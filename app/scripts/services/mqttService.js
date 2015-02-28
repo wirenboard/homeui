@@ -1,3 +1,5 @@
+'use strict';
+
 var mqttServiceModule = angular.module('homeuiApp.mqttServiceModule', ['ngResource']);
 
 mqttServiceModule.factory('mqttClient', function($rootScope) {
@@ -17,7 +19,7 @@ mqttServiceModule.factory('mqttClient', function($rootScope) {
 
     console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with user " + user);
 
-    client = new Paho.MQTT.Client(host, parseInt(port), '/', 'Contactless web ui');
+    client = new Paho.MQTT.Client(host, parseInt(port), '/', 'userID-Contactless');
     client.connect(options);
 
     client.onConnectionLost = service.onConnectionLost;
