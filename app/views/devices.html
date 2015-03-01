@@ -1,32 +1,16 @@
-<div id="devicesContainer" class="view">
-  <div class="card" ng-repeat="(name, device) in devices" on>
-    <div ng-if="device.metaName">
-      <h1 class="deviceName">{{device.metaName}}</h1>
-    </div>
-    <div ng-if="!device.metaName">
-      <h1 class="deviceName">{{name}}</h1>
-    </div>
-    <div class="control-view">
-      <div ng-repeat="(controlName, control) in device.controls" class="control-wrapper">
-        <!-- Push button -->
-        <input ng-if="control.metaType == 'pushbutton'" type="button" ng-value="controlName"/>
-
-        <!-- Range selector -->
-        <h2 ng-if="control.metaType == 'range' || control.metaType == 'switch'">{{controlName}}</h2>
-        <div class="rangeWrapper" ng-if="control.metaType == 'range'">
-          <input type="range" ng-value="control.value" />
+<div class="row">
+  <div id='devices-list'>
+    <ul class="list-unstyled">
+      <li ng-repeat="(name, device) in devices">
+        <div class="panel panel-primary">
+          <div class="panel-heading" device-name></div>
+          <div class="panel-body">
+            <div ng-repeat="(controlName, control) in device.controls" class="control-wrapper">
+              <device-control></device-control>
+            </div>
+          </div>
         </div>
-
-        <!-- Checkbox selector -->
-
-        <div ng-if="control.metaType == 'switch'" class="onoffswitch">
-          <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-          <label class="onoffswitch-label" for="myonoffswitch">
-            <span class="onoffswitch-inner"></span>
-            <span class="onoffswitch-switch"></span>
-          </label>
-        </div>
-      </div>
-    </div>
+      </li>
+    </ul>
   </div>
 </div>

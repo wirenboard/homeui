@@ -13,6 +13,13 @@ angular.module('homeuiApp')
 
     $scope.change = function(device) { console.log('Track change!') };
 
+
+    var wookmarkOptions = {
+      autoResize: true,
+      container: $('#devices-list'),
+      offset: 10
+    };
+
     mqttClient.onMessage(function(message) {
       var pathItems = message.destinationName.split('/');
       if(pathItems[1] != "devices") {
@@ -33,7 +40,10 @@ angular.module('homeuiApp')
 
       parseMessage(device, pathItems, message);
 
-      $scope.$apply(function (){ console.log('Track apply!') });
+      $scope.$apply(function (){
+        $("#devices-list ul li").wookmark(wookmarkOptions);
+        $("[type='checkbox']").bootstrapSwitch();
+      });
     });
 
     function parseMessage(device, pathItems, message) {
@@ -97,4 +107,41 @@ angular.module('homeuiApp')
           control.value = message.payloadBytes[0];
       }
     }
-  }]);
+  }])
+  .directive('deviceName', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/device-name.html'
+    };
+  })
+  .directive('deviceControl', function(){
+    return{
+      restrict: 'E',
+      templateUrl: 'views/devices/device-control.html'
+    };
+  })
+  .directive('controlRange', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/controls/control-range.html'
+    };
+  })
+  .directive('controlPushbutton', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/controls/control-button.html'
+    };
+  })
+  .directive('controlSwitch', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/controls/control-switch.html'
+    };
+  })
+  .directive('controlTextbox', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/controls/control-textbox.html'
+    };
+  })
+  ;
