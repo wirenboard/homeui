@@ -62,6 +62,7 @@ mqttServiceModule.factory('mqttClient', function($rootScope) {
   service.send = function(destination, payload) {
     var message = new Paho.MQTT.Message(payload);
     message.destinationName = destination;
+    message.retained = true;
 
     client.send(message);
   };

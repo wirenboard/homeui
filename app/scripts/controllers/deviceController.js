@@ -11,8 +11,15 @@ angular.module('homeuiApp')
   .controller('DeviceCtrl', ['$scope', '$location', '$rootScope', '$interval', 'mqttClient', function($scope, $location, $rootScope, $interval, mqttClient) {
     $scope.devices = {};
 
-    $scope.change = function(device) { console.log('Track change!') };
-
+    $scope.change = function(control) {
+      console.log(control);
+      console.log('changed: ' + control.name + ' value: ' + control.value);
+      var payload = control.value;
+      if(control.metaType == 'switch' && (control.value === true || control.value === false)){
+        payload = control.value ? '1' : '0';
+      }
+      mqttClient.send(control.topic, payload);
+    };
 
     var wookmarkOptions = {
       autoResize: true,
@@ -42,7 +49,6 @@ angular.module('homeuiApp')
 
       $scope.$apply(function (){
         $("#devices-list ul li").wookmark(wookmarkOptions);
-        $("[type='checkbox']").bootstrapSwitch();
       });
     });
 
@@ -104,7 +110,11 @@ angular.module('homeuiApp')
           parseControlsMeta(control, pathItems, message);
           break;
         case undefined:
-          control.value = message.payloadBytes[0];
+          if(message.payloadBytes[0] === 48 || message.payloadBytes[0] === 49){
+            control.value = parseInt(String.fromCharCode.apply(null, message.payloadBytes));
+          }else
+            control.value = String.fromCharCode.apply(null, message.payloadBytes);
+          control.topic = message.destinationName;
       }
     }
   }])
@@ -143,5 +153,4 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/devices/controls/control-textbox.html'
     };
-  })
-  ;
+  });

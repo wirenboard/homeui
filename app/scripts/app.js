@@ -14,7 +14,8 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch',
+    'toggle-switch'
   ])
   .config(function ($routeProvider) {
     $routeProvider
