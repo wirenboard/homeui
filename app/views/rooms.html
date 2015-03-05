@@ -40,6 +40,14 @@
   </tbody>
 </table>
 
+<h4>Add Widget To Room</h4>
+
+<form class="form-inline" name='widgetToRoomForm' ng-submit='widgetToRoomForm.$valid && addWidgetToRoom()' novalidate>
+  <select ng-model="selectedRoom" ng-options="room.name for room in roomsArray" required></select>
+  <select ng-model="selectedWidget" ng-options="widget.name for widget in widgets" required></select>
+  <button type="submit" class="btn btn-primary">Add widget</button>
+</form>
+
 <div class="row">
   <div id='rooms-list' class='wookmark-list'>
     <ul class="list-unstyled">

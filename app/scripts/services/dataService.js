@@ -27,6 +27,12 @@ angular.module('homeuiApp.dataServiceModule', [])
     roomsService.addWidget = function(uid, widget) {
       rooms[uid].widgets[widget.uid] = widget;
     }
+    roomsService.to_a = function() {
+      var roomsArray = $.map(rooms, function(value, index) {
+          return [value];
+      });
+      return roomsArray;
+    };
 
     return roomsService;
   })
@@ -39,6 +45,12 @@ angular.module('homeuiApp.dataServiceModule', [])
     };
     widgetsService.list = function() {
       return widgets;
+    };
+    widgetsService.to_a = function() {
+      var widgets_array = $.map(widgets, function(value, index) {
+          return [value];
+      });
+      return widgets_array;
     };
 
     return widgetsService;

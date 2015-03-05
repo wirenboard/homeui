@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('RoomCtrl', ['$scope', '$rootScope', 'HomeUIRooms', '$timeout', 'mqttClient', function($scope, $rootScope, HomeUIRooms, $timeout, mqttClient){
+  .controller('RoomCtrl', ['$scope', '$rootScope', 'HomeUIRooms', 'HomeUIWidgets', '$timeout', 'mqttClient', function($scope, $rootScope, HomeUIRooms, HomeUIWidgets, $timeout, mqttClient){
 
     $scope.change = function(control) {
       console.log('changed: ' + control.name + ' value: ' + control.value);
@@ -15,18 +15,31 @@ angular.module('homeuiApp')
     $scope.room = {};
 
     $scope.rooms = HomeUIRooms.list();
+    $scope.roomsArray = HomeUIRooms.to_a();
+    $scope.widgets = HomeUIWidgets.to_a();
+    $scope.selectedWidget = null;
+    $scope.selectedRoom = null;
 
     $scope.addOrUpdateRoom = function(){
-
-      var room_index = $scope.rooms.map(function(e) {return e.uid; }).indexOf($scope.room.uid);
-
-      if(room_index >= 0){
-        $scope.rooms[room_index].name = $scope.room.name;
-      }else{
-        $scope.rooms.push($scope.room);
-      }
+      $scope.rooms[$scope.room.uid] = $scope.room;
+      mqttClient.send('/user/config/rooms/' + $scope.room.uid + '/name', $scope.room.name);
       $scope.room = {};
     };
+
+    $scope.addWidgetToRoom = function(){
+      mqttClient.send('/user/config/widgets/' + $scope.selectedWidget.uid + '/room', $scope.selectedRoom.uid);
+      var oldRoom = $scope.rooms[$scope.selectedWidget.room];
+      delete oldRoom.widgets[$scope.selectedWidget.uid];
+      $scope.selectedWidget.room = $scope.selectedRoom.uid;
+      var room = $scope.rooms[$scope.selectedRoom.uid];
+      room.widgets[$scope.selectedWidget.uid] = $scope.selectedWidget;
+    };
+
+    mqttClient.onMessage(function(message) {
+      $scope.$apply(function (){
+        initWookmark();
+      });
+    });
 
     function initWookmark(){
       var wookmarkOptions = {
