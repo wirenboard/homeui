@@ -29,7 +29,7 @@ mqttServiceModule.factory('mqttClient', function($rootScope) {
 
   service.onConnect = function() {
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
-    client.subscribe("/devices/#");
+    client.subscribe("/user/#");
   };
 
   service.onFailure = function() {

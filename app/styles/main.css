@@ -80,11 +80,21 @@ body {
 
 /* Devices List */
 
-#devices-list{
+.wookmark-list{
   position: relative;
 }
 
-#devices-list ul li{
+.wookmark-list ul li{
   display: none;
   width: 270px;
+}
+
+/* Form Validation */
+
+.ng-invalid.ng-dirty{
+  border-color: #FA787E;
+}
+
+.ng-valid.ng-dirty{
+  border-color: #78FA89;
 }

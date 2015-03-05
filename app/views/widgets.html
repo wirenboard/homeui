@@ -1,0 +1,39 @@
+<form class="form-inline" name='widgetForm' ng-submit='widgetForm.$valid && widgetCtrl.addOrUpdateWidget()' novalidate>
+  <div ng-show="widgetForm.$submitted">
+    <div ng-show="widgetForm.widgetUID.$error.required">UID is required</div>
+    <div ng-show="widgetForm.widgetName.$error.required">Name is required</div>
+    <div ng-show="widgetForm.widgetType.$error.required">Type is required</div>
+  </div>
+  <div class="form-group">
+    <label for="widgetUID">ID</label>
+    <input type="text" class="form-control" id="widgetUID" name='widgetUID' placeholder="Widget UID" ng-model='widgetCtrl.widget.uid' required>
+  </div>
+  <div class="form-group">
+    <label for="widgetName">Name</label>
+    <input type="text" class="form-control" id="widgetName" name='widgetName' placeholder="Widget name" ng-model='widgetCtrl.widget.name' required>
+  </div>
+  <div class="form-group">
+    <label for="widgetType">Type</label>
+    <input type="text" class="form-control" id="widgetType" name='widgetType' placeholder="Widget type" ng-model='widgetCtrl.widget.type' required>
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<h4>Widgets</h4>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>UID</th>
+      <th>Name</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat='widget in widgetCtrl.widgets'>
+      <th scope="row">{{widget.uid}}</th>
+      <td>{{widget.name}}</td>
+      <td>{{widget.type}}</td>
+    </tr>
+  </tbody>
+</table>

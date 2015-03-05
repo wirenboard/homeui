@@ -11,6 +11,7 @@
 angular
   .module('homeuiApp', [
     'homeuiApp.mqttServiceModule',
+    'homeuiApp.dataServiceModule',
     'ngResource',
     'ngRoute',
     'ngSanitize',
@@ -27,6 +28,15 @@ angular
       .when('/devices', {
         templateUrl: 'views/devices.html',
         controller: 'DeviceCtrl'
+      })
+      .when('/rooms', {
+        templateUrl: 'views/rooms.html',
+        controller: 'RoomCtrl'
+      })
+      .when('/widgets', {
+        templateUrl: 'views/widgets.html',
+        controller: 'WidgetCtrl',
+        controllerAs: 'widgetCtrl'
       })
       .otherwise({
         redirectTo: '/'
