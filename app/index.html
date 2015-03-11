@@ -2,69 +2,80 @@
 <html class="no-js">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Wiren Board HomeUI</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <!-- build:css(.) styles/vendor.css -->
-    <!-- bower:css -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="bower_components/angular-toggle-switch/angular-toggle-switch.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
-    <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
-    <!-- endbuild -->
   </head>
   <body ng-app="homeuiApp">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <!-- Add your site or application content here -->
-    <div class="header">
-      <div class="navbar navbar-default" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
+    <div id="wrapper">
 
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#js-navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#/">Wiren Board HomeUI</a>
+            </div>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li class="active">
+                        <a href="#/"><i class="glyphicon glyphicon-dashboard"></i> Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="#/devices"><i class="glyphicon glyphicon-wrench"></i> Devices</a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#rooms-menu"><i class="glyphicon glyphicon-home"></i> Rooms <i class="glyphicon glyphicon-menu-down"></i></a>
+                        <ul id="rooms-menu" class="collapse">
+                            <li>
+                                <a href="#">Kitchen</a>
+                            </li>
+                            <li>
+                                <a href="#">Bedroom</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
 
-            <a class="navbar-brand" href="#/">homeui</a>
-          </div>
+        <div id="page-wrapper">
 
-          <div class="collapse navbar-collapse" id="js-navbar-collapse">
+            <div class="container-fluid">
 
-            <ul class="nav navbar-nav">
-              <li><a href="#/devices">Devices</a></li>
-              <li><a href="#/rooms">Rooms</a></li>
-              <li><a href="#/widgets">Widgets</a></li>
-            </ul>
-          </div>
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div ng-view=""></div>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+            </div>
+            <!-- /.container-fluid -->
+
         </div>
-      </div>
+        <!-- /#page-wrapper -->
+
     </div>
 
-    <div class="container">
-      <div ng-view=""></div>
-    </div>
+    <script src="lib/mqttws31.js"></script>
 
-    <div class="footer">
-      <div class="container">
-        <p><span class="glyphicon glyphicon-heart"></span></p>
-      </div>
-    </div>
-
-    <!-- lib -->
-      <script src="lib/mqttws31.js"></script>
-    <!-- endlib -->
-
-    <!-- build:js(.) scripts/vendor.js -->
-    <!-- bower:js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
@@ -73,19 +84,15 @@
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-touch/angular-touch.js"></script>
     <script src="bower_components/angular-toggle-switch/angular-toggle-switch.js"></script>
-    <!-- endbower -->
-    <!-- endbuild -->
 
     <script src="lib/jquery.wookmark.min.js"></script>
 
-        <!-- build:js({.tmp,app}) scripts/scripts.js -->
-        <script src="scripts/app.js"></script>
-        <script src="scripts/controllers/homeui.js"></script>
-        <script src="scripts/services/mqttService.js"></script>
-        <script src="scripts/services/dataService.js"></script>
-        <script src="scripts/controllers/deviceController.js"></script>
-        <script src="scripts/controllers/roomController.js"></script>
-        <script src="scripts/controllers/widgetController.js"></script>
-        <!-- endbuild -->
-</body>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/homeui.js"></script>
+    <script src="scripts/services/mqttService.js"></script>
+    <script src="scripts/services/dataService.js"></script>
+    <script src="scripts/controllers/deviceController.js"></script>
+    <script src="scripts/controllers/roomController.js"></script>
+    <script src="scripts/controllers/widgetController.js"></script>
+  </body>
 </html>

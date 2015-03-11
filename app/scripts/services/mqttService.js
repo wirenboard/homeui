@@ -2,7 +2,7 @@
 
 var mqttServiceModule = angular.module('homeuiApp.mqttServiceModule', ['ngResource']);
 
-mqttServiceModule.factory('mqttClient', function($rootScope) {
+mqttServiceModule.factory('mqttClient', function($window) {
   var service = {};
   var client = {};
 
@@ -30,10 +30,12 @@ mqttServiceModule.factory('mqttClient', function($rootScope) {
   service.onConnect = function() {
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
     client.subscribe("/user/#");
+    $window.localStorage.setItem('connected', true);
   };
 
   service.onFailure = function() {
     console.log("Failure to connect to " + client.host + ":" + client.port + " as " + client.clientId);
+    $window.localStorage.setItem('connected', false);
   };
 
   service.publish = function(topic, payload) {
@@ -47,6 +49,7 @@ mqttServiceModule.factory('mqttClient', function($rootScope) {
 
   service.onConnectionLost = function (errorCallback) {
     console.log("Server connection lost: " + errorCallback.errorMessage);
+    $window.localStorage.setItem('connected', false);
   };
 
   service.onMessageDelivered = function(message) {

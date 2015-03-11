@@ -29,7 +29,7 @@ angular.module('homeuiApp')
     $scope.addWidgetToRoom = function(){
       mqttClient.send('/user/config/widgets/' + $scope.selectedWidget.uid + '/room', $scope.selectedRoom.uid);
       var oldRoom = $scope.rooms[$scope.selectedWidget.room];
-      delete oldRoom.widgets[$scope.selectedWidget.uid];
+      oldRoom && delete oldRoom.widgets[$scope.selectedWidget.uid];
       $scope.selectedWidget.room = $scope.selectedRoom.uid;
       var room = $scope.rooms[$scope.selectedRoom.uid];
       room.widgets[$scope.selectedWidget.uid] = $scope.selectedWidget;

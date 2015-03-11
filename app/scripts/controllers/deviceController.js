@@ -1,12 +1,5 @@
 'use strict';
 
-/**
- * @ngdoc function
- * @name homeuiApp.controller:HomeuiCtrl
- * @description
- * # HomeuiCtrl
- * Controller of the homeuiApp
- */
 angular.module('homeuiApp')
   .controller('DeviceCtrl', ['$scope', '$location', '$rootScope', '$interval', 'mqttClient', 'HomeUIDevices', 'HomeUIControls', 'HomeUIRooms', 'HomeUIWidgets', function($scope, $location, $rootScope, $interval, mqttClient, HomeUIDevices, HomeUIControls, HomeUIRooms, HomeUIWidgets) {
 

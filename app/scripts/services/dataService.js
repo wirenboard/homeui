@@ -11,6 +11,12 @@ angular.module('homeuiApp.dataServiceModule', [])
     controlsService.list = function() {
       return controls;
     };
+    controlsService.to_a = function() {
+      var controls_array = $.map(controls, function(value, index) {
+          return [value];
+      });
+      return controls_array;
+    };
 
     return controlsService;
   })
@@ -67,7 +73,7 @@ angular.module('homeuiApp.dataServiceModule', [])
     };
     devicesService.find = function(query) {
       query = query.split('/');
-      return devices[query[2]].controls[query[4]];
+      return devices[query[3]].controls[query[5]];
     };
     return devicesService;
   });

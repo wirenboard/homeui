@@ -35,29 +35,9 @@ angular
       })
       .when('/widgets', {
         templateUrl: 'views/widgets.html',
-        controller: 'WidgetCtrl',
-        controllerAs: 'widgetCtrl'
+        controller: 'WidgetCtrl'
       })
       .otherwise({
         redirectTo: '/'
       });
-  })
-  .run(function($rootScope, $location, $window, mqttClient) {
-    var host = $window.localStorage['host'];
-    var port = $window.localStorage['port'];
-    var user = $window.localStorage['user'];
-    var password = $window.localStorage['password'];
-    console.log("Verifying User Session..." + user);
-    if(host == null && port == null){
-      console.log('Going to login');
-      $location.path('/');
-    }else{
-      console.log('Going to devices');
-      try {
-        mqttClient.connect(host, port, user, password);
-        $location.path('/devices');
-      } catch(e) {
-        console.log(e.toString());
-      }
-    }
   });

@@ -1,16 +1,17 @@
-<div class="row">
-  <div id='devices-list' class='wookmark-list'>
-    <ul class="list-unstyled">
-      <li ng-repeat="(name, device) in devices">
-        <div class="panel panel-primary">
-          <div class="panel-heading" device-name></div>
-          <div class="panel-body">
-            <div ng-repeat="(controlName, control) in device.controls" class="control-wrapper">
-              <device-control></device-control>
-            </div>
+<h1 class="page-header">
+    Devices <small>with controls</small>
+</h1>
+<div id='devices-list' class='wookmark-list'>
+  <ul class="list-unstyled">
+    <li ng-repeat="(name, device) in devices">
+      <div class="panel panel-primary">
+        <div class="panel-heading" device-name></div>
+        <div class="panel-body">
+          <div ng-repeat="(controlName, control) in device.controls" class="control-wrapper">
+            <device-control></device-control>
           </div>
         </div>
-      </li>
-    </ul>
-  </div>
+      </div>
+    </li>
+  </ul>
 </div>
