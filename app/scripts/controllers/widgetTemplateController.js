@@ -29,4 +29,14 @@ angular.module('homeuiApp')
       var widget_template = $scope.widgetTemplates[$scope.widgetTemplate.uid];
       if(widget_template) $scope.widgetTemplate = widget_template;
     };
+
+    $scope.wookmarkIt = function(){
+      var wookmarkOptions = {
+        autoResize: true,
+        container: $('.wookmark-list'),
+        offset: 10
+      };
+
+      $(".wookmark-list ul li").wookmark(wookmarkOptions);
+    };
   }]);

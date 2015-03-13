@@ -1,4 +1,24 @@
+<a href="#/widget_templates/new" class="btn btn-success pull-right">Add template</a>
 <h1 class="page-header">
-    Widget <small>templates</small>
-    <a href="#/widget_templates/new" class="btn btn-success pull-right">Add template</a>
+  Widget <small>templates</small>
 </h1>
+<div id='widget-templates-list' class='wookmark-list'>
+  <ul class="list-unstyled">
+    <li ng-repeat="widgetTemplate in widgetTemplates">
+      {{wookmarkIt()}}
+      <div class="panel panel-primary">
+        <div class="panel-heading">{{ widgetTemplate.name }}</div>
+        <div class="panel-body">
+          <h4>Slots for controls</h4>
+          <div ng-repeat="slot in widgetTemplate.slots" class="control-wrapper">
+            {{ slot.uid }} - {{ slot.name }}
+          </div>
+          <h4>Options</h4>
+          <div ng-repeat="option in widgetTemplate.options" class="control-wrapper">
+            {{ option.uid }} - {{ option.name }}
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
