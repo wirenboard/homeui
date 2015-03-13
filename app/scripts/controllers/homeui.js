@@ -1,13 +1,15 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('HomeuiCtrl', ['$scope', '$location', '$window', 'mqttClient', function ($scope, $location, $window, mqttClient){
+  .controller('HomeuiCtrl', ['$scope', '$location', '$window', 'mqttClient', 'HomeUIData', function ($scope, $location, $window, mqttClient, HomeUIData){
     $scope.loginData = {};
+    $scope.data = {};
     $scope.loginData.host = 'mqtt.carbonfay.ru';
     $scope.loginData.port = 18883;
     $scope.tryConnect = tryConnect;
     $scope.disconnect = disconnect;
     $scope.connected = $window.localStorage['connected'];
+    $scope.data = HomeUIData.list();
 
     function tryConnect() {
       console.log('Try to connect as ' + $scope.loginData.user);
@@ -18,7 +20,6 @@ angular.module('homeuiApp')
         $window.localStorage.setItem('password',$scope.loginData.password);
         mqttClient.connect($scope.loginData.host, $scope.loginData.port, $scope.loginData.user, $scope.loginData.password);
         console.log('Successfully logged in ' + $scope.loginData.user);
-        $location.path('/devices');
       }else{
         $scope.showAlert();
       }
@@ -30,13 +31,16 @@ angular.module('homeuiApp')
       $location.path('/home');
     };
 
+    $scope.objectsKeys = function(collection){
+      return Object.keys(collection);
+    }
+
     $scope.$watch('$viewContentLoaded', function(){
-      if(!$scope.connected){
-        $scope.tryConnect();
-      }
+      $scope.tryConnect();
     });
 
     mqttClient.onMessage(function(message) {
-      console.log('Catch onMessage callback');
+      HomeUIData.parseMsg(message);
+      $scope.$apply();
     });
   }]);

@@ -1,79 +1,150 @@
 'use strict';
 
 angular.module('homeuiApp.dataServiceModule', [])
-  .factory('HomeUIControls', function() {
-    var controls = {};
-    var controlsService = {};
+  .factory('HomeUIData', function() {
+    var data = { devices:{}, controls:{}, widgets:{}, widget_types:{}, rooms:{} };
+    var dataService = {};
 
-    controlsService.add = function(controlName, control) {
-      controls[controlName] = control;
-    };
-    controlsService.list = function() {
-      return controls;
-    };
-    controlsService.to_a = function() {
-      var controls_array = $.map(controls, function(value, index) {
-          return [value];
-      });
-      return controls_array;
+    dataService.parseMsg = function(message) {
+      var pathItems = message.destinationName.split('/');
+
+      parseMsg(pathItems, message);
+
+      console.log('======================');
+      console.log(data);
+      console.log('======================');
     };
 
-    return controlsService;
-  })
-  .factory('HomeUIRooms', function() {
-    var rooms = {};
-    var roomsService = {};
+    dataService.list = function() {
+      return data;
+    };
 
-    roomsService.add = function(uid, room) {
-      rooms[uid] = room;
+    dataService.addDevice = function(uid, device) {
+      data.devices[uid] = device;
     };
-    roomsService.list = function() {
-      return rooms;
+
+    function parseMsg(pathItems, message){
+      switch(pathItems[1]) {
+        case "devices":
+          parseDeviceMsg(pathItems, message);
+          break;
+        case "config":
+          parseConfigMsg(pathItems, message);
+          break;
+        default:
+          console.log("ERROR: Unknown message");
+          return null;
+          break;
+      }
     };
-    roomsService.addWidget = function(uid, widget) {
-      rooms[uid].widgets[widget.uid] = widget;
+
+    function parseDeviceMsg(pathItems, message){
+      var device = {};
+      var deviceName = pathItems[2];
+      if(data.devices[deviceName] != null){ // We already register the device, change it
+        device = data.devices[deviceName];
+      }else {
+        device = {name: deviceName, controls: {}};
+        dataService.addDevice(deviceName, device);
+      }
+      parseDeviceInfo(pathItems, message);
+    };
+
+    function parseDeviceInfo(pathItems, message){
+      switch(pathItems[3]) {
+        case "meta":
+          parseDeviceMeta(pathItems, message);
+          break;
+        case "controls":
+          parseControls(pathItems, message);
+          break;
+      }
     }
-    roomsService.to_a = function() {
-      var roomsArray = $.map(rooms, function(value, index) {
-          return [value];
-      });
-      return roomsArray;
+
+    function parseDeviceMeta(pathItems, message){
+      var deviceName = pathItems[2];
+      data.devices[deviceName]['meta' + capitalizeFirstLetter(pathItems[4])] = message.payloadString;
     };
 
-    return roomsService;
-  })
-  .factory('HomeUIWidgets', function() {
-    var widgets = {};
-    var widgetsService = {};
-
-    widgetsService.add = function(uid, widget) {
-      widgets[uid] = widget;
-    };
-    widgetsService.list = function() {
-      return widgets;
-    };
-    widgetsService.to_a = function() {
-      var widgets_array = $.map(widgets, function(value, index) {
-          return [value];
-      });
-      return widgets_array;
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
-    return widgetsService;
-  })
-  .factory('HomeUIDevices', function(){
-    var devices = {};
-    var devicesService = {};
+    function parseControls(pathItems, message){
+      var deviceName = pathItems[2];
+      var controlName = pathItems[4];
+      var control = {};
 
-    devicesService.add = function(uid, device) {
-      devices[uid] = device;
+      if(data.controls[controlName] != null) {
+        control = data.controls[controlName];
+      } else {
+        control = data.controls[controlName] = {name: controlName, value: 0};
+      };
+
+      control.topic = pathItems.slice(0,5).join('/');
+
+      switch(pathItems[5]) {
+        case "meta":
+          parseControlMeta(pathItems, message);
+          break;
+        case undefined:
+          var value = message.payloadString;
+          if(message.payloadBytes[0] === 48 || message.payloadBytes[0] === 49) value = parseInt(message.payloadString);
+          control.value = value;
+      };
+
+      data.devices[deviceName].controls[controlName] = control;
     };
-    devicesService.list = function() {
-      return devices;
+
+    function parseControlMeta(pathItems, message){
+      var controlName = pathItems[4];
+      data.controls[controlName]['meta' + capitalizeFirstLetter(pathItems[6])] = message.payloadString;
     };
-    devicesService.find = function(query) {
-      query = query.split('/');
-      return devices[query[3]].controls[query[5]];
+
+    function parseConfigMsg(pathItems, message){
+      switch(pathItems[2]) {
+        case "widgets":
+          parseWidgetMsg(pathItems, message);
+          break;
+        case "rooms":
+          parseRoomMsg(pathItems, message);
+          break;
+        default:
+          console.log("ERROR: Unknown config message");
+          return null;
+          break;
+      };
     };
-    return devicesService;
+
+    function parseWidgetMsg(pathItems, message){
+      var deviceInfo = message.payloadString.split('/');
+      var deviceName = deviceInfo[2];
+      var controlName = deviceInfo[4];
+      var widgetUID = pathItems[3];
+      var widget = {controls: {}};
+
+      if(data.widgets[widgetUID] != null){
+        widget = data.widgets[widgetUID];
+      } else {
+        widget['uid'] = widgetUID;
+      };
+
+      if(pathItems[4] === 'controls'){
+        widget.controls[pathItems[5]] = data.devices[deviceName].controls[controlName];
+      }else{
+        widget[pathItems[4]] = message.payloadString;
+      };
+
+      if(pathItems[4] === 'room'){
+        data.rooms[message.payloadString].widgets[widgetUID] = widget;
+      };
+
+      data.widgets[widgetUID] = widget;
+    };
+
+    function parseRoomMsg(pathItems, message){
+      data.rooms[pathItems[3]] = { uid: pathItems[3], name: message.payloadString, widgets: {} };
+    };
+
+    return dataService;
   });
