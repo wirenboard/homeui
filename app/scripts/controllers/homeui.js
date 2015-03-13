@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('HomeuiCtrl', ['$scope', '$location', '$window', 'mqttClient', 'HomeUIData', function ($scope, $location, $window, mqttClient, HomeUIData){
+  .controller('HomeuiCtrl', ['$scope', '$rootScope', '$location', '$window', 'mqttClient', 'HomeUIData', function ($scope, $rootScope, $location, $window, mqttClient, HomeUIData){
     $scope.loginData = {};
     $scope.data = {};
     $scope.loginData.host = 'mqtt.carbonfay.ru';
@@ -30,10 +30,6 @@ angular.module('homeuiApp')
       $window.localStorage.clear();
       $location.path('/home');
     };
-
-    $scope.objectsKeys = function(collection){
-      return Object.keys(collection);
-    }
 
     $scope.$watch('$viewContentLoaded', function(){
       $scope.tryConnect();

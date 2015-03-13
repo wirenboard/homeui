@@ -31,11 +31,11 @@
             </div>
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav">
-                    <li class="active">
-                        <a href="#/"><i class="glyphicon glyphicon-dashboard"></i> Dashboard</a>
+                <ul class="nav navbar-nav side-nav" ng-controller='NavigationCtrl'>
+                    <li ng-class="{ active: isActive('/') }">
+                        <a href="#/"><i class="glyphicon glyphicon-dashboard"></i> Dashboard </a>
                     </li>
-                    <li>
+                    <li ng-class="{ active: isActive('/devices') }">
                         <a href="#/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
                     </li>
                     <li>
@@ -46,6 +46,17 @@
                             </li>
                             <li>
                                 <a href="#">Bedroom</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#widgets-menu"><i class="glyphicon glyphicon-list-alt"></i> Widgets <i class="glyphicon glyphicon-menu-down"></i></a>
+                        <ul id="widgets-menu" class="collapse">
+                            <li ng-class="{ active: isActive('/widgets') }">
+                                <a href="#/widgets">Widgets</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/widget_templates') }">
+                                <a href="#/widget_templates">Widget Templates</a>
                             </li>
                         </ul>
                     </li>
@@ -97,5 +108,7 @@
     <script src="scripts/controllers/deviceController.js"></script>
     <script src="scripts/controllers/roomController.js"></script>
     <script src="scripts/controllers/widgetController.js"></script>
+    <script src="scripts/controllers/widgetTemplateController.js"></script>
+    <script src="scripts/controllers/navigationController.js"></script>
   </body>
 </html>

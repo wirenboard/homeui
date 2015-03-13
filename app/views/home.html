@@ -43,7 +43,7 @@
     </div>
   </div>
   <div class="col-lg-6">
-    <h2>Widget Types</h2>
+    <h2>Widget Templates</h2>
     <div class="table-responsive">
       <table class="table table-bordered table-hover">
         <thead>
@@ -53,9 +53,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="widget_type in data.widget_types">
-            <td>{{ widget.name }}</td>
-            <td>{{ widget.type }}</td>
+          <tr ng-repeat="widget_template in data.widget_templates">
+            <td>{{ widget_template.name }}</td>
+            <td>{{ widget_template.uid }}</td>
           </tr>
         </tbody>
       </table>

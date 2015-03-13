@@ -2,7 +2,7 @@
 
 angular.module('homeuiApp.dataServiceModule', [])
   .factory('HomeUIData', function() {
-    var data = { devices:{}, controls:{}, widgets:{}, widget_types:{}, rooms:{} };
+    var data = { devices:{}, controls:{}, widgets:{}, widget_templates:{}, rooms:{} };
     var dataService = {};
 
     dataService.parseMsg = function(message) {
@@ -109,6 +109,9 @@ angular.module('homeuiApp.dataServiceModule', [])
         case "rooms":
           parseRoomMsg(pathItems, message);
           break;
+        case "widget_templates":
+          parseWidgetTemplateMsg(pathItems, message);
+          break;
         default:
           console.log("ERROR: Unknown config message");
           return null;
@@ -144,6 +147,44 @@ angular.module('homeuiApp.dataServiceModule', [])
 
     function parseRoomMsg(pathItems, message){
       data.rooms[pathItems[3]] = { uid: pathItems[3], name: message.payloadString, widgets: {} };
+    };
+
+    function parseWidgetTemplateMsg(pathItems, message){
+      var widgetTemplateUID = pathItems[3];
+      var widgetTemplate = { slots: {}, options:{} };
+      if(data.widget_templates[widgetTemplateUID] != null){
+        widgetTemplate = data.widget_templates[widgetTemplateUID];
+      } else {
+        widgetTemplate['uid'] = widgetTemplateUID;
+      };
+      switch(pathItems[4]) {
+        case "name":
+          widgetTemplate['name'] = message.payloadString;
+          break;
+        case "slots":
+          if(widgetTemplate.slots[pathItems[5]] === undefined){
+            var slot = {};
+            slot[pathItems[6]] = message.payloadString;
+            widgetTemplate.slots[pathItems[5]] = slot;
+          }else{
+            widgetTemplate.slots[pathItems[5]][pathItems[6]] = message.payloadString;
+          }
+          break;
+        case "options":
+          if(widgetTemplate.options[pathItems[5]] === undefined){
+            var option = {};
+            option[pathItems[6]] = message.payloadString;
+            widgetTemplate.options[pathItems[5]] = option;
+          }else{
+            widgetTemplate.options[pathItems[5]][pathItems[6]] = message.payloadString;
+          }
+          break;
+        default:
+          console.log("ERROR: Unknown widget template message");
+          return null;
+          break;
+      };
+      data.widget_templates[widgetTemplateUID] = widgetTemplate;
     };
 
     return dataService;

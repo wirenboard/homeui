@@ -243,3 +243,10 @@ ul.alert-dropdown {
 .ng-valid.ng-dirty{
   border-color: #78FA89;
 }
+
+/* NavBar Items */
+
+.navbar-nav .active > a{
+  color: #fff;
+  background-color: #080808;
+}
