@@ -37,6 +37,10 @@ angular
         templateUrl: 'views/widgets.html',
         controller: 'WidgetCtrl'
       })
+      .when('/widgets/new', {
+        templateUrl: 'views/new_widget.html',
+        controller: 'WidgetCtrl'
+      })
       .when('/widget_templates', {
         templateUrl: 'views/widget_templates.html',
         controller: 'WidgetTemplateCtrl'

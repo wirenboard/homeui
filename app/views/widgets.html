@@ -1,66 +1,24 @@
-<form class="form-inline" name='widgetForm' ng-submit='widgetForm.$valid && addOrUpdateWidget()' novalidate>
-  <div ng-show="widgetForm.$submitted">
-    <div ng-show="widgetForm.widgetUID.$error.required">UID is required</div>
-    <div ng-show="widgetForm.widgetName.$error.required">Name is required</div>
-    <div ng-show="widgetForm.widgetType.$error.required">Type is required</div>
-  </div>
-  <div class="form-group">
-    <label for="widgetUID">ID</label>
-    <input type="text" class="form-control" id="widgetUID" name='widgetUID' placeholder="Widget UID" ng-model='widget.uid' required>
-  </div>
-  <div class="form-group">
-    <label for="widgetName">Name</label>
-    <input type="text" class="form-control" id="widgetName" name='widgetName' placeholder="Widget name" ng-model='widget.name' required>
-  </div>
-  <div class="form-group">
-    <label for="widgetType">Type</label>
-    <input type="text" class="form-control" id="widgetType" name='widgetType' placeholder="Widget type" ng-model='widget.type' required>
-  </div>
-  <button type="submit" class="btn btn-primary">Save</button>
-</form>
-
-<h4>Widgets</h4>
-
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>UID</th>
-      <th>Name</th>
-      <th>Type</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr ng-repeat='widget in widgets'>
-      <th scope="row">{{widget.uid}}</th>
-      <td>{{widget.name}}</td>
-      <td>{{widget.type}}</td>
-    </tr>
-  </tbody>
-</table>
-
-<h4>Add Control To Widget</h4>
-
-<form class="form-inline" name='controlToWidgetForm' ng-submit='controlToWidgetForm.$valid && addControlToWidget()' novalidate>
-  <select ng-model="selectedControl" ng-options="control.topic for control in controls" required></select>
-  <select ng-model="selectedWidget" ng-options="widget.name for widget in widgetsArray" required></select>
-  <button type="submit" class="btn btn-primary">Save</button>
-</form>
-
-<div class="row">
-  <div id='widgets-list' class='wookmark-list'>
-    <ul class="list-unstyled">
-      <li ng-repeat="widget in widgets">
-        <div class="panel panel-primary">
-          <div class="panel-heading">
-            <h3>{{widget.uid}} - {{widget.name}}</h3>
+<a href="#/widgets/new" class="btn btn-success pull-right">Add widget</a>
+<h1 class="page-header">
+  Widgets
+</h1>
+<div id='widgets-list' class='wookmark-list'>
+  <ul class="list-unstyled">
+    <li ng-repeat="widget in widgets">
+      {{wookmarkIt()}}
+      <div class="panel panel-primary">
+        <div class="panel-heading">{{ widget.name }}</div>
+        <div class="panel-body">
+          <h4>Сontrols</h4>
+          <div ng-repeat="control in widget.controls" class="control-wrapper">
+            {{ control.topic.topic }}
           </div>
-          <div class="panel-body">
-            <div ng-repeat="control in widget.controls">
-              {{control.name}} - {{control.metaType}}
-            </div>
+          <h4>Options</h4>
+          <div ng-repeat="option in widget.options" class="control-wrapper">
+            {{ option.uid }} - {{ option.value }}
           </div>
         </div>
-      </li>
-    </ul>
-  </div>
+      </div>
+    </li>
+  </ul>
 </div>

@@ -30,6 +30,7 @@ mqttServiceModule.factory('mqttClient', function($window) {
   service.onConnect = function() {
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
     client.subscribe("/devices/#");
+    client.subscribe("/config/widget_templates/#");
     client.subscribe("/config/#");
     $window.localStorage.setItem('connected', true);
   };
@@ -58,8 +59,8 @@ mqttServiceModule.factory('mqttClient', function($window) {
   };
 
   service.onMessageArrived = function(message) {
-    console.log("Arrived message: " + message.destinationName + " with " + message.payloadBytes.length + " bytes of payload");
-    console.log("Message: " + String.fromCharCode.apply(null, message.payloadBytes));
+    // console.log("Arrived message: " + message.destinationName + " with " + message.payloadBytes.length + " bytes of payload");
+    // console.log("Message: " + String.fromCharCode.apply(null, message.payloadBytes));
     service.callback(message);
   };
 

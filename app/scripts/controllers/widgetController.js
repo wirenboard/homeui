@@ -1,49 +1,55 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetCtrl', ['$scope', '$rootScope', '$timeout', 'HomeUIWidgets', 'HomeUIControls', 'mqttClient', function($scope, $rootScope, $timeout, HomeUIWidgets, HomeUIControls, mqttClient){
-    $scope.widget = {controls: {}};
-
-    $scope.change = function(control) {
-      console.log('Widget changed');
-    };
-
-    $scope.widgets = HomeUIWidgets.list();
-    $scope.widgetsArray = HomeUIWidgets.to_a();
-    $scope.controls = HomeUIControls.to_a();
-    $scope.selectedControl = null;
-    $scope.selectedWidget = null;
+  .controller('WidgetCtrl', ['$scope', '$rootScope', 'HomeUIData', function($scope, $rootScope, HomeUIData){
+    $scope.widgets = HomeUIData.list().widgets;
+    $scope.rooms = HomeUIData.list().rooms;
+    $scope.controls = HomeUIData.list().controls;
+    $scope.widgetTemplates = HomeUIData.list().widget_templates;
+    $scope.widget = { controls: {}, options: {} };
 
     $scope.addOrUpdateWidget = function(){
-      HomeUIWidgets.add($scope.widget.uid, $scope.widget);
-      mqttClient.send('/user/config/widgets/' + $scope.widget.uid + '/name', $scope.widget.name);
-      mqttClient.send('/user/config/widgets/' + $scope.widget.uid + '/type', $scope.widget.type);
+      console.log('Start creating...');
+      var topic = '/config/widgets/' + $scope.widget.uid;
+      var widget = $scope.widget;
+      for(var c in widget.controls){
+        var control = widget.controls[c];
+        widget.controls[control.uid] = { uid: control.uid, topic: control.topic.topic };
+      };
+      widget.room = widget.room.uid;
+      widget.template = widget.template.uid;
+
+      $rootScope.mqttSendCollection(topic, widget);
+
       $scope.widget = {};
+      console.log('Successfully created!');
     };
 
-    $scope.addControlToWidget = function(){
-      mqttClient.send('/user/config/widgets/' + $scope.selectedWidget.uid + '/controls/slot0', $scope.selectedControl.topic);
-      $scope.selectedWidget.controls['slot0'] = $scope.selectedControl.topic;
-      var widget = $scope.widgets[$scope.selectedWidget.uid];
-      widget.controls[$scope.selectedControl.uid] = $scope.selectedControl;
+    $scope.renderFieldsForTemplate = function(){
+      $scope.widget.controls = {};
+      $scope.widget.options = {};
+      if($scope.widget.template){
+        for(var slot in $scope.widget.template.slots){
+          $scope.widget.controls[slot] = { uid: slot };
+        };
+        for(var option in $scope.widget.template.options){
+          $scope.widget.options[option] = { uid: option };
+        };
+      };
     };
 
-    mqttClient.onMessage(function(message) {
-      console.log('Hello from Widget!');
-      $scope.$apply(function (){
-        initWookmark();
-      });
-    });
+    $scope.search = function() {
+      var widget = $scope.widgets[$scope.widget.uid];
+      if(widget) $scope.widget = widget;
+    };
 
-    function initWookmark(){
+    $scope.wookmarkIt = function(){
       var wookmarkOptions = {
         autoResize: true,
-        container: $('#widgets-list'),
+        container: $('.wookmark-list'),
         offset: 10
       };
 
-      $("#widgets-list ul li").wookmark(wookmarkOptions);
+      $(".wookmark-list ul li").wookmark(wookmarkOptions);
     };
-
-    $timeout(initWookmark, 0);
   }]);

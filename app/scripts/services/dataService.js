@@ -10,9 +10,9 @@ angular.module('homeuiApp.dataServiceModule', [])
 
       parseMsg(pathItems, message);
 
-      console.log('======================');
-      console.log(data);
-      console.log('======================');
+      // console.log('======================');
+      // console.log(data);
+      // console.log('======================');
     };
 
     dataService.list = function() {
@@ -124,7 +124,7 @@ angular.module('homeuiApp.dataServiceModule', [])
       var deviceName = deviceInfo[2];
       var controlName = deviceInfo[4];
       var widgetUID = pathItems[3];
-      var widget = {controls: {}};
+      var widget = {controls: {}, options: {}};
 
       if(data.widgets[widgetUID] != null){
         widget = data.widgets[widgetUID];
@@ -133,13 +133,34 @@ angular.module('homeuiApp.dataServiceModule', [])
       };
 
       if(pathItems[4] === 'controls'){
-        widget.controls[pathItems[5]] = data.devices[deviceName].controls[controlName];
-      }else{
+        widget.controls[pathItems[5]] = widget.controls[pathItems[5]] || {};
+        switch(pathItems[6]) {
+          case "uid":
+            widget.controls[pathItems[5]]['uid'] = message.payloadString;
+            break;
+          case "topic":
+            widget.controls[pathItems[5]]['topic'] = data.devices[deviceName].controls[controlName];
+            break;
+          default:
+            console.log("ERROR: Unknown control message");
+            return null;
+            break;
+        };
+      }else if(pathItems[4] === 'options'){
+        widget.options[pathItems[5]] = widget.options[pathItems[5]] || {};
+        widget.options[pathItems[5]][pathItems[6]] = message.payloadString;
+      }
+      else{
         widget[pathItems[4]] = message.payloadString;
       };
 
       if(pathItems[4] === 'room'){
+        widget[pathItems[4]] = data.rooms[message.payloadString];
         data.rooms[message.payloadString].widgets[widgetUID] = widget;
+      };
+
+      if(pathItems[4] === 'template'){
+        widget[pathItems[4]] = data.widget_templates[message.payloadString];
       };
 
       data.widgets[widgetUID] = widget;
