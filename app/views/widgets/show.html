@@ -1,7 +1,10 @@
 {{wookmarkIt()}}
-<div class="panel panel-primary">
-  <div class="panel-heading">{{ widget.name }}</div>
+<div class="panel panel-primary" ng-mouseover="hoverIn(widget)" ng-mouseleave="hoverOut(widget)">
+  <div class="panel-heading">
+    {{ widget.name }}
+  </div>
   <div class="panel-body">
+    <a href='#/widgets/{{widget.uid}}/edit' ng-show='widget.canEdit' class='btn btn-warning pull-right'>Edit</a>
     <h4>Сontrols</h4>
     <div ng-repeat="control in widget.controls" class="control-wrapper">
       <widget-control></widget-control>

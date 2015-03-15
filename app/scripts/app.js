@@ -35,11 +35,11 @@ angular
         controller: 'RoomCtrl'
       })
       .when('/widgets', {
-        templateUrl: 'views/widgets.html',
+        templateUrl: 'views/widgets/index.html',
         controller: 'WidgetCtrl'
       })
       .when('/widgets/new', {
-        templateUrl: 'views/new_widget.html',
+        templateUrl: 'views/widgets/form.html',
         controller: 'WidgetCtrl'
       })
       .when('/widget_templates', {
@@ -49,6 +49,10 @@ angular
       .when('/rooms/:id', {
         templateUrl: 'views/rooms/show.html',
         controller: 'RoomCtrl'
+      })
+      .when('/widgets/:id/edit', {
+        templateUrl: 'views/widgets/form.html',
+        controller: 'WidgetCtrl'
       })
       .otherwise({
         redirectTo: '/'

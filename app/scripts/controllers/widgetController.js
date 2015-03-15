@@ -1,12 +1,20 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetCtrl', ['$scope', '$rootScope', 'HomeUIData', 'mqttClient', function($scope, $rootScope, HomeUIData, mqttClient){
+  .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', 'HomeUIData', 'mqttClient', function($scope, $rootScope, $routeParams, HomeUIData, mqttClient){
     $scope.widgets = HomeUIData.list().widgets;
     $scope.rooms = HomeUIData.list().rooms;
     $scope.controls = HomeUIData.list().controls;
     $scope.widgetTemplates = HomeUIData.list().widget_templates;
-    $scope.widget = { controls: {}, options: {} };
+    $scope.widget = $scope.widgets[$routeParams.id] || { controls: {}, options: {} };
+
+    $scope.hoverIn = function(widget){
+      widget.canEdit = true;
+    };
+
+    $scope.hoverOut = function(widget){
+      widget.canEdit = false;
+    };
 
     $scope.change = function(control) {
       console.log('changed: ' + control.name + ' value: ' + control.value);

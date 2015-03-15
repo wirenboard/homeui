@@ -5,6 +5,14 @@ angular.module('homeuiApp')
     $scope.room_name = HomeUIData.list().rooms[$routeParams.id].name;
     $scope.widgets = HomeUIData.list().rooms[$routeParams.id].widgets;
 
+    $scope.hoverIn = function(widget){
+      widget.canEdit = true;
+    };
+
+    $scope.hoverOut = function(widget){
+      widget.canEdit = false;
+    };
+
     $scope.change = function(control) {
       console.log('changed: ' + control.name + ' value: ' + control.value);
       var payload = control.value;
