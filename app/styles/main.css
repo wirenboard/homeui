@@ -246,7 +246,8 @@ ul.alert-dropdown {
 
 /* NavBar Items */
 
-.navbar-nav .active > a{
-  color: #fff;
-  background-color: #080808;
+.navbar-nav .active > a,
+.navbar-nav a.active{
+  color: #fff !important;
+  background-color: #080808 !important;
 }

@@ -2,7 +2,7 @@
 
 angular.module('homeuiApp.dataServiceModule', [])
   .factory('HomeUIData', function() {
-    var data = { devices:{}, controls:{}, widgets:{}, widget_templates:{}, rooms:{} };
+    var data = { devices:{}, controls:{}, widgets:{}, widget_templates:{}, rooms:{}, dashboards:{} };
     var dataService = {};
 
     data.widget_templates = {
@@ -120,6 +120,9 @@ angular.module('homeuiApp.dataServiceModule', [])
         case "rooms":
           parseRoomMsg(pathItems, message);
           break;
+        case "dashboards":
+          parseDashboardMsg(pathItems, message);
+          break;
         default:
           console.log("ERROR: Unknown config message: " + pathItems[2]);
           return null;
@@ -176,6 +179,35 @@ angular.module('homeuiApp.dataServiceModule', [])
 
     function parseRoomMsg(pathItems, message){
       data.rooms[pathItems[3]] = { uid: pathItems[3], name: message.payloadString, widgets: {} };
+    };
+
+    function parseDashboardMsg(pathItems, message){
+      var dashboardUID = pathItems[3];
+      var dashboard = { widgets: {} };
+
+      if(data.dashboards[dashboardUID] != null){
+        dashboard = data.dashboards[dashboardUID];
+      } else {
+        dashboard['uid'] = dashboardUID;
+      };
+
+      if(pathItems[4] === 'widgets'){
+        dashboard.widgets[pathItems[5]] = dashboard.widgets[pathItems[5]] || {};
+        switch(pathItems[6]) {
+          case "uid":
+            dashboard.widgets[pathItems[5]]['uid'] = data.widgets[message.payloadString];
+            break;
+          default:
+            console.log("ERROR: Unknown dashboard message: " + pathItems[6]);
+            return null;
+            break;
+        };
+      }
+      else{
+        dashboard[pathItems[4]] = message.payloadString;
+      };
+
+      data.dashboards[dashboardUID] = dashboard;
     };
 
     return dataService;

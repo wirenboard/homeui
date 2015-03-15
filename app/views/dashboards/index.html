@@ -1,0 +1,20 @@
+<a href="#/dashboards/new" class="btn btn-success pull-right">Add dashboard</a>
+<h1 class="page-header">
+  Dashboards
+</h1>
+<div id='dashboards-list' class='wookmark-list'>
+  <ul class="list-unstyled">
+    <li ng-repeat="dashboard in dashboards">
+      {{wookmarkIt()}}
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          {{ dashboard.name }}
+        </div>
+        <div class="panel-body">
+          <a href='#/dashboards/{{dashboard.uid}}' class='btn btn-success'>Show</a>
+          <a href='#/dashboards/{{dashboard.uid}}/edit' class='btn btn-warning'>Edit</a>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

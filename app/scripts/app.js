@@ -54,6 +54,22 @@ angular
         templateUrl: 'views/widgets/form.html',
         controller: 'WidgetCtrl'
       })
+      .when('/dashboards', {
+        templateUrl: 'views/dashboards/index.html',
+        controller: 'DashboardCtrl'
+      })
+      .when('/dashboards/new', {
+        templateUrl: 'views/dashboards/form.html',
+        controller: 'DashboardCtrl'
+      })
+      .when('/dashboards/:id/edit', {
+        templateUrl: 'views/dashboards/form.html',
+        controller: 'DashboardCtrl'
+      })
+      .when('/dashboards/:id', {
+        templateUrl: 'views/dashboards/show.html',
+        controller: 'DashboardCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

@@ -1,1 +1,1 @@
-<a href="#/rooms/{{ room.uid }}">{{ room.name }}</a>
+<a href="#/rooms/{{ room.uid }}" ng-class="{ active: isActive('/rooms/{{ room.uid }}') }">{{ room.name }}</a>

@@ -1,0 +1,35 @@
+<a href="#/dashboards/{{dashboard.uid}}/edit" class="btn btn-warning pull-right">Edit dashboard</a>
+<h1 class="page-header">
+    {{ dashboard.name }}
+</h1>
+<ol class="breadcrumb">
+  <li>
+    <i class="glyphicon glyphicon-dashboard"></i>  <a href="#/dashboards">Dashboards</a>
+  </li>
+  <li class="active">
+    {{ dashboard.name }}
+  </li>
+</ol>
+<div id='widgets-list' class='wookmark-list'>
+  <ul class="list-unstyled">
+    <li ng-repeat="widget in dashboard.widgets">
+      {{wookmarkIt()}}
+      <div class="panel panel-primary" ng-mouseover="hoverIn(widget.uid)" ng-mouseleave="hoverOut(widget.uid)">
+        <div class="panel-heading">
+          {{ widget.uid.name }}
+        </div>
+        <div class="panel-body">
+          <a href='#/widgets/{{widget.uid.uid}}/edit' ng-show='widget.uid.canEdit' class='btn btn-warning pull-right'>Edit</a>
+          <h4>Сontrols</h4>
+          <div ng-repeat="control in widget.uid.controls" class="control-wrapper">
+            <widget-control></widget-control>
+          </div>
+          <h4>Options</h4>
+          <div ng-repeat="option in widget.uid.options" class="control-wrapper">
+            {{ option.uid }} - {{ option.value }}
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
