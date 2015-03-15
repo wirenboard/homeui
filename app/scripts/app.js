@@ -49,9 +49,9 @@ angular
         templateUrl: 'views/new_widget_template.html',
         controller: 'WidgetTemplateCtrl'
       })
-      .when('/rooms/bathroom', {
-        templateUrl: 'views/bathroom.html',
-        controller: 'bathroomCtrl'
+      .when('/rooms/:id', {
+        templateUrl: 'views/rooms/show.html',
+        controller: 'RoomCtrl'
       })
       .otherwise({
         redirectTo: '/'

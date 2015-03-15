@@ -16,72 +16,70 @@
     <![endif]-->
 
     <div id="wrapper">
+      <!-- Navigation -->
+      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#/">Wiren Board HomeUI</a>
+        </div>
+        <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+          <ul class="nav navbar-nav side-nav" ng-controller='NavigationCtrl'>
+            <li ng-class="{ active: isActive('/') }">
+              <a href="#/"><i class="glyphicon glyphicon-dashboard"></i> Dashboard</a>
+            </li>
+            <li ng-class="{ active: isActive('/devices') }">
+              <a href="#/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
+            </li>
+            <li>
+              <a href="javascript:;" data-toggle="collapse" data-target="#rooms-menu"><i class="glyphicon glyphicon-home"></i> Rooms <i class="glyphicon glyphicon-menu-down"></i></a>
+              <ul id="rooms-menu" class="collapse">
+                <li ng-repeat="room in rooms" room-menu-item>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="javascript:;" data-toggle="collapse" data-target="#widgets-menu"><i class="glyphicon glyphicon-list-alt"></i> Widgets <i class="glyphicon glyphicon-menu-down"></i></a>
+              <ul id="widgets-menu" class="collapse">
+                <li ng-class="{ active: isActive('/widgets') }">
+                  <a href="#/widgets">Widgets</a>
+                </li>
+                <li ng-class="{ active: isActive('/widget_templates') }">
+                  <a href="#/widget_templates">Widget Templates</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="javascript:;"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
+            </li>
+          </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+      </nav>
 
-        <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#/">Wiren Board HomeUI</a>
+      <div id="page-wrapper">
+
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <div class="row">
+            <div class="col-lg-12">
+              <div ng-view=""></div>
             </div>
-            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav" ng-controller='NavigationCtrl'>
-                    <li ng-class="{ active: isActive('/') }">
-                        <a href="#/"><i class="glyphicon glyphicon-dashboard"></i> Dashboard </a>
-                    </li>
-                    <li ng-class="{ active: isActive('/devices') }">
-                        <a href="#/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#rooms-menu"><i class="glyphicon glyphicon-home"></i> Rooms <i class="glyphicon glyphicon-menu-down"></i></a>
-                        <ul id="rooms-menu" class="collapse">
-                            <li>
-                                <a href="#/rooms/bathroom">Bathroom</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#widgets-menu"><i class="glyphicon glyphicon-list-alt"></i> Widgets <i class="glyphicon glyphicon-menu-down"></i></a>
-                        <ul id="widgets-menu" class="collapse">
-                            <li ng-class="{ active: isActive('/widgets') }">
-                                <a href="#/widgets">Widgets</a>
-                            </li>
-                            <li ng-class="{ active: isActive('/widget_templates') }">
-                                <a href="#/widget_templates">Widget Templates</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </nav>
-
-        <div id="page-wrapper">
-
-            <div class="container-fluid">
-
-                <!-- Page Heading -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div ng-view=""></div>
-                    </div>
-                </div>
-                <!-- /.row -->
-
-            </div>
-            <!-- /.container-fluid -->
+          </div>
+          <!-- /.row -->
 
         </div>
-        <!-- /#page-wrapper -->
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- /#page-wrapper -->
 
     </div>
 
@@ -107,6 +105,5 @@
     <script src="scripts/controllers/widgetController.js"></script>
     <script src="scripts/controllers/widgetTemplateController.js"></script>
     <script src="scripts/controllers/navigationController.js"></script>
-    <script src="scripts/controllers/bathroomController.js"></script>
   </body>
 </html>

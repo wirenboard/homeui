@@ -142,7 +142,7 @@ angular.module('homeuiApp.dataServiceModule', [])
             widget.controls[pathItems[5]]['topic'] = data.devices[deviceName].controls[controlName];
             break;
           default:
-            console.log("ERROR: Unknown control message");
+            console.log("ERROR: Unknown control message: " + pathItems[6]);
             return null;
             break;
         };
@@ -201,7 +201,7 @@ angular.module('homeuiApp.dataServiceModule', [])
           }
           break;
         default:
-          console.log("ERROR: Unknown widget template message");
+          console.log("ERROR: Unknown widget template message: " + pathItems[4]);
           return null;
           break;
       };
