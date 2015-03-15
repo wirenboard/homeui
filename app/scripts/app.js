@@ -12,6 +12,7 @@ angular
   .module('homeuiApp', [
     'homeuiApp.mqttServiceModule',
     'homeuiApp.dataServiceModule',
+    'homeuiApp.dataFilters',
     'ngResource',
     'ngRoute',
     'ngSanitize',
@@ -43,10 +44,6 @@ angular
       })
       .when('/widget_templates', {
         templateUrl: 'views/widget_templates.html',
-        controller: 'WidgetTemplateCtrl'
-      })
-      .when('/widget_templates/new', {
-        templateUrl: 'views/new_widget_template.html',
         controller: 'WidgetTemplateCtrl'
       })
       .when('/rooms/:id', {

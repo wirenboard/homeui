@@ -47,7 +47,7 @@
     <div class="form-group" ng-repeat="control in widget.controls">
       <label for="widgetControl{{$index}}" class="col-sm-2 control-label">{{widget.template.slots[control.uid]['name']}}</label>
       <div class="col-sm-6">
-        <select ng-model="control.topic" ng-options="value.topic for (key, value) in controls" id="widgetControl{{$index}}" required>
+        <select ng-model="control.topic" ng-options="control.topic for control in controls | metaTypeFilter:widget.template.slots[control.uid]['type']" id="widgetControl{{$index}}" required>
           <option value=''>- Please Choose -</option>
         </select>
       </div>

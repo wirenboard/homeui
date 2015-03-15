@@ -30,7 +30,6 @@ mqttServiceModule.factory('mqttClient', function($window) {
   service.onConnect = function() {
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
     client.subscribe("/devices/#");
-    client.subscribe("/config/widget_templates/#");
     client.subscribe("/config/#");
     $window.localStorage.setItem('connected', true);
   };
