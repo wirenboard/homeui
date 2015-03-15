@@ -83,15 +83,16 @@ angular.module('homeuiApp.dataServiceModule', [])
     function parseControls(pathItems, message){
       var deviceName = pathItems[2];
       var controlName = pathItems[4];
+      var topic = pathItems.slice(0,5).join('/');
       var control = {};
 
-      if(data.controls[controlName] != null) {
-        control = data.controls[controlName];
+      if(data.controls[topic] != null) {
+        control = data.controls[topic];
       } else {
-        control = data.controls[controlName] = {name: controlName, value: 0};
+        control = data.controls[topic] = {name: controlName, value: 0};
       };
 
-      control.topic = pathItems.slice(0,5).join('/');
+      control.topic = topic;
 
       switch(pathItems[5]) {
         case "meta":
@@ -107,8 +108,8 @@ angular.module('homeuiApp.dataServiceModule', [])
     };
 
     function parseControlMeta(pathItems, message){
-      var controlName = pathItems[4];
-      data.controls[controlName]['meta' + capitalizeFirstLetter(pathItems[6])] = message.payloadString;
+      var topic = pathItems.slice(0,5).join('/');
+      data.controls[topic]['meta' + capitalizeFirstLetter(pathItems[6])] = message.payloadString;
     };
 
     function parseConfigMsg(pathItems, message){
