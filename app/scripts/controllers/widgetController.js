@@ -1,12 +1,21 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetCtrl', ['$scope', '$rootScope', 'HomeUIData', function($scope, $rootScope, HomeUIData){
+  .controller('WidgetCtrl', ['$scope', '$rootScope', 'HomeUIData', 'mqttClient', function($scope, $rootScope, HomeUIData, mqttClient){
     $scope.widgets = HomeUIData.list().widgets;
     $scope.rooms = HomeUIData.list().rooms;
     $scope.controls = HomeUIData.list().controls;
     $scope.widgetTemplates = HomeUIData.list().widget_templates;
     $scope.widget = { controls: {}, options: {} };
+
+    $scope.change = function(control) {
+      console.log('changed: ' + control.name + ' value: ' + control.value);
+      var payload = control.value;
+      if(control.metaType == 'switch' && (control.value === true || control.value === false)){
+        payload = control.value ? '1' : '0';
+      }
+      mqttClient.send(control.topic, payload);
+    };
 
     $scope.addOrUpdateWidget = function(){
       console.log('Start creating...');
@@ -52,4 +61,40 @@ angular.module('homeuiApp')
 
       $(".wookmark-list ul li").wookmark(wookmarkOptions);
     };
-  }]);
+  }])
+  .directive('widget', function(){
+    return{
+      restrict: 'E',
+      templateUrl: 'views/widgets/show.html'
+    };
+  })
+  .directive('widgetControl', function(){
+    return{
+      restrict: 'E',
+      templateUrl: 'views/widgets/controls/control.html'
+    };
+  })
+  .directive('widgetControlRange', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/controls/control-range.html'
+    };
+  })
+  .directive('widgetControlPushbutton', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/controls/control-button.html'
+    };
+  })
+  .directive('widgetControlSwitch', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/controls/control-switch.html'
+    };
+  })
+  .directive('widgetControlTextbox', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/controls/control-textbox.html'
+    };
+  });

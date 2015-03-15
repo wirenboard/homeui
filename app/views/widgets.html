@@ -5,20 +5,7 @@
 <div id='widgets-list' class='wookmark-list'>
   <ul class="list-unstyled">
     <li ng-repeat="widget in widgets">
-      {{wookmarkIt()}}
-      <div class="panel panel-primary">
-        <div class="panel-heading">{{ widget.name }}</div>
-        <div class="panel-body">
-          <h4>Сontrols</h4>
-          <div ng-repeat="control in widget.controls" class="control-wrapper">
-            {{ control.topic.topic }}
-          </div>
-          <h4>Options</h4>
-          <div ng-repeat="option in widget.options" class="control-wrapper">
-            {{ option.uid }} - {{ option.value }}
-          </div>
-        </div>
-      </div>
+      <widget></widget>
     </li>
   </ul>
 </div>

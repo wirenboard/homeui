@@ -1,0 +1,14 @@
+{{wookmarkIt()}}
+<div class="panel panel-primary">
+  <div class="panel-heading">{{ widget.name }}</div>
+  <div class="panel-body">
+    <h4>Сontrols</h4>
+    <div ng-repeat="control in widget.controls" class="control-wrapper">
+      <widget-control></widget-control>
+    </div>
+    <h4>Options</h4>
+    <div ng-repeat="option in widget.options" class="control-wrapper">
+      {{ option.uid }} - {{ option.value }}
+    </div>
+  </div>
+</div>
