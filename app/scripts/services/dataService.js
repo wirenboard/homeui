@@ -42,7 +42,7 @@ angular.module('homeuiApp.dataServiceModule', [])
           parseConfigMsg(pathItems, message);
           break;
         default:
-          console.log("ERROR: Unknown message");
+          console.log("WARNING: Unknown message: " + pathItems[1]);
           return null;
           break;
       }
@@ -124,7 +124,7 @@ angular.module('homeuiApp.dataServiceModule', [])
           parseDashboardMsg(pathItems, message);
           break;
         default:
-          console.log("ERROR: Unknown config message: " + pathItems[2]);
+          console.log("WARNING: Unknown config message: " + pathItems[2]);
           return null;
           break;
       };
@@ -153,7 +153,7 @@ angular.module('homeuiApp.dataServiceModule', [])
             widget.controls[pathItems[5]]['topic'] = data.devices[deviceName].controls[controlName];
             break;
           default:
-            console.log("ERROR: Unknown control message: " + pathItems[6]);
+            console.log("WARNING: Unknown control message: " + pathItems[6]);
             return null;
             break;
         };
@@ -198,7 +198,7 @@ angular.module('homeuiApp.dataServiceModule', [])
             dashboard.widgets[pathItems[5]]['uid'] = data.widgets[message.payloadString];
             break;
           default:
-            console.log("ERROR: Unknown dashboard message: " + pathItems[6]);
+            console.log("WARNING: Unknown dashboard message: " + pathItems[6]);
             return null;
             break;
         };
