@@ -9,10 +9,10 @@
       <div class="panel panel-primary">
         <div class="panel-heading">
           {{ dashboard.name }}
+          <a href='#/dashboards/{{dashboard.uid}}/edit' class='pull-right'><i class="glyphicon glyphicon-edit white"></i></a>
         </div>
         <div class="panel-body">
           <a href='#/dashboards/{{dashboard.uid}}' class='btn btn-success'>Show</a>
-          <a href='#/dashboards/{{dashboard.uid}}/edit' class='btn btn-warning'>Edit</a>
         </div>
       </div>
     </li>

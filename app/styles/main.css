@@ -251,3 +251,15 @@ ul.alert-dropdown {
   color: #fff !important;
   background-color: #080808 !important;
 }
+
+/* Glyphicons */
+
+.white {
+  color: #fff;
+}
+.black {
+  color: #000;
+}
+.medium{
+  font-size: 18px;
+}
