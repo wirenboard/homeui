@@ -1,10 +1,17 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'HomeUIData', 'mqttClient', function($scope, $rootScope, $routeParams, HomeUIData, mqttClient){
+  .controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', '$location', 'HomeUIData', 'mqttClient', function($scope, $rootScope, $routeParams, $location, HomeUIData, mqttClient){
     $scope.dashboards = HomeUIData.list().dashboards;
     $scope.widgets = HomeUIData.list().widgets;
-    $scope.dashboard = $scope.dashboards[$routeParams.id] || { widgets: {} };
+    $scope.dashboard = { widgets: {} };
+    $scope.action = 'New';
+    $scope.created = $routeParams.created;
+
+    if($routeParams.id){
+      $scope.action = 'Edit';
+      $scope.dashboard = $scope.dashboards[$routeParams.id];
+    }
 
     $scope.hoverIn = function(dashboard){
       dashboard.canEdit = true;
@@ -31,15 +38,22 @@ angular.module('homeuiApp')
     $scope.addOrUpdateDashboard = function(){
       console.log('Start creating...');
       var topic = '/config/dashboards/' + $scope.dashboard.uid;
+      delete $scope.dashboard['canEdit'];
+
+      $scope.dashboard.uid = $scope.dashboard.uid || ('dashboard' + ($rootScope.objectsKeys($scope.dashboards).length + 1));
+
       var dashboard = $scope.dashboard;
       for(var w in dashboard.widgets){
         var widget = dashboard.widgets[w];
         dashboard.widgets[w] = { uid: widget.uid.uid };
       };
 
+      console.log(dashboard);
+
       $rootScope.mqttSendCollection(topic, dashboard);
 
-      $scope.dashboard = {};
+      $scope.submit();
+
       console.log('Successfully created!');
     };
 
@@ -47,6 +61,10 @@ angular.module('homeuiApp')
       var dashboard = $scope.dashboards[$scope.dashboard.uid];
       if(dashboard) $scope.dashboard = dashboard;
     };
+
+    $scope.submit = function() {
+      $location.path('/dashboards').search({created: true});;
+    }
 
     $scope.wookmarkIt = function(){
       var wookmarkOptions = {

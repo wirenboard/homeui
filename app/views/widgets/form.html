@@ -1,22 +1,17 @@
 <h1 class="page-header">
-  New <small>widget</small>
+  {{ action }} <small>widget</small>
 </h1>
 <ol class="breadcrumb">
   <li>
     <i class="glyphicon glyphicon-cog"></i>  <a href="#/widgets">Widgets</a>
   </li>
   <li class="active">
-    <i class="glyphicon glyphicon-plus"></i> New widget
+    <i class="glyphicon glyphicon-plus"></i> {{ action }} widget
   </li>
 </ol>
 <div class='row' ng-controller='WidgetCtrl'>
   <form class="form-horizontal" name='newWidgetForm' ng-submit='newWidgetForm.$valid && addOrUpdateWidget()' novalidate>
-    <div class="form-group">
-      <label for="widgetUid" class="col-sm-2 control-label">UID</label>
-      <div class="col-sm-6">
-        <input type="text" class="form-control" id="widgetUid" ng-change="search()" ng-model='widget.uid' placeholder="UID" required>
-      </div>
-    </div>
+    <input type="hidden" class="form-control" id="widgetUid" ng-model='widget.uid' placeholder="UID">
 
     <div class="form-group">
       <label for="widgetName" class="col-sm-2 control-label">Name</label>

@@ -1,22 +1,17 @@
 <h1 class="page-header">
-  New <small>Dashboard</small>
+  {{ action }} <small>Dashboard</small>
 </h1>
 <ol class="breadcrumb">
   <li>
     <i class="glyphicon glyphicon-dashboard"></i>  <a href="#/dashboards">Dashboards</a>
   </li>
   <li class="active">
-    <i class="glyphicon glyphicon-plus"></i> New dashboard
+    <i class="glyphicon glyphicon-plus"></i> {{ action }} dashboard
   </li>
 </ol>
 <div class='row' ng-controller='DashboardCtrl'>
   <form class="form-horizontal" name='dashboardForm' ng-submit='dashboardForm.$valid && addOrUpdateDashboard()' novalidate>
-    <div class="form-group">
-      <label for="dashboardUid" class="col-sm-2 control-label">UID</label>
-      <div class="col-sm-6">
-        <input type="text" class="form-control" id="dashboardUid" ng-change="search()" ng-model='dashboard.uid' placeholder="UID" required>
-      </div>
-    </div>
+    <input type="hidden" class="form-control" id="dashboardUid" ng-model='dashboard.uid' placeholder="UID">
 
     <div class="form-group">
       <label for="dashboardName" class="col-sm-2 control-label">Name</label>

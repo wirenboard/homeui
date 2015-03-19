@@ -1,12 +1,19 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', 'HomeUIData', 'mqttClient', function($scope, $rootScope, $routeParams, HomeUIData, mqttClient){
+  .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', '$location', 'HomeUIData', 'mqttClient', function($scope, $rootScope, $routeParams, $location, HomeUIData, mqttClient){
     $scope.widgets = HomeUIData.list().widgets;
     $scope.rooms = HomeUIData.list().rooms;
     $scope.controls = HomeUIData.list().controls;
     $scope.widgetTemplates = HomeUIData.list().widget_templates;
-    $scope.widget = $scope.widgets[$routeParams.id] || { controls: {}, options: {} };
+    $scope.widget = { controls: {}, options: {} };
+    $scope.action = 'New';
+    $scope.created = $routeParams.created;
+
+    if($routeParams.id){
+      $scope.action = 'Edit';
+      $scope.widget = $scope.widgets[$routeParams.id]
+    }
 
     $scope.hoverIn = function(widget){
       widget.canEdit = true;
@@ -28,6 +35,10 @@ angular.module('homeuiApp')
     $scope.addOrUpdateWidget = function(){
       console.log('Start creating...');
       var topic = '/config/widgets/' + $scope.widget.uid;
+      delete $scope.widget['canEdit'];
+
+      $scope.widget.uid = $scope.widget.uid || ('widget' + ($rootScope.objectsKeys($scope.widgets).length + 1));
+
       var widget = $scope.widget;
       for(var c in widget.controls){
         var control = widget.controls[c];
@@ -36,9 +47,12 @@ angular.module('homeuiApp')
       widget.room = widget.room.uid;
       widget.template = widget.template.uid;
 
+      console.log(widget);
+
       $rootScope.mqttSendCollection(topic, widget);
 
-      $scope.widget = {};
+      $scope.submit();
+
       console.log('Successfully created!');
     };
 
@@ -59,6 +73,10 @@ angular.module('homeuiApp')
       var widget = $scope.widgets[$scope.widget.uid];
       if(widget) $scope.widget = widget;
     };
+
+    $scope.submit = function() {
+      $location.path('/widgets').search({created: true});;
+    }
 
     $scope.wookmarkIt = function(){
       var wookmarkOptions = {
