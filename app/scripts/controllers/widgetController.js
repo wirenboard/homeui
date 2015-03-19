@@ -34,10 +34,12 @@ angular.module('homeuiApp')
 
     $scope.addOrUpdateWidget = function(){
       console.log('Start creating...');
-      var topic = '/config/widgets/' + $scope.widget.uid;
+
       delete $scope.widget['canEdit'];
 
       $scope.widget.uid = $scope.widget.uid || ('widget' + ($rootScope.objectsKeys($scope.widgets).length + 1));
+
+      var topic = '/config/widgets/' + $scope.widget.uid;
 
       var widget = $scope.widget;
       for(var c in widget.controls){

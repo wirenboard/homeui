@@ -37,10 +37,12 @@ angular.module('homeuiApp')
 
     $scope.addOrUpdateDashboard = function(){
       console.log('Start creating...');
-      var topic = '/config/dashboards/' + $scope.dashboard.uid;
+
       delete $scope.dashboard['canEdit'];
 
       $scope.dashboard.uid = $scope.dashboard.uid || ('dashboard' + ($rootScope.objectsKeys($scope.dashboards).length + 1));
+
+      var topic = '/config/dashboards/' + $scope.dashboard.uid;
 
       var dashboard = $scope.dashboard;
       for(var w in dashboard.widgets){
