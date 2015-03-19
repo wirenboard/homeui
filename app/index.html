@@ -34,8 +34,9 @@
             <li ng-class="{ active: isActive('/') }">
               <a href="#/"><i class="glyphicon glyphicon-th-list"></i> Home</a>
             </li>
-            <li>
-              <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i class="glyphicon glyphicon-dashboard"></i> Dashboards <i class="glyphicon glyphicon-menu-down"></i></a>
+            <li ng-class="{ active: isActive('/dashboards') }" class="list-menu">
+              <a href="#/dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
+              <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="dashboards-menu" class="collapse">
                 <li ng-repeat="dashboard in dashboards" dashboard-menu-item>
                 </li>
@@ -44,22 +45,25 @@
             <li ng-class="{ active: isActive('/devices') }">
               <a href="#/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
             </li>
-            <li>
-              <a href="javascript:;" data-toggle="collapse" data-target="#rooms-menu"><i class="glyphicon glyphicon-home"></i> Rooms <i class="glyphicon glyphicon-menu-down"></i></a>
+            <li ng-class="{ active: isActive('/rooms') }" class="list-menu">
+              <a href="#/rooms"><i class="glyphicon glyphicon-home"></i> Rooms</a>
+              <a href="javascript:;" data-toggle="collapse" data-target="#rooms-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="rooms-menu" class="collapse">
-                <li ng-repeat="room in rooms" room-menu-item>
-                </li>
+                <li ng-repeat="room in rooms" room-menu-item></li>
               </ul>
             </li>
-            <li>
-              <a href="javascript:;" data-toggle="collapse" data-target="#widgets-menu"><i class="glyphicon glyphicon-list-alt"></i> Widgets <i class="glyphicon glyphicon-menu-down"></i></a>
+            <li ng-class="{ active: isActive('/widgets') }" class="list-menu">
+              <a href="#/widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
+              <a href="javascript:;" data-toggle="collapse" data-target="#widgets-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="widgets-menu" class="collapse">
-                <li ng-class="{ active: isActive('/widgets') }">
-                  <a href="#/widgets">Widgets</a>
-                </li>
-                <li ng-class="{ active: isActive('/widget_templates') }">
-                  <a href="#/widget_templates">Widget Templates</a>
-                </li>
+                <li ng-repeat="widget in widgets" widget-menu-item></li>
+              </ul>
+            </li>
+            <li ng-class="{ active: isActive('/widget_templates') }" class="list-menu">
+              <a href="#/widget_templates"><i class="glyphicon glyphicon-list-alt"></i>Widget Templates</a>
+              <a href="javascript:;" data-toggle="collapse" data-target="#widget-templates-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
+              <ul id="widget-templates-menu" class="collapse">
+                <li ng-repeat="widget_template in widget_templates" widget-template-menu-item></li>
               </ul>
             </li>
             <li>

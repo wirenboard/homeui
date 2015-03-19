@@ -7,6 +7,8 @@ angular.module('homeuiApp')
     }
     $scope.rooms = HomeUIData.list().rooms;
     $scope.dashboards = HomeUIData.list().dashboards;
+    $scope.widgets = HomeUIData.list().widgets;
+    $scope.widget_templates = HomeUIData.list().widget_templates;
   }])
   .directive('roomMenuItem', function(){
     return{
@@ -18,5 +20,17 @@ angular.module('homeuiApp')
     return{
       restrict: 'A',
       templateUrl: 'views/dashboards/menu-item.html'
+    };
+  })
+  .directive('widgetMenuItem', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/menu-item.html'
+    };
+  })
+  .directive('widgetTemplateMenuItem', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/template-menu-item.html'
     };
   });

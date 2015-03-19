@@ -263,3 +263,18 @@ ul.alert-dropdown {
 .medium{
   font-size: 18px;
 }
+
+/* List menu */
+
+li.list-menu{
+  width: 225px;
+  line-height: 50px;
+}
+
+li.list-menu li{
+  line-height: 20px;
+}
+
+li.list-menu > a{
+  display: inline;
+}
