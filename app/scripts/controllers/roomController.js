@@ -1,9 +1,16 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('RoomCtrl', ['$scope', 'HomeUIData', '$routeParams', 'mqttClient', function($scope, HomeUIData, $routeParams, mqttClient){
-    $scope.room_name = HomeUIData.list().rooms[$routeParams.id].name;
-    $scope.widgets = HomeUIData.list().rooms[$routeParams.id].widgets;
+  .controller('RoomCtrl', ['$scope', 'HomeUIData', '$routeParams', 'mqttClient', '$location', '$rootScope', function($scope, HomeUIData, $routeParams, mqttClient, $location, $rootScope){
+
+    $scope.rooms = HomeUIData.list().rooms;
+    $scope.action = 'New';
+    $scope.created = $routeParams.created;
+
+    if($routeParams.id){
+      $scope.action = 'Edit';
+      $scope.room = HomeUIData.list().rooms[$routeParams.id];
+    }
 
     $scope.hoverIn = function(widget){
       widget.canEdit = true;
@@ -21,6 +28,24 @@ angular.module('homeuiApp')
       }
       mqttClient.send(control.topic, payload);
     };
+
+    $scope.addOrUpdateRoom = function($location){
+      console.log('Start creating...');
+
+      $scope.room.uid = $scope.room.uid || ('room' + ($rootScope.objectsKeys($scope.rooms).length + 1));
+
+      var topic = '/config/rooms/' + $scope.room.uid;
+
+      $rootScope.mqttSendCollection(topic, $scope.room);
+
+      $scope.submit();
+
+      console.log('Successfully created!');
+    };
+
+    $scope.submit = function() {
+      $location.path('/rooms').search({created: true});;
+    }
 
     $scope.wookmarkIt = function(){
       var wookmarkOptions = {

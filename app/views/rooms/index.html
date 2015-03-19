@@ -1,0 +1,29 @@
+<a href="#/rooms/new" class="btn btn-success pull-right">Add room</a>
+<h1 class="page-header">
+  Rooms
+</h1>
+<div class="alert alert-success alert-dismissible" role="alert" ng-show='created'>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Changes</strong> successfully saved. Please <a href='#/rooms'>refresh</a> the page.
+</div>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>UID</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="room in rooms">
+      <th scope="row" >{{ $index+1 }}</th>
+      <td>{{ room.name }}</td>
+      <td>{{ room.uid }}</td>
+      <td class="text-center">
+        <a href='#/rooms/{{room.uid}}/edit'><i class="glyphicon glyphicon-edit black medium"></i></a>
+        <a href='#/rooms/{{room.uid}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
+      </td>
+    </tr>
+  </tbody>
+</table>

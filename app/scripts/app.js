@@ -30,10 +30,6 @@ angular
         templateUrl: 'views/devices.html',
         controller: 'DeviceCtrl'
       })
-      .when('/rooms', {
-        templateUrl: 'views/rooms.html',
-        controller: 'RoomCtrl'
-      })
       .when('/widgets', {
         templateUrl: 'views/widgets/index.html',
         controller: 'WidgetCtrl'
@@ -46,13 +42,25 @@ angular
         templateUrl: 'views/widget_templates.html',
         controller: 'WidgetTemplateCtrl'
       })
+      .when('/widgets/:id/edit', {
+        templateUrl: 'views/widgets/form.html',
+        controller: 'WidgetCtrl'
+      })
+      .when('/rooms', {
+        templateUrl: 'views/rooms/index.html',
+        controller: 'RoomCtrl'
+      })
+      .when('/rooms/new', {
+        templateUrl: 'views/rooms/form.html',
+        controller: 'RoomCtrl'
+      })
       .when('/rooms/:id', {
         templateUrl: 'views/rooms/show.html',
         controller: 'RoomCtrl'
       })
-      .when('/widgets/:id/edit', {
-        templateUrl: 'views/widgets/form.html',
-        controller: 'WidgetCtrl'
+      .when('/rooms/:id/edit', {
+        templateUrl: 'views/rooms/form.html',
+        controller: 'RoomCtrl'
       })
       .when('/dashboards', {
         templateUrl: 'views/dashboards/index.html',

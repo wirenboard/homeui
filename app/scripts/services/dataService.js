@@ -178,7 +178,9 @@ angular.module('homeuiApp.dataServiceModule', [])
     };
 
     function parseRoomMsg(pathItems, message){
-      data.rooms[pathItems[3]] = { uid: pathItems[3], name: message.payloadString, widgets: {} };
+      if(pathItems[4] === 'name'){
+        data.rooms[pathItems[3]] = { uid: pathItems[3], name: message.payloadString, widgets: {} };
+      };
     };
 
     function parseDashboardMsg(pathItems, message){
