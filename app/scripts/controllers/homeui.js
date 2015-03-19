@@ -11,6 +11,15 @@ angular.module('homeuiApp')
     $scope.connected = $window.localStorage['connected'];
     $scope.data = HomeUIData.list();
 
+    $scope.change = function(control) {
+      console.log('changed: ' + control.name + ' value: ' + control.value);
+      var payload = control.value;
+      if(control.metaType == 'switch' && (control.value === true || control.value === false)){
+        payload = control.value ? '1' : '0';
+      }
+      mqttClient.send(control.topic, payload);
+    };
+
     function tryConnect() {
       console.log('Try to connect as ' + $scope.loginData.user);
       if($scope.loginData.host && $scope.loginData.port){
@@ -39,4 +48,14 @@ angular.module('homeuiApp')
       HomeUIData.parseMsg(message);
       $scope.$apply();
     });
+
+    $scope.wookmarkIt = function(){
+      var wookmarkOptions = {
+        autoResize: true,
+        container: $('.wookmark-list'),
+        offset: 10
+      };
+
+      $(".wookmark-list ul li").wookmark(wookmarkOptions);
+    };
   }]);

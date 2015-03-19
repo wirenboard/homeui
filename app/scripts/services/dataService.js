@@ -2,7 +2,7 @@
 
 angular.module('homeuiApp.dataServiceModule', [])
   .factory('HomeUIData', function() {
-    var data = { devices:{}, controls:{}, widgets:{}, widget_templates:{}, rooms:{}, dashboards:{} };
+    var data = { devices:{}, controls:{}, widgets:{}, widget_templates:{}, rooms:{}, dashboards:{}, defaults: {} };
     var dataService = {};
 
     data.widget_templates = {
@@ -122,6 +122,9 @@ angular.module('homeuiApp.dataServiceModule', [])
           break;
         case "dashboards":
           parseDashboardMsg(pathItems, message);
+          break;
+        case "default_dashboard":
+          data.defaults["dashboard"] = message.payloadString;
           break;
         default:
           console.log("WARNING: Unknown config message: " + pathItems[2]);

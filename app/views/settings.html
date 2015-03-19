@@ -1,0 +1,152 @@
+<h1 class="page-header">
+  Settings
+</h1>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="glyphicon glyphicon-wrench"></i> Common Info</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat='setting in settings'>
+                <td>{{ setting.name }}</td>
+                <td>{{ setting.value }}</td>
+              </tr>
+              <tr>
+                <td>
+                  Default Dashboard
+                  <a ng-show='dashboard' href='#/dashboards/{{ dashboard.uid }}/edit'><i class="glyphicon glyphicon-edit black medium"></i></a>
+                  <a ng-show='dashboard' href='#/dashboards/{{ dashboard.uid }}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
+                </td>
+                <td class="text-center">
+                  <select ng-model="dashboard" ng-options="value.name for (key, value) in data.dashboards" ng-change="changeDefaultDashboard()">
+                    <option value=''>- Please Choose -</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<h1 class="page-header">
+  Home <small>Statistics Overview</small>
+</h1>
+<div class="row">
+  <div class="col-lg-12">
+    <h2>Devices</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Controls</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="device in data.devices">
+            <td>{{ device.name }}</td>
+            <td>{{ objectsKeys(device.controls) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-6">
+    <h2>Controls</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Topic</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="control in data.controls">
+            <td>{{ control.name }}</td>
+            <td>{{ control.topic }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <h2>Widget Templates</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="widget_template in data.widget_templates">
+            <td>{{ widget_template.name }}</td>
+            <td>{{ widget_template.uid }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <h2>Rooms</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Widgets</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="room in data.rooms">
+            <td>{{ room.uid }}</td>
+            <td>{{ room.name }}</td>
+            <td>{{ objectsKeys(room.widgets) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <h2>Widgets</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Control Slots</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="widget in data.widgets">
+            <td>{{ widget.uid }}</td>
+            <td>{{ widget.name }}</td>
+            <td>{{ objectsKeys(widget.controls) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

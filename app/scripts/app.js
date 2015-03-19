@@ -78,11 +78,15 @@ angular
         templateUrl: 'views/dashboards/show.html',
         controller: 'DashboardCtrl'
       })
+      .when('/settings', {
+        templateUrl: 'views/settings.html',
+        controller: 'SettingCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
   })
-  .run(function($rootScope, mqttClient) {
+  .run(['$rootScope', 'mqttClient', function ($rootScope, mqttClient){
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
     }
@@ -98,4 +102,4 @@ angular
         };
       };
     }
-  });
+  }]);

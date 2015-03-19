@@ -31,6 +31,9 @@
         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
           <ul class="nav navbar-nav side-nav" ng-controller='NavigationCtrl'>
+            <li ng-class="{ active: isActive('/') }">
+              <a href="#/"><i class="glyphicon glyphicon-cog"></i> Home</a>
+            </li>
             <li ng-class="{ active: isActive('/dashboards') }" class="list-menu">
               <a href="#/dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
@@ -63,8 +66,8 @@
                 <li ng-repeat="widget_template in widget_templates" widget-template-menu-item></li>
               </ul>
             </li>
-            <li ng-class="{ active: isActive('/') }">
-              <a href="#/"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
+            <li ng-class="{ active: isActive('/settings') }">
+              <a href="#/settings"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
             </li>
           </ul>
         </div>
@@ -114,6 +117,7 @@
     <script src="scripts/controllers/widgetTemplateController.js"></script>
     <script src="scripts/controllers/navigationController.js"></script>
     <script src="scripts/controllers/dashboardController.js"></script>
+    <script src="scripts/controllers/settingController.js"></script>
     <script src="scripts/filters/metaTypeFilter.js"></script>
   </body>
 </html>

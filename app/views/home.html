@@ -1,110 +1,34 @@
-<h1 class="page-header">
-  Home <small>Statistics Overview</small>
-</h1>
-<div class="row">
+<div class="row" ng-hide="data.dashboards[default]">
   <div class="col-lg-12">
-    <h2>Devices</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Controls</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="device in data.devices">
-            <td>{{ device.name }}</td>
-            <td>{{ objectsKeys(device.controls) }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="alert alert-warning alert-dismissible" role="alert" style="margin-bottom:0px;">
+      You need to select default dashboard in <a href='#/settings'>settings</a>.
     </div>
   </div>
 </div>
-<div class="row">
-  <div class="col-lg-6">
-    <h2>Controls</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Topic</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="control in data.controls">
-            <td>{{ control.name }}</td>
-            <td>{{ control.topic }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="col-lg-6">
-    <h2>Widget Templates</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="widget_template in data.widget_templates">
-            <td>{{ widget_template.name }}</td>
-            <td>{{ widget_template.uid }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-<div class="row">
+<div class="row" ng-show="data.dashboards[default]" ng-repeat='default in data.defaults'>
   <div class="col-lg-12">
-    <h2>Rooms</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Widgets</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="room in data.rooms">
-            <td>{{ room.uid }}</td>
-            <td>{{ room.name }}</td>
-            <td>{{ objectsKeys(room.widgets) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-lg-12">
-    <h2>Widgets</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Control Slots</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="widget in data.widgets">
-            <td>{{ widget.uid }}</td>
-            <td>{{ widget.name }}</td>
-            <td>{{ objectsKeys(widget.controls) }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <h1 class="page-header">
+        {{ data.dashboards[default].name }}
+        <a href='#/dashboards/{{default}}/edit' class='pull-right'><i class="glyphicon glyphicon-edit black medium"></i></a>
+    </h1>
+    <div id='widgets-list' class='wookmark-list'>
+      <ul class="list-unstyled">
+        <li ng-repeat="widget in data.dashboards[default].widgets">
+          {{wookmarkIt()}}
+          <div class="panel panel-primary">
+            <div class="panel-heading" ng-mouseover="hoverIn(widget.uid)" ng-mouseleave="hoverOut(widget.uid)">
+              {{ widget.uid.name }}
+              <a href='#/widgets/{{widget.uid.uid}}/edit' ng-show='widget.uid.canEdit' class='pull-right'><i class="glyphicon glyphicon-edit white"></i></a>
+            </div>
+            <div class="panel-body">
+              <h4>Сontrols</h4>
+              <div ng-repeat="control in widget.uid.controls" class="control-wrapper">
+                <widget-control></widget-control>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </div>
