@@ -25,7 +25,7 @@
     <div class="form-group" ng-repeat="w in dashboard.widgets">
       <label for="widget{{$index}}" class="col-sm-2 control-label">Widget</label>
       <div class="col-sm-6">
-        <select ng-model="w.uid" ng-options="value.name for (key, value) in widgets" id="widget{{$index}}" required>
+        <select ng-model="w.uid" ng-options="([value.room.name, value.name].join(' / ')) for (key, value) in widgets" id="widget{{$index}}" required>
           <option value=''>- Please Choose -</option>
         </select>
       </div>
