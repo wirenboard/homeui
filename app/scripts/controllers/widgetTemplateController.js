@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetTemplateCtrl', ['$scope', 'HomeUIData', function($scope, HomeUIData){
-    $scope.widgetTemplates = HomeUIData.list().widget_templates;
+  .controller('WidgetTemplateCtrl', ['$scope', 'CommonСode', function($scope, CommonСode){
+    $scope.data = CommonСode.data;
+    $scope.widgetTemplates = $scope.data.widget_templates;
 
     $scope.wookmarkIt = function(){
       var wookmarkOptions = {

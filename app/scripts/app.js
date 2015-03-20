@@ -12,6 +12,7 @@ angular
   .module('homeuiApp', [
     'homeuiApp.mqttServiceModule',
     'homeuiApp.dataServiceModule',
+    'homeuiApp.commonServiceModule',
     'homeuiApp.dataFilters',
     'ngResource',
     'ngRoute',
@@ -23,8 +24,7 @@ angular
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
-        controller: 'HomeuiCtrl',
-        controllerAs: 'homeui'
+        controller: 'HomeCtrl'
       })
       .when('/devices', {
         templateUrl: 'views/devices.html',
@@ -89,17 +89,5 @@ angular
   .run(['$rootScope', 'mqttClient', function ($rootScope, mqttClient){
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
-    }
-    $rootScope.mqttSendCollection = function(topic, collection){
-      for (var key in collection) {
-        if (collection.hasOwnProperty(key)) {
-          if(typeof collection[key] === "object")
-            $rootScope.mqttSendCollection(topic + '/' + key ,collection[key]);
-          else{
-            console.log(topic + "/" + key + " -> " + collection[key]);
-            mqttClient.send(topic + "/" + key, collection[key]);
-          }
-        };
-      };
-    }
+    };
   }]);

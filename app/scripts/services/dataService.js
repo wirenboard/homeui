@@ -168,6 +168,15 @@ angular.module('homeuiApp.dataServiceModule', [])
         widget[pathItems[4]] = message.payloadString;
       };
 
+      if(pathItems[4] === 'room'){
+        widget[pathItems[4]] = message.payloadString;
+        data.rooms[message.payloadString].widgets.push(widget.uid);
+      };
+
+      if(pathItems[4] === 'template'){
+        widget[pathItems[4]] = message.payloadString;
+      };
+
       data.widgets[widgetUID] = widget;
     };
 

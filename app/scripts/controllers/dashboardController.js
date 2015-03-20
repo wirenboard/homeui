@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', '$location', 'HomeUIData', 'mqttClient', function($scope, $rootScope, $routeParams, $location, HomeUIData, mqttClient){
-    $scope.dashboards = HomeUIData.list().dashboards;
-    $scope.widgets = HomeUIData.list().widgets;
+  .controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonСode', function($scope, $rootScope, $routeParams, CommonСode){
+    $scope.data = CommonСode.data;
+    $scope.dashboards = $scope.data.dashboards;
+    $scope.widgets = $scope.data.widgets;
     $scope.dashboard = { widgets: {} };
     $scope.action = 'New';
     $scope.created = $routeParams.created;
@@ -19,15 +20,6 @@ angular.module('homeuiApp')
 
     $scope.hoverOut = function(dashboard){
       dashboard.canEdit = false;
-    };
-
-    $scope.change = function(control) {
-      console.log('changed: ' + control.name + ' value: ' + control.value);
-      var payload = control.value;
-      if(control.metaType == 'switch' && (control.value === true || control.value === false)){
-        payload = control.value ? '1' : '0';
-      }
-      mqttClient.send(control.topic, payload);
     };
 
     $scope.addWidget = function (dashboard) {
@@ -50,32 +42,9 @@ angular.module('homeuiApp')
         dashboard.widgets[w] = { uid: widget.uid.uid };
       };
 
-      console.log(dashboard);
-
-      $rootScope.mqttSendCollection(topic, dashboard);
-
-      $scope.submit();
+      $scope.mqttSendCollection(topic, dashboard, '/dashboards');
 
       console.log('Successfully created!');
-    };
-
-    $scope.search = function() {
-      var dashboard = $scope.dashboards[$scope.dashboard.uid];
-      if(dashboard) $scope.dashboard = dashboard;
-    };
-
-    $scope.submit = function() {
-      $location.path('/dashboards').search({created: true});;
-    }
-
-    $scope.wookmarkIt = function(){
-      var wookmarkOptions = {
-        autoResize: true,
-        container: $('.wookmark-list'),
-        offset: 10
-      };
-
-      $(".wookmark-list ul li").wookmark(wookmarkOptions);
     };
   }])
   .directive('dashboard-widget', function(){

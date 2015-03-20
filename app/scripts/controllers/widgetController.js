@@ -1,11 +1,12 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', '$location', 'HomeUIData', 'mqttClient', function($scope, $rootScope, $routeParams, $location, HomeUIData, mqttClient){
-    $scope.widgets = HomeUIData.list().widgets;
-    $scope.rooms = HomeUIData.list().rooms;
-    $scope.controls = HomeUIData.list().controls;
-    $scope.widgetTemplates = HomeUIData.list().widget_templates;
+  .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonСode', function($scope, $rootScope, $routeParams, CommonСode){
+    $scope.data = CommonСode.data;
+    $scope.widgets = $scope.data.widgets;
+    $scope.rooms = $scope.data.rooms;
+    $scope.controls = $scope.data.controls;
+    $scope.widgetTemplates = $scope.data.widget_templates;
     $scope.widget = { controls: {}, options: {} };
     $scope.action = 'New';
     $scope.created = $routeParams.created;
@@ -15,7 +16,6 @@ angular.module('homeuiApp')
       $scope.widget = $scope.widgets[$routeParams.id];
       $scope.room = $scope.rooms[$scope.widget.room];
       $scope.template = $scope.widgetTemplates[$scope.widget.template];
-      console.log($scope.widget);
       delete $scope.widget['canEdit'];
     };
 
@@ -25,15 +25,6 @@ angular.module('homeuiApp')
 
     $scope.hoverOut = function(widget){
       widget.canEdit = false;
-    };
-
-    $scope.change = function(control) {
-      console.log('changed: ' + control.name + ' value: ' + control.value);
-      var payload = control.value;
-      if(control.metaType == 'switch' && (control.value === true || control.value === false)){
-        payload = control.value ? '1' : '0';
-      }
-      mqttClient.send(control.topic, payload);
     };
 
     $scope.addOrUpdateWidget = function(){
@@ -53,9 +44,7 @@ angular.module('homeuiApp')
         $scope.mqtt_widget.controls[control.uid] = { uid: control.uid, topic: control.topic.topic };
       };
 
-      $rootScope.mqttSendCollection(topic, $scope.mqtt_widget);
-
-      $scope.submit();
+      $scope.mqttSendCollection(topic, $scope.mqtt_widget, '/widgets');
 
       console.log('Successfully created!');
     };
@@ -63,33 +52,14 @@ angular.module('homeuiApp')
     $scope.renderFieldsForTemplate = function(){
       $scope.widget.controls = {};
       $scope.widget.options = {};
-      if($scope.widget.template){
-        for(var slot in $scope.widget.template.slots){
+      if($scope.template){
+        for(var slot in $scope.template.slots){
           $scope.widget.controls[slot] = { uid: slot };
         };
-        for(var option in $scope.widget.template.options){
+        for(var option in $scope.template.options){
           $scope.widget.options[option] = { uid: option };
         };
       };
-    };
-
-    $scope.search = function() {
-      var widget = $scope.widgets[$scope.widget.uid];
-      if(widget) $scope.widget = widget;
-    };
-
-    $scope.submit = function() {
-      $location.path('/widgets').search({created: true});;
-    }
-
-    $scope.wookmarkIt = function(){
-      var wookmarkOptions = {
-        autoResize: true,
-        container: $('.wookmark-list'),
-        offset: 10
-      };
-
-      $(".wookmark-list ul li").wookmark(wookmarkOptions);
     };
   }])
   .directive('widget', function(){

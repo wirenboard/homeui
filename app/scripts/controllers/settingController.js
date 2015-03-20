@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('SettingCtrl', ['$scope', '$rootScope', 'HomeUIData', 'mqttClient', function($scope, $rootScope, HomeUIData, mqttClient){
+  .controller('SettingCtrl', ['$scope', '$rootScope', 'CommonСode', 'mqttClient', function($scope, $rootScope, CommonСode, mqttClient){
     $scope.settings = {
                         setting0: { name: "IP", value: "148.251.208.199" },
                         setting1: { name: "Host", value: "mqtt.carbonfay.ru" },
@@ -13,7 +13,7 @@ angular.module('homeuiApp')
                         setting7: { name: "Controller Version", value: "1.34" },
                         setting8: { name: "Debian Version", value: "7.8" }
                       };
-    $scope.data = HomeUIData.list();
+    $scope.data = CommonСode.data;
     $scope.dashboard = $scope.data.dashboards[$scope.data.defaults.dashboard];
 
     $scope.changeDefaultDashboard = function(){
