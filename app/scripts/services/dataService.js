@@ -170,7 +170,7 @@ angular.module('homeuiApp.dataServiceModule', [])
 
       if(pathItems[4] === 'room'){
         widget[pathItems[4]] = data.rooms[message.payloadString];
-        data.rooms[message.payloadString].widgets[widgetUID] = widget;
+        data.rooms[message.payloadString].widgets.push(widget.uid);
       };
 
       if(pathItems[4] === 'template'){
@@ -182,7 +182,7 @@ angular.module('homeuiApp.dataServiceModule', [])
 
     function parseRoomMsg(pathItems, message){
       if(pathItems[4] === 'name'){
-        data.rooms[pathItems[3]] = { uid: pathItems[3], name: message.payloadString, widgets: {} };
+        data.rooms[pathItems[3]] = { uid: pathItems[3], name: message.payloadString, widgets: [] };
       };
     };
 

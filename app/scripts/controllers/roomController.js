@@ -4,12 +4,21 @@ angular.module('homeuiApp')
   .controller('RoomCtrl', ['$scope', 'HomeUIData', '$routeParams', 'mqttClient', '$location', '$rootScope', function($scope, HomeUIData, $routeParams, mqttClient, $location, $rootScope){
 
     $scope.rooms = HomeUIData.list().rooms;
+    $scope.all_widgets = HomeUIData.list().widgets;
     $scope.action = 'New';
     $scope.created = $routeParams.created;
+    $scope.widgets = {};
 
     if($routeParams.id){
       $scope.action = 'Edit';
       $scope.room = HomeUIData.list().rooms[$routeParams.id];
+      if($scope.room){
+        $scope.room.widgets.forEach(function(widget_uid) {
+          if ($scope.all_widgets.hasOwnProperty(widget_uid)) {
+            $scope.widgets[widget_uid] = $scope.all_widgets[widget_uid];
+          };
+        });
+      };
     }
 
     $scope.hoverIn = function(widget){
@@ -37,6 +46,8 @@ angular.module('homeuiApp')
 
       room.name = $scope.room.name;
 
+      $scope.rooms[room.uid] = {uid: room.uid, name: room.name};
+
       var topic = '/config/rooms/' + room.uid;
 
       $rootScope.mqttSendCollection(topic, room);
@@ -47,7 +58,7 @@ angular.module('homeuiApp')
     };
 
     $scope.submit = function() {
-      $location.path('/rooms').search({created: true});;
+      $location.path('/rooms').search({created: true});
     }
 
     $scope.wookmarkIt = function(){
