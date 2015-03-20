@@ -31,12 +31,15 @@ angular.module('homeuiApp')
 
     $scope.addOrUpdateRoom = function($location){
       console.log('Start creating...');
+      var room = {};
 
-      $scope.room.uid = $scope.room.uid || ('room' + ($rootScope.objectsKeys($scope.rooms).length + 1));
+      room.uid = $scope.room.uid || ('room' + ($rootScope.objectsKeys($scope.rooms).length + 1));
 
-      var topic = '/config/rooms/' + $scope.room.uid;
+      room.name = $scope.room.name;
 
-      $rootScope.mqttSendCollection(topic, $scope.room);
+      var topic = '/config/rooms/' + room.uid;
+
+      $rootScope.mqttSendCollection(topic, room);
 
       $scope.submit();
 
