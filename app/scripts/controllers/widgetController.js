@@ -12,8 +12,12 @@ angular.module('homeuiApp')
 
     if($routeParams.id){
       $scope.action = 'Edit';
-      $scope.widget = $scope.widgets[$routeParams.id]
-    }
+      $scope.widget = $scope.widgets[$routeParams.id];
+      $scope.room = $scope.rooms[$scope.widget.room];
+      $scope.template = $scope.widgetTemplates[$scope.widget.template];
+      console.log($scope.widget);
+      delete $scope.widget['canEdit'];
+    };
 
     $scope.hoverIn = function(widget){
       widget.canEdit = true;
@@ -35,23 +39,21 @@ angular.module('homeuiApp')
     $scope.addOrUpdateWidget = function(){
       console.log('Start creating...');
 
-      delete $scope.widget['canEdit'];
+      $scope.widget.room = $scope.room.uid;
+      $scope.widget.template = $scope.template.uid;
 
       $scope.widget.uid = $scope.widget.uid || ('widget' + ($rootScope.objectsKeys($scope.widgets).length + 1));
 
       var topic = '/config/widgets/' + $scope.widget.uid;
 
-      var widget = $scope.widget;
-      for(var c in widget.controls){
-        var control = widget.controls[c];
-        widget.controls[control.uid] = { uid: control.uid, topic: control.topic.topic };
+      $scope.mqtt_widget = angular.copy($scope.widget);
+
+      for(var c in $scope.mqtt_widget.controls){
+        var control = $scope.mqtt_widget.controls[c];
+        $scope.mqtt_widget.controls[control.uid] = { uid: control.uid, topic: control.topic.topic };
       };
-      widget.room = widget.room.uid;
-      widget.template = widget.template.uid;
 
-      console.log(widget);
-
-      $rootScope.mqttSendCollection(topic, widget);
+      $rootScope.mqttSendCollection(topic, $scope.mqtt_widget);
 
       $scope.submit();
 
