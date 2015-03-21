@@ -11,15 +11,20 @@ angular.module('homeuiApp')
 
     if($routeParams.id){
       $scope.action = 'Edit';
-      $scope.room = $scope.rooms[$routeParams.id];
-      if($scope.room){
-        $scope.room.widgets.forEach(function(widget_uid) {
-          if ($scope.all_widgets.hasOwnProperty(widget_uid)) {
-            $scope.widgets[widget_uid] = $scope.all_widgets[widget_uid];
-          };
-        });
-      };
-    }
+      $scope.roomID = $routeParams.id;
+      $scope.$watch('rooms.' + $scope.roomID, function(){
+        $scope.room = $scope.rooms[$routeParams.id];
+        if($scope.room){
+          $scope.$watch('room.widgets.length', function(){
+            $scope.room.widgets.forEach(function(widget_uid) {
+              if ($scope.all_widgets.hasOwnProperty(widget_uid)) {
+                $scope.widgets[widget_uid] = $scope.all_widgets[widget_uid];
+              };
+            });
+          });
+        };
+      });
+    };
 
     $scope.hoverIn = function(widget){
       widget.canEdit = true;
