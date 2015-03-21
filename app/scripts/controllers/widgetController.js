@@ -13,10 +13,23 @@ angular.module('homeuiApp')
 
     if($routeParams.id){
       $scope.action = 'Edit';
-      $scope.widget = $scope.widgets[$routeParams.id];
-      $scope.room = $scope.rooms[$scope.widget.room];
-      $scope.template = $scope.widgetTemplates[$scope.widget.template];
-      delete $scope.widget['canEdit'];
+      $scope.widgetID = $routeParams.id;
+      $scope.$watch('widgets.' + $scope.widgetID, function(){
+        $scope.widget = $scope.widgets[$scope.widgetID];
+        if($scope.widget){
+          $scope.$watch('widget.room', function(){
+            $scope.$watch('rooms.' + $scope.widget.room, function(){
+              $scope.room = $scope.rooms[$scope.widget.room];
+            });
+          });
+          $scope.$watch('widget.template', function(){
+            $scope.$watch('widgetTemplates.' + $scope.widget.template, function(){
+              $scope.template = $scope.widgetTemplates[$scope.widget.template];
+            });
+          });
+          delete $scope.widget['canEdit'];
+        };
+      });
     };
 
     $scope.hoverIn = function(widget){
@@ -36,6 +49,7 @@ angular.module('homeuiApp')
       $scope.widget.uid = $scope.widget.uid || ('widget' + ($rootScope.objectsKeys($scope.widgets).length + 1));
 
       var topic = '/config/widgets/' + $scope.widget.uid;
+
 
       $scope.mqtt_widget = angular.copy($scope.widget);
 
