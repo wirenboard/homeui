@@ -11,8 +11,11 @@ angular.module('homeuiApp')
 
     if($routeParams.id){
       $scope.action = 'Edit';
-      $scope.dashboard = $scope.dashboards[$routeParams.id];
-    }
+      $scope.dashboardID = $routeParams.id;
+      $scope.$watch('dashboards.' + $scope.dashboardID, function(){
+        $scope.dashboard = $scope.dashboards[$scope.dashboardID];
+      });
+    };
 
     $scope.hoverIn = function(dashboard){
       dashboard.canEdit = true;
