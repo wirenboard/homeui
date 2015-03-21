@@ -4,26 +4,25 @@ angular.module('homeuiApp.commonServiceModule', [])
   .factory('CommonСode', ['$rootScope', '$location', '$window', 'mqttClient', 'HomeUIData', function ($rootScope, $location, $window, mqttClient, HomeUIData){
     var commonCode = {};
 
-    commonCode.loginData = {};
-    commonCode.loginData.host = 'mqtt.carbonfay.ru';
-    commonCode.loginData.port = 18883;
     commonCode.tryConnect = commonCode.tryConnect;
     commonCode.disconnect = commonCode.disconnect;
     commonCode.connected = $window.localStorage['connected'];
     commonCode.data = HomeUIData.list();
 
     commonCode.tryConnect = function() {
-      console.log('Try to connect as ' + commonCode.loginData.user);
+      commonCode.loginData = {};
+      commonCode.loginData.host = $window.localStorage['host'];
+      commonCode.loginData.port = $window.localStorage['port'];
+      commonCode.loginData.user = $window.localStorage['user'];
+      commonCode.loginData.password = $window.localStorage['password'];
+      commonCode.loginData.prefix = $window.localStorage['prefix'];
       if(commonCode.loginData.host && commonCode.loginData.port){
-        $window.localStorage.setItem('host',commonCode.loginData.host);
-        $window.localStorage.setItem('port',commonCode.loginData.port);
-        $window.localStorage.setItem('user',commonCode.loginData.user);
-        $window.localStorage.setItem('password',commonCode.loginData.password);
+        console.log('Try to connect as ' + commonCode.loginData.user);
         mqttClient.connect(commonCode.loginData.host, commonCode.loginData.port, commonCode.loginData.user, commonCode.loginData.password);
         console.log('Successfully logged in ' + commonCode.loginData.user);
       }else{
-        commonCode.showAlert();
-      }
+        alert('Вам нужно перейти в настройки и заполнить данные для входа');
+      };
     };
 
     $rootScope.change = function(control) {
@@ -37,8 +36,6 @@ angular.module('homeuiApp.commonServiceModule', [])
 
     commonCode.disconnect = function() {
       mqttClient.disconnect();
-      $window.localStorage.clear();
-      $location.path('/home');
     };
 
     $rootScope.$watch('$viewContentLoaded', function(){
