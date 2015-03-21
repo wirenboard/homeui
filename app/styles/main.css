@@ -236,7 +236,7 @@ ul.alert-dropdown {
 
 /* Form Validation */
 
-.ng-invalid.ng-dirty{
+.ng-invalid{
   border-color: #FA787E;
 }
 
