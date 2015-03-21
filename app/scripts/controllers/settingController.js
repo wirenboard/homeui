@@ -14,7 +14,12 @@ angular.module('homeuiApp')
                         setting8: { name: "Debian Version", value: "7.8" }
                       };
     $scope.data = CommonСode.data;
-    $scope.dashboard = $scope.data.dashboards[$scope.data.defaults.dashboard];
+
+    $scope.$watch('data.defaults.dashboard', function(){
+      $scope.$watch('data.dashboards.' + $scope.data.defaults.dashboard, function(){
+        $scope.dashboard = $scope.data.dashboards[$scope.data.defaults.dashboard];
+      });
+    });
 
     $scope.changeDefaultDashboard = function(){
       console.log('New default dashboard: ' + $scope.dashboard.uid);
