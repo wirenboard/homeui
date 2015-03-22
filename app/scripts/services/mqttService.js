@@ -3,8 +3,10 @@
 var mqttServiceModule = angular.module('homeuiApp.mqttServiceModule', ['ngResource']);
 
 mqttServiceModule.factory('mqttClient', function($window) {
+  var globalPrefix = '';
   var service = {};
   var client = {};
+  if($window.localStorage['prefix'] === 'true') globalPrefix = '/client/' + $window.localStorage['user'];
 
   service.connect = function(host, port, user, password) {
     var options = {
@@ -19,7 +21,7 @@ mqttServiceModule.factory('mqttClient', function($window) {
 
     console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with user " + user);
 
-    client = new Paho.MQTT.Client(host, parseInt(port), '/', 'userID-Contactless');
+    client = new Paho.MQTT.Client(host, parseInt(port), '/', user);
     client.connect(options);
 
     client.onConnectionLost = service.onConnectionLost;
@@ -29,8 +31,9 @@ mqttServiceModule.factory('mqttClient', function($window) {
 
   service.onConnect = function() {
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
-    client.subscribe("/devices/#");
-    client.subscribe("/config/#");
+    if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
+    client.subscribe(globalPrefix + "/devices/#");
+    client.subscribe(globalPrefix + "/config/#");
     $window.localStorage.setItem('connected', true);
   };
 

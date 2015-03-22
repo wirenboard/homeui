@@ -31,7 +31,7 @@ angular.module('homeuiApp')
       if($scope.loginSettings.user) $window.localStorage.setItem('user', $scope.loginSettings.user);
       if($scope.loginSettings.password) $window.localStorage.setItem('password', $scope.loginSettings.password);
       if($scope.loginSettings.prefix) $window.localStorage.setItem('prefix', $scope.loginSettings.prefix);
-      CommonСode.tryConnect();
+      $window.location.reload();
     };
 
     $scope.changeDefaultDashboard = function(){

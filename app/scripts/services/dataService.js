@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('homeuiApp.dataServiceModule', [])
-  .factory('HomeUIData', function() {
+  .factory('HomeUIData', function($window) {
     var data = { devices:{}, controls:{}, widgets:{}, widget_templates:{}, rooms:{}, dashboards:{}, defaults: {} };
     var dataService = {};
+    var globalPrefix = '';
 
     data.widget_templates = {
       roller_shutter: { uid: 'roller_shutter', name: 'Roller shutter',
@@ -16,7 +17,8 @@ angular.module('homeuiApp.dataServiceModule', [])
     };
 
     dataService.parseMsg = function(message) {
-      var pathItems = message.destinationName.split('/');
+      if($window.localStorage['prefix']) globalPrefix = '/client/' + $window.localStorage['user'];
+      var pathItems = message.destinationName.replace(globalPrefix, '').split('/');
 
       parseMsg(pathItems, message);
 
