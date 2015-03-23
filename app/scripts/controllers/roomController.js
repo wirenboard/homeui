@@ -42,7 +42,7 @@ angular.module('homeuiApp')
 
       room.name = $scope.room.name;
 
-      $scope.rooms[room.uid] = {uid: room.uid, name: room.name};
+      $scope.rooms[room.uid] = {uid: room.uid, name: room.name, widgets: $scope.room.widgets};
 
       var topic = '/config/rooms/' + room.uid;
 
