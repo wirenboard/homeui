@@ -7,7 +7,6 @@ angular.module('homeuiApp')
     $scope.widgets = $scope.data.widgets;
     $scope.dashboard = { widgets: {} };
     $scope.action = 'New';
-    $scope.created = $routeParams.created;
 
     if($routeParams.id){
       $scope.action = 'Edit';
@@ -45,7 +44,7 @@ angular.module('homeuiApp')
         dashboard.widgets[w] = { uid: widget.uid.uid };
       };
 
-      $scope.mqttSendCollection(topic, dashboard, '/dashboards');
+      $scope.mqttSendCollection(topic, dashboard, $rootScope.refererLocation);
 
       console.log('Successfully created!');
     };

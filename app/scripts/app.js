@@ -86,8 +86,12 @@ angular
         redirectTo: '/'
       });
   })
-  .run(['$rootScope', 'mqttClient', function ($rootScope, mqttClient){
+  .run(['$rootScope', '$location', 'mqttClient', function ($rootScope, $location, mqttClient){
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
     };
+    $rootScope.$on( "$locationChangeStart", function(event, next, current) {
+      if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
+      $rootScope.refererLocation = current;
+    });
   }]);

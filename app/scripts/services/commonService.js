@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp.commonServiceModule', [])
-  .factory('CommonСode', ['$rootScope', '$location', '$window', 'mqttClient', 'HomeUIData', function ($rootScope, $location, $window, mqttClient, HomeUIData){
+  .factory('CommonСode', ['$rootScope', '$location', '$window', '$routeParams', 'mqttClient', 'HomeUIData', function ($rootScope, $location, $window, $routeParams, mqttClient, HomeUIData){
     var commonCode = {};
 
     commonCode.tryConnect = commonCode.tryConnect;
@@ -71,7 +71,14 @@ angular.module('homeuiApp.commonServiceModule', [])
         };
       };
 
-      if(backTo) $location.path(backTo).search({created: true});
+      $rootScope.showCreated = true;
+
+      if(backTo){
+        var currentPath = $location.path().split("#").pop();
+        backTo = backTo.split("#").pop();
+        if(backTo === currentPath) backTo = '/';
+        $location.path(backTo);
+      };
     };
 
     return commonCode;

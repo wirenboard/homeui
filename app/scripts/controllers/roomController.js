@@ -6,7 +6,6 @@ angular.module('homeuiApp')
     $scope.rooms = $scope.data.rooms;
     $scope.all_widgets = $scope.data.widgets;
     $scope.action = 'New';
-    $scope.created = $routeParams.created;
     $scope.widgets = {};
 
     if($routeParams.id){
@@ -46,7 +45,7 @@ angular.module('homeuiApp')
 
       var topic = '/config/rooms/' + room.uid;
 
-      $scope.mqttSendCollection(topic, room, '/rooms');
+      $scope.mqttSendCollection(topic, room, $rootScope.refererLocation);
 
       console.log('Successfully created!');
     };

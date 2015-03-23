@@ -9,7 +9,6 @@ angular.module('homeuiApp')
     $scope.widgetTemplates = $scope.data.widget_templates;
     $scope.widget = { controls: {}, options: {} };
     $scope.action = 'New';
-    $scope.created = $routeParams.created;
 
     if($routeParams.id){
       $scope.action = 'Edit';
@@ -58,7 +57,7 @@ angular.module('homeuiApp')
         $scope.mqtt_widget.controls[control.uid] = { uid: control.uid, topic: control.topic.topic };
       };
 
-      $scope.mqttSendCollection(topic, $scope.mqtt_widget, '/widgets');
+      $scope.mqttSendCollection(topic, $scope.mqtt_widget, $rootScope.refererLocation);
 
       console.log('Successfully created!');
     };
