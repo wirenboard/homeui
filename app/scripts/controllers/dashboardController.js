@@ -41,7 +41,11 @@ angular.module('homeuiApp')
       var dashboard = $scope.dashboard;
       for(var w in dashboard.widgets){
         var widget = dashboard.widgets[w];
-        dashboard.widgets[w] = { uid: widget.uid.uid };
+        if(widget.uid && widget.uid.hasOwnProperty('uid')){
+          dashboard.widgets[w] = { uid: widget.uid.uid };
+        }else{
+          delete dashboard.widgets[w];
+        };
       };
 
       $scope.mqttSendCollection(topic, dashboard, $rootScope.refererLocation);
