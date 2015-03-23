@@ -20,9 +20,11 @@ angular.module('homeuiApp')
     $scope.data = CommonСode.data;
 
     $scope.$watch('data.defaults.dashboard', function(){
-      $scope.$watch('data.dashboards.' + $scope.data.defaults.dashboard, function(){
-        $scope.dashboard = $scope.data.dashboards[$scope.data.defaults.dashboard];
-      });
+      if($scope.data.defaults.dashboard){
+        $scope.$watch('data.dashboards.' + $scope.data.defaults.dashboard, function(){
+          $scope.dashboard = $scope.data.dashboards[$scope.data.defaults.dashboard];
+        });
+      };
     });
 
     $scope.updateLoginSettings = function(){
@@ -35,7 +37,8 @@ angular.module('homeuiApp')
     };
 
     $scope.changeDefaultDashboard = function(){
-      console.log('New default dashboard: ' + $scope.dashboard.uid);
-      mqttClient.send('/config/default_dashboard/uid', $scope.dashboard.uid);
+      var uid = $scope.dashboard ? $scope.dashboard.uid : '';
+      console.log('New default dashboard: ' + uid);
+      mqttClient.send('/config/default_dashboard/uid', uid);
     };
   }]);
