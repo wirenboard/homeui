@@ -17,7 +17,7 @@ angular.module('homeuiApp.dataServiceModule', [])
     };
 
     dataService.parseMsg = function(message) {
-      if($window.localStorage['prefix']) globalPrefix = '/client/' + $window.localStorage['user'];
+      if($window.localStorage['prefix'] === 'true') globalPrefix = '/client/' + $window.localStorage['user'];
       var pathItems = message.destinationName.replace(globalPrefix, '').split('/');
 
       parseMsg(pathItems, message);

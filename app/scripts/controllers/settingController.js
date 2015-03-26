@@ -28,11 +28,11 @@ angular.module('homeuiApp')
     });
 
     $scope.updateLoginSettings = function(){
-      if($scope.loginSettings.host) $window.localStorage.setItem('host', $scope.loginSettings.host);
-      if($scope.loginSettings.port) $window.localStorage.setItem('port', $scope.loginSettings.port);
-      if($scope.loginSettings.user) $window.localStorage.setItem('user', $scope.loginSettings.user);
-      if($scope.loginSettings.password) $window.localStorage.setItem('password', $scope.loginSettings.password);
-      if($scope.loginSettings.prefix) $window.localStorage.setItem('prefix', $scope.loginSettings.prefix);
+      $window.localStorage.setItem('host', $scope.loginSettings.host);
+      $window.localStorage.setItem('port', $scope.loginSettings.port);
+      $window.localStorage.setItem('user', $scope.loginSettings.user);
+      $window.localStorage.setItem('password', $scope.loginSettings.password);
+      $window.localStorage.setItem('prefix', $scope.loginSettings.prefix);
       $window.location.reload();
     };
 

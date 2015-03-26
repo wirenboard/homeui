@@ -17,7 +17,7 @@ angular.module('homeuiApp.commonServiceModule', [])
       commonCode.loginData.password = $window.localStorage['password'];
       commonCode.loginData.prefix = $window.localStorage['prefix'];
       if(commonCode.loginData.host && commonCode.loginData.port){
-        var userID = commonCode.loginData.user === undefined ? 'contactless' : commonCode.loginData.user;
+        var userID = commonCode.loginData.user ? commonCode.loginData.user : 'contactless';
         console.log('Try to connect as ' + userID);
         mqttClient.connect(commonCode.loginData.host, commonCode.loginData.port, userID, commonCode.loginData.password);
         console.log('Successfully logged in ' + userID);
@@ -29,11 +29,10 @@ angular.module('homeuiApp.commonServiceModule', [])
     $rootScope.change = function(control) {
       console.log('changed: ' + control.name + ' value: ' + control.value);
       var payload = control.value;
-      var topic = commonCode.loginData.prefix === 'true' ? ('/client/' + commonCode.loginData.user + control.topic) : control.topic;
       if(control.metaType == 'switch' && (control.value === true || control.value === false)){
         payload = control.value ? '1' : '0';
       }
-      mqttClient.send(topic, payload);
+      mqttClient.send(control.topic, payload);
     };
 
     commonCode.disconnect = function() {
