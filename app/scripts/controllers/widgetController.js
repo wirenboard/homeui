@@ -81,33 +81,33 @@ angular.module('homeuiApp')
       templateUrl: 'views/widgets/show.html'
     };
   })
-  .directive('widgetControl', function(){
+  .directive('widgetTemplate', function(){
     return{
       restrict: 'E',
-      templateUrl: 'views/widgets/controls/control.html'
+      templateUrl: 'views/widgets/templates/template.html'
     };
   })
-  .directive('widgetControlRange', function(){
+  .directive('widgetDimmableLight', function(){
     return{
       restrict: 'A',
-      templateUrl: 'views/widgets/controls/control-range.html'
+      templateUrl: 'views/widgets/templates/widget-dimmable-light.html'
     };
   })
-  .directive('widgetControlPushbutton', function(){
+  .directive('widgetLight', function(){
     return{
       restrict: 'A',
-      templateUrl: 'views/widgets/controls/control-button.html'
+      templateUrl: 'views/widgets/templates/widget-light.html'
     };
   })
-  .directive('widgetControlSwitch', function(){
+  .directive('widgetSensor', function(){
     return{
       restrict: 'A',
-      templateUrl: 'views/widgets/controls/control-switch.html'
+      templateUrl: 'views/widgets/templates/widget-sensor.html'
     };
   })
-  .directive('widgetControlTextbox', function(){
+  .directive('widgetControlValue', function(){
     return{
       restrict: 'A',
-      templateUrl: 'views/widgets/controls/control-textbox.html'
+      templateUrl: 'views/widgets/templates/control-value.html'
     };
   });

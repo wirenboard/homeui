@@ -7,7 +7,7 @@
       {{wookmarkIt()}}
       <div class="panel panel-primary">
         <div class="panel-heading">{{ widgetTemplate.name }}</div>
-        <div class="panel-body">
+        <div class="panel-body" ng-hide='isEmpty(widgetTemplate.slots)'>
           <h4>Slots for controls</h4>
           <div ng-repeat="slot in widgetTemplate.slots" class="control-wrapper">
             {{ slot.uid }} - {{ slot.name }}

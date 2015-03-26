@@ -7,13 +7,24 @@ angular.module('homeuiApp.dataServiceModule', [])
     var globalPrefix = '';
 
     data.widget_templates = {
-      roller_shutter: { uid: 'roller_shutter', name: 'Roller shutter',
-                        options: { option0: { name: 'Icon', uid: 'option0' } },
+      light: { uid: 'light', name: 'Lighting control relay',
+               options: {},
+               slots: {
+                 slot0: { name: 'Switch', uid: 'slot0', type: 'switch' }
+               }
+             },
+      dimmable_light: { uid: 'dimmable_light', name: 'Dimmable lighting control',
+                        options: {},
                         slots: {
-                          slot0: { name: 'Forward actuator', uid: 'slot0', type: 'switch' },
-                          slot1: { name: 'Backward actuator', uid: 'slot1', type: 'range' }
+                          slot0: { name: 'Dimmer', uid: 'slot0', type: 'range' }
                         }
-                      }
+                      },
+      sensor: { uid: 'sensor', name: 'Sensor',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor Value', uid: 'slot0' }
+                }
+              }
     };
 
     dataService.parseMsg = function(message) {

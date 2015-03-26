@@ -7,6 +7,8 @@ angular.module('homeuiApp.dataFilters', [])
       angular.forEach(items, function (value, key) {
         if (value['metaType'] === search) {
           result.push(value);
+        }else if(search === undefined){
+          result.push(value);
         };
       });
       return result;

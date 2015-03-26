@@ -1,0 +1,14 @@
+<div ng-switch on="control.topic.metaType">
+  {{control.topic.value}}
+  <span ng-switch-when="temperature">°C</span>
+  <span ng-switch-when="rel_humidity">%, RH</span>
+  <span ng-switch-when="atmospheric_pressure">millibar (100 Pa)</span>
+  <span ng-switch-when="rainfall">mm per hour</span>
+  <span ng-switch-when="wind_speed">m/s</span>
+  <span ng-switch-when="power">watt</span>
+  <span ng-switch-when="power_consumption">kWh</span>
+  <span ng-switch-when="voltage">volts</span>
+  <span ng-switch-when="water_flow">m<sup>3</sup> / hour</span>
+  <span ng-switch-when="water_consumption">m<sup>3</sup></span>
+  <span ng-switch-default>{{control.topic.metaUnits}}</span>
+</div>

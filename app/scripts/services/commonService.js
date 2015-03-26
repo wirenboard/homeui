@@ -80,5 +80,9 @@ angular.module('homeuiApp.commonServiceModule', [])
       };
     };
 
+    $rootScope.isEmpty = function(collection){
+      return angular.equals({}, collection);
+    };
+
     return commonCode;
   }]);

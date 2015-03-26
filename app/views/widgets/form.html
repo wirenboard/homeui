@@ -38,21 +38,25 @@
       </div>
     </div>
 
-    <h4 class="col-sm-12">Controls</h4>
-    <div class="form-group" ng-repeat="control in widget.controls">
-      <label for="widgetControl{{$index}}" class="col-sm-2 control-label">{{template.slots[control.uid]['name']}}</label>
-      <div class="col-sm-6">
-        <select ng-model="control.topic" ng-options="control.topic for control in controls | metaTypeFilter:template.slots[control.uid]['type']" id="widgetControl{{$index}}" required>
-          <option value=''>- Please Choose -</option>
-        </select>
+    <div ng-hide="isEmpty(widget.controls)">
+      <h4 class="col-sm-12">Controls</h4>
+      <div class="form-group" ng-repeat="control in widget.controls">
+        <label for="widgetControl{{$index}}" class="col-sm-2 control-label">{{template.slots[control.uid]['name']}}</label>
+        <div class="col-sm-6">
+          <select ng-model="control.topic" ng-options="control.topic for control in controls | metaTypeFilter:template.slots[control.uid]['type']" id="widgetControl{{$index}}" required>
+            <option value=''>- Please Choose -</option>
+          </select>
+        </div>
       </div>
     </div>
 
-    <h4 class="col-sm-12">Options</h4>
-    <div class="form-group" ng-repeat="option in widget.options">
-      <label for="widgetOption{{$index}}" class="col-sm-2 control-label">{{template.options[option.uid]['name']}}</label>
-      <div class="col-sm-6">
-        <input type="text" class="form-control" id="widgetOption{{$index}}" ng-model='option.value' placeholder="Value" required>
+    <div ng-hide="isEmpty(widget.options)">
+      <h4 class="col-sm-12">Options</h4>
+      <div class="form-group" ng-repeat="option in widget.options">
+        <label for="widgetOption{{$index}}" class="col-sm-2 control-label">{{template.options[option.uid]['name']}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="widgetOption{{$index}}" ng-model='option.value' placeholder="Value" required>
+        </div>
       </div>
     </div>
 
