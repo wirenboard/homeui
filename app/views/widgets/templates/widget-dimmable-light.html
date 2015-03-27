@@ -1,2 +1,3 @@
 <h4>{{control.topic.name}}</h4>
-<input type="range" ng-model="control.topic.value" ng-change="change(control.topic)"/>
+<a class="btn btn-primary" ng-click="switchOff(control.topic)">Switch Off</a>
+<input type="range" ng-model="control.topic.value" max="{{control.metaMax}}" ng-change="change(control.topic)"/>

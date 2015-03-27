@@ -85,5 +85,9 @@ angular.module('homeuiApp.commonServiceModule', [])
       return angular.equals({}, collection);
     };
 
+    $rootScope.switchOff = function(control){
+      mqttClient.send(control.topic, '0/on');
+    };
+
     return commonCode;
   }]);
