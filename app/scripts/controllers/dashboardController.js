@@ -53,9 +53,9 @@ angular.module('homeuiApp')
       console.log('Successfully created!');
     };
   }])
-  .directive('dashboard-widget', function(){
+  .directive('dashboardWidgetTemplate', function(){
     return{
       restrict: 'E',
-      templateUrl: 'views/dashboards/widgets/show.html'
+      templateUrl: 'views/dashboards/widget-template.html'
     };
   });
