@@ -32,8 +32,8 @@ angular.module('homeuiApp.commonServiceModule', [])
       if(control.metaType == 'switch' && (control.value === true || control.value === false)){
         payload = control.value ? '1' : '0';
       }
-      payload = payload + '/on';
-      mqttClient.send(control.topic, payload);
+      var topic = control.topic + '/on';
+      mqttClient.send(topic, payload);
     };
 
     commonCode.disconnect = function() {
@@ -86,7 +86,8 @@ angular.module('homeuiApp.commonServiceModule', [])
     };
 
     $rootScope.switchOff = function(control){
-      mqttClient.send(control.topic, '0/on');
+      var topic = control.topic + '/on';
+      mqttClient.send(topic, '0');
     };
 
     return commonCode;

@@ -112,7 +112,7 @@ angular.module('homeuiApp.dataServiceModule', [])
           parseControlMeta(pathItems, message);
           break;
         case undefined:
-          var value = message.payloadString.replace('/on','');
+          var value = message.payloadString;
           if(message.payloadBytes[0] === 48 || message.payloadBytes[0] === 49) value = parseInt(message.payloadString);
           control.value = value;
       };
