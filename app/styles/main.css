@@ -26,6 +26,7 @@ body {
     padding: 0;
     background-color: #fff;
     min-height: 370px;
+    position: relative;
 }
 
 .huge {
@@ -280,4 +281,10 @@ li.list-menu li{
 
 li.list-menu > a{
   display: inline;
+}
+
+footer{
+  position: absolute;
+  bottom: 0;
+  right:25px;
 }
