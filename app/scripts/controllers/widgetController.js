@@ -140,4 +140,10 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/widget-air-quality.html'
     };
+  })
+  .directive('widgetLeakage', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-leakage.html'
+    };
   });

@@ -54,6 +54,12 @@ angular.module('homeuiApp.dataServiceModule', [])
                 slots: {
                   slot0: { name: 'Sensor', uid: 'slot0' }
                 }
+              },
+      leakage: { uid: 'leakage', name: 'Leakage',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
               }
     };
 
