@@ -134,4 +134,10 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/widget-luminiscence.html'
     };
+  })
+  .directive('widgetAirQuality', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-air-quality.html'
+    };
   });
