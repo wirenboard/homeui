@@ -116,4 +116,22 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/widget-open-closed-sensor.html'
     };
+  })
+  .directive('widgetTemperature', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-temperature.html'
+    };
+  })
+  .directive('widgetHumidity', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-humidity.html'
+    };
+  })
+  .directive('widgetLuminiscence', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-luminiscence.html'
+    };
   });

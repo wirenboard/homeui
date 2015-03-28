@@ -30,7 +30,25 @@ angular.module('homeuiApp.dataServiceModule', [])
                             slots: {
                               slot0: { name: 'Sensor', uid: 'slot0' }
                             }
-                          }
+                          },
+      temperature: { uid: 'temperature', name: 'Temperature',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      humidity: { uid: 'humidity', name: 'Humidity',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      luminiscence: { uid: 'luminiscence', name: 'Luminiscence',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              }
     };
 
     dataService.parseMsg = function(message) {
