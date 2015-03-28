@@ -110,4 +110,10 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/control-value.html'
     };
+  })
+  .directive('widgetOpenClosedSensor', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-open-closed-sensor.html'
+    };
   });
