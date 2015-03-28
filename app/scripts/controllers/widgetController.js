@@ -146,4 +146,10 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/widget-leakage.html'
     };
+  })
+  .directive('widgetMotion', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-motion.html'
+    };
   });

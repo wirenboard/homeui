@@ -60,6 +60,12 @@ angular.module('homeuiApp.dataServiceModule', [])
                 slots: {
                   slot0: { name: 'Sensor', uid: 'slot0' }
                 }
+              },
+      motion: { uid: 'motion', name: 'Motion',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
               }
     };
 
