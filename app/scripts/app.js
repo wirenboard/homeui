@@ -82,6 +82,10 @@ angular
         templateUrl: 'views/settings.html',
         controller: 'SettingCtrl'
       })
+      .when('/login/:id',{
+        templateUrl: 'views/login.html',
+        controller: 'LoginCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
