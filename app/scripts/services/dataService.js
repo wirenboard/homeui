@@ -72,6 +72,12 @@ angular.module('homeuiApp.dataServiceModule', [])
                 slots: {
                   slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
                 }
+             },
+      fan: { uid: 'fan', name: 'Fan',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
+                }
              }
     };
 
