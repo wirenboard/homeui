@@ -152,4 +152,10 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/widget-motion.html'
     };
+  })
+  .directive('widgetAlarm', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-alarm.html'
+    };
   });

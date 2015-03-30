@@ -66,7 +66,13 @@ angular.module('homeuiApp.dataServiceModule', [])
                 slots: {
                   slot0: { name: 'Sensor', uid: 'slot0' }
                 }
-              }
+              },
+      alarm: { uid: 'alarm', name: 'Alarm',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
+                }
+             }
     };
 
     dataService.parseMsg = function(message) {
