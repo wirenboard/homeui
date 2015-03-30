@@ -17,7 +17,7 @@ angular.module('homeuiApp.commonServiceModule', [])
       commonCode.loginData.password = $window.localStorage['password'];
       commonCode.loginData.prefix = $window.localStorage['prefix'];
       if(commonCode.loginData.host && commonCode.loginData.port){
-        var userID = commonCode.loginData.user ? commonCode.loginData.user : 'contactless';
+        var userID = 'contactless-' + randomString(10);
         console.log('Try to connect as ' + userID);
         mqttClient.connect(commonCode.loginData.host, commonCode.loginData.port, userID, commonCode.loginData.password);
         console.log('Successfully logged in ' + userID);
@@ -89,6 +89,14 @@ angular.module('homeuiApp.commonServiceModule', [])
       var topic = control.topic + '/on';
       mqttClient.send(topic, '0');
     };
+
+    function randomString(length) {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (var i = 0; i < length; i++)
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+      return text;
+    }
 
     return commonCode;
   }]);
