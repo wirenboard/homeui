@@ -22,7 +22,7 @@ angular.module('homeuiApp.commonServiceModule', [])
         mqttClient.connect(commonCode.loginData.host, commonCode.loginData.port, userID, commonCode.loginData.password);
         console.log('Successfully logged in ' + userID);
       }else{
-        alert('Вам нужно перейти в настройки и заполнить данные для входа');
+        console.log('Вам нужно перейти в настройки и заполнить данные для входа');
       };
     };
 
