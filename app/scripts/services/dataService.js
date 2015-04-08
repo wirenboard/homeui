@@ -24,7 +24,61 @@ angular.module('homeuiApp.dataServiceModule', [])
                 slots: {
                   slot0: { name: 'Sensor Value', uid: 'slot0' }
                 }
-              }
+              },
+      open_closed_sensor: {
+                            uid: 'open_closed_sensor', name: 'Open/close sensor',
+                            slots: {
+                              slot0: { name: 'Sensor', uid: 'slot0' }
+                            }
+                          },
+      temperature: { uid: 'temperature', name: 'Temperature',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      humidity: { uid: 'humidity', name: 'Humidity',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      luminiscence: { uid: 'luminiscence', name: 'Luminiscence',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      air_quality: { uid: 'air_quality', name: 'Air quality',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      leakage: { uid: 'leakage', name: 'Leakage',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      motion: { uid: 'motion', name: 'Motion',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0' }
+                }
+              },
+      alarm: { uid: 'alarm', name: 'Alarm',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
+                }
+             },
+      fan: { uid: 'fan', name: 'Fan',
+                options: {},
+                slots: {
+                  slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
+                }
+             }
     };
 
     dataService.parseMsg = function(message) {

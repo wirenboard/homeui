@@ -110,4 +110,58 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/control-value.html'
     };
+  })
+  .directive('widgetOpenClosedSensor', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-open-closed-sensor.html'
+    };
+  })
+  .directive('widgetTemperature', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-temperature.html'
+    };
+  })
+  .directive('widgetHumidity', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-humidity.html'
+    };
+  })
+  .directive('widgetLuminiscence', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-luminiscence.html'
+    };
+  })
+  .directive('widgetAirQuality', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-air-quality.html'
+    };
+  })
+  .directive('widgetLeakage', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-leakage.html'
+    };
+  })
+  .directive('widgetMotion', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-motion.html'
+    };
+  })
+  .directive('widgetAlarm', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-alarm.html'
+    };
+  })
+  .directive('widgetFan', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-fan.html'
+    };
   });
