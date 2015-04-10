@@ -1,2 +1,8 @@
 <h4>{{control.name}}</h4>
-<toggle-switch class="control-value" ng-model="control.value" class="switch-small switch-primary" ng-true-value="1" ng-false-value="0" ng-change="change(control)"><toggle-switch>
+
+<div ng-switch on="control.metaReadonly">
+    <input ng-switch-when="1" type="checkbox" class="control-value" ng-model="control.value" readonly disabled ng-true-value="1" ng-false-value="0"  />
+    <toggle-switch ng-switch-default class="control-value" ng-model="control.value" class="switch-small switch-primary" ng-true-value="1" ng-false-value="0" ng-change="change(control)"><toggle-switch>
+
+</div>
+
