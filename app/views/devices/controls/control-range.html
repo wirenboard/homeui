@@ -1,2 +1,8 @@
 <h4>{{control.name}}</h4>
-<input type="range" class="control-value" ng-model="control.value" max='{{control.metaMax}}' ng-change="change(control)"/>
+
+<div ng-switch on="control.metaReadonly">
+    <input ng-switch-when="1"  type="range" class="control-value" ng-model="control.value" max='{{control.metaMax}}' disabled />
+    <input ng-switch-default  type="range" class="control-value" ng-model="control.value" max='{{control.metaMax}}' ng-change="change(control)"/>
+</div>
+
+
