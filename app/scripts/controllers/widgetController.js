@@ -129,10 +129,10 @@ angular.module('homeuiApp')
       templateUrl: 'views/widgets/templates/widget-humidity.html'
     };
   })
-  .directive('widgetLuminiscence', function(){
+  .directive('widgetIlluminance', function(){
     return{
       restrict: 'A',
-      templateUrl: 'views/widgets/templates/widget-luminiscence.html'
+      templateUrl: 'views/widgets/templates/widget-illuminance.html'
     };
   })
   .directive('widgetAirQuality', function(){

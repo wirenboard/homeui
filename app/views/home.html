@@ -16,15 +16,12 @@
         <li ng-repeat="widget in data.dashboards[default].widgets">
           {{wookmarkIt()}}
           <div class="panel panel-primary">
-            <div class="panel-heading" ng-mouseover="hoverIn(widget.uid)" ng-mouseleave="hoverOut(widget.uid)">
-              {{ widget.uid.name }}
-              <a href='#/widgets/{{widget.uid.uid}}/edit' ng-show='widget.uid.canEdit' class='pull-right'><i class="glyphicon glyphicon-edit white"></i></a>
+            <div class="panel-heading" ng-mouseover="hoverIn(widget)" ng-mouseleave="hoverOut(widget)">
+              {{ widget.name }}
+              <a href='#/widgets/{{widget.uid}}/edit' ng-show='widget.canEdit' class='pull-right'><i class="glyphicon glyphicon-edit white"></i></a>
             </div>
             <div class="panel-body">
-              <h4>Сontrols</h4>
-              <div ng-repeat="control in widget.uid.controls" class="control-wrapper">
                 <dashboard-widget-template></dashboard-widget-template>
-              </div>
             </div>
           </div>
         </li>

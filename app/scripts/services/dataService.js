@@ -7,19 +7,19 @@ angular.module('homeuiApp.dataServiceModule', [])
     var globalPrefix = '';
 
     data.widget_templates = {
-      light: { uid: 'light', name: 'Lighting control relay',
+      light: { uid: 'light', name: 'Light control relay',
                options: {},
                slots: {
                  slot0: { name: 'Switch', uid: 'slot0', type: 'switch' }
                }
              },
-      dimmable_light: { uid: 'dimmable_light', name: 'Dimmable lighting control',
+      dimmable_light: { uid: 'dimmable_light', name: 'Dimmable light control',
                         options: {},
                         slots: {
                           slot0: { name: 'Dimmer', uid: 'slot0', type: 'range' }
                         }
                       },
-      sensor: { uid: 'sensor', name: 'Sensor',
+      sensor: { uid: 'sensor', name: 'Generic Sensor',
                 options: {},
                 slots: {
                   slot0: { name: 'Sensor Value', uid: 'slot0' }
@@ -34,19 +34,19 @@ angular.module('homeuiApp.dataServiceModule', [])
       temperature: { uid: 'temperature', name: 'Temperature',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
+                  slot0: { name: 'Temperature sensor', uid: 'slot0', type: 'temperature' }
                 }
               },
       humidity: { uid: 'humidity', name: 'Humidity',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
+                  slot0: { name: 'Himudity sensor', uid: 'slot0' }
                 }
               },
-      luminiscence: { uid: 'luminiscence', name: 'Luminiscence',
+      illuminance: { uid: 'illuminance', name: 'Illuminance',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
+                  slot0: { name: 'Illuminance sensor', uid: 'slot0' }
                 }
               },
       air_quality: { uid: 'air_quality', name: 'Air quality',
@@ -167,7 +167,12 @@ angular.module('homeuiApp.dataServiceModule', [])
           break;
         case undefined:
           var value = message.payloadString;
-          if(message.payloadBytes[0] === 48 || message.payloadBytes[0] === 49) value = parseInt(message.payloadString);
+          //FIXME: implement proper parsing of value based on meta type?
+          if (message.payloadString == "1") {
+              value = 1;
+          } else if (message.payloadString == "0") {
+              value = 0;
+          }
           control.value = value;
       };
 
@@ -267,7 +272,8 @@ angular.module('homeuiApp.dataServiceModule', [])
         dashboard.widgets[pathItems[5]] = dashboard.widgets[pathItems[5]] || {};
         switch(pathItems[6]) {
           case "uid":
-            dashboard.widgets[pathItems[5]]['uid'] = data.widgets[message.payloadString];
+            //~ dashboard.widgets[pathItems[5]]['uid'] = data.widgets[message.payloadString];
+            dashboard.widgets[pathItems[5]] = data.widgets[message.payloadString];
             break;
           default:
             console.log("WARNING: Unknown dashboard message: " + pathItems[6]);

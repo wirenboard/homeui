@@ -1,0 +1,24 @@
+<h4>{{control.name}}</h4>
+<!--
+<input type="text" class="control-value" ng-model="control.value" readonly/>
+-->
+<div ng-switch on="control.metaType">
+    <span class="control-value" ng-switch-when="temperature">{{control.value}} &deg;C</span>
+    <span class="control-value" ng-switch-when="rel_humidity">{{control.value}} % RH</span>
+    <span class="control-value" ng-switch-when="atmospheric_pressure">{{control.value}} mbar</span>
+    <span class="control-value" ng-switch-when="rainfall">{{control.value}} mm/h</span>
+    <span class="control-value" ng-switch-when="wind_speed">{{control.value}} m/s</span>
+    <span class="control-value" ng-switch-when="power">{{control.value}} W</span>
+    <span class="control-value" ng-switch-when="power_consumption">{{control.value}} kWh</span>
+    <span class="control-value" ng-switch-when="voltage">{{control.value}} V</span>
+    <span class="control-value" ng-switch-when="water_flow">{{control.value}} m<sup>3</sup>/s</span>
+    <span class="control-value" ng-switch-when="water_consumption">{{control.value}} m<sup>3</sup></span>
+    <span class="control-value" ng-switch-when="value">{{control.value}} {{control.metaUnits}}</span>
+    <span class="control-value" ng-switch-default> {{control.value}}</span>
+</div>
+
+
+
+<!--
+{{control.metaType}}-->
+

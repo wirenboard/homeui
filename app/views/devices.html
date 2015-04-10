@@ -8,7 +8,7 @@
       <div class="panel panel-primary">
         <div class="panel-heading" device-name></div>
         <div class="panel-body">
-          <div ng-repeat="(controlName, control) in device.controls" class="control-wrapper">
+          <div ng-repeat="(controlName, control) in device.controls | orderBy:'metaOrder'" class="control-wrapper">
             <device-control></device-control>
           </div>
         </div>

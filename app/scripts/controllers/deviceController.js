@@ -42,4 +42,11 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/devices/controls/control-textbox.html'
     };
-  });
+  })
+  .directive('controlValue', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/controls/control-value.html'
+    };
+  })
+  ;

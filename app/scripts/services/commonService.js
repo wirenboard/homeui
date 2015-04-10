@@ -66,7 +66,7 @@ angular.module('homeuiApp.commonServiceModule', [])
             $rootScope.mqttSendCollection(topic + '/' + key ,collection[key]);
           else{
             console.log(topic + "/" + key + " -> " + collection[key]);
-            mqttClient.send(topic + "/" + key, collection[key]);
+            mqttClient.send(topic + "/" + key, String(collection[key]));
           }
         };
       };

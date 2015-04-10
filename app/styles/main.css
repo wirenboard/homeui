@@ -235,7 +235,7 @@ ul.alert-dropdown {
 
 .wookmark-list ul li{
   display: none;
-  width: 270px;
+  width: 380px;
 }
 
 /* Form Validation */
@@ -288,4 +288,21 @@ footer{
   bottom: 0;
   right:25px;
   opacity: 0.5;
+}
+
+.control-wrapper h4{
+  display:inline-block;
+  width: 200px;
+  float: left;
+}
+
+.control-wrapper input[type="text"] {
+    width: 120px;
+}
+
+.control-value {
+    float: right;
+}
+.control-wrapper input[type="range"] {
+    width: 120px;
 }

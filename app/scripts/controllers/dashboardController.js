@@ -26,7 +26,7 @@ angular.module('homeuiApp')
 
     $scope.addWidget = function (dashboard) {
       var widgetName = "widget" + $rootScope.objectsKeys(dashboard.widgets).length;
-      dashboard.widgets[widgetName] = { name:'', uid: widgetName };
+      dashboard.widgets[widgetName] = {};//{ name:'', uid: widgetName };
     };
 
     $scope.addOrUpdateDashboard = function(){
@@ -39,14 +39,15 @@ angular.module('homeuiApp')
       var topic = '/config/dashboards/' + $scope.dashboard.uid;
 
       var dashboard = $scope.dashboard;
+
       for(var w in dashboard.widgets){
         var widget = dashboard.widgets[w];
-        if(widget.uid && widget.uid.hasOwnProperty('uid')){
-          dashboard.widgets[w] = { uid: widget.uid.uid };
-        }else{
-          delete dashboard.widgets[w];
+        if (widget == null) {
+            delete dashboard.widgets[w];
+        } else {
+            dashboard.widgets[w] = widget;
         };
-      };
+      }
 
       $scope.mqttSendCollection(topic, dashboard, $rootScope.refererLocation);
 
