@@ -40,7 +40,7 @@ angular.module('homeuiApp.dataServiceModule', [])
       humidity: { uid: 'humidity', name: 'Humidity',
                 options: {},
                 slots: {
-                  slot0: { name: 'Himudity sensor', uid: 'slot0' }
+                  slot0: { name: 'Himudity sensor', uid: 'slot0', type: 'rel_humidity' }
                 }
               },
       illuminance: { uid: 'illuminance', name: 'Illuminance',
@@ -76,7 +76,7 @@ angular.module('homeuiApp.dataServiceModule', [])
       fan: { uid: 'fan', name: 'Fan',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
+                  slot0: { name: 'Fan control relay', uid: 'slot0', type: 'switch' }
                 }
              }
     };
