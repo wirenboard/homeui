@@ -18,7 +18,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'toggle-switch'
+    'toggle-switch',
+    'minicolors'
   ])
   .config(function ($routeProvider) {
     $routeProvider

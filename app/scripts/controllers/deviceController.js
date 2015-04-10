@@ -43,6 +43,12 @@ angular.module('homeuiApp')
       templateUrl: 'views/devices/controls/control-textbox.html'
     };
   })
+  .directive('controlRgb', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/controls/control-rgb.html'
+    };
+  })
   .directive('controlValue', function(){
     return{
       restrict: 'A',
