@@ -2,10 +2,9 @@
 <h1 class="page-header">
   Dashboards
 </h1>
-<div id='dashboards-list' class='wookmark-list'>
+<div id='dashboards-list' class='multicol-list'>
   <ul class="list-unstyled">
     <li ng-repeat="dashboard in dashboards">
-      {{wookmarkIt()}}
       <div class="panel panel-primary">
         <div class="panel-heading" ng-mouseover="hoverIn(dashboard)" ng-mouseleave="hoverOut(dashboard)">
           {{ dashboard.name }}

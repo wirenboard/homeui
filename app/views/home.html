@@ -11,10 +11,9 @@
         {{ data.dashboards[default].name }}
         <a href='#/dashboards/{{default}}/edit' class='pull-right'><i class="glyphicon glyphicon-edit black medium"></i></a>
     </h1>
-    <div id='widgets-list' class='wookmark-list'>
+    <div id='widgets-list' class='multicol-list'>
       <ul class="list-unstyled">
         <li ng-repeat="widget in data.dashboards[default].widgets">
-          {{wookmarkIt()}}
           <div class="panel panel-primary">
             <div class="panel-heading" ng-mouseover="hoverIn(widget)" ng-mouseleave="hoverOut(widget)">
               {{ widget.name }}

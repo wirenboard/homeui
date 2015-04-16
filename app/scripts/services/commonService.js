@@ -49,16 +49,6 @@ angular.module('homeuiApp.commonServiceModule', [])
       $rootScope.$apply();
     });
 
-    $rootScope.wookmarkIt = function(){
-      var wookmarkOptions = {
-        autoResize: true,
-        container: $('.wookmark-list'),
-        offset: 10
-      };
-
-      $(".wookmark-list ul li").wookmark(wookmarkOptions);
-    };
-
     $rootScope.mqttSendCollection = function(topic, collection, backTo){
       for (var key in collection) {
         if (collection.hasOwnProperty(key)) {

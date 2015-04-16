@@ -229,12 +229,18 @@ ul.alert-dropdown {
 
 /* Devices List */
 
-.wookmark-list{
+.multicol-list{
   position: relative;
+  -webkit-column-width: 390px;
+  -webkit-column-gap: 0;
+  -moz-column-width: 390px;
+  -moz-column-gap: 0;
+  column-width: 390px;
+  column-gap: 0;
 }
 
-.wookmark-list ul li{
-  display: none;
+.multicol-list ul li{
+  display: inline-block;
   width: 380px;
 }
 

@@ -1,10 +1,9 @@
 <h1 class="page-header">
   Widget <small>templates</small>
 </h1>
-<div id='widget-templates-list' class='wookmark-list'>
+<div id='widget-templates-list' class='multicol-list'>
   <ul class="list-unstyled">
     <li ng-repeat="widgetTemplate in widgetTemplates">
-      {{wookmarkIt()}}
       <div class="panel panel-primary">
         <div class="panel-heading">{{ widgetTemplate.name }}</div>
         <div class="panel-body" ng-hide='isEmpty(widgetTemplate.slots)'>

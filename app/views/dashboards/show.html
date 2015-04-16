@@ -10,10 +10,9 @@
     {{ dashboard.name }}
   </li>
 </ol>
-<div id='widgets-list' class='wookmark-list'>
+<div id='widgets-list' class='multicol-list'>
   <ul class="list-unstyled">
     <li ng-repeat="widget in dashboard.widgets">
-      {{wookmarkIt()}}
       <div class="panel panel-primary">
         <div class="panel-heading" ng-mouseover="hoverIn(widget)" ng-mouseleave="hoverOut(widget)">
           {{ widget.name }}
