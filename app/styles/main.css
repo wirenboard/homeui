@@ -317,6 +317,10 @@ footer{
   float: right;
 }
 
+.control-pushbutton{
+  clear: both;
+}
+
 .connection-status{
   padding-right: 10px;
 }

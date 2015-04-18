@@ -33,7 +33,8 @@ angular.module('homeuiApp.commonServiceModule', [])
       var payload = control.value;
       if(control.metaType == 'switch' && (control.value === true || control.value === false)){
         payload = control.value ? '1' : '0';
-      }
+      } else if (control.metaType == 'pushbutton')
+        payload = "1";
       var topic = control.topic + '/on';
       mqttClient.send(topic, payload);
     };
