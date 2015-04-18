@@ -49,14 +49,10 @@ angular.module('homeuiApp')
       require: "ngModel",
       link: function (scope, element, attrs, ngModel) {
         ngModel.$formatters.push(function(value) {
-          var r = "rgb(" + value.replace(/;/g, ", ") + ")";
-          console.log("formatting: %s -> %s", value, r);
-          return r;
+          return "rgb(" + value.replace(/;/g, ", ") + ")";
         });
         ngModel.$parsers.push(function(value) {
-          var r = value.replace(/^rgb\s*\(\s*|\s*\)\s*$/g, "").replace(/\s*,\s*/g, ";");
-          console.log("parsing: %s -> %s", value, r);
-          return r;
+          return value.replace(/^rgb\s*\(\s*|\s*\)\s*$/g, "").replace(/\s*,\s*/g, ";");
         });
       }
     };
