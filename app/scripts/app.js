@@ -19,7 +19,7 @@ angular
     'ngSanitize',
     'ngTouch',
     'toggle-switch',
-    'minicolors'
+    'angularSpectrumColorpicker'
   ])
   .config(function ($routeProvider) {
     $routeProvider

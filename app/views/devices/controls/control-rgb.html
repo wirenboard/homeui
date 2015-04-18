@@ -1,2 +1,7 @@
-<h4>RGB {{control.name}}</h4>
-<input type="text" class="control-value" ng-model="control.value" readonly/>
+<h4>{{control.name}}</h4>
+<spectrum-colorpicker format="rgb"
+                      options="{showPalette: true, localStorageKey: 'rgb_palette', showButtons: false}"
+                      transform-rgb
+                      ng-model="control.value"
+                      ng-change="change(control)">
+</spectrum-colorpicker>

@@ -312,3 +312,7 @@ footer{
 .control-wrapper input[type="range"] {
     width: 120px;
 }
+
+.control-rgb > span{
+  float: right;
+}

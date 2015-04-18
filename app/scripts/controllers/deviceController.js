@@ -43,9 +43,28 @@ angular.module('homeuiApp')
       templateUrl: 'views/devices/controls/control-textbox.html'
     };
   })
+  .directive("transformRgb", function(){
+    return{
+      restrict: 'A',
+      require: "ngModel",
+      link: function (scope, element, attrs, ngModel) {
+        ngModel.$formatters.push(function(value) {
+          var r = "rgb(" + value.replace(/;/g, ", ") + ")";
+          console.log("formatting: %s -> %s", value, r);
+          return r;
+        });
+        ngModel.$parsers.push(function(value) {
+          var r = value.replace(/^rgb\s*\(\s*|\s*\)\s*$/g, "").replace(/\s*,\s*/g, ";");
+          console.log("parsing: %s -> %s", value, r);
+          return r;
+        });
+      }
+    };
+  })
   .directive('controlRgb', function(){
     return{
       restrict: 'A',
+      scope: "",
       templateUrl: 'views/devices/controls/control-rgb.html'
     };
   })
