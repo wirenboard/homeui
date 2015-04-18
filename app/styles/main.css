@@ -316,3 +316,7 @@ footer{
 .control-rgb > span{
   float: right;
 }
+
+.connection-status{
+  padding-right: 10px;
+}

@@ -1,15 +1,18 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('NavigationCtrl', ['$scope', '$location', 'CommonСode', function($scope, $location, CommonСode){
+  .controller('NavigationCtrl', ['$scope', '$location', 'CommonСode', function($scope, $location, CommonCode){
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
-    }
-    $scope.data = CommonСode.data;
+    };
+    $scope.data = CommonCode.data;
     $scope.rooms = $scope.data.rooms;
     $scope.dashboards = $scope.data.dashboards;
     $scope.widgets = $scope.data.widgets;
     $scope.widget_templates = $scope.data.widget_templates;
+    $scope.isConnected = function () {
+      return CommonCode.isConnected();
+    };
   }])
   .directive('roomMenuItem', function(){
     return{

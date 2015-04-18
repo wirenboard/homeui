@@ -6,9 +6,11 @@ angular.module('homeuiApp.commonServiceModule', [])
 
     commonCode.tryConnect = commonCode.tryConnect;
     commonCode.disconnect = commonCode.disconnect;
-    commonCode.connected = $window.localStorage['connected'];
     commonCode.data = HomeUIData.list();
 
+    commonCode.isConnected = function () {
+      return mqttClient.isConnected();
+    };
     commonCode.tryConnect = function() {
       commonCode.loginData = {};
       commonCode.loginData.host = $window.localStorage['host'];
