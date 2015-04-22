@@ -2,10 +2,11 @@
 
 var mqttServiceModule = angular.module('homeuiApp.mqttServiceModule', ['ngResource']);
 
-mqttServiceModule.factory('mqttClient', function($window) {
+mqttServiceModule.factory('mqttClient', function($window, $rootScope) {
   var globalPrefix = '';
   var service = {};
   var client = {};
+  var connected = false;
   if($window.localStorage['prefix'] === 'true') globalPrefix = '/client/' + $window.localStorage['user'];
 
   service.connect = function(host, port, user, password) {
@@ -33,19 +34,15 @@ mqttServiceModule.factory('mqttClient', function($window) {
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
     if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
     client.subscribe(globalPrefix + "/devices/#");
-    //~ client.subscribe(globalPrefix + "/config/#");
-    client.subscribe(globalPrefix + "/config/default_dashboard/#");
-    client.subscribe(globalPrefix + "/config/rooms/#");
-    client.subscribe(globalPrefix + "/config/widgets/#");
-    client.subscribe(globalPrefix + "/config/dashboards/#");
-
-
-    $window.localStorage.setItem('connected', true);
+    client.subscribe(globalPrefix + "/config/#");
+    connected = true;
+    $rootScope.$digest();
   };
 
   service.onFailure = function() {
     console.log("Failure to connect to " + client.host + ":" + client.port + " as " + client.clientId);
-    $window.localStorage.setItem('connected', false);
+    connected = false;
+    $rootScope.$digest();
   };
 
   service.publish = function(topic, payload) {
@@ -59,7 +56,8 @@ mqttServiceModule.factory('mqttClient', function($window) {
 
   service.onConnectionLost = function (errorCallback) {
     console.log("Server connection lost: " + errorCallback.errorMessage);
-    $window.localStorage.setItem('connected', false);
+    connected = false;
+    $rootScope.$digest();
   };
 
   service.onMessageDelivered = function(message) {
@@ -85,5 +83,8 @@ mqttServiceModule.factory('mqttClient', function($window) {
     client.disconnect();
   };
 
+  service.isConnected = function () {
+    return connected;
+  };
   return service;
 });
