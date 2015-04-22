@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('NavigationCtrl', ['$scope', '$location', 'CommonСode', function($scope, $location, CommonCode){
+  .controller('NavigationCtrl', ['$scope', '$location', 'CommonCode', function($scope, $location, CommonCode){
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };

@@ -1,12 +1,15 @@
 'use strict';
 
 angular.module('homeuiApp.commonServiceModule', [])
-  .factory('CommonСode', ['$rootScope', '$location', '$window', '$routeParams', 'mqttClient', 'HomeUIData', function ($rootScope, $location, $window, $routeParams, mqttClient, HomeUIData){
+  .factory('CommonCode', ['$rootScope', '$location', '$window', '$routeParams', 'mqttClient', 'HomeUIData', function ($rootScope, $location, $window, $routeParams, mqttClient, HomeUIData){
     var commonCode = {};
+    var globalPrefix = '';
 
     commonCode.tryConnect = commonCode.tryConnect;
     commonCode.disconnect = commonCode.disconnect;
     commonCode.data = HomeUIData.list();
+
+	$rootScope._mqttTopicCache = {};
 
     commonCode.isConnected = function () {
       return mqttClient.isConnected();
@@ -28,6 +31,48 @@ angular.module('homeuiApp.commonServiceModule', [])
       };
     };
 
+	commonCode.deleteWidget = function(widget){
+      console.log("click_delete widget");
+      console.log(widget);
+      widget.name += "-";
+
+      var uid = widget.uid;
+      delete commonCode.data.widgets[uid];
+
+      $rootScope.mqttDeleteByPrefix("/config/widgets/" + uid + "/");
+
+	  for (var dashboard_id in commonCode.data.dashboards) {
+		  var dashboard = commonCode.data.dashboards[dashboard_id];
+
+		  for (var widget_key in dashboard.widgets) {
+			  var dashboard_widget = dashboard.widgets[widget_key];
+			  if (dashboard_widget.uid == uid) {
+			    delete dashboard.widgets[widget_key];
+
+				//fixme: use dashboard.uid instead of dashboard_id ?
+				$rootScope.mqttDeleteByPrefix( '/config/dashboards/' + dashboard_id + '/widgets/' + widget_key + '/');
+			}
+
+		  }
+
+	  }
+
+
+	  for (var room_id in commonCode.data.rooms) {
+		  var room = commonCode.data.rooms[room_id];
+		  console.log(room);
+		  for (var i = 0; i < room.widgets.length; i++) {
+			  if (room.widgets[i] == uid) {
+				  room.widgets.splice(i, 1);
+			  }
+		  }
+	  }
+
+
+
+    };
+
+
     $rootScope.change = function(control) {
       console.log('changed: ' + control.name + ' value: ' + control.value);
       var payload = control.value;
@@ -48,6 +93,9 @@ angular.module('homeuiApp.commonServiceModule', [])
     });
 
     mqttClient.onMessage(function(message) {
+	  if($window.localStorage['prefix'] === 'true') globalPrefix = '/client/' + $window.localStorage['user'];
+	  $rootScope._mqttTopicCache[message.destinationName.replace(globalPrefix, '')] = message.payloadBytes;
+
       HomeUIData.parseMsg(message);
       $rootScope.$apply();
     });
@@ -73,6 +121,20 @@ angular.module('homeuiApp.commonServiceModule', [])
         $location.path(backTo);
       };
     };
+
+    $rootScope.mqttDeleteByPrefix = function(prefix){
+		//~ debugger;
+		for (var topic in $rootScope._mqttTopicCache) {
+
+			if (topic.slice(0, prefix.length) == prefix) {
+				//~ payload = $rootScope._mqttTopicsCache[msg];
+				console.log("undefined -> " + topic);
+				mqttClient.send(topic, null);
+
+
+			}
+		}
+	};
 
     $rootScope.isEmpty = function(collection){
       return angular.equals({}, collection);

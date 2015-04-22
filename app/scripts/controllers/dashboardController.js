@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonСode', function($scope, $rootScope, $routeParams, CommonСode){
-    $scope.data = CommonСode.data;
+  .controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonCode', function($scope, $rootScope, $routeParams, CommonCode){
+    $scope.data = CommonCode.data;
     $scope.dashboards = $scope.data.dashboards;
     $scope.widgets = $scope.data.widgets;
     $scope.dashboard = { widgets: {} };
@@ -29,6 +29,23 @@ angular.module('homeuiApp')
       dashboard.widgets[widgetName] = {};//{ name:'', uid: widgetName };
     };
 
+
+    $scope.dashboardDeleteWidget = function (widget) {
+		console.log("dashboardDeleteWidget");
+
+        for(var w in $scope.dashboard.widgets){
+			if ($scope.dashboard.widgets[w].uid == widget.uid) {
+				console.log(widget);
+				console.log(w);
+
+	            delete $scope.dashboard.widgets[w];
+	            $scope.mqttDeleteByPrefix( '/config/dashboards/' + $scope.dashboard.uid + '/widgets/' + w + '/');
+			}
+		}
+
+
+	};
+
     $scope.addOrUpdateDashboard = function(){
       console.log('Start creating...');
 
@@ -44,11 +61,15 @@ angular.module('homeuiApp')
         var widget = dashboard.widgets[w];
         if (widget == null) {
             delete dashboard.widgets[w];
+            $scope.mqttDeleteByPrefix( topic + '/widgets/' + w + '/');
         } else {
             dashboard.widgets[w] = widget;
         };
       }
 
+
+
+	  //~ debugger;
       $scope.mqttSendCollection(topic, dashboard, $rootScope.refererLocation);
 
       console.log('Successfully created!');

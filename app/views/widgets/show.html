@@ -1,18 +1,16 @@
 <div class="panel panel-primary">
   <div class="panel-heading" ng-mouseover="hoverIn(widget)" ng-mouseleave="hoverOut(widget)">
     {{ widget.name }}
-    <a href='#/widgets/{{widget.uid}}/edit' ng-show='widget.canEdit' class='pull-right'><i class="glyphicon glyphicon-edit white"></i></a>
+    <a href='#/widgets/{{widget.uid}}/edit' ng-show='widget.canEdit' class='pull-right'><i class="glyphicon glyphicon-edit white widget-caption-button"></i></a>
+
+
+    <a  href="" ng-click="deleteWidget(widget)" ng-show='widget.canEdit' class='pull-right'><i class="glyphicon glyphicon-remove white widget-caption-button"></i></a>
+
+
+
+
   </div>
   <div class="panel-body">
-<!--
-    <h4>Сontrols</h4>
--->
-<!--
-    <div ng-repeat="control in widget.controls" class="control-wrapper">
--->
       <widget-template></widget-template>
-<!--
-    </div>
--->
   </div>
 </div>

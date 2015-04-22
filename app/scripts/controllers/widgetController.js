@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonСode', function($scope, $rootScope, $routeParams, CommonСode){
-    $scope.data = CommonСode.data;
+  .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonCode', function($scope, $rootScope, $routeParams, CommonCode){
+    $scope.data = CommonCode.data;
+
     $scope.widgets = $scope.data.widgets;
     $scope.rooms = $scope.data.rooms;
     $scope.controls = $scope.data.controls;
@@ -31,6 +32,9 @@ angular.module('homeuiApp')
       });
     };
 
+    $scope.deleteWidget = CommonCode.deleteWidget;
+
+
     $scope.hoverIn = function(widget){
       widget.canEdit = true;
     };
@@ -45,7 +49,20 @@ angular.module('homeuiApp')
       $scope.widget.room = $scope.room.uid;
       $scope.widget.template = $scope.template.uid;
 
-      $scope.widget.uid = $scope.widget.uid || ('widget' + ($rootScope.objectsKeys($scope.widgets).length + 1));
+		  //~ debugger;
+      if (!$scope.widget.uid) {
+			var max_uid_index = 0;
+			for (var key in $scope.widgets) {
+				var  uid_index = parseInt(key.slice("widget".length));
+				if (uid_index > max_uid_index) {
+					max_uid_index = uid_index;
+				}
+			}
+
+		  $scope.widget.uid = "widget" + (max_uid_index + 1);
+	  }
+
+
 
       var topic = '/config/widgets/' + $scope.widget.uid;
 

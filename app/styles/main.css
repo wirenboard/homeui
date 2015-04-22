@@ -324,3 +324,7 @@ footer{
 .connection-status{
   padding-right: 10px;
 }
+
+.widget-caption-button {
+	padding-left: 10px;
+}

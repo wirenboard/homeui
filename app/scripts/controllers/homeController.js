@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('HomeCtrl', ['$scope', 'CommonСode', function ($scope, CommonСode){
-    $scope.data = CommonСode.data;
+  .controller('HomeCtrl', ['$scope', 'CommonCode', function ($scope, CommonCode){
+    $scope.data = CommonCode.data;
   }]);

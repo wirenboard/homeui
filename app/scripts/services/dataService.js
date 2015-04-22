@@ -215,6 +215,9 @@ angular.module('homeuiApp.dataServiceModule', [])
       if(data.widgets[widgetUID] != null){
         widget = data.widgets[widgetUID];
       } else {
+		if (message.payloadString == "") {
+			return;
+		}
         widget['uid'] = widgetUID;
       };
 
@@ -242,6 +245,7 @@ angular.module('homeuiApp.dataServiceModule', [])
 
       if(pathItems[4] === 'room'){
         widget[pathItems[4]] = message.payloadString;
+
         data.rooms[message.payloadString].widgets.push(widget.uid);
       };
 
@@ -261,6 +265,12 @@ angular.module('homeuiApp.dataServiceModule', [])
     function parseDashboardMsg(pathItems, message){
       var dashboardUID = pathItems[3];
       var dashboard = { widgets: {} };
+
+	  //FIXME: properly handle null messages
+      if (message.payloadString == "") {
+		return;
+      }
+
 
       if(data.dashboards[dashboardUID] != null){
         dashboard = data.dashboards[dashboardUID];

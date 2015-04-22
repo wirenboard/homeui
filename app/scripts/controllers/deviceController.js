@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('DeviceCtrl', ['$scope', 'CommonСode', function($scope, CommonСode) {
+  .controller('DeviceCtrl', ['$scope', 'CommonCode', function($scope, CommonCode) {
 
-    $scope.data = CommonСode.data;
+    $scope.data = CommonCode.data;
     $scope.devices = $scope.data.devices;
 
   }])

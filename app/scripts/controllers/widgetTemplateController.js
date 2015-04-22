@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('WidgetTemplateCtrl', ['$scope', 'CommonСode', function($scope, CommonСode){
-    $scope.data = CommonСode.data;
+  .controller('WidgetTemplateCtrl', ['$scope', 'CommonCode', function($scope, CommonCode){
+    $scope.data = CommonCode.data;
     $scope.widgetTemplates = $scope.data.widget_templates;
   }]);

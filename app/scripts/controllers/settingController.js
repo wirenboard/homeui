@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('SettingCtrl', ['$scope', '$rootScope', '$window', 'CommonСode', 'mqttClient', function($scope, $rootScope, $window, CommonСode, mqttClient){
+  .controller('SettingCtrl', ['$scope', '$rootScope', '$window', 'CommonCode', 'mqttClient', function($scope, $rootScope, $window, CommonCode, mqttClient){
     $scope.loginSettings = {};
     $scope.loginSettings.host = $window.localStorage['host'];
     $scope.loginSettings.port = $window.localStorage['port'];
@@ -17,7 +17,7 @@ angular.module('homeuiApp')
                         setting7: { name: "Controller Version", value: "1.34" },
                         setting8: { name: "Debian Version", value: "7.8" }
                       };
-    $scope.data = CommonСode.data;
+    $scope.data = CommonCode.data;
 
     $scope.$watch('data.defaults.dashboard', function(){
       if($scope.data.defaults.dashboard){
