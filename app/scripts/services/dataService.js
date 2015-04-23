@@ -55,12 +55,12 @@ angular.module('homeuiApp.dataServiceModule', [])
                   slot0: { name: 'Illuminance sensor', uid: 'slot0' }
                 }
               },
-      air_quality: { uid: 'air_quality', name: 'Air quality',
-                options: {},
-                slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
-                }
-              },
+      //~ air_quality: { uid: 'air_quality', name: 'Air quality',
+                //~ options: {},
+                //~ slots: {
+                  //~ slot0: { name: 'Sensor', uid: 'slot0' }
+                //~ }
+              //~ },
       leakage: { uid: 'leakage', name: 'Leakage',
                 options: {},
                 slots: {
