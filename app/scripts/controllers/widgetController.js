@@ -49,7 +49,6 @@ angular.module('homeuiApp')
       $scope.widget.room = $scope.room.uid;
       $scope.widget.template = $scope.template.uid;
 
-		  //~ debugger;
       if (!$scope.widget.uid) {
 			var max_uid_index = 0;
 			for (var key in $scope.widgets) {

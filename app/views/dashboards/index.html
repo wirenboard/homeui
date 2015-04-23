@@ -8,7 +8,10 @@
       <div class="panel panel-primary">
         <div class="panel-heading" ng-mouseover="hoverIn(dashboard)" ng-mouseleave="hoverOut(dashboard)">
           {{ dashboard.name }}
-          <a href='#/dashboards/{{dashboard.uid}}/edit' class='pull-right' ng-show='dashboard.canEdit'><i class="glyphicon glyphicon-edit white"></i></a>
+          <a href='#/dashboards/{{dashboard.uid}}/edit' class='pull-right' ng-show='dashboard.canEdit'><i class="glyphicon glyphicon-edit white dashboard-caption-button"></i></a>
+          <a href='' class='pull-right' ng-click='deleteDashboard(dashboard)' ng-show='dashboard.canEdit'><i class="glyphicon glyphicon-remove white dashboard-caption-button"></i></a>
+
+
         </div>
         <div class="panel-body">
           <a href='#/dashboards/{{dashboard.uid}}' class='btn btn-success'>Show</a>

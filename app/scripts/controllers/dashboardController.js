@@ -31,8 +31,6 @@ angular.module('homeuiApp')
 
 
     $scope.dashboardDeleteWidget = function (widget) {
-		console.log("dashboardDeleteWidget");
-
         for(var w in $scope.dashboard.widgets){
 			if ($scope.dashboard.widgets[w].uid == widget.uid) {
 				console.log(widget);
@@ -45,13 +43,43 @@ angular.module('homeuiApp')
 
 
 	};
+	$scope.deleteDashboard = function(dashboard) {
+		console.log($scope.dashboards);
+		console.log(dashboard);
+        for(var key in $scope.dashboards){
+			if ($scope.dashboards[key] == dashboard) {
+				var uid = dashboard.uid;
+				delete $scope.dashboards[key];
+				$scope.mqttDeleteByPrefix( '/config/dashboards/' + uid + '/');
+
+				if ($scope.data.defaults.dashboard == uid) {
+					$scope.data.defaults.dashboard = '';
+			        mqttClient.send('/config/default_dashboard/uid', '');
+				}
+			}
+		}
+
+	};
+
 
     $scope.addOrUpdateDashboard = function(){
       console.log('Start creating...');
 
       delete $scope.dashboard['canEdit'];
 
-      $scope.dashboard.uid = $scope.dashboard.uid || ('dashboard' + ($rootScope.objectsKeys($scope.dashboards).length + 1));
+
+      if (!$scope.dashboard.uid) {
+			var max_uid_index = 0;
+			for (var key in $scope.dashboards) {
+				var  uid_index = parseInt(key.slice("dashboard".length));
+				if (uid_index > max_uid_index) {
+					max_uid_index = uid_index;
+				}
+			}
+
+		  $scope.dashboard.uid = "dashboard" + (max_uid_index + 1);
+      }
+
 
       var topic = '/config/dashboards/' + $scope.dashboard.uid;
 
