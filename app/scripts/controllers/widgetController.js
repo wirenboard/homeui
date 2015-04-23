@@ -115,6 +115,12 @@ angular.module('homeuiApp')
       templateUrl: 'views/widgets/templates/widget-light.html'
     };
   })
+  .directive('widgetRgb', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-rgb.html'
+    };
+  })
   .directive('widgetSensor', function(){
     return{
       restrict: 'A',

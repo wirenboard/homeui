@@ -19,6 +19,12 @@ angular.module('homeuiApp.dataServiceModule', [])
                           slot0: { name: 'Dimmer', uid: 'slot0', type: 'range' }
                         }
                       },
+      rgb: { uid: 'rgb', name: 'RGB light',
+               options: {},
+               slots: {
+                 slot0: { name: 'RGB control', uid: 'slot0', type: 'rgb' }
+               }
+             },
       sensor: { uid: 'sensor', name: 'Generic Sensor',
                 options: {},
                 slots: {
