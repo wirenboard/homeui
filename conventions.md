@@ -60,3 +60,4 @@ A read-only control for a certain type of value.
 | Voltage |  voltage | volts | float | |
 | Water flow | water_flow | m^3 / hour | float ||
 | Water total consumption | water_consumption | m^3  | float ||
+| Resistance | resistance | Ohm  | float ||
