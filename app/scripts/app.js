@@ -19,7 +19,8 @@ angular
     'ngSanitize',
     'ngTouch',
     'toggle-switch',
-    'angularSpectrumColorpicker'
+    'angularSpectrumColorpicker',
+    'ngOrderObjectBy'
   ])
   .config(function ($routeProvider) {
     $routeProvider

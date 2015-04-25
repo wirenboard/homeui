@@ -187,7 +187,14 @@ angular.module('homeuiApp.dataServiceModule', [])
 
     function parseControlMeta(pathItems, message){
       var topic = pathItems.slice(0,5).join('/');
-      data.controls[topic]['meta' + capitalizeFirstLetter(pathItems[6])] = message.payloadString;
+      var value = message.payloadString;
+      var metaName = pathItems[6];
+
+      if (metaName == 'order') {
+		  value = parseInt(value);
+	  }
+
+      data.controls[topic]['meta' + capitalizeFirstLetter(metaName)] = value;
     };
 
     function parseConfigMsg(pathItems, message){
