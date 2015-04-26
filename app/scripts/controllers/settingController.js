@@ -10,12 +10,12 @@ angular.module('homeuiApp')
     $scope.loginSettings.prefix = $window.localStorage['prefix'];
 
     $scope.settings = {
-                        setting0: { name: "IP", value: "148.251.208.199" },
-                        setting4: { name: "Mosquitto Version", value: "1.4" },
-                        setting5: { name: "Webfsd Version", value: "1.21" },
-                        setting6: { name: "Controller Serial Nubmer", value: "199-251-148-208" },
-                        setting7: { name: "Controller Version", value: "1.34" },
-                        setting8: { name: "Debian Version", value: "7.8" }
+							//~ setting0: { name: "IP", value: "148.251.208.199" },
+							//~ setting4: { name: "Mosquitto Version", value: "1.4" },
+							//~ setting5: { name: "Webfsd Version", value: "1.21" },
+							//~ setting6: { name: "Controller Serial Nubmer", value: "199-251-148-208" },
+							//~ setting7: { name: "Controller Version", value: "1.34" },
+							//~ setting8: { name: "Debian Version", value: "7.8" }
                       };
     $scope.data = CommonCode.data;
 
