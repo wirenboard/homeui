@@ -14,13 +14,30 @@ angular.module('homeuiApp.commonServiceModule', [])
     commonCode.isConnected = function () {
       return mqttClient.isConnected();
     };
+
+
     commonCode.tryConnect = function() {
+
+	  if ($window.localStorage['port'] == undefined) {
+		  $window.localStorage['port'] = 18883;
+	  }
+
+	  if ($window.localStorage['host'] == undefined) {
+		  $window.localStorage['host'] = $window.location.hostname;
+	  }
+
+
       commonCode.loginData = {};
       commonCode.loginData.host = $window.localStorage['host'];
       commonCode.loginData.port = $window.localStorage['port'];
       commonCode.loginData.user = $window.localStorage['user'];
       commonCode.loginData.password = $window.localStorage['password'];
       commonCode.loginData.prefix = $window.localStorage['prefix'];
+
+
+
+
+
       if(commonCode.loginData.host && commonCode.loginData.port){
         var userID = 'contactless-' + randomString(10);
         console.log('Try to connect as ' + userID);
