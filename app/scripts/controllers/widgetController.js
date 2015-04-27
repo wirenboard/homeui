@@ -175,6 +175,12 @@ angular.module('homeuiApp')
       templateUrl: 'views/widgets/templates/widget-motion.html'
     };
   })
+  .directive('widgetBinarySensor', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-binary-sensor.html'
+    };
+  })
   .directive('widgetAlarm', function(){
     return{
       restrict: 'A',

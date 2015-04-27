@@ -76,7 +76,7 @@ angular.module('homeuiApp.dataServiceModule', [])
       alarm: { uid: 'alarm', name: 'Alarm',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
+                  slot0: { name: 'Switch', uid: 'slot0', type: 'switch' }
                 }
              },
       fan: { uid: 'fan', name: 'Fan',
@@ -84,7 +84,13 @@ angular.module('homeuiApp.dataServiceModule', [])
                 slots: {
                   slot0: { name: 'Fan control relay', uid: 'slot0', type: 'switch' }
                 }
-             }
+             },
+      binary_sensor: { uid: 'binary_sensor', name: 'Binary Sensor',
+                options: {},
+                slots: {
+                  slot0: { name: 'Binary Sensor', uid: 'slot0', type : 'switch' }
+                }
+              },
     };
 
     dataService.parseMsg = function(message) {
