@@ -7,7 +7,7 @@
 /* Global Styles */
 
 body {
-    margin-top: 100px;
+    margin-top: 50px;
     background-color: #222;
 }
 
@@ -154,6 +154,33 @@ ul.alert-dropdown {
 .side-nav>li>ul>li>a:hover {
     color: #fff;
 }
+
+
+/* connection status */
+
+.connection-status{
+	float: right;
+	padding-right: 20px;
+    display: none;
+}
+@media(min-width:360px) {
+	.connection-status{
+	  display: inherit;
+	}
+}
+
+@media(min-width:768px) {
+	.navbar-header {
+		float: none;
+	}
+
+	.connection-status{
+	  padding-right: 40px;
+	}
+}
+
+
+
 
 /* Flot Chart Containers */
 
@@ -319,10 +346,6 @@ footer{
 
 .control-pushbutton{
   clear: both;
-}
-
-.connection-status{
-  padding-right: 10px;
 }
 
 .widget-caption-button {
