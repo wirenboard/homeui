@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.0.1) stable; urgency=medium
+
+  * minor widget fixes
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 28 Apr 2015 20:53:18 +0300
+
 wb-mqtt-homeui (1.0) stable; urgency=medium
 
   * Initial release. 
