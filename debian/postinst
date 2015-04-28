@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+
+	CONFIG_PRESENT=`mqtt-get-dump '/config/#' | wc -l`
+	if [ $CONFIG_PRESENT = "0" ]; then
+		# no config
+
+		mqtt-upload-dump /usr/share/wb-mqtt-homeui/default_config_dump.tsv
+
+	fi
+
+    ;;
+esac
+
+
+#DEBHELPER#
+
+exit 0

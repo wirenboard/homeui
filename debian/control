@@ -1,0 +1,12 @@
+Source: wb-mqtt-homeui
+Maintainer: Evgeny Boger <boger@contactless.ru>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), pkg-config
+
+Package: wb-mqtt-homeui
+Architecture: all
+Conflicts: wb-homa-webinterface
+Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools
+Description: Wiren Board HomeUI web interface
