@@ -374,3 +374,20 @@ footer{
 	padding-left: 10px;
 }
 
+
+
+
+
+.btn-primary {
+	background-color: #337ab7;
+    color: #ffffff;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+	background-color: #5393c8;
+}
+
+.btn-primary:active, .btn-primary.active {
+	background-color: #094b83;
+	box-shadow: none;
+}
