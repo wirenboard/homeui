@@ -271,6 +271,10 @@ ul.alert-dropdown {
   width: 380px;
 }
 
+
+
+
+
 /* Form Validation */
 
 .ng-invalid{
@@ -329,7 +333,7 @@ footer{
   float: left;
 }
 
-.control-wrapper input[type="text"] {
+.control-wrapper input[type="text"].control-value {
     width: 120px;
 }
 
@@ -337,8 +341,22 @@ footer{
     float: right;
 }
 .control-wrapper input[type="range"] {
-    width: 120px;
+    width: 102px;
 }
+
+.control-wrapper .control-range-text-value {
+	margin-left: 3px;
+    max-width: 20px;
+    min-width: 20px;
+/*
+    float: right;
+*/
+    display: inline;
+}
+
+
+
+
 
 .control-rgb > span{
   float: right;
@@ -355,3 +373,4 @@ footer{
 .dashboard-caption-button {
 	padding-left: 10px;
 }
+
