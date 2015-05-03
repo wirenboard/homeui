@@ -75,14 +75,19 @@ mqttServiceModule.factory('mqttClient', function($window, $rootScope) {
     service.callback(message);
   };
 
-  service.send = function(destination, payload) {
+  service.send = function(destination, payload, retained) {
     var topic = globalPrefix + destination;
     if (payload == null) {
 		payload = new ArrayBuffer();
 	}
     var message = new Paho.MQTT.Message(payload);
     message.destinationName = topic;
-    message.retained = true;
+
+    if (retained != undefined) {
+		message.retained = retained;
+	} else {
+	    message.retained = true;
+	}
 
     client.send(message);
   };
