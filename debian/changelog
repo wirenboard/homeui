@@ -1,3 +1,11 @@
+wb-mqtt-homeui (1.0.2) stable; urgency=medium
+
+  * add text value to range control
+  * css improvements
+  * do not retain pushbutton messages
+
+ -- Evgeny Boger <boger@contactless.ru>  Sun, 03 May 2015 20:42:59 +0300
+
 wb-mqtt-homeui (1.0.1) stable; urgency=medium
 
   * minor widget fixes
