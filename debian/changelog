@@ -1,3 +1,10 @@
+wb-mqtt-homeui (1.0.3) stable; urgency=medium
+
+  * fix error on nonexistent device referenced by widget 
+
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 05 May 2015 02:45:29 +0300
+
 wb-mqtt-homeui (1.0.2) stable; urgency=medium
 
   * add text value to range control
