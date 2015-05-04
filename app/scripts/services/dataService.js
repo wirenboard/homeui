@@ -247,7 +247,14 @@ angular.module('homeuiApp.dataServiceModule', [])
             widget.controls[pathItems[5]]['uid'] = message.payloadString;
             break;
           case "topic":
-            widget.controls[pathItems[5]]['topic'] = data.devices[deviceName].controls[controlName];
+
+            var device = data.devices[deviceName];
+            if (device != undefined) {
+				widget.controls[pathItems[5]]['topic'] = device.controls[controlName];
+			} else {
+				widget.controls[pathItems[5]]['topic'] = undefined;
+			}
+
             break;
           default:
             console.log("WARNING: Unknown control message: " + pathItems[6]);
