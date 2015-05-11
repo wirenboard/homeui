@@ -39,10 +39,10 @@ angular.module('homeuiApp.commonServiceModule', [])
 
 
       if(commonCode.loginData.host && commonCode.loginData.port){
-        var userID = 'contactless-' + randomString(10);
-        console.log('Try to connect as ' + userID);
-        mqttClient.connect(commonCode.loginData.host, commonCode.loginData.port, userID, commonCode.loginData.password);
-        console.log('Successfully logged in ' + userID);
+        var clientID = 'contactless-' + randomString(10);
+        console.log('Try to connect as ' + clientID);
+        mqttClient.connect(commonCode.loginData.host, commonCode.loginData.port, clientID, commonCode.loginData.user,  commonCode.loginData.password);
+        console.log('Successfully logged in ' + clientID);
       }else{
         console.log('Вам нужно перейти в настройки и заполнить данные для входа');
       };

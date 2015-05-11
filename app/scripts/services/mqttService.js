@@ -9,7 +9,7 @@ mqttServiceModule.factory('mqttClient', function($window, $rootScope) {
   var connected = false;
   if($window.localStorage['prefix'] === 'true') globalPrefix = '/client/' + $window.localStorage['user'];
 
-  service.connect = function(host, port, user, password) {
+  service.connect = function(host, port, clientid, user, password) {
     var options = {
       onSuccess: service.onConnect,
       onFailure: service.onFailure
@@ -20,9 +20,9 @@ mqttServiceModule.factory('mqttClient', function($window, $rootScope) {
       options.password = password;
     }
 
-    console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with user " + user);
+    console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with username " + user + " and clientid " + clientid);
 
-    client = new Paho.MQTT.Client(host, parseInt(port), '/', user);
+    client = new Paho.MQTT.Client(host, parseInt(port), '/', clientid);
     client.connect(options);
 
     client.onConnectionLost = service.onConnectionLost;
