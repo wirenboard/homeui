@@ -4,7 +4,7 @@
 
 <div ng-switch on="control.metaReadonly">
     <input ng-switch-when="1"  type="range" class="control-value" ng-model="control.value" max='{{control.metaMax}}' disabled />
-    <input ng-switch-default  type="range" class="control-value" ng-model="control.value" max='{{control.metaMax}}' ng-change="change(control)"/>
+    <input ng-switch-default  type="range" class="control-value" ng-model="control.value" max='{{control.metaMax}}' ng-change="change(control)" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 100, 'blur': 0} }"/>
 </div>
 
 
