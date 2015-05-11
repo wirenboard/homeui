@@ -1,3 +1,10 @@
+wb-mqtt-homeui (1.0.4) stable; urgency=medium
+
+  * UserID should be used as username, not clientid
+  * add debouncing to range inputs
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 07 May 2015 16:32:06 +0300
+
 wb-mqtt-homeui (1.0.3) stable; urgency=medium
 
   * fix error on nonexistent device referenced by widget 
