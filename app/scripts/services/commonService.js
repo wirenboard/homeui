@@ -161,8 +161,13 @@ angular.module('homeuiApp.commonServiceModule', [])
     };
 
     $rootScope.switchOff = function(control){
-      var topic = control.topic + '/on';
-      mqttClient.send(topic, '0');
+      control.value = "0";
+      $rootScope.change(control);
+    };
+
+    $rootScope.switchOn = function(control){
+      control.value = control.metaMax;
+      $rootScope.change(control);
     };
 
     function randomString(length) {

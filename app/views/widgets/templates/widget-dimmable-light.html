@@ -1,6 +1,7 @@
 <!--{{widget.controls.slot0.topic.name}}-->
 
 <a class="btn btn-primary " ng-click="switchOff(widget.controls.slot0.topic)">Switch Off</a>
+<a class="btn btn-primary " ng-click="switchOn(widget.controls.slot0.topic)">Switch On</a>
 
 <span class="label label-info pull-right">{{Math.round(widget.controls.slot0.topic.value / widget.controls.slot0.topic.metaMax * 100 )}}% </span>
 <input type="range" ng-model="widget.controls.slot0.topic.value" max="{{widget.controls.slot0.metaMax}}" ng-change="change(widget.controls.slot0.topic)" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 100, 'blur': 0} }"/>
