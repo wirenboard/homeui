@@ -2,7 +2,9 @@
                       options="{preferredFormat: 'rgb', showPalette: true, localStorageKey: 'rgb_palette', showButtons: false, flat: false, showInput:true}"
                       transform-rgb
                       ng-model="widget.controls.slot0.topic.value"
-                      ng-change="change(widget.controls.slot0.topic)">
+                      ng-change="change(widget.controls.slot0.topic)"
+                      ng-model-options="{ updateOn: 'default blur', debounce: {'default': 100, 'blur': 0} }"
+                      >
 </spectrum-colorpicker>
 
 
