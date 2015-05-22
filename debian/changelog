@@ -1,3 +1,21 @@
+wb-mqtt-homeui (1.0.9) stable; urgency=medium
+
+  * add temp+humidity widget
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 22:31:54 +0300
+
+wb-mqtt-homeui (1.0.8) stable; urgency=medium
+
+  * do not set retain flag on /on messages
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 20:58:24 +0300
+
+wb-mqtt-homeui (1.0.7) stable; urgency=medium
+
+  * fix some widgets
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 18:13:03 +0300
+
 wb-mqtt-homeui (1.0.6) stable; urgency=medium
 
   * add debouncing to rgb controls and widgets
