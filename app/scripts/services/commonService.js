@@ -93,12 +93,11 @@ angular.module('homeuiApp.commonServiceModule', [])
     $rootScope.change = function(control) {
       console.log('changed: ' + control.name + ' value: ' + control.value);
       var payload = control.value;
-      var retained = true;
+      var retained = false;
       if(control.metaType == 'switch' && (control.value === true || control.value === false)){
         payload = control.value ? '1' : '0';
       } else if (control.metaType == 'pushbutton') {
         payload = "1";
-        retained = false;
 	  }
       var topic = control.topic + '/on';
       mqttClient.send(topic, payload, retained);
