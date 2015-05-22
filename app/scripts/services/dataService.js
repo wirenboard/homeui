@@ -34,7 +34,7 @@ angular.module('homeuiApp.dataServiceModule', [])
       open_closed_sensor: {
                             uid: 'open_closed_sensor', name: 'Open/close sensor',
                             slots: {
-                              slot0: { name: 'Sensor', uid: 'slot0' }
+                              slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
                             }
                           },
       temperature: { uid: 'temperature', name: 'Temperature',
@@ -64,13 +64,13 @@ angular.module('homeuiApp.dataServiceModule', [])
       leakage: { uid: 'leakage', name: 'Leakage',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
+                  slot0: { name: 'Sensor', uid: 'slot0' , type: 'switch'}
                 }
               },
       motion: { uid: 'motion', name: 'Motion',
                 options: {},
                 slots: {
-                  slot0: { name: 'Binary input (normally closed)', uid: 'slot0' }
+                  slot0: { name: 'Binary input (normally closed)', uid: 'slot0' , type :'switch'}
                 }
               },
       alarm: { uid: 'alarm', name: 'Alarm',
