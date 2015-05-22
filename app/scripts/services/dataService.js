@@ -70,7 +70,7 @@ angular.module('homeuiApp.dataServiceModule', [])
       motion: { uid: 'motion', name: 'Motion',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
+                  slot0: { name: 'Binary input (normally closed)', uid: 'slot0' }
                 }
               },
       alarm: { uid: 'alarm', name: 'Alarm',
