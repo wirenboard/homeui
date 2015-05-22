@@ -91,6 +91,15 @@ angular.module('homeuiApp.dataServiceModule', [])
                   slot0: { name: 'Binary Sensor', uid: 'slot0', type : 'switch' }
                 }
               },
+
+      temp_humidity : { uid: 'temp_humidity', name: 'Temperature&Humidity',
+               options: {},
+               slots: {
+                 slot0: {name: 'Temperature sensor', uid: 'slot0', type: 'temperature'},
+                 slot1: {name: 'Humidity sensor', uid: 'slot1', type: 'rel_humidity' }
+               }
+		      },
+
     };
 
     dataService.parseMsg = function(message) {

@@ -183,6 +183,12 @@ angular.module('homeuiApp')
       templateUrl: 'views/widgets/templates/widget-binary-sensor.html'
     };
   })
+  .directive('widgetTempHumidity', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-temp-humidity.html'
+    };
+  })
   .directive('widgetAlarm', function(){
     return{
       restrict: 'A',
