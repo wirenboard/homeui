@@ -1,3 +1,15 @@
+wb-mqtt-homeui (1.0.11) stable; urgency=medium
+
+  * fix concetration in devices
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 23 May 2015 23:45:27 +0300
+
+wb-mqtt-homeui (1.0.10) stable; urgency=medium
+
+  * add concentration meta type
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 23 May 2015 23:32:11 +0300
+
 wb-mqtt-homeui (1.0.9) stable; urgency=medium
 
   * add temp+humidity widget
