@@ -29,7 +29,16 @@
           </button>
           <a class="navbar-brand" href="#/">Wiren Board HomeUI</a>
 
-        <p class="navbar-text navbar-right connection-status" ng-bind="isConnected() ? 'Connected' : 'Disconnected'"></p>
+<!--
+        <p class="navbar-text navbar-right connection-status" ng-bind="isConnected() ? 'Connected' : 'Disconnected'">
+
+        </p>
+-->
+
+        <p class="navbar-text navbar-right connection-status">
+			<span  class="" ng-class="(isConnected()) ? '' : 'label label-danger'" ng-bind="isConnected() ? 'Connected' : 'Disconnected'"></span>
+
+        </p>
 
         </div>
         <div class="nav navbar-nav navbar-right">
