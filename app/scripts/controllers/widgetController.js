@@ -4,8 +4,6 @@ angular.module('homeuiApp')
   .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonCode', function($scope, $rootScope, $routeParams, CommonCode){
     $scope.data = CommonCode.data;
 
-	$scope.Math = window.Math;
-
     $scope.widgets = $scope.data.widgets;
     $scope.rooms = $scope.data.rooms;
     $scope.controls = $scope.data.controls;

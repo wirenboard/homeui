@@ -5,6 +5,8 @@ angular.module('homeuiApp.commonServiceModule', [])
         var commonCode = {};
         var globalPrefix = '';
 
+        $rootScope.Math = window.Math;
+
         commonCode.tryConnect = commonCode.tryConnect;
         commonCode.disconnect = commonCode.disconnect;
         commonCode.data = HomeUIData.list();
