@@ -333,6 +333,12 @@ footer{
   float: left;
 }
 
+
+.control-wrapper.control-error h4{
+	color: red;
+}
+
+
 .control-wrapper input[type="text"].control-value {
     width: 120px;
 }

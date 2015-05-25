@@ -1,3 +1,16 @@
+wb-mqtt-homeui (1.0.13) stable; urgency=medium
+
+  * support meta/error in devices
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 25 May 2015 15:18:41 +0300
+
+wb-mqtt-homeui (1.0.12) stable; urgency=medium
+
+  * add warning label class to disconnected label
+  * fix percentage in dimmable light widget
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 25 May 2015 01:55:39 +0300
+
 wb-mqtt-homeui (1.0.11) stable; urgency=medium
 
   * fix concetration in devices
