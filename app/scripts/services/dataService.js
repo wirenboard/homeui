@@ -99,7 +99,13 @@ angular.module('homeuiApp.dataServiceModule', [])
                  slot1: {name: 'Humidity sensor', uid: 'slot1', type: 'rel_humidity' }
                }
 		      },
-
+	  rgb_switch : { uid: 'rgb_switch', name: 'RGB light with switch',
+                options : {},
+                slots : {
+                  slot0: {name: 'RGB light', uid: 'slot0', type: 'rgb'},
+                  slot1: {name: 'Associated switch', uid: 'slot1', type: 'switch'},
+                }
+          },
     };
 
     dataService.parseMsg = function(message) {

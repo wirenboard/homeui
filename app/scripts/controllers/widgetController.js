@@ -193,6 +193,12 @@ angular.module('homeuiApp')
       templateUrl: 'views/widgets/templates/widget-alarm.html'
     };
   })
+  .directive('widgetRgbSwitch', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-rgb-switch.html'
+    };
+  })
   .directive('widgetFan', function(){
     return{
       restrict: 'A',
