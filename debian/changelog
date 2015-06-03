@@ -1,3 +1,46 @@
+wb-mqtt-homeui (1.0.13) stable; urgency=medium
+
+  * support meta/error in devices
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 25 May 2015 15:18:41 +0300
+
+wb-mqtt-homeui (1.0.12) stable; urgency=medium
+
+  * add warning label class to disconnected label
+  * fix percentage in dimmable light widget
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 25 May 2015 01:55:39 +0300
+
+wb-mqtt-homeui (1.0.11) stable; urgency=medium
+
+  * fix concetration in devices
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 23 May 2015 23:45:27 +0300
+
+wb-mqtt-homeui (1.0.10) stable; urgency=medium
+
+  * add concentration meta type
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 23 May 2015 23:32:11 +0300
+
+wb-mqtt-homeui (1.0.9) stable; urgency=medium
+
+  * add temp+humidity widget
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 22:31:54 +0300
+
+wb-mqtt-homeui (1.0.8) stable; urgency=medium
+
+  * do not set retain flag on /on messages
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 20:58:24 +0300
+
+wb-mqtt-homeui (1.0.7) stable; urgency=medium
+
+  * fix some widgets
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 18:13:03 +0300
+
 wb-mqtt-homeui (1.0.6) stable; urgency=medium
 
   * add debouncing to rgb controls and widgets

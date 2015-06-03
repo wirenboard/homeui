@@ -1,4 +1,4 @@
-<div ng-switch on="control.metaType">
+<div ng-switch on="control.metaType" >
   <div control-range ng-switch-when="range"></div>
   <div control-pushbutton ng-switch-when="pushbutton" class="control-pushbutton"></div>
   <div control-switch ng-switch-when="switch"></div>
@@ -13,6 +13,7 @@
   <div control-value ng-switch-when="water_flow"></div>
   <div control-value ng-switch-when="water_consumption"></div>
   <div control-value ng-switch-when="resistance"></div>
+  <div control-value ng-switch-when="concentration"></div>
   <div control-value ng-switch-when="value"></div>
   <div control-rgb ng-switch-when="rgb" class="control-rgb"></div>
   <div control-textbox ng-switch-default></div>

@@ -34,7 +34,7 @@ angular.module('homeuiApp.dataServiceModule', [])
       open_closed_sensor: {
                             uid: 'open_closed_sensor', name: 'Open/close sensor',
                             slots: {
-                              slot0: { name: 'Sensor', uid: 'slot0' }
+                              slot0: { name: 'Sensor', uid: 'slot0', type: 'switch' }
                             }
                           },
       temperature: { uid: 'temperature', name: 'Temperature',
@@ -49,12 +49,12 @@ angular.module('homeuiApp.dataServiceModule', [])
                   slot0: { name: 'Himudity sensor', uid: 'slot0', type: 'rel_humidity' }
                 }
               },
-      illuminance: { uid: 'illuminance', name: 'Illuminance',
-                options: {},
-                slots: {
-                  slot0: { name: 'Illuminance sensor', uid: 'slot0' }
-                }
-              },
+      //~ illuminance: { uid: 'illuminance', name: 'Illuminance',
+                //~ options: {},
+                //~ slots: {
+                  //~ slot0: { name: 'Illuminance sensor', uid: 'slot0' }
+                //~ }
+              //~ },
       //~ air_quality: { uid: 'air_quality', name: 'Air quality',
                 //~ options: {},
                 //~ slots: {
@@ -64,13 +64,13 @@ angular.module('homeuiApp.dataServiceModule', [])
       leakage: { uid: 'leakage', name: 'Leakage',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
+                  slot0: { name: 'Sensor', uid: 'slot0' , type: 'switch'}
                 }
               },
       motion: { uid: 'motion', name: 'Motion',
                 options: {},
                 slots: {
-                  slot0: { name: 'Sensor', uid: 'slot0' }
+                  slot0: { name: 'Binary input (normally closed)', uid: 'slot0' , type :'switch'}
                 }
               },
       alarm: { uid: 'alarm', name: 'Alarm',
@@ -91,6 +91,21 @@ angular.module('homeuiApp.dataServiceModule', [])
                   slot0: { name: 'Binary Sensor', uid: 'slot0', type : 'switch' }
                 }
               },
+
+      temp_humidity : { uid: 'temp_humidity', name: 'Temperature&Humidity',
+               options: {},
+               slots: {
+                 slot0: {name: 'Temperature sensor', uid: 'slot0', type: 'temperature'},
+                 slot1: {name: 'Humidity sensor', uid: 'slot1', type: 'rel_humidity' }
+               }
+		      },
+	  rgb_switch : { uid: 'rgb_switch', name: 'RGB light with switch',
+                options : {},
+                slots : {
+                  slot0: {name: 'RGB light', uid: 'slot0', type: 'rgb'},
+                  slot1: {name: 'Associated switch', uid: 'slot1', type: 'switch'},
+                }
+          },
     };
 
     dataService.parseMsg = function(message) {

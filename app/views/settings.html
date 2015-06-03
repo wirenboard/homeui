@@ -192,7 +192,11 @@
           <tr ng-repeat="widget in data.widgets">
             <td>{{ widget.uid }}</td>
             <td>{{ widget.name }}</td>
-            <td>{{ objectsKeys(widget.controls) }}</td>
+            <td>
+	          <div ng-repeat="control in widget.controls">
+	           {{control.uid}}: {{control.topic.topic}}
+			  </div>
+			</td>
           </tr>
         </tbody>
       </table>

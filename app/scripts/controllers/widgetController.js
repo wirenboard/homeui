@@ -4,8 +4,6 @@ angular.module('homeuiApp')
   .controller('WidgetCtrl', ['$scope', '$rootScope', '$routeParams', 'CommonCode', function($scope, $rootScope, $routeParams, CommonCode){
     $scope.data = CommonCode.data;
 
-	$scope.Math = window.Math;
-
     $scope.widgets = $scope.data.widgets;
     $scope.rooms = $scope.data.rooms;
     $scope.controls = $scope.data.controls;
@@ -183,10 +181,22 @@ angular.module('homeuiApp')
       templateUrl: 'views/widgets/templates/widget-binary-sensor.html'
     };
   })
+  .directive('widgetTempHumidity', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-temp-humidity.html'
+    };
+  })
   .directive('widgetAlarm', function(){
     return{
       restrict: 'A',
       templateUrl: 'views/widgets/templates/widget-alarm.html'
+    };
+  })
+  .directive('widgetRgbSwitch', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-rgb-switch.html'
     };
   })
   .directive('widgetFan', function(){
