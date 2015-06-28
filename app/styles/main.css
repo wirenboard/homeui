@@ -386,7 +386,7 @@ footer{
 
 .btn-primary {
 	background-color: #337ab7;
-    color: #ffffff;
+	color: #ffffff;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
