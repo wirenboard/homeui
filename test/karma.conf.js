@@ -29,6 +29,7 @@ module.exports = function(config) {
       'bower_components/angular-toggle-switch/angular-toggle-switch.js',
       'bower_components/spectrum/spectrum.js',
       'bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min.js',
+      'bower_components/angular-order-object-by/src/ng-order-object-by.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',
@@ -52,13 +53,14 @@ module.exports = function(config) {
     // - PhantomJS
     // - IE (only Windows)
     browsers: [
-      'PhantomJS'
+      'Chrome'
     ],
 
     // Which plugins to enable
     plugins: [
-      'karma-phantomjs-launcher',
-      'karma-jasmine'
+      'karma-chrome-launcher',
+      'karma-jasmine',
+      'karma-emacs-reporter'
     ],
 
     // Continuous Integration mode
@@ -70,6 +72,8 @@ module.exports = function(config) {
     // level of logging
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
     logLevel: config.LOG_INFO,
+
+    reporters: [ "dots", "emacs" ],
 
     // Uncomment the following lines if you are using grunt's server to run the tests
     // proxies: {
