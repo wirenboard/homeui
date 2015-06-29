@@ -1,27 +1,62 @@
 "use strict";
 
 angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
-  .factory("MqttRpc", function (mqttClient, $q) {
+  .factory("MqttRpc", function (mqttClient, $q, $rootScope) {
+    var disconnectedError = {
+      data: "MqttConnectionError",
+      message: "MQTT client is not connected"
+    };
+
     function Proxy(target, methods) {
       this._prefix = "/rpc/v1/" + target + "/";
       this._inflight = {};
       this._nextId = 1;
+      this._watchStopper = null;
     }
 
     Proxy.prototype._init = function _init () {
       if (this._nextId > 1)
-        return
+        return;
       // first time
       mqttClient.subscribe(
         this._prefix + "+/" + mqttClient.getID() + "/reply",
         this._handleMessage.bind(this));
-    }
+    };
+
+    Proxy.prototype._maybeStartWatching = function _maybeStartWatching () {
+      if (this._watchStopper !== null)
+        return;
+      this._watchStopper = $rootScope.$watch(
+        function () { return mqttClient.isConnected(); },
+        function (connected) {
+          if (!connected)
+            this._handleDisconnection();
+        }.bind(this));
+    };
+
+    Proxy.prototype._handleDisconnection = function _handleDisconnection () {
+      Object.keys(this._inflight).sort().forEach(function (callId) {
+        this._inflight[callId](null, {
+          error: disconnectedError
+        });
+      }, this);
+      this._inflight = {};
+      this._maybeStopWatching();
+    };
+
+    Proxy.prototype._maybeStopWatching = function _maybeStopWatching () {
+      if (Object.keys(this._inflight).length || !this._watchStopper)
+        return;
+      this._watchStopper();
+      this._watchStopper = null;
+    };
 
     Proxy.prototype._call = function _call (method, params) {
       this._init();
+      this._maybeStartWatching();
       return $q(function (resolve, reject) {
         if (!mqttClient.isConnected()) {
-          reject("not connected");
+          reject(disconnectedError);
           return;
         }
         var callId = this._nextId++;
@@ -34,14 +69,15 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
           }),
           false);
         this._inflight[callId] = function (actualTopic, reply) {
-          // TBD: handle errors
-          if (actualTopic != topic + "/reply")
+          if (actualTopic !== null && actualTopic != topic + "/reply")
             reject("unexpected response topic " + actualTopic);
-          else
+          else if (reply.hasOwnProperty("error")) {
+            reject(reply.error);
+          } else
             resolve(reply.result);
         };
       }.bind(this));
-    }
+    };
 
     Proxy.prototype._handleMessage = function _handleMessage (msg) {
       try {
@@ -58,7 +94,13 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
         console.error("MQTT response with unexpected id: %o", msg);
         return;
       }
-      this._inflight[parsed.id](msg.topic, parsed);
+      var id = parsed.id;
+      try {
+        this._inflight[id](msg.topic, parsed);
+      } finally {
+        delete this._inflight[id];
+        this._maybeStopWatching();
+      }
     };
 
     return {
