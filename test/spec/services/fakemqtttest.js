@@ -5,10 +5,11 @@ describe("Fake MQTT", function () {
 
   // load the controller's module
   beforeEach(module('homeuiApp'));
-  beforeEach(module('homeuiApp.fakeMQTT'));
+  beforeEach(module('homeuiApp.fakeMqtt'));
 
-  beforeEach(inject(function (_FakeMQTTFixture_) {
-    f = _FakeMQTTFixture_;
+  beforeEach(inject(function (_FakeMqttFixture_) {
+    f = _FakeMqttFixture_;
+    f.useJSON = false;
   }));
 
   it("should change status upon connection", function () {

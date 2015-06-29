@@ -1,4 +1,4 @@
-angular.module('homeuiApp.fakeMQTT', [])
+angular.module('homeuiApp.fakeMqtt', [])
   .factory("mqttBroker", function ($rootScope, $timeout) {
     var clientMap = Object.create(null),
         subscriptionMap = Object.create(null);
@@ -36,6 +36,10 @@ angular.module('homeuiApp.fakeMQTT', [])
 
     function Client() {
       this.connected = false;
+    }
+
+    Client.prototype.getID = function getID () { // FIXME: add this to the real mqttService
+      return this.clientid;
     }
 
     Client.prototype.connect = function (host, port, clientid, user, password) {
@@ -115,12 +119,13 @@ angular.module('homeuiApp.fakeMQTT', [])
     return mqttBroker.createClient();
   })
 
-  .factory("FakeMQTTFixture", function (mqttBroker, mqttClient, $timeout) {
+  .factory("FakeMqttFixture", function (mqttBroker, mqttClient, $timeout) {
     var journal = [];
     return {
       broker: mqttBroker,
       mqttClient: mqttClient,
       extClient: mqttBroker.createClient(),
+      useJSON: false,
       connect: function () {
         this.extClient.connect("localhost", 1883, "extclient", "", "");
         this.mqttClient.connect("localhost", 1883, "ui", "", "");
@@ -128,9 +133,14 @@ angular.module('homeuiApp.fakeMQTT', [])
       },
       msgLogger: function (title) {
         return function (msg) {
-          journal.push(title + ": " + msg.topic + ": [" + msg.payload + "] (QoS " + msg.qos +
-                   (msg.retained ? ", retained)" : ")"));
-        };
+          var p = msg.payload;
+          if (this.useJSON)
+            p = "-";
+          journal.push(title + ": " + msg.topic + ": [" + p + "] (QoS " + msg.qos +
+                       (msg.retained ? ", retained)" : ")"));
+          if (this.useJSON)
+            journal.push(JSON.parse(msg.payload));
+        }.bind(this);
       },
       expectJournal: function () {
         var r = journal;
