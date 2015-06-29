@@ -57,10 +57,18 @@ angular.module('homeuiApp.fakeMqtt', [])
     }
 
     Client.prototype.disconnect = function disconnect () {
-      throw new Error("not implemented yet"); // must rm itself from clientMap & subscriptionMap
-      // FIXME: update the real implementation to call $rootScope.$digest()
-      // upon disconnect
-      // $timeout(function () { $rootScope.$digest(); });
+      if (!this.connected)
+        return;
+      this.connected = false;
+      this.callbackMap = {};
+      for (var topic in subscriptionMap) {
+        if (subscriptionMap[topic].indexOf(this) >= 0)
+          subscriptionMap[topic] = subscriptionMap[topic].filter(function (client) {
+            return client != this;
+          });
+      }
+      delete clientMap[this.clientid];
+      $timeout(function () { $rootScope.$digest(); });
     }
 
     Client.prototype.isConnected = function isConnected () {
@@ -122,6 +130,7 @@ angular.module('homeuiApp.fakeMqtt', [])
   .factory("FakeMqttFixture", function (mqttBroker, mqttClient, $timeout) {
     var journal = [];
     return {
+      $timeout: $timeout,
       broker: mqttBroker,
       mqttClient: mqttClient,
       extClient: mqttBroker.createClient(),
