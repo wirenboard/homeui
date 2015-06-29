@@ -113,4 +113,29 @@ angular.module('homeuiApp.fakeMQTT', [])
 
   .factory("mqttClient", function ($rootScope, mqttBroker) {
     return mqttBroker.createClient();
+  })
+
+  .factory("FakeMQTTFixture", function (mqttBroker, mqttClient, $timeout) {
+    var journal = [];
+    return {
+      broker: mqttBroker,
+      mqttClient: mqttClient,
+      extClient: mqttBroker.createClient(),
+      connect: function () {
+        this.extClient.connect("localhost", 1883, "extclient", "", "");
+        this.mqttClient.connect("localhost", 1883, "ui", "", "");
+        $timeout.flush();
+      },
+      msgLogger: function (title) {
+        return function (msg) {
+          journal.push(title + ": " + msg.topic + ": [" + msg.payload + "] (QoS " + msg.qos +
+                   (msg.retained ? ", retained)" : ")"));
+        };
+      },
+      expectJournal: function () {
+        var r = journal;
+        journal = [];
+        return expect(r);
+      }
+    }
   });
