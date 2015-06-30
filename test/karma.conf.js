@@ -30,6 +30,8 @@ module.exports = function(config) {
       'bower_components/spectrum/spectrum.js',
       'bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min.js',
       'bower_components/angular-order-object-by/src/ng-order-object-by.js',
+      'bower_components/codemirror/lib/codemirror.js',
+      'bower_components/angular-ui-codemirror/ui-codemirror.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

@@ -4,5 +4,7 @@
 
 <div class="script-editor">
   <button class="btn btn-primary" name="save" ng-click="save()">Save</button>
-  <textarea cols="100" rows="30" ng-model="content" spellcheck="false"></textarea>
+  <textarea ui-codemirror
+            ui-codemirror-opts="{ mode: 'javascript', lineNumbers: true }"
+            ng-model="content"></textarea>
 </div>

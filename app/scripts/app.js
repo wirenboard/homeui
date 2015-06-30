@@ -21,7 +21,8 @@ angular
     'ngTouch',
     'toggle-switch',
     'angularSpectrumColorpicker',
-    'ngOrderObjectBy'
+    'ngOrderObjectBy',
+    'ui.codemirror'
   ])
   .config(function ($routeProvider) {
     $routeProvider
@@ -94,7 +95,7 @@ angular
         controller: 'ScriptsCtrl'
       })
       .when('/scripts/:path*', {
-        templateUrl: 'views/file.html',
+        templateUrl: 'views/script.html',
         controller: 'ScriptCtrl'
       })
       .otherwise({

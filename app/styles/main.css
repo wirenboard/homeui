@@ -398,8 +398,7 @@ footer{
 	box-shadow: none;
 }
 
-.script-editor textarea {
-  display: block;
+.script-editor .CodeMirror {
+  height: 500px;
   margin-top: 10px;
-  font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
 }
