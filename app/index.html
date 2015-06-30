@@ -73,6 +73,16 @@
               <a href="#/widget_templates"><i class="glyphicon glyphicon-list-alt"></i>Widget Templates</a>
             </li>
 -->
+            <li ng-if="isConnected()" ng-class="{ active: isActive('/scripts') }" class="list-menu">
+              <a href="#/scripts"><i class="glyphicon glyphicon-flash"></i> Scripts</a>
+              <a href="javascript:;" data-toggle="collapse" data-target="#scripts-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
+              <ul id="scripts-menu" class="collapse">
+                <li ng-repeat="script in getScripts()">
+                  <a href="#/scripts/{{ script.virtualPath }}"
+                     ng-class="{ active: isActive('/scripts/{{ script.virtualPath }}') }">{{ script.virtualPath }}</a>
+                </li>
+              </ul>
+            </li>
             <li ng-class="{ active: isActive('/settings') }">
               <a href="#/settings"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
             </li>
@@ -131,6 +141,8 @@
     <script src="scripts/services/mqttService.js"></script>
     <script src="scripts/services/dataService.js"></script>
     <script src="scripts/services/commonService.js"></script>
+    <script src="scripts/services/editorProxy.js"></script>
+    <script src="scripts/services/rpc.js"></script>
     <script src="scripts/controllers/homeController.js"></script>
     <script src="scripts/controllers/deviceController.js"></script>
     <script src="scripts/controllers/roomController.js"></script>
@@ -140,6 +152,8 @@
     <script src="scripts/controllers/dashboardController.js"></script>
     <script src="scripts/controllers/settingController.js"></script>
     <script src="scripts/controllers/loginController.js"></script>
+    <script src="scripts/controllers/scriptController.js"></script>
+    <script src="scripts/controllers/scriptsController.js"></script>
     <script src="scripts/filters/metaTypeFilter.js"></script>
   </body>
 </html>

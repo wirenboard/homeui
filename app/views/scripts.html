@@ -1,0 +1,11 @@
+<h1 class="page-header">
+  Scripts
+</h1>
+<div class="scripts">
+  <ul>
+    <li ng-repeat="script in scripts">
+      <a href="#/scripts/{{ script.virtualPath }}"
+         ng-class="{ active: isActive('/scripts/{{ script.virtualPath }}') }">{{ script.virtualPath }}</a>
+    </li>
+  </ul>
+</div>

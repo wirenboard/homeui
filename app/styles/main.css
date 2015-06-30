@@ -397,3 +397,9 @@ footer{
 	background-color: #094b83;
 	box-shadow: none;
 }
+
+.script-editor textarea {
+  display: block;
+  margin-top: 10px;
+  font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+}

@@ -14,6 +14,7 @@ angular
     'homeuiApp.dataServiceModule',
     'homeuiApp.commonServiceModule',
     'homeuiApp.dataFilters',
+    'homeuiApp.MqttRpc',
     'ngResource',
     'ngRoute',
     'ngSanitize',
@@ -87,6 +88,14 @@ angular
       .when('/login/:id',{
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl'
+      })
+      .when('/scripts', {
+        templateUrl: 'views/scripts.html',
+        controller: 'ScriptsCtrl'
+      })
+      .when('/scripts/:path*', {
+        templateUrl: 'views/file.html',
+        controller: 'ScriptCtrl'
       })
       .otherwise({
         redirectTo: '/'

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('NavigationCtrl', ['$scope', '$location', 'CommonCode', function($scope, $location, CommonCode){
+  .controller('NavigationCtrl', ['$scope', '$location', 'CommonCode', 'EditorProxy', 'mqttClient', 'whenMqttReady', function($scope, $location, CommonCode, EditorProxy, mqttClient, whenMqttReady){
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };
@@ -11,7 +11,28 @@ angular.module('homeuiApp')
     $scope.widgets = $scope.data.widgets;
     $scope.widget_templates = $scope.data.widget_templates;
     $scope.isConnected = function () {
-      return CommonCode.isConnected();
+      return mqttClient.isConnected();
+    };
+
+    var scripts = [], needToLoadFiles = false;
+
+    whenMqttReady().then(function () {
+      needToLoadFiles = true;
+      mqttClient.subscribe("/wbrules/updates/+", function () {
+        needToLoadFiles = true;
+      });
+    });
+
+    $scope.getScripts = function () {
+      if (needToLoadFiles) {
+        needToLoadFiles = false;
+        EditorProxy.List().then(function (result) {
+          scripts = result;
+        }, function (err) {
+          console.error("error listing scripts: %s", err.message);
+        });
+      }
+      return scripts;
     };
   }])
   .directive('roomMenuItem', function(){
