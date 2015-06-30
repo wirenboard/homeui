@@ -136,7 +136,7 @@ angular.module('homeuiApp.dataServiceModule', [])
           parseConfigMsg(pathItems, message);
           break;
         default:
-          console.log("WARNING: Unknown message: " + pathItems[1]);
+          // console.log("WARNING: Unknown message: " + pathItems[1]);
           return null;
           break;
       }

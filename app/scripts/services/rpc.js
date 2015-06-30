@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
-  .factory("MqttRpc", function (mqttClient, $q, $rootScope) {
+  .factory("MqttRpc", ["mqttClient", "$q", "$rootScope", function (mqttClient, $q, $rootScope) {
     var disconnectedError = {
       data: "MqttConnectionError",
       message: "MQTT client is not connected"
@@ -69,12 +69,14 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
           }),
           false);
         this._inflight[callId] = function (actualTopic, reply) {
+          // console.log("reply: %o", reply);
           if (actualTopic !== null && actualTopic != topic + "/reply")
             reject("unexpected response topic " + actualTopic);
           else if (reply.hasOwnProperty("error")) {
             reject(reply.error);
-          } else
+          } else {
             resolve(reply.result);
+          }
         };
       }.bind(this));
     };
@@ -113,4 +115,4 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
         return outer;
       }
     };
-  });
+  }]);

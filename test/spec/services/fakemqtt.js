@@ -1,25 +1,7 @@
-angular.module('homeuiApp.fakeMqtt', [])
-  .factory("mqttBroker", function ($rootScope, $timeout) {
+angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
+  .factory("mqttBroker", function ($rootScope, $timeout, topicMatches) {
     var clientMap = Object.create(null),
         subscriptionMap = Object.create(null);
-
-    function topicMatches(pattern, topic) {
-      function match (patternParts, topicParts) {
-        if (!patternParts.length)
-          return !topicParts.length;
-        if (patternParts[0] == "#") {
-          if (patternParts.length != 1)
-            throw new Error("invalid pattern");
-          return true;
-        }
-        if (!topicParts.length)
-          return false;
-        if (patternParts[0] != "+" && topicParts[0] != patternParts[0])
-          return false;
-        return match(patternParts.slice(1), topicParts.slice(1));
-      }
-      return match(pattern.split("/"), topic.split("/"));
-    }
 
     function spread(msg) {
       var clients = [];
@@ -40,7 +22,7 @@ angular.module('homeuiApp.fakeMqtt', [])
 
     Client.prototype.getID = function getID () { // FIXME: add this to the real mqttService
       return this.clientid;
-    }
+    };
 
     Client.prototype.connect = function (host, port, clientid, user, password) {
       if (this.connected)
@@ -51,16 +33,16 @@ angular.module('homeuiApp.fakeMqtt', [])
         throw new Error("clientid already in use");
       this.clientid = clientid;
       this.connected = true;
-      this.callbackMap = {}; // TBD: add global callback
+      this.callbackMap = Object.create(null); // TBD: add global callback
       clientMap[clientid] = this;
       $timeout(function () { $rootScope.$digest(); });
-    }
+    };
 
     Client.prototype.disconnect = function disconnect () {
       if (!this.connected)
         return;
       this.connected = false;
-      this.callbackMap = {};
+      this.callbackMap = Object.create(null);
       for (var topic in subscriptionMap) {
         if (subscriptionMap[topic].indexOf(this) >= 0)
           subscriptionMap[topic] = subscriptionMap[topic].filter(function (client) {
@@ -69,11 +51,11 @@ angular.module('homeuiApp.fakeMqtt', [])
       }
       delete clientMap[this.clientid];
       $timeout(function () { $rootScope.$digest(); });
-    }
+    };
 
     Client.prototype.isConnected = function isConnected () {
       return this.connected;
-    }
+    };
 
     Client.prototype._receive = function _receive (msg) {
       Object.keys(this.callbackMap).sort().forEach(function (pattern) {
@@ -83,7 +65,7 @@ angular.module('homeuiApp.fakeMqtt', [])
           callback(msg);
         });
       }, this);
-    }
+    };
 
     Client.prototype.subscribe = function subscribe (topic, callback) {
       var l = subscriptionMap[topic];
@@ -92,7 +74,7 @@ angular.module('homeuiApp.fakeMqtt', [])
       else if (l.indexOf(this) < 0)
         l.push(this);
       this.callbackMap[topic] = (this.callbackMap[topic] || []).concat([callback]);
-    }
+    };
 
     Client.prototype.unsubscribe = function unsubscribe (topic) {
       if (!subscriptionMap[topic])
@@ -101,7 +83,7 @@ angular.module('homeuiApp.fakeMqtt', [])
         return client != this;
       }, this);
       delete this.callbackMap[topic];
-    }
+    };
 
     Client.prototype.send = function(topic, payload, retained, qos) {
       if (retained === undefined)
@@ -114,26 +96,28 @@ angular.module('homeuiApp.fakeMqtt', [])
         retained: retained,
         qos: qos
       });
-    }
+    };
 
     return {
       createClient: function () {
         return new Client();
       }
-    }
+    };
   })
 
   .factory("mqttClient", function ($rootScope, mqttBroker) {
     return mqttBroker.createClient();
   })
 
-  .factory("FakeMqttFixture", function (mqttBroker, mqttClient, $timeout) {
+  .factory("FakeMqttFixture", function ($rootScope, mqttBroker, mqttClient, $timeout, whenMqttReady) {
     var journal = [];
     return {
+      $rootScope: $rootScope,
       $timeout: $timeout,
       broker: mqttBroker,
       mqttClient: mqttClient,
       extClient: mqttBroker.createClient(),
+      whenMqttReady: whenMqttReady,
       useJSON: false,
       connect: function () {
         this.extClient.connect("localhost", 1883, "extclient", "", "");
@@ -156,5 +140,5 @@ angular.module('homeuiApp.fakeMqtt', [])
         journal = [];
         return expect(r);
       }
-    }
+    };
   });

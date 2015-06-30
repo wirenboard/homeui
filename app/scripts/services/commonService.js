@@ -121,7 +121,6 @@ angular.module('homeuiApp.commonServiceModule', [])
             $rootScope._mqttTopicCache[message.destinationName.replace(globalPrefix, '')] = message.payloadBytes;
 
             HomeUIData.parseMsg(message);
-            $rootScope.$apply();
         });
 
         $rootScope.mqttSendCollection = function(topic, collection, backTo) {

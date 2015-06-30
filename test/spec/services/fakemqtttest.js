@@ -90,4 +90,24 @@ describe("Fake MQTT", function () {
     f.extClient.send("/abc/def", "foobar", false);
     f.expectJournal().toEqual(["local: /abc/def: [foobar] (QoS 1)"]);
   });
+
+  it("should support whenMqttReady", function () {
+    var ready = false;
+    f.whenMqttReady().then(function () {
+      if (ready)
+        throw new Error("promise callback called twice???");
+      ready = true;
+    });
+    expect(ready).toBe(false);
+    f.connect();
+    expect(ready).toBe(true);
+    ready = false;
+    f.whenMqttReady().then(function () {
+      if (ready)
+        throw new Error("promise callback called twice???");
+      ready = true;
+    });
+    f.$rootScope.$digest();
+    expect(ready).toBe(true);
+  });
 });
