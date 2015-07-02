@@ -5,6 +5,6 @@
 <div class="script-editor">
   <button class="btn btn-primary" name="save" ng-click="save()">Save</button>
   <textarea ui-codemirror
-            ui-codemirror-opts="{ mode: 'javascript', lineNumbers: true, onLoad: codeMirrorLoaded }"
+            ui-codemirror-opts="{ mode: 'javascript', lineNumbers: true, viewportMargin: vpMargin, scrollbarStyle: null, onLoad: codeMirrorLoaded }"
             ng-model="content"></textarea>
 </div>

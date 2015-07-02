@@ -13,6 +13,9 @@ angular.module("homeuiApp")
       cm = _cm;
       cm.focus();
     };
+    // AngularJS expression parser seemingly chokes on Infinity,
+    // thinks its a variable name (?)
+    $scope.vpMargin = Infinity;
     $scope.loaded = false;
     $scope.content = "";
     $scope.save = function save () {
