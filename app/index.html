@@ -85,7 +85,7 @@
               </ul>
             </li>
             <li ng-if="isConnected()" class="list-menu">
-              <a href="#/rules"><i class="glyphicon glyphicon-flash"></i> Rules</a>
+              <a><i class="glyphicon glyphicon-flash"></i> Rules</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#rules-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="rules-menu" class="collapse">
                 <li ng-repeat="rule in getRules()">
@@ -94,7 +94,7 @@
               </ul>
             </li>
             <li ng-if="isConnected()" class="list-menu">
-              <a href="#/vdevices"><i class="glyphicon glyphicon-scale"></i> Virtual Devices</a>
+              <a><i class="glyphicon glyphicon-scale"></i> Virtual Devices</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#vdevices-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="vdevices-menu" class="collapse">
                 <li ng-repeat="vdev in getVirtualDevices()">
