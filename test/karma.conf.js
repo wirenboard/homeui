@@ -34,6 +34,7 @@ module.exports = function(config) {
       'bower_components/angular-ui-codemirror/ui-codemirror.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
+      'bower_components/codemirror/mode/javascript/javascript.js',
       'app/scripts/**/*.js',
       'test/mock/**/*.js',
       'test/spec/**/*.js'

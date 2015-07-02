@@ -75,12 +75,30 @@
             </li>
 -->
             <li ng-if="isConnected()" ng-class="{ active: isActive('/scripts') }" class="list-menu">
-              <a href="#/scripts"><i class="glyphicon glyphicon-flash"></i> Scripts</a>
+              <a href="#/scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#scripts-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="scripts-menu" class="collapse">
                 <li ng-repeat="script in getScripts()">
                   <a href="#/scripts/{{ script.virtualPath }}"
                      ng-class="{ active: isActive('/scripts/{{ script.virtualPath }}') }">{{ script.virtualPath }}</a>
+                </li>
+              </ul>
+            </li>
+            <li ng-if="isConnected()" class="list-menu">
+              <a href="#/rules"><i class="glyphicon glyphicon-flash"></i> Rules</a>
+              <a href="javascript:;" data-toggle="collapse" data-target="#rules-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
+              <ul id="rules-menu" class="collapse">
+                <li ng-repeat="rule in getRules()">
+                  <a href="#/scripts/{{ rule.virtualPath }}/D{{rule.line - 1}}:0">{{ rule.name }}</a>
+                </li>
+              </ul>
+            </li>
+            <li ng-if="isConnected()" class="list-menu">
+              <a href="#/vdevices"><i class="glyphicon glyphicon-scale"></i> Virtual Devices</a>
+              <a href="javascript:;" data-toggle="collapse" data-target="#vdevices-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
+              <ul id="vdevices-menu" class="collapse">
+                <li ng-repeat="vdev in getVirtualDevices()">
+                  <a href="#/scripts/{{ vdev.virtualPath }}/D{{vdev.line - 1}}:0">{{ vdev.name }}</a>
                 </li>
               </ul>
             </li>
@@ -147,6 +165,7 @@
     <script src="scripts/services/commonService.js"></script>
     <script src="scripts/services/editorProxy.js"></script>
     <script src="scripts/services/rpc.js"></script>
+    <script src="scripts/services/gotoDefStart.js"></script>
     <script src="scripts/controllers/homeController.js"></script>
     <script src="scripts/controllers/deviceController.js"></script>
     <script src="scripts/controllers/roomController.js"></script>
