@@ -40,36 +40,57 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     };
   })
 
-  .factory('mqttClient', function($window, $rootScope, topicMatches) {
+  .value("mqttConnectTimeout", 15000)
+  .value("mqttReconnectDelay", 1500)
+
+  .factory('mqttClient', function($window, $rootScope, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) {
     var globalPrefix = '';
     var service = {};
     var client = {};
     var id = '';
     var connected = false;
+    var connectOptions;
+    var reconnectTimeout = null;
     var callbackMap = Object.create(null);
     if($window.localStorage['prefix'] === 'true')
       globalPrefix = '/client/' + $window.localStorage['user'];
 
+    function reconnectAfterTimeout() {
+      reconnectTimeout = $timeout(function () {
+        console.log("reconnect timer fired");
+        reconnectTimeout = null;
+        client.connect(angular.copy(connectOptions));
+      }, mqttReconnectDelay);
+    }
+
+    function clearReconnectTimeout() {
+      if (reconnectTimeout !== null)
+        $timeout.cancel(reconnectTimeout);
+    }
+
     service.connect = function(host, port, clientid, user, password) {
-      var options = {
+      clearReconnectTimeout();
+
+      connectOptions = {
         onSuccess: service.onConnect,
-        onFailure: service.onFailure
+        onFailure: service.onFailure,
+        timeout: mqttConnectTimeout / 1000
       };
 
       if(user != undefined && password != undefined) {
-        options.userName = user;
-        options.password = password;
+        connectOptions.userName = user;
+        connectOptions.password = password;
       }
 
       id = clientid;
       console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with username " + user + " and clientid " + clientid);
 
       client = new Paho.MQTT.Client(host, parseInt(port), '/', clientid);
-      client.connect(options);
-
       client.onConnectionLost = service.onConnectionLost;
       client.onMessageDelivered = service.onMessageDelivered;
       client.onMessageArrived = service.onMessageArrived;
+
+      client.connect(angular.copy(connectOptions));
     };
 
     service.getID = function getID () {
@@ -93,6 +114,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     service.onFailure = function() {
       console.log("Failure to connect to " + client.host + ":" + client.port + " as " + client.clientId);
       connected = false;
+      reconnectAfterTimeout();
       $rootScope.$digest();
     };
 
@@ -110,10 +132,12 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       service.callback = callback;
     };
 
-    service.onConnectionLost = function (errorCallback) {
-      console.log("Server connection lost: " + errorCallback.errorMessage);
+    service.onConnectionLost = function (responseObject) {
+      console.log("Server connection lost: %o", responseObject);
       connected = false;
       callbackMap = Object.create(null);
+      if (responseObject.errorCode != 0)
+        reconnectAfterTimeout();
       $rootScope.$digest();
     };
 
@@ -163,6 +187,8 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     };
 
     service.disconnect = function() {
+      clearReconnectTimeout();
+      callbackMap = Object.create(null);
       client.disconnect();
     };
 
