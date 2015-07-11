@@ -1,10 +1,15 @@
 "use strict";
 
 angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
-  .factory("MqttRpc", ["mqttClient", "$q", "$rootScope", function (mqttClient, $q, $rootScope) {
+  .value("mqttRpcTimeout", 15000)
+  .factory("MqttRpc", function ($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout) {
     var disconnectedError = {
       data: "MqttConnectionError",
       message: "MQTT client is not connected"
+    };
+    var timeoutError = {
+      data: "MqttTimeoutError",
+      message: "MQTT RPC request timed out"
     };
 
     function Proxy(target, methods) {
@@ -34,21 +39,22 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
         }.bind(this));
     };
 
-    Proxy.prototype._handleDisconnection = function _handleDisconnection () {
-      Object.keys(this._inflight).sort().forEach(function (callId) {
-        this._inflight[callId](null, {
-          error: disconnectedError
-        });
-      }, this);
-      this._inflight = {};
-      this._maybeStopWatching();
-    };
-
     Proxy.prototype._maybeStopWatching = function _maybeStopWatching () {
       if (Object.keys(this._inflight).length || !this._watchStopper)
         return;
       this._watchStopper();
       this._watchStopper = null;
+    };
+
+    Proxy.prototype._handleDisconnection = function _handleDisconnection () {
+      Object.keys(this._inflight).sort().forEach(function (callId) {
+        this._invokeResponseHandler(callId, null, {
+          error: disconnectedError
+        });
+      }, this);
+      if (Object.keys(this._inflight).length)
+        throw new Error("Proxy._handleDisconnection(): pending requests remained");
+      this._maybeStopWatching();
     };
 
     Proxy.prototype._call = function _call (method, params) {
@@ -68,17 +74,29 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
             params: params || {}
           }),
           false);
-        this._inflight[callId] = function (actualTopic, reply) {
+        var timeout = $timeout(this._invokeResponseHandler.bind(this, callId, null, {
+          error: timeoutError
+        }), mqttRpcTimeout);
+        this._inflight[callId] = function onResponse (actualTopic, reply) {
           // console.log("reply: %o", reply);
+          $timeout.cancel(timeout);
           if (actualTopic !== null && actualTopic != topic + "/reply")
             reject("unexpected response topic " + actualTopic);
-          else if (reply.hasOwnProperty("error")) {
+          else if (reply.hasOwnProperty("error"))
             reject(reply.error);
-          } else {
+          else
             resolve(reply.result);
-          }
-        };
+        }.bind(this);
       }.bind(this));
+    };
+
+    Proxy.prototype._invokeResponseHandler = function _invokeResponseHandler (id, topic, reply) {
+      try {
+        this._inflight[id](topic, reply);
+      } finally {
+        delete this._inflight[id];
+        this._maybeStopWatching();
+      }
     };
 
     Proxy.prototype._handleMessage = function _handleMessage (msg) {
@@ -96,13 +114,7 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
         console.error("MQTT response with unexpected id: %o", msg);
         return;
       }
-      var id = parsed.id;
-      try {
-        this._inflight[id](msg.topic, parsed);
-      } finally {
-        delete this._inflight[id];
-        this._maybeStopWatching();
-      }
+      this._invokeResponseHandler(parsed.id, msg.topic, parsed);
     };
 
     return {
@@ -115,4 +127,4 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
         return outer;
       }
     };
-  }]);
+  });

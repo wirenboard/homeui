@@ -103,4 +103,23 @@ describe("MQTT RPC", function () {
       message: "MQTT client is not connected"
     });
   });
+
+  it("should time out if the request takes too long to complete", function () {
+    var error = null;
+    proxy.Divide({ A: 42, B: 2 }).then(function (r) {
+      error = "RPC call succeeded after timeout?";
+    }, function (err) {
+      error = err;
+    });
+
+    $rootScope.$digest(); // make sure accidental cancellation doesn't happen here
+    expect(error).toBeNull();
+
+    f.$timeout.flush();
+    $rootScope.$digest();
+    expect(error).toEqual({
+      data: "MqttTimeoutError",
+      message: "MQTT RPC request timed out"
+    });
+  });
 });
