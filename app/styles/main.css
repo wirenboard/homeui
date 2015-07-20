@@ -402,3 +402,98 @@ footer{
   height: auto;
   margin-top: 10px;
 }
+
+button.show-console {
+  position: fixed;
+  right: 10px;
+  bottom: 30px;
+  font-size: 18px;
+  padding: 6px 10px;
+  opacity: 0.3;
+}
+
+.show-console:hover {
+  opacity: 1;
+}
+
+button.show-console span {
+  vertical-align: -1px;
+}
+
+.script-editor {
+  margin-right: 30px;
+  border-right: 1px solid #eee;
+}
+
+.console {
+  position: fixed;
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 220px;
+  z-index: 100000;
+}
+
+.console button.close {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 16px;
+}
+
+.show-console #page-wrapper {
+  padding-bottom: 180px;
+}
+
+.console .console-view {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 2px;
+  bottom: 4px;
+}
+
+.console .console-view > label {
+  font-weight: normal;
+  float: right;
+  margin-right: 30px;
+}
+
+.console .console-view > label > input {
+  vertical-align: -1px;
+}
+
+.console .console-view .console-messages {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.console .console-view .console-message-ts {
+  display: inline-block;
+  width: 145px;
+  vertical-align: middle;
+}
+
+.console-message-level-error {
+  font-weight: bold;
+  color: #b00;
+}
+
+.console-message-level-warning {
+  font-weight: bold;
+  color: #c90;
+}
+
+.console-message-level-debug {
+  color: #090;
+}
+
+.console-message-level-info {
+  color: #009;
+}

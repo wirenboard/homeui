@@ -1,3 +1,5 @@
+"use strict";
+
 angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
   .factory("mqttBroker", function ($rootScope, $timeout, topicMatches) {
     var clientMap = Object.create(null),
@@ -16,7 +18,8 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
       clients.forEach(function (client) { client._receive(msg); });
     }
 
-    function Client() {
+    function Client(stickySubscriptions) {
+      this.stickySubscriptions = [];
       this.connected = false;
     }
 
@@ -35,6 +38,9 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
       this.connected = true;
       this.callbackMap = Object.create(null); // TBD: add global callback
       clientMap[clientid] = this;
+      this.stickySubscriptions.forEach(function (item) {
+        this.subscribe(item.topic, item.callback);
+      }, this);
       $timeout(function () { $rootScope.$digest(); });
     };
 
@@ -68,6 +74,8 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
     };
 
     Client.prototype.subscribe = function subscribe (topic, callback) {
+      if (!this.connected)
+        throw new Error("not connected");
       var l = subscriptionMap[topic];
       if (!l)
         subscriptionMap[topic] = [ this ];
@@ -77,12 +85,20 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
     };
 
     Client.prototype.unsubscribe = function unsubscribe (topic) {
+      if (!this.connected)
+        throw new Error("not connected");
       if (!subscriptionMap[topic])
         return;
       subscriptionMap[topic] = subscriptionMap[topic].filter(function (client) {
         return client != this;
       }, this);
       delete this.callbackMap[topic];
+    };
+
+    Client.prototype.addStickySubscription = function addStickySubscription (topic, callback) {
+      this.stickySubscriptions.push({ topic: topic, callback: callback });
+      if (this.connected)
+        this.subscribe(topic, callback);
     };
 
     Client.prototype.send = function(topic, payload, retained, qos) {

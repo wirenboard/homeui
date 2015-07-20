@@ -17,7 +17,7 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <div id="wrapper">
+    <div id="wrapper" ng-class="{ 'show-console': consoleVisible }">
       <!-- Navigation -->
       <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl'>
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -141,6 +141,20 @@
 
     </div>
 
+    <div class="console" ng-show="consoleVisible">
+      <console></console>
+      <button type="button" name="close" class="close"
+              ng-click="consoleVisible = false">
+        <span class="glyphicon glyphicon-remove"></span>
+      </button>
+    </div>
+
+    <button type="button" class="btn btn-default btn-lg show-console"
+            ng-hide="consoleVisible"
+            ng-click="consoleVisible = true">
+      <span class="glyphicon glyphicon-wrench"></span>
+    </button>
+
     <script src="lib/mqttws31.js"></script>
 
     <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -166,6 +180,8 @@
     <script src="scripts/services/editorProxy.js"></script>
     <script src="scripts/services/rpc.js"></script>
     <script src="scripts/services/gotoDefStart.js"></script>
+    <script src="scripts/services/time.js"></script>
+    <script src="scripts/directives/console.js"></script>
     <script src="scripts/controllers/homeController.js"></script>
     <script src="scripts/controllers/deviceController.js"></script>
     <script src="scripts/controllers/roomController.js"></script>

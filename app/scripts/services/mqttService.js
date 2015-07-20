@@ -44,14 +44,16 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
   .value("mqttReconnectDelay", 1500)
 
   .factory('mqttClient', function($window, $rootScope, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) {
-    var globalPrefix = '';
-    var service = {};
-    var client = {};
-    var id = '';
-    var connected = false;
-    var connectOptions;
-    var reconnectTimeout = null;
-    var callbackMap = Object.create(null);
+    var globalPrefix = '',
+        service = {},
+        client = {},
+        id = '',
+        connected = false,
+        connectOptions,
+        reconnectTimeout = null,
+        callbackMap = Object.create(null),
+        stickySubscriptions = [];
+
     if($window.localStorage['prefix'] === 'true')
       globalPrefix = '/client/' + $window.localStorage['user'];
 
@@ -72,8 +74,8 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       clearReconnectTimeout();
 
       connectOptions = {
-        onSuccess: service.onConnect,
-        onFailure: service.onFailure,
+        onSuccess: service.onConnect.bind(service),
+        onFailure: service.onFailure.bind(service),
         timeout: mqttConnectTimeout / 1000
       };
 
@@ -108,6 +110,9 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       client.subscribe(globalPrefix + "/config/dashboards/#");
 
       connected = true;
+      stickySubscriptions.forEach(function (item) {
+        this.subscribe(item.topic, item.callback);
+      }, this);
       $rootScope.$digest();
     };
 
@@ -119,14 +124,33 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     };
 
     service.publish = function(topic, payload) {
+      if (!connected) {
+        // FIXME: should fail hard here
+        console.error("can't publish(): disconnected");
+        return;
+      }
       client.publish(topic, payload, {retain: true});
       console.log('publish-Event sent '+ payload + ' with topic: ' + topic + ' ' + client);
     };
 
     service.subscribe = function (topic, callback) {
+      console.log("SUBSCRIBE: " + topic);
+      if (!connected) {
+        // FIXME: should fail hard here
+        console.error("can't subscribe(): disconnected");
+        return;
+      }
       client.subscribe(globalPrefix + topic, { qos: 2 });
       callbackMap[topic] = (callbackMap[topic] || []).concat([callback]);
     };
+
+    service.addStickySubscription = function (topic, callback) {
+      stickySubscriptions.push({ topic: topic, callback: callback });
+      if (connected)
+        this.subscribe(topic, callback);
+    };
+
+    // TBD: unsubcribe
 
     service.onMessage = function(callback) {
       service.callback = callback;
@@ -170,6 +194,11 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     };
 
     service.send = function(destination, payload, retained, qos) {
+      if (!connected) {
+        // FIXME: should fail hard here
+        console.error("can't send(): disconnected");
+        return;
+      }
       var topic = globalPrefix + destination;
       if (payload == null) {
 	payload = new ArrayBuffer();

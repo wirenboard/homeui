@@ -23,7 +23,7 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
       if (this._nextId > 1)
         return;
       // first time
-      mqttClient.subscribe(
+      mqttClient.addStickySubscription(
         this._prefix + "+/" + mqttClient.getID() + "/reply",
         this._handleMessage.bind(this));
     };

@@ -110,4 +110,31 @@ describe("Fake MQTT", function () {
     f.$rootScope.$digest();
     expect(ready).toBe(true);
   });
+
+  it("should support sticky subscriptions", function () {
+    f.mqttClient.addStickySubscription("/abc/def", f.msgLogger("local"));
+    f.connect();
+    f.mqttClient.addStickySubscription("/abc/qqq", f.msgLogger("local"));
+    f.extClient.send("/abc/def", "def", false);
+    f.extClient.send("/abc/qqq", "qqq", false);
+    f.expectJournal().toEqual([
+      "local: /abc/def: [def] (QoS 1)",
+      "local: /abc/qqq: [qqq] (QoS 1)",
+    ]);
+
+    f.mqttClient.disconnect();
+    f.$timeout.flush();
+    f.mqttClient.connect("localhost", 1883, "ui", "", "");
+    f.$timeout.flush();
+    expect(f.mqttClient.isConnected()).toBe(true);
+    expect(f.extClient.isConnected()).toBe(true);
+
+    f.extClient.send("/abc/def", "dontskipthis", false);
+    f.extClient.send("/abc/qqq", "dontskipthiseither", false);
+    f.extClient.send("/abc/def", "foobar", false);
+    f.expectJournal().toEqual([
+      "local: /abc/def: [dontskipthis] (QoS 1)",
+      "local: /abc/qqq: [dontskipthiseither] (QoS 1)",
+      "local: /abc/def: [foobar] (QoS 1)"]);
+  });
 });

@@ -1,18 +1,17 @@
 "use strict";
 
 describe("MQTT RPC", function () {
-  var f, MqttRpc, $rootScope, proxy;
+  var f, MqttRpc, proxy;
 
   // load the controller's module
   beforeEach(module('homeuiApp'));
   beforeEach(module('homeuiApp.fakeMqtt'));
   beforeEach(module('homeuiApp.MqttRpc'));
 
-  beforeEach(inject(function (_FakeMqttFixture_, _MqttRpc_, _$rootScope_) {
+  beforeEach(inject(function (_FakeMqttFixture_, _MqttRpc_) {
     f = _FakeMqttFixture_;
     f.useJSON = true;
     MqttRpc = _MqttRpc_;
-    $rootScope = _$rootScope_;
     f.connect();
     f.extClient.subscribe("/rpc/v1/fooserv/+/+/+", f.msgLogger("ext"));
     proxy = MqttRpc.getProxy("fooserv/Arith", ["Multiply", "Divide"]);
@@ -34,7 +33,7 @@ describe("MQTT RPC", function () {
       var r = i * (i + 1);
       f.extClient.send("/rpc/v1/fooserv/Arith/Multiply/ui/reply",
                        JSON.stringify({ id: i, result: r }));
-      $rootScope.$digest(); // resolve the promise
+      f.$rootScope.$digest(); // resolve the promise
       expect(result).toBe(r);
     }
   });
@@ -62,7 +61,7 @@ describe("MQTT RPC", function () {
           message: "divide by zero"
         }
       }));
-    $rootScope.$digest(); // resolve the promise
+    f.$rootScope.$digest(); // resolve the promise
     expect(error).toEqual({
       code: -1,
       message: "divide by zero"
@@ -71,14 +70,14 @@ describe("MQTT RPC", function () {
 
   it("should fail immediately if the client is not connected", function () {
     f.mqttClient.disconnect();
-    $rootScope.$digest();
+    f.$rootScope.$digest();
     var error = null;
     proxy.Divide({ A: 42, B: 2 }).then(function (r) {
       error = "succeeded in calling via the disconnected client";
     }, function (err) {
       error = err;
     });
-    $rootScope.$digest();
+    f.$rootScope.$digest();
     expect(error).toEqual({
       data: "MqttConnectionError",
       message: "MQTT client is not connected"
@@ -93,11 +92,11 @@ describe("MQTT RPC", function () {
       error = err;
     });
 
-    $rootScope.$digest(); // make sure accidental cancellation doesn't happen here
+    f.$rootScope.$digest(); // make sure accidental cancellation doesn't happen here
     expect(error).toBeNull();
 
     f.mqttClient.disconnect();
-    $rootScope.$digest();
+    f.$rootScope.$digest();
     expect(error).toEqual({
       data: "MqttConnectionError",
       message: "MQTT client is not connected"
@@ -112,11 +111,11 @@ describe("MQTT RPC", function () {
       error = err;
     });
 
-    $rootScope.$digest(); // make sure accidental cancellation doesn't happen here
+    f.$rootScope.$digest(); // make sure accidental cancellation doesn't happen here
     expect(error).toBeNull();
 
     f.$timeout.flush();
-    $rootScope.$digest();
+    f.$rootScope.$digest();
     expect(error).toEqual({
       data: "MqttTimeoutError",
       message: "MQTT RPC request timed out"

@@ -16,6 +16,10 @@ module.exports = function(config) {
     // testing framework to use (jasmine/mocha/qunit/...)
     frameworks: ['jasmine'],
 
+    preprocessors: {
+      "**/*.html": ["ng-html2js"]
+    },
+
     // list of files / patterns to load in the browser
     files: [
       // bower:js
@@ -35,7 +39,9 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'bower_components/codemirror/mode/javascript/javascript.js',
+      'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'app/scripts/**/*.js',
+      'app/scripts/**/*.html',
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
@@ -61,6 +67,7 @@ module.exports = function(config) {
 
     // Which plugins to enable
     plugins: [
+      'karma-ng-html2js-preprocessor',
       'karma-chrome-launcher',
       'karma-jasmine',
       'karma-emacs-reporter'
@@ -78,6 +85,10 @@ module.exports = function(config) {
 
     reporters: [ "dots", "emacs" ],
 
+    ngHtml2JsPreprocessor: {
+      stripPrefix: "^([^/]*)",
+      moduleName: "homeuiApp"
+    }
     // Uncomment the following lines if you are using grunt's server to run the tests
     // proxies: {
     //   '/': 'http://localhost:9000/'
