@@ -1,10 +1,11 @@
 <h1 class="page-header">
-  {{ path }}
+  <span ng-if="!file.isNew">{{ file.path }}</span>
+  <input ng-if="file.isNew" type="text" ng-model="file.path">
 </h1>
 
 <div class="script-editor">
   <button class="btn btn-primary" name="save" ng-click="save()">Save</button>
   <textarea ui-codemirror
             ui-codemirror-opts="{ mode: 'javascript', lineNumbers: true, viewportMargin: vpMargin, scrollbarStyle: null, onLoad: codeMirrorLoaded }"
-            ng-model="content"></textarea>
+            ng-model="file.content"></textarea>
 </div>

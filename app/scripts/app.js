@@ -94,7 +94,11 @@ angular
         templateUrl: 'views/scripts.html',
         controller: 'ScriptsCtrl'
       })
-      .when('/scripts/:path*', {
+      .when('/scripts/edit/:path*', {
+        templateUrl: 'views/script.html',
+        controller: 'ScriptCtrl'
+      })
+      .when('/scripts/new', {
         templateUrl: 'views/script.html',
         controller: 'ScriptCtrl'
       })
