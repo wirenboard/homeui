@@ -59,10 +59,13 @@ angular.module("homeuiApp")
         return;
       EditorProxy.Save({ path: $scope.file.path, content: $scope.file.content })
         .then(function (reply) {
-          if ($scope.file.isNew) {
+          if ($scope.file.isNew || pos !== null) {
+            // clear pos in the url after saving to be able
+            // to navigate to errors
             $location.path("/scripts/edit/" + reply.path);
           } else {
             cm.focus();
+            cm.setValue(cm.getValue()); // clear line classes / marks
             if (reply.error)
               showError(reply.error, reply.traceback);
             else
