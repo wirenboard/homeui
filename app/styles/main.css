@@ -410,9 +410,18 @@ footer{
   font-size: 12px;
 }
 
+.script-editor {
+  margin-right: 30px;
+  border-right: 1px solid #eee;
+}
+
 .script-editor .CodeMirror {
   height: auto;
   margin-top: 10px;
+}
+
+.script-editor .CodeMirror .script-error-line {
+  background-color: #f00;
 }
 
 button.show-console {
@@ -430,11 +439,6 @@ button.show-console {
 
 button.show-console span {
   vertical-align: -1px;
-}
-
-.script-editor {
-  margin-right: 30px;
-  border-right: 1px solid #eee;
 }
 
 .console {

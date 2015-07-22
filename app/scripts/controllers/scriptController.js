@@ -23,7 +23,7 @@ angular.module("homeuiApp")
       cm.focus();
     };
 
-    function showError (message, traceback) {
+    function showError (message, traceback, setCursor) {
       var errorLine = null;
       errors.showError("Script error", message);
 
@@ -38,8 +38,16 @@ angular.module("homeuiApp")
       }
       if (errorLine != null)
         $timeout(function () {
-          cm.setCursor(errorLine, 0);
-          cm.scrollIntoView({ line: errorLine, ch: 0 });
+          cm.addLineClass(errorLine, "wrap", "script-error-line");
+          cm.markText({ line: errorLine, ch: 0 },
+                      { line: errorLine + 1, ch: 0 },
+                      { title: message.replace(/\n.*/g, "") });
+          if (setCursor) {
+            // FIXME: this scrollIntoView() doesn't seem to work here
+            // cm.scrollIntoView({ line: errorLine, ch: 0 });
+            cm.setCursor(errorLine, 0);
+            $(".script-error-line").get(0).scrollIntoView();
+          }
         });
     }
 
@@ -73,15 +81,19 @@ angular.module("homeuiApp")
         if (pos !== null) {
           $timeout(function () {
             cm.setCursor(pos.line, pos.ch);
-            cm.scrollIntoView(pos);
+            // FIXME: this scrollIntoView() doesn't seem to work here
+            // cm.scrollIntoView(pos);
+            cm.addLineClass(pos.line, "wrap", "script-target-line");
+            $(".script-target-line").get(0).scrollIntoView();
             gotoDefStart(cm);
           });
         }
         if (r.error)
           showError(
             r.error.message,
+            r.error.traceback,
             // only jump to error location if postition wasn't specified
-            pos === null ? r.error.traceback : null);
+            pos === null);
       }).catch(errors.catch("Error loading the file"));
     }
   });
