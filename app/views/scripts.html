@@ -7,7 +7,7 @@
       <a href="#/scripts/new">New...</a>
     </li>
     <li ng-repeat="script in scripts">
-      <a href="#/scripts/{{ script.virtualPath }}"
+      <a href="#/scripts/edit/{{ script.virtualPath }}"
          ng-class="{ active: isActive('/scripts/{{ script.virtualPath }}') }">{{ script.virtualPath }}</a>
     </li>
   </ul>
