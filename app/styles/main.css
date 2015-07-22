@@ -402,6 +402,14 @@ footer{
 	box-shadow: none;
 }
 
+.script-menu .error {
+  color: #f00;
+}
+
+.script-menu .error .glyphicon-alert {
+  font-size: 12px;
+}
+
 .script-editor .CodeMirror {
   height: auto;
   margin-top: 10px;
