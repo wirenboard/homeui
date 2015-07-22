@@ -18,6 +18,7 @@
     <![endif]-->
 
     <div id="wrapper" ng-class="{ 'show-console': consoleVisible }">
+
       <!-- Navigation -->
       <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl'>
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -123,6 +124,12 @@
               <div class="alert alert-success" role="alert" ng-show='showCreated'>
                 <strong>Changes</strong> successfully saved.
               </div>
+              <div class="alert alert-danger" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="visible">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <!-- <span class="sr-only">Error:</span> -->
+                {{ message }}
+              </div>
               <div ng-view=""></div>
             </div>
           </div>
@@ -177,6 +184,7 @@
     <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
 
     <script src="scripts/app.js"></script>
+    <script src="scripts/services/errors.js"></script>
     <script src="scripts/services/mqttService.js"></script>
     <script src="scripts/services/dataService.js"></script>
     <script src="scripts/services/commonService.js"></script>
@@ -185,6 +193,7 @@
     <script src="scripts/services/gotoDefStart.js"></script>
     <script src="scripts/services/time.js"></script>
     <script src="scripts/directives/console.js"></script>
+    <script src="scripts/controllers/alertController.js"></script>
     <script src="scripts/controllers/homeController.js"></script>
     <script src="scripts/controllers/deviceController.js"></script>
     <script src="scripts/controllers/roomController.js"></script>

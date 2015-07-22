@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .controller("ScriptCtrl", function ($scope, $routeParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location) {
+  .controller("ScriptCtrl", function ($scope, $routeParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, errors) {
     var cm, pos = null;
     $scope.file = {
       isNew: !$routeParams.hasOwnProperty("path"),
@@ -33,7 +33,8 @@ angular.module("homeuiApp")
         .then(function (reply) {
           if ($scope.file.isNew)
             $location.path("/scripts/edit/" + reply.path);
-        });
+        })
+        .catch(errors.catch("Error saving the file"));
     };
 
     if (!$scope.file.isNew) {
@@ -48,8 +49,6 @@ angular.module("homeuiApp")
             gotoDefStart(cm);
           });
         }
-      }, function (e) {
-        console.error("error loading %s: %s", $scope.file.path, e.message);
-      });
+      }).catch(errors.catch("Error loading the file"));
     }
   });

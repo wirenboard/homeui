@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('NavigationCtrl', ['$scope', '$location', 'CommonCode', 'EditorProxy', 'mqttClient', 'whenMqttReady', function($scope, $location, CommonCode, EditorProxy, mqttClient, whenMqttReady){
+  .controller('NavigationCtrl', function($scope, $location, CommonCode, EditorProxy, mqttClient, whenMqttReady, errors) {
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };
@@ -48,9 +48,7 @@ angular.module('homeuiApp')
           scripts = result;
           rules = collectLocs(scripts, "rules");
           devices = collectLocs(scripts, "devices");
-        }, function (err) {
-          console.error("error listing scripts: %s", err.message);
-        });
+        }).catch(errors.catch("Error listing the scripts"));
       }
       return scripts;
     };
@@ -64,7 +62,7 @@ angular.module('homeuiApp')
       this.getScripts();
       return devices;
     };
-  }])
+  })
   .directive('roomMenuItem', function(){
     return{
       restrict: 'A',

@@ -47,9 +47,10 @@ angular.module("homeuiApp")
           $("<span class='console-message-ts'></span>")
             .text(dateFilter(ts, "yyyy-MM-dd HH:mm:ss"))
             .appendTo(msgEl);
-          $("<span class='console-message-text'></span>")
+          var textEl = $("<span class='console-message-text'></span>")
             .text(message)
             .appendTo(msgEl);
+          textEl.html(textEl.html().replace(/\n/g, "<br>"));
           msgEl.appendTo(messageContainer);
           if (scrollTimeout !== null)
             $timeout.cancel(scrollTimeout);
