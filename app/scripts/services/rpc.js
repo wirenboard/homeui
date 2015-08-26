@@ -82,7 +82,7 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
           $timeout.cancel(timeout);
           if (actualTopic !== null && actualTopic != topic + "/reply")
             reject("unexpected response topic " + actualTopic);
-          else if (reply.hasOwnProperty("error"))
+          else if (reply.hasOwnProperty("error") && reply.error !== null)
             reject(reply.error);
           else
             resolve(reply.result);
