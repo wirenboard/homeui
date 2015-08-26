@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('homeuiApp.commonServiceModule', [])
-    .factory('CommonCode', ['$rootScope', '$location', '$window', '$routeParams', 'mqttClient', 'HomeUIData', function($rootScope, $location, $window, $routeParams, mqttClient, HomeUIData) {
+    .factory('CommonCode', ['$rootScope', '$location', '$window', '$routeParams', 'mqttClient', 'HomeUIData', '$timeout', function($rootScope, $location, $window, $routeParams, mqttClient, HomeUIData, $timeout) {
         var commonCode = {};
         var globalPrefix = '';
+        var msgDigestDelay = 250;
 
         $rootScope.Math = window.Math;
 
@@ -116,11 +117,17 @@ angular.module('homeuiApp.commonServiceModule', [])
             commonCode.tryConnect();
         });
 
+        var pendingDigest = null;
         mqttClient.onMessage(function(message) {
             if ($window.localStorage['prefix'] === 'true') globalPrefix = '/client/' + $window.localStorage['user'];
             $rootScope._mqttTopicCache[message.destinationName.replace(globalPrefix, '')] = message.payloadBytes;
 
             HomeUIData.parseMsg(message);
+            if (pendingDigest)
+                $timeout.cancel(pendingDigest);
+            pendingDigest = $timeout(function () {
+                pendingDigest = null;
+            }, msgDigestDelay);
         });
 
         $rootScope.mqttSendCollection = function(topic, collection, backTo) {

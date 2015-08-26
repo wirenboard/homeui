@@ -36,6 +36,9 @@ module.exports = function(config) {
       'bower_components/angular-order-object-by/src/ng-order-object-by.js',
       'bower_components/codemirror/lib/codemirror.js',
       'bower_components/angular-ui-codemirror/ui-codemirror.js',
+      'bower_components/d3/d3.js',
+      'bower_components/c3/c3.js',
+      'bower_components/c3-angular/c3js-directive.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'bower_components/codemirror/mode/javascript/javascript.js',

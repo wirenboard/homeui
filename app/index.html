@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="bower_components/angular-toggle-switch/angular-toggle-switch.css" />
     <link rel="stylesheet" href="bower_components/spectrum/spectrum.css" />
     <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="bower_components/c3/c3.css" type="text/css">
     <link rel="stylesheet" href="styles/main.css">
   </head>
   <body ng-app="homeuiApp">
@@ -69,6 +70,9 @@
             </li>
             <li ng-class="{ active: isActive('/widgets') }">
               <a href="#/widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
+            </li>
+            <li ng-class="{ active: isActive('/history') }">
+              <a href="#/history"><i class="glyphicon glyphicon-stats"></i> History</a>
             </li>
 <!--
             <li ng-class="{ active: isActive('/widget_templates') }">
@@ -174,6 +178,8 @@
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="bower_components/codemirror/lib/codemirror.js"></script>
     <script type="text/javascript" src="bower_components/codemirror/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+    <script type="text/javascript" src="bower_components/c3/c3.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -186,6 +192,7 @@
     <script src="bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.js"></script>
     <script src="bower_components/angular-order-object-by/src/ng-order-object-by.js"></script>
     <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
+    <script src="bower_components/c3-angular/c3js-directive.js"></script>
 
     <script src="scripts/3rdparty/ui-bootstrap.js"></script>
     <script src="scripts/app.js"></script>
@@ -194,6 +201,7 @@
     <script src="scripts/services/dataService.js"></script>
     <script src="scripts/services/commonService.js"></script>
     <script src="scripts/services/editorProxy.js"></script>
+    <script src="scripts/services/historyProxy.js"></script>
     <script src="scripts/services/rpc.js"></script>
     <script src="scripts/services/gotoDefStart.js"></script>
     <script src="scripts/services/time.js"></script>
@@ -210,6 +218,7 @@
     <script src="scripts/controllers/loginController.js"></script>
     <script src="scripts/controllers/scriptController.js"></script>
     <script src="scripts/controllers/scriptsController.js"></script>
+    <script src="scripts/controllers/historyController.js"></script>
     <script src="scripts/filters/metaTypeFilter.js"></script>
   </body>
 </html>

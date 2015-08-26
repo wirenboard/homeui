@@ -22,7 +22,9 @@ angular
     'toggle-switch',
     'angularSpectrumColorpicker',
     'ngOrderObjectBy',
-    'ui.codemirror'
+    'ui.bootstrap',
+    'ui.codemirror',
+    'gridshore.c3js.chart',
   ])
   .config(function ($routeProvider) {
     $routeProvider
@@ -101,6 +103,14 @@ angular
       .when('/scripts/new', {
         templateUrl: 'views/script.html',
         controller: 'ScriptCtrl'
+      })
+      .when('/history', {
+        templateUrl: 'views/history.html',
+        controller: 'HistoryCtrl'
+      })
+      .when('/history/:device/:control/:start/:end', {
+        templateUrl: 'views/history.html',
+        controller: 'HistoryCtrl'
       })
       .otherwise({
         redirectTo: '/'
