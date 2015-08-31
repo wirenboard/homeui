@@ -5,3 +5,5 @@ dist
 /bower_components
 npm-debug.log
 .tern-port
+debian/files
+debian/wb-mqtt-homeui*
