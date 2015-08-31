@@ -14,7 +14,7 @@ describe("MQTT RPC", function () {
     MqttRpc = _MqttRpc_;
     f.connect();
     f.extClient.subscribe("/rpc/v1/fooserv/+/+/+", f.msgLogger("ext"));
-    proxy = MqttRpc.getProxy("fooserv/Arith", ["Multiply", "Divide"]);
+    proxy = MqttRpc.getProxy("fooserv/Arith", ["Multiply", "Divide"], "myproxy");
   }));
 
   it("should support remote calls", function () {
@@ -36,6 +36,58 @@ describe("MQTT RPC", function () {
       f.$rootScope.$digest(); // resolve the promise
       expect(result).toBe(r);
     }
+  });
+
+  it("should activate the spinner while the call is active", function () {
+    var proxy1 = MqttRpc.getProxy("fooserv/Arith", ["Multiply", "Divide"], "myproxy1");
+    var r1, r2;
+    expect(f.$rootScope.spinnerActive()).toBe(false);
+    expect(f.$rootScope.spinnerActive("myproxy")).toBe(false);
+    expect(f.$rootScope.spinnerActive("myproxy1")).toBe(false);
+
+    proxy.Multiply({ A: 2, B: 2 }).then(function (r) {
+      r1 = r;
+    });
+    expect(f.$rootScope.spinnerActive()).toBe(true);
+    expect(f.$rootScope.spinnerActive("myproxy")).toBe(true);
+    expect(f.$rootScope.spinnerActive("myproxy1")).toBe(false);
+    f.expectJournal().toEqual([
+      "ext: /rpc/v1/fooserv/Arith/Multiply/ui: [-] (QoS 1)",
+      {
+        id: 1,
+        params: { A: 2, B: 2 }
+      }
+    ]);
+
+    proxy1.Multiply({ A: 2, B: 5 }).then(function (r) {
+      r2 = r;
+    });
+    expect(f.$rootScope.spinnerActive()).toBe(true);
+    expect(f.$rootScope.spinnerActive("myproxy")).toBe(true);
+    expect(f.$rootScope.spinnerActive("myproxy1")).toBe(true);
+    f.expectJournal().toEqual([
+      "ext: /rpc/v1/fooserv/Arith/Multiply/ui: [-] (QoS 1)",
+      {
+        id: 2,
+        params: { A: 2, B: 5 }
+      }
+    ]);
+
+    f.extClient.send("/rpc/v1/fooserv/Arith/Multiply/ui/reply",
+                     JSON.stringify({ id: 1, result: 4 }));
+    f.$rootScope.$digest(); // resolve the promise
+    expect(r1).toBe(4);
+    expect(f.$rootScope.spinnerActive()).toBe(true);
+    expect(f.$rootScope.spinnerActive("myproxy")).toBe(false);
+    expect(f.$rootScope.spinnerActive("myproxy1")).toBe(true);
+
+    f.extClient.send("/rpc/v1/fooserv/Arith/Multiply/ui/reply",
+                     JSON.stringify({ id: 2, result: 10 }));
+    f.$rootScope.$digest(); // resolve the promise
+    expect(r2).toBe(10);
+    expect(f.$rootScope.spinnerActive()).toBe(false);
+    expect(f.$rootScope.spinnerActive("myproxy")).toBe(false);
+    expect(f.$rootScope.spinnerActive("myproxy1")).toBe(false);
   });
 
   it("should support exceptions", function () {

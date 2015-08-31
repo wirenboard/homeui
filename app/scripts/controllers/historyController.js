@@ -43,7 +43,6 @@ angular.module("homeuiApp")
     $scope.selectedTopic = $scope.topic;
     $scope.selectedStartDate = $scope.startDate;
     $scope.selectedEndDate = $scope.endDate;
-    console.log("selectedTopic %s", $scope.selectedTopic);
 
     function maybeUpdateUrl () {
       if (!$scope.selectedTopic)
@@ -53,7 +52,6 @@ angular.module("homeuiApp")
       if (!parseTopic)
         return;
 
-      console.log("parsedTopic: %o", parsedTopic);
       $location.path("/history/" + [
         parsedTopic.deviceId,
         parsedTopic.controlId,
@@ -118,8 +116,6 @@ angular.module("homeuiApp")
             y: item.value - 0
           };
         });
-        console.log("datapoints: %o", $scope.datapoints);
-        console.log("result: %o", result);
       }).catch(errors.catch("Error getting history"));
     }
 

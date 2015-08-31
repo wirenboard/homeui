@@ -513,3 +513,8 @@ button.show-console span {
 .console-message-level-info {
   color: #009;
 }
+
+.spinner {
+  padding: 30px 0;
+  text-align: center;
+}

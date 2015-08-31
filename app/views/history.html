@@ -58,7 +58,11 @@
     </div>
   </div>
 
-  <div class="col-sm-11">
+  <div class="col-sm-11 spinner" ng-show="spinnerActive('historyProxy')" ng-cloak>
+    <span class="spinner-loader">Loading...</span>
+  </div>
+
+  <div class="col-sm-11" ng-show="!spinnerActive('historyProxy')"  ng-cloak>
     <c3chart ng-show="topic !== null && datapoints.length"
              bindto-id="histchart"
              chart-data="datapoints"
