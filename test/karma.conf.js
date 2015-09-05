@@ -45,6 +45,7 @@ module.exports = function(config) {
       'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'app/scripts/**/*.js',
       'app/scripts/**/*.html',
+      'app/views/**/*.html',
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
