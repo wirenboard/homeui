@@ -21,11 +21,9 @@ angular.module("homeuiApp")
 
     return {
       start: function (id, suffix) {
-        console.log("start: " + fullId(id, suffix));
         spinner[fullId(id, suffix)] = true;
       },
       stop: function (id, suffix) {
-        console.log("stop: " + fullId(id, suffix));
         delete spinner[fullId(id, suffix)];
       },
       isActive: isActive
