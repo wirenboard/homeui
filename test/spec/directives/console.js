@@ -34,6 +34,10 @@ describe("Directive: console", function () {
     });
   }));
 
+  afterEach(function () {
+    container.remove();
+  });
+
   function extractMessages () {
     return element.find(".console-message").toArray().map(function (el) {
       el = $(el);
