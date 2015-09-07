@@ -1,6 +1,6 @@
 "use strict";
 
-describe("MQTT RPC", function () {
+describe("Scripts view", function () {
   var f, vf;
 
   beforeEach(module('homeuiApp'));

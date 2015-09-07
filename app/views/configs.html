@@ -18,8 +18,8 @@
     <tbody>
       <tr ng-repeat="config in configs">
         <td>
-          <a href="#/configs/edit/{{ config.configPath }}"
-             ng-class="{ active: isActive('/configs/{{ config.configPath }}') }">{{ config.configPath }}</a>
+          <a href="#/configs/edit{{ config.configPath }}"
+             ng-class="{ active: isActive('/configs{{ config.configPath }}') }">{{ config.configPath }}</a>
         </td>
         <td>{{ config.title }}</td>
         <td>{{ config.description }}</td>

@@ -1,0 +1,12 @@
+<h1 class="page-header">
+  <span>{{ file.path }}</span>
+</h1>
+
+<div class="spinner" ng-show="spinnerActive('configEditorProxy')" ng-cloak>
+  <span class="spinner-loader">Loading...</span>
+</div>
+
+<div class="config-editor" ng-if="file.schema && !spinnerActive('configEditorProxy')">
+  <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()">Save</button>
+  <json-editor schema="file.schema" startval="file.content" on-change="onChange"></json-editor>
+</div>

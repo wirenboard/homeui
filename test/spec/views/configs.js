@@ -57,8 +57,8 @@ describe("MQTT RPC", function () {
     });
     expect(extracted).toEqual([
       // TBD: all config paths should be absolute
-      ["#/configs/edit//etc/abc.conf", "/etc/abc.conf", "ABC config", "The config of ABC"],
-      ["#/configs/edit//etc/foobar.conf", "/etc/foobar.conf", "Foobar config", ""]
+      ["#/configs/edit/etc/abc.conf", "/etc/abc.conf", "ABC config", "The config of ABC"],
+      ["#/configs/edit/etc/foobar.conf", "/etc/foobar.conf", "Foobar config", ""]
     ]);
   });
 });

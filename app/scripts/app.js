@@ -25,8 +25,18 @@ angular
     'ui.bootstrap',
     'ui.codemirror',
     'gridshore.c3js.chart',
+    'angular-json-editor'
   ])
-  .config(function ($routeProvider) {
+  .config(function ($routeProvider, JSONEditorProvider) {
+    JSONEditorProvider.configure({
+      defaults: {
+        options: {
+          show_errors: "always"
+          // iconlib: 'bootstrap3',
+          // theme: 'bootstrap3',
+        }
+      }
+    });
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
@@ -111,6 +121,14 @@ angular
       .when('/history/:device/:control/:start/:end', {
         templateUrl: 'views/history.html',
         controller: 'HistoryCtrl'
+      })
+      .when('/configs', {
+        templateUrl: 'views/configs.html',
+        controller: 'ConfigsCtrl'
+      })
+      .when('/configs/edit/:path*', {
+        templateUrl: 'views/config.html',
+        controller: 'ConfigCtrl'
       })
       .otherwise({
         redirectTo: '/'
