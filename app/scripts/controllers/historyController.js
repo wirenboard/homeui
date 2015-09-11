@@ -104,7 +104,7 @@ angular.module("homeuiApp")
 
       if ($scope.endDate) {
         params.timestamp = params.timestamp || {};
-        params.timestamp.lt = $scope.endDate.getTime() / 1000;
+        params.timestamp.lt = $scope.endDate.getTime() / 1000 + 86400;
       }
 
       HistoryProxy.get_values(params).then(function (result) {
