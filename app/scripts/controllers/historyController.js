@@ -99,7 +99,9 @@ angular.module("homeuiApp")
 
       if ($scope.startDate) {
         params.timestamp = params.timestamp || {};
-        params.timestamp.gt = $scope.startDate.getTime() / 1000;
+        // add extra second to include 00:00:00
+        // (FIXME: maybe wb-mqtt-db should support not just gt/lt, but also gte/lte?)
+        params.timestamp.gt = $scope.startDate.getTime() / 1000 - 1;
       }
 
       if ($scope.endDate) {
