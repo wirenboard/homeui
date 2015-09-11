@@ -74,7 +74,7 @@ angular.module("homeuiApp")
         this.end = true;
       }
     };
-    var ready = false, loadPending = false;
+    var ready = false, loadPending = !!$scope.topic;
 
     function loadHistory () {
       if (!ready) {
@@ -125,7 +125,12 @@ angular.module("homeuiApp")
         loadHistory();
     });
 
-    $scope.$watch("topic", loadHistory);
-    $scope.$watch("startDate", loadHistory);
-    $scope.$watch("endDate", loadHistory);
+    function loadHistoryOnChange(newValue, oldValue) {
+      if (newValue !== oldValue)
+        loadHistory();
+    }
+
+    $scope.$watch("topic", loadHistoryOnChange);
+    $scope.$watch("startDate", loadHistoryOnChange);
+    $scope.$watch("endDate", loadHistoryOnChange);
   });
