@@ -3,7 +3,7 @@
 angular.module('homeuiApp.viewFixture', [])
   .factory("ViewFixture", function ($rootScope, $compile, $templateCache, $controller) {
     return {
-      compile: function (url, controllerName, locals) {
+      setup: function (url, controllerName, locals) {
         var html = $templateCache.get(url);
         if (html === undefined)
           throw new Error("ViewFixture: unable to locate view template: " + url);

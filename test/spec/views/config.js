@@ -1,21 +1,13 @@
 "use strict";
 
 describe("Config view", function () {
-  var f, vf, raf, reqId;
+  var f, raf;
 
-  beforeEach(module('homeuiApp'));
-  beforeEach(module('homeuiApp.fakeMqtt'));
-  beforeEach(module('homeuiApp.MqttRpc'));
-  beforeEach(module('homeuiApp.viewFixture'));
+  beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
-  beforeEach(inject(function (FakeMqttFixture, ViewFixture) {
-    reqId = 1;
-    f = FakeMqttFixture;
-    f.useJSON = true;
-    f.connect();
-    f.extClient.subscribe("/rpc/v1/confed/Editor/+/+", f.msgLogger("ext"));
-    vf = ViewFixture;
-    vf.compile("/views/config.html", "ConfigCtrl", {
+  beforeEach(inject(function (MqttRpcViewFixture) {
+    f = MqttRpcViewFixture;
+    f.setup("/rpc/v1/confed/Editor", "/views/config.html", "ConfigCtrl", {
       $routeParams: { path: "etc/foobar.conf" }
     });
     // json-editor is not very testable out of the box
@@ -28,48 +20,35 @@ describe("Config view", function () {
 
   afterEach(function () {
     window.requestAnimationFrame = raf;
-    vf.remove();
+    f.remove();
   });
 
   function load () {
-    f.expectJournal().toEqual([
-      "ext: /rpc/v1/confed/Editor/Load/ui: [-] (QoS 1)",
-      {
-        id: reqId,
-        params: {
-          path: "/etc/foobar.conf"
-        }
-      }
-    ]);
-    f.extClient.send(
-      "/rpc/v1/confed/Editor/Load/ui/reply",
-      JSON.stringify({
-        id: reqId++,
-        result: {
-          content: {
-            name: "foo"
-          },
-          schema: {
-            "type": "object",
-            "title": "Another Example Config",
-            "properties": {
-              "name": {
-                "type": "string",
-                "title": "Device name",
-                "description": "Device name to be displayed in UI",
-                "minLength": 1
-              }
-            },
-            "required": ["name"],
-            "configPath": "/etc/foobar.conf"
+    f.expectRequest("/rpc/v1/confed/Editor/Load", {
+      path: "/etc/foobar.conf"
+    }, {
+      content: {
+        name: "foo"
+      },
+      schema: {
+        "type": "object",
+        "title": "Another Example Config",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Device name",
+            "description": "Device name to be displayed in UI",
+            "minLength": 1
           }
-        }
-      }));
-    f.$rootScope.$digest();
+        },
+        "required": ["name"],
+        "configPath": "/etc/foobar.conf"
+      }
+    });
   }
 
   function nameInput () {
-    var nameInput = vf.container.find("input[name='root[name]']");
+    var nameInput = f.container.find("input[name='root[name]']");
     expect(nameInput).toExist();
     return nameInput;
   }
@@ -80,7 +59,7 @@ describe("Config view", function () {
   });
 
   function saveButton () {
-    var saveBtn = vf.container.find(".config-editor > button[name=save]");
+    var saveBtn = f.container.find(".config-editor > button[name=save]");
     expect(saveBtn).toHaveLength(1);
     return saveBtn;
   }
@@ -104,28 +83,16 @@ describe("Config view", function () {
   });
 
   function processSave(expectedContent, error) {
-    f.expectJournal().toEqual([
-      "ext: /rpc/v1/confed/Editor/Save/ui: [-] (QoS 1)",
-      {
-        id: reqId,
-        params: {
-          path: "/etc/foobar.conf",
-          content: expectedContent
-        }
-      }
-    ]);
-    f.extClient.send(
-      "/rpc/v1/confed/Editor/Save/ui/reply",
-      JSON.stringify(!error ? {
-        id: reqId++,
-        result: {
-          path: "/etc/foobar.conf"
-        }
-      } : {
-        id: reqId++,
-        error: error
-      }));
-    f.$rootScope.$digest();
+    var params = {
+        path: "/etc/foobar.conf",
+        content: expectedContent
+    };
+    if (!error)
+      f.expectRequest("/rpc/v1/confed/Editor/Save", params, {
+        path: "/etc/foobar.conf"
+      });
+    else
+      f.expectRequestAndFail("/rpc/v1/confed/Editor/Save", params, error);
   }
 
   it("should post changes to the server after clicking Save, then disable Save button", function () {
@@ -141,7 +108,7 @@ describe("Config view", function () {
     load();
     editName("");
     expect(saveButton()).toBeDisabled();
-    var errorMsg = vf.container.find(".errormsg");
+    var errorMsg = f.container.find(".errormsg");
     expect(errorMsg).toHaveLength(1);
     expect(errorMsg).toBeVisible();
     expect(errorMsg).toContainText("Value required.");
@@ -166,5 +133,3 @@ describe("Config view", function () {
     expect(msg).toBe("Error saving /etc/foobar.conf: write failed");
   });
 });
-
-// TBD: _format -> format (workaround for gojsconschema problem)

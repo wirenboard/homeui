@@ -1,52 +1,32 @@
 "use strict";
 
-describe("MQTT RPC", function () {
-  var f, vf;
+describe("Configs view", function () {
+  var f;
 
-  beforeEach(module('homeuiApp'));
-  beforeEach(module('homeuiApp.fakeMqtt'));
-  beforeEach(module('homeuiApp.MqttRpc'));
-  beforeEach(module('homeuiApp.viewFixture'));
+  beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
-  beforeEach(inject(function (FakeMqttFixture, ViewFixture) {
-    f = FakeMqttFixture;
-    f.useJSON = true;
-    f.connect();
-    f.extClient.subscribe("/rpc/v1/confed/Editor/+/+", f.msgLogger("ext"));
-    vf = ViewFixture;
-    vf.compile("/views/configs.html", "ConfigsCtrl");
+  beforeEach(inject(function (MqttRpcViewFixture) {
+    f = MqttRpcViewFixture;
+    f.setup("/rpc/v1/confed/Editor", "/views/configs.html", "ConfigsCtrl");
   }));
 
   afterEach(function () {
-    vf.remove();
+    f.remove();
   });
 
   it("should display a list of configs", function () {
-    f.expectJournal().toEqual([
-      "ext: /rpc/v1/confed/Editor/List/ui: [-] (QoS 1)",
+    f.expectRequest("/rpc/v1/confed/Editor/List", {}, [
       {
-        id: 1,
-        params: {}
+        title: "ABC config",
+        description: "The config of ABC",
+        configPath: "/etc/abc.conf"
+      },
+      {
+        title: "Foobar config",
+        configPath: "/etc/foobar.conf"
       }
     ]);
-    f.extClient.send(
-      "/rpc/v1/confed/Editor/List/ui/reply",
-      JSON.stringify({
-        id: 1,
-        result: [
-          {
-            title: "ABC config",
-            description: "The config of ABC",
-            configPath: "/etc/abc.conf"
-          },
-          {
-            title: "Foobar config",
-            configPath: "/etc/foobar.conf"
-          }
-        ]
-      }));
-    f.$rootScope.$digest(); // resolve the promise
-    var extracted = vf.container.find("table > tbody > tr").toArray().map(function (tr) {
+    var extracted = f.container.find("table > tbody > tr").toArray().map(function (tr) {
       return [$(tr).find("a").prop("hash")]
         .concat(
           $(tr).find("td")

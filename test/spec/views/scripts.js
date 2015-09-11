@@ -1,49 +1,25 @@
 "use strict";
 
 describe("Scripts view", function () {
-  var f, vf;
+  var f;
 
-  beforeEach(module('homeuiApp'));
-  beforeEach(module('homeuiApp.fakeMqtt'));
-  beforeEach(module('homeuiApp.MqttRpc'));
-  beforeEach(module('homeuiApp.viewFixture'));
+  beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
-  beforeEach(inject(function (FakeMqttFixture, ViewFixture) {
-    f = FakeMqttFixture;
-    f.useJSON = true;
-    f.connect();
-    f.extClient.subscribe("/rpc/v1/wbrules/Editor/+/+", f.msgLogger("ext"));
-    vf = ViewFixture;
-    vf.compile("/views/scripts.html", "ScriptsCtrl");
+  beforeEach(inject(function (MqttRpcViewFixture) {
+    f = MqttRpcViewFixture;
+    f.setup("/rpc/v1/wbrules/Editor", "/views/scripts.html", "ScriptsCtrl");
   }));
 
   afterEach(function () {
-    vf.remove();
+    f.remove();
   });
 
   it("should display a list of scripts", function () {
-    f.expectJournal().toEqual([
-      "ext: /rpc/v1/wbrules/Editor/List/ui: [-] (QoS 1)",
-      {
-        id: 1,
-        params: {}
-      }
+    f.expectRequest("/rpc/v1/wbrules/Editor/List", {}, [
+      { virtualPath: "abc.js" },
+      { virtualPath: "foobar.js" }
     ]);
-    f.extClient.send(
-      "/rpc/v1/wbrules/Editor/List/ui/reply",
-      JSON.stringify({
-        id: 1,
-        result: [
-          {
-            virtualPath: "abc.js"
-          },
-          {
-            virtualPath: "foobar.js"
-          }
-        ]
-      }));
-    f.$rootScope.$digest(); // resolve the promise
-    var extracted = vf.container.find("li > a").toArray().map(function (el) {
+    var extracted = f.container.find("li > a").toArray().map(function (el) {
       return [el.hash, el.textContent];
     });
     expect(extracted).toEqual([
