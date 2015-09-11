@@ -44,12 +44,12 @@ angular.module("homeuiApp")
     $scope.selectedStartDate = $scope.startDate;
     $scope.selectedEndDate = $scope.endDate;
 
-    function maybeUpdateUrl () {
-      if (!$scope.selectedTopic)
+    function maybeUpdateUrl (newValue, oldValue) {
+      if (newValue === oldValue || !$scope.selectedTopic)
         return;
 
       var parsedTopic = parseTopic($scope.selectedTopic);
-      if (!parseTopic)
+      if (!parsedTopic)
         return;
 
       $location.path("/history/" + [
@@ -60,9 +60,9 @@ angular.module("homeuiApp")
       ].join("/"));
     }
 
-    $scope.$watchGroup(
-      ["selectedTopic", "selectedStartDate", "selectedEndDate"],
-      maybeUpdateUrl);
+    ["selectedTopic", "selectedStartDate", "selectedEndDate"].forEach(function (expr) {
+      $scope.$watch(expr, maybeUpdateUrl);
+    });
 
     $scope.popups = {
       start: false,
