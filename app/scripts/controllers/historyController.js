@@ -2,7 +2,8 @@
 
 angular.module("homeuiApp")
   .controller("HistoryCtrl", function ($scope, $routeParams, $location, HistoryProxy,
-                                       whenMqttReady, errors, CommonCode, historyMaxPoints) {
+                                       whenMqttReady, errors, CommonCode, historyMaxPoints,
+                                       $timeout) {
     $scope.datapoints = [];
     $scope.datacolumns = [
       { "id":"y", "type":"line", "color":"green" }
@@ -23,6 +24,11 @@ angular.module("homeuiApp")
     $scope.controls = CommonCode.data.controls;
     $scope.startDate = convDate($routeParams.start);
     $scope.endDate = convDate($routeParams.end);
+    $scope.shouldShowChart = function () {
+      return !$scope.spinnerActive('historyProxy') &&
+        $scope.topic !== null &&
+        !!$scope.datapoints.length;
+    };
 
     function parseTopic (topic) {
       if (!topic)

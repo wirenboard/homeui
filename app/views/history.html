@@ -58,12 +58,13 @@
     </div>
   </div>
 
-  <div class="col-sm-11 spinner" ng-show="spinnerActive('historyProxy')" ng-cloak>
+  <div class="col-sm-12 spinner" ng-show="spinnerActive('historyProxy')" ng-cloak>
     <span class="spinner-loader">Loading...</span>
   </div>
 
-  <div class="col-sm-11" ng-show="!spinnerActive('historyProxy')"  ng-cloak>
-    <c3chart ng-show="topic !== null && datapoints.length"
+  <!-- don't use ng-show on c3 because it will cause problems with chart size -->
+  <div class="col-sm-12" ng-if="!spinnerActive('historyProxy')">
+    <c3chart ng-if="shouldShowChart()"
              bindto-id="histchart"
              chart-data="datapoints"
              chart-columns="datacolumns"
@@ -82,7 +83,7 @@
     </div>
   </div>
 
-  <div class="col-sm-4" ng-show="topic !== null && datapoints.length">
+  <div class="col-sm-4" ng-show="shouldShowChart()">
     <table class="table">
       <thead>
         <tr>

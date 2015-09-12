@@ -15,7 +15,8 @@
     "jquery": "~2.1.4",
     "c3-angular": "~0.6.0",
     "css-spinners": "~2.1.0",
-    "json-editor": "^0.7.22"
+    "json-editor": "^0.7.22",
+    "c3": "0.4.11-rc4"
   },
   "devDependencies": {
     "angular-mocks": "~1.3"

@@ -55,7 +55,10 @@ describe("History view", function () {
     beforeEach(setup());
 
     it("should not display start/end dates and the chart until the topic is selected", function () {
-      expect($("#history-start, #history-end, #histchart")).not.toBeVisible();
+      expect($("#history-start, #history-end")).not.toBeVisible();
+      // The chart must no be a part of DOM at this point
+      // or it will have resize issues
+      expect($("#histchart")).not.toExist();
     });
 
     it("should list controls in the <select>", function () {
