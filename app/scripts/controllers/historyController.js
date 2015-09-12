@@ -109,6 +109,8 @@ angular.module("homeuiApp")
       }
 
       HistoryProxy.get_values(params).then(function (result) {
+        if (result.has_more)
+          errors.showError("Warning", "maximum number of points exceeded");
         $scope.datapoints = result.values.map(function (item) {
           var ts = new Date();
           ts.setTime(item.timestamp * 1000);

@@ -10,7 +10,7 @@ describe("History view", function () {
     module(function ($provide) {
       // make sure we don't have to update the test
       // every time the limit is reconfigured
-      $provide.value("historyMaxPoints", 100);
+      $provide.value("historyMaxPoints", 5);
     });
   });
 
@@ -80,18 +80,22 @@ describe("History view", function () {
   describe("with topic selected", function () {
     beforeEach(setup({ device: "somedev", control: "somectl" }));
 
-    function load () {
-      f.expectRequest("/rpc/v1/db_logger/history/get_values", {
-        channels: [["somedev", "somectl"]],
-        limit: 100
-      }, {
+    function load (hasMore) {
+      var resp = {
         values: [
           { timestamp: ts(1), value: 10 },
           { timestamp: ts(2), value: 20 },
           { timestamp: ts(3), value: 30 },
-          { timestamp: ts(4), value: 42 }
+          { timestamp: ts(4), value: 40 },
+          { timestamp: ts(5), value: 50 }
         ]
-      });
+      };
+      if (hasMore)
+        resp.has_more = true;
+      f.expectRequest("/rpc/v1/db_logger/history/get_values", {
+        channels: [["somedev", "somectl"]],
+        limit: 5
+      }, resp);
     }
 
     it("should display selected topic in the select", function () {
@@ -122,7 +126,8 @@ describe("History view", function () {
         ["2015-09-01 00:00:00", "10"],
         ["2015-09-02 00:00:00", "20"],
         ["2015-09-03 00:00:00", "30"],
-        ["2015-09-04 00:00:00", "42" ]
+        ["2015-09-04 00:00:00", "40"],
+        ["2015-09-05 00:00:00", "50"]
       ]);
     });
 
@@ -141,6 +146,17 @@ describe("History view", function () {
       expect(f.$location.path).toHaveBeenCalledWith("/history/somedev/somectl/-/" + ts(3) * 1000);
       f.$location.path.calls.reset();
     });
+
+    it("should display warning in case if maximum number of points is exceeded", function () {
+      var msg = null;
+      f.$rootScope.$on("alert", function (ev, message, sticky) {
+        expect(msg).toBeNull();
+        expect(sticky).toBe(true);
+        msg = message;
+      });
+      load(true);
+      expect(msg).toBe("Warning: maximum number of points exceeded");
+    });
   });
 
   describe("with topic and start date selected", function () {
@@ -156,7 +172,7 @@ describe("History view", function () {
         timestamp: {
           gt: ts(2) - 1
         },
-        limit: 100
+        limit: 5
       }, {
         values: [
           { timestamp: ts(2), value: 20 },
@@ -197,7 +213,7 @@ describe("History view", function () {
         timestamp: {
           lt: ts(3) + 86400
         },
-        limit: 100
+        limit: 5
       }, {
         values: [
           { timestamp: ts(1), value: 20 },
@@ -240,7 +256,7 @@ describe("History view", function () {
           gt: ts(2) - 1,
           lt: ts(3) + 86400
         },
-        limit: 100
+        limit: 5
       }, {
         values: [
           { timestamp: ts(2), value: 20 },
