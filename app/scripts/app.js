@@ -27,6 +27,7 @@ angular
     'gridshore.c3js.chart',
     'angular-json-editor'
   ])
+  .value("historyMaxPoints", 1000)
   .config(function ($routeProvider, JSONEditorProvider) {
     JSONEditorProvider.configure({
       defaults: {

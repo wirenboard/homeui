@@ -1,7 +1,6 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .value("historyMaxPoints", 1000)
   .controller("HistoryCtrl", function ($scope, $routeParams, $location, HistoryProxy,
                                        whenMqttReady, errors, CommonCode, historyMaxPoints) {
     $scope.datapoints = [];
