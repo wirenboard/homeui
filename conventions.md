@@ -23,7 +23,7 @@ Different values can be set by publishing an arbitrary integer that is greater t
 
 #### RGB color control
 R/W control for color
-* Meta topic value: pushbutton
+* Meta topic value: rgb
 * Possible values: "R;G;B" , i.e. three semicolon-delimited numbers.
 The numbers itself must be integers between 0 and 255.
 
@@ -37,7 +37,7 @@ A read-only control that displays it's value as text.
 
 A read-only control for a arbitrary value.
 
-* Meta type value: "value"
+* Meta type value: value
 * Possible values: float
 
 Units should be specified in "meta/units" topic.
