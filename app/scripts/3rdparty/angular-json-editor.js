@@ -100,6 +100,14 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                     throw new Error('json-editor: could not resolve schema data.');
                 }
 
+                // Commit changes in text fields immediately.
+                // FIXME: should make this an option (and perhaps file a pull request for JSONEditor)
+                element.on("input", "input[type=text], textarea", function () {
+                    var e = document.createEvent("HTMLEvents");
+                    e.initEvent("change", false, true);
+                    this.dispatchEvent(e);
+                });
+
                 scope.editor = new JSONEditor(element[0], {
                     startval: startVal,
                     schema: schema
