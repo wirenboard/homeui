@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.1.1) stable; urgency=medium
+
+  * create /var/www/uploads directory 
+
+ -- Alexey Ignatov <lexszero@gmail.com>  Wed, 23 Sep 2015 18:42:06 +0000
+
 wb-mqtt-homeui (1.1) stable; urgency=medium
 
   * support for rule editing
