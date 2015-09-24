@@ -22,6 +22,7 @@ angular
     'ngTouch',
     'toggle-switch',
     'angularSpectrumColorpicker',
+    'ngFileUpload',
     'ngOrderObjectBy',
     'ui.bootstrap',
     'ui.codemirror',

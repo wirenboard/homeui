@@ -54,6 +54,24 @@
   <div class="col-lg-12">
     <div class="panel panel-default">
       <div class="panel-heading">
+        <h3 class="panel-title"><i class="glyphicon glyphicon-upload"></i> Firmware update</h3>
+      </div>
+      <div class="panel-body" ng-controller="FirmwareCtrl">
+        <button type="file" class="btn btn-default" ngf-select="firmwareUpload($file)" ngf-max-size="200MB">Select file</button>
+        <br><br>
+        File:
+        <div style="font:smaller">{{firmwareFile.name}} {{firmwareFile.$error}} {{firmwareFile.$errorParam}}
+          <span class="progress" ng-show="firmwareFile.progress >= 0">
+            <div style="width:{{firmwareFile.progress}}%" ng-bind="firmwareFile.progress + '%'"></div>
+          </span>
+        </div>
+        {{errorMsg}}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
         <h3 class="panel-title"><i class="glyphicon glyphicon-wrench"></i> Common Info</h3>
       </div>
       <div class="panel-body">
