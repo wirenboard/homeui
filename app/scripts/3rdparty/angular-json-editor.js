@@ -102,7 +102,8 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
 
                 // Commit changes in text fields immediately.
                 // FIXME: should make this an option (and perhaps file a pull request for JSONEditor)
-                element.on("input", "input[type=text], textarea", function () {
+                // FIXME: ipv4 input type seems to be an invention of JSONEditor author
+                element.on("input", "input[type=text], input[type=ipv4], textarea", function () {
                     var e = document.createEvent("HTMLEvents");
                     e.initEvent("change", false, true);
                     this.dispatchEvent(e);
