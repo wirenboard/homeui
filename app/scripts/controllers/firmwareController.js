@@ -4,24 +4,23 @@ angular.module('homeuiApp')
   .controller('FirmwareCtrl', function ($scope, $timeout, Upload, mqttClient, whenMqttReady) {
   $scope.busy = false;
   $scope.done = false;
-  $scope.showState = false;
 
-  var showInfo = function(msg) {
-    $scope.stateMsg = msg;
-    $scope.stateType = 'info';
-  }
+  var log = $('#firmwareLog')
 
-  var showError = function(msg) {
+  var showState = function(type, msg) {
+    if ($scope.progress == 0) {
+      $scope.progress = 100;
+    }
+    $scope.stateType = type;
     $scope.stateMsg = msg;
-    $scope.stateType = 'danger';
   }
 
   $scope.upload = function(file) {
     $scope.f = file;
     $scope.busy = true;
-    $scope.showState = false;
     if (file && !file.$error) {
-      showInfo('Uploading firmware file')
+      showState('info', 'Uploading firmware file');
+      $scope.log = '';
       file.upload = Upload.upload({
         url: '/fwupdate/upload',
         file: file
@@ -30,18 +29,16 @@ angular.module('homeuiApp')
       })
       .success(function (data, status, headers, config) {
         $scope.progress = 0;
-        showInfo('Upload complete')
-        $scope.showState = true;
-        $scope.log = '';
+        showState('info', 'Upload complete')
         whenMqttReady().then(function() {
           mqttClient.subscribe('/firmware/log', function(msg) {
-            $scope.log = $scope.log + "\n" + msg.payload;
+            log.append($scope.log + "\n" + msg.payload);
+            if (log.length) {
+              log.scrollTop(log[0].scrollHeight - log.height());
+            }
           })
           mqttClient.subscribe('/firmware/progress', function(msg) {
             $scope.progress = parseInt(msg.payload);
-            if ($scope.progress == 100) {
-                $scope.progress = 0;
-            }
           })
           mqttClient.subscribe('/firmware/status', function(msg) {
             var p = msg.payload.indexOf(' ');
@@ -49,21 +46,22 @@ angular.module('homeuiApp')
             var payload = (p < 0) ? msg.payload : msg.payload.substr(p+1, msg.payload.length);
 
             if (type == 'DONE') {
+                showState('success', 'All done');
                 $scope.busy = true;
                 $scope.done = true;
-            } else {
-              if (type == 'OK') {
-                showInfo(payload);
-              } else if (type == 'ERROR') {
-                showError(payload);
-              }
+            } else if (type == 'REBOOT') {
+                showState('warning', 'Rebooting, please wait');
+            } else if (type == 'OK') {
+                showState('info', payload);
+            } else if (type == 'ERROR') {
+                showError('danger', payload);
             }
           })
         })
       })
       .error(function (data, status, headers, config) {
         $scope.progress = 0;
-        showError(status + ': ' + data)
+        showState('error', status + ': ' + data)
       })
 
     }

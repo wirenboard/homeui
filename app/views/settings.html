@@ -57,21 +57,15 @@
         <h3 class="panel-title"><i class="glyphicon glyphicon-upload"></i> Firmware update</h3>
       </div>
       <div class="panel-body">
-        <div class="form-group">
-
-            <button ng-show="!busy" type="file" class="btn btn-success btn-lg" 
-                ngf-select="upload($file)" ngf-max-size="200MB" ngf-pattern="'.fit,.*'">Select file</button>
-
-            <div class="progress" ng-show="showState || progress">
-              <div class="progress-bar progress-bar-striped" style="width:{{progress}}%;" ng-bind="progress+'%'"></div>
-            </div>
-
-            <div class="alert alert-{{stateType}}" ng-show="showState && stateMsg">{{stateMsg}}</div>
-
-            <pre class="well well-sm pre-scrollable" ng-show="showState && busy" ng-bind="log"></pre>
-
-            <button class="btn btn-lg btn-default" ng-show="done" ng-click="showState = false; progress = 0; done = false; busy = false">Hide log</button>
+        <button ng-show="!busy" type="file" class="btn btn-success btn-lg" 
+            ngf-select="upload($file)" ngf-max-size="300MB" ngf-pattern="'.fit,.*'">Select file</button>
+        <div class="progress" ng-show="busy">
+          <div class="progress-bar progress-bar-{{stateType}}" style="width:{{progress}}%;">
+		    <span ng-bind="stateMsg"></span>
+		  </div>
         </div>
+        <pre id="firmwareLog" class="well well-sm pre-scrollable" ng-show="busy" ng-bind="log"></pre>
+        <button class="btn btn-lg btn-default" ng-show="done" ng-click="done = false; busy = false">Hide log</button>
       </div>
     </div>
   </div>
