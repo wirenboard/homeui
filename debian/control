@@ -8,5 +8,5 @@ Build-Depends: debhelper (>= 9), pkg-config
 Package: wb-mqtt-homeui
 Architecture: all
 Conflicts: wb-homa-webinterface
-Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools
+Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools, nginx-extras, wb-utils (>=1.57)
 Description: Wiren Board HomeUI web interface

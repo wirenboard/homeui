@@ -1,3 +1,15 @@
+wb-mqtt-homeui (1.3.1) stable; urgency=medium
+
+  * fwupdate: change messages, fix controller
+
+ -- Alexey Ignatov <lexszero@gmail.com>  Mon, 28 Sep 2015 00:22:31 +0000
+
+wb-mqtt-homeui (1.3) stable; urgency=medium
+
+  * firmware update
+
+ -- Alexey Ignatov <lexszero@gmail.com>  Sat, 26 Sep 2015 20:13:38 +0000
+
 wb-mqtt-homeui (1.2) stable; urgency=medium
 
   * history viewer 

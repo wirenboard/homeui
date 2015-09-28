@@ -2,8 +2,10 @@
 
 angular.module('homeuiApp')
   .controller('FirmwareCtrl', function ($scope, $timeout, Upload, mqttClient, whenMqttReady) {
-  $scope.busy = false;
+  $scope.canUpload = false;
   $scope.done = false;
+  $scope.uploading = false;
+  $scope.running = false;
 
   var log = $('#firmwareLog')
 
@@ -15,12 +17,68 @@ angular.module('homeuiApp')
     $scope.stateMsg = msg;
   }
 
+  var showDoneButton = function(msg) {
+    $scope.doneLabel = msg;
+    $scope.done = true;
+  }
+
+  var timeout = undefined;
+
+  var setTimeout = function(seconds, msg) {
+    $scope.running = true;
+    if (timeout) {
+      $timeout.cancel(timeout)
+    }
+    timeout = $timeout(function() {
+      timeout = undefined;
+      showState('error', msg);
+      showDoneButton('Dismiss');
+    }, seconds * 1000);
+  }
+
+  var setProgressTimeout = function() {
+    setTimeout(60, 'Firmware update stalled, something gone wrong')
+  }
+
+  mqttClient.addStickySubscription('/firmware/status', function(msg) {
+    var p = msg.payload.indexOf(' ');
+    var type = (p < 0) ? msg.payload : msg.payload.substr(0, p);
+    var payload = (p < 0) ? msg.payload : msg.payload.substr(p+1, msg.payload.length);
+    if (type == 'IDLE') {
+      $scope.canUpload = true;
+      if ($scope.running) {
+        $timeout.cancel(timeout);
+        showState('success', 'Firmware update complete');
+        showDoneButton('Hide');
+      }
+    } else if (type == 'INFO') {
+      showState('info', payload);
+      setProgressTimeout();
+    } else if (type == 'ERROR') {
+      showState('error', payload);
+      setProgressTimeout();
+    } else if (type == 'REBOOT') {
+      showState('warning', 'Rebooting, please wait');
+      setTimeout(300, 'It tooks too long to reboot');
+    }
+  })
+  mqttClient.addStickySubscription('/firmware/log', function(msg) {
+    log.append(msg.payload + "\n");
+    if (log.length) {
+      log.scrollTop(log[0].scrollHeight - log.height());
+    }
+    setProgressTimeout();
+  })
+  mqttClient.addStickySubscription('/firmware/progress', function(msg) {
+    $scope.progress = parseInt(msg.payload);
+    setProgressTimeout();
+  })
+
   $scope.upload = function(file) {
-    $scope.f = file;
-    $scope.busy = true;
     if (file && !file.$error) {
+      $scope.uploading = true;
+      log.text('');
       showState('info', 'Uploading firmware file');
-      $scope.log = '';
       file.upload = Upload.upload({
         url: '/fwupdate/upload',
         file: file
@@ -28,42 +86,19 @@ angular.module('homeuiApp')
         $scope.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
       })
       .success(function (data, status, headers, config) {
-        $scope.progress = 0;
+        $scope.uploading = false;
+        setProgressTimeout();
         showState('info', 'Upload complete')
-        whenMqttReady().then(function() {
-          mqttClient.subscribe('/firmware/log', function(msg) {
-            log.append($scope.log + "\n" + msg.payload);
-            if (log.length) {
-              log.scrollTop(log[0].scrollHeight - log.height());
-            }
-          })
-          mqttClient.subscribe('/firmware/progress', function(msg) {
-            $scope.progress = parseInt(msg.payload);
-          })
-          mqttClient.subscribe('/firmware/status', function(msg) {
-            var p = msg.payload.indexOf(' ');
-            var type = (p < 0) ? msg.payload : msg.payload.substr(0, p);
-            var payload = (p < 0) ? msg.payload : msg.payload.substr(p+1, msg.payload.length);
-
-            if (type == 'DONE') {
-                showState('success', 'All done');
-                $scope.busy = true;
-                $scope.done = true;
-            } else if (type == 'REBOOT') {
-                showState('warning', 'Rebooting, please wait');
-            } else if (type == 'OK') {
-                showState('info', payload);
-            } else if (type == 'ERROR') {
-                showError('danger', payload);
-            }
-          })
-        })
       })
       .error(function (data, status, headers, config) {
-        $scope.progress = 0;
-        showState('error', status + ': ' + data)
+        $scope.uploading = false;
+        showState('error', status + ': ' + data);
+        showDoneButton();
       })
-
     }
+  }
+
+  $scope.doneClick = function() {
+    $scope.done = $scope.running = $scope.uploading = false;
   }
 });
