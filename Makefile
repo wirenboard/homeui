@@ -1,7 +1,9 @@
 .PHONY: all clean
 
+PATH := /usr/local/bin:$(PATH)
+
 all:
-	/usr/local/bin/bower install --allow-root
+	bower install --allow-root
 
 clean :
 	#~ /usr/local/bin/bower  cache clean --allow-root
