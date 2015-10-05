@@ -15,6 +15,7 @@ angular
     'homeuiApp.commonServiceModule',
     'homeuiApp.dataFilters',
     'homeuiApp.MqttRpc',
+    'homeuiApp.DumbTemplate',
     'ngResource',
     'ngRoute',
     'ngSanitize',
@@ -22,9 +23,30 @@ angular
     'toggle-switch',
     'angularSpectrumColorpicker',
     'ngOrderObjectBy',
-    'ui.codemirror'
+    'ui.bootstrap',
+    'ui.codemirror',
+    'gridshore.c3js.chart',
+    'angular-json-editor'
   ])
-  .config(function ($routeProvider) {
+  .value("historyMaxPoints", 1000)
+  .config(function ($routeProvider, JSONEditorProvider, DumbTemplateProvider) {
+    var DumbTemplate = null;
+    JSONEditorProvider.configure({
+      defaults: {
+        options: {
+          show_errors: "always",
+          template: {
+            compile: function (template) {
+              if (!DumbTemplate)
+                DumbTemplate = DumbTemplateProvider.$get();
+              return DumbTemplate.compile(template);
+            }
+          }
+          // iconlib: 'bootstrap3',
+          // theme: 'bootstrap3',
+        }
+      }
+    });
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
@@ -101,6 +123,22 @@ angular
       .when('/scripts/new', {
         templateUrl: 'views/script.html',
         controller: 'ScriptCtrl'
+      })
+      .when('/history', {
+        templateUrl: 'views/history.html',
+        controller: 'HistoryCtrl'
+      })
+      .when('/history/:device/:control/:start/:end', {
+        templateUrl: 'views/history.html',
+        controller: 'HistoryCtrl'
+      })
+      .when('/configs', {
+        templateUrl: 'views/configs.html',
+        controller: 'ConfigsCtrl'
+      })
+      .when('/configs/edit/:path*', {
+        templateUrl: 'views/config.html',
+        controller: 'ConfigCtrl'
       })
       .otherwise({
         redirectTo: '/'

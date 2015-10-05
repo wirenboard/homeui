@@ -11,3 +11,4 @@ debian/wb-mqtt-homeui.debhelper.log
 debian/wb-mqtt-homeui.substvars
 debian/wb-mqtt-homeui/
 				
+debian/wb-mqtt-homeui*

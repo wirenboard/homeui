@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('NavigationCtrl', function($scope, $location, CommonCode, EditorProxy, mqttClient, whenMqttReady, errors) {
+  .controller('NavigationCtrl', function($scope, $location, CommonCode, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors) {
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };
@@ -14,12 +14,14 @@ angular.module('homeuiApp')
       return mqttClient.isConnected();
     };
 
-    var scripts = [], rules = [], devices = [], needToLoadFiles = false;
+    var scripts = [], rules = [], devices = [], configs = [],
+        needToLoadScripts = false,
+        needToLoadConfigs = false;
 
     whenMqttReady().then(function () {
-      needToLoadFiles = true;
+      needToLoadScripts = needToLoadConfigs = true;
       mqttClient.subscribe("/wbrules/updates/+", function () {
-        needToLoadFiles = true;
+        needToLoadScripts = true;
       });
     });
 
@@ -42,8 +44,8 @@ angular.module('homeuiApp')
     }
 
     $scope.getScripts = function () {
-      if (needToLoadFiles) {
-        needToLoadFiles = false;
+      if (needToLoadScripts) {
+        needToLoadScripts = false;
         EditorProxy.List().then(function (result) {
           scripts = result;
           rules = collectLocs(scripts, "rules");
@@ -61,6 +63,16 @@ angular.module('homeuiApp')
     $scope.getVirtualDevices = function getVirtualDevices () {
       this.getScripts();
       return devices;
+    };
+
+    $scope.getConfigs = function () {
+      if (needToLoadConfigs) {
+        needToLoadConfigs = false;
+        ConfigEditorProxy.List().then(function (result) {
+          configs = result;
+        }).catch(errors.catch("Error listing the configs"));
+      }
+      return configs;
     };
   })
   .directive('roomMenuItem', function(){

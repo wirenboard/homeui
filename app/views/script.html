@@ -3,7 +3,11 @@
   <input ng-if="file.isNew" type="text" ng-model="file.path">
 </h1>
 
-<div class="script-editor">
+<div class="spinner" ng-show="spinnerActive('editorProxy')" ng-cloak>
+  <span class="spinner-loader">Loading...</span>
+</div>
+
+<div class="script-editor" ng-if="!spinnerActive('editorProxy')">
   <button class="btn btn-primary" name="save" ng-click="save()">Save</button>
   <textarea ui-codemirror
             ui-codemirror-opts="{ mode: 'javascript', lineNumbers: true, viewportMargin: vpMargin, scrollbarStyle: null, onLoad: codeMirrorLoaded }"

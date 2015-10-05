@@ -7,5 +7,5 @@ angular.module("homeuiApp")
       "Load",
       "Save",
       "Remove"
-    ]);
+    ], "editorProxy");
   }]);

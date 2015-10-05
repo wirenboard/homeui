@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.2) stable; urgency=medium
+
+  * history viewer 
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 10 Sep 2015 18:52:14 +0300
+
 wb-mqtt-homeui (1.1.1) stable; urgency=medium
 
   * create /var/www/uploads directory 

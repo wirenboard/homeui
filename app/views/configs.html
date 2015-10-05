@@ -1,0 +1,29 @@
+<h1 class="page-header">
+  Configuration Files
+</h1>
+
+<div class="spinner" ng-show="spinnerActive('configEditorProxy')" ng-cloak>
+  <span class="spinner-loader">Loading...</span>
+</div>
+
+<div class="configs" ng-show="!spinnerActive('configEditorProxy')" ng-cloak>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>Title</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="config in configs">
+        <td>
+          <a href="#/configs/edit{{ config.configPath }}"
+             ng-class="{ active: isActive('/configs{{ config.configPath }}') }">{{ config.configPath }}</a>
+        </td>
+        <td>{{ config.title }}</td>
+        <td>{{ config.description }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

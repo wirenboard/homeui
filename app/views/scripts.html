@@ -1,7 +1,12 @@
 <h1 class="page-header">
   Scripts
 </h1>
-<div class="scripts">
+
+<div class="spinner" ng-show="spinnerActive('editorProxy')" ng-cloak>
+  <span class="spinner-loader">Loading...</span>
+</div>
+
+<div class="scripts" ng-show="!spinnerActive('editorProxy')" ng-cloak>
   <ul>
     <li>
       <a href="#/scripts/new">New...</a>
