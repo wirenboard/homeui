@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.2.1) stable; urgency=medium
+
+  * Use new wb-mqtt-db API. Better handling of large intervals
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 06 Oct 2015 17:59:32 +0300
+
 wb-mqtt-homeui (1.2) stable; urgency=medium
 
   * history viewer 
