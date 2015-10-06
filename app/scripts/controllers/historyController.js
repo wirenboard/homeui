@@ -115,9 +115,23 @@ angular.module("homeuiApp")
         params.timestamp.lt = $scope.endDate.getTime() / 1000 + 86400;
       }
 
+      if ($scope.startDate) {
+		  if ($scope.endDate) {
+			  var endDate = $scope.endDate;
+		  } else {
+			  var endDate = Date.now();
+		  }
+
+		  var interval_ms = endDate - $scope.startDate; // duration of requested interval, in ms
+
+		  // we want to request  no more than "limit" data points.
+		  // Additional divider 1.1 is here just to be on the safe side
+		  params.min_interval = interval_ms * 1.0 / params.limit * 1.1;
+	  }
+
       HistoryProxy.get_values(params).then(function (result) {
         if (result.has_more)
-          errors.showError("Warning", "maximum number of points exceeded");
+          errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
         $scope.datapoints = result.values.map(function (item) {
           var ts = new Date();
           ts.setTime(item.t * 1000);
