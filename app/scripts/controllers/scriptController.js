@@ -1,8 +1,22 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .controller("ScriptCtrl", function ($scope, $routeParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, errors) {
+  .directive("scriptForm", function (PageState) {
+    return {
+      restrict: "A",
+      link: function (scope, element) {
+        var formCtrl = scope[element.attr("name")];
+        scope.$watch(element.attr("name") + ".$dirty", function (newValue) {
+          PageState.setDirty(newValue);
+        });
+      }
+    };
+  })
+  .controller("ScriptCtrl", function ($scope, $routeParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     var cm, pos = null;
+    $scope.canSave = function () {
+      return PageState.isDirty();
+    };
     $scope.file = {
       isNew: !$routeParams.hasOwnProperty("path"),
       path: $routeParams.path,
