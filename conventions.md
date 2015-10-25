@@ -17,7 +17,7 @@ For example, some room lighting control *device* with one input (for wall switch
 Each *device* usually represents the single physical device or one of the integrated peripheral of a complex physical device, although there are some boundary cases where the distinction is not clear. The small and not-so-complex real-world devices (say, wireless wheather sensor) are ought to be represented by a single *device* in the MQTT hierarchy. 
 Each *device* must be handled by a single driver or publisher, though it's not enforced in any way.
 
-The *Conventions* are based on [HomA MQTT Conventions](https://github.com/binarybucks/homA/wiki/Conventions). The main changes are: no configuration is stored in MQTT (as MQTT is not so good as database) and the *control* types system is more developed and complicated.
+The *Conventions* are based on [HomA MQTT Conventions](https://github.com/binarybucks/homA/wiki/Conventions). The main changes are: no configuration is stored in MQTT (as MQTT is not so good as a database) and the *control* types system is more developed and complicated.
 
 ### Control Types
 The meta topic ```/devices/<device_id>/controls/<control_id>/meta/type``` defines different types of controls that decide which interface is shown to the user.
