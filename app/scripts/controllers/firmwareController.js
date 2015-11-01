@@ -6,6 +6,7 @@ angular.module('homeuiApp')
   $scope.done = false;
   $scope.uploading = false;
   $scope.running = false;
+  $scope.error = null;
 
   var log = $('#firmwareLog')
 
@@ -31,7 +32,7 @@ angular.module('homeuiApp')
     }
     timeout = $timeout(function() {
       timeout = undefined;
-      showState('error', msg);
+      showState('danger', msg);
       showDoneButton('Dismiss');
     }, seconds * 1000);
   }
@@ -48,14 +49,17 @@ angular.module('homeuiApp')
       $scope.canUpload = true;
       if ($scope.running) {
         $timeout.cancel(timeout);
-        showState('success', 'Firmware update complete');
+        if (!$scope.error) {
+          showState('success', 'Firmware update complete');
+        }
         showDoneButton('Hide');
       }
     } else if (type == 'INFO') {
       showState('info', payload);
       setProgressTimeout();
     } else if (type == 'ERROR') {
-      showState('error', payload);
+      $scope.error = payload;
+      showState('danger', payload);
       setProgressTimeout();
     } else if (type == 'REBOOT') {
       showState('warning', 'Rebooting, please wait');
@@ -100,5 +104,6 @@ angular.module('homeuiApp')
 
   $scope.doneClick = function() {
     $scope.done = $scope.running = $scope.uploading = false;
+    $scope.error = null;
   }
 });
