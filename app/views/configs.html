@@ -10,19 +10,15 @@
   <table class="table">
     <thead>
       <tr>
-        <th>File</th>
         <th>Title</th>
-        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat="config in configs">
         <td>
           <a href="#/configs/edit{{ config.configPath }}"
-             ng-class="{ active: isActive('/configs{{ config.configPath }}') }">{{ config.configPath }}</a>
+             ng-class="{ active: isActive('/configs{{ config.configPath }}') }">{{ config.title }}</a>
         </td>
-        <td>{{ config.title }}</td>
-        <td>{{ config.description }}</td>
       </tr>
     </tbody>
   </table>

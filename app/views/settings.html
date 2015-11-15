@@ -2,6 +2,7 @@
   Settings
 </h1>
 <div class="row">
+<!--
   <div class="col-lg-12">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -51,13 +52,14 @@
       </div>
     </div>
   </div>
+-->
   <div class="col-lg-12">
     <div class="panel panel-default" ng-controller="FirmwareCtrl">
       <div class="panel-heading">
         <h3 class="panel-title"><i class="glyphicon glyphicon-upload"></i> Firmware update</h3>
       </div>
       <div class="panel-body">
-        <button ng-show="canUpload && !(running || uploading)" type="file" class="btn btn-success btn-lg" 
+        <button ng-show="canUpload && !(running || uploading)" type="file" class="btn btn-success btn-lg"
             ngf-select="upload($file)" ngf-max-size="300MB" ngf-pattern="'.fit,.*'">Select file</button>
         <div class="progress" ng-show="running || uploading">
           <div class="progress-bar progress-bar-{{stateType}}" style="width:{{progress}}%;">
@@ -107,6 +109,7 @@
     </div>
   </div>
 </div>
+<!--
 <h1 class="page-header">
   Home <small>Statistics Overview</small>
 </h1>
@@ -221,3 +224,4 @@
     </div>
   </div>
 </div>
+-->
