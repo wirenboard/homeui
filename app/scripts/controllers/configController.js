@@ -1,11 +1,10 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .controller("ConfigCtrl", function ($scope, $routeParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, errors) {
+  .controller("ConfigCtrl", function ($scope, $routeParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     $scope.file = {
       path: $routeParams.path,
       loaded: false,
-      changed: false,
       valid: true,
       content: {}
     };
@@ -13,22 +12,22 @@ angular.module("homeuiApp")
       $scope.file.path = "/" + $scope.file.path;
 
     $scope.canSave = function () {
-      return $scope.file.changed && $scope.file.valid;
+      return PageState.isDirty() && $scope.file.valid;
     };
 
     $scope.onChange = function (content, errors) {
       if (!angular.equals($scope.file.content, content)) {
-        $scope.file.changed = true;
+        PageState.setDirty(true);
         $scope.file.content = content;
       }
       $scope.file.valid = !errors.length;
     };
 
     $scope.save = function () {
-      $scope.file.changed = false;
+      PageState.setDirty(false);
       ConfigEditorProxy.Save({ path: $scope.file.path, content: $scope.file.content })
         .catch(function (e) {
-          $scope.file.changed = true;
+          PageState.setDirty(true);
           errors.showError("Error saving " + $scope.file.path, e);
         });
     };

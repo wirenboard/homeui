@@ -522,3 +522,14 @@ button.show-console span {
   padding: 30px 0;
   text-align: center;
 }
+
+.progress {
+    position: relative;
+}
+
+.progress span {
+    position: absolute;
+    display: block;
+    width: 100%;
+    color: black;
+ }
