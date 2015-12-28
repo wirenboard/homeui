@@ -86,18 +86,19 @@ describe("History view", function () {
     function load (hasMore) {
       var resp = {
         values: [
-          { timestamp: ts(1), value: 10 },
-          { timestamp: ts(2), value: 20 },
-          { timestamp: ts(3), value: 30 },
-          { timestamp: ts(4), value: 40 },
-          { timestamp: ts(5), value: 50 }
+          { t: ts(1), v: 10 },
+          { t: ts(2), v: 20 },
+          { t: ts(3), v: 30 },
+          { t: ts(4), v: 40 },
+          { t: ts(5), v: 50 }
         ]
       };
       if (hasMore)
         resp.has_more = true;
       f.expectRequest("/rpc/v1/db_logger/history/get_values", {
         channels: [["somedev", "somectl"]],
-        limit: 5
+        limit: 5,
+        ver: 1
       }, resp);
     }
 
@@ -158,11 +159,14 @@ describe("History view", function () {
         msg = message;
       });
       load(true);
-      expect(msg).toBe("Warning: maximum number of points exceeded");
+      expect(msg).toBe("Warning: maximum number of points exceeded. Please select start date.");
     });
   });
 
   describe("with topic and start date selected", function () {
+    beforeEach(function () {
+      spyOn(Date, "now").and.returnValue(ts(5) * 1000);
+    });
     beforeEach(setup({
       device: "somedev",
       control: "somectl",
@@ -175,12 +179,14 @@ describe("History view", function () {
         timestamp: {
           gt: ts(2) - 1
         },
-        limit: 5
+        min_interval: 3 * 24 * 3600 * 1000 / 5 * 1.1,
+        limit: 5,
+        ver: 1
       }, {
         values: [
-          { timestamp: ts(2), value: 20 },
-          { timestamp: ts(3), value: 30 },
-          { timestamp: ts(4), value: 42 }
+          { t: ts(2), v: 20 },
+          { t: ts(3), v: 30 },
+          { t: ts(4), v: 42 }
         ]
       });
     }
@@ -216,12 +222,13 @@ describe("History view", function () {
         timestamp: {
           lt: ts(3) + 86400
         },
-        limit: 5
+        limit: 5,
+        ver: 1
       }, {
         values: [
-          { timestamp: ts(1), value: 20 },
-          { timestamp: ts(2), value: 20 },
-          { timestamp: ts(3), value: 30 }
+          { t: ts(1), v: 20 },
+          { t: ts(2), v: 20 },
+          { t: ts(3), v: 30 }
         ]
       });
     }
@@ -259,11 +266,13 @@ describe("History view", function () {
           gt: ts(2) - 1,
           lt: ts(3) + 86400
         },
-        limit: 5
+        min_interval: 24 * 3600 * 1000 / 5 * 1.1,
+        limit: 5,
+        ver: 1
       }, {
         values: [
-          { timestamp: ts(2), value: 20 },
-          { timestamp: ts(3), value: 30 }
+          { t: ts(2), v: 20 },
+          { t: ts(3), v: 30 }
         ]
       });
     }
