@@ -46,6 +46,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         scope: {
             schema: '=',
             startval: '=',
+            options: "=",
             buttonsController: '@',
             onChange: '&'
         },
@@ -109,10 +110,13 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                     this.dispatchEvent(e);
                 });
 
-                scope.editor = new JSONEditor(element[0], {
+                var options = {
                     startval: startVal,
                     schema: schema
-                });
+                };
+                if (scope.options)
+                    angular.extend(options, scope.options);
+                scope.editor = new JSONEditor(element[0], options);
 
                 var editor = scope.editor;
 

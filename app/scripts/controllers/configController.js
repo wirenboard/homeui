@@ -8,6 +8,7 @@ angular.module("homeuiApp")
       valid: true,
       content: {}
     };
+    $scope.editorOptions = {};
     if (!/^\//.test($scope.file.path))
       $scope.file.path = "/" + $scope.file.path;
 
@@ -35,6 +36,12 @@ angular.module("homeuiApp")
     whenMqttReady().then(function () {
       return ConfigEditorProxy.Load({ path: $scope.file.path });
     }).then(function (r) {
+      $scope.editorOptions = r.schema.strictProps ? { no_additional_properties: true } : {};
+      if (r.schema.limited)
+        angular.extend($scope.editorOptions, {
+          disable_properties: true,
+          disable_edit_json: true
+        });
       $scope.file.content = r.content;
       $scope.file.schema = r.schema;
       $scope.file.loaded = true;
