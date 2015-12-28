@@ -533,3 +533,17 @@ button.show-console span {
     width: 100%;
     color: black;
  }
+
+.alarm {
+  border: 1px solid #900;
+  padding: 4px 10px;
+  border-radius: 10px;
+  color: #900;
+  opacity: 0.2;
+}
+
+.alarm-active {
+  background-color: #900;
+  color: #fff;
+  opacity: 1;
+}

@@ -70,4 +70,9 @@ angular.module('homeuiApp')
       templateUrl: 'views/devices/controls/control-value.html'
     };
   })
-  ;
+  .directive('controlAlarm', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/devices/controls/control-alarm.html'
+    };
+  });

@@ -27,6 +27,11 @@ A control that toggles it's value when pressed by the user.
 * Meta topic value: switch
 * Possible values: 0 or 1
 
+#### Alarm
+A control that indicates whether an alarm is active.
+* Meta topic value: alarm
+* Possible values: 0 or 1
+
 #### Push button
 A stateless push button
 
