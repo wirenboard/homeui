@@ -30,7 +30,6 @@ module.exports = function(config) {
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/angular-touch/angular-touch.js',
-      'bower_components/angular-toggle-switch/angular-toggle-switch.js',
       'bower_components/spectrum/spectrum.js',
       'bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min.js',
       'bower_components/angular-order-object-by/src/ng-order-object-by.js',
@@ -39,6 +38,8 @@ module.exports = function(config) {
       'bower_components/d3/d3.js',
       'bower_components/c3/c3.js',
       'bower_components/c3-angular/c3js-directive.js',
+      'bower_components/ng-file-upload/ng-file-upload.js',
+      'bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'bower_components/codemirror/mode/javascript/javascript.js',
