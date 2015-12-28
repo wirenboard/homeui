@@ -1,3 +1,10 @@
+wb-mqtt-homeui (1.3.4) stable; urgency=medium
+
+  * Added 'alarm' control type
+  * Support 'strictProps' & 'limited' in config schema
+
+ -- Ivan Shvedunov <ivan4th@gmail.com>  Mon, 28 Dec 2015 07:18:54 +0300
+
 wb-mqtt-homeui (1.3.3) stable; urgency=medium
 
   * workaround for Chrome bug
