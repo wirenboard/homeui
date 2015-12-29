@@ -132,7 +132,7 @@ angular.module("homeuiApp")
           ts.setTime(item.t * 1000);
           return {
             x: ts,
-            y: item.v - 0
+            y: item.v 
           };
         });
       }).catch(errors.catch("Error getting history"));

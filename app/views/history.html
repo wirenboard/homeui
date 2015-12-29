@@ -4,7 +4,7 @@
 <div class="row">
 
   <form class="form-horizontal" name="history-form" onsubmit="return false;">
-    <div class="form-group">
+   <!--  <div class="form-group">
       <label for="control-select" class="col-sm-2 control-label">Control</label>
       <div class="col-sm-3">
         <select id="control-select"
@@ -15,7 +15,7 @@
                   ng-repeat="control in controls" value="{{control.topic}}">{{control.topic}}</option>
         </select>
       </div>
-    </div>
+    </div> -->
 
     <div class="form-group" ng-show="topic !== null">
       <label for="history-start" class="col-sm-2 control-label">Start</label>
@@ -63,7 +63,7 @@
   </div>
 
   <!-- don't use ng-show on c3 because it will cause problems with chart size -->
-  <div class="col-sm-12" ng-if="!spinnerActive('historyProxy')">
+<!--   <div class="col-sm-12" ng-if="!spinnerActive('historyProxy')">
     <c3chart ng-if="shouldShowChart()"
              bindto-id="histchart"
              chart-data="datapoints"
@@ -82,7 +82,7 @@
       No data points to display.
     </div>
   </div>
-
+ -->
   <div class="col-sm-4" ng-show="shouldShowChart()">
     <table class="table">
       <thead>
@@ -92,7 +92,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="p in datapoints">
+        <tr ng-repeat="p in datapoints.slice().reverse()">
           <td>{{ p.x | date:'yyyy-MM-dd HH:mm:ss' }}</td>
           <td>{{ p.y }}</td>
         </tr>

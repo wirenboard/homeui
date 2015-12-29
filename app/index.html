@@ -51,7 +51,7 @@
             <li ng-class="{ active: isActive('/') }">
               <a href="#/"><i class="glyphicon glyphicon-cog"></i> Home</a>
             </li>
-            <li ng-class="{ active: isActive('/dashboards') }" class="list-menu">
+<!--             <li ng-class="{ active: isActive('/dashboards') }" class="list-menu">
               <a href="#/dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="dashboards-menu" class="collapse">
@@ -74,13 +74,16 @@
             </li>
             <li ng-class="{ active: isActive('/history') }">
               <a href="#/history"><i class="glyphicon glyphicon-stats"></i> History</a>
+            </li> -->
+            <li ng-class="{ active: isActive('/history/sampleAlarms/log/-/-') }">
+              <a href="#/history/sampleAlarms/log/-/-"><i class="glyphicon glyphicon-stats"></i> Alarm History</a>
             </li>
 <!--
             <li ng-class="{ active: isActive('/widget_templates') }">
               <a href="#/widget_templates"><i class="glyphicon glyphicon-list-alt"></i>Widget Templates</a>
             </li>
 -->
-            <li ng-if="isConnected()" ng-class="{ active: isActive('/scripts') }" class="list-menu script-menu">
+<!--             <li ng-if="isConnected()" ng-class="{ active: isActive('/scripts') }" class="list-menu script-menu">
               <a href="#/scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#scripts-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="scripts-menu" class="collapse">
@@ -127,8 +130,17 @@
                 </li>
               </ul>
             </li>
+ -->        
+            <li ng-if="isConnected()" ng-class="{ active: isActive('/configs') }" >
+              <a href="#/configs/edit/etc/wb-rules/alarms.conf"
+                 ng-class="{ active: isActive('/configs/edit/etc/wb-rules/alarms.conf'), error: !!config.error }">
+                <i class="glyphicon glyphicon-file"></i>                 
+                Alarm Configuration
+                <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>
+              </a>
+            </li> 
             <li ng-class="{ active: isActive('/settings') }">
-              <a href="#/settings"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
+              <a href="#/settings"><i class="glyphicon glyphicon-wrench"></i> System</a>
             </li>
           </ul>
         </div>
