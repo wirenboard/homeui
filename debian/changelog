@@ -1,3 +1,8 @@
+wb-mqtt-homeui-conven1 (1.3.4+conven1) stable; urgency=medium
+
+  first release
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 28 Dec 2015 07:18:54 +0300
+
 wb-mqtt-homeui (1.3.4) stable; urgency=medium
 
   * Added 'alarm' control type

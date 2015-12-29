@@ -1,12 +1,12 @@
-Source: wb-mqtt-homeui
+Source: wb-mqtt-homeui-conven1
 Maintainer: Evgeny Boger <boger@contactless.ru>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9), pkg-config
 
-Package: wb-mqtt-homeui
+Package: wb-mqtt-homeui-conven1
 Architecture: all
 Conflicts: wb-homa-webinterface
 Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools, nginx-extras, wb-utils (>=1.57), wb-mqtt-db (>= 1.3)
-Description: Wiren Board HomeUI web interface
+Description: Wiren Board HomeUI web interface (conven1)
