@@ -36,7 +36,7 @@ angular.module("homeuiApp")
       restrict: "EA",
       replace: true,
       scope: true,
-      templateUrl: "/scripts/directives/console.html",
+      templateUrl: "scripts/directives/console.html",
       link: function (scope, element, attrs) {
         var scrollTimeout = null,
             messageContainer = element.find(".console-messages");
