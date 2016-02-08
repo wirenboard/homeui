@@ -24,26 +24,35 @@ angular.module("homeuiApp")
       $scope.file.valid = !errors.length;
     };
 
+    var load = function() {
+      ConfigEditorProxy.Load({ path: $scope.file.path })
+      .then(function (r) {
+        $scope.editorOptions = r.schema.strictProps ? { no_additional_properties: true } : {};
+        if (r.schema.limited)
+          angular.extend($scope.editorOptions, {
+            disable_properties: true,
+            disable_edit_json: true
+          });
+        $scope.file.content = r.content;
+        $scope.file.schema = r.schema;
+        $scope.file.loaded = true;
+      })
+      .catch(errors.catch("Error loading the file"));
+    };
+
     $scope.save = function () {
       PageState.setDirty(false);
       ConfigEditorProxy.Save({ path: $scope.file.path, content: $scope.file.content })
+        .then(function() {
+          if ($scope.file.schema.needReload) {
+            load();
+          }
+        })
         .catch(function (e) {
           PageState.setDirty(true);
           errors.showError("Error saving " + $scope.file.path, e);
         });
     };
 
-    whenMqttReady().then(function () {
-      return ConfigEditorProxy.Load({ path: $scope.file.path });
-    }).then(function (r) {
-      $scope.editorOptions = r.schema.strictProps ? { no_additional_properties: true } : {};
-      if (r.schema.limited)
-        angular.extend($scope.editorOptions, {
-          disable_properties: true,
-          disable_edit_json: true
-        });
-      $scope.file.content = r.content;
-      $scope.file.schema = r.schema;
-      $scope.file.loaded = true;
-    }).catch(errors.catch("Error loading the file"));
+    whenMqttReady().then(load);
   });
