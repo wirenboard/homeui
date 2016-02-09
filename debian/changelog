@@ -1,3 +1,16 @@
+wb-mqtt-homeui (1.3.7) stable; urgency=medium
+
+  * add A1 to wb5 def config
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 09 Feb 2016 14:43:50 +0300
+
+wb-mqtt-homeui (1.3.6) stable; urgency=medium
+
+  * adds board-specific default webinterface config
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 09 Feb 2016 14:16:05 +0300
+
+
 wb-mqtt-homeui (1.3.5) stable; urgency=medium
 
   * Conditions in dumbtemplate for wb-hwconf-manager

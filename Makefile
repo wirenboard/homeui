@@ -23,6 +23,7 @@ install: all
 	install  -m 0644 app/index.html  $(DESTDIR)/var/www/
 
 	install -m 0644 default_config_dump.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.tsv
+	install -m 0644 default_config_dump.wb5.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv
 
 	install -d -m 0777 $(DESTDIR)/var/www/uploads/
 
