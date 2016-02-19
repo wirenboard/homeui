@@ -974,10 +974,11 @@ Paho.MQTT = (function (global) {
 		}
 		this.connected = false;
 		if (this.connectOptions.mqttVersion < 4) {
-			this.socket = new WebSocket(wsurl);
+			this.socket = new WebSocket(wsurl, ["mqttv3.1"]);
 		} else {
-			this.socket = new WebSocket(wsurl);
+			this.socket = new WebSocket(wsurl, ["mqtt"]);
 		}
+
 		this.socket.binaryType = 'arraybuffer';
 
 		this.socket.onopen = scope(this._on_socket_open, this);

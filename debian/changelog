@@ -1,3 +1,12 @@
+wb-mqtt-homeui (1.5) stable; urgency=medium
+
+  * password authentification
+  * standard WS mqtt
+  * support for mqtt WS over main http url
+  * cleanup for statistics in Settings tab
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 11 Feb 2016 16:55:55 +0300
+
 wb-mqtt-homeui (1.4) UNRELEASED; urgency=medium
 
   * Hide virtual devices and rules tabs. Disable drop-down list in Scripts tab

@@ -10,30 +10,33 @@
       <div class="panel-body">
         <form class="form-horizontal" name='loginForm' ng-submit='loginForm.$valid && updateLoginSettings()' novalidate>
           <div class="form-group">
-            <label for="loginHost" class="col-sm-2 control-label">Host</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="loginHost" ng-model="loginSettings.host" placeholder="Host" required>
-            </div>
-          </div>
-          <div class="form-group">
             <label for="loginPort" class="col-sm-2 control-label">Port</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="loginPort" ng-model="loginSettings.port" placeholder="Port" required>
             </div>
           </div>
           <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="loginSettings.useCredentials" ng-true-value="true" ng-false-value="false"> Use access credentials
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" >
             <label for="loginUser" class="col-sm-2 control-label">User ID</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="loginUser" ng-model="loginSettings.user" placeholder="User ID" ng-required="loginSettings.prefix === 'true'">
+              <input type="text" class="form-control" id="loginUser" ng-model="loginSettings.user" placeholder="User ID"  ng-required="(loginSettings.prefix === 'true') || (loginSettings.useCredentials === true)"  ng-disabled="loginSettings.useCredentials == false">
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" >
             <label for="loginPassword" class="col-sm-2 control-label" ng-model="loginSettings.password">Password</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" id="loginPassword"  ng-model="loginSettings.password" placeholder="Password" ng-required="loginSettings.prefix === 'true'">
+              <input type="password" class="form-control" id="loginPassword"  ng-model="loginSettings.password" placeholder="Password" ng-required="(loginSettings.prefix === 'true') || (loginSettings.useCredentials === true)" ng-disabled="loginSettings.useCredentials == false">
             </div>
           </div>
-          <div class="form-group">
+<!--           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
                 <label>
@@ -42,9 +45,10 @@
               </div>
             </div>
           </div>
+ -->          
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" class="btn btn-default">Submit</button>
+              <button type="submit" class="btn btn-default">Apply</button>
             </div>
           </div>
         </form>
@@ -107,117 +111,37 @@
     </div>
   </div>
 </div>
-<h1 class="page-header">
-  Home <small>Statistics Overview</small>
-</h1>
 <div class="row">
   <div class="col-lg-12">
-    <h2>Devices</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Controls</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="device in data.devices">
-            <td>{{ device.name }}</td>
-            <td>{{ objectsKeys(device.controls) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-lg-6">
-    <h2>Controls</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Topic</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="control in data.controls">
-            <td>{{ control.name }}</td>
-            <td>{{ control.topic }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="col-lg-6">
-    <h2>Widget Templates</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="widget_template in data.widget_templates">
-            <td>{{ widget_template.name }}</td>
-            <td>{{ widget_template.uid }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-lg-12">
-    <h2>Rooms</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Widgets</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="room in data.rooms">
-            <td>{{ room.uid }}</td>
-            <td>{{ room.name }}</td>
-            <td>{{ objectsKeys(room.widgets) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-lg-12">
-    <h2>Widgets</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Control Slots</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="widget in data.widgets">
-            <td>{{ widget.uid }}</td>
-            <td>{{ widget.name }}</td>
-            <td>
-	          <div ng-repeat="control in widget.controls">
-	           {{control.uid}}: {{control.topic.topic}}
-			  </div>
-			</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="glyphicon glyphicon-wrench"></i> MQTT Channels</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Device</th>
+                <th>Control</th>
+                <th>Meta Type</th>
+                <th>Topic</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody ng-repeat="(name, device) in data.devices">
+
+                <tr ng-repeat="(controlName, control) in device.controls">
+                  <td>{{name}}</td>
+                  <td>{{controlName }}</td>
+                  <td>{{control.metaType }}</td>
+                  <td>{{control.topic }}</td>
+                  <td>{{control.value }}</td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>

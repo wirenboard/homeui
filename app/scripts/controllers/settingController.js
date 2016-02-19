@@ -9,6 +9,12 @@ angular.module('homeuiApp')
     $scope.loginSettings.password = $window.localStorage['password'];
     $scope.loginSettings.prefix = $window.localStorage['prefix'];
 
+    if ($scope.loginSettings.user || $scope.loginSettings.password) {
+      $scope.loginSettings.useCredentials = true;
+    } else {
+      $scope.loginSettings.useCredentials = false;
+    }
+  
     $scope.settings = {
 							//~ setting0: { name: "IP", value: "148.251.208.199" },
 							//~ setting4: { name: "Mosquitto Version", value: "1.4" },
@@ -30,9 +36,17 @@ angular.module('homeuiApp')
     $scope.updateLoginSettings = function(){
       $window.localStorage.setItem('host', $scope.loginSettings.host);
       $window.localStorage.setItem('port', $scope.loginSettings.port);
-      $window.localStorage.setItem('user', $scope.loginSettings.user);
-      $window.localStorage.setItem('password', $scope.loginSettings.password);
+
       $window.localStorage.setItem('prefix', $scope.loginSettings.prefix);
+
+      if ($scope.loginSettings.useCredentials) {
+        $window.localStorage.setItem('user', $scope.loginSettings.user);
+        $window.localStorage.setItem('password', $scope.loginSettings.password);
+      } else {
+        $window.localStorage.setItem('user', '');
+        $window.localStorage.setItem('password', '');
+      }
+
       $window.location.reload();
     };
 

@@ -79,7 +79,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
         timeout: mqttConnectTimeout / 1000
       };
 
-      if(user != undefined && password != undefined) {
+      if(user && password) {
         connectOptions.userName = user;
         connectOptions.password = password;
       }
@@ -87,7 +87,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       id = clientid;
       console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with username " + user + " and clientid " + clientid);
 
-      client = new Paho.MQTT.Client(host, parseInt(port), '/', clientid);
+      client = new Paho.MQTT.Client(host, parseInt(port), '/mqtt', clientid);
       client.onConnectionLost = service.onConnectionLost;
       client.onMessageDelivered = service.onMessageDelivered;
       client.onMessageArrived = service.onMessageArrived;
@@ -116,8 +116,10 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       $rootScope.$digest();
     };
 
-    service.onFailure = function() {
-      console.log("Failure to connect to " + client.host + ":" + client.port + " as " + client.clientId);
+    service.onFailure = function(context) {
+      console.log("Failure to connect to " + client.host + ":" + client.port + 
+                   " as " + client.clientId + ". error code " + context.errorCode +
+                   ", error message \"" + context.errorMessage + "\""     );
       connected = false;
       reconnectAfterTimeout();
       $rootScope.$digest();
