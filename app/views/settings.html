@@ -60,7 +60,10 @@
       <div class="panel-heading">
         <h3 class="panel-title"><i class="glyphicon glyphicon-upload"></i> Firmware update</h3>
       </div>
-      <div class="panel-body">
+        <div class="panel-body">
+        <span ng-show="!canUpload" class="label label-warning">
+          Firmware update service is not available
+        </span>
         <button ng-show="canUpload && !(running || uploading)" type="file" class="btn btn-success btn-lg" 
             ngf-select="upload($file)" ngf-max-size="300MB" ngf-pattern="'.fit,.*'">Select file</button>
         <div class="progress" ng-show="running || uploading">
@@ -124,19 +127,29 @@
               <tr>
                 <th>Device</th>
                 <th>Control</th>
-                <th>Meta Type</th>
+                <th>Type</th>
                 <th>Topic</th>
                 <th>Value</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody ng-repeat="(name, device) in data.devices">
-
                 <tr ng-repeat="(controlName, control) in device.controls">
                   <td>{{name}}</td>
                   <td>{{controlName }}</td>
-                  <td>{{control.metaType }}</td>
+                  <td>{{control.metaType }} <span ng-show="control.metaReadonly">(ro)</span></td>
                   <td>{{control.topic }}</td>
                   <td>{{control.value }}</td>
+                  <td>
+                    <span  ng-show="control.metaError" class="label label-danger">
+                      Error: {{control.metaError }}
+                    </span>
+
+                    <span ng-show="!control.metaError" class="label label-success">
+                      OK
+                    </span>
+
+                  </td>
                 </tr>
             </tbody>
           </table>
