@@ -8,7 +8,7 @@ describe("Config view", function () {
   beforeEach(inject(function (MqttRpcViewFixture) {
     f = MqttRpcViewFixture;
     f.setup("/rpc/v1/confed/Editor", "/views/config.html", "ConfigCtrl", {
-      $routeParams: { path: "etc/foobar.conf" }
+      $routeParams: { path: "usr/share/wb-mqtt-confed/schemas/foobar.schema.json" }
     });
     // json-editor is not very testable out of the box
     // because it uses RAF to postpone change events
@@ -25,8 +25,9 @@ describe("Config view", function () {
 
   function load () {
     f.expectRequest("/rpc/v1/confed/Editor/Load", {
-      path: "/etc/foobar.conf"
+      path: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json"
     }, {
+      configPath: "/etc/foobar.conf",
       content: {
         name: "foo"
       },
@@ -84,12 +85,12 @@ describe("Config view", function () {
 
   function processSave(expectedContent, error) {
     var params = {
-        path: "/etc/foobar.conf",
-        content: expectedContent
+      path: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json",
+      content: expectedContent
     };
     if (!error)
       f.expectRequest("/rpc/v1/confed/Editor/Save", params, {
-        path: "/etc/foobar.conf"
+        path: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json"
       });
     else
       f.expectRequestAndFail("/rpc/v1/confed/Editor/Save", params, error);
