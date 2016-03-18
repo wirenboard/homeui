@@ -53,4 +53,14 @@ describe("Template engine", function () {
     var tmpl = DumbTemplate.compile("{{a}} {{(|b|)}} {{c}}");
     expect(tmpl({ a: 42, b: 43, c: 44 })).toBe("42 (43) 44");
   });
+
+  it("should understand arrays of objects, using key 'id' for matching", function() {
+    var tmpl = DumbTemplate.compile("{{arr.x.a}}");
+    expect(tmpl({ arr: [{id: "x", a: 42}, {id: "y", a: "bad" }]})).toBe("42");
+  });
+
+  it("should understand indirect keys like {{ a.[b] }}", function () {
+    var tmpl = DumbTemplate.compile("{{a.[b]}}");
+    expect(tmpl({ a: { foo: 42 }, b: "foo" })).toBe("42");
+  });
 });
