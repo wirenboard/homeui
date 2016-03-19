@@ -59,6 +59,12 @@ describe("Template engine", function () {
     expect(tmpl({ arr: [{id: "x", a: 42}, {id: "y", a: "bad" }]})).toBe("42");
   });
 
+  it("should return empty string if array item with given 'id' not found", function() {
+    var tmpl = DumbTemplate.compile("{{arr.[key]}}");
+    expect(tmpl({ arr: [{id: "a", val: 42}], key: "a"})).toBe("[object Object]");
+    expect(tmpl({ arr: [{id: "b", val: "bad"}]})).toBe("");
+  });
+
   it("should understand indirect keys like {{ a.[b] }}", function () {
     var tmpl = DumbTemplate.compile("{{a.[b]}}");
     expect(tmpl({ a: { foo: 42 }, b: "foo" })).toBe("42");

@@ -27,23 +27,21 @@ angular.module("homeuiApp.DumbTemplate", [])
                   parts[i] = k.slice(1);
                   k = expandParts();
                 }
-                if (k[k.length - 1] == ']') {
+                if (!k)
+                  return k;
+
+                if (typeof k == 'string' && k[k.length - 1] == ']') {
                   k = k.slice(0, -1);
                   last = true;
                 }
-                if (!k)
-                  break;
 
                 if (Array.isArray(v)) {
-                  for (var j = 0; j < v.length; j++) {
-                    if (v[j]["id"] == k) {
-                      k = j;
-                      break;
-                    }
-                  }
+                  v = v.find(function(element) {
+                    return (element.id == k);
+                  });
+                } else {
+                  v = v[k];
                 }
-
-                v = v[k];
                 if (!v || last)
                   break;
               }
@@ -52,13 +50,17 @@ angular.module("homeuiApp.DumbTemplate", [])
             return expandParts();
           }
 
+          var stringify = function(v) {
+            return v === undefined || v === null || v === "" ? "" : v.toString()
+          }
+
           return src
             .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in)\s*([\w.\[\]]+?|".*?")\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, function (m, left, op, right, ifTrue, ifFalse) {
               left = expandVar(left);
               right = expandVar(right);
               var result = false;
               if (op == "==") {
-                result = (left == right);
+                result = ((typeof right == 'string' ? stringify(left) : left) == right);
               }
               else if (op == "in") {
                 result = (right.indexOf(left) >= 0);
@@ -66,8 +68,8 @@ angular.module("homeuiApp.DumbTemplate", [])
               return result ? (ifTrue || "") : (ifFalse || "");
             })
             .replace(/\{\{(?:([^{]*?)\|)?\s*([\w.\[\]]+?)\s*(?:\|([^}]*?))?\}\}/g, function (m, prefix, expr, suffix) {
-              var v = expandVar(expr);
-              return v === undefined || v === null || v === "" ? "" : (prefix || "") + v + (suffix || "");
+              var v = stringify(expandVar(expr));
+              return v === "" ? "" : (prefix || "") + v + (suffix || "");
             });
         };
       }
