@@ -7,7 +7,10 @@ describe("Directive: console", function () {
   beforeEach(module("homeuiApp.fakeTime"));
   beforeEach(module("homeuiApp.fakeMqtt"));
 
-  beforeEach(inject(function ($rootScope, _FakeTime_, _FakeMqttFixture_, $compile) {
+  beforeEach(inject(function ($rootScope, _FakeTime_, _FakeMqttFixture_, $compile, $templateCache) {
+    // FIXME: workaround for abolute path in template cache
+    $templateCache.put("scripts/directives/console.html",
+                       $templateCache.get("/scripts/directives/console.html"));
     FakeTime = _FakeTime_;
     // Note that month index '5' means June here due to JS Date() API specifics
     FakeTime.setTime(new Date(2015, 5, 19, 20, 25, 6));

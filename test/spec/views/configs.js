@@ -19,11 +19,13 @@ describe("Configs view", function () {
       {
         title: "ABC config",
         description: "The config of ABC",
-        configPath: "/etc/abc.conf"
+        configPath: "/etc/abc.conf",
+        schemaPath: "/usr/share/wb-mqtt-confed/schemas/abc.schema.json"
       },
       {
         title: "Foobar config",
-        configPath: "/etc/foobar.conf"
+        configPath: "/etc/foobar.conf",
+        schemaPath: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json"
       }
     ]);
     var extracted = f.container.find("table > tbody > tr").toArray().map(function (tr) {
@@ -37,8 +39,10 @@ describe("Configs view", function () {
     });
     expect(extracted).toEqual([
       // TBD: all config paths should be absolute
-      ["#/configs/edit/etc/abc.conf", "/etc/abc.conf", "ABC config", "The config of ABC"],
-      ["#/configs/edit/etc/foobar.conf", "/etc/foobar.conf", "Foobar config", ""]
+      ["#/configs/edit/usr/share/wb-mqtt-confed/schemas/abc.schema.json",
+       "/etc/abc.conf", "ABC config", "The config of ABC"],
+      ["#/configs/edit/usr/share/wb-mqtt-confed/schemas/foobar.schema.json",
+       "/etc/foobar.conf", "Foobar config", ""]
     ]);
   });
 });

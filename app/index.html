@@ -89,8 +89,8 @@
               <a href="javascript:;" data-toggle="collapse" data-target="#configs-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="configs-menu" class="collapse">
                 <li ng-repeat="config in getConfigs()">
-                  <a href="#/configs/edit{{ config.configPath }}"
-                     ng-class="{ active: isActive('/configs/edit{{ config.configPath }}'), error: !!config.error }">
+                  <a href="#/configs/edit{{ config.schemaPath }}"
+                     ng-class="{ active: isActive('/configs/edit{{ config.schemaPath }}'), error: !!config.error }">
                     {{ config.title }}
                     <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>
                   </a>
