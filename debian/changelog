@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.6) stable; urgency=medium
+
+  * config editor improvements to support module parameters in hwconf
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 28 Mar 2016 13:27:52 +0300
+
 wb-mqtt-homeui (1.5.1) stable; urgency=low
 
   * Config editor: multiple schemas per config
