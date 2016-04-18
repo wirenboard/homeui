@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.6) unstable; urgency=medium
+
+  * adds support for graphic dashboards
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 18 Apr 2016 03:05:04 +0300
+
 wb-mqtt-homeui (1.6) stable; urgency=medium
 
   * config editor improvements to support module parameters in hwconf
