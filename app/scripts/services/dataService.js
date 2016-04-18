@@ -286,8 +286,11 @@ angular.module('homeuiApp.dataServiceModule', [])
 
       if(pathItems[4] === 'room'){
         widget[pathItems[4]] = message.payloadString;
-
-        data.rooms[message.payloadString].widgets.push(widget.uid);
+        var room = data.rooms[message.payloadString];
+        if (room == undefined) {
+          room = {'widgets' : []};
+        }
+        room.widgets.push(widget.uid);
       };
 
       if(pathItems[4] === 'template'){
