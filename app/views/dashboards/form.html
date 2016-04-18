@@ -1,14 +1,6 @@
 <h1 class="page-header">
   {{ action }} <small>Dashboard</small>
 </h1>
-<ol class="breadcrumb">
-  <li>
-    <i class="glyphicon glyphicon-dashboard"></i>  <a href="#/dashboards">Dashboards</a>
-  </li>
-  <li class="active">
-    <i class="glyphicon glyphicon-plus"></i> {{ action }} dashboard
-  </li>
-</ol>
 <div class='row' ng-controller='DashboardCtrl'>
   <form class="form-horizontal" name='dashboardForm' ng-submit='dashboardForm.$valid && addOrUpdateDashboard()' novalidate>
     <input type="hidden" class="form-control" id="dashboardUid" ng-model='dashboard.uid' placeholder="UID">
@@ -20,17 +12,50 @@
       </div>
     </div>
 
-    <h4 class="col-sm-12">Widgets</h4>
-    <div class="form-group" ng-repeat="w in dashboard.widgets">
-      <label for="widget{{$index}}" class="col-sm-2 control-label">Widget</label>
+    <div class="form-group">
+      <label for="dashboardType2" class="col-sm-2 control-label">Type</label>
       <div class="col-sm-6">
-        <select ng-model='dashboard.widgets["widget"+$index]' ng-options="([data.rooms[value.room].name, value.name].join(' / ')) for (key, value) in widgets" id="widget{{$index}}">
-          <option value=''>- Please Choose / None -</option>
+        <select ng-model="dashboard.type" required class="form-control" id="dashboardType2">
+          <option value="widgets">Widgets</option>
+          <option value="graphic">Graphic</option>
         </select>
       </div>
     </div>
 
-    <a ng-click='addWidget(dashboard)' class="btn btn-default pull-right"> <i class="glyphicon glyphicon-plus"></i> Add widget</a>
+    <div ng-switch="dashboard.type">
+      <div ng-switch-when="graphic">
+        <div class="form-group">
+          <label for="svgSchemeUrl" class="col-sm-2 control-label">SVG scheme URL</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="svgSchemeUrl" ng-model='dashboard.svg_url' placeholder="URL">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="svgSchemeWidth" class="col-sm-2 control-label">Scheme width</label>
+          <div class="col-sm-6 checkbox">
+          <label>
+            <input id="svgSchemeWidth" type="checkbox" ng-model="dashboard.svg_fullwidth" ng-true-value="'1'" ng-false-value="''"> Fit to page
+          </label>
+          </div>
+        </div>
+      </div>
+
+      <div ng-switch-default>
+        <h4 class="col-sm-12">Widgets</h4>
+        <div class="form-group" ng-repeat="w in dashboard.widgets">
+          <label for="widget{{$index}}" class="col-sm-2 control-label">Widget</label>
+          <div class="col-sm-6">
+            <select ng-model='dashboard.widgets["widget"+$index]' ng-options="([data.rooms[value.room].name, value.name].join(' / ')) for (key, value) in widgets" id="widget{{$index}}">
+              <option value=''>- Please Choose / None -</option>
+            </select>
+          </div>
+        </div>
+
+        <a ng-click='addWidget(dashboard)' class="btn btn-default pull-right"> <i class="glyphicon glyphicon-plus"></i> Add widget</a>
+      </div>
+    </div>
+
 
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">

@@ -5,7 +5,8 @@ angular.module('homeuiApp')
     $scope.data = CommonCode.data;
     $scope.dashboards = $scope.data.dashboards;
     $scope.widgets = $scope.data.widgets;
-    $scope.dashboard = { widgets: {} };
+    $scope.devices = $scope.data.devices;
+    $scope.dashboard = { widgets: {} , type: 'widgets'};
     $scope.action = 'New';
 
     if($routeParams.id){
@@ -108,4 +109,15 @@ angular.module('homeuiApp')
       restrict: 'E',
       templateUrl: 'views/dashboards/widget-template.html'
     };
+  })
+  .directive('dashboardTemplate', function(){
+    return{
+      restrict: 'E',
+      scope: {
+        dashboard: "=",
+        devices: "=",
+      },
+      templateUrl: 'views/dashboards/dashboard-template.html'
+    };
   });
+
