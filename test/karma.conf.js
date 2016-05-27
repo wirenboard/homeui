@@ -40,7 +40,10 @@ module.exports = function(config) {
       'bower_components/c3-angular/c3js-directive.js',
       'bower_components/ng-file-upload/ng-file-upload.js',
       'bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.js',
+      'bower_components/angular-sortable-view/src/angular-sortable-view.js',
+      'bower_components/angular-xeditable/dist/js/xeditable.js',
       'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/jquery-simulate/jquery.simulate.js',
       // endbower
       'bower_components/codemirror/mode/javascript/javascript.js',
       'node_modules/jasmine-jquery/lib/jasmine-jquery.js',

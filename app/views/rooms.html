@@ -1,0 +1,48 @@
+<form editable-form name="tableform" onshow="show()" oncancel="cancel()">
+  <button type="button"
+          name="edit-rooms"
+          class="btn btn-success pull-right"
+          ng-show="!tableform.$visible"
+          ng-click="tableform.$show()">
+    Edit rooms
+  </button>
+  <h1 class="page-header">
+    Rooms
+  </h1>
+  <div class="empty-list well" ng-if="!data.rooms.length">No rooms currently defined.</div>
+  <table class="table table-bordered" ng-if="data.rooms.length || tableform.$visible">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>ID</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody sv-root sv-part="data.rooms">
+      <!-- TBD: just sv-element -->
+      <tr class="room" ng-repeat="room in data.rooms" sv-element="">
+        <th scope="row" >{{ $index+1 }}</th>
+        <td><span editable-text="room.name"
+                  onbeforesave="checkNonEmpty($data, 'Empty room name is not allowed')">{{ room.name }}</span></td>
+        <td><span editable-text="room.id"
+                  onbeforesave="checkId($data, room)">{{ room.id }}</span></td>
+        <td class="text-center">
+          <button name="delete" type="button" ng-show="tableform.$visible"
+                  ng-click="deleteRoom(room)" class="btn btn-danger pull-right">
+            Delete
+          </button>
+          <a href='#/rooms/{{room.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="btn-form" ng-show="tableform.$visible">
+    <button name="add"
+            type="button" ng-disabled="tableform.$waiting"
+            ng-click="addRoom()" class="btn btn-default pull-right">Add room</button>
+    <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-primary">Save</button>
+    <button name="cancel" type="button" ng-disabled="tableform.$waiting"
+            ng-click="tableform.$cancel()" class="btn btn-default">Cancel</button>
+  </div>
+</form>

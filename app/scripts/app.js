@@ -27,7 +27,9 @@ angular
     'ui.bootstrap',
     'ui.codemirror',
     'gridshore.c3js.chart',
-    'angular-json-editor'
+    'angular-json-editor',
+    'angular-sortable-view',
+    'xeditable'
   ])
   .value("historyMaxPoints", 1000)
   .config(function ($routeProvider, JSONEditorProvider, DumbTemplateProvider) {
@@ -74,19 +76,11 @@ angular
         controller: 'WidgetCtrl'
       })
       .when('/rooms', {
-        templateUrl: 'views/rooms/index.html',
-        controller: 'RoomCtrl'
-      })
-      .when('/rooms/new', {
-        templateUrl: 'views/rooms/form.html',
-        controller: 'RoomCtrl'
+        templateUrl: 'views/rooms.html',
+        controller: 'RoomsCtrl'
       })
       .when('/rooms/:id', {
         templateUrl: 'views/rooms/show.html',
-        controller: 'RoomCtrl'
-      })
-      .when('/rooms/:id/edit', {
-        templateUrl: 'views/rooms/form.html',
         controller: 'RoomCtrl'
       })
       .when('/dashboards', {

@@ -48,6 +48,14 @@ angular.module('homeuiApp.viewFixture', [])
       remove: function () {
         if (this.container)
           this.container.remove();
+      },
+
+      click: function (element) {
+        if (typeof element == "string")
+          element = this.container.find(element);
+        expect(element).toHaveLength(1);
+        expect(element).toBeVisible();
+        element.click();
       }
     };
   });
