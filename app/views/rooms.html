@@ -20,8 +20,7 @@
       </tr>
     </thead>
     <tbody sv-root sv-part="data.rooms">
-      <!-- TBD: just sv-element -->
-      <tr class="room" ng-repeat="room in data.rooms" sv-element="">
+      <tr class="room" ng-repeat="room in data.rooms" sv-element>
         <th scope="row" >{{ $index+1 }}</th>
         <td><span editable-text="room.name"
                   onbeforesave="checkNonEmpty($data, 'Empty room name is not allowed')">{{ room.name }}</span></td>
