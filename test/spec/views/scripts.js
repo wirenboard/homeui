@@ -7,7 +7,7 @@ describe("Scripts view", function () {
 
   beforeEach(inject(function (MqttRpcViewFixture) {
     f = MqttRpcViewFixture;
-    f.setup("/rpc/v1/wbrules/Editor", "/views/scripts.html", "ScriptsCtrl");
+    f.setup("/rpc/v1/wbrules/Editor", "views/scripts.html", "ScriptsCtrl");
   }));
 
   afterEach(function () {

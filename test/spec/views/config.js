@@ -7,7 +7,7 @@ describe("Config view", function () {
 
   beforeEach(inject(function (MqttRpcViewFixture) {
     f = MqttRpcViewFixture;
-    f.setup("/rpc/v1/confed/Editor", "/views/config.html", "ConfigCtrl", {
+    f.setup("/rpc/v1/confed/Editor", "views/config.html", "ConfigCtrl", {
       $routeParams: { path: "usr/share/wb-mqtt-confed/schemas/foobar.schema.json" }
     });
     // json-editor is not very testable out of the box

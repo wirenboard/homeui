@@ -25,7 +25,7 @@ describe("History view", function () {
 
   function setup (routeParams) {
     return function () {
-      f.setup("/rpc/v1/db_logger/history", "/views/history.html", "HistoryCtrl", {
+      f.setup("/rpc/v1/db_logger/history", "views/history.html", "HistoryCtrl", {
         // Fake control list
         CommonCode: {
           data: {

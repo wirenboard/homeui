@@ -8,7 +8,7 @@ describe("Rooms view", function () {
 
   beforeEach(inject(function (ViewFixture, uiConfig) {
     f = ViewFixture;
-    f.setup("/views/rooms.html", "RoomsCtrl");
+    f.setup("views/rooms.html", "RoomsCtrl");
     data = uiConfig.data;
   }));
 

@@ -7,7 +7,7 @@ describe("Configs view", function () {
 
   beforeEach(inject(function (MqttRpcViewFixture) {
     f = MqttRpcViewFixture;
-    f.setup("/rpc/v1/confed/Editor", "/views/configs.html", "ConfigsCtrl");
+    f.setup("/rpc/v1/confed/Editor", "views/configs.html", "ConfigsCtrl");
   }));
 
   afterEach(function () {

@@ -95,7 +95,7 @@ module.exports = function(config) {
     reporters: [ "jasmine-diff", "dots", "emacs" ],
 
     ngHtml2JsPreprocessor: {
-      stripPrefix: "^([^/]*)",
+      stripPrefix: "^([^/]*)/",
       moduleName: "homeuiApp"
     }
     // Uncomment the following lines if you are using grunt's server to run the tests
