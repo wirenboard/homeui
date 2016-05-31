@@ -343,6 +343,39 @@ angular.module("homeuiApp")
       }).sort();
     }
 
+    var fakeCell = new Cell("nosuch/cell");
+
+    class CellProxy {
+      constructor (name) {
+        this.name = name;
+      }
+
+      gotCell () {
+        return cells.hasOwnProperty(this.name);
+      }
+
+      get cell () {
+        return this.gotCell () ? cells[this.name] : fakeCell;
+      }
+
+      isComplete () {
+        return this.gotCell() && this.cell.isComplete();
+      }
+
+      sendValue (newValue) {
+        if (this.gotCell())
+          this.cell.sendValue(newValue);
+      }
+
+      get value () { return this.cell.value; }
+      get type () { return this.cell.type; }
+      get units () { return this.cell.units; }
+      get readOnly () { return this.cell.readOnly; }
+      get error () { return this.cell.error; }
+      get min () { return this.cell.min; }
+      get max () { return this.cell.max; }
+    }
+
     return {
       devices: devices,
       cells: cells,
@@ -359,6 +392,10 @@ angular.module("homeuiApp")
         if (!cells.hasOwnProperty(name))
           throw new Error("cell not found: " + name);
         return cells[name];
+      },
+
+      proxy (name) {
+        return new CellProxy(name);
       }
     };
   });

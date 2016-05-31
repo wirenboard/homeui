@@ -630,4 +630,48 @@ describe("DeviceData service", () => {
     expect(DeviceData.getCellNamesByType("value")).toEqual(["dev1/volume", "dev2/foo"]);
     expect(DeviceData.getCellNamesByType("voltage")).toEqual(["dev1/voltage1"]);
   });
+
+  it("should provide cell proxy objects that serve as placeholders for nonexistent cells", () => {
+    var proxy = DeviceData.proxy("dev2/bar"); // a proxy for nonexistent cell
+    expect(proxy.isComplete()).toBe(false);
+    expect(proxy.name).toBe("dev2/bar");
+    expect(proxy.value).toBe(null);
+    expect(proxy.type).toBe("incomplete");
+    expect(proxy.units).toBe("");
+    expect(proxy.readOnly).toBe(false);
+    expect(proxy.error).toBe(false);
+    expect(proxy.min).toBe(null);
+    expect(proxy.max).toBe(null);
+    proxy.sendValue(999); // does nothing
+
+    publishNumericCells();
+    expect(proxy.isComplete()).toBe(true);
+    expect(proxy.name).toBe("dev2/bar");
+    expect(proxy.value).toBe(123);
+    expect(proxy.type).toBe("range");
+    expect(proxy.units).toBe("");
+    expect(proxy.readOnly).toBe(false);
+    expect(proxy.error).toBe(false);
+    expect(proxy.min).toBe(-1000);
+    expect(proxy.max).toBe(1000);
+
+    proxy.sendValue(42);
+    f.expectJournal().toEqual([
+      "sent: /devices/dev2/controls/bar/on: [42] (QoS 1)"
+    ]);
+    expect(proxy.value).toBe(42);
+
+    f.extClient.send("/devices/dev2/controls/bar/meta/readonly", "1", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/units", "m", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/error", "r", true, 1);
+    expect(proxy.isComplete()).toBe(true);
+    expect(proxy.name).toBe("dev2/bar");
+    expect(proxy.value).toBe(42);
+    expect(proxy.type).toBe("range");
+    expect(proxy.units).toBe("m");
+    expect(proxy.readOnly).toBe(true);
+    expect(proxy.error).toBe(true);
+    expect(proxy.min).toBe(-1000);
+    expect(proxy.max).toBe(1000);
+  });
 });
