@@ -440,6 +440,12 @@ describe("DeviceData service", () => {
     f.expectJournal().toEqual([]);
   });
 
+  it("should ignore attempts to set values of readonly cells", () => {
+    publishNumericCells();
+    DeviceData.cells["dev2/foo"].sendValue(100);
+    f.expectJournal().toEqual([]);
+  });
+
   it("should support changing cell type", () => {
     publishSwitchCell();
     f.extClient.send("/devices/dev2/controls/fooSwitch/meta/type", "value", true, 1);

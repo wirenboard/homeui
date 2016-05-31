@@ -245,7 +245,7 @@ angular.module("homeuiApp")
       }
 
       sendValue (newValue) {
-        if (!this.isComplete())
+        if (!this.isComplete() || this.readOnly)
           return;
         if (newValue === "" && !this._isText())
           newValue = this.value;
