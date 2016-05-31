@@ -78,7 +78,8 @@ module.exports = function(config) {
       'karma-ng-html2js-preprocessor',
       'karma-chrome-launcher',
       'karma-jasmine',
-      'karma-emacs-reporter'
+      'karma-emacs-reporter',
+      'karma-jasmine-diff-reporter'
     ],
 
     // Continuous Integration mode
@@ -91,7 +92,7 @@ module.exports = function(config) {
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
     logLevel: config.LOG_INFO,
 
-    reporters: [ "dots", "emacs" ],
+    reporters: [ "jasmine-diff", "dots", "emacs" ],
 
     ngHtml2JsPreprocessor: {
       stripPrefix: "^([^/]*)",
