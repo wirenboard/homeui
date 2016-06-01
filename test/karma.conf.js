@@ -37,7 +37,7 @@ module.exports = function(config) {
       'bower_components/angular-ui-codemirror/ui-codemirror.js',
       'bower_components/d3/d3.js',
       'bower_components/c3/c3.js',
-      'bower_components/c3-angular/c3js-directive.js',
+      'bower_components/c3-angular/c3-angular.min.js',
       'bower_components/ng-file-upload/ng-file-upload.js',
       'bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.js',
       'bower_components/angular-sortable-view/src/angular-sortable-view.js',
