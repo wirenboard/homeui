@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.6.1) stable; urgency=medium
+
+  * config editor update for hwconf slot capabilities
+
+ -- Alexey Ignatov <lexszero@gmail.com>  Wed, 01 Jun 2016 15:56:57 +0000
+
 wb-mqtt-homeui (1.6) stable; urgency=medium
 
   * config editor improvements to support module parameters in hwconf
