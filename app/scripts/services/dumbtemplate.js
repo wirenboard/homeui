@@ -55,7 +55,7 @@ angular.module("homeuiApp.DumbTemplate", [])
           }
 
           return src
-            .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in)\s*([\w.\[\]]+?|".*?")\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, function (m, left, op, right, ifTrue, ifFalse) {
+            .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in|intersect)\s*([\w.\[\]]+?|".*?")\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, function (m, left, op, right, ifTrue, ifFalse) {
               left = expandVar(left);
               right = expandVar(right);
               var result = false;
@@ -64,6 +64,11 @@ angular.module("homeuiApp.DumbTemplate", [])
               }
               else if (op == "in") {
                 result = (right.indexOf(left) >= 0);
+              }
+              else if (op == "intersect") {
+                result = left.filter(function(n) {
+                  return right.indexOf(n) != -1;
+                }).length > 0;
               }
               return result ? (ifTrue || "") : (ifFalse || "");
             })
