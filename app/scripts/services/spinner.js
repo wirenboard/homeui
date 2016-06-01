@@ -6,9 +6,8 @@ angular.module("homeuiApp")
 
     function isActive (prefix) {
       for (var k in spinner) {
-        if (prefix === undefined || k.replace(/\s+.*$/, "") == prefix) {
+        if (prefix === undefined || k.replace(/\s+.*$/, "") == prefix)
           return true;
-        }
       }
       return false;
     }
@@ -20,10 +19,10 @@ angular.module("homeuiApp")
     }
 
     return {
-      start: function (id, suffix) {
+      start (id, suffix) {
         spinner[fullId(id, suffix)] = true;
       },
-      stop: function (id, suffix) {
+      stop (id, suffix) {
         delete spinner[fullId(id, suffix)];
       },
       isActive: isActive

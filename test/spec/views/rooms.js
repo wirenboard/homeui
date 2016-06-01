@@ -1,28 +1,27 @@
 "use strict";
 
-describe("Rooms view", function () {
+describe("Rooms view", () => {
   var f, data;
 
   beforeEach(module("homeuiApp.fakeUIConfig"));
   beforeEach(module("homeuiApp.viewFixture"));
 
   beforeEach(inject(function (ViewFixture, uiConfig) {
-    f = ViewFixture;
-    f.setup("views/rooms.html", "RoomsCtrl");
+    f = new ViewFixture("views/rooms.html", "RoomsCtrl");
     data = uiConfig.data;
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     f.remove();
   });
 
-  it("should not display any rooms when there's no rooms defined", function () {
+  it("should not display any rooms when there's no rooms defined", () => {
     expect("table").not.toExist();
     expect(".empty-list").toExist();
   });
 
   function extractRooms() {
-    return f.container.find("table > tbody > tr.room:visible").toArray().map(function (tr) {
+    return f.container.find("table > tbody > tr.room:visible").toArray().map(tr => {
       var name = $(tr).find("td").eq(0).text(),
           id = $(tr).find("td").eq(1).text(),
           link = $(tr).find("td:eq(2) a").prop("hash");
@@ -77,7 +76,7 @@ describe("Rooms view", function () {
     fromEl.simulate("mouseup", { clientX: p2.x, clientY: p2.y });
   }
 
-  it("should list rooms when they exist", function () {
+  it("should list rooms when they exist", () => {
     addData();
     expect(extractRooms()).toEqual([
       ["room1", "Room One"],
@@ -97,7 +96,7 @@ describe("Rooms view", function () {
     return f.container.find("tr").eq(row).find("td input[type=text]");
   }
 
-  it("should be possible to add rooms", function () {
+  it("should be possible to add rooms", () => {
     expect(inputs(1)).not.toExist();
     expect(addBtn()).not.toBeVisible();
 
@@ -145,7 +144,7 @@ describe("Rooms view", function () {
     verifyOriginal();
   });
 
-  it("should be possible to edit rooms", function () {
+  it("should be possible to edit rooms", () => {
     addData();
     f.click(editBtn());
 
@@ -165,7 +164,7 @@ describe("Rooms view", function () {
     ]);
   });
 
-  it("should be possible to remove rows", function () {
+  it("should be possible to remove rows", () => {
     addData();
     f.click(editBtn());
     f.click("tr:eq(1) button[name=delete]");
@@ -179,7 +178,7 @@ describe("Rooms view", function () {
     ]);
   });
 
-  it("should be possible to cancel edit", function () {
+  it("should be possible to cancel edit", () => {
     addData();
     f.click(editBtn());
     f.click("tr:eq(1) button[name=delete]");
@@ -195,7 +194,7 @@ describe("Rooms view", function () {
     verifyOriginal();
   });
 
-  it("should be possible to move elements around", function () {
+  it("should be possible to move elements around", () => {
     // angular-sortable-view does unpretty setTimeout
     jasmine.clock().install();
     addData();
@@ -214,7 +213,7 @@ describe("Rooms view", function () {
     ]);
   });
 
-  it("should not allow empty room names", function () {
+  it("should not allow empty room names", () => {
     addData();
     f.click(editBtn());
     inputs(1).eq(0).val("").change();
@@ -224,7 +223,7 @@ describe("Rooms view", function () {
     verifyOriginal();
   });
 
-  it("should not allow empty room ids", function () {
+  it("should not allow empty room ids", () => {
     addData();
     f.click(editBtn());
     inputs(1).eq(1).val("").change();
@@ -234,9 +233,9 @@ describe("Rooms view", function () {
     verifyOriginal();
   });
 
-  it("should not allow duplicate room ids", function () {
+  it("should not allow duplicate room ids", () => {
     addData();
-    ["room2", "   room2", "room2   ", "   room2  "].forEach(function (id) {
+    ["room2", "   room2", "room2   ", "   room2  "].forEach(id => {
       f.click(editBtn());
       inputs(1).eq(1).val(id).change();
       f.click("button[type=submit]");

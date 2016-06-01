@@ -6,7 +6,7 @@ angular.module("homeuiApp")
     var dirty = false,
         CONFIRMATION_MSG = "The page has unsaved changes. Are you sure you want to leave?";
 
-    $rootScope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
+    $rootScope.$on('$locationChangeStart', (event, newUrl, oldUrl) => {
       if (!dirty)
         return;
       if($window.confirm(CONFIRMATION_MSG))
@@ -18,7 +18,7 @@ angular.module("homeuiApp")
     // https://developer.mozilla.org/en-US/docs/Web/Events/beforeunload
     // But don't add the listener during the tests unless explicitly asked to do it
     if (!window.beforeEach || !window.afterEach || forceBeforeUnloadConfirmationForTests) {
-      window.addEventListener("beforeunload", function (e) {
+      window.addEventListener("beforeunload", e => {
         if (dirty) {
           e.returnValue = CONFIRMATION_MSG; // Gecko and Trident
           return CONFIRMATION_MSG; // Gecko and WebKit
@@ -29,11 +29,11 @@ angular.module("homeuiApp")
     }
 
     return {
-      isDirty: function () {
+      isDirty () {
         return dirty;
       },
 
-      setDirty: function (isDirty) {
+      setDirty (isDirty) {
         dirty = !!isDirty;
       }
     };

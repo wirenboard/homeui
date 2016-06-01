@@ -1,6 +1,6 @@
 "use strict";
 
-describe("Directive: console", function () {
+describe("Directive: console", () => {
   var f, FakeTime, scope, container, element;
 
   beforeEach(module("homeuiApp"));
@@ -16,7 +16,7 @@ describe("Directive: console", function () {
     scope = f.$rootScope.$new();
     container = $("<div></div>")
       .appendTo($("body"));
-    element = $compile("<console></console>")(scope, function (clonedElement) {
+    element = $compile("<console></console>")(scope, clonedElement => {
       container.append(clonedElement);
     });
     f.connect();
@@ -34,19 +34,17 @@ describe("Directive: console", function () {
     });
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     container.remove();
   });
 
   function extractMessages () {
-    return element.find(".console-message").toArray().map(function (el) {
+    return element.find(".console-message").toArray().map(el => {
       el = $(el);
       var levelClasses = el.prop("className")
             .replace(/^\s+|\s+$/g, "")
             .split(/\s+/)
-            .filter(function (className) {
-              return /^console-message-level-/.test(className);
-            }),
+            .filter(className => /^console-message-level-/.test(className)),
           ts = el.find(".console-message-ts"),
           text = el.find(".console-message-text");
       expect(levelClasses.length).toBe(1);
@@ -60,11 +58,11 @@ describe("Directive: console", function () {
     });
   }
 
-  it("should not display any messages initially", function () {
+  it("should not display any messages initially", () => {
     expect(extractMessages()).toEqual([]);
   });
 
-  it("should receive and display console messages", function () {
+  it("should receive and display console messages", () => {
     f.extClient.send("/wbrules/log/info", "Info message");
     expect(extractMessages()).toEqual([
       { level: "info", ts: "2015-06-19 20:25:06", text: "Info message" }
@@ -85,7 +83,7 @@ describe("Directive: console", function () {
     ]);
   });
 
-  it("should scroll to the bottom after receiving messages", function () {
+  it("should scroll to the bottom after receiving messages", () => {
     for (var i = 0; i < 60; ++i) {
       FakeTime.setTime(new Date(2015, 5, 19, 20, 25, 16));
       f.extClient.send("/wbrules/log/info", "Info message");
@@ -98,15 +96,15 @@ describe("Directive: console", function () {
     expect(messagesEl.scrollTop()).toBe(messagesEl.prop("scrollHeight") - messagesEl.height());
   });
 
-  describe("toggle switch", function () {
+  describe("toggle switch", () => {
     var sw;
 
-    beforeEach(function () {
+    beforeEach(() => {
       sw = container.find("input[type=checkbox][name='debug']");
       f.extClient.subscribe("/devices/wbrules/controls/Rule debugging/on", f.msgLogger("ext"));
     });
 
-    it("should accept 'Rule debugging' values", function () {
+    it("should accept 'Rule debugging' values", () => {
       expect(sw).toExist();
       expect(sw.prop("checked")).toBe(false);
       f.extClient.send("/devices/wbrules/controls/Rule debugging", "1");
@@ -117,7 +115,7 @@ describe("Directive: console", function () {
       expect(sw.prop("checked")).toBe(false);
     });
 
-    it("should toggle 'Rule debugging' when clicked", function () {
+    it("should toggle 'Rule debugging' when clicked", () => {
       f.expectJournal().toEqual([]);
       sw.click();
       f.$rootScope.$digest();

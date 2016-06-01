@@ -1,20 +1,16 @@
 "use strict";
 
-describe("Configs view", function () {
+describe("Configs view", () => {
   var f;
 
   beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
   beforeEach(inject(function (MqttRpcViewFixture) {
-    f = MqttRpcViewFixture;
-    f.setup("/rpc/v1/confed/Editor", "views/configs.html", "ConfigsCtrl");
+    f = new MqttRpcViewFixture("/rpc/v1/confed/Editor", "views/configs.html", "ConfigsCtrl");
   }));
+  afterEach(() => { f.remove(); });
 
-  afterEach(function () {
-    f.remove();
-  });
-
-  it("should display a list of configs", function () {
+  it("should display a list of configs", () => {
     f.expectRequest("/rpc/v1/confed/Editor/List", {}, [
       {
         title: "ABC config",
@@ -28,15 +24,11 @@ describe("Configs view", function () {
         schemaPath: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json"
       }
     ]);
-    var extracted = f.container.find("table > tbody > tr").toArray().map(function (tr) {
-      return [$(tr).find("a").prop("hash")]
-        .concat(
-          $(tr).find("td")
-            .toArray()
-            .map(function (td) {
-              return td.textContent.replace(/^\s*|\s*$/g, "");
-            }));
-    });
+    var extracted = f.container.find("table > tbody > tr").toArray().map(
+      tr => [$(tr).find("a").prop("hash")].concat(
+        $(tr).find("td")
+          .toArray()
+          .map(td => td.textContent.replace(/^\s*|\s*$/g, ""))));
     expect(extracted).toEqual([
       // TBD: all config paths should be absolute
       ["#/configs/edit/usr/share/wb-mqtt-confed/schemas/abc.schema.json",

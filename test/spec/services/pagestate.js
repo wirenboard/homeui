@@ -1,10 +1,10 @@
 "use strict";
 
-describe("PageState service", function () {
+describe("PageState service", () => {
   var $window, $rootScope, PageState, beforeUnloadHandler = null;
 
-  beforeEach(function () {
-    spyOn(window, "addEventListener").and.callFake(function (type, listener, useCapture) {
+  beforeEach(() => {
+    spyOn(window, "addEventListener").and.callFake((type, listener, useCapture) => {
       if (type != "beforeunload")
         return;
       if (beforeUnloadHandler !== null)
@@ -24,36 +24,36 @@ describe("PageState service", function () {
     PageState = _PageState_;
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     beforeUnloadHandler = null;
   });
 
-  it("should not be marked dirty initially", function () {
+  it("should not be marked dirty initially", () => {
     expect(PageState.isDirty()).toBe(false);
   });
 
-  it("should mark itself as dirty after setDirty(true) call", function () {
+  it("should mark itself as dirty after setDirty(true) call", () => {
     PageState.setDirty(true);
     expect(PageState.isDirty()).toBe(true);
   });
 
-  it("should mark itself clean after setDirty(false) call", function () {
+  it("should mark itself clean after setDirty(false) call", () => {
     PageState.setDirty(true);
     expect(PageState.isDirty()).toBe(true);
     PageState.setDirty(false);
     expect(PageState.isDirty()).toBe(false);
   });
 
-  it("should not ask for confirmation when leaving a non-dirty page", function () {
+  it("should not ask for confirmation when leaving a non-dirty page", () => {
     spyOn($window, "confirm").and.throwError("must not ask for confirmation");
     var ev = $rootScope.$broadcast(
       "$locationChangeStart", "http://localhost/new", "http://localhost/old");
     expect(ev.defaultPrevented).toBeFalsy();
   });
 
-  it("should ask for confirmation when leaving a dirty page", function () {
+  it("should ask for confirmation when leaving a dirty page", () => {
     var okToLeave = false;
-    spyOn($window, "confirm").and.callFake(function (prompt) {
+    spyOn($window, "confirm").and.callFake((prompt) => {
       expect(typeof prompt).toBe("string");
       return okToLeave;
     });
@@ -72,7 +72,7 @@ describe("PageState service", function () {
     expect(PageState.isDirty()).toBe(false);
   });
 
-  it("should not ask for confirmation when closing a non-dirty tab", function () {
+  it("should not ask for confirmation when closing a non-dirty tab", () => {
     expect(beforeUnloadHandler).toBeTruthy();
     expect(typeof beforeUnloadHandler).toBe("function");
     var e = {};
@@ -80,7 +80,7 @@ describe("PageState service", function () {
     expect(e.hasOwnProperty("returnValue")).toBe(false);
   });
 
-  it("should ask for confirmation when closing a dirty tab", function () {
+  it("should ask for confirmation when closing a dirty tab", () => {
     expect(beforeUnloadHandler).toBeTruthy();
     expect(typeof beforeUnloadHandler).toBe("function");
     PageState.setDirty(true);

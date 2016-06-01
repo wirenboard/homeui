@@ -1,11 +1,12 @@
 "use strict";
 
-describe("History view", function () {
+describe("History view", () => {
   var f,
+      MqttRpcViewFixture,
       TOPIC1 = "/devices/somedev/controls/somectl",
       TOPIC2 = "/devices/somedev/controls/anotherctl";
 
-  beforeEach(function () {
+  beforeEach(() => {
     module("homeuiApp.mqttRpcViewFixture");
     module(function ($provide) {
       // make sure we don't have to update the test
@@ -24,8 +25,8 @@ describe("History view", function () {
   }
 
   function setup (routeParams) {
-    return function () {
-      f.setup("/rpc/v1/db_logger/history", "views/history.html", "HistoryCtrl", {
+    return () => {
+      f = new MqttRpcViewFixture("/rpc/v1/db_logger/history", "views/history.html", "HistoryCtrl", {
         // Fake control list
         CommonCode: {
           data: {
@@ -37,34 +38,33 @@ describe("History view", function () {
         },
         $routeParams: routeParams || {}
       });
+      spyOn(f.$location, "path");
     };
   }
 
-  beforeEach(inject(function (MqttRpcViewFixture) {
-    f = MqttRpcViewFixture;
-    spyOn(f.$location, "path");
+  beforeEach(inject(function (_MqttRpcViewFixture_) {
+    MqttRpcViewFixture = _MqttRpcViewFixture_;
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     // catch any unexpected location changes
     expect(f.$location.path).not.toHaveBeenCalled();
     f.remove();
   });
 
-  describe("with no topic selected", function () {
+  describe("with no topic selected", () => {
     beforeEach(setup());
 
-    it("should not display start/end dates and the chart until the topic is selected", function () {
+    it("should not display start/end dates and the chart until the topic is selected", () => {
       expect($("#history-start, #history-end")).not.toBeVisible();
       // The chart must no be a part of DOM at this point
       // or it will have resize issues
       expect($("#histchart")).not.toExist();
     });
 
-    it("should list controls in the <select>", function () {
-      var options = $("#control-select option").toArray().map(function (opt) {
-        return [opt.value, $(opt).text().replace(/^s\*|\s*$/g, "")];
-      });
+    it("should list controls in the <select>", () => {
+      var options = $("#control-select option").toArray().map(
+        opt => [opt.value, $(opt).text().replace(/^s\*|\s*$/g, "")]);
       expect(options).toEqual([
         ["", "- Please Choose -"],
         [TOPIC1, TOPIC1],
@@ -72,7 +72,7 @@ describe("History view", function () {
       ]);
     });
 
-    it("should jump to topic history URL after selecting topic", function () {
+    it("should jump to topic history URL after selecting topic", () => {
       $("#control-select option:eq(1)").prop("selected", true);
       $("#control-select").trigger("change");
       expect(f.$location.path).toHaveBeenCalledWith("/history/somedev/somectl/-/-");
@@ -80,7 +80,7 @@ describe("History view", function () {
     });
   });
 
-  describe("with topic selected", function () {
+  describe("with topic selected", () => {
     beforeEach(setup({ device: "somedev", control: "somectl" }));
 
     function load (hasMore) {
@@ -102,30 +102,28 @@ describe("History view", function () {
       }, resp);
     }
 
-    it("should display selected topic in the select", function () {
+    it("should display selected topic in the select", () => {
       expect($("#control-select").val()).toBe(TOPIC1);
     });
 
-    it("should display start/end date controls", function () {
+    it("should display start/end date controls", () => {
       expect($("#history-start, #history-end")).toBeVisible();
     });
 
-    it("should request topic history without start/end dates", function () {
+    it("should request topic history without start/end dates", () => {
       load();
     });
 
-    it("should display chart once values are loaded", function () {
+    it("should display chart once values are loaded", () => {
       load();
       expect("#histchart").toBeVisible();
     });
 
-    it("should list reported values in the table", function () {
+    it("should list reported values in the table", () => {
       load();
-      var extractedValues = $("table.table > tbody > tr").toArray().map(function (tr) {
-        return $(tr).find("td").toArray().map(function (td) {
-          return $(td).text().replace(/^\s*|\s*$/g, "");
-        });
-      });
+      var extractedValues = $("table.table > tbody > tr").toArray().map(
+        tr =>  $(tr).find("td").toArray().map(
+          td => $(td).text().replace(/^\s*|\s*$/g, "")));
       expect(extractedValues).toEqual([
         ["2015-09-01 00:00:00", "10"],
         ["2015-09-02 00:00:00", "20"],
@@ -135,7 +133,7 @@ describe("History view", function () {
       ]);
     });
 
-    it("should jump to URL with start date once start date is selected", function () {
+    it("should jump to URL with start date once start date is selected", () => {
       load();
       $("#history-start").data("setDate")(date(2));
       f.$rootScope.$digest();
@@ -143,7 +141,7 @@ describe("History view", function () {
       f.$location.path.calls.reset();
     });
 
-    it("should jump to URL with end date once end date is selected", function () {
+    it("should jump to URL with end date once end date is selected", () => {
       load();
       $("#history-end").data("setDate")(date(3));
       f.$rootScope.$digest();
@@ -151,9 +149,9 @@ describe("History view", function () {
       f.$location.path.calls.reset();
     });
 
-    it("should display warning in case if maximum number of points is exceeded", function () {
+    it("should display warning in case if maximum number of points is exceeded", () => {
       var msg = null;
-      f.$rootScope.$on("alert", function (ev, message, sticky) {
+      f.$rootScope.$on("alert", (ev, message, sticky) => {
         expect(msg).toBeNull();
         expect(sticky).toBe(true);
         msg = message;
@@ -163,8 +161,8 @@ describe("History view", function () {
     });
   });
 
-  describe("with topic and start date selected", function () {
-    beforeEach(function () {
+  describe("with topic and start date selected", () => {
+    beforeEach(() => {
       spyOn(Date, "now").and.returnValue(ts(5) * 1000);
     });
     beforeEach(setup({
@@ -191,15 +189,15 @@ describe("History view", function () {
       });
     }
 
-    it("should display selected start date", function () {
+    it("should display selected start date", () => {
       expect($("#history-start").val()).toBe("" + ts(2) * 1000);
     });
 
-    it("should request topic history with start date", function () {
+    it("should request topic history with start date", () => {
       load();
     });
 
-    it("should jump to URL with start and end date once end date is selected", function () {
+    it("should jump to URL with start and end date once end date is selected", () => {
       load();
       $("#history-end").data("setDate")(date(3));
       f.$rootScope.$digest();
@@ -209,7 +207,7 @@ describe("History view", function () {
     });
   });
 
-  describe("with topic and end date selected", function () {
+  describe("with topic and end date selected", () => {
     beforeEach(setup({
       device: "somedev",
       control: "somectl",
@@ -233,15 +231,15 @@ describe("History view", function () {
       });
     }
 
-    it("should display selected end date", function () {
+    it("should display selected end date", () => {
       expect($("#history-end").val()).toBe("" + ts(3) * 1000);
     });
 
-    it("should request topic history with end date", function () {
+    it("should request topic history with end date", () => {
       load();
     });
 
-    it("should jump to URL with start and end date once end date is selected", function () {
+    it("should jump to URL with start and end date once end date is selected", () => {
       load();
       $("#history-start").data("setDate")(date(2));
       f.$rootScope.$digest();
@@ -251,7 +249,7 @@ describe("History view", function () {
     });
   });
 
-  describe("with topic and start+end dates selected", function () {
+  describe("with topic and start+end dates selected", () => {
     beforeEach(setup({
       device: "somedev",
       control: "somectl",
@@ -277,7 +275,7 @@ describe("History view", function () {
       });
     }
 
-    it("should request topic history with start and end dates", function () {
+    it("should request topic history with start and end dates", () => {
       load();
     });
   });

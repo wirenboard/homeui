@@ -1,14 +1,6 @@
 angular.module("homeuiApp.mqttRpcViewFixture", ["homeuiApp", "homeuiApp.fakeMqtt", "homeuiApp.MqttRpc", "homeuiApp.viewFixture"])
   .factory("MqttRpcViewFixture", function (FakeMqttFixture, ViewFixture) {
-    var vf = Object.create(ViewFixture),
-        reqId = 1;
-
-    for (var k in FakeMqttFixture) {
-      if (!FakeMqttFixture.hasOwnProperty(k))
-        continue;
-      var v = FakeMqttFixture[k];
-      vf[k] = angular.isFunction(v) ? v.bind(FakeMqttFixture) : v;
-    }
+    var reqId = 1;
 
     function doExpectRequest (topic, params) {
       FakeMqttFixture.expectJournal().toEqual([
@@ -20,34 +12,41 @@ angular.module("homeuiApp.mqttRpcViewFixture", ["homeuiApp", "homeuiApp.fakeMqtt
       ]);
     }
 
-    vf.setup = function setup (topic, url, controllerName, locals) {
+    class MqttRpcViewFixture extends ViewFixture {
+      constructor (topic, url, controllerName, locals) {
+        super(url, controllerName, locals, { topic: topic });
+        FakeMqttFixture.delegateVia(this);
+      }
+
+      setup (options) {
         FakeMqttFixture.useJSON = true;
-        this.connect();
-        this.extClient.subscribe(topic + "/+/+", this.msgLogger("ext"));
-        ViewFixture.setup(url, controllerName, locals);
-    };
+        FakeMqttFixture.connect();
+        FakeMqttFixture.extClient.subscribe(options.topic + "/+/+", FakeMqttFixture.msgLogger("ext"));
+        super.setup(options);
+      }
 
-    vf.expectRequest = function expectRequest (topic, params, response) {
-      doExpectRequest(topic, params);
-      this.extClient.send(
-        topic + "/ui/reply",
-        JSON.stringify({
-          id: reqId++,
-          result: response
-        }));
-      this.$rootScope.$digest(); // resolve the promise
-    };
+      expectRequest (topic, params, response) {
+        doExpectRequest(topic, params);
+        this.extClient.send(
+          topic + "/ui/reply",
+          JSON.stringify({
+            id: reqId++,
+            result: response
+          }));
+        this.$rootScope.$digest(); // resolve the promise
+      }
 
-    vf.expectRequestAndFail = function expectRequestAndFail (topic, params, error) {
-      doExpectRequest(topic, params);
-      this.extClient.send(
-        topic + "/ui/reply",
-        JSON.stringify({
-          id: reqId++,
-          error: error
-        }));
-      this.$rootScope.$digest(); // resolve the promise
-    };
+      expectRequestAndFail (topic, params, error) {
+        doExpectRequest(topic, params);
+        this.extClient.send(
+          topic + "/ui/reply",
+          JSON.stringify({
+            id: reqId++,
+            error: error
+          }));
+        this.$rootScope.$digest(); // resolve the promise
+      }
+    }
 
-    return vf;
+    return MqttRpcViewFixture;
   });

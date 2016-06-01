@@ -7,10 +7,12 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
       data: "MqttConnectionError",
       message: "MQTT client is not connected"
     };
+
     var timeoutError = {
       data: "MqttTimeoutError",
       message: "MQTT RPC request timed out"
     };
+
     var nextId = 1,
         inflight = {},
         watchStopper = null,
@@ -26,7 +28,7 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
     };
 
     function handleDisconnection () {
-      Object.keys(inflight).sort().forEach(function (callId) {
+      Object.keys(inflight).sort().forEach(callId => {
         invokeResponseHandler(callId, null, {
           error: disconnectedError
         });
@@ -40,8 +42,8 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
       if (watchStopper !== null)
         return;
       watchStopper = $rootScope.$watch(
-        function () { return mqttClient.isConnected(); },
-        function (connected) {
+        () => mqttClient.isConnected(),
+        connected => {
           if (!connected)
             handleDisconnection();
         });
@@ -79,57 +81,59 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
       mqttClient.addStickySubscription(topic, handleMessage);
     }
 
-    function Proxy(target, spinnerIdPrefix) {
-      this._prefix = "/rpc/v1/" + target + "/";
-      this._watchStopper = null;
-      this._spinnerIdPrefix = spinnerIdPrefix || "mqttRpc";
+    class Proxy {
+      constructor (target, spinnerIdPrefix) {
+        this._prefix = "/rpc/v1/" + target + "/";
+        this._watchStopper = null;
+        this._spinnerIdPrefix = spinnerIdPrefix || "mqttRpc";
+      }
+
+      _init () {
+        ensureSubscription(this._prefix + "+/" + mqttClient.getID() + "/reply");
+      }
+
+      _call (method, params) {
+        this._init();
+        maybeStartWatching();
+        return $q((resolve, reject) => {
+          if (!mqttClient.isConnected()) {
+            reject(disconnectedError);
+            return;
+          }
+          var callId = nextId++;
+          var topic = this._prefix + method + "/" + mqttClient.getID();
+          mqttClient.send(
+            topic,
+            JSON.stringify({
+              id: callId,
+              params: params || {}
+            }),
+            false);
+          var timeout = $timeout(invokeResponseHandler.bind(null, callId, null, {
+            error: timeoutError
+          }), mqttRpcTimeout);
+
+          Spinner.start(this._spinnerIdPrefix, callId);
+          inflight[callId] = (actualTopic, reply) => {
+            // console.log("reply: %o", reply);
+            Spinner.stop(this._spinnerIdPrefix, callId);
+            $timeout.cancel(timeout);
+            if (actualTopic !== null && actualTopic != topic + "/reply")
+              reject("unexpected response topic " + actualTopic);
+            else if (reply.hasOwnProperty("error") && reply.error !== null)
+              reject(reply.error);
+            else
+              resolve(reply.result);
+          };
+        });
+      }
     }
 
-    Proxy.prototype._init = function _init () {
-      ensureSubscription(this._prefix + "+/" + mqttClient.getID() + "/reply");
-    };
-
-    Proxy.prototype._call = function _call (method, params) {
-      this._init();
-      maybeStartWatching();
-      return $q(function (resolve, reject) {
-        if (!mqttClient.isConnected()) {
-          reject(disconnectedError);
-          return;
-        }
-        var callId = nextId++;
-        var topic = this._prefix + method + "/" + mqttClient.getID();
-        mqttClient.send(
-          topic,
-          JSON.stringify({
-            id: callId,
-            params: params || {}
-          }),
-          false);
-        var timeout = $timeout(invokeResponseHandler.bind(null, callId, null, {
-          error: timeoutError
-        }), mqttRpcTimeout);
-
-        Spinner.start(this._spinnerIdPrefix, callId);
-        inflight[callId] = function onResponse (actualTopic, reply) {
-          // console.log("reply: %o", reply);
-          Spinner.stop(this._spinnerIdPrefix, callId);
-          $timeout.cancel(timeout);
-          if (actualTopic !== null && actualTopic != topic + "/reply")
-            reject("unexpected response topic " + actualTopic);
-          else if (reply.hasOwnProperty("error") && reply.error !== null)
-            reject(reply.error);
-          else
-            resolve(reply.result);
-        }.bind(this);
-      }.bind(this));
-    };
-
     return {
-      getProxy: function (target, methods, spinnerIdPrefix) {
+      getProxy (target, methods, spinnerIdPrefix) {
         var proxy = new Proxy(target, spinnerIdPrefix),
             outer = Object.create(proxy);
-        methods.forEach(function (method) {
+        methods.forEach(method => {
           outer[method] = proxy._call.bind(proxy, method);
         });
         return outer;

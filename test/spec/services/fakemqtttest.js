@@ -1,6 +1,6 @@
 "use strict";
 
-describe("Fake MQTT", function () {
+describe("Fake MQTT", () => {
   var f;
 
   // load the controller's module
@@ -12,13 +12,13 @@ describe("Fake MQTT", function () {
     f.useJSON = false;
   }));
 
-  it("should change status upon connection", function () {
+  it("should change status upon connection", () => {
     f.connect();
     expect(f.extClient.isConnected()).toBe(true);
     expect(f.mqttClient.isConnected()).toBe(true);
   });
 
-  it("should support subscriptions", function () {
+  it("should support subscriptions", () => {
     f.connect();
     f.mqttClient.subscribe("/abc/def", f.msgLogger("local"));
     f.extClient.send("/abc/def", "foobar", false);
@@ -61,7 +61,7 @@ describe("Fake MQTT", function () {
     f.expectJournal().toEqual([]);
   });
 
-  it("should not receive any messages after disconnection", function () {
+  it("should not receive any messages after disconnection", () => {
     f.connect();
     f.mqttClient.subscribe("/abc/def", f.msgLogger("local"));
     f.extClient.send("/abc/def", "foobar", false);
@@ -75,7 +75,7 @@ describe("Fake MQTT", function () {
     f.expectJournal().toEqual([]);
   });
 
-  it("should be able to reconnect after disconnection, but clearing the old subscriptions", function () {
+  it("should be able to reconnect after disconnection, but clearing the old subscriptions", () => {
     f.connect();
     f.mqttClient.subscribe("/abc/def", f.msgLogger("local"));
     f.mqttClient.disconnect();
@@ -91,9 +91,9 @@ describe("Fake MQTT", function () {
     f.expectJournal().toEqual(["local: /abc/def: [foobar] (QoS 1)"]);
   });
 
-  it("should support whenMqttReady", function () {
+  it("should support whenMqttReady", () => {
     var ready = false;
-    f.whenMqttReady().then(function () {
+    f.whenMqttReady().then(() => {
       if (ready)
         throw new Error("promise callback called twice???");
       ready = true;
@@ -102,7 +102,7 @@ describe("Fake MQTT", function () {
     f.connect();
     expect(ready).toBe(true);
     ready = false;
-    f.whenMqttReady().then(function () {
+    f.whenMqttReady().then(() => {
       if (ready)
         throw new Error("promise callback called twice???");
       ready = true;
@@ -111,7 +111,7 @@ describe("Fake MQTT", function () {
     expect(ready).toBe(true);
   });
 
-  it("should support sticky subscriptions", function () {
+  it("should support sticky subscriptions", () => {
     f.mqttClient.addStickySubscription("/abc/def", f.msgLogger("local"));
     f.connect();
     f.mqttClient.addStickySubscription("/abc/qqq", f.msgLogger("local"));

@@ -1,6 +1,6 @@
 "use strict";
 
-describe("MQTT RPC", function () {
+describe("MQTT RPC", () => {
   var f, MqttRpc, proxy;
 
   // load the controller's module
@@ -17,10 +17,10 @@ describe("MQTT RPC", function () {
     proxy = MqttRpc.getProxy("fooserv/Arith", ["Multiply", "Divide"], "myproxy");
   }));
 
-  it("should support remote calls", function () {
+  it("should support remote calls", () => {
     var result = null;
     for (var i = 1; i < 10; ++i) {
-      proxy.Multiply({ A: i, B: i + 1 }).then(function (r) {
+      proxy.Multiply({ A: i, B: i + 1 }).then(r => {
         result = r;
       });
       f.expectJournal().toEqual([
@@ -38,14 +38,14 @@ describe("MQTT RPC", function () {
     }
   });
 
-  it("should activate the spinner while the call is active", function () {
+  it("should activate the spinner while the call is active", () => {
     var proxy1 = MqttRpc.getProxy("fooserv/Arith", ["Multiply", "Divide"], "myproxy1");
     var r1, r2;
     expect(f.$rootScope.spinnerActive()).toBe(false);
     expect(f.$rootScope.spinnerActive("myproxy")).toBe(false);
     expect(f.$rootScope.spinnerActive("myproxy1")).toBe(false);
 
-    proxy.Multiply({ A: 2, B: 2 }).then(function (r) {
+    proxy.Multiply({ A: 2, B: 2 }).then(r => {
       r1 = r;
     });
     expect(f.$rootScope.spinnerActive()).toBe(true);
@@ -59,7 +59,7 @@ describe("MQTT RPC", function () {
       }
     ]);
 
-    proxy1.Multiply({ A: 2, B: 5 }).then(function (r) {
+    proxy1.Multiply({ A: 2, B: 5 }).then(r => {
       r2 = r;
     });
     expect(f.$rootScope.spinnerActive()).toBe(true);
@@ -90,11 +90,11 @@ describe("MQTT RPC", function () {
     expect(f.$rootScope.spinnerActive("myproxy1")).toBe(false);
   });
 
-  it("should support exceptions", function () {
+  it("should support exceptions", () => {
     var error = null;
-    proxy.Divide({ A: 42, B: 0 }).then(function (r) {
+    proxy.Divide({ A: 42, B: 0 }).then(r => {
       error = "succeeded in dividing by zero";
-    }, function (err) {
+    }, err => {
       error = err;
     });
     f.expectJournal().toEqual([
@@ -120,13 +120,13 @@ describe("MQTT RPC", function () {
     });
   });
 
-  it("should fail immediately if the client is not connected", function () {
+  it("should fail immediately if the client is not connected", () => {
     f.mqttClient.disconnect();
     f.$rootScope.$digest();
     var error = null;
-    proxy.Divide({ A: 42, B: 2 }).then(function (r) {
+    proxy.Divide({ A: 42, B: 2 }).then(r => {
       error = "succeeded in calling via the disconnected client";
-    }, function (err) {
+    }, err => {
       error = err;
     });
     f.$rootScope.$digest();
@@ -136,11 +136,11 @@ describe("MQTT RPC", function () {
     });
   });
 
-  it("should cancel pending requests upon client disconnection", function () {
+  it("should cancel pending requests upon client disconnection", () => {
     var error = null;
-    proxy.Divide({ A: 42, B: 2 }).then(function (r) {
+    proxy.Divide({ A: 42, B: 2 }).then(r => {
       error = "succeeded in calling via the disconnected client";
-    }, function (err) {
+    }, err => {
       error = err;
     });
 
@@ -155,11 +155,11 @@ describe("MQTT RPC", function () {
     });
   });
 
-  it("should time out if the request takes too long to complete", function () {
+  it("should time out if the request takes too long to complete", () => {
     var error = null;
-    proxy.Divide({ A: 42, B: 2 }).then(function (r) {
+    proxy.Divide({ A: 42, B: 2 }).then(r => {
       error = "RPC call succeeded after timeout?";
-    }, function (err) {
+    }, err => {
       error = err;
     });
 

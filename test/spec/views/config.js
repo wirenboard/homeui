@@ -1,24 +1,23 @@
 "use strict";
 
-describe("Config view", function () {
+describe("Config view", () => {
   var f, raf;
 
   beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
   beforeEach(inject(function (MqttRpcViewFixture) {
-    f = MqttRpcViewFixture;
-    f.setup("/rpc/v1/confed/Editor", "views/config.html", "ConfigCtrl", {
+    f = new MqttRpcViewFixture("/rpc/v1/confed/Editor", "views/config.html", "ConfigCtrl", {
       $routeParams: { path: "usr/share/wb-mqtt-confed/schemas/foobar.schema.json" }
     });
     // json-editor is not very testable out of the box
     // because it uses RAF to postpone change events
     raf = window.requestAnimationFrame;
-    window.requestAnimationFrame = function (callback) {
+    window.requestAnimationFrame = (callback) => {
       callback();
     };
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     window.requestAnimationFrame = raf;
     f.remove();
   });
@@ -54,7 +53,7 @@ describe("Config view", function () {
     return nameInput;
   }
 
-  it("should display the config using json-editor", function () {
+  it("should display the config using json-editor", () => {
     load();
     expect(nameInput().val()).toBe("foo");
   });
@@ -65,7 +64,7 @@ describe("Config view", function () {
     return saveBtn;
   }
 
-  it("should have Save button initially disabled", function () {
+  it("should have Save button initially disabled", () => {
     load();
     expect(saveButton()).toBeDisabled();
   });
@@ -77,7 +76,7 @@ describe("Config view", function () {
     f.$rootScope.$digest();
   }
 
-  it("should enable Save button after changes are made", function () {
+  it("should enable Save button after changes are made", () => {
     load();
     editName("foobar");
     expect(saveButton()).not.toBeDisabled();
@@ -96,7 +95,7 @@ describe("Config view", function () {
       f.expectRequestAndFail("/rpc/v1/confed/Editor/Save", params, error);
   }
 
-  it("should post changes to the server after clicking Save, then disable Save button", function () {
+  it("should post changes to the server after clicking Save, then disable Save button", () => {
     load();
     editName("foobar");
     saveButton().click();
@@ -105,7 +104,7 @@ describe("Config view", function () {
     expect(saveButton()).toBeDisabled();
   });
 
-  it("should show validation errors and disable Save button when there are validation errors", function () {
+  it("should show validation errors and disable Save button when there are validation errors", () => {
     load();
     editName("");
     expect(saveButton()).toBeDisabled();
@@ -115,9 +114,9 @@ describe("Config view", function () {
     expect(errorMsg).toContainText("Value required.");
   });
 
-  it("should display an error and reenable Save button if save fails", function () {
+  it("should display an error and reenable Save button if save fails", () => {
     var msg = null;
-    f.$rootScope.$on("alert", function (ev, message, sticky) {
+    f.$rootScope.$on("alert", (ev, message, sticky) => {
       expect(msg).toBeNull();
       expect(sticky).toBe(true);
       msg = message;

@@ -16,10 +16,10 @@ angular.module("homeuiApp")
     var STATE_FIND_CLOSING_PAREN = 0,
         STATE_FIND_OPEN_PAREN = 1,
         STATE_FIND_BEGINNING = 2;
-    return function (cm) {
+    return cm => {
       var state = STATE_FIND_CLOSING_PAREN,
           level = 1;
-      mapTokensBackward(cm, function (token, line) {
+      mapTokensBackward(cm, (token, line) => {
         // console.log("state=" + state + "; type=" + token.type + "; string=" + token.string);
         switch (state) {
         case STATE_FIND_CLOSING_PAREN:
