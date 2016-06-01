@@ -17,8 +17,8 @@ describe("DeviceData service", () => {
     Object.keys(DeviceData.cells).forEach(devctl => {
       var origCell = DeviceData.cells[devctl], cell = {};
       expect(origCell.name).toEqual(devctl);
-      Object.keys(origCell).forEach(k => {
-        if (k != "name")
+      Object.keys(origCell).concat(["value"]).forEach(k => {
+        if (k != "name" && k != "_value")
           cell[k] = origCell[k];
       });
       r[devctl] = cell;
@@ -382,52 +382,52 @@ describe("DeviceData service", () => {
     publishRgbCell();
     publishPushButtonCell();
 
-    DeviceData.cells["dev2/bar"].sendValue(42);
+    DeviceData.cells["dev2/bar"].value = 42;
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/bar/on: [42] (QoS 1)"
     ]);
     expect(DeviceData.cell("dev2/bar").value).toBe(42);
 
-    DeviceData.cells["dev2/fooText"].sendValue("123");
+    DeviceData.cells["dev2/fooText"].value = "123";
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/fooText/on: [123] (QoS 1)"
     ]);
     expect(DeviceData.cell("dev2/fooText").value).toBe("123");
 
-    DeviceData.cells["dev2/fooText"].sendValue("");
+    DeviceData.cells["dev2/fooText"].value = "";
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/fooText/on: [] (QoS 1)"
     ]);
     expect(DeviceData.cell("dev2/fooText").value).toBe("");
     expect(DeviceData.cell("dev2/fooText").isComplete()).toBe(true);
 
-    DeviceData.cells["dev2/fooText"].sendValue("abc");
+    DeviceData.cells["dev2/fooText"].value = "abc";
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/fooText/on: [abc] (QoS 1)"
     ]);
     expect(DeviceData.cell("dev2/fooText").value).toBe("abc");
     expect(DeviceData.cell("dev2/fooText").isComplete()).toBe(true);
 
-    DeviceData.cells["dev2/fooSwitch"].sendValue(true);
+    DeviceData.cells["dev2/fooSwitch"].value = true;
     // value is sent even if it wasn't changed
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/fooSwitch/on: [1] (QoS 1)"
     ]);
     expect(DeviceData.cell("dev2/fooSwitch").value).toBe(true);
 
-    DeviceData.cells["dev2/fooSwitch"].sendValue(false);
+    DeviceData.cells["dev2/fooSwitch"].value = false;
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/fooSwitch/on: [0] (QoS 1)"
     ]);
     expect(DeviceData.cell("dev2/fooSwitch").value).toBe(false);
 
-    DeviceData.cells["dev2/fooRgb"].sendValue({ r: 100, g: 200, b: 210 });
+    DeviceData.cells["dev2/fooRgb"].value = { r: 100, g: 200, b: 210 };
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/fooRgb/on: [100;200;210] (QoS 1)"
     ]);
     expect(DeviceData.cell("dev2/fooRgb").value).toEqual({ r: 100, g: 200, b: 210 });
 
-    DeviceData.cells["dev2/fooButton"].sendValue(true);
+    DeviceData.cells["dev2/fooButton"].value = true;
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/fooButton/on: [1] (QoS 1)"
     ]);
@@ -436,13 +436,13 @@ describe("DeviceData service", () => {
 
   it("should ignore attempts to set values of incomplete cells", () => {
     publishIncompleteCell();
-    DeviceData.cells["dev2/fooInc"].sendValue(100);
+    DeviceData.cells["dev2/fooInc"].value = 100;
     f.expectJournal().toEqual([]);
   });
 
   it("should ignore attempts to set values of readonly cells", () => {
     publishNumericCells();
-    DeviceData.cells["dev2/foo"].sendValue(100);
+    DeviceData.cells["dev2/foo"].value = 100;
     f.expectJournal().toEqual([]);
   });
 
@@ -642,7 +642,7 @@ describe("DeviceData service", () => {
     expect(proxy.error).toBe(false);
     expect(proxy.min).toBe(null);
     expect(proxy.max).toBe(null);
-    proxy.sendValue(999); // does nothing
+    proxy.value = 999; // does nothig
 
     publishNumericCells();
     expect(proxy.isComplete()).toBe(true);
@@ -655,7 +655,7 @@ describe("DeviceData service", () => {
     expect(proxy.min).toBe(-1000);
     expect(proxy.max).toBe(1000);
 
-    proxy.sendValue(42);
+    proxy.value = 42;
     f.expectJournal().toEqual([
       "sent: /devices/dev2/controls/bar/on: [42] (QoS 1)"
     ]);

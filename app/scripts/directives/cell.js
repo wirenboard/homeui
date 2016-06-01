@@ -11,6 +11,7 @@ angular.module("homeuiApp")
     return {
       restrict: "A",
       scope: true,
+      priority: 1, // take precedence over ng-model
       controller: CellController
     };
   });

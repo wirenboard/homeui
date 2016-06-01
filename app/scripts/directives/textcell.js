@@ -7,6 +7,6 @@ angular.module("homeuiApp")
       scope: false,
       require: "^cell",
       replace: true,
-      template: "<input readonly class='cell cell-text' type='text' value='{{ cell.value }}'>"
+      template: "<input ng-readonly='cell.readOnly' class='cell cell-text' type='text' ng-model='cell.value' explicit-changes>"
     };
   });

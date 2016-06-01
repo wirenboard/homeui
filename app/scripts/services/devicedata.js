@@ -163,11 +163,19 @@ angular.module("homeuiApp")
         this.controlName = parts[1];
         this.type = "incomplete";
         this.units = "";
-        this.value = null;
+        this._value = null;
         this.readOnly = false;
         this.error = false;
         this.min = null;
         this.max = null;
+      }
+
+      get value () {
+        return this._value;
+      }
+
+      set value (newValue) {
+        this.sendValue(newValue);
       }
 
       valueType () {
@@ -191,20 +199,20 @@ angular.module("homeuiApp")
       _setCellValue (value) {
         switch (this.valueType()) {
         case "number":
-          this.value = value - 0;
+          this._value = value - 0;
           break;
         case "boolean":
-          this.value = typeof value == "bool" ? value : value == "1";
+          this._value = typeof value == "bool" ? value : value == "1";
           break;
         case "pushbutton":
           // unsettable
           break;
         case "rgb":
-          this.value = isRgb(value) ? value : parseRgb(value);
+          this._value = isRgb(value) ? value : parseRgb(value);
           break;
         case "string":
         default:
-          this.value = "" + value;
+          this._value = "" + value;
           break;
         }
       }
@@ -212,15 +220,15 @@ angular.module("homeuiApp")
       stringValue () {
         switch (this.valueType()) {
         case "boolean":
-          return this.value ? "1" : "0";
+          return this._value ? "1" : "0";
         case "pushbutton":
           return null;
         case "rgb":
-          return isRgb(this.value) ? formatRgb(this.value) : "";
+          return isRgb(this._value) ? formatRgb(this._value) : "";
         case "number":
         case "string":
         default:
-          return "" + this.value;
+          return "" + this._value;
         }
       }
 
@@ -238,7 +246,7 @@ angular.module("homeuiApp")
 
       receiveValue (newValue) {
         if (!newValue)
-          this.value = this._isText() ? "" : null; // value removed, non-pushbutton/text cell becomes incomplete
+          this._value = this._isText() ? "" : null; // value removed, non-pushbutton/text cell becomes incomplete
         else
           this._setCellValue(newValue);
         this._updateCompleteness();
@@ -248,7 +256,7 @@ angular.module("homeuiApp")
         if (!this.isComplete() || this.readOnly)
           return;
         if (newValue === "" && !this._isText())
-          newValue = this.value;
+          newValue = this._value;
         this._setCellValue(newValue);
         mqttClient.send(
           this._sendValueTopic(),
@@ -256,7 +264,7 @@ angular.module("homeuiApp")
       }
 
       isComplete () {
-        return this.type != "incomplete" && (this._isButton() || this.value !== null);
+        return this.type != "incomplete" && (this._isButton() || this._value !== null);
       }
 
       _updateCompleteness () {
@@ -266,7 +274,7 @@ angular.module("homeuiApp")
         }
         this._removeFromDevice();
         maybeRemoveDevice(this.deviceName);
-        if (this.type == "incomplete" && this.value === null)
+        if (this.type == "incomplete" && this._value === null)
           delete cells[this.name];
       }
 
@@ -278,8 +286,8 @@ angular.module("homeuiApp")
       setType (type) {
         this.type = type || "incomplete";
         this.updateUnits();
-        if (this.value !== null)
-          this._setCellValue(this.value);
+        if (this._value !== null)
+          this._setCellValue(this._value);
         else if (this._isText())
           this._setCellValue("");
         this._updateCompleteness();
@@ -368,6 +376,8 @@ angular.module("homeuiApp")
       }
 
       get value () { return this.cell.value; }
+      set value (newValue) { this.cell.value = newValue; }
+
       get type () { return this.cell.type; }
       get units () { return this.cell.units; }
       get readOnly () { return this.cell.readOnly; }

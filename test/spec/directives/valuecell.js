@@ -19,4 +19,6 @@ describe("Directive: value-cell", () => {
     expect(el).toBeVisible();
     expect(el).toContainText("223 V");
   });
+
+  // TBD: editable value, via input[type=number] perhaps
 });
