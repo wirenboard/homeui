@@ -1,27 +1,18 @@
 "use strict";
 
 describe("Directive: console", () => {
-  var f, FakeTime, scope, container, element;
+  var f, FakeTime;
 
   beforeEach(module("homeuiApp"));
   beforeEach(module("homeuiApp.fakeTime"));
-  beforeEach(module("homeuiApp.fakeMqtt"));
+  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject(function ($rootScope, _FakeTime_, _FakeMqttFixture_, $compile) {
+  beforeEach(inject(function ($rootScope, _FakeTime_, MqttDirectiveFixture, $compile) {
     FakeTime = _FakeTime_;
     // Note that month index '5' means June here due to JS Date() API specifics
     FakeTime.setTime(new Date(2015, 5, 19, 20, 25, 6));
-    f = _FakeMqttFixture_;
-    f.useJSON = false;
-    scope = f.$rootScope.$new();
-    container = $("<div></div>")
-      .appendTo($("body"));
-    element = $compile("<console></console>")(scope, clonedElement => {
-      container.append(clonedElement);
-    });
-    f.connect();
-    f.$rootScope.$digest();
-    element.find(".console-messages").css({
+    f = new MqttDirectiveFixture("<console></console>");
+    f.element.find(".console-messages").css({
       fontSize: "12px",
       position: "absolute",
       left: 0,
@@ -34,12 +25,10 @@ describe("Directive: console", () => {
     });
   }));
 
-  afterEach(() => {
-    container.remove();
-  });
+  afterEach(() => { f.remove(); });
 
   function extractMessages () {
-    return element.find(".console-message").toArray().map(el => {
+    return f.element.find(".console-message").toArray().map(el => {
       el = $(el);
       var levelClasses = el.prop("className")
             .replace(/^\s+|\s+$/g, "")
@@ -90,7 +79,7 @@ describe("Directive: console", () => {
       if (i > 30)
         f.$timeout.flush();
     }
-    var messagesEl = element.find(".console-messages");
+    var messagesEl = f.element.find(".console-messages");
     expect(messagesEl).toExist();
     expect(messagesEl.scrollTop()).toBeGreaterThan(0);
     expect(messagesEl.scrollTop()).toBe(messagesEl.prop("scrollHeight") - messagesEl.height());
@@ -100,8 +89,7 @@ describe("Directive: console", () => {
     var sw;
 
     beforeEach(() => {
-      sw = container.find("input[type=checkbox][name='debug']");
-      f.extClient.subscribe("/devices/wbrules/controls/Rule debugging/on", f.msgLogger("ext"));
+      sw = f.container.find("input[type=checkbox][name='debug']");
     });
 
     it("should accept 'Rule debugging' values", () => {

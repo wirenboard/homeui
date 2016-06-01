@@ -32,7 +32,7 @@ angular.module('homeuiApp.viewFixture', [])
         this.$scope = $rootScope.$new();
         this.setup(options);
         this.container = $("<div></div>").appendTo($("body"));
-        $compile(angular.element(html))(this.$scope, (clonedElement) => {
+        this.element = $compile(angular.element(html))(this.$scope, (clonedElement) => {
           this.container.append(clonedElement);
         });
         this.$scope.$digest();
@@ -62,7 +62,7 @@ angular.module('homeuiApp.viewFixture', [])
   })
   .factory("ViewFixture", function (HtmlFixture, $templateCache, $controller, $rootScope) {
     class ViewFixture extends HtmlFixture {
-      constructor(url, controllerName, locals, options) {
+      constructor (url, controllerName, locals, options) {
         super($templateCache.get(url), angular.extend({
           controllerName: controllerName,
           locals: locals

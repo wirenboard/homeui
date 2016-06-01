@@ -163,7 +163,7 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
           if (!this.hasOwnProperty(k))
             continue;
           var v = this[k];
-          target[k] = angular.isFunction(v) ? v.bind(this) : v;
+          target[k] = k != "$timeout" && angular.isFunction(v) ? v.bind(this) : v;
         }
       }
     };

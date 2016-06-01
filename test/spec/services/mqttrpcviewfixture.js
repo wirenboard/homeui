@@ -15,13 +15,13 @@ angular.module("homeuiApp.mqttRpcViewFixture", ["homeuiApp", "homeuiApp.fakeMqtt
     class MqttRpcViewFixture extends ViewFixture {
       constructor (topic, url, controllerName, locals) {
         super(url, controllerName, locals, { topic: topic });
-        FakeMqttFixture.delegateVia(this);
       }
 
       setup (options) {
         FakeMqttFixture.useJSON = true;
-        FakeMqttFixture.connect();
-        FakeMqttFixture.extClient.subscribe(options.topic + "/+/+", FakeMqttFixture.msgLogger("ext"));
+        FakeMqttFixture.delegateVia(this);
+        this.connect();
+        this.extClient.subscribe(options.topic + "/+/+", FakeMqttFixture.msgLogger("ext"));
         super.setup(options);
       }
 
