@@ -26,7 +26,7 @@ describe("DeviceData service", () => {
     return r;
   }
 
-  function publishNumericCells() {
+  function publishNumericCells () {
     f.extClient.send("/devices/dev1/meta/name", "Device One");
     f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "voltage", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 0);
@@ -39,6 +39,7 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "1000", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/step", "10", true, 1);
     f.extClient.send("/devices/dev2/controls/bar", "123", true, 0);
   }
 
@@ -63,7 +64,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev1/volume": {
         deviceName: "dev1",
@@ -74,7 +76,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/foo": {
         deviceName: "dev2",
@@ -85,7 +88,8 @@ describe("DeviceData service", () => {
         readOnly: true,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -96,7 +100,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: -1000,
-        max: 1000
+        max: 1000,
+        step: 10
       }
     });
   });
@@ -125,7 +130,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -145,7 +151,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -167,7 +174,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
     f.extClient.send("/devices/dev2/controls/fooSwitch", "0", true, 0);
@@ -181,7 +189,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -203,7 +212,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
     f.extClient.send("/devices/dev2/controls/fooRgb", "200;100;50", true, 0);
@@ -217,7 +227,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -235,7 +246,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
 
@@ -250,7 +262,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: true,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
 
@@ -265,7 +278,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -287,7 +301,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/barInc": {
         deviceName: "dev2",
@@ -298,7 +313,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
     expect(DeviceData.cell("dev2/fooInc").isComplete()).toBe(false);
@@ -316,7 +332,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/barInc": {
         deviceName: "dev2",
@@ -327,7 +344,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
     expect(DeviceData.cell("dev2/fooInc").isComplete()).toBe(true);
@@ -351,7 +369,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -370,7 +389,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -459,7 +479,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -483,7 +504,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -494,7 +516,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/fooSwitch": {
         deviceName: "dev2",
@@ -505,7 +528,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
     expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
@@ -522,7 +546,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
     expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
@@ -537,6 +562,7 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/foo/meta/readonly", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/step", "", true, 1);
     expect(DeviceData.devices).toEqual({
       "dev1": { name: "Device One", explicit: true, cellNames: ["dev1/voltage1", "dev1/volume"] },
       "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/bar", "dev2/foo"] }
@@ -554,7 +580,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev1/volume": {
         deviceName: "dev1",
@@ -565,7 +592,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/foo": {
         deviceName: "dev2",
@@ -576,7 +604,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -587,7 +616,8 @@ describe("DeviceData service", () => {
         readOnly: false,
         error: false,
         min: null,
-        max: null
+        max: null,
+        step: null
       }
     });
   });
@@ -673,5 +703,6 @@ describe("DeviceData service", () => {
     expect(proxy.error).toBe(true);
     expect(proxy.min).toBe(-1000);
     expect(proxy.max).toBe(1000);
+    expect(proxy.step).toBe(10);
   });
 });

@@ -168,6 +168,7 @@ angular.module("homeuiApp")
         this.error = false;
         this.min = null;
         this.max = null;
+        this.step = null;
       }
 
       get value () {
@@ -306,12 +307,16 @@ angular.module("homeuiApp")
         this.error = !!error;
       }
 
+      setMin (min) {
+        this.min = min == "" ? null: min - 0;
+      }
+
       setMax (max) {
         this.max = max == "" ? null : max - 0;
       }
 
-      setMin (min) {
-        this.min = min == "" ? null: min - 0;
+      setStep (step) {
+        this.step = step == "" ? null: step - 0;
       }
     }
 
@@ -343,6 +348,7 @@ angular.module("homeuiApp")
     addCellSubscription("/meta/error",    (cell, payload) => { cell.setError(!!payload);         });
     addCellSubscription("/meta/min",      (cell, payload) => { cell.setMin(payload);             });
     addCellSubscription("/meta/max",      (cell, payload) => { cell.setMax(payload);             });
+    addCellSubscription("/meta/step",     (cell, payload) => { cell.setStep(payload);            });
 
     function filterCellNames (func) {
       return Object.keys(cells).filter(name => {
@@ -376,7 +382,11 @@ angular.module("homeuiApp")
       }
 
       get value () { return this.cell.value; }
-      set value (newValue) { this.cell.value = newValue; }
+      set value (newValue) {
+        // undefined comes from control values that didn't pass validation
+        if (newValue !== undefined)
+          this.cell.value = newValue;
+      }
 
       get type () { return this.cell.type; }
       get units () { return this.cell.units; }
@@ -384,6 +394,7 @@ angular.module("homeuiApp")
       get error () { return this.cell.error; }
       get min () { return this.cell.min; }
       get max () { return this.cell.max; }
+      get step () { return this.cell.step; }
     }
 
     return {
