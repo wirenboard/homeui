@@ -21,14 +21,14 @@ describe("Directive: text-cell", () => {
   }
 
   it("should display the value of the cell in a text field", () => {
-    expect(input().val()).toBe("qqq");
+    expect(input()).toHaveValue("qqq");
     expect(input().prop("readonly")).toBe(false);
   });
 
   it("should display readonly cell values in readonly text field", () => {
     f.extClient.send("/devices/dev1/controls/foobar/meta/readonly", "1", true, 1);
     f.$scope.$digest();
-    expect(input().val()).toBe("qqq");
+    expect(input()).toHaveValue("qqq");
     expect(input().prop("readonly")).toBe(true);
   });
 
@@ -37,14 +37,17 @@ describe("Directive: text-cell", () => {
     f.expectJournal().toEqual([
       "ext: /devices/dev1/controls/foobar/on: [zzz] (QoS 1)"
     ]);
+    expect(input()).toHaveValue("zzz");
+
     input().val("abc").simulate("keydown", { keyCode: 13 });
     f.expectJournal().toEqual([
       "ext: /devices/dev1/controls/foobar/on: [abc] (QoS 1)"
     ]);
+    expect(input()).toHaveValue("abc");
   });
 
   it("should discard unsent text field changes upon ESC key press", () => {
     input().val("zzz").simulate("keydown", { keyCode: 27 });
-    expect(input().val()).toBe("qqq");
+    expect(input()).toHaveValue("qqq");
   });
 });
