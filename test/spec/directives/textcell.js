@@ -1,7 +1,7 @@
 "use strict";
 
 describe("Directive: text-cell", () => {
-  var f, DeviceData, container, scope, element;
+  var f, DeviceData;
   beforeEach(module("homeuiApp"));
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
