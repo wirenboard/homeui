@@ -46,4 +46,15 @@ describe("Directive: switch-cell", () => {
     f.$scope.$digest();
     expect(checkbox()).not.toBeChecked();
   });
+
+  it("should update cell value on click", () => {
+    toggleSwitch().click();
+    f.expectJournal().toEqual([
+      "ext: /devices/dev2/controls/fooSwitch/on: [0] (QoS 1)"
+    ]);
+    toggleSwitch().click();
+    f.expectJournal().toEqual([
+      "ext: /devices/dev2/controls/fooSwitch/on: [1] (QoS 1)"
+    ]);
+  });
 });
