@@ -154,13 +154,14 @@ angular.module("homeuiApp")
     }
 
     class Cell {
-      constructor (name) {
-        this.name = name;
-        var parts = this.name.split("/");
+      constructor (id) {
+        this.id = id;
+        var parts = this.id.split("/");
         if (parts.length != 2)
-          throw new Error("invalid cell name: " + this.name);
+          throw new Error("invalid cell id: " + this.id);
         this.deviceName = parts[0];
         this.controlName = parts[1];
+        this.name = this.controlName;
         this.type = "incomplete";
         this.units = "";
         this._value = null;
@@ -185,8 +186,8 @@ angular.module("homeuiApp")
 
       _addToDevice () {
         var devCellNames = ensureDevice(this.deviceName).cellNames;
-        if (devCellNames.indexOf(this.name) < 0) {
-          devCellNames.push(this.name);
+        if (devCellNames.indexOf(this.id) < 0) {
+          devCellNames.push(this.id);
           devCellNames.sort();
         }
       }
@@ -194,7 +195,7 @@ angular.module("homeuiApp")
       _removeFromDevice () {
         if (!devices.hasOwnProperty(this.deviceName))
           return;
-        devices[this.deviceName].cellNames = devices[this.deviceName].cellNames.filter(name => name != this.name);
+        devices[this.deviceName].cellNames = devices[this.deviceName].cellNames.filter(name => name != this.id);
       }
 
       _setCellValue (value) {
@@ -276,7 +277,7 @@ angular.module("homeuiApp")
         this._removeFromDevice();
         maybeRemoveDevice(this.deviceName);
         if (this.type == "incomplete" && this._value === null)
-          delete cells[this.name];
+          delete cells[this.id];
       }
 
       updateUnits () {
@@ -292,6 +293,10 @@ angular.module("homeuiApp")
         else if (this._isText())
           this._setCellValue("");
         this._updateCompleteness();
+      }
+
+      setName (name) {
+        this.name = name;
       }
 
       setUnits (units) {
@@ -343,6 +348,7 @@ angular.module("homeuiApp")
 
     addCellSubscription("",               (cell, payload) => { cell.receiveValue(payload);       });
     addCellSubscription("/meta/type",     (cell, payload) => { cell.setType(payload);            });
+    addCellSubscription("/meta/name",     (cell, payload) => { cell.setName(payload);            });
     addCellSubscription("/meta/units",    (cell, payload) => { cell.setUnits(payload);           });
     addCellSubscription("/meta/readonly", (cell, payload) => { cell.setReadOnly(payload == "1"); });
     addCellSubscription("/meta/error",    (cell, payload) => { cell.setError(!!payload);         });
@@ -360,16 +366,16 @@ angular.module("homeuiApp")
     var fakeCell = new Cell("nosuch/cell");
 
     class CellProxy {
-      constructor (name) {
-        this.name = name;
+      constructor (id) {
+        this.id = id;
       }
 
       gotCell () {
-        return cells.hasOwnProperty(this.name);
+        return cells.hasOwnProperty(this.id);
       }
 
       get cell () {
-        return this.gotCell () ? cells[this.name] : fakeCell;
+        return this.gotCell () ? cells[this.id] : fakeCell;
       }
 
       isComplete () {
@@ -389,6 +395,7 @@ angular.module("homeuiApp")
       }
 
       get type () { return this.cell.type; }
+      get name () { return this.cell.name; }
       get units () { return this.cell.units; }
       get readOnly () { return this.cell.readOnly; }
       get error () { return this.cell.error; }

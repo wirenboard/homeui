@@ -16,9 +16,9 @@ describe("DeviceData service", () => {
     var r = {};
     Object.keys(DeviceData.cells).forEach(devctl => {
       var origCell = DeviceData.cells[devctl], cell = {};
-      expect(origCell.name).toEqual(devctl);
+      expect(origCell.id).toEqual(devctl);
       Object.keys(origCell).concat(["value"]).forEach(k => {
-        if (k != "name" && k != "_value")
+        if (k != "id" && k != "_value")
           cell[k] = origCell[k];
       });
       r[devctl] = cell;
@@ -29,6 +29,7 @@ describe("DeviceData service", () => {
   function publishNumericCells () {
     f.extClient.send("/devices/dev1/meta/name", "Device One");
     f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "voltage", true, 1);
+    f.extClient.send("/devices/dev1/controls/voltage1/meta/name", "Voltage 1", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 0);
     f.extClient.send("/devices/dev1/controls/volume", "42", true, 0);
     f.extClient.send("/devices/dev1/controls/volume/meta/type", "value", true, 1);
@@ -58,6 +59,7 @@ describe("DeviceData service", () => {
       "dev1/voltage1": {
         deviceName: "dev1",
         controlName: "voltage1",
+        name: "Voltage 1",
         value: 223,
         type: "voltage",
         units: "V",
@@ -70,6 +72,7 @@ describe("DeviceData service", () => {
       "dev1/volume": {
         deviceName: "dev1",
         controlName: "volume",
+        name: "volume",
         value: 42,
         type: "value",
         units: "l",
@@ -82,6 +85,7 @@ describe("DeviceData service", () => {
       "dev2/foo": {
         deviceName: "dev2",
         controlName: "foo",
+        name: "foo",
         value: 4242,
         type: "value",
         units: "",
@@ -94,6 +98,7 @@ describe("DeviceData service", () => {
       "dev2/bar": {
         deviceName: "dev2",
         controlName: "bar",
+        name: "bar",
         value: 123,
         type: "range",
         units: "",
@@ -124,6 +129,7 @@ describe("DeviceData service", () => {
       "dev2/fooText": {
         deviceName: "dev2",
         controlName: "fooText",
+        name: "fooText",
         value: "4242",
         type: "text",
         units: "",
@@ -145,6 +151,7 @@ describe("DeviceData service", () => {
       "dev2/fooText": {
         deviceName: "dev2",
         controlName: "fooText",
+        name: "fooText",
         value: "",
         type: "text",
         units: "",
@@ -168,6 +175,7 @@ describe("DeviceData service", () => {
       "dev2/fooSwitch": {
         deviceName: "dev2",
         controlName: "fooSwitch",
+        name: "fooSwitch",
         value: true,
         type: "switch",
         units: "",
@@ -183,6 +191,7 @@ describe("DeviceData service", () => {
       "dev2/fooSwitch": {
         deviceName: "dev2",
         controlName: "fooSwitch",
+        name: "fooSwitch",
         value: false,
         type: "switch",
         units: "",
@@ -206,6 +215,7 @@ describe("DeviceData service", () => {
       "dev2/fooRgb": {
         deviceName: "dev2",
         controlName: "fooRgb",
+        name: "fooRgb",
         value: { r: 0, g: 200, b: 255 },
         type: "rgb",
         units: "",
@@ -221,6 +231,7 @@ describe("DeviceData service", () => {
       "dev2/fooRgb": {
         deviceName: "dev2",
         controlName: "fooRgb",
+        name: "fooRgb",
         value: { r: 200, g: 100, b: 50 },
         type: "rgb",
         units: "",
@@ -240,6 +251,7 @@ describe("DeviceData service", () => {
       "dev2/foo": {
         deviceName: "dev2",
         controlName: "foo",
+        name: "foo",
         value: 4242,
         type: "value",
         units: "",
@@ -256,6 +268,7 @@ describe("DeviceData service", () => {
       "dev2/foo": {
         deviceName: "dev2",
         controlName: "foo",
+        name: "foo",
         value: 4242,
         type: "value",
         units: "",
@@ -272,6 +285,7 @@ describe("DeviceData service", () => {
       "dev2/foo": {
         deviceName: "dev2",
         controlName: "foo",
+        name: "foo",
         value: 4242,
         type: "value",
         units: "",
@@ -295,6 +309,7 @@ describe("DeviceData service", () => {
       "dev2/fooInc": {
         deviceName: "dev2",
         controlName: "fooInc",
+        name: "fooInc",
         value: "4242",
         type: "incomplete",
         units: "",
@@ -307,6 +322,7 @@ describe("DeviceData service", () => {
       "dev2/barInc": {
         deviceName: "dev2",
         controlName: "barInc",
+        name: "barInc",
         value: null,
         type: "value",
         units: "",
@@ -326,6 +342,7 @@ describe("DeviceData service", () => {
       "dev2/fooInc": {
         deviceName: "dev2",
         controlName: "fooInc",
+        name: "fooInc",
         value: 4242,
         type: "value",
         units: "",
@@ -338,6 +355,7 @@ describe("DeviceData service", () => {
       "dev2/barInc": {
         deviceName: "dev2",
         controlName: "barInc",
+        name: "barInc",
         value: 4243,
         type: "value",
         units: "",
@@ -363,6 +381,7 @@ describe("DeviceData service", () => {
       "dev2/fooButton": {
         deviceName: "dev2",
         controlName: "fooButton",
+        name: "fooButton",
         value: null,
         type: "pushbutton",
         units: "",
@@ -383,6 +402,7 @@ describe("DeviceData service", () => {
       "dev2/fooButton": {
         deviceName: "dev2",
         controlName: "fooButton",
+        name: "fooButton",
         value: null,
         type: "pushbutton",
         units: "",
@@ -473,6 +493,7 @@ describe("DeviceData service", () => {
       "dev2/fooSwitch": {
         deviceName: "dev2",
         controlName: "fooSwitch",
+        name: "fooSwitch",
         value: 1,
         type: "value",
         units: "",
@@ -498,6 +519,7 @@ describe("DeviceData service", () => {
       "dev2/foo": {
         deviceName: "dev2",
         controlName: "foo",
+        name: "foo",
         value: "4242",
         type: "incomplete",
         units: "",
@@ -510,6 +532,7 @@ describe("DeviceData service", () => {
       "dev2/bar": {
         deviceName: "dev2",
         controlName: "bar",
+        name: "bar",
         value: 123,
         type: "value",
         units: "",
@@ -522,6 +545,7 @@ describe("DeviceData service", () => {
       "dev2/fooSwitch": {
         deviceName: "dev2",
         controlName: "fooSwitch",
+        name: "fooSwitch",
         value: null,
         type: "switch",
         units: "",
@@ -540,6 +564,7 @@ describe("DeviceData service", () => {
       "dev2/bar": {
         deviceName: "dev2",
         controlName: "bar",
+        name: "bar",
         value: 123,
         type: "value",
         units: "",
@@ -574,6 +599,7 @@ describe("DeviceData service", () => {
       "dev1/voltage1": {
         deviceName: "dev1",
         controlName: "voltage1",
+        name: "Voltage 1",
         value: 223,
         type: "voltage",
         units: "V",
@@ -586,6 +612,7 @@ describe("DeviceData service", () => {
       "dev1/volume": {
         deviceName: "dev1",
         controlName: "volume",
+        name: "volume",
         value: 42,
         type: "value",
         units: "",
@@ -598,6 +625,7 @@ describe("DeviceData service", () => {
       "dev2/foo": {
         deviceName: "dev2",
         controlName: "foo",
+        name: "foo",
         value: 4242,
         type: "value",
         units: "",
@@ -610,6 +638,7 @@ describe("DeviceData service", () => {
       "dev2/bar": {
         deviceName: "dev2",
         controlName: "bar",
+        name: "bar",
         value: 123,
         type: "range",
         units: "",
@@ -664,7 +693,7 @@ describe("DeviceData service", () => {
   it("should provide cell proxy objects that serve as placeholders for nonexistent cells", () => {
     var proxy = DeviceData.proxy("dev2/bar"); // a proxy for nonexistent cell
     expect(proxy.isComplete()).toBe(false);
-    expect(proxy.name).toBe("dev2/bar");
+    expect(proxy.id).toBe("dev2/bar");
     expect(proxy.value).toBe(null);
     expect(proxy.type).toBe("incomplete");
     expect(proxy.units).toBe("");
@@ -676,7 +705,7 @@ describe("DeviceData service", () => {
 
     publishNumericCells();
     expect(proxy.isComplete()).toBe(true);
-    expect(proxy.name).toBe("dev2/bar");
+    expect(proxy.id).toBe("dev2/bar");
     expect(proxy.value).toBe(123);
     expect(proxy.type).toBe("range");
     expect(proxy.units).toBe("");
@@ -695,7 +724,7 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/units", "m", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/error", "r", true, 1);
     expect(proxy.isComplete()).toBe(true);
-    expect(proxy.name).toBe("dev2/bar");
+    expect(proxy.id).toBe("dev2/bar");
     expect(proxy.value).toBe(42);
     expect(proxy.type).toBe("range");
     expect(proxy.units).toBe("m");
