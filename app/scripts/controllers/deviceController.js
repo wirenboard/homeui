@@ -43,20 +43,6 @@ angular.module('homeuiApp')
       templateUrl: 'views/devices/controls/control-textbox.html'
     };
   })
-  .directive("transformRgb", function(){
-    return{
-      restrict: 'A',
-      require: "ngModel",
-      link: function (scope, element, attrs, ngModel) {
-        ngModel.$formatters.push(function(value) {
-          return "rgb(" + value.replace(/;/g, ", ") + ")";
-        });
-        ngModel.$parsers.push(function(value) {
-          return value.replace(/^rgb\s*\(\s*|\s*\)\s*$/g, "").replace(/\s*,\s*/g, ";");
-        });
-      }
-    };
-  })
   .directive('controlRgb', function(){
     return{
       restrict: 'A',

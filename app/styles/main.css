@@ -547,3 +547,9 @@ button.show-console span {
   color: #fff;
   opacity: 1;
 }
+
+.color-indicator {
+  display: block;
+  width: 20px;
+  height: 20px;
+}

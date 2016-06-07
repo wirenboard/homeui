@@ -360,7 +360,7 @@ angular.module("homeuiApp")
       }).sort();
     }
 
-    var fakeCell = new Cell("nosuch/cell");
+    var fakeCell = new Cell("nosuchdev/nosuchcell");
 
     class CellProxy {
       constructor (id) {
