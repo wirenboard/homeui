@@ -16,6 +16,8 @@ describe("Directive: range-cell", () => {
     f.$scope.$digest();
   }));
 
+  afterEach(() => { f.remove(); });
+
   function input () {
     return f.container.find("input[type=range].cell.cell-range:visible");
   }

@@ -13,6 +13,8 @@ describe("Directive: text-cell", () => {
     f.$scope.$digest();
   }));
 
+  afterEach(() => { f.remove(); });
+
   function input () {
     var el = f.container.find("input.cell.cell-text");
     expect(el).toHaveLength(1);

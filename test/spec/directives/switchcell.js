@@ -13,6 +13,8 @@ describe("Directive: switch-cell", () => {
     f.$scope.$digest();
   }));
 
+  afterEach(() => { f.remove(); });
+
   function checkbox () {
     return f.container.find(".cell.cell-switch input[type=checkbox]:visible");
   }

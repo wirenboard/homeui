@@ -13,6 +13,8 @@ describe("Directive: value-cell", () => {
     f.$scope.$digest();
   }));
 
+  afterEach(() => { f.remove(); });
+
   function input () {
     return f.container.find(".cell.cell-value input[type=number]:visible");
   }

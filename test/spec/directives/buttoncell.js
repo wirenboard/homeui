@@ -13,6 +13,8 @@ describe("Directive: button-cell", () => {
     f.$scope.$digest();
   }));
 
+  afterEach(() => { f.remove(); });
+
   function button () {
     return f.container.find("button.cell.cell-button:visible");
   }
