@@ -50,6 +50,7 @@ module.exports = function(config) {
       'app/scripts/**/*.js',
       'app/scripts/**/*.html',
       'app/views/**/*.html',
+      'app/styles/**/*.css',
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
