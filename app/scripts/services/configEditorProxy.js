@@ -1,10 +1,10 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .factory("ConfigEditorProxy", [ "MqttRpc", function (MqttRpc) {
+  .factory("ConfigEditorProxy", MqttRpc => {
     return MqttRpc.getProxy("confed/Editor", [
       "List",
       "Load",
       "Save"
     ], "configEditorProxy");
-  }]);
+  });

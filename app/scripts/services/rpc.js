@@ -2,7 +2,7 @@
 
 angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
   .value("mqttRpcTimeout", 30000)
-  .factory("MqttRpc", function ($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) {
+  .factory("MqttRpc", ($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) => {
     var disconnectedError = {
       data: "MqttConnectionError",
       message: "MQTT client is not connected"

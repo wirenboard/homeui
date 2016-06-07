@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .factory("DeviceData", function (mqttClient) {
+  .factory("DeviceData", mqttClient => {
     var devices = {}, cells = {};
 
     var cellTypeMap = {
@@ -112,9 +112,6 @@ angular.module("homeuiApp")
       var parts = splitTopic(topic);
       ensureDevice(parts[1]);
       return parts[1] + "/" + parts[3];
-    }
-
-    function _maybeAddToDevice() {
     }
 
     function internCell (name) {

@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .directive("valueCell", function () {
+  .directive("valueCell", () => {
     return {
       restrict: "EA",
       scope: false,

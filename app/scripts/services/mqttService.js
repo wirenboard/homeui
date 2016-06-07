@@ -1,15 +1,15 @@
 'use strict';
 
 angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
-  .factory('whenMqttReady', function ($q, $rootScope, mqttClient) {
-    return function whenMqttReady () {
+  .factory('whenMqttReady', ($q, $rootScope, mqttClient) => {
+    return () => {
       var deferred = $q.defer();
       if (mqttClient.isConnected())
         deferred.resolve();
       else {
         var unwatch = $rootScope.$watch(
-          function () { return mqttClient.isConnected(); },
-          function (newValue) {
+          () => mqttClient.isConnected(),
+          newValue => {
             if (!newValue)
               return;
             deferred.resolve();
@@ -20,8 +20,8 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     };
   })
 
-  .factory('topicMatches', function () {
-    return function topicMatches(pattern, topic) {
+  .factory('topicMatches', () => {
+    return (pattern, topic) => {
       function match (patternParts, topicParts) {
         if (!patternParts.length)
           return !topicParts.length;
@@ -43,7 +43,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
   .value("mqttConnectTimeout", 15000)
   .value("mqttReconnectDelay", 1500)
 
-  .factory('mqttClient', function($window, $rootScope, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) {
+  .factory('mqttClient', ($window, $rootScope, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) => {
     var globalPrefix = '',
         service = {},
         client = {},
@@ -58,7 +58,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       globalPrefix = '/client/' + $window.localStorage['user'];
 
     function reconnectAfterTimeout() {
-      reconnectTimeout = $timeout(function () {
+      reconnectTimeout = $timeout(() => {
         console.log("reconnect timer fired");
         reconnectTimeout = null;
         client.connect(angular.copy(connectOptions));
@@ -117,7 +117,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     };
 
     service.onFailure = function(context) {
-      console.log("Failure to connect to " + client.host + ":" + client.port + 
+      console.log("Failure to connect to " + client.host + ":" + client.port +
                    " as " + client.clientId + ". error code " + context.errorCode +
                    ", error message \"" + context.errorMessage + "\""     );
       connected = false;

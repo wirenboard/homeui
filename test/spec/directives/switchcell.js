@@ -5,7 +5,7 @@ describe("Directive: switch-cell", () => {
   beforeEach(module("homeuiApp"));
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject(function (MqttDirectiveFixture, _DeviceData_, $compile) {
+  beforeEach(inject((MqttDirectiveFixture, _DeviceData_, $compile) => {
     f = new MqttDirectiveFixture("<switch-cell cell='dev2/fooSwitch'></switch-cell>");
     DeviceData = _DeviceData_;
     f.extClient.send("/devices/dev2/controls/fooSwitch/meta/type", "switch", true, 1);

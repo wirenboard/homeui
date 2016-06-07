@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .factory("gotoDefStart", function () {
+  .factory("gotoDefStart", () => {
     function mapTokensBackward (cm, func) {
       var cur = cm.getCursor();
       for (var line = cur.line; line >= 0; line--) {

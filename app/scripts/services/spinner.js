@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .factory("Spinner", function ($rootScope) {
+  .factory("Spinner", $rootScope => {
     var spinner = Object.create(null);
 
     function isActive (prefix) {

@@ -3,10 +3,10 @@
 angular.module("homeuiApp")
   .value("scrollTimeoutMs", 100)
 
-  .directive("console", function (mqttClient, $rootScope, $timeout,
-                                  dateFilter, getTime, scrollTimeoutMs) {
+  .directive("console", (mqttClient, $rootScope, $timeout,
+                         dateFilter, getTime, scrollTimeoutMs) => {
     mqttClient.addStickySubscription(
-      "/wbrules/log/+", function (options) {
+      "/wbrules/log/+", options => {
         $rootScope.$broadcast(
           "wbrulesLog",
           options.topic.replace(/^.*\//, ""),
@@ -18,7 +18,7 @@ angular.module("homeuiApp")
       localEnabled: false
     };
 
-    $rootScope.$watch("ruleDebug.enabled", function (newValue) {
+    $rootScope.$watch("ruleDebug.enabled", newValue => {
       if (!!newValue !== $rootScope.ruleDebug.localEnabled) {
         mqttClient.send(
           "/devices/wbrules/controls/Rule debugging/on",
@@ -28,7 +28,7 @@ angular.module("homeuiApp")
     });
 
     mqttClient.addStickySubscription(
-      "/devices/wbrules/controls/Rule debugging", function (options) {
+      "/devices/wbrules/controls/Rule debugging", options => {
         $rootScope.ruleDebug.enabled = $rootScope.ruleDebug.localEnabled = options.payload == "1";
       });
 
@@ -37,10 +37,10 @@ angular.module("homeuiApp")
       replace: true,
       scope: true,
       templateUrl: "scripts/directives/console.html",
-      link: function (scope, element, attrs) {
+      link: (scope, element, attrs) => {
         var scrollTimeout = null,
             messageContainer = element.find(".console-messages");
-        scope.$on("wbrulesLog", function (event, level, message) {
+        scope.$on("wbrulesLog", (event, level, message) => {
           var msgEl = $("<div class='console-message'></div>")
                 .addClass("console-message-level-" + level),
               ts = getTime();
@@ -54,7 +54,7 @@ angular.module("homeuiApp")
           msgEl.appendTo(messageContainer);
           if (scrollTimeout !== null)
             $timeout.cancel(scrollTimeout);
-          scrollTimeout = $timeout(function () {
+          scrollTimeout = $timeout(() => {
             scrollTimeout = null;
             var scrollHeight = messageContainer.prop("scrollHeight"),
                 elementHeight = messageContainer.height();

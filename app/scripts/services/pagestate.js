@@ -2,7 +2,7 @@
 
 angular.module("homeuiApp")
   .value("forceBeforeUnloadConfirmationForTests", false)
-  .factory("PageState", function ($rootScope, $window, $timeout, $location, forceBeforeUnloadConfirmationForTests) {
+  .factory("PageState", ($rootScope, $window, $timeout, $location, forceBeforeUnloadConfirmationForTests) => {
     var dirty = false,
         CONFIRMATION_MSG = "The page has unsaved changes. Are you sure you want to leave?";
 

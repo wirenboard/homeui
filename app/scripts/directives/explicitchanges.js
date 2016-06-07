@@ -1,11 +1,11 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .directive("explicitChanges", function () {
+  .directive("explicitChanges", () => {
     return {
       restrict: 'A',
       require: 'ngModel',
-      link: function(scope, element, attr, ngModelCtrl) {
+      link: (scope, element, attr, ngModelCtrl) => {
         if (attr.type === 'radio' || attr.type === 'checkbox')
           return;
 

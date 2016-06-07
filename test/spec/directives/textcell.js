@@ -5,7 +5,7 @@ describe("Directive: text-cell", () => {
   beforeEach(module("homeuiApp"));
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject(function (MqttDirectiveFixture, _DeviceData_, $compile) {
+  beforeEach(inject((MqttDirectiveFixture, _DeviceData_, $compile) => {
     f = new MqttDirectiveFixture("<text-cell cell='dev1/foobar'></text-cell>");
     DeviceData = _DeviceData_;
     f.extClient.send("/devices/dev1/controls/foobar/meta/type", "text", true, 1);

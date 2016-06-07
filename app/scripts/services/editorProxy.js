@@ -1,11 +1,11 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .factory("EditorProxy", [ "MqttRpc", function (MqttRpc) {
+  .factory("EditorProxy", MqttRpc => {
     return MqttRpc.getProxy("wbrules/Editor", [
       "List",
       "Load",
       "Save",
       "Remove"
     ], "editorProxy");
-  }]);
+  });
