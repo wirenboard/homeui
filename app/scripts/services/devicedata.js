@@ -7,87 +7,119 @@ angular.module("homeuiApp")
     var cellTypeMap = {
       "text": {
         valueType: "string",
-        units: ""
+        units: "",
+        readOnly: true
       },
       "switch": {
         valueType: "boolean",
-        units: ""
+        units: "",
+        readOnly: false
       },
       "wo-switch": {
         valueType: "boolean",
-        units: ""
+        units: "",
+        readOnly: false
       },
       "alarm": {
         valueType: "boolean",
-        units: ""
+        units: "",
+        readOnly: true
       },
       "pushbutton": {
         valueType: "pushbutton",
-        units: ""
+        units: "",
+        readOnly: false
       },
       "temperature": {
         valueType: "number",
-        units: "°C"
+        units: "°C",
+        readOnly: true
       },
       "rel_humidity": {
         valueType: "number",
-        units: "%, RH"
+        units: "%, RH",
+        readOnly: true
       },
       "atmospheric_pressure": {
         valueType: "number",
-        units: "millibar (100 Pa)"
+        units: "millibar (100 Pa)",
+        readOnly: true
       },
       "rainfall": {
         valueType: "number",
-        units: "mm/h"
+        units: "mm/h",
+        readOnly: true
       },
       "wind_speed": {
         valueType: "number",
-        units: "m/s"
+        units: "m/s",
+        readOnly: true
       },
       "power": {
         valueType: "number",
-        units: "W"
+        units: "W",
+        readOnly: true
       },
       "power_consumption": {
         valueType: "number",
-        units: "kWh"
+        units: "kWh",
+        readOnly: true
       },
       "voltage": {
         valueType: "number",
-        units: "V"
+        units: "V",
+        readOnly: true
       },
       "water_flow": {
         valueType: "number",
-        units: "m³/h"
+        units: "m³/h",
+        readOnly: true
       },
       "water_consumption": {
         valueType: "number",
-        units: "m³"
+        units: "m³",
+        readOnly: true
       },
       "resistance": {
         valueType: "number",
-        units: "Ohm"
+        units: "Ohm",
+        readOnly: true
       },
       "concentration": {
         valueType: "number",
-        units: "ppm"
+        units: "ppm",
+        readOnly: true
       },
       "pressure": {
         valueType: "number",
-        units: "bar"
+        units: "bar",
+        readOnly: true
       },
       "range": {
         valueType: "number",
-        units: ""
+        units: "",
+        readOnly: false
       },
       "value": {
         valueType: "number",
-        units: ""
+        units: "",
+        readOnly: true
       },
       "rgb": {
         valueType: "rgb",
-        units: ""
+        units: "",
+        readOnly: false
+      },
+      // XXX rename/replace
+      "wtext": {
+        valueType: "string",
+        units: "",
+        readOnly: false
+      },
+      "wvalue": {
+        valueType: "number",
+        units: "",
+        readOnly: false
       }
     };
 
@@ -160,9 +192,9 @@ angular.module("homeuiApp")
         this.controlName = parts[1];
         this.name = this.controlName;
         this.type = "incomplete";
-        this.units = "";
         this._value = null;
-        this.readOnly = false;
+        this._explicitUnits = "";
+        this._explicitReadOnly = false;
         this.error = false;
         this.min = null;
         this.max = null;
@@ -178,7 +210,7 @@ angular.module("homeuiApp")
       }
 
       valueType () {
-        return cellTypeMap.hasOwnProperty(this.type) ? cellTypeMap[this.type].valueType : "string";
+        return this._typeEntry().valueType;
       }
 
       _addToDevice () {
@@ -239,13 +271,17 @@ angular.module("homeuiApp")
         return this.type == "pushbutton";
       }
 
-      _isText () {
-        return this.type == "text";
+      _isString () {
+        return this.isComplete() && this.valueType() == "string";
+      }
+
+      _typeEntry () {
+        return cellTypeMap.hasOwnProperty(this.type) ? cellTypeMap[this.type] : cellTypeMap["text"];
       }
 
       receiveValue (newValue) {
         if (!newValue)
-          this._value = this._isText() ? "" : null; // value removed, non-pushbutton/text cell becomes incomplete
+          this._value = this._isString() ? "" : null; // value removed, non-pushbutton/text cell becomes incomplete
         else
           this._setCellValue(newValue);
         this._updateCompleteness();
@@ -254,7 +290,7 @@ angular.module("homeuiApp")
       sendValue (newValue) {
         if (!this.isComplete() || this.readOnly)
           return;
-        if (newValue === "" && !this._isText())
+        if (newValue === "" && !this._isString())
           newValue = this._value;
         this._setCellValue(newValue);
         mqttClient.send(
@@ -277,17 +313,11 @@ angular.module("homeuiApp")
           delete cells[this.id];
       }
 
-      updateUnits () {
-        if (!this.units && cellTypeMap.hasOwnProperty(this.type))
-          this.units = cellTypeMap[this.type].units;
-      }
-
       setType (type) {
         this.type = type || "incomplete";
-        this.updateUnits();
         if (this._value !== null)
           this._setCellValue(this._value);
-        else if (this._isText())
+        else if (this._isString())
           this._setCellValue("");
         this._updateCompleteness();
       }
@@ -297,12 +327,19 @@ angular.module("homeuiApp")
       }
 
       setUnits (units) {
-        this.units = units;
-        this.updateUnits();
+        this._explicitUnits = units;
+      }
+
+      get units () {
+        return this._explicitUnits || this._typeEntry().units || "";
+      }
+
+      get readOnly () {
+        return this._explicitReadOnly || this._typeEntry().readOnly;
       }
 
       setReadOnly (readOnly) {
-        this.readOnly = !!readOnly;
+        this._explicitReadOnly = !!readOnly;
       }
 
       setError (error) {
