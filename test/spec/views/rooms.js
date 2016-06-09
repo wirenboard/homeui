@@ -6,7 +6,7 @@ describe("Rooms view", () => {
   beforeEach(module("homeuiApp.fakeUIConfig"));
   beforeEach(module("homeuiApp.viewFixture"));
 
-  beforeEach(inject(function (ViewFixture, uiConfig) {
+  beforeEach(inject((ViewFixture, uiConfig) => {
     f = new ViewFixture("views/rooms.html", "RoomsCtrl");
     data = uiConfig.data;
   }));
@@ -20,7 +20,7 @@ describe("Rooms view", () => {
     expect(".empty-list").toExist();
   });
 
-  function extractRooms() {
+  function extractRooms () {
     return f.container.find("table > tbody > tr.room:visible").toArray().map(tr => {
       var name = $(tr).find("td").eq(0).text(),
           id = $(tr).find("td").eq(1).text(),
@@ -30,7 +30,7 @@ describe("Rooms view", () => {
     });
   }
 
-  function addData() {
+  function addData () {
     data.rooms = [
       { id: "room1", name: "Room One" },
       { id: "room2", name: "Room Two" }
@@ -38,7 +38,7 @@ describe("Rooms view", () => {
     f.$scope.$digest();
   }
 
-  function verifyOriginal() {
+  function verifyOriginal () {
     expect(angular.copy(data.rooms)).toEqual([
       { id: "room1", name: "Room One" },
       { id: "room2", name: "Room Two" }
@@ -63,7 +63,7 @@ describe("Rooms view", () => {
     };
   };
 
-  function drag(fromEl, toEl, xofs, yofs) {
+  function drag (fromEl, toEl, xofs, yofs) {
     if (typeof fromEl == "string")
       fromEl = f.container.find(fromEl);
     var p1 = centerPoint(fromEl), p2 = centerPoint(toEl);
@@ -84,11 +84,11 @@ describe("Rooms view", () => {
     ]);
   });
 
-  function addBtn() {
+  function addBtn () {
     return f.container.find("button[name=add]");
   }
 
-  function editBtn() {
+  function editBtn () {
     return f.container.find("button[name=edit-rooms]");
   }
 

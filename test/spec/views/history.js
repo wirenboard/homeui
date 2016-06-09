@@ -8,7 +8,7 @@ describe("History view", () => {
 
   beforeEach(() => {
     module("homeuiApp.mqttRpcViewFixture");
-    module(function ($provide) {
+    module($provide => {
       // make sure we don't have to update the test
       // every time the limit is reconfigured
       $provide.value("historyMaxPoints", 5);
@@ -42,7 +42,7 @@ describe("History view", () => {
     };
   }
 
-  beforeEach(inject(function (_MqttRpcViewFixture_) {
+  beforeEach(inject(_MqttRpcViewFixture_ => {
     MqttRpcViewFixture = _MqttRpcViewFixture_;
   }));
 

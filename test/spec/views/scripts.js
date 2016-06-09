@@ -2,9 +2,9 @@
 
 describe("Scripts view", () => {
   var f;
-
   beforeEach(module("homeuiApp.mqttRpcViewFixture"));
-  beforeEach(inject(function (MqttRpcViewFixture) {
+
+  beforeEach(inject(MqttRpcViewFixture => {
     f = new MqttRpcViewFixture("/rpc/v1/wbrules/Editor", "views/scripts.html", "ScriptsCtrl");
   }));
 

@@ -2,12 +2,12 @@
 
 describe("Configs view", () => {
   var f;
-
   beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
-  beforeEach(inject(function (MqttRpcViewFixture) {
+  beforeEach(inject(MqttRpcViewFixture => {
     f = new MqttRpcViewFixture("/rpc/v1/confed/Editor", "views/configs.html", "ConfigsCtrl");
   }));
+
   afterEach(() => { f.remove(); });
 
   it("should display a list of configs", () => {

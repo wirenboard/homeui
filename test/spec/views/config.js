@@ -5,7 +5,7 @@ describe("Config view", () => {
 
   beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
-  beforeEach(inject(function (MqttRpcViewFixture) {
+  beforeEach(inject(MqttRpcViewFixture => {
     f = new MqttRpcViewFixture("/rpc/v1/confed/Editor", "views/config.html", "ConfigCtrl", {
       $routeParams: { path: "usr/share/wb-mqtt-confed/schemas/foobar.schema.json" }
     });
@@ -69,7 +69,7 @@ describe("Config view", () => {
     expect(saveButton()).toBeDisabled();
   });
 
-  function editName(newName) {
+  function editName (newName) {
     var evt = document.createEvent("HTMLEvents");
     evt.initEvent("change", false, true);
     nameInput().val(newName).get(0).dispatchEvent(evt);
@@ -82,7 +82,7 @@ describe("Config view", () => {
     expect(saveButton()).not.toBeDisabled();
   });
 
-  function processSave(expectedContent, error) {
+  function processSave (expectedContent, error) {
     var params = {
       path: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json",
       content: expectedContent
