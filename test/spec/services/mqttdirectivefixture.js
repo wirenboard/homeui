@@ -1,5 +1,5 @@
 angular.module("homeuiApp.mqttDirectiveFixture", ["homeuiApp", "homeuiApp.fakeMqtt", "homeuiApp.viewFixture"])
-  .factory("MqttDirectiveFixture", function (FakeMqttFixture, HtmlFixture) {
+  .factory("MqttDirectiveFixture", (FakeMqttFixture, HtmlFixture) => {
     const DEFAULT_TOPIC = "/devices/+/controls/+/on";
 
     class MqttDirectiveFixture extends HtmlFixture {

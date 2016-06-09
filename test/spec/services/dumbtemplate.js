@@ -3,7 +3,7 @@
 describe("Template engine", () => {
   var DumbTemplate;
   beforeEach(module("homeuiApp.DumbTemplate"));
-  beforeEach(inject(function (_DumbTemplate_) {
+  beforeEach(inject(_DumbTemplate_ => {
     DumbTemplate = _DumbTemplate_;
   }));
 

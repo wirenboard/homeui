@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
-  .factory("mqttBroker", function ($rootScope, $timeout, topicMatches) {
+  .factory("mqttBroker", ($rootScope, $timeout, topicMatches) => {
     var clientMap = Object.create(null),
         subscriptionMap = Object.create(null);
 
@@ -42,7 +42,7 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
         this.stickySubscriptions.forEach(item => {
           this.subscribe(item.topic, item.callback);
         });
-        $timeout(function () { $rootScope.$digest(); });
+        $timeout(() => { $rootScope.$digest(); });
       }
 
       disconnect () {
@@ -119,11 +119,11 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
     };
   })
 
-  .factory("mqttClient", function ($rootScope, mqttBroker) {
+  .factory("mqttClient", ($rootScope, mqttBroker) => {
     return mqttBroker.createClient();
   })
 
-  .factory("FakeMqttFixture", function ($rootScope, mqttBroker, mqttClient, $timeout, whenMqttReady) {
+  .factory("FakeMqttFixture", ($rootScope, mqttBroker, mqttClient, $timeout, whenMqttReady) => {
     var journal = [];
     return {
       $rootScope: $rootScope,

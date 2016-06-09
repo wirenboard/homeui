@@ -7,7 +7,7 @@ describe("Fake MQTT", () => {
   beforeEach(module('homeuiApp'));
   beforeEach(module('homeuiApp.fakeMqtt'));
 
-  beforeEach(inject(function (_FakeMqttFixture_) {
+  beforeEach(inject(_FakeMqttFixture_ => {
     f = _FakeMqttFixture_;
     f.useJSON = false;
   }));

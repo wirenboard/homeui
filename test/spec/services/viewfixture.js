@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module('homeuiApp.viewFixture', [])
-  .directive("datepickerPopup", function () {
+  .directive("datepickerPopup", () => {
     // Disable date pickers as they're hard to test.
     // Here's very naive replacement that makes it possible
     // to simulate date choice.
@@ -9,7 +9,7 @@ angular.module('homeuiApp.viewFixture', [])
       restrict: "EA",
       priority: 1,
       terminal: true,
-      link: function (scope, element, attrs) {
+      link: (scope, element, attrs) => {
         scope.$watch(attrs.ngModel, (newValue) => {
           element.val(newValue ? newValue.getTime() : "");
         });
@@ -19,14 +19,14 @@ angular.module('homeuiApp.viewFixture', [])
       }
     };
   })
-  .directive("datepickerOptions", function () {
+  .directive("datepickerOptions", () => {
     return {
       restrict: "EA",
       priority: 1,
       terminal: true
     };
   })
-  .factory("HtmlFixture", function ($rootScope, $compile, $location) {
+  .factory("HtmlFixture", ($rootScope, $compile, $location) => {
     class HtmlFixture {
       constructor (html, options) {
         this.$scope = $rootScope.$new();
@@ -60,7 +60,7 @@ angular.module('homeuiApp.viewFixture', [])
 
     return HtmlFixture;
   })
-  .factory("ViewFixture", function (HtmlFixture, $templateCache, $controller, $rootScope) {
+  .factory("ViewFixture", (HtmlFixture, $templateCache, $controller, $rootScope) => {
     class ViewFixture extends HtmlFixture {
       constructor (url, controllerName, locals, options) {
         super($templateCache.get(url), angular.extend({

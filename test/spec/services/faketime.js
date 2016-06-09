@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module('homeuiApp.fakeTime', ["homeuiApp"])
-  .factory("FakeTime", function () {
+  .factory("FakeTime", () => {
     var d = null;
     return {
       getTime () {
@@ -17,6 +17,4 @@ angular.module('homeuiApp.fakeTime', ["homeuiApp"])
       }
     };
   })
-  .factory("getTime", function (FakeTime) {
-    return FakeTime.getTime;
-  });
+  .factory("getTime", FakeTime => FakeTime.getTime);

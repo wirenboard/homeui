@@ -5,7 +5,7 @@ describe("DeviceData service", () => {
   beforeEach(module("homeuiApp"));
   beforeEach(module("homeuiApp.fakeMqtt"));
 
-  beforeEach(inject(function (FakeMqttFixture, _DeviceData_) {
+  beforeEach(inject((FakeMqttFixture, _DeviceData_) => {
     f = FakeMqttFixture;
     DeviceData = _DeviceData_;
     f.connect();
@@ -316,7 +316,7 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/barInc/meta/type", "wvalue", true, 0);
   }
 
-  it("should treat cells with no type or no value as incomplete", function () {
+  it("should treat cells with no type or no value as incomplete", () => {
     publishIncompleteCell();
     expect(extractCellData()).toEqual({
       "dev2/fooInc": {

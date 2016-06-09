@@ -8,7 +8,7 @@ describe("MQTT RPC", () => {
   beforeEach(module('homeuiApp.fakeMqtt'));
   beforeEach(module('homeuiApp.MqttRpc'));
 
-  beforeEach(inject(function (_FakeMqttFixture_, _MqttRpc_) {
+  beforeEach(inject((_FakeMqttFixture_, _MqttRpc_) => {
     f = _FakeMqttFixture_;
     f.useJSON = true;
     MqttRpc = _MqttRpc_;

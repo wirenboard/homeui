@@ -13,12 +13,12 @@ describe("PageState service", () => {
     });
   });
   beforeEach(module("homeuiApp"));
-  beforeEach(module(function ($provide) {
+  beforeEach(module($provide => {
     // for most tests, beforeUnload handler is disabled
     // because it interferes with unloading of the test frame
     $provide.value("forceBeforeUnloadConfirmationForTests", true);
   }));
-  beforeEach(inject(function (_$window_, _$rootScope_, _PageState_) {
+  beforeEach(inject((_$window_, _$rootScope_, _PageState_) => {
     $window = _$window_;
     $rootScope = _$rootScope_;
     PageState = _PageState_;

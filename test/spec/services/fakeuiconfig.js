@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp.fakeUIConfig", ["homeuiApp"])
-  .factory("uiConfig", function () {
+  .factory("uiConfig", ()  => {
     return {
       data: {
         rooms: []

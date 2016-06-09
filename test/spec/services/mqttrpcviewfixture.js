@@ -1,5 +1,5 @@
 angular.module("homeuiApp.mqttRpcViewFixture", ["homeuiApp", "homeuiApp.fakeMqtt", "homeuiApp.MqttRpc", "homeuiApp.viewFixture"])
-  .factory("MqttRpcViewFixture", function (FakeMqttFixture, ViewFixture) {
+  .factory("MqttRpcViewFixture", (FakeMqttFixture, ViewFixture) => {
     var reqId = 1;
 
     function doExpectRequest (topic, params) {

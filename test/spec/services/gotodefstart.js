@@ -19,7 +19,7 @@ describe("gotoDefStart service", () => {
         '  });\n';
   beforeEach(module('homeuiApp'));
 
-  beforeEach(inject(function (_gotoDefStart_) {
+  beforeEach(inject(_gotoDefStart_ => {
     gotoDefStart = _gotoDefStart_;
     textarea = $("<textarea>").appendTo(document.body).get(0);
     cm = CodeMirror(textarea, { mode: "javascript" });
