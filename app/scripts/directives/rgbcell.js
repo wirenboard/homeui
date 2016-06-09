@@ -30,16 +30,7 @@ angular.module("homeuiApp")
       require: "^cell",
       replace: true,
       controllerAs: "ctrl",
-      template: "<span class='cell cell-rgb'>" +
-        "<spectrum-colorpicker ng-if='!cell.readOnly'" +
-        " format='rgb'" +
-        " options='ctrl.colorPickerOptions'" +
-        " on-show-options='{ update : false }'" +
-        " on-hide-options='{ update : false }'" +
-        " on-move-options='{ update : false }'" +
-        " transform-rgb ng-model='cell.value'></spectrum-colorpicker>" +
-        "<span ng-if='cell.readOnly' class='color-indicator' ng-style='ctrl.indicatorStyle()'></span>" +
-        "</span>",
+      templateUrl: "scripts/directives/rgbcell.html",
       controller: RgbController
     };
   });
