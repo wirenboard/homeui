@@ -17,7 +17,7 @@ describe("DeviceData service", () => {
     Object.keys(DeviceData.cells).forEach(devctl => {
       var origCell = DeviceData.cells[devctl], cell = {};
       expect(origCell.id).toEqual(devctl);
-      Object.keys(origCell).concat(["value", "units", "readOnly"]).forEach(k => {
+      Object.keys(origCell).concat(["value", "units", "readOnly", "displayType"]).forEach(k => {
         if (k != "id" && !/^_/.test(k))
           cell[k] = origCell[k];
       });
@@ -67,7 +67,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev1/volume": {
         deviceName: "dev1",
@@ -80,7 +81,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev2/foo": {
         deviceName: "dev2",
@@ -93,7 +95,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -106,7 +109,8 @@ describe("DeviceData service", () => {
         error: false,
         min: -1000,
         max: 1000,
-        step: 10
+        step: 10,
+        displayType: "range"
       }
     });
   });
@@ -137,7 +141,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "text"
       }
     });
   });
@@ -159,7 +164,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "text"
       }
     });
   });
@@ -183,7 +189,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "switch"
       }
     });
     f.extClient.send("/devices/dev2/controls/fooSwitch", "0", true, 0);
@@ -199,7 +206,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "switch"
       }
     });
   });
@@ -223,7 +231,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "rgb"
       }
     });
     f.extClient.send("/devices/dev2/controls/fooRgb", "200;100;50", true, 0);
@@ -239,7 +248,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "rgb"
       }
     });
   });
@@ -259,7 +269,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       }
     });
 
@@ -276,7 +287,8 @@ describe("DeviceData service", () => {
         error: true,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       }
     });
 
@@ -293,7 +305,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       }
     });
   });
@@ -317,7 +330,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "text"
       },
       "dev2/barInc": {
         deviceName: "dev2",
@@ -330,7 +344,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       }
     });
     expect(DeviceData.cell("dev2/fooInc").isComplete()).toBe(false);
@@ -350,7 +365,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev2/barInc": {
         deviceName: "dev2",
@@ -363,7 +379,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       }
     });
     expect(DeviceData.cell("dev2/fooInc").isComplete()).toBe(true);
@@ -389,7 +406,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "button"
       }
     });
   });
@@ -410,7 +428,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "button"
       }
     });
   });
@@ -501,7 +520,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       }
     });
   });
@@ -527,7 +547,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "text"
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -540,7 +561,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev2/fooSwitch": {
         deviceName: "dev2",
@@ -553,7 +575,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "switch"
       }
     });
     expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
@@ -572,7 +595,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       }
     });
     expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
@@ -607,7 +631,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev1/volume": {
         deviceName: "dev1",
@@ -620,7 +645,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev2/foo": {
         deviceName: "dev2",
@@ -633,7 +659,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "value"
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -646,7 +673,8 @@ describe("DeviceData service", () => {
         error: false,
         min: null,
         max: null,
-        step: null
+        step: null,
+        displayType: "range"
       }
     });
   });
@@ -701,6 +729,8 @@ describe("DeviceData service", () => {
     expect(proxy.error).toBe(false);
     expect(proxy.min).toBe(null);
     expect(proxy.max).toBe(null);
+    expect(proxy.displayType).toBe("text");
+    expect(proxy.valueType).toBe("string");
     proxy.value = 999; // does nothig
 
     publishNumericCells();
@@ -713,6 +743,8 @@ describe("DeviceData service", () => {
     expect(proxy.error).toBe(false);
     expect(proxy.min).toBe(-1000);
     expect(proxy.max).toBe(1000);
+    expect(proxy.displayType).toBe("range");
+    expect(proxy.valueType).toBe("number");
 
     proxy.value = 42;
     f.expectJournal().toEqual([
@@ -733,6 +765,8 @@ describe("DeviceData service", () => {
     expect(proxy.min).toBe(-1000);
     expect(proxy.max).toBe(1000);
     expect(proxy.step).toBe(10);
+    expect(proxy.displayType).toBe("range");
+    expect(proxy.valueType).toBe("number");
   });
 
   it("should make cells of read-only type readonly", () => {

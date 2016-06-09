@@ -8,118 +8,141 @@ angular.module("homeuiApp")
       "text": {
         valueType: "string",
         units: "",
-        readOnly: true
+        readOnly: true,
+        displayType: "text"
       },
       "switch": {
         valueType: "boolean",
         units: "",
-        readOnly: false
+        readOnly: false,
+        displayType: "switch"
       },
       "wo-switch": {
         valueType: "boolean",
         units: "",
-        readOnly: false
+        readOnly: false,
+        displayType: "switch"
       },
       "alarm": {
         valueType: "boolean",
         units: "",
-        readOnly: true
+        readOnly: true,
+        displayType: "alarm"
       },
       "pushbutton": {
         valueType: "pushbutton",
         units: "",
-        readOnly: false
+        readOnly: false,
+        displayType: "button"
       },
       "temperature": {
         valueType: "number",
         units: "°C",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "rel_humidity": {
         valueType: "number",
         units: "%, RH",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "atmospheric_pressure": {
         valueType: "number",
         units: "millibar (100 Pa)",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "rainfall": {
         valueType: "number",
         units: "mm/h",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "wind_speed": {
         valueType: "number",
         units: "m/s",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "power": {
         valueType: "number",
         units: "W",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "power_consumption": {
         valueType: "number",
         units: "kWh",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "voltage": {
         valueType: "number",
         units: "V",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "water_flow": {
         valueType: "number",
         units: "m³/h",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "water_consumption": {
         valueType: "number",
         units: "m³",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "resistance": {
         valueType: "number",
         units: "Ohm",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "concentration": {
         valueType: "number",
         units: "ppm",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "pressure": {
         valueType: "number",
         units: "bar",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "range": {
         valueType: "number",
         units: "",
-        readOnly: false
+        readOnly: false,
+        displayType: "range"
       },
       "value": {
         valueType: "number",
         units: "",
-        readOnly: true
+        readOnly: true,
+        displayType: "value"
       },
       "rgb": {
         valueType: "rgb",
         units: "",
-        readOnly: false
+        readOnly: false,
+        displayType: "rgb"
       },
       // XXX rename/replace
       "wtext": {
         valueType: "string",
         units: "",
-        readOnly: false
+        readOnly: false,
+        displayType: "text"
       },
       "wvalue": {
         valueType: "number",
         units: "",
-        readOnly: false
+        readOnly: false,
+        displayType: "value"
       }
     };
 
@@ -209,8 +232,12 @@ angular.module("homeuiApp")
         this.sendValue(newValue);
       }
 
-      valueType () {
+      get valueType () {
         return this._typeEntry().valueType;
+      }
+
+      get displayType () {
+        return this._typeEntry().displayType;
       }
 
       _addToDevice () {
@@ -228,7 +255,7 @@ angular.module("homeuiApp")
       }
 
       _setCellValue (value) {
-        switch (this.valueType()) {
+        switch (this.valueType) {
         case "number":
           this._value = value - 0;
           break;
@@ -249,7 +276,7 @@ angular.module("homeuiApp")
       }
 
       stringValue () {
-        switch (this.valueType()) {
+        switch (this.valueType) {
         case "boolean":
           return this._value ? "1" : "0";
         case "pushbutton":
@@ -272,7 +299,7 @@ angular.module("homeuiApp")
       }
 
       _isString () {
-        return this.isComplete() && this.valueType() == "string";
+        return this.isComplete() && this.valueType == "string";
       }
 
       _typeEntry () {
@@ -436,6 +463,8 @@ angular.module("homeuiApp")
       get min () { return this.cell.min; }
       get max () { return this.cell.max; }
       get step () { return this.cell.step; }
+      get valueType () { return this.cell.valueType; }
+      get displayType () { return this.cell.displayType; }
     }
 
     return {
