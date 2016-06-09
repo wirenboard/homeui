@@ -50,10 +50,10 @@ describe("DeviceData service", () => {
     publishNumericCells();
     expect(DeviceData.devices).toEqual({
       "dev1": { name: "Device One", explicit: true, cellNames: ["dev1/voltage1", "dev1/volume"] },
-      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/bar", "dev2/foo"] }
+      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/foo", "dev2/bar"] }
     });
     expect(DeviceData.getCellNames()).toEqual([
-      "dev1/voltage1", "dev1/volume", "dev2/bar", "dev2/foo"
+      "dev1/voltage1", "dev1/volume", "dev2/foo", "dev2/bar"
     ]);
     expect(extractCellData()).toEqual({
       "dev1/voltage1": {
@@ -68,7 +68,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev1/volume": {
         deviceName: "dev1",
@@ -82,7 +83,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev2/foo": {
         deviceName: "dev2",
@@ -96,7 +98,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -110,7 +113,8 @@ describe("DeviceData service", () => {
         min: -1000,
         max: 1000,
         step: 10,
-        displayType: "range"
+        displayType: "range",
+        order: null
       }
     });
   });
@@ -142,7 +146,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "text"
+        displayType: "text",
+        order: null
       }
     });
   });
@@ -165,7 +170,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "text"
+        displayType: "text",
+        order: null
       }
     });
   });
@@ -190,7 +196,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "switch"
+        displayType: "switch",
+        order: null
       }
     });
     f.extClient.send("/devices/dev2/controls/fooSwitch", "0", true, 0);
@@ -207,7 +214,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "switch"
+        displayType: "switch",
+        order: null
       }
     });
   });
@@ -232,7 +240,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "rgb"
+        displayType: "rgb",
+        order: null
       }
     });
     f.extClient.send("/devices/dev2/controls/fooRgb", "200;100;50", true, 0);
@@ -249,7 +258,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "rgb"
+        displayType: "rgb",
+        order: null
       }
     });
   });
@@ -270,7 +280,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       }
     });
 
@@ -288,7 +299,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       }
     });
 
@@ -306,7 +318,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       }
     });
   });
@@ -331,7 +344,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "text"
+        displayType: "text",
+        order: null
       },
       "dev2/barInc": {
         deviceName: "dev2",
@@ -345,7 +359,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       }
     });
     expect(DeviceData.cell("dev2/fooInc").isComplete()).toBe(false);
@@ -366,7 +381,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev2/barInc": {
         deviceName: "dev2",
@@ -380,7 +396,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       }
     });
     expect(DeviceData.cell("dev2/fooInc").isComplete()).toBe(true);
@@ -407,7 +424,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "button"
+        displayType: "button",
+        order: null
       }
     });
   });
@@ -429,7 +447,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "button"
+        displayType: "button",
+        order: null
       }
     });
   });
@@ -521,7 +540,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       }
     });
   });
@@ -548,7 +568,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "text"
+        displayType: "text",
+        order: null
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -562,7 +583,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev2/fooSwitch": {
         deviceName: "dev2",
@@ -576,7 +598,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "switch"
+        displayType: "switch",
+        order: null
       }
     });
     expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
@@ -596,7 +619,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       }
     });
     expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
@@ -614,10 +638,10 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/step", "", true, 1);
     expect(DeviceData.devices).toEqual({
       "dev1": { name: "Device One", explicit: true, cellNames: ["dev1/voltage1", "dev1/volume"] },
-      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/bar", "dev2/foo"] }
+      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/foo", "dev2/bar"] }
     });
     expect(DeviceData.getCellNames()).toEqual([
-      "dev1/voltage1", "dev1/volume", "dev2/bar", "dev2/foo"
+      "dev1/voltage1", "dev1/volume", "dev2/foo", "dev2/bar"
     ]);
     expect(extractCellData()).toEqual({
       "dev1/voltage1": {
@@ -632,7 +656,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev1/volume": {
         deviceName: "dev1",
@@ -646,7 +671,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev2/foo": {
         deviceName: "dev2",
@@ -660,7 +686,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "value"
+        displayType: "value",
+        order: null
       },
       "dev2/bar": {
         deviceName: "dev2",
@@ -674,7 +701,8 @@ describe("DeviceData service", () => {
         min: null,
         max: null,
         step: null,
-        displayType: "range"
+        displayType: "range",
+        order: null
       }
     });
   });
@@ -731,6 +759,7 @@ describe("DeviceData service", () => {
     expect(proxy.max).toBe(null);
     expect(proxy.displayType).toBe("text");
     expect(proxy.valueType).toBe("string");
+    expect(proxy.order).toBe(null);
     proxy.value = 999; // does nothig
 
     publishNumericCells();
@@ -745,6 +774,7 @@ describe("DeviceData service", () => {
     expect(proxy.max).toBe(1000);
     expect(proxy.displayType).toBe("range");
     expect(proxy.valueType).toBe("number");
+    expect(proxy.order).toBe(null);
 
     proxy.value = 42;
     f.expectJournal().toEqual([
@@ -754,6 +784,7 @@ describe("DeviceData service", () => {
 
     f.extClient.send("/devices/dev2/controls/bar/meta/readonly", "1", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/units", "m", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/order", "10", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/error", "r", true, 1);
     expect(proxy.isComplete()).toBe(true);
     expect(proxy.id).toBe("dev2/bar");
@@ -767,6 +798,7 @@ describe("DeviceData service", () => {
     expect(proxy.step).toBe(10);
     expect(proxy.displayType).toBe("range");
     expect(proxy.valueType).toBe("number");
+    expect(proxy.order).toBe(10);
   });
 
   it("should make cells of read-only type readonly", () => {
@@ -776,5 +808,125 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/bar", "xxx", true, 1);
     expect(DeviceData.cell("dev2/foo").readOnly).toBe(true);
     expect(DeviceData.cell("dev2/bar").readOnly).toBe(true);
+  });
+
+  function publishSimpleCell (dev, control, order) {
+    var topicBase = "/devices/" + dev + "/controls/" + control;
+    f.extClient.send(topicBase + "/meta/type", "value");
+    if (order !== undefined)
+      f.extClient.send(topicBase + "/meta/order", "" + order);
+    f.extClient.send(topicBase, "42");
+  }
+
+  it("should honor cell ordering, putting cells without meta/order to the end of the list in their original order", () => {
+    publishSimpleCell("dev1", "a01");
+    publishSimpleCell("dev1", "a02");
+    publishSimpleCell("dev1", "a00");
+    for (var i = 10; i >= 1; i--) {
+      publishSimpleCell("dev1", "a" + i, i);
+      publishSimpleCell("dev2", "b" + i, i);
+    }
+    expect(DeviceData.devices).toEqual({
+      "dev1": {
+        name: "dev1",
+        explicit: false,
+        cellNames: [
+          "dev1/a1",
+          "dev1/a2",
+          "dev1/a3",
+          "dev1/a4",
+          "dev1/a5",
+          "dev1/a6",
+          "dev1/a7",
+          "dev1/a8",
+          "dev1/a9",
+          "dev1/a10",
+          "dev1/a01",
+          "dev1/a02",
+          "dev1/a00"
+        ]
+      },
+      "dev2": {
+        name: "dev2",
+        explicit: false,
+        cellNames: [
+          "dev2/b1",
+          "dev2/b2",
+          "dev2/b3",
+          "dev2/b4",
+          "dev2/b5",
+          "dev2/b6",
+          "dev2/b7",
+          "dev2/b8",
+          "dev2/b9",
+          "dev2/b10"
+        ]
+      }
+    });
+
+    f.extClient.send("/devices/dev1/controls/a1/meta/order", "100", true, 1);
+    expect(DeviceData.devices).toEqual({
+      "dev1": {
+        name: "dev1",
+        explicit: false,
+        cellNames: [
+          "dev1/a2",
+          "dev1/a3",
+          "dev1/a4",
+          "dev1/a5",
+          "dev1/a6",
+          "dev1/a7",
+          "dev1/a8",
+          "dev1/a9",
+          "dev1/a10",
+          "dev1/a1",
+          "dev1/a01",
+          "dev1/a02",
+          "dev1/a00"
+        ]
+      },
+      "dev2": {
+        name: "dev2",
+        explicit: false,
+        cellNames: [
+          "dev2/b1",
+          "dev2/b2",
+          "dev2/b3",
+          "dev2/b4",
+          "dev2/b5",
+          "dev2/b6",
+          "dev2/b7",
+          "dev2/b8",
+          "dev2/b9",
+          "dev2/b10"
+        ]
+      }
+    });
+
+    expect(DeviceData.getCellNames()).toEqual([
+      "dev1/a2",
+      "dev1/a3",
+      "dev1/a4",
+      "dev1/a5",
+      "dev1/a6",
+      "dev1/a7",
+      "dev1/a8",
+      "dev1/a9",
+      "dev1/a10",
+      "dev1/a1",
+      "dev1/a01",
+      "dev1/a02",
+      "dev1/a00",
+      "dev2/b1",
+      "dev2/b2",
+      "dev2/b3",
+      "dev2/b4",
+      "dev2/b5",
+      "dev2/b6",
+      "dev2/b7",
+      "dev2/b8",
+      "dev2/b9",
+      "dev2/b10"
+    ]);
   });
 });

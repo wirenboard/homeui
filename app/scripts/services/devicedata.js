@@ -205,6 +205,18 @@ angular.module("homeuiApp")
       return angular.isObject(value) && ["r", "g", "b"].every(c => value.hasOwnProperty(c));
     }
 
+    function compareCellNames (nameA, nameB) {
+      if (!cells.hasOwnProperty(nameA) || !cells.hasOwnProperty(nameB))
+        return 0;
+
+      var cellA = cells[nameA], cellB = cells[nameB], r;
+      if (cellA.order !== null)
+        return cellB.order === null ? -1 : cellA.order - cellB.order;
+      return cellB.order === null ? cellA._seq - cellB._seq : 1;
+    }
+
+    var nextCellSeq = 1;
+
     class Cell {
       constructor (id) {
         this.id = id;
@@ -222,6 +234,8 @@ angular.module("homeuiApp")
         this.min = null;
         this.max = null;
         this.step = null;
+        this.order = null;
+        this._seq = nextCellSeq++;
       }
 
       get value () {
@@ -244,7 +258,7 @@ angular.module("homeuiApp")
         var devCellNames = ensureDevice(this.deviceName).cellNames;
         if (devCellNames.indexOf(this.id) < 0) {
           devCellNames.push(this.id);
-          devCellNames.sort();
+          devCellNames.sort(compareCellNames);
         }
       }
 
@@ -384,6 +398,13 @@ angular.module("homeuiApp")
       setStep (step) {
         this.step = step == "" ? null: step - 0;
       }
+
+      setOrder (order) {
+        this.order = order - 0;
+        if (!this.isComplete())
+          return;
+        ensureDevice(this.deviceName).cellNames.sort(compareCellNames);
+      }
     }
 
     mqttClient.addStickySubscription("/devices/+/meta/name", msg => {
@@ -416,12 +437,17 @@ angular.module("homeuiApp")
     addCellSubscription("/meta/min",      (cell, payload) => { cell.setMin(payload);             });
     addCellSubscription("/meta/max",      (cell, payload) => { cell.setMax(payload);             });
     addCellSubscription("/meta/step",     (cell, payload) => { cell.setStep(payload);            });
+    addCellSubscription("/meta/order",    (cell, payload) => { cell.setOrder(payload);           });
 
     function filterCellNames (func) {
-      return Object.keys(cells).filter(name => {
-        var cell = cells[name];
-        return cell.isComplete() && (!func || func(cell));
-      }).sort();
+      var result = [];
+      Object.keys(devices).forEach(devId => {
+        var devCellNames = devices[devId].cellNames;
+        if (func)
+          devCellNames = devCellNames.filter(name => func(cells[name]));
+        result = result.concat(devCellNames);
+      });
+      return result;
     }
 
     var fakeCell = new Cell("nosuchdev/nosuchcell");
@@ -465,6 +491,7 @@ angular.module("homeuiApp")
       get step () { return this.cell.step; }
       get valueType () { return this.cell.valueType; }
       get displayType () { return this.cell.displayType; }
+      get order () { return this.cell.order; }
     }
 
     return {
@@ -476,7 +503,7 @@ angular.module("homeuiApp")
       },
 
       getCellNamesByType (type) {
-        return filterCellNames(cell => cell.type == type).sort();
+        return filterCellNames(cell => cell.type == type);
       },
 
       cell (name) {
