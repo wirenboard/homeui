@@ -3,11 +3,10 @@
 describe("Directive: console", () => {
   var f, FakeTime;
 
-  beforeEach(module("homeuiApp"));
   beforeEach(module("homeuiApp.fakeTime"));
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject(($rootScope, _FakeTime_, MqttDirectiveFixture, $compile) => {
+  beforeEach(inject(($rootScope, _FakeTime_, MqttDirectiveFixture) => {
     FakeTime = _FakeTime_;
     // Note that month index '5' means June here due to JS Date() API specifics
     FakeTime.setTime(new Date(2015, 5, 19, 20, 25, 6));

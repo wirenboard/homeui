@@ -1,13 +1,11 @@
 "use strict";
 
 describe("Directive: alarm-cell", () => {
-  var f, DeviceData;
-  beforeEach(module("homeuiApp"));
+  var f;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject((MqttDirectiveFixture, _DeviceData_, $compile) => {
+  beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<alarm-cell cell='dev2/fooAlarm'></alarm-cell>");
-    DeviceData = _DeviceData_;
     f.extClient.send("/devices/dev2/controls/fooAlarm/meta/type", "alarm", true, 1);
     f.extClient.send("/devices/dev2/controls/fooAlarm/meta/name", "Sample Alarm", true, 1);
     f.extClient.send("/devices/dev2/controls/fooAlarm", "0", true, 0);

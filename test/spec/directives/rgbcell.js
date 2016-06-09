@@ -1,8 +1,7 @@
 "use strict";
 
 describe("Directive: rgb-cell", () => {
-  var f, DeviceData;
-  beforeEach(module("homeuiApp"));
+  var f;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(module($provide => {
@@ -10,9 +9,8 @@ describe("Directive: rgb-cell", () => {
     $provide.value("rgbLocalStorageKey", null);
   }));
 
-  beforeEach(inject((MqttDirectiveFixture, _DeviceData_, $compile) => {
+  beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<rgb-cell cell='dev2/fooRgb'></rgb-cell>");
-    DeviceData = _DeviceData_;
     f.extClient.send("/devices/dev2/controls/fooRgb/meta/type", "rgb", true, 1);
     f.extClient.send("/devices/dev2/controls/fooRgb", "0;200;255", true, 0);
     f.$scope.$digest();

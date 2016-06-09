@@ -1,13 +1,11 @@
 "use strict";
 
 describe("Directive: range-cell", () => {
-  var f, DeviceData;
-  beforeEach(module("homeuiApp"));
+  var f;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject((MqttDirectiveFixture, _DeviceData_, $compile) => {
+  beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<range-cell cell='dev2/bar'></range-cell>");
-    DeviceData = _DeviceData_;
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "1000", true, 1);

@@ -1,13 +1,11 @@
 "use strict";
 
 describe("Directive: value-cell", () => {
-  var f, DeviceData;
-  beforeEach(module("homeuiApp"));
+  var f;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject((MqttDirectiveFixture, _DeviceData_, $compile) => {
+  beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<value-cell cell='dev1/voltage1'></value-cell>");
-    DeviceData = _DeviceData_;
     f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "wvalue", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1/meta/units", "V", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 0);

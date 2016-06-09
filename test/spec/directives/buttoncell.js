@@ -1,13 +1,11 @@
 "use strict";
 
 describe("Directive: button-cell", () => {
-  var f, DeviceData;
-  beforeEach(module("homeuiApp"));
+  var f;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject((MqttDirectiveFixture, _DeviceData_, $compile) => {
+  beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<button-cell cell='dev2/fooButton'></button-cell>");
-    DeviceData = _DeviceData_;
     f.extClient.send("/devices/dev2/controls/fooButton/meta/name", "Foo Button", true, 1);
     f.extClient.send("/devices/dev2/controls/fooButton/meta/type", "pushbutton", true, 1);
     f.$scope.$digest();
