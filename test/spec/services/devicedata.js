@@ -746,6 +746,19 @@ describe("DeviceData service", () => {
     expect(DeviceData.getCellIdsByType("voltage")).toEqual(["dev1/voltage1"]);
   });
 
+  it("should return the cells of specified display type via getCellsByType", () => {
+    publishNumericCells();
+    publishSwitchCell();
+    publishIncompleteCell();
+    // incomplete cells are never included
+    expect(DeviceData.getCellIdsByDisplayType("value")).toEqual([
+      "dev1/voltage1",
+      "dev1/volume",
+      "dev2/foo"
+    ]);
+    expect(DeviceData.getCellIdsByDisplayType("switch")).toEqual(["dev2/fooSwitch"]);
+  });
+
   it("should provide cell proxy objects that serve as placeholders for nonexistent cells", () => {
     var proxy = DeviceData.proxy("dev2/bar"); // a proxy for nonexistent cell
     expect(proxy.isComplete()).toBe(false);

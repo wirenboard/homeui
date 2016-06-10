@@ -446,7 +446,7 @@ angular.module("homeuiApp")
       Object.keys(devices).forEach(devId => {
         var devCellIds = devices[devId].cellIds;
         if (func)
-          devCellIds = devCellIds.filter(name => func(cells[name]));
+          devCellIds = devCellIds.filter(id => func(cells[id]));
         result = result.concat(devCellIds);
       });
       return result;
@@ -508,15 +508,18 @@ angular.module("homeuiApp")
         return filterCellIds(cell => cell.type == type);
       },
 
-      cell (name) {
-        if (!cells.hasOwnProperty(name))
-          throw new Error("cell not found: " + name);
-        return cells[name];
+      getCellIdsByDisplayType (displayType) {
+        return filterCellIds(cell => cell.displayType == displayType);
       },
 
-      proxy (name) {
-        return new CellProxy(name);
+      cell (id) {
+        if (!cells.hasOwnProperty(id))
+          throw new Error("cell not found: " + id);
+        return cells[id];
+      },
+
+      proxy (id) {
+        return new CellProxy(id);
       }
     };
   });
-// TBD: Name -> Id
