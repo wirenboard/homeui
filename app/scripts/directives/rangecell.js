@@ -2,7 +2,7 @@
 
 angular.module("homeuiApp")
   .directive("rangeCell", () => {
-    const DEFAULT_MIN = -1e9, DEFAULT_MAX = 1e9, DEFAULT_STEP = 1e-3;
+    const DEFAULT_MIN = 0, DEFAULT_MAX = 1e9, DEFAULT_STEP = 1e-3;
     return {
       restrict: "EA",
       scope: false,

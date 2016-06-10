@@ -1,15 +1,16 @@
 <h1 class="page-header">
   Devices <small>with controls</small>
 </h1>
-<div id='devices-list' class='multicol-list'>
+<div id="devices-list" class="multicol-list">
   <ul class="list-unstyled">
-    <li ng-repeat="(name, device) in devices">
-      <div class="panel panel-primary">
-        <div class="panel-heading" device-name></div>
+    <li ng-repeat="dev in devices">
+      <div class="panel panel-primary device">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{ dev.name }}</h3>
+        </div>
         <div class="panel-body">
-          <div ng-repeat="(controlName, control) in device.controls | orderObjectBy:'metaOrder'" class="control-wrapper" ng-class="(control.metaError) ? 'control-error' : ''">
-
-            <device-control></device-control>
+          <div ng-repeat="cellId in dev.cellIds">
+            <display-cell cell="cellId"></display-cell>
           </div>
         </div>
       </div>

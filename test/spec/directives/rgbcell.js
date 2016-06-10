@@ -10,7 +10,7 @@ describe("Directive: rgb-cell", () => {
   }));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<rgb-cell cell='dev2/fooRgb'></rgb-cell>");
+    f = new MqttDirectiveFixture("<rgb-cell cell=\"'dev2/fooRgb'\"></rgb-cell>");
     f.extClient.send("/devices/dev2/controls/fooRgb/meta/type", "rgb", true, 1);
     f.extClient.send("/devices/dev2/controls/fooRgb", "0;200;255", true, 0);
     f.$scope.$digest();

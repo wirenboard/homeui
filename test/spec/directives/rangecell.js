@@ -5,7 +5,7 @@ describe("Directive: range-cell", () => {
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<range-cell cell='dev2/bar'></range-cell>");
+    f = new MqttDirectiveFixture("<range-cell cell=\"'dev2/bar'\"></range-cell>");
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "1000", true, 1);
@@ -45,5 +45,13 @@ describe("Directive: range-cell", () => {
       "ext: /devices/dev2/controls/bar/on: [770] (QoS 1)"
     ]);
     expect(input()).toHaveValue("770");
+  });
+
+  it("should default min value to 0", () => {
+    f.extClient.send("/devices/dev2/controls/bar/meta/min", "", true, 1);
+    f.$rootScope.$digest();
+    expect(input().attr("min")).toBe("0");
+    expect(input().attr("max")).toBe("1000");
+    expect(input().attr("step")).toBe("10");
   });
 });

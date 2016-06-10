@@ -1,4 +1,5 @@
-<div class="display-cell cell-type-{{ cell.type }}" ng-switch on="cell.displayType">
+<div class="display-cell cell-type-{{ cell.type }}" ng-switch on="cell.displayType"
+     data-cell-id="{{ cell.id }}">
   <div ng-switch-when="text" class="display-cell-text">
     <cell-name></cell-name>
     <text-cell></text-cell>

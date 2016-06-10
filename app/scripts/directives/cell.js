@@ -1,10 +1,10 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .directive("cell", function (DeviceData) {
+  .directive("cell", function (DeviceData, $parse) {
     class CellController {
       constructor ($scope, $element, $attrs) {
-        this.cell = $scope.cell = DeviceData.proxy($attrs.cell);
+        this.cell = $scope.cell = DeviceData.proxy($scope.$eval($attrs.cell));
       }
     }
 

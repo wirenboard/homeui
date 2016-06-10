@@ -7,7 +7,7 @@ describe("Directive: display-cell", () => {
   const CELL_NAME = "Foo Cell";
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<display-cell cell='dev/foo'></display-cell>");
+    f = new MqttDirectiveFixture("<display-cell cell=\"'dev/foo'\"></display-cell>");
   }));
 
   afterEach(() => { f.remove(); });

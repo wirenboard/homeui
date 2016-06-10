@@ -5,7 +5,7 @@ describe("Directive: alarm-cell", () => {
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<alarm-cell cell='dev2/fooAlarm'></alarm-cell>");
+    f = new MqttDirectiveFixture("<alarm-cell cell=\"'dev2/fooAlarm'\"></alarm-cell>");
     f.extClient.send("/devices/dev2/controls/fooAlarm/meta/type", "alarm", true, 1);
     f.extClient.send("/devices/dev2/controls/fooAlarm/meta/name", "Sample Alarm", true, 1);
     f.extClient.send("/devices/dev2/controls/fooAlarm", "0", true, 0);

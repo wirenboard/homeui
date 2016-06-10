@@ -5,7 +5,7 @@ describe("Directive: button-cell", () => {
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<button-cell cell='dev2/fooButton'></button-cell>");
+    f = new MqttDirectiveFixture("<button-cell cell=\"'dev2/fooButton'\"></button-cell>");
     f.extClient.send("/devices/dev2/controls/fooButton/meta/name", "Foo Button", true, 1);
     f.extClient.send("/devices/dev2/controls/fooButton/meta/type", "pushbutton", true, 1);
     f.$scope.$digest();

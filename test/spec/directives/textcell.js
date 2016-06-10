@@ -5,7 +5,7 @@ describe("Directive: text-cell", () => {
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<text-cell cell='dev1/foobar'></text-cell>");
+    f = new MqttDirectiveFixture("<text-cell cell=\"'dev1/foobar'\"></text-cell>");
     f.extClient.send("/devices/dev1/controls/foobar/meta/type", "wtext", true, 1);
     f.extClient.send("/devices/dev1/controls/foobar", "qqq", true, 0);
     f.$scope.$digest();
