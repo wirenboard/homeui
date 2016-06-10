@@ -150,17 +150,17 @@ angular.module("homeuiApp")
       return topic.substring(1).split("/");
     }
 
-    function ensureDevice (name) {
-      if (!devices.hasOwnProperty(name))
-        devices[name] = { name: name, explicit: false, cellNames: [] };
-      return devices[name];
+    function ensureDevice (id) {
+      if (!devices.hasOwnProperty(id))
+        devices[id] = { name: id, explicit: false, cellIds: [] };
+      return devices[id];
     }
 
-    function maybeRemoveDevice (name) {
-      if (!devices.hasOwnProperty(name))
+    function maybeRemoveDevice (id) {
+      if (!devices.hasOwnProperty(id))
         return;
-      if (!devices[name].explicit && !devices[name].cellNames.length)
-        delete devices[name];
+      if (!devices[id].explicit && !devices[id].cellIds.length)
+        delete devices[id];
     }
 
     function parseCellTopic (topic) {
@@ -169,11 +169,11 @@ angular.module("homeuiApp")
       return parts[1] + "/" + parts[3];
     }
 
-    function internCell (name) {
-      if (cells.hasOwnProperty(name))
-        return cells[name];
-      var cell = new Cell(name);
-      cells[name] = cell;
+    function internCell (id) {
+      if (cells.hasOwnProperty(id))
+        return cells[id];
+      var cell = new Cell(id);
+      cells[id] = cell;
       return cell;
     }
 
@@ -205,11 +205,11 @@ angular.module("homeuiApp")
       return angular.isObject(value) && ["r", "g", "b"].every(c => value.hasOwnProperty(c));
     }
 
-    function compareCellNames (nameA, nameB) {
-      if (!cells.hasOwnProperty(nameA) || !cells.hasOwnProperty(nameB))
+    function compareCellIds (idA, idB) {
+      if (!cells.hasOwnProperty(idA) || !cells.hasOwnProperty(idB))
         return 0;
 
-      var cellA = cells[nameA], cellB = cells[nameB], r;
+      var cellA = cells[idA], cellB = cells[idB], r;
       if (cellA.order !== null)
         return cellB.order === null ? -1 : cellA.order - cellB.order;
       return cellB.order === null ? cellA._seq - cellB._seq : 1;
@@ -223,9 +223,9 @@ angular.module("homeuiApp")
         var parts = this.id.split("/");
         if (parts.length != 2)
           throw new Error("invalid cell id: " + this.id);
-        this.deviceName = parts[0];
-        this.controlName = parts[1];
-        this.name = this.controlName;
+        this.deviceId = parts[0];
+        this.controlId = parts[1];
+        this.name = this.controlId;
         this.type = "incomplete";
         this._value = null;
         this._explicitUnits = "";
@@ -255,17 +255,17 @@ angular.module("homeuiApp")
       }
 
       _addToDevice () {
-        var devCellNames = ensureDevice(this.deviceName).cellNames;
-        if (devCellNames.indexOf(this.id) < 0) {
-          devCellNames.push(this.id);
-          devCellNames.sort(compareCellNames);
+        var devCellIds = ensureDevice(this.deviceId).cellIds;
+        if (devCellIds.indexOf(this.id) < 0) {
+          devCellIds.push(this.id);
+          devCellIds.sort(compareCellIds);
         }
       }
 
       _removeFromDevice () {
-        if (!devices.hasOwnProperty(this.deviceName))
+        if (!devices.hasOwnProperty(this.deviceId))
           return;
-        devices[this.deviceName].cellNames = devices[this.deviceName].cellNames.filter(name => name != this.id);
+        devices[this.deviceId].cellIds = devices[this.deviceId].cellIds.filter(id => id != this.id);
       }
 
       _setCellValue (value) {
@@ -305,7 +305,7 @@ angular.module("homeuiApp")
       }
 
       _sendValueTopic () {
-        return ["", "devices", this.deviceName, "controls", this.controlName, "on"].join("/");
+        return ["", "devices", this.deviceId, "controls", this.controlId, "on"].join("/");
       }
 
       _isButton () {
@@ -349,7 +349,7 @@ angular.module("homeuiApp")
           return;
         }
         this._removeFromDevice();
-        maybeRemoveDevice(this.deviceName);
+        maybeRemoveDevice(this.deviceId);
         if (this.type == "incomplete" && this._value === null)
           delete cells[this.id];
       }
@@ -403,27 +403,28 @@ angular.module("homeuiApp")
         this.order = order - 0;
         if (!this.isComplete())
           return;
-        ensureDevice(this.deviceName).cellNames.sort(compareCellNames);
+        ensureDevice(this.deviceId).cellIds.sort(compareCellIds);
       }
     }
 
     mqttClient.addStickySubscription("/devices/+/meta/name", msg => {
-      var deviceName = splitTopic(msg.topic)[1];
+      var deviceId = splitTopic(msg.topic)[1];
       if (msg.payload == "") {
-        if (!devices.hasOwnProperty(deviceName))
+        if (!devices.hasOwnProperty(deviceId))
           return;
-        devices[deviceName].name = deviceName;
-        devices[deviceName].explicit = false;
-        maybeRemoveDevice(deviceName);
+        devices[deviceId].name = deviceId;
+        devices[deviceId].explicit = false;
+        maybeRemoveDevice(deviceId);
         return;
       }
-      var dev = ensureDevice(deviceName);
+      var dev = ensureDevice(deviceId);
       dev.name = msg.payload;
       dev.explicit = true;
     });
 
     function addCellSubscription(suffix, handler) {
       mqttClient.addStickySubscription("/devices/+/controls/+" + suffix, msg => {
+        //console.debug("%s: %s: %s: %s", suffix || "<empty>", msg.topic, cellFromTopic(msg.topic).id, msg.payload);
         handler(cellFromTopic(msg.topic), msg.payload);
       });
     }
@@ -438,14 +439,15 @@ angular.module("homeuiApp")
     addCellSubscription("/meta/max",      (cell, payload) => { cell.setMax(payload);             });
     addCellSubscription("/meta/step",     (cell, payload) => { cell.setStep(payload);            });
     addCellSubscription("/meta/order",    (cell, payload) => { cell.setOrder(payload);           });
+    // STEP --> precision (округление) ?
 
-    function filterCellNames (func) {
+    function filterCellIds (func) {
       var result = [];
       Object.keys(devices).forEach(devId => {
-        var devCellNames = devices[devId].cellNames;
+        var devCellIds = devices[devId].cellIds;
         if (func)
-          devCellNames = devCellNames.filter(name => func(cells[name]));
-        result = result.concat(devCellNames);
+          devCellIds = devCellIds.filter(name => func(cells[name]));
+        result = result.concat(devCellIds);
       });
       return result;
     }
@@ -498,12 +500,12 @@ angular.module("homeuiApp")
       devices: devices,
       cells: cells,
 
-      getCellNames () {
-        return filterCellNames();
+      getCellIds () {
+        return filterCellIds();
       },
 
-      getCellNamesByType (type) {
-        return filterCellNames(cell => cell.type == type);
+      getCellIdsByType (type) {
+        return filterCellIds(cell => cell.type == type);
       },
 
       cell (name) {
@@ -517,3 +519,4 @@ angular.module("homeuiApp")
       }
     };
   });
+// TBD: Name -> Id

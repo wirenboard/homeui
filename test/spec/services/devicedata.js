@@ -46,19 +46,19 @@ describe("DeviceData service", () => {
 
   it("should provide list of available cells and their properties", () => {
     expect(DeviceData.devices).toEqual({});
-    expect(DeviceData.getCellNames()).toEqual([]);
+    expect(DeviceData.getCellIds()).toEqual([]);
     publishNumericCells();
     expect(DeviceData.devices).toEqual({
-      "dev1": { name: "Device One", explicit: true, cellNames: ["dev1/voltage1", "dev1/volume"] },
-      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/foo", "dev2/bar"] }
+      "dev1": { name: "Device One", explicit: true, cellIds: ["dev1/voltage1", "dev1/volume"] },
+      "dev2": { name: "dev2", explicit: false, cellIds: ["dev2/foo", "dev2/bar"] }
     });
-    expect(DeviceData.getCellNames()).toEqual([
+    expect(DeviceData.getCellIds()).toEqual([
       "dev1/voltage1", "dev1/volume", "dev2/foo", "dev2/bar"
     ]);
     expect(extractCellData()).toEqual({
       "dev1/voltage1": {
-        deviceName: "dev1",
-        controlName: "voltage1",
+        deviceId: "dev1",
+        controlId: "voltage1",
         name: "Voltage 1",
         value: 223,
         type: "voltage",
@@ -72,8 +72,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev1/volume": {
-        deviceName: "dev1",
-        controlName: "volume",
+        deviceId: "dev1",
+        controlId: "volume",
         name: "volume",
         value: 42,
         type: "wvalue",
@@ -87,8 +87,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/foo": {
-        deviceName: "dev2",
-        controlName: "foo",
+        deviceId: "dev2",
+        controlId: "foo",
         name: "foo",
         value: 4242,
         type: "wvalue",
@@ -102,8 +102,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/bar": {
-        deviceName: "dev2",
-        controlName: "bar",
+        deviceId: "dev2",
+        controlId: "bar",
         name: "bar",
         value: 123,
         type: "range",
@@ -121,7 +121,7 @@ describe("DeviceData service", () => {
 
   it("should return cells by name via cell() function", () => {
     publishNumericCells();
-    DeviceData.getCellNames().forEach(cellName => {
+    DeviceData.getCellIds().forEach(cellName => {
       expect(DeviceData.cell(cellName)).toBe(DeviceData.cells[cellName]);
     });
   });
@@ -135,8 +135,8 @@ describe("DeviceData service", () => {
     publishTextCell();
     expect(extractCellData()).toEqual({
       "dev2/fooText": {
-        deviceName: "dev2",
-        controlName: "fooText",
+        deviceId: "dev2",
+        controlId: "fooText",
         name: "fooText",
         value: "4242",
         type: "wtext",
@@ -159,8 +159,8 @@ describe("DeviceData service", () => {
     expect(DeviceData.cell("dev2/fooText").isComplete()).toBe(true);
     expect(extractCellData()).toEqual({
       "dev2/fooText": {
-        deviceName: "dev2",
-        controlName: "fooText",
+        deviceId: "dev2",
+        controlId: "fooText",
         name: "fooText",
         value: "",
         type: "wtext",
@@ -185,8 +185,8 @@ describe("DeviceData service", () => {
     publishSwitchCell();
     expect(extractCellData()).toEqual({
       "dev2/fooSwitch": {
-        deviceName: "dev2",
-        controlName: "fooSwitch",
+        deviceId: "dev2",
+        controlId: "fooSwitch",
         name: "fooSwitch",
         value: true,
         type: "switch",
@@ -203,8 +203,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/fooSwitch", "0", true, 0);
     expect(extractCellData()).toEqual({
       "dev2/fooSwitch": {
-        deviceName: "dev2",
-        controlName: "fooSwitch",
+        deviceId: "dev2",
+        controlId: "fooSwitch",
         name: "fooSwitch",
         value: false,
         type: "switch",
@@ -229,8 +229,8 @@ describe("DeviceData service", () => {
     publishRgbCell();
     expect(extractCellData()).toEqual({
       "dev2/fooRgb": {
-        deviceName: "dev2",
-        controlName: "fooRgb",
+        deviceId: "dev2",
+        controlId: "fooRgb",
         name: "fooRgb",
         value: { r: 0, g: 200, b: 255 },
         type: "rgb",
@@ -247,8 +247,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/fooRgb", "200;100;50", true, 0);
     expect(extractCellData()).toEqual({
       "dev2/fooRgb": {
-        deviceName: "dev2",
-        controlName: "fooRgb",
+        deviceId: "dev2",
+        controlId: "fooRgb",
         name: "fooRgb",
         value: { r: 200, g: 100, b: 50 },
         type: "rgb",
@@ -269,8 +269,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/foo", "4242", true, 0);
     expect(extractCellData()).toEqual({
       "dev2/foo": {
-        deviceName: "dev2",
-        controlName: "foo",
+        deviceId: "dev2",
+        controlId: "foo",
         name: "foo",
         value: 4242,
         type: "wvalue",
@@ -288,8 +288,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/foo/meta/error", "1", true, 1);
     expect(extractCellData()).toEqual({
       "dev2/foo": {
-        deviceName: "dev2",
-        controlName: "foo",
+        deviceId: "dev2",
+        controlId: "foo",
         name: "foo",
         value: 4242,
         type: "wvalue",
@@ -307,8 +307,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/foo/meta/error", "", true, 1);
     expect(extractCellData()).toEqual({
       "dev2/foo": {
-        deviceName: "dev2",
-        controlName: "foo",
+        deviceId: "dev2",
+        controlId: "foo",
         name: "foo",
         value: 4242,
         type: "wvalue",
@@ -333,8 +333,8 @@ describe("DeviceData service", () => {
     publishIncompleteCell();
     expect(extractCellData()).toEqual({
       "dev2/fooInc": {
-        deviceName: "dev2",
-        controlName: "fooInc",
+        deviceId: "dev2",
+        controlId: "fooInc",
         name: "fooInc",
         value: "4242",
         type: "incomplete",
@@ -348,8 +348,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/barInc": {
-        deviceName: "dev2",
-        controlName: "barInc",
+        deviceId: "dev2",
+        controlId: "barInc",
         name: "barInc",
         value: null,
         type: "wvalue",
@@ -370,8 +370,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/barInc", "4243", true, 0);
     expect(extractCellData()).toEqual({
       "dev2/fooInc": {
-        deviceName: "dev2",
-        controlName: "fooInc",
+        deviceId: "dev2",
+        controlId: "fooInc",
         name: "fooInc",
         value: 4242,
         type: "wvalue",
@@ -385,8 +385,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/barInc": {
-        deviceName: "dev2",
-        controlName: "barInc",
+        deviceId: "dev2",
+        controlId: "barInc",
         name: "barInc",
         value: 4243,
         type: "wvalue",
@@ -413,8 +413,8 @@ describe("DeviceData service", () => {
     expect(DeviceData.cell("dev2/fooButton").isComplete()).toBe(true);
     expect(extractCellData()).toEqual({
       "dev2/fooButton": {
-        deviceName: "dev2",
-        controlName: "fooButton",
+        deviceId: "dev2",
+        controlId: "fooButton",
         name: "fooButton",
         value: null,
         type: "pushbutton",
@@ -436,8 +436,8 @@ describe("DeviceData service", () => {
     expect(DeviceData.cell("dev2/fooButton").isComplete()).toBe(true);
     expect(extractCellData()).toEqual({
       "dev2/fooButton": {
-        deviceName: "dev2",
-        controlName: "fooButton",
+        deviceId: "dev2",
+        controlId: "fooButton",
         name: "fooButton",
         value: null,
         type: "pushbutton",
@@ -529,8 +529,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/fooSwitch/meta/type", "wvalue", true, 1);
     expect(extractCellData()).toEqual({
       "dev2/fooSwitch": {
-        deviceName: "dev2",
-        controlName: "fooSwitch",
+        deviceId: "dev2",
+        controlId: "fooSwitch",
         name: "fooSwitch",
         value: 1,
         type: "wvalue",
@@ -557,8 +557,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/fooSwitch", "", true, 1);
     expect(extractCellData()).toEqual({
       "dev2/foo": {
-        deviceName: "dev2",
-        controlName: "foo",
+        deviceId: "dev2",
+        controlId: "foo",
         name: "foo",
         value: "4242",
         type: "incomplete",
@@ -572,8 +572,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/bar": {
-        deviceName: "dev2",
-        controlName: "bar",
+        deviceId: "dev2",
+        controlId: "bar",
         name: "bar",
         value: 123,
         type: "wvalue",
@@ -587,8 +587,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/fooSwitch": {
-        deviceName: "dev2",
-        controlName: "fooSwitch",
+        deviceId: "dev2",
+        controlId: "fooSwitch",
         name: "fooSwitch",
         value: null,
         type: "switch",
@@ -602,14 +602,14 @@ describe("DeviceData service", () => {
         order: null
       }
     });
-    expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
+    expect(DeviceData.getCellIds()).toEqual(["dev2/bar"]);
 
     f.extClient.send("/devices/dev2/controls/foo", "", true, 1);
     f.extClient.send("/devices/dev2/controls/fooSwitch/meta/type", "", true, 1);
     expect(extractCellData()).toEqual({
       "dev2/bar": {
-        deviceName: "dev2",
-        controlName: "bar",
+        deviceId: "dev2",
+        controlId: "bar",
         name: "bar",
         value: 123,
         type: "wvalue",
@@ -623,9 +623,9 @@ describe("DeviceData service", () => {
         order: null
       }
     });
-    expect(DeviceData.getCellNames()).toEqual(["dev2/bar"]);
+    expect(DeviceData.getCellIds()).toEqual(["dev2/bar"]);
     expect(DeviceData.devices).toEqual({
-      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/bar"] }
+      "dev2": { name: "dev2", explicit: false, cellIds: ["dev2/bar"] }
     });
   });
 
@@ -637,16 +637,16 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/step", "", true, 1);
     expect(DeviceData.devices).toEqual({
-      "dev1": { name: "Device One", explicit: true, cellNames: ["dev1/voltage1", "dev1/volume"] },
-      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/foo", "dev2/bar"] }
+      "dev1": { name: "Device One", explicit: true, cellIds: ["dev1/voltage1", "dev1/volume"] },
+      "dev2": { name: "dev2", explicit: false, cellIds: ["dev2/foo", "dev2/bar"] }
     });
-    expect(DeviceData.getCellNames()).toEqual([
+    expect(DeviceData.getCellIds()).toEqual([
       "dev1/voltage1", "dev1/volume", "dev2/foo", "dev2/bar"
     ]);
     expect(extractCellData()).toEqual({
       "dev1/voltage1": {
-        deviceName: "dev1",
-        controlName: "voltage1",
+        deviceId: "dev1",
+        controlId: "voltage1",
         name: "Voltage 1",
         value: 223,
         type: "voltage",
@@ -660,8 +660,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev1/volume": {
-        deviceName: "dev1",
-        controlName: "volume",
+        deviceId: "dev1",
+        controlId: "volume",
         name: "volume",
         value: 42,
         type: "wvalue",
@@ -675,8 +675,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/foo": {
-        deviceName: "dev2",
-        controlName: "foo",
+        deviceId: "dev2",
+        controlId: "foo",
         name: "foo",
         value: 4242,
         type: "wvalue",
@@ -690,8 +690,8 @@ describe("DeviceData service", () => {
         order: null
       },
       "dev2/bar": {
-        deviceName: "dev2",
-        controlName: "bar",
+        deviceId: "dev2",
+        controlId: "bar",
         name: "bar",
         value: 123,
         type: "range",
@@ -713,24 +713,24 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 1);
     publishPushButtonCell();
     expect(DeviceData.devices).toEqual({
-      "dev1": { name: "Device One", explicit: true, cellNames: ["dev1/voltage1"] },
-      "dev2": { name: "dev2", explicit: false, cellNames: ["dev2/fooButton"] }
+      "dev1": { name: "Device One", explicit: true, cellIds: ["dev1/voltage1"] },
+      "dev2": { name: "dev2", explicit: false, cellIds: ["dev2/fooButton"] }
     });
     f.extClient.send("/devices/dev2/controls/fooButton/meta/type", "");
     expect(DeviceData.devices).toEqual({
-      "dev1": { name: "Device One", explicit: true, cellNames: ["dev1/voltage1"] }
+      "dev1": { name: "Device One", explicit: true, cellIds: ["dev1/voltage1"] }
     });
 
     f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "");
     // single incomplete cell mentioning Device One (not listed), device not removed due to explicitness
     expect(DeviceData.devices).toEqual({
-      "dev1": { name: "Device One", explicit: true, cellNames: [] }
+      "dev1": { name: "Device One", explicit: true, cellIds: [] }
     });
 
     f.extClient.send("/devices/dev1/controls/voltage1", "");
     // no cells cell in Device One, device not removed due to explicitness
     expect(DeviceData.devices).toEqual({
-      "dev1": { name: "Device One", explicit: true, cellNames: [] }
+      "dev1": { name: "Device One", explicit: true, cellIds: [] }
     });
 
     // dev1 loses its name and is removed
@@ -742,8 +742,8 @@ describe("DeviceData service", () => {
     publishNumericCells();
     publishIncompleteCell();
     // incomplete cells are never included
-    expect(DeviceData.getCellNamesByType("wvalue")).toEqual(["dev1/volume", "dev2/foo"]);
-    expect(DeviceData.getCellNamesByType("voltage")).toEqual(["dev1/voltage1"]);
+    expect(DeviceData.getCellIdsByType("wvalue")).toEqual(["dev1/volume", "dev2/foo"]);
+    expect(DeviceData.getCellIdsByType("voltage")).toEqual(["dev1/voltage1"]);
   });
 
   it("should provide cell proxy objects that serve as placeholders for nonexistent cells", () => {
@@ -830,7 +830,7 @@ describe("DeviceData service", () => {
       "dev1": {
         name: "dev1",
         explicit: false,
-        cellNames: [
+        cellIds: [
           "dev1/a1",
           "dev1/a2",
           "dev1/a3",
@@ -849,7 +849,7 @@ describe("DeviceData service", () => {
       "dev2": {
         name: "dev2",
         explicit: false,
-        cellNames: [
+        cellIds: [
           "dev2/b1",
           "dev2/b2",
           "dev2/b3",
@@ -869,7 +869,7 @@ describe("DeviceData service", () => {
       "dev1": {
         name: "dev1",
         explicit: false,
-        cellNames: [
+        cellIds: [
           "dev1/a2",
           "dev1/a3",
           "dev1/a4",
@@ -888,7 +888,7 @@ describe("DeviceData service", () => {
       "dev2": {
         name: "dev2",
         explicit: false,
-        cellNames: [
+        cellIds: [
           "dev2/b1",
           "dev2/b2",
           "dev2/b3",
@@ -903,7 +903,7 @@ describe("DeviceData service", () => {
       }
     });
 
-    expect(DeviceData.getCellNames()).toEqual([
+    expect(DeviceData.getCellIds()).toEqual([
       "dev1/a2",
       "dev1/a3",
       "dev1/a4",
