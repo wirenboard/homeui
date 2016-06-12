@@ -1,6 +1,6 @@
 "use strict";
 
-describe("Rooms view", () => {
+describe("Devices view", () => {
   var f;
   beforeEach(module("homeuiApp.mqttViewFixture"));
 
@@ -26,9 +26,12 @@ describe("Rooms view", () => {
 
   afterEach(() => { f.remove(); });
 
+  function extractDevices () {
+    return f.container.find(".panel-heading h3").toArray().map(el => el.textContent);
+  }
+
   it("should display all the devices", () => {
-    expect(f.container.find(".panel-heading h3").toArray().map(el => el.textContent))
-      .toEqual(["Device One", "dev2"]);
+    expect(extractDevices()).toEqual(["Device One", "dev2"]);
   });
 
   function extractDevicesWithCells () {
@@ -44,6 +47,23 @@ describe("Rooms view", () => {
     expect(extractDevicesWithCells()).toEqual([
       { name: "Device One", cells: ["dev1/voltage1", "dev1/volume"] },
       { name: "dev2", cells: ["dev2/foo", "dev2/bar"] }
+    ]);
+  });
+
+  it("should pick up new devices on the fly", () => {
+    f.extClient.send("/devices/dev3/controls/baz/meta/type", "value", true, 1);
+    f.extClient.send("/devices/dev3/controls/baz", "4242", true, 0);
+    f.$scope.$digest();
+    expect(extractDevices()).toEqual(["Device One", "dev2", "dev3"]);
+  });
+
+  it("should reflect changes in device cell list", () => {
+    f.extClient.send("/devices/dev2/controls/baz/meta/type", "value", true, 1);
+    f.extClient.send("/devices/dev2/controls/baz", "4242", true, 0);
+    f.$scope.$digest();
+    expect(extractDevicesWithCells()).toEqual([
+      { name: "Device One", cells: ["dev1/voltage1", "dev1/volume"] },
+      { name: "dev2", cells: ["dev2/foo", "dev2/bar", "dev2/baz"] }
     ]);
   });
 });

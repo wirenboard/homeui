@@ -3,13 +3,13 @@
 </h1>
 <div id="devices-list" class="multicol-list">
   <ul class="list-unstyled">
-    <li ng-repeat="dev in devices">
+    <li ng-repeat="devId in deviceIds">
       <div class="panel panel-primary device">
         <div class="panel-heading">
-          <h3 class="panel-title">{{ dev.name }}</h3>
+          <h3 class="panel-title">{{ dev(devId).name }}</h3>
         </div>
         <div class="panel-body">
-          <div ng-repeat="cellId in dev.cellIds">
+          <div ng-repeat="cellId in dev(devId).cellIds">
             <display-cell cell="cellId"></display-cell>
           </div>
         </div>
