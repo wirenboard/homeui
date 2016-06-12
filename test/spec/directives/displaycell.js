@@ -104,4 +104,9 @@ describe("Directive: display-cell", () => {
     publishCell("voltage", "231");
     expect(find(".display-cell")).toHaveClass("cell-type-voltage");
   });
+
+  it("should reflect cell errors via cell-error class on the element", () => {
+    publishCell("voltage", "231", { error: "rw" });
+    expect(find(".display-cell")).toHaveClass("cell-error");
+  });
 });

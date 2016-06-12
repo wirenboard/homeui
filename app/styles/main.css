@@ -552,3 +552,7 @@ button.show-console span {
 .device .display-cell > div .cell-value input {
   width: 120px;
 }
+
+.cell-error {
+  color: red;
+}
