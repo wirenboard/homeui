@@ -12,6 +12,7 @@ angular.module("homeuiApp")
         function sendValue () {
           scope.$apply(() => {
             ngModelCtrl.$setViewValue(element.val());
+            ngModelCtrl.$setPristine();
           });
         }
 

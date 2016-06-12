@@ -49,6 +49,14 @@ describe("Directive: value-cell", () => {
     expect(input()).toHaveValue("42");
   });
 
+  it("should not leave ng-dirty class on input after changes", () => {
+    input().val("777").blur();
+    f.expectJournal().toEqual([
+      "ext: /devices/dev1/controls/voltage1/on: [777] (QoS 1)"
+    ]);
+    expect(input()).not.toHaveClass("ng-dirty");
+  });
+
   it("should perform validation based on min/max values", () => {
     expect(input().attr("min")).toBeFalsy();
     expect(input().attr("max")).toBeFalsy();
