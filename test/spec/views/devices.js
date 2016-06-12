@@ -11,10 +11,10 @@ describe("Devices view", () => {
     f.extClient.send("/devices/dev1/controls/voltage1/meta/name", "Voltage 1", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 0);
     f.extClient.send("/devices/dev1/controls/volume", "42", true, 0);
-    f.extClient.send("/devices/dev1/controls/volume/meta/type", "wvalue", true, 1);
+    f.extClient.send("/devices/dev1/controls/volume/meta/type", "value", true, 1);
+    f.extClient.send("/devices/dev1/controls/volume/meta/writable", "1", true, 1);
     f.extClient.send("/devices/dev1/controls/volume/meta/units", "l", true, 1);
-    f.extClient.send("/devices/dev2/controls/foo/meta/type", "wvalue", true, 1);
-    f.extClient.send("/devices/dev2/controls/foo/meta/readonly", "1", true, 1);
+    f.extClient.send("/devices/dev2/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev2/controls/foo", "4242", true, 0);
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);

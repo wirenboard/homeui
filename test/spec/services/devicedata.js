@@ -32,10 +32,10 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev1/controls/voltage1/meta/name", "Voltage 1", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 0);
     f.extClient.send("/devices/dev1/controls/volume", "42", true, 0);
-    f.extClient.send("/devices/dev1/controls/volume/meta/type", "wvalue", true, 1);
+    f.extClient.send("/devices/dev1/controls/volume/meta/type", "value", true, 1);
+    f.extClient.send("/devices/dev1/controls/volume/meta/writable", "1", true, 1);
     f.extClient.send("/devices/dev1/controls/volume/meta/units", "l", true, 1);
-    f.extClient.send("/devices/dev2/controls/foo/meta/type", "wvalue", true, 1);
-    f.extClient.send("/devices/dev2/controls/foo/meta/readonly", "1", true, 1);
+    f.extClient.send("/devices/dev2/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev2/controls/foo", "4242", true, 0);
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
@@ -76,7 +76,7 @@ describe("DeviceData service", () => {
         controlId: "volume",
         name: "volume",
         value: 42,
-        type: "wvalue",
+        type: "value",
         units: "l",
         readOnly: false,
         error: false,
@@ -91,7 +91,7 @@ describe("DeviceData service", () => {
         controlId: "foo",
         name: "foo",
         value: 4242,
-        type: "wvalue",
+        type: "value",
         units: "",
         readOnly: true,
         error: false,
@@ -127,7 +127,8 @@ describe("DeviceData service", () => {
   });
 
   function publishTextCell() {
-    f.extClient.send("/devices/dev2/controls/fooText/meta/type", "wtext", true, 1);
+    f.extClient.send("/devices/dev2/controls/fooText/meta/type", "text", true, 1);
+    f.extClient.send("/devices/dev2/controls/fooText/meta/writable", "1", true, 1);
     f.extClient.send("/devices/dev2/controls/fooText", "4242", true, 0);
   }
 
@@ -139,7 +140,7 @@ describe("DeviceData service", () => {
         controlId: "fooText",
         name: "fooText",
         value: "4242",
-        type: "wtext",
+        type: "text",
         units: "",
         readOnly: false,
         error: false,
@@ -163,7 +164,7 @@ describe("DeviceData service", () => {
         controlId: "fooText",
         name: "fooText",
         value: "",
-        type: "wtext",
+        type: "text",
         units: "",
         readOnly: false,
         error: false,
@@ -265,7 +266,7 @@ describe("DeviceData service", () => {
   });
 
   it("should honour meta/error", () => {
-    f.extClient.send("/devices/dev2/controls/foo/meta/type", "wvalue", true, 1);
+    f.extClient.send("/devices/dev2/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev2/controls/foo", "4242", true, 0);
     expect(extractCellData()).toEqual({
       "dev2/foo": {
@@ -273,9 +274,9 @@ describe("DeviceData service", () => {
         controlId: "foo",
         name: "foo",
         value: 4242,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -292,9 +293,9 @@ describe("DeviceData service", () => {
         controlId: "foo",
         name: "foo",
         value: 4242,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: true,
         min: null,
         max: null,
@@ -311,9 +312,9 @@ describe("DeviceData service", () => {
         controlId: "foo",
         name: "foo",
         value: 4242,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -326,7 +327,8 @@ describe("DeviceData service", () => {
 
   function publishIncompleteCell () {
     f.extClient.send("/devices/dev2/controls/fooInc", "4242", true, 0);
-    f.extClient.send("/devices/dev2/controls/barInc/meta/type", "wvalue", true, 0);
+    f.extClient.send("/devices/dev2/controls/barInc/meta/type", "value", true, 0);
+    f.extClient.send("/devices/dev2/controls/barInc/meta/writable", "1", true, 0);
   }
 
   it("should treat cells with no type or no value as incomplete", () => {
@@ -352,7 +354,7 @@ describe("DeviceData service", () => {
         controlId: "barInc",
         name: "barInc",
         value: null,
-        type: "wvalue",
+        type: "value",
         units: "",
         readOnly: false,
         error: false,
@@ -366,7 +368,7 @@ describe("DeviceData service", () => {
     expect(DeviceData.cell("dev2/fooInc").isComplete()).toBe(false);
     expect(DeviceData.cell("dev2/barInc").isComplete()).toBe(false);
 
-    f.extClient.send("/devices/dev2/controls/fooInc/meta/type", "wvalue", true, 0);
+    f.extClient.send("/devices/dev2/controls/fooInc/meta/type", "value", true, 0);
     f.extClient.send("/devices/dev2/controls/barInc", "4243", true, 0);
     expect(extractCellData()).toEqual({
       "dev2/fooInc": {
@@ -374,9 +376,9 @@ describe("DeviceData service", () => {
         controlId: "fooInc",
         name: "fooInc",
         value: 4242,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -389,7 +391,7 @@ describe("DeviceData service", () => {
         controlId: "barInc",
         name: "barInc",
         value: 4243,
-        type: "wvalue",
+        type: "value",
         units: "",
         readOnly: false,
         error: false,
@@ -526,16 +528,16 @@ describe("DeviceData service", () => {
 
   it("should support changing cell type", () => {
     publishSwitchCell();
-    f.extClient.send("/devices/dev2/controls/fooSwitch/meta/type", "wvalue", true, 1);
+    f.extClient.send("/devices/dev2/controls/fooSwitch/meta/type", "value", true, 1);
     expect(extractCellData()).toEqual({
       "dev2/fooSwitch": {
         deviceId: "dev2",
         controlId: "fooSwitch",
         name: "fooSwitch",
         value: 1,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -547,9 +549,9 @@ describe("DeviceData service", () => {
   });
 
   it("should support cell removal", () => {
-    f.extClient.send("/devices/dev2/controls/foo/meta/type", "wvalue", true, 1);
+    f.extClient.send("/devices/dev2/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev2/controls/foo", "4242", true, 0);
-    f.extClient.send("/devices/dev2/controls/bar/meta/type", "wvalue", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev2/controls/bar", "123", true, 0);
     publishSwitchCell();
 
@@ -576,9 +578,9 @@ describe("DeviceData service", () => {
         controlId: "bar",
         name: "bar",
         value: 123,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -612,9 +614,9 @@ describe("DeviceData service", () => {
         controlId: "bar",
         name: "bar",
         value: 123,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -629,10 +631,10 @@ describe("DeviceData service", () => {
     });
   });
 
-  it("should support removal of additional cell properties(min/max, units, readonly)", () => {
+  it("should support removal of additional cell properties, such as min/max, units, writable", () => {
     publishNumericCells();
     f.extClient.send("/devices/dev1/controls/volume/meta/units", "", true, 1);
-    f.extClient.send("/devices/dev2/controls/foo/meta/readonly", "", true, 1);
+    f.extClient.send("/devices/dev1/controls/volume/meta/writable", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/step", "", true, 1);
@@ -664,9 +666,9 @@ describe("DeviceData service", () => {
         controlId: "volume",
         name: "volume",
         value: 42,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -679,9 +681,9 @@ describe("DeviceData service", () => {
         controlId: "foo",
         name: "foo",
         value: 4242,
-        type: "wvalue",
+        type: "value",
         units: "",
-        readOnly: false,
+        readOnly: true,
         error: false,
         min: null,
         max: null,
@@ -742,7 +744,7 @@ describe("DeviceData service", () => {
     publishNumericCells();
     publishIncompleteCell();
     // incomplete cells are never included
-    expect(DeviceData.getCellIdsByType("wvalue")).toEqual(["dev1/volume", "dev2/foo"]);
+    expect(DeviceData.getCellIdsByType("value")).toEqual(["dev1/volume", "dev2/foo"]);
     expect(DeviceData.getCellIdsByType("voltage")).toEqual(["dev1/voltage1"]);
   });
 

@@ -6,7 +6,8 @@ describe("Directive: value-cell", () => {
 
   beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<value-cell cell=\"'dev1/voltage1'\"></value-cell>");
-    f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "wvalue", true, 1);
+    f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "value", true, 1);
+    f.extClient.send("/devices/dev1/controls/voltage1/meta/writable", "1", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1/meta/units", "V", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 0);
     f.$scope.$digest();

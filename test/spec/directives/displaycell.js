@@ -45,8 +45,8 @@ describe("Directive: display-cell", () => {
     expectCellTitle();
   });
 
-  it("should display wtext cells as editable inputs with title", () => {
-    publishCell("wtext", "foobar", { name: CELL_NAME });
+  it("should display writable text cells as editable inputs with title", () => {
+    publishCell("text", "foobar", { name: CELL_NAME, writable: "1" });
     var el = find("input.cell.cell-text:visible");
     expect(el).toHaveValue("foobar");
     expect(el.prop("readonly")).toBe(false);
@@ -61,7 +61,7 @@ describe("Directive: display-cell", () => {
   });
 
   it("should display writable value cells as number inputs with title and units", () => {
-    publishCell("wvalue", "42", { name: CELL_NAME, units: "l" });
+    publishCell("value", "42", { name: CELL_NAME, units: "l", writable: "1" });
     var el = find(".cell.cell-value input[type=number]:visible");
     expect(el).toHaveValue("42");
     expect(el.prop("readonly")).toBe(false);

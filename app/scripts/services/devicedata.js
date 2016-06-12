@@ -130,19 +130,6 @@ angular.module("homeuiApp")
         units: "",
         readOnly: false,
         displayType: "rgb"
-      },
-      // XXX rename/replace
-      "wtext": {
-        valueType: "string",
-        units: "",
-        readOnly: false,
-        displayType: "text"
-      },
-      "wvalue": {
-        valueType: "number",
-        units: "",
-        readOnly: false,
-        displayType: "value"
       }
     };
 
@@ -230,6 +217,7 @@ angular.module("homeuiApp")
         this._value = null;
         this._explicitUnits = "";
         this._explicitReadOnly = false;
+        this._writable = false;
         this.error = false;
         this.min = null;
         this.max = null;
@@ -376,7 +364,7 @@ angular.module("homeuiApp")
       }
 
       get readOnly () {
-        return this._explicitReadOnly || this._typeEntry().readOnly;
+        return this._explicitReadOnly || (!this._writable && this._typeEntry().readOnly);
       }
 
       setReadOnly (readOnly) {
@@ -397,6 +385,10 @@ angular.module("homeuiApp")
 
       setStep (step) {
         this.step = step == "" ? null: step - 0;
+      }
+
+      setWritable (writable) {
+        this._writable = !!writable;
       }
 
       setOrder (order) {
@@ -434,6 +426,7 @@ angular.module("homeuiApp")
     addCellSubscription("/meta/name",     (cell, payload) => { cell.setName(payload);            });
     addCellSubscription("/meta/units",    (cell, payload) => { cell.setUnits(payload);           });
     addCellSubscription("/meta/readonly", (cell, payload) => { cell.setReadOnly(payload == "1"); });
+    addCellSubscription("/meta/writable", (cell, payload) => { cell.setWritable(payload == "1"); });
     addCellSubscription("/meta/error",    (cell, payload) => { cell.setError(!!payload);         });
     addCellSubscription("/meta/min",      (cell, payload) => { cell.setMin(payload);             });
     addCellSubscription("/meta/max",      (cell, payload) => { cell.setMax(payload);             });
