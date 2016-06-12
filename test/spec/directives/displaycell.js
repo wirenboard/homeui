@@ -60,7 +60,7 @@ describe("Directive: display-cell", () => {
     expectCellTitle();
   });
 
-  it("should display writable value cells as read-only number inputs with title and units", () => {
+  it("should display writable value cells as number inputs with title and units", () => {
     publishCell("wvalue", "42", { name: CELL_NAME, units: "l" });
     var el = find(".cell.cell-value input[type=number]:visible");
     expect(el).toHaveValue("42");
