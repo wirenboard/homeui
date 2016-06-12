@@ -548,3 +548,7 @@ button.show-console span {
 .device .display-cell > div input.cell-text {
   width: 120px;
 }
+
+.device .display-cell > div .cell-value input {
+  width: 120px;
+}
