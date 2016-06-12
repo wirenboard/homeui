@@ -1,6 +1,7 @@
 <span class="cell cell-value">
-  <input ng-readonly="cell.readOnly" type="number"
+  <input ng-if="!cell.readOnly" type="number"
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"
          ng-model="cell.value" explicit-changes>
+  <span ng-if="cell.readOnly" class="value">{{ cell.value }}</span>
   <span class="units">{{ cell.units }}</span>
 </span>

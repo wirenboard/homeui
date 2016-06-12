@@ -26,11 +26,13 @@ describe("Directive: value-cell", () => {
     expect(el.find(".units:visible")).toHaveText("V");
   });
 
-  it("should display readonly cell values in readonly text field", () => {
+  it("should display readonly cell values in a span field", () => {
     f.extClient.send("/devices/dev1/controls/voltage1/meta/readonly", "1", true, 1);
     f.$scope.$digest();
-    expect(input()).toHaveValue("223");
-    expect(input().prop("readonly")).toBe(true);
+    expect(input()).not.toExist();
+    var el = f.container.find(".cell.cell-value");
+    expect(el.find("span.value:visible")).toHaveText("223");
+    expect(el.find("span.units:visible")).toHaveText("V");
   });
 
   it("should allow value editing for non-readonly cells sending the value upon blur or Enter key press", () => {

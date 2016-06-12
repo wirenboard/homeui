@@ -53,12 +53,10 @@ describe("Directive: display-cell", () => {
     expectCellTitle();
   });
 
-  it("should display read-only value cells as read-only number inputs with title and units", () => {
+  it("should display read-only value cells as spans with title and units", () => {
     publishCell("voltage", "231", { name: CELL_NAME });
-    var el = find(".cell.cell-value input[type=number]:visible");
-    expect(el).toHaveValue("231");
-    expect(el.prop("readonly")).toBe(true);
-    expect(find(".cell.cell-value .units")).toHaveText("V");
+    expect(find(".cell.cell-value span.value:visible")).toHaveText("231");
+    expect(find(".cell.cell-value span.units:visible")).toHaveText("V");
     expectCellTitle();
   });
 
@@ -85,7 +83,7 @@ describe("Directive: display-cell", () => {
 
   it("should display range cells as input[type=range] with title", () => {
     publishCell("range", 42, { min: 0, max: 100, step: 1, name: CELL_NAME });
-    expect(find("input.cell.cell-range")).toHaveValue("42");
+    expect(find(".cell.cell-range input[type=range]")).toHaveValue("42");
     expectCellTitle();
   });
 
