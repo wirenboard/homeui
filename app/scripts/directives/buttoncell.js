@@ -8,6 +8,6 @@ angular.module("homeuiApp")
       require: "^cell",
       replace: true,
       template: "<button type='button' ng-click='cell.value = true' " +
-        "ng-disabled='cell.readOnly' class='cell cell-button'>{{ cell.name }}</button>"
+        "ng-disabled='cell.readOnly' class='btn btn-primary cell cell-button'>{{ cell.name }}</button>"
     };
   });
