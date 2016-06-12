@@ -424,7 +424,7 @@ angular.module("homeuiApp")
 
     function addCellSubscription(suffix, handler) {
       mqttClient.addStickySubscription("/devices/+/controls/+" + suffix, msg => {
-        //console.debug("%s: %s: %s: %s", suffix || "<empty>", msg.topic, cellFromTopic(msg.topic).id, msg.payload);
+        // console.debug("%s: %s: %s: %s", suffix || "<empty>", msg.topic, cellFromTopic(msg.topic).id, msg.payload);
         handler(cellFromTopic(msg.topic), msg.payload);
       });
     }
@@ -522,4 +522,7 @@ angular.module("homeuiApp")
         return new CellProxy(id);
       }
     };
+  })
+  .run(DeviceData => {
+    // make sure DeviceData is loaded at the startup so no MQTT messages are missed
   });
