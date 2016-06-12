@@ -264,19 +264,28 @@ ul.alert-dropdown {
 
 /* Devices List */
 
-.multicol-list{
-  position: relative;
-  -webkit-column-width: 390px;
-  -webkit-column-gap: 0;
-  -moz-column-width: 390px;
-  -moz-column-gap: 0;
-  column-width: 390px;
-  column-gap: 0;
+@media(min-width:768px) {
+  .multicol-list{
+    position: relative;
+    -webkit-column-width: 390px;
+    -webkit-column-gap: 0;
+    -moz-column-width: 390px;
+    -moz-column-gap: 0;
+    column-width: 390px;
+    column-gap: 0;
+  }
 }
 
-.multicol-list ul li{
+.multicol-list ul li {
   display: inline-block;
   width: 380px;
+}
+
+@media(max-width: 390px) {
+  .multicol-list ul li {
+    display: inline-block;
+    width: 100% !important;
+  }
 }
 
 
