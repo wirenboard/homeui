@@ -335,51 +335,6 @@ footer{
   opacity: 0.5;
 }
 
-.control-wrapper h4{
-  display:inline-block;
-  width: 200px;
-  float: left;
-}
-
-
-.control-wrapper.control-error h4{
-	color: red;
-}
-
-
-.control-wrapper input[type="text"].control-value {
-    width: 120px;
-}
-
-.control-value {
-    float: right;
-}
-.control-wrapper input[type="range"] {
-    width: 102px;
-}
-
-.control-wrapper .control-range-text-value {
-	margin-left: 3px;
-    max-width: 20px;
-    min-width: 20px;
-/*
-    float: right;
-*/
-    display: inline;
-}
-
-
-
-
-
-.control-rgb > span{
-  float: right;
-}
-
-.control-pushbutton{
-  clear: both;
-}
-
 .widget-caption-button {
 	padding-left: 10px;
 }
@@ -552,4 +507,35 @@ button.show-console span {
   display: block;
   width: 20px;
   height: 20px;
+}
+
+.device .display-cell .value,
+.device .display-cell .units,
+.device .display-cell input {
+  font-family: monospace;
+}
+
+.device .display-cell:not(.cell-type-range) > div {
+  display: flex;
+  align-items: center;
+}
+
+.device .display-cell:not(.cell-type-range) > div h4 {
+  flex-grow: 1;
+}
+
+.device .display-cell > div .cell-range .value-wrapper {
+  display: block;
+  text-align: center;
+  border-bottom: 1px dotted #ccc;
+  width: 80%;
+  margin: 0 auto 4px auto;
+}
+
+.device .display-cell > div  button.cell-button {
+  margin: 4px 0;
+}
+
+.device .display-cell > div input.cell-text {
+  width: 120px;
 }
