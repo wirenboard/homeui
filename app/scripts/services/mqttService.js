@@ -42,8 +42,12 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
 
   .value("mqttConnectTimeout", 15000)
   .value("mqttReconnectDelay", 1500)
+  .value("mqttDigestInterval", 250)
 
-  .factory('mqttClient', ($window, $rootScope, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) => {
+  .factory('mqttClient', ($window, $rootScope, $timeout, topicMatches,
+                          mqttConnectTimeout,
+                          mqttReconnectDelay,
+                          mqttDigestInterval) => {
     var globalPrefix = '',
         service = {},
         client = {},
@@ -52,7 +56,8 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
         connectOptions,
         reconnectTimeout = null,
         callbackMap = Object.create(null),
-        stickySubscriptions = [];
+        stickySubscriptions = [],
+        messageDigestTimer = null;
 
     if($window.localStorage['prefix'] === 'true')
       globalPrefix = '/client/' + $window.localStorage['user'];
@@ -192,7 +197,9 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       // FIXME: probably should get rid of the following
       // (use common subscription mechanism implemented above)
       service.callback(message);
-      $rootScope.$digest();
+      // $rootScope.$digest();
+      if (!messageDigestTimer)
+        messageDigestTimer = $timeout(() => { messageDigestTimer = null; }, mqttDigestInterval);
     };
 
     service.send = function(destination, payload, retained, qos) {
