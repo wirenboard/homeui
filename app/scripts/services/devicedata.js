@@ -436,7 +436,7 @@ angular.module("homeuiApp")
 
     function filterCellIds (func) {
       var result = [];
-      Object.keys(devices).forEach(devId => {
+      Object.keys(devices).sort().forEach(devId => {
         var devCellIds = devices[devId].cellIds;
         if (func)
           devCellIds = devCellIds.filter(id => func(cells[id]));
