@@ -4,7 +4,9 @@ angular.module("homeuiApp")
   .directive("cellPicker", function (DeviceData, $parse) {
     return {
       restrict: "EA",
-      scope: {},
+      scope: {
+        filterByType: "&"
+      },
       priority: 1,
       require: "ngModel",
       replace: true,
@@ -30,10 +32,11 @@ angular.module("homeuiApp")
         }
 
         scope.choice = {};
-        scope.cells = () => Array.prototype.concat.apply(
-          [],
-          Object.keys(DeviceData.devices).sort().map(
-            devId => DeviceData.devices[devId].cellIds.map(internCellItem)));
+        scope.cells = () =>
+          (scope.filterByType() ?
+           DeviceData.getCellIdsByType(scope.filterByType()) :
+           DeviceData.getCellIds())
+          .map(internCellItem);
 
         scope.$watch("choice.selected", (newValue, oldValue) => {
           if (newValue !== oldValue) {

@@ -5,7 +5,7 @@ describe("Directive: cell-picker", () => {
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<cell-picker ng-model='choice.cellId'></cell-picker>");
+    f = new MqttDirectiveFixture("<cell-picker ng-model='choice.cellId' filter-by-type='cellType'></cell-picker>");
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
     f.extClient.send("/devices/dev1/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev1/controls/foo/meta/name", "Foo", true, 1);
@@ -14,6 +14,8 @@ describe("Directive: cell-picker", () => {
     // use strange cell name to test html escaping
     f.extClient.send("/devices/dev1/controls/bar/meta/name", "<Bar>", true, 1);
     f.extClient.send("/devices/dev1/controls/bar", "42", true, 0);
+    f.extClient.send("/devices/dev2/controls/baz/meta/type", "text", true, 1);
+    f.extClient.send("/devices/dev2/controls/baz", "qqq", true, 0);
     f.$scope.$digest();
   }));
 
@@ -35,7 +37,11 @@ describe("Directive: cell-picker", () => {
     f.container.find(".ui-select-match .ui-select-toggle").click();
     // XXX: the following depends upon the inner structure of ui-select popup
     expect($(".ui-select-container a.ui-select-choices-row-inner").toArray().map(
-      el => $(el).text().replace(/^\s+|\s+$/g, ""))).toEqual(["Dev1 / Foo", "Dev1 / <Bar>"]);
+      el => $(el).text().replace(/^\s+|\s+$/g, ""))).toEqual([
+        "Dev1 / Foo",
+        "Dev1 / <Bar>",
+        "dev2 / baz"
+      ]);
   });
 
   it("should select cell upon click", () => {
@@ -44,5 +50,16 @@ describe("Directive: cell-picker", () => {
     expect(el).toExist();
     el.click();
     expect(f.$scope.choice.cellId).toBe("dev1/bar");
+  });
+
+  it("should support filtering by cell type", () => {
+    f.$scope.cellType = "text";
+    f.$scope.$digest();
+    f.container.find(".ui-select-match .ui-select-toggle").click();
+    // XXX: the following depends upon the inner structure of ui-select popup
+    expect($(".ui-select-container a.ui-select-choices-row-inner").toArray().map(
+      el => $(el).text().replace(/^\s+|\s+$/g, ""))).toEqual([
+        "dev2 / baz"
+      ]);
   });
 });
