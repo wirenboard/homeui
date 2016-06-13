@@ -21,6 +21,8 @@ describe("Directive: rgb-cell", () => {
     f.remove();
   });
 
+  // XXX: this test depends upon the inner structure of spectrum controls
+
   function colorPreview () {
     return f.container.find(".cell.cell-rgb .sp-preview-inner:visible");
   }
