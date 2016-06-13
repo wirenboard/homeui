@@ -3,7 +3,7 @@
 </h1>
 <div id="devices-list" class="multicol-list">
   <ul class="list-unstyled">
-    <li ng-repeat="devId in deviceIds">
+    <li ng-repeat="devId in deviceIds()">
       <div class="panel panel-primary device">
         <div class="panel-heading">
           <h3 class="panel-title">{{ dev(devId).name }}</h3>

@@ -1,0 +1,11 @@
+<span class="cell-picker">
+  <ui-select ng-model="choice.selected"
+             theme="bootstrap"
+             title="Choose a cell"
+             append-to-body="true">
+    <ui-select-match placeholder="Select a control or search for it...">{{$select.selected.name}}</ui-select-match>
+    <ui-select-choices repeat="cell in cells() | filter: { name: $select.search }">
+      <div ng-bind-html="cell.name | hilite: $select.search"></div>
+    </ui-select-choices>
+  </ui-select>
+</span>

@@ -765,6 +765,8 @@ describe("DeviceData service", () => {
     var proxy = DeviceData.proxy("dev2/bar"); // a proxy for nonexistent cell
     expect(proxy.isComplete()).toBe(false);
     expect(proxy.id).toBe("dev2/bar");
+    expect(proxy.deviceId).toBe("dev2");
+    expect(proxy.controlId).toBe("bar");
     expect(proxy.value).toBe(null);
     expect(proxy.type).toBe("incomplete");
     expect(proxy.units).toBe("");
@@ -780,6 +782,8 @@ describe("DeviceData service", () => {
     publishNumericCells();
     expect(proxy.isComplete()).toBe(true);
     expect(proxy.id).toBe("dev2/bar");
+    expect(proxy.deviceId).toBe("dev2");
+    expect(proxy.controlId).toBe("bar");
     expect(proxy.value).toBe(123);
     expect(proxy.type).toBe("range");
     expect(proxy.units).toBe("");
@@ -803,6 +807,8 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/error", "r", true, 1);
     expect(proxy.isComplete()).toBe(true);
     expect(proxy.id).toBe("dev2/bar");
+    expect(proxy.deviceId).toBe("dev2");
+    expect(proxy.controlId).toBe("bar");
     expect(proxy.value).toBe(42);
     expect(proxy.type).toBe("range");
     expect(proxy.units).toBe("m");

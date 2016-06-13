@@ -487,6 +487,8 @@ angular.module("homeuiApp")
       get valueType () { return this.cell.valueType; }
       get displayType () { return this.cell.displayType; }
       get order () { return this.cell.order; }
+      get deviceId () { return this.id.split("/")[0]; }
+      get controlId () { return this.id.split("/")[1]; }
     }
 
     return {

@@ -3,8 +3,8 @@ angular.module("homeuiApp.mqttDirectiveFixture", ["homeuiApp", "homeuiApp.fakeMq
     const DEFAULT_TOPIC = "/devices/+/controls/+/on";
 
     class MqttDirectiveFixture extends HtmlFixture {
-      constructor (html, topic) {
-        super(html, { topic: topic || DEFAULT_TOPIC });
+      constructor (html, options) {
+        super(html, angular.extend({ topic: DEFAULT_TOPIC }, options || {}));
       }
 
       setup (options) {

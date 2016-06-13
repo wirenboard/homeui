@@ -29,7 +29,8 @@ angular
     'gridshore.c3js.chart',
     'angular-json-editor',
     'angular-sortable-view',
-    'xeditable'
+    'xeditable',
+    'ui.select'
   ])
   .value("historyMaxPoints", 1000)
   .config(function ($routeProvider, JSONEditorProvider, DumbTemplateProvider) {
