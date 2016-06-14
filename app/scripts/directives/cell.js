@@ -4,6 +4,7 @@ angular.module("homeuiApp")
   .directive("cell", function (DeviceData, $parse) {
     class CellController {
       constructor ($scope, $element, $attrs) {
+        // XXX should be possible to change the cell
         this.cell = $scope.cell = DeviceData.proxy($scope.$eval($attrs.cell));
       }
     }

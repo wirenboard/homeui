@@ -2,6 +2,9 @@
 
 angular.module("homeuiApp")
   .value("rgbLocalStorageKey", "cell_rgb_palette")
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType("rgb", "rgb-cell");
+  })
   .directive("rgbCell", rgbLocalStorageKey => {
     class RgbController {
       constructor ($scope, $element, $attrs) {

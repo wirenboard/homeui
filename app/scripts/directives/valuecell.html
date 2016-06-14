@@ -1,5 +1,5 @@
 <span class="cell cell-value">
-  <input ng-if="!cell.readOnly" type="number"
+  <input ng-if="cell.valueType == 'number' && !cell.readOnly" type="number"
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"
          ng-model="cell.value" explicit-changes>
   <span ng-if="cell.readOnly" class="value">{{ cell.value }}</span>

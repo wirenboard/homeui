@@ -1,13 +1,12 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .directive("cellPicker", function (DeviceData, $parse) {
+  .directive("cellPicker", function (DeviceData) {
     return {
       restrict: "EA",
       scope: {
         filterByType: "&"
       },
-      priority: 1,
       require: "ngModel",
       replace: true,
       templateUrl: "scripts/directives/cellpicker.html",

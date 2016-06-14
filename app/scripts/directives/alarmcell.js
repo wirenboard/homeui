@@ -1,6 +1,9 @@
 "use strict";
 
 angular.module("homeuiApp")
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType("alarm", "alarm-cell", true);
+  })
   .directive("alarmCell", () => {
     return {
       restrict: "EA",

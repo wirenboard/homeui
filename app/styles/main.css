@@ -524,16 +524,16 @@ button.show-console span {
   font-family: monospace;
 }
 
-.device .display-cell:not(.cell-type-range) > div {
+.device .display-cell:not(.cell-type-range) {
   display: flex;
   align-items: center;
 }
 
-.device .display-cell:not(.cell-type-range) > div h4 {
+.device .display-cell:not(.cell-type-range) h4 {
   flex-grow: 1;
 }
 
-.device .display-cell > div .cell-range .value-wrapper {
+.device .display-cell .cell-range .value-wrapper {
   display: block;
   text-align: center;
   border-bottom: 1px dotted #ccc;
@@ -541,15 +541,15 @@ button.show-console span {
   margin: 0 auto 4px auto;
 }
 
-.device .display-cell > div  button.cell-button {
+.device .display-cell  button.cell-button {
   margin: 4px 0;
 }
 
-.device .display-cell > div input.cell-text {
+.device .display-cell input.cell-text {
   width: 120px;
 }
 
-.device .display-cell > div .cell-value input {
+.device .display-cell .cell-value input {
   width: 120px;
 }
 

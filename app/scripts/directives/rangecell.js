@@ -1,6 +1,9 @@
 "use strict";
 
 angular.module("homeuiApp")
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType("range", "range-cell");
+  })
   .directive("rangeCell", () => {
     const DEFAULT_MIN = 0, DEFAULT_MAX = 1e9, DEFAULT_STEP = 1;
     return {
@@ -21,6 +24,18 @@ angular.module("homeuiApp")
         relayAttr("min", DEFAULT_MIN);
         relayAttr("max", DEFAULT_MAX);
         relayAttr("step", DEFAULT_STEP);
+        // Protect against non-number values that cause error inside Angular.
+        // Can't just use ng-if on input as with value-cell because in this
+        // case relayAttr hack will not work.
+        $scope.target = {
+          get value () {
+            var v = $scope.cell.value - 0;
+            return isNaN(v) ? 0 : v;
+          },
+          set value (newValue) {
+            $scope.cell.value = newValue;
+          }
+        };
       }
     };
   });

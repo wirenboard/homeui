@@ -1,6 +1,9 @@
 "use strict";
 
 angular.module("homeuiApp")
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType("text", "text-cell");
+  })
   .directive("textCell", () => {
     return {
       restrict: "EA",

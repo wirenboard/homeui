@@ -7,7 +7,8 @@ describe("Directive: display-cell", () => {
   const CELL_NAME = "Foo Cell";
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<display-cell cell=\"'dev/foo'\"></display-cell>");
+    f = new MqttDirectiveFixture(
+      "<display-cell compact='compact' cell=\"'dev/foo'\" override-name='overrideName'></display-cell>");
   }));
 
   afterEach(() => { f.remove(); });
@@ -108,5 +109,19 @@ describe("Directive: display-cell", () => {
   it("should reflect cell errors via cell-error class on the element", () => {
     publishCell("voltage", "231", { error: "rw" });
     expect(find(".display-cell")).toHaveClass("cell-error");
+  });
+
+  it("should not display cell names in compact mode", () => {
+    f.$scope.compact = true;
+    ["text", "value", "range", "switch", "rgb"].forEach(type => {
+      publishCell(type, type == "rgb" ? "0;0;0" : "123", { name: CELL_NAME });
+      expectNoSeparateCellTitle();
+    });
+  });
+
+  it("should support overriding cell names", () => {
+    f.$scope.overrideName = "New name";
+    publishCell("text", "foobar", { name: CELL_NAME });
+    expect(find(".cell-title")).toHaveText("New name");
   });
 });

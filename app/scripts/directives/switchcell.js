@@ -1,6 +1,9 @@
 "use strict";
 
 angular.module("homeuiApp")
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType("switch", "switch-cell");
+  })
   .directive("switchCell", () => {
     return {
       restrict: "EA",

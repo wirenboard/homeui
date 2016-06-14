@@ -1,6 +1,9 @@
 "use strict";
 
 angular.module("homeuiApp")
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType("button", "button-cell", true);
+  })
   .directive("buttonCell", function () {
     return {
       restrict: "EA",
