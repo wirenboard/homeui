@@ -950,4 +950,10 @@ describe("DeviceData service", () => {
       "dev2/b10"
     ]);
   });
+
+  it("should return a list of type names via cellTypeNames()", () => {
+    expect(DeviceData.cellTypeNames()).toContain("text");
+    expect(DeviceData.cellTypeNames()).toContain("value");
+    expect(DeviceData.cellTypeNames()).toContain("temperature");
+  });
 });

@@ -515,6 +515,10 @@ angular.module("homeuiApp")
 
       proxy (id) {
         return new CellProxy(id);
+      },
+
+      cellTypeNames() {
+        return Object.keys(cellTypeMap).sort();
       }
     };
   })
