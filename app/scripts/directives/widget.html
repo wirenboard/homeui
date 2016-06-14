@@ -1,0 +1,14 @@
+<div class="widget panel panel-primary">
+  <div class="panel-heading">
+    <span class="widget-name">{{ ctrl.source.name }}</span>
+    <!-- TBD: use CSS to show/hide edit buttons
+    <a href="#/widgets/widget10/edit" ng-show="widget.canEdit" class="pull-right ng-hide"><i class="glyphicon glyphicon-edit white widget-caption-button"></i></a>
+    <a href="" ng-click="deleteWidget(widget)" ng-show="widget.canEdit" class="pull-right ng-hide"><i class="glyphicon glyphicon-remove white widget-caption-button"></i></a>
+    -->
+  </div>
+  <div class="panel-body">
+    <div ng-repeat="item in ctrl.source.cells">
+      <display-cell compact="ctrl.source.compact" cell="item.id" override-name="item.name"></display-cell>
+    </div>
+  </div>
+</div>
