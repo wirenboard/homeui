@@ -1,11 +1,11 @@
 "use strict";
 
 describe("Directive: widget", () => {
-  var f;
+  var f, deleted;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<widget source='widget'></widget>");
+    f = new MqttDirectiveFixture("<widget source='widget' on-delete='deleteWidget()'></widget>");
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
     f.extClient.send("/devices/dev1/controls/temp1/meta/type", "temperature", true, 1);
     f.extClient.send("/devices/dev1/controls/temp1/meta/name", "Temp 1", true, 1);
@@ -22,6 +22,11 @@ describe("Directive: widget", () => {
         { id: "dev1/temp1" },
         { id: "dev1/voltage1" }
       ]
+    };
+    deleted = false;
+    f.$scope.deleteWidget = () => {
+      expect(deleted).toBe(false);
+      deleted = true;
     };
     f.$scope.$digest();
   }));
@@ -280,5 +285,11 @@ describe("Directive: widget", () => {
       { value: "42", units: "°C" },
       { value: "231", units: "V" }
     ]);
+  });
+
+  it("should invoke deletion handler upon widget deletion button click", () => {
+    expect(deleted).toBe(false);
+    f.click(".widget-button-delete");
+    expect(deleted).toBe(true);
   });
 });

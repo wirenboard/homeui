@@ -9,10 +9,9 @@
           class="widget-name">{{ ctrl.source.name }}</span>
     <span ng-show="!widgetForm.$visible"
           ng-click="widgetForm.$show()"
-          class="widget-button pull-right"><i class="glyphicon glyphicon-edit white widget-caption-button"></i></span>
-    <!-- TBD: use CSS to show/hide edit buttons
-    <a href="" ng-click="deleteWidget(widget)" ng-show="widget.canEdit" class="pull-right"><i class="glyphicon glyphicon-remove white widget-caption-button"></i></a>
-    -->
+          class="widget-button widget-button-edit pull-right"><i class="glyphicon glyphicon-edit white widget-caption-button"></i></span>
+    <span ng-click="ctrl.onDelete()"
+          class="widget-button widget-button-delete pull-right"><i class="glyphicon glyphicon-remove white widget-caption-button"></i></span>
   </div>
   <div class="panel-body">
     <div ng-if="!widgetForm.$visible" ng-repeat="item in ctrl.source.cells">

@@ -105,7 +105,8 @@ angular.module("homeuiApp")
       restrict: "EA",
       scope: {},
       bindToController: {
-        _source: "&source"
+        _source: "&source",
+        onDelete: "&"
       },
       controllerAs: "ctrl",
       controller: WidgetController,
