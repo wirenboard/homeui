@@ -5,7 +5,9 @@ describe("Directive: cell-picker", () => {
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<cell-picker ng-model='choice.cellId' filter-by-type='cellType'></cell-picker>");
+    f = new MqttDirectiveFixture(
+      "<cell-picker placeholder='{{ placeholder}}' " +
+        "ng-model='choice.cellId' filter-by-type='cellType'></cell-picker>");
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
     f.extClient.send("/devices/dev1/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev1/controls/foo/meta/name", "Foo", true, 1);
@@ -61,5 +63,13 @@ describe("Directive: cell-picker", () => {
       el => $(el).text().replace(/^\s+|\s+$/g, ""))).toEqual([
         "dev2 / baz"
       ]);
+  });
+
+  it("should support custom placeholders", () => {
+    expect(f.container).toContainText("Select a control");
+    f.$scope.placeholder = "Add a new control";
+    f.$scope.$digest();
+    expect(f.container).not.toContainText("Select a control");
+    expect(f.container).toContainText("Add a new control");
   });
 });
