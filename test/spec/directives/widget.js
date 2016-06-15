@@ -3,9 +3,13 @@
 describe("Directive: widget", () => {
   var f, deleted;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
+  beforeEach(module("homeuiApp.cellPickerMixin"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
-    f = new MqttDirectiveFixture("<widget source='widget' on-delete='deleteWidget()'></widget>");
+    f = new MqttDirectiveFixture(
+      "<widget source='widget' on-delete='deleteWidget()'></widget>", {
+        mixins: ["CellPickerMixin"]
+      });
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
     f.extClient.send("/devices/dev1/controls/temp1/meta/type", "temperature", true, 1);
     f.extClient.send("/devices/dev1/controls/temp1/meta/name", "Temp 1", true, 1);
@@ -31,10 +35,7 @@ describe("Directive: widget", () => {
     f.$scope.$digest();
   }));
 
-  afterEach(() => {
-    $(".ui-select-container").remove();
-    f.remove();
-  });
+  afterEach(() => { f.remove(); });
 
   it("should display widget title", () => {
     expect(f.container.find(".widget .panel-heading .widget-name")).toHaveText("Some widget");
@@ -151,19 +152,17 @@ describe("Directive: widget", () => {
   });
 
   it("should support adding cells", () => {
-    expect(".ui-select-match").not.toExist();
+    expect(f.isUISelectVisible()).toBe(false);
     edit();
-    expect(".ui-select-match").toExist();
-    f.container.find(".ui-select-match .ui-select-toggle").click();
-    var el = $(".ui-select-container a.ui-select-choices-row-inner:contains(baz)");
-    expect(el).toExist();
-    el.click();
+    expect(f.isUISelectVisible()).toBe(true);
+    f.clickUISelect();
+    f.clickChoice("baz");
     expect(angular.copy(f.$scope.widget.cells)).toEqual([
       { id: "dev1/temp1" },
       { id: "dev1/voltage1" }
     ]);
     // cell picker must be cleared
-    expect(f.container.find(".ui-select-match")).not.toContainText("dev2 / baz");
+    expect(f.extractUISelectText()).toBe("");
     expect(f.container.find("tbody > tr:eq(2) input[type=text]")).toHaveValue("baz");
     submit();
     expect(angular.copy(f.$scope.widget.cells)).toEqual([
@@ -185,24 +184,20 @@ describe("Directive: widget", () => {
     typeSelect.find("option[value=text]").attr("selected", "selected");
     typeSelect.find("option[value=any]").removeAttr("selected");
     typeSelect.change();
-    f.container.find(".ui-select-match .ui-select-toggle").click();
-    expect($(".ui-select-container a.ui-select-choices-row-inner:contains(Dev1)")).not.toExist();
-    expect($(".ui-select-container a.ui-select-choices-row-inner:contains(dev2 / baz)")).toExist();
+    f.clickUISelect();
+    expect(f.extractChoices()).toEqual(["dev2 / baz"]);
 
     typeSelect.find("option[value=any]").attr("selected", "selected");
     typeSelect.find("option[value=text]").removeAttr("selected");
     typeSelect.change();
     expect(typeSelect.val()).toBe("any");
-    expect($(".ui-select-container a.ui-select-choices-row-inner:contains(Dev1)")).toExist();
-    expect($(".ui-select-container a.ui-select-choices-row-inner:contains(dev2 / baz)")).toExist();
+    expect(f.extractChoices()).toEqual(["Dev1 / Temp 1", "Dev1 / Voltage 1", "dev2 / baz"]);
   });
 
   it("should not add duplicate cells", () => {
     edit();
-    f.container.find(".ui-select-match .ui-select-toggle").click();
-    var el = $(".ui-select-container a.ui-select-choices-row-inner:contains(Temp 1)");
-    expect(el).toExist();
-    el.click();
+    f.clickUISelect();
+    f.clickChoice("Temp 1");
     submit();
     expect(angular.copy(f.$scope.widget.cells)).toEqual([
       { id: "dev1/temp1" },
@@ -235,8 +230,8 @@ describe("Directive: widget", () => {
     edit();
     f.container.find("tbody > tr:eq(0) input[type=text]").val("Temperature").change();
     f.click("tbody > tr:eq(1) button[name=delete]");
-    f.container.find(".ui-select-match .ui-select-toggle").click();
-    $(".ui-select-container a.ui-select-choices-row-inner:contains(baz)").click();
+    f.clickUISelect();
+    f.clickChoice("baz");
     f.click("button[name=cancel]");
 
     expect(f.container.find(".panel-heading input[type=text]")).not.toBeVisible();

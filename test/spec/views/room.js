@@ -1,17 +1,18 @@
 "use strict";
 
-describe("Room view", () => {
+fdescribe("Room view", () => {
   var f, data;
 
   beforeEach(module("homeuiApp.fakeUIConfig"));
   beforeEach(module("homeuiApp.mqttViewFixture"));
+  beforeEach(module("homeuiApp.cellPickerMixin"));
 
   beforeEach(inject((MqttViewFixture, uiConfig) => {
     f = new MqttViewFixture("views/room.html", "RoomCtrl", {
       $routeParams: {
         id: "room1"
       }
-    });
+    }, { mixins: ["CellPickerMixin"] });
     // XXX: fix: copy/paste from widget.js
     // (should add a new kind of fixture or a helper function)
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
@@ -51,10 +52,7 @@ describe("Room view", () => {
     f.$rootScope.$digest();
   }));
 
-  afterEach(() => {
-    $(".ui-select-container").remove();
-    f.remove();
-  });
+  afterEach(() => { f.remove(); });
 
   it("should display room name in the header", () => {
     expect(f.container.find(".page-header")).toContainText("Room One");
@@ -74,8 +72,8 @@ describe("Room view", () => {
     f.click("button[name=add-widget]");
     expect(widgetTitleEdit()).toHaveLength(1);
     widgetTitleEdit().val("abc").change();
-    f.container.find(".ui-select-match .ui-select-toggle").click();
-    $(".ui-select-container a.ui-select-choices-row-inner:contains(baz)").click();
+    f.clickUISelect();
+    f.clickChoice("baz");
     expect(f.container.find("button[type=submit]:visible")).not.toBeDisabled();
     f.click("button[type=submit]:visible");
 

@@ -26,10 +26,20 @@ angular.module('homeuiApp.viewFixture', [])
       terminal: true
     };
   })
-  .factory("HtmlFixture", ($rootScope, $compile, $location) => {
+  .factory("HtmlFixture", ($rootScope, $compile, $location, $injector) => {
     class HtmlFixture {
       constructor (html, options) {
+        this.cleanups = [];
         this.$scope = $rootScope.$new();
+        if (options && options.hasOwnProperty("mixins"))
+          options.mixins.forEach(name => {
+            var copy = angular.extend({}, $injector.get(name));
+            if (copy.cleanup) {
+              this.cleanups.push(copy.cleanup);
+              delete copy.cleanup;
+            }
+            angular.extend(this, copy);
+          });
         this.setup(options);
         this.container = $("<div></div>").appendTo($("body"));
         this.element = $compile(angular.element(html))(this.$scope, (clonedElement) => {
@@ -45,6 +55,7 @@ angular.module('homeuiApp.viewFixture', [])
       }
 
       remove () {
+        this.cleanups.forEach(cleanup => { cleanup(); });
         if (this.container)
           this.container.remove();
       }

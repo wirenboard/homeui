@@ -3,11 +3,14 @@
 describe("Directive: cell-picker", () => {
   var f;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
+  beforeEach(module("homeuiApp.cellPickerMixin"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture(
       "<cell-picker placeholder='{{ placeholder}}' " +
-        "ng-model='choice.cellId' filter-by-type='cellType'></cell-picker>");
+        "ng-model='choice.cellId' filter-by-type='cellType'></cell-picker>", {
+          mixins: ["CellPickerMixin"]
+        });
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
     f.extClient.send("/devices/dev1/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev1/controls/foo/meta/name", "Foo", true, 1);
@@ -21,25 +24,19 @@ describe("Directive: cell-picker", () => {
     f.$scope.$digest();
   }));
 
-  afterEach(() => {
-    $(".ui-select-container").remove();
-    f.remove();
-  });
+  afterEach(() => { f.remove(); });
 
   it("should display currently selected cell in the picker", () => {
     f.$scope.choice = { cellId: "dev1/foo" };
     f.$scope.$digest();
-    expect(".ui-select-match .ui-select-toggle").toContainText("Dev1 / Foo");
+    expect(f.extractUISelectText()).toEqual("Dev1 / Foo");
     expect(f.$scope.choice.cellId).toBe("dev1/foo");
   });
 
   it("should display cell list upon click", () => {
-    // we don't use f.click() here because .ui-select-toggle is not
-    // recognized as visible
-    f.container.find(".ui-select-match .ui-select-toggle").click();
+    f.clickUISelect();
     // XXX: the following depends upon the inner structure of ui-select popup
-    expect($(".ui-select-container a.ui-select-choices-row-inner").toArray().map(
-      el => $(el).text().replace(/^\s+|\s+$/g, ""))).toEqual([
+    expect(f.extractChoices()).toEqual([
         "Dev1 / Foo",
         "Dev1 / <Bar>",
         "dev2 / baz"
@@ -47,22 +44,16 @@ describe("Directive: cell-picker", () => {
   });
 
   it("should select cell upon click", () => {
-    f.container.find(".ui-select-match .ui-select-toggle").click();
-    var el = $(".ui-select-container a.ui-select-choices-row-inner:contains(Bar)");
-    expect(el).toExist();
-    el.click();
+    f.clickUISelect();
+    f.clickChoice("Bar");
     expect(f.$scope.choice.cellId).toBe("dev1/bar");
   });
 
   it("should support filtering by cell type", () => {
     f.$scope.cellType = "text";
     f.$scope.$digest();
-    f.container.find(".ui-select-match .ui-select-toggle").click();
-    // XXX: the following depends upon the inner structure of ui-select popup
-    expect($(".ui-select-container a.ui-select-choices-row-inner").toArray().map(
-      el => $(el).text().replace(/^\s+|\s+$/g, ""))).toEqual([
-        "dev2 / baz"
-      ]);
+    f.clickUISelect();
+    expect(f.extractChoices()).toEqual(["dev2 / baz"]);
   });
 
   it("should support custom placeholders", () => {
