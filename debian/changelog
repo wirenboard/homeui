@@ -1,3 +1,11 @@
+wb-mqtt-homeui (1.7) stable; urgency=medium
+
+  * json config
+  * new dashboards & widgets
+  * removed rooms
+
+ -- Ivan Shvedunov <ivan4th@gmail.com>  Thu, 06 Jun 2016 01:02:09 +0300
+
 wb-mqtt-homeui (1.6) stable; urgency=medium
 
   * config editor improvements to support module parameters in hwconf
