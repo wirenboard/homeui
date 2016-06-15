@@ -28,6 +28,13 @@ angular.module("homeuiApp")
             return;
           this.source.cells.push({ id: newCellId, name: cellName(newCellId) });
           this.newCellId = null;
+          // XXX the following is a hack, but we can't just set the name
+          // in scope because we're using xeditable
+          $scope.$evalAsync(() => {
+            var el = $element.find(".panel-heading input[type=text]");
+            if (el.size() && !el.val())
+              el.val(cellName(newCellId)).change();
+          });
         });
         $scope.$watch(() => this.source.new && !$scope.widgetForm.$visible, shouldEdit => {
           if (shouldEdit)

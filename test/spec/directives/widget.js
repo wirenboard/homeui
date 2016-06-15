@@ -301,4 +301,14 @@ describe("Directive: widget", () => {
     submit();
     expect(f.$scope.widget.hasOwnProperty("new")).toBe(false);
   });
+
+  it("should set widget title to the name of added cell if the title is empty", () => {
+    f.$scope.widget.name = "";
+    f.$scope.$digest();
+    edit();
+    f.clickUISelect();
+    f.clickChoice("baz");
+    submit();
+    expect(f.$scope.widget.name).toBe("baz");
+  });
 });
