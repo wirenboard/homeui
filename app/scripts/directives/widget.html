@@ -2,7 +2,6 @@
       name="widgetForm"
       class="widget panel panel-primary display-cell-bin"
       ng-class="{ 'compact': ctrl.source.compact && !widgetForm.$visible, 'display-cell-bin': !ctrl.source.compact && !widgetForm.$visible }"
-      ng-dblclick="widgetForm.$show()"
       onshow="ctrl.prepareToEdit()"
       onbeforesave="ctrl.verify()"
       onaftersave="ctrl.commit()"
