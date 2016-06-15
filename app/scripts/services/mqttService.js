@@ -151,7 +151,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       // { qos: 2 } subscribe option was triggering some bug inside
       // mosquitto that caused MQTT RPC reply subscriptions to be
       // skipped when there were any retained messages to receive.
-      // Verified for the case of mosquitto's own MQTT bridge.
+      // Verified for the case of mosquitto's own MQTT WS bridge.
       client.subscribe(globalPrefix + topic);
       callbackMap[topic] = (callbackMap[topic] || []).concat([callback]);
     };
