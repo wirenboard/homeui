@@ -147,7 +147,12 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
         console.error("can't subscribe(): disconnected");
         return;
       }
-      client.subscribe(globalPrefix + topic, { qos: 2 });
+      // !!! XXX: FIXME !!!
+      // { qos: 2 } subscribe option was triggering some bug inside
+      // mosquitto that caused MQTT RPC reply subscriptions to be
+      // skipped when there were any retained messages to receive.
+      // Verified for the case of mosquitto's own MQTT bridge.
+      client.subscribe(globalPrefix + topic);
       callbackMap[topic] = (callbackMap[topic] || []).concat([callback]);
     };
 
