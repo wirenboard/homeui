@@ -12,6 +12,7 @@ angular.module("homeuiApp")
       ],
       widgets: []
     };
+    var deferReady = $q.defer();
 
     function add (prop, idBase, content) {
       var items = data[prop], n = 1,
@@ -69,6 +70,15 @@ angular.module("homeuiApp")
       }).map(item => {
         var toCopy = angular.extend({}, item);
         delete toCopy._model;
+        // FIXME: test this
+        if (toCopy.hasOwnProperty("widgets")) {
+          var newWidgets = Object.create(null);
+          data.widgets.forEach(widget => {
+            if (widget.isNew)
+              newWidgets[widget.id] = true;
+          });
+          toCopy.widgets = toCopy.widgets.filter(widgetId => !newWidgets[widgetId]);
+        }
         return angular.copy(toCopy);
       });
     }
@@ -128,8 +138,13 @@ angular.module("homeuiApp")
       data: data,
 
       whenReady () {
-        // TBD: implement
-        return $q.when(true);
+        return deferReady.promise;
+      },
+
+      ready (changes) {
+        if (changes)
+          angular.extend(data, changes);
+        deferReady.resolve(data);
       },
 
       deleteWidget: deleteWidget,

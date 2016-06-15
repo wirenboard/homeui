@@ -5,9 +5,10 @@ describe("Dashboards view", () => {
 
   beforeEach(module("homeuiApp.viewFixture"));
 
-  beforeEach(inject((ViewFixture, _uiConfig_) => {
+  beforeEach(inject((ViewFixture, _uiConfig_, $rootScope) => {
     uiConfig = _uiConfig_;
     uiConfig.data.dashboards = [];
+    $rootScope.$digest();
     f = new ViewFixture("views/dashboards.html", "DashboardsCtrl");
   }));
 

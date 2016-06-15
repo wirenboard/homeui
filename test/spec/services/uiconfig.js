@@ -27,6 +27,22 @@ describe("uiConfig service", () => {
     return r;
   }
 
+  it("should indicate readiness after ready() call", () => {
+    var ready = false;
+    uiConfig.whenReady().then((data) => {
+      expect(data).toBe(uiConfig.data);
+      ready = true;
+    });
+    $rootScope.$digest();
+    expect(ready).toBe(false);
+    uiConfig.ready({
+      widgets: [ WIDGET_1 ]
+    });
+    $rootScope.$digest();
+    expect(ready).toBe(true);
+    expect(data().widgets).toEqual([ WIDGET_1 ]);
+  });
+
   it("should contain empty default dashboard initially", () => {
     expect(data().dashboards).toEqual([ DEFAULT_DASHBOARD ]);
   });

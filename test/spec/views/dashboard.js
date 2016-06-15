@@ -8,6 +8,7 @@ describe("Dashboard view", () => {
 
   beforeEach(inject((MqttViewFixture, _uiConfig_) => {
     uiConfig = _uiConfig_;
+    uiConfig.ready();
     data = uiConfig.data;
     data.widgets = [
       {
