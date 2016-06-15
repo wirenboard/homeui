@@ -33,7 +33,9 @@ angular
     'ui.select'
   ])
   .value("historyMaxPoints", 1000)
-  .config(function ($routeProvider, JSONEditorProvider, DumbTemplateProvider) {
+  .value("webuiConfigPath", "/etc/wb-webui.conf")
+  .value("configSaveDebounceMs", 300)
+  .config(($routeProvider, JSONEditorProvider, DumbTemplateProvider) => {
     var DumbTemplate = null;
     JSONEditorProvider.configure({
       defaults: {
@@ -112,12 +114,32 @@ angular
         redirectTo: '/'
       });
   })
-  .run(['$rootScope', '$location', 'mqttClient', function ($rootScope, $location, mqttClient){
+  .run(($rootScope, $location, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
     };
-    $rootScope.$on( "$locationChangeStart", function(event, next, current) {
+    $rootScope.$on("$locationChangeStart", function(event, next, current) {
       if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
       $rootScope.refererLocation = current;
     });
-  }]);
+    // TBD: the following should be handled by config sync service
+    var configSaveDebounce = null;
+    whenMqttReady()
+      .then(() => ConfigEditorProxy.Load({ path: webuiConfigPath }))
+      .then((r) => {
+        console.log("LOAD CONF: %o", r.content);
+        uiConfig.ready(r.content);
+        $rootScope.$watch(() => uiConfig.filtered(), (newData, oldData) => {
+          if (angular.equals(newData, oldData))
+            return;
+          console.log("new data: %o", newData);
+          if (configSaveDebounce)
+            $timeout.cancel(configSaveDebounce);
+          configSaveDebounce = $timeout(() => {
+            ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData }).then(() => {
+              console.log("config saved");
+            });
+          }, configSaveDebounceMs);
+        }, true);
+      }).catch(errors.catch("Error loading WebUI config"));
+  });

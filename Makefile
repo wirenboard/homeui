@@ -27,3 +27,7 @@ install: all
 
 	install -d -m 0777 $(DESTDIR)/var/www/uploads/
 
+	install -d $(DESTDIR)/etc
+	mkdir -p $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
+	install -m 0644 wb-webui.conf $(DESTDIR)/etc/wb-webui.conf
+	install -m 0644 webui.schema.json $(DESTDIR)/usr/share/wb-mqtt-confed/schemas/webui.schema.json
