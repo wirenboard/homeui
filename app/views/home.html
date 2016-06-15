@@ -1,30 +1,7 @@
-<div class="row" ng-hide="data.dashboards[default]">
+<div class="row"><!--  ng-hide="data.dashboards[default]" -->
   <div class="col-lg-12">
     <div class="alert alert-warning alert-dismissible" role="alert" style="margin-bottom:0px;">
       You can select default dashboard in <a href='#/settings'>settings</a>.
-    </div>
-  </div>
-</div>
-<div class="row" ng-show="data.dashboards[default]" ng-repeat='default in data.defaults'>
-  <div class="col-lg-12">
-    <h1 class="page-header">
-        {{ data.dashboards[default].name }}
-        <a href='#/dashboards/{{default}}/edit' class='pull-right'><i class="glyphicon glyphicon-edit black medium"></i></a>
-    </h1>
-    <div id='widgets-list' class='multicol-list'>
-      <ul class="list-unstyled">
-        <li ng-repeat="widget in data.dashboards[default].widgets">
-          <div class="panel panel-primary">
-            <div class="panel-heading" ng-mouseover="hoverIn(widget)" ng-mouseleave="hoverOut(widget)">
-              {{ widget.name }}
-              <a href='#/widgets/{{widget.uid}}/edit' ng-show='widget.canEdit' class='pull-right'><i class="glyphicon glyphicon-edit white"></i></a>
-            </div>
-            <div class="panel-body">
-                <dashboard-widget-template></dashboard-widget-template>
-            </div>
-          </div>
-        </li>
-      </ul>
     </div>
   </div>
 </div>
