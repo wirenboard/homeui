@@ -203,6 +203,7 @@ describe("Directive: widget", () => {
     edit();
     f.clickUISelect();
     f.clickChoice("Temp 1");
+    expect(f.extractUISelectText()).toEqual("");
     submit();
     expect(angular.copy(f.$scope.widget.cells)).toEqual([
       { id: "dev1/temp1" },

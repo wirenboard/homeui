@@ -22,8 +22,10 @@ angular.module("homeuiApp")
         }, true);
         // add cell upon picker selection
         $scope.$watch(() => this.newCellId, newCellId => {
-          if (!newCellId || this.source.cells.find(cell => cell.id === newCellId))
+          if (!newCellId || this.source.cells.find(cell => cell.id === newCellId)) {
+            this.newCellId = null;
             return;
+          }
           this.source.cells.push({ id: newCellId, name: cellName(newCellId) });
           this.newCellId = null;
           // XXX the following is a hack, but we can't just set the name
