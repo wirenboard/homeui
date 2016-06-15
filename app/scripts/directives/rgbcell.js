@@ -32,8 +32,13 @@ angular.module("homeuiApp")
       scope: false,
       require: "^cell",
       replace: true,
-      controllerAs: "ctrl",
+      controllerAs: "rgbCtrl",
       templateUrl: "scripts/directives/rgbcell.html",
-      controller: RgbController
+      controller: RgbController,
+      link: (scope, element, attr) => {
+        // 'show' event causes widgets' onshow attribute value used by
+        // xeditable to be executed as plain js
+        element.on("show.spectrum", event => event.stopPropagation());
+      }
     };
   });
