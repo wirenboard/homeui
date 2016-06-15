@@ -18,7 +18,7 @@ angular.module("homeuiApp")
 
         function internCellItem (cellId) {
           if (!cellId)
-            return {};
+            return null;
 
           var cell = DeviceData.proxy(cellId),
               devName = DeviceData.devices.hasOwnProperty(cell.deviceId) ?
