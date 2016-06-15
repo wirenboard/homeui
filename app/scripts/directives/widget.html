@@ -54,7 +54,7 @@
     <div class="add-cell" ng-if="widgetForm.$visible">
       <label>
         Find controls of type
-        <select name="type-filter" ng-options="name for name in ctrl.cellTypeNames track by name"
+        <select name="type-filter" ng-options="name for name in ctrl.cellTypesUsed track by name"
                 ng-model="ctrl.cellType" class="form-control"></select>
       </label>
       <cell-picker placeholder="Add control..."

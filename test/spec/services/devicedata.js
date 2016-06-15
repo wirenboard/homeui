@@ -956,4 +956,9 @@ describe("DeviceData service", () => {
     expect(DeviceData.cellTypeNames()).toContain("value");
     expect(DeviceData.cellTypeNames()).toContain("temperature");
   });
+
+  it("should return an alphabetically sorted list of types used by complete cells via cellTypesUsed()", () => {
+    publishNumericCells();
+    expect(DeviceData.cellTypesUsed()).toEqual(["range", "value", "voltage"]);
+  });
 });

@@ -11,8 +11,6 @@ angular.module("homeuiApp")
       }
     }
 
-    var cellTypeNames = ["any"].concat(DeviceData.cellTypeNames());
-
     class WidgetController {
       constructor ($scope, $element, $attrs) {
         this.cellType = "any";
@@ -52,8 +50,8 @@ angular.module("homeuiApp")
           };
       }
 
-      get cellTypeNames () {
-        return cellTypeNames;
+      get cellTypesUsed () {
+        return ["any"].concat(DeviceData.cellTypesUsed());
       }
 
       cellTypeFromId (id) {

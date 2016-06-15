@@ -185,9 +185,7 @@ describe("Directive: widget", () => {
     expect(typeSelect).toHaveLength(1);
     expect(typeSelect.val()).toBe("any");
     var types = typeSelect.find("option").toArray().map(opt => $(opt).text());
-    expect(types).toContain("value");
-    expect(types).toContain("text");
-    expect(types).toContain("temperature");
+    expect(types).toEqual(["any", "temperature", "text", "voltage"]);
     typeSelect.find("option[value=text]").attr("selected", "selected");
     typeSelect.find("option[value=any]").removeAttr("selected");
     typeSelect.change();

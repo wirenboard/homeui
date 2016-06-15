@@ -517,8 +517,16 @@ angular.module("homeuiApp")
         return new CellProxy(id);
       },
 
-      cellTypeNames() {
+      cellTypeNames () {
         return Object.keys(cellTypeMap).sort();
+      },
+
+      cellTypesUsed () {
+        var types = {};
+        filterCellIds().forEach(cellId => {
+          types[cells[cellId].type] = true;
+        });
+        return Object.keys(types).sort();
       }
     };
   })
