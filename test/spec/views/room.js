@@ -1,6 +1,6 @@
 "use strict";
 
-fdescribe("Room view", () => {
+describe("Room view", () => {
   var f, data;
 
   beforeEach(module("homeuiApp.fakeUIConfig"));
