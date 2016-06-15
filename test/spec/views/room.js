@@ -3,27 +3,10 @@
 describe("Room view", () => {
   var f, data;
 
-  beforeEach(module("homeuiApp.fakeUIConfig"));
   beforeEach(module("homeuiApp.mqttViewFixture"));
   beforeEach(module("homeuiApp.cellPickerMixin"));
 
   beforeEach(inject((MqttViewFixture, uiConfig) => {
-    f = new MqttViewFixture("views/room.html", "RoomCtrl", {
-      $routeParams: {
-        id: "room1"
-      }
-    }, { mixins: ["CellPickerMixin"] });
-    // XXX: fix: copy/paste from widget.js
-    // (should add a new kind of fixture or a helper function)
-    f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
-    f.extClient.send("/devices/dev1/controls/temp1/meta/type", "temperature", true, 1);
-    f.extClient.send("/devices/dev1/controls/temp1/meta/name", "Temp 1", true, 1);
-    f.extClient.send("/devices/dev1/controls/temp1", "42", true, 0);
-    f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "voltage", true, 1);
-    f.extClient.send("/devices/dev1/controls/voltage1/meta/name", "Voltage 1", true, 1);
-    f.extClient.send("/devices/dev1/controls/voltage1", "231", true, 0);
-    f.extClient.send("/devices/dev2/controls/baz/meta/type", "text", true, 1);
-    f.extClient.send("/devices/dev2/controls/baz", "qqq", true, 0);
     data = uiConfig.data;
     data.rooms = [
       {
@@ -49,6 +32,22 @@ describe("Room view", () => {
       },
       { id: "room2", name: "Room Two", widgets: [] }
     ];
+    f = new MqttViewFixture("views/room.html", "RoomCtrl", {
+      $routeParams: {
+        id: "room1"
+      }
+    }, { mixins: ["CellPickerMixin"] });
+    // XXX: fix: copy/paste from widget.js
+    // (should add a new kind of fixture or a helper function)
+    f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
+    f.extClient.send("/devices/dev1/controls/temp1/meta/type", "temperature", true, 1);
+    f.extClient.send("/devices/dev1/controls/temp1/meta/name", "Temp 1", true, 1);
+    f.extClient.send("/devices/dev1/controls/temp1", "42", true, 0);
+    f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "voltage", true, 1);
+    f.extClient.send("/devices/dev1/controls/voltage1/meta/name", "Voltage 1", true, 1);
+    f.extClient.send("/devices/dev1/controls/voltage1", "231", true, 0);
+    f.extClient.send("/devices/dev2/controls/baz/meta/type", "text", true, 1);
+    f.extClient.send("/devices/dev2/controls/baz", "qqq", true, 0);
     f.$rootScope.$digest();
   }));
 

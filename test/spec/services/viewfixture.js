@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('homeuiApp.viewFixture', [])
+angular.module('homeuiApp.viewFixture', ["homeuiApp"])
   .directive("datepickerPopup", () => {
     // Disable date pickers as they're hard to test.
     // Here's very naive replacement that makes it possible

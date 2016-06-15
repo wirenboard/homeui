@@ -3,12 +3,12 @@
 describe("Rooms view", () => {
   var f, data;
 
-  beforeEach(module("homeuiApp.fakeUIConfig"));
   beforeEach(module("homeuiApp.viewFixture"));
 
   beforeEach(inject((ViewFixture, uiConfig) => {
-    f = new ViewFixture("views/rooms.html", "RoomsCtrl");
     data = uiConfig.data;
+    data.rooms = [];
+    f = new ViewFixture("views/rooms.html", "RoomsCtrl");
   }));
 
   afterEach(() => {
