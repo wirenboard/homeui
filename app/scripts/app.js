@@ -81,7 +81,7 @@ angular
         controller: 'RoomsCtrl'
       })
       .when('/rooms/:id', {
-        templateUrl: 'views/rooms/show.html',
+        templateUrl: 'views/room.html',
         controller: 'RoomCtrl'
       })
       .when('/dashboards', {

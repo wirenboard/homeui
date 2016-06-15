@@ -29,6 +29,10 @@ angular.module("homeuiApp")
           this.source.cells.push({ id: newCellId, name: cellName(newCellId) });
           this.newCellId = null;
         });
+        $scope.$watch(() => this.source.new && !$scope.widgetForm.$visible, shouldEdit => {
+          if (shouldEdit)
+            $scope.widgetForm.$show();
+        });
       }
 
       updateSource () {
@@ -75,6 +79,7 @@ angular.module("homeuiApp")
               delete cell.name;
           });
           angular.extend(this._source(), this.source);
+          delete this._source().new;
         }
       }
 

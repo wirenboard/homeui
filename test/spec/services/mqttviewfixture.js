@@ -3,8 +3,9 @@ angular.module("homeuiApp.mqttViewFixture", ["homeuiApp", "homeuiApp.fakeMqtt", 
     const DEFAULT_TOPIC = "/devices/+/controls/+/on";
 
     class MqttViewFixture extends ViewFixture {
-      constructor (url, controllerName, topic, locals, options) {
-        super(url, controllerName, topic, locals, angular.extend({}, options, { topic: topic || DEFAULT_TOPIC }));
+      constructor (url, controllerName, locals, options) {
+        options = angular.extend({ topic: DEFAULT_TOPIC }, options || {});
+        super(url, controllerName, locals, angular.extend({}, options));
       }
 
       setup (options) {

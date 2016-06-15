@@ -292,4 +292,18 @@ describe("Directive: widget", () => {
     f.click(".widget-button-delete");
     expect(deleted).toBe(true);
   });
+
+  it("should bring itself in edit mode if the widget is marked as new", () => {
+    f.$scope.widget.new = true;
+    f.$scope.$digest();
+    expect(f.container.find(".panel-heading input[type=text]")).toExist();
+  });
+
+  it("should remove 'new' property after saving changes", () => {
+    f.$scope.widget.new = true;
+    f.$scope.$digest();
+    expect(f.container.find(".panel-heading input[type=text]")).toExist();
+    submit();
+    expect(f.$scope.widget.hasOwnProperty("new")).toBe(false);
+  });
 });
