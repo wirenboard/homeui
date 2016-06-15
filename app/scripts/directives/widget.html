@@ -1,4 +1,8 @@
-<form editable-form name="widgetForm" class="widget panel panel-primary"
+<form editable-form
+      name="widgetForm"
+      class="widget panel panel-primary display-cell-bin"
+      ng-class="{ 'compact': ctrl.source.compact && !widgetForm.$visible, 'display-cell-bin': !ctrl.source.compact && !widgetForm.$visible }"
+      ng-dblclick="widgetForm.$show()"
       onshow="ctrl.prepareToEdit()"
       onbeforesave="ctrl.verify()"
       onaftersave="ctrl.commit()"
@@ -9,19 +13,19 @@
           class="widget-name">{{ ctrl.source.name }}</span>
     <span ng-show="!widgetForm.$visible"
           ng-click="widgetForm.$show()"
-          class="widget-button widget-button-edit pull-right"><i class="glyphicon glyphicon-edit white widget-caption-button"></i></span>
+          class="widget-button widget-button-edit"><i class="glyphicon glyphicon-edit white widget-caption-button"></i></span>
     <span ng-click="ctrl.onDelete()"
-          class="widget-button widget-button-delete pull-right"><i class="glyphicon glyphicon-remove white widget-caption-button"></i></span>
+          class="widget-button widget-button-delete"><i class="glyphicon glyphicon-remove white widget-caption-button"></i></span>
   </div>
   <div class="panel-body">
-    <div ng-if="!widgetForm.$visible" ng-repeat="item in ctrl.source.cells">
-      <display-cell compact="ctrl.source.compact" cell="item.id" override-name="item.name"></display-cell>
-    </div>
+    <display-cell ng-if="!widgetForm.$visible"
+                  ng-repeat="item in ctrl.source.cells"
+                  compact="ctrl.source.compact" cell="item.id" override-name="item.name"></display-cell>
     <label ng-if="widgetForm.$visible">
       <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
       Compact mode
     </label>
-    <table class="table table-bordered" ng-if="widgetForm.$visible">
+    <table class="table" ng-if="widgetForm.$visible && ctrl.source.cells.length > 0">
       <thead>
         <tr>
           <th>#</th>
@@ -37,16 +41,17 @@
           <td><span class="cell-type">{{ ctrl.cellTypeFromId(cell.id) }}</span></td>
           <td class="text-center">
             <button name="delete" type="button" ng-show="widgetForm.$visible"
-                    ng-click="ctrl.deleteCell(cell)" class="btn btn-danger pull-right">
-              Delete
-            </button>
+                    ng-click="ctrl.deleteCell(cell)" class="icon-button pull-right"><i class="glyphicon glyphicon-trash"></i></button>
           </td>
         </tr>
       </tbody>
     </table>
     <div class="add-cell" ng-if="widgetForm.$visible">
-      <select name="type-filter" ng-options="name for name in ctrl.cellTypeNames track by name"
-              ng-model="ctrl.cellType"></select>
+      <label>
+        Find controls of type
+        <select name="type-filter" ng-options="name for name in ctrl.cellTypeNames track by name"
+                ng-model="ctrl.cellType" class="form-control"></select>
+      </label>
       <cell-picker placeholder="Add control..."
                    ng-model="ctrl.newCellId" filter-by-type="ctrl.cellTypeFilter()"></cell-picker>
     </div>

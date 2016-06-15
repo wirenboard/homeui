@@ -292,15 +292,16 @@ ul.alert-dropdown {
 
 
 
-/* Form Validation */
+/* Form Validation -- disabled for now
 
-.ng-invalid{
+.ng-invalid {
   border-color: #FA787E;
 }
 
 .ng-valid.ng-dirty{
   border-color: #78FA89;
 }
+-->
 
 /* NavBar Items */
 
@@ -518,22 +519,29 @@ button.show-console span {
   height: 20px;
 }
 
-.device .display-cell .value,
-.device .display-cell .units,
-.device .display-cell input {
+.icon-button {
+  -webkit-appearance: none;
+  outline: none;
+  border: 0;
+  background: transparent;
+}
+
+.display-cell .value,
+.display-cell .units,
+.display-cell input {
   font-family: monospace;
 }
 
-.device .display-cell:not(.cell-type-range) {
+.display-cell-bin .display-cell:not(.cell-type-range) {
   display: flex;
   align-items: center;
 }
 
-.device .display-cell:not(.cell-type-range) h4 {
+.display-cell-bin .display-cell:not(.cell-type-range) h4 {
   flex-grow: 1;
 }
 
-.device .display-cell .cell-range .value-wrapper {
+.display-cell .cell-range .value-wrapper {
   display: block;
   text-align: center;
   border-bottom: 1px dotted #ccc;
@@ -541,18 +549,75 @@ button.show-console span {
   margin: 0 auto 4px auto;
 }
 
-.device .display-cell  button.cell-button {
+.display-cell  button.cell-button {
   margin: 4px 0;
 }
 
-.device .display-cell input.cell-text {
+.display-cell input.cell-text {
   width: 120px;
 }
 
-.device .display-cell .cell-value input {
+.display-cell .cell-value input {
   width: 120px;
 }
 
 .cell-error {
   color: red;
+}
+
+.widget .panel-heading {
+  display: flex;
+}
+
+.widget-caption-button {
+  cursor: pointer;
+  visibility: hidden;
+}
+
+.widget:hover .widget-caption-button {
+  visibility: visible;
+}
+
+.widget .panel-heading .widget-name,
+.widget .panel-heading .editable-text {
+  flex-grow: 1;
+}
+
+.widget .panel-heading .editable-wrap {
+  display: block;
+}
+
+.widget .panel-heading input[type=text] {
+  width: 100%;
+  color: #555;
+  border: none;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.widget .panel-heading input[type=text]:focus {
+  outline: none;
+}
+
+.widget .add-cell label select {
+  display: inline-block;
+  width: 140px;
+}
+
+.widget .btn-form {
+  margin-top: 10px;
+}
+
+.widget .ui-select-container {
+  max-width: 100%;
+}
+
+.widget.compact .display-cell.cell-type-range {
+  margin-top: 4px;
+}
+
+.widget.compact .display-cell:not(.cell-type-range) {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
 }
