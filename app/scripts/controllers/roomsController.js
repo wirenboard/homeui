@@ -6,7 +6,14 @@ angular.module("homeuiApp")
     $scope.data = uiConfig.data;
 
     $scope.addRoom = function () {
-      $scope.data.rooms.push({ name: "", id: "" });
+      var roomIds = {};
+      $scope.data.rooms.forEach(room => {
+        roomIds[room.id] = true;
+      });
+      var n = 1;
+      while (roomIds.hasOwnProperty("room" + n))
+        n++;
+      $scope.data.rooms.push({ name: "", id: "room" + n });
     };
 
     $scope.deleteRoom = function (room) {

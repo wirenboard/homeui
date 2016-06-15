@@ -96,7 +96,7 @@ describe("Rooms view", () => {
     return f.container.find("tr").eq(row).find("td input[type=text]");
   }
 
-  it("should be possible to add rooms", () => {
+  it("should allow to add rooms", () => {
     expect(inputs(1)).not.toExist();
     expect(addBtn()).not.toBeVisible();
 
@@ -108,8 +108,7 @@ describe("Rooms view", () => {
 
     expect(inputs(1).eq(0).val()).toBe("");
     inputs(1).eq(0).val("Room One").change();
-    expect(inputs(1).eq(1).val()).toBe("");
-    inputs(1).eq(1).val("room1").change();
+    expect(inputs(1).eq(1).val()).toBe("room1");
 
     f.click("button[type=submit]");
     expect(inputs(1)).not.toExist();
@@ -133,8 +132,7 @@ describe("Rooms view", () => {
     f.click(addBtn());
     expect(inputs(2).eq(0).val()).toBe("");
     inputs(2).eq(0).val("Room Two").change();
-    expect(inputs(2).eq(1).val()).toBe("");
-    inputs(2).eq(1).val("room2").change();
+    expect(inputs(2).eq(1).val()).toBe("room2");
 
     f.click("button[type=submit]");
     expect(inputs(1)).not.toExist();
@@ -144,7 +142,7 @@ describe("Rooms view", () => {
     verifyOriginal();
   });
 
-  it("should be possible to edit rooms", () => {
+  it("should allow to edit rooms", () => {
     addData();
     f.click(editBtn());
 
@@ -164,7 +162,7 @@ describe("Rooms view", () => {
     ]);
   });
 
-  it("should be possible to remove rows", () => {
+  it("should allow to remove rows", () => {
     addData();
     f.click(editBtn());
     f.click("tr:eq(1) button[name=delete]");
@@ -178,7 +176,7 @@ describe("Rooms view", () => {
     ]);
   });
 
-  it("should be possible to cancel edit", () => {
+  it("should allow to cancel edit", () => {
     addData();
     f.click(editBtn());
     f.click("tr:eq(1) button[name=delete]");
@@ -187,14 +185,14 @@ describe("Rooms view", () => {
     f.click(addBtn());
     expect(inputs(2).eq(0).val()).toBe("");
     inputs(2).eq(0).val("New Room").change();
-    expect(inputs(2).eq(1).val()).toBe("");
+    expect(inputs(2).eq(1).val()).toBe("room1");
     inputs(2).eq(1).val("newroom").change();
     f.click("button[name=cancel]");
 
     verifyOriginal();
   });
 
-  it("should be possible to move elements around", () => {
+  it("should allow to move elements around", () => {
     // angular-sortable-view does unpretty setTimeout
     jasmine.clock().install();
     addData();
