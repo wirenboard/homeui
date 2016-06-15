@@ -9,7 +9,7 @@
   <h1 class="page-header">
     Rooms
   </h1>
-  <div class="empty-list well" ng-if="!data.rooms.length">No rooms currently defined.</div>
+  <div class="empty-list well" ng-if="!tableform.$visible && !data.rooms.length">No rooms currently defined.</div>
   <table class="table table-bordered" ng-if="data.rooms.length || tableform.$visible">
     <thead>
       <tr>
@@ -31,7 +31,8 @@
                   ng-click="deleteRoom(room)" class="btn btn-danger pull-right">
             Delete
           </button>
-          <a href='#/rooms/{{room.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
+          <a ng-show="!tableform.$visible"
+             href='#/rooms/{{room.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
         </td>
       </tr>
     </tbody>
