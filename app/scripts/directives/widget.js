@@ -36,7 +36,7 @@ angular.module("homeuiApp")
               el.val(cellName(newCellId)).change();
           });
         });
-        $scope.$watch(() => this.source.new && !$scope.widgetForm.$visible, shouldEdit => {
+        $scope.$watch(() => this.source.isNew && !$scope.widgetForm.$visible, shouldEdit => {
           if (shouldEdit)
             $scope.widgetForm.$show();
         });
@@ -86,12 +86,15 @@ angular.module("homeuiApp")
               delete cell.name;
           });
           angular.extend(this._source(), this.source);
-          delete this._source().new;
+          delete this._source().isNew;
         }
       }
 
       cancel () {
-        this.updateSource();
+        if (this._source() && this._source().isNew)
+          this.onDelete(this._source());
+        else
+          this.updateSource();
       }
 
       checkNonEmpty (value, msg) {
@@ -118,6 +121,7 @@ angular.module("homeuiApp")
       scope: {},
       bindToController: {
         _source: "&source",
+        onRemove: "&",
         onDelete: "&"
       },
       controllerAs: "ctrl",

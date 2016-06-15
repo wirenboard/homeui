@@ -1,13 +1,13 @@
 "use strict";
 
 describe("Directive: widget", () => {
-  var f, deleted;
+  var f, deleted, removed;
   beforeEach(module("homeuiApp.mqttDirectiveFixture"));
   beforeEach(module("homeuiApp.cellPickerMixin"));
 
   beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture(
-      "<widget source='widget' on-delete='deleteWidget()'></widget>", {
+      "<widget source='widget' on-delete='deleteWidget(widget)' on-remove='removeWidget(widget)'></widget>", {
         mixins: ["CellPickerMixin"]
       });
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
@@ -28,9 +28,16 @@ describe("Directive: widget", () => {
       ]
     };
     deleted = false;
-    f.$scope.deleteWidget = () => {
+    removed = false;
+    f.$scope.deleteWidget = (w) => {
+      expect(w).toBe(f.$scope.widget);
       expect(deleted).toBe(false);
       deleted = true;
+    };
+    f.$scope.removeWidget = (w) => {
+      expect(w).toBe(f.$scope.widget);
+      expect(removed).toBe(false);
+      removed = true;
     };
     f.$scope.$digest();
   }));
@@ -288,18 +295,33 @@ describe("Directive: widget", () => {
     expect(deleted).toBe(true);
   });
 
+  it("should invoke removal handler upon widget remove button click", () => {
+    expect(removed).toBe(false);
+    f.click(".widget-button-remove");
+    expect(removed).toBe(true);
+  });
+
   it("should bring itself in edit mode if the widget is marked as new", () => {
-    f.$scope.widget.new = true;
+    f.$scope.widget.isNew = true;
     f.$scope.$digest();
     expect(f.container.find(".panel-heading input[type=text]")).toExist();
   });
 
-  it("should remove 'new' property after saving changes", () => {
-    f.$scope.widget.new = true;
+  it("should remove 'isNew' property after saving changes", () => {
+    f.$scope.widget.isNew = true;
     f.$scope.$digest();
     expect(f.container.find(".panel-heading input[type=text]")).toExist();
     submit();
-    expect(f.$scope.widget.hasOwnProperty("new")).toBe(false);
+    expect(f.$scope.widget.hasOwnProperty("isNew")).toBe(false);
+  });
+
+  it("should invoke onDelete if editing of a new widget is cancelled", () => {
+    f.$scope.widget.isNew = true;
+    f.$scope.$digest();
+    expect(f.container.find(".panel-heading input[type=text]")).toExist();
+    expect(deleted).toBe(false);
+    f.click("button[name=cancel]");
+    expect(deleted).toBe(true);
   });
 
   it("should set widget title to the name of added cell if the title is empty", () => {

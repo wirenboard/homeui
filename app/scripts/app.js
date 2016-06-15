@@ -88,16 +88,8 @@ angular
         templateUrl: 'views/dashboards/index.html',
         controller: 'DashboardCtrl'
       })
-      .when('/dashboards/new', {
-        templateUrl: 'views/dashboards/form.html',
-        controller: 'DashboardCtrl'
-      })
-      .when('/dashboards/:id/edit', {
-        templateUrl: 'views/dashboards/form.html',
-        controller: 'DashboardCtrl'
-      })
       .when('/dashboards/:id', {
-        templateUrl: 'views/dashboards/show.html',
+        templateUrl: 'views/dashboard.html',
         controller: 'DashboardCtrl'
       })
       .when('/settings', {
