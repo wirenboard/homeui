@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('NavigationCtrl', function($scope, $location, CommonCode, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors) {
+  .controller('NavigationCtrl', function($scope, $location, CommonCode, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig) {
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };
     $scope.data = CommonCode.data;
-    $scope.rooms = $scope.data.rooms;
-    $scope.dashboards = $scope.data.dashboards;
+    $scope.dashboards = () => {
+      return uiConfig.data.dashboards.filter(dashboard => !dashboard.isNew);
+    };
     $scope.widgets = $scope.data.widgets;
     $scope.widget_templates = $scope.data.widget_templates;
     $scope.isConnected = function () {
@@ -73,18 +74,6 @@ angular.module('homeuiApp')
         }).catch(errors.catch("Error listing the configs"));
       }
       return configs;
-    };
-  })
-  .directive('roomMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/rooms/menu-item.html'
-    };
-  })
-  .directive('dashboardMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/dashboards/menu-item.html'
     };
   })
   .directive('widgetMenuItem', function(){

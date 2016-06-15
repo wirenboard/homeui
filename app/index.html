@@ -57,19 +57,13 @@
               <a href="#/dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="dashboards-menu" class="collapse">
-                <li ng-repeat="dashboard in dashboards" dashboard-menu-item>
+                <li ng-repeat="dashboard in dashboards()" dashboard-menu-item>
+                  <a href="#/dashboards/{{ dashboard.id }}" ng-class="{ active: isActive('/dashboards/{{ dashboard.id }}') }">{{ dashboard.name }}</a>
                 </li>
               </ul>
             </li>
             <li ng-class="{ active: isActive('/devices') }">
               <a href="#/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
-            </li>
-            <li ng-class="{ active: isActive('/rooms') }" class="list-menu">
-              <a href="#/rooms"><i class="glyphicon glyphicon-home"></i> Rooms</a>
-              <a href="javascript:;" data-toggle="collapse" data-target="#rooms-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
-              <ul id="rooms-menu" class="collapse">
-                <li ng-repeat="room in rooms" room-menu-item></li>
-              </ul>
             </li>
             <li ng-class="{ active: isActive('/widgets') }">
               <a href="#/widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
@@ -223,8 +217,8 @@
     <script src="scripts/controllers/alertController.js"></script>
     <script src="scripts/controllers/homeController.js"></script>
     <script src="scripts/controllers/devicesController.js"></script>
-    <script src="scripts/controllers/roomsController.js"></script>
-    <script src="scripts/controllers/roomController.js"></script>
+    <script src="scripts/controllers/dashboardsController.js"></script>
+    <script src="scripts/controllers/dashboardController.js"></script>
     <script src="scripts/controllers/widgetController.js"></script>
     <script src="scripts/controllers/widgetTemplateController.js"></script>
     <script src="scripts/controllers/navigationController.js"></script>

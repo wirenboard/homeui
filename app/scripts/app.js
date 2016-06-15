@@ -64,29 +64,9 @@ angular
         templateUrl: 'views/widgets/index.html',
         controller: 'WidgetCtrl'
       })
-      .when('/widgets/new', {
-        templateUrl: 'views/widgets/form.html',
-        controller: 'WidgetCtrl'
-      })
-      .when('/widget_templates', {
-        templateUrl: 'views/widget_templates.html',
-        controller: 'WidgetTemplateCtrl'
-      })
-      .when('/widgets/:id/edit', {
-        templateUrl: 'views/widgets/form.html',
-        controller: 'WidgetCtrl'
-      })
-      .when('/rooms', {
-        templateUrl: 'views/rooms.html',
-        controller: 'RoomsCtrl'
-      })
-      .when('/rooms/:id', {
-        templateUrl: 'views/room.html',
-        controller: 'RoomCtrl'
-      })
       .when('/dashboards', {
-        templateUrl: 'views/dashboards/index.html',
-        controller: 'DashboardCtrl'
+        templateUrl: 'views/dashboards.html',
+        controller: 'DashboardsCtrl'
       })
       .when('/dashboards/:id', {
         templateUrl: 'views/dashboard.html',

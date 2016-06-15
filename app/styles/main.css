@@ -621,3 +621,24 @@ button.show-console span {
   vertical-align: middle;
   margin-right: 10px;
 }
+
+.idx-col {
+  width: 30px;
+}
+
+.name-col input[type=text] {
+  display: inline-block;
+  width: 400px;
+}
+
+.id-col {
+  width: 100px;
+}
+
+.button-col {
+  width: 200px;
+}
+
+.editable-error {
+  color: red;
+}
