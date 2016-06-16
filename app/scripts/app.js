@@ -114,7 +114,7 @@ angular
         redirectTo: '/'
       });
   })
-  .run(($rootScope, $location, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
+  .run(($rootScope, $location) => {
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
     };
@@ -122,6 +122,10 @@ angular
       if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
       $rootScope.refererLocation = current;
     });
+  });
+
+angular.module("realHomeuiApp", ["homeuiApp"])
+  .run(($rootScope, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     // TBD: the following should be handled by config sync service
     var configSaveDebounce = null;
     whenMqttReady()
