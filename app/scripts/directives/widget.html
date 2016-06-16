@@ -59,7 +59,10 @@
       <cell-picker placeholder="Add control..."
                    ng-model="ctrl.newCellId" filter-by-type="ctrl.cellTypeFilter()"></cell-picker>
     </div>
-
+    <div ng-if="widgetForm.$visible"
+         class="widget-description"
+         placeholder="Widget description"
+         editable-elastic-textarea="ctrl.source.description">{{ ctrl.source.description }}</div>
     <div class="btn-form" ng-show="widgetForm.$visible">
       <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length">Save</button>
       <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default">Cancel</button>

@@ -642,3 +642,8 @@ button.show-console span {
 .editable-error {
   color: red;
 }
+
+.editable-wrap.editable-elastic-textarea {
+  display: block;
+  margin-top: 10px;
+}

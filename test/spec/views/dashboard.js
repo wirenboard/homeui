@@ -14,6 +14,7 @@ describe("Dashboard view", () => {
       {
         id: "widget1",
         name: "Some widget",
+        description: "",
         compact: true,
         cells: [
           { id: "dev1/temp1" },
@@ -23,6 +24,7 @@ describe("Dashboard view", () => {
       {
         id: "widget2",
         name: "Another widget",
+        description: "",
         compact: false,
         cells: [
           { id: "dev2/baz", name: "Baz" }
@@ -98,6 +100,7 @@ describe("Dashboard view", () => {
         {
           id: "widget1",
           name: "Some widget",
+          description: "",
           compact: true,
           cells: [
             { id: "dev1/temp1" },
@@ -107,6 +110,7 @@ describe("Dashboard view", () => {
         {
           id: "widget2",
           name: "Another widget",
+          description: "",
           compact: false,
           cells: [
             { id: "dev2/baz", name: "Baz" }
@@ -115,6 +119,7 @@ describe("Dashboard view", () => {
         {
           id: "widget3",
           name: "abc",
+          description: "",
           compact: true,
           cells: [
             { id: "dev2/baz" }

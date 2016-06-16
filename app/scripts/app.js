@@ -30,7 +30,8 @@ angular
     'angular-json-editor',
     'angular-sortable-view',
     'xeditable',
-    'ui.select'
+    'ui.select',
+    'monospaced.elastic'
   ])
   .value("historyMaxPoints", 1000)
   .value("webuiConfigPath", "/etc/wb-webui.conf")

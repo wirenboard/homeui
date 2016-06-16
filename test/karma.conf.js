@@ -43,6 +43,7 @@ module.exports = function(config) {
       'bower_components/angular-sortable-view/src/angular-sortable-view.js',
       'bower_components/angular-xeditable/dist/js/xeditable.js',
       'bower_components/angular-ui-select/dist/select.js',
+      'bower_components/angular-elastic/elastic.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/jquery-simulate/jquery.simulate.js',
       // endbower

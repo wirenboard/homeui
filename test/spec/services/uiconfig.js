@@ -14,6 +14,27 @@ describe("uiConfig service", () => {
     widgets: []
   };
 
+  var WIDGET_1 = {
+    id: "widget1",
+    name: "Temperatures",
+    description: "",
+    compact: true,
+    cells: [
+      { id: "foo/temp1" },
+      { id: "foo/temp2" }
+    ]
+  };
+  var WIDGET_2 = {
+    id: "widget2",
+    name: "Switches",
+    description: "",
+    compact: true,
+    cells: [
+      { id: "foo/switch1" },
+      { id: "foo/switch2" }
+    ]
+  };
+
   function filterDashboard (content) {
     var toCopy = angular.extend({}, content);
     delete toCopy._model;
@@ -80,6 +101,7 @@ describe("uiConfig service", () => {
     expect(newWidget1).toEqual({
       id: "widget1",
       name: "",
+      description: "",
       compact: true,
       cells: [],
       isNew: true
@@ -90,31 +112,13 @@ describe("uiConfig service", () => {
     expect(newWidget2).toEqual({
       id: "widget2",
       name: "",
+      description: "",
       compact: true,
       cells: [],
       isNew: true
     });
     expect(data().widgets).toEqual([ newWidget1, newWidget2 ]);
   });
-
-  var WIDGET_1 = {
-    id: "widget1",
-    name: "Temperatures",
-    compact: true,
-    cells: [
-      { id: "foo/temp1" },
-      { id: "foo/temp2" }
-    ]
-  };
-  var WIDGET_2 = {
-    id: "widget2",
-    name: "Switches",
-    compact: true,
-    cells: [
-      { id: "foo/switch1" },
-      { id: "foo/switch2" }
-    ]
-  };
 
   function addSampleData () {
     uiConfig.data.widgets.push(WIDGET_1);

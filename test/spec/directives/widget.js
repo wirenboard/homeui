@@ -21,6 +21,7 @@ describe("Directive: widget", () => {
     f.extClient.send("/devices/dev2/controls/baz", "qqq", true, 0);
     f.$scope.widget = {
       name: "Some widget",
+      description: "",
       compact: true,
       cells: [
         { id: "dev1/temp1" },
@@ -100,18 +101,26 @@ describe("Directive: widget", () => {
     f.click("button[type=submit]");
   }
 
-  it("should support edititing widget name", () => {
+  it("should support edititing widget name and description", () => {
     edit();
     var nameInput = f.container.find(".panel-heading input[type=text]");
     expect(nameInput).toExist();
+    expect(nameInput).toBeVisible();
     expect(nameInput).toHaveValue("Some widget");
     nameInput.val("Foobar").change();
+    var descriptionTextarea = f.container.find("textarea");
+    expect(descriptionTextarea).toExist();
+    expect(descriptionTextarea).toBeVisible();
+    expect(descriptionTextarea).toHaveValue("");
+    descriptionTextarea.val("some description").change();
 
     // not changed yet
     expect(f.$scope.widget.name).toBe("Some widget");
+    expect(f.$scope.widget.description).toBe("");
 
     submit();
     expect(f.$scope.widget.name).toBe("Foobar");
+    expect(f.$scope.widget.description).toBe("some description");
   });
 
   it("should not allow blank widget names", () => {

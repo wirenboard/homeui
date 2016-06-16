@@ -162,6 +162,7 @@ angular.module("homeuiApp")
 
       addWidget: () => add("widgets", "widget", {
         name: "",
+        description: "",
         compact: true,
         cells: []
       }),
