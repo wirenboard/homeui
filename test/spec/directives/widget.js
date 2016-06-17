@@ -7,7 +7,7 @@ describe("Directive: widget", () => {
 
   beforeEach(inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture(
-      "<widget source='widget' on-delete='deleteWidget(widget)' on-remove='removeWidget(widget)'></widget>", {
+      "<widget source='widget' can-delete='canDelete' on-delete='deleteWidget(widget)' can-remove='canRemove' on-remove='removeWidget(widget)'></widget>", {
         mixins: ["CellPickerMixin"]
       });
     f.extClient.send("/devices/dev1/meta/name", "Dev1", true, 1);
@@ -30,6 +30,8 @@ describe("Directive: widget", () => {
     };
     deleted = false;
     removed = false;
+    f.$scope.canDelete = true;
+    f.$scope.canRemove = true;
     f.$scope.deleteWidget = (w) => {
       expect(w).toBe(f.$scope.widget);
       expect(deleted).toBe(false);
@@ -340,5 +342,19 @@ describe("Directive: widget", () => {
     f.clickChoice("baz");
     submit();
     expect(f.$scope.widget.name).toBe("baz");
+  });
+
+  it("should not display 'delete' button when deletion is disabled, but still display 'remove' button if removal is enabled", () => {
+    f.$scope.canDelete = false;
+    f.$scope.$digest();
+    expect(f.container.find(".widget-button-delete")).not.toExist();
+    expect(f.container.find(".widget-button-remove")).toExist();
+  });
+
+  it("should not display 'remove' button when removal is disabled, but still display 'delete' button if deletion is enabled", () => {
+    f.$scope.canRemove = false;
+    f.$scope.$digest();
+    expect(f.container.find(".widget-button-delete")).toExist();
+    expect(f.container.find(".widget-button-remove")).not.toExist();
   });
 });

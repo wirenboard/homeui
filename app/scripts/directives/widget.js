@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .directive("widget", function (DeviceData) {
+  .directive("widget", (DeviceData, $timeout) => {
     function cellName (id) {
       try {
         return DeviceData.proxy(id).name;
@@ -121,7 +121,9 @@ angular.module("homeuiApp")
       scope: {},
       bindToController: {
         _source: "&source",
+        canRemove: "&",
         onRemove: "&",
+        canDelete: "&",
         onDelete: "&"
       },
       controllerAs: "ctrl",
