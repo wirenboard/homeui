@@ -29,25 +29,33 @@ angular.module("homeuiApp")
         });
       });
       // XXX: dashboards. perhaps should add config change tracking
-      $scope.rows = Array.prototype.concat.apply([], uiConfig.data.widgets.map(widget => [
-        {
+      $scope.rows = Array.prototype.concat.apply([], uiConfig.data.widgets.map(widget => {
+        var primaryRow = {
           name: widget.name,
           id: widget.id,
           widget: widget,
-          rowSpan: Math.max(widget.cells.length, 1),
+          get rowSpan () {
+            return this.preview ? 1 : Math.max(widget.cells.length, 1);
+          },
           dashboards: dashboardMap[widget.id] || [],
           cellIndex: 1,
           cell: widget.cells.length ? wrapWidgetCell(widget.cells[0]) : null,
+          show: true,
+          preview: false,
           deleteWidget: () => {
-            uiConfig.deleteWidget(widget);
+            if (confirm("Really delete the widget?"))
+              uiConfig.deleteWidget(widget);
           }
-        }
-      ].concat(widget.cells.slice(1).map((cell, n) => ({
-        name: widget.name,
-        id: widget.id,
-        widget: null,
-        cellIndex: n + 2,
-        cell: wrapWidgetCell(cell)
-      })))));
+        };
+        return [ primaryRow ].concat(widget.cells.slice(1).map((cell, n) => ({
+          name: widget.name,
+          id: widget.id,
+          widget: null,
+          cellIndex: n + 2,
+          cell: wrapWidgetCell(cell),
+          get show () { return !primaryRow.preview; },
+          get preview () { return primaryRow.preview; }
+        })));
+      }));
     });
   });

@@ -688,8 +688,23 @@ button.show-console span {
   width: 21px;
 }
 
+.widgets-table .button-col button {
+  color: #337ab7;
+  margin: 0;
+  padding: 2px;
+}
+
+.widgets-table .button-col button[name=delete] {
+  color: #c00;
+}
+
+.widgets-table td .widget {
+  margin: 10px auto;
+  max-width: 378px;
+}
+
 .widgets-table .button-col {
-  width: 21px;
+  width: 60px;
 }
 
 .editable-error {

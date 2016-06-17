@@ -187,11 +187,39 @@ describe("Widgets view", () => {
   });
 
   it("should provide 'delete widget' button", () => {
+    spyOn(window, "confirm").and.returnValue(true);
     f.click("tbody > tr:eq(0) button[name=delete]");
     expect(uiConfig.data.widgets.map(widget => widget.id)).toEqual([ "widget1" ]);
     expect(extractWidgets()).toEqual([ EXTRACTED_WIDGET_1 ]);
   });
 
-  // TBD: preview
+  it("should provide widget preview via 'preview' button", () => {
+    f.click("tbody > tr:eq(0) button[name=preview]");
+    expect(f.container.find("tbody > tr:eq(0) .cell-name-col")).not.toExist();
+    expect(f.container.find("tbody > tr:eq(0) .cell-type-col")).not.toExist();
+    expect(f.container.find("tbody > tr:eq(0) .cell-value-col")).not.toExist();
+    expect(f.container.find("tbody > tr:eq(0) .cell-history-col")).not.toExist();
+    expect(f.container.find("tbody > tr:eq(0) button[name=preview]")).not.toExist();
+    // 2nd cell row hidden for the first widget
+    expect(f.container.find("tbody > tr:eq(1)")).toContainText("Temperatures");
+    expect(f.container.find("tbody > tr:eq(0) .widget .panel-heading")).toContainText("Switches");
+  });
+
+  it("should hide widget preview via 'table' button", () => {
+    expect("tbody > tr:eq(0) button[name=table]").not.toExist();
+    f.click("tbody > tr:eq(0) button[name=preview]");
+    f.click("tbody > tr:eq(0) button[name=table]");
+    expect(f.container.find("tbody > tr:eq(0) .cell-name-col")).toExist();
+    expect(f.container.find("tbody > tr:eq(0) .cell-type-col")).toExist();
+    expect(f.container.find("tbody > tr:eq(0) .cell-value-col")).toExist();
+    expect(f.container.find("tbody > tr:eq(0) .cell-history-col")).toExist();
+    expect(f.container.find("tbody > tr:eq(0) button[name=preview]")).toExist();
+    // 2nd cell row hidden for the first widget
+    expect(f.container.find("tbody > tr:eq(1) .name-col")).not.toExist();
+    expect(f.container.find("tbody > tr:eq(0) .widget .panel-heading")).not.toExist();
+    expect(f.container.find("tbody > tr:eq(2)")).toContainText("Temperatures");
+    expect("tbody > tr:eq(0) button[name=table]").not.toExist();
+  });
+
   // TBD: adding widgets
 });
