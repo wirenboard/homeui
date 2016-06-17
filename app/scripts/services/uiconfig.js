@@ -12,7 +12,8 @@ angular.module("homeuiApp")
       ],
       widgets: []
     };
-    var deferReady = $q.defer();
+    var deferReady = $q.defer(),
+        version = 1;
 
     function add (prop, idBase, content) {
       var items = data[prop], n = 1,
@@ -134,8 +135,21 @@ angular.module("homeuiApp")
       }
     }
 
+    function filtered () {
+      return {
+        dashboards: filterCollection(data.dashboards),
+        widgets: filterCollection(data.widgets)
+      };
+    }
+
+    $rootScope.$watch(filtered, () => { version++; }, true);
+
     return {
       data: data,
+
+      version () {
+        return version;
+      },
 
       whenReady () {
         return deferReady.promise;
@@ -167,11 +181,6 @@ angular.module("homeuiApp")
         cells: []
       }),
 
-      filtered () {
-        return {
-          dashboards: filterCollection(data.dashboards),
-          widgets: filterCollection(data.widgets)
-        };
-      }
+      filtered: filtered
     };
   });

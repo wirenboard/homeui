@@ -288,6 +288,26 @@ describe("uiConfig service", () => {
       });
   });
 
-  // TBD: later: keep widgets sorted by name
+  it("should track config changes by incrementing comment versions", () => {
+    addSampleData();
+    expect(uiConfig.version()).toEqual(1);
+
+    uiConfig.getDashboard("dashboard1").name = "xxx";
+    $rootScope.$digest();
+    expect(uiConfig.version()).toEqual(2);
+
+    uiConfig.data.widgets[1].name = "zzz";
+    $rootScope.$digest();
+    expect(uiConfig.version()).toEqual(3);
+
+    uiConfig.data.dashboards.length = 0;
+    $rootScope.$digest();
+    expect(uiConfig.version()).toEqual(4);
+
+    uiConfig.data.widgets.length = 0;
+    $rootScope.$digest();
+    expect(uiConfig.version()).toEqual(5);
+  });
+
   // TBD: later: add Widget model, use props to mark widgets/dashboards as dirty
 });
