@@ -48,7 +48,7 @@ angular.module("homeuiApp")
           var directive = (displayCellConfig.displayTypes.hasOwnProperty(displayType) ?
                            displayCellConfig.displayTypes[displayType] :
                            displayCellConfig.displayTypes["text"]).directive;
-          element.find("*:not(h4)").remove();
+          element.find("> *:not(h4)").remove();
           $compile("<" + directive + "></" + directive + ">")(scope, (clonedElement) => {
             element.append(clonedElement);
           });

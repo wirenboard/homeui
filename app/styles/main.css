@@ -639,6 +639,51 @@ button.show-console span {
   width: 200px;
 }
 
+.table.widgets-table {
+  width: auto;
+}
+
+.widgets-table .name-col {
+  min-width: 200px;
+}
+
+.widgets-table .description-col {
+  min-width: 200px;
+  max-width: 350px;
+}
+
+.widgets-table ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.widgets-table .cell-name-col {
+  min-width: 200px;
+}
+
+.widgets-table h4.cell-title .name {
+  font-size: 14px;
+}
+
+.widgets-table h4.cell-title .id {
+  font-size: 10px;
+  display: block;
+  margin-top: 2px;
+}
+
+.widgets-table .dashboards-col {
+  width: 200px
+}
+
+.widgets-table .cell-type-col {
+  width: 100px;
+}
+
+.widgets-table .cell-value-col {
+  width: 200px;
+}
+
 .editable-error {
   color: red;
 }
@@ -646,4 +691,9 @@ button.show-console span {
 .editable-wrap.editable-elastic-textarea {
   display: block;
   margin-top: 10px;
+}
+
+.table.webui-table td,
+.table.webui-table th {
+  vertical-align: middle;
 }

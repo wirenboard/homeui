@@ -5,12 +5,20 @@ angular.module("homeuiApp")
     return {
       restrict: "EA",
       scope: {
-        override: "&"
+        override: "&",
+        displayId: "&"
       },
       require: "^cell",
       replace: true,
-      template: "<h4 class='cell-title'>{{ name() }}</h4>",
+      // XXX: trying to use templateUrl causes 'controller cell not
+      // found' error
+      template: "<h4 class='cell-title'>" +
+        "<span class='name'>{{ name() }}</span>" +
+        "<span ng-if='displayId()' class='id' title='device/control id'>{{ cellId() }}</span>" +
+        "</h4>",
+
       link: (scope, element, attrs, cellCtrl) => {
+        scope.cellId = () => cellCtrl.cell.id;
         scope.name = () => scope.override() || cellCtrl.cell.name;
       }
     };

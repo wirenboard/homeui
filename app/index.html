@@ -71,11 +71,6 @@
             <li ng-class="{ active: isActive('/history') }">
               <a href="#/history"><i class="glyphicon glyphicon-stats"></i> History</a>
             </li>
-<!--
-            <li ng-class="{ active: isActive('/widget_templates') }">
-              <a href="#/widget_templates"><i class="glyphicon glyphicon-list-alt"></i>Widget Templates</a>
-            </li>
--->
             <li ng-if="isConnected()" ng-class="{ active: isActive('/scripts') }">
               <a href="#/scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
             </li>
@@ -221,8 +216,7 @@
     <script src="scripts/controllers/devicesController.js"></script>
     <script src="scripts/controllers/dashboardsController.js"></script>
     <script src="scripts/controllers/dashboardController.js"></script>
-    <script src="scripts/controllers/widgetController.js"></script>
-    <script src="scripts/controllers/widgetTemplateController.js"></script>
+    <script src="scripts/controllers/widgetsController.js"></script>
     <script src="scripts/controllers/navigationController.js"></script>
     <script src="scripts/controllers/dashboardController.js"></script>
     <script src="scripts/controllers/settingController.js"></script>

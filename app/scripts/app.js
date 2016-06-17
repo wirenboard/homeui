@@ -64,8 +64,8 @@ angular
         controller: 'DevicesCtrl'
       })
       .when('/widgets', {
-        templateUrl: 'views/widgets/index.html',
-        controller: 'WidgetCtrl'
+        templateUrl: 'views/widgets.html',
+        controller: 'WidgetsCtrl'
       })
       .when('/dashboards', {
         templateUrl: 'views/dashboards.html',
