@@ -680,6 +680,18 @@ button.show-console span {
   width: 200px;
 }
 
+.widgets-table .cell-history-col {
+  width: 21px;
+}
+
+.widgets-table .cell-history-col {
+  width: 21px;
+}
+
+.widgets-table .button-col {
+  width: 21px;
+}
+
 .editable-error {
   color: red;
 }

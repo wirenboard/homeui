@@ -13,6 +13,7 @@
       <th class="cell-history-col"></th>
       <th class="description-col">Description</th>
       <th class="dashboards-col">Dashboards</th>
+      <th class="button-col"></th>
     </tr>
   </thead>
   <tbody>
@@ -38,6 +39,9 @@
             <a href="#/dashboards/{{ dashboard.id }}">{{ dashboard.name }}</a>
           </li>
         </ul>
+      </td>
+      <td ng-if="!!row.widget" class="button-col" rowspan="{{ row.rowSpan }}">
+        <button type="button" class="icon-button" name="delete" ng-click="row.deleteWidget()"><i class="glyphicon glyphicon-trash"></i></button>
       </td>
     </tr>
   </tbody>

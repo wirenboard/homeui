@@ -13,7 +13,11 @@
 <div id="widgets-list" class="multicol-list">
   <ul class="list-unstyled" sv-root sv-part="dashboard.widgets">
     <li ng-repeat="widget in dashboard.widgets" sv-element>
-      <widget source="widget" on-remove="removeWidget(widget)" on-delete="deleteWidget(widget)"></widget>
+      <widget source="widget"
+              can-remove="true"
+              on-remove="removeWidget(widget)"
+              can-delete="true"
+              on-delete="deleteWidget(widget)"></widget>
     </li>
   </ul>
 </div>

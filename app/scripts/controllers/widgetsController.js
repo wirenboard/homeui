@@ -37,7 +37,10 @@ angular.module("homeuiApp")
           rowSpan: Math.max(widget.cells.length, 1),
           dashboards: dashboardMap[widget.id] || [],
           cellIndex: 1,
-          cell: widget.cells.length ? wrapWidgetCell(widget.cells[0]) : null
+          cell: widget.cells.length ? wrapWidgetCell(widget.cells[0]) : null,
+          deleteWidget: () => {
+            uiConfig.deleteWidget(widget);
+          }
         }
       ].concat(widget.cells.slice(1).map((cell, n) => ({
         name: widget.name,

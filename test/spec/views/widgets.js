@@ -65,6 +65,47 @@ describe("Widgets view", () => {
     f.remove();
   });
 
+  // widget view is alphabetically sorted, thus the order of widgets
+  // is reversed
+  var EXTRACTED_WIDGET_1 = {
+    name: "Temperatures",
+    description: "Some temperatures",
+    dashboards: ["Dashboard 1"],
+    cells: [
+      {
+        id: "foo/temp1",
+        name: "Temp 1",
+        type: "temperature",
+        value: 42
+      },
+      {
+        id: "foo/temp2",
+        name: "Temp 2",
+        type: "temperature",
+        value: 43
+      }
+    ]
+  };
+  var EXTRACTED_WIDGET_2 = {
+    name: "Switches",
+    description: "Some switches",
+    dashboards: ["Dashboard 1", "Dashboard 2"],
+    cells: [
+      {
+        id: "foo/switch1",
+        name: "Switch 1",
+        type: "switch",
+        value: true
+      },
+      {
+        id: "foo/switch2",
+        name: "Switch 2",
+        type: "switch",
+        value: false
+      }
+    ]
+  };
+
   function extractCell (el) {
     el = $(el);
     var cellValue = el.find(".cell-value .value"),
@@ -112,44 +153,8 @@ describe("Widgets view", () => {
 
   it("should list all the widges with their dashboards, cell lists, descriptions and values", () => {
     expect(extractWidgets()).toEqual([
-      {
-        name: "Switches",
-        description: "Some switches",
-        dashboards: ["Dashboard 1", "Dashboard 2"],
-        cells: [
-          {
-            id: "foo/switch1",
-            name: "Switch 1",
-            type: "switch",
-            value: true
-          },
-          {
-            id: "foo/switch2",
-            name: "Switch 2",
-            type: "switch",
-            value: false
-          }
-        ]
-      },
-      {
-        name: "Temperatures",
-        description: "Some temperatures",
-        dashboards: ["Dashboard 1"],
-        cells: [
-          {
-            id: "foo/temp1",
-            name: "Temp 1",
-            type: "temperature",
-            value: 42
-          },
-          {
-            id: "foo/temp2",
-            name: "Temp 2",
-            type: "temperature",
-            value: 43
-          }
-        ]
-      }
+      EXTRACTED_WIDGET_2,
+      EXTRACTED_WIDGET_1
     ]);
   });
 
@@ -180,6 +185,13 @@ describe("Widgets view", () => {
       "#/history/foo/temp2" + ts,
     ]);
   });
+
+  it("should provide 'delete widget' button", () => {
+    f.click("tbody > tr:eq(0) button[name=delete]");
+    expect(uiConfig.data.widgets.map(widget => widget.id)).toEqual([ "widget1" ]);
+    expect(extractWidgets()).toEqual([ EXTRACTED_WIDGET_1 ]);
+  });
+
   // TBD: preview
   // TBD: adding widgets
 });
