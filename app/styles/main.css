@@ -639,17 +639,13 @@ button.show-console span {
   width: 200px;
 }
 
-.table.widgets-table {
-  width: auto;
-}
-
 .widgets-table .name-col {
   min-width: 200px;
 }
 
 .widgets-table .description-col {
   min-width: 200px;
-  max-width: 350px;
+  max-width: 300px;
 }
 
 .widgets-table ul {

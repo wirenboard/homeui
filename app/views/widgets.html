@@ -7,26 +7,18 @@
     <tr>
       <th class="idx-col">#</th>
       <th class="name-col">Name</th>
-      <th class="description-col">Description</th>
-      <th class="dashboards-col">Dashboards</th>
       <th class="cell-name-col">Cells</th>
       <th class="cell-type-col">Types</th>
       <th class="cell-value-col">Values</th>
       <th class="cell-history-col"></th>
+      <th class="description-col">Description</th>
+      <th class="dashboards-col">Dashboards</th>
     </tr>
   </thead>
   <tbody>
     <tr ng-repeat="row in rows | orderBy:['name', 'id', 'cellIndex']">
       <th ng-if="!!row.widget" class="idx-col" scope="row" rowspan="{{ row.rowSpan }}">{{ $index+1 }}</th>
       <td ng-if="!!row.widget" class="name-col" rowspan="{{ row.rowSpan }}">{{ row.name }}</td>
-      <td ng-if="!!row.widget" class="description-col" rowspan="{{ row.rowSpan }}">{{ row.widget.description }}</td>
-      <td ng-if="!!row.widget" class="dashboards-col" rowspan="{{ row.rowSpan }}">
-        <ul ng-if="row.dashboards.length">
-          <li ng-repeat="dashboard in row.dashboards">
-            <a href="#/dashboards/{{ dashboard.id }}">{{ dashboard.name }}</a>
-          </li>
-        </ul>
-      </td>
       <td class="cell-name-col" cell="row.cell.id">
         <cell-name override="row.cell.name" display-id="true"></cell-name>
       </td>
@@ -38,6 +30,14 @@
       </td>
       <td class="cell-history-col">
         <a title="History" class="cell-history" href="#/history/{{ row.cell.id }}/{{ historyStartTS() }}/-"><i class="glyphicon glyphicon-stats"></i></a>
+      </td>
+      <td ng-if="!!row.widget" class="description-col" rowspan="{{ row.rowSpan }}">{{ row.widget.description }}</td>
+      <td ng-if="!!row.widget" class="dashboards-col" rowspan="{{ row.rowSpan }}">
+        <ul ng-if="row.dashboards.length">
+          <li ng-repeat="dashboard in row.dashboards">
+            <a href="#/dashboards/{{ dashboard.id }}">{{ dashboard.name }}</a>
+          </li>
+        </ul>
       </td>
     </tr>
   </tbody>
