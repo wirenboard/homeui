@@ -5,6 +5,7 @@ angular.module("homeuiApp")
                                        whenMqttReady, errors, CommonCode, historyMaxPoints,
                                        $timeout) {
     $scope.datapoints = [];
+    $scope.controls = [];
     $scope.datacolumns = [
       { "id":"y", "type":"line", "color":"green" }
     ];
@@ -21,7 +22,8 @@ angular.module("homeuiApp")
     $scope.topic = $routeParams.device && $routeParams.control ?
       "/devices/" + $routeParams.device + "/controls/" + $routeParams.control :
       null;
-    $scope.controls = CommonCode.data.controls;
+    
+
     $scope.startDate = convDate($routeParams.start);
     $scope.endDate = convDate($routeParams.end);
     $scope.shouldShowChart = function () {
@@ -139,7 +141,32 @@ angular.module("homeuiApp")
     }
 
     whenMqttReady().then(function () {
+
       ready = true;
+
+      // console.log("Looks like MQTT is connnected! Try to load channels");
+      // get controls
+      HistoryProxy.get_channels({}).then(function (result) {
+        // into $scope.controls -> channels
+        // control.topic is our required value
+        // console.log("Hey, got channels! %o", result);
+        result.channels.forEach(function(value, key) {
+          for (var k in value) {
+            // console.log("Channel data $o -> $o", k, value[k]);
+            if (value[k].items > 0) {
+              var m = k.match(/^\/([^\/]+)\/([^\/]+)/);
+              if (!m)
+                console.error("bad reply from mqtt-db: %s", k);
+
+              $scope.controls.push({ topic: "/devices/" + m[1] + "/controls/" + m[2] });
+            }
+          }
+        });
+      }, function(reason) {
+        console.error("Failed to get channels list: %o", reason);
+      }).catch(errors.catch("Error getting channels list"));
+
+
       if (loadPending)
         loadHistory();
     });
