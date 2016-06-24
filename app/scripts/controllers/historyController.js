@@ -149,17 +149,16 @@ angular.module("homeuiApp")
       HistoryProxy.get_channels({}).then(function (result) {
         // into $scope.controls -> channels
         // control.topic is our required value
-        // console.log("Hey, got channels! %o", result);
-        result.channels.forEach(function(value, key) {
-          for (var k in value) {
-            // console.log("Channel data $o -> $o", k, value[k]);
-            if (value[k].items > 0) {
-              var m = k.match(/^\/([^\/]+)\/([^\/]+)/);
-              if (!m)
-                console.error("bad reply from mqtt-db: %s", k);
+        console.log("Hey, got channels! %o", result);
 
-              $scope.controls.push({ topic: "/devices/" + m[1] + "/controls/" + m[2] });
-            }
+        Object.keys(result.channels).sort().forEach(function(key) {
+          // console.log("Channel data $o -> $o", k, value[k]);
+          if (result.channels[key].items > 0) {
+            var m = key.match(/^\/([^\/]+)\/([^\/]+)/);
+            if (!m)
+              console.error("bad reply from mqtt-db: %s", k);
+
+            $scope.controls.push({ topic: "/devices/" + m[1] + "/controls/" + m[2] });
           }
         });
       }, function(reason) {
