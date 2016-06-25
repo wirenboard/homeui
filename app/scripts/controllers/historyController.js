@@ -20,7 +20,7 @@ angular.module("homeuiApp")
     }
 
     $scope.topic = $routeParams.device && $routeParams.control ?
-      "/devices/" + $routeParams.device + "/controls/" + $routeParams.control :
+      $routeParams.device + "/" + $routeParams.control :
       null;
     
 
@@ -36,7 +36,7 @@ angular.module("homeuiApp")
       if (!topic)
         return null;
 
-      var m = topic.match(/^\/devices\/([^\/]+)\/controls\/([^\/]+)/);
+      var m = topic.match(/^([^\/]+)\/([^\/]+)/);
       if (!m) {
         console.warn("bad topic: %s", topic);
         return null;
@@ -154,11 +154,11 @@ angular.module("homeuiApp")
         Object.keys(result.channels).sort().forEach(function(key) {
           // console.log("Channel data $o -> $o", k, value[k]);
           if (result.channels[key].items > 0) {
-            var m = key.match(/^\/([^\/]+)\/([^\/]+)/);
+            var m = key.match(/^([^\/]+)\/([^\/]+)/);
             if (!m)
               console.error("bad reply from mqtt-db: %s", k);
 
-            $scope.controls.push({ topic: "/devices/" + m[1] + "/controls/" + m[2] });
+            $scope.controls.push({ topic: m[1] + "/" + m[2] });
           }
         });
       }, function(reason) {
