@@ -16,7 +16,7 @@ html, body {
 
 body {
     margin-top: 50px;
-    background-color: #222;
+    background-color: #102a83;
 }
 
 @media(min-width:768px) {
@@ -32,9 +32,21 @@ body {
 #page-wrapper {
     width: 100%;
     padding: 0;
-    background-color: #fff;
+    background-color: #1b1918;
     min-height: 370px;
     position: relative;
+}
+
+.page-header, .page-header > * {
+  color: #ffffff;
+}
+
+.navbar-header {
+  background-color: #102a83;
+}
+
+.navbar-header .navbar-brand {
+  color: #ffec00;
 }
 
 .huge {
@@ -132,7 +144,7 @@ ul.alert-dropdown {
         border: none;
         border-radius: 0;
         overflow-y: auto;
-        background-color: #222;
+        background-color: #102a83;
         bottom:0;
         overflow-x:hidden;
     }
@@ -141,10 +153,19 @@ ul.alert-dropdown {
         width: 225px;
     }
 
+    .side-nav li {
+        background-color: #6e6f70 !important;
+    }
+
+    .side-nav li a {
+        background-color: #6e6f70 !important;
+
+    }
+
     .side-nav li a:hover,
     .side-nav li a:focus {
         outline: none;
-        background-color: #000 !important;
+        background-color: #1b1918 !important;
     }
 }
 
@@ -295,11 +316,17 @@ ul.alert-dropdown {
 
 /* NavBar Items */
 
+.navbar-nav a{
+  color: #ffffff !important;
+  background-color: #1b1918 !important;
+}
+
 .navbar-nav .active > a,
 .navbar-nav a.active{
-  color: #fff !important;
-  background-color: #080808 !important;
+  color: #009035 !important;
+  background-color: #1b1918 !important;
 }
+
 
 /* Glyphicons */
 
