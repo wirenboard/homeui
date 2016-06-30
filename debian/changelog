@@ -1,3 +1,10 @@
+wb-mqtt-homeui (1.6.2) stable; urgency=medium
+
+  * do not show empty channels in History tab
+  * change channel name format in History tab
+
+ -- Nikita Maslov <n.maslov@contactless.ru>  Thu, 30 Jun 2016 12:37:27 +0300
+
 wb-mqtt-homeui (1.6.1) stable; urgency=medium
 
   * config editor update for hwconf slot capabilities
