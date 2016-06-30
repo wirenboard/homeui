@@ -155,8 +155,10 @@ angular.module("homeuiApp")
           // console.log("Channel data $o -> $o", k, value[k]);
           if (result.channels[key].items > 0) {
             var m = key.match(/^([^\/]+)\/([^\/]+)/);
-            if (!m)
-              console.error("bad reply from mqtt-db: %s", k);
+            if (!m) {
+              errors.showError("Error", "bad reply from mqtt-db: " + key);
+              return;
+            }
 
             $scope.controls.push({ topic: m[1] + "/" + m[2] });
           }
