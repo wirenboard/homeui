@@ -95,6 +95,18 @@ angular.module("homeuiApp")
         readOnly: true,
         displayType: "value"
       },
+      "heat_power": {
+        valueType: "number",
+        units: "Gcal/h",
+        readOnly: true,
+        displayType: "value"
+      },
+      "heat_energy": {
+        valueType: "number",
+        units: "Gcal",
+        readOnly: true,
+        displayType: "value"
+      },
       "resistance": {
         valueType: "number",
         units: "Ohm",

@@ -89,3 +89,5 @@ A read-only control for a certain type of value.
 | Water total consumption | water_consumption | m^3  | float ||
 | Resistance | resistance | Ohm  | float ||
 | Gas concentration | concentration | ppm  | float (unsigned) ||
+| Heat power | heat_power | Gcal / hour | float ||
+| Heat energy | heat_energy | Gcal | float ||
