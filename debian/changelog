@@ -1,3 +1,9 @@
+wb-mqtt-homeui-intelworld (1.6.1+intelworld1) stable; urgency=medium
+
+  * cusomization for intelworld
+
+ -- Evgeny Boger <boger@contactless.ru>  Wed, 01 Jun 2016 15:56:57 +0000
+
 wb-mqtt-homeui (1.6.1) stable; urgency=medium
 
   * config editor update for hwconf slot capabilities
