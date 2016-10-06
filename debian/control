@@ -1,13 +1,13 @@
-Source: wb-mqtt-homeui
+Source: wb-mqtt-homeui-hitedconf
 Maintainer: Evgeny Boger <boger@contactless.ru>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9), pkg-config
 
-Package: wb-mqtt-homeui
+Package: wb-mqtt-homeui-hitedconf
 Architecture: all
 Conflicts: wb-homa-webinterface
 Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools, nginx-extras, wb-utils (>=1.57), wb-mqtt-db (>= 1.5)
 Breaks: wb-mqtt-confed (<< 1.0.3)
-Description: Wiren Board HomeUI web interface
+Description: Wiren Board HomeUI web interface (hitedconf)

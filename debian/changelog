@@ -1,3 +1,8 @@
+wb-mqtt-homeui-hitedconf (1.6.2) stable; urgency=medium
+
+  first release
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 28 Dec 2015 07:18:54 +0300
+
 wb-mqtt-homeui (1.6.2) stable; urgency=medium
 
   * do not show empty channels in History tab
