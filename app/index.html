@@ -2,7 +2,7 @@
 <html class="no-js">
   <head>
     <meta charset="utf-8">
-    <title>Wiren Board Web UI</title>
+    <title>Wiren Board Network Configuration UI</title>
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,7 +31,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#/">Wiren Board Web UI</a>
+          <a class="navbar-brand" href="#/">Wiren Board Network Configuration UI</a>
 
 
         <p class="navbar-text navbar-right connection-status">
@@ -51,13 +51,20 @@
             </li>
 
             <li ng-if="isConnected()" ng-class="{ active: isActive('/configs') }" >
-              <a href="#/configs/edit/etc/wb-rules/alarms.conf"
-                 ng-class="{ active: isActive('/configs/edit/etc/wb-rules/alarms.conf'), error: !!config.error }">
+              <a href="#/configs/edit/etc/ntp.conf"
+                 ng-class="{ active: isActive('/configs/edit/etc/ntp.conf'), error: !!config.error }">
                 <i class="glyphicon glyphicon-file"></i>
-                Alarm Configuration
+                NTP Configuration
+                <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>
+              </a>
+              <a href="#/configs/edit/etc/network/interfaces"
+                 ng-class="{ active: isActive('/configs/edit/etc/network/interfaces'), error: !!config.error }">
+                <i class="glyphicon glyphicon-file"></i>
+                Network Configuration
                 <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>
               </a>
             </li> 
+
           </ul>
         </div>
         <!-- /.navbar-collapse -->
