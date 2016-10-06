@@ -43,75 +43,21 @@
         <div class="nav navbar-nav navbar-right">
         </div>
 
-
-
         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
           <ul class="nav navbar-nav side-nav">
             <li ng-class="{ active: isActive('/') }">
               <a href="#/"><i class="glyphicon glyphicon-cog"></i> Home</a>
             </li>
-<!--             <li ng-class="{ active: isActive('/dashboards') }" class="list-menu">
-              <a href="#/dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
-              <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
-              <ul id="dashboards-menu" class="collapse">
-                <li ng-repeat="dashboard in dashboards" dashboard-menu-item>
-                </li>
-              </ul>
-            </li>
-            <li ng-class="{ active: isActive('/devices') }">
-              <a href="#/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
-            </li>
-            <li ng-class="{ active: isActive('/rooms') }" class="list-menu">
-              <a href="#/rooms"><i class="glyphicon glyphicon-home"></i> Rooms</a>
-              <a href="javascript:;" data-toggle="collapse" data-target="#rooms-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
-              <ul id="rooms-menu" class="collapse">
-                <li ng-repeat="room in rooms" room-menu-item></li>
-              </ul>
-            </li>
-            <li ng-class="{ active: isActive('/widgets') }">
-              <a href="#/widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
-            </li>
-            <li ng-class="{ active: isActive('/history') }">
-              <a href="#/history"><i class="glyphicon glyphicon-stats"></i> History</a>
-            </li> -->
-            <li ng-class="{ active: isActive('/history/sampleAlarms/log/-/-') }">
-              <a href="#/history/sampleAlarms/log/-/-"><i class="glyphicon glyphicon-stats"></i> Alarm History</a>
-            </li>
-<!--
-            <li ng-class="{ active: isActive('/widget_templates') }">
-              <a href="#/widget_templates"><i class="glyphicon glyphicon-list-alt"></i>Widget Templates</a>
-            </li>
--->
-<!--            <li ng-if="isConnected()" ng-class="{ active: isActive('/scripts') }">
-              <a href="#/scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
-                </li>
 
-            <li ng-if="isConnected()" ng-class="{ active: isActive('/configs') }" class="list-menu config-menu">
-              <a href="#/configs"><i class="glyphicon glyphicon-file"></i> Configs</a>
-              <a href="javascript:;" data-toggle="collapse" data-target="#configs-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
-              <ul id="configs-menu" class="collapse">
-                <li ng-repeat="config in getConfigs()">
-                  <a href="#/configs/edit{{ config.schemaPath }}"
-                     ng-class="{ active: isActive('/configs/edit{{ config.schemaPath }}'), error: !!config.error }">
-                    {{ config.title }}
-                    <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>
-                  </a>
-                </li>
-              </ul>
-            </li>
- -->        
             <li ng-if="isConnected()" ng-class="{ active: isActive('/configs') }" >
               <a href="#/configs/edit/etc/wb-rules/alarms.conf"
                  ng-class="{ active: isActive('/configs/edit/etc/wb-rules/alarms.conf'), error: !!config.error }">
-                <i class="glyphicon glyphicon-file"></i>                 
+                <i class="glyphicon glyphicon-file"></i>
                 Alarm Configuration
                 <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>
               </a>
             </li> 
-            <li ng-class="{ active: isActive('/settings') }">
-              <a href="#/settings"><i class="glyphicon glyphicon-wrench"></i> System</a>
-            </li>
           </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -202,7 +148,6 @@
     <script src="scripts/services/commonService.js"></script>
     <script src="scripts/services/editorProxy.js"></script>
     <script src="scripts/services/configEditorProxy.js"></script>
-    <script src="scripts/services/historyProxy.js"></script>
     <script src="scripts/services/rpc.js"></script>
     <script src="scripts/services/gotoDefStart.js"></script>
     <script src="scripts/services/time.js"></script>
@@ -212,20 +157,9 @@
     <script src="scripts/directives/console.js"></script>
     <script src="scripts/controllers/alertController.js"></script>
     <script src="scripts/controllers/homeController.js"></script>
-    <script src="scripts/controllers/deviceController.js"></script>
-    <script src="scripts/controllers/roomController.js"></script>
-    <script src="scripts/controllers/widgetController.js"></script>
-    <script src="scripts/controllers/widgetTemplateController.js"></script>
     <script src="scripts/controllers/navigationController.js"></script>
-    <script src="scripts/controllers/dashboardController.js"></script>
-    <script src="scripts/controllers/settingController.js"></script>
     <script src="scripts/controllers/loginController.js"></script>
-    <script src="scripts/controllers/scriptController.js"></script>
-    <script src="scripts/controllers/scriptsController.js"></script>
-    <script src="scripts/controllers/historyController.js"></script>
-    <script src="scripts/controllers/configsController.js"></script>
     <script src="scripts/controllers/configController.js"></script>
-    <script src="scripts/controllers/firmwareController.js"></script>
     <script src="scripts/filters/metaTypeFilter.js"></script>
   </body>
 </html>

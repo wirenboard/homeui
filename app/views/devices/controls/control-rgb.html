@@ -1,9 +1,0 @@
-<h4>{{control.name}}</h4>
-<spectrum-colorpicker format="rgb"
-                      options="{showPalette: true, localStorageKey: 'rgb_palette', showButtons: false}"
-                      transform-rgb
-                      ng-model="control.value"
-                      ng-change="change(control)"
-                      ng-model-options="{ updateOn: 'default blur', debounce: {'default': 100, 'blur': 0} }"
-                      >
-</spectrum-colorpicker>

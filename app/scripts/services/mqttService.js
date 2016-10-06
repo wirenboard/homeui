@@ -102,12 +102,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     service.onConnect = function() {
       console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
       if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
-      client.subscribe(globalPrefix + "/devices/#");
-      //~ client.subscribe(globalPrefix + "/config/#");
-      client.subscribe(globalPrefix + "/config/default_dashboard/#");
-      client.subscribe(globalPrefix + "/config/rooms/#");
-      client.subscribe(globalPrefix + "/config/widgets/#");
-      client.subscribe(globalPrefix + "/config/dashboards/#");
+
 
       connected = true;
       stickySubscriptions.forEach(function (item) {
