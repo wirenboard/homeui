@@ -11,19 +11,16 @@ clean :
 
 
 install: all
-	cp -a  bower_components/*  $(DESTDIR)/var/www/bower_components/
-	cp -a  app/images/*  $(DESTDIR)/var/www/images/
-	cp -a  app/lib/*  $(DESTDIR)/var/www/lib/
-	cp -a  app/styles/*  $(DESTDIR)/var/www/styles/
-	cp -a  app/views/*  $(DESTDIR)/var/www/views/
-	cp -a  app/scripts/*  $(DESTDIR)/var/www/scripts/
+	install -d -m 0777 $(DESTDIR)/var/www/hitedconf/
 
-	install  -m 0644 app/404.html  $(DESTDIR)/var/www/
-	install  -m 0644 app/robots.txt  $(DESTDIR)/var/www/
-	install  -m 0644 app/index.html  $(DESTDIR)/var/www/
+	cp -a  bower_components/*  $(DESTDIR)/var/www/hitedconf/bower_components/
+	cp -a  app/images/*  $(DESTDIR)/var/www/hitedconf/images/
+	cp -a  app/lib/*  $(DESTDIR)/var/www/hitedconf/lib/
+	cp -a  app/styles/*  $(DESTDIR)/var/www/hitedconf/styles/
+	cp -a  app/views/*  $(DESTDIR)/var/www/hitedconf/views/
+	cp -a  app/scripts/*  $(DESTDIR)/var/www/hitedconf/scripts/
 
-	install -m 0644 default_config_dump.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.tsv
-	install -m 0644 default_config_dump.wb5.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv
-
-	install -d -m 0777 $(DESTDIR)/var/www/uploads/
-
+	install  -m 0644 app/404.html  $(DESTDIR)/var/www/hitedconf/
+	install  -m 0644 app/robots.txt  $(DESTDIR)/var/www/hitedconf/
+	install  -m 0644 app/index.html  $(DESTDIR)/var/www/hitedconf/
+	install  -m 0644 nginx_custom.conf $(DESTDIR)/etc/nginx/sites-available/hited

@@ -1,0 +1,8 @@
+var/www/hitedconf/images
+var/www/hitedconf/bower_components
+var/www/hitedconf/lib
+var/www/hitedconf/scripts
+var/www/hitedconf/styles
+var/www/hitedconf/views
+usr/share/wb-mqtt-homeui
+etc/nginx/sites-available

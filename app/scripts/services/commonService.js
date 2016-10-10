@@ -21,7 +21,7 @@ angular.module('homeuiApp.commonServiceModule', [])
 
         commonCode.tryConnect = function() {
             if ($window.localStorage['port'] == undefined) {
-                $window.localStorage['port'] = 18883;
+                $window.localStorage['port'] = 80;
             }
 
             if ($window.localStorage['host'] == undefined) {

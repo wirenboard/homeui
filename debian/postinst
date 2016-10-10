@@ -1,33 +1,5 @@
 #!/bin/sh
 set -e
-. /etc/wb_env.sh
-
-
-case "$WB_VERSION" in
-    "52"|"50" )
-        CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv"
-    ;;
-
-    * ) 
-        CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.tsv"
-    ;;
-esac
-
-
-case "$1" in
-    configure)
-
-	CONFIG_PRESENT=`mqtt-get-dump '/config/#' | wc -l`
-	if [ $CONFIG_PRESENT = "0" ]; then
-		# no config
-
-		mqtt-upload-dump ${CONF_FILE}
-
-	fi
-
-    ;;
-esac
-
 
 #DEBHELPER#
 
