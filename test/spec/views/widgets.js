@@ -177,7 +177,7 @@ describe("Widgets view", () => {
   }
 
   it("should provide history links for cells", () => {
-    var ts = "/1466110800000/-";
+    var ts = "/1466110800000/-"; // TBD: XXX -- fixme -- this is tz-dependent
     expect(extractHistoryLinks()).toEqual([
       "#/history/foo/switch1" + ts,
       "#/history/foo/switch2" + ts,
