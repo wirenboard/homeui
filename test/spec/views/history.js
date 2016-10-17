@@ -4,7 +4,8 @@ describe("History view", () => {
   var f,
       MqttRpcViewFixture,
       TOPIC1 = "/devices/somedev/controls/somectl",
-      TOPIC2 = "/devices/somedev/controls/anotherctl";
+      TOPIC2 = "/devices/somedev/controls/anotherctl",
+      TOPIC3 = "/devices/somedev/controls/yetanotherctl";
 
   beforeEach(() => {
     module("homeuiApp.mqttRpcViewFixture");
@@ -27,23 +28,32 @@ describe("History view", () => {
   function setup (routeParams) {
     return () => {
       f = new MqttRpcViewFixture("/rpc/v1/db_logger/history", "views/history.html", "HistoryCtrl", {
-        // Fake control list
-        CommonCode: {
-          data: {
-            controls: [
-              { topic: TOPIC1 },
-              { topic: TOPIC2 }
-            ]
-          }
-        },
         $routeParams: routeParams || {}
       });
       spyOn(f.$location, "path");
     };
   }
 
-  beforeEach(inject(_MqttRpcViewFixture_ => {
+  beforeEach(inject((_MqttRpcViewFixture_, uiConfig) => {
     MqttRpcViewFixture = _MqttRpcViewFixture_;
+    uiConfig.data.widgets = [
+      {
+        id: "widget1",
+        name: "Widget 1",
+        cells: [
+          { id: "somedev/somectl", name: "Some Control" },
+          { id: "somedev/anotherctl", name: "Another Control" }
+        ]
+      },
+      {
+        id: "widget2",
+        name: "Widget 2",
+        cells: [
+          { id: "somedev/yetanotherctl", name: "Yet Another Control" }
+        ]
+      }
+    ];
+    uiConfig.ready();
   }));
 
   afterEach(() => {
@@ -67,13 +77,14 @@ describe("History view", () => {
         opt => [opt.value, $(opt).text().replace(/^s\*|\s*$/g, "")]);
       expect(options).toEqual([
         ["", "- Please Choose -"],
-        [TOPIC1, TOPIC1],
-        [TOPIC2, TOPIC2]
+        [TOPIC2, "Widget 1 / Another Control"], // alphabetical sort
+        [TOPIC1, "Widget 1 / Some Control"],
+        [TOPIC3, "Widget 2 / Yet Another Control"]
       ]);
     });
 
     it("should jump to topic history URL after selecting topic", () => {
-      $("#control-select option:eq(1)").prop("selected", true);
+      $("#control-select option:eq(2)").prop("selected", true);
       $("#control-select").trigger("change");
       expect(f.$location.path).toHaveBeenCalledWith("/history/somedev/somectl/-/-");
       f.$location.path.calls.reset();

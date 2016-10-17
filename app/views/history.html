@@ -12,7 +12,7 @@
                 ng-model="selectedTopic">
           <option value=''>- Please Choose -</option>
           <option ng-selected="control.topic == selectedTopic"
-                  ng-repeat="control in controls" value="{{control.topic}}">{{control.topic}}</option>
+                  ng-repeat="control in controls" value="{{control.topic}}">{{control.name}}</option>
         </select>
       </div>
     </div>

@@ -2,8 +2,8 @@
 
 angular.module("homeuiApp")
   .controller("HistoryCtrl", function ($scope, $routeParams, $location, HistoryProxy,
-                                       whenMqttReady, errors, CommonCode, historyMaxPoints,
-                                       $timeout, dateFilter) {
+                                       whenMqttReady, errors, historyMaxPoints,
+                                       $timeout, dateFilter, uiConfig, orderByFilter) {
     function convDate (ts) {
       if (ts == null || ts == "-")
         return null;
@@ -12,11 +12,26 @@ angular.module("homeuiApp")
       return d;
     }
 
+    function topicFromCellId (cellId) {
+      return "/devices/" + cellId.replace("/", "/controls/");
+    }
+
     $scope.dataPoints = [];
     $scope.topic = $routeParams.device && $routeParams.control ?
       "/devices/" + $routeParams.device + "/controls/" + $routeParams.control :
       null;
-    $scope.controls = CommonCode.data.controls;
+    $scope.controls = [];
+    uiConfig.whenReady().then((data) => {
+      $scope.controls = orderByFilter(
+        Array.prototype.concat.apply(
+          [], data.widgets.map(widget =>
+                               widget.cells.map(cell =>
+                                                ({
+                                                  topic: topicFromCellId(cell.id),
+                                                  name: widget.name + " / " + (cell.name || cell.id)
+                                                })))),
+        "name");
+    });
     $scope.startDate = convDate($routeParams.start);
     $scope.endDate = convDate($routeParams.end);
     $scope.shouldShowChart = function () {
