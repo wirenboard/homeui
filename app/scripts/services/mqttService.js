@@ -44,10 +44,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
   .value("mqttReconnectDelay", 1500)
   .value("mqttDigestInterval", 250)
 
-  .factory('mqttClient', ($window, $rootScope, $timeout, topicMatches,
-                          mqttConnectTimeout,
-                          mqttReconnectDelay,
-                          mqttDigestInterval) => {
+  .factory('mqttClient', ($window, $rootScope, $timeout, topicMatches,mqttConnectTimeout, mqttReconnectDelay, mqttDigestInterval) => {
     var globalPrefix = '',
         service = {},
         client = {},
@@ -164,10 +161,6 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
 
     // TBD: unsubcribe
 
-    service.onMessage = function(callback) {
-      service.callback = callback;
-    };
-
     service.onConnectionLost = function (responseObject) {
       console.log("Server connection lost: %o", responseObject);
       connected = false;
@@ -199,10 +192,6 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
           });
         });
       });
-      // FIXME: probably should get rid of the following
-      // (use common subscription mechanism implemented above)
-      service.callback(message);
-      // $rootScope.$digest();
       if (!messageDigestTimer)
         messageDigestTimer = $timeout(() => { messageDigestTimer = null; }, mqttDigestInterval);
     };

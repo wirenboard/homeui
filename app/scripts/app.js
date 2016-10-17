@@ -11,8 +11,6 @@
 angular
   .module('homeuiApp', [
     'homeuiApp.mqttServiceModule',
-    'homeuiApp.dataServiceModule',
-    'homeuiApp.commonServiceModule',
     'homeuiApp.dataFilters',
     'homeuiApp.MqttRpc',
     'homeuiApp.DumbTemplate',
@@ -126,9 +124,36 @@ angular
   });
 
 angular.module("realHomeuiApp", ["homeuiApp"])
-  .run(($rootScope, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
+  .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     // TBD: the following should be handled by config sync service
     var configSaveDebounce = null;
+    // TBD: loginService
+    function randomString (length) {
+      var text = "";
+      var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (var i = 0; i < length; i++)
+        text += chars.charAt(Math.floor(Math.random() * chars.length));
+      return text;
+    }
+
+    var loginData = {
+      host: $window.localStorage['host'],
+      port: $window.localStorage['port'],
+      user: $window.localStorage['user'],
+      password: $window.localStorage['password'],
+      prefix: $window.localStorage['prefix']
+    };
+
+    if (loginData.host && loginData.port) {
+      var clientID = 'contactless-' + randomString(10);
+      console.log('Try to connect as ' + clientID);
+      mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
+      console.log('Successfully logged in ' + clientID);
+    } else {
+      alert("Please specify connection data in Settings");
+      return;
+    }
+
     whenMqttReady()
       .then(() => ConfigEditorProxy.Load({ path: webuiConfigPath }))
       .then((r) => {

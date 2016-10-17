@@ -1,16 +1,15 @@
 'use strict';
 
 angular.module('homeuiApp')
-  .controller('NavigationCtrl', function($scope, $location, CommonCode, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig) {
+  .controller('NavigationCtrl', function($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig) {
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };
-    $scope.data = CommonCode.data;
+
     $scope.dashboards = () => {
       return uiConfig.data.dashboards.filter(dashboard => !dashboard.isNew);
     };
-    $scope.widgets = $scope.data.widgets;
-    $scope.widget_templates = $scope.data.widget_templates;
+
     $scope.isConnected = function () {
       return mqttClient.isConnected();
     };
