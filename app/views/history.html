@@ -64,21 +64,8 @@
 
   <!-- don't use ng-show on c3 because it will cause problems with chart size -->
   <div class="col-sm-12" ng-if="!spinnerActive('historyProxy')">
-    <c3chart ng-if="shouldShowChart()"
-             bindto-id="histchart"
-             chart-data="datapoints"
-             chart-columns="datacolumns"
-             chart-x="datax"
-             enable-zoom="true">
-      <chart-legend show-legend="false"/>
-      <chart-axis-x axis-id="x" axis-type="timeseries">
-        <chart-axis-x-tick tick-format="%Y-%m-%d %H:%M:%S"
-                           tick-culling-max="4"
-                           tick-centered="true"/>
-      </chart-axis-x>
-      <chart-points show-point="false"/>
-    </c3chart>
-    <div class="history-empty" ng-show="topic !== null && !datapoints.length">
+    <c3-simple ng-if="shouldShowChart()" id="histchart" config="chartConfig"></c3-simple>
+    <div class="history-empty" ng-show="topic !== null && !dataPoints.length">
       No data points to display.
     </div>
   </div>
@@ -92,7 +79,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="p in datapoints">
+        <tr ng-repeat="p in dataPoints">
           <td>{{ p.x | date:'yyyy-MM-dd HH:mm:ss' }}</td>
           <td>{{ p.y }}</td>
         </tr>

@@ -26,7 +26,7 @@ angular
     'ngOrderObjectBy',
     'ui.bootstrap',
     'ui.codemirror',
-    'gridshore.c3js.chart',
+    'angular-c3-simple',
     'angular-json-editor',
     'angular-sortable-view',
     'xeditable',

@@ -3,13 +3,7 @@
 angular.module("homeuiApp")
   .controller("HistoryCtrl", function ($scope, $routeParams, $location, HistoryProxy,
                                        whenMqttReady, errors, CommonCode, historyMaxPoints,
-                                       $timeout) {
-    $scope.datapoints = [];
-    $scope.datacolumns = [
-      { "id":"y", "type":"line", "color":"green" }
-    ];
-    $scope.datax = { "id":"x" };
-
+                                       $timeout, dateFilter) {
     function convDate (ts) {
       if (ts == null || ts == "-")
         return null;
@@ -18,6 +12,7 @@ angular.module("homeuiApp")
       return d;
     }
 
+    $scope.dataPoints = [];
     $scope.topic = $routeParams.device && $routeParams.control ?
       "/devices/" + $routeParams.device + "/controls/" + $routeParams.control :
       null;
@@ -25,9 +20,9 @@ angular.module("homeuiApp")
     $scope.startDate = convDate($routeParams.start);
     $scope.endDate = convDate($routeParams.end);
     $scope.shouldShowChart = function () {
-      return !$scope.spinnerActive('historyProxy') &&
+      return !$scope.spinnerActive("historyProxy") &&
         $scope.topic !== null &&
-        !!$scope.datapoints.length;
+        !!$scope.chartConfig;
     };
 
     function parseTopic (topic) {
@@ -127,14 +122,40 @@ angular.module("homeuiApp")
       HistoryProxy.get_values(params).then(function (result) {
         if (result.has_more)
           errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
-        $scope.datapoints = result.values.map(function (item) {
+        var xValues = result.values.map(item => {
           var ts = new Date();
           ts.setTime(item.t * 1000);
-          return {
-            x: ts,
-            y: item.v - 0
-          };
-        });
+          return dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
+        }), yValues = result.values.map(item => item.v - 0);
+        $scope.chartConfig = {
+          data: {
+            x: "x",
+            xFormat: "%Y-%m-%d %H:%M:%S",
+            columns: [
+              ["x"].concat(xValues),
+              ["y"].concat(yValues)
+            ]
+          },
+          axis: {
+            x: {
+              type: "timeseries",
+              tick: {
+                count: 10,
+                format: "%Y-%m-%d %H:%M:%S"
+              }
+            }
+          },
+          point: {
+            show: false
+          },
+          zoom: {
+            enabled: true
+          },
+          color: {
+            pattern: ["green"]
+          }
+        };
+        $scope.dataPoints = xValues.map((x, i) => ({ x: x, y: yValues[i] }));
       }).catch(errors.catch("Error getting history"));
     }
 
