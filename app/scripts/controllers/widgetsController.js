@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module("homeuiApp")
-  .controller("WidgetsCtrl", function ($scope, uiConfig, DeviceData) {
+  .controller("WidgetsCtrl", function ($scope, uiConfig, DeviceData, getTime) {
     $scope.cell = id => {
       return DeviceData.proxy(id);
     };
@@ -17,8 +17,10 @@ angular.module("homeuiApp")
     }
 
     $scope.historyStartTS = () => {
-      var t = new Date().getTime();
-      return t - t % 86400000;
+      var t = getTime(),
+          d = new Date();
+      d.setTime(t);
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
     };
     $scope.rows = [];
     $scope.$watch(uiConfig.version, () => {
