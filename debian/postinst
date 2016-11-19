@@ -4,7 +4,7 @@ set -e
 
 
 case "$WB_VERSION" in
-    "52"|"50" )
+    "58" | "55" | "52"|"50" )
         CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv"
     ;;
 
