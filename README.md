@@ -20,6 +20,10 @@
 This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
 version 0.11.1.
 
+# MQTT naming conventions
+
+See into conventions.md to understand how to organize devices and controls (what write to /meta/type for example).
+
 ## Build & development
 
 Run `grunt` for building and `grunt serve` for preview.
