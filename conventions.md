@@ -7,6 +7,7 @@ Each *device* has some *controls* assigned to it, i.e. parameters that can be co
 For example, some room lighting control *device* with one input (for wall switch) and one output (for controlling the lamp) *controls* is represented with MQTT topics as following:
 
 * `/devices/RoomLight/meta/name` - 'Light in my room', human-friendly description of the *device*
+* `/devices/RoomLight/meta/error` - device-level error state, non-null means there was an error (usable as Last Will and Testament)
 * `/devices/RoomLight/controls/Lamp` - contains current lamp state, '0' = off, '1' = on
 * `/devices/RoomLight/controls/Lamp/on` - send a message with this topic and payload of '0'/'1' to turn lamp off or on
 * `/devices/RoomLight/controls/Lamp/meta/type` - 'switch' (binary value)
