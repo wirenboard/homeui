@@ -7,7 +7,7 @@
       <div class="panel panel-primary">
         <div class="panel-heading" device-name></div>
         <div class="panel-body">
-          <div ng-repeat="(controlName, control) in device.controls | orderObjectBy:'metaOrder'" class="control-wrapper" ng-class="(control.metaError) ? 'control-error' : ''">
+          <div ng-repeat="(controlName, control) in device.controls | orderObjectBy:'metaOrder'" class="clearfix control-wrapper" ng-class="(control.metaError) ? 'control-error' : ''">
 
             <device-control></device-control>
           </div>
