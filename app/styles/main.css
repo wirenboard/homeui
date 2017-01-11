@@ -263,28 +263,30 @@ ul.alert-dropdown {
 }
 
 /* Devices List */
-
-.multicol-list{
-  position: relative;
-  -webkit-column-width: 390px;
-  -webkit-column-gap: 0;
-  -moz-column-width: 390px;
-  -moz-column-gap: 0;
-  column-width: 390px;
-  column-gap: 0;
+.multicol-list {
+    -webkit-column-gap: 30px;
+    -moz-column-gap: 30px;
+    column-gap: 30px;
+    padding: 0;
+    -webkit-columns: auto 2;
+    -moz-columns: auto 2;
+    columns: auto 2; 
 }
 
 .multicol-list ul li{
   display: inline-block;
-  width: 380px;
+  width: 100%;
 }
 
-
-
-
+@media (max-width: 992px) {
+  .multicol-list {
+    -webkit-columns: auto 1;
+    -moz-columns: auto 1;
+    columns: auto 1; 
+  }
+}
 
 /* Form Validation */
-
 .ng-invalid{
   border-color: #FA787E;
 }
