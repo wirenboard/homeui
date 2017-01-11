@@ -106,6 +106,14 @@ angular.module('homeuiApp.dataServiceModule', [])
                   slot1: {name: 'Associated switch', uid: 'slot1', type: 'switch'},
                 }
           },
+      thermostat : { uid: 'thermostat', name: 'Thermostat',
+                options: {},
+                slots: {
+                  slot0: {name: 'Temperature', uid: 'slot0', type: 'temperature'},
+                  slot1: {name: 'Thermostat', uid: 'slot1', type: 'range' },
+		  slot2: {name: 'Heating', uid: 'slot2', type: 'switch' }
+                }
+          }
     };
 
     dataService.parseMsg = function(message) {

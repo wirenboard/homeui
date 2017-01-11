@@ -204,4 +204,10 @@ angular.module('homeuiApp')
       restrict: 'A',
       templateUrl: 'views/widgets/templates/widget-fan.html'
     };
+  })
+  .directive('widgetThermostat', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/templates/widget-thermostat.html'
+    };
   });

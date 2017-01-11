@@ -1,0 +1,11 @@
+<span>{{ widget.controls.slot0.topic.value }} &deg;C</span>
+
+<div ng-switch on="widget.controls.slot2.topic.value" class="pull-right">
+    <span ng-switch-when="1" class="label label-danger">ON</span>
+    <span ng-switch-when="0" class="label label-default">OFF</span>
+</div>
+<div class="pull-right">
+    <span class="label label-info">{{ widget.controls.slot1.topic.value / 10 }} </span>
+</div>
+<input type="range" ng-model="widget.controls.slot1.topic.value"  max="{{widget.controls.slot1.topic.metaMax}}" ng-change="change(widget.controls.slot1.topic)" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 100, 'blur': 0} }"/>
+
