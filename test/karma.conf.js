@@ -23,8 +23,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       // bower:js
-      'bower_components/jquery/dist/jquery.js',
       'bower_components/angular/angular.js',
+      'bower_components/jquery/dist/jquery.js',
       'bower_components/bootstrap/dist/js/bootstrap.js',
       'bower_components/angular-resource/angular-resource.js',
       'bower_components/angular-route/angular-route.js',
@@ -47,12 +47,10 @@ module.exports = function(config) {
       'bower_components/jquery-simulate/jquery.simulate.js',
       // endbower
       'bower_components/codemirror/mode/javascript/javascript.js',
-      'bower_components/angular-c3-simple/src/angular_c3_simple.js',
       'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'app/scripts/**/*.js',
       'app/scripts/**/*.html',
       'app/views/**/*.html',
-      'app/styles/**/*.css',
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
@@ -80,9 +78,7 @@ module.exports = function(config) {
     plugins: [
       'karma-ng-html2js-preprocessor',
       'karma-chrome-launcher',
-      'karma-jasmine',
-      'karma-emacs-reporter',
-      'karma-jasmine-diff-reporter'
+      'karma-jasmine'
     ],
 
     // Continuous Integration mode
@@ -95,10 +91,10 @@ module.exports = function(config) {
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
     logLevel: config.LOG_INFO,
 
-    reporters: [ "jasmine-diff", "dots", "emacs" ],
+    reporters: [ "dots" ],
 
     ngHtml2JsPreprocessor: {
-      stripPrefix: "^([^/]*)/",
+      stripPrefix: "^([^/]*)",
       moduleName: "homeuiApp"
     }
     // Uncomment the following lines if you are using grunt's server to run the tests

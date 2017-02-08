@@ -15,6 +15,9 @@ module.exports = function (grunt) {
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
+  var serveStatic = require('serve-static');
+//  var serveIndex = require('serve-index');
+  
   // Configurable paths for the application
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
@@ -35,7 +38,7 @@ module.exports = function (grunt) {
       },
       js: {
         files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
-        tasks: [], //['newer:jshint:all'],
+        tasks: ['newer:jshint:all'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
@@ -56,9 +59,9 @@ module.exports = function (grunt) {
           livereload: '<%= connect.options.livereload %>'
         },
         files: [
-          '<%= yeoman.app %>/{,**/}*.html',
-          '.tmp/styles/{,**/}*.css',
-          '<%= yeoman.app %>/images/{,**/}*.{png,jpg,jpeg,gif,webp,svg}'
+          '<%= yeoman.app %>/{,*/}*.html',
+          '.tmp/styles/{,*/}*.css',
+          '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
     },
@@ -68,7 +71,8 @@ module.exports = function (grunt) {
       options: {
         port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost',
+        hostname: '0.0.0.0',
+//      hostname: 'localhost',
         livereload: 35729
       },
       livereload: {
@@ -76,16 +80,16 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [
-              connect.static('.tmp'),
+              serveStatic('.tmp'),
               connect().use(
                 '/bower_components',
-                connect.static('./bower_components')
+                serveStatic('./bower_components')
               ),
               connect().use(
                 '/app/styles',
-                connect.static('./app/styles')
+                serveStatic('./app/styles')
               ),
-              connect.static(appConfig.app)
+              serveStatic(appConfig.app)
             ];
           }
         }
@@ -95,17 +99,18 @@ module.exports = function (grunt) {
           port: 9001,
           middleware: function (connect) {
             return [
-              connect.static('.tmp'),
-              connect.static('test'),
+              serveStatic('.tmp'),
+              serveStatic('test'),
               connect().use(
                 '/bower_components',
-                connect.static('./bower_components')
+                serveStatic('./bower_components')
               ),
-              connect.static(appConfig.app)
+              serveStatic(appConfig.app)
             ];
           }
         }
       },
+
       dist: {
         options: {
           open: true,
@@ -268,6 +273,36 @@ module.exports = function (grunt) {
     // concat: {
     //   dist: {}
     // },
+    
+    cssmin: {
+      target: {
+         files: {
+            '<%= yeoman.dist %>/styles/main.css': [
+              '.tmp/styles/{,*/}*.css'
+            ]
+         }
+      }
+    },
+
+    uglify: {
+      my_target: {
+        files: {
+          '<%= yeoman.dist %>/scripts/scripts.js': [
+            '.tmp/concat/scripts/scripts.js'
+          ]
+        }
+      }
+    },
+  
+    concat: {
+      options: {
+        separator: ';',
+      },
+      dist: {
+        src: ['.tmp/compiled/**/*.js'],
+        dest: '.tmp/concat/scripts/scripts.js',
+      },
+    },
 
     imagemin: {
       dist: {
@@ -386,9 +421,25 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: false
       }
+    },
+    
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['es2015']
+      },
+//      target: {
+        files: {
+//          '.tmp/transpiled/{,*/}*.js': '<%= yeoman.app %>/scripts/{,*/}*.js'
+          expand: true,
+          cwd: '<%= yeoman.app %>/scripts/',
+          dest: '.tmp/compiled/',
+          src: ['**/*.js'], // *.es6?
+          ext: '.js'
+        }
+//      }
     }
   });
-
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
@@ -415,13 +466,14 @@ module.exports = function (grunt) {
     'wiredep',
     'concurrent:test',
     'autoprefixer',
-    'connect:test',
-    'karma'
+//    'connect:test',
+//    'karma'
   ]);
 
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
+    'babel',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
