@@ -279,7 +279,11 @@ ul.alert-dropdown {
   width: 380px;
 }
 
-
+@media(max-width:768px) {
+    .multicol-list ul {
+        overflow-x: scroll;
+    }
+}
 
 
 
