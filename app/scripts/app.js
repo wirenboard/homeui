@@ -1,4 +1,16 @@
-'use strict';
+// Import slylesheets
+import 'bootstrap/dist/css/bootstrap.css';
+import '../styles/main.css';
+import 'spectrum-colorpicker/spectrum.css';
+import 'codemirror/lib/codemirror.css';
+
+// Angular packages
+import angular from 'angular';
+
+import 'bootstrap';
+import spectrum from 'spectrum-colorpicker/spectrum';
+//import codemirror from 'codemirror/lib/codemirror';
+import codemirror from 'codemirror/mode/javascript/javascript';
 
 /**
  * @ngdoc overview
