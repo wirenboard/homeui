@@ -1,7 +1,8 @@
-'use strict';
+class SettingCtrl {
+  constructor($scope, $rootScope, $window, mqttClient) {
+    'ngInject';
+    console.log('SettingCtrl constructor call.');
 
-angular.module('homeuiApp')
-  .controller('SettingCtrl', ['$scope', '$rootScope', '$window', 'mqttClient', function($scope, $rootScope, $window, mqttClient){
     $scope.loginSettings = {};
     $scope.loginSettings.host = $window.localStorage['host'];
     $scope.loginSettings.port = $window.localStorage['port'];
@@ -54,5 +55,8 @@ angular.module('homeuiApp')
       var uid = $scope.dashboard ? $scope.dashboard.uid : '';
       console.log('New default dashboard: ' + uid);
       mqttClient.send('/config/default_dashboard/uid', uid);
-    };
-  }]);
+    };  
+  }
+}
+
+export default SettingCtrl;

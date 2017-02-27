@@ -12,11 +12,18 @@ import 'bootstrap';
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import DashboardsCtrl from './controllers/dashboardsController';
+import DashboardCtrl from './controllers/dashboardController';
 import DevicesCtrl from './controllers/devicesController';
 import WidgetsCtrl from './controllers/widgetsController';
 import HistoryCtrl from './controllers/historyController';
 import ScriptsCtrl from './controllers/scriptsController';
+import ScriptCtrl from './controllers/scriptController';
 import ConfigsCtrl from './controllers/configsController';
+import ConfigCtrl from './controllers/configController';
+import SettingCtrl from './controllers/settingController';
+import NavigationCtrl from './controllers/navigationController';
+import LoginCtrl from './controllers/loginController';
+import FirmwareCtrl from './controllers/firmwareController';
 
 /**
  * @ngdoc overview
@@ -59,11 +66,45 @@ angular.module("homeuiApp")
   .controller("AlertCtrl", AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('DashboardsCtrl', DashboardsCtrl)
+  .controller('DashboardCtrl', DashboardCtrl)
   .controller('DevicesCtrl', DevicesCtrl)
   .controller('WidgetsCtrl', WidgetsCtrl)
   .controller('HistoryCtrl', HistoryCtrl)
   .controller('ScriptsCtrl', ScriptsCtrl)
-  .controller('ConfigsCtrl', ConfigsCtrl);
+  .controller('ConfigsCtrl', ConfigsCtrl)
+  .controller('ConfigCtrl', ConfigCtrl)
+  .controller('FirmwareCtrl', FirmwareCtrl)
+  .controller('SettingCtrl', SettingCtrl)
+  .controller('LoginCtrl', LoginCtrl);
+
+angular.module('homeuiApp')
+  .controller('NavigationCtrl', NavigationCtrl)
+  .directive('widgetMenuItem', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/menu-item.html'
+    };
+  })
+  .directive('widgetTemplateMenuItem', function(){
+    return{
+      restrict: 'A',
+      templateUrl: 'views/widgets/template-menu-item.html'
+    };
+  });
+
+angular.module("homeuiApp")
+  .directive("scriptForm", function (PageState) {
+    return {
+      restrict: "A",
+      link: function (scope, element) {
+        var formCtrl = scope[element.attr("name")];
+        scope.$watch(element.attr("name") + ".$dirty", function (newValue) {
+          PageState.setDirty(newValue);
+        });
+      }
+    };
+  })
+  .controller("ScriptCtrl", ScriptCtrl);
 
 // Set up routes
 angular

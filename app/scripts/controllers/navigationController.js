@@ -1,7 +1,8 @@
-'use strict';
+class NavigationCtrl {
+  constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig) {
+    'ngInject';
+    console.log('NavigationCtrl constructor call.');
 
-angular.module('homeuiApp')
-  .controller('NavigationCtrl', function($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig) {
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };
@@ -25,31 +26,13 @@ angular.module('homeuiApp')
       });
     });
 
-    function collectLocs(scripts, member) {
-      var m = {};
-      scripts.forEach(function (script) {
-        (script[member] || []).forEach(function (loc) {
-          m[loc.name] = {
-            virtualPath: script.virtualPath,
-            name: loc.name,
-            line: loc.line
-          };
-        });
-      });
-      var r = [];
-      Object.keys(m).sort().forEach(function (name) {
-        r.push(m[name]);
-      });
-      return r;
-    }
-
     $scope.getScripts = function () {
       if (needToLoadScripts) {
         needToLoadScripts = false;
         EditorProxy.List().then(function (result) {
           scripts = result;
-          rules = collectLocs(scripts, "rules");
-          devices = collectLocs(scripts, "devices");
+          rules = this.collectLocs(scripts, "rules");
+          devices = this.collectLocs(scripts, "devices");
         }).catch(errors.catch("Error listing the scripts"));
       }
       return scripts;
@@ -74,16 +57,26 @@ angular.module('homeuiApp')
       }
       return configs;
     };
-  })
-  .directive('widgetMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/widgets/menu-item.html'
-    };
-  })
-  .directive('widgetTemplateMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/widgets/template-menu-item.html'
-    };
-  });
+  }
+
+//-----------------------------------------------------------------------------
+  collectLocs(scripts, member) {
+    var m = {};
+    scripts.forEach(function (script) {
+      (script[member] || []).forEach(function (loc) {
+        m[loc.name] = {
+          virtualPath: script.virtualPath,
+          name: loc.name,
+          line: loc.line
+        };
+      });
+    });
+    var r = [];
+    Object.keys(m).sort().forEach(function (name) {
+      r.push(m[name]);
+    });
+    return r;
+  }
+}
+
+export default NavigationCtrl;

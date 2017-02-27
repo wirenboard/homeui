@@ -1,7 +1,8 @@
-"use strict";
+class ConfigCtrl {
+  constructor($scope, $routeParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
+    'ngInject';
+    console.log('ConfigCtrl constructor call.');
 
-angular.module("homeuiApp")
-  .controller("ConfigCtrl", function ($scope, $routeParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     $scope.file = {
       schemaPath: $routeParams.path,
       configPath: "",
@@ -56,4 +57,7 @@ angular.module("homeuiApp")
     };
 
     whenMqttReady().then(load);
-  });
+  }
+}
+
+export default ConfigCtrl;

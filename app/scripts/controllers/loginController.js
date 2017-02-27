@@ -1,7 +1,8 @@
-'use strict';
+class LoginCtrl {
+  constructor($window, $location, $routeParams) {
+    'ngInject';
+    console.log('LoginCtrl constructor call.');
 
-angular.module('homeuiApp')
-  .controller('LoginCtrl', ['$window', '$location', '$routeParams', function($window, $location, $routeParams){
     if($routeParams.id && $routeParams.id === 'wb_008641ccdc3d'){
       if($window.localStorage['user'] === $routeParams.id){
         $location.path('/');
@@ -25,4 +26,7 @@ angular.module('homeuiApp')
         $window.location.reload();
       };
     };
-  }]);
+  }
+}
+
+export default LoginCtrl;

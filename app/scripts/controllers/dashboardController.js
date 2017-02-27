@@ -1,7 +1,8 @@
-"use strict";
+class DashboardCtrl {
+  constructor($scope, uiConfig, $routeParams) {
+    'ngInject';
+    console.log('DashboardCtrl constructor call.');
 
-angular.module("homeuiApp")
-  .controller("DashboardCtrl", function ($scope, uiConfig, $routeParams) {
     var defaultDashboard = {};
     function getDashboard () {
       return uiConfig.getDashboard($routeParams.id);
@@ -24,4 +25,7 @@ angular.module("homeuiApp")
         uiConfig.deleteWidget(widget);
       };
     });
-  });
+  }
+}
+
+export default DashboardCtrl;

@@ -36,12 +36,12 @@
           </button>
         </form>
         <div class="buttons" ng-show="!rowform.$visible">
-          <a class="btn btn-primary" href="#/dashboards/{{dashboard.id}}">View</a>
+          <a class="btn btn-primary" href="/dashboards/{{dashboard.id}}">View</a>
           <button name="edit" type="button" class="btn btn-primary" ng-click="rowform.$show()">Edit</button>
           <button name="delete" type="button" class="btn btn-danger" ng-click="model(dashboard).remove()">Delete</button>
         </div>  
         <!--
-        <a href='#/dashboards/{{dashboard.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
+        <a href='/dashboards/{{dashboard.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
         -->
       </td>
     </tr>
