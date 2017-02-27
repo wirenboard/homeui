@@ -12,6 +12,9 @@ import spectrum from 'spectrum-colorpicker/spectrum';
 //import codemirror from 'codemirror/lib/codemirror';
 import codemirror from 'codemirror/mode/javascript/javascript';
 
+// homeui modules
+import HomeCtrl from './controllers/homeController';
+
 /**
  * @ngdoc overview
  * @name homeuiApp
@@ -45,7 +48,16 @@ angular
   ])
   .value("historyMaxPoints", 1000)
   .value("webuiConfigPath", "/etc/wb-webui.conf")
-  .value("configSaveDebounceMs", 300)
+  .value("configSaveDebounceMs", 300);
+
+// Register controllers
+angular
+  .module('homeuiApp')
+  .controller('HomeCtrl', HomeCtrl);
+
+// Set up routes
+angular
+  .module('homeuiApp')
   .config(($routeProvider, JSONEditorProvider, DumbTemplateProvider) => {
     var DumbTemplate = null;
     JSONEditorProvider.configure({

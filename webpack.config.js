@@ -93,7 +93,7 @@ module.exports = function makeWebpackConfig() {
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      include: path.resolve(__dirname, 'scripts/'),
+      include: path.resolve(__dirname, 'scripts'),
       exclude: /(node_modules|bower_components)/,
       use: [{
           loader: 'babel-loader',

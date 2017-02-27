@@ -1,6 +1,9 @@
-'use strict';
+class HomeCtrl {
+  constructor($scope) {
+    'ngInject';
+    this.name = 'Home';
+    console.log('HomeCtrl constructor call.');
+  }
+}
 
-angular.module('homeuiApp')
-  .controller('HomeCtrl', function ($scope){
-    // TBD
-  });
+export default HomeCtrl;
