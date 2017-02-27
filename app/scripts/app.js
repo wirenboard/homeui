@@ -25,9 +25,11 @@ import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
 
-import routing from './app.routes.js'
+import routing from './app.routes.js';
 
-import errorsService from './services/errors'
+import errorsService from './services/errors';
+import mqttServiceModule from './services/mqttService';
+
 /**
  * @ngdoc overview
  * @name homeuiApp
@@ -38,7 +40,7 @@ import errorsService from './services/errors'
  */
 angular
   .module('homeuiApp', [
-    'homeuiApp.mqttServiceModule',
+    mqttServiceModule,
     'homeuiApp.dataFilters',
     'homeuiApp.MqttRpc',
     'homeuiApp.DumbTemplate',
