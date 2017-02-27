@@ -2,18 +2,21 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
-import 'codemirror/lib/codemirror.css';
 
 // Angular packages
 import angular from 'angular';
 
 import 'bootstrap';
-import spectrum from 'spectrum-colorpicker/spectrum';
-//import codemirror from 'codemirror/lib/codemirror';
-import codemirror from 'codemirror/mode/javascript/javascript';
 
 // homeui modules
+import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
+import DashboardsCtrl from './controllers/dashboardsController';
+import DevicesCtrl from './controllers/devicesController';
+import WidgetsCtrl from './controllers/widgetsController';
+import HistoryCtrl from './controllers/historyController';
+import ScriptsCtrl from './controllers/scriptsController';
+import ConfigsCtrl from './controllers/configsController';
 
 /**
  * @ngdoc overview
@@ -51,15 +54,23 @@ angular
   .value("configSaveDebounceMs", 300);
 
 // Register controllers
-angular
-  .module('homeuiApp')
-  .controller('HomeCtrl', HomeCtrl);
+angular.module("homeuiApp")
+  .value("AlertDelayMs", 5000)
+  .controller("AlertCtrl", AlertCtrl)
+  .controller('HomeCtrl', HomeCtrl)
+  .controller('DashboardsCtrl', DashboardsCtrl)
+  .controller('DevicesCtrl', DevicesCtrl)
+  .controller('WidgetsCtrl', WidgetsCtrl)
+  .controller('HistoryCtrl', HistoryCtrl)
+  .controller('ScriptsCtrl', ScriptsCtrl)
+  .controller('ConfigsCtrl', ConfigsCtrl);
 
 // Set up routes
 angular
   .module('homeuiApp')
-  .config(($routeProvider, JSONEditorProvider, DumbTemplateProvider) => {
+  .config(($routeProvider,  $locationProvider, JSONEditorProvider, DumbTemplateProvider) => {
     var DumbTemplate = null;
+
     JSONEditorProvider.configure({
       defaults: {
         options: {
@@ -136,6 +147,9 @@ angular
       .otherwise({
         redirectTo: '/'
       });
+
+    // use the HTML5 History API
+    $locationProvider.html5Mode(true).hashPrefix('!');
   })
   .run(($rootScope, $location) => {
     $rootScope.objectsKeys = function(collection){

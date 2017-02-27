@@ -1,7 +1,8 @@
-"use strict";
+class DashboardsCtrl {
+  constructor($scope, uiConfig) {
+    'ngInject';
+    console.log('DashboardsCtrl constructor call.');
 
-angular.module("homeuiApp")
-  .controller("DashboardsCtrl", function ($scope, uiConfig) {
     // FIXME: make better use of the model
     $scope.data = uiConfig.data;
 
@@ -34,4 +35,7 @@ angular.module("homeuiApp")
       delete dashboard.isNew;
     };
     // TBD: add uiconfig methods to save/revert dashboards
-  });
+  }
+}
+
+export default DashboardsCtrl;

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="bower_components/css-spinners/css/spinner/spinner.css">
     <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css"></script>
     <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css"></script>
+    <base href="/">
   </head>
   <body ng-app="realHomeuiApp">
     <!--[if lt IE 7]>
@@ -29,7 +30,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#/">Wiren Board Web UI</a>
+          <a class="navbar-brand" href="/">Wiren Board Web UI</a>
 
 
         <p class="navbar-text navbar-right connection-status">
@@ -47,36 +48,36 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
           <ul class="nav navbar-nav side-nav">
             <li ng-class="{ active: isActive('/') }">
-              <a href="#/"><i class="glyphicon glyphicon-cog"></i> Home</a>
+              <a href="/"><i class="glyphicon glyphicon-cog"></i> Home</a>
             </li>
             <li ng-class="{ active: isActive('/dashboards') }" class="list-menu">
-              <a href="#/dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
+              <a href="/dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="dashboards-menu" class="collapse">
                 <li ng-repeat="dashboard in dashboards()" dashboard-menu-item>
-                  <a href="#/dashboards/{{ dashboard.id }}" ng-class="{ active: isActive('/dashboards/{{ dashboard.id }}') }">{{ dashboard.name }}</a>
+                  <a href="/dashboards/{{ dashboard.id }}" ng-class="{ active: isActive('/dashboards/{{ dashboard.id }}') }">{{ dashboard.name }}</a>
                 </li>
               </ul>
             </li>
             <li ng-class="{ active: isActive('/devices') }">
-              <a href="#/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
+              <a href="/devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
             </li>
             <li ng-class="{ active: isActive('/widgets') }">
-              <a href="#/widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
+              <a href="/widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
             </li>
             <li ng-class="{ active: isActive('/history') }">
-              <a href="#/history"><i class="glyphicon glyphicon-stats"></i> History</a>
+              <a href="/history"><i class="glyphicon glyphicon-stats"></i> History</a>
             </li>
             <li ng-if="isConnected()" ng-class="{ active: isActive('/scripts') }">
-              <a href="#/scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
+              <a href="/scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
             </li>
 
             <li ng-if="isConnected()" ng-class="{ active: isActive('/configs') }" class="list-menu config-menu">
-              <a href="#/configs"><i class="glyphicon glyphicon-file"></i> Configs</a>
+              <a href="/configs"><i class="glyphicon glyphicon-file"></i> Configs</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#configs-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="configs-menu" class="collapse">
                 <li ng-repeat="config in getConfigs()">
-                  <a href="#/configs/edit{{ config.schemaPath }}"
+                  <a href="/configs/edit{{ config.schemaPath }}"
                      ng-class="{ active: isActive('/configs/edit{{ config.schemaPath }}'), error: !!config.error }">
                     {{ config.title }}
                     <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>
@@ -85,7 +86,7 @@
               </ul>
             </li>
             <li ng-class="{ active: isActive('/settings') }">
-              <a href="#/settings"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
+              <a href="/settings"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
             </li>
           </ul>
         </div>
@@ -146,7 +147,9 @@
 
     <script src="lib/mqttws31.js"></script>
 
-    <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/codemirror/lib/codemirror.js"></script>
+    <script type="text/javascript" src="bower_components/codemirror/mode/javascript/javascript.js"></script><script type="text/javascript" src="bower_components/d3/d3.js"></script>
     <script type="text/javascript" src="bower_components/c3/c3.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
@@ -154,6 +157,7 @@
     <script src="bower_components/angular-touch/angular-touch.js"></script>
     <script src="bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.js"></script>
 
+    <script src="bower_components/spectrum/spectrum.js"></script>
     <script src="bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.js"></script>
     <script src="bower_components/angular-order-object-by/src/ng-order-object-by.js"></script>
     <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
@@ -198,19 +202,12 @@
     <script src="scripts/directives/valuecell.js"></script>
     <script src="scripts/directives/cellpicker.js"></script>
     <script src="scripts/directives/widget.js"></script>
-    <script src="scripts/controllers/alertController.js"></script>
-    <script src="scripts/controllers/devicesController.js"></script>
-    <script src="scripts/controllers/dashboardsController.js"></script>
     <script src="scripts/controllers/dashboardController.js"></script>
-    <script src="scripts/controllers/widgetsController.js"></script>
     <script src="scripts/controllers/navigationController.js"></script>
     <script src="scripts/controllers/dashboardController.js"></script>
     <script src="scripts/controllers/settingController.js"></script>
     <script src="scripts/controllers/loginController.js"></script>
     <script src="scripts/controllers/scriptController.js"></script>
-    <script src="scripts/controllers/scriptsController.js"></script>
-    <script src="scripts/controllers/historyController.js"></script>
-    <script src="scripts/controllers/configsController.js"></script>
     <script src="scripts/controllers/configController.js"></script>
     <script src="scripts/controllers/firmwareController.js"></script>
     <script src="scripts/filters/metaTypeFilter.js"></script>

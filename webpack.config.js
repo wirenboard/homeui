@@ -6,7 +6,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
-const StatsPlugin = require('stats-webpack-plugin');
 const path = require('path')
 
 /**
@@ -191,10 +190,6 @@ module.exports = function makeWebpackConfig() {
           plugins: [autoprefixer]
         }
       }
-    }),
-    new StatsPlugin('stats.json', {
-      chunkModules: true,
-      exclude: [/node_modules/]
     }),
     new webpack.ProvidePlugin({
       jQuery: 'jquery',

@@ -1,7 +1,8 @@
-"use strict";
+class WidgetsCtrl {
+  constructor($scope, uiConfig, DeviceData, getTime) {
+    'ngInject';
+    console.log('WidgetsCtrl constructor call.');
 
-angular.module("homeuiApp")
-  .controller("WidgetsCtrl", function ($scope, uiConfig, DeviceData, getTime) {
     $scope.cell = id => {
       return DeviceData.proxy(id);
     };
@@ -60,4 +61,7 @@ angular.module("homeuiApp")
         })));
       }));
     });
-  });
+  }
+}
+
+export default WidgetsCtrl;

@@ -1,9 +1,13 @@
-"use strict";
+class ConfigsCtrl {
+  constructor($scope, ConfigEditorProxy, whenMqttReady, errors) {
+    'ngInject';
+    console.log('ConfigsCtrl constructor call.');
 
-angular.module("homeuiApp")
-  .controller("ConfigsCtrl", function ($scope, ConfigEditorProxy, whenMqttReady, errors) {
     $scope.configs = [];
     whenMqttReady().then(() => ConfigEditorProxy.List()).then(result => {
       $scope.configs = result;
     }).catch(errors.catch("Error listing the configs"));
-  });
+  }
+}
+
+export default ConfigsCtrl;

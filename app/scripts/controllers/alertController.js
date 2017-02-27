@@ -1,9 +1,10 @@
-"use strict";
+class AlertCtrl {
+  constructor($scope, $timeout, AlertDelayMs) {
+    'ngInject';
+    console.log('AlertCtrl constructor call.');
 
-angular.module("homeuiApp")
-  .value("AlertDelayMs", 5000)
-  .controller("AlertCtrl", function ($scope, $timeout, AlertDelayMs) {
     var oldTimeout = null;
+
     $scope.visible = false;
     $scope.messageHtml = "";
     $scope.$on("$locationChangeSuccess", function () {
@@ -27,4 +28,7 @@ angular.module("homeuiApp")
         }, AlertDelayMs);
       }
     });
-  });
+  }
+}
+
+export default AlertCtrl;
