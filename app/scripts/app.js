@@ -27,6 +27,7 @@ import FirmwareCtrl from './controllers/firmwareController';
 
 import routing from './app.routes.js'
 
+import errorsService from './services/errors'
 /**
  * @ngdoc overview
  * @name homeuiApp
@@ -121,6 +122,11 @@ angular
     });
   });
 
+// Services
+angular.module('homeuiApp')
+  .factory('errors', errorsService);
+
+// Wrapper module
 angular.module("realHomeuiApp", ["homeuiApp"])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     // TBD: the following should be handled by config sync service
