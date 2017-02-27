@@ -36,7 +36,7 @@ module.exports = function makeWebpackConfig() {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? void 0 : {
-    app: './scripts/app.js'
+    homeui: './scripts/app.js'
   };
 
   /**
@@ -92,7 +92,7 @@ module.exports = function makeWebpackConfig() {
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      include: path.resolve(__dirname, 'scripts'),
+      include: path.resolve(__dirname, 'app', 'scripts'),
       exclude: /(node_modules|bower_components)/,
       use: [{
           loader: 'babel-loader',
@@ -224,7 +224,7 @@ module.exports = function makeWebpackConfig() {
       // Copy assets from the public folder
       // Reference: https://github.com/kevlened/copy-webpack-plugin
       new CopyWebpackPlugin([{
-        from: path.join(__dirname, 'app', 'images'),
+        from: path.join(__dirname, 'app', 'images'), to: 'images' 
       }])
     )
   }
