@@ -1,4 +1,6 @@
 function spinnerService($rootScope) {
+  'ngInject';
+
   var spinner = Object.create(null);
 
   function isActive (prefix) {

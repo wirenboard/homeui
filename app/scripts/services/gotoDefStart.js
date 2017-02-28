@@ -1,4 +1,5 @@
 function gotoDefStartService() {
+  'ngInject';
 
   function mapTokensBackward (cm, func) {
     var cur = cm.getCursor();

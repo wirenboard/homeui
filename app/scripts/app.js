@@ -27,6 +27,7 @@ import gotoDefStartService from './services/gotoDefStart';
 import getTimeService from './services/time';
 import spinnerService from './services/spinner';
 import dumbTemplateModule from './services/dumbtemplate';
+import pageStateService from './services/pagestate';
 
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
@@ -92,6 +93,9 @@ angular.module('homeuiApp')
   .factory('gotoDefStart', gotoDefStartService)
   .factory('getTime', getTimeService)
   .factory("Spinner", spinnerService);
+angular.module("homeuiApp")
+  .value("forceBeforeUnloadConfirmationForTests", false)
+  .factory("PageState", pageStateService);
 
 // Register controllers
 angular.module("homeuiApp")
