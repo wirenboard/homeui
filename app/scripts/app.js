@@ -37,6 +37,7 @@ import routing from './app.routes.js';
 
 import errorsService from './services/errors';
 import mqttServiceModule from './services/mqttService';
+import editorProxyService from './services/editorProxy';
 
 /**
  * @ngdoc overview
@@ -72,6 +73,11 @@ angular
   .value("historyMaxPoints", 1000)
   .value("webuiConfigPath", "/etc/wb-webui.conf")
   .value("configSaveDebounceMs", 300);
+
+// Register services
+angular.module('homeuiApp')
+  .factory('errors', errorsService)
+  .factory('EditorProxy', editorProxyService);
 
 // Register controllers
 angular.module("homeuiApp")
@@ -131,10 +137,6 @@ angular
       $rootScope.refererLocation = current;
     });
   });
-
-// Services
-angular.module('homeuiApp')
-  .factory('errors', errorsService);
 
 // Wrapper module
 angular.module("realHomeuiApp", ["homeuiApp"])
