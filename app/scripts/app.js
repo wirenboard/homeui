@@ -44,6 +44,8 @@ import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
 
+import metaTypeFilterModule from './filters/metaTypeFilter';
+
 import routing from './app.routes.js';
 
 /**
@@ -57,7 +59,7 @@ import routing from './app.routes.js';
 angular
   .module('homeuiApp', [
     mqttServiceModule,
-    'homeuiApp.dataFilters',
+    metaTypeFilterModule,
     mqttRpcServiceModule,
     dumbTemplateModule,
     ngResource,
