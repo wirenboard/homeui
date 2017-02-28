@@ -30,6 +30,7 @@ import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
 import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
+import hiliteService from './services/hilite';
 
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
@@ -101,7 +102,8 @@ angular.module('homeuiApp')
   .run(DeviceData => {
     // make sure DeviceData is loaded at the startup so no MQTT messages are missed
   })
-  .factory('uiConfig', uiConfigService);
+  .factory('uiConfig', uiConfigService)
+  .filter('hilite', hiliteService);
 
 // Register controllers
 angular.module("homeuiApp")
