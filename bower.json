@@ -29,6 +29,7 @@
   "appPath": "app",
   "moduleName": "homeuiApp",
   "resolutions": {
-    "angular": "~1.5"
+    "angular": "~1.5",
+    "spectrum": "1.7.0"
   }
 }

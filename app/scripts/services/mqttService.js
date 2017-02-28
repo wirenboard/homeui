@@ -14,6 +14,7 @@ const mqttServiceModule = angular
 
 //-----------------------------------------------------------------------------
 function whenMqttReady($q, $rootScope, mqttClient) {
+  'ngInject';
   return () => {
     var deferred = $q.defer();
     if (mqttClient.isConnected())
@@ -34,6 +35,7 @@ function whenMqttReady($q, $rootScope, mqttClient) {
 
 //-----------------------------------------------------------------------------
 function topicMatches() {
+  'ngInject';
   return (pattern, topic) => {
     function match (patternParts, topicParts) {
       if (!patternParts.length)
@@ -56,6 +58,7 @@ function topicMatches() {
 //-----------------------------------------------------------------------------
 function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeout, 
                     mqttReconnectDelay, mqttDigestInterval) {
+  'ngInject';
   var globalPrefix = '',
       service = {},
       client = {},

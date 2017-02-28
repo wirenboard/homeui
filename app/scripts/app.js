@@ -5,8 +5,16 @@ import 'spectrum-colorpicker/spectrum.css';
 
 // Angular packages
 import angular from 'angular';
+import ngRoute from 'angular-route';
+import ngResource from 'angular-resource';
+import ngSanitize from 'angular-sanitize';
+import ngTouch from 'angular-touch';
+import uiSelect from 'ui-select';
 
 import 'bootstrap';
+
+import 'spectrum-colorpicker';
+import '../bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
 
 // homeui modules
 import AlertCtrl from './controllers/alertController';
@@ -44,10 +52,10 @@ angular
     'homeuiApp.dataFilters',
     'homeuiApp.MqttRpc',
     'homeuiApp.DumbTemplate',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch',
+    ngResource,
+    ngRoute,
+    ngSanitize,
+    ngTouch,
     'toggle-switch',
     'angularSpectrumColorpicker',
     'ngFileUpload',
@@ -58,7 +66,7 @@ angular
     'angular-json-editor',
     'angular-sortable-view',
     'xeditable',
-    'ui.select',
+    uiSelect,
     'monospaced.elastic'
   ])
   .value("historyMaxPoints", 1000)
