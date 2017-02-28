@@ -24,6 +24,7 @@ import configEditorProxyService from './services/configEditorProxy';
 import historyProxyService from './services/historyProxy';
 import mqttRpcServiceModule from './services/rpc';
 import gotoDefStartService from './services/gotoDefStart';
+import getTimeService from './services/time';
 
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
@@ -84,7 +85,8 @@ angular.module('homeuiApp')
   .factory('EditorProxy', editorProxyService)
   .factory('ConfigEditorProxy', configEditorProxyService)
   .factory('HistoryProxy', historyProxyService)
-  .factory('gotoDefStart', gotoDefStartService);
+  .factory('gotoDefStart', gotoDefStartService)
+  .factory('getTime', getTimeService);
 
 // Register controllers
 angular.module("homeuiApp")
