@@ -1,4 +1,6 @@
 function deviceDataService(mqttClient) {
+  'ngInject';
+  
   var devices = {}, cells = {};
 
   var cellTypeMap = {

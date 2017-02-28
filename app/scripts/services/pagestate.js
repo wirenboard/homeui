@@ -1,5 +1,6 @@
 function pageStateService($rootScope, $window, $timeout, $location, forceBeforeUnloadConfirmationForTests) {
   'ngInject';
+  
   var dirty = false,
       CONFIRMATION_MSG = "The page has unsaved changes. Are you sure you want to leave?";
 
