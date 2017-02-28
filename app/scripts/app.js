@@ -28,6 +28,7 @@ import getTimeService from './services/time';
 import spinnerService from './services/spinner';
 import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
+import deviceDataService from './services/devicedata';
 
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
@@ -92,10 +93,13 @@ angular.module('homeuiApp')
   .factory('HistoryProxy', historyProxyService)
   .factory('gotoDefStart', gotoDefStartService)
   .factory('getTime', getTimeService)
-  .factory("Spinner", spinnerService);
-angular.module("homeuiApp")
+  .factory('Spinner', spinnerService)
   .value("forceBeforeUnloadConfirmationForTests", false)
-  .factory("PageState", pageStateService);
+  .factory('PageState', pageStateService)
+  .factory('DeviceData', deviceDataService)
+  .run(DeviceData => {
+    // make sure DeviceData is loaded at the startup so no MQTT messages are missed
+  });
 
 // Register controllers
 angular.module("homeuiApp")
