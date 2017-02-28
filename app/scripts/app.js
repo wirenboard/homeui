@@ -17,6 +17,11 @@ import 'spectrum-colorpicker';
 import '../bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
 
 // homeui modules
+import errorsService from './services/errors';
+import mqttServiceModule from './services/mqttService';
+import editorProxyService from './services/editorProxy';
+import configEditorProxyService from './services/configEditorProxy';
+
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import DashboardsCtrl from './controllers/dashboardsController';
@@ -34,10 +39,6 @@ import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
 
 import routing from './app.routes.js';
-
-import errorsService from './services/errors';
-import mqttServiceModule from './services/mqttService';
-import editorProxyService from './services/editorProxy';
 
 /**
  * @ngdoc overview
@@ -77,7 +78,8 @@ angular
 // Register services
 angular.module('homeuiApp')
   .factory('errors', errorsService)
-  .factory('EditorProxy', editorProxyService);
+  .factory('EditorProxy', editorProxyService)
+  .factory("ConfigEditorProxy", configEditorProxyService);
 
 // Register controllers
 angular.module("homeuiApp")

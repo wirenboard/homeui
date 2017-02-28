@@ -1,10 +1,9 @@
-"use strict";
+function configEditorProxyService(MqttRpc) {
+  return MqttRpc.getProxy("confed/Editor", [
+    "List",
+    "Load",
+    "Save"
+  ], "configEditorProxy");
+}
 
-angular.module("homeuiApp")
-  .factory("ConfigEditorProxy", MqttRpc => {
-    return MqttRpc.getProxy("confed/Editor", [
-      "List",
-      "Load",
-      "Save"
-    ], "configEditorProxy");
-  });
+export default configEditorProxyService;
