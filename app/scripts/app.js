@@ -48,6 +48,8 @@ import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
 
+import cellDirective from './directives/cell';
+
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
 import routing from './app.routes.js';
@@ -60,7 +62,7 @@ import routing from './app.routes.js';
  *
  * Main module of the application.
  */
-angular
+let module = angular
   .module('homeuiApp', [
     mqttServiceModule,
     metaTypeFilterModule,
@@ -88,7 +90,7 @@ angular
   .value("configSaveDebounceMs", 300);
 
 // Register services
-angular.module('homeuiApp')
+module
   .factory('errors', errorsService)
   .factory('EditorProxy', editorProxyService)
   .factory('ConfigEditorProxy', configEditorProxyService)
@@ -106,7 +108,7 @@ angular.module('homeuiApp')
   .filter('hilite', hiliteService);
 
 // Register controllers
-angular.module("homeuiApp")
+module
   .value("AlertDelayMs", 5000)
   .controller("AlertCtrl", AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
@@ -122,7 +124,7 @@ angular.module("homeuiApp")
   .controller('SettingCtrl', SettingCtrl)
   .controller('LoginCtrl', LoginCtrl);
 
-angular.module('homeuiApp')
+module
   .controller('NavigationCtrl', NavigationCtrl)
   .directive('widgetMenuItem', function(){
     return{
@@ -137,7 +139,7 @@ angular.module('homeuiApp')
     };
   });
 
-angular.module("homeuiApp")
+module
   .directive("scriptForm", function (PageState) {
     return {
       restrict: "A",
@@ -151,8 +153,12 @@ angular.module("homeuiApp")
   })
   .controller("ScriptCtrl", ScriptCtrl);
 
-angular
-  .module('homeuiApp')
+// Register directives
+module
+  .directive("cell", cellDirective);
+
+
+module
   .config(routing)
   .run(($rootScope, $location) => {
     $rootScope.objectsKeys = function(collection){
@@ -165,7 +171,7 @@ angular
   });
 
 // Wrapper module
-angular.module("realHomeuiApp", ["homeuiApp"])
+angular.module("realHomeuiApp", [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     // TBD: the following should be handled by config sync service
     var configSaveDebounce = null;
