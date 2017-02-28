@@ -1,8 +1,7 @@
-"use strict";
+function historyProxyService(MqttRpc) {
+  return MqttRpc.getProxy("db_logger/history", [
+    "get_values"
+  ], "historyProxy");
+}
 
-angular.module("homeuiApp")
-  .factory("HistoryProxy", MqttRpc => {
-    return MqttRpc.getProxy("db_logger/history", [
-      "get_values"
-    ], "historyProxy");
-  });
+export default historyProxyService;

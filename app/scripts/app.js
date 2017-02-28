@@ -21,6 +21,7 @@ import errorsService from './services/errors';
 import mqttServiceModule from './services/mqttService';
 import editorProxyService from './services/editorProxy';
 import configEditorProxyService from './services/configEditorProxy';
+import historyProxyService from './services/historyProxy';
 
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
@@ -79,7 +80,8 @@ angular
 angular.module('homeuiApp')
   .factory('errors', errorsService)
   .factory('EditorProxy', editorProxyService)
-  .factory("ConfigEditorProxy", configEditorProxyService);
+  .factory('ConfigEditorProxy', configEditorProxyService)
+  .factory('HistoryProxy', historyProxyService);
 
 // Register controllers
 angular.module("homeuiApp")
