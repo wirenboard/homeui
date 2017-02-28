@@ -22,6 +22,7 @@ import mqttServiceModule from './services/mqttService';
 import editorProxyService from './services/editorProxy';
 import configEditorProxyService from './services/configEditorProxy';
 import historyProxyService from './services/historyProxy';
+import mqttRpcServiceModule from './services/rpc';
 
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
@@ -53,7 +54,7 @@ angular
   .module('homeuiApp', [
     mqttServiceModule,
     'homeuiApp.dataFilters',
-    'homeuiApp.MqttRpc',
+    mqttRpcServiceModule,
     'homeuiApp.DumbTemplate',
     ngResource,
     ngRoute,
