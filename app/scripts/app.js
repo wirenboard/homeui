@@ -25,6 +25,8 @@ import historyProxyService from './services/historyProxy';
 import mqttRpcServiceModule from './services/rpc';
 import gotoDefStartService from './services/gotoDefStart';
 import getTimeService from './services/time';
+import spinnerService from './services/spinner';
+import dumbTemplateModule from './services/dumbtemplate';
 
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
@@ -57,7 +59,7 @@ angular
     mqttServiceModule,
     'homeuiApp.dataFilters',
     mqttRpcServiceModule,
-    'homeuiApp.DumbTemplate',
+    dumbTemplateModule,
     ngResource,
     ngRoute,
     ngSanitize,
@@ -86,7 +88,8 @@ angular.module('homeuiApp')
   .factory('ConfigEditorProxy', configEditorProxyService)
   .factory('HistoryProxy', historyProxyService)
   .factory('gotoDefStart', gotoDefStartService)
-  .factory('getTime', getTimeService);
+  .factory('getTime', getTimeService)
+  .factory("Spinner", spinnerService);
 
 // Register controllers
 angular.module("homeuiApp")
