@@ -49,6 +49,7 @@ import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
 
 import cellDirective from './directives/cell';
+import consoleDirective from './directives/console';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -155,7 +156,9 @@ module
 
 // Register directives
 module
-  .directive("cell", cellDirective);
+  .directive('cell', cellDirective)
+  .value('scrollTimeoutMs', 100)
+  .directive('console', consoleDirective);
 
 
 module
@@ -170,7 +173,7 @@ module
     });
   });
 
-// Wrapper module
+// Register wrapper module
 angular.module("realHomeuiApp", [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     // TBD: the following should be handled by config sync service
