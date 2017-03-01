@@ -1,6 +1,7 @@
 class WidgetsCtrl {
   constructor($scope, uiConfig, DeviceData, getTime) {
     'ngInject';
+    
     console.log('WidgetsCtrl constructor call.');
 
     $scope.cell = id => {

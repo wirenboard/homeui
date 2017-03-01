@@ -2,6 +2,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
+import 'ui-select/dist/select.css';
 
 // Angular packages
 import angular from 'angular';
@@ -50,6 +51,8 @@ import FirmwareCtrl from './controllers/firmwareController';
 
 import cellDirective from './directives/cell';
 import consoleDirective from './directives/console';
+import widgetDirective from './directives/widget';
+import transformRgbDirective from './directives/transformrgb';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -158,9 +161,11 @@ module
 module
   .directive('cell', cellDirective)
   .value('scrollTimeoutMs', 100)
-  .directive('console', consoleDirective);
+  .directive('console', consoleDirective)
+  .directive('widget', widgetDirective)
+  .directive('transformRgb', transformRgbDirective);
 
-
+// Set up routing
 module
   .config(routing)
   .run(($rootScope, $location) => {
