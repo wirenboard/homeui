@@ -14,6 +14,7 @@ import uiSelect from 'ui-select';
 import monospacedElastic from 'angular-elastic/elastic';
 import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
+import * as d3 from 'd3';
 
 import 'bootstrap';
 
