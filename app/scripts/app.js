@@ -13,6 +13,7 @@ import ngTouch from 'angular-touch';
 import uiSelect from 'ui-select';
 import monospacedElastic from 'angular-elastic/elastic';
 import 'angular-xeditable/dist/js/xeditable';
+import 'ng-file-upload';
 
 import 'bootstrap';
 
