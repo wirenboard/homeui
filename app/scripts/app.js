@@ -70,6 +70,7 @@ import metaTypeFilterModule from './filters/metaTypeFilter';
 
 import './3rdparty/angular-json-editor'
 import './3rdparty/jsoneditor'
+import './3rdparty/ui-bootstrap'
 
 import routing from './app.routes.js';
 
