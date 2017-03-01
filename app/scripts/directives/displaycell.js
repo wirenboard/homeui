@@ -1,6 +1,3 @@
-import angular from 'angular';
-
-//-----------------------------------------------------------------------------
 function displayCellDirective(displayCellConfig, $compile) {
   'ngInject';
 

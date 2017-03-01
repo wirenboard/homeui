@@ -87,6 +87,9 @@ module.exports = function makeWebpackConfig() {
   // Initialize module
   config.module = {
     rules: [{
+      test: require.resolve('angular'),
+      use: 'exports-loader?window.angular'
+    }, {
       // JS LOADER
       // Reference: https://github.com/babel/babel-loader
       // Transpile .js files using babel-loader
@@ -176,6 +179,7 @@ module.exports = function makeWebpackConfig() {
       }
     }),
     new webpack.ProvidePlugin({
+      'angular': 'angular',
       jQuery: 'jquery',
       $: 'jquery',
       'window.jQuery': 'jquery',

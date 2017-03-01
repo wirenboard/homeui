@@ -7,7 +7,6 @@ import 'c3/c3.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 
 // Angular packages
-import angular from 'angular';
 import ngRoute from 'angular-route';
 import ngResource from 'angular-resource';
 import ngSanitize from 'angular-sanitize';
@@ -16,6 +15,7 @@ import uiSelect from 'ui-select';
 import monospacedElastic from 'angular-elastic/elastic';
 import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
+import 'angular-sortable-view/src/angular-sortable-view';
 
 import 'bootstrap';
 

@@ -1,6 +1,3 @@
-import angular from 'angular';
-
-//-----------------------------------------------------------------------------
 const dumbTemplateModule = angular
   .module("homeuiApp.DumbTemplate", [])
   .factory('DumbTemplate', dumbTemplateService)

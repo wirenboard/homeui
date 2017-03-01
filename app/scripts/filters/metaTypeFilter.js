@@ -1,6 +1,3 @@
-import angular from 'angular';
-
-//-----------------------------------------------------------------------------
 const metaTypeFilterModule = angular
   .module('homeuiApp.dataFilters', [])
   .filter('metaTypeFilter', metaTypeFilter)
