@@ -22,6 +22,8 @@ import 'bootstrap';
 import 'spectrum-colorpicker';
 import '../bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
 import '../bower_components/angular-c3-simple/src/angular_c3_simple';
+import '../bower_components/angular-order-object-by/src/ng-order-object-by';
+import '../bower_components/angular-ui-codemirror/ui-codemirror';
 
 // homeui modules
 import errorsService from './services/errors';
@@ -104,9 +106,9 @@ const module = angular
     'ngOrderObjectBy',
     'ui.bootstrap',
     'ui.codemirror',
-//    'angular-c3-simple',
+    'angular-c3-simple',
     'angular-json-editor',
-    'angular-sortable-view',
+    'ngOrderObjectBy',
     'xeditable',
     uiSelect,
     monospacedElastic
