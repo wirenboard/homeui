@@ -60,6 +60,7 @@ import textCellDirective from './directives/textcell';
 import rangeCellDirective from './directives/rangecell';
 import buttonCellDirective from './directives/buttoncell';
 import {displayCellDirective, displayCellConfig} from './directives/displaycell';
+import cellNameDirective from './directives/cellname';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -171,6 +172,8 @@ module
   .directive('console', consoleDirective)
   .directive('widget', widgetDirective)
   .directive('transformRgb', transformRgbDirective)
+  .provider('displayCellConfig', displayCellConfig)
+  .directive('displayCell', displayCellDirective)
   .config(displayCellConfigProvider => {
     displayCellConfigProvider.addDisplayType('alarm', 'alarm-cell', true);
   })
@@ -196,8 +199,7 @@ module
     displayCellConfigProvider.addDisplayType('button', 'button-cell', true);
   })
   .directive('buttonCell', buttonCellDirective)
-  .provider('displayCellConfig', displayCellConfig)
-  .directive('displayCell', displayCellDirective);
+  .directive('cellName', cellNameDirective);
 
 // Set up routing
 module
