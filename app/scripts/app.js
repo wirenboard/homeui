@@ -68,6 +68,8 @@ import editableElasticTextareaDirective from './directives/editableelastictextar
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
+import './3rdparty/angular-json-editor'
+
 import routing from './app.routes.js';
 
 /**
