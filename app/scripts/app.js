@@ -64,6 +64,7 @@ import cellNameDirective from './directives/cellname';
 import rgbCellDirective from './directives/rgbcell';
 import cellPickerDirective from './directives/cellpicker';
 import explicitChangesDirective from './directives/explicitchanges';
+import editableElasticTextareaDirective from './directives/editableelastictextarea';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -209,7 +210,8 @@ module
   })
   .directive('rgbCell',rgbCellDirective)
   .directive('cellPicker', cellPickerDirective)
-  .directive('explicitChanges', explicitChangesDirective);
+  .directive('explicitChanges', explicitChangesDirective)
+  .directive('editableElasticTextarea', editableElasticTextareaDirective);
 
 // Set up routing
 module

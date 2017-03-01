@@ -1,5 +1,7 @@
 // Based on the code from angular-xeditable https://github.com/vitalets/angular-xeditable
-angular.module('homeuiApp').directive('editableElasticTextarea', (editableDirectiveFactory) => {
+function editableElasticTextareaDirective(editableDirectiveFactory) {
+  'ngInject';
+
   var directive = editableDirectiveFactory({
     directiveName: 'editableElasticTextarea',
     inputTpl: '<textarea class="form-control" placeholder="{{ placeholder }}" msd-elastic></textarea>',
@@ -28,4 +30,6 @@ angular.module('homeuiApp').directive('editableElasticTextarea', (editableDirect
     scope.placeholder = element.attr("placeholder") || "";
   };
   return directive;
-});
+}
+
+export default editableElasticTextareaDirective;
