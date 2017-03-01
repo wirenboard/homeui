@@ -58,6 +58,7 @@ import valueCellDirective from './directives/valuecell';
 import switchCellDirective from './directives/switchcell';
 import textCellDirective from './directives/textcell';
 import rangeCellDirective from './directives/rangecell';
+import buttonCellDirective from './directives/buttoncell';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -189,7 +190,11 @@ module
   .config(displayCellConfigProvider => {
     displayCellConfigProvider.addDisplayType('range', 'range-cell');
   })
-  .directive('rangeCell', rangeCellDirective);
+  .directive('rangeCell', rangeCellDirective)
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType('button', 'button-cell', true);
+  })
+  .directive('buttonCell', buttonCellDirective);
 
 // Set up routing
 module
