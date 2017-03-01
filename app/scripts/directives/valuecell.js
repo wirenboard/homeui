@@ -1,15 +1,13 @@
-"use strict";
+function valueCellDirective() {
+  'ngInject';
 
-angular.module("homeuiApp")
-  .config(displayCellConfigProvider => {
-    displayCellConfigProvider.addDisplayType("value", "value-cell");
-  })
-  .directive("valueCell", () => {
-    return {
-      restrict: "EA",
-      scope: false,
-      require: "^cell",
-      replace: true,
-      templateUrl: "scripts/directives/valuecell.html"
-    };
-  });
+  return {
+    restrict: "EA",
+    scope: false,
+    require: "^cell",
+    replace: true,
+    templateUrl: "scripts/directives/valuecell.html"
+  };
+}
+
+export default valueCellDirective;

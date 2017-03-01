@@ -54,6 +54,7 @@ import consoleDirective from './directives/console';
 import widgetDirective from './directives/widget';
 import transformRgbDirective from './directives/transformrgb';
 import alarmCellDirective from './directives/alarmcell';
+import valueCellDirective from './directives/valuecell';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -168,7 +169,11 @@ module
   .config(displayCellConfigProvider => {
     displayCellConfigProvider.addDisplayType('alarm', 'alarm-cell', true);
   })
-  .directive('alarmCell', alarmCellDirective);
+  .directive('alarmCell', alarmCellDirective)
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType('value', 'value-cell');
+  })
+  .directive('valueCell', valueCellDirective);
 
 // Set up routing
 module
