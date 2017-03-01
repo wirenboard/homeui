@@ -63,6 +63,7 @@ import {displayCellDirective, displayCellConfig} from './directives/displaycell'
 import cellNameDirective from './directives/cellname';
 import rgbCellDirective from './directives/rgbcell';
 import cellPickerDirective from './directives/cellpicker';
+import explicitChangesDirective from './directives/explicitchanges';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -207,7 +208,8 @@ module
     displayCellConfigProvider.addDisplayType('rgb', 'rgb-cell');
   })
   .directive('rgbCell',rgbCellDirective)
-  .directive('cellPicker', cellPickerDirective);
+  .directive('cellPicker', cellPickerDirective)
+  .directive('explicitChanges', explicitChangesDirective);
 
 // Set up routing
 module
