@@ -62,6 +62,7 @@ import buttonCellDirective from './directives/buttoncell';
 import {displayCellDirective, displayCellConfig} from './directives/displaycell';
 import cellNameDirective from './directives/cellname';
 import rgbCellDirective from './directives/rgbcell';
+import cellPickerDirective from './directives/cellpicker';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -98,9 +99,9 @@ let module = angular
     uiSelect,
     'monospaced.elastic'
   ])
-  .value("historyMaxPoints", 1000)
-  .value("webuiConfigPath", "/etc/wb-webui.conf")
-  .value("configSaveDebounceMs", 300);
+  .value('historyMaxPoints', 1000)
+  .value('webuiConfigPath', '/etc/wb-webui.conf')
+  .value('configSaveDebounceMs', 300);
 
 // Register services
 module
@@ -111,7 +112,7 @@ module
   .factory('gotoDefStart', gotoDefStartService)
   .factory('getTime', getTimeService)
   .factory('Spinner', spinnerService)
-  .value("forceBeforeUnloadConfirmationForTests", false)
+  .value('forceBeforeUnloadConfirmationForTests', false)
   .factory('PageState', pageStateService)
   .factory('DeviceData', deviceDataService)
   .run(DeviceData => {
@@ -122,8 +123,8 @@ module
 
 // Register controllers
 module
-  .value("AlertDelayMs", 5000)
-  .controller("AlertCtrl", AlertCtrl)
+  .value('AlertDelayMs', 5000)
+  .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('DashboardsCtrl', DashboardsCtrl)
   .controller('DashboardCtrl', DashboardCtrl)
@@ -153,18 +154,18 @@ module
   });
 
 module
-  .directive("scriptForm", function (PageState) {
+  .directive('scriptForm', function (PageState) {
     return {
-      restrict: "A",
+      restrict: 'A',
       link: function (scope, element) {
-        var formCtrl = scope[element.attr("name")];
-        scope.$watch(element.attr("name") + ".$dirty", function (newValue) {
+        var formCtrl = scope[element.attr('name')];
+        scope.$watch(element.attr('name') + '.$dirty', function (newValue) {
           PageState.setDirty(newValue);
         });
       }
     };
   })
-  .controller("ScriptCtrl", ScriptCtrl);
+  .controller('ScriptCtrl', ScriptCtrl);
 
 // Register directives
 module
@@ -205,7 +206,8 @@ module
   .config(displayCellConfigProvider => {
     displayCellConfigProvider.addDisplayType('rgb', 'rgb-cell');
   })
-  .directive('rgbCell',rgbCellDirective);
+  .directive('rgbCell',rgbCellDirective)
+  .directive('cellPicker', cellPickerDirective);
 
 // Set up routing
 module
@@ -214,21 +216,21 @@ module
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
     };
-    $rootScope.$on("$locationChangeStart", function(event, next, current) {
+    $rootScope.$on('$locationChangeStart', function(event, next, current) {
       if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
       $rootScope.refererLocation = current;
     });
   });
 
 // Register wrapper module
-angular.module("realHomeuiApp", [module.name])
+angular.module('realHomeuiApp', [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     // TBD: the following should be handled by config sync service
     var configSaveDebounce = null;
     // TBD: loginService
     function randomString (length) {
-      var text = "";
-      var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      var text = '';
+      var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       for (var i = 0; i < length; i++)
         text += chars.charAt(Math.floor(Math.random() * chars.length));
       return text;
@@ -248,26 +250,26 @@ angular.module("realHomeuiApp", [module.name])
       mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
       console.log('Successfully logged in ' + clientID);
     } else {
-      alert("Please specify connection data in Settings");
+      alert('Please specify connection data in Settings');
       return;
     }
 
     whenMqttReady()
       .then(() => ConfigEditorProxy.Load({ path: webuiConfigPath }))
       .then((r) => {
-        console.log("LOAD CONF: %o", r.content);
+        console.log('LOAD CONF: %o', r.content);
         uiConfig.ready(r.content);
         $rootScope.$watch(() => uiConfig.filtered(), (newData, oldData) => {
           if (angular.equals(newData, oldData))
             return;
-          console.log("new data: %o", newData);
+          console.log('new data: %o', newData);
           if (configSaveDebounce)
             $timeout.cancel(configSaveDebounce);
           configSaveDebounce = $timeout(() => {
             ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData }).then(() => {
-              console.log("config saved");
+              console.log('config saved');
             });
           }, configSaveDebounceMs);
         }, true);
-      }).catch(errors.catch("Error loading WebUI config"));
+      }).catch(errors.catch('Error loading WebUI config'));
   });
