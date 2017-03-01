@@ -61,6 +61,7 @@ import rangeCellDirective from './directives/rangecell';
 import buttonCellDirective from './directives/buttoncell';
 import {displayCellDirective, displayCellConfig} from './directives/displaycell';
 import cellNameDirective from './directives/cellname';
+import rgbCellDirective from './directives/rgbcell';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -199,7 +200,12 @@ module
     displayCellConfigProvider.addDisplayType('button', 'button-cell', true);
   })
   .directive('buttonCell', buttonCellDirective)
-  .directive('cellName', cellNameDirective);
+  .directive('cellName', cellNameDirective)
+  .value('rgbLocalStorageKey', 'cell_rgb_palette')
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType('rgb', 'rgb-cell');
+  })
+  .directive('rgbCell',rgbCellDirective);
 
 // Set up routing
 module
