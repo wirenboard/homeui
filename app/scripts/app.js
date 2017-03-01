@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
+import 'c3/c3.css';
+import 'angular-xeditable/dist/css/xeditable.css';
 
 // Angular packages
 import angular from 'angular';
@@ -14,12 +16,12 @@ import uiSelect from 'ui-select';
 import monospacedElastic from 'angular-elastic/elastic';
 import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
-import * as d3 from 'd3';
 
 import 'bootstrap';
 
 import 'spectrum-colorpicker';
 import '../bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
+import '../bower_components/angular-c3-simple/src/angular_c3_simple';
 
 // homeui modules
 import errorsService from './services/errors';
@@ -86,7 +88,7 @@ import routing from './app.routes.js';
  *
  * Main module of the application.
  */
-let module = angular
+const module = angular
   .module('homeuiApp', [
     mqttServiceModule,
     metaTypeFilterModule,
@@ -102,7 +104,7 @@ let module = angular
     'ngOrderObjectBy',
     'ui.bootstrap',
     'ui.codemirror',
-    'angular-c3-simple',
+//    'angular-c3-simple',
     'angular-json-editor',
     'angular-sortable-view',
     'xeditable',

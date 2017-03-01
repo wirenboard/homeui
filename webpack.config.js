@@ -178,7 +178,9 @@ module.exports = function makeWebpackConfig() {
     new webpack.ProvidePlugin({
       jQuery: 'jquery',
       $: 'jquery',
-      'window.jQuery': 'jquery'
+      'window.jQuery': 'jquery',
+      'd3': 'd3',
+      'c3': 'c3/c3'
     })
   ];
 

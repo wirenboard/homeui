@@ -29,6 +29,7 @@
     "angular-touch": "^1.6.2",
     "angular-xeditable": "^0.6.0",
     "bootstrap": "^3.3.7",
+    "c3": "^0.4.11",
     "codemirror": "^5.24.2",
     "d3": "^4.7.0",
     "jquery": "^3.1.1",
