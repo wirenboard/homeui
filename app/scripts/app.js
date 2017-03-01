@@ -57,6 +57,7 @@ import alarmCellDirective from './directives/alarmcell';
 import valueCellDirective from './directives/valuecell';
 import switchCellDirective from './directives/switchcell';
 import textCellDirective from './directives/textcell';
+import rangeCellDirective from './directives/rangecell';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -184,7 +185,11 @@ module
   .config(displayCellConfigProvider => {
     displayCellConfigProvider.addDisplayType('text', 'text-cell');
   })
-  .directive('textCell', textCellDirective);
+  .directive('textCell', textCellDirective)
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType('range', 'range-cell');
+  })
+  .directive('rangeCell', rangeCellDirective);
 
 // Set up routing
 module
