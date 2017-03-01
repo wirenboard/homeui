@@ -5,6 +5,7 @@ import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'c3/c3.css';
 import 'angular-xeditable/dist/css/xeditable.css';
+import '../bower_components/css-spinners/css/spinner/spinner.css'
 
 // Angular packages
 import ngRoute from 'angular-route';
@@ -16,6 +17,7 @@ import monospacedElastic from 'angular-elastic/elastic';
 import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
 import 'angular-sortable-view/src/angular-sortable-view';
+import 'codemirror/mode/javascript/javascript';
 
 import 'bootstrap';
 

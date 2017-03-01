@@ -184,7 +184,8 @@ module.exports = function makeWebpackConfig() {
       $: 'jquery',
       'window.jQuery': 'jquery',
       'd3': 'd3',
-      'c3': 'c3/c3'
+      'c3': 'c3/c3',
+      'window.CodeMirror': 'codemirror/lib/codemirror'
     })
   ];
 
