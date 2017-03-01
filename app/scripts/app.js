@@ -56,6 +56,7 @@ import transformRgbDirective from './directives/transformrgb';
 import alarmCellDirective from './directives/alarmcell';
 import valueCellDirective from './directives/valuecell';
 import switchCellDirective from './directives/switchcell';
+import textCellDirective from './directives/textcell';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -179,7 +180,11 @@ module
   .config(displayCellConfigProvider => {
     displayCellConfigProvider.addDisplayType('switch', 'switch-cell');
   })
-  .directive('switchCell', switchCellDirective);
+  .directive('switchCell', switchCellDirective)
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType('text', 'text-cell');
+  })
+  .directive('textCell', textCellDirective);
 
 // Set up routing
 module
