@@ -53,6 +53,7 @@ import cellDirective from './directives/cell';
 import consoleDirective from './directives/console';
 import widgetDirective from './directives/widget';
 import transformRgbDirective from './directives/transformrgb';
+import alarmCellDirective from './directives/alarmcell';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -163,7 +164,11 @@ module
   .value('scrollTimeoutMs', 100)
   .directive('console', consoleDirective)
   .directive('widget', widgetDirective)
-  .directive('transformRgb', transformRgbDirective);
+  .directive('transformRgb', transformRgbDirective)
+  .config(displayCellConfigProvider => {
+    displayCellConfigProvider.addDisplayType('alarm', 'alarm-cell', true);
+  })
+  .directive('alarmCell', alarmCellDirective);
 
 // Set up routing
 module
