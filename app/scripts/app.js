@@ -11,6 +11,7 @@ import ngResource from 'angular-resource';
 import ngSanitize from 'angular-sanitize';
 import ngTouch from 'angular-touch';
 import uiSelect from 'ui-select';
+import monospacedElastic from 'angular-elastic/elastic';
 
 import 'bootstrap';
 
@@ -103,7 +104,7 @@ let module = angular
     'angular-sortable-view',
     'xeditable',
     uiSelect,
-    'monospaced.elastic'
+    monospacedElastic
   ])
   .value('historyMaxPoints', 1000)
   .value('webuiConfigPath', '/etc/wb-webui.conf')
