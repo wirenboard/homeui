@@ -1,7 +1,6 @@
 class DashboardCtrl {
   constructor($scope, uiConfig, $routeParams) {
     'ngInject';
-    console.log('DashboardCtrl constructor call.');
 
     var defaultDashboard = {};
     function getDashboard () {

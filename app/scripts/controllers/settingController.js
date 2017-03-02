@@ -1,7 +1,6 @@
 class SettingCtrl {
   constructor($scope, $rootScope, $window, mqttClient) {
     'ngInject';
-    console.log('SettingCtrl constructor call.');
 
     $scope.loginSettings = {};
     $scope.loginSettings.host = $window.localStorage['host'];

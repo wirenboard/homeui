@@ -1,7 +1,6 @@
 class NavigationCtrl {
   constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig) {
     'ngInject';
-    console.log('NavigationCtrl constructor call.');
 
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();

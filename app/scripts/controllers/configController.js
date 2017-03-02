@@ -1,7 +1,6 @@
 class ConfigCtrl {
   constructor($scope, $routeParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     'ngInject';
-    console.log('ConfigCtrl constructor call.');
 
     $scope.file = {
       schemaPath: $routeParams.path,

@@ -1,7 +1,6 @@
 class AlertCtrl {
   constructor($scope, $timeout, AlertDelayMs) {
     'ngInject';
-    console.log('AlertCtrl constructor call.');
 
     var oldTimeout = null;
 

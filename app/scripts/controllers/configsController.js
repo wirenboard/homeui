@@ -1,7 +1,6 @@
 class ConfigsCtrl {
   constructor($scope, ConfigEditorProxy, whenMqttReady, errors) {
     'ngInject';
-    console.log('ConfigsCtrl constructor call.');
 
     $scope.configs = [];
     whenMqttReady().then(() => ConfigEditorProxy.List()).then(result => {

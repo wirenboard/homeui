@@ -1,7 +1,6 @@
 class ScriptCtrl {
   constructor($scope, $routeParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     'ngInject';
-    console.log('ScriptCtrl constructor call.');
 
     var cm, pos = null;
     $scope.canSave = function () {

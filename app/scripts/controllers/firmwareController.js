@@ -1,7 +1,6 @@
 class FirmwareCtrl {
   constructor($scope, $timeout, Upload, mqttClient, whenMqttReady) {
     'ngInject';
-    console.log('FirmwareCtrl constructor call.');
 
     $scope.canUpload = false;
     $scope.done = false;

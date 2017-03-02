@@ -1,7 +1,6 @@
 class DashboardsCtrl {
   constructor($scope, uiConfig) {
     'ngInject';
-    console.log('DashboardsCtrl constructor call.');
 
     // FIXME: make better use of the model
     $scope.data = uiConfig.data;

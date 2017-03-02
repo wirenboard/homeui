@@ -3,7 +3,6 @@ class HistoryCtrl {
              whenMqttReady, errors, historyMaxPoints,
              $timeout, dateFilter, uiConfig, orderByFilter) {
     'ngInject';
-    console.log('HistoryCtrl constructor call.');
 
     $scope.dataPoints = [];
     $scope.topic = $routeParams.device && $routeParams.control ?
