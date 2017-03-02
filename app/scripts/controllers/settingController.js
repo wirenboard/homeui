@@ -33,29 +33,32 @@ class SettingCtrl {
     //   };
     // });
 
-    $scope.updateLoginSettings = function(){
-      $window.localStorage.setItem('host', $scope.loginSettings.host);
-      $window.localStorage.setItem('port', $scope.loginSettings.port);
-
-      $window.localStorage.setItem('prefix', $scope.loginSettings.prefix);
-
-      if ($scope.loginSettings.useCredentials) {
-        $window.localStorage.setItem('user', $scope.loginSettings.user);
-        $window.localStorage.setItem('password', $scope.loginSettings.password);
-      } else {
-        $window.localStorage.setItem('user', '');
-        $window.localStorage.setItem('password', '');
-      }
-
-      $window.location.reload();
-    };
-
     $scope.changeDefaultDashboard = function(){
       var uid = $scope.dashboard ? $scope.dashboard.uid : '';
       console.log('New default dashboard: ' + uid);
       mqttClient.send('/config/default_dashboard/uid', uid);
     };  
   }
+
+//-----------------------------------------------------------------------------
+  updateLoginSettings() {
+    alert('Update settings!');
+    $window.localStorage.setItem('host', $scope.loginSettings.host);
+    $window.localStorage.setItem('port', $scope.loginSettings.port);
+
+    $window.localStorage.setItem('prefix', $scope.loginSettings.prefix);
+
+    if ($scope.loginSettings.useCredentials) {
+      $window.localStorage.setItem('user', $scope.loginSettings.user);
+      $window.localStorage.setItem('password', $scope.loginSettings.password);
+    } else {
+      $window.localStorage.setItem('user', '');
+      $window.localStorage.setItem('password', '');
+    }
+
+    $window.location.reload();
+  };
 }
 
+//-----------------------------------------------------------------------------
 export default SettingCtrl;

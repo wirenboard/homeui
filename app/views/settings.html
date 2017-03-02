@@ -8,11 +8,17 @@
         <h3 class="panel-title"><i class="glyphicon glyphicon-log-in"></i> Login</h3>
       </div>
       <div class="panel-body">
-        <form class="form-horizontal" name='loginForm' ng-submit='loginForm.$valid && updateLoginSettings()' novalidate>
+        <form class="form-horizontal" name='loginForm' ng-submit='loginForm.$valid && $ctrl.updateLoginSettings()' novalidate>
+          <div class="form-group">
+            <label for="loginHost" class="col-sm-2 control-label">Host</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="loginHost" ng-model="loginSettings.host" placeholder="localhost" required>
+            </div>
+          </div>
           <div class="form-group">
             <label for="loginPort" class="col-sm-2 control-label">Port</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="loginPort" ng-model="loginSettings.port" placeholder="Port" required>
+              <input type="text" class="form-control" id="loginPort" ng-model="loginSettings.port" placeholder="1883" required>
             </div>
           </div>
           <div class="form-group">
