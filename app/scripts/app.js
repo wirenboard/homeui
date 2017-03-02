@@ -8,6 +8,9 @@ import 'angular-xeditable/dist/css/xeditable.css';
 import '../bower_components/css-spinners/css/spinner/spinner.css';
 import '../bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.css';
 
+// External libraries
+import '../lib/mqttws31';
+
 // Angular packages
 import ngRoute from 'angular-route';
 import ngResource from 'angular-resource';
@@ -80,6 +83,7 @@ import editableElasticTextareaDirective from './directives/editableelastictextar
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
+// 3rdparty libraries
 import './3rdparty/angular-json-editor'
 import './3rdparty/jsoneditor'
 import './3rdparty/ui-bootstrap'
