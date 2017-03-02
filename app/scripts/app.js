@@ -5,7 +5,8 @@ import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'c3/c3.css';
 import 'angular-xeditable/dist/css/xeditable.css';
-import '../bower_components/css-spinners/css/spinner/spinner.css'
+import '../bower_components/css-spinners/css/spinner/spinner.css';
+import '../bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.css';
 
 // Angular packages
 import ngRoute from 'angular-route';
@@ -26,6 +27,7 @@ import '../bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-c
 import '../bower_components/angular-c3-simple/src/angular_c3_simple';
 import '../bower_components/angular-order-object-by/src/ng-order-object-by';
 import '../bower_components/angular-ui-codemirror/ui-codemirror';
+import '../bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch';
 
 // homeui modules
 import errorsService from './services/errors';
