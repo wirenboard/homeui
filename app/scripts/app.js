@@ -10,6 +10,9 @@ import '../bower_components/angular-toggle-switch-fix-chrome-527709/angular-togg
 
 // External libraries
 import '../lib/mqttws31';
+import 'bootstrap';
+import 'codemirror/mode/javascript/javascript';
+import 'spectrum-colorpicker';
 
 // Angular packages
 import ngRoute from 'angular-route';
@@ -21,18 +24,14 @@ import monospacedElastic from 'angular-elastic/elastic';
 import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
 import 'angular-sortable-view/src/angular-sortable-view';
-import 'codemirror/mode/javascript/javascript';
 
-import 'bootstrap';
-
-import 'spectrum-colorpicker';
 import '../bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
 import '../bower_components/angular-c3-simple/src/angular_c3_simple';
 import '../bower_components/angular-order-object-by/src/ng-order-object-by';
 import '../bower_components/angular-ui-codemirror/ui-codemirror';
 import '../bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch';
 
-// homeui modules
+// homeui modules: sevices
 import errorsService from './services/errors';
 import mqttServiceModule from './services/mqttService';
 import editorProxyService from './services/editorProxy';
@@ -48,6 +47,7 @@ import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 
+// homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import DashboardsCtrl from './controllers/dashboardsController';
@@ -64,6 +64,7 @@ import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
 
+// homeui modules: directives
 import cellDirective from './directives/cell';
 import consoleDirective from './directives/console';
 import widgetDirective from './directives/widget';
@@ -88,8 +89,10 @@ import './3rdparty/angular-json-editor'
 import './3rdparty/jsoneditor'
 import './3rdparty/ui-bootstrap'
 
+// Angular routes
 import routing from './app.routes.js';
 
+//-----------------------------------------------------------------------------
 /**
  * @ngdoc overview
  * @name homeuiApp
@@ -246,6 +249,7 @@ module
     });
   });
 
+//-----------------------------------------------------------------------------
 // Register wrapper module
 angular.module('realHomeuiApp', [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
