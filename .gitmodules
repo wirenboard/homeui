@@ -1,0 +1,18 @@
+[submodule "app/lib/css-spinners"]
+	path = app/lib/css-spinners
+	url = https://github.com/jlong/css-spinners.git
+[submodule "app/lib/angular-toggle-switch"]
+	path = app/lib/angular-toggle-switch
+	url = https://github.com/cgarvis/angular-toggle-switch.git
+[submodule "app/lib/angular-spectrum-colorpicker"]
+	path = app/lib/angular-spectrum-colorpicker
+	url = https://github.com/Jimdo/angular-spectrum-colorpicker.git
+[submodule "app/lib/angular-c3-simple"]
+	path = app/lib/angular-c3-simple
+	url = https://github.com/wasilak/angular-c3-simple.git
+[submodule "app/lib/angular-order-object-by"]
+	path = app/lib/angular-order-object-by
+	url = https://github.com/fmquaglia/ngOrderObjectBy.git
+[submodule "app/lib/angular-ui-codemirror"]
+	path = app/lib/angular-ui-codemirror
+	url = https://github.com/angular-ui/ui-codemirror.git

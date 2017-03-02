@@ -5,8 +5,8 @@ import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'c3/c3.css';
 import 'angular-xeditable/dist/css/xeditable.css';
-import '../bower_components/css-spinners/css/spinner/spinner.css';
-import '../bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.css';
+import '../lib/css-spinners/css/spinner/spinner.css';
+import '../lib/angular-toggle-switch/angular-toggle-switch.css';
 
 // External libraries
 import '../lib/mqttws31';
@@ -25,11 +25,16 @@ import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
 import 'angular-sortable-view/src/angular-sortable-view';
 
-import '../bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
-import '../bower_components/angular-c3-simple/src/angular_c3_simple';
-import '../bower_components/angular-order-object-by/src/ng-order-object-by';
-import '../bower_components/angular-ui-codemirror/ui-codemirror';
-import '../bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch';
+// Non-npm packages (former bower packages)
+// Use:
+// $ git submodule init
+// $ git submodule update
+// to set up git submodules
+import '../lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
+import '../lib/angular-c3-simple/src/angular_c3_simple';
+import '../lib/angular-order-object-by/src/ng-order-object-by';
+import '../lib/angular-ui-codemirror/src/ui-codemirror';
+import '../lib/angular-toggle-switch/angular-toggle-switch';
 
 // homeui modules: sevices
 import errorsService from './services/errors';
