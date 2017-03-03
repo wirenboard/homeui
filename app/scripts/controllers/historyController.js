@@ -1,12 +1,12 @@
 class HistoryCtrl {
-  constructor($scope, $routeParams, $location, HistoryProxy,
+  constructor($scope, $stateParams, $location, HistoryProxy,
              whenMqttReady, errors, historyMaxPoints,
              $timeout, dateFilter, uiConfig, orderByFilter) {
     'ngInject';
 
     $scope.dataPoints = [];
-    $scope.topic = $routeParams.device && $routeParams.control ?
-      "/devices/" + $routeParams.device + "/controls/" + $routeParams.control :
+    $scope.topic = $stateParams.device && $stateParams.control ?
+      "/devices/" + $stateParams.device + "/controls/" + $stateParams.control :
       null;
     $scope.controls = [];
     uiConfig.whenReady().then((data) => {
@@ -21,8 +21,8 @@ class HistoryCtrl {
         "name");
     });
 
-    $scope.startDate = this.convDate($routeParams.start);
-    $scope.endDate = this.convDate($routeParams.end);
+    $scope.startDate = this.convDate($stateParams.start);
+    $scope.endDate = this.convDate($stateParams.end);
     $scope.shouldShowChart = function () {
       return !$scope.spinnerActive("historyProxy") &&
         $scope.topic !== null &&

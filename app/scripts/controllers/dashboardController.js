@@ -1,10 +1,10 @@
 class DashboardCtrl {
-  constructor($scope, uiConfig, $routeParams) {
+  constructor($scope, uiConfig, $stateParams) {
     'ngInject';
 
     var defaultDashboard = {};
     function getDashboard () {
-      return uiConfig.getDashboard($routeParams.id);
+      return uiConfig.getDashboard($stateParams.id);
     }
 
     uiConfig.whenReady().then(() => {
@@ -27,4 +27,5 @@ class DashboardCtrl {
   }
 }
 
+//-----------------------------------------------------------------------------
 export default DashboardCtrl;

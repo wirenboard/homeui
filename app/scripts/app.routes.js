@@ -1,4 +1,6 @@
-function routing ($routeProvider,  $locationProvider, JSONEditorProvider, DumbTemplateProvider) {
+import uiRouter from 'angular-ui-router';
+
+function routing ($stateProvider,  $locationProvider, $urlRouterProvider, JSONEditorProvider, DumbTemplateProvider) {
   'ngInject';
 
   var DumbTemplate = null;
@@ -20,69 +22,82 @@ function routing ($routeProvider,  $locationProvider, JSONEditorProvider, DumbTe
     }
   });
 
-  $routeProvider
-    .when('/', {
+  // use the HTML5 History API
+  $locationProvider.html5Mode(true).hashPrefix('!');
+
+  $stateProvider
+    .state('home', {
+      url: '/',
       templateUrl: 'views/home.html',
-      controller: 'HomeCtrl'
+      controller: 'HomeCtrl as $ctrl'
     })
-    .when('/devices', {
+    .state('devices', {
+      url: '/devices',
       templateUrl: 'views/devices.html',
-      controller: 'DevicesCtrl'
+      controller: 'DevicesCtrl as $ctrl'
     })
-    .when('/widgets', {
+    .state('widgets', {
+      url: '/widgets',
       templateUrl: 'views/widgets.html',
-      controller: 'WidgetsCtrl'
+      controller: 'WidgetsCtrl as $ctrl'
     })
-    .when('/dashboards', {
+    .state('dashboards', {
+      url: '/dashboards',
       templateUrl: 'views/dashboards.html',
-      controller: 'DashboardsCtrl'
+      controller: 'DashboardsCtrl as $ctrl'
     })
-    .when('/dashboards/:id', {
+    .state('dashboard', {
+      url: '/dashboards/{id}',
       templateUrl: 'views/dashboard.html',
-      controller: 'DashboardCtrl'
+      controller: 'DashboardCtrl as $ctrl'
     })
-    .when('/settings', {
+    .state('settings', {
+      url: '/settings',
       templateUrl: 'views/settings.html',
-      controller: 'SettingCtrl'
+      controller: 'SettingCtrl as $ctrl'
     })
-    .when('/login/:id',{
+    .state('login', {
+      url: '/login/{id}',
       templateUrl: 'views/login.html',
-      controller: 'LoginCtrl'
+      controller: 'LoginCtrl as $ctrl'
     })
-    .when('/scripts', {
+    .state('scripts', {
+      url: '/scripts',
       templateUrl: 'views/scripts.html',
       controller: 'ScriptsCtrl'
     })
-    .when('/scripts/edit/:path*', {
+    .state('scripts.edit', {
+      url: '/scripts/edit/{path}',
       templateUrl: 'views/script.html',
-      controller: 'ScriptCtrl'
+      controller: 'ScriptCtrl as $ctrl'
     })
-    .when('/scripts/new', {
+    .state('scripts.new', {
+      url: '/',
       templateUrl: 'views/script.html',
-      controller: 'ScriptCtrl'
+      controller: 'ScriptCtrl as $ctrl'
     })
-    .when('/history', {
+    .state('history', {
+      url: '/history',
       templateUrl: 'views/history.html',
       controller: 'HistoryCtrl'
     })
-    .when('/history/:device/:control/:start/:end', {
+    .state('history.sample', {
+      url: '/history/{device}/{control}/{start}/{end}',
       templateUrl: 'views/history.html',
-      controller: 'HistoryCtrl'
+      controller: 'HistoryCtrl as $ctrl'
     })
-    .when('/configs', {
+    .state('configs', {
+      url: '/configs',
       templateUrl: 'views/configs.html',
-      controller: 'ConfigsCtrl'
+      controller: 'ConfigsCtrl as $ctrl'
     })
-    .when('/configs/edit/:path*', {
+    .state('configs.edit', {
+      url: '/configs/edit/{path}',
       templateUrl: 'views/config.html',
-      controller: 'ConfigCtrl'
-    })
-    .otherwise({
-      redirectTo: '/'
+      controller: 'ConfigCtrl as $ctrl'
     });
 
-  // use the HTML5 History API
-  $locationProvider.html5Mode(true).hashPrefix('!');
+  $urlRouterProvider.otherwise('/');
 };
 
 export default routing;

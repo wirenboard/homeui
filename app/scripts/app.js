@@ -15,7 +15,7 @@ import 'codemirror/mode/javascript/javascript';
 import 'spectrum-colorpicker';
 
 // Angular packages
-import ngRoute from 'angular-route';
+import uiRouter from 'angular-ui-router';
 import ngResource from 'angular-resource';
 import ngSanitize from 'angular-sanitize';
 import ngTouch from 'angular-touch';
@@ -113,7 +113,7 @@ const module = angular
     mqttRpcServiceModule,
     dumbTemplateModule,
     ngResource,
-    ngRoute,
+    uiRouter,
     ngSanitize,
     ngTouch,
     'toggle-switch',
