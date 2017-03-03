@@ -97,6 +97,9 @@ import './3rdparty/ui-bootstrap'
 // Angular routes
 import routing from './app.routes.js';
 
+// Internal components
+import LoginFormModule from './components/loginForm';
+
 //-----------------------------------------------------------------------------
 /**
  * @ngdoc overview
@@ -127,7 +130,8 @@ const module = angular
     'ngOrderObjectBy',
     'xeditable',
     uiSelect,
-    monospacedElastic
+    monospacedElastic,
+    LoginFormModule
   ])
   .value('historyMaxPoints', 1000)
   .value('webuiConfigPath', '/etc/wb-webui.conf')
