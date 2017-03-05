@@ -8,6 +8,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const path = require('path')
 
+process.traceDeprecation = true;
+
 /**
  * Env
  * Get npm lifecycle event to identify the environment
@@ -122,7 +124,7 @@ module.exports = function makeWebpackConfig() {
       use: isTest ? 'null-loader' : ExtractTextPlugin.extract({
         fallback: 'style-loader',
         use: [
-          {loader: 'css-loader', query: {sourceMap: true}},
+          {loader: 'css-loader', options: {sourceMap: true}},
           {loader: 'postcss-loader'}
         ],
       })
@@ -154,22 +156,27 @@ module.exports = function makeWebpackConfig() {
   }
 
   /**
-   * PostCSS
-   * Reference: https://github.com/postcss/autoprefixer-core
-   * Add vendor prefixes to your css
-   */
-   // NOTE: This is now handled in the `postcss.config.js`
-   //       webpack2 has some issues, making the config file necessary
-
-  /**
    * Plugins
    * Reference: http://webpack.github.io/docs/configuration.html#plugins
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
+    /**
+    * Angular annotate
+    * Reference: 
+    * 
+    */
     new ngAnnotatePlugin({
       add: true
     }),
+
+    /**
+    * PostCSS
+    * Reference: https://github.com/postcss/autoprefixer-core
+    * Add vendor prefixes to your css
+    */
+    // NOTE: This is now handled in the `postcss.config.js`
+    //       webpack2 has some issues, making the config file necessary
     new webpack.LoaderOptionsPlugin({
       test: /\.scss$/i,
       options: {
@@ -178,6 +185,11 @@ module.exports = function makeWebpackConfig() {
         }
       }
     }),
+    /**
+    * Provide plugin
+    * Reference: 
+    * 
+    */
     new webpack.ProvidePlugin({
       'angular': 'angular',
       jQuery: 'jquery',
@@ -187,6 +199,7 @@ module.exports = function makeWebpackConfig() {
       'c3': 'c3/c3',
       'window.CodeMirror': 'codemirror/lib/codemirror'
     })
+    // TODO: Add stat plugin
   ];
 
   // Skip rendering index.html in test mode
