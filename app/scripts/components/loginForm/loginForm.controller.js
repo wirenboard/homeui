@@ -1,10 +1,11 @@
 class LoginFormCtrl {
-  constructor ($window, mqttClient, $state) {
+  constructor ($window, mqttClient, $state, $location) {
     'ngInject';
 
     this.localStorage = $window.localStorage;
     this.mqttClient = mqttClient;
     this.state = $state;
+    this.currentHost = $location.host();
 
     this.loginSettings = {};
     this.loginSettings.host = this.localStorage['host'];
@@ -18,6 +19,8 @@ class LoginFormCtrl {
     } else {
       this.loginSettings.useCredentials = false;
     }
+
+    console.log('LoginFormCtrl.constructor', this);
   }
 
 //-----------------------------------------------------------------------------
@@ -32,7 +35,7 @@ class LoginFormCtrl {
     if (host) {
       this.host = host;
     } else {
-      this.host = 'localhost';
+      this.host = this.currentHost;
     }
     if (port) {
       this.port = port;

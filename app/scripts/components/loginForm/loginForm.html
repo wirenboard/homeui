@@ -33,9 +33,9 @@
           </div>
         </div>
         <div class="form-group" >
-          <label for="loginPassword" class="col-sm-2 control-label" name="password" ng-model="$ctrl.password">Password</label>
+          <label for="loginPassword" class="col-sm-2 control-label" ng-model="$ctrl.password">Password</label>
           <div class="col-sm-10">
-            <input type="password" class="form-control" id="loginPassword"  ng-model="$ctrl.password" ng-required="($ctrl.prefix === 'true') || ($ctrl.useCredentials === true)" ng-disabled="$ctrl.useCredentials == false">
+            <input type="password" class="form-control" id="loginPassword"  name="password" ng-model="$ctrl.password" ng-required="($ctrl.prefix === 'true') || ($ctrl.useCredentials === true)" ng-disabled="$ctrl.useCredentials == false">
           </div>
         </div>
 <!--           <div class="form-group">
