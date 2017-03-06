@@ -19,8 +19,6 @@ class LoginFormCtrl {
     } else {
       this.loginSettings.useCredentials = false;
     }
-
-    console.log('LoginFormCtrl.constructor', this);
   }
 
 //-----------------------------------------------------------------------------

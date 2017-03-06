@@ -1,13 +1,13 @@
-function rangeCellDirective() {
-  'ngInject';
+import template from './rangecell.html';
 
+function rangeCellDirective() {
   const DEFAULT_MIN = 0, DEFAULT_MAX = 1e9, DEFAULT_STEP = 1;
   return {
     restrict: "EA",
     scope: false,
     require: "^cell",
     replace: true,
-    templateUrl: "scripts/directives/rangecell.html",
+    template,
     link: ($scope, element, attr, cellCtrl) => {
       // Make sure min/max/step are initialized to a range that is
       // broad enough for the range control to initialize correctly.

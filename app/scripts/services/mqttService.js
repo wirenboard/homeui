@@ -34,7 +34,6 @@ function whenMqttReady($q, $rootScope, mqttClient) {
 
 //-----------------------------------------------------------------------------
 function topicMatches() {
-  'ngInject';
   return (pattern, topic) => {
     function match (patternParts, topicParts) {
       if (!patternParts.length)

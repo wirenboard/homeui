@@ -1,10 +1,10 @@
+import template from './widget.html';
+
 function widgetDirective(DeviceData, $timeout) {
   'ngInject';
 
 //-----------------------------------------------------------------------------
   function cellName (id) {
-    'ngInject';
-
     try {
       return DeviceData.proxy(id).name;
     } catch (e) {
@@ -135,7 +135,7 @@ function widgetDirective(DeviceData, $timeout) {
     controllerAs: "ctrl",
     controller: WidgetController,
     replace: true,
-    templateUrl: "scripts/directives/widget.html"
+    template
   };
 }
 

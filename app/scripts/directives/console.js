@@ -1,3 +1,5 @@
+import template from './console.html'
+
 function consoleDirective(mqttClient, $rootScope, $timeout,
                          dateFilter, getTime, scrollTimeoutMs) {
   'ngInject';
@@ -33,10 +35,8 @@ function consoleDirective(mqttClient, $rootScope, $timeout,
     restrict: "EA",
     replace: true,
     scope: true,
-    templateUrl: "scripts/directives/console.html",
+    template,
     link: (scope, element, attrs) => {
-      'ngInject';
-      
       var scrollTimeout = null,
           messageContainer = element.find(".console-messages");
       scope.$on("wbrulesLog", (event, level, message) => {

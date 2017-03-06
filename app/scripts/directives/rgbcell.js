@@ -1,8 +1,11 @@
+import template from './rgbcell.html';
+
 function rgbCellDirective(rgbLocalStorageKey) {
   'ngInject';
-
+  
   class RgbController {
     constructor ($scope, $element, $attrs) {
+      'ngInject';
       this.cell = $scope.cell;
       this.colorPickerOptions = {
         showPalette: true,
@@ -28,7 +31,7 @@ function rgbCellDirective(rgbLocalStorageKey) {
     require: '^cell',
     replace: true,
     controllerAs: 'rgbCtrl',
-    templateUrl: 'scripts/directives/rgbcell.html',
+    template,
     controller: RgbController,
     link: (scope, element, attr) => {
       // 'show' event causes widgets' onshow attribute value used by

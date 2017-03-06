@@ -1,6 +1,4 @@
 function buttonCellDirective() {
-  'ngInject';
-
   return {
     restrict: 'EA',
     scope: false,

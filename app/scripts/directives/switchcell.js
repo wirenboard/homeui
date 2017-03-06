@@ -1,12 +1,12 @@
-function switchCellDirective() {
-  'ngInject';
+import template from './switchcell.html';
 
+function switchCellDirective() {
   return {
     restrict: 'EA',
     scope: false,
     require: '^cell',
     replace: true,
-    templateUrl: 'scripts/directives/switchcell.html'
+    template
   };
 }
 

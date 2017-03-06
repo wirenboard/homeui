@@ -1,12 +1,12 @@
-function valueCellDirective() {
-  'ngInject';
+import template from './valuecell.html';
 
+function valueCellDirective() {
   return {
     restrict: "EA",
     scope: false,
     require: "^cell",
     replace: true,
-    templateUrl: "scripts/directives/valuecell.html"
+    template
   };
 }
 

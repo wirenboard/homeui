@@ -1,3 +1,5 @@
+import template from './displaycell.html';
+
 function displayCellDirective(displayCellConfig, $compile) {
   'ngInject';
 
@@ -28,7 +30,7 @@ function displayCellDirective(displayCellConfig, $compile) {
     // created by 'cell' directive, so don't use two <display-cell>
     // directives within single 'cell' directive scope
     controllerAs: 'displayCellCtrl',
-    templateUrl: 'scripts/directives/displaycell.html',
+    template,
     link: (scope, element, attrs) => {
       scope.$watch(() => scope.cell.displayType, displayType => {
         var directive = (displayCellConfig.displayTypes.hasOwnProperty(displayType) ?

@@ -1,6 +1,4 @@
 function transformRgbDirective() {
-  'ngInject';
-
   return {
     restrict: "A",
     require: "ngModel",

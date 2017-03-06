@@ -1,6 +1,4 @@
 function textCellDirective() {
-  'ngInject';
-
   return {
     restrict: 'EA',
     scope: false,

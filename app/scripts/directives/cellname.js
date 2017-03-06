@@ -1,6 +1,4 @@
 function cellNameDirective() {
-  'ngInject';
-
   return {
     restrict: 'EA',
     scope: {

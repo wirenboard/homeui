@@ -1,6 +1,4 @@
 function alarmCellDirective() {
-  'ngInject';
-
   return {
     restrict: 'EA',
     scope: false,

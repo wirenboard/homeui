@@ -1,3 +1,5 @@
+import template from './cellpicker.html';
+
 function cellPickerDirective(DeviceData) {
   'ngInject';
 
@@ -11,7 +13,7 @@ function cellPickerDirective(DeviceData) {
     },
     require: 'ngModel',
     replace: true,
-    templateUrl: 'scripts/directives/cellpicker.html',
+    template,
     link: (scope, element, attrs, ngModelCtrl) => {
       var items = {};
 
