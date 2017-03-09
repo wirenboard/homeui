@@ -1,27 +1,6 @@
 import uiRouter from 'angular-ui-router';
 
-function routing ($stateProvider,  $locationProvider, $urlRouterProvider, JSONEditorProvider, DumbTemplateProvider) {
-  'ngInject';
-
-  var DumbTemplate = null;
-
-  JSONEditorProvider.configure({
-    defaults: {
-      options: {
-        show_errors: "always",
-        template: {
-          compile: function (template) {
-            if (!DumbTemplate)
-              DumbTemplate = DumbTemplateProvider.$get();
-            return DumbTemplate.compile(template);
-          }
-        }
-        // iconlib: 'bootstrap3',
-        // theme: 'bootstrap3',
-      }
-    }
-  });
-
+function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   // use the HTML5 History API
   $locationProvider.html5Mode(true).hashPrefix('!');
 
@@ -100,4 +79,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider, JSONEd
   $urlRouterProvider.otherwise('/');
 };
 
-export default routing;
+export default angular
+  .module('homeuiApp.routing', [uiRouter])
+  .config(routing)
+  .name;

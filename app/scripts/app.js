@@ -24,6 +24,7 @@ import monospacedElastic from 'angular-elastic/elastic';
 import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
 import 'angular-sortable-view/src/angular-sortable-view';
+import oclazyload from 'oclazyload';
 
 // Non-npm packages (former bower packages)
 // Use:
@@ -95,7 +96,7 @@ import './3rdparty/jsoneditor'
 import './3rdparty/ui-bootstrap'
 
 // Angular routes
-import routing from './app.routes.js';
+import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm';
@@ -111,6 +112,7 @@ import LoginFormModule from './components/loginForm';
  */
 const module = angular
   .module('homeuiApp', [
+    routingModule,
     mqttServiceModule,
     metaTypeFilterModule,
     mqttRpcServiceModule,
@@ -131,6 +133,7 @@ const module = angular
     'xeditable',
     uiSelect,
     monospacedElastic,
+    oclazyload,
     LoginFormModule
   ])
   .value('historyMaxPoints', 1000)
@@ -245,9 +248,29 @@ module
   .directive('explicitChanges', explicitChangesDirective)
   .directive('editableElasticTextarea', editableElasticTextareaDirective);
 
-// Set up routing
 module
-  .config(routing)
+  .config((JSONEditorProvider, DumbTemplateProvider) => {
+    'ngInject';
+
+    var DumbTemplate = null;
+
+    JSONEditorProvider.configure({
+      defaults: {
+        options: {
+          show_errors: "always",
+          template: {
+            compile: function (template) {
+              if (!DumbTemplate)
+                DumbTemplate = DumbTemplateProvider.$get();
+              return DumbTemplate.compile(template);
+            }
+          }
+          // iconlib: 'bootstrap3',
+          // theme: 'bootstrap3',
+        }
+      }
+    });
+  })
   .run(($rootScope, $location) => {
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
