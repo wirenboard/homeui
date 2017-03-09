@@ -33,17 +33,19 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     })
     .state('settings', {
       url: '/settings',
-      templateProvider: ['$q', function ($q) {
+      templateProvider: function ($q) {
+        'ngInject';
         let deferred = $q.defer();
         require.ensure(['../views/settings.html'], function () {
             let template = require('../views/settings.html');
             deferred.resolve(template);
         });
         return deferred.promise;
-      }],
+      },
       controller: 'SettingCtrl as $ctrl',
       resolve: {
-        ctrl: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
+        ctrl: function ($q, $ocLazyLoad) {
+          'ngInject';
           let deferred = $q.defer();
           require.ensure([], function () {
             let module = require('./controllers/settingController.js');
@@ -52,9 +54,8 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
             });
             deferred.resolve(module);
           });
-
           return deferred.promise;
-        }]
+        }
       }
     })
     .state('login', {
