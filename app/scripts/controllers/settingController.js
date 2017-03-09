@@ -15,4 +15,6 @@ class SettingCtrl {
 }
 
 //-----------------------------------------------------------------------------
-export default SettingCtrl;
+export default angular
+    .module('homeuiApp.settings', [])
+    .controller('SettingCtrl', SettingCtrl);

@@ -40,7 +40,10 @@ module.exports = function makeWebpackConfig() {
    */
   config.entry = isTest ? void 0 : {
     homeui: './scripts/app.js',
-    common: ['angular', 'jquery', 'bootstrap', 'angular-ui-router', 'angular-touch']
+    common: ['angular', 'jquery', 'bootstrap', 'angular-ui-router', 'angular-touch',
+      'ui-select', 'angular-resource', 'angular-sanitize', 'angular-elastic/elastic',
+      'angular-xeditable/dist/js/xeditable', 'ng-file-upload', 
+      'angular-sortable-view/src/angular-sortable-view', 'oclazyload']
   };
 
   /**

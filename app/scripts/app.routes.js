@@ -2,7 +2,8 @@ import uiRouter from 'angular-ui-router';
 
 function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   // use the HTML5 History API
-  $locationProvider.html5Mode(true).hashPrefix('!');
+  $locationProvider.html5Mode(true);
+  $locationProvider.hashPrefix('!');
 
   $stateProvider
     .state('home', {
@@ -32,8 +33,29 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     })
     .state('settings', {
       url: '/settings',
-      templateUrl: 'views/settings.html',
-      controller: 'SettingCtrl as $ctrl'
+      templateProvider: ['$q', function ($q) {
+        let deferred = $q.defer();
+        require.ensure(['../views/settings.html'], function () {
+            let template = require('../views/settings.html');
+            deferred.resolve(template);
+        });
+        return deferred.promise;
+      }],
+      controller: 'SettingCtrl as $ctrl',
+      resolve: {
+        ctrl: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/settingController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+
+          return deferred.promise;
+        }]
+      }
     })
     .state('login', {
       url: '/login/{id}',

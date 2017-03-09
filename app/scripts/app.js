@@ -65,7 +65,6 @@ import ScriptsCtrl from './controllers/scriptsController';
 import ScriptCtrl from './controllers/scriptController';
 import ConfigsCtrl from './controllers/configsController';
 import ConfigCtrl from './controllers/configController';
-import SettingCtrl from './controllers/settingController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
@@ -172,7 +171,6 @@ module
   .controller('ConfigsCtrl', ConfigsCtrl)
   .controller('ConfigCtrl', ConfigCtrl)
   .controller('FirmwareCtrl', FirmwareCtrl)
-  .controller('SettingCtrl', SettingCtrl)
   .controller('LoginCtrl', LoginCtrl);
 
 module
