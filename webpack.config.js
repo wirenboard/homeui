@@ -39,7 +39,8 @@ module.exports = function makeWebpackConfig() {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? void 0 : {
-    homeui: './scripts/app.js'
+    homeui: './scripts/app.js',
+    common: ['angular', 'jquery', 'bootstrap', 'angular-ui-router', 'angular-touch']
   };
 
   /**
@@ -164,6 +165,11 @@ module.exports = function makeWebpackConfig() {
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
+    // https://webpack.js.org/guides/code-splitting-libraries/
+    new webpack.optimize.CommonsChunkPlugin({
+      names: ['common', 'manifest'] // Specify the common bundle's name.
+    }),
+
     /**
     * Angular annotate
     * Reference: 
