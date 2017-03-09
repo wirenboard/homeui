@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
+const StatsPlugin = require('stats-webpack-plugin');
 const path = require('path')
 
 process.traceDeprecation = true;
@@ -126,7 +127,7 @@ module.exports = function makeWebpackConfig() {
         use: [
           {loader: 'css-loader', options: {sourceMap: true}},
           {loader: 'postcss-loader'}
-        ],
+        ]
       })
     }, {
       // ASSET LOADER
@@ -138,11 +139,13 @@ module.exports = function makeWebpackConfig() {
       test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
       use: 'file-loader'
     }, {
-      // HTML LOADER
-      // Reference: https://github.com/webpack/raw-loader
-      // Allow loading html through js
       test: /\.html$/,
-      use: 'raw-loader'
+      use: [
+        // HTML LOADER
+        // Reference: https://github.com/webpack/raw-loader
+        // Allow loading html through js
+        {loader: 'raw-loader'}
+      ]
     }]
   };
 
@@ -228,9 +231,20 @@ module.exports = function makeWebpackConfig() {
 
       // Copy assets from the public folder
       // Reference: https://github.com/kevlened/copy-webpack-plugin
-      new CopyWebpackPlugin([{
-        from: path.join(__dirname, 'app', 'images'), to: 'images' 
-      }])
+      new CopyWebpackPlugin([
+        {from: path.join(__dirname, 'app', 'images'), to: 'images'},
+        {from: path.join(__dirname, 'app', 'views'), to: 'views'},
+        {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
+        {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
+        {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'}
+      ]),
+
+      // Writes the stats of a build to a file.
+      // Reference: https://github.com/unindented/stats-webpack-plugin/
+      new StatsPlugin('stats.json', {
+        chunkModules: true,
+        exclude: [/node_modules/]
+      })
     )
   }
 
