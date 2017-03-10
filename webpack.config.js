@@ -40,12 +40,22 @@ module.exports = function makeWebpackConfig() {
    */
   config.entry = isTest ? void 0 : {
     homeui: './scripts/app.js',
-    common: ['angular', 'jquery', 'bootstrap', 'angular-ui-router', 'angular-touch',
+    common: ['angular', 'jquery', 'bootstrap',
+      'angular-ui-router', 'angular-touch',
       'ui-select', 'angular-resource', 'angular-sanitize', 'angular-elastic/elastic',
       'angular-xeditable/dist/js/xeditable', 'ng-file-upload', 
-      'angular-sortable-view/src/angular-sortable-view', 'oclazyload']
-  };
+      'angular-sortable-view/src/angular-sortable-view', 'oclazyload',
+      'codemirror/lib/codemirror',
+      './lib/mqttws31',
+      './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker', 'spectrum-colorpicker',
+      './lib/angular-order-object-by/src/ng-order-object-by',
+      './lib/angular-ui-codemirror/src/ui-codemirror', 'codemirror/mode/javascript/javascript',
+      './lib/angular-toggle-switch/angular-toggle-switch',
+      './scripts/3rdparty/angular-json-editor', './scripts/3rdparty/jsoneditor', 
+      './scripts/3rdparty/ui-bootstrap'
 
+     ]
+  };
   /**
    * Output
    * Reference: http://webpack.github.io/docs/configuration.html#output
@@ -221,7 +231,7 @@ module.exports = function makeWebpackConfig() {
     config.plugins.push(
       new HtmlWebpackPlugin({
         template: './index.html',
-        inject: 'head'
+        inject: 'body'
       }),
 
       // Reference: https://github.com/webpack/extract-text-webpack-plugin

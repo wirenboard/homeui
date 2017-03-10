@@ -1,3 +1,7 @@
+// import * as d3 from 'd3'
+// import * as c3 from 'c3/c3'
+//import '../../lib/angular-c3-simple/src/angular_c3_simple';
+
 class HistoryCtrl {
   constructor($scope, $stateParams, $location, HistoryProxy,
              whenMqttReady, errors, historyMaxPoints,
@@ -207,6 +211,7 @@ class HistoryCtrl {
 }
 
 //-----------------------------------------------------------------------------
+require('../../lib/angular-c3-simple/src/angular_c3_simple');
 export default angular
-    .module('homeuiApp.history', [])
+    .module('homeuiApp.history', ['angular-c3-simple'])
     .controller('HistoryCtrl', HistoryCtrl);

@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
-import 'c3/c3.css';
+//import 'c3/c3.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
 import '../lib/angular-toggle-switch/angular-toggle-switch.css';
@@ -32,7 +32,6 @@ import oclazyload from 'oclazyload';
 // $ git submodule update
 // to set up git submodules
 import '../lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
-import '../lib/angular-c3-simple/src/angular_c3_simple';
 import '../lib/angular-order-object-by/src/ng-order-object-by';
 import '../lib/angular-ui-codemirror/src/ui-codemirror';
 import '../lib/angular-toggle-switch/angular-toggle-switch';
@@ -117,7 +116,6 @@ const module = angular
     'ngOrderObjectBy',
     'ui.bootstrap',
     'ui.codemirror',
-    'angular-c3-simple',
     'angular-json-editor',
     'ngOrderObjectBy',
     'xeditable',
