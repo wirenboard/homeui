@@ -56,7 +56,6 @@ import hiliteService from './services/hilite';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import ScriptCtrl from './controllers/scriptController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
@@ -184,7 +183,6 @@ module
       }
     };
   })
-  .controller('ScriptCtrl', ScriptCtrl);
 
 // Register directives
 module
