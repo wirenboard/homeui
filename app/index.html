@@ -69,7 +69,7 @@
               <a href="javascript:;" data-toggle="collapse" data-target="#configs-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="configs-menu" class="collapse">
                 <li ng-repeat="config in getConfigs()">
-                  <a ui-sref="configs.edit({ path: config.schemaPath} )"
+                  <a ui-sref="configEdit({ path: config.schemaPath })"
                     ui-sref-active="active">
                     {{ config.title }}
                     <span class="glyphicon glyphicon-alert" ng-show="!!config.error"></span>

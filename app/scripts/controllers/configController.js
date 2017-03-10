@@ -1,14 +1,15 @@
 class ConfigCtrl {
-  constructor($scope, $routeParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
+  constructor($scope, $stateParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     'ngInject';
-
+    console.log('ConfigCtrl started.');
     $scope.file = {
-      schemaPath: $routeParams.path,
+      schemaPath: $stateParams.path,
       configPath: "",
       loaded: false,
       valid: true,
       content: {}
     };
+    console.log($scope.file);
     $scope.editorOptions = {};
     if (!/^\//.test($scope.file.schemaPath))
       $scope.file.schemaPath = "/" + $scope.file.schemaPath;
@@ -59,4 +60,7 @@ class ConfigCtrl {
   }
 }
 
-export default ConfigCtrl;
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.config', [])
+    .controller('ConfigCtrl', ConfigCtrl);

@@ -1,5 +1,5 @@
 class ScriptCtrl {
-  constructor($scope, $routeParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
+  constructor($scope, $stateParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     'ngInject';
 
     var cm, pos = null;
@@ -7,8 +7,8 @@ class ScriptCtrl {
       return PageState.isDirty();
     };
     $scope.file = {
-      isNew: !$routeParams.hasOwnProperty("path"),
-      path: $routeParams.path,
+      isNew: !$stateParams.hasOwnProperty("path"),
+      path: $stateParams.path,
       loaded: false,
       content: ""
     };

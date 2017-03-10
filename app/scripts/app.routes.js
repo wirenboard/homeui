@@ -2,7 +2,7 @@ import uiRouter from 'angular-ui-router';
 
 function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   // use the HTML5 History API
-  $locationProvider.html5Mode(true);
+  $locationProvider.html5Mode(false);
   $locationProvider.hashPrefix('!');
   $urlRouterProvider.otherwise('/');
 
@@ -17,15 +17,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('devices', {
       url: '/devices',
       controller: 'DevicesCtrl as $ctrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/devices.html'], function () {
-            let template = require('../views/devices.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/devices.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -45,15 +37,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('widgets', {
       url: '/widgets',
       controller: 'WidgetsCtrl as $ctrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/widgets.html'], function () {
-            let template = require('../views/widgets.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/widgets.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -73,15 +57,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('dashboards', {
       url: '/dashboards',
       controller: 'DashboardsCtrl as $ctrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/dashboards.html'], function () {
-            let template = require('../views/dashboards.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/dashboards.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -101,15 +77,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('dashboard', {
       url: '/dashboards/{id}',
       controller: 'DashboardCtrl as $ctrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/dashboard.html'], function () {
-            let template = require('../views/dashboard.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/dashboard.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -129,15 +97,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('settings', {
       url: '/settings',
       controller: 'SettingCtrl as $ctrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/settings.html'], function () {
-            let template = require('../views/settings.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/settings.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -163,15 +123,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('scripts', {
       url: '/scripts',
       controller: 'ScriptsCtrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/scripts.html'], function () {
-            let template = require('../views/scripts.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/scripts.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -188,14 +140,14 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
       }
     })
   //...........................................................................
-    .state('scripts.edit', {
-      url: '/scripts/edit/{path}',
+    .state('scriptEdit', {
+      url: '/scripts/edit/{path:.*}',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl',
     })
   //...........................................................................
-    .state('scripts.new', {
-      url: '/',
+    .state('scriptNew', {
+      url: '/scripts/new',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl'
     })
@@ -203,15 +155,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('history', {
       url: '/history',
       controller: 'HistoryCtrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/history.html'], function () {
-            let template = require('../views/history.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/history.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -237,15 +181,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('configs', {
       url: '/configs',
       controller: 'ConfigsCtrl as $ctrl',
-      templateProvider: ($q) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(['../views/configs.html'], function () {
-            let template = require('../views/configs.html');
-            deferred.resolve(template);
-        });
-        return deferred.promise;
-      },
+      templateUrl: 'views/configs.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -262,10 +198,25 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
       }
     })
   //...........................................................................
-    .state('configs.edit', {
-      url: '/configs/edit/{path}',
+    .state('configEdit', {
+      url: '/configs/edit/{path:.*}',
+      controller: 'ConfigCtrl as $ctrl',
       templateUrl: 'views/config.html',
-      controller: 'ConfigCtrl as $ctrl'
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/configController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            }).then(function() {
+              deferred.resolve(module);
+              });
+          });
+          return deferred.promise;
+        }
+      }
     });
 };
 
