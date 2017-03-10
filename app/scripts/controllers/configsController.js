@@ -9,4 +9,7 @@ class ConfigsCtrl {
   }
 }
 
-export default ConfigsCtrl;
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.configs', [])
+    .controller('ConfigsCtrl', ConfigsCtrl);

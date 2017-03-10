@@ -191,7 +191,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('scripts.edit', {
       url: '/scripts/edit/{path}',
       templateUrl: 'views/script.html',
-      controller: 'ScriptCtrl as $ctrl'
+      controller: 'ScriptCtrl as $ctrl',
     })
   //...........................................................................
     .state('scripts.new', {
@@ -202,8 +202,30 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('history', {
       url: '/history',
-      templateUrl: 'views/history.html',
-      controller: 'HistoryCtrl'
+      controller: 'HistoryCtrl',
+      templateProvider: ($q) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(['../views/history.html'], function () {
+            let template = require('../views/history.html');
+            deferred.resolve(template);
+        });
+        return deferred.promise;
+      },
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/historyController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('history.sample', {
@@ -214,8 +236,30 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('configs', {
       url: '/configs',
-      templateUrl: 'views/configs.html',
-      controller: 'ConfigsCtrl as $ctrl'
+      controller: 'ConfigsCtrl as $ctrl',
+      templateProvider: ($q) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(['../views/configs.html'], function () {
+            let template = require('../views/configs.html');
+            deferred.resolve(template);
+        });
+        return deferred.promise;
+      },
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/configsController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('configs.edit', {

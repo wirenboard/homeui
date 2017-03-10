@@ -206,4 +206,7 @@ class HistoryCtrl {
   }
 }
 
-export default HistoryCtrl;
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.history', [])
+    .controller('HistoryCtrl', HistoryCtrl);
