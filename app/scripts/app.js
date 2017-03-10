@@ -56,10 +56,7 @@ import hiliteService from './services/hilite';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import DashboardsCtrl from './controllers/dashboardsController';
-import DashboardCtrl from './controllers/dashboardController';
 import HistoryCtrl from './controllers/historyController';
-import ScriptsCtrl from './controllers/scriptsController';
 import ScriptCtrl from './controllers/scriptController';
 import ConfigsCtrl from './controllers/configsController';
 import ConfigCtrl from './controllers/configController';
@@ -160,10 +157,7 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('DashboardsCtrl', DashboardsCtrl)
-  .controller('DashboardCtrl', DashboardCtrl)
   .controller('HistoryCtrl', HistoryCtrl)
-  .controller('ScriptsCtrl', ScriptsCtrl)
   .controller('ConfigsCtrl', ConfigsCtrl)
   .controller('ConfigCtrl', ConfigCtrl)
   .controller('FirmwareCtrl', FirmwareCtrl)

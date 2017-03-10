@@ -37,4 +37,7 @@ class DashboardsCtrl {
   }
 }
 
-export default DashboardsCtrl;
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.dashboards', [])
+    .controller('DashboardsCtrl', DashboardsCtrl);

@@ -72,14 +72,58 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('dashboards', {
       url: '/dashboards',
-      templateUrl: 'views/dashboards.html',
-      controller: 'DashboardsCtrl as $ctrl'
+      controller: 'DashboardsCtrl as $ctrl',
+      templateProvider: ($q) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(['../views/dashboards.html'], function () {
+            let template = require('../views/dashboards.html');
+            deferred.resolve(template);
+        });
+        return deferred.promise;
+      },
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/dashboardsController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('dashboard', {
       url: '/dashboards/{id}',
-      templateUrl: 'views/dashboard.html',
-      controller: 'DashboardCtrl as $ctrl'
+      controller: 'DashboardCtrl as $ctrl',
+      templateProvider: ($q) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(['../views/dashboard.html'], function () {
+            let template = require('../views/dashboard.html');
+            deferred.resolve(template);
+        });
+        return deferred.promise;
+      },
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/dashboardController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('settings', {
@@ -118,8 +162,30 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('scripts', {
       url: '/scripts',
-      templateUrl: 'views/scripts.html',
-      controller: 'ScriptsCtrl'
+      controller: 'ScriptsCtrl',
+      templateProvider: ($q) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(['../views/scripts.html'], function () {
+            let template = require('../views/scripts.html');
+            deferred.resolve(template);
+        });
+        return deferred.promise;
+      },
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/scriptsController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('scripts.edit', {
