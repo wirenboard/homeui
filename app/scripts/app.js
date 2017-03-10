@@ -58,7 +58,6 @@ import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import DashboardsCtrl from './controllers/dashboardsController';
 import DashboardCtrl from './controllers/dashboardController';
-import WidgetsCtrl from './controllers/widgetsController';
 import HistoryCtrl from './controllers/historyController';
 import ScriptsCtrl from './controllers/scriptsController';
 import ScriptCtrl from './controllers/scriptController';
@@ -163,7 +162,6 @@ module
   .controller('HomeCtrl', HomeCtrl)
   .controller('DashboardsCtrl', DashboardsCtrl)
   .controller('DashboardCtrl', DashboardCtrl)
-  .controller('WidgetsCtrl', WidgetsCtrl)
   .controller('HistoryCtrl', HistoryCtrl)
   .controller('ScriptsCtrl', ScriptsCtrl)
   .controller('ConfigsCtrl', ConfigsCtrl)

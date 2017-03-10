@@ -44,8 +44,30 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('widgets', {
       url: '/widgets',
-      templateUrl: 'views/widgets.html',
-      controller: 'WidgetsCtrl as $ctrl'
+      controller: 'WidgetsCtrl as $ctrl',
+      templateProvider: ($q) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(['../views/widgets.html'], function () {
+            let template = require('../views/widgets.html');
+            deferred.resolve(template);
+        });
+        return deferred.promise;
+      },
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/widgetsController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('dashboards', {

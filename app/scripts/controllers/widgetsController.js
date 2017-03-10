@@ -63,4 +63,7 @@ class WidgetsCtrl {
   }
 }
 
-export default WidgetsCtrl;
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.widgets', [])
+    .controller('WidgetsCtrl', WidgetsCtrl);
