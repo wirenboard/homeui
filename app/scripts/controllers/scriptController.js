@@ -105,5 +105,7 @@ class ScriptCtrl {
   }
 }
 
-export default ScriptCtrl;
-
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.script', [])
+    .controller('ScriptCtrl', ScriptCtrl);

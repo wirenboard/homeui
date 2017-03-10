@@ -144,12 +144,40 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
       url: '/scripts/edit/{path:.*}',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/scriptController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('scriptNew', {
       url: '/scripts/new',
       templateUrl: 'views/script.html',
-      controller: 'ScriptCtrl as $ctrl'
+      controller: 'ScriptCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure([], function () {
+            let module = require('./controllers/scriptController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            });
+            deferred.resolve(module);
+          });
+          return deferred.promise;
+        }
+      }
     })
   //...........................................................................
     .state('history', {
