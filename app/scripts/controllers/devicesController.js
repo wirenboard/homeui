@@ -8,4 +8,7 @@ class DevicesCtrl {
   }
 }
 
-export default DevicesCtrl;
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.devices', [])
+    .controller('DevicesCtrl', DevicesCtrl);
