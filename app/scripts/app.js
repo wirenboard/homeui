@@ -263,6 +263,7 @@ module
 // Register wrapper module
 angular.module('realHomeuiApp', [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
+    'ngInject';
     // TBD: the following should be handled by config sync service
     var configSaveDebounce = null;
     // TBD: loginService
@@ -293,10 +294,12 @@ angular.module('realHomeuiApp', [module.name])
     }
 
     whenMqttReady()
-      .then(() => ConfigEditorProxy.Load({ path: webuiConfigPath }))
-      .then((r) => {
-        console.log('LOAD CONF: %o', r.content);
-        uiConfig.ready(r.content);
+      .then(() => {
+        return ConfigEditorProxy.Load({ path: webuiConfigPath })
+      })
+      .then((result) => {
+        console.log('LOAD CONF: %o', result.content);
+        uiConfig.ready(result.content);
         $rootScope.$watch(() => uiConfig.filtered(), (newData, oldData) => {
           if (angular.equals(newData, oldData))
             return;
@@ -309,5 +312,6 @@ angular.module('realHomeuiApp', [module.name])
             });
           }, configSaveDebounceMs);
         }, true);
-      }).catch(errors.catch('Error loading WebUI config'));
+      })
+      .catch(errors.catch('Error loading WebUI config'));
   });
