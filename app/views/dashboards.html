@@ -1,8 +1,8 @@
 <h1 class="page-header">
   Dashboards
 </h1>
-<div class="empty-list well" ng-if="!data.dashboards.length">No dashboards currently defined.</div>
-<table class="table dashboards-table webui-table" ng-if="data.dashboards.length">
+<div class="empty-list well" ng-if="!$ctrl.data.dashboards.length">No dashboards currently defined.</div>
+<table class="table dashboards-table webui-table" ng-if="$ctrl.data.dashboards.length">
   <thead>
     <tr>
       <th class="idx-col">#</th>
@@ -11,8 +11,8 @@
       <th class="button-col"></th>
     </tr>
   </thead>
-  <tbody sv-root sv-part="data.dashboards">
-    <tr class="dashboard" ng-repeat="dashboard in data.dashboards" sv-element>
+  <tbody sv-root sv-part="$ctrl.data.dashboards">
+    <tr class="dashboard" ng-repeat="dashboard in $ctrl.data.dashboards" sv-element>
       <th class="idx-col" scope="row" >{{ $index+1 }}</th>
       <td class="name-col">
         <span editable-text="dashboard.name"
@@ -22,11 +22,11 @@
       <td class="id-col">
         <span editable-text="dashboard.id"
               e-form="rowform"
-              onbeforesave="checkId($data, dashboard)">{{ dashboard.id }}</span>
+              onbeforesave="$ctrl.checkId($data, dashboard)">{{ dashboard.id }}</span>
       </td>
       <td class="button-col">
         <form editable-form name="rowform" ng-show="rowform.$visible" class="form-buttons form-inline"
-              shown="dashboard.isNew" onaftersave="afterSave(dashboard)" oncancel="cancel(dashboard)">
+              shown="dashboard.isNew" onaftersave="$ctrl.afterSave(dashboard)" oncancel="cancel(dashboard)">
           <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">
             Save
           </button>
@@ -38,7 +38,7 @@
         <div class="buttons" ng-show="!rowform.$visible">
           <a class="btn btn-primary" ui-sref="dashboard({ id: dashboard.id })">View</a>
           <button name="edit" type="button" class="btn btn-primary" ng-click="rowform.$show()">Edit</button>
-          <button name="delete" type="button" class="btn btn-danger" ng-click="model(dashboard).remove()">Delete</button>
+          <button name="delete" type="button" class="btn btn-danger" ng-click="$ctrl.model(dashboard).remove()">Delete</button>
         </div>  
         <!--
         <a href='/dashboards/{{dashboard.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
@@ -50,5 +50,5 @@
 <div class="btn-form">
   <button name="add"
           type="button"
-          ng-click="addDashboard()" class="btn btn-default pull-right">Add dashboard</button>
+          ng-click="$ctrl.addDashboard()" class="btn btn-default pull-right">Add dashboard</button>
 </div>

@@ -8,7 +8,7 @@ class FirmwareCtrl {
     $scope.running = false;
     $scope.error = null;
 
-    var log = $('#firmwareLog')
+    var log = $('#firmwareLog');
 
     var showState = function(type, msg) {
       if ($scope.progress == 0) {
@@ -65,18 +65,20 @@ class FirmwareCtrl {
         showState('warning', 'Rebooting, please wait');
         setTimeout(300, 'It tooks too long to reboot');
       }
-    })
+    });
+
     mqttClient.addStickySubscription('/firmware/log', function(msg) {
       log.append(msg.payload + "\n");
       if (log.length) {
         log.scrollTop(log[0].scrollHeight - log.height());
       }
       setProgressTimeout();
-    })
+    });
+
     mqttClient.addStickySubscription('/firmware/progress', function(msg) {
       $scope.progress = parseInt(msg.payload);
       setProgressTimeout();
-    })
+    });
 
     $scope.upload = function(file) {
       if (file && !file.$error) {
@@ -98,7 +100,7 @@ class FirmwareCtrl {
           $scope.uploading = false;
           showState('error', status + ': ' + data);
           showDoneButton();
-        })
+        });
       }
     }
 

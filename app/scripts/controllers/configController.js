@@ -1,7 +1,7 @@
 class ConfigCtrl {
   constructor($scope, $stateParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     'ngInject';
-    console.log('ConfigCtrl started.');
+
     $scope.file = {
       schemaPath: $stateParams.path,
       configPath: "",
@@ -9,7 +9,7 @@ class ConfigCtrl {
       valid: true,
       content: {}
     };
-    console.log($scope.file);
+
     $scope.editorOptions = {};
     if (!/^\//.test($scope.file.schemaPath))
       $scope.file.schemaPath = "/" + $scope.file.schemaPath;

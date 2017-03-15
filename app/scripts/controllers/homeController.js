@@ -1,7 +1,11 @@
 class HomeCtrl {
-  constructor($scope) {
+  constructor(uiConfig) {
     'ngInject';
-    // TBD
+
+    uiConfig.whenReady()
+    .then((data) => {
+      this.dashboard = uiConfig.getDashboard(data.defaultDashboardId);
+    });
   }
 }
 

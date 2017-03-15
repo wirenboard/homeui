@@ -2,14 +2,9 @@ function uiConfigService($rootScope, $q) {
   'ngInject';
 
   var data = {
-    dashboards: [
-      {
-        id: "default",
-        name: "Default Dashboard",
-        widgets: []
-      }
-    ],
-    widgets: []
+    dashboards: [],
+    widgets: [],
+    defaultDashboardId: undefined
   };
   var deferReady = $q.defer(),
       version = 1;
@@ -40,7 +35,6 @@ function uiConfigService($rootScope, $q) {
     if (!r)
       throw new Error("invalid dashboard id: " + id);
     return r;
-
   }
 
   function getDashboard (id) {
@@ -137,14 +131,23 @@ function uiConfigService($rootScope, $q) {
   function filtered () {
     return {
       dashboards: filterCollection(data.dashboards),
-      widgets: filterCollection(data.widgets)
+      widgets: filterCollection(data.widgets),
+      defaultDashboardId: data.defaultDashboardId
     };
+  }
+
+  function setDefaultDashboard(id) {
+    if (getDashboard(id)) {
+      data.defaultDashboardId = id;
+    } else {
+      throw new Error("invalid dashboard id: " + id);
+    }
   }
 
   $rootScope.$watch(filtered, () => { version++; }, true);
 
   return {
-    data: data,
+    data,
 
     version () {
       return version;
@@ -160,9 +163,8 @@ function uiConfigService($rootScope, $q) {
       deferReady.resolve(data);
     },
 
-    deleteWidget: deleteWidget,
-
-    getDashboard: getDashboard,
+    deleteWidget,
+    getDashboard,
 
     addDashboard: () => {
       var item = add("dashboards", "dashboard", {
@@ -180,7 +182,8 @@ function uiConfigService($rootScope, $q) {
       cells: []
     }),
 
-    filtered: filtered
+    filtered,
+    setDefaultDashboard
   };
 }
 

@@ -26,6 +26,7 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
       watchStopper = null,
       subs = Object.create(null);
 
+//.............................................................................
   function invokeResponseHandler (id, topic, reply) {
     try {
       inflight[id](topic, reply);
@@ -35,6 +36,7 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
     }
   };
 
+//.............................................................................
   function handleDisconnection () {
     Object.keys(inflight).sort().forEach(callId => {
       invokeResponseHandler(callId, null, {
@@ -46,6 +48,7 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
     maybeStopWatching();
   };
 
+//.............................................................................
   function maybeStartWatching () {
     if (watchStopper !== null)
       return;
@@ -57,6 +60,7 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
       });
   };
 
+//.............................................................................
   function maybeStopWatching () {
     if (Object.keys(inflight).length || !watchStopper)
       return;
@@ -64,6 +68,7 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
     watchStopper = null;
   };
 
+//.............................................................................
   function handleMessage (msg) {
     try {
       var parsed = JSON.parse(msg.payload);
@@ -82,6 +87,7 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
     invokeResponseHandler(parsed.id, msg.topic, parsed);
   }
 
+//.............................................................................
   function ensureSubscription (topic) {
     if (subs[topic])
       return;
@@ -89,17 +95,21 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
     mqttClient.addStickySubscription(topic, handleMessage);
   }
 
+//-----------------------------------------------------------------------------
   class Proxy {
+//.............................................................................
     constructor (target, spinnerIdPrefix) {
       this._prefix = "/rpc/v1/" + target + "/";
       this._watchStopper = null;
       this._spinnerIdPrefix = spinnerIdPrefix || "mqttRpc";
     }
 
+//.............................................................................
     _init () {
       ensureSubscription(this._prefix + "+/" + mqttClient.getID() + "/reply");
     }
 
+//.............................................................................
     _call (method, params) {
       this._init();
       maybeStartWatching();
@@ -137,6 +147,7 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
     }
   }
 
+//-----------------------------------------------------------------------------
   return {
     getProxy (target, methods, spinnerIdPrefix) {
       var proxy = new Proxy(target, spinnerIdPrefix),

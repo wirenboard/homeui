@@ -39,19 +39,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat='setting in settings'>
+              <tr ng-repeat='setting in $ctrl.settings'>
                 <td>{{ setting.name }}</td>
                 <td>{{ setting.value }}</td>
               </tr>
               <tr>
                 <td>
                   Default Dashboard
-                  <a ng-show='dashboard' ui-sref="dashboard({ id: d.id })"><i class="glyphicon glyphicon-edit black medium"></i></a>
-                  <a ng-show='dashboard' ui-sref="dashboard({ id: d.id })"><i class="glyphicon glyphicon-play-circle black medium"></i></a>
+                  <a ng-show='$ctrl.defaultDashboard' ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-edit black medium"></i></a>
+                  <a ng-show='$ctrl.defaultDashboard' ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-play-circle black medium"></i></a>
                 </td>
                 <td class="text-center">
-                  <select ng-model="dashboard" ng-options="value.name for (key, value) in data.dashboards" ng-change="$ctrl.changeDefaultDashboard()">
-                    <option value=''>- Please Choose / None -</option>
+                  <select ng-model="$ctrl.defaultDashboard" ng-options="dashboard.name for dashboard in $ctrl.dashboards track by dashboard.id" ng-change="$ctrl.changeDefaultDashboard()">
+                    <option value="">- Please Choose / None -</option>
                   </select>
                 </td>
               </tr>

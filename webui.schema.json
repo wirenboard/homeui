@@ -5,7 +5,8 @@
   "description": "WebUI Schema stub",
   "properties": {
     "dashboards": {},
-    "widgets": {}
+    "widgets": {},
+    "defaultDashboard": {}
   },
   "configFile": {
     "path": "/etc/wb-webui.conf"

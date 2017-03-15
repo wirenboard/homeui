@@ -118,8 +118,8 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
     client.subscribe(globalPrefix + "/devices/#");
     //~ client.subscribe(globalPrefix + "/config/#");
-    client.subscribe(globalPrefix + "/config/default_dashboard/#");
-    client.subscribe(globalPrefix + "/config/rooms/#");
+//    client.subscribe(globalPrefix + "/config/default_dashboard/#");
+//    client.subscribe(globalPrefix + "/config/rooms/#");
     client.subscribe(globalPrefix + "/config/widgets/#");
     client.subscribe(globalPrefix + "/config/dashboards/#");
 
@@ -183,7 +183,7 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
   };
 
   service.onMessageDelivered = function(message) {
-    console.log("Delivered message: " + JSON.stringify(message));
+    console.log("Delivered message: ", JSON.stringify(message));
   };
 
   service.onMessageArrived = function(message) {
@@ -192,9 +192,11 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     var topic = message.destinationName;
     if (topic.substring(0, globalPrefix.length) == globalPrefix)
       topic = topic.substring(globalPrefix.length);
+
     Object.keys(callbackMap).sort().forEach(function (pattern) {
-      if (!topicMatches(pattern, topic))
+      if (!topicMatches(pattern, topic)) {
         return;
+      }
       callbackMap[pattern].forEach(function (callback) {
         callback({
           topic: topic,
