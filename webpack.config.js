@@ -86,7 +86,7 @@ module.exports = function makeWebpackConfig() {
     config.devtool = 'inline-source-map';
   }
   else if (isProd) {
-    config.devtool = 'eval';
+    config.devtool = 'source-map';
   }
   else {
     config.devtool = 'source-map';
@@ -137,7 +137,7 @@ module.exports = function makeWebpackConfig() {
       use: isTest ? 'null-loader' : ExtractTextPlugin.extract({
         fallback: 'style-loader',
         use: [
-          {loader: 'css-loader', options: {sourceMap: true}},
+          {loader: 'css-loader', options: {sourceMap: false, comments: {removeAll: true}}},
           {loader: 'postcss-loader'}
         ]
       })
@@ -244,7 +244,38 @@ module.exports = function makeWebpackConfig() {
     config.plugins.push(
       // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
       // Minify all javascript, switch loaders to minimizing mode
-      new webpack.optimize.UglifyJsPlugin({sourceMap: false}),
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false,
+          properties: true,
+          sequences: true,
+          dead_code: true,
+          conditionals: true,
+          comparisons: true,
+          evaluate: true,
+          booleans: true,
+          unused: true,
+          loops: true,
+          hoist_funs: true,
+          cascade: true,
+          if_return: true,
+          join_vars: true,
+          drop_debugger: true,
+          unsafe: true,
+          hoist_vars: true,
+          negate_iife: true          
+        },
+        comments: false,
+        sourceMap: false,
+        mangle: {
+          screw_ie8: true,
+          keep_fnames: false,
+          toplevel: true,
+          sort: true,
+          eval: true,
+          properties: true
+        },
+      }),
 
       // Copy assets from the public folder
       // Reference: https://github.com/kevlened/copy-webpack-plugin
