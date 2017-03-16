@@ -45,11 +45,9 @@ module.exports = function makeWebpackConfig() {
       'ui-select', 'angular-resource', 'angular-sanitize', 'angular-elastic/elastic',
       'angular-xeditable/dist/js/xeditable', 'ng-file-upload', 
       'angular-sortable-view/src/angular-sortable-view', 'oclazyload',
-      'codemirror/lib/codemirror',
       './lib/mqttws31',
       './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker', 'spectrum-colorpicker',
       './lib/angular-order-object-by/src/ng-order-object-by',
-      './lib/angular-ui-codemirror/src/ui-codemirror', 'codemirror/mode/javascript/javascript',
       './lib/angular-toggle-switch/angular-toggle-switch',
       './scripts/3rdparty/angular-json-editor', './scripts/3rdparty/jsoneditor', 
       './scripts/3rdparty/ui-bootstrap'
@@ -88,10 +86,10 @@ module.exports = function makeWebpackConfig() {
     config.devtool = 'inline-source-map';
   }
   else if (isProd) {
-    config.devtool = 'source-map';
+    config.devtool = 'eval';
   }
   else {
-    config.devtool = 'eval-source-map';
+    config.devtool = 'source-map';
   }
 
   /**
@@ -216,7 +214,10 @@ module.exports = function makeWebpackConfig() {
       'angular': 'angular',
       jQuery: 'jquery',
       $: 'jquery',
-      'window.jQuery': 'jquery'
+      'window.jQuery': 'jquery',
+     'd3': 'd3',
+     'c3': 'c3/c3',
+      'window.CodeMirror': 'codemirror/lib/codemirror'
     })
     // TODO: Add stat plugin
   ];
@@ -243,7 +244,7 @@ module.exports = function makeWebpackConfig() {
     config.plugins.push(
       // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
       // Minify all javascript, switch loaders to minimizing mode
-      new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
+      new webpack.optimize.UglifyJsPlugin({sourceMap: false}),
 
       // Copy assets from the public folder
       // Reference: https://github.com/kevlened/copy-webpack-plugin

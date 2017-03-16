@@ -233,19 +233,26 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
+          let deferred_1 = $q.defer();
+          let deferred_2 = $q.defer();
           require.ensure(
-            ['d3', 'c3/c3', 'c3/c3.css', '../lib/angular-c3-simple/src/angular_c3_simple'], 
+            ['d3', 'c3/c3'], 
             function () {
-              let module = require('./controllers/historyController.js');
+              let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
-                name: module.default.name,
+                name: module_1.default.name,
               });
-              deferred.resolve(module);
+              deferred_1.resolve(module_1);
+
+              let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple');
+              $ocLazyLoad.load({
+                name: 'ui.codemirror'
+              });
+              deferred_2.resolve(module_2);
             }, 
             'history'
           );
-          return deferred.promise;
+          return $q.all([deferred_1.promise, deferred_2.promise]);
         }
       }
     })
