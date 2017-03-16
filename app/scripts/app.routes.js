@@ -171,19 +171,26 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
+          let deferred_1 = $q.defer();
+          let deferred_2 = $q.defer();
           require.ensure(
             ['codemirror/lib/codemirror', 'codemirror/mode/javascript/javascript'], 
             function () {
-              let module = require('./controllers/scriptController.js');
+              let module_1 = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
-                name: module.default.name
+                name: module_1.default.name
               });
-              deferred.resolve(module);
+              deferred_1.resolve(module_1);
+
+              let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
+              $ocLazyLoad.load({
+                name: 'ui.codemirror'
+              });
+              deferred_2.resolve(module_2);
             },
             'script-edit'
           );
-          return deferred.promise;
+          return $q.all([deferred_1.promise, deferred_2.promise]);
         }
       }
     })
@@ -195,19 +202,26 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
+          let deferred_1 = $q.defer();
+          let deferred_2 = $q.defer();
           require.ensure(
             ['codemirror/lib/codemirror', 'codemirror/mode/javascript/javascript'], 
             function () {
-              let module = require('./controllers/scriptController.js');
+              let module_1 = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
-                name: module.default.name
+                name: module_1.default.name
               });
-              deferred.resolve(module);
+              deferred_1.resolve(module_1);
+
+              let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
+              $ocLazyLoad.load({
+                name: 'ui.codemirror'
+              });
+              deferred_2.resolve(module_2);
             },
             'script-new'
           );
-          return deferred.promise;
+          return $q.all([deferred_1.promise, deferred_2.promise]);
         }
       }
     })

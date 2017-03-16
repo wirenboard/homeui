@@ -12,7 +12,6 @@ import 'codemirror/lib/codemirror.css';
 // External libraries
 import '../lib/mqttws31';
 import 'bootstrap';
-//import 'codemirror/mode/javascript/javascript';
 import 'spectrum-colorpicker';
 
 // Angular packages
@@ -34,7 +33,6 @@ import oclazyload from 'oclazyload';
 // to set up git submodules
 import '../lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
 import '../lib/angular-order-object-by/src/ng-order-object-by';
-import '../lib/angular-ui-codemirror/src/ui-codemirror';
 import '../lib/angular-toggle-switch/angular-toggle-switch';
 
 // homeui modules: sevices
@@ -116,7 +114,6 @@ const module = angular
     'ngFileUpload',
     'ngOrderObjectBy',
     'ui.bootstrap',
-    'ui.codemirror',
     'angular-json-editor',
     'ngOrderObjectBy',
     'xeditable',
