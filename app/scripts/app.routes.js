@@ -203,7 +203,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
           let deferred_1 = $q.defer();
-          let deferred_2 = $q.defer();
+         let deferred_2 = $q.defer();
           require.ensure(
             ['codemirror/lib/codemirror', 'codemirror/mode/javascript/javascript'], 
             function () {
@@ -228,7 +228,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('history', {
       url: '/history',
-      controller: 'HistoryCtrl',
+      controller: 'HistoryCtrl as $ctrl',
       templateUrl: 'views/history.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
@@ -236,7 +236,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
           let deferred_1 = $q.defer();
           let deferred_2 = $q.defer();
           require.ensure(
-            ['d3', 'c3/c3'], 
+            ['d3', 'c3/c3', '../lib/angular-c3-simple/src/angular_c3_simple.js'], 
             function () {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
@@ -244,15 +244,15 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               });
               deferred_1.resolve(module_1);
 
-              let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple');
+             let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple.js');
               $ocLazyLoad.load({
-                name: 'ui.codemirror'
+                name: 'angular-c3-simple'
               });
-              deferred_2.resolve(module_2);
+             deferred_2.resolve(module_2);
             }, 
             'history'
           );
-          return $q.all([deferred_1.promise, deferred_2.promise]);
+         return $q.all([deferred_1.promise, deferred_2.promise]);
         }
       }
     })
@@ -260,7 +260,32 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('historySample', {
       url: '/history/{device}/{control}/{start}/{end}',
       templateUrl: 'views/history.html',
-      controller: 'HistoryCtrl as $ctrl'
+      controller: 'HistoryCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred_1 = $q.defer();
+          let deferred_2 = $q.defer();
+          require.ensure(
+            ['d3', 'c3/c3', '../lib/angular-c3-simple/src/angular_c3_simple.js'], 
+            function () {
+              let module_1 = require('./controllers/historyController.js');
+              $ocLazyLoad.load({
+                name: module_1.default.name,
+              });
+              deferred_1.resolve(module_1);
+
+             let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple.js');
+              $ocLazyLoad.load({
+                name: 'angular-c3-simple'
+              });
+             deferred_2.resolve(module_2);
+            }, 
+            'history'
+          );
+         return $q.all([deferred_1.promise, deferred_2.promise]);
+        }
+      }
     })
   //...........................................................................
     .state('configs', {

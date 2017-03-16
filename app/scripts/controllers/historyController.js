@@ -1,20 +1,35 @@
-// import * as d3 from 'd3'
-// import * as c3 from 'c3/c3'
-//import '../../lib/angular-c3-simple/src/angular_c3_simple';
-
 class HistoryCtrl {
+  //...........................................................................
   constructor($scope, $stateParams, $location, HistoryProxy,
              whenMqttReady, errors, historyMaxPoints,
-             $timeout, dateFilter, uiConfig, orderByFilter) {
+             dateFilter, uiConfig, orderByFilter) {
     'ngInject';
 
-    $scope.dataPoints = [];
-    $scope.topic = $stateParams.device && $stateParams.control ?
+    var vm = this;
+
+    this.scope = $scope;
+    this.location = $location;
+    this.historyMaxPoints = historyMaxPoints;
+    this.HistoryProxy = HistoryProxy;
+    this.dateFilter = dateFilter;
+    this.errors = errors;
+
+    this.dataPoints = [];
+    this.topic = $stateParams.device && $stateParams.control ?
       "/devices/" + $stateParams.device + "/controls/" + $stateParams.control :
       null;
-    $scope.controls = [];
+
+    this.startDate = this.convDate($stateParams.start);
+    this.endDate = this.convDate($stateParams.end);
+
+    this.selectedTopic = this.topic;
+    this.selectedStartDate = this.startDate;
+    this.selectedEndDate = this.endDate;
+
+    this.controls = [];
+
     uiConfig.whenReady().then((data) => {
-      $scope.controls = orderByFilter(
+      this.controls = orderByFilter(
         Array.prototype.concat.apply(
           [], data.widgets.map(widget =>
                                widget.cells.map(cell =>
@@ -25,73 +40,60 @@ class HistoryCtrl {
         "name");
     });
 
-    $scope.startDate = this.convDate($stateParams.start);
-    $scope.endDate = this.convDate($stateParams.end);
-    $scope.shouldShowChart = function () {
-      return !$scope.spinnerActive("historyProxy") &&
-        $scope.topic !== null &&
-        !!$scope.chartConfig;
-    };
-
-    $scope.selectedTopic = $scope.topic;
-    $scope.selectedStartDate = $scope.startDate;
-    $scope.selectedEndDate = $scope.endDate;
-
-    ["selectedTopic", "selectedStartDate", "selectedEndDate"].forEach(function (expr) {
+    ["$ctrl.selectedTopic", "$ctrl.selectedStartDate", "$ctrl.selectedEndDate"].forEach((expr) => {
       $scope.$watch(expr, maybeUpdateUrl);
     });
 
-    $scope.popups = {
+    this.popups = {
       start: false,
       end: false,
-      showStart: function () {
-        this.start = true;
+      showStart: () => {
+        this.popups.start = true;
       },
-      showEnd: function () {
-        this.end = true;
+      showEnd: () => {
+        this.popups.end = true;
       }
     };
 
-    var ready = false, loadPending = !!$scope.topic;
+    this.ready = false;
+    this.loadPending = !!this.topic;
 
-    whenMqttReady().then(function () {
-      ready = true;
-      if (loadPending) {
+    whenMqttReady().then(() => {
+      this.ready = true;
+      if (this.loadPending) {
         this.loadHistory();
       }
     });
 
-    $scope.$watch("topic", loadHistoryOnChange);
-    $scope.$watch("startDate", loadHistoryOnChange);
-    $scope.$watch("endDate", loadHistoryOnChange);
+    $scope.$watch("$ctrl.topic", this.loadHistoryOnChange);
+    $scope.$watch("$ctrl.startDate", this.loadHistoryOnChange);
+    $scope.$watch("$ctrl.endDate", this.loadHistoryOnChange);
 
-//-----------------------------------------------------------------------------
-    function maybeUpdateUrl (newValue, oldValue) {
-      if (newValue === oldValue || !$scope.selectedTopic)
+    //...........................................................................
+    function maybeUpdateUrl(newValue, oldValue) {
+      if (newValue === oldValue || !vm.selectedTopic)
         return;
 
-      var parsedTopic = this.parseTopic($scope.selectedTopic);
+      var parsedTopic = vm.parseTopic(vm.selectedTopic);
       if (!parsedTopic)
         return;
 
-      $location.path("/history/" + [
+      vm.location.path("/history/" + [
         parsedTopic.deviceId,
         parsedTopic.controlId,
-        $scope.selectedStartDate ? $scope.selectedStartDate.getTime() : "-",
-        $scope.selectedEndDate ? $scope.selectedEndDate.getTime() : "-"
+        vm.selectedStartDate ? vm.selectedStartDate.getTime() : "-",
+        vm.selectedEndDate ? vm.selectedEndDate.getTime() : "-"
       ].join("/"));
-    }
+    } // maybeUpdateUrl
+  } // constructor
 
-//-----------------------------------------------------------------------------
-    function loadHistoryOnChange(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.loadHistory();
-      }
-    }
-
+  //...........................................................................
+  loadHistoryOnChange(newValue, oldValue) {
+    if (newValue !== oldValue)
+      this.loadHistory();
   }
 
-//-----------------------------------------------------------------------------
+  //...........................................................................
   convDate(ts) {
     if (ts == null || ts == "-") {
       return null;
@@ -101,13 +103,13 @@ class HistoryCtrl {
     return d;
   }
 
-//-----------------------------------------------------------------------------
+  //...........................................................................
   topicFromCellId(cellId) {
     return "/devices/" + cellId.replace("/", "/controls/");
   }
 
-//-----------------------------------------------------------------------------
-  parseTopic (topic) {
+  //...........................................................................
+  parseTopic(topic) {
     if (!topic) {
       return null;
     }
@@ -121,21 +123,28 @@ class HistoryCtrl {
       deviceId: m[1],
       controlId: m[2]
     };
+  } // parseTopic
+
+  //...........................................................................
+  shouldShowChart() {
+    return !this.scope.spinnerActive("historyProxy") &&
+      this.topic !== null &&
+      !!this.chartConfig;
   }
 
-//-----------------------------------------------------------------------------
+  //...........................................................................
   loadHistory () {
-    if (!ready) {
-      loadPending = true;
+    if (!this.ready) {
+      this.loadPending = true;
       return;
     }
 
-    loadPending = false;
-    if (!$scope.topic) {
+    this.loadPending = false;
+    if (!this.topic) {
       return;
     }
 
-    var parsedTopic = this.parseTopic($scope.topic);
+    var parsedTopic = this.parseTopic(this.topic);
     if (!parsedTopic) {
       return;
     }
@@ -144,40 +153,40 @@ class HistoryCtrl {
       channels: [
         [parsedTopic.deviceId, parsedTopic.controlId]
       ],
-      limit: historyMaxPoints,
+      limit: this.historyMaxPoints,
       ver: 1
     };
 
-    if ($scope.startDate) {
+    if (this.startDate) {
       params.timestamp = params.timestamp || {};
       // add extra second to include 00:00:00
       // (FIXME: maybe wb-mqtt-db should support not just gt/lt, but also gte/lte?)
-      params.timestamp.gt = $scope.startDate.getTime() / 1000 - 1;
+      params.timestamp.gt = this.startDate.getTime() / 1000 - 1;
     }
 
-    if ($scope.endDate) {
+    if (this.endDate) {
       params.timestamp = params.timestamp || {};
-      params.timestamp.lt = $scope.endDate.getTime() / 1000 + 86400;
+      params.timestamp.lt = this.endDate.getTime() / 1000 + 86400;
     }
 
-    if ($scope.startDate) {
-      var endDate = $scope.endDate || Date.now();
-      var intervalMs = endDate - $scope.startDate; // duration of requested interval, in ms
+    if (this.startDate) {
+      var endDate = this.endDate || Date.now();
+      var intervalMs = endDate - this.startDate; // duration of requested interval, in ms
 
       // we want to request  no more than "limit" data points.
       // Additional divider 1.1 is here just to be on the safe side
       params.min_interval = intervalMs / params.limit * 1.1;
     }
 
-    HistoryProxy.get_values(params).then(function (result) {
+    this.HistoryProxy.get_values(params).then((result) => {
       if (result.has_more)
-        errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
+        this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
       var xValues = result.values.map(item => {
         var ts = new Date();
         ts.setTime(item.t * 1000);
-        return dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
+        return this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
       }), yValues = result.values.map(item => item.v - 0);
-      $scope.chartConfig = {
+      this.chartConfig = {
         data: {
           x: "x",
           xFormat: "%Y-%m-%d %H:%M:%S",
@@ -205,13 +214,12 @@ class HistoryCtrl {
           pattern: ["green"]
         }
       };
-      $scope.dataPoints = xValues.map((x, i) => ({ x: x, y: yValues[i] }));
-    }).catch(errors.catch("Error getting history"));
-  }
+      this.dataPoints = xValues.map((x, i) => ({ x: x, y: yValues[i] }));
+    }).catch(this.errors.catch("Error getting history"));
+  } // loadHistory
 }
 
 //-----------------------------------------------------------------------------
-require('../../lib/angular-c3-simple/src/angular_c3_simple');
 export default angular
-    .module('homeuiApp.history', ['angular-c3-simple'])
+    .module('homeuiApp.history', [])
     .controller('HistoryCtrl', HistoryCtrl);

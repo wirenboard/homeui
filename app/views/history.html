@@ -9,15 +9,14 @@
       <div class="col-sm-3">
         <select id="control-select"
                 class="form-control"
-                ng-model="selectedTopic">
-          <option value=''>- Please Choose -</option>
-          <option ng-selected="control.topic == selectedTopic"
-                  ng-repeat="control in controls" value="{{control.topic}}">{{control.name}}</option>
+                ng-model="$ctrl.selectedTopic"
+                ng-options="control.topic as control.name for control in $ctrl.controls">
+          <option value="">- Please Choose -</option>
         </select>
       </div>
     </div>
 
-    <div class="form-group" ng-show="topic !== null">
+    <div class="form-group" ng-show="$ctrl.topic !== null">
       <label for="history-start" class="col-sm-2 control-label">Start</label>
       <div class="col-sm-2">
         <div class="input-group">
@@ -25,19 +24,19 @@
                  type="text"
                  class="form-control"
                  datepicker-popup="{{format}}"
-                 ng-model="selectedStartDate"
-                 is-open="popups.start"
-                 max-date="selectedEndDate"
-                 datepicker-options="dateOptions"
+                 ng-model="$ctrl.selectedStartDate"
+                 is-open="$ctrl.popups.start"
+                 max-date="$ctrl.selectedEndDate"
+                 datepicker-options="$ctrl.dateOptions"
                  close-text="Close"/>
           <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="popups.showStart()"><i class="glyphicon glyphicon-calendar"></i></button>
+            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.showStart()"><i class="glyphicon glyphicon-calendar"></i></button>
           </span>
         </div>
       </div>
     </div>
 
-    <div class="form-group" ng-show="topic !== null">
+    <div class="form-group" ng-show="$ctrl.topic !== null">
       <label for="history-end" class="col-sm-2 control-label">End</label>
       <div class="col-sm-2">
         <div class="input-group">
@@ -45,13 +44,13 @@
                  type="text"
                  class="form-control"
                  datepicker-popup="{{format}}"
-                 ng-model="selectedEndDate"
-                 is-open="popups.end"
-                 min-date="selectedStartDate"
-                 datepicker-options="dateOptions"
+                 ng-model="$ctrl.selectedEndDate"
+                 is-open="$ctrl.popups.end"
+                 min-date="$ctrl.selectedStartDate"
+                 datepicker-options="$ctrl.dateOptions"
                  close-text="Close"/>
           <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="popups.showEnd()"><i class="glyphicon glyphicon-calendar"></i></button>
+            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.showEnd()"><i class="glyphicon glyphicon-calendar"></i></button>
           </span>
         </div>
       </div>
@@ -64,13 +63,13 @@
 
   <!-- don't use ng-show on c3 because it will cause problems with chart size -->
   <div class="col-sm-12" ng-if="!spinnerActive('historyProxy')">
-    <c3-simple ng-if="shouldShowChart()" id="histchart" config="chartConfig"></c3-simple>
-    <div class="history-empty" ng-show="topic !== null && !dataPoints.length">
+    <c3-simple ng-if="$ctrl.shouldShowChart()" id="histchart" config="$ctrl.chartConfig"></c3-simple>
+    <div class="history-empty" ng-show="$ctrl.topic !== null && !$ctrl.dataPoints.length">
       No data points to display.
     </div>
   </div>
 
-  <div class="col-sm-4" ng-show="shouldShowChart()">
+  <div class="col-sm-4" ng-show="$ctrl.shouldShowChart()">
     <table class="table">
       <thead>
         <tr>
@@ -79,7 +78,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="p in dataPoints">
+        <tr ng-repeat="p in $ctrl.dataPoints">
           <td>{{ p.x | date:'yyyy-MM-dd HH:mm:ss' }}</td>
           <td>{{ p.y }}</td>
         </tr>
