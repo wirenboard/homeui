@@ -7,6 +7,7 @@ import 'ui-select/dist/select.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
 import '../lib/angular-toggle-switch/angular-toggle-switch.css';
+import 'codemirror/lib/codemirror.css';
 
 // External libraries
 import '../lib/mqttws31';
