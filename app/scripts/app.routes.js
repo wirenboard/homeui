@@ -173,7 +173,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [], 
+            ['codemirror/lib/codemirror', 'codemirror/mode/javascript/javascript'], 
             function () {
               let module = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
@@ -197,7 +197,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [], 
+            ['codemirror/lib/codemirror', 'codemirror/mode/javascript/javascript'], 
             function () {
               let module = require('./controllers/scriptController.js');
               $ocLazyLoad.load({

@@ -216,10 +216,7 @@ module.exports = function makeWebpackConfig() {
       'angular': 'angular',
       jQuery: 'jquery',
       $: 'jquery',
-      'window.jQuery': 'jquery',
-      'd3': 'd3',
-      'c3': 'c3/c3',
-      'window.CodeMirror': 'codemirror/lib/codemirror'
+      'window.jQuery': 'jquery'
     })
     // TODO: Add stat plugin
   ];

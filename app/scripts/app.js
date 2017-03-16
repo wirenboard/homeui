@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
-//import 'c3/c3.css';
+import 'c3/c3.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
 import '../lib/angular-toggle-switch/angular-toggle-switch.css';
@@ -12,7 +12,7 @@ import 'codemirror/lib/codemirror.css';
 // External libraries
 import '../lib/mqttws31';
 import 'bootstrap';
-import 'codemirror/mode/javascript/javascript';
+//import 'codemirror/mode/javascript/javascript';
 import 'spectrum-colorpicker';
 
 // Angular packages
