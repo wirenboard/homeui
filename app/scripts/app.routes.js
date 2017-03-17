@@ -28,8 +28,10 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/devicesController.js');
               $ocLazyLoad.load({
                 name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
               });
-              deferred.resolve(module);
             },
             'devices'
           );
@@ -52,8 +54,10 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/widgetsController.js');
               $ocLazyLoad.load({
                 name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
               });
-              deferred.resolve(module);
             },
             'widgets'
           );
@@ -76,8 +80,10 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/dashboardsController.js');
               $ocLazyLoad.load({
                 name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
               });
-              deferred.resolve(module);
             },
             'dashboards'
           );
@@ -100,8 +106,10 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/dashboardController.js');
               $ocLazyLoad.load({
                 name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
               });
-              deferred.resolve(module);
             },
             'dashboard'
           );
@@ -124,8 +132,10 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/settingController.js');
               $ocLazyLoad.load({
                 name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
               });
-              deferred.resolve(module);
             },
             'settings'
           );
@@ -154,8 +164,10 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/scriptsController.js');
               $ocLazyLoad.load({
                 name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
               });
-              deferred.resolve(module);
             },
             'scripts'
           );
@@ -179,14 +191,18 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module_1 = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
                 name: module_1.default.name
+              })
+              .then(() => {
+                deferred_1.resolve(module_1);
               });
-              deferred_1.resolve(module_1);
 
               let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
               $ocLazyLoad.load({
                 name: 'ui.codemirror'
+              })
+              .then(() => {
+                deferred_2.resolve(module_2);
               });
-              deferred_2.resolve(module_2);
             },
             'script-edit'
           );
@@ -199,6 +215,35 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
       url: '/scripts/new',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred_1 = $q.defer();
+          let deferred_2 = $q.defer();
+          require.ensure(
+            ['codemirror/mode/javascript/javascript'], 
+            (require) => {
+              let module_1 = require('./controllers/scriptController.js');
+              $ocLazyLoad.load({
+                name: module_1.default.name
+              })
+              .then(() => {
+                deferred_1.resolve(module_1);
+              });
+
+              let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
+              $ocLazyLoad.load({
+                name: 'ui.codemirror'
+              })
+              .then(() => {
+                deferred_2.resolve(module_2);
+              });
+            },
+            'script-edit'
+          );
+          return $q.all([deferred_1.promise, deferred_2.promise]);
+        }
+      }
     })
   //...........................................................................
     .state('history', {
@@ -216,14 +261,18 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
                 name: module_1.default.name,
+              })
+              .then(() => {
+                deferred_1.resolve(module_1);
               });
-              deferred_1.resolve(module_1);
 
              let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple.js');
               $ocLazyLoad.load({
                 name: 'angular-c3-simple'
+              })
+              .then(() => {
+                deferred_2.resolve(module_2);
               });
-             deferred_2.resolve(module_2);
             }, 
             'history'
           );
@@ -247,14 +296,18 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
                 name: module_1.default.name,
+              })
+              .then(() => {
+                deferred_1.resolve(module_1);
               });
-              deferred_1.resolve(module_1);
 
              let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple.js');
               $ocLazyLoad.load({
                 name: 'angular-c3-simple'
+              })
+              .then(() => {
+                deferred_2.resolve(module_2);
               });
-             deferred_2.resolve(module_2);
             }, 
             'history'
           );
@@ -277,8 +330,10 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/configsController.js');
               $ocLazyLoad.load({
                 name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
               });
-              deferred.resolve(module);
             },
             'configs'
           );
@@ -286,6 +341,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
         }
       }
     })
+
   //...........................................................................
     .state('configEdit', {
       url: '/configs/edit/{path:.*}',
@@ -301,7 +357,8 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
               let module = require('./controllers/configController.js');
               $ocLazyLoad.load({
                 name: module.default.name
-              }).then(function() {
+              })
+              .then(() => {
                 deferred.resolve(module);
                 });
             },
