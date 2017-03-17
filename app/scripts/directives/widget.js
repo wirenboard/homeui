@@ -37,7 +37,7 @@ function widgetDirective(DeviceData, $timeout) {
         // in scope because we're using xeditable
         $scope.$evalAsync(() => {
           var el = $element.find(".panel-heading input[type=text]");
-          if (el.size() && !el.val())
+          if (el.length && !el.val())
             el.val(cellName(newCellId)).change();
         });
       });
