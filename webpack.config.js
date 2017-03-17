@@ -50,8 +50,7 @@ module.exports = function makeWebpackConfig() {
       './lib/angular-order-object-by/src/ng-order-object-by',
       './lib/angular-toggle-switch/angular-toggle-switch',
       './scripts/3rdparty/angular-json-editor', './scripts/3rdparty/jsoneditor', 
-      './scripts/3rdparty/ui-bootstrap'
-
+      './scripts/3rdparty/ui-bootstrap', 'codemirror/mode/javascript/javascript'
      ]
   };
   /**
