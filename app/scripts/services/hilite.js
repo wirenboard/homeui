@@ -1,4 +1,5 @@
 function hiliteService($sce, $injector, $log) {
+  'ngInject';
   // Based on AngularUI Bootstrap Typeahead
   // https://github.com/angular-ui/bootstrap/blob/master/src/typeahead/typeahead.js#L649
   // Unlike 'highlight' filter from ui-select, doesn't mangle text that looks like html
