@@ -262,8 +262,7 @@ module
 angular.module('realHomeuiApp', [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     'ngInject';
-    // TBD: the following should be handled by config sync service
-    var configSaveDebounce = null;
+
     // TBD: loginService
     function randomString (length) {
       var text = '';
@@ -290,6 +289,7 @@ angular.module('realHomeuiApp', [module.name])
       return;
     }
 
+    // Try to obtain WebUI configs
     whenMqttReady()
       .then(() => {
         return ConfigEditorProxy.Load({ path: webuiConfigPath })
@@ -297,18 +297,31 @@ angular.module('realHomeuiApp', [module.name])
       .then((result) => {
         console.log('LOAD CONF: %o', result.content);
         uiConfig.ready(result.content);
-        $rootScope.$watch(() => uiConfig.filtered(), (newData, oldData) => {
-          if (angular.equals(newData, oldData))
-            return;
-          console.log('new data: %o', newData);
-          if (configSaveDebounce)
-            $timeout.cancel(configSaveDebounce);
-          configSaveDebounce = $timeout(() => {
-            ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData }).then(() => {
-              console.log('config saved');
-            });
-          }, configSaveDebounceMs);
-        }, true);
       })
       .catch(errors.catch('Error loading WebUI config'));
+
+    // TBD: the following should be handled by config sync service
+    var configSaveDebounce = null;
+    var firstBootstrap = true;
+
+    // Watch for WebUI config changes
+    $rootScope.$watch(() => uiConfig.filtered(), (newData, oldData) => {
+      if (angular.equals(newData, oldData)) {
+        return;
+      }
+      if (firstBootstrap) {
+        firstBootstrap = false;
+        return;
+      }
+      console.log('new data: %o', newData);
+      if (configSaveDebounce){
+        $timeout.cancel(configSaveDebounce);
+      }
+      configSaveDebounce = $timeout(() => {
+        ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
+        .then(() => {
+          console.log('config saved');
+        });
+      }, configSaveDebounceMs);
+    }, true);
   });

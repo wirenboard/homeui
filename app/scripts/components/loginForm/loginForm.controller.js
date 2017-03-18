@@ -1,11 +1,17 @@
 class LoginFormCtrl {
-  constructor ($window, mqttClient, $state, $location) {
+  constructor ($window, $state, $location, errors, mqttClient, whenMqttReady, ConfigEditorProxy, uiConfig, webuiConfigPath) {
     'ngInject';
 
     this.localStorage = $window.localStorage;
-    this.mqttClient = mqttClient;
     this.state = $state;
     this.currentHost = $location.host();
+
+    this.errors = errors;
+    this.mqttClient = mqttClient;
+    this.whenMqttReady = whenMqttReady;
+    this.ConfigEditorProxy = ConfigEditorProxy;
+    this.uiConfig = uiConfig;
+    this.webuiConfigPath = webuiConfigPath;
 
     this.loginSettings = {};
     this.loginSettings.host = this.localStorage['host'];
@@ -78,19 +84,21 @@ class LoginFormCtrl {
       this.localStorage.setItem('password', '');
     }
 
-    // Try to login with new settings
-    let loginData = {
-      host: this.localStorage['host'],
-      port: this.localStorage['port'],
-      user: this.localStorage['user'],
-      password: this.localStorage['password'],
-      prefix: this.localStorage['prefix']
-    };
-
-    if (loginData.host && loginData.port) {
+    if (this.host && this.port) {
       let clientID = 'contactless-' + this.randomString(10);
       console.log('Try to connect as ' + clientID);
-      this.mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
+      this.mqttClient.connect(this.host, this.port, clientID, this.user, this.password);
+
+      // Try to obtain WebUI configs
+      this.whenMqttReady()
+        .then(() => {
+          return this.ConfigEditorProxy.Load({ path: this.webuiConfigPath })
+        })
+        .then((result) => {
+          console.log('LOAD CONF: %o', result.content);
+          this.uiConfig.ready(result.content);
+        })
+        .catch(this.errors.catch('Error loading WebUI config'));
     }
   }
 
