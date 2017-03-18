@@ -1,6 +1,7 @@
 <h1 class="page-header">
   Devices <small>with controls</small>
 </h1>
+<div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
 <div id="devices-list" class="multicol-list">
   <ul class="list-unstyled">
     <li ng-repeat="devId in deviceIds()">

@@ -285,7 +285,6 @@ angular.module('realHomeuiApp', [module.name])
       var clientID = 'contactless-' + randomString(10);
       console.log('Try to connect as ' + clientID);
       mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
-      console.log('Successfully logged in ' + clientID);
     } else {
       alert('Please specify connection data in Settings');
       return;

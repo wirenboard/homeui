@@ -64,6 +64,7 @@ class LoginFormCtrl {
 
 //-----------------------------------------------------------------------------
   updateLoginSettings() {
+    // Update settings in Local Storage
     this.localStorage.setItem('host', this.host);
     this.localStorage.setItem('port', this.port);
 
@@ -76,6 +77,30 @@ class LoginFormCtrl {
       this.localStorage.setItem('user', '');
       this.localStorage.setItem('password', '');
     }
+
+    // Try to login with new settings
+    let loginData = {
+      host: this.localStorage['host'],
+      port: this.localStorage['port'],
+      user: this.localStorage['user'],
+      password: this.localStorage['password'],
+      prefix: this.localStorage['prefix']
+    };
+
+    if (loginData.host && loginData.port) {
+      let clientID = 'contactless-' + this.randomString(10);
+      console.log('Try to connect as ' + clientID);
+      this.mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
+    }
+  }
+
+  //...........................................................................
+  randomString(length) {
+    var text = '';
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (var i = 0; i < length; i++)
+      text += chars.charAt(Math.floor(Math.random() * chars.length));
+    return text;
   }
 }
 
