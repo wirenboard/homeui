@@ -263,15 +263,50 @@ angular.module('realHomeuiApp', [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     'ngInject';
 
-    // TBD: loginService
-    function randomString (length) {
-      var text = '';
-      var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      for (var i = 0; i < length; i++)
-        text += chars.charAt(Math.floor(Math.random() * chars.length));
-      return text;
+    //.........................................................................
+    function configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig) {
+      return function(loginData) {
+        console.log('requestConfig call:', loginData);
+
+        if (loginData.host && loginData.port) {
+          var clientID = 'contactless-' + randomString(10);
+          if (mqttClient.isConnected()) {
+            mqttClient.disconnect();
+          }
+          mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
+        } else {
+          console.log('requestConfig: cancelled.');
+          return false;
+        }
+
+        // Try to obtain WebUI configs
+        whenMqttReady()
+          .then(() => {
+            return ConfigEditorProxy.Load({ path: webuiConfigPath })
+          })
+          .then((result) => {
+            console.log('LOAD CONF: %o', result.content);
+            uiConfig.ready(result.content);
+          })
+          .catch(errors.catch('Cannot load WebUI config.'));
+
+        return true;
+
+        //.....................................................................
+        // TBD: loginService
+        function randomString (length) {
+          var text = '';
+          var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          for (var i = 0; i < length; i++)
+            text += chars.charAt(Math.floor(Math.random() * chars.length));
+          return text;
+        }
+      }
     }
 
+    $rootScope.requestConfig = configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig);
+
+    //.........................................................................
     var loginData = {
       host: $window.localStorage['host'],
       port: $window.localStorage['port'],
@@ -280,25 +315,9 @@ angular.module('realHomeuiApp', [module.name])
       prefix: $window.localStorage['prefix']
     };
 
-    if (loginData.host && loginData.port) {
-      var clientID = 'contactless-' + randomString(10);
-      console.log('Try to connect as ' + clientID);
-      mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
-    } else {
+    if (!$rootScope.requestConfig(loginData)) {
       alert('Please specify connection data in Settings');
-      return;
     }
-
-    // Try to obtain WebUI configs
-    whenMqttReady()
-      .then(() => {
-        return ConfigEditorProxy.Load({ path: webuiConfigPath })
-      })
-      .then((result) => {
-        console.log('LOAD CONF: %o', result.content);
-        uiConfig.ready(result.content);
-      })
-      .catch(errors.catch('Error loading WebUI config'));
 
     // TBD: the following should be handled by config sync service
     var configSaveDebounce = null;

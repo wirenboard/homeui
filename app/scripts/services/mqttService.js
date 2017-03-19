@@ -22,8 +22,9 @@ function whenMqttReady($q, $rootScope, mqttClient) {
       var unwatch = $rootScope.$watch(
         () => mqttClient.isConnected(),
         newValue => {
-          if (!newValue)
+          if (!newValue) { // Resolve only when connection is established
             return;
+          }
           deferred.resolve();
           unwatch();
         });
@@ -71,7 +72,11 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
   if($window.localStorage['prefix'] === 'true')
     globalPrefix = '/client/' + $window.localStorage['user'];
 
+  //...........................................................................
   function reconnectAfterTimeout() {
+    if (reconnectTimeout) { // debounce
+      $timeout.cancel(reconnectTimeout);
+    }
     reconnectTimeout = $timeout(() => {
       console.log("reconnect timer fired");
       reconnectTimeout = null;
@@ -79,11 +84,13 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     }, mqttReconnectDelay);
   }
 
+  //...........................................................................
   function clearReconnectTimeout() {
     if (reconnectTimeout !== null)
       $timeout.cancel(reconnectTimeout);
   }
 
+  //...........................................................................
   service.connect = function(host, port, clientid, user, password) {
     clearReconnectTimeout();
 
@@ -109,36 +116,41 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     client.connect(angular.copy(connectOptions));
   };
 
+  //...........................................................................
   service.getID = function getID () {
     return id;
   };
 
+  //...........................................................................
   service.onConnect = function() {
+    if (connected) {
+      return;
+    }
+    connected = true;
+
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
     if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
+
     client.subscribe(globalPrefix + "/devices/#");
-    //~ client.subscribe(globalPrefix + "/config/#");
-//    client.subscribe(globalPrefix + "/config/default_dashboard/#");
-//    client.subscribe(globalPrefix + "/config/rooms/#");
     client.subscribe(globalPrefix + "/config/widgets/#");
     client.subscribe(globalPrefix + "/config/dashboards/#");
 
-    connected = true;
     stickySubscriptions.forEach(function (item) {
       this.subscribe(item.topic, item.callback);
     }, this);
-    $rootScope.$digest();
   };
 
+  //...........................................................................
   service.onFailure = function(context) {
+    connected = false;
+
     console.log("Failure to connect to " + client.host + ":" + client.port +
                  " as " + client.clientId + ". error code " + context.errorCode +
                  ", error message \"" + context.errorMessage + "\""     );
-    connected = false;
     reconnectAfterTimeout();
-    $rootScope.$digest();
   };
 
+  //...........................................................................
   service.publish = function(topic, payload) {
     if (!connected) {
       // FIXME: should fail hard here
@@ -149,6 +161,7 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     console.log('publish-Event sent '+ payload + ' with topic: ' + topic + ' ' + client);
   };
 
+  //...........................................................................
   service.subscribe = function (topic, callback) {
     console.log("SUBSCRIBE: " + topic);
     if (!connected) {
@@ -165,6 +178,7 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     callbackMap[topic] = (callbackMap[topic] || []).concat([callback]);
   };
 
+  //...........................................................................
   service.addStickySubscription = function (topic, callback) {
     stickySubscriptions.push({ topic: topic, callback: callback });
     if (connected)
@@ -173,19 +187,25 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
 
   // TBD: unsubcribe
 
+  //...........................................................................
   service.onConnectionLost = function (responseObject) {
-    console.log("Server connection lost: %o", responseObject);
     connected = false;
+
     callbackMap = Object.create(null);
-    if (responseObject.errorCode != 0)
+    if (responseObject.errorCode != 0) { // not intentionally disconnected
+      console.log("Server connection lost: %o", responseObject);
       reconnectAfterTimeout();
-    $rootScope.$digest();
+    } else {
+      console.log("Successfully disconnected");
+    }
   };
 
+  //...........................................................................
   service.onMessageDelivered = function(message) {
     console.log("Delivered message: ", JSON.stringify(message));
   };
 
+  //...........................................................................
   service.onMessageArrived = function(message) {
     // console.log("Arrived message: " + message.destinationName + " with " + message.payloadBytes.length + " bytes of payload");
     // console.log("Message: " + String.fromCharCode.apply(null, message.payloadBytes));
@@ -210,6 +230,7 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
       messageDigestTimer = $timeout(() => { messageDigestTimer = null; }, mqttDigestInterval);
   };
 
+  //...........................................................................
   service.send = function(destination, payload, retained, qos) {
     if (!connected) {
       // FIXME: should fail hard here
@@ -218,27 +239,31 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     }
     var topic = globalPrefix + destination;
     if (payload == null) {
-payload = new ArrayBuffer();
+      payload = new ArrayBuffer();
     }
     var message = new Paho.MQTT.Message(payload);
     message.destinationName = topic;
     message.qos = qos === undefined ? 1 : qos;
     if (retained != undefined) {
-message.retained = retained;
+      message.retained = retained;
     } else {
-message.retained = true;
+      message.retained = true;
     }
 
     client.send(message);
   };
 
+  //...........................................................................
   service.disconnect = function() {
     clearReconnectTimeout();
     callbackMap = Object.create(null);
-    client.disconnect();
+    if (connected) {
+      client.disconnect();
+    }
   };
 
-  service.isConnected = function () {
+  //...........................................................................
+  service.isConnected = () => {
     return connected;
   };
 

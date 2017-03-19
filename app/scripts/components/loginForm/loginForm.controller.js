@@ -1,17 +1,20 @@
 class LoginFormCtrl {
-  constructor ($window, $state, $location, errors, mqttClient, whenMqttReady, ConfigEditorProxy, uiConfig, webuiConfigPath) {
+  //...........................................................................
+  constructor ($window, $rootScope, $state, $location, /*errors, mqttClient, whenMqttReady, ConfigEditorProxy, uiConfig, webuiConfigPath */) {
     'ngInject';
+
+    this.rootScope = $rootScope;
 
     this.localStorage = $window.localStorage;
     this.state = $state;
     this.currentHost = $location.host();
 
-    this.errors = errors;
-    this.mqttClient = mqttClient;
-    this.whenMqttReady = whenMqttReady;
-    this.ConfigEditorProxy = ConfigEditorProxy;
-    this.uiConfig = uiConfig;
-    this.webuiConfigPath = webuiConfigPath;
+    // this.errors = errors;
+    // this.mqttClient = mqttClient;
+    // this.whenMqttReady = whenMqttReady;
+    // this.ConfigEditorProxy = ConfigEditorProxy;
+    // this.uiConfig = uiConfig;
+    // this.webuiConfigPath = webuiConfigPath;
 
     this.loginSettings = {};
     this.loginSettings.host = this.localStorage['host'];
@@ -27,7 +30,7 @@ class LoginFormCtrl {
     }
   }
 
-//-----------------------------------------------------------------------------
+  //...........................................................................
   $postLink() {
     let host = this.loginSettings.host;
     let port = this.loginSettings.port;
@@ -68,7 +71,7 @@ class LoginFormCtrl {
     }
   }
 
-//-----------------------------------------------------------------------------
+  //...........................................................................
   updateLoginSettings() {
     // Update settings in Local Storage
     this.localStorage.setItem('host', this.host);
@@ -84,31 +87,16 @@ class LoginFormCtrl {
       this.localStorage.setItem('password', '');
     }
 
-    if (this.host && this.port) {
-      let clientID = 'contactless-' + this.randomString(10);
-      console.log('Try to connect as ' + clientID);
-      this.mqttClient.connect(this.host, this.port, clientID, this.user, this.password);
+    // Try to fetch UI config this new settings
+    let loginData = {
+      host: this.host,
+      port: this.port,
+      user: this.user,
+      password: this.password,
+      prefix: this.prefix
+    };
 
-      // Try to obtain WebUI configs
-      this.whenMqttReady()
-        .then(() => {
-          return this.ConfigEditorProxy.Load({ path: this.webuiConfigPath })
-        })
-        .then((result) => {
-          console.log('LOAD CONF: %o', result.content);
-          this.uiConfig.ready(result.content);
-        })
-        .catch(this.errors.catch('Error loading WebUI config'));
-    }
-  }
-
-  //...........................................................................
-  randomString(length) {
-    var text = '';
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < length; i++)
-      text += chars.charAt(Math.floor(Math.random() * chars.length));
-    return text;
+    this.rootScope.requestConfig(loginData);
   }
 }
 
