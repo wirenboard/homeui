@@ -7,8 +7,11 @@ class WidgetsCtrl {
     };
     function wrapWidgetCell (entry) {
       var proxy = DeviceData.proxy(entry.id);
+      var splittedId = entry.id.split('/', 2);
       return {
         id: entry.id,
+        device: splittedId[0],
+        control: splittedId[1],
         get name() {
           return (entry.hasOwnProperty("name") && entry.name) || proxy.name;
         },

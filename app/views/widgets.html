@@ -34,13 +34,13 @@
         <display-cell compact="true"></display-cell>
       </td>
       <td ng-if="!row.preview" class="cell-history-col">
-        <a title="History" class="cell-history" href="#/history/{{ row.cell.id }}/{{ historyStartTS() }}/-"><i class="glyphicon glyphicon-stats"></i></a>
+        <a title="History" class="cell-history" ui-sref="historySample({device: row.cell.device, control: row.cell.control, start: historyStartTS(), end: '-'})"><i class="glyphicon glyphicon-stats"></i></a>
       </td>
       <td ng-if="!!row.widget" class="description-col" rowspan="{{ row.rowSpan }}">{{ row.widget.description }}</td>
       <td ng-if="!!row.widget" class="dashboards-col" rowspan="{{ row.rowSpan }}">
         <ul ng-if="row.dashboards.length">
           <li ng-repeat="dashboard in row.dashboards">
-            <a href="#/dashboards/{{ dashboard.id }}">{{ dashboard.name }}</a>
+            <a ui-sref="dashboard({ id: dashboard.id })">{{ dashboard.name }}</a>
           </li>
         </ul>
       </td>
