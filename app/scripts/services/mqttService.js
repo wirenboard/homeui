@@ -45,6 +45,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
 
   .factory('mqttClient', function($window, $rootScope, $q, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) {
     var globalPrefix = '',
+        hasGlobalPrefix = false,
         service = {},
         client = {},
         id = '',
@@ -57,8 +58,10 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
         callbackMap = Object.create(null),
         stickySubscriptions = [];
 
-    if($window.localStorage['prefix'] === 'true')
+    if($window.localStorage['prefix'] === 'true') {
       globalPrefix = '/client/' + $window.localStorage['user'];
+      hasGlobalPrefix = true;
+    }
 
     function reconnectAfterTimeout() {
       reconnectTimeout = $timeout(function () {
@@ -139,7 +142,8 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
 
     service.onConnect = function() {
       console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
-      if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
+      if(hasGlobalPrefix) console.log('With globalPrefix: ' + globalPrefix);
+
       //~ client.subscribe(globalPrefix + "/config/#");
       client.subscribe(globalPrefix + "/config/default_dashboard/#");
       client.subscribe(globalPrefix + "/config/rooms/#");
@@ -228,7 +232,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
         return;
       }
 
-      if (topic.substring(0, globalPrefix.length) == globalPrefix)
+      if (hasGlobalPrefix && topic.substring(0, globalPrefix.length) == globalPrefix)
         topic = topic.substring(globalPrefix.length);
       Object.keys(callbackMap).sort().forEach(function (pattern) {
         if (!topicMatches(pattern, topic))
