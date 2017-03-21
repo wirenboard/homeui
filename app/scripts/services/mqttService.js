@@ -232,7 +232,7 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
         return;
       }
 
-      if (hasGlobalPrefix && topic.substring(0, globalPrefix.length) == globalPrefix)
+      if (hasGlobalPrefix && topic.search(globalPrefix) == 0)
         topic = topic.substring(globalPrefix.length);
       Object.keys(callbackMap).sort().forEach(function (pattern) {
         if (!topicMatches(pattern, topic))
