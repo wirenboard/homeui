@@ -1,3 +1,10 @@
+wb-mqtt-homeui (1.6.5~beta1) stable; urgency=medium
+
+  * Minor optimizations
+  * Fix: measure timeouts from last retained message
+
+ -- Nikita Maslov <n.maslov@contactless.ru>  Tue, 21 Mar 2017 17:29:07 +0300
+
 wb-mqtt-homeui (1.6.4) stable; urgency=medium
 
   * fixes default UI config on WB5.5 and WB5.8
