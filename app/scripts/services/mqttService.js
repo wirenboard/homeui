@@ -43,12 +43,15 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
   .value("mqttConnectTimeout", 15000)
   .value("mqttReconnectDelay", 1500)
 
-  .factory('mqttClient', function($window, $rootScope, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) {
+  .factory('mqttClient', function($window, $rootScope, $q, $timeout, topicMatches, mqttConnectTimeout, mqttReconnectDelay) {
     var globalPrefix = '',
         service = {},
         client = {},
         id = '',
         connected = false,
+        retainReady = $q.defer(),
+        retainIsDone = false,
+        retainHackTopic = '',
         connectOptions,
         reconnectTimeout = null,
         callbackMap = Object.create(null),
@@ -70,6 +73,35 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
         $timeout.cancel(reconnectTimeout);
     }
 
+    service.whenReady = function() {
+        return retainReady.promise;
+    };
+
+    service.isReady = function() {
+        return retainIsDone;
+    };
+
+    // timeout measured after receiving all retained messages
+    service.timeout = function(fn, delay) {
+      var t = $q.defer();
+
+      t.promise._defer = t;
+      t.promise.then(fn);
+
+      retainReady.promise.then(function() {
+          t.promise._timeout = $timeout(t.resolve, delay);
+      });
+
+      return t.promise;
+    };
+
+    service.cancel = function(promise) {
+        promise._defer.reject();
+        retainReady.promise.then(function() {
+            $timeout.cancel(promise._timeout);
+        });
+    };
+
     service.connect = function(host, port, clientid, user, password) {
       clearReconnectTimeout();
 
@@ -85,6 +117,12 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       }
 
       id = clientid;
+      retainHackTopic = "/tmp/" + id + "/retain_hack";
+      retainIsDone = false;
+      retainReady = $q.defer();
+      retainReady.promise.then(function() {
+        console.log("All retained messages are received");
+      });
       console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with username " + user + " and clientid " + clientid);
 
       client = new Paho.MQTT.Client(host, parseInt(port), '/mqtt', clientid);
@@ -102,17 +140,24 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     service.onConnect = function() {
       console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
       if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
-      client.subscribe(globalPrefix + "/devices/#");
       //~ client.subscribe(globalPrefix + "/config/#");
       client.subscribe(globalPrefix + "/config/default_dashboard/#");
       client.subscribe(globalPrefix + "/config/rooms/#");
       client.subscribe(globalPrefix + "/config/widgets/#");
       client.subscribe(globalPrefix + "/config/dashboards/#");
+      client.subscribe(globalPrefix + "/devices/#");
 
       connected = true;
       stickySubscriptions.forEach(function (item) {
         this.subscribe(item.topic, item.callback);
       }, this);
+
+      // prepare retain hack
+      client.subscribe(globalPrefix + retainHackTopic);
+      var msg = new Paho.MQTT.Message('1');
+      msg.destinationName = globalPrefix + retainHackTopic;
+      client.send(msg);
+
       $rootScope.$digest();
     };
 
@@ -175,6 +220,14 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       // console.log("Arrived message: " + message.destinationName + " with " + message.payloadBytes.length + " bytes of payload");
       // console.log("Message: " + String.fromCharCode.apply(null, message.payloadBytes));
       var topic = message.destinationName;
+
+      // check retain hack
+      if (!retainIsDone && topic == retainHackTopic) {
+        retainIsDone = true;
+        retainReady.resolve();
+        return;
+      }
+
       if (topic.substring(0, globalPrefix.length) == globalPrefix)
         topic = topic.substring(globalPrefix.length);
       Object.keys(callbackMap).sort().forEach(function (pattern) {

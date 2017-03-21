@@ -1,8 +1,8 @@
 "use strict";
 
 angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
-  .value("mqttRpcTimeout", 30000)
-  .factory("MqttRpc", function ($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) {
+  .value("mqttRpcTimeout", 10000)
+  .factory("MqttRpc", function ($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
     var disconnectedError = {
       data: "MqttConnectionError",
       message: "MQTT client is not connected"
@@ -106,7 +106,7 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
             params: params || {}
           }),
           false);
-        var timeout = $timeout(invokeResponseHandler.bind(null, callId, null, {
+        var timeout = mqttClient.timeout(invokeResponseHandler.bind(null, callId, null, {
           error: timeoutError
         }), mqttRpcTimeout);
 
@@ -114,7 +114,7 @@ angular.module("homeuiApp.MqttRpc", ["homeuiApp.mqttServiceModule"])
         inflight[callId] = function onResponse (actualTopic, reply) {
           // console.log("reply: %o", reply);
           Spinner.stop(this._spinnerIdPrefix, callId);
-          $timeout.cancel(timeout);
+          mqttClient.cancel(timeout);
           if (actualTopic !== null && actualTopic != topic + "/reply")
             reject("unexpected response topic " + actualTopic);
           else if (reply.hasOwnProperty("error") && reply.error !== null)
