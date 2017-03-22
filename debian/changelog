@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.6.5~beta2) stable; urgency=medium
+
+  * Fix: clear retained flag on reconnect 
+
+ -- Nikita Maslov <n.maslov@contactless.ru>  Wed, 22 Mar 2017 10:00:19 +0300
+
 wb-mqtt-homeui (1.6.5~beta1) stable; urgency=medium
 
   * Minor optimizations
