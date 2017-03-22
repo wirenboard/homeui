@@ -120,12 +120,6 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
       }
 
       id = clientid;
-      retainHackTopic = "/tmp/" + id + "/retain_hack";
-      retainIsDone = false;
-      retainReady = $q.defer();
-      retainReady.promise.then(function() {
-        console.log("All retained messages are received");
-      });
       console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with username " + user + " and clientid " + clientid);
 
       client = new Paho.MQTT.Client(host, parseInt(port), '/mqtt', clientid);
@@ -141,6 +135,14 @@ angular.module('homeuiApp.mqttServiceModule', ['ngResource'])
     };
 
     service.onConnect = function() {
+      // clear retain hack
+      retainHackTopic = "/tmp/" + id + "/retain_hack";
+      retainIsDone = false;
+      retainReady = $q.defer();
+      retainReady.promise.then(function() {
+        console.log("All retained messages are received");
+      });
+
       console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
       if(hasGlobalPrefix) console.log('With globalPrefix: ' + globalPrefix);
 
