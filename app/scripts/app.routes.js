@@ -1,6 +1,8 @@
 import uiRouter from 'angular-ui-router';
 
-function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
+function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
+  'ngInject';
+
   // use the HTML5 History API
   $locationProvider.html5Mode(false);
   $locationProvider.hashPrefix('!');
@@ -186,7 +188,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
           let deferred_1 = $q.defer();
           let deferred_2 = $q.defer();
           require.ensure(
-            ['codemirror/mode/javascript/javascript'], 
+            [], 
             (require) => {
               let module_1 = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
@@ -221,7 +223,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
           let deferred_1 = $q.defer();
           let deferred_2 = $q.defer();
           require.ensure(
-            ['codemirror/mode/javascript/javascript'], 
+            [], 
             (require) => {
               let module_1 = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
@@ -256,7 +258,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
           let deferred_1 = $q.defer();
           let deferred_2 = $q.defer();
           require.ensure(
-            ['d3', 'c3/c3', '../lib/angular-c3-simple/src/angular_c3_simple.js'], 
+            ['d3', 'c3/c3'], 
             (require) => {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
@@ -291,7 +293,7 @@ function routing ($stateProvider,  $locationProvider, $urlRouterProvider) {
           let deferred_1 = $q.defer();
           let deferred_2 = $q.defer();
           require.ensure(
-            ['d3', 'c3/c3', '../lib/angular-c3-simple/src/angular_c3_simple.js'], 
+            ['d3', 'c3/c3'], 
             (require) => {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({

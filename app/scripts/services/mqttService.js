@@ -1,8 +1,5 @@
-import ngResource from 'angular-resource'
-
-//-----------------------------------------------------------------------------
 const mqttServiceModule = angular
-  .module('homeuiApp.mqttServiceModule', [ngResource])
+  .module('homeuiApp.mqttServiceModule', [])
   .factory('whenMqttReady', whenMqttReady)
   .factory('topicMatches', topicMatches)
   .value("mqttConnectTimeout", 15000)

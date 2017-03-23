@@ -3,37 +3,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
-import 'c3/c3.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
 import '../lib/angular-toggle-switch/angular-toggle-switch.css';
-import 'codemirror/lib/codemirror.css';
-
-// External libraries
-import '../lib/mqttws31';
-import 'bootstrap';
-import 'spectrum-colorpicker';
-
-// Angular packages
-import uiRouter from 'angular-ui-router';
-import ngResource from 'angular-resource';
-import ngSanitize from 'angular-sanitize';
-import ngTouch from 'angular-touch';
-import uiSelect from 'ui-select';
-import monospacedElastic from 'angular-elastic/elastic';
-import 'angular-xeditable/dist/js/xeditable';
-import 'ng-file-upload';
-import 'angular-sortable-view/src/angular-sortable-view';
-import oclazyload from 'oclazyload';
-
-// Non-npm packages (former bower packages)
-// Use:
-// $ git submodule init
-// $ git submodule update
-// to set up git submodules
-import '../lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker';
-import '../lib/angular-order-object-by/src/ng-order-object-by';
-import '../lib/angular-toggle-switch/angular-toggle-switch';
 
 // homeui modules: sevices
 import errorsService from './services/errors';
@@ -78,11 +50,6 @@ import editableElasticTextareaDirective from './directives/editableelastictextar
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
-// 3rdparty libraries
-import './3rdparty/angular-json-editor'
-import './3rdparty/jsoneditor'
-import './3rdparty/ui-bootstrap'
-
 // Angular routes
 import routingModule from './app.routes';
 
@@ -100,26 +67,25 @@ import LoginFormModule from './components/loginForm';
  */
 const module = angular
   .module('homeuiApp', [
-    routingModule,
-    mqttServiceModule,
-    metaTypeFilterModule,
-    mqttRpcServiceModule,
-    dumbTemplateModule,
-    ngResource,
-    uiRouter,
-    ngSanitize,
-    ngTouch,
+    'ngResource',
+    'ngSanitize',
+    'ngTouch',
     'toggle-switch',
     'angularSpectrumColorpicker',
     'ngFileUpload',
     'ngOrderObjectBy',
     'ui.bootstrap',
-    'angular-json-editor',
     'ngOrderObjectBy',
     'xeditable',
-    uiSelect,
-    monospacedElastic,
-    oclazyload,
+    'ui.select',
+    'monospaced.elastic',
+    'angular-json-editor',
+    'oc.lazyLoad',
+    routingModule,
+    mqttServiceModule,
+    metaTypeFilterModule,
+    mqttRpcServiceModule,
+    dumbTemplateModule,
     LoginFormModule
   ])
   .value('historyMaxPoints', 1000)
@@ -266,8 +232,6 @@ angular.module('realHomeuiApp', [module.name])
     //.........................................................................
     function configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig) {
       return function(loginData) {
-        console.log('requestConfig call:', loginData);
-
         if (loginData.host && loginData.port) {
           var clientID = 'contactless-' + randomString(10);
           if (mqttClient.isConnected()) {
@@ -275,7 +239,6 @@ angular.module('realHomeuiApp', [module.name])
           }
           mqttClient.connect(loginData.host, loginData.port, clientID, loginData.user, loginData.password);
         } else {
-          console.log('requestConfig: cancelled.');
           return false;
         }
 

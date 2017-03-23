@@ -1,3 +1,5 @@
+import 'c3/c3.css';
+
 class HistoryCtrl {
   //...........................................................................
   constructor($scope, $stateParams, $location, HistoryProxy,

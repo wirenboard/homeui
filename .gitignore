@@ -18,3 +18,6 @@ debian/wb-mqtt-homeui*
 
 grunt.log
 .fuse*
+coverage
+*.sh
+*.tsv

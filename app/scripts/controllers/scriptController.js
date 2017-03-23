@@ -1,3 +1,6 @@
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/javascript/javascript';
+
 class ScriptCtrl {
   constructor($scope, $stateParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
     'ngInject';

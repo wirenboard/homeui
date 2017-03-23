@@ -7,6 +7,11 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const StatsPlugin = require('stats-webpack-plugin');
+const ChunkManifestPlugin = require('chunk-manifest-webpack-plugin');
+const WebpackChunkHash = require("webpack-chunk-hash");
+const InlineManifestWebpackPlugin = require("inline-manifest-webpack-plugin");
+const InlineChunksManifestPlugin = require('./inline-chunks-manifest');
+
 const path = require('path')
 
 process.traceDeprecation = true;
@@ -39,18 +44,24 @@ module.exports = function makeWebpackConfig() {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? void 0 : {
-    homeui: './scripts/app.js',
-    common: ['angular', 'jquery', 'bootstrap',
-      'angular-ui-router', 'angular-touch',
-      'ui-select', 'angular-resource', 'angular-sanitize', 'angular-elastic/elastic',
-      'angular-xeditable/dist/js/xeditable', 'ng-file-upload', 
-      'angular-sortable-view/src/angular-sortable-view', 'oclazyload',
-      './lib/mqttws31',
-      './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker', 'spectrum-colorpicker',
-      './lib/angular-order-object-by/src/ng-order-object-by',
-      './lib/angular-toggle-switch/angular-toggle-switch',
-      './scripts/3rdparty/ui-bootstrap', 'codemirror/mode/javascript/javascript'
-     ]
+    main: './scripts/app.js',
+    libs: ['angular', 'jquery', './lib/mqttws31', 'bootstrap',
+    './3rdparty/angular-json-editor',
+    './3rdparty/jsoneditor',
+    './3rdparty/ui-bootstrap',
+    'spectrum-colorpicker', './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker',
+    'angular-resource',
+    'angular-sanitize',
+    'angular-touch',
+    'ui-select',
+    'angular-elastic/elastic',
+    'angular-xeditable/dist/js/xeditable',
+    'ng-file-upload',
+    'angular-sortable-view/src/angular-sortable-view',
+    'oclazyload',
+    './lib/angular-order-object-by/src/ng-order-object-by',
+    './lib/angular-toggle-switch/angular-toggle-switch'
+    ]
   };
   /**
    * Output
@@ -68,11 +79,11 @@ module.exports = function makeWebpackConfig() {
 
     // Filename for entry points
     // Only adds hash in build mode
-    filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
+    filename: isProd ? '[name].[chunkhash].js' : '[name].bundle.js',
 
     // Filename for non-entry points
     // Only adds hash in build mode
-    chunkFilename: isProd ? '[name].[hash].js' : '[name].bundle.js'
+    chunkFilename: isProd ? '[name].[chunkhash].js' : '[name].bundle.js'
   };
 
   /**
@@ -84,10 +95,10 @@ module.exports = function makeWebpackConfig() {
     config.devtool = 'inline-source-map';
   }
   else if (isProd) {
-    config.devtool = 'source-map';
+    config.devtool = 'nosources-source-map';
   }
   else {
-    config.devtool = 'source-map';
+    config.devtool = 'eval-source-map';
   }
 
   /**
@@ -108,12 +119,15 @@ module.exports = function makeWebpackConfig() {
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      include: path.resolve(__dirname, 'app', 'scripts'),
+      include: [
+        path.resolve(__dirname, 'app', 'scripts')
+      ],
       exclude: /(node_modules|bower_components)/,
       use: [{
           loader: 'babel-loader',
           options: {
-            babelrc: true,
+            presets: ['es2015'],
+            babelrc: false,
             cacheDirectory: true
           }
         }
@@ -135,8 +149,16 @@ module.exports = function makeWebpackConfig() {
       use: isTest ? 'null-loader' : ExtractTextPlugin.extract({
         fallback: 'style-loader',
         use: [
-          {loader: 'css-loader', options: {sourceMap: false, comments: {removeAll: true}}},
-          {loader: 'postcss-loader'}
+          {loader: 'css-loader', options: {
+            sourceMap: false, 
+            comments: {removeAll: true},
+            minimize: true
+            }
+          },
+          {loader: 'postcss-loader', options: {
+            sourceMap: false
+            }
+          }
         ]
       })
     }, {
@@ -174,15 +196,10 @@ module.exports = function makeWebpackConfig() {
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
   config.plugins = [
-    // https://webpack.js.org/guides/code-splitting-libraries/
-    new webpack.optimize.CommonsChunkPlugin({
-      names: ['common', 'manifest'] // Specify the common bundle's name.
-    }),
-
     /**
     * Angular annotate
-    * Reference: 
-    * 
+    * Reference: https://github.com/jeffling/ng-annotate-webpack-plugin
+    * Add AngularJS dependency injection annotations.
     */
     new ngAnnotatePlugin({
       add: true
@@ -203,6 +220,7 @@ module.exports = function makeWebpackConfig() {
         }
       }
     }),
+
     /**
     * Provide plugin
     * Reference: 
@@ -213,21 +231,32 @@ module.exports = function makeWebpackConfig() {
       jQuery: 'jquery',
       $: 'jquery',
       'window.jQuery': 'jquery',
-     'd3': 'd3',
-     'c3': 'c3/c3',
+      'd3': 'd3',
+      'c3': 'c3/c3',
       'window.CodeMirror': 'codemirror/lib/codemirror'
-    })
-    // TODO: Add stat plugin
+    }),
+
+    // Reference: https://webpack.js.org/guides/code-splitting-libraries/
+    new webpack.optimize.CommonsChunkPlugin({
+      names: ['libs', 'manifest'],
+      minChunks: Infinity
+    }),
   ];
 
   // Skip rendering index.html in test mode
   if (!isTest) {
-    // Reference: https://github.com/ampedandwired/html-webpack-plugin
-    // Render index.html
     config.plugins.push(
+      // Reference: https://github.com/ampedandwired/html-webpack-plugin
+      // Render index.html
       new HtmlWebpackPlugin({
-        template: './index.html',
-        inject: 'body'
+        filename: './index.html',
+        template: './index.ejs',
+        chunksSortMode: function(a, b) {
+          var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
+          return order.indexOf(a.names[0]) - order.indexOf(b.names[0]);
+        },
+        inject: 'body',
+        minify: false
       }),
 
       // Reference: https://github.com/webpack/extract-text-webpack-plugin
@@ -285,6 +314,33 @@ module.exports = function makeWebpackConfig() {
         {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'}
       ]),
 
+      new webpack.HashedModuleIdsPlugin(),
+      new WebpackChunkHash({algorithm: 'md5'}),
+
+      // Allows exporting a JSON file that maps chunk ids to their resulting 
+      // asset files. Webpack can then read this mapping, assuming it is 
+      // provided somehow on the client, instead of storing a mapping (with 
+      // chunk asset hashes) in the bootstrap script, which allows to actually 
+      // leverage long-term caching.
+      // Reference: https://github.com/soundcloud/chunk-manifest-webpack-plugin
+      new ChunkManifestPlugin({
+        filename: 'chunk-manifest.json',
+        manifestVariable: 'webpackManifest'
+      }),
+
+      // This is a webpack plugin that inline your manifest.js with a script tag to save http request.
+      // Reference: https://github.com/szrenwei/inline-manifest-webpack-plugin
+      new InlineManifestWebpackPlugin({
+        name: 'webpackManifest'
+      }),
+
+      // Inline output JSON chunck manifest from ChunkManifestPlugin into index.ejs template
+      new InlineChunksManifestPlugin({
+        name: 'chunksManifest', // asset name for accessing from HTML template
+        filename: 'chunk-manifest.json',
+        manifestVariable: 'webpackManifest'
+      }),
+
       // Writes the stats of a build to a file.
       // Reference: https://github.com/unindented/stats-webpack-plugin/
       new StatsPlugin('stats.json', {
@@ -300,7 +356,8 @@ module.exports = function makeWebpackConfig() {
    * Reference: http://webpack.github.io/docs/webpack-dev-server.html
    */
   config.devServer = {
-    contentBase: path.join(__dirname, 'app')
+    contentBase: path.join(__dirname, 'app'),
+    port: 8080
   };
 
   return config;
