@@ -235,17 +235,17 @@ module.exports = function makeWebpackConfig() {
       'c3': 'c3/c3',
       'window.CodeMirror': 'codemirror/lib/codemirror'
     }),
-
-    // Reference: https://webpack.js.org/guides/code-splitting-libraries/
-    new webpack.optimize.CommonsChunkPlugin({
-      names: ['libs', 'manifest'],
-      minChunks: Infinity
-    }),
   ];
 
   // Skip rendering index.html in test mode
   if (!isTest) {
     config.plugins.push(
+      // Reference: https://webpack.js.org/guides/code-splitting-libraries/
+      new webpack.optimize.CommonsChunkPlugin({
+        names: ['libs', 'manifest'],
+        minChunks: Infinity
+      }),
+      
       // Reference: https://github.com/ampedandwired/html-webpack-plugin
       // Render index.html
       new HtmlWebpackPlugin({
