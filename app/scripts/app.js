@@ -213,13 +213,23 @@ module
       }
     });
   })
-  .run(($rootScope, $location) => {
+  .run(($rootScope, $state) => {
+    'ngInject';
+
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
     };
-    $rootScope.$on('$locationChangeStart', function(event, next, current) {
-      if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
-      $rootScope.refererLocation = current;
+    // $rootScope.$on('$locationChangeStart', function(event, next, current) {
+    //   if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
+    //   $rootScope.refererLocation = current;
+    // });
+
+    $rootScope.$on('$stateChangeStart', () => {
+        $rootScope.stateIsLoading = true;
+    });
+
+    $rootScope.$on('$stateChangeSuccess', () => {
+         $rootScope.stateIsLoading = false;
     });
   });
 
