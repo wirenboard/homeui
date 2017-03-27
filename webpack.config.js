@@ -185,8 +185,27 @@ module.exports = function makeWebpackConfig() {
     config.module.rules.push({
       enforce: 'pre',
       test: /\.js$/,
-      exclude: /node_modules/,
+      exclude:  /(node_modules|bower_components)/,
       use: [{loader: 'eslint-loader', options: {rules: {semi: 0}}}],
+    }, {
+      // JS LOADER
+      // Reference: https://github.com/babel/babel-loader
+      // Transpile .js files using babel-loader
+      // Compiles ES6 and ES7 into ES5 code
+      test: /\.js$/,
+      include: [
+        path.resolve(__dirname, 'test')
+      ],
+      exclude: /(node_modules|bower_components)/,
+      use: [{
+          loader: 'babel-loader',
+          options: {
+            presets: ['es2015'],
+            babelrc: false,
+            cacheDirectory: true
+          }
+        }
+      ]
     });
   }
 

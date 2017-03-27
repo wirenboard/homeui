@@ -8,10 +8,10 @@ module.exports = function karmaConfig (config) {
       reporters: [
         { type:'html', subdir: 'report-html' },
         { type:'lcov', subdir: 'report-lcov' }
-      ]
-      // instrumenterOptions: {
-      //   istanbul: { noCompact:true }
-      // }
+      ],
+      instrumenterOptions: {
+        istanbul: { noCompact:true }
+      }
     },
 
     frameworks: [
@@ -31,6 +31,7 @@ module.exports = function karmaConfig (config) {
     ],
 
     files: [
+      'node_modules/jasmine-promises/dist/jasmine-promises.js',
       'test/tests.webpack.js'
     ],
 
@@ -38,7 +39,8 @@ module.exports = function karmaConfig (config) {
       // Reference: http://webpack.github.io/docs/testing.html
       // Reference: https://github.com/webpack/karma-webpack
       // Convert files with webpack and load sourcemaps
-      'test/tests.webpack.js': ['webpack']
+      'test/tests.webpack.js': ['webpack', 'sourcemap'],
+      "**/*.html": ["ng-html2js"]
     },
 
     browsers: [
@@ -48,7 +50,7 @@ module.exports = function karmaConfig (config) {
 
     webpack: require('./webpack.config'),
 
-    // Hide webpack build information from output
+    // Print webpack build information to console
     webpackMiddleware: {
       noInfo: false
     },
@@ -58,9 +60,18 @@ module.exports = function karmaConfig (config) {
       'karma-jasmine',
       'karma-coverage',
       'karma-webpack',
-      'karma-spec-reporter'
+      'karma-spec-reporter',
+      'karma-ng-html2js-preprocessor',
+      'karma-sourcemap-loader'
     ],
 
+    // Reference: https://github.com/karma-runner/karma-ng-html2js-preprocessor
+    ngHtml2JsPreprocessor: {
+      stripPrefix: "^([^/]*)",
+      moduleName: "homeuiApp"
+    },
+    
+    singleRun: true,
     logLevel: config.LOG_INFO,
     concurrency: Infinity,
     port: 9876,

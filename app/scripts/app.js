@@ -219,10 +219,11 @@ module
     $rootScope.objectsKeys = function(collection){
       return Object.keys(collection);
     };
-    // $rootScope.$on('$locationChangeStart', function(event, next, current) {
-    //   if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
-    //   $rootScope.refererLocation = current;
-    // });
+
+    $rootScope.$on('$stateChangeStart', function(event, next, current) {
+      if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
+      $rootScope.refererLocation = current;
+    });
 
     $rootScope.$on('$stateChangeStart', () => {
         $rootScope.stateIsLoading = true;
@@ -235,7 +236,7 @@ module
 
 //-----------------------------------------------------------------------------
 // Register wrapper module
-angular.module('realHomeuiApp', [module.name])
+const app = angular.module('realHomeuiApp', [module.name])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     'ngInject';
 
@@ -317,3 +318,5 @@ angular.module('realHomeuiApp', [module.name])
       }, configSaveDebounceMs);
     }, true);
   });
+
+export default module.name;
