@@ -1,6 +1,6 @@
-"use strict";
+import mqttServiceModule from '../../../app/scripts/services/mqttService';
 
-angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
+export default angular.module('homeuiApp.fakeMqtt', [mqttServiceModule])
   .factory("mqttBroker", ($rootScope, $timeout, topicMatches) => {
     var clientMap = Object.create(null),
         subscriptionMap = Object.create(null);
@@ -167,4 +167,5 @@ angular.module('homeuiApp.fakeMqtt', ["homeuiApp.mqttServiceModule"])
         }
       }
     };
-  });
+  })
+  .name;

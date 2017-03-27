@@ -4,7 +4,7 @@
 import 'angular';
 import 'angular-mocks/angular-mocks';
 
-var testsContext = require.context('./unit', true, /\.js$/);
+var testsContext = require.context('./spec/services', true, /fakemqtttest\.js$/);
 
 testsContext.keys().forEach(testsContext);
 

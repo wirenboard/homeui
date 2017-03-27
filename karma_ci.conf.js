@@ -31,7 +31,6 @@ module.exports = function karmaConfig (config) {
     ],
 
     files: [
-      'node_modules/jasmine-promises/dist/jasmine-promises.js',
       'test/tests.webpack.js'
     ],
 
@@ -72,9 +71,10 @@ module.exports = function karmaConfig (config) {
     },
     
     singleRun: true,
-    logLevel: config.LOG_INFO,
+    autoWatch: false,
+    logLevel: config.LOG_DEBUG,
     concurrency: Infinity,
     port: 9876,
-    colors: true
+    colors: true,
   });
 };

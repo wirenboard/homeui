@@ -1,13 +1,11 @@
-"use strict";
+import fakeMqttModule from './fakemqtt';
 
 describe("Fake MQTT", () => {
   var f;
 
-  // load the controller's module
-  beforeEach(module('homeuiApp'));
-  beforeEach(module('homeuiApp.fakeMqtt'));
+  beforeEach(angular.mock.module(fakeMqttModule));
 
-  beforeEach(inject(_FakeMqttFixture_ => {
+  beforeEach(angular.mock.inject(_FakeMqttFixture_ => {
     f = _FakeMqttFixture_;
     f.useJSON = false;
   }));

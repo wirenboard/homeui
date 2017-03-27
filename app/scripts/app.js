@@ -82,9 +82,7 @@ const module = angular
     'angular-json-editor',
     'oc.lazyLoad',
     routingModule,
-    mqttServiceModule,
     metaTypeFilterModule,
-    mqttRpcServiceModule,
     dumbTemplateModule,
     LoginFormModule
   ])
@@ -220,9 +218,9 @@ module
       return Object.keys(collection);
     };
 
-    $rootScope.$on('$stateChangeStart', function(event, next, current) {
-      if(current.split('/').pop() != 'edit' && current.split('/').pop() != 'new') $rootScope.showCreated = false;
-      $rootScope.refererLocation = current;
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+      if(fromState.name.split('/').pop() != 'edit' && fromState.name.split('/').pop() != 'new') $rootScope.showCreated = false;
+      $rootScope.refererLocation = fromState;
     });
 
     $rootScope.$on('$stateChangeStart', () => {
@@ -235,8 +233,8 @@ module
   });
 
 //-----------------------------------------------------------------------------
-// Register wrapper module
-const app = angular.module('realHomeuiApp', [module.name])
+// Register module with communication
+const app = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
   .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
     'ngInject';
 
