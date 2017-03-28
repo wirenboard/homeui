@@ -31,6 +31,7 @@ module.exports = function karmaConfig (config) {
     ],
 
     files: [
+      'node_modules/phantomjs-polyfill-find/find-polyfill.js',
       'test/tests.webpack.js'
     ],
 

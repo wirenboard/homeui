@@ -234,8 +234,9 @@ module
 
 //-----------------------------------------------------------------------------
 // Register module with communication
-const app = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
-  .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig, $timeout, configSaveDebounceMs) => {
+const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
+  .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, 
+      uiConfig, $timeout, configSaveDebounceMs) => {
     'ngInject';
 
     //.........................................................................
@@ -318,3 +319,4 @@ const app = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqt
   });
 
 export default module.name;
+export {realApp};

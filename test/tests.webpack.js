@@ -23,7 +23,7 @@ import 'oclazyload';
 import '../app/lib/angular-order-object-by/src/ng-order-object-by';
 import '../app/lib/angular-toggle-switch/angular-toggle-switch';
 
-var testsContext = require.context('./spec/services', true, /mqttrpc\.js$/);
+var testsContext = require.context('./spec/services', true, /uiconfig\.js$/);
 
 testsContext.keys().forEach(testsContext);
 

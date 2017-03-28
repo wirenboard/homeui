@@ -1,9 +1,11 @@
-"use strict";
+import app from '../../../app/scripts/app';
+import fakeMqttModule from './fakemqtt';
 
 describe("uiConfig service", () => {
   var $rootScope, uiConfig;
-  beforeEach(module("homeuiApp"));
-  beforeEach(inject((_$rootScope_, _uiConfig_) => {
+  beforeEach(angular.mock.module(fakeMqttModule));
+  beforeEach(angular.mock.module(app));
+  beforeEach(angular.mock.inject((_$rootScope_, _uiConfig_) => {
     $rootScope = _$rootScope_;
     uiConfig = _uiConfig_;
   }));
@@ -35,13 +37,13 @@ describe("uiConfig service", () => {
     ]
   };
 
-  function filterDashboard (content) {
+  function filterDashboard(content) {
     var toCopy = angular.extend({}, content);
     delete toCopy._model;
     return angular.copy(toCopy);
   }
 
-  function data () {
+  function data() {
     var r = angular.extend({}, uiConfig.data);
     r.dashboards = r.dashboards.map(filterDashboard);
     r.widgets = angular.copy(r.widgets);
@@ -271,6 +273,7 @@ describe("uiConfig service", () => {
     uiConfig.getDashboard("dashboard1"); // make sure the _model attribute is added
     uiConfig.addWidget();
     uiConfig.addDashboard();
+
     expect(uiConfig.filtered()).toEqual(
       {
         dashboards: [
@@ -284,7 +287,8 @@ describe("uiConfig service", () => {
             ]
           }
         ],
-        widgets: [ WIDGET_1, WIDGET_2 ]
+        widgets: [ WIDGET_1, WIDGET_2 ],
+        defaultDashboardId: 'default'
       });
   });
 

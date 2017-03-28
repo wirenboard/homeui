@@ -1,10 +1,16 @@
 function uiConfigService($rootScope, $q) {
   'ngInject';
+  
+  var DEFAULT_DASHBOARD = {
+    id: "default",
+    name: "Default Dashboard",
+    widgets: []
+  };
 
   var data = {
-    dashboards: [],
+    dashboards: [DEFAULT_DASHBOARD],
     widgets: [],
-    defaultDashboardId: undefined
+    defaultDashboardId: 'default'
   };
   var deferReady = $q.defer(),
       version = 1;
