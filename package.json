@@ -7,7 +7,7 @@
     "build": "npm run clean && webpack --bail --progress --profile",
     "server": "webpack-dev-server --history-api-fallback --inline --progress",
     "test": "rimraf coverage && karma start karma_ci.conf.js",
-    "test-watch": "karma start karma_dev.conf.js --auto-watch --no-single-run",
+    "test-watch": "karma start karma_dev.conf.js",
     "start": "npm run server"
   },
   "repository": {

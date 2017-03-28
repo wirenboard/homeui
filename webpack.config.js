@@ -1,4 +1,5 @@
 'use strict';
+
 // Modules
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');

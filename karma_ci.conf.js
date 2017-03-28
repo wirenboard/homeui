@@ -51,7 +51,7 @@ module.exports = function karmaConfig (config) {
 
     // Print webpack build information to console
     webpackMiddleware: {
-      noInfo: false
+      noInfo: true
     },
 
     plugins: [
@@ -72,7 +72,7 @@ module.exports = function karmaConfig (config) {
     
     singleRun: true,
     autoWatch: false,
-    logLevel: config.LOG_DEBUG,
+    logLevel: config.LOG_ERROR,
     concurrency: Infinity,
     port: 9876,
     colors: true,

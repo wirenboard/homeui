@@ -1,4 +1,8 @@
-angular.module("homeuiApp.mqttViewFixture", ["homeuiApp", "homeuiApp.fakeMqtt", "homeuiApp.viewFixture"])
+import appModule from '../../../app/scripts/app';
+import fakeMqttModule from './fakemqtt';
+import viewFixtureModule from './viewfixture';
+
+export default angular.module("homeuiApp.mqttViewFixture", [appModule, fakeMqttModule, viewFixtureModule])
   .factory("MqttViewFixture", (FakeMqttFixture, ViewFixture) => {
     const DEFAULT_TOPIC = "/devices/+/controls/+/on";
 
@@ -17,4 +21,5 @@ angular.module("homeuiApp.mqttViewFixture", ["homeuiApp", "homeuiApp.fakeMqtt", 
     }
 
     return MqttViewFixture;
-  });
+  })
+  .name;

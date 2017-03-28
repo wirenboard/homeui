@@ -1,14 +1,18 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
+import mqttRpcServiceModule from '../../../app/scripts/services/rpc';
+import fakeMqttModule from './fakemqtt';
 
 describe("MQTT RPC", () => {
   var f, MqttRpc, proxy;
 
   // load the controller's module
-  beforeEach(module('homeuiApp'));
-  beforeEach(module('homeuiApp.fakeMqtt'));
-  beforeEach(module('homeuiApp.MqttRpc'));
+  beforeEach(() => {
+    angular.mock.module(appModule);
+    angular.mock.module(mqttRpcServiceModule);
+    angular.mock.module(fakeMqttModule);
+  });
 
-  beforeEach(inject((_FakeMqttFixture_, _MqttRpc_) => {
+  beforeEach(angular.mock.inject((_FakeMqttFixture_, _MqttRpc_) => {
     f = _FakeMqttFixture_;
     f.useJSON = true;
     MqttRpc = _MqttRpc_;
