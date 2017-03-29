@@ -48,19 +48,19 @@ export default angular.module('homeuiApp.viewFixture', [appModule])
         this.$scope.$digest();
       }
 
-      setup (options) {}
+      setup(options) {}
 
       get $location () {
         return $location;
       }
 
-      remove () {
+      remove() {
         this.cleanups.forEach(cleanup => { cleanup(); });
         if (this.container)
           this.container.remove();
       }
 
-      click (element) {
+      click(element) {
         if (typeof element == "string") {
           element = this.container.find(element);
         }
@@ -80,7 +80,7 @@ export default angular.module('homeuiApp.viewFixture', [appModule])
         }, options));
       }
 
-      setup (options) {
+      setup(options) {
         this.ctrl = $controller(options.controllerName, angular.extend({
           $scope: this.$scope,
           $rootScope: $rootScope

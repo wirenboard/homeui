@@ -1,4 +1,7 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
+import fakeMqttModule from './fakemqtt';
+import CodeMirror from 'codemirror/lib/codemirror';
+import 'codemirror/mode/javascript/javascript';
 
 describe("gotoDefStart service", () => {
   var gotoDefStart, textarea, cm,
@@ -17,9 +20,9 @@ describe("gotoDefStart service", () => {
         '      log("foobar");\n' +
         '    }\n' +
         '  });\n';
-  beforeEach(module('homeuiApp'));
+  beforeEach(angular.mock.module(fakeMqttModule, appModule));
 
-  beforeEach(inject(_gotoDefStart_ => {
+  beforeEach(angular.mock.inject(_gotoDefStart_ => {
     gotoDefStart = _gotoDefStart_;
     textarea = $("<textarea>").appendTo(document.body).get(0);
     cm = CodeMirror(textarea, { mode: "javascript" });

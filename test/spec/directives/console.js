@@ -44,7 +44,6 @@ describe("Directive: console", () => {
         text: text.text()
       };
     });
-    console.log('extractMessages:', result);
     return result;
   }
 
