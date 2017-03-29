@@ -1,20 +1,23 @@
-"use strict";
-
-angular.module('homeuiApp.fakeTime', ["homeuiApp"])
+export default angular.module('homeuiApp.fakeTime', [])
   .factory("FakeTime", () => {
     var d = null;
     return {
-      getTime () {
-        if (d === null)
+      getTime() {
+        if (d === null) {
           throw new Error("time not set");
-        return d;
+        } else {
+          return d;
+        }
       },
 
-      setTime (newTime) {
-        if (!newTime || !newTime instanceof Date)
+      setTime(newTime) {
+        if (!newTime || !newTime instanceof Date) {
           throw new Error("invalid time");
-        d = newTime;
+        } else {
+          d = newTime;
+        }
       }
     };
   })
-  .factory("getTime", FakeTime => FakeTime.getTime);
+  .factory("getTime", FakeTime => FakeTime.getTime)
+  .name;

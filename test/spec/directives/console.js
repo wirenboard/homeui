@@ -1,12 +1,12 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
+import fakeTimeModule from '../services/faketime';
 
 describe("Directive: console", () => {
   var f, FakeTime;
 
-  beforeEach(module("homeuiApp.fakeTime"));
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule, fakeTimeModule));
 
-  beforeEach(inject(($rootScope, _FakeTime_, MqttDirectiveFixture) => {
+  beforeEach(angular.mock.inject(($rootScope, _FakeTime_, MqttDirectiveFixture) => {
     FakeTime = _FakeTime_;
     // Note that month index '5' means June here due to JS Date() API specifics
     FakeTime.setTime(new Date(2015, 5, 19, 20, 25, 6));
@@ -27,7 +27,7 @@ describe("Directive: console", () => {
   afterEach(() => { f.remove(); });
 
   function extractMessages () {
-    return f.element.find(".console-message").toArray().map(el => {
+    var result =  f.element.find(".console-message").toArray().map(el => {
       el = $(el);
       var levelClasses = el.prop("className")
             .replace(/^\s+|\s+$/g, "")
@@ -44,6 +44,8 @@ describe("Directive: console", () => {
         text: text.text()
       };
     });
+    console.log('extractMessages:', result);
+    return result;
   }
 
   it("should not display any messages initially", () => {
