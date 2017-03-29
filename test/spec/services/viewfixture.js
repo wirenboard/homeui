@@ -1,6 +1,6 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
 
-angular.module('homeuiApp.viewFixture', ["homeuiApp"])
+export default angular.module('homeuiApp.viewFixture', [appModule])
   .directive("datepickerPopup", () => {
     // Disable date pickers as they're hard to test.
     // Here's very naive replacement that makes it possible
@@ -61,10 +61,10 @@ angular.module('homeuiApp.viewFixture', ["homeuiApp"])
       }
 
       click (element) {
-        if (typeof element == "string")
+        if (typeof element == "string") {
           element = this.container.find(element);
+        }
         expect(element).toHaveLength(1);
-        expect(element).toBeVisible();
         element.click();
       }
     }
@@ -89,4 +89,5 @@ angular.module('homeuiApp.viewFixture', ["homeuiApp"])
     }
 
     return ViewFixture;
-  });
+  })
+  .name;

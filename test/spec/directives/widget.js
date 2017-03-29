@@ -1,11 +1,11 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
+import cellPickerMixinModule from '../services/cellpickermixin';
 
 describe("Directive: widget", () => {
   var f, deleted, removed;
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
-  beforeEach(module("homeuiApp.cellPickerMixin"));
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule, cellPickerMixinModule));
 
-  beforeEach(inject((MqttDirectiveFixture) => {
+  beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture(
       "<widget source='widget' can-delete='canDelete' on-delete='deleteWidget(widget)' can-remove='canRemove' on-remove='removeWidget(widget)'></widget>", {
         mixins: ["CellPickerMixin"]
@@ -54,13 +54,13 @@ describe("Directive: widget", () => {
   function extractCell (el) {
     el = $(el);
     var cell = {};
-    if (el.find("h4").size())
+    if (el.find("h4").length)
       cell.name = el.find("h4").text();
-    if (el.find("input").size())
+    if (el.find("input").length)
       cell.value = el.find("input").val();
-    else if (el.find(".value").size())
+    else if (el.find(".value").length)
       cell.value = el.find(".value").text();
-    if (el.find(".units").size())
+    if (el.find(".units").length)
       cell.units = el.find(".units").text();
     return cell;
   }

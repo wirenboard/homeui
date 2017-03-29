@@ -23,7 +23,7 @@ import 'oclazyload';
 import '../app/lib/angular-order-object-by/src/ng-order-object-by';
 import '../app/lib/angular-toggle-switch/angular-toggle-switch';
 
-var testsContext = require.context('./spec/services', true, /uiconfig\.js$/);
+var testsContext = require.context('./spec/directives', true, /widget\.js$/);
 
 testsContext.keys().forEach(testsContext);
 

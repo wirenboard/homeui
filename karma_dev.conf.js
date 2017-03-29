@@ -4,6 +4,10 @@ module.exports = function karmaConfig (config) {
     basePath: './',
 
     frameworks: [
+      // Reference: https://github.com/bessdsv/karma-jasmine-jquery
+      // jQuery matchers and fixture loader for Jasmine framework
+      'jasmine-jquery',
+
       // Reference: https://github.com/karma-runner/karma-jasmine
       // Set framework to jasmine
       'jasmine'
@@ -42,6 +46,7 @@ module.exports = function karmaConfig (config) {
     plugins: [
       'karma-chrome-launcher',
       'karma-jasmine',
+      'karma-jasmine-jquery',
       'karma-webpack',
       'karma-spec-reporter',
       'karma-ng-html2js-preprocessor',
