@@ -1,23 +1,24 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
 
 describe("Directive: range-cell", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject((MqttDirectiveFixture) => {
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule));
+
+  beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<range-cell cell=\"'dev2/bar'\"></range-cell>");
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "1000", true, 1);
-    f.extClient.send("/devices/dev2/controls/bar/meta/step", "10", true, 1);
-    f.extClient.send("/devices/dev2/controls/bar/meta/units", "l", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/step", "1", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/units", "Unit", true, 1);
     f.extClient.send("/devices/dev2/controls/bar", "123", true, 0);
     f.$scope.$digest();
   }));
 
   afterEach(() => { f.remove(); });
 
-  function input () {
+  function input() {
     return f.container.find(".cell.cell-range input[type=range]:visible");
   }
 
@@ -30,7 +31,7 @@ describe("Directive: range-cell", () => {
   it("it should apply min/max and step values to the slider", () => {
     expect(input().attr("min")).toBe("-1000");
     expect(input().attr("max")).toBe("1000");
-    expect(input().attr("step")).toBe("10");
+    expect(input().attr("step")).toBe("1");
   });
 
   it("should display readonly cell values in readonly text field", () => {
@@ -53,12 +54,10 @@ describe("Directive: range-cell", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "", true, 1);
     f.$rootScope.$digest();
     expect(input().attr("min")).toBe("0");
-    expect(input().attr("max")).toBe("1000");
-    expect(input().attr("step")).toBe("10");
   });
 
   it("should display current cell value and units near the slider", () => {
     expect(f.container.find(".value")).toHaveText("123");
-    expect(f.container.find(".units")).toHaveText("l");
+    expect(f.container.find(".units")).toHaveText("Unit");
   });
 });
