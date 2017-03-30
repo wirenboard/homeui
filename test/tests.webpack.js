@@ -22,8 +22,9 @@ import 'angular-sortable-view/src/angular-sortable-view';
 import 'oclazyload';
 import '../app/lib/angular-order-object-by/src/ng-order-object-by';
 import '../app/lib/angular-toggle-switch/angular-toggle-switch';
+import 'jquery-simulate-ext/libs/jquery.simulate';
 
-var testsContext = require.context('./spec/directives', true, /switchcell\.js$/);
+var testsContext = require.context('./spec/directives', true, /textcell\.js$/);
 
 testsContext.keys().forEach(testsContext);
 
