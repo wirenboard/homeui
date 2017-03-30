@@ -1,15 +1,16 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
 
 describe("Directive: rgb-cell", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(module($provide => {
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule));
+
+  beforeEach(angular.mock.module($provide => {
     // make sure locally stored palette doesn't affect tests
     $provide.value("rgbLocalStorageKey", null);
   }));
 
-  beforeEach(inject((MqttDirectiveFixture) => {
+  beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<rgb-cell cell=\"'dev2/fooRgb'\"></rgb-cell>");
     f.extClient.send("/devices/dev2/controls/fooRgb/meta/type", "rgb", true, 1);
     f.extClient.send("/devices/dev2/controls/fooRgb", "0;200;255", true, 0);
@@ -28,7 +29,7 @@ describe("Directive: rgb-cell", () => {
   }
 
   function extractColorFromPreview () {
-    if (!colorPreview().size())
+    if (!colorPreview().length)
       throw new Error("color preview not found");
     return colorPreview().css("background-color").replace(/\s+/g, "");
   }
@@ -38,7 +39,7 @@ describe("Directive: rgb-cell", () => {
   }
 
   function extractColorFromColorIndicator () {
-    if (!readOnlyColorIndicator().size())
+    if (!readOnlyColorIndicator().length)
       throw new Error("color indicator not found");
     return readOnlyColorIndicator().css("background-color").replace(/\s+/g, "");
   }

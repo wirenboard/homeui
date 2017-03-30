@@ -23,7 +23,7 @@ import 'oclazyload';
 import '../app/lib/angular-order-object-by/src/ng-order-object-by';
 import '../app/lib/angular-toggle-switch/angular-toggle-switch';
 
-var testsContext = require.context('./spec/directives', true, /rangecell\.js$/);
+var testsContext = require.context('./spec/directives', true, /rgbcell\.js$/);
 
 testsContext.keys().forEach(testsContext);
 
