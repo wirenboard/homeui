@@ -1,10 +1,11 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
 
 describe("Directive: switch-cell", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject((MqttDirectiveFixture) => {
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule));
+
+  beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<switch-cell cell=\"'dev2/fooSwitch'\"></switch-cell>");
     f.extClient.send("/devices/dev2/controls/fooSwitch/meta/type", "switch", true, 1);
     f.extClient.send("/devices/dev2/controls/fooSwitch", "1", true, 0);
