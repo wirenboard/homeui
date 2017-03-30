@@ -17,7 +17,7 @@ export default angular.module('homeuiApp.cellPickerMixin', [])
 
       extractUISelectText() {
         return this.container
-          .find(".ui-select-choices-row .ng-binding:not(.ui-select-placeholder)")
+          .find(".ui-select-match-text")
           .text().replace(/^\s+|\s+$/g, "");
       },
 

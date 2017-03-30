@@ -35,11 +35,13 @@ function cellPickerDirective(DeviceData) {
       }
 
       scope.choice = {};
-      scope.cells = () =>
+
+      scope.cells = () => 
         (scope.filterByType() ?
          DeviceData.getCellIdsByType(scope.filterByType()) :
          DeviceData.getCellIds())
         .map(internCellItem);
+
       scope.actualPlaceholder = () => {
         return scope.placeholder || DEFAULT_PLACEHOLDER;
       };

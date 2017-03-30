@@ -1,11 +1,11 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
+import cellPickerMixinModule from '../services/cellpickermixin';
 
 describe("Directive: cell-picker", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
-  beforeEach(module("homeuiApp.cellPickerMixin"));
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule, cellPickerMixinModule));
 
-  beforeEach(inject((MqttDirectiveFixture) => {
+  beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture(
       "<cell-picker placeholder='{{ placeholder}}' " +
         "ng-model='choice.cellId' filter-by-type='cellType'></cell-picker>", {
