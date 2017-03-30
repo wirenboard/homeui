@@ -1,10 +1,10 @@
-import app from '../../../app/scripts/app';
+import appModule from '../../../app/scripts/app';
 import fakeMqttModule from './fakemqtt';
 
 describe("uiConfig service", () => {
   var $rootScope, uiConfig;
   beforeEach(angular.mock.module(fakeMqttModule));
-  beforeEach(angular.mock.module(app));
+  beforeEach(angular.mock.module(appModule));
   beforeEach(angular.mock.inject((_$rootScope_, _uiConfig_) => {
     $rootScope = _$rootScope_;
     uiConfig = _uiConfig_;

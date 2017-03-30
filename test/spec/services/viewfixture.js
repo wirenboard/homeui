@@ -28,7 +28,7 @@ export default angular.module('homeuiApp.viewFixture', [appModule])
   })
   .factory("HtmlFixture", ($rootScope, $compile, $location, $injector) => {
     class HtmlFixture {
-      constructor (html, options) {
+      constructor(html, options) {
         this.cleanups = [];
         this.$scope = $rootScope.$new();
         if (options && options.hasOwnProperty("mixins"))
