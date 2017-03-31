@@ -1,11 +1,12 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
+import fakeMqttModule from './fakemqtt';
 
 describe("DeviceData service", () => {
   var f, DeviceData;
-  beforeEach(module("homeuiApp"));
-  beforeEach(module("homeuiApp.fakeMqtt"));
 
-  beforeEach(inject((FakeMqttFixture, _DeviceData_) => {
+  beforeEach(angular.mock.module(fakeMqttModule, appModule));
+
+  beforeEach(angular.mock.inject((FakeMqttFixture, _DeviceData_) => {
     f = FakeMqttFixture;
     DeviceData = _DeviceData_;
     f.connect();
