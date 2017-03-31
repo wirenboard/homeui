@@ -1,12 +1,13 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
 
 describe("Directive: display-cell", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
+
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule));
 
   const CELL_NAME = "Foo Cell";
 
-  beforeEach(inject((MqttDirectiveFixture) => {
+  beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture(
       "<display-cell compact='compact' cell=\"'dev/foo'\" override-name='overrideName'></display-cell>");
   }));
