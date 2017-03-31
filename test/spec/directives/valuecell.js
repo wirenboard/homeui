@@ -1,10 +1,11 @@
-"use strict";
+import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
 
 describe("Directive: value-cell", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttDirectiveFixture"));
 
-  beforeEach(inject((MqttDirectiveFixture) => {
+  beforeEach(angular.mock.module(mqttDirectiveFixtureModule));
+
+  beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<value-cell cell=\"'dev1/voltage1'\"></value-cell>");
     f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev1/controls/voltage1/meta/writable", "1", true, 1);
