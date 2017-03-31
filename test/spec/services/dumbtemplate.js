@@ -1,9 +1,11 @@
-"use strict";
+import dumbTemplateModule from '../../../app/scripts/services/dumbtemplate';
 
 describe("Template engine", () => {
   var DumbTemplate;
-  beforeEach(module("homeuiApp.DumbTemplate"));
-  beforeEach(inject(_DumbTemplate_ => {
+
+  beforeEach(angular.mock.module(dumbTemplateModule));
+
+  beforeEach(angular.mock.inject(_DumbTemplate_ => {
     DumbTemplate = _DumbTemplate_;
   }));
 
