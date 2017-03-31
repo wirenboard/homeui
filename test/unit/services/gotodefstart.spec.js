@@ -1,5 +1,5 @@
 import appModule from '../../../app/scripts/app';
-import fakeMqttModule from './fakemqtt';
+import fakeMqttModule from '../mock/fakemqtt';
 import CodeMirror from 'codemirror/lib/codemirror';
 import 'codemirror/mode/javascript/javascript';
 

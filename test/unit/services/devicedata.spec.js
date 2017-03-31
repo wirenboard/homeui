@@ -1,5 +1,5 @@
 import appModule from '../../../app/scripts/app';
-import fakeMqttModule from './fakemqtt';
+import fakeMqttModule from '../mock/fakemqtt';
 
 describe("DeviceData service", () => {
   var f, DeviceData;

@@ -1,4 +1,4 @@
-import fakeMqttModule from './fakemqtt';
+import fakeMqttModule from '../mock/fakemqtt';
 
 describe("Fake MQTT", () => {
   var f;

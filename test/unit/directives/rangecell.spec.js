@@ -1,4 +1,4 @@
-import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
+import mqttDirectiveFixtureModule from '../mock/mqttdirectivefixture';
 
 describe("Directive: range-cell", () => {
   var f;

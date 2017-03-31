@@ -1,6 +1,6 @@
 import appModule from '../../../app/scripts/app';
 import mqttRpcServiceModule from '../../../app/scripts/services/rpc';
-import fakeMqttModule from './fakemqtt';
+import fakeMqttModule from '../mock/fakemqtt';
 
 describe("MQTT RPC", () => {
   var f, MqttRpc, proxy;

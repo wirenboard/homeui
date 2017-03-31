@@ -1,5 +1,5 @@
-import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
-import cellPickerMixinModule from '../services/cellpickermixin';
+import mqttDirectiveFixtureModule from '../mock/mqttdirectivefixture';
+import cellPickerMixinModule from '../mock/cellpickermixin';
 
 describe("Directive: widget", () => {
   var f, deleted, removed;

@@ -1,5 +1,5 @@
-import mqttDirectiveFixtureModule from '../services/mqttdirectivefixture';
-import fakeTimeModule from '../services/faketime';
+import mqttDirectiveFixtureModule from '../mock/mqttdirectivefixture';
+import fakeTimeModule from '../mock/faketime';
 
 describe("Directive: console", () => {
   var f, FakeTime;
