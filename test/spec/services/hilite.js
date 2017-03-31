@@ -1,10 +1,11 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
+import fakeMqttModule from './fakemqtt';
 
 describe("Filter: hilite", () => {
   var filt;
 
-  beforeEach(module("homeuiApp"));
-  beforeEach(inject($filter => { filt = $filter("hilite"); }));
+  beforeEach(angular.mock.module(fakeMqttModule, appModule));
+  beforeEach(angular.mock.inject($filter => { filt = $filter("hilite"); }));
 
   it("should highlight a matching part of the string, if any", () => {
     [
