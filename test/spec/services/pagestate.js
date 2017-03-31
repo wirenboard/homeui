@@ -1,4 +1,5 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
+import fakeMqttModule from './fakemqtt';
 
 describe("PageState service", () => {
   var $window, $rootScope, PageState, beforeUnloadHandler = null;
@@ -12,13 +13,13 @@ describe("PageState service", () => {
       beforeUnloadHandler = listener;
     });
   });
-  beforeEach(module("homeuiApp"));
-  beforeEach(module($provide => {
+  beforeEach(angular.mock.module(fakeMqttModule, appModule));
+  beforeEach(angular.mock.module($provide => {
     // for most tests, beforeUnload handler is disabled
     // because it interferes with unloading of the test frame
     $provide.value("forceBeforeUnloadConfirmationForTests", true);
   }));
-  beforeEach(inject((_$window_, _$rootScope_, _PageState_) => {
+  beforeEach(angular.mock.inject((_$window_, _$rootScope_, _PageState_) => {
     $window = _$window_;
     $rootScope = _$rootScope_;
     PageState = _PageState_;
