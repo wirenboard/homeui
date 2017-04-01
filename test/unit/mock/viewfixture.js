@@ -50,7 +50,7 @@ export default angular.module('homeuiApp.viewFixture', [appModule])
 
       setup(options) {}
 
-      get $location () {
+      get $location() {
         return $location;
       }
 

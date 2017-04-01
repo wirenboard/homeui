@@ -1,12 +1,12 @@
 import mqttRpcViewFixture from '../mock/mqttrpcviewfixture';
-import scriptsModule from '../../../app/scripts/controllers/scriptsController';
+import ctrlModule from '../../../app/scripts/controllers/scriptsController';
 
 describe("Scripts view", () => {
   var f;
 
   beforeEach(angular.mock.module('htmlTemplates'));
 
-  beforeEach(angular.mock.module(mqttRpcViewFixture, scriptsModule.name));
+  beforeEach(angular.mock.module(mqttRpcViewFixture, ctrlModule.name));
 
   beforeEach(angular.mock.inject(MqttRpcViewFixture => {
     f = new MqttRpcViewFixture("/rpc/v1/wbrules/Editor", "views/scripts.html", "ScriptsCtrl");

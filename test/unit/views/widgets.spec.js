@@ -1,5 +1,5 @@
 import appModule from '../../../app/scripts/app';
-import widgetsModule from '../../../app/scripts/controllers/widgetsController';
+import ctrlModule from '../../../app/scripts/controllers/widgetsController';
 import fakeTimeModule from '../mock/faketime';
 import mqttViewFixtureModule from '../mock/mqttviewfixture';
 
@@ -9,7 +9,7 @@ describe("Widgets view", () => {
 
   beforeEach(angular.mock.module('htmlTemplates'));
 
-  beforeEach(angular.mock.module(mqttViewFixtureModule, appModule, widgetsModule.name, fakeTimeModule));
+  beforeEach(angular.mock.module(mqttViewFixtureModule, appModule, ctrlModule.name, fakeTimeModule));
 
   beforeEach(angular.mock.inject((MqttViewFixture, _uiConfig_, $rootScope, _FakeTime_) => {
     FakeTime = _FakeTime_;

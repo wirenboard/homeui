@@ -1,10 +1,14 @@
-"use strict";
+import mqttRpcViewFixture from '../mock/mqttrpcviewfixture';
+import ctrlModule from '../../../app/scripts/controllers/configsController';
 
 describe("Configs view", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttRpcViewFixture"));
 
-  beforeEach(inject(MqttRpcViewFixture => {
+  beforeEach(angular.mock.module('htmlTemplates'));
+
+  beforeEach(angular.mock.module(mqttRpcViewFixture, ctrlModule.name));
+
+  beforeEach(angular.mock.inject(MqttRpcViewFixture => {
     f = new MqttRpcViewFixture("/rpc/v1/confed/Editor", "views/configs.html", "ConfigsCtrl");
   }));
 
@@ -31,9 +35,9 @@ describe("Configs view", () => {
           .map(td => td.textContent.replace(/^\s*|\s*$/g, ""))));
     expect(extracted).toEqual([
       // TBD: all config paths should be absolute
-      ["#/configs/edit/usr/share/wb-mqtt-confed/schemas/abc.schema.json",
+      ["#!/configs/edit/~2Fusr~2Fshare~2Fwb-mqtt-confed~2Fschemas~2Fabc.schema.json",
        "/etc/abc.conf", "ABC config", "The config of ABC"],
-      ["#/configs/edit/usr/share/wb-mqtt-confed/schemas/foobar.schema.json",
+      ["#!/configs/edit/~2Fusr~2Fshare~2Fwb-mqtt-confed~2Fschemas~2Ffoobar.schema.json",
        "/etc/foobar.conf", "Foobar config", ""]
     ]);
   });
