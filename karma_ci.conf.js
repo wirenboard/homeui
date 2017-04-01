@@ -36,15 +36,16 @@ module.exports = function karmaConfig (config) {
 
     files: [
       'node_modules/phantomjs-polyfill-find/find-polyfill.js',
-      'test/tests.webpack.js'
+      'test/tests.webpack.js',
+      'app/views/*.html'
     ],
 
     preprocessors: {
       // Reference: http://webpack.github.io/docs/testing.html
       // Reference: https://github.com/webpack/karma-webpack
       // Convert files with webpack and load sourcemaps
-      'test/tests.webpack.js': ['webpack', 'sourcemap'],
-      "**/*.html": ["ng-html2js"]
+      'app/views/*.html': ['ng-html2js'],
+      'test/tests.webpack.js': ['webpack', 'sourcemap']
     },
 
     browsers: [
@@ -72,8 +73,8 @@ module.exports = function karmaConfig (config) {
 
     // Reference: https://github.com/karma-runner/karma-ng-html2js-preprocessor
     ngHtml2JsPreprocessor: {
-      stripPrefix: "^([^/]*)",
-      moduleName: "homeuiApp"
+      stripPrefix: "app/",
+      moduleName: 'htmlTemplates'
     },
     
     singleRun: true,

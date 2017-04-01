@@ -1,13 +1,19 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
+import widgetsModule from '../../../app/scripts/controllers/widgetsController';
+import fakeTimeModule from '../mock/faketime';
+import mqttViewFixtureModule from '../mock/mqttviewfixture';
 
 describe("Widgets view", () => {
-  var f, uiConfig;
+  var f, uiConfig, FakeTime;
+  const TIMESTAMP = 1466183742396;
 
-  beforeEach(module("homeuiApp.fakeTime"));
-  beforeEach(module("homeuiApp.mqttViewFixture"));
+  beforeEach(angular.mock.module('htmlTemplates'));
 
-  beforeEach(inject((MqttViewFixture, _uiConfig_, $rootScope, FakeTime) => {
-    FakeTime.setTime(1466183742396);
+  beforeEach(angular.mock.module(mqttViewFixtureModule, appModule, widgetsModule.name, fakeTimeModule));
+
+  beforeEach(angular.mock.inject((MqttViewFixture, _uiConfig_, $rootScope, _FakeTime_) => {
+    FakeTime = _FakeTime_;
+    FakeTime.setTime(TIMESTAMP);
     uiConfig = _uiConfig_;
     uiConfig.data.dashboards = [
       {
@@ -114,8 +120,8 @@ describe("Widgets view", () => {
       id: el.find(".cell-title .id").text().trim(),
       name: el.find(".cell-title .name").text().trim(),
       type: el.find(".cell-type-col").text().trim(),
-      value: cellValue.size() ? cellValue.text().trim() - 0 :
-        switchCell.size() ? !!switchCell.find(".switch-on").size() :
+      value: cellValue.length ? cellValue.text().trim() - 0 :
+        switchCell.length ? !!switchCell.find(".switch-on").length :
         "<unknown>"
     };
   }
@@ -125,7 +131,7 @@ describe("Widgets view", () => {
     var dashboard = uiConfig.data.dashboards.find(dashboard => dashboard.name == name);
     expect(dashboard).not.toBeNull();
     if (dashboard)
-      expect($(el).prop("hash")).toEqual("#/dashboards/" + dashboard.id);
+      expect($(el).prop("hash")).toEqual("#!/dashboards/" + dashboard.id);
     return name;
   }
 
@@ -151,7 +157,7 @@ describe("Widgets view", () => {
     return result;
   }
 
-  it("should list all the widges with their dashboards, cell lists, descriptions and values", () => {
+  it("should list all the widgets with their dashboards, cell lists, descriptions and values", () => {
     expect(extractWidgets()).toEqual([
       EXTRACTED_WIDGET_2,
       EXTRACTED_WIDGET_1
@@ -177,12 +183,14 @@ describe("Widgets view", () => {
   }
 
   it("should provide history links for cells", () => {
-    var ts = "/1466110800000/-"; // TBD: XXX -- fixme -- this is tz-dependent
+    var d = new Date(TIMESTAMP);
+    var ts = new Date(d.getFullYear(), d.getMonth(), d.getDate()).valueOf() ;
+    ts = '/' + ts + '/-';
     expect(extractHistoryLinks()).toEqual([
-      "#/history/foo/switch1" + ts,
-      "#/history/foo/switch2" + ts,
-      "#/history/foo/temp1" + ts,
-      "#/history/foo/temp2" + ts,
+      "#!/history/foo/switch1" + ts,
+      "#!/history/foo/switch2" + ts,
+      "#!/history/foo/temp1" + ts,
+      "#!/history/foo/temp2" + ts,
     ]);
   });
 
