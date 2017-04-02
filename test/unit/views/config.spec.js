@@ -1,13 +1,16 @@
-"use strict";
+import mqttRpcViewFixture from '../mock/mqttrpcviewfixture';
+import ctrlModule from '../../../app/scripts/controllers/configController';
 
 describe("Config view", () => {
   var f, raf;
 
-  beforeEach(module("homeuiApp.mqttRpcViewFixture"));
+  beforeEach(angular.mock.module('htmlTemplates'));
 
-  beforeEach(inject(MqttRpcViewFixture => {
+  beforeEach(angular.mock.module(mqttRpcViewFixture, ctrlModule.name));
+
+  beforeEach(angular.mock.inject(MqttRpcViewFixture => {
     f = new MqttRpcViewFixture("/rpc/v1/confed/Editor", "views/config.html", "ConfigCtrl", {
-      $routeParams: { path: "usr/share/wb-mqtt-confed/schemas/foobar.schema.json" }
+      $stateParams: { path: "usr/share/wb-mqtt-confed/schemas/foobar.schema.json" }
     });
     // json-editor is not very testable out of the box
     // because it uses RAF to postpone change events
@@ -22,7 +25,7 @@ describe("Config view", () => {
     f.remove();
   });
 
-  function load () {
+  function load() {
     f.expectRequest("/rpc/v1/confed/Editor/Load", {
       path: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json"
     }, {
@@ -47,7 +50,7 @@ describe("Config view", () => {
     });
   }
 
-  function nameInput () {
+  function nameInput() {
     var nameInput = f.container.find("input[name='root[name]']");
     expect(nameInput).toExist();
     return nameInput;
@@ -58,7 +61,7 @@ describe("Config view", () => {
     expect(nameInput().val()).toBe("foo");
   });
 
-  function saveButton () {
+  function saveButton() {
     var saveBtn = f.container.find(".config-editor > button[name=save]");
     expect(saveBtn).toHaveLength(1);
     return saveBtn;
@@ -69,7 +72,7 @@ describe("Config view", () => {
     expect(saveButton()).toBeDisabled();
   });
 
-  function editName (newName) {
+  function editName(newName) {
     var evt = document.createEvent("HTMLEvents");
     evt.initEvent("change", false, true);
     nameInput().val(newName).get(0).dispatchEvent(evt);
@@ -82,7 +85,7 @@ describe("Config view", () => {
     expect(saveButton()).not.toBeDisabled();
   });
 
-  function processSave (expectedContent, error) {
+  function processSave(expectedContent, error) {
     var params = {
       path: "/usr/share/wb-mqtt-confed/schemas/foobar.schema.json",
       content: expectedContent

@@ -134,13 +134,13 @@ export default angular.module('homeuiApp.fakeMqtt', [mqttServiceModule])
       whenMqttReady: whenMqttReady,
       useJSON: false,
 
-      connect () {
+      connect() {
         this.extClient.connect("localhost", 1883, "extclient", "", "");
         this.mqttClient.connect("localhost", 1883, "ui", "", "");
         $timeout.flush();
       },
 
-      msgLogger (title) {
+      msgLogger(title) {
         return msg => {
           var p = msg.payload;
           if (this.useJSON)
@@ -152,13 +152,13 @@ export default angular.module('homeuiApp.fakeMqtt', [mqttServiceModule])
         };
       },
 
-      expectJournal () {
+      expectJournal() {
         var r = journal;
         journal = [];
         return expect(r);
       },
 
-      delegateVia (target) {
+      delegateVia(target) {
         for (var k in this) {
           if (!this.hasOwnProperty(k))
             continue;
