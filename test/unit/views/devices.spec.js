@@ -1,10 +1,15 @@
-"use strict";
+//import appModule from '../../../app/scripts/app';
+import ctrlModule from '../../../app/scripts/controllers/devicesController';
+import mqttViewFixtureModule from '../mock/mqttviewfixture';
 
 describe("Devices view", () => {
   var f;
-  beforeEach(module("homeuiApp.mqttViewFixture"));
 
-  beforeEach(inject(MqttViewFixture => {
+  beforeEach(angular.mock.module('htmlTemplates'));
+
+  beforeEach(angular.mock.module(mqttViewFixtureModule, ctrlModule.name));
+
+  beforeEach(angular.mock.inject(MqttViewFixture => {
     f = new MqttViewFixture("views/devices.html", "DevicesCtrl");
     f.extClient.send("/devices/dev1/meta/name", "Device One");
     f.extClient.send("/devices/dev1/controls/voltage1/meta/type", "voltage", true, 1);

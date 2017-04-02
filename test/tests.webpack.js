@@ -24,7 +24,7 @@ import '../app/lib/angular-order-object-by/src/ng-order-object-by';
 import '../app/lib/angular-toggle-switch/angular-toggle-switch';
 import 'jquery-simulate-ext/libs/jquery.simulate';
 
-var testsContext = require.context('./unit/views', true, /config\.spec\.js$/);
+var testsContext = require.context('./unit/views', true, /devices\.spec\.js$/);
 
 testsContext.keys().forEach(testsContext);
 
