@@ -1,4 +1,3 @@
-//import appModule from '../../../app/scripts/app';
 import ctrlModule from '../../../app/scripts/controllers/widgetsController';
 import fakeTimeModule from '../mock/faketime';
 import mqttViewFixtureModule from '../mock/mqttviewfixture';
