@@ -66,7 +66,7 @@ module.exports = function makeWebpackConfig() {
   };
   /**
    * Output
-   * Reference: http://webpack.github.io/docs/configuration.html#output
+   * Reference: https://webpack.js.org/concepts/output/
    * Should be an empty object if it's generating a test build
    * Karma will handle setting it up for you when it's a test build
    */

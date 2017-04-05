@@ -1,26 +1,30 @@
-.PHONY: all clean
+.PHONY: all
 
 PATH := /usr/local/bin:$(PATH)
 
-all:
-	bower install --allow-root
+all: build install
 
-clean :
-	#~ /usr/local/bin/bower  cache clean --allow-root
-	#~ rm -rf bower_components
+build:
+	npm install
+	git submodule init
+	git submodule update
+	npm run build
 
+install:
+	mkdir $(DESTDIR)/var/www/css $(DESTDIR)/var/www/images $(DESTDIR)/var/www/views
+	cp -a  dist/css/*  $(DESTDIR)/var/www/css/
+	cp -a  dist/images/*  $(DESTDIR)/var/www/images/
+	cp -a  dist/views/*  $(DESTDIR)/var/www/views/
+	cp -a  dist/favicon.ico  $(DESTDIR)/var/www/favicon.ico
+	cp -a  dist/*.js  $(DESTDIR)/var/www/
+	cp -a  dist/*.svg  $(DESTDIR)/var/www/
+	cp -a  dist/*.ttf  $(DESTDIR)/var/www/
+	cp -a  dist/*.woff  $(DESTDIR)/var/www/
+	cp -a  dist/*.woff2  $(DESTDIR)/var/www/
 
-install: all
-	cp -a  bower_components/*  $(DESTDIR)/var/www/bower_components/
-	cp -a  app/images/*  $(DESTDIR)/var/www/images/
-	cp -a  app/lib/*  $(DESTDIR)/var/www/lib/
-	cp -a  app/styles/*  $(DESTDIR)/var/www/styles/
-	cp -a  app/views/*  $(DESTDIR)/var/www/views/
-	cp -a  app/scripts/*  $(DESTDIR)/var/www/scripts/
-
-	install  -m 0644 app/404.html  $(DESTDIR)/var/www/
-	install  -m 0644 app/robots.txt  $(DESTDIR)/var/www/
-	install  -m 0644 app/index.html  $(DESTDIR)/var/www/
+	install  -m 0644 dist/404.html  $(DESTDIR)/var/www/
+	install  -m 0644 dist/robots.txt  $(DESTDIR)/var/www/
+	install  -m 0644 dist/index.html  $(DESTDIR)/var/www/
 
 	install -m 0644 default_config_dump.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.tsv
 	install -m 0644 default_config_dump.wb5.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv
