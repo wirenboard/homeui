@@ -1,12 +1,15 @@
-"use strict";
+import ctrlModule from '../../../app/scripts/controllers/dashboardController';
+import mqttViewFixtureModule from '../mock/mqttviewfixture';
+import cellPickerMixinModule from '../mock/cellpickermixin';
 
 describe("Dashboard view", () => {
   var f, data, uiConfig;
 
-  beforeEach(module("homeuiApp.mqttViewFixture"));
-  beforeEach(module("homeuiApp.cellPickerMixin"));
+  beforeEach(angular.mock.module('htmlTemplates'));
 
-  beforeEach(inject((MqttViewFixture, _uiConfig_) => {
+  beforeEach(angular.mock.module(mqttViewFixtureModule, cellPickerMixinModule, ctrlModule.name));
+
+  beforeEach(angular.mock.inject((MqttViewFixture, _uiConfig_) => {
     uiConfig = _uiConfig_;
     uiConfig.ready();
     data = uiConfig.data;
@@ -40,7 +43,7 @@ describe("Dashboard view", () => {
       { id: "dashboard2", name: "Dashboard Two", widgets: [] }
     ];
     f = new MqttViewFixture("views/dashboard.html", "DashboardCtrl", {
-      $routeParams: {
+      $stateParams: {
         id: "dashboard1"
       }
     }, { mixins: ["CellPickerMixin"] });

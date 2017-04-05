@@ -1,11 +1,16 @@
-"use strict";
+import appModule from '../../../app/scripts/app';
+import viewFixtureModule from '../mock/viewfixture';
+import ctrlModule from '../../../app/scripts/controllers/dashboardsController';
+import fakeMqttModule from '../mock/fakemqtt';
 
 describe("Dashboards view", () => {
   var f, uiConfig;
 
-  beforeEach(module("homeuiApp.viewFixture"));
+  beforeEach(angular.mock.module('htmlTemplates'));
 
-  beforeEach(inject((ViewFixture, _uiConfig_, $rootScope) => {
+  beforeEach(angular.mock.module(viewFixtureModule, fakeMqttModule, appModule, ctrlModule.name));
+
+  beforeEach(angular.mock.inject((ViewFixture, _uiConfig_, $rootScope) => {
     uiConfig = _uiConfig_;
     uiConfig.data.dashboards = [];
     $rootScope.$digest();
@@ -21,7 +26,7 @@ describe("Dashboards view", () => {
     expect(".empty-list").toExist();
   });
 
-  function dashboards () {
+  function dashboards() {
     return uiConfig.data.dashboards.map(dashboard => {
       var toCopy = angular.extend({}, dashboard);
       delete toCopy._model;
@@ -30,17 +35,18 @@ describe("Dashboards view", () => {
     });
   }
 
-  function extractDashboards () {
-    return f.container.find("table > tbody > tr.dashboard:visible").toArray().map(tr => {
+  function extractDashboards() {
+    var el = f.container.find("table");
+    return f.container.find("table.dashboards-table > tbody > tr.dashboard:visible").toArray().map(tr => {
       var name = $(tr).find("td").eq(0).text().replace(/^\s+|\s+$/g, ""),
           id = $(tr).find("td").eq(1).text().replace(/^\s+|\s+$/g, ""),
           link = $(tr).find("td:eq(2) a").prop("hash");
-      expect(link).toEqual("#/dashboards/" + id);
+      expect(link).toEqual("#!/dashboards/" + id);
       return [id, name];
     });
   }
 
-  function addData () {
+  function addData() {
     uiConfig.data.dashboards = [
       { id: "dashboard1", name: "Dashboard One", widgets: [] },
       { id: "dashboard2", name: "Dashboard Two", widgets: [] }
@@ -48,7 +54,7 @@ describe("Dashboards view", () => {
     f.$scope.$digest();
   }
 
-  function verifyOriginal () {
+  function verifyOriginal() {
     expect(dashboards()).toEqual([
       { id: "dashboard1", name: "Dashboard One", widgets: [] },
       { id: "dashboard2", name: "Dashboard Two", widgets: [] }
@@ -59,7 +65,7 @@ describe("Dashboards view", () => {
     ]);
   }
 
-  function centerPoint (element) {
+  function centerPoint(element) {
     if (typeof element == "string")
       element = f.container.find(element);
 
@@ -73,7 +79,7 @@ describe("Dashboards view", () => {
     };
   };
 
-  function drag (fromEl, toEl, xofs, yofs) {
+  function drag(fromEl, toEl, xofs, yofs) {
     if (typeof fromEl == "string")
       fromEl = f.container.find(fromEl);
     var p1 = centerPoint(fromEl), p2 = centerPoint(toEl);
@@ -94,23 +100,23 @@ describe("Dashboards view", () => {
     ]);
   });
 
-  function addButton () {
+  function addButton() {
     return f.container.find("button[name=add]");
   }
 
-  function inputs (row) {
+  function inputs(row) {
     return f.container.find("tr").eq(row).find("td input[type=text]");
   }
 
-  function editButton (row) {
+  function editButton(row) {
     return f.container.find("tr").eq(row).find("td button[name=edit]");
   }
 
-  function cancelButton (row) {
+  function cancelButton(row) {
     return f.container.find("tr").eq(row).find("td button[name=cancel]");
   }
 
-  function saveButton (row) {
+  function saveButton(row) {
     return f.container.find("tr").eq(row).find("td button[type=submit]");
   }
 

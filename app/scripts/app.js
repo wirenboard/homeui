@@ -73,7 +73,6 @@ const module = angular
     'toggle-switch',
     'angularSpectrumColorpicker',
     'ngFileUpload',
-    'ngOrderObjectBy',
     'ui.bootstrap',
     'ngOrderObjectBy',
     'xeditable',

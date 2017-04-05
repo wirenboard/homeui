@@ -15,7 +15,7 @@ function uiConfigService($rootScope, $q) {
   var deferReady = $q.defer(),
       version = 1;
 
-  function add (prop, idBase, content) {
+  function add(prop, idBase, content) {
     var items = data[prop], n = 1,
         existingIds = Object.create(null);
     items.forEach(item => existingIds[item.id] = true);
@@ -29,21 +29,21 @@ function uiConfigService($rootScope, $q) {
     return o;
   }
 
-  function getWidget (id) {
+  function getWidget(id) {
     var r = data.widgets.find(widget => widget.id === id);
     if (!r)
       throw new Error("invalid widget id: " + id);
     return r;
   }
 
-  function _getDashboard (id) {
+  function _getDashboard(id) {
     var r = data.dashboards.find(dashboard => dashboard.id === id);
     if (!r)
       throw new Error("invalid dashboard id: " + id);
     return r;
   }
 
-  function getDashboard (id) {
+  function getDashboard(id) {
     // We hold unique Dashboard models per real dashboard so it
     // can hold its own scope object that can be destroyed when
     // the dashboard is deleted. The scope is needed to track
@@ -54,7 +54,7 @@ function uiConfigService($rootScope, $q) {
     return dash._model;
   };
 
-  function deleteWidget (widget) {
+  function deleteWidget(widget) {
     var idx = data.widgets.indexOf(widget);
     if (idx < 0)
       return;
@@ -64,7 +64,7 @@ function uiConfigService($rootScope, $q) {
     });
   }
 
-  function filterCollection (items) {
+  function filterCollection(items) {
     return items.filter(item => {
       return !item.hasOwnProperty("isNew") || !item.isNew;
     }).map(item => {
@@ -82,9 +82,10 @@ function uiConfigService($rootScope, $q) {
       return angular.copy(toCopy);
     });
   }
-
+  
+  //---------------------------------------------------------------------------
   class Dashboard {
-    constructor (content) {
+    constructor(content) {
       this.scope = $rootScope.$new();
       this.content = content;
       this.widgets = this.content.widgets.map(getWidget);
@@ -96,34 +97,34 @@ function uiConfigService($rootScope, $q) {
       });
     }
 
-    get id () {
+    get id() {
       return this.content.id;
     }
 
-    set id (newId) {
+    set id(newId) {
       this.content.id = newId;
     }
 
-    get name () {
+    get name() {
       return this.content.name;
     }
 
-    set name (newName) {
+    set name(newName) {
       this.content.name = newName;
     }
 
-    get isNew () {
+    get isNew() {
       return this.content.hasOwnProperty("isNew") ? this.content.isNew : false;
     }
 
-    remove () {
+    remove() {
       this.scope.$destroy();
       var idx = data.dashboards.indexOf(this.content);
       if (idx >= 0)
         data.dashboards.splice(idx, 1);
     }
 
-    removeWidgetFromDashboard (widget) {
+    removeWidgetFromDashboard(widget) {
       var idx = this.widgets.indexOf(widget);
       if (idx >= 0)
         this.widgets.splice(idx, 1);
@@ -133,8 +134,9 @@ function uiConfigService($rootScope, $q) {
         this.content.widgets.splice(idx, 1);
     }
   }
-
-  function filtered () {
+  
+  //---------------------------------------------------------------------------
+  function filtered() {
     return {
       dashboards: filterCollection(data.dashboards),
       widgets: filterCollection(data.widgets),
@@ -155,17 +157,18 @@ function uiConfigService($rootScope, $q) {
   return {
     data,
 
-    version () {
+    version() {
       return version;
     },
 
-    whenReady () {
+    whenReady() {
       return deferReady.promise;
     },
 
-    ready (changes) {
-      if (changes)
+    ready(changes) {
+      if (changes) {
         angular.extend(data, changes);
+      }
       deferReady.resolve(data);
     },
 

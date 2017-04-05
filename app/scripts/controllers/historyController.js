@@ -2,49 +2,43 @@ import 'c3/c3.css';
 
 class HistoryCtrl {
   //...........................................................................
-  constructor($scope, $stateParams, $location, HistoryProxy,
-             whenMqttReady, errors, historyMaxPoints,
-             dateFilter, uiConfig, orderByFilter) {
+  constructor($scope, $injector) {
     'ngInject';
 
+    // 1. Self-reference
     var vm = this;
 
-    this.scope = $scope;
-    this.location = $location;
-    this.historyMaxPoints = historyMaxPoints;
-    this.HistoryProxy = HistoryProxy;
-    this.dateFilter = dateFilter;
-    this.errors = errors;
+    // 2. requirements
+    var $stateParams = $injector.get('$stateParams');
+    var $location = $injector.get('$location');
+    var HistoryProxy = $injector.get('HistoryProxy');
+    var whenMqttReady = $injector.get('whenMqttReady');
+    var errors = $injector.get('errors');
+    var historyMaxPoints = $injector.get('historyMaxPoints');
+    var dateFilter = $injector.get('dateFilter');
+    var uiConfig = $injector.get('uiConfig');
+    var orderByFilter = $injector.get('orderByFilter');
 
-    this.dataPoints = [];
+    angular.extend(this, {
+      scope: $scope,
+      location: $location,
+      historyMaxPoints: historyMaxPoints,
+      HistoryProxy: HistoryProxy,
+      dateFilter:  dateFilter,
+      errors: errors,
+      dataPoints: [],
+      startDate: this.convDate($stateParams.start),
+      endDate: this.convDate($stateParams.end),
+      controls: []
+    });
+
     this.topic = $stateParams.device && $stateParams.control ?
       "/devices/" + $stateParams.device + "/controls/" + $stateParams.control :
       null;
 
-    this.startDate = this.convDate($stateParams.start);
-    this.endDate = this.convDate($stateParams.end);
-
     this.selectedTopic = this.topic;
     this.selectedStartDate = this.startDate;
     this.selectedEndDate = this.endDate;
-
-    this.controls = [];
-
-    uiConfig.whenReady().then((data) => {
-      this.controls = orderByFilter(
-        Array.prototype.concat.apply(
-          [], data.widgets.map(widget =>
-                               widget.cells.map(cell =>
-                                                ({
-                                                  topic: this.topicFromCellId(cell.id),
-                                                  name: widget.name + " / " + (cell.name || cell.id)
-                                                })))),
-        "name");
-    });
-
-    ["$ctrl.selectedTopic", "$ctrl.selectedStartDate", "$ctrl.selectedEndDate"].forEach((expr) => {
-      $scope.$watch(expr, maybeUpdateUrl);
-    });
 
     this.popups = {
       start: false,
@@ -60,17 +54,39 @@ class HistoryCtrl {
     this.ready = false;
     this.loadPending = !!this.topic;
 
-    whenMqttReady().then(() => {
-      this.ready = true;
-      if (this.loadPending) {
-        this.loadHistory();
-      }
-    });
+    // 3. Do scope stuff
 
+    // 3a. Set up watchers on the scope
     $scope.$watch("$ctrl.topic", this.loadHistoryOnChange);
     $scope.$watch("$ctrl.startDate", this.loadHistoryOnChange);
     $scope.$watch("$ctrl.endDate", this.loadHistoryOnChange);
 
+    ["$ctrl.selectedTopic", "$ctrl.selectedStartDate", "$ctrl.selectedEndDate"].forEach((expr) => {
+      $scope.$watch(expr, maybeUpdateUrl);
+    });
+
+    // 3b. Expose methods or data on the scope
+
+    // 3c. Listen to events on the scope
+
+    // 4. Setup
+   uiConfig.whenReady().then((data) => { updateControls(data.widgets); });
+
+    whenMqttReady().then(() => {
+      vm.ready = true;
+      if (vm.loadPending) {
+        vm.loadHistory();
+      }
+    });
+
+    // 5. Clean up
+    $scope.$on('$destroy', () => {
+          // Do whatever cleanup might be necessary
+          vm = null; // MEMLEAK FIX
+          $scope = null; // MEMLEAK FIX
+    });
+
+    // 6. All the actual implementations go here
     //...........................................................................
     function maybeUpdateUrl(newValue, oldValue) {
       if (newValue === oldValue || !vm.selectedTopic)
@@ -87,8 +103,22 @@ class HistoryCtrl {
         vm.selectedEndDate ? vm.selectedEndDate.getTime() : "-"
       ].join("/"));
     } // maybeUpdateUrl
+
+    //...........................................................................
+    function updateControls(widgets) {
+      vm.controls = orderByFilter(
+        Array.prototype.concat.apply(
+          [], widgets.map(widget =>
+            widget.cells.map(cell =>
+              ({
+                topic: vm.topicFromCellId(cell.id),
+                name: widget.name + " / " + (cell.name || cell.id)
+              })))),
+        "name");
+    }
   } // constructor
 
+  // Class methods
   //...........................................................................
   loadHistoryOnChange(newValue, oldValue) {
     if (newValue !== oldValue)
@@ -135,7 +165,7 @@ class HistoryCtrl {
   }
 
   //...........................................................................
-  loadHistory () {
+  loadHistory() {
     if (!this.ready) {
       this.loadPending = true;
       return;
@@ -219,7 +249,7 @@ class HistoryCtrl {
       this.dataPoints = xValues.map((x, i) => ({ x: x, y: yValues[i] }));
     }).catch(this.errors.catch("Error getting history"));
   } // loadHistory
-}
+} // class HistoryCtrl
 
 //-----------------------------------------------------------------------------
 export default angular

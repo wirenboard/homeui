@@ -1,4 +1,5 @@
-"use strict";
+import ctrlModule from '../../../app/scripts/controllers/historyController';
+import mqttRpcViewFixtureModule from '../mock/mqttrpcviewfixture';
 
 describe("History view", () => {
   var f,
@@ -8,35 +9,36 @@ describe("History view", () => {
       TOPIC3 = "/devices/somedev/controls/yetanotherctl";
 
   beforeEach(() => {
-    module("homeuiApp.mqttRpcViewFixture");
-    module($provide => {
+    angular.mock.module('htmlTemplates');
+    angular.mock.module(mqttRpcViewFixtureModule, ctrlModule.name);
+    angular.mock.module($provide => {
       // make sure we don't have to update the test
       // every time the limit is reconfigured
       $provide.value("historyMaxPoints", 5);
     });
   });
 
-  function date (day) {
+  function date(day) {
     // Note that 8 means September here.
     return new Date(2015, 8, day);
   }
 
-  function ts (day) {
+  function ts(day) {
     return date(day).getTime() / 1000;
   }
 
-  function setup (routeParams) {
+  function setup(stateParams) {
     return () => {
       f = new MqttRpcViewFixture("/rpc/v1/db_logger/history", "views/history.html", "HistoryCtrl", {
-        $routeParams: routeParams || {}
+        $stateParams: stateParams || {}
       });
       spyOn(f.$location, "path");
     };
   }
 
-  beforeEach(inject((_MqttRpcViewFixture_, uiConfig) => {
+  beforeEach(angular.mock.inject((_MqttRpcViewFixture_, uiConfig) => {
     MqttRpcViewFixture = _MqttRpcViewFixture_;
-    uiConfig.data.widgets = [
+    var widgets = [
       {
         id: "widget1",
         name: "Widget 1",
@@ -53,7 +55,7 @@ describe("History view", () => {
         ]
       }
     ];
-    uiConfig.ready();
+    uiConfig.ready({ widgets });
   }));
 
   afterEach(() => {
@@ -63,7 +65,7 @@ describe("History view", () => {
   });
 
   describe("with no topic selected", () => {
-    beforeEach(setup());
+    beforeEach(setup(/*No url params*/));
 
     it("should not display start/end dates and the chart until the topic is selected", () => {
       expect($("#history-start, #history-end")).not.toBeVisible();
