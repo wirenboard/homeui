@@ -1,7 +1,4 @@
 var/www/images
-var/www/bower_components
-var/www/lib
-var/www/scripts
-var/www/styles
+var/www/css
 var/www/views
 usr/share/wb-mqtt-homeui
