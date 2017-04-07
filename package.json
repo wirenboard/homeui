@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "A workflow for Angular made with Webpack",
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && webpack --bail --progress --profile",
+    "clean": "rimraf dist coverage ./tmp",
+    "build": "webpack --bail --progress --profile",
     "server": "webpack-dev-server --history-api-fallback --inline --progress",
     "test": "rimraf coverage && karma start karma_ci.conf.js",
     "test-watch": "karma start karma_dev.conf.js",
