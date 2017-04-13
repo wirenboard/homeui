@@ -8,9 +8,9 @@ clean:
 	npm run clean
 
 build:
-	# npm install
-	# git submodule init
-	# git submodule update
+	npm install
+	git submodule init
+	git submodule update
 	npm run build
 
 install:
