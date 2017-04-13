@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0~beta1) stable; urgency=medium
+
+  * webpack build
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 08 Apr 2017 14:20:39 +0300
+
 wb-mqtt-homeui (1.7) stable; urgency=medium
 
   * json config
