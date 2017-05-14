@@ -1,6 +1,6 @@
 class LoginFormCtrl {
   //...........................................................................
-  constructor ($window, $rootScope, $state, $location, /*errors, mqttClient, whenMqttReady, ConfigEditorProxy, uiConfig, webuiConfigPath */) {
+  constructor ($window, $rootScope, $state, $location/*, errors, mqttClient, whenMqttReady, ConfigEditorProxy, uiConfig, webuiConfigPath */) {
     'ngInject';
 
     this.rootScope = $rootScope;
@@ -22,7 +22,6 @@ class LoginFormCtrl {
     this.loginSettings.user = this.localStorage['user'];
     this.loginSettings.password = this.localStorage['password'];
     this.loginSettings.prefix = this.localStorage['prefix'];
-
     if (this.loginSettings.user || this.loginSettings.password) {
       this.loginSettings.useCredentials = true;
     } else {

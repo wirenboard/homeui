@@ -1,88 +1,120 @@
 <h1 class="page-header">
-  History
+    History
 </h1>
-<div class="row">
 
-  <form class="form-horizontal" name="history-form" onsubmit="return false;">
-    <div class="form-group">
-      <label for="control-select" class="col-sm-2 control-label">Control</label>
-      <div class="col-sm-3">
+<div class="row" ng-repeat="sel in $ctrl.selectedTopics track by $index">
+    <label for="control-select" class="col-xs-offset-1 col-xs-2 col-sm-1 control-label">
+        Control {{$index+1}}
+    </label>
+    <div class="col-xs-7 col-sm-8">
         <select id="control-select"
                 class="form-control"
-                ng-model="$ctrl.selectedTopic"
+                ng-disabled="$ctrl.pend"
+                ng-change="$ctrl.updateUrl($index)"
+                ng-model="$ctrl.selectedTopics[$index]"
                 ng-options="control.topic as control.name for control in $ctrl.controls">
-          <option value="">- Please Choose -</option>
+            <option value="">- Please Choose -</option>
         </select>
-      </div>
     </div>
-
-    <div class="form-group" ng-show="$ctrl.topic !== null">
-      <label for="history-start" class="col-sm-2 control-label">Start</label>
-      <div class="col-sm-2">
-        <div class="input-group">
-          <input id="history-start"
-                 type="text"
-                 class="form-control"
-                 datepicker-popup="{{format}}"
-                 ng-model="$ctrl.selectedStartDate"
-                 is-open="$ctrl.popups.start"
-                 max-date="$ctrl.selectedEndDate"
-                 datepicker-options="$ctrl.dateOptions"
-                 close-text="Close"/>
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.showStart()"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
-        </div>
-      </div>
+    <div class="col-xs-1">
+        <div ng-hide="($index==0 && $ctrl.selectedTopics.length==1) || !$ctrl.selectedTopics[1]"
+             class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)">delete</div>
     </div>
-
-    <div class="form-group" ng-show="$ctrl.topic !== null">
-      <label for="history-end" class="col-sm-2 control-label">End</label>
-      <div class="col-sm-2">
-        <div class="input-group">
-          <input id="history-end"
-                 type="text"
-                 class="form-control"
-                 datepicker-popup="{{format}}"
-                 ng-model="$ctrl.selectedEndDate"
-                 is-open="$ctrl.popups.end"
-                 min-date="$ctrl.selectedStartDate"
-                 datepicker-options="$ctrl.dateOptions"
-                 close-text="Close"/>
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.showEnd()"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-12 spinner" ng-show="spinnerActive('historyProxy')" ng-cloak>
-    <span class="spinner-loader">Loading...</span>
-  </div>
-
-  <!-- don't use ng-show on c3 because it will cause problems with chart size -->
-  <div class="col-sm-12" ng-if="!spinnerActive('historyProxy')">
-    <c3-simple ng-if="$ctrl.shouldShowChart()" id="histchart" config="$ctrl.chartConfig"></c3-simple>
-    <div class="history-empty" ng-show="$ctrl.topic !== null && !$ctrl.dataPoints.length">
-      No data points to display.
-    </div>
-  </div>
-
-  <div class="col-sm-4" ng-show="$ctrl.shouldShowChart()">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Date and time</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="p in $ctrl.dataPoints">
-          <td>{{ p.x | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-          <td>{{ p.y }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <br><br>
 </div>
+
+<div class="row">
+    <div  class="col-xs-offset-1 col-xs-11"
+          ng-hide="$ctrl.selectedTopics.length==1 && !$ctrl.selectedTopics[$ctrl.selectedTopics.length-1]">
+        <div class="btn btn-success" ng-click="$ctrl.addTopic()">Add control</div>
+    </div>
+    <br><br>
+    <div class="col-xs-4 col-sm-3 col-md-2 col-xs-offset-1" ng-show="$ctrl.topics.length">
+        <label for="history-start" class="control-label">Start</label>
+
+        <div uib-timepicker ng-model="$ctrl.selectedStartDateMinute"
+             ng-change="$ctrl.onlyTimeUpdate()"
+             minute-step="5" hour-step="1"
+             show-meridian="false"></div>
+        <div class="input-group">
+            <input id="history-start"
+                   type="text"
+                   class="form-control"
+                   uib-datepicker-popup="{{format}}"
+                   ng-change="$ctrl.onlyTimeUpdate()"
+                   ng-model="$ctrl.selectedStartDate"
+                   is-open="$ctrl.popups.start"
+                   datepicker-options="$ctrl.dateOptionsStart"
+                   close-text="Close"/>
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="$ctrl.popups.start = true"><i
+                            class="glyphicon glyphicon-calendar"></i></button>
+                  </span>
+        </div>
+    </div>
+    <div class="col-xs-4 col-sm-3 col-md-2 col-xs-offset-1" ng-show="$ctrl.topics.length">
+        <label for="history-end" class="control-label">End</label>
+
+        <div uib-timepicker ng-model="$ctrl.selectedEndDateMinute"
+             ng-change="$ctrl.onlyTimeUpdate()"
+             minute-step="5" hour-step="1"
+             show-meridian="false"></div>
+        <div class="input-group">
+            <input id="history-end"
+                   type="text"
+                   class="form-control"
+                   uib-datepicker-popup="{{format}}"
+                   ng-change="$ctrl.onlyTimeUpdate()"
+                   ng-model="$ctrl.selectedEndDate"
+                   is-open="$ctrl.popups.end"
+                   datepicker-options="$ctrl.dateOptionsEnd"
+                   close-text="Close"/>
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.end = true"><i
+                    class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </div>
+    </div>
+</div>
+
+<!--<button ng-click="$ctrl.changeDateByPlotly()"
+        ng-show="$ctrl.plotlyStartDate">
+    changeDateByPlotly
+</button>-->
+
+<div class="col-sm-12 spinner" ng-cloak
+     ng-show="$ctrl.pend || (!$ctrl.firstTopicIsLoaded && !$ctrl.selectedTopics.length)">
+    <span class="spinner-loader">Loading...</span>
+</div>
+
+<div oc-lazy-load="['https://cdn.plot.ly/plotly-latest.min.js']">
+    <div class="col-sm-12" ng-if="$ctrl.firstTopicIsLoaded">
+        <plotly plotly-events="$ctrl.plotlyEvents"
+                plotly-data="$ctrl.chartConfig"
+                plotly-layout="$ctrl.layoutConfig"
+                plotly-options="$ctrl.options"></plotly>
+        <br>
+        <div class="history-empty"
+             ng-show="$ctrl.topics.length && !$ctrl.dataPoints.length">
+            No data points to display.
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12 col-md-6 col-lg-4" ng-show="$ctrl.dataPoints">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date and time</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="p in $ctrl.dataPoints">
+                <td>{{ p.x | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>{{ p.y }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

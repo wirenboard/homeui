@@ -66,8 +66,10 @@
             <li ng-if="isConnected()" ui-sref-active="active">
               <a ui-sref="scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
             </li>
-
-            <li ng-if="isConnected()" ui-sref-active="active" class="list-menu config-menu">
+            <li ng-if="isConnected()" ui-sref-active="active">
+              <a ui-sref="configs"><i class="glyphicon glyphicon-file"></i> Configs</a>
+            </li>
+            <!-- /<li ng-if="isConnected()" ui-sref-active="active" class="list-menu config-menu">
               <a ui-sref="configs"><i class="glyphicon glyphicon-file"></i> Configs</a>
               <a href="javascript:;" data-toggle="collapse" data-target="#configs-menu"><i class="glyphicon glyphicon-menu-down"></i></a>
               <ul id="configs-menu" class="collapse">
@@ -79,7 +81,7 @@
                   </a>
                 </li>
               </ul>
-            </li>
+            </li> -->
             <li ui-sref-active="active">
               <a ui-sref="settings"><i class="glyphicon glyphicon-wrench"></i> Settings</a>
             </li>

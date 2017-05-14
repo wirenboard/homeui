@@ -256,29 +256,21 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
           let deferred_1 = $q.defer();
-          let deferred_2 = $q.defer();
           require.ensure(
-            ['d3', 'c3/c3'], 
+            [],
             (require) => {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
-                name: module_1.default.name,
+                name: module_1.default.name
               })
               .then(() => {
                 deferred_1.resolve(module_1);
               });
 
-             let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple.js');
-              $ocLazyLoad.load({
-                name: 'angular-c3-simple'
-              })
-              .then(() => {
-                deferred_2.resolve(module_2);
-              });
             }, 
             'history'
           );
-         return $q.all([deferred_1.promise, deferred_2.promise]);
+         return deferred_1.promise
         }
       }
     })
@@ -291,29 +283,21 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
           let deferred_1 = $q.defer();
-          let deferred_2 = $q.defer();
           require.ensure(
-            ['d3', 'c3/c3'], 
+            [],
             (require) => {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
-                name: module_1.default.name,
+                name: module_1.default.name
               })
               .then(() => {
                 deferred_1.resolve(module_1);
               });
 
-             let module_2 = require('../lib/angular-c3-simple/src/angular_c3_simple.js');
-              $ocLazyLoad.load({
-                name: 'angular-c3-simple'
-              })
-              .then(() => {
-                deferred_2.resolve(module_2);
-              });
             }, 
             'history'
           );
-         return $q.all([deferred_1.promise, deferred_2.promise]);
+         return deferred_1.promise
         }
       }
     })

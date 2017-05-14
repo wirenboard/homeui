@@ -1,4 +1,4 @@
-<h1 class="page-header">
+<!--<h1 class="page-header">
   Devices <small>with controls</small>
 </h1>
 <div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
@@ -7,14 +7,67 @@
     <li ng-repeat="devId in deviceIds()">
       <div class="panel panel-primary device display-cell-bin">
         <div class="panel-heading">
-          <h3 class="panel-title">{{ dev(devId).name }}</h3>
+          <h3 class="panel-title">{{ ::dev(devId).name }}</h3>
         </div>
         <div class="panel-body">
-          <div ng-repeat="cellId in dev(devId).cellIds">
-            <display-cell cell="cellId"></display-cell>
+          <div ng-repeat="cellId in dev(devId).cellIds" ng-click="$ctrl.copy(_name,cellId)">
+            <display-cell parent-name="{{::dev(devId).name}}" cell="::cellId"
+                          uib-tooltip="{{cellId}}"
+                          tooltip-popup-close-delay="200"
+                          tooltip-class="custom-tooltip"></display-cell>
+              <button class="btn btn-info btn-block btn-sm show-on-parent-hover"
+                      ng-click="$ctrl.redirect(cellId)">history</button>
           </div>
         </div>
       </div>
     </li>
   </ul>
+</div>-->
+
+<h1 class="page-header">
+    Devices
+    <small>with controls</small>
+</h1>
+<div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
+
+<div id="devices-list" class="multicol-list">
+    <ul class="list-unstyled">
+        <li ng-repeat="devId in deviceIds()" class="border-bottom">
+            <div id="{{_fullscreen==$index?'jarviswidget-fullscreen-mode':null}}"><!--jarviswidget-fullscreen-mode-->
+                <div class=" jarviswidget device display-cell-bin">
+                    <header>
+                        <div class="jarviswidget-ctrls" role="menu" ng-show="dev(devId).cellIds.length">
+                            <a href class="button-icon jarviswidget-fullscreen-btn not-fullscreen"
+                               ng-click="_fullscreen=$index"
+                               uib-tooltip="Fullscreen">
+                                <i class="fa fa-expand"></i>
+                            </a>
+                            <a href class="button-icon jarviswidget-fullscreen-btn only-fullscreen"
+                               ng-click="_fullscreen=null"
+                               uib-tooltip="Collapse">
+                                <i class="fa fa-minus"></i>
+                            </a>
+                        </div>
+                        <h2 class="font-md">{{ _name = dev(devId).name }}</h2>
+                    </header>
+                    <div class="widget-body">
+                        <div class="alert alert-default padding-10" ng-repeat="cellId in dev(devId).cellIds"
+                             ng-click="$ctrl.copy(_name,cellId)">
+                            <!--{{_name}}/-->
+                            <display-cell
+                                    uib-tooltip="{{cellId}}"
+                                    tooltip-popup-close-delay="500"
+                                    tooltip-class="custom-tooltip"
+                                    cell="cellId"></display-cell>
+                            <button class="btn bg-color-blueDark txt-color-white btn-block btn-sm show-on-parent-hover"
+                                    ng-click="$ctrl.redirect(cellId)">
+                                show history <i class="glyphicon glyphicon-stats"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </li>
+    </ul>
 </div>
