@@ -21,3 +21,36 @@
     </li>
   </ul>
 </div>
+
+<h1 class="page-header">
+  {{ dashboard.name }}
+  <a href='#/dashboards/{{dashboard.uid}}/edit' class='pull-right'><i class="glyphicon glyphicon-edit black medium"></i></a>
+</h1>
+
+
+<div ng-switch="dashboard.type">
+  <div ng-switch-when="graphic">
+    <div svg-scheme devices="devices" svg-full-width="dashboard.svg_fullwidth"
+         ng-include="dashboard.svg_url"></div>
+  </div>
+
+  <div ng-switch-default>
+    <div id='widgets-list' class='multicol-list'>
+      <ul class="list-unstyled">
+        <li ng-repeat="widget in dashboard.widgets">
+          <div class="panel panel-primary">
+            <div class="panel-heading" ng-mouseover="hoverIn(widget)" ng-mouseleave="hoverOut(widget)">
+              {{ widget.name }}
+              <a href='#/widgets/{{widget.uid}}/edit' ng-show='widget.canEdit' class='pull-right'><i class="glyphicon glyphicon-edit white widget-caption-button"></i></a>
+              <a  href="" ng-click="dashboardDeleteWidget(widget)" ng-show='widget.canEdit' class='pull-right'><i class="glyphicon glyphicon-remove white widget-caption-button"></i></a>
+
+            </div>
+            <div class="panel-body">
+              <dashboard-widget-template></dashboard-widget-template>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
