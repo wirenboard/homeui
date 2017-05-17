@@ -1,7 +1,6 @@
 class ScriptsCtrl {
   constructor($scope, EditorProxy, whenMqttReady, errors) {
     'ngInject';
-
     $scope.scripts = [];
     whenMqttReady().then(function () {
       return EditorProxy.List();

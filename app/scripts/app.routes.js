@@ -261,18 +261,18 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
             (require) => {
               let module_1 = require('./controllers/historyController.js');
               $ocLazyLoad.load({
-                name: module_1.default.name
+                name: module_1.default.name,
               })
               .then(() => {
                 deferred_1.resolve(module_1);
               });
 
+
             }, 
             'history'
           );
          return deferred_1.promise
-        }
-      }
+      }}
     })
   //...........................................................................
     .state('historySample', {
@@ -280,24 +280,28 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       templateUrl: 'views/history.html',
       controller: 'HistoryCtrl as $ctrl',
       resolve: {
+          /*load: ['$ocLazyLoad', function($ocLazyLoad) {
+              return $ocLazyLoad.load(['plotly','historyController'])
+          }],*/
         ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          let deferred_1 = $q.defer();
-          require.ensure(
-            [],
-            (require) => {
-              let module_1 = require('./controllers/historyController.js');
-              $ocLazyLoad.load({
-                name: module_1.default.name
-              })
-              .then(() => {
-                deferred_1.resolve(module_1);
-              });
+            'ngInject';
+            let deferred_1 = $q.defer();
+            require.ensure(
+                [],
+                (require) => {
+                    let module_1 = require('./controllers/historyController.js');
+                    $ocLazyLoad.load({
+                            name: module_1.default.name,
+                        })
+                        .then(() => {
+                            deferred_1.resolve(module_1);
+                        });
 
-            }, 
-            'history'
-          );
-         return deferred_1.promise
+
+                },
+                'history'
+            );
+            return deferred_1.promise
         }
       }
     })

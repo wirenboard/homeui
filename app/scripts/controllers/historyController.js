@@ -2,12 +2,13 @@
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, $injector) {
+    constructor($scope, $injector, handleData) {
         'ngInject';
 
         // 1. Self-reference
         var vm = this;
-
+        // интервал загрузки частей графика
+        this.CHUNK_INTERVAL = 10;
         // 2. requirements
         var $stateParams = $injector.get('$stateParams');
         var $location = $injector.get('$location');
@@ -26,11 +27,14 @@ class HistoryCtrl {
             HistoryProxy: HistoryProxy,
             dateFilter: dateFilter,
             errors: errors,
-            // читаем из урла даты
-            startDate: this.convDate($stateParams.start),
-            endDate: this.convDate($stateParams.end),
             controls: []
         });
+
+        this.handleData = handleData;
+
+        // читаем из урла даты
+        this.startDate = this.convDate($stateParams.start);
+        this.endDate = this.convDate($stateParams.end);
 
         this.topics = [];// все топики из урла
         this.chartConfig = [];// данные графика
@@ -81,11 +85,11 @@ class HistoryCtrl {
         whenMqttReady().then(() => {
             vm.ready = true;
             if (vm.loadPending) {
-                vm.loadHistory();
+                vm.beforeLoadChunkedHistory();
             }
         });
 
-        /*this.plotlyEvents = (graph)=>{
+        this.plotlyEvents = (graph)=>{
             // !!!!! метод обязтельно должен быть в конструкторе иначе контекст будет непонятно чей
             graph.on('plotly_relayout', (event)=>{
                 if(event['xaxis.range[0]']) {
@@ -94,7 +98,7 @@ class HistoryCtrl {
                     this.plotlyEndDate = event['xaxis.range[1]'];
                 }
             })
-        };*/
+        };
 
         // 5. Clean up
         $scope.$on('$destroy', () => {
@@ -247,17 +251,27 @@ class HistoryCtrl {
         ].join("/"))
     }
 
-    loadHistory(index=0,byChunks=false) {
+    beforeLoadChunkedHistory(indexOfControl=0) {
         if (!this.ready) {
             this.loadPending = true;
             return
         }
         this.loadPending = false;
-        if (!this.topics[index]) {
+        if (!this.topics[indexOfControl]) {
             return
         }
 
-        var parsedTopic = this.parseTopic(this.topics[index]);
+        var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
+        console.log("_chunks",chunks);
+
+        //var chunks = ["2017-05-01", "2017-05-05", "2017-05-09", "2017-05-12"];
+
+        this.loadChunkedHistory(indexOfControl,0,chunks)
+    }
+
+    loadChunkedHistory(indexOfControl,indexOfChunk, chunks) {
+        //    {"gt":1493582399,"lt":1494558000} с 1 по 12 мая 17г
+        var parsedTopic = this.parseTopic(this.topics[indexOfControl]);
         if (!parsedTopic) {
             return
         }
@@ -270,62 +284,116 @@ class HistoryCtrl {
             ver: 1
         };
 
-        if (this.startDate) {
-            params.timestamp = params.timestamp || {};
-            // add extra second to include 00:00:00
+        // никаких проверок дат. есть значения по умолчанию
+        const [startDate,endDate] = [new Date(chunks[indexOfChunk]),new Date(chunks[indexOfChunk + 1])];
+
+        params.timestamp = {
+            // add extra second to include 00:00:00 но только для первого чанка / для последущих чанков наоборот
+            // прибавляю 1 чтобы не было нахлеста
             // (FIXME: maybe wb-mqtt-db should support not just gt/lt, but also gte/lte?)
-            params.timestamp.gt = this.startDate.getTime() / 1000 - 1;
-        }
+            gt: indexOfChunk==0? startDate.getTime() / 1000 - 1 : startDate.getTime() / 1000 + 1,
+            lt: endDate.getTime() / 1000/// + 86400;
+        };
 
-        if (this.endDate) {
-            params.timestamp = params.timestamp || {};
-            params.timestamp.lt = this.endDate.getTime() / 1000;/// + 86400;
-        }
+        var intervalMs = endDate - startDate; // duration of requested interval, in ms
+        // we want to request  no more than "limit" data points.
+        // Additional divider 1.1 is here just to be on the safe side
+        params.min_interval = intervalMs / params.limit * 1.1;
 
-        if (this.startDate) {
-            var endDate = this.endDate || Date.now();
-            var intervalMs = endDate - this.startDate; // duration of requested interval, in ms
 
-            // we want to request  no more than "limit" data points.
-            // Additional divider 1.1 is here just to be on the safe side
-            params.min_interval = intervalMs / params.limit * 1.1;
-        }
+        this.loadHistory(params,indexOfControl,indexOfChunk,chunks)
+    }
+
+    loadHistory(params,indexOfControl,indexOfChunk,chunks) {
 
         this.pend = true;
 
         this.HistoryProxy.get_values(params).then(result => {
             this.pend = false;
-            if (result.has_more)
-                this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
+            if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
+
             var xValues = result.values.map(item => {
                 var ts = new Date();
                 ts.setTime(item.t * 1000);
                 return this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
             });
             var yValues = result.values.map(item => item.v - 0);
+            //var minValues = result.values.map(item => item.min - 0);
+            //var maxValues = result.values.map(item => item.max - 0);
 
-
-
-            this.chartConfig[index] = {//https://plot.ly/javascript/error-bars/
-                name: 'Control ' + (index+1),
+            // изза особенности графика типа "ОШИБКИ" отображать экстремумы надо
+            // высчитывая отклонение от основных значений
+            var minValuesErr = result.values.map(item => item.min && item.v? item.v-item.min : null);
+            var maxValuesErr = result.values.map(item => item.max && item.v? item.max-item.v : null);
+            /*var trace1 = {//простой график
                 x: xValues,
-                y: yValues,
-                type: 'scatter',
-                mode: 'lines'
-            };
+                y: maxValues,
+                type: 'scatter'
+            };*/
 
-            if(index==0) {
-                this.firstTopicIsLoaded = true;
+
+            // если это первый чанк то создаю график
+            if(indexOfChunk==0) {
+                console.log("********первый чанк  контрол " ,indexOfControl);
+
+                this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
+                    name: 'Control ' + (indexOfControl+1),
+                    x: xValues,
+                    y: yValues,
+                    error_y: {//построит график  типа "ОШИБКИ"(error-bars)
+                        type: 'data',
+                        symmetric: false,
+                        array: maxValuesErr,
+                        arrayminus: minValuesErr,
+                        thickness: 0.5,
+                        width: 0,
+                        value: 0.1
+                        //color: '#85144B',
+                        //opacity: 1
+                    },
+                    type: 'scatter',
+                    mode: 'lines'
+                };
+
+                // для таблицы под графиком для первого контрола
+                if(indexOfControl==0) this.dataPoints = xValues.map((x, i) => ({x: x, y: yValues[i]}));
+            } else {
+                console.log("******** чанк",indexOfChunk,' контрол ' ,indexOfControl+1);
+                // если последущие то просто добавляю дату
+                this.chartConfig[indexOfControl].x = this.chartConfig[indexOfControl].x.concat(xValues);
+                this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(yValues);
+                this.chartConfig[indexOfControl].error_y.array = this.chartConfig[indexOfControl].error_y.array.concat(maxValuesErr);
+                this.chartConfig[indexOfControl].error_y.arrayminus = this.chartConfig[indexOfControl].error_y.arrayminus.concat(minValuesErr);
+
+                // для таблицы под графиком для первого контрола
+                if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(xValues.map((x, i) => ({x: x, y: yValues[i]})))
             }
 
-            // для таблицы под графиком
-            this.dataPoints = xValues.map((x, i) => ({x: x, y: yValues[i]}));
 
-            // запрашиваю все графики по очереди
-            if(index < this.selectedTopics.length) this.loadHistory(index+1);
+            if(indexOfControl==0) {
+                this.firstChunkIsLoaded = true;
+            }
+
+
+            // если еще есть части интервала
+            if(indexOfChunk + 2 < chunks.length) {
+                console.log("++++ есть еще чанки");
+
+                this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
+
+                // запрашиваю следущий контол если есть
+            } else if(indexOfControl < this.selectedTopics.length){
+                 this.beforeLoadChunkedHistory(indexOfControl + 1);
+            }
+
 
         }).catch(this.errors.catch("Error getting history"));
+
     } // loadHistory
+
+    handleResponse() {
+
+    }
 
 } // class HistoryCtrl
 

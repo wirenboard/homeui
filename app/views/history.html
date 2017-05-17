@@ -3,10 +3,10 @@
 </h1>
 
 <div class="row" ng-repeat="sel in $ctrl.selectedTopics track by $index">
-    <label for="control-select" class="col-xs-offset-1 col-xs-2 col-sm-1 control-label">
+    <label for="control-select" class="col-xs-offset-1 col-xs-2 control-label">
         Control {{$index+1}}
     </label>
-    <div class="col-xs-7 col-sm-8">
+    <div class="col-xs-7">
         <select id="control-select"
                 class="form-control"
                 ng-disabled="$ctrl.pend"
@@ -20,15 +20,10 @@
         <div ng-hide="($index==0 && $ctrl.selectedTopics.length==1) || !$ctrl.selectedTopics[1]"
              class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)">delete</div>
     </div>
-    <br><br>
+    <br><br><br>
 </div>
 
 <div class="row">
-    <div  class="col-xs-offset-1 col-xs-11"
-          ng-hide="$ctrl.selectedTopics.length==1 && !$ctrl.selectedTopics[$ctrl.selectedTopics.length-1]">
-        <div class="btn btn-success" ng-click="$ctrl.addTopic()">Add control</div>
-    </div>
-    <br><br>
     <div class="col-xs-4 col-sm-3 col-md-2 col-xs-offset-1" ng-show="$ctrl.topics.length">
         <label for="history-start" class="control-label">Start</label>
 
@@ -75,33 +70,53 @@
           </span>
         </div>
     </div>
+
+    <div  class="col-xs-offset-1 col-xs-11"
+          ng-hide="$ctrl.selectedTopics.length==1 && !$ctrl.selectedTopics[$ctrl.selectedTopics.length-1]">
+        <br>
+        <div class="row">
+            <div class="col-xs-5 col-sm-3">
+                <button class="btn btn-success" ng-click="$ctrl.addTopic()">
+                    Add control
+                </button>
+            </div>
+            <div class="col-xs-7 col-sm-3">
+                <button class="btn btn-success"
+                        ng-show="$ctrl.plotlyStartDate"
+                        ng-click="$ctrl.changeDateByPlotly()">
+                    Change timeframe
+                </button>
+            </div>
+        </div>
+
+    </div>
+    <br><br>
 </div>
 
-<!--<button ng-click="$ctrl.changeDateByPlotly()"
-        ng-show="$ctrl.plotlyStartDate">
-    changeDateByPlotly
-</button>-->
+
 
 <div class="col-sm-12 spinner" ng-cloak
-     ng-show="$ctrl.pend || (!$ctrl.firstTopicIsLoaded && !$ctrl.selectedTopics.length)">
+     ng-show="$ctrl.pend || (!$ctrl.firstChunkIsLoaded && !$ctrl.selectedTopics.length)">
     <span class="spinner-loader">Loading...</span>
 </div>
 
 <div oc-lazy-load="['https://cdn.plot.ly/plotly-latest.min.js']">
-    <div class="col-sm-12" ng-if="$ctrl.firstTopicIsLoaded">
+    <div class="col-sm-12" ng-if="$ctrl.firstChunkIsLoaded">
         <plotly plotly-events="$ctrl.plotlyEvents"
                 plotly-data="$ctrl.chartConfig"
                 plotly-layout="$ctrl.layoutConfig"
                 plotly-options="$ctrl.options"></plotly>
         <br>
         <div class="history-empty"
-             ng-show="$ctrl.topics.length && !$ctrl.dataPoints.length">
+             ng-show="this.chartConfig[0].x.length && !$ctrl.dataPoints.length">
             No data points to display.
         </div>
     </div>
 </div>
 
-<div class="col-xs-12 col-md-6 col-lg-4" ng-show="$ctrl.dataPoints">
+
+<div class="col-xs-12 col-md-6 col-lg-4" ng-show="$ctrl.dataPoints.length">
+    Control 1
     <table class="table">
         <thead>
             <tr>
@@ -110,7 +125,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="p in $ctrl.dataPoints">
+            <tr ng-repeat="p in $ctrl.dataPoints track by $index">
                 <td>{{ p.x | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                 <td>{{ p.y }}</td>
             </tr>
