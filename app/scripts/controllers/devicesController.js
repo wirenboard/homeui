@@ -2,7 +2,6 @@
 class DevicesCtrl {
     constructor($scope, $state, DeviceData, handleData) {
         'ngInject';
-        console.log("DeviceData", DeviceData);
 
         this.$state = $state;
         this.handleData = handleData;

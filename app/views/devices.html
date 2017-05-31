@@ -15,8 +15,10 @@
                           uib-tooltip="{{cellId}}"
                           tooltip-popup-close-delay="200"
                           tooltip-class="custom-tooltip"></display-cell>
-              <button class="btn btn-info btn-block btn-sm show-on-parent-hover"
-                      ng-click="$ctrl.redirect(cellId)">history</button>
+              <button class="btn bg-color-blueDark txt-color-white btn-block btn-sm show-on-parent-hover"
+                      ng-click="$ctrl.redirect(cellId)">
+                  show history <i class="glyphicon glyphicon-stats"></i>
+              </button>
           </div>
         </div>
       </div>
@@ -24,10 +26,6 @@
   </ul>
 </div>-->
 
-<h1 class="page-header">
-    Devices
-    <small>with controls</small>
-</h1>
 <div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
 
 <div id="devices-list" class="multicol-list">
@@ -53,7 +51,6 @@
                     <div class="widget-body">
                         <div class="alert alert-default padding-10" ng-repeat="cellId in dev(devId).cellIds"
                              ng-click="$ctrl.copy(_name,cellId)">
-                            <!--{{_name}}/-->
                             <display-cell
                                     uib-tooltip="{{cellId}}"
                                     tooltip-popup-close-delay="500"

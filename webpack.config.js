@@ -65,8 +65,7 @@ module.exports = function makeWebpackConfig() {
 
             'angular-plotly',
             'angular-rangeslider',
-
-            ///'./lib/angular-toggle-switch/angular-toggle-switch'
+            './lib/angular-toggle-switch/angular-toggle-switch'
         ]
     };
     /**
@@ -176,9 +175,14 @@ module.exports = function makeWebpackConfig() {
             // Rename the file using the asset hash
             // Pass along the updated reference to your code
             // You can add here any file extension you want to get copied to your output
-            test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+            test: /\.(png|jpg|jpeg|gif)$/,
             use: 'file-loader'
         }, {
+            // ASSET LOADER
+            // without hash
+            test: /\.(svg|woff|woff2|ttf|eot)$/,
+            use: 'file-loader?name=[name]'
+        },{
             test: /\.html$/,
             use: [
                 // HTML LOADER
@@ -277,7 +281,7 @@ module.exports = function makeWebpackConfig() {
             // Render index.html
             new HtmlWebpackPlugin({
                 filename: './index.html',
-                template: './index.html',
+                template: './index.ejs',
                 chunksSortMode: function (a, b) {
                     var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
                     return order.indexOf(a.names[0]) - order.indexOf(b.names[0]);
