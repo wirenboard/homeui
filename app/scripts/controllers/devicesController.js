@@ -8,6 +8,8 @@ class DevicesCtrl {
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
         $scope.deviceIds = () => Object.keys(DeviceData.devices).sort();
+        console.log("+++++++++.devices",DeviceData.devices);
+
     }
 
     copy(device, control) {
