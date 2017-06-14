@@ -46,15 +46,21 @@ export default function handleDataService() {
         return returnString ? d : new Date(d)
     };
 
-    this.dayMinusNDays = (dayString,n, returnString = true)=> {
-        let d = JSON.stringify(new Date(+new Date(dayString) - n * (24 * 60 * 60000))).slice(1, 11);
+    // убавляет дни от даты/ можно со временем
+    this.dayMinusNDays = (dayString,n, returnString = true,withTime=false)=> {
+        // делаю поправку на отступ
+        var offset = (new Date).getTimezoneOffset()/60;
+        let d = JSON.stringify(new Date(+new Date(dayString) -
+            n * ((24 + (withTime? offset : 0))* 60 * 60000) )).slice(1, withTime? 20 : 11);
         return returnString ? d : new Date(d)
     };
 
+    // добавляет ноль
     this.addZeroToDate = (d)=> {
         return d<10? '0' + d : d
     };
 
+    // можно со временем без секунд
     this.dateYYYYMMDD = (date,withTime = false)=>  {
         if (!date) return null;
         date = typeof date ==='string'? new Date(date) : date;
@@ -68,12 +74,12 @@ export default function handleDataService() {
 
 
     // разбивает дни на сегменты из N дней
-    // rangInterval параметр общей длины интервала графика если не указано значениt начала графика
-    this.splitDate = (start, end, days = 10,rangInterval = days)=> {
+    // rangInterval параметр длины интервала графика если не указана начальная точка
+    this.splitDate = (start, end, days = 10,rangInterval = 1)=> {
         end = end? end : new Date();// если нету то = текущим дате и времени
         end = typeof end ==='string'? end : this.dateYYYYMMDD(end,true);
-
-        start = start? start : this.dayMinusNDays(end,rangInterval);// если нету то = end - инетервал days
+        // если нету то = end - инетервал days вместе с минутами
+        start = start? start : this.dayMinusNDays(end,rangInterval,true,true);
         start = typeof start ==='string'? start : this.dateYYYYMMDD(start,true);
 
         var diffDates = this.diffDates(start, end);

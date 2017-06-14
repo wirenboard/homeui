@@ -1,30 +1,3 @@
-<!--<h1 class="page-header">
-  Devices <small>with controls</small>
-</h1>
-<div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
-<div id="devices-list" class="multicol-list">
-  <ul class="list-unstyled">
-    <li ng-repeat="devId in deviceIds()">
-      <div class="panel panel-primary device display-cell-bin">
-        <div class="panel-heading">
-          <h3 class="panel-title">{{ ::dev(devId).name }}</h3>
-        </div>
-        <div class="panel-body">
-          <div ng-repeat="cellId in dev(devId).cellIds" ng-click="$ctrl.copy(_name,cellId)">
-            <display-cell parent-name="{{::dev(devId).name}}" cell="::cellId"
-                          uib-tooltip="{{cellId}}"
-                          tooltip-popup-close-delay="200"
-                          tooltip-class="custom-tooltip"></display-cell>
-              <button class="btn bg-color-blueDark txt-color-white btn-block btn-sm show-on-parent-hover"
-                      ng-click="$ctrl.redirect(cellId)">
-                  show history <i class="glyphicon glyphicon-stats"></i>
-              </button>
-          </div>
-        </div>
-      </div>
-    </li>
-  </ul>
-</div>-->
 
 <div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
 
@@ -49,17 +22,17 @@
                         <h2 class="font-md">{{ _name = dev(devId).name }}</h2>
                     </header>
                     <div class="widget-body">
-                        <div class="alert alert-default padding-10" ng-repeat="cellId in dev(devId).cellIds"
+                        <div class="alert alert-default devices-control" ng-repeat="cellId in dev(devId).cellIds"
                              ng-click="$ctrl.copy(_name,cellId)">
+                            <button class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
+                                    ng-click="$ctrl.redirect(cellId)">
+                                <i class="glyphicon glyphicon-stats"></i>
+                            </button>
                             <display-cell
                                     uib-tooltip="{{cellId}}"
-                                    tooltip-popup-close-delay="500"
+
                                     tooltip-class="custom-tooltip"
                                     cell="cellId"></display-cell>
-                            <button class="btn bg-color-blueDark txt-color-white btn-block btn-sm show-on-parent-hover"
-                                    ng-click="$ctrl.redirect(cellId)">
-                                show history <i class="glyphicon glyphicon-stats"></i>
-                            </button>
                         </div>
                     </div>
                 </div>

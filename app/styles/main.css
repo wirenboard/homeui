@@ -526,6 +526,19 @@ button.show-console span {
   background: transparent;
 }
 
+.devices-control.alert {
+    padding: 0;
+}
+
+.display-cell {
+    width: calc(100% - 40px);
+}
+
+.display-cell-btn {
+    float: right;
+    padding: 4px 7px 3px 6px;
+}
+
 .display-cell .value,
 .display-cell .units,
 .display-cell input {

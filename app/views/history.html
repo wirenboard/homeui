@@ -4,7 +4,7 @@
 
 <div class="row" ng-repeat="sel in $ctrl.selectedTopics track by $index">
     <label for="control-select" class="col-xs-offset-1 col-xs-2 control-label">
-        Control {{$index+1}}
+        Channel {{$index+1}}
     </label>
     <div class="col-xs-7">
         <select id="control-select"
@@ -20,10 +20,19 @@
         <div ng-hide="($index==0 && $ctrl.selectedTopics.length==1) || !$ctrl.selectedTopics[1]"
              class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)">delete</div>
     </div>
-    <br><br><br>
 </div>
 
 <div class="row">
+    <div class="col-xs-offset-1 col-xs-2">
+        <br>
+        <button class="btn btn-success"
+                ng-click="$ctrl.addTopic()"
+                ng-hide="$ctrl.selectedTopics.length==1 && !$ctrl.selectedTopics[$ctrl.selectedTopics.length-1]">
+            Add channel
+        </button>
+        <br>
+    </div>
+    <br><br>
     <div class="col-xs-4 col-sm-3 col-md-2 col-xs-offset-1" ng-show="$ctrl.topics.length">
         <label for="history-start" class="control-label">Start</label>
 
@@ -70,25 +79,13 @@
           </span>
         </div>
     </div>
-
-    <div  class="col-xs-offset-1 col-xs-11"
-          ng-hide="$ctrl.selectedTopics.length==1 && !$ctrl.selectedTopics[$ctrl.selectedTopics.length-1]">
+    <div class="col-xs-offset-1 col-xs-11">
         <br>
-        <div class="row">
-            <div class="col-xs-5 col-sm-3">
-                <button class="btn btn-success" ng-click="$ctrl.addTopic()">
-                    Add control
-                </button>
-            </div>
-            <div class="col-xs-7 col-sm-3">
-                <button class="btn btn-success"
-                        ng-show="$ctrl.plotlyStartDate"
-                        ng-click="$ctrl.changeDateByPlotly()">
-                    Change timeframe
-                </button>
-            </div>
-        </div>
-
+        <button class="btn btn-success"
+                ng-show="$ctrl.plotlyStartDate"
+                ng-click="$ctrl.changeDateByPlotly()">
+            Change timeframe
+        </button>
     </div>
     <br><br>
 </div>

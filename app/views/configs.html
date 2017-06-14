@@ -13,17 +13,23 @@
         <th>File</th>
         <th>Title</th>
         <th>Description</th>
+        <th>Last editing</th>
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="config in configs">
+      <tr ng-repeat="config in configs track by $index">
+        <td>{{ config.configPath }}</td>
         <td>
-          <a ui-sref="configEdit({ path: config.schemaPath })" ui-sref-active="active">
-          {{ config.configPath }}
+          <a ui-sref="configEdit({path: config.schemaPath})">
+            {{ config.title }}
           </a>
         </td>
-        <td>{{ config.title }}</td>
-        <td>{{ config.description }}</td>
+        <td>
+          <a ui-sref="configEdit({path: config.schemaPath})">
+            {{ config.description }}
+          </a>
+        </td>
+        <td>{{ config.date_editing }}</td>
       </tr>
     </tbody>
   </table>

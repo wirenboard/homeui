@@ -181,7 +181,7 @@ module.exports = function makeWebpackConfig() {
             // ASSET LOADER
             // without hash
             test: /\.(svg|woff|woff2|ttf|eot)$/,
-            use: 'file-loader?name=[name]'
+            use: 'file-loader?name=[name].[ext]'
         },{
             test: /\.html$/,
             use: [
