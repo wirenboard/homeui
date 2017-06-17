@@ -733,3 +733,11 @@ button.show-console span {
 .table.webui-table th {
   vertical-align: middle;
 }
+
+.history-time-col-l {
+    padding-top: 42px;
+}
+
+.history-time-col-r {
+    padding-top: 34px;
+}

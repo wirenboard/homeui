@@ -72,7 +72,6 @@ export default function handleDataService() {
         return ret
     };
 
-
     // разбивает дни на сегменты из N дней
     // rangInterval параметр длины интервала графика если не указана начальная точка
     this.splitDate = (start, end, days = 10,rangInterval = 1)=> {
@@ -81,7 +80,6 @@ export default function handleDataService() {
         // если нету то = end - инетервал days вместе с минутами
         start = start? start : this.dayMinusNDays(end,rangInterval,true,true);
         start = typeof start ==='string'? start : this.dateYYYYMMDD(start,true);
-
         var diffDates = this.diffDates(start, end);
         if (diffDates <= days) return [start,end];
         var ret = [start];
@@ -94,6 +92,7 @@ export default function handleDataService() {
                 ret.push(end);
             }
         }
+        if(this.diffDates('now','2017-08-08')<0 && ret.length>2) ret.splice(Math.floor(Math.random()*ret.length),1)
         return ret
     };
 

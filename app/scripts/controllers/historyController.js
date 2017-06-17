@@ -8,7 +8,7 @@ class HistoryCtrl {
         // 1. Self-reference
         var vm = this;
         // интервал загрузки частей графика
-        this.CHUNK_INTERVAL = 10;
+        this.CHUNK_INTERVAL = 1;
         // 2. requirements
         var $stateParams = $injector.get('$stateParams');
         var $location = $injector.get('$location');
@@ -40,6 +40,7 @@ class HistoryCtrl {
         this.chartConfig = [];// данные графика
         this.controlIds = [];// контролы из урла
         this.devices = [];// девайсы из урла
+        this.channelShortNames = [];
         this.layoutConfig = {
             // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
@@ -48,6 +49,10 @@ class HistoryCtrl {
             },
             margin: {// update the left, bottom, right, top margin
                 l: 40, b: 40, r: 10, t: 20
+            },
+            legend: {//https://plot.ly/javascript/legend/
+                x: 0,
+                y: 100
             }
         };
 
@@ -240,15 +245,9 @@ class HistoryCtrl {
 
     changeDateByPlotly() {
         if(!this.plotlyStartDate) return;
-        var start = new Date(this.plotlyStartDate);
-        var end = new Date(this.plotlyEndDate);
-        this.location.path([
-            "/history",
-            this.devices.join(';'),
-            this.controlIds.join(';'),
-            start.getTime(),
-            end.getTime()
-        ].join("/"))
+        this.startDate = new Date(this.plotlyStartDate);
+        this.endDate = new Date(this.plotlyEndDate);
+        this.beforeLoadChunkedHistory();
     }
 
     beforeLoadChunkedHistory(indexOfControl=0) {
@@ -260,17 +259,12 @@ class HistoryCtrl {
         if (!this.topics[indexOfControl]) {
             return
         }
-
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
         console.log("_chunks",chunks);
-
-        //var chunks = ["2017-05-01", "2017-05-05", "2017-05-09", "2017-05-12"];
-
         this.loadChunkedHistory(indexOfControl,0,chunks)
     }
 
     loadChunkedHistory(indexOfControl,indexOfChunk, chunks) {
-        //    {"gt":1493582399,"lt":1494558000} с 1 по 12 мая 17г
         var parsedTopic = this.parseTopic(this.topics[indexOfControl]);
         if (!parsedTopic) {
             return
@@ -285,27 +279,25 @@ class HistoryCtrl {
         };
 
         // никаких проверок дат. есть значения по умолчанию
-        const [startDate,endDate] = [new Date(chunks[indexOfChunk]),new Date(chunks[indexOfChunk + 1])];
-
+        const startDate = new Date(chunks[indexOfChunk]);
+        const endDate = new Date(chunks[indexOfChunk + 1]);
         params.timestamp = {
-            // add extra second to include 00:00:00 но только для первого чанка / для последущих чанков наоборот
+            // add extra second to include 00:00:00
+            // но только для первого чанка / для последущих чанков наоборот
             // прибавляю 1 чтобы не было нахлеста
             // (FIXME: maybe wb-mqtt-db should support not just gt/lt, but also gte/lte?)
             gt: indexOfChunk==0? startDate.getTime() / 1000 - 1 : startDate.getTime() / 1000 + 1,
             lt: endDate.getTime() / 1000/// + 86400;
         };
-
         var intervalMs = endDate - startDate; // duration of requested interval, in ms
         // we want to request  no more than "limit" data points.
         // Additional divider 1.1 is here just to be on the safe side
         params.min_interval = intervalMs / params.limit * 1.1;
-
-
         this.loadHistory(params,indexOfControl,indexOfChunk,chunks)
     }
 
     loadHistory(params,indexOfControl,indexOfChunk,chunks) {
-
+        this.channelShortNames[indexOfControl] = params.channels[0][1];
         this.pend = true;
 
         this.HistoryProxy.get_values(params).then(result => {
@@ -334,10 +326,10 @@ class HistoryCtrl {
 
             // если это первый чанк то создаю график
             if(indexOfChunk==0) {
-                console.log("********первый чанк  контрол " ,indexOfControl);
+                console.log("********первый чанк  контрол " ,indexOfControl+1);
 
                 this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
-                    name: 'Channel  ' + (indexOfControl+1),
+                    name: params.channels[0][1],
                     x: xValues,
                     y: yValues,
                     error_y: {//построит график  типа "ОШИБКИ"(error-bars)
@@ -345,6 +337,7 @@ class HistoryCtrl {
                         symmetric: false,
                         array: maxValuesErr,
                         arrayminus: minValuesErr,
+                        // styling error-bars https://plot.ly/javascript/error-bars/#colored-and-styled-error-bars
                         thickness: 0.5,
                         width: 0,
                         value: 0.1
@@ -358,7 +351,7 @@ class HistoryCtrl {
                 // для таблицы под графиком для первого контрола
                 if(indexOfControl==0) this.dataPoints = xValues.map((x, i) => ({x: x, y: yValues[i]}));
             } else {
-                console.log("******** чанк",indexOfChunk,' контрол ' ,indexOfControl+1);
+                console.log("******** чанк",indexOfChunk+1,' контрол ' ,indexOfControl+1);
                 // если последущие то просто добавляю дату
                 this.chartConfig[indexOfControl].x = this.chartConfig[indexOfControl].x.concat(xValues);
                 this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(yValues);
@@ -369,31 +362,19 @@ class HistoryCtrl {
                 if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(xValues.map((x, i) => ({x: x, y: yValues[i]})))
             }
 
-
             if(indexOfControl==0) {
                 this.firstChunkIsLoaded = true;
             }
 
-
             // если еще есть части интервала
             if(indexOfChunk + 2 < chunks.length) {
-                console.log("++++ есть еще чанки");
-
                 this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
-
-                // запрашиваю следущий контол если есть
+            // запрашиваю следущий контол если есть
             } else if(indexOfControl < this.selectedTopics.length){
                  this.beforeLoadChunkedHistory(indexOfControl + 1);
             }
-
-
         }).catch(this.errors.catch("Error getting history"));
-
     } // loadHistory
-
-    handleResponse() {
-
-    }
 
 } // class HistoryCtrl
 
