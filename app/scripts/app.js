@@ -9,8 +9,8 @@ import '../styles/css/smartadmin-production-plugins.min.css'
 import '../styles/css/smartadmin-production.min.css'
 import '../styles/css/smartadmin-rtl.min.css'
 import '../styles/css/smartadmin-skins.min.css'
-import '../styles/css/style.css'
 
+import '../styles/css/new.css'
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
@@ -34,6 +34,7 @@ import pageStateService from './services/pagestate';
 import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
+import userAgentFactory from './services/userAgent.factory';
 
 
 import handleDataService from './services/handle-data';
@@ -41,6 +42,7 @@ import handleDataService from './services/handle-data';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
+import HelpCtrl from './controllers/helpController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
@@ -122,6 +124,7 @@ module
 
 
     .service('handleData', handleDataService)
+    .service('userAgentFactory', userAgentFactory)
 
 
     .run(DeviceData => {
@@ -135,6 +138,7 @@ module
     .value('AlertDelayMs', 5000)
     .controller('AlertCtrl', AlertCtrl)
     .controller('HomeCtrl', HomeCtrl)
+    .controller('HelpCtrl', HelpCtrl)
     .controller('FirmwareCtrl', FirmwareCtrl)
     .controller('LoginCtrl', LoginCtrl);
 

@@ -28,6 +28,9 @@
 
 
               <p class="navbar-text navbar-right connection-status">
+                  <a ui-sref="help">
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                  </a>
                   <span class="" ng-class="(isConnected()) ? '' : 'label label-danger'"
                         ng-bind="isConnected() ? 'Connected' : 'Disconnected'"></span>
               </p>

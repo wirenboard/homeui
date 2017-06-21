@@ -15,6 +15,11 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       templateUrl: 'views/home.html',
       controller: 'HomeCtrl as $ctrl'
     })
+      .state('help', {
+          url: '/help',
+          templateUrl: 'views/help.html',
+          controller: 'HelpCtrl as $ctrl'
+      })
   //...........................................................................
     .state('devices', {
       url: '/devices',
