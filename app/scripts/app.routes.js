@@ -20,6 +20,21 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           templateUrl: 'views/help.html',
           controller: 'HelpCtrl as $ctrl'
       })
+      .state('webUI', {
+          url: '/web-ui',
+          templateUrl: 'views/web-ui.html',
+          controller: 'WebUICtrl as $ctrl'
+      })
+      .state('system', {
+          url: '/system',
+          templateUrl: 'views/system.html',
+          controller: 'SystemCtrl as $ctrl'
+      })
+      .state('MQTTChannels', {
+          url: '/MQTTChannels',
+          templateUrl: 'views/MQTTChannels.html',
+          controller: 'MQTTCtrl as $ctrl'
+      })
   //...........................................................................
     .state('devices', {
       url: '/devices',

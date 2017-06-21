@@ -46,6 +46,9 @@ import HelpCtrl from './controllers/helpController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
+import WebUICtrl from './controllers/webUiController';
+import SystemCtrl from './controllers/systemController';
+import MQTTCtrl from './controllers/MQTTChannelsController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -140,7 +143,10 @@ module
     .controller('HomeCtrl', HomeCtrl)
     .controller('HelpCtrl', HelpCtrl)
     .controller('FirmwareCtrl', FirmwareCtrl)
-    .controller('LoginCtrl', LoginCtrl);
+    .controller('LoginCtrl', LoginCtrl)
+    .controller('WebUICtrl', WebUICtrl)
+    .controller('SystemCtrl', SystemCtrl)
+    .controller('MQTTCtrl', MQTTCtrl);
 
 module
     .controller('NavigationCtrl', NavigationCtrl)

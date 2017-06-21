@@ -28,11 +28,9 @@
                                     ng-click="$ctrl.redirect(cellId)">
                                 <i class="glyphicon glyphicon-stats"></i>
                             </button>
-                            <display-cell
+                            <display-cell cell="cellId"
                                     uib-tooltip="{{cellId}}"
-
-                                    tooltip-class="custom-tooltip"
-                                    cell="cellId"></display-cell>
+                                    tooltip-class="custom-tooltip"></display-cell>
                         </div>
                     </div>
                 </div>
