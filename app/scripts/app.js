@@ -35,6 +35,7 @@ import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
+import rolesFactory from './services/roles.factory';
 
 
 import handleDataService from './services/handle-data';
@@ -49,6 +50,7 @@ import FirmwareCtrl from './controllers/firmwareController';
 import WebUICtrl from './controllers/webUiController';
 import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
+import AccessLevelCtrl from './controllers/accessLevelController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -67,6 +69,7 @@ import rgbCellDirective from './directives/rgbcell';
 import cellPickerDirective from './directives/cellpicker';
 import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
+import userRolesDirective from './directives/user-roles.directive';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -128,6 +131,7 @@ module
 
     .service('handleData', handleDataService)
     .service('userAgentFactory', userAgentFactory)
+    .service('rolesFactory', rolesFactory)
 
 
     .run(DeviceData => {
@@ -146,7 +150,8 @@ module
     .controller('LoginCtrl', LoginCtrl)
     .controller('WebUICtrl', WebUICtrl)
     .controller('SystemCtrl', SystemCtrl)
-    .controller('MQTTCtrl', MQTTCtrl);
+    .controller('MQTTCtrl', MQTTCtrl)
+    .controller('AccessLevelCtrl', AccessLevelCtrl);
 
 module
     .controller('NavigationCtrl', NavigationCtrl)
@@ -218,7 +223,8 @@ module
     .directive('rgbCell', rgbCellDirective)
     .directive('cellPicker', cellPickerDirective)
     .directive('explicitChanges', explicitChangesDirective)
-    .directive('editableElasticTextarea', editableElasticTextareaDirective);
+    .directive('editableElasticTextarea', editableElasticTextareaDirective)
+    .directive('userRole', userRolesDirective);
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {
@@ -321,7 +327,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         };
 
         if (!$rootScope.requestConfig(loginData)) {
-            alert('Please specify connection data in Settings');
+            alert('Please specify connection data in Settings -> web-ui');
         }
 
         // TBD: the following should be handled by config sync service

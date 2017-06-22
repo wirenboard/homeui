@@ -54,7 +54,7 @@
                           </li>
                       </ul>
                   </li>
-                  <li ui-sref-active="active">
+                  <li ui-sref-active="active" user-role="mto" current-role="roles.current.role">
                       <a ui-sref="devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
                   </li>
                   <li ui-sref-active="active">
@@ -63,7 +63,8 @@
                   <li ui-sref-active="active">
                       <a ui-sref="history"><i class="glyphicon glyphicon-stats"></i> History</a>
                   </li>
-                  <li ng-if="isConnected()" ui-sref-active="active">
+                  <li ng-if="isConnected()" ui-sref-active="active"
+                      user-role="mtt" current-role="roles.current.role">
                       <a ui-sref="scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
                   </li>
                   <li ui-sref-active="active">
@@ -71,17 +72,20 @@
                           <i class="glyphicon glyphicon-wrench"></i> Settings
                       </a>
                       <ul id="settings-menu" class="collapse">
-                          <li ng-if="isConnected()">
+                          <li ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
                               <a ui-sref="configs" ui-sref-active="active">Configs</a>
                           </li>
                           <li>
                               <a ui-sref="webUI" ui-sref-active="active">Web UI</a>
                           </li>
-                          <li>
+                          <li user-role="mtt" current-role="roles.current.role">
                               <a ui-sref="system" ui-sref-active="active">System</a>
                           </li>
                           <li>
                               <a ui-sref="MQTTChannels" ui-sref-active="active">MQTT Channels</a>
+                          </li>
+                          <li user-role="mtt" current-role="roles.current.role">
+                              <a ui-sref="accessLevel" ui-sref-active="active">Change access level</a>
                           </li>
                       </ul>
                   </li>

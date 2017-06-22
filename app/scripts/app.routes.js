@@ -35,6 +35,11 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           templateUrl: 'views/MQTTChannels.html',
           controller: 'MQTTCtrl as $ctrl'
       })
+      .state('accessLevel', {
+          url: '/access-level',
+          templateUrl: 'views/access-level.html',
+          controller: 'AccessLevelCtrl as $ctrl'
+      })
   //...........................................................................
     .state('devices', {
       url: '/devices',

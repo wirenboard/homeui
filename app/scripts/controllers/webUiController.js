@@ -3,9 +3,10 @@
  */
 
 export default class WebUICtrl {
-    constructor(uiConfig, errors) {
+    constructor(uiConfig, errors, rolesFactory) {
         'ngInject';
 
+        this.rolesFactory = rolesFactory;
         uiConfig.whenReady()
             .then((data) => {
                 this.dashboards = data.dashboards;

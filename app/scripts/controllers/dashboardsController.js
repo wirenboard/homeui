@@ -1,7 +1,8 @@
 class DashboardsCtrl {
-  constructor(uiConfig) {
+  constructor(uiConfig,rolesFactory) {
     'ngInject';
 
+    this.roles = rolesFactory;
     this.uiConfig = uiConfig;
     this.data = uiConfig.data;
     // FIXME: make better use of the model

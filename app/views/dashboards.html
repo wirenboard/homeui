@@ -1,7 +1,9 @@
 <h1 class="page-header">
   Dashboards
 </h1>
-<div class="empty-list well" ng-if="!$ctrl.data.dashboards.length">No dashboards currently defined.</div>
+<div class="empty-list well" ng-if="!$ctrl.data.dashboards.length">
+  No dashboards currently defined.
+</div>
 <table class="table dashboards-table webui-table" ng-if="$ctrl.data.dashboards.length">
   <thead>
     <tr>
@@ -37,8 +39,12 @@
         </form>
         <div class="buttons" ng-show="!rowform.$visible">
           <a class="btn btn-primary" ui-sref="dashboard({ id: dashboard.id })">View</a>
-          <button name="edit" type="button" class="btn btn-primary" ng-click="rowform.$show()">Edit</button>
-          <button name="delete" type="button" class="btn btn-danger" ng-click="$ctrl.model(dashboard).remove()">Delete</button>
+          <button name="edit" type="button" class="btn btn-primary"
+                  user-role="mto" current-role="$ctrl.roles.current.role"
+                  ng-click="rowform.$show()">Edit</button>
+          <button name="delete" type="button" class="btn btn-danger"
+                  user-role="mto" current-role="$ctrl.roles.current.role"
+                  ng-click="$ctrl.model(dashboard).remove()">Delete</button>
         </div>  
         <!--
         <a href='/dashboards/{{dashboard.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
@@ -47,7 +53,7 @@
     </tr>
   </tbody>
 </table>
-<div class="btn-form">
+<div class="btn-form" user-role="mto" current-role="$ctrl.roles.current.role">
   <button name="add"
           type="button"
           ng-click="$ctrl.addDashboard()" class="btn btn-default pull-right">Add dashboard</button>

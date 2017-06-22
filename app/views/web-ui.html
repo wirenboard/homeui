@@ -26,8 +26,11 @@
                         <tr>
                             <td>
                                 Default Dashboard
-                                <a ng-show='$ctrl.defaultDashboard' ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-edit black medium"></i></a>
-                                <a ng-show='$ctrl.defaultDashboard' ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-play-circle black medium"></i></a>
+                                <a ng-show='$ctrl.defaultDashboard'
+                                   user-role="mto" current-role="$ctrl.roles.current.role"
+                                   ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-edit black medium"></i></a>
+                                <a ng-show='$ctrl.defaultDashboard'
+                                   ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-play-circle black medium"></i></a>
                             </td>
                             <td class="text-center">
                                 <select ng-model="$ctrl.defaultDashboard" ng-options="dashboard.name for dashboard in $ctrl.dashboards track by dashboard.id" ng-change="$ctrl.changeDefaultDashboard()">

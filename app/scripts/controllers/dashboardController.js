@@ -1,7 +1,8 @@
 class DashboardCtrl {
-  constructor($scope, uiConfig, $stateParams) {
+  constructor($scope, uiConfig, $stateParams, rolesFactory) {
     'ngInject';
 
+    $scope.roles = rolesFactory;
     var defaultDashboard = {};
     function getDashboard () {
       return uiConfig.getDashboard($stateParams.id);

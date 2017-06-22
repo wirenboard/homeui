@@ -1,0 +1,33 @@
+<h1 class="page-header">
+    Access level
+</h1>
+
+<div class="form-group">
+        <div class="radio">
+            <label>
+                <input type="radio" ng-model="$ctrl.level" value="1" name="level"> Level 1
+            </label>
+        </div>
+</div>
+<div class="form-group">
+    <div class="radio">
+        <label>
+            <input type="radio" ng-model="$ctrl.level" value="2" name="level"> Level 2
+        </label>
+    </div>
+</div>
+<div class="form-group">
+    <div class="radio">
+        <label>
+            <input type="radio" ng-model="$ctrl.level" value="3" name="level"> Level 3
+        </label>
+    </div>
+</div>
+<div class="btn btn-success"
+     user-role="mtt" current-role="$ctrl.rolesFactory.current.role"
+     ng-click="$ctrl.apply()">Apply</div>
+
+<br><br><br>
+<div class="alert alert-danger" ng-if="$ctrl.level==3">
+    Are you sure?
+</div>
