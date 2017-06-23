@@ -19,12 +19,9 @@ class ScriptsCtrl {
     whenMqttReady().then( ()=>
         EditorProxy.List()
     ).then(scripts=> {
-      console.log("**********",scripts);
-
       // пишу каждому временное имя
       this.scripts = scripts.map(script=> {
         script.tempName = script.virtualPath;
-        console.log("scripts",scripts);
         return script
       })
     }).catch(errors.catch("Error listing the scripts"));
@@ -59,11 +56,12 @@ class ScriptsCtrl {
   }
 
   restart(index) {
+    alert("restart Script N " + index)
 
   }
 
   toggleScript(index) {//отключить/включить
-    console.log("$index",index);
+    alert("toggle Script N " + index)
 
   }
 
