@@ -9,7 +9,7 @@ export default function handleDataService() {
         selBox.style.left = '0';
         selBox.style.top = '0';
         selBox.style.opacity = '0';
-        selBox.value = val;//this.text.join('\r\n');
+        selBox.value = val;
 
         document.body.appendChild(selBox);
         selBox.focus();

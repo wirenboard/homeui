@@ -329,7 +329,7 @@ class HistoryCtrl {
                 console.log("********первый чанк  контрол " ,indexOfControl+1);
 
                 this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
-                    name: params.channels[0][1],
+                    name: params.channels[0][0] + ' / ' + params.channels[0][1],
                     x: xValues,
                     y: yValues,
                     error_y: {//построит график  типа "ОШИБКИ"(error-bars)

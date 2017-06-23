@@ -17,7 +17,7 @@ export default function rolesFactory () {
 
     roles.getRole = ()=> {
         roles.current.role = localStorage.getItem('role');
-        return localStorage.getItem('role')
+        return roles.current.role
     };
 
     roles.setRole = (n)=> {
@@ -31,20 +31,3 @@ export default function rolesFactory () {
 
     return roles
 }
-
-/*
-* три режима:
- 1) Режим простого пользователя (по-умолчанию)
- Только смотреть и взаимодействовать с Widgets на дашбордах + просматривать историю. Доступны разделы:
-  Home,
-  Dashboards (read-only),
-   Widgets (read-only),
-   History (read-only) значит, что нельзя менять виджеты.
-   Если в виджете есть допустим кнопка или изменяемое поле - пользоваться можно.
- 2) Режим "настройка интерфейса"
- - разблокирует изменения интерфейса, т.е. добавление/удаление/изменение виджетов
-   - появляется раздел Devices.
- 3) Режим "эксперт"
- Следующий уровень "Эксперт" активируется с огромным Warning об опасности действий и
-  активирует всё остальное.
- */

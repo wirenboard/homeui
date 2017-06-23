@@ -97,7 +97,7 @@ class LoginFormCtrl {
 
     this.rolesFactory.setRole(1);
     this.rootScope.requestConfig(loginData);
-    location.reload();//this.state.reload()
+    location.reload();
   }
 }
 

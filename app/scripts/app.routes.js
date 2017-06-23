@@ -179,7 +179,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('scripts', {
       url: '/scripts',
-      controller: 'ScriptsCtrl',
+      controller: 'ScriptsCtrl as $ctrl',
       templateUrl: 'views/scripts.html',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
