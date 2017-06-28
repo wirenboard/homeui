@@ -326,7 +326,6 @@ class HistoryCtrl {
 
             // если это первый чанк то создаю график
             if(indexOfChunk==0) {
-                console.log("********первый чанк  контрол " ,indexOfControl+1);
 
                 this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
                     name: params.channels[0][0] + ' / ' + params.channels[0][1],
@@ -340,9 +339,9 @@ class HistoryCtrl {
                         // styling error-bars https://plot.ly/javascript/error-bars/#colored-and-styled-error-bars
                         thickness: 0.5,
                         width: 0,
-                        value: 0.1
+                        value: 0.1,
                         //color: '#85144B',
-                        //opacity: 1
+                        opacity: 0.5
                     },
                     type: 'scatter',
                     mode: 'lines'
@@ -351,7 +350,6 @@ class HistoryCtrl {
                 // для таблицы под графиком для первого контрола
                 if(indexOfControl==0) this.dataPoints = xValues.map((x, i) => ({x: x, y: yValues[i]}));
             } else {
-                console.log("******** чанк",indexOfChunk+1,' контрол ' ,indexOfControl+1);
                 // если последущие то просто добавляю дату
                 this.chartConfig[indexOfControl].x = this.chartConfig[indexOfControl].x.concat(xValues);
                 this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(yValues);

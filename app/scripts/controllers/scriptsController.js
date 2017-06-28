@@ -37,8 +37,7 @@ class ScriptsCtrl {
 
   save(index) {
     var path = this.scripts[index].virtualPath;
-    if (path == this.scripts[index].tempName)
-      return;
+    if (path == this.scripts[index].tempName) return;
     // приходится сначала запрашивать скрипт изза отсутствия поля контент в списке скриптов
     this.EditorProxy.Load({path}).then(script=>{
       console.log("script",script);

@@ -54,7 +54,9 @@
                 </div>
             </div>
             <div class="col-xs-3">
-                <div uib-timepicker ng-model="$ctrl.selectedStartDateMinute"
+                <div uib-timepicker
+                     ng-model="$ctrl.selectedStartDateMinute"
+                     ng-model-options="{'debounce':3000}"
                      ng-change="$ctrl.onlyTimeUpdate()"
                      minute-step="5" hour-step="1"
                      show-meridian="false"></div>
@@ -85,7 +87,9 @@
                 </div>
             </div>
             <div class="col-xs-3">
-                <div uib-timepicker ng-model="$ctrl.selectedEndDateMinute"
+                <div uib-timepicker
+                     ng-model="$ctrl.selectedEndDateMinute"
+                     ng-model-options="{'debounce':3000}"
                      ng-change="$ctrl.onlyTimeUpdate()"
                      minute-step="5" hour-step="1"
                      show-meridian="false"></div>
