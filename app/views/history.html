@@ -3,9 +3,6 @@
 </h1>
 
 <div class="row" ng-repeat="sel in $ctrl.selectedTopics track by $index">
-    <label for="control-select" class="col-xs-2 control-label">
-        {{$ctrl.channelShortNames[$index]}}
-    </label>
     <div class="col-xs-7">
         <select id="control-select"
                 class="form-control"
@@ -16,7 +13,7 @@
             <option value="">- Please Choose -</option>
         </select>
     </div>
-    <div class="col-xs-2">
+    <div class="col-xs-4">
         <div ng-hide="($index==0 && $ctrl.selectedTopics.length==1) || !$ctrl.selectedTopics[1]"
              class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)">delete
         </div>
