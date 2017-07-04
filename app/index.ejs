@@ -28,9 +28,9 @@
 
 
               <p class="navbar-text navbar-right connection-status">
-                  <a ui-sref="help">
+                  <!--<a ui-sref="help">
                     <i class="glyphicon glyphicon-question-sign"></i>
-                  </a>
+                  </a>-->
                   <span class="" ng-class="(isConnected()) ? '' : 'label label-danger'"
                         ng-bind="isConnected() ? 'Connected' : 'Disconnected'"></span>
               </p>
@@ -88,6 +88,9 @@
                               <a ui-sref="accessLevel" ui-sref-active="active">Change access level</a>
                           </li>
                       </ul>
+                  </li>
+                  <li ui-sref-active="help">
+                      <a ui-sref="scripts"><i class="glyphicon glyphicon-question-sign"></i> Help</a>
                   </li>
               </ul>
           </div>
