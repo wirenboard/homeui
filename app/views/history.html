@@ -122,7 +122,7 @@
 </div>
 
 
-<div class="col-xs-12 col-md-6 col-lg-4" ng-show="$ctrl.dataPoints.length">
+<div class="col-xs-12 col-md-6 col-lg-4" ng-if="$ctrl.dataPoints.length">
     <table class="table">
         <thead>
             <tr>
@@ -139,3 +139,19 @@
     </table>
 </div>
 
+<div class="col-xs-12" ng-if="$ctrl.dataPointsMultiple.length">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Date and time</th>
+            <th ng-repeat="name in $ctrl.channelShortNames">Value {{name}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="p in $ctrl.dataPointsMultiple track by p.date">
+            <td>{{ p.date | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td ng-repeat="_x in p.value track by $index">{{ _x }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

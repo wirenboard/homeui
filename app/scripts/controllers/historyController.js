@@ -257,11 +257,48 @@ class HistoryCtrl {
         }
         this.loadPending = false;
         if (!this.topics[indexOfControl]) {
-            return
+            // если это последний контрол + 1 то надо посчитать таблицу данных внизу страницы
+            if (this.topics[indexOfControl-1]) {
+                this.calculateTable();
+            } else  return
         }
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
-        console.log("_chunks",chunks);
+        //console.log("_chunks",chunks);
         this.loadChunkedHistory(indexOfControl,0,chunks)
+    }
+
+    calculateTable() {
+        // для таблицы под графиком для одного контрола
+        if(this.topics.length === 1) {
+            this.dataPoints = this.xValues.map((x, i) => ({x: x, y: this.yValues[i]}));
+        } else {
+            // и для нескольких
+            var objX = {},graph = [];
+            this.chartConfig.forEach(ctrl=> {
+                ctrl.x.forEach(x=> {
+                    objX[x] = null
+                })
+            });
+            var arrX = Object.keys(objX);
+            var _arrX = arrX.sort();
+            _arrX.forEach(date=> {
+                graph.push({
+                    date,
+                    value: Array(this.chartConfig.length).fill(null)
+                });
+                // ищу совпадения в каждом канале
+                this.chartConfig.forEach((ctrl,iCtrl)=> {
+                    for (var i = 0; i < ctrl.x.length; i++) {
+                        // если не нахожу то останется null
+                        if(date === ctrl.x[i]) {
+                            graph[graph.length-1].value[iCtrl] = ctrl.y[i];
+                            break
+                        }
+                    }
+                });
+            });
+            this.dataPointsMultiple = graph;
+        }
     }
 
     loadChunkedHistory(indexOfControl,indexOfChunk, chunks) {
@@ -304,12 +341,12 @@ class HistoryCtrl {
             this.pend = false;
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
 
-            var xValues = result.values.map(item => {
+            this.xValues = result.values.map(item => {
                 var ts = new Date();
                 ts.setTime(item.t * 1000);
                 return this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
             });
-            var yValues = result.values.map(item => item.v - 0);
+            this.yValues = result.values.map(item => item.v - 0);
             //var minValues = result.values.map(item => item.min - 0);
             //var maxValues = result.values.map(item => item.max - 0);
 
@@ -318,7 +355,7 @@ class HistoryCtrl {
             var minValuesErr = result.values.map(item => item.min && item.v? item.v-item.min : null);
             var maxValuesErr = result.values.map(item => item.max && item.v? item.max-item.v : null);
             /*var trace1 = {//простой график
-                x: xValues,
+                x: this.xValues,
                 y: maxValues,
                 type: 'scatter'
             };*/
@@ -329,8 +366,8 @@ class HistoryCtrl {
 
                 this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
                     name: params.channels[0][0] + ' / ' + params.channels[0][1],
-                    x: xValues,
-                    y: yValues,
+                    x: this.xValues,
+                    y: this.yValues,
                     error_y: {//построит график  типа "ОШИБКИ"(error-bars)
                         type: 'data',
                         symmetric: false,
@@ -345,25 +382,21 @@ class HistoryCtrl {
                     },
                     type: 'scatter',
                     mode: 'lines'
-                };
-
-                // для таблицы под графиком для первого контрола
-                if(indexOfControl==0) this.dataPoints = xValues.map((x, i) => ({x: x, y: yValues[i]}));
+                }
             } else {
                 // если последущие то просто добавляю дату
-                this.chartConfig[indexOfControl].x = this.chartConfig[indexOfControl].x.concat(xValues);
-                this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(yValues);
+                this.chartConfig[indexOfControl].x = this.chartConfig[indexOfControl].x.concat(this.xValues);
+                this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(this.yValues);
                 this.chartConfig[indexOfControl].error_y.array = this.chartConfig[indexOfControl].error_y.array.concat(maxValuesErr);
                 this.chartConfig[indexOfControl].error_y.arrayminus = this.chartConfig[indexOfControl].error_y.arrayminus.concat(minValuesErr);
 
                 // для таблицы под графиком для первого контрола
-                if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(xValues.map((x, i) => ({x: x, y: yValues[i]})))
+                if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(this.xValues.map((x, i) => ({x: x, y: this.yValues[i]})))
             }
 
             if(indexOfControl==0) {
                 this.firstChunkIsLoaded = true;
             }
-
             // если еще есть части интервала
             if(indexOfChunk + 2 < chunks.length) {
                 this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
