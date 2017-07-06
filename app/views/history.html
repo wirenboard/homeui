@@ -127,7 +127,7 @@
         <thead>
             <tr>
                 <th>Date and time</th>
-                <th>Value</th>
+                <th>{{$ctrl.channelNames[0]}}</th>
             </tr>
         </thead>
         <tbody>
@@ -144,7 +144,7 @@
         <thead>
         <tr>
             <th>Date and time</th>
-            <th ng-repeat="name in $ctrl.channelShortNames">Value {{name}}</th>
+            <th ng-repeat="name in $ctrl.channelNames">{{name}}</th>
         </tr>
         </thead>
         <tbody>

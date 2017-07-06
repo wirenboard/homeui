@@ -41,6 +41,7 @@ class HistoryCtrl {
         this.controlIds = [];// контролы из урла
         this.devices = [];// девайсы из урла
         this.channelShortNames = [];
+        this.channelNames = [];
         this.layoutConfig = {
             // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
@@ -335,6 +336,7 @@ class HistoryCtrl {
 
     loadHistory(params,indexOfControl,indexOfChunk,chunks) {
         this.channelShortNames[indexOfControl] = params.channels[0][1];
+        this.channelNames[indexOfControl] = params.channels[0][0] + ' / ' + params.channels[0][1];
         this.pend = true;
 
         this.HistoryProxy.get_values(params).then(result => {
