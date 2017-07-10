@@ -5,29 +5,38 @@
 <div class="form-group">
     <div class="radio">
         <label>
-            <input type="radio" ng-model="$ctrl.level" value="1" name="level"> User
+            <input type="radio" value="1" name="level"
+                   ng-model="$ctrl.level"
+                   ng-change="$ctrl.select($ctrl.one)"> {{$ctrl.one.name}}
+            <span ng-show="$ctrl.activeRole == 1" class="label label-info"> active</span>
         </label>
     </div>
 </div>
 <div class="form-group">
     <div class="radio">
         <label>
-            <input type="radio" ng-model="$ctrl.level" value="2" name="level"> Operator
+            <input type="radio" value="2" name="level"
+                   ng-model="$ctrl.level"
+                   ng-change="$ctrl.select($ctrl.two)"> {{$ctrl.two.name}}
+            <span ng-show="$ctrl.activeRole == 2" class="label label-info"> active</span>
         </label>
     </div>
 </div>
 <div class="form-group">
     <div class="radio">
         <label>
-            <input type="radio" ng-model="$ctrl.level" value="3" name="level"> Administrator
+            <input type="radio" value="3" name="level"
+                   ng-model="$ctrl.level"
+                   ng-change="$ctrl.select($ctrl.three)"> {{$ctrl.three.name}}
+            <span ng-show="$ctrl.activeRole == 3" class="label label-info"> active</span>
         </label>
     </div>
 </div>
 <div ng-click="$ctrl.apply()" class="btn btn-success">Apply</div>
 
 <br><br><br>
-<div class="alert alert-danger" ng-if="$ctrl.level==3">
+<div class="alert alert-danger" ng-show="$ctrl.level==3">
     <h2>
-        Are you sure?
+        {{$ctrl.three.name}}
     </h2>
 </div>
