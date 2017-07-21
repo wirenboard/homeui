@@ -44,11 +44,14 @@
                   <li ui-sref-active="active">
                       <a ui-sref="home"><i class="glyphicon glyphicon-cog"></i> Home</a>
                   </li>
-                  <li ui-sref-active="active" class="list-menu">
-                      <a ui-sref="dashboards"><i class="glyphicon glyphicon-dashboard"></i> Dashboards</a>
-                      <a href="javascript:;" data-toggle="collapse" data-target="#dashboards-menu"><i
-                              class="glyphicon glyphicon-menu-down"></i></a>
+                  <li ui-sref-active="active">
+                      <a href="javascript:" data-toggle="collapse" data-target="#dashboards-menu">
+                          <i class="glyphicon glyphicon-wrench"></i> Dashboards
+                      </a>
                       <ul id="dashboards-menu" class="collapse">
+                          <li>
+                              <a ui-sref="dashboards">List</a>
+                          </li>
                           <li ng-repeat="d in dashboards()" dashboard-menu-item>
                               <a ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
                           </li>

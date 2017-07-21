@@ -42,6 +42,7 @@ class HistoryCtrl {
         this.devices = [];// девайсы из урла
         this.channelShortNames = [];
         this.channelNames = [];
+        this.dataPoints = [];
         this.layoutConfig = {
             // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
