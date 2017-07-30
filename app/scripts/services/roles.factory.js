@@ -29,5 +29,11 @@ export default function rolesFactory () {
         localStorage.setItem('role',n)
     };
 
+    // проверяет есть ли права доступа/просмотра
+    // принимает значение минимально возможного статуса для доступа/просмотра
+    roles.checkRights = (onlyRoleGreatThanOrEqual)=> {
+        return roles.getRole() >= onlyRoleGreatThanOrEqual
+    };
+
     return roles
 }

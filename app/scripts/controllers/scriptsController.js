@@ -1,9 +1,11 @@
 class ScriptsCtrl {
-  constructor(EditorProxy, whenMqttReady, errors) {
+  constructor(EditorProxy, whenMqttReady, errors, rolesFactory) {
     'ngInject';
 
     this.EditorProxy = EditorProxy;
     this.errors = errors;
+    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
+    if(!this.haveRights) return;
     /*
      get list
      /rpc/v1/wbrules/Editor/List/contactless-uLo93IW6a0 {"id":1,"params":{}}

@@ -38,3 +38,7 @@
 .only-fullscreen, #jarviswidget-fullscreen-mode .not-fullscreen{
     display: none!important
 }
+
+.alert-danger a {
+    color: #404040;
+}

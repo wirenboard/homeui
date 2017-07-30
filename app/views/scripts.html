@@ -3,32 +3,37 @@
 </h1>
 
 
-<a ui-sref="scriptNew" ui-sref-active="active" class="btn btn-success">
-    New...
-</a>
-<div class="spinner" ng-show="spinnerActive('editorProxy')" ng-cloak>
-    <span class="spinner-loader">Loading...</span>
+<div class="alert alert-danger alert-dismissible" role="alert"
+     ng-hide="$ctrl.haveRights">
+    You cannot view this page. You can change <a ui-sref="accessLevel">access level</a>.
 </div>
-<br><br>
+<section ng-if="$ctrl.haveRights">
+    <a ui-sref="scriptNew" ui-sref-active="active" class="btn btn-success">
+        New...
+    </a>
+    <div class="spinner" ng-show="spinnerActive('editorProxy')" ng-cloak>
+        <span class="spinner-loader">Loading...</span>
+    </div>
+    <br><br>
 
-<div ng-cloak
-     ng-show="$ctrl.scripts.length"
-     ng-class="{'pointer-none':spinnerActive('editorProxy')}">
-    <div>
+    <div ng-cloak
+         ng-show="$ctrl.scripts.length"
+         ng-class="{'pointer-none':spinnerActive('editorProxy')}">
+        <div>
 
-        <div class="row" ng-repeat="script in $ctrl.scripts">
-            <div class="col-xs-4">
-                <a ui-sref="scriptEdit({ path: script.virtualPath })"
-                   ng-hide="$ctrl.renamedScripts[$index]">
-                    {{ script.virtualPath }}
-                </a>
-                <input type="text" class="form-control" ng-model="script.tempName" ng-show="$ctrl.renamedScripts[$index]">
-            </div>
+            <div class="row" ng-repeat="script in $ctrl.scripts">
+                <div class="col-xs-4">
+                    <a ui-sref="scriptEdit({ path: script.virtualPath })"
+                       ng-hide="$ctrl.renamedScripts[$index]">
+                        {{ script.virtualPath }}
+                    </a>
+                    <input type="text" class="form-control" ng-model="script.tempName" ng-show="$ctrl.renamedScripts[$index]">
+                </div>
 
-            <div class="col-xs-8">
-                <button class="icon-button" ng-click="$ctrl.deleteScript($index)" title="delete">
-                    <i class="glyphicon glyphicon-trash"></i>
-                </button>
+                <div class="col-xs-8">
+                    <button class="icon-button" ng-click="$ctrl.deleteScript($index)" title="delete">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </button>
                 <span class="onoffswitch">
                    <input type="checkbox" class="onoffswitch-checkbox" id="switch{{$index}}"
                           ng-change="$ctrl.toggleScript($index)"
@@ -39,103 +44,31 @@
                        <span class="onoffswitch-switch"></span>
                    </label>
                 </span>
-                <button ng-click="$ctrl.restart($index)" title="restart" class="icon-button">
-                    <i class="glyphicon glyphicon-retweet"></i>
-                </button>
+                    <button ng-click="$ctrl.restart($index)" title="restart" class="icon-button">
+                        <i class="glyphicon glyphicon-retweet"></i>
+                    </button>
 
-                <button class="icon-button" ng-click="$ctrl.renameMode($index)"
-                        title="edit name"
-                        ng-hide="$ctrl.renamedScripts[$index]">
-                    <i class="glyphicon glyphicon-pencil"></i>
-                </button>
-                <button class="icon-button" ng-click="$ctrl.undoRename($index)"
-                        title="undo"
-                        ng-show="$ctrl.renamedScripts[$index]">
-                    <i class="glyphicon glyphicon-arrow-left"></i>
-                </button>
-                <button class="icon-button" ng-click="$ctrl.save($index)"
-                        title="save"
-                        ng-show="$ctrl.renamedScripts[$index]">
-                    <i class="glyphicon glyphicon-ok"></i>
-                </button>
+                    <button class="icon-button" ng-click="$ctrl.renameMode($index)"
+                            title="edit name"
+                            ng-hide="$ctrl.renamedScripts[$index]">
+                        <i class="glyphicon glyphicon-pencil"></i>
+                    </button>
+                    <button class="icon-button" ng-click="$ctrl.undoRename($index)"
+                            title="undo"
+                            ng-show="$ctrl.renamedScripts[$index]">
+                        <i class="glyphicon glyphicon-arrow-left"></i>
+                    </button>
+                    <button class="icon-button" ng-click="$ctrl.save($index)"
+                            title="save"
+                            ng-show="$ctrl.renamedScripts[$index]">
+                        <i class="glyphicon glyphicon-ok"></i>
+                    </button>
+                </div>
+                <hr>
+                <div class="clerfix"></div>
             </div>
-            <hr>
-            <div class="clerfix"></div>
         </div>
     </div>
-</div>
+</section>
 
-<!--
-<div class="table-responsive" ng-cloak
-           ng-class="{'pointer-none':spinnerActive('editorProxy')}">
-    <table class="table table-bordered" ng-show="$ctrl.scripts.length">
-        <thead>
-        <tr>
-            <th>Script name</th>
-            <th></th>
-            <th></th>
-            <th>on/off</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="script in $ctrl.scripts">
-            <td>
-                <a ui-sref="scriptEdit({ path: script.virtualPath })"
-                   ng-hide="$ctrl.renamedScripts[$index]">
-                    {{ script.virtualPath }}
-                </a>
-                <label class="input">
-                    <input type="text" ng-model="script.tempName" ng-show="$ctrl.renamedScripts[$index]">
-                </label>
 
-            </td>
-            <td>
-                <button class="btn btn-warning" ng-click="$ctrl.renameMode($index)"
-                        ng-hide="$ctrl.renamedScripts[$index]">
-                    Rename
-                </button>
-                <button class="btn btn-warning" ng-click="$ctrl.undoRename($index)"
-                        ng-show="$ctrl.renamedScripts[$index]">
-                    Undo
-                </button>
-                <button class="btn btn-success" ng-click="$ctrl.save($index)"
-                        ng-show="$ctrl.renamedScripts[$index]">
-                    Save
-                </button>
-            </td>
-            <td>
-                <button ng-click="$ctrl.deleteMode($index)" class="btn btn-danger"
-                        ng-hide="$ctrl.deletedScripts[$index]">
-                    Delete
-                </button>
-                <button ng-click="$ctrl.deleteScript($index)" class="btn btn-danger"
-                        ng-show="$ctrl.deletedScripts[$index]">
-                    Yes
-                </button>
-                <button ng-click="$ctrl.deleteMode($index)" class="btn btn-success"
-                        ng-show="$ctrl.deletedScripts[$index]">
-                    No
-                </button>
-            </td>
-            <td>
-                <span class="onoffswitch">
-                   <input type="checkbox" class="onoffswitch-checkbox" id="switch{{$index}}"
-                          ng-change="$ctrl.toggleScript($index)"
-                          ng-model="cell.value">
-                   <label class="onoffswitch-label" for="switch{{$index}}"
-                          ng-class="{'pointer-none text-muted':cell.readOnly==true}">
-                       <span class="onoffswitch-inner" data-swchon-text="ON" data-swchoff-text="OFF"></span>
-                       <span class="onoffswitch-switch"></span>
-                   </label>
-                </span>
-            </td>
-            <td>
-                <a ng-click="$ctrl.restart($index)" class="btn btn-success">
-                    Restart
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>-->
