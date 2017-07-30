@@ -1,7 +1,8 @@
 class WidgetsCtrl {
-  constructor($scope, uiConfig, DeviceData, getTime) {
+  constructor($scope, uiConfig, DeviceData, handleData) {
     'ngInject';
-    
+
+    this.handleData = handleData;
     $scope.cell = id => {
       return DeviceData.proxy(id);
     };
@@ -19,12 +20,7 @@ class WidgetsCtrl {
       };
     }
 
-    $scope.historyStartTS = () => {
-      var t = getTime(),
-          d = new Date();
-      d.setTime(t);
-      return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    };
+    $scope.historyStartTS = () => this.handleData.historyStartTS();
     $scope.rows = [];
     $scope.$watch(uiConfig.version, () => {
       var dashboardMap = Object.create(null);

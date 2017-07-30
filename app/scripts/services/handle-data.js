@@ -96,4 +96,10 @@ export default function handleDataService() {
         return ret
     };
 
+    this.historyStartTS = () => {
+        var d = new Date();
+        d.setTime(new Date().getTime());
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    }
+
 }
