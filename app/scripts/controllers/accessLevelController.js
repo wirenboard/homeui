@@ -8,9 +8,9 @@ export default class accessLevelController {
 
         this.$timeout = $timeout;
 
-        this.one = {id: 1, name: 'User'};
-        this.two = {id: 2, name: 'Operator'};
-        this.three = {id: 3, name: 'Administrator'};
+        this.one = rolesFactory.ROLES[0];
+        this.two = rolesFactory.ROLES[1];
+        this.three = rolesFactory.ROLES[2];
         this.rolesFactory = rolesFactory;
         this.activeRole = rolesFactory.current.role;
         this.level = '' + rolesFactory.getRole();

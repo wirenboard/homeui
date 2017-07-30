@@ -28,10 +28,15 @@
 
 
               <p class="navbar-text navbar-right connection-status">
-                  <!--<a ui-sref="help">
+                  <!--<a ui-sref="help">label label-warning
                     <i class="glyphicon glyphicon-question-sign"></i>
                   </a>-->
-                  <span class="" ng-class="(isConnected()) ? '' : 'label label-danger'"
+                  <span class="label label-warning label-custom"
+                        ng-show="roles.current.roles.shortName"
+                        title="access level: {{roles.current.roles.name}}">
+                      {{roles.current.roles.shortName}}
+                  </span>
+                  <span class="connected-status" ng-class="(isConnected()) ? 'label label-success' : 'label label-danger'"
                         ng-bind="isConnected() ? 'Connected' : 'Disconnected'"></span>
               </p>
           </div>

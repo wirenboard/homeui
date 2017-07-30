@@ -42,3 +42,12 @@
 .alert-danger a {
     color: #404040;
 }
+
+.label.label-custom {
+    margin-right: 10px;
+    padding: .3em .4em .3em .6em;
+}
+
+.connected-status {
+    padding-top: 3px;
+}
