@@ -34,6 +34,7 @@ class WidgetsCtrl {
         var primaryRow = {
           name: widget.name,
           id: widget.id,
+          _id: widget.id.slice(6),
           widget: widget,
           get rowSpan () {
             return this.preview ? 1 : Math.max(widget.cells.length, 1);
@@ -51,6 +52,7 @@ class WidgetsCtrl {
         return [ primaryRow ].concat(widget.cells.slice(1).map((cell, n) => ({
           name: widget.name,
           id: widget.id,
+          _id: widget.id.slice(6),
           widget: null,
           cellIndex: n + 2,
           cell: wrapWidgetCell(cell),
