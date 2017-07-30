@@ -43,6 +43,7 @@ class HistoryCtrl {
         this.channelShortNames = [];
         this.channelNames = [];
         this.dataPoints = [];
+        this.hasStrings = [];
         this.layoutConfig = {
             // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
@@ -146,7 +147,7 @@ class HistoryCtrl {
             var parsedTopic = this.parseTopic(this.selectedTopics[index]);
             // если этот контрол уже загружен в другой селект или нет такого топика
             if (!parsedTopic ||
-                (this.controlIds.includes(parsedTopic.controlId)) && this.devices.includes(parsedTopic.deviceId))
+                (this.controlIds.indexOf(parsedTopic.controlId)>=0 && this.devices.indexOf(parsedTopic.deviceId)>=0))
                 return;
             // перезаписываю существующие
             this.devices[index] = parsedTopic.deviceId;
@@ -259,7 +260,10 @@ class HistoryCtrl {
         }
         this.loadPending = false;
         if (!this.topics[indexOfControl]) {
-            // если это последний контрол + 1 то надо посчитать таблицу данных внизу страницы
+            // если это последний контрол + 1 то надо
+            // проверить есть ли графики с строковыми значениями
+            this.hasString = this.hasStrings.some(d => d);
+            // и посчитать таблицу данных внизу страницы
             if (this.topics[indexOfControl-1]) {
                 this.calculateTable();
             } else  return
@@ -342,6 +346,7 @@ class HistoryCtrl {
 
         this.HistoryProxy.get_values(params).then(result => {
             this.pend = false;
+            this.hasStrings[indexOfControl] = result.values.some(item => typeof item.v === 'string');
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
 
             this.xValues = result.values.map(item => {

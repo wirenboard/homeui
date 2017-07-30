@@ -112,13 +112,18 @@
         <plotly plotly-events="$ctrl.plotlyEvents"
                 plotly-data="$ctrl.chartConfig"
                 plotly-layout="$ctrl.layoutConfig"
-                plotly-options="$ctrl.options"></plotly>
+                plotly-options="$ctrl.options"
+                ng-hide="$ctrl.hasString"></plotly>
         <br>
         <div class="history-empty"
              ng-show="this.chartConfig[0].x.length && !$ctrl.dataPoints.length">
             No data points to display.
         </div>
     </div>
+    <!--<div class="history-empty"
+         ng-show="$ctrl.hasString">
+        No points for graph.
+    </div>-->
 </div>
 
 
