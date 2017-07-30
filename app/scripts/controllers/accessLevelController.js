@@ -8,6 +8,7 @@ export default class accessLevelController {
 
         this.$timeout = $timeout;
 
+        this.isLevelUp = false;
         this.one = rolesFactory.ROLES[0];
         this.two = rolesFactory.ROLES[1];
         this.three = rolesFactory.ROLES[2];
@@ -18,16 +19,11 @@ export default class accessLevelController {
     }
 
     select(newType) {
+        this.ok = false;
         if(newType.id > this.type.id) {
-            if(confirm(`Switch to ${newType.name}?`)) {
-                this.type = newType;
-            } else {
-                // откатываю значение
-                // чтобы не переключалось ставлю пустышку
-                this.level = '';
-                this.$timeout(()=>this.level = '' + this.type.id)
-            }
+            this.isLevelUp = true;
         } else {
+            this.isLevelUp = false;
             this.type = newType;
         }
     }

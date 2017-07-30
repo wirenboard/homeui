@@ -32,11 +32,13 @@
         </label>
     </div>
 </div>
-<div ng-click="$ctrl.apply()" class="btn btn-success">Apply</div>
-
-<br><br><br>
-<div class="alert alert-danger" ng-show="$ctrl.level==3">
-    <h2>
-        {{$ctrl.three.name}}
-    </h2>
+<br><br>
+<div class="form-group alert alert-danger" ng-show="$ctrl.isLevelUp">
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="$ctrl.ok"> I now what i do
+        </label>
+    </div>
 </div>
+
+<button ng-click="$ctrl.apply()" ng-disabled="!$ctrl.ok && $ctrl.isLevelUp" class="btn btn-success">Apply</button>
