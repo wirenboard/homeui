@@ -275,16 +275,23 @@ class HistoryCtrl {
 
     calculateTable() {
         // для таблицы под графиком для одного контрола
+        this.dataPoints = true;
         if(this.topics.length === 1) {
             this.dataPoints = this.xValues.map((x, i) => ({x: x, y: this.yValues[i]}));
+            // провериь есть ли точки в контроллах
+            this.hasPoints = this.dataPoints.some(point =>  !!point.y)
         } else {
             // и для нескольких
+            this.dataPointsArr = [];
             var objX = {},graph = [];
-            this.chartConfig.forEach(ctrl=> {
+            this.chartConfig.forEach((ctrl,i) => {
+                this.dataPointsArr[i] = ctrl.y.some(point =>  !!point);
                 ctrl.x.forEach(x=> {
                     objX[x] = null
                 })
             });
+            this.hasPoints = this.dataPointsArr.some(boolin => boolin);
+
             var arrX = Object.keys(objX);
             var _arrX = arrX.sort();
             _arrX.forEach(date=> {

@@ -113,10 +113,10 @@
                 plotly-data="$ctrl.chartConfig"
                 plotly-layout="$ctrl.layoutConfig"
                 plotly-options="$ctrl.options"
-                ng-hide="$ctrl.hasString"></plotly>
+                ng-hide="$ctrl.hasString || !$ctrl.hasPoints"></plotly>
         <br>
         <div class="history-empty"
-             ng-show="this.chartConfig[0].x.length && !$ctrl.dataPoints.length">
+             ng-show="(this.chartConfig[0].x.length && !$ctrl.dataPoints.length) || !$ctrl.hasPoints">
             No data points to display.
         </div>
     </div>
@@ -127,7 +127,7 @@
 </div>
 
 
-<div class="col-xs-12 col-md-6 col-lg-4" ng-if="$ctrl.dataPoints.length">
+<div class="col-xs-12 col-md-6 col-lg-4" ng-if="$ctrl.dataPoints.length && $ctrl.hasPoints">
     <table class="table">
         <thead>
             <tr>
@@ -144,7 +144,7 @@
     </table>
 </div>
 
-<div class="col-xs-12" ng-if="$ctrl.dataPointsMultiple.length">
+<div class="col-xs-12" ng-if="$ctrl.dataPointsMultiple.length && $ctrl.hasPoints">
     <table class="table">
         <thead>
         <tr>

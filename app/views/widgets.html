@@ -2,7 +2,8 @@
     Widgets
 </h1>
 <div class="empty-list well" ng-if="!rows.length">No widgets are currently defined.</div>
-<table class="table widgets-table webui-table table-condensed" ng-if="rows.length">
+
+<table class="table widgets-table webui-table table-condensed table-scroll " ng-if="rows.length">
     <thead>
     <tr>
         <th class="idx-col">#</th>
@@ -10,19 +11,18 @@
         <th class="cell-name-col">Cells</th>
         <th class="cell-type-col">Types</th>
         <th class="cell-value-col">Values</th>
-        <th class="cell-history-col">Graph</th>
+        <th class="idx-col">Graph</th>
         <th class="description-col">Description</th>
         <th class="dashboards-col">Dashboards</th>
         <th class="button-col"></th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="row in rows | filter:{show:true}">
+    <tr ng-repeat="row in rows track by $index">
         <th ng-if="!!row.widget" class="idx-col" scope="row" rowspan="{{ row.rowSpan }}">{{ row._id }}</th>
         <td ng-if="!!row.widget" class="name-col" rowspan="{{ row.rowSpan }}">{{ row.name }}</td>
         <td ng-if="row.widget && row.preview" class="preview-col" colspan="4">
             <widget source="row.widget"></widget>
-        </td>
         </td>
         <td ng-if="!row.preview" class="cell-name-col" cell="row.cell.id">
             <cell-name override="row.cell.name" display-id="true"></cell-name>
