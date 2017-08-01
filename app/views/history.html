@@ -39,7 +39,7 @@
                            type="text"
                            class="form-control"
                            uib-datepicker-popup="{{format}}"
-                           ng-change="$ctrl.onlyTimeUpdate()"
+                           ng-change="$ctrl.timeChange()"
                            ng-model="$ctrl.selectedStartDate"
                            is-open="$ctrl.popups.start"
                            datepicker-options="$ctrl.dateOptionsStart"
@@ -53,8 +53,7 @@
             <div class="col-xs-3">
                 <div uib-timepicker
                      ng-model="$ctrl.selectedStartDateMinute"
-                     ng-model-options="{'debounce':3000}"
-                     ng-change="$ctrl.onlyTimeUpdate()"
+                     ng-change="$ctrl.timeChange()"
                      minute-step="5" hour-step="1"
                      show-meridian="false"></div>
             </div>
@@ -72,7 +71,7 @@
                            type="text"
                            class="form-control"
                            uib-datepicker-popup="{{format}}"
-                           ng-change="$ctrl.onlyTimeUpdate()"
+                           ng-change="$ctrl.timeChange()"
                            ng-model="$ctrl.selectedEndDate"
                            is-open="$ctrl.popups.end"
                            datepicker-options="$ctrl.dateOptionsEnd"
@@ -86,8 +85,7 @@
             <div class="col-xs-3">
                 <div uib-timepicker
                      ng-model="$ctrl.selectedEndDateMinute"
-                     ng-model-options="{'debounce':3000}"
-                     ng-change="$ctrl.onlyTimeUpdate()"
+                     ng-change="$ctrl.timeChange()"
                      minute-step="5" hour-step="1"
                      show-meridian="false"></div>
             </div>
@@ -95,9 +93,12 @@
     </div>
 </div>
 
-<div ng-show="$ctrl.plotlyStartDate">
-    <button class="btn btn-success" ng-click="$ctrl.changeDateByPlotly()">
-        Load more data
+<div ng-show="$ctrl.timeChanged">
+    <button class="btn btn-success" ng-click="$ctrl.updateDateRange()">
+        Load data
+    </button>
+    <button class="btn btn-success" ng-click="$ctrl.readDatesFromUrl()">
+        Reset
     </button>
     <br><br>
 </div>

@@ -11,6 +11,7 @@ class HistoryCtrl {
         this.CHUNK_INTERVAL = 1;
         // 2. requirements
         var $stateParams = $injector.get('$stateParams');
+        this.$stateParams = $stateParams;
         var $location = $injector.get('$location');
         var HistoryProxy = $injector.get('HistoryProxy');
         var whenMqttReady = $injector.get('whenMqttReady');
@@ -33,8 +34,7 @@ class HistoryCtrl {
         this.handleData = handleData;
 
         // читаем из урла даты
-        this.startDate = this.convDate($stateParams.start);
-        this.endDate = this.convDate($stateParams.end);
+        this.readDatesFromUrl();
 
         this.topics = [];// все топики из урла
         this.chartConfig = [];// данные графика
@@ -74,9 +74,6 @@ class HistoryCtrl {
         this.topics = this.topics.length? this.topics : [null];
         this.selectedTopics = this.topics;
 
-        this.setDefaultTime(this.startDate,this.endDate);
-        this.selectedStartDate = this.startDate;
-        this.selectedEndDate = this.endDate;
         // опции ограничивающие выбор. тк после смены дат перезагрузка то
         // только здесь они определяются/ вотчить не надо
         this.dateOptionsEnd = {minDate:this.startDate};
@@ -97,13 +94,18 @@ class HistoryCtrl {
             }
         });
 
-        this.plotlyEvents = (graph)=>{
+        this.plotlyEvents = (graph) => {
             // !!!!! метод обязтельно должен быть в конструкторе иначе контекст будет непонятно чей
-            graph.on('plotly_relayout', (event)=>{
+            graph.on('plotly_relayout', (event) => {
                 if(event['xaxis.range[0]']) {
-                    // после первой перерисовки открываю кнопку с помощью this.plotlyStartDate
-                    this.plotlyStartDate = event['xaxis.range[0]'];
-                    this.plotlyEndDate = event['xaxis.range[1]'];
+                    this.timeChange();
+
+                    // порядок не менять!!!
+                    this.selectedStartDate = new Date(event['xaxis.range[0]']);
+                    this.selectedEndDate = new Date(event['xaxis.range[1]']);
+                    this.setDefaultTime(this.selectedStartDate,this.selectedEndDate);
+                    //обнуляю время чтобы не прогрессировало
+                    this.resetTime();
                 }
             })
         };
@@ -135,8 +137,18 @@ class HistoryCtrl {
 
     // Class methods
     //...........................................................................
+
+    // читает из урла даты
+    readDatesFromUrl() {
+        this.startDate = this.convDate(this.$stateParams.start);
+        this.endDate = this.convDate(this.$stateParams.end);
+        this.setDefaultTime(this.startDate,this.endDate);
+        this.selectedStartDate = this.startDate;
+        this.selectedEndDate = this.endDate;
+    };
+
+    // смена урла
     updateUrl(index=0,deleteOne=false,onlyTimeUpdate=false) {
-        // смена урла
 
         //  если удаляется селект
         if(deleteOne) {
@@ -164,6 +176,17 @@ class HistoryCtrl {
             return num
         }
 
+        this.resetTime();
+        this.location.path([
+            "/history",
+            this.devices.join(';'),
+            this.controlIds.join(';'),
+            this.selectedStartDate ? this.selectedStartDate.getTime() + addHoursAndMinutes(this.selectedStartDateMinute) : "-",
+            this.selectedEndDate ? this.selectedEndDate.getTime() + addHoursAndMinutes(this.selectedEndDateMinute) : "-"
+        ].join("/"));
+    }
+
+    resetTime() {
         // обнуляю время чтобы не прогрессировало
         if(this.selectedStartDate) {
             this.selectedStartDate.setHours(0);
@@ -173,14 +196,6 @@ class HistoryCtrl {
             this.selectedEndDate.setHours(0);
             this.selectedEndDate.setMinutes(0)
         }
-
-        this.location.path([
-            "/history",
-            this.devices.join(';'),
-            this.controlIds.join(';'),
-            this.selectedStartDate ? this.selectedStartDate.getTime() + addHoursAndMinutes(this.selectedStartDateMinute) : "-",
-            this.selectedEndDate ? this.selectedEndDate.getTime() + addHoursAndMinutes(this.selectedEndDateMinute) : "-"
-        ].join("/"));
     }
 
     addTopic() {
@@ -191,10 +206,49 @@ class HistoryCtrl {
         this.updateUrl(i,true)
     }
 
-    onlyTimeUpdate() {
-        // доп проверки на минуты можно не ставить. если менять минуты например старта когда дата старта
-        // не определена то урл не сменится так как все равно подставится "-" вместо даты старта
-        if(this.selectedStartDate || this.selectedEndDate) this.updateUrl(false,false,true)
+    timeChange() {
+        this.timeChanged = true;
+    }
+
+    updateDateRange() {
+        if(this.isValidDatesRange()) {
+            // доп проверки на минуты можно не ставить. если менять минуты например старта когда дата старта
+            // не определена то урл не сменится так как все равно подставится "-" вместо даты старта
+            if(this.selectedStartDate || this.selectedEndDate) this.updateUrl(false,false,true)
+        } else {
+            alert('Date range is invalid. Change one of dates')
+        }
+    }
+
+    isValidDatesRange() {
+        // не с чем сравнивать (время в расчет не беру) поэтому валидирую сразу
+        if(!this.selectedStartDate || !this.selectedEndDate) return true;
+
+        var sMin, sHour, eMin, eHour,
+            // копирую
+            s = new Date(this.selectedStartDate),
+            e = new Date(this.selectedEndDate);
+        if(this.selectedStartDateMinute) {
+            sMin = this.selectedStartDateMinute.getMinutes();
+            sHour = this.selectedStartDateMinute.getHours();
+        } else {
+            sMin = 0;
+            sHour = 0;
+        }
+        if(this.selectedEndDateMinute) {
+            eMin = this.selectedEndDateMinute.getMinutes();
+            eHour = this.selectedEndDateMinute.getHours();
+        } else {
+            eMin = 0;
+            eHour = 0;
+        }
+        
+        s.setMinutes(sMin);
+        s.setHours(sHour);
+        e.setMinutes(eMin);
+        e.setHours(eHour);
+
+        return this.handleData.diffDatesInMinutes(s, e) > 0
     }
 
     //...........................................................................
@@ -207,6 +261,7 @@ class HistoryCtrl {
         return d;
     }
 
+    // проставляет только время
     setDefaultTime(start,end) {
         // выставляю время
         // вычитываю из урла или ставлю дефолтное
@@ -245,13 +300,6 @@ class HistoryCtrl {
             controlId: m[2]
         };
     } // parseTopic
-
-    changeDateByPlotly() {
-        if(!this.plotlyStartDate) return;
-        this.startDate = new Date(this.plotlyStartDate);
-        this.endDate = new Date(this.plotlyEndDate);
-        this.beforeLoadChunkedHistory();
-    }
 
     beforeLoadChunkedHistory(indexOfControl=0) {
         if (!this.ready) {

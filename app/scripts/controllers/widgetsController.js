@@ -30,11 +30,11 @@ class WidgetsCtrl {
         });
       });
       // XXX: dashboards. perhaps should add config change tracking
-      $scope.rows = Array.prototype.concat.apply([], uiConfig.data.widgets.map(widget => {
+      $scope.rows = Array.prototype.concat.apply([], uiConfig.data.widgets.map((widget,i) => {
         var primaryRow = {
           name: widget.name,
           id: widget.id,
-          _id: widget.id.slice(6),
+          _id:i+1,
           widget: widget,
           get rowSpan () {
             return this.preview ? 1 : Math.max(widget.cells.length, 1);

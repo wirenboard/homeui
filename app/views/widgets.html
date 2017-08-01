@@ -19,7 +19,7 @@
     </thead>
     <tbody>
     <tr ng-repeat="row in rows track by $index">
-        <th ng-if="!!row.widget" class="idx-col" scope="row" rowspan="{{ row.rowSpan }}">{{ row._id }}</th>
+        <th ng-if="!!row.widget" class="idx-col" scope="row" rowspan="{{ row.rowSpan }}">{{row._id}}</th>
         <td ng-if="!!row.widget" class="name-col" rowspan="{{ row.rowSpan }}">{{ row.name }}</td>
         <td ng-if="row.widget && row.preview" class="preview-col" colspan="4">
             <widget source="row.widget"></widget>
