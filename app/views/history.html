@@ -42,8 +42,7 @@
                            ng-change="$ctrl.timeChange()"
                            ng-model="$ctrl.selectedStartDate"
                            is-open="$ctrl.popups.start"
-                           datepicker-options="$ctrl.dateOptionsStart"
-                           close-text="Close"/>
+                           close-text="Close"/><!--datepicker-options="$ctrl.dateOptionsStart"-->
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="$ctrl.popups.start = true"><i
                         class="glyphicon glyphicon-calendar"></i></button>
@@ -74,8 +73,7 @@
                            ng-change="$ctrl.timeChange()"
                            ng-model="$ctrl.selectedEndDate"
                            is-open="$ctrl.popups.end"
-                           datepicker-options="$ctrl.dateOptionsEnd"
-                           close-text="Close"/>
+                           close-text="Close"/><!--datepicker-options="$ctrl.dateOptionsEnd"-->
                   <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="$ctrl.popups.end = true"><i
                             class="glyphicon glyphicon-calendar"></i></button>
@@ -93,15 +91,17 @@
     </div>
 </div>
 
-<div ng-show="$ctrl.timeChanged">
-    <button class="btn btn-success" ng-click="$ctrl.updateDateRange()">
-        Load data
-    </button>
-    <button class="btn btn-success" ng-click="$ctrl.readDatesFromUrl()">
-        Reset
-    </button>
-    <br><br>
-</div>
+<button class="btn btn-success"
+        ng-disabled="!$ctrl.timeChanged"
+        ng-click="$ctrl.updateDateRange()">
+    Load data
+</button>
+<button class="btn btn-success"
+        ng-disabled="!$ctrl.timeChanged"
+        ng-click="$ctrl.readDatesFromUrl()">
+    Reset
+</button>
+<br><br>
 
 <div class="col-sm-12 spinner" ng-cloak
      ng-show="$ctrl.pend || (!$ctrl.firstChunkIsLoaded && !$ctrl.selectedTopics.length)">

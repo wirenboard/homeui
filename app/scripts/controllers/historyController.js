@@ -221,13 +221,12 @@ class HistoryCtrl {
     }
 
     isValidDatesRange() {
-        // не с чем сравнивать (время в расчет не беру) поэтому валидирую сразу
-        if(!this.selectedStartDate || !this.selectedEndDate) return true;
+        if(!this.selectedStartDate) return true;
 
-        var sMin, sHour, eMin, eHour,
+        var sMin, sHour,
             // копирую
             s = new Date(this.selectedStartDate),
-            e = new Date(this.selectedEndDate);
+            e = this.selectedEndDate ? new Date( this.selectedEndDate) : new Date();
         if(this.selectedStartDateMinute) {
             sMin = this.selectedStartDateMinute.getMinutes();
             sHour = this.selectedStartDateMinute.getHours();
@@ -235,20 +234,17 @@ class HistoryCtrl {
             sMin = 0;
             sHour = 0;
         }
-        if(this.selectedEndDateMinute) {
-            eMin = this.selectedEndDateMinute.getMinutes();
-            eHour = this.selectedEndDateMinute.getHours();
-        } else {
-            eMin = 0;
-            eHour = 0;
-        }
-        
         s.setMinutes(sMin);
         s.setHours(sHour);
-        e.setMinutes(eMin);
-        e.setHours(eHour);
 
-        return this.handleData.diffDatesInMinutes(s, e) > 0
+        // назначаю только если есть конечная дата(а не время) иначе берутся текущие
+        if(this.selectedEndDate) {
+            e.setMinutes(this.selectedEndDateMinute.getMinutes());
+            e.setHours(this.selectedEndDateMinute.getHours());
+        }
+        
+        // сравниваю и разницу дат и то чтобы старт не был в будущем
+        return this.handleData.diffDatesInMinutes(s, new Date()) > 0 && this.handleData.diffDatesInMinutes(s, e) > 0
     }
 
     //...........................................................................
@@ -327,7 +323,8 @@ class HistoryCtrl {
         if(this.topics.length === 1) {
             this.dataPoints = this.xValues.map((x, i) => ({x: x, y: this.yValues[i]}));
             // провериь есть ли точки в контроллах
-            this.hasPoints = this.dataPoints.some(point =>  !!point.y)
+            // ниже point.y == 0 специально выставлено не жесткое сравнение / не менять!!!
+            this.hasPoints = this.dataPoints.some(point =>  !!point.y || point.y == 0)
         } else {
             // и для нескольких
             this.dataPointsArr = [];
