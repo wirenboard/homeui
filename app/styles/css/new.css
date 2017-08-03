@@ -58,3 +58,26 @@ div[uib-datepicker-popup-wrap] {
     z-index: 10000;
     position: relative;
 }
+
+.relative {
+    position: relative;
+}
+
+.floating {
+    position: absolute;
+}
+
+.spinner-floating {
+    position: relative;
+    width: 33px;
+    margin: 0 auto;
+}
+
+.spinner-floating .spinner{
+    position: absolute;
+}
+
+.hidden-picker .form-group.uib-time {
+     pointer-events: none;
+     opacity: 0.9
+ }

@@ -73,11 +73,10 @@ class HistoryCtrl {
         // если массив пустой то создаю первый элемент
         this.topics = this.topics.length? this.topics : [null];
         this.selectedTopics = this.topics;
-
         // опции ограничивающие выбор. тк после смены дат перезагрузка то
         // только здесь они определяются/ вотчить не надо
-        this.dateOptionsEnd = {minDate:this.startDate};
-        this.dateOptionsStart = {maxDate:this.endDate};
+        this.dateOptionsEnd = {minDate:this.startDate,maxDate: new Date()};
+        this.dateOptionsStart = {maxDate:this.endDate || new Date()};
 
         this.ready = false;
         this.loadPending = !!this.topics.length;
@@ -206,7 +205,7 @@ class HistoryCtrl {
         this.updateUrl(i,true)
     }
 
-    timeChange() {
+    timeChange(type) {
         this.timeChanged = true;
     }
 
@@ -397,6 +396,8 @@ class HistoryCtrl {
         this.pend = true;
 
         this.HistoryProxy.get_values(params).then(result => {
+            console.log("result",result);
+
             this.pend = false;
             this.hasStrings[indexOfControl] = result.values.some(item => typeof item.v === 'string');
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
@@ -456,6 +457,8 @@ class HistoryCtrl {
 
             if(indexOfControl==0) {
                 this.firstChunkIsLoaded = true;
+                console.log("firstChunkIsLoaded");
+                
             }
             // если еще есть части интервала
             if(indexOfChunk + 2 < chunks.length) {

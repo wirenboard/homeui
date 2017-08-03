@@ -39,10 +39,11 @@
                            type="text"
                            class="form-control"
                            uib-datepicker-popup="{{format}}"
-                           ng-change="$ctrl.timeChange()"
+                           ng-change="$ctrl.timeChange('start')"
                            ng-model="$ctrl.selectedStartDate"
                            is-open="$ctrl.popups.start"
-                           close-text="Close"/><!--datepicker-options="$ctrl.dateOptionsStart"-->
+                           datepicker-options="$ctrl.dateOptionsStart"
+                           close-text="Close"/>
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="$ctrl.popups.start = true"><i
                         class="glyphicon glyphicon-calendar"></i></button>
@@ -52,7 +53,7 @@
             <div class="col-xs-3">
                 <div uib-timepicker
                      ng-model="$ctrl.selectedStartDateMinute"
-                     ng-change="$ctrl.timeChange()"
+                     ng-change="$ctrl.timeChange('start')"
                      minute-step="5" hour-step="1"
                      show-meridian="false"></div>
             </div>
@@ -70,10 +71,11 @@
                            type="text"
                            class="form-control"
                            uib-datepicker-popup="{{format}}"
-                           ng-change="$ctrl.timeChange()"
+                           ng-change="$ctrl.timeChange('end')"
                            ng-model="$ctrl.selectedEndDate"
                            is-open="$ctrl.popups.end"
-                           close-text="Close"/><!--datepicker-options="$ctrl.dateOptionsEnd"-->
+                           datepicker-options="$ctrl.dateOptionsEnd"
+                           close-text="Close"/>
                   <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="$ctrl.popups.end = true"><i
                             class="glyphicon glyphicon-calendar"></i></button>
@@ -83,7 +85,7 @@
             <div class="col-xs-3">
                 <div uib-timepicker
                      ng-model="$ctrl.selectedEndDateMinute"
-                     ng-change="$ctrl.timeChange()"
+                     ng-change="$ctrl.timeChange('end')"
                      minute-step="5" hour-step="1"
                      show-meridian="false"></div>
             </div>

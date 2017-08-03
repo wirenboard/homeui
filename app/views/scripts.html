@@ -11,11 +11,12 @@
     <a ui-sref="scriptNew" ui-sref-active="active" class="btn btn-success">
         New...
     </a>
-    <div class="spinner" ng-show="spinnerActive('editorProxy')" ng-cloak>
-        <span class="spinner-loader">Loading...</span>
+    <div class="spinner-floating">
+        <div class="spinner" ng-show="spinnerActive('editorProxy')" ng-cloak>
+            <span class="spinner-loader">Loading...</span>
+        </div>
     </div>
     <br><br>
-
     <div ng-cloak
          ng-show="$ctrl.scripts.length"
          ng-class="{'pointer-none':spinnerActive('editorProxy')}">
