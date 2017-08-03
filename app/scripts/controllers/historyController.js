@@ -304,8 +304,6 @@ class HistoryCtrl {
         this.loadPending = false;
         if (!this.topics[indexOfControl]) {
             // если это последний контрол + 1 то надо
-            // проверить есть ли графики с строковыми значениями
-            this.hasString = this.hasStrings.some(d => d);
             // и посчитать таблицу данных внизу страницы
             if (this.topics[indexOfControl-1]) {
                 this.calculateTable();
@@ -321,20 +319,14 @@ class HistoryCtrl {
         this.dataPoints = true;
         if(this.topics.length === 1) {
             this.dataPoints = this.xValues.map((x, i) => ({x: x, y: this.yValues[i]}));
-            // провериь есть ли точки в контроллах
-            // ниже point.y == 0 специально выставлено не жесткое сравнение / не менять!!!
-            this.hasPoints = this.dataPoints.some(point =>  !!point.y || point.y == 0)
         } else {
             // и для нескольких
-            this.dataPointsArr = [];
             var objX = {},graph = [];
             this.chartConfig.forEach((ctrl,i) => {
-                this.dataPointsArr[i] = ctrl.y.some(point =>  !!point);
                 ctrl.x.forEach(x=> {
                     objX[x] = null
                 })
             });
-            this.hasPoints = this.dataPointsArr.some(boolin => boolin);
 
             var arrX = Object.keys(objX);
             var _arrX = arrX.sort();
@@ -399,7 +391,12 @@ class HistoryCtrl {
             console.log("result",result);
 
             this.pend = false;
-            this.hasStrings[indexOfControl] = result.values.some(item => typeof item.v === 'string');
+            // проверить есть ли строковые значения
+            // проверяю только если еще не нашел строки
+            if(!this.hasString) {
+                this.hasString = result.values.some(item => typeof item.v === 'string');
+            }
+
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
 
             this.xValues = result.values.map(item => {
@@ -457,9 +454,24 @@ class HistoryCtrl {
 
             if(indexOfControl==0) {
                 this.firstChunkIsLoaded = true;
-                console.log("firstChunkIsLoaded");
-                
             }
+
+            if(this.topics.length === 1) {
+                // провериь есть ли точки в контроллах
+                // ниже point.y == 0 специально выставлено не жесткое сравнение / не менять!!!
+                this.hasPoints = this.chartConfig[indexOfControl].y.some(y => {
+                  return  !!y || y == 0
+                } )
+                
+            } else {
+                this.dataPointsArr = [];
+                this.chartConfig.forEach((ctrl,i) => {
+                    this.dataPointsArr[i] = ctrl.y.some(point =>  !!point);
+                });
+                this.hasPoints = this.dataPointsArr.some(boolin => boolin);
+            }
+
+
             // если еще есть части интервала
             if(indexOfChunk + 2 < chunks.length) {
                 this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
