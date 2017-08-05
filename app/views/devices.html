@@ -8,36 +8,22 @@
 
     <div id="devices-list" class="multicol-list">
         <ul class="list-unstyled">
-            <li ng-repeat="devId in deviceIds()" class="border-bottom">
-                <div id="{{_fullscreen==$index?'jarviswidget-fullscreen-mode':null}}"><!--jarviswidget-fullscreen-mode-->
-                    <div class=" jarviswidget device display-cell-bin">
-                        <header>
-                            <div class="jarviswidget-ctrls" role="menu" ng-show="dev(devId).cellIds.length">
-                                <a href class="button-icon jarviswidget-fullscreen-btn not-fullscreen"
-                                   ng-click="_fullscreen=$index"
-                                   uib-tooltip="Fullscreen">
-                                    <i class="fa fa-expand"></i>
-                                </a>
-                                <a href class="button-icon jarviswidget-fullscreen-btn only-fullscreen"
-                                   ng-click="_fullscreen=null"
-                                   uib-tooltip="Collapse">
-                                    <i class="fa fa-minus"></i>
-                                </a>
-                            </div>
-                            <h2 class="font-md">{{ _name = dev(devId).name }}</h2>
-                        </header>
-                        <div class="widget-body">
-                            <div class="alert alert-default devices-control" ng-repeat="cellId in dev(devId).cellIds"
-                                 ng-click="$ctrl.copy(_name,cellId)">
-                                <button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
-                                        ng-click="$ctrl.redirect(cellId)">
-                                    <i class="glyphicon glyphicon-stats"></i>
-                                </button>
-                                <display-cell cell="cellId"
-                                              tooltip-popup-delay="500"
-                                              uib-tooltip="{{cellId}}"
-                                              tooltip-class="custom-tooltip"></display-cell>
-                            </div>
+            <li ng-repeat="devId in deviceIds()">
+                <div class="jarviswidget device display-cell-bin">
+                    <header>
+                        <h2 class="font-md">{{ _name = dev(devId).name }}</h2>
+                    </header>
+                    <div class="widget-body">
+                        <div class="alert alert-default devices-control" ng-repeat="cellId in dev(devId).cellIds"
+                             ng-click="$ctrl.copy(_name,cellId)">
+                            <button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
+                                    ng-click="$ctrl.redirect(cellId)">
+                                <i class="glyphicon glyphicon-stats"></i>
+                            </button>
+                            <display-cell cell="cellId"
+                                          tooltip-popup-delay="500"
+                                          uib-tooltip="{{cellId}}"
+                                          tooltip-class="custom-tooltip"></display-cell>
                         </div>
                     </div>
                 </div>

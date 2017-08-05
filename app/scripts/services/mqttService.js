@@ -160,7 +160,7 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
 
   //...........................................................................
   service.subscribe = function (topic, callback) {
-    //console.log("SUBSCRIBE: " + topic);
+    console.log("SUBSCRIBE: " + topic, callback);
     if (!connected) {
       // FIXME: should fail hard here
       console.error("can't subscribe(): disconnected");
