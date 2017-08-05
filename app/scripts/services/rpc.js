@@ -28,6 +28,8 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
 
 //.............................................................................
   function invokeResponseHandler (id, topic, reply) {
+    console.log("invokeResponseHandler",id, topic, reply);
+
     try {
       inflight[id](topic, reply);
     } finally {
@@ -133,7 +135,6 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
 
         Spinner.start(this._spinnerIdPrefix, callId);
         inflight[callId] = (actualTopic, reply) => {
-          // console.log("reply: %o", reply);
           Spinner.stop(this._spinnerIdPrefix, callId);
           $timeout.cancel(timeout);
           if (actualTopic !== null && actualTopic != topic + "/reply")

@@ -73,10 +73,6 @@ class HistoryCtrl {
         // если массив пустой то создаю первый элемент
         this.topics = this.topics.length? this.topics : [null];
         this.selectedTopics = this.topics;
-        // опции ограничивающие выбор. тк после смены дат перезагрузка то
-        // только здесь они определяются/ вотчить не надо
-        this.dateOptionsEnd = {minDate:this.startDate,maxDate: new Date()};
-        this.dateOptionsStart = {maxDate:this.endDate || new Date()};
 
         this.ready = false;
         this.loadPending = !!this.topics.length;
@@ -137,6 +133,11 @@ class HistoryCtrl {
     // Class methods
     //...........................................................................
 
+    // опции ограничивающие выбор. тк после смены дат перезагрузка то
+    setDateOptions() {
+        this.dateOptionsEnd = {minDate:this.selectedStartDate, maxDate: new Date()};
+        this.dateOptionsStart = {maxDate:this.selectedEndDate || new Date()};
+    }
     // читает из урла даты
     readDatesFromUrl() {
         this.startDate = this.convDate(this.$stateParams.start);
@@ -206,6 +207,7 @@ class HistoryCtrl {
     }
 
     timeChange(type) {
+        this.setDateOptions();
         this.timeChanged = true;
     }
 
@@ -272,6 +274,8 @@ class HistoryCtrl {
         _e.setHours(!end? 0 : e.getHours());// у даты по умолчанию стоит 4 часа а не 0
         _e.setMinutes(e.getMinutes());
         this.selectedEndDateMinute = _e;
+
+        this.setDateOptions();
     }
 
     //...........................................................................

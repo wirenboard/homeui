@@ -86,3 +86,7 @@ div[uib-datepicker-popup-wrap] {
     border-bottom-right-radius: 2px;
     border-top-right-radius: 2px;
 }
+
+.stretch-height {
+    min-height: calc(100vh - 200px)
+}
