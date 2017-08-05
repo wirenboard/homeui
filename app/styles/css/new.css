@@ -81,3 +81,8 @@ div[uib-datepicker-popup-wrap] {
      pointer-events: none;
      opacity: 0.9
  }
+
+.turn-off-group-button .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+}

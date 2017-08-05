@@ -15,7 +15,10 @@
 
     <div class="config-editor" ng-if="file.schema && !spinnerActive('configEditorProxy')">
         <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()">Save</button>
-        <json-editor schema="file.schema" startval="file.content" options="editorOptions"
-                     on-change="onChange"></json-editor>
+        <json-editor class="turn-off-group-button"
+                schema="file.schema"
+                startval="file.content"
+                options="editorOptions"
+                on-change="onChange"></json-editor>
     </div>
 </section>
