@@ -44,6 +44,8 @@ class HistoryCtrl {
         this.channelNames = [];
         this.dataPoints = [];
         this.hasStrings = [];
+        this.progreses = [];
+        this.progresMax = 100;
         this.layoutConfig = {
             // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
@@ -66,7 +68,9 @@ class HistoryCtrl {
             // только если количество параметров сходится
             if(this.devices.length === this.controlIds.length) {
                 for (var i = 0; i < this.devices.length; i++) {
-                    this.topics.push("/devices/" + this.devices[i] + "/controls/" + this.controlIds[i])
+                    this.topics.push("/devices/" + this.devices[i] + "/controls/" + this.controlIds[i]);
+                    // инициализирую все прогрес бары
+                    this.progreses[i] = {value: 0, isLoaded: false};
                 }
             }
         }
@@ -145,6 +149,7 @@ class HistoryCtrl {
         this.setDefaultTime(this.startDate,this.endDate);
         this.selectedStartDate = this.startDate;
         this.selectedEndDate = this.endDate;
+        this.setDateOptions();
     };
 
     // смена урла
@@ -274,8 +279,6 @@ class HistoryCtrl {
         _e.setHours(!end? 0 : e.getHours());// у даты по умолчанию стоит 4 часа а не 0
         _e.setMinutes(e.getMinutes());
         this.selectedEndDateMinute = _e;
-
-        this.setDateOptions();
     }
 
     //...........................................................................
@@ -386,14 +389,29 @@ class HistoryCtrl {
         this.loadHistory(params,indexOfControl,indexOfChunk,chunks)
     }
 
+    stopLoadingData() {
+        this.stopLoadData = true;
+    }
+
     loadHistory(params,indexOfControl,indexOfChunk,chunks) {
+        if(this.stopLoadData) return;
         this.channelShortNames[indexOfControl] = params.channels[0][1];
         this.channelNames[indexOfControl] = params.channels[0][0] + ' / ' + params.channels[0][1];
         this.pend = true;
+        // прибавляю немного чтобы показать что процесс пошел
+        var val = (indexOfChunk + 1) * this.progresMax / (chunks.length - 1);
+        if(this.progreses[indexOfControl].value === 0) {
+            //var _val = Math.min(0.1 * this.progresMax, val);
+            this.progreses[indexOfControl].value = this.progreses[indexOfControl].value + 0.1 * val;
+        }
 
         this.HistoryProxy.get_values(params).then(result => {
             console.log("result",result);
 
+            this.progreses[indexOfControl].value = val;
+            this.progreses[indexOfControl].isLoaded = indexOfChunk === chunks.length - 2;
+            console.log(indexOfChunk + 1, chunks.length-1);
+            
             this.pend = false;
             // проверить есть ли строковые значения
             // проверяю только если еще не нашел строки
@@ -453,7 +471,7 @@ class HistoryCtrl {
                 this.chartConfig[indexOfControl].error_y.arrayminus = this.chartConfig[indexOfControl].error_y.arrayminus.concat(minValuesErr);
 
                 // для таблицы под графиком для первого контрола
-                if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(this.xValues.map((x, i) => ({x: x, y: this.yValues[i]})))
+                //if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(this.xValues.map((x, i) => ({x: x, y: this.yValues[i]})))
             }
 
             if(indexOfControl==0) {

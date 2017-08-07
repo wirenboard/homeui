@@ -320,8 +320,8 @@ function deviceDataService(mqttClient) {
     }
 
     receiveValue (newValue) {
-      if (!newValue)
-        this._value = this._isString() ? "" : null; // value removed, non-pushbutton/text cell becomes incomplete
+      if (!newValue) /// ozk замена null на  '-' тут и в 342 строке
+        this._value = this._isString() ? "" : '-' /*null*/; // value removed, non-pushbutton/text cell becomes incomplete
       else
         this._setCellValue(newValue);
       this._updateCompleteness();
@@ -339,7 +339,7 @@ function deviceDataService(mqttClient) {
     }
 
     isComplete () {
-      return this.type != "incomplete" && (this._isButton() || this._value !== null);
+      return this.type != "incomplete" && (this._isButton() || this._value !== '-' /*null*/);/// ozk замена null на  '-'
     }
 
     _updateCompleteness () {

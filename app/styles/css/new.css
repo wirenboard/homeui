@@ -90,3 +90,37 @@ div[uib-datepicker-popup-wrap] {
 .stretch-height {
     min-height: calc(100vh - 200px)
 }
+
+.relative {
+    position: relative;
+}
+.progress-history{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 300px;
+}
+.history-page select{
+    margin-bottom: 5px;
+}
+.history-page .progress {
+    margin-bottom: 1px;
+    height: 32px;
+}
+.history-page .progress-bar > div {
+    font-size: 11px;
+    margin-top: 7px;
+}
+
+@media (max-width: 996px){
+    .history-page .progress {
+        height: 4px;
+        margin-bottom: 1px;
+    }
+    .history-page select{
+        margin-bottom: 1px;
+    }
+    .progress-bar {
+        font-size: 1px;
+    }
+}
