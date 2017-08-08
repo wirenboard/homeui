@@ -139,10 +139,10 @@ class HistoryCtrl {
     // Class methods
     //...........................................................................
 
-    // опции ограничивающие выбор. тк после смены дат перезагрузка то
+    // опции ограничивающие выбор. пока отключено
     setDateOptions() {
-        this.dateOptionsEnd = {minDate:this.selectedStartDate, maxDate: new Date()};
-        this.dateOptionsStart = {maxDate:this.selectedEndDate || new Date()};
+        /*this.dateOptionsEnd = {minDate:this.selectedStartDate, maxDate: new Date()};
+        this.dateOptionsStart = {maxDate:this.selectedEndDate || new Date()};*/
     }
     // читает из урла даты
     readDatesFromUrl() {
