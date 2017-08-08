@@ -124,3 +124,7 @@ div[uib-datepicker-popup-wrap] {
         font-size: 1px;
     }
 }
+
+#devices-list .display-cell{
+    cursor: pointer;
+}
