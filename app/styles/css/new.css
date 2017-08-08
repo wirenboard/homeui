@@ -38,3 +38,89 @@
 .only-fullscreen, #jarviswidget-fullscreen-mode .not-fullscreen{
     display: none!important
 }
+
+.alert-danger a {
+    color: #404040;
+}
+
+.label.label-custom {
+    margin-right: 10px;
+    padding: .2em .4em .3em .6em;
+}
+
+.table-scroll {
+    display: block;
+    max-width: 100%;
+    overflow: auto
+}
+
+div[uib-datepicker-popup-wrap] {
+    z-index: 10000;
+    position: relative;
+}
+
+.relative {
+    position: relative;
+}
+
+.floating {
+    position: absolute;
+}
+
+.spinner-floating {
+    position: relative;
+    width: 33px;
+    margin: 0 auto;
+}
+
+.spinner-floating .spinner{
+    position: absolute;
+}
+
+.hidden-picker .form-group.uib-time {
+     pointer-events: none;
+     opacity: 0.9
+ }
+
+.turn-off-group-button .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+}
+
+.stretch-height {
+    min-height: calc(100vh - 200px)
+}
+
+.relative {
+    position: relative;
+}
+.progress-history{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 300px;
+}
+.history-page select{
+    margin-bottom: 5px;
+}
+.history-page .progress {
+    margin-bottom: 1px;
+    height: 32px;
+}
+.history-page .progress-bar > div {
+    font-size: 11px;
+    margin-top: 7px;
+}
+
+@media (max-width: 996px){
+    .history-page .progress {
+        height: 4px;
+        margin-bottom: 1px;
+    }
+    .history-page select{
+        margin-bottom: 1px;
+    }
+    .progress-bar {
+        font-size: 1px;
+    }
+}

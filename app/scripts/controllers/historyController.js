@@ -11,6 +11,7 @@ class HistoryCtrl {
         this.CHUNK_INTERVAL = 1;
         // 2. requirements
         var $stateParams = $injector.get('$stateParams');
+        this.$stateParams = $stateParams;
         var $location = $injector.get('$location');
         var HistoryProxy = $injector.get('HistoryProxy');
         var whenMqttReady = $injector.get('whenMqttReady');
@@ -33,8 +34,7 @@ class HistoryCtrl {
         this.handleData = handleData;
 
         // читаем из урла даты
-        this.startDate = this.convDate($stateParams.start);
-        this.endDate = this.convDate($stateParams.end);
+        this.readDatesFromUrl();
 
         this.topics = [];// все топики из урла
         this.chartConfig = [];// данные графика
@@ -43,6 +43,9 @@ class HistoryCtrl {
         this.channelShortNames = [];
         this.channelNames = [];
         this.dataPoints = [];
+        this.hasStrings = [];
+        this.progreses = [];
+        this.progresMax = 100;
         this.layoutConfig = {
             // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
@@ -65,21 +68,15 @@ class HistoryCtrl {
             // только если количество параметров сходится
             if(this.devices.length === this.controlIds.length) {
                 for (var i = 0; i < this.devices.length; i++) {
-                    this.topics.push("/devices/" + this.devices[i] + "/controls/" + this.controlIds[i])
+                    this.topics.push("/devices/" + this.devices[i] + "/controls/" + this.controlIds[i]);
+                    // инициализирую все прогрес бары
+                    this.progreses[i] = {value: 0, isLoaded: false};
                 }
             }
         }
         // если массив пустой то создаю первый элемент
         this.topics = this.topics.length? this.topics : [null];
         this.selectedTopics = this.topics;
-
-        this.setDefaultTime(this.startDate,this.endDate);
-        this.selectedStartDate = this.startDate;
-        this.selectedEndDate = this.endDate;
-        // опции ограничивающие выбор. тк после смены дат перезагрузка то
-        // только здесь они определяются/ вотчить не надо
-        this.dateOptionsEnd = {minDate:this.startDate};
-        this.dateOptionsStart = {maxDate:this.endDate};
 
         this.ready = false;
         this.loadPending = !!this.topics.length;
@@ -96,13 +93,18 @@ class HistoryCtrl {
             }
         });
 
-        this.plotlyEvents = (graph)=>{
+        this.plotlyEvents = (graph) => {
             // !!!!! метод обязтельно должен быть в конструкторе иначе контекст будет непонятно чей
-            graph.on('plotly_relayout', (event)=>{
+            graph.on('plotly_relayout', (event) => {
                 if(event['xaxis.range[0]']) {
-                    // после первой перерисовки открываю кнопку с помощью this.plotlyStartDate
-                    this.plotlyStartDate = event['xaxis.range[0]'];
-                    this.plotlyEndDate = event['xaxis.range[1]'];
+                    this.timeChange();
+
+                    // порядок не менять!!!
+                    this.selectedStartDate = new Date(event['xaxis.range[0]']);
+                    this.selectedEndDate = new Date(event['xaxis.range[1]']);
+                    this.setDefaultTime(this.selectedStartDate,this.selectedEndDate);
+                    //обнуляю время чтобы не прогрессировало
+                    this.resetTime();
                 }
             })
         };
@@ -134,8 +136,24 @@ class HistoryCtrl {
 
     // Class methods
     //...........................................................................
+
+    // опции ограничивающие выбор. тк после смены дат перезагрузка то
+    setDateOptions() {
+        this.dateOptionsEnd = {minDate:this.selectedStartDate, maxDate: new Date()};
+        this.dateOptionsStart = {maxDate:this.selectedEndDate || new Date()};
+    }
+    // читает из урла даты
+    readDatesFromUrl() {
+        this.startDate = this.convDate(this.$stateParams.start);
+        this.endDate = this.convDate(this.$stateParams.end);
+        this.setDefaultTime(this.startDate,this.endDate);
+        this.selectedStartDate = this.startDate;
+        this.selectedEndDate = this.endDate;
+        this.setDateOptions();
+    };
+
+    // смена урла
     updateUrl(index=0,deleteOne=false,onlyTimeUpdate=false) {
-        // смена урла
 
         //  если удаляется селект
         if(deleteOne) {
@@ -146,7 +164,7 @@ class HistoryCtrl {
             var parsedTopic = this.parseTopic(this.selectedTopics[index]);
             // если этот контрол уже загружен в другой селект или нет такого топика
             if (!parsedTopic ||
-                (this.controlIds.includes(parsedTopic.controlId)) && this.devices.includes(parsedTopic.deviceId))
+                (this.controlIds.indexOf(parsedTopic.controlId)>=0 && this.devices.indexOf(parsedTopic.deviceId)>=0))
                 return;
             // перезаписываю существующие
             this.devices[index] = parsedTopic.deviceId;
@@ -163,6 +181,17 @@ class HistoryCtrl {
             return num
         }
 
+        this.resetTime();
+        this.location.path([
+            "/history",
+            this.devices.join(';'),
+            this.controlIds.join(';'),
+            this.selectedStartDate ? this.selectedStartDate.getTime() + addHoursAndMinutes(this.selectedStartDateMinute) : "-",
+            this.selectedEndDate ? this.selectedEndDate.getTime() + addHoursAndMinutes(this.selectedEndDateMinute) : "-"
+        ].join("/"));
+    }
+
+    resetTime() {
         // обнуляю время чтобы не прогрессировало
         if(this.selectedStartDate) {
             this.selectedStartDate.setHours(0);
@@ -172,14 +201,6 @@ class HistoryCtrl {
             this.selectedEndDate.setHours(0);
             this.selectedEndDate.setMinutes(0)
         }
-
-        this.location.path([
-            "/history",
-            this.devices.join(';'),
-            this.controlIds.join(';'),
-            this.selectedStartDate ? this.selectedStartDate.getTime() + addHoursAndMinutes(this.selectedStartDateMinute) : "-",
-            this.selectedEndDate ? this.selectedEndDate.getTime() + addHoursAndMinutes(this.selectedEndDateMinute) : "-"
-        ].join("/"));
     }
 
     addTopic() {
@@ -190,10 +211,46 @@ class HistoryCtrl {
         this.updateUrl(i,true)
     }
 
-    onlyTimeUpdate() {
-        // доп проверки на минуты можно не ставить. если менять минуты например старта когда дата старта
-        // не определена то урл не сменится так как все равно подставится "-" вместо даты старта
-        if(this.selectedStartDate || this.selectedEndDate) this.updateUrl(false,false,true)
+    timeChange(type) {
+        this.setDateOptions();
+        this.timeChanged = true;
+    }
+
+    updateDateRange() {
+        if(this.isValidDatesRange()) {
+            // доп проверки на минуты можно не ставить. если менять минуты например старта когда дата старта
+            // не определена то урл не сменится так как все равно подставится "-" вместо даты старта
+            if(this.selectedStartDate || this.selectedEndDate) this.updateUrl(false,false,true)
+        } else {
+            alert('Date range is invalid. Change one of dates')
+        }
+    }
+
+    isValidDatesRange() {
+        if(!this.selectedStartDate) return true;
+
+        var sMin, sHour,
+            // копирую
+            s = new Date(this.selectedStartDate),
+            e = this.selectedEndDate ? new Date( this.selectedEndDate) : new Date();
+        if(this.selectedStartDateMinute) {
+            sMin = this.selectedStartDateMinute.getMinutes();
+            sHour = this.selectedStartDateMinute.getHours();
+        } else {
+            sMin = 0;
+            sHour = 0;
+        }
+        s.setMinutes(sMin);
+        s.setHours(sHour);
+
+        // назначаю только если есть конечная дата(а не время) иначе берутся текущие
+        if(this.selectedEndDate) {
+            e.setMinutes(this.selectedEndDateMinute.getMinutes());
+            e.setHours(this.selectedEndDateMinute.getHours());
+        }
+        
+        // сравниваю и разницу дат и то чтобы старт не был в будущем
+        return this.handleData.diffDatesInMinutes(s, new Date()) > 0 && this.handleData.diffDatesInMinutes(s, e) > 0
     }
 
     //...........................................................................
@@ -206,6 +263,7 @@ class HistoryCtrl {
         return d;
     }
 
+    // проставляет только время
     setDefaultTime(start,end) {
         // выставляю время
         // вычитываю из урла или ставлю дефолтное
@@ -245,13 +303,6 @@ class HistoryCtrl {
         };
     } // parseTopic
 
-    changeDateByPlotly() {
-        if(!this.plotlyStartDate) return;
-        this.startDate = new Date(this.plotlyStartDate);
-        this.endDate = new Date(this.plotlyEndDate);
-        this.beforeLoadChunkedHistory();
-    }
-
     beforeLoadChunkedHistory(indexOfControl=0) {
         if (!this.ready) {
             this.loadPending = true;
@@ -259,7 +310,8 @@ class HistoryCtrl {
         }
         this.loadPending = false;
         if (!this.topics[indexOfControl]) {
-            // если это последний контрол + 1 то надо посчитать таблицу данных внизу страницы
+            // если это последний контрол + 1 то надо
+            // и посчитать таблицу данных внизу страницы
             if (this.topics[indexOfControl-1]) {
                 this.calculateTable();
             } else  return
@@ -271,16 +323,18 @@ class HistoryCtrl {
 
     calculateTable() {
         // для таблицы под графиком для одного контрола
+        this.dataPoints = true;
         if(this.topics.length === 1) {
             this.dataPoints = this.xValues.map((x, i) => ({x: x, y: this.yValues[i]}));
         } else {
             // и для нескольких
             var objX = {},graph = [];
-            this.chartConfig.forEach(ctrl=> {
+            this.chartConfig.forEach((ctrl,i) => {
                 ctrl.x.forEach(x=> {
                     objX[x] = null
                 })
             });
+
             var arrX = Object.keys(objX);
             var _arrX = arrX.sort();
             _arrX.forEach(date=> {
@@ -335,13 +389,36 @@ class HistoryCtrl {
         this.loadHistory(params,indexOfControl,indexOfChunk,chunks)
     }
 
+    stopLoadingData() {
+        this.stopLoadData = true;
+    }
+
     loadHistory(params,indexOfControl,indexOfChunk,chunks) {
+        if(this.stopLoadData) return;
         this.channelShortNames[indexOfControl] = params.channels[0][1];
         this.channelNames[indexOfControl] = params.channels[0][0] + ' / ' + params.channels[0][1];
         this.pend = true;
+        // прибавляю немного чтобы показать что процесс пошел
+        var val = (indexOfChunk + 1) * this.progresMax / (chunks.length - 1);
+        if(this.progreses[indexOfControl].value === 0) {
+            //var _val = Math.min(0.1 * this.progresMax, val);
+            this.progreses[indexOfControl].value = this.progreses[indexOfControl].value + 0.1 * val;
+        }
 
         this.HistoryProxy.get_values(params).then(result => {
+            console.log("result",result);
+
+            this.progreses[indexOfControl].value = val;
+            this.progreses[indexOfControl].isLoaded = indexOfChunk === chunks.length - 2;
+            console.log(indexOfChunk + 1, chunks.length-1);
+            
             this.pend = false;
+            // проверить есть ли строковые значения
+            // проверяю только если еще не нашел строки
+            if(!this.hasString) {
+                this.hasString = result.values.some(item => typeof item.v === 'string');
+            }
+
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
 
             this.xValues = result.values.map(item => {
@@ -394,12 +471,29 @@ class HistoryCtrl {
                 this.chartConfig[indexOfControl].error_y.arrayminus = this.chartConfig[indexOfControl].error_y.arrayminus.concat(minValuesErr);
 
                 // для таблицы под графиком для первого контрола
-                if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(this.xValues.map((x, i) => ({x: x, y: this.yValues[i]})))
+                //if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(this.xValues.map((x, i) => ({x: x, y: this.yValues[i]})))
             }
 
             if(indexOfControl==0) {
                 this.firstChunkIsLoaded = true;
             }
+
+            if(this.topics.length === 1) {
+                // провериь есть ли точки в контроллах
+                // ниже point.y == 0 специально выставлено не жесткое сравнение / не менять!!!
+                this.hasPoints = this.chartConfig[indexOfControl].y.some(y => {
+                  return  !!y || y == 0
+                } )
+                
+            } else {
+                this.dataPointsArr = [];
+                this.chartConfig.forEach((ctrl,i) => {
+                    this.dataPointsArr[i] = ctrl.y.some(point =>  !!point);
+                });
+                this.hasPoints = this.dataPointsArr.some(boolin => boolin);
+            }
+
+
             // если еще есть части интервала
             if(indexOfChunk + 2 < chunks.length) {
                 this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);

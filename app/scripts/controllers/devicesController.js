@@ -1,7 +1,10 @@
 
 class DevicesCtrl {
-    constructor($scope, $state, DeviceData, handleData) {
+    constructor($scope, $state, DeviceData, handleData, rolesFactory) {
         'ngInject';
+
+        this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
+        if(!this.haveRights) return;
 
         this.$state = $state;
         this.handleData = handleData;
@@ -17,7 +20,7 @@ class DevicesCtrl {
 
     redirect(contr) {
         var [device,control] = contr.split('/');
-        this.$state.go('historySample', {device, control, start: '-', end: '-'})
+        this.$state.go('historySample', {device, control, start: this.handleData.historyStartTS(), end: '-'})
     }
 }
 

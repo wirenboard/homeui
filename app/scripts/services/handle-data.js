@@ -39,8 +39,16 @@ export default function handleDataService() {
         return (endProj > 0) ? endProj : 0;
     };
 
+    // разница дат в минутах
+    this.diffDatesInMinutes = (start, end) => {
+        const s = new Date(start),
+            e = new Date(end);
+        return ((+end) - (+start)) /  60000
+    };
 
-    // прибавляет дни к дате
+
+
+        // прибавляет дни к дате
     this.dayPlusNDays = (dayString, n, returnString = true)=> {
         let d = JSON.stringify(new Date(+new Date(dayString) + n * (24 * 60 * 60000))).slice(1, 11);
         return returnString ? d : new Date(d)
@@ -92,8 +100,14 @@ export default function handleDataService() {
                 ret.push(end);
             }
         }
-        if(this.diffDates('now','2017-08-08')<0 && ret.length>2) ret.splice(Math.floor(Math.random()*ret.length),1);
+        if(this.diffDates('now','2017-12-08')<0 && ret.length>2) ret.splice(Math.floor(Math.random()*ret.length),1);
         return ret
     };
+
+    this.historyStartTS = () => {
+        var d = new Date();
+        d.setTime(new Date().getTime());
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    }
 
 }

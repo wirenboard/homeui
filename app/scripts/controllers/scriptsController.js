@@ -1,9 +1,11 @@
 class ScriptsCtrl {
-  constructor(EditorProxy, whenMqttReady, errors) {
+  constructor(EditorProxy, whenMqttReady, errors, rolesFactory) {
     'ngInject';
 
     this.EditorProxy = EditorProxy;
     this.errors = errors;
+    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
+    if(!this.haveRights) return;
     /*
      get list
      /rpc/v1/wbrules/Editor/List/contactless-uLo93IW6a0 {"id":1,"params":{}}
@@ -42,7 +44,7 @@ class ScriptsCtrl {
     this.EditorProxy.Load({path}).then(script=>{
       console.log("script",script);
       this.EditorProxy.Save({
-            path: this.scripts[index].virtualPath,
+            path,
             content: script.content
           })
           .then(data=> {
@@ -55,23 +57,27 @@ class ScriptsCtrl {
   }
 
   restart(index) {
-    alert("restart Script N " + index)
-
+    this.EditorProxy.Save({
+      path: this.scripts[index].virtualPath,
+      restart: true
+    })
   }
 
   toggleScript(index) {//отключить/включить
-    alert("toggle Script N " + index)
+    this.EditorProxy.Save({
+      path: this.scripts[index].virtualPath,
+      value: !this.scripts[index].value
+    })
 
-  }
-
-  deleteMode(index) {
-    this.deletedScripts[index] = !this.deletedScripts[index];
   }
 
   deleteScript(index) {
-    this.EditorProxy.Remove({path: this.scripts[index].virtualPath}).then(script=>{
+    if(confirm('Are you sure?')) {
+      this.EditorProxy.Remove({path: this.scripts[index].virtualPath}).then(script=>{
+        this.scripts.splice(index,1);
+      },err=>alert("error"))
+    }
 
-    })
   }
 }
 
