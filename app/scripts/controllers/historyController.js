@@ -20,6 +20,8 @@ class HistoryCtrl {
         var dateFilter = $injector.get('dateFilter');
         var uiConfig = $injector.get('uiConfig');
         var orderByFilter = $injector.get('orderByFilter');
+        this.$timeout = $injector.get('$timeout');
+        this.$state = $injector.get('$state');
 
         angular.extend(this, {
             scope: $scope,
@@ -80,7 +82,7 @@ class HistoryCtrl {
 
         this.ready = false;
         this.loadPending = !!this.topics.length;
-
+        this.originalUrl = this.getUrl();
         // 4. Setup
         uiConfig.whenReady().then((data) => {
             updateControls(data.widgets);
@@ -154,7 +156,6 @@ class HistoryCtrl {
 
     // смена урла
     updateUrl(index=0,deleteOne=false,onlyTimeUpdate=false) {
-
         //  если удаляется селект
         if(deleteOne) {
             this.devices.splice(index,1);
@@ -173,22 +174,37 @@ class HistoryCtrl {
 
         }
 
-        // считаю часы + минуты в мсек
-        function addHoursAndMinutes(date) {
-            var num = 0;
-            num += date.getHours()*60*60*1000;
-            num += date.getMinutes()*60*1000;
-            return num
-        }
-
         this.resetTime();
-        this.location.path([
+        var url = this.getUrl();
+        // изза остановки и возможного возобновления загрузки графика ввожу доп проверку
+        // изменился ли урл или нет
+        // не надо сравнивать с location.href
+        if(this.originalUrl.indexOf(url)>=0) {
+            console.log("url not changed");
+            this.$state.reload();
+        } else {
+            this.location.path(url);
+        }
+        //перезаписываю
+        this.originalUrl = url;
+    }
+
+    // считаю часы + минуты в мсек
+    addHoursAndMinutes(date) {
+    var num = 0;
+    num += date.getHours()*60*60*1000;
+    num += date.getMinutes()*60*1000;
+    return num
+}
+
+    getUrl() {
+        return [
             "/history",
             this.devices.join(';'),
             this.controlIds.join(';'),
-            this.selectedStartDate ? this.selectedStartDate.getTime() + addHoursAndMinutes(this.selectedStartDateMinute) : "-",
-            this.selectedEndDate ? this.selectedEndDate.getTime() + addHoursAndMinutes(this.selectedEndDateMinute) : "-"
-        ].join("/"));
+            this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-",
+            this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-"
+        ].join("/")
     }
 
     resetTime() {
@@ -317,7 +333,7 @@ class HistoryCtrl {
             } else  return
         }
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
-        //console.log("_chunks",chunks);
+        this.chunksN = chunks.length - 1;
         this.loadChunkedHistory(indexOfControl,0,chunks)
     }
 
@@ -390,7 +406,10 @@ class HistoryCtrl {
     }
 
     stopLoadingData() {
-        this.stopLoadData = true;
+        this.$timeout( () => {
+            this.timeChanged = true;
+            this.stopLoadData = true;
+        })
     }
 
     loadHistory(params,indexOfControl,indexOfChunk,chunks) {
@@ -398,19 +417,13 @@ class HistoryCtrl {
         this.channelShortNames[indexOfControl] = params.channels[0][1];
         this.channelNames[indexOfControl] = params.channels[0][0] + ' / ' + params.channels[0][1];
         this.pend = true;
-        // прибавляю немного чтобы показать что процесс пошел
-        var val = (indexOfChunk + 1) * this.progresMax / (chunks.length - 1);
-        if(this.progreses[indexOfControl].value === 0) {
-            //var _val = Math.min(0.1 * this.progresMax, val);
-            this.progreses[indexOfControl].value = this.progreses[indexOfControl].value + 0.1 * val;
-        }
 
         this.HistoryProxy.get_values(params).then(result => {
-            console.log("result",result);
 
-            this.progreses[indexOfControl].value = val;
-            this.progreses[indexOfControl].isLoaded = indexOfChunk === chunks.length - 2;
-            console.log(indexOfChunk + 1, chunks.length-1);
+            this.progreses[indexOfControl].value = indexOfChunk + 1;
+            if(indexOfChunk === chunks.length - 2) {
+                this.$timeout( () => {this.progreses[indexOfControl].isLoaded = true}, 500)
+            }
             
             this.pend = false;
             // проверить есть ли строковые значения

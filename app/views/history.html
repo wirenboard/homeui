@@ -4,20 +4,6 @@
         History
     </h1>
 
-    <!--<div class="relative">
-        <div class="progress-history">
-            <div class="row ">
-                <div class="col-sm-2">
-                    <uib-progressbar ng-repeat="progres in $ctrl.progreses track by $index"
-                                     type="{{progres.isLoaded? 'success':'warning'}}"
-                                     value="progres.value"
-                                     min="0" max="$ctrl.progresMax"></uib-progressbar>&lt;!&ndash;22%&ndash;&gt;
-                </div>
-            </div>
-        </div>
-    </div>-->
-
-
     <div class="row" ng-repeat="sel in $ctrl.selectedTopics track by $index">
         <div class="col-xs-8 col-md-5">
             <select id="control-select"
@@ -36,12 +22,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-xs-12 col-sm-12 col-md-4">
-            <uib-progressbar ng-if="$ctrl.selectedTopics[$index]"
-                             type="{{$ctrl.progreses[$index].isLoaded? 'success':'warning'}}"
+        <div class="col-xs-12 col-sm-12 col-md-4" ng-if="$ctrl.chunksN>1">
+            <uib-progressbar ng-if="$ctrl.selectedTopics[$index] && !$ctrl.progreses[$index].isLoaded"
                              value="$ctrl.progreses[$index].value"
-                             min="0" max="::$ctrl.progresMax">
-                <div>{{$ctrl.progreses[$index].value | number : 0}}/{{::$ctrl.progresMax}}</div>
+                             min="0" max="::$ctrl.chunksN">
+                <div>{{$ctrl.progreses[$index].value}}/{{::$ctrl.chunksN}}</div>
             </uib-progressbar>
         </div>
     </div>
@@ -128,8 +113,9 @@
             ng-disabled="!$ctrl.timeChanged"
             ng-click="$ctrl.readDatesFromUrl()">
         Reset
-    </button>
+    </button><!-- ng-if="$ctrl.pend"-->
     <button class="btn btn-success"
+            ng-disabled="!$ctrl.pend"
             ng-click="$ctrl.stopLoadingData()">
         Stop loading
     </button>
