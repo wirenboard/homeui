@@ -128,3 +128,37 @@ div[uib-datepicker-popup-wrap] {
 #devices-list .display-cell{
     cursor: pointer;
 }
+
+
+.cell-value .value {
+    margin-right: -10px;
+    width: 110px;
+    display: inline-block;
+}
+
+.cell-value span{
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.value .int {
+    display: inline-block;
+    width: 50px;
+}
+
+.value .int span {
+    float: right;
+}
+
+.cell-value .units {
+    width: 20px
+}
+
+.value .decimal, .value .comma {
+    margin-left: -7px;
+}
+
+.value .decimal {
+    width: 40px;
+    overflow: hidden;
+}

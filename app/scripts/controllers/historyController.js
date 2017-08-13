@@ -429,7 +429,8 @@ class HistoryCtrl {
             // проверить есть ли строковые значения
             // проверяю только если еще не нашел строки
             if(!this.hasString) {
-                this.hasString = result.values.some(item => typeof item.v === 'string');
+                this.hasString = result.values.some(item => item.v != parseFloat(item.v)/*typeof item.v === 'string'*/);
+                console.log("____hasString",this.hasString,result.values.filter(item => typeof item.v === 'string'));
             }
 
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");

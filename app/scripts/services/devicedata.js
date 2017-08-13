@@ -383,7 +383,7 @@ function deviceDataService(mqttClient) {
     }
 
     setError (error) {
-      this.error = !!error;
+      this.error = error;
     }
 
     setMin (min) {
@@ -438,7 +438,7 @@ function deviceDataService(mqttClient) {
   addCellSubscription("/meta/units",    (cell, payload) => { cell.setUnits(payload);           });
   addCellSubscription("/meta/readonly", (cell, payload) => { cell.setReadOnly(payload == "1"); });
   addCellSubscription("/meta/writable", (cell, payload) => { cell.setWritable(payload == "1"); });
-  addCellSubscription("/meta/error",    (cell, payload) => { cell.setError(!!payload);         });
+  addCellSubscription("/meta/error",    (cell, payload) => { cell.setError(payload);         });
   addCellSubscription("/meta/min",      (cell, payload) => { cell.setMin(payload);             });
   addCellSubscription("/meta/max",      (cell, payload) => { cell.setMax(payload);             });
   addCellSubscription("/meta/step",     (cell, payload) => { cell.setStep(payload);            });
