@@ -20,7 +20,6 @@ export default class MQTTChannelsCtrl {
         this.keys.forEach(key=> {
             if(this.DeviceData.devices[key].cellIds.length) {
                 this.DeviceData.devices[key].cellIds.forEach(id=> {
-                    if(key === 'mercury230ar02_49' && this.DeviceData.cell(id).name=='AP1') console.log(this.DeviceData.cell(id));
                     this.rows.push(this.DeviceData.cell(id))
                 })
             }

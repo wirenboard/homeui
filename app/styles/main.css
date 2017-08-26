@@ -741,3 +741,15 @@ button.show-console span {
 .history-time-col-r {
     padding-top: 34px;
 }
+
+.jarviswidget > div {
+    border-width: 1px;
+}
+
+svg-scheme {
+    display: block;
+}
+
+svg:not(:root) {
+    overflow: auto;
+}

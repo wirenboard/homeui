@@ -150,7 +150,7 @@ class HistoryCtrl {
         this.endDate = this.convDate(this.$stateParams.end);
         this.setDefaultTime(this.startDate,this.endDate);
         this.selectedStartDate = this.startDate;
-        this.selectedEndDate = this.endDate;
+        this.selectedEndDate = this.endDate? this.endDate : new Date();
         this.setDateOptions();
     };
 
@@ -180,7 +180,6 @@ class HistoryCtrl {
         // изменился ли урл или нет
         // не надо сравнивать с location.href
         if(this.originalUrl.indexOf(url)>=0) {
-            console.log("url not changed");
             this.$state.reload();
         } else {
             this.location.path(url);
@@ -290,9 +289,9 @@ class HistoryCtrl {
         _s.setMinutes(s.getMinutes());
         this.selectedStartDateMinute = _s;
 
-        var e = end || new Date('2000-01-01');
+        var e = end || new Date();
         var _e = new Date();
-        _e.setHours(!end? 0 : e.getHours());// у даты по умолчанию стоит 4 часа а не 0
+        _e.setHours(e.getHours());
         _e.setMinutes(e.getMinutes());
         this.selectedEndDateMinute = _e;
     }

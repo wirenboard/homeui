@@ -1,4 +1,4 @@
-function uiConfigService($rootScope, $q) {
+function uiConfigService($rootScope, $q, $timeout) {
   'ngInject';
   
   var DEFAULT_DASHBOARD = {
@@ -25,7 +25,9 @@ function uiConfigService($rootScope, $q) {
       id: idBase + n,
       isNew: true
     });
-    items.push(o);
+    $timeout(()=>items.push(o));
+    console.log(items);
+
     return o;
   }
 
@@ -52,7 +54,7 @@ function uiConfigService($rootScope, $q) {
     if (!dash.hasOwnProperty("_model"))
       dash._model = new Dashboard(dash);
     return dash._model;
-  };
+  }
 
   function deleteWidget(widget) {
     var idx = data.widgets.indexOf(widget);
@@ -65,13 +67,16 @@ function uiConfigService($rootScope, $q) {
   }
 
   function filterCollection(items) {
+    //if(items.length!=13) console.log("items",items);
     return items.filter(item => {
       return !item.hasOwnProperty("isNew") || !item.isNew;
     }).map(item => {
       var toCopy = angular.extend({}, item);
       delete toCopy._model;
+      // для дашбордов
       // FIXME: test this
       if (toCopy.hasOwnProperty("widgets")) {
+        item.isSvg = !!item.svg_url;
         var newWidgets = Object.create(null);
         data.widgets.forEach(widget => {
           if (widget.isNew)
@@ -178,9 +183,25 @@ function uiConfigService($rootScope, $q) {
     addDashboard: () => {
       var item = add("dashboards", "dashboard", {
         name: "",
+        widgets: [],
+        isSvg: false
+      });
+      item._model = new Dashboard(item);
+      return item._model;
+    },
+
+    addDashboardWithSvg: () => {
+      console.log("addDashboardWithSvg");
+
+      var item = add("dashboards", "dashboard", {
+        name: "",
+        isSvg: true,
+        svg_url: "",
+        svg_fullwidth: '',
         widgets: []
       });
       item._model = new Dashboard(item);
+      
       return item._model;
     },
 
