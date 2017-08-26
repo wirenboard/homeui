@@ -26,8 +26,6 @@ function uiConfigService($rootScope, $q, $timeout) {
       isNew: true
     });
     $timeout(()=>items.push(o));
-    console.log(items);
-
     return o;
   }
 
@@ -67,7 +65,6 @@ function uiConfigService($rootScope, $q, $timeout) {
   }
 
   function filterCollection(items) {
-    //if(items.length!=13) console.log("items",items);
     return items.filter(item => {
       return !item.hasOwnProperty("isNew") || !item.isNew;
     }).map(item => {
@@ -191,8 +188,6 @@ function uiConfigService($rootScope, $q, $timeout) {
     },
 
     addDashboardWithSvg: () => {
-      console.log("addDashboardWithSvg");
-
       var item = add("dashboards", "dashboard", {
         name: "",
         isSvg: true,

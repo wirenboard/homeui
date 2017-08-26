@@ -25,20 +25,7 @@ class DashboardsCtrl {
 
 //.............................................................................
   checkNonEmpty(value, msg) {
-
-    if (!/\S/.test(value))
-      return msg;
-
-
-    console.log("checkNonEmpty",value, msg);
-    return true;
-  };
-
-  checkSvgUrl(value, msg) {
-    console.log("checkSvgUrl",value);
-
-    if (!value.length)
-      return msg;
+    if (!/\S/.test(value)) return msg;
     return true;
   };
 
