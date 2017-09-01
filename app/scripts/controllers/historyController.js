@@ -149,7 +149,7 @@ class HistoryCtrl {
         this.startDate = this.convDate(this.$stateParams.start);
         this.endDate = this.convDate(this.$stateParams.end);
         this.setDefaultTime(this.startDate,this.endDate);
-        this.selectedStartDate = this.startDate? this.endDate : new Date();
+        this.selectedStartDate = this.startDate? this.startDate : new Date();
         this.selectedEndDate = this.endDate? this.endDate : new Date();
         this.setDateOptions();
     };
