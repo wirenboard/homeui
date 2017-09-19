@@ -70,6 +70,8 @@ import cellPickerDirective from './directives/cellpicker';
 import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
 import userRolesDirective from './directives/user-roles.directive';
+import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
+
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -224,7 +226,9 @@ module
     .directive('cellPicker', cellPickerDirective)
     .directive('explicitChanges', explicitChangesDirective)
     .directive('editableElasticTextarea', editableElasticTextareaDirective)
-    .directive('userRole', userRolesDirective);
+    .directive('userRole', userRolesDirective)
+    .directive('svgCompiledElement', svgCompiledElementDirective)
+    .directive('svgScheme', svgSchemeDirective);
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {

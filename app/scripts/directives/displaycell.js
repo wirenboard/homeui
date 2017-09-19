@@ -42,8 +42,6 @@ function displayCellDirective(displayCellConfig, $compile) {
     controllerAs: 'displayCellCtrl',
     template,
     link: (scope, element, attrs) => {
-      //scope.parentName = attrs.parentName;
-      //console.log("scope.parentName",scope.parentName);
 
       scope.$watch(() => scope.cell.displayType, displayType => {
         var directive = (displayCellConfig.displayTypes.hasOwnProperty(displayType) ?

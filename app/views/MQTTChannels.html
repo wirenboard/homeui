@@ -21,7 +21,7 @@
                 <span ng-show="row._metaReadonly">(ro)</span>
             </td>
             <td>/devices/{{row.deviceId}}/controls/{{row.controlId }}</td>
-            <td>{{row._value? row._value : '-' }}</td>
+            <td>{{row._value}}</td>
             <td>
                 <span ng-show="row.error" class="label label-danger">
                   Error: {{row.error }}

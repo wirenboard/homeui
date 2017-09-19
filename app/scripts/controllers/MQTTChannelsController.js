@@ -20,7 +20,6 @@ export default class MQTTChannelsCtrl {
         this.keys.forEach(key=> {
             if(this.DeviceData.devices[key].cellIds.length) {
                 this.DeviceData.devices[key].cellIds.forEach(id=> {
-                    //if(key === 'wb-gpio') console.log(this.DeviceData.cell(id));
                     this.rows.push(this.DeviceData.cell(id))
                 })
             }
