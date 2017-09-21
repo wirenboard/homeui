@@ -149,7 +149,8 @@ class HistoryCtrl {
         this.startDate = this.convDate(this.$stateParams.start);
         this.endDate = this.convDate(this.$stateParams.end);
         this.setDefaultTime(this.startDate,this.endDate);
-        this.selectedStartDate = this.startDate? this.startDate : new Date();
+        // по умолчанию дата равна сегодня минус один день
+        this.selectedStartDate = this.startDate? this.startDate : new Date( + (new Date()) - 24*60*60*1000 );
         this.selectedEndDate = this.endDate? this.endDate : new Date();
         this.setDateOptions();
     };
@@ -190,11 +191,11 @@ class HistoryCtrl {
 
     // считаю часы + минуты в мсек
     addHoursAndMinutes(date) {
-    var num = 0;
-    num += date.getHours()*60*60*1000;
-    num += date.getMinutes()*60*1000;
-    return num
-}
+        var num = 0;
+        num += date.getHours()*60*60*1000;
+        num += date.getMinutes()*60*1000;
+        return num
+    }
 
     getUrl() {
         return [
@@ -282,12 +283,7 @@ class HistoryCtrl {
     setDefaultTime(start,end) {
         // выставляю время
         // вычитываю из урла или ставлю дефолтное
-        // если даты не определены то ставлю произвольные но главное время 00-00
-        var s = start || new Date('2000-01-01');
-        var _s = new Date();
-        _s.setHours(!start? 0 : s.getHours());// у даты по умолчанию стоит 4 часа а не 0
-        _s.setMinutes(s.getMinutes());
-        this.selectedStartDateMinute = _s;
+        this.selectedStartDateMinute = start || new Date();
 
         var e = end || new Date();
         var _e = new Date();

@@ -536,9 +536,11 @@ button.show-console span {
 
 .display-cell-btn {
     float: right;
-    padding: 4px 7px 3px 6px;
+    padding: 0 4px 1px 3px;
 }
-
+.display-cell-btn i{
+    font-size: 10px;
+}
 .display-cell .value,
 .display-cell .units,
 .display-cell input {

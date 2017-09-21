@@ -54,10 +54,14 @@ export default function handleDataService() {
         return returnString ? d : new Date(d)
     };
 
+    this.getOffset = function () {
+        return (new Date).getTimezoneOffset();
+    };
+
     // убавляет дни от даты/ можно со временем
     this.dayMinusNDays = (dayString,n, returnString = true,withTime=false)=> {
         // делаю поправку на отступ
-        var offset = (new Date).getTimezoneOffset()/60;
+        var offset = this.getOffset()/60;
         let d = JSON.stringify(new Date(+new Date(dayString) -
             n * ((24 + (withTime? offset : 0))* 60 * 60000) )).slice(1, withTime? 20 : 11);
         return returnString ? d : new Date(d)

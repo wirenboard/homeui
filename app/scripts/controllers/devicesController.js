@@ -20,7 +20,7 @@ class DevicesCtrl {
 
     redirect(contr) {
         var [device,control] = contr.split('/');
-        this.$state.go('historySample', {device, control, start: this.handleData.historyStartTS(), end: '-'})
+        this.$state.go('historySample', {device, control, start: '-', end: '-'})
     }
 }
 
