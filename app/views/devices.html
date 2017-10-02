@@ -9,8 +9,23 @@
     <div id="devices-list" class="multicol-list">
         <ul class="list-unstyled">
             <li ng-repeat="devId in deviceIds()">
-                <div class="jarviswidget device display-cell-bin">
-                    <header>
+                <div class="panel panel-primary device display-cell-bin">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ _name = dev(devId).name }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div ng-repeat="cellId in dev(devId).cellIds" ng-click="$ctrl.copy(_name,cellId)">
+                            <button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
+                                    ng-click="$ctrl.redirect(cellId)">
+                                <i class="glyphicon glyphicon-stats"></i>
+                            </button>
+                            <display-cell cell="cellId"
+                                          tooltip-popup-delay="500"
+                                          uib-tooltip="click to copy '{{cellId}}'"
+                                          tooltip-class="custom-tooltip"></display-cell>
+                        </div>
+                    </div>
+                    <!--<header>
                         <h2 class="font-md">{{ _name = dev(devId).name }}</h2>
                     </header>
                     <div class="widget-body">
@@ -25,7 +40,7 @@
                                           uib-tooltip="click to copy '{{cellId}}'"
                                           tooltip-class="custom-tooltip"></display-cell>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
 
             </li>

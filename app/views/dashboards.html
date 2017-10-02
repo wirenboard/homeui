@@ -57,9 +57,12 @@
 <div class="btn-form" user-role="mto" current-role="$ctrl.roles.current.role">
   <button name="add"
           type="button"
-          ng-click="$ctrl.addDashboard()" class="btn btn-default pull-right">Add dashboard without svg</button>
+          ng-click="$ctrl.addDashboard()" class="btn btn-default pull-right">Add</button>
 </div>
 <br><br><br>
+<h1 class="page-header">
+  SVG Dashboards
+</h1>
 
 <table class="table dashboards-table webui-table" ng-if="$ctrl.data.dashboards.length">
   <thead>
@@ -124,7 +127,7 @@
 <div class="btn-form" user-role="mto" current-role="$ctrl.roles.current.role">
   <button name="add"
           type="button"
-          ng-click="$ctrl.addDashboardWithSvg()" class="btn btn-default pull-right">Add dashboard with svg</button>
+          ng-click="$ctrl.addDashboardWithSvg()" class="btn btn-default pull-right">Add</button>
 </div>
 <!--
 <pre>{{$ctrl.data.dashboards | json}}</pre>-->

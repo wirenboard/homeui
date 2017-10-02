@@ -151,7 +151,8 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .cell-value .units {
-    width: 20px
+    width: 20px;
+    white-space: nowrap;
 }
 
 .value .decimal, .value .comma {
