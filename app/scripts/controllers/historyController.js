@@ -179,8 +179,7 @@ class HistoryCtrl {
         var url = this.getUrl();
         // изза остановки и возможного возобновления загрузки графика ввожу доп проверку
         // изменился ли урл или нет
-        // не надо сравнивать с location.href
-        if(this.originalUrl.indexOf(url)>=0) {
+        if(this.originalUrl === url || location.href.indexOf(url)>=0) {
             this.$state.reload();
         } else {
             this.location.path(url);
