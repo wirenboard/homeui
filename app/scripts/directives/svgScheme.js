@@ -4,13 +4,11 @@ export function svgSchemeDirective($compile, DeviceData) {
     return {
         restrict: 'E',
         scope : {
-            svgFullWidth: "=",
-            devices: "="
+            svgFullWidth: "="
         },
         link: function (scope, element, attrs) {
             function getElementAttributes (elem) {
                 var attr = {};
-
                 if(elem && elem.length) {
                     $.each(elem.get(0).attributes, function(v,n) {
                         n = n.nodeName||n.name;
@@ -63,7 +61,6 @@ export function svgSchemeDirective($compile, DeviceData) {
                             var tspan = element[0].querySelector("tspan");
                             if (tspan != null) {
                                 tspan.innerHTML = attrs.value;
-                                //console.log("___innerHTML",attrs.value,element);
                             }
                         }
                     }

@@ -566,25 +566,12 @@ Created by potrace 1.8, written by Peter Selinger 2001-2007
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="sssssssssss" />
     <rect
-                  style="fill:#0019ff;"
-                  id="rect4251"
-                  width="16.743309"
-                  height="{{155 + 4.55 * val}}"
-                  x="100.95068"
-                  y="{{65 - 4.55 * val}}" />
-
-       h140 y57 defaults
-       <rect
-              style="fill:#0019ff;"
-              id="rect4251"
-              width="16.743309"
-              height="255"
-              x="100.95068"
-              y="5" />
-              <desc>
-
-
-       </desc>
+       style="opacity:1;fill:#0019ff;fill-opacity:1;stroke:none;stroke-width:3.79500008;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4251"
+       width="16.743309"
+       height="140.7113"
+       x="100.95068"
+       y="57.359249" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none"
@@ -624,7 +611,7 @@ value=&quot;{{val * 1.8  + 32|number:2}}&quot;</desc><tspan
          id="tspan3403-7-0-3"
          x="186.66908"
          y="207.35339"
-         style="font-size:55.65074921px">{{val * 1.8  + 32|number:2}}</tspan></text>
+         style="font-size:55.65074921px">24.00</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none"
@@ -639,9 +626,8 @@ value=&quot;{{val|number:1}}&quot;</desc><tspan
          id="tspan3403-7-0-0"
          x="189.58334"
          y="143.88379"
-         style="font-size:55.65074921px">{{val|number:1}}</tspan></text>
+         style="font-size:55.65074921px">24.0</tspan></text>
     <text
-        ng-show="val>26"
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:41.54999924px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#ff0000;fill-opacity:1;stroke:none"
        x="264.27759"
@@ -677,15 +663,31 @@ y=&quot;{{ 64.29 + (-336.02-64.29)/90*val}}&quot;</desc>
          sodipodi:role="line"
          id="tspan4418"
          x="203.60585"
-         y="287.21753"></tspan></text>
+         y="287.21753">Показать ошибку, </tspan><tspan
+         sodipodi:role="line"
+         x="203.60585"
+         y="317.5144"
+         id="tspan4420">если больше 26°C:</tspan></text>
     <rect
-        ng-show="val>26"
        style="opacity:1;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:3.79500008;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4422"
        width="316.21542"
        height="137.94092"
        x="193.78918"
        y="257.61819" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none"
+       x="360.50098"
+       y="205.75998"
+       id="text3401-6-6-1-0"
+       sodipodi:linespacing="125%"
+       transform="scale(1.006272,0.99376709)"><tspan
+         sodipodi:role="line"
+         id="tspan3403-7-0-3-1"
+         x="360.50098"
+         y="205.75998"
+         style="font-size:55.65074921px">°F</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none"
@@ -711,7 +713,7 @@ y=&quot;{{ 64.29 + (-336.02-64.29)/90*val}}&quot;</desc>
          id="tspan3403-7-8"
          x="176.13321"
          y="-419.16727"
-         style="font-size:38.08749798px">{{topicName}}:</tspan></text>
+         style="font-size:38.08749798px">A1_OUT:</tspan></text>
     <rect
        style="display:inline;opacity:1;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:3.79500031;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4422-8"
@@ -728,22 +730,21 @@ y=&quot;{{ 64.29 + (-336.02-64.29)/90*val}}&quot;</desc>
        sodipodi:linespacing="125%"
        transform="scale(1.006272,0.99376709)"><desc
          id="desc4277-4-1">channel=&quot;wb-gpio/A1_OUT&quot;
-value=&quot;{{ (_val+ 0) >0 ? 'включен' : 'выключен'   }}&quot;</desc><tspan
+value=&quot;{{  ((val+ 0) &gt;0) ? 'включен' : 'выключен'   }}&quot;</desc><tspan
          sodipodi:role="line"
          id="tspan3403-7-8-4"
          x="185.15521"
          y="-367.38754"
-         style="font-size:38.08749771px;fill:#ff0000">|{{ (val+ 0) >0 ? 'включен' : 'выключен' }}|</tspan></text>
+         style="font-size:38.08749771px;fill:#ff0000">|выключен|</tspan></text>
     <circle
-       style="opacity:1;fill:{{ (_val+ 0) >0 ? '#00ff00' : '#ff0000'}};
-            fill-opacity:1;stroke:none;stroke-width:5.25607491;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:5.25607491;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4523"
        cx="444.28821"
        cy="-428.03198"
        r="17.112099">
       <desc
          id="desc4525">channel=&quot;wb-gpio/A1_OUT&quot;
-append-style=&quot;{{ (val+ 0) >0 ? ';fill:#00ff00' : ';fill:#ff0000'  }}&quot;</desc>
+append-style=&quot;{{  ((val+ 0) &gt;0) ? ';fill:#00ff00' : ';fill:#ff0000'  }}&quot;</desc>
     </circle>
   </g>
 </svg>
