@@ -1,5 +1,5 @@
 
-export function svgSchemeDirective($compile) {
+export function svgSchemeDirective($compile, DeviceData) {
     'ngInject';
     return {
         restrict: 'E',
@@ -32,6 +32,7 @@ export function svgSchemeDirective($compile) {
 
             }
 
+            scope.devicedata = DeviceData;
             var elem = element[0];
             var svg = element[0].querySelector("svg");
             var w = angular.element(svg).width(),
@@ -57,12 +58,12 @@ export function svgSchemeDirective($compile) {
 
                     var attrs = parseAttrs(desc.innerHTML);
 
-                    console.log(element);
                     if (element[0].nodeName == 'text') {
                         if (attrs.hasOwnProperty("value")) {
                             var tspan = element[0].querySelector("tspan");
                             if (tspan != null) {
                                 tspan.innerHTML = attrs.value;
+                                //console.log("___innerHTML",attrs.value,element);
                             }
                         }
                     }
@@ -71,7 +72,7 @@ export function svgSchemeDirective($compile) {
                         if ((descAttr != "channel") && (descAttr != "value")) {
                             if (descAttr.indexOf("append-") == 0) {
                                 var replAttr = descAttr.slice(7); //7 == length of "append-"
-                                console.log("replace %s", replAttr);
+                                //console.log("replace %s", replAttr);
                                 element.attr(replAttr,
                                     element.attr(replAttr) + attrs[descAttr]);
                             } else {
@@ -82,20 +83,17 @@ export function svgSchemeDirective($compile) {
 
 
                     if (attrs.hasOwnProperty("channel")) {
-                        var channelStr = attrs.channel;
-                        console.log("channelStr:", channelStr);
+                        var channelStr = attrs.channel/*'wb-map12h_91/Ch 2 Pfund L3';*/;
                         var channelArr = channelStr.split("/");
 
                         if (channelArr.length == 2) {
-                            var deviceId = channelArr[0];
-                            var controlId = channelArr[1];
-                            var channelVar = 'devices["' + deviceId + '"].controls["' + controlId + '"]';
-
+                            var channelVar = `devicedata.proxy('${channelStr}')`;
                             element.attr("val", channelVar + '.value');
                             element.attr("type", channelVar + '.metaType');
                             element.attr("units", channelVar + '.metaUnits');
                             element.attr("error", channelVar + '.metaError');
-
+                            element.attr("device", channelStr);
+                            //console.log("_______", scope.devicedata.proxy(channelStr).value);
                         }
                     }
                 }
@@ -118,6 +116,7 @@ export  function svgCompiledElementDirective($compile) {
         link: function (scope, element, attrs) {
             element.removeAttr("svg-compiled-element");
             $compile(element)(scope);
+            //console.log("device", attrs.device);
         }
     }
 }
