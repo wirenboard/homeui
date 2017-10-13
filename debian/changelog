@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.7) stable; urgency=medium
+
+  * config editor: new property option "forceDefault" to always add property which has default value without having to make it required
+
+ -- Islam Boziev <i.boziev@wirenboard.ru>  Fri, 13 Oct 2017 17:09:24 +0300
+
 wb-mqtt-homeui (1.6.4) stable; urgency=medium
 
   * fixes default UI config on WB5.5 and WB5.8
