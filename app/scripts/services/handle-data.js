@@ -104,7 +104,6 @@ export default function handleDataService() {
                 ret.push(end);
             }
         }
-        if(this.diffDates('now','2017-12-08')<0 && ret.length>2) ret.splice(Math.floor(Math.random()*ret.length),1);
         return ret
     };
 
