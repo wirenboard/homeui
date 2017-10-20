@@ -27,7 +27,7 @@ install:
 	cp -a dist/*.svg $(DESTDIR)/var/www/
 	cp -a dist/*.ttf $(DESTDIR)/var/www/
 	cp -a dist/*.woff $(DESTDIR)/var/www/
-	cp -a dist/*.woff2 $(DESTDIR)/var/www/
+	cp -a dist/*.woff2 $(DESTDIR)/var/www/ || :
 
 	install -m 0644 dist/404.html $(DESTDIR)/var/www/
 	install -m 0644 dist/robots.txt $(DESTDIR)/var/www/
