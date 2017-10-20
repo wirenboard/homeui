@@ -179,8 +179,7 @@ class HistoryCtrl {
         var url = this.getUrl();
         // изза остановки и возможного возобновления загрузки графика ввожу доп проверку
         // изменился ли урл или нет
-        // не надо сравнивать с location.href
-        if(this.originalUrl.indexOf(url)>=0) {
+        if(this.originalUrl === url || location.href.indexOf(url)>=0) {
             this.$state.reload();
         } else {
             this.location.path(url);
@@ -281,10 +280,13 @@ class HistoryCtrl {
 
     // проставляет только время
     setDefaultTime(start,end) {
-        // выставляю время
         // вычитываю из урла или ставлю дефолтное
-        this.selectedStartDateMinute = start || new Date();
-
+        var s = start || new Date();
+        var _s = new Date();
+        _s.setHours(s.getHours());
+        _s.setMinutes(s.getMinutes());
+        this.selectedStartDateMinute = _s;
+        
         var e = end || new Date();
         var _e = new Date();
         _e.setHours(e.getHours());
@@ -425,7 +427,6 @@ class HistoryCtrl {
             // проверяю только если еще не нашел строки
             if(!this.hasString) {
                 this.hasString = result.values.some(item => item.v != parseFloat(item.v)/*typeof item.v === 'string'*/);
-                console.log("____hasString",this.hasString,result.values.filter(item => typeof item.v === 'string'));
             }
 
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");

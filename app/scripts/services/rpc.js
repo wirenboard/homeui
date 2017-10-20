@@ -28,8 +28,6 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
 
 //.............................................................................
   function invokeResponseHandler (id, topic, reply) {
-    console.log("invokeResponseHandler",id, topic, reply);
-
     try {
       inflight[id](topic, reply);
     } finally {
