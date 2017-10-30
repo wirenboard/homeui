@@ -24,6 +24,7 @@ class ScriptsCtrl {
       // пишу каждому временное имя
       this.scripts = scripts.map(script=> {
         script.tempName = script.virtualPath;
+        script.processingRequest = false;
         return script
       })
     }).catch(errors.catch("Error listing the scripts"));
@@ -64,11 +65,19 @@ class ScriptsCtrl {
   }
 
   toggleScript(index) {//отключить/включить
-    this.EditorProxy.Save({
+    // force previous value till request is in processing
+    this.scripts[index].processingRequest = true;
+    this.EditorProxy.ChangeState({
       path: this.scripts[index].virtualPath,
-      value: !this.scripts[index].value
+      state: this.scripts[index].enabled
     })
-
+    .then(() => {
+      this.scripts[index].processingRequest = false;
+    }, err => {
+      this.scripts[index].processingRequest = false;
+      console.error("ChangeState error: %o", err);
+      this.scripts[index].enabled = !this.scripts[index].enabled;
+    });
   }
 
   deleteScript(index) {

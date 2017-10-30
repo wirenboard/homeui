@@ -38,9 +38,9 @@
                 <span class="onoffswitch">
                    <input type="checkbox" class="onoffswitch-checkbox" id="switch{{$index}}"
                           ng-change="$ctrl.toggleScript($index)"
-                          ng-model="cell.value">
-                   <label class="onoffswitch-label" for="switch{{$index}}"
-                          ng-class="{'pointer-none text-muted':cell.readOnly==true}">
+                          ng-model="script.enabled"
+                          ng-disabled="script.processingRequest">
+                   <label class="onoffswitch-label" for="switch{{$index}}">
                        <span class="onoffswitch-inner" data-swchon-text="ON" data-swchoff-text="OFF"></span>
                        <span class="onoffswitch-switch"></span>
                    </label>
