@@ -6,14 +6,15 @@
 
     <div class="row" ng-repeat="sel in $ctrl.selectedTopics track by $index">
         <div class="col-xs-8 col-md-5">
-            <select id="control-select"
-                    class="form-control"
-                    ng-disabled="$ctrl.pend"
-                    ng-change="$ctrl.updateUrl($index)"
-                    ng-model="$ctrl.selectedTopics[$index]"
-                    ng-options="control.topic as control.name for control in $ctrl.controls">
-                <option value="">- Please Choose -</option>
-            </select>
+            <ui-select ng-model="$ctrl.selectedTopics[$index]"
+                       ng-change="$ctrl.updateUrl($index)"
+                       theme="bootstrap"
+                       append-to-body="true">
+              <ui-select-match>{{ $select.selected.name }}</ui-select-match>
+              <ui-select-choices repeat="control.topic as control in $ctrl.controls | filter: { name: $select.search }">
+                <div ng-bind-html="control.name | hilite: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
         </div>
         <div class="col-xs-4 col-md-3">
             <div class="pull-right">
