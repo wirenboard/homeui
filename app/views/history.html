@@ -45,19 +45,22 @@
                     <label for="history-start">Start</label>
                 </div>
                 <div class="col-xs-8 history-time-col-r">
-                    <div class="input-group">
-                        <input id="history-start"
-                               type="text"
-                               class="form-control"
-                               uib-datepicker-popup="{{format}}"
-                               ng-change="$ctrl.timeChange('start')"
-                               ng-model="$ctrl.selectedStartDate"
-                               is-open="$ctrl.popups.start"
-                               close-text="Close"/>
-                          <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.start = true"><i
-                                    class="glyphicon glyphicon-calendar"></i></button>
-                          </span>
+                    <div class="form-group" ng-class="{'has-error': $ctrl.datesValidation.startDateError}">
+                        <div class="input-group">
+                            <input id="history-start"
+                                   type="text"
+                                   class="form-control"
+                                   uib-datepicker-popup="{{format}}"
+                                   ng-change="$ctrl.timeChange('start')"
+                                   ng-model="$ctrl.selectedStartDate"
+                                   is-open="$ctrl.popups.start"
+                                   close-text="Close"/>
+                              <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="$ctrl.popups.start = true"><i
+                                        class="glyphicon glyphicon-calendar"></i></button>
+                              </span>
+                        </div>
+                        <p class="help-block">Start date is greater, then end date</p>
                     </div>
                 </div>
                 <div class="col-xs-3">
@@ -76,19 +79,22 @@
                     <label for="history-start">End</label>
                 </div>
                 <div class="col-xs-8 history-time-col-r">
-                    <div class="input-group">
-                        <input id="history-end"
-                               type="text"
-                               class="form-control"
-                               uib-datepicker-popup="{{format}}"
-                               ng-change="$ctrl.timeChange('end')"
-                               ng-model="$ctrl.selectedEndDate"
-                               is-open="$ctrl.popups.end"
-                               close-text="Close"/>
-                          <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.end = true"><i
-                                    class="glyphicon glyphicon-calendar"></i></button>
-                          </span>
+                    <div class="form-group" ng-class="{'has-error': $ctrl.datesValidation.endDateError}">
+                        <div class="input-group">
+                            <input id="history-end"
+                                   type="text"
+                                   class="form-control"
+                                   uib-datepicker-popup="{{format}}"
+                                   ng-change="$ctrl.timeChange('end')"
+                                   ng-model="$ctrl.selectedEndDate"
+                                   is-open="$ctrl.popups.end"
+                                   close-text="Close"/>
+                              <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="$ctrl.popups.end = true"><i
+                                        class="glyphicon glyphicon-calendar"></i></button>
+                              </span>
+                        </div>
+                        <p class="help-block"></p>
                     </div>
                 </div>
                 <div class="col-xs-3">

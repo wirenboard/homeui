@@ -228,21 +228,26 @@ class HistoryCtrl {
 
     timeChange(type) {
         this.setDateOptions();
+        this.updateDateRange();
         this.timeChanged = true;
     }
 
     updateDateRange() {
-        if(this.isValidDatesRange()) {
+        if(this.validateDatesRange()) {
             // доп проверки на минуты можно не ставить. если менять минуты например старта когда дата старта
             // не определена то урл не сменится так как все равно подставится "-" вместо даты старта
             if(this.selectedStartDate || this.selectedEndDate) this.updateUrl(false,false,true)
-        } else {
-            alert('Date range is invalid. Change one of dates')
         }
     }
 
-    isValidDatesRange() {
+    validateDatesRange() {
         if(!this.selectedStartDate) return true;
+
+        this.datesValidation = {}
+        if(new Date(this.selectedStartDate) > new Date(this.selectedEndDate)) {
+            this.datesValidation.startDateError = true
+            this.datesValidation.endDateError = true
+        }
 
         var sMin, sHour,
             // копирую
@@ -263,7 +268,7 @@ class HistoryCtrl {
             e.setMinutes(this.selectedEndDateMinute.getMinutes());
             e.setHours(this.selectedEndDateMinute.getHours());
         }
-        
+
         // сравниваю и разницу дат и то чтобы старт не был в будущем
         return this.handleData.diffDatesInMinutes(s, new Date()) > 0 && this.handleData.diffDatesInMinutes(s, e) > 0
     }
@@ -286,7 +291,7 @@ class HistoryCtrl {
         _s.setHours(s.getHours());
         _s.setMinutes(s.getMinutes());
         this.selectedStartDateMinute = _s;
-        
+
         var e = end || new Date();
         var _e = new Date();
         _e.setHours(e.getHours());
@@ -421,7 +426,7 @@ class HistoryCtrl {
             if(indexOfChunk === chunks.length - 2) {
                 this.$timeout( () => {this.progreses[indexOfControl].isLoaded = true}, 500)
             }
-            
+
             this.pend = false;
             // проверить есть ли строковые значения
             // проверяю только если еще не нашел строки
@@ -494,7 +499,7 @@ class HistoryCtrl {
                 this.hasPoints = this.chartConfig[indexOfControl].y.some(y => {
                   return  !!y || y == 0
                 } )
-                
+
             } else {
                 this.dataPointsArr = [];
                 this.chartConfig.forEach((ctrl,i) => {
