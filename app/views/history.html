@@ -60,7 +60,7 @@
                                         class="glyphicon glyphicon-calendar"></i></button>
                               </span>
                         </div>
-                        <p class="help-block">Start date is greater, then end date</p>
+                        <p class="help-block" ng-show="$ctrl.datesValidation.startDateError">Start date is greater, then end date</p>
                     </div>
                 </div>
                 <div class="col-xs-3">
@@ -94,7 +94,7 @@
                                         class="glyphicon glyphicon-calendar"></i></button>
                               </span>
                         </div>
-                        <p class="help-block"></p>
+                        <p class="help-block" ng-show="$ctrl.endValidation.startDateError"></p>
                     </div>
                 </div>
                 <div class="col-xs-3">
