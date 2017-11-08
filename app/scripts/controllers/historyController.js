@@ -2,7 +2,7 @@
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, $injector, handleData) {
+    constructor($scope, $injector, handleData, DeviceData) {
         'ngInject';
 
         // 1. Self-reference
@@ -124,14 +124,28 @@ class HistoryCtrl {
         function updateControls(widgets) {
             vm.controls = orderByFilter(
                 Array.prototype.concat.apply(
-                    [], widgets.map(widget =>
-                        widget.cells.map(cell =>
-                            ({
-                                topic: vm.topicFromCellId(cell.id),
-                                name: widget.name + " / " + (cell.name || cell.id)
-                            })))),
+                    [], DeviceData.getCellIds().map(internCellItem)),
                 "name");
 
+        }
+
+        var items = {}
+
+        function internCellItem(cellId) {
+          if (!cellId)
+            return null;
+
+          var cell = DeviceData.proxy(cellId),
+              devName = DeviceData.devices.hasOwnProperty(cell.deviceId) ?
+                DeviceData.devices[cell.deviceId].name : cell.deviceId,
+              fullCellName = devName + ' / ' + cell.name;
+
+          if (items.hasOwnProperty(cellId))
+            items[cellId].name = fullCellName;
+          else
+            items[cellId] = { topic: vm.topicFromCellId(cellId), name: fullCellName };
+
+          return items[cellId];
         }
 
     } // constructor
