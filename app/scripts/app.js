@@ -280,7 +280,7 @@ module
 // Register module with communication
 const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast) => {
         'ngInject';
 
         //.........................................................................
@@ -333,7 +333,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         };
 
         if (!$rootScope.requestConfig(loginData)) {
-            alert('Please specify connection data in Settings -> web-ui');
+            ngToast.danger('Please specify connection data in Settings -> web-ui');
         }
 
         // TBD: the following should be handled by config sync service
