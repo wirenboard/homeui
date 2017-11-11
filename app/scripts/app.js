@@ -14,9 +14,10 @@ import '../styles/css/new.css'
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
+import 'ng-toast/dist/ngToast.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
-import '../styles/css/angular.rangeSlider.css'
+import '../styles/css/angular.rangeSlider.css';
 ///import '../lib/angular-toggle-switch/angular-toggle-switch.css';
 
 // homeui modules: sevices
@@ -112,6 +113,7 @@ const module = angular
         ///'toggle-switch',
         'plotly',
         'ui-rangeSlider',
+        'ngToast'
     ])
     .value('historyMaxPoints', 1000)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
