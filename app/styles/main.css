@@ -619,6 +619,11 @@ button.show-console span {
   width: 140px;
 }
 
+.widget .cells-list .cell-id {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .widget .btn-form {
   margin-top: 10px;
 }

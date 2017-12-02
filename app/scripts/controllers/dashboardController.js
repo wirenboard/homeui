@@ -19,11 +19,13 @@ class DashboardCtrl {
         };
 
         $scope.removeWidget = (widget) => {
+          if (confirm("Really delete widget from dashboard?"))
             $scope.dashboard.removeWidgetFromDashboard(widget);
         };
 
         $scope.deleteWidget = (widget) => {
-            uiConfig.deleteWidget(widget);
+            if (confirm("Really delete the widget?"))
+              uiConfig.deleteWidget(widget);
         };
 
     }
