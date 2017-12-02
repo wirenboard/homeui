@@ -14,9 +14,10 @@ import '../styles/css/new.css'
 import '../styles/main.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
+import 'ng-toast/dist/ngToast.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
-import '../styles/css/angular.rangeSlider.css'
+import '../styles/css/angular.rangeSlider.css';
 ///import '../lib/angular-toggle-switch/angular-toggle-switch.css';
 
 // homeui modules: sevices
@@ -112,6 +113,7 @@ const module = angular
         ///'toggle-switch',
         'plotly',
         'ui-rangeSlider',
+        'ngToast'
     ])
     .value('historyMaxPoints', 1000)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
@@ -278,7 +280,7 @@ module
 // Register module with communication
 const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
         'ngInject';
 
         //.........................................................................
@@ -322,16 +324,23 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $rootScope.requestConfig = configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig);
 
         //.........................................................................
+        var demoLoginData = {
+          host: $window.location.hostname,
+          port: 18883
+        };
         var loginData = {
-            host: $window.localStorage['host'],
-            port: $window.localStorage['port'],
+            host: $window.localStorage['host'] || demoLoginData['host'],
+            port: $window.localStorage['port'] || demoLoginData['port'],
             user: $window.localStorage['user'],
             password: $window.localStorage['password'],
             prefix: $window.localStorage['prefix']
         };
 
         if (!$rootScope.requestConfig(loginData)) {
-            alert('Please specify connection data in Settings -> web-ui');
+            ngToast.danger({
+              content: $sce.trustAsHtml('Please specify connection data in <a ui-sref="webUI" href="javascript:"> Settings -> web-ui </a>'),
+              compileContent: true
+            });
         }
 
         // TBD: the following should be handled by config sync service
