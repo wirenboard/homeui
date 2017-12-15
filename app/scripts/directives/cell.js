@@ -1,12 +1,12 @@
 function cellDirective(DeviceData) {
   'ngInject';
-  
+
   class CellController {
     constructor ($scope, $attrs) {
       'ngInject';
       // XXX should be possible to change the cell
 
-      this.cell = $scope.cell = DeviceData.proxy($scope.$eval($attrs.cell));
+      this.cell = $scope.cell = DeviceData.proxy($scope.$eval($attrs.cell).id, $scope.$eval($attrs.cell).extra);
       // назначаю разные id для чекбоксов
       $scope.id = Math.random() + '';
       /* this.cell =

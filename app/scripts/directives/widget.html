@@ -33,15 +33,15 @@
   <div class="panel-body">
     <display-cell ng-if="!widgetForm.$visible"
                   ng-repeat="item in ctrl.source.cells"
-                  compact="ctrl.source.compact" cell="item.id" override-name="item.name"></display-cell>
+                  compact="ctrl.source.compact" cell="item" override-name="item.name"></display-cell>
     <label ng-if="widgetForm.$visible">
       <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
       Compact mode
     </label>
-    <table class="table" ng-if="widgetForm.$visible && ctrl.source.cells.length > 0">
+    <table class="table cells-list" ng-if="widgetForm.$visible && ctrl.source.cells.length > 0">
       <thead>
         <tr>
-          <th>#</th>
+          <th>Actions</th>
           <th>Name</th>
           <th>Type</th>
           <th></th>
@@ -49,10 +49,15 @@
       </thead>
       <tbody sv-root sv-part="ctrl.source.cells">
         <tr class="room" ng-repeat="cell in ctrl.source.cells" sv-element>
-          <th scope="row" >{{ $index+1 }}</th>
-          <td><span editable-text="cell.name">{{ cell.name }}</span></td>
+          <td scope="row" class="cell-actions">
+            <label ng-if="ctrl.cellTypeFromId(cell.id) == 'switch'">
+              <input type="checkbox" ng-model="cell.extra.invert">
+              <span class="action-name"> Invert </span>
+            </label>
+          </td>
+          <td class="cell-name"><span editable-text="cell.name">{{ cell.name }}</span></td>
           <td><span class="cell-type">{{ ctrl.cellTypeFromId(cell.id) }}</span></td>
-          <td class="text-center">
+          <td class="text-center remove-cell">
             <button name="delete" type="button" ng-show="widgetForm.$visible"
                     ng-click="ctrl.deleteCell(cell)" class="icon-button pull-right"><i class="glyphicon glyphicon-trash"></i></button>
           </td>
