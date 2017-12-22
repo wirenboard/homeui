@@ -527,7 +527,7 @@ function deviceDataService(mqttClient) {
 
     proxy (id, extra = {}) {
       return new CellProxy(id, extra);
-    }
+    },
 
     cellTypeNames () {
       return Object.keys(cellTypeMap).sort();
