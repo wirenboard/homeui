@@ -16,7 +16,8 @@ import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
-import '../styles/css/angular.rangeSlider.css'
+import '../styles/css/angular.rangeSlider.css';
+import 'ng-toast/dist/ngToast.css';
 ///import '../lib/angular-toggle-switch/angular-toggle-switch.css';
 
 // homeui modules: sevices
@@ -112,6 +113,7 @@ const module = angular
         ///'toggle-switch',
         'plotly',
         'ui-rangeSlider',
+        'ngToast'
     ])
     .value('historyMaxPoints', 1000)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
@@ -278,7 +280,7 @@ module
 // Register module with communication
 const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
         'ngInject';
 
         //.........................................................................
@@ -331,7 +333,10 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         };
 
         if (!$rootScope.requestConfig(loginData)) {
-            alert('Please specify connection data in Settings -> web-ui');
+          ngToast.danger({
+            content: $sce.trustAsHtml('Please specify connection data in <a ui-sref="webUI" href="javascript:"> Settings -> web-ui </a>'),
+            compileContent: true
+          });
         }
 
         // TBD: the following should be handled by config sync service
