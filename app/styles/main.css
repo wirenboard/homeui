@@ -619,6 +619,11 @@ button.show-console span {
   width: 140px;
 }
 
+.widget .widget-json-settings {
+  width: 100%;
+  height: 400px;
+}
+
 .widget .btn-form {
   margin-top: 10px;
 }
