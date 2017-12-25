@@ -1,6 +1,6 @@
 function deviceDataService(mqttClient) {
   'ngInject';
-  
+
   var devices = {}, cells = {};
 
   var cellTypeMap = {
@@ -459,8 +459,9 @@ function deviceDataService(mqttClient) {
   var fakeCell = new Cell("nosuchdev/nosuchcell");
 
   class CellProxy {
-    constructor (id) {
+    constructor (id, extra = {}) {
       this.id = id;
+      this.extra = extra;
     }
 
     gotCell () {
@@ -524,8 +525,8 @@ function deviceDataService(mqttClient) {
       return cells[id];
     },
 
-    proxy (id) {
-      return new CellProxy(id);
+    proxy (id, extra = {}) {
+      return new CellProxy(id, extra);
     },
 
     cellTypeNames () {
