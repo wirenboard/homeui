@@ -24,7 +24,8 @@ class WidgetsCtrl {
     $scope.rows = [];
     $scope.$watch(uiConfig.version, () => {
       var dashboardMap = Object.create(null);
-      uiConfig.data.dashboards.forEach(dashboard => {
+      var dashboards = uiConfig.data.dashboards;
+      dashboards.forEach(dashboard => {
         dashboard.widgets.forEach(widgetId => {
           (dashboardMap[widgetId] || (dashboardMap[widgetId] = [])).push(uiConfig.getDashboard(dashboard.id));
         });
@@ -40,10 +41,14 @@ class WidgetsCtrl {
             return this.preview ? 1 : Math.max(widget.cells.length, 1);
           },
           dashboards: dashboardMap[widget.id] || [],
+          availableDashboards: dashboards.filter(d => !(dashboardMap[widget.id] || []).some(dm => d.id === dm.id)),
           cellIndex: 1,
           cell: widget.cells.length ? wrapWidgetCell(widget.cells[0]) : null,
           show: true,
           preview: false,
+          addDashboard: (dashboard) => {
+            dashboard.widgets.push(widget.id);
+          },
           deleteWidget: () => {
             if (confirm("Really delete the widget?"))
               uiConfig.deleteWidget(widget);
