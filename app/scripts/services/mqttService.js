@@ -52,8 +52,8 @@ function topicMatches() {
 }
 
 //-----------------------------------------------------------------------------
-function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeout, 
-                    mqttReconnectDelay, mqttDigestInterval, errors) {
+function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeout,
+                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast) {
   'ngInject';
   var globalPrefix = '',
       service = {},
@@ -144,12 +144,12 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
   service.onFailure = function(context) {
     connected = false;
     // ставлю флаг что ошибка показана чтобы позже при коннекте
-    // почистить именно ее а не другую ошику
+    // почистить именно ее а не другую ошибку
     showConnectError = true;
     var m = "Failure to connect to " + client.host + ":" + client.port +
         " as " + client.clientId + ". error code " + context.errorCode +
         ", error message \"" + context.errorMessage + "\"";
-    errors.showError(m);
+    ngToast.danger(m);
     reconnectAfterTimeout();
   };
 
