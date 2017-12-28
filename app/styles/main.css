@@ -618,30 +618,6 @@ button.show-console span {
   display: inline-block;
   width: 140px;
 }
-.widget .cells-list .cell-actions {
-  text-align: center;
-}
-.widget .cells-list .cell-actions label {
-  cursor: pointer;
-}
-.widget .cells-list .cell-actions .action-name {
-  display: block;
-  color: #555555;
-}
-.widget .cells-list .editable-input {
-  width: 140px;
-}
-.widget .cells-list .cell-name {
-  padding-left: 0;
-}
-.widget .cells-list .cell-id {
-  padding-left: 0;
-  padding-right: 0;
-}
-.widget .cells-list .remove-cell {
-  padding-right: 0;
-  padding-left: 0;
-}
 
 .widget .cells-list .cell-id {
   padding-left: 0;
