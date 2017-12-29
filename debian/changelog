@@ -4,6 +4,12 @@ wb-mqtt-homeui (1.7) stable; urgency=medium
 
  -- Islam Boziev <i.boziev@wirenboard.ru>  Fri, 13 Oct 2017 17:09:24 +0300
 
+wb-mqtt-homeui (1.6.5) stable; urgency=medium
+
+  * do not require wb-mqtt-db
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 26 Oct 2017 02:28:54 +0300
+
 wb-mqtt-homeui (1.6.4) stable; urgency=medium
 
   * fixes default UI config on WB5.5 and WB5.8
