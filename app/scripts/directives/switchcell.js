@@ -6,7 +6,12 @@ function switchCellDirective() {
     scope: false,
     require: '^cell',
     replace: true,
-    template
+    template,
+
+    link: (scope, element, attrs, cellCtrl) => {
+      scope._value = scope.cell.extra.invert ? !scope.cell.value : scope.cell.value;
+      scope.name = () => scope.override() || cellCtrl.cell.name;
+    }
   };
 }
 
