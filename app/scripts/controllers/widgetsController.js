@@ -41,7 +41,7 @@ class WidgetsCtrl {
             return this.preview ? 1 : Math.max(widget.cells.length, 1);
           },
           dashboards: dashboardMap[widget.id] || [],
-          availableDashboards: dashboards.filter(d => !(dashboardMap[widget.id] || []).some(dm => d.id === dm.id)),
+          availableDashboards: dashboards.filter(d => !(dashboardMap[widget.id] || []).some(dm => d.id === dm.id) && !d.isSvg),
           cellIndex: 1,
           cell: widget.cells.length ? wrapWidgetCell(widget.cells[0]) : null,
           show: true,
