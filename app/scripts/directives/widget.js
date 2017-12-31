@@ -47,6 +47,10 @@ function widgetDirective(DeviceData, rolesFactory) {
         if (shouldEdit)
           $scope.widgetForm.$show();
       });
+      $scope.$watch(() => this.editJsonMode, (isJsonMode) => {
+        const el = $element.find(".panel-heading input[type=text]");
+        el.attr('disabled', isJsonMode);
+      });
     }
 
     updateSource () {
@@ -68,16 +72,19 @@ function widgetDirective(DeviceData, rolesFactory) {
       this.editJsonMode = false;
     }
 
-    updateSourceFromJson () {
+    updateSourceFromJson (form) {
       let newSource = null;
       try {
         newSource = angular.fromJson(this.jsonSource);
       } catch (e) {
         alert(e);
+        return;
       }
       if (!newSource) { return; }
       angular.extend(this._source(), newSource);
       this.updateSource();
+      this.disableEditJsonMode();
+      form.$cancel();
     }
 
     get cellTypesUsed () {
