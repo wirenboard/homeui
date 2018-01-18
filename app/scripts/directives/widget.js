@@ -64,15 +64,15 @@ function widgetDirective(DeviceData, rolesFactory) {
     }
 
     enableEditJsonMode () {
-      this.jsonSource = angular.toJson(this.source, true);
-      this.editJsonMode = true;
+        this.jsonSource = angular.toJson(this.source, true);
+        this.editJsonMode = true;
     }
 
     disableEditJsonMode () {
       this.editJsonMode = false;
     }
 
-    updateSourceFromJson (form) {
+    updateSourceFromJson () {
       let newSource = null;
       try {
         newSource = angular.fromJson(this.jsonSource);
@@ -84,7 +84,6 @@ function widgetDirective(DeviceData, rolesFactory) {
       angular.extend(this._source(), newSource);
       this.updateSource();
       this.disableEditJsonMode();
-      form.$cancel();
     }
 
     get cellTypesUsed () {
