@@ -334,7 +334,9 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             prefix: $window.localStorage['prefix']
         };
 
-        if (!$rootScope.requestConfig(loginData)) {
+        $rootScope.requestConfig(loginData);
+
+        if (loginData['host'] === demoLoginData['host'] && loginData['port'] === demoLoginData['port']) {
             alert('Please specify connection data in Settings -> web-ui');
         }
 
