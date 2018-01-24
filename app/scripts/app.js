@@ -113,7 +113,8 @@ const module = angular
         ///'toggle-switch',
         'plotly',
         'ui-rangeSlider',
-        'ngToast'
+        'ngToast',
+        'angular-sortable-view'
     ])
     .value('historyMaxPoints', 1000)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
