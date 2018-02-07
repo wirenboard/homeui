@@ -36,47 +36,47 @@
                   compact="ctrl.source.compact" cell="item.id" override-name="item.name"></display-cell>
     <div ng-if="widgetForm.$visible && !ctrl.editJsonMode">
       <label>
-        <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
-        Compact mode
-      </label>
+      <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
+      Compact mode
+    </label>
       <table class="table" ng-if="ctrl.source.cells.length > 0">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody sv-root sv-part="ctrl.source.cells">
-          <tr class="room" ng-repeat="cell in ctrl.source.cells" sv-element>
-            <th scope="row" >{{ $index+1 }}</th>
-            <td><span editable-text="cell.name">{{ cell.name }}</span></td>
-            <td><span class="cell-type">{{ ctrl.cellTypeFromId(cell.id) }}</span></td>
-            <td class="text-center">
-              <button name="delete" type="button" ng-show="widgetForm.$visible"
-                      ng-click="ctrl.deleteCell(cell)" class="icon-button pull-right"><i class="glyphicon glyphicon-trash"></i></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody sv-root sv-part="ctrl.source.cells">
+        <tr class="room" ng-repeat="cell in ctrl.source.cells" sv-element>
+          <th scope="row" >{{ $index+1 }}</th>
+          <td><span editable-text="cell.name">{{ cell.name }}</span></td>
+          <td class="cell-id"><span>{{ cell.id }}</span></td>
+          <td class="text-center">
+            <button name="delete" type="button" ng-show="widgetForm.$visible"
+                    ng-click="ctrl.deleteCell(cell)" class="icon-button pull-right"><i class="glyphicon glyphicon-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
       <div class="add-cell">
-        <label>
-          Find controls of type
-          <select name="type-filter" ng-options="name for name in ctrl.cellTypesUsed track by name"
-                  ng-model="ctrl.cellType" class="form-control"></select>
-        </label>
-        <cell-picker placeholder="Add control..."
-                     ng-model="ctrl.newCellId" filter-by-type="ctrl.cellTypeFilter()"></cell-picker>
-      </div>
+      <label>
+        Find controls of type
+        <select name="type-filter" ng-options="name for name in ctrl.cellTypesUsed track by name"
+                ng-model="ctrl.cellType" class="form-control"></select>
+      </label>
+      <cell-picker placeholder="Add control..."
+                   ng-model="ctrl.newCellId" filter-by-type="ctrl.cellTypeFilter()"></cell-picker>
+    </div>
       <div class="widget-description"
-           placeholder="Widget description"
-           editable-elastic-textarea="ctrl.source.description">{{ ctrl.source.description }}</div>
+         placeholder="Widget description"
+         editable-elastic-textarea="ctrl.source.description">{{ ctrl.source.description }}</div>
       <div class="btn-form">
-        <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length">Save</button>
-        <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default">Cancel</button>
+      <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length">Save</button>
+      <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default">Cancel</button>
         <button name="cancel" type="submit" ng-click="widgetForm.$submit() || ctrl.enableEditJsonMode()" class="btn btn-default pull-right">Edit as JSON</button>
-      </div>
+    </div>
     </div>
     <div ng-if="ctrl.editJsonMode">
       <textarea class="widget-json-settings" ng-model="ctrl.jsonSource">{{ ctrl.jsonSource }}</textarea>
