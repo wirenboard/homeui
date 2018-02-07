@@ -72,6 +72,7 @@ import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
 import userRolesDirective from './directives/user-roles.directive';
 import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
+import dashboardPickerDirective from './directives/dashboardpicker';
 
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
@@ -231,7 +232,8 @@ module
     .directive('editableElasticTextarea', editableElasticTextareaDirective)
     .directive('userRole', userRolesDirective)
     .directive('svgCompiledElement', svgCompiledElementDirective)
-    .directive('svgScheme', svgSchemeDirective);
+    .directive('svgScheme', svgSchemeDirective)
+    .directive('dashboardPicker', dashboardPickerDirective);
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {

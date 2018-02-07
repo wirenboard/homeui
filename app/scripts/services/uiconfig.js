@@ -1,6 +1,6 @@
 function uiConfigService($rootScope, $q, $timeout) {
   'ngInject';
-  
+
   var DEFAULT_DASHBOARD = {
     id: "default",
     name: "Default Dashboard",
@@ -84,7 +84,7 @@ function uiConfigService($rootScope, $q, $timeout) {
       return angular.copy(toCopy);
     });
   }
-  
+
   //---------------------------------------------------------------------------
   class Dashboard {
     constructor(content) {
@@ -136,7 +136,7 @@ function uiConfigService($rootScope, $q, $timeout) {
         this.content.widgets.splice(idx, 1);
     }
   }
-  
+
   //---------------------------------------------------------------------------
   function filtered() {
     return {
@@ -196,7 +196,7 @@ function uiConfigService($rootScope, $q, $timeout) {
         widgets: []
       });
       item._model = new Dashboard(item);
-      
+
       return item._model;
     },
 
