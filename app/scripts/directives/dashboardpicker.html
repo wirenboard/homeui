@@ -1,0 +1,12 @@
+<span class="dashboard-picker">
+  <button class="btn btn-default btn-xs" ng-hide="active" ng-click="showSelect()">{{ buttonText || 'Add to dashboard' }}</button>
+  <ui-select ng-show="active"
+             ng-model="choice.selected"
+             theme="bootstrap"
+             uis-open-close="onToogleSelect(isOpen)">
+    <ui-select-match>{{ $select.selected.name }}</ui-select-match>
+    <ui-select-choices repeat="item in items | filter: { name: $select.search }">
+      <div ng-bind-html="item.name | hilite: $select.search"></div>
+    </ui-select-choices>
+  </ui-select>
+</span>

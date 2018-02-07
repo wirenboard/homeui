@@ -51,7 +51,7 @@
         <tr class="room" ng-repeat="cell in ctrl.source.cells" sv-element>
           <th scope="row" >{{ $index+1 }}</th>
           <td><span editable-text="cell.name">{{ cell.name }}</span></td>
-          <td><span class="cell-type">{{ ctrl.cellTypeFromId(cell.id) }}</span></td>
+          <td class="cell-id"><span>{{ cell.id }}</span></td>
           <td class="text-center">
             <button name="delete" type="button" ng-show="widgetForm.$visible"
                     ng-click="ctrl.deleteCell(cell)" class="icon-button pull-right"><i class="glyphicon glyphicon-trash"></i></button>
