@@ -624,6 +624,16 @@ button.show-console span {
   height: 400px;
 }
 
+.widget .cells-list .cell-id {
+  padding-left: 0;
+  padding-right: 0;
+}
+.widget .cells-list .cell-id span {
+  display: block;
+  width: 102px;
+  word-wrap: break-word;
+}
+
 .widget .btn-form {
   margin-top: 10px;
 }
