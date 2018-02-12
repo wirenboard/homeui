@@ -72,7 +72,7 @@ function widgetDirective(DeviceData, rolesFactory) {
       this.editJsonMode = false;
     }
 
-    updateSourceFromJson () {
+    updateSourceFromJson (needSave = false) {
       let newSource = null;
       try {
         newSource = angular.fromJson(this.jsonSource);
@@ -81,8 +81,12 @@ function widgetDirective(DeviceData, rolesFactory) {
         return;
       }
       if (!newSource) { return; }
-      angular.extend(this._source(), newSource);
-      this.updateSource();
+      if (needSave) {
+        angular.extend(this._source(), newSource);
+        this.updateSource();
+      } else {
+        this.source = newSource;
+      }
       this.disableEditJsonMode();
     }
 
