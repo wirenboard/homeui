@@ -20,7 +20,9 @@ function widgetDirective(DeviceData, rolesFactory) {
       this.roles = rolesFactory;
       this.cellType = "any";
       this.source = {};
+      this.jsonSource = angular.toJson(this.source, true);
       this.originalSource = {};
+      this.editJsonMode = false;
       $scope.$watch(() => this._source(), newSource => {
         if (!$scope.widgetForm.$visible)
           this.updateSource();
@@ -45,6 +47,10 @@ function widgetDirective(DeviceData, rolesFactory) {
         if (shouldEdit)
           $scope.widgetForm.$show();
       });
+      $scope.$watch(() => this.editJsonMode, (isJsonMode) => {
+        const el = $element.find(".panel-heading input[type=text]");
+        el.attr('disabled', isJsonMode);
+      });
     }
 
     updateSource () {
@@ -55,6 +61,33 @@ function widgetDirective(DeviceData, rolesFactory) {
           compact: true,
           cells: []
         };
+    }
+
+    enableEditJsonMode () {
+        this.jsonSource = angular.toJson(this.source, true);
+        this.editJsonMode = true;
+    }
+
+    disableEditJsonMode () {
+      this.editJsonMode = false;
+    }
+
+    updateSourceFromJson (needSave = false) {
+      let newSource = null;
+      try {
+        newSource = angular.fromJson(this.jsonSource);
+      } catch (e) {
+        alert(e);
+        return;
+      }
+      if (!newSource) { return; }
+      if (needSave) {
+        angular.extend(this._source(), newSource);
+        this.updateSource();
+      } else {
+        this.source = newSource;
+      }
+      this.disableEditJsonMode();
     }
 
     get cellTypesUsed () {

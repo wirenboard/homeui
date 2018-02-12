@@ -619,6 +619,11 @@ button.show-console span {
   width: 140px;
 }
 
+.widget .widget-json-settings {
+  width: 100%;
+  height: 400px;
+}
+
 .widget .cells-list .cell-id {
   padding-left: 0;
   padding-right: 0;
