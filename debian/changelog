@@ -1,3 +1,13 @@
+wb-mqtt-homeui (2.0~beta4) stable; urgency=medium
+
+  * Allow to edit widget as JSON
+  * Autologin
+  * Adding the ability to add widget to several dashboards
+  * Add widget delete and remove from dashboard confirmation
+  * Add topic instead meta-type to widget in edit mode
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 13 Feb 2018 12:27:13 +0300
+
 wb-mqtt-homeui (2.0~beta3) stable; urgency=medium
 
   * do not require wb-mqtt-db
