@@ -3,7 +3,7 @@ import mqttServiceModule from './mqttService';
 //-----------------------------------------------------------------------------
 const mqttRpcServiceModule = angular
   .module('homeuiApp.MqttRpc', [mqttServiceModule])
-  .value("mqttRpcTimeout", 30000)
+  .value("mqttRpcTimeout", 60000)
   .factory("MqttRpc", mqttRpc)
   .name;
 
