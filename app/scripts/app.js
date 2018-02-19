@@ -72,6 +72,7 @@ import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
 import userRolesDirective from './directives/user-roles.directive';
 import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
+import dashboardPickerDirective from './directives/dashboardpicker';
 
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
@@ -230,7 +231,8 @@ module
     .directive('editableElasticTextarea', editableElasticTextareaDirective)
     .directive('userRole', userRolesDirective)
     .directive('svgCompiledElement', svgCompiledElementDirective)
-    .directive('svgScheme', svgSchemeDirective);
+    .directive('svgScheme', svgSchemeDirective)
+    .directive('dashboardPicker', dashboardPickerDirective);
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {
@@ -324,15 +326,21 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $rootScope.requestConfig = configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig);
 
         //.........................................................................
+        var demoLoginData = {
+            host: $window.location.hostname,
+            port: 18883
+        };
         var loginData = {
-            host: $window.localStorage['host'],
-            port: $window.localStorage['port'],
+            host: $window.localStorage['host'] || demoLoginData['host'],
+            port: $window.localStorage['port'] || demoLoginData['port'],
             user: $window.localStorage['user'],
             password: $window.localStorage['password'],
             prefix: $window.localStorage['prefix']
         };
 
-        if (!$rootScope.requestConfig(loginData)) {
+        $rootScope.requestConfig(loginData);
+
+        if (loginData['host'] === demoLoginData['host'] && loginData['port'] === demoLoginData['port']) {
           ngToast.danger({
             content: $sce.trustAsHtml('Please specify connection data in <a ui-sref="webUI" href="javascript:"> Settings -> web-ui </a>'),
             compileContent: true
