@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0~beta4+wide) stable; urgency=medium
+
+  * widgets are 2.5 times wider
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 19 Feb 2018 21:41:17 +0300
+
 wb-mqtt-homeui (2.0~beta4) stable; urgency=medium
 
   * Allow to edit widget as JSON

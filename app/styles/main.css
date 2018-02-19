@@ -267,18 +267,18 @@ ul.alert-dropdown {
 @media(min-width:768px) {
   .multicol-list{
     position: relative;
-    -webkit-column-width: 390px;
+    -webkit-column-width: 960px;
     -webkit-column-gap: 0;
-    -moz-column-width: 390px;
+    -moz-column-width: 960px;
     -moz-column-gap: 0;
-    column-width: 390px;
+    column-width: 960px;
     column-gap: 0;
   }
 }
 
 .multicol-list ul li {
   display: inline-block;
-  width: 380px;
+  width: 950px;
 }
 
 @media(max-width: 390px) {
