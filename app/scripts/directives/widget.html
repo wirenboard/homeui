@@ -33,7 +33,7 @@
   <div class="panel-body">
     <display-cell ng-if="!widgetForm.$visible && !ctrl.editJsonMode"
                   ng-repeat="item in ctrl.source.cells"
-                  compact="ctrl.source.compact" cell="item.id" override-name="item.name"></display-cell>
+                  compact="ctrl.source.compact" cell="item" override-name="item.name"></display-cell>
     <div ng-if="widgetForm.$visible && !ctrl.editJsonMode">
       <label>
       <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
