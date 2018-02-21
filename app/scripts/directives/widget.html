@@ -39,6 +39,10 @@
       <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
       Compact mode
     </label>
+      <span class="pull-right text-danger" popover-trigger="'mouseenter'" ng-if="ctrl.multipleDashboards"
+            uib-popover="You added this widget to several dashboards, so when applying changes, they will be applied on each.">
+        Сhanges affect other dashboards
+      </span>
       <table class="table cells-list" ng-if="ctrl.source.cells.length > 0">
       <thead>
         <tr>
