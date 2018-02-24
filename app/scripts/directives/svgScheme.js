@@ -30,6 +30,16 @@ export function svgSchemeDirective($compile, DeviceData) {
 
             }
 
+            function getDirectChild(element, nodeName) {
+                for (var i = 0; i < element.children.length; i++) {
+                    var child = element.children[i];
+                    if (child.nodeName == nodeName) {
+                        return child;
+                    }
+                }
+                return null;
+            }
+
             scope.devicedata = DeviceData;
             var elem = element[0];
             var svg = element[0].querySelector("svg");
@@ -51,9 +61,8 @@ export function svgSchemeDirective($compile, DeviceData) {
                 var element = angular.element(path);
                 element.attr("svg-compiled-element", "");
 
-                var desc = element[0].querySelector("desc");
+                var desc = getDirectChild(element[0], "desc");
                 if (desc != null) {
-
                     var attrs = parseAttrs(desc.innerHTML);
 
                     if (element[0].nodeName == 'text') {
@@ -69,7 +78,6 @@ export function svgSchemeDirective($compile, DeviceData) {
                         if ((descAttr != "channel") && (descAttr != "value")) {
                             if (descAttr.indexOf("append-") == 0) {
                                 var replAttr = descAttr.slice(7); //7 == length of "append-"
-                                //console.log("replace %s", replAttr);
                                 element.attr(replAttr,
                                     element.attr(replAttr) + attrs[descAttr]);
                             } else {
@@ -78,9 +86,8 @@ export function svgSchemeDirective($compile, DeviceData) {
                         }
                     }
 
-
                     if (attrs.hasOwnProperty("channel")) {
-                        var channelStr = attrs.channel/*'wb-map12h_91/Ch 2 Pfund L3';*/;
+                        var channelStr = attrs.channel;
                         var channelArr = channelStr.split("/");
 
                         if (channelArr.length == 2) {
@@ -90,7 +97,6 @@ export function svgSchemeDirective($compile, DeviceData) {
                             element.attr("units", channelVar + '.metaUnits');
                             element.attr("error", channelVar + '.metaError');
                             element.attr("device", channelStr);
-                            //console.log("_______", scope.devicedata.proxy(channelStr).value);
                         }
                     }
                 }
@@ -113,7 +119,6 @@ export  function svgCompiledElementDirective($compile) {
         link: function (scope, element, attrs) {
             element.removeAttr("svg-compiled-element");
             $compile(element)(scope);
-            //console.log("device", attrs.device);
         }
     }
 }

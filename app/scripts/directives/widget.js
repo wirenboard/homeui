@@ -1,6 +1,6 @@
 import template from './widget.html';
 
-function widgetDirective(DeviceData, rolesFactory) {
+function widgetDirective(DeviceData, rolesFactory, uiConfig) {
   'ngInject';
 
 //-----------------------------------------------------------------------------
@@ -23,6 +23,7 @@ function widgetDirective(DeviceData, rolesFactory) {
       this.jsonSource = angular.toJson(this.source, true);
       this.originalSource = {};
       this.editJsonMode = false;
+      this.multipleDashboards = false;
       $scope.$watch(() => this._source(), newSource => {
         if (!$scope.widgetForm.$visible)
           this.updateSource();
@@ -33,7 +34,7 @@ function widgetDirective(DeviceData, rolesFactory) {
           this.newCellId = null;
           return;
         }
-        this.source.cells.push({ id: newCellId, name: cellName(newCellId) });
+        this.source.cells.push({ id: newCellId, name: cellName(newCellId), extra: {}, type: DeviceData.proxy(newCellId).type});
         this.newCellId = null;
         // XXX the following is a hack, but we can't just set the name
         // in scope because we're using xeditable
@@ -108,6 +109,7 @@ function widgetDirective(DeviceData, rolesFactory) {
     }
 
     prepareToEdit () {
+      this.checkMultipleDashboards();
       this.source.cells.forEach(cell => {
         if (!cell.hasOwnProperty("name") || !cell.name)
           cell.name = cellName(cell.id);
@@ -151,6 +153,16 @@ function widgetDirective(DeviceData, rolesFactory) {
       if (!this.source.cells.length)
         return "error";
       return true;
+    }
+
+    checkMultipleDashboards() {
+      const dashboards = [];
+      uiConfig.data.dashboards.forEach((dashboard) => {
+        if (dashboard.widgets.find((widget) => widget === this.source.id))
+          dashboards.push(dashboard.id)
+      });
+      if (dashboards.length > 1)
+        this.multipleDashboards = true;
     }
   }
 
