@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.0~beta5) stable; urgency=medium
+
+  * Allow to invert switch state in widgets
+  * Mark widgets present on multiple dashboards
+  * Increase default RPC timeout
+  * Fixes SVG dashboards
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 24 Feb 2018 14:30:12 +0300
+
 wb-mqtt-homeui (2.0~beta4) stable; urgency=medium
 
   * Allow to edit widget as JSON
