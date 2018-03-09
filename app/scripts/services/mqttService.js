@@ -12,11 +12,12 @@ const mqttServiceModule = angular
 function whenMqttReady($q, $rootScope, mqttClient) {
   'ngInject';
   return () => {
-    var deferred = $q.defer();
+    const deferred = $q.defer();
+
     if (mqttClient.isConnected())
       deferred.resolve();
     else {
-      var unwatch = $rootScope.$watch(
+      const unwatch = $rootScope.$watch(
         () => mqttClient.isConnected(),
         newValue => {
           if (!newValue) { // Resolve only when connection is established
@@ -53,7 +54,7 @@ function topicMatches() {
 
 //-----------------------------------------------------------------------------
 function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnectTimeout,
-                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast) {
+                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast, uiConfig) {
   'ngInject';
   var globalPrefix = '',
       service = {},
@@ -163,11 +164,11 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
 
     client.subscribe(globalPrefix + "/config/widgets/#");
     client.subscribe(globalPrefix + "/config/dashboards/#");
-    client.subscribe(globalPrefix + "/devices/#");
 
-    stickySubscriptions.forEach(function (item) {
-      this.subscribe(item.topic, item.callback);
-    }, this);
+    uiConfig.whenReady().then(() => {
+      client.subscribe(globalPrefix + "/devices/#");
+      stickySubscriptions.forEach(item => this.subscribe(item.topic, item.callback));
+    });
 
     // prepare retain hack
     client.subscribe(globalPrefix + retainHackTopic);
