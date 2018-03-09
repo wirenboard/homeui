@@ -517,6 +517,7 @@ class HistoryCtrl {
             }
         }).catch((reason) => {
             if (angular.isObject(reason) && (reason['data'] === 'MqttTimeoutError' || reason['data'] === 'MqttPacketTimeoutError')) {
+                this.stopLoadingData();
                 this.isRequestTimeout = true;
             }
             this.errors.catch("Error getting history")(reason);
