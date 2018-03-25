@@ -165,10 +165,8 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
     client.subscribe(globalPrefix + "/config/widgets/#");
     client.subscribe(globalPrefix + "/config/dashboards/#");
 
-    uiConfig.whenReady().then(() => {
-      client.subscribe(globalPrefix + "/devices/#");
-      stickySubscriptions.forEach(item => this.subscribe(item.topic, item.callback));
-    });
+    client.subscribe(globalPrefix + "/devices/#");
+    stickySubscriptions.forEach(item => this.subscribe(item.topic, item.callback));
 
     // prepare retain hack
     client.subscribe(globalPrefix + retainHackTopic);
