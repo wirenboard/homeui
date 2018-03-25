@@ -14,8 +14,8 @@
       <th class="button-col"></th>
     </tr>
   </thead>
-  <tbody sv-root sv-part="$ctrl.data.dashboards">
-    <tr class="dashboard" ng-repeat="dashboard in $ctrl.data.dashboards | filter:{isSvg: false}" sv-element>
+  <tbody>
+    <tr class="dashboard" ng-repeat="dashboard in $ctrl.data.dashboards | filter:{isSvg: false}">
       <td class="idx-col" scope="row" >{{ $index+1 }}</td>
       <td class="name-col">
         <span editable-text="dashboard.name"
@@ -46,7 +46,7 @@
           <button name="delete" type="button" class="btn btn-danger"
                   user-role="mto" current-role="$ctrl.roles.current.role"
                   ng-click="$ctrl.deleteDashboard(dashboard)">Delete</button>
-        </div>  
+        </div>
         <!--
         <a href='/dashboards/{{dashboard.id}}'><i class="glyphicon glyphicon-play-circle black medium"></i></a>
         -->
@@ -75,8 +75,8 @@
     <th class="button-col"></th>
   </tr>
   </thead>
-  <tbody sv-root sv-part="$ctrl.data.dashboards">
-  <tr class="dashboard" ng-repeat="dashboard in $ctrl.data.dashboards | filter:{isSvg: true}" sv-element>
+  <tbody>
+  <tr class="dashboard" ng-repeat="dashboard in $ctrl.data.dashboards | filter:{isSvg: true}">
     <td class="idx-col" scope="row" >{{ $index+1 }}</td>
     <td>
         <span editable-text="dashboard.name"
