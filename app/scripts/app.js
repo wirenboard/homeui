@@ -281,6 +281,7 @@ module
 //-----------------------------------------------------------------------------
 // Register module with communication
 const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
+    .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
           uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
         'ngInject';

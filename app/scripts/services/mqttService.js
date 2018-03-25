@@ -12,11 +12,12 @@ const mqttServiceModule = angular
 function whenMqttReady($q, $rootScope, mqttClient) {
   'ngInject';
   return () => {
-    var deferred = $q.defer();
+    const deferred = $q.defer();
+
     if (mqttClient.isConnected())
       deferred.resolve();
     else {
-      var unwatch = $rootScope.$watch(
+      const unwatch = $rootScope.$watch(
         () => mqttClient.isConnected(),
         newValue => {
           if (!newValue) { // Resolve only when connection is established
@@ -36,14 +37,14 @@ function topicMatches() {
     function match (patternParts, topicParts) {
       if (!patternParts.length)
         return !topicParts.length;
-      if (patternParts[0] == "#") {
-        if (patternParts.length != 1)
+      if (patternParts[0] === "#") {
+        if (patternParts.length !== 1)
           throw new Error("invalid pattern");
         return true;
       }
       if (!topicParts.length)
         return false;
-      if (patternParts[0] != "+" && topicParts[0] != patternParts[0])
+      if (patternParts[0] !== "+" && topicParts[0] !== patternParts[0])
         return false;
       return match(patternParts.slice(1), topicParts.slice(1));
     }
@@ -52,8 +53,8 @@ function topicMatches() {
 }
 
 //-----------------------------------------------------------------------------
-function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeout,
-                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast) {
+function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnectTimeout,
+                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast, uiConfig) {
   'ngInject';
   var globalPrefix = '',
       service = {},
@@ -65,7 +66,10 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
       reconnectTimeout = null,
       callbackMap = Object.create(null),
       stickySubscriptions = [],
-      messageDigestTimer = null;
+      messageDigestTimer = null,
+      retainReady = $q.defer(),
+      retainIsDone = false,
+      retainHackTopic = '';
 
   if($window.localStorage['prefix'] === 'true')
     globalPrefix = '/client/' + $window.localStorage['user'];
@@ -88,6 +92,28 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
       $timeout.cancel(reconnectTimeout);
   }
 
+  service.whenReady = function() {
+    return retainReady.promise;
+  };
+
+  service.isReady = function() {
+    return retainIsDone
+  };
+
+  // timeout measured after receiving all retained messages
+  service.timeout = function(callback, delay) {
+    const timeout = $q.defer();
+    timeout.promise._defer = timeout;
+    timeout.promise.then(callback);
+    retainReady.promise.then(() => timeout.promise._timeout = $timeout(timeout.resolve, delay));
+    return timeout.promise;
+  };
+
+  service.cancel = function(promise) {
+    promise._defer.reject();
+    retainReady.promise.then(() => $timeout.cancel(promise._timeout));
+  };
+
   //...........................................................................
   service.connect = function(host, port, clientid, user, password) {
     clearReconnectTimeout();
@@ -104,6 +130,11 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     }
 
     id = clientid;
+
+    retainIsDone = false;
+    retainHackTopic = "/tmp/" + id + "/retain_hack";
+    retainReady = $q.defer();
+
     console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with username " + user + " and clientid " + clientid);
 
     client = new Paho.MQTT.Client(host, parseInt(port), '/mqtt', clientid);
@@ -129,15 +160,21 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     connected = true;
 
     console.log("Connected to " + client.host + ":" + client.port + " as '" + client.clientId + "'");
-    if(globalPrefix != '') console.log('With globalPrefix: ' + globalPrefix);
+    if(globalPrefix !== '') console.log('With globalPrefix: ' + globalPrefix);
 
-    client.subscribe(globalPrefix + "/devices/#");
     client.subscribe(globalPrefix + "/config/widgets/#");
     client.subscribe(globalPrefix + "/config/dashboards/#");
 
-    stickySubscriptions.forEach(function (item) {
-      this.subscribe(item.topic, item.callback);
-    }, this);
+    uiConfig.whenReady().then(() => {
+      client.subscribe(globalPrefix + "/devices/#");
+      stickySubscriptions.forEach(item => this.subscribe(item.topic, item.callback));
+    });
+
+    // prepare retain hack
+    client.subscribe(globalPrefix + retainHackTopic);
+    var msg = new Paho.MQTT.Message('1');
+    msg.destinationName = globalPrefix + retainHackTopic;
+    client.send(msg);
   };
 
   //...........................................................................
@@ -194,7 +231,7 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     connected = false;
 
     callbackMap = Object.create(null);
-    if (responseObject.errorCode != 0) { // not intentionally disconnected
+    if (responseObject.errorCode !== 0) { // not intentionally disconnected
       console.log("Server connection lost: %o", responseObject);
       reconnectAfterTimeout();
     } else {
@@ -212,7 +249,15 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     // console.log("Arrived message: " + message.destinationName + " with " + message.payloadBytes.length + " bytes of payload");
     // console.log("Message: " + String.fromCharCode.apply(null, message.payloadBytes));
     var topic = message.destinationName;
-    if (topic.substring(0, globalPrefix.length) == globalPrefix)
+
+    // check retain hack
+    if (!retainIsDone && topic === retainHackTopic) {
+      retainIsDone = true;
+      retainReady.resolve();
+      return;
+    }
+
+    if (topic.substring(0, globalPrefix.length) === globalPrefix)
       topic = topic.substring(globalPrefix.length);
 
     Object.keys(callbackMap).sort().forEach(function (pattern) {
@@ -248,7 +293,7 @@ function mqttClient($window, $rootScope, $timeout, topicMatches,mqttConnectTimeo
     var message = new Paho.MQTT.Message(payload);
     message.destinationName = topic;
     message.qos = qos === undefined ? 1 : qos;
-    if (retained != undefined) {
+    if (retained !== undefined) {
       message.retained = retained;
     } else {
       message.retained = true;

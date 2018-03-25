@@ -8,7 +8,7 @@ const mqttRpcServiceModule = angular
   .name;
 
 //-----------------------------------------------------------------------------
-function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) {
+function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
   'ngInject';
 
   var disconnectedError = {
@@ -127,14 +127,14 @@ function mqttRpc($q, $rootScope, $timeout, mqttClient, mqttRpcTimeout, Spinner) 
             params: params || {}
           }),
           false);
-        var timeout = $timeout(invokeResponseHandler.bind(null, callId, null, {
+        var timeout = mqttClient.timeout(invokeResponseHandler.bind(null, callId, null, {
           error: timeoutError
         }), mqttRpcTimeout);
 
         Spinner.start(this._spinnerIdPrefix, callId);
         inflight[callId] = (actualTopic, reply) => {
           Spinner.stop(this._spinnerIdPrefix, callId);
-          $timeout.cancel(timeout);
+          mqttClient.cancel(timeout);
           if (actualTopic !== null && actualTopic != topic + "/reply")
             reject("unexpected response topic " + actualTopic);
           else if (reply.hasOwnProperty("error") && reply.error !== null)
