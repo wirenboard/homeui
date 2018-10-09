@@ -164,3 +164,7 @@ div[uib-datepicker-popup-wrap] {
     width: 40px;
     overflow: hidden;
 }
+
+.ma-0 {
+    margin: 0px;
+}
