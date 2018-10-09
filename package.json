@@ -9,7 +9,7 @@
     "test": "rimraf coverage && karma start karma_ci.conf.js",
     "test-watch": "karma start karma_dev.conf.js",
     "start": "npm run server",
-    "start-dist": "cd ./dist &с& python3 ../test/dist_server.py "
+    "start-dist": "cd ./dist && python3 ../test/dist_server.py "
   },
   "repository": {
     "type": "git",
