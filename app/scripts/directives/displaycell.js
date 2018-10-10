@@ -55,13 +55,7 @@ function displayCellDirective(displayCellConfig, $compile) {
                          displayCellConfig.displayTypes['text']).directive;
 
         $compile('<' + directive + '></' + directive + '>')(scope, (clonedElement) => {
-          element.append(clonedElement);
-          element.append(
-            '<button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"' +
-            'ng-click="displayCellCtrl.redirect(cell.id)">' +
-            '<i class="glyphicon glyphicon-stats"></i>' +
-            '</button>'
-        )
+          angular.element(element[0].firstElementChild).after(clonedElement);
         });
       });
     }
