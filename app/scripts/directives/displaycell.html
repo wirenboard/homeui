@@ -1,11 +1,9 @@
-<div>
-  <div class="display-cell display-cell-{{cell.displayType}} cell-type-{{ cell.type }}"
-       ng-switch on="cell.displayType"
-       ng-class="{ 'cell-error': cell.error }"
-       data-cell-id="{{ cell.id }}">
-      <cell-name ng-if="displayCellCtrl.shouldDisplayCellName()"
-                 override="displayCellCtrl.overrideName()"></cell-name>
-  </div>
+<div class="display-cell display-cell-{{cell.displayType}} cell-type-{{ cell.type }}"
+      ng-switch on="cell.displayType"
+      ng-class="{ 'cell-error': cell.error }"
+      data-cell-id="{{ cell.id }}">
+  <cell-name ng-if="displayCellCtrl.shouldDisplayCellName()"
+              override="displayCellCtrl.overrideName()"></cell-name>
   <button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
           ng-click="displayCellCtrl.redirect(cell.id)">
     <i class="glyphicon glyphicon-stats"></i>
