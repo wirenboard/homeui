@@ -4,10 +4,11 @@ function displayCellDirective(displayCellConfig, $compile) {
   'ngInject';
 
   class DisplayCellController {
-    constructor ($scope, $element, $attrs, handleData) {
+    constructor ($scope, $state, $element, $attrs, handleData) {
       'ngInject';
       //this.$scope = $scope;
       this.cell = $scope.cell;
+      this.$state = $state;
       //console.log("+++++++++this.cell",this.cell);
 
       //this.handleData = handleData;
@@ -23,6 +24,11 @@ function displayCellDirective(displayCellConfig, $compile) {
       return !this.compact() &&
         !(displayCellConfig.displayTypes.hasOwnProperty(this.cell.displayType) &&
           displayCellConfig.displayTypes[this.cell.displayType].noSeparateName);
+    }
+
+    redirect(contr) {
+      var [device,control] = contr.split('/');
+      this.$state.go('historySample', {device, control, start: '-', end: '-'})
     }
   }
 
@@ -47,9 +53,15 @@ function displayCellDirective(displayCellConfig, $compile) {
         var directive = (displayCellConfig.displayTypes.hasOwnProperty(displayType) ?
                          displayCellConfig.displayTypes[displayType] :
                          displayCellConfig.displayTypes['text']).directive;
-        element.find('> *:not(h4)').remove();
+
         $compile('<' + directive + '></' + directive + '>')(scope, (clonedElement) => {
           element.append(clonedElement);
+          element.append(
+            '<button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"' +
+            'ng-click="displayCellCtrl.redirect(cell.id)">' +
+            '<i class="glyphicon glyphicon-stats"></i>' +
+            '</button>'
+        )
         });
       });
     }
