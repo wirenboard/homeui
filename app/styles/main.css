@@ -531,11 +531,17 @@ button.show-console span {
 }
 
 .display-cell {
-    width: calc(100% - 40px);
+    width: 100%;
+    position: relative;
+    padding-right: 40px;
 }
 
-.display-cell-btn {
-    float: right;
+.display-cell-btn,
+.display-cell-btn:active {
+    top: 0;
+    right: 0;
+    left: auto;
+    position: absolute;
     padding: 0 4px 1px 3px;
 }
 .display-cell-btn i{

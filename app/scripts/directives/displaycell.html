@@ -4,6 +4,10 @@
      data-cell-id="{{ cell.id }}">
     <cell-name ng-if="displayCellCtrl.shouldDisplayCellName()"
                override="displayCellCtrl.overrideName()"></cell-name>
+    <button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
+            ng-click="displayCellCtrl.redirect(cell.id)">
+      <i class="glyphicon glyphicon-stats"></i>
+    </button>
 </div>
 <!--uib-tooltip="{{parentName}}/{{cell.id}}"
      tooltip-class="custom-tooltip"-->

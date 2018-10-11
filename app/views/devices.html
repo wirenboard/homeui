@@ -15,10 +15,6 @@
                     </div>
                     <div class="panel-body">
                         <div ng-repeat="cellId in dev(devId).cellIds" ng-click="$ctrl.copy(_name,cellId)">
-                            <button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
-                                    ng-click="$ctrl.redirect(cellId)">
-                                <i class="glyphicon glyphicon-stats"></i>
-                            </button>
                             <display-cell cell="cell(cellId)"
                                           tooltip-popup-delay="500"
                                           uib-tooltip="click to copy '{{cellId}}'"
