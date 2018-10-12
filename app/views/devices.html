@@ -17,7 +17,7 @@
                         <div ng-repeat="cellId in dev(devId).cellIds" ng-click="$ctrl.copy(_name,cellId)">
                             <display-cell cell="cell(cellId)"
                                           tooltip-popup-close-delay="500"
-                                          uib-tooltip="'{{cellId}}' value copied to clipboard"
+                                          uib-tooltip="'{{cellId}}' copied to clipboard"
                                           tooltip-trigger="{
                                             'outsideClick': 'mouseleave',
                                             'focus': 'mouseleave'
