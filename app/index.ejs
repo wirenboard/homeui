@@ -49,7 +49,7 @@
           <div class="collapse navbar-collapse navbar-ex1-collapse">
               <ul class="nav navbar-nav side-nav">
                   <li ui-sref-active="active">
-                      <a ui-sref="home"><i class="glyphicon glyphicon-cog"></i> Home</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="home"><i class="glyphicon glyphicon-cog"></i> Home</a>
                   </li>
                   <li ui-sref-active="active">
                       <a href="javascript:" data-toggle="collapse" data-target="#dashboards-menu">
@@ -57,25 +57,25 @@
                       </a>
                       <ul id="dashboards-menu" class="collapse">
                           <li>
-                              <a ui-sref="dashboards">List</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="dashboards">List</a>
                           </li>
                           <li ng-repeat="d in dashboards()" dashboard-menu-item>
-                              <a ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
                           </li>
                       </ul>
                   </li>
                   <li ui-sref-active="active" user-role="mto" current-role="roles.current.role">
-                      <a ui-sref="devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="devices"><i class="glyphicon glyphicon-cog"></i> Devices</a>
                   </li>
                   <li ui-sref-active="active">
-                      <a ui-sref="widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="widgets"><i class="glyphicon glyphicon-list-alt"></i> Widgets</a>
                   </li>
                   <li ui-sref-active="active">
-                      <a ui-sref="history"><i class="glyphicon glyphicon-stats"></i> History</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats"></i> History</a>
                   </li>
                   <li ng-if="isConnected()" ui-sref-active="active"
                       user-role="mtt" current-role="roles.current.role">
-                      <a ui-sref="scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="scripts"><i class="glyphicon glyphicon-file"></i> Scripts</a>
                   </li>
                   <li ui-sref-active="active">
                       <a href="javascript:" data-toggle="collapse" data-target="#settings-menu">
@@ -83,24 +83,24 @@
                       </a>
                       <ul id="settings-menu" class="collapse">
                           <li ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
-                              <a ui-sref="configs" ui-sref-active="active">Configs</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="configs" ui-sref-active="active">Configs</a>
                           </li>
                           <li>
-                              <a ui-sref="webUI" ui-sref-active="active">Web UI</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="webUI" ui-sref-active="active">Web UI</a>
                           </li>
                           <li user-role="mtt" current-role="roles.current.role">
-                              <a ui-sref="system" ui-sref-active="active">System</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="system" ui-sref-active="active">System</a>
                           </li>
                           <li>
-                              <a ui-sref="MQTTChannels" ui-sref-active="active">MQTT Channels</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="MQTTChannels" ui-sref-active="active">MQTT Channels</a>
                           </li>
                           <li>
-                              <a ui-sref="accessLevel" ui-sref-active="active">Change access level</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="accessLevel" ui-sref-active="active">Change access level</a>
                           </li>
                       </ul>
                   </li>
                   <li ui-sref-active="help">
-                      <a ui-sref="help"><i class="glyphicon glyphicon-question-sign"></i> Help</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help"><i class="glyphicon glyphicon-question-sign"></i> Help</a>
                   </li>
               </ul>
           </div>
