@@ -3,4 +3,6 @@
   ng-click="cell.value = true"
   ng-disabled="cell.readOnly"
   class="btn btn-primary cell cell-button"
->{{ ctrl.getCellName(cell.id) }}</button>
+>
+  <cell-name override="displayCellCtrl.overrideName()"></cell-name>
+</button>
