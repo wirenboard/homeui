@@ -842,3 +842,13 @@ svg:not(:root) {
     /*border-color: rgba(0,0,0,0);*/
     border: none;
 }
+
+@media (max-width: 767px) {
+  .navbar-collapse {
+    padding: 0;
+  }
+
+  .navbar-nav.side-nav {
+    margin: 8px 0;
+  }
+}
