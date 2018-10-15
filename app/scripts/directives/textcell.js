@@ -4,7 +4,12 @@ function textCellDirective() {
     scope: false,
     require: '^cell',
     replace: true,
-    template: '<input ng-readonly="cell.readOnly" class="cell cell-text" type="text" ng-model="cell.value" explicit-changes>'
+    template: `
+      <div>
+        <p ng-if="cell.readOnly" class="cell cell-text" type="text">{{ cell.value }}</p>
+        <input ng-hide="cell.readOnly" class="cell cell-text" type="text" ng-model="cell.value" explicit-changes>
+      </div>
+    `
   };
 }
 
