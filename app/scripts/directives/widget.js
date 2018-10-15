@@ -13,16 +13,6 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
     }
   }
 
-  function getCell (id){
-    try {
-      console.log(DeviceData.cell(id))
-      return DeviceData.cell(id);
-    } catch (e) {
-      console.error("bad cell id: " + id);
-      return id;
-    }
-  }
-
 //-----------------------------------------------------------------------------
   class WidgetController {
     constructor ($scope, $element, $attrs) {
@@ -132,7 +122,8 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
         this.source.cells.forEach(cell => {
           var oldName = cellName(cell.id),
               newName = (cell.name || "").replace(/^s+|\s+$/g, "");
-          getCell(cell.id).setName(cell.name)
+          if (!newName || oldName == newName)
+            delete cell.name;
         });
         angular.extend(this._source(), this.source);
         delete this._source().isNew;
