@@ -169,7 +169,6 @@ div[uib-datepicker-popup-wrap] {
     margin: 0px;
 }
 
-.navbar-brand-logo {
-  max-height: 36px;
-  margin: 7px 10px;
+.wb-navbar-brand {
+  padding: 7px 10px;
 }
