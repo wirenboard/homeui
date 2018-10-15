@@ -568,6 +568,9 @@ button.show-console span {
   margin: 4px 0;
 }
 
+.display-cell  button.cell-button h4 {
+  font-size: 13px;
+}
 .display-cell input.cell-text {
   width: 120px;
 }
