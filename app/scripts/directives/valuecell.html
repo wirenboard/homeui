@@ -4,8 +4,11 @@
          ng-model="cell.value" explicit-changes>
   <span ng-if="cell.readOnly" class="value">
     <span style="display:none">{{ __value = ('' + cell.value).split('.') }}</span>
-    <span class="cell-value-with-unit">
-      {{ __value[0] }}{{ __value[1] ? '.'+__value[1] : '' }} {{ cell.units }}
+    <span class="int">
+      <span>{{ __value[0] }}</span>
     </span>
+    <span class="comma" ng-show="__value[1]">.</span>
+    <span class="decimal">{{ __value[1] }}</span>
   </span>
+  <span class="units">{{ cell.units }}</span>
 </span>
