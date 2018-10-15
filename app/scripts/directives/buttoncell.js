@@ -1,11 +1,28 @@
-function buttonCellDirective() {
+import template from './buttoncell.html';
+
+function buttonCellDirective(DeviceData) {
+  'ngInject';
+
+  class buttonCellController{
+    getCellName(id){
+      try {
+        console.log(DeviceData.cell(id))
+        return DeviceData.cell(id);
+      } catch (e) {
+        console.error("bad cell id: " + id);
+        return id;
+      }
+    }
+  }
+
   return {
     restrict: 'EA',
     scope: false,
     require: '^cell',
+    controllerAs: "ctrl",
+    controller: buttonCellController,
     replace: true,
-    template: '<button type="button" ng-click="cell.value = true" ' +
-      'ng-disabled="cell.readOnly" class="btn btn-primary cell cell-button">{{ cell.name }}</button>'
+    template
   };
 }
 
