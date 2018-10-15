@@ -130,6 +130,9 @@ div[uib-datepicker-popup-wrap] {
     cursor: pointer;
 }
 
+.cell.cell-value {
+  display: flex;
+}
 
 .cell-value .value {
     margin-right: -10px;
