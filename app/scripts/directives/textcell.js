@@ -6,7 +6,12 @@ function textCellDirective() {
     replace: true,
     template: `
       <div>
-        <p ng-if="cell.readOnly" class="cell cell-text" type="text">{{ cell.value }}</p>
+        <span ng-if="cell.readOnly" class="cell cell-value cell-text">
+          <span class="value">
+            {{ cell.value }}
+          </span>
+          <span class="units"></span>
+        </span>
         <input ng-hide="cell.readOnly" class="cell cell-text" type="text" ng-model="cell.value" explicit-changes>
       </div>
     `

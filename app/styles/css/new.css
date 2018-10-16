@@ -134,6 +134,11 @@ div[uib-datepicker-popup-wrap] {
   display: flex;
 }
 
+.cell.cell-text .value {
+  text-align: center;
+  padding-right: 17px;
+}
+
 .cell-value .value {
     margin-right: -10px;
     width: 110px;
