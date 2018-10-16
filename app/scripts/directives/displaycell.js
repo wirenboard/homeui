@@ -8,10 +8,11 @@ function displayCellDirective(displayCellConfig, $compile) {
       'ngInject';
       //this.$scope = $scope;
       this.cell = $scope.cell;
+      this.cell.copy = this.copy.bind(this);
       this.$state = $state;
       //console.log("+++++++++this.cell",this.cell);
 
-      //this.handleData = handleData;
+      this.handleData = handleData;
     }
 
     /*copy() {
@@ -19,6 +20,11 @@ function displayCellDirective(displayCellConfig, $compile) {
 
       if(this.parentName && this.cell.id) this.handleData.copyToClipboard(this.$scope.parentName + '/' + this.$scope.cell.id)
     }*/
+
+    copy(value) {
+      debugger
+      this.handleData.copyToClipboard(value)
+    }
 
     shouldDisplayCellName () {
       return !this.compact() &&
