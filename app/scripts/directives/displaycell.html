@@ -4,9 +4,9 @@
      data-cell-id="{{ cell.id }}">
     <cell-name ng-if="displayCellCtrl.shouldDisplayCellName()"
                override="displayCellCtrl.overrideName()"
-               ng-click="displayCellCtrl.copy(cell.name)"
+               ng-click="displayCellCtrl.copy(cell.id)"
                tooltip-popup-close-delay="500"
-               uib-tooltip="'{{ cell.name }}' copied to clipboard"
+               uib-tooltip="'{{ cell.id }}' copied to clipboard"
                tooltip-trigger="{
                  'outsideClick': 'mouseleave',
                  'focus': 'mouseleave'
