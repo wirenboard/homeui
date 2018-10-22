@@ -57,27 +57,32 @@ function dumbTemplateService() {
           return v === undefined || v === null || v === "" ? "" : v.toString()
         }
 
-        return src
-          .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in)\s*([\w.\[\]]+?|".*?")\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, function (m, left, op, right, ifTrue, ifFalse) {
-            left = expandVar(left);
-            right = expandVar(right);
-            var result = false;
-            if (op == "==") {
-              result = ((typeof right == 'string' ? stringify(left) : left) == right);
-            }
-            else if (op == "in") {
-              result = (right.indexOf(left) >= 0);
-            }
-            return result ? (ifTrue || "") : (ifFalse || "");
-          })
-          .replace(/\{\{(?:([^{]*?)\|)?\s*([\w.\[\]]+?)\s*(?:\|([^}]*?))?\}\}/g, function (m, prefix, expr, suffix) {
-            var v = stringify(expandVar(expr));
-            return v === "" ? "" : (prefix || "") + v + (suffix || "");
-          });
-      };
-    }
-  };
-}
+          return src
+            .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in|intersect)\s*([\w.\[\]]+?|".*?")\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, function (m, left, op, right, ifTrue, ifFalse) {
+              left = expandVar(left);
+              right = expandVar(right);
+              var result = false;
+              if (op == "==") {
+                result = ((typeof right == 'string' ? stringify(left) : left) == right);
+              }
+              else if (op == "in") {
+                result = (right.indexOf(left) >= 0);
+              }
+              else if (op == "intersect") {
+                result = left.filter(function(n) {
+                  return right.indexOf(n) != -1;
+                }).length > 0;
+              }
+              return result ? (ifTrue || "") : (ifFalse || "");
+            })
+            .replace(/\{\{(?:([^{]*?)\|)?\s*([\w.\[\]]+?)\s*(?:\|([^}]*?))?\}\}/g, function (m, prefix, expr, suffix) {
+              var v = stringify(expandVar(expr));
+              return v === "" ? "" : (prefix || "") + v + (suffix || "");
+            });
+        };
+      }
+    };
+  });
 
 //-----------------------------------------------------------------------------
 export default dumbTemplateModule;
