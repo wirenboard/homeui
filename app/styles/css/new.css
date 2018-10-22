@@ -14,6 +14,14 @@
     max-width: 300px;
 }
 
+.custom-tooltip.cell-name-tooltip {
+  left: 0% !important;
+}
+
+.custom-tooltip.cell-name-tooltip .tooltip-arrow {
+  left: 20px !important;
+}
+
 .show-on-parent-hover {
     display: none;
 }

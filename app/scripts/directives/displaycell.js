@@ -22,7 +22,6 @@ function displayCellDirective(displayCellConfig, $compile) {
     }*/
 
     copy(value) {
-      debugger
       this.handleData.copyToClipboard(value)
     }
 
