@@ -82,7 +82,7 @@ function dumbTemplateService() {
         };
       }
     };
-  });
+  };
 
 //-----------------------------------------------------------------------------
 export default dumbTemplateModule;
