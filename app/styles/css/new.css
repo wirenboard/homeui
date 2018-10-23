@@ -126,10 +126,6 @@ div[uib-datepicker-popup-wrap] {
     }
 }
 
-#devices-list .display-cell{
-    cursor: pointer;
-}
-
 .cell.cell-value {
   display: flex;
 }
@@ -174,4 +170,60 @@ div[uib-datepicker-popup-wrap] {
 
 .wb-navbar-brand {
   padding: 7px 10px;
+}
+
+
+.devices-panel-list {
+
+}
+
+.devices-panel-list .device-panel + .device-panel {
+  margin-top: 10px;
+}
+
+.device-panel {
+  width: 380px;
+  border: none !important;
+}
+
+.device-panel > .panel-heading {
+  background-color: #3276b1;
+  color: white;
+  padding: 0;
+  border: none !important;
+}
+
+.device-panel__header {
+  padding: 10px 15px;
+  height: 40px;
+}
+
+.device-panel__header-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+.device-panel__header-glyphicon {
+  font-size: 10px;
+}
+
+.device-panel__header-title,
+.device-panel__header-glyphicon {
+  line-height: 18px;
+}
+
+.device-panel .panel-body {
+  padding: 0;
+  border: none !important;
+}
+
+.device-panel__body {
+  border: 1px solid #3276b1;
+  border-top: 0px;
+  padding: 10px;
+}
+
+.device-panel__body .display-cell + .display-cell {
+  margin-top: 2px;
 }
