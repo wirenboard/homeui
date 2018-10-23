@@ -23,7 +23,7 @@ class DevicesCtrl {
         if(deviceIdFromUrl) this.$state.devicesVisibility.firstRender = true;
         // if devices count > collapseDevicesAfter,
         // all devices except 1'st will be folded.
-        const collapseDevicesAfter = 5;
+        const collapseDevicesAfter = 50;
 
         // dynamic classes for arrow chevron in panel-header
         $scope.getShevronClass = (deviceId) => {
@@ -53,11 +53,16 @@ class DevicesCtrl {
               })
               this.$state.devicesVisibility.firstRender = false;
           }
-          if(this.$state.devicesVisibility.firstRender && tooManyDevices) {
+          else if(this.$state.devicesVisibility.firstRender && tooManyDevices) {
               devicesIdsList.map((deviceId, index) => {
                 this.$state.devicesVisibility[deviceId].isOpen = tooManyDevices ? index === 0 ? true : false : true;
               })
               this.$state.devicesVisibility.firstRender = false;
+          }
+          else if (this.$state.devicesVisibility.firstRender) {
+            devicesIdsList.map((deviceId) => {
+              this.$state.devicesVisibility[deviceId].isOpen = true;
+            })
           }
 
           return devicesIdsList;
