@@ -25,48 +25,52 @@ class DevicesCtrl {
         // all devices except 1'st will be folded.
         const collapseDevicesAfter = 50;
 
-        // dynamic classes for arrow chevron in panel-header
-        $scope.getShevronClass = (deviceId) => {
-          return {
-            'glyphicon-chevron-down': this.getDevicesVisibility(deviceId).isOpen,
-            'glyphicon-chevron-right':  !this.getDevicesVisibility(deviceId).isOpen
-          }
-        }
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
         $scope.deviceIds = () => {
           const devicesIdsList = Object.keys(DeviceData.devices).sort();
 
+          // todo: в watcher а не тут!
           devicesIdsList.map((deviceId) => {
             if(!this.$state.devicesVisibility.hasOwnProperty(deviceId)) {
-              this.setDevicesVisibility(deviceId)
+              this.setDevicesVisibility(deviceId);
+              this.$state.devicesVisibility.firstRender = true;
             }
           })
 
           // two flags to display what we need to custom show/collapse devices
           const haveDeviceFromUrl = DeviceData.devices.hasOwnProperty(deviceIdFromUrl);
           const tooManyDevices = devicesIdsList.length > collapseDevicesAfter;
+          const firstRender = this.$state.devicesVisibility.firstRender;
 
-          if(this.$state.devicesVisibility.firstRender && haveDeviceFromUrl) {
+          if(firstRender && haveDeviceFromUrl) {
               devicesIdsList.map((deviceId) => {
                 this.$state.devicesVisibility[deviceId].isOpen = deviceIdFromUrl === deviceId ? true : false;
               })
               this.$state.devicesVisibility.firstRender = false;
           }
-          else if(this.$state.devicesVisibility.firstRender && tooManyDevices) {
+          else if(firstRender && tooManyDevices) {
               devicesIdsList.map((deviceId, index) => {
                 this.$state.devicesVisibility[deviceId].isOpen = tooManyDevices ? index === 0 ? true : false : true;
               })
               this.$state.devicesVisibility.firstRender = false;
           }
-          else if (this.$state.devicesVisibility.firstRender) {
+          else if (firstRender && devicesIdsList.length) {
             devicesIdsList.map((deviceId) => {
               this.$state.devicesVisibility[deviceId].isOpen = true;
             })
+            this.$state.devicesVisibility.firstRender = false;
           }
 
           return devicesIdsList;
-      }
+        }
+        // dynamic classes for arrow chevron in panel-header
+        $scope.getDeviceShevronClasses = (deviceId) => {
+          return {
+            'glyphicon-chevron-down': this.getDevicesVisibility(deviceId).isOpen,
+            'glyphicon-chevron-right':  !this.getDevicesVisibility(deviceId).isOpen
+          }
+        }
     }
 
     setDevicesVisibility(deviceId) {

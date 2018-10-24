@@ -11,7 +11,7 @@
             <uib-accordion-heading>
               <div  class="device-panel__header">
                   <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
-                  <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="getShevronClass(deviceId)"></i>
+                  <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="getDeviceShevronClasses(deviceId)"></i>
               </div>
             </uib-accordion-heading>
             <div class="device-panel__body" ng-if="$ctrl.getDevicesVisibility(deviceId).isOpen">
