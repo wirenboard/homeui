@@ -172,18 +172,18 @@ div[uib-datepicker-popup-wrap] {
   padding: 7px 10px;
 }
 
-
-.devices-panel-list {
-
+.devices-panel-list .device-panel:not(:last-child) {
+  margin-bottom: 18px;
 }
 
 .devices-panel-list .device-panel + .device-panel {
-  margin-top: 10px;
+  margin-top: 0;
 }
 
 .device-panel {
   width: 380px;
   border: none !important;
+  box-shadow: none;
 }
 
 .device-panel > .panel-heading {
