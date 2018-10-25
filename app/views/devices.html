@@ -7,14 +7,19 @@
     <div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
 
     <uib-accordion close-others="false" class="devices-panel-list">
-        <div uib-accordion-group class="panel-default device-panel display-cell-bin" ng-repeat="deviceId in deviceIds() track by $index" is-open="$ctrl.getDevicesVisibility(deviceId).isOpen">
+        <div
+            uib-accordion-group
+            class="panel-default device-panel display-cell-bin"
+            ng-repeat="deviceId in deviceIds() track by $index"
+            is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
+        >
             <uib-accordion-heading>
-              <div  class="device-panel__header">
+              <div class="device-panel__header">
                   <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
-                  <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="getDeviceShevronClasses(deviceId)"></i>
+                  <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
               </div>
             </uib-accordion-heading>
-            <div class="device-panel__body" ng-if="$ctrl.getDevicesVisibility(deviceId).isOpen">
+            <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
                 <display-cell
                   ng-repeat="cellId in dev(deviceId).cellIds"
                   cell="cell(cellId)"

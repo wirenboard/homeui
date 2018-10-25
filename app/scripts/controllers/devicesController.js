@@ -7,74 +7,111 @@ class DevicesCtrl {
         if(!this.haveRights) return;
 
         this.$state = $state;
-        // object to keep devicesVisibility in State
-        // fore keeping during the navigation
-        if(!this.$state.devicesVisibility) this.$state.devicesVisibility = {};
-        // if this flag is set, we will change the visibility of devices
-        if(this.$state.devicesVisibility.firstRender === undefined) this.$state.devicesVisibility.firstRender = true;
-        this.getDevicesVisibility = (deviceId) => this.$state.devicesVisibility[deviceId];
-
         this.handleData = handleData;
 
-        // object which contain url params.
-        const stateParams = $injector.get('$stateParams');
-        const deviceIdFromUrl = stateParams.deviceId;
+        // will create object to keep devices open/close condition in State
+        // fore keeping during the navigation, if it's not there
+        this.createDevicesVisibilityObject();
 
-        if(deviceIdFromUrl) this.$state.devicesVisibility.firstRender = true;
+        // if url contain deviceId, this device will be open,
+        // all other devices will be folded.
+        const deviceIdFromUrl = this.parseDeviceIdFromUrl($injector);
+
         // if devices count > collapseDevicesAfter,
         // all devices except 1'st will be folded.
-        const collapseDevicesAfter = 50;
+        const collapseDevicesAfter = 10;
 
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
         $scope.deviceIds = () => {
-          const devicesIdsList = Object.keys(DeviceData.devices).sort();
+            const devicesIdsList = Object.keys(DeviceData.devices).sort();
+            const devicesIdsCount = devicesIdsList.length;
 
-          // todo: в watcher а не тут!
-          devicesIdsList.map((deviceId) => {
-            if(!this.$state.devicesVisibility.hasOwnProperty(deviceId)) {
-              this.setDevicesVisibility(deviceId);
-              this.$state.devicesVisibility.firstRender = true;
+            // devices are loaded dynamically by sockets, therefore
+            // while browsing the page, their number may change.
+            if(devicesIdsCount != this.$state.devicesVisibility.devicesIdsCount){
+                devicesIdsList.map((deviceId) => {
+                    if(!this.$state.devicesVisibility.hasOwnProperty(deviceId)) {
+                        this.setDeviceVisibility(deviceId, false);
+                    }
+                })
+
+                this.$state.devicesVisibility.devicesIdsCount = devicesIdsCount;
+                this.setFirstRender(true);
             }
-          })
 
-          // two flags to display what we need to custom show/collapse devices
-          const haveDeviceFromUrl = DeviceData.devices.hasOwnProperty(deviceIdFromUrl);
-          const tooManyDevices = devicesIdsList.length > collapseDevicesAfter;
-          const firstRender = this.$state.devicesVisibility.firstRender;
+            const isFirstRender = this.$state.devicesVisibility.isFirstRender;
 
-          if(firstRender && haveDeviceFromUrl) {
-              devicesIdsList.map((deviceId) => {
-                this.$state.devicesVisibility[deviceId].isOpen = deviceIdFromUrl === deviceId ? true : false;
-              })
-              this.$state.devicesVisibility.firstRender = false;
-          }
-          else if(firstRender && tooManyDevices) {
-              devicesIdsList.map((deviceId, index) => {
-                this.$state.devicesVisibility[deviceId].isOpen = tooManyDevices ? index === 0 ? true : false : true;
-              })
-              this.$state.devicesVisibility.firstRender = false;
-          }
-          else if (firstRender && devicesIdsList.length) {
-            devicesIdsList.map((deviceId) => {
-              this.$state.devicesVisibility[deviceId].isOpen = true;
-            })
-            this.$state.devicesVisibility.firstRender = false;
-          }
+            if(isFirstRender && devicesIdsCount) {
+                const haveDeviceFromUrl = DeviceData.devices.hasOwnProperty(deviceIdFromUrl);
+                const tooManyDevices = devicesIdsCount > collapseDevicesAfter;
 
-          return devicesIdsList;
-        }
-        // dynamic classes for arrow chevron in panel-header
-        $scope.getDeviceShevronClasses = (deviceId) => {
-          return {
-            'glyphicon-chevron-down': this.getDevicesVisibility(deviceId).isOpen,
-            'glyphicon-chevron-right':  !this.getDevicesVisibility(deviceId).isOpen
-          }
+                if(haveDeviceFromUrl) {
+                    devicesIdsList.map((deviceId) => {
+                        const isOpen = deviceIdFromUrl === deviceId ? true : false;
+                        this.setDeviceVisibility(deviceId, isOpen);
+                    })
+                }
+                else if(tooManyDevices) {
+                    devicesIdsList.map((deviceId, index) => {
+                        const isOpen = tooManyDevices ? index === 0 ? true : false : true;
+                        this.setDeviceVisibility(deviceId, isOpen);
+                    })
+                }
+                else {
+                    devicesIdsList.map((deviceId) => {
+                        this.setDeviceVisibility(deviceId, true);
+                    })
+                }
+
+                this.setFirstRender(false);
+            }
+
+            return devicesIdsList;
         }
     }
 
-    setDevicesVisibility(deviceId) {
-      this.$state.devicesVisibility[deviceId] = { isOpen: false }
+    createDevicesVisibilityObject() {
+        if(!this.$state.devicesVisibility) {
+            this.$state.devicesVisibility = {
+                devices: {}, // { 'deviceId': { isOpen: bool }}
+                isFirstRender: true,
+                devicesIdsCount: 0
+            };
+        }
+    }
+
+    parseDeviceIdFromUrl($injector) {
+        const deviceIdFromUrl = $injector.get('$stateParams').deviceId;
+
+        // if URL contains deviceId we must display it panel open,
+        // so change the flag isFirstRender to true
+        if(deviceIdFromUrl) this.setFirstRender(true);
+
+        return deviceIdFromUrl;
+    }
+
+    setDeviceVisibility(deviceId, isOpen) {
+        this.$state.devicesVisibility.devices[deviceId] = {'isOpen' : isOpen};
+    }
+
+    // return Object { isOpen: bool }, instead of bool value
+    // to be used as model 'is-open' in devices.html view
+    getDeviceVisibility(deviceId) {
+        return this.$state.devicesVisibility.devices[deviceId];
+    }
+
+    setFirstRender(isFirst) {
+        this.$state.devicesVisibility.isFirstRender = isFirst;
+    }
+
+    // dynamic classes for arrow chevron in device panel-header
+    getDeviceShevronClasses(deviceId) {
+        const isOpen = this.getDeviceVisibility(deviceId).isOpen;
+        return {
+            'glyphicon-chevron-down': isOpen,
+            'glyphicon-chevron-right':  !isOpen
+        }
     }
 
     copy(device, control) {
