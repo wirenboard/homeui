@@ -319,8 +319,8 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
               });
 
 
-            },
-            'history' 
+            }, 
+            'history'
           );
          return deferred_1.promise
       }}

@@ -126,9 +126,9 @@ div[uib-datepicker-popup-wrap] {
     }
 }
 
-.device-panel .display-cell{	
-  cursor: pointer;	
-}	
+.device-panel .display-cell{
+    cursor: pointer;
+}
 
 .cell.cell-value {
   display: flex;
