@@ -37,7 +37,6 @@ class DevicesCtrl {
                 })
 
                 this.$state.devicesVisibility.devicesIdsCount = devicesIdsCount;
-                this.setFirstRender(true);
             }
 
             const isFirstRender = this.$state.devicesVisibility.isFirstRender;
