@@ -50,7 +50,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/devicesController.js');
               $ocLazyLoad.load({
@@ -76,7 +76,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
         'ngInject';
         let deferred = $q.defer();
         require.ensure(
-          [],
+          [], 
           (require) => {
             let module = require('./controllers/devicesController.js');
             $ocLazyLoad.load({
@@ -102,7 +102,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/widgetsController.js');
               $ocLazyLoad.load({
@@ -128,7 +128,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/dashboardsController.js');
               $ocLazyLoad.load({
@@ -154,7 +154,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/dashboardController.js');
               $ocLazyLoad.load({
@@ -180,7 +180,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/settingController.js');
               $ocLazyLoad.load({
@@ -212,7 +212,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/scriptsController.js');
               $ocLazyLoad.load({
@@ -239,7 +239,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           let deferred_1 = $q.defer();
           let deferred_2 = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module_1 = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
@@ -274,7 +274,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           let deferred_1 = $q.defer();
           let deferred_2 = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module_1 = require('./controllers/scriptController.js');
               $ocLazyLoad.load({
@@ -320,7 +320,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
 
 
             },
-            'history'
+            'history' 
           );
          return deferred_1.promise
       }}
@@ -366,7 +366,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/configsController.js');
               $ocLazyLoad.load({
@@ -393,7 +393,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           'ngInject';
           let deferred = $q.defer();
           require.ensure(
-            [],
+            [], 
             (require) => {
               let module = require('./controllers/configController.js');
               $ocLazyLoad.load({
