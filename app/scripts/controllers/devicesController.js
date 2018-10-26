@@ -31,7 +31,7 @@ class DevicesCtrl {
             // while browsing the page, their number may change.
             if(devicesIdsCount != this.$state.devicesVisibility.devicesIdsCount){
                 devicesIdsList.map((deviceId) => {
-                    if(!this.$state.devicesVisibility.hasOwnProperty(deviceId)) {
+                    if(!this.$state.devicesVisibility.devices.hasOwnProperty(deviceId)) {
                         this.setDeviceVisibility(deviceId, false);
                     }
                 })
