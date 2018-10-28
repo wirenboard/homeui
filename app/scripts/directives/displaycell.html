@@ -3,7 +3,15 @@
      ng-class="{ 'cell-error': cell.error }"
      data-cell-id="{{ cell.id }}">
     <cell-name ng-if="displayCellCtrl.shouldDisplayCellName()"
-               override="displayCellCtrl.overrideName()"></cell-name>
+               override="displayCellCtrl.overrideName()"
+               ng-click="displayCellCtrl.copy(cell.id)"
+               tooltip-popup-close-delay="500"
+               uib-tooltip="'{{ cell.id }}' copied to clipboard"
+               tooltip-trigger="{
+                 'outsideClick': 'mouseleave',
+                 'focus': 'mouseleave'
+               }"
+               tooltip-class="custom-tooltip cell-name-tooltip"></cell-name>
     <button title="History" class="display-cell-btn btn bg-color-blueDark txt-color-white show-on-parent-hover"
             ng-click="displayCellCtrl.redirect(cell.id)">
       <i class="glyphicon glyphicon-stats"></i>

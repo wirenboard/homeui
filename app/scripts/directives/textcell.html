@@ -1,0 +1,23 @@
+<div
+  ng-click="cell.copy(cell.value)"
+  tooltip-popup-close-delay="500"
+  uib-tooltip="'{{ cell.value }}' copied to clipboard"
+  tooltip-trigger="{
+    'outsideClick': 'mouseleave',
+    'focus': 'mouseleave'
+  }"
+>
+  <p
+    ng-if="cell.readOnly"
+    class="cell cell-text"
+  >
+    {{ cell.value }}
+  </p>
+  <input
+    ng-hide="cell.readOnly"
+    ng-model="cell.value"
+    type="text"
+    class="cell cell-text"
+    explicit-changes
+  >
+</div>
