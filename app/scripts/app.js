@@ -327,13 +327,19 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $rootScope.requestConfig = configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig);
 
         //.........................................................................
-        var demoLoginData = {
+        const demoLoginData = {
             host: $window.location.hostname,
             port: 18883
         };
+
+        if(!$window.localStorage.host || !$window.localStorage.port) {
+            $window.localStorage.setItem('host', demoLoginData.host)
+            $window.localStorage.setItem('port', demoLoginData.port)
+        }
+
         var loginData = {
-            host: $window.localStorage['host'] || demoLoginData['host'],
-            port: $window.localStorage['port'] || demoLoginData['port'],
+            host: $window.localStorage['host'],
+            port: $window.localStorage['port'],
             user: $window.localStorage['user'],
             password: $window.localStorage['password'],
             prefix: $window.localStorage['prefix']
