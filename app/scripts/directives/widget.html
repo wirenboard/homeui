@@ -84,13 +84,13 @@
       <div class="btn-form">
       <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length">Save</button>
       <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default">Cancel</button>
-        <button name="cancel" type="submit" ng-click="widgetForm.$submit() || ctrl.enableEditJsonMode()" class="btn btn-default pull-right">Edit as JSON</button>
+        <button name="cancel" type="button" ng-click="widgetForm.$submit() || ctrl.enableEditJsonMode()" class="btn btn-default pull-right">Edit as JSON</button>
     </div>
     </div>
     <div ng-if="ctrl.editJsonMode">
       <textarea class="widget-json-settings" ng-model="ctrl.jsonSource">{{ ctrl.jsonSource }}</textarea>
       <div class="btn-form">
-        <button name="submit" type="button" ng-click="ctrl.updateSourceFromJson(true) || widgetForm.$hide()" class="btn btn-primary" ng-disabled="!ctrl.jsonSource.length">Save</button>
+        <button name="submit" type="submit" ng-click="ctrl.updateSourceFromJson(true) || widgetForm.$hide()" class="btn btn-primary" ng-disabled="!ctrl.jsonSource.length">Save</button>
         <button name="cancel" type="button" ng-click="widgetForm.$cancel() || ctrl.disableEditJsonMode()" class="btn btn-default">Cancel</button>
         <button name="cancel" type="button" ng-click="ctrl.updateSourceFromJson() || widgetForm.$show()" class="btn btn-default pull-right">Visual editor</button>
       </div>

@@ -1,3 +1,20 @@
+wb-mqtt-homeui (2.0~beta6) stable; urgency=medium
+
+  * compatibility with newer wb-utils in postinst
+  * fix pushbutton renaming in widgets
+  * show text controls as labels
+  * change favicon and logos
+  * changed css rules for displaying rows with values
+  * add menu collapsing to all end menu items
+  * changed the styles of items in the mobile menu to fit full wight
+  * change min-height of main page-wrapper
+  * change behavior of 'copy to clipboard' popup
+  * fix styles for readonly switch
+  * add history btn to dashboards/widgets
+  * fix menu width for mobile
+
+ -- Evgeny Boger <boger@contactless.ru>  Wed, 17 Oct 2018 18:32:47 +0300
+
 wb-mqtt-homeui (2.0~beta5) stable; urgency=medium
 
   * Allow to invert switch state in widgets
