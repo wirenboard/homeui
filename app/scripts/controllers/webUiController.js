@@ -7,6 +7,8 @@ export default class WebUICtrl {
         'ngInject';
 
         this.rolesFactory = rolesFactory;
+        this.uiConfig = uiConfig;
+
         uiConfig.whenReady()
             .then((data) => {
                 this.dashboards = data.dashboards;

@@ -113,10 +113,6 @@ class DevicesCtrl {
         }
     }
 
-    copy(device, control) {
-        if (control) this.handleData.copyToClipboard(control)
-    }
-
     redirect(contr) {
         var [device,control] = contr.split('/');
         this.$state.go('historySample', {device, control, start: '-', end: '-'})

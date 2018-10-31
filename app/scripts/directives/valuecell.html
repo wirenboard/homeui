@@ -1,4 +1,14 @@
-<span class="cell cell-value">
+<span
+  class="cell cell-value"
+  ng-click="cell.copy(cell.value)"
+  tooltip-popup-close-delay="500"
+  uib-tooltip="'{{ cell.value }}' copied to clipboard"
+  tooltip-trigger="{
+    'outsideClick': 'mouseleave',
+    'focus': 'mouseleave'
+  }"
+  tooltip-class="custom-tooltip"
+>
   <input ng-if="cell.valueType == 'number' && !cell.readOnly" type="number"
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"
          ng-model="cell.value" explicit-changes>

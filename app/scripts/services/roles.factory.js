@@ -14,8 +14,13 @@ export default function rolesFactory () {
     roles.ROLE_THREE = roles._ROLE_THREE.id;
     roles.ROLES = [roles._ROLE_ONE, roles._ROLE_TWO, roles._ROLE_THREE];
 
+    const setDefaultRole = (defaultRole = 1) => {
+      localStorage.setItem('role', defaultRole);
+      return defaultRole;
+    }
+
     roles.current = {
-        role: localStorage.getItem('role') || 1,
+        role: localStorage.getItem('role') || setDefaultRole(),
         roles: roles.ROLES[(localStorage.getItem('role') || 1) - 1]
     };
 
