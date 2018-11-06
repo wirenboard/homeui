@@ -3,28 +3,30 @@
      ng-hide="$ctrl.haveRights">
     You cannot view this page. You can change <a ui-sref="accessLevel">access level</a>.
 </div>
-<section ng-if="$ctrl.haveRights">
-    <div class="empty-list well" ng-if="deviceIds().length == 0">No devices available for this moment.</div>
+<section ng-if="$ctrl.haveRights" id="devices-list">
+    <div class="empty-list well" ng-if="deviceIds.length == 0">No devices available for this moment.</div>
 
-    <uib-accordion close-others="false" class="devices-panel-list">
-        <div
-            uib-accordion-group
-            class="panel-default device-panel display-cell-bin"
-            ng-repeat="deviceId in deviceIds() track by $index"
-            is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
-            ng-click="$ctrl.changeDeviceVisibility(deviceId)"
-        >
-            <uib-accordion-heading>
-              <div class="device-panel__header">
-                  <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
-                  <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
-              </div>
-            </uib-accordion-heading>
-            <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
-                <display-cell
-                  ng-repeat="cellId in dev(deviceId).cellIds"
-                  cell="cell(cellId)"
-                />
+    <uib-accordion close-others="false" class="devices-panel-list" >
+        <div ng-repeat="columnOfIds in deviceIdsColumns()">
+            <div
+              uib-accordion-group
+              class="panel-default device-panel display-cell-bin"
+              ng-repeat="deviceId in columnOfIds"
+              is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
+              ng-click="$ctrl.changeDeviceVisibility(deviceId)"
+            >
+                <uib-accordion-heading>
+                  <div class="device-panel__header">
+                      <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
+                      <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
+                  </div>
+                </uib-accordion-heading>
+                <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
+                    <display-cell
+                      ng-repeat="cellId in dev(deviceId).cellIds"
+                      cell="cell(cellId)"
+                    />
+                </div>
             </div>
         </div>
     </uib-accordion>

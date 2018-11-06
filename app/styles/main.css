@@ -265,7 +265,6 @@ ul.alert-dropdown {
 /* Devices List */
 
 @media(min-width:768px) {
-  .panel-group,
   .multicol-list{
     position: relative;
     -webkit-column-width: 390px;
@@ -277,14 +276,12 @@ ul.alert-dropdown {
   }
 }
 
-.panel-group .device-panel,
 .multicol-list ul li {
   display: inline-block;
   width: 380px;
 }
 
 @media(max-width: 390px) {
-  .panel-group .device-panel,
   .multicol-list ul li {
     display: inline-block;
     width: 100% !important;

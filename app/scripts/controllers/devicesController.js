@@ -17,15 +17,19 @@ class DevicesCtrl {
         // all other devices will be folded.
         const deviceIdFromUrl = this.parseDeviceIdFromUrl($injector);
 
-        // if devices count > collapseDevicesAfter,
-        // all devices except 1'st will be folded.
-        const collapseDevicesAfter = 10;
+        // if devices will not fit on the screen, 
+        // all but the first will be minimized.
+        this.shouldCollapseDevices = false;
+
+        this.deviceIdsResult = [];
 
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
-        $scope.deviceIds = () => {
+        $scope.deviceIdsColumns = () => {
             const devicesIdsList = Object.keys(DeviceData.devices).sort();
             const devicesIdsCount = devicesIdsList.length;
+
+            let needReorderIdsInColumns = false;
 
             let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility)
             // devices are loaded dynamically by sockets, therefore
@@ -37,11 +41,16 @@ class DevicesCtrl {
                     }
                 })
 
+                needReorderIdsInColumns = true;
                 devicesVisibility.devicesIdsCount = devicesIdsCount;
                 window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
             }
 
             const isFirstRender = devicesVisibility.isFirstRender;
+
+            if(needReorderIdsInColumns || isFirstRender) {
+              this.deviceIdsResult = this.getDevicesIdsInColumn(devicesIdsList)
+            }
 
             if(isFirstRender && devicesIdsCount) {
                 const haveDeviceFromUrl = DeviceData.devices.hasOwnProperty(deviceIdFromUrl);
@@ -68,8 +77,37 @@ class DevicesCtrl {
                 this.setFirstRender(false);
             }
 
-            return devicesIdsList;
+            return this.deviceIdsResult;
         }
+    }
+
+    getDevicesColumnsCount() {
+      const containerWidth = document.getElementById("devices-list").offsetWidth;
+      const devicePanelWidth = 390;
+      const columnCount = Math.floor(containerWidth / devicePanelWidth );
+      return columnCount;
+    }
+
+    getDevicesIdsInColumn(devicesIdsList) {
+        const columnCount = this.getDevicesColumnsCount();
+        let devicesIdsInColumns = [];
+
+        for(let i = 0; i < columnCount; i++) {
+            devicesIdsInColumns.push([]);
+        }
+
+        let index = 0;
+
+        devicesIdsList.forEach((deviceId) => {
+            if(index > columnCount - 1) {
+              index = 0;
+            }
+            devicesIdsInColumns[index].push(deviceId);
+            index += 1;
+        })
+
+        devicesIdsList = devicesIdsInColumns
+        return devicesIdsList
     }
 
     createDevicesVisibilityObject() {

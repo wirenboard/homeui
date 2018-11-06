@@ -196,6 +196,7 @@ div[uib-datepicker-popup-wrap] {
   width: 380px;
   border: none !important;
   box-shadow: none;
+  margin-right: 18px;
 }
 
 .device-panel > .panel-heading {
@@ -238,4 +239,8 @@ div[uib-datepicker-popup-wrap] {
 
 .device-panel__body .display-cell + .display-cell {
   margin-top: 2px;
+}
+
+.panel-group {
+  display: flex;
 }
