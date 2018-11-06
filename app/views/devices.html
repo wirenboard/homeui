@@ -12,6 +12,7 @@
             class="panel-default device-panel display-cell-bin"
             ng-repeat="deviceId in deviceIds() track by $index"
             is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
+            ng-click="$ctrl.changeDeviceVisibility(deviceId)"
         >
             <uib-accordion-heading>
               <div class="device-panel__header">

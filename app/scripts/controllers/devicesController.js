@@ -27,19 +27,21 @@ class DevicesCtrl {
             const devicesIdsList = Object.keys(DeviceData.devices).sort();
             const devicesIdsCount = devicesIdsList.length;
 
+            let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility)
             // devices are loaded dynamically by sockets, therefore
             // while browsing the page, their number may change.
-            if(devicesIdsCount != this.$state.devicesVisibility.devicesIdsCount){
+            if(devicesIdsCount != devicesVisibility.devicesIdsCount){
                 devicesIdsList.map((deviceId) => {
-                    if(!this.$state.devicesVisibility.devices.hasOwnProperty(deviceId)) {
-                        this.setDeviceVisibility(deviceId, false);
+                    if(!devicesVisibility.devices.hasOwnProperty(deviceId)) {
+                      devicesVisibility.devices[deviceId] = { isOpen : false };
                     }
                 })
 
-                this.$state.devicesVisibility.devicesIdsCount = devicesIdsCount;
+                devicesVisibility.devicesIdsCount = devicesIdsCount;
+                window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
             }
 
-            const isFirstRender = this.$state.devicesVisibility.isFirstRender;
+            const isFirstRender = devicesVisibility.isFirstRender;
 
             if(isFirstRender && devicesIdsCount) {
                 const haveDeviceFromUrl = DeviceData.devices.hasOwnProperty(deviceIdFromUrl);
@@ -71,12 +73,13 @@ class DevicesCtrl {
     }
 
     createDevicesVisibilityObject() {
-        if(!this.$state.devicesVisibility) {
-            this.$state.devicesVisibility = {
-                devices: {}, // { 'deviceId': { isOpen: bool }}
-                isFirstRender: true,
-                devicesIdsCount: 0
-            };
+        if(!window.localStorage.devicesVisibility) {
+          window.localStorage.setItem('devicesVisibility', JSON.stringify(
+            {
+              devices: {}, // { 'deviceId': { isOpen: bool }}
+              isFirstRender: true,
+              devicesIdsCount: 0
+          }));
         }
     }
 
@@ -91,17 +94,28 @@ class DevicesCtrl {
     }
 
     setDeviceVisibility(deviceId, isOpen) {
-        this.$state.devicesVisibility.devices[deviceId] = {'isOpen' : isOpen};
+        const devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility)
+        devicesVisibility.devices[deviceId] = { 'isOpen' : isOpen };
+        window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
     }
 
     // return Object { isOpen: bool }, instead of bool value
     // to be used as model 'is-open' in devices.html view
     getDeviceVisibility(deviceId) {
-        return this.$state.devicesVisibility.devices[deviceId];
+        const devicesVisibility = JSON.parse(window.localStorage.devicesVisibility)
+        return devicesVisibility.devices[deviceId];
+    }
+
+    changeDeviceVisibility(deviceId) {
+        const devicesVisibility = JSON.parse(window.localStorage.devicesVisibility)
+        devicesVisibility.devices[deviceId].isOpen = !devicesVisibility.devices[deviceId].isOpen
+        window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
     }
 
     setFirstRender(isFirst) {
-        this.$state.devicesVisibility.isFirstRender = isFirst;
+        const devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility)
+        devicesVisibility.isFirstRender = isFirst
+        window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
     }
 
     // dynamic classes for arrow chevron in device panel-header
