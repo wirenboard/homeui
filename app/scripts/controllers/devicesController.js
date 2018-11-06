@@ -25,6 +25,9 @@ class DevicesCtrl {
 
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
+        $scope.devicesCount = () => {
+          return Object.keys(DeviceData.devices).length
+        },
         $scope.deviceIdsColumns = () => {
             const devicesIdsList = Object.keys(DeviceData.devices).sort();
             const devicesIdsCount = devicesIdsList.length;
@@ -32,8 +35,10 @@ class DevicesCtrl {
             let needReorderIdsInColumns = false;
 
             let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility)
+
             // devices are loaded dynamically by sockets, therefore
             // while browsing the page, their number may change.
+            // it will change collapsed/unfolded state of devices 
             if(devicesIdsCount != devicesVisibility.devicesIdsCount){
                 devicesIdsList.map((deviceId) => {
                     if(!devicesVisibility.devices.hasOwnProperty(deviceId)) {
@@ -48,10 +53,12 @@ class DevicesCtrl {
 
             const isFirstRender = devicesVisibility.isFirstRender;
 
+            // reorganize devicesIds in columns to displaying into view
             if(needReorderIdsInColumns || isFirstRender) {
               this.deviceIdsResult = this.getDevicesIdsInColumn(devicesIdsList)
             }
 
+            // section with custom devices visibility logic
             if(isFirstRender && devicesIdsCount) {
                 const haveDeviceFromUrl = DeviceData.devices.hasOwnProperty(deviceIdFromUrl);
                 const tooManyDevices = devicesIdsCount > collapseDevicesAfter;
