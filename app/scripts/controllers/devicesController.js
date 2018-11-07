@@ -98,7 +98,7 @@ class DevicesCtrl {
       const containerWidth = document.getElementById("devices-list").offsetWidth;
       const devicePanelWidth = 390;
       const columnCount = Math.floor(containerWidth / devicePanelWidth );
-      return columnCount;
+      return columnCount || 1;
     }
 
     splitDevicesIdsIntoColumns(devicesIdsList) {
