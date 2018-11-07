@@ -15,6 +15,9 @@ class DevicesCtrl {
 
         const deviceIdFromUrl = this.parseDeviceIdFromUrl($injector);
 
+        // this listener needed to redraw columns and devices on window resize.
+        $(window).resize(() => { this.$state.devicesIdsCount = 0 });
+
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
         $scope.devicesCount = () => Object.keys(DeviceData.devices).length,
@@ -22,12 +25,14 @@ class DevicesCtrl {
             const devicesIdsList = Object.keys(DeviceData.devices).sort();
             const devicesIdsCount = devicesIdsList.length;
 
-            let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility);
+            if(devicesIdsCount <= 0) return;
 
             // devices are loaded dynamically by sockets, therefore
             // their number may change. If there is a new device, 
             // it is entered into the devicesVisibility object, collapsed - by default.
-            if(devicesIdsCount != devicesVisibility.devicesIdsCount) {
+            if(devicesIdsCount != this.$state.devicesIdsCount) {
+                let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility);
+
                 devicesIdsList.map((deviceId) => {
                     if(!devicesVisibility.devices.hasOwnProperty(deviceId)) {
                         devicesVisibility.devices[deviceId] = { isOpen : false };
@@ -35,17 +40,21 @@ class DevicesCtrl {
                 })
 
                 devicesVisibility.isFirstRender = true;
-                devicesVisibility.devicesIdsCount = devicesIdsCount;
+                this.$state.devicesIdsCount = devicesIdsCount;
+
+                window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
             }
+
+            let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility);
 
             // if there are devices to display, split them into columns
             // and determine their minimized / expanded state.
-            if(devicesIdsCount > 0 && devicesVisibility.isFirstRender) {
+            if(devicesVisibility.isFirstRender) {
                 this.$state.deviceIdsIntoColumns = this.splitDevicesIdsIntoColumns(devicesIdsList);
 
                 // if url contain deviceId, this device will be open,
                 // all other devices will be folded.
-                if(DeviceData.devices.hasOwnProperty(deviceIdFromUrl)) {
+                if(deviceIdFromUrl && DeviceData.devices.hasOwnProperty(deviceIdFromUrl)) {
                     devicesIdsList.map((deviceId) => {
                         const isOpen = deviceIdFromUrl === deviceId;
                         devicesVisibility.devices[deviceId] = { 'isOpen' : isOpen };
@@ -53,7 +62,28 @@ class DevicesCtrl {
                 }
                 // display expanded only devices, that fit on the screen.
                 else {
+                  const containerHeight = document.getElementById("page-wrapper").offsetHeight - 34;
+                  const collapsedPanelHeight = 60;
+                  const panelRowHeight = 30;
+                  const panelContentPadding = 20;
 
+                  this.$state.deviceIdsIntoColumns.forEach((columnOfIds) => {
+                      let availableSpace = containerHeight - (columnOfIds.length * collapsedPanelHeight);
+
+                      columnOfIds.forEach((deviceId) => {
+                          devicesVisibility.devices[deviceId].isOpen = false;
+
+                          if (availableSpace > 0) {
+                            const deviceRowCount = DeviceData.devices[deviceId].cellIds.length;
+                            const deviceInnerHeight = panelContentPadding + (deviceRowCount * panelRowHeight);
+
+                            if(availableSpace - deviceInnerHeight > 0) {
+                                availableSpace -= deviceInnerHeight;
+                                devicesVisibility.devices[deviceId].isOpen = true;
+                            }
+                          }
+                      });
+                  });
                 }
 
                 devicesVisibility.isFirstRender = false;
@@ -98,8 +128,7 @@ class DevicesCtrl {
           window.localStorage.setItem('devicesVisibility', JSON.stringify(
             {
               devices: {}, // { 'deviceId': { isOpen: bool }}
-              isFirstRender: true,
-              devicesIdsCount: 0
+              isFirstRender: true
           }));
         }
     }
