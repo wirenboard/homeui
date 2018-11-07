@@ -7,13 +7,13 @@
     <div class="empty-list well" ng-if="devicesCount() == 0">No devices available for this moment.</div>
 
     <uib-accordion close-others="false" class="devices-panel-list" >
-        <div ng-repeat="columnOfIds in deviceIdsColumns()">
+        <div ng-repeat="deviceIdsInColumn in deviceIdsInColumns()">
             <div
               uib-accordion-group
               class="panel-default device-panel display-cell-bin"
-              ng-repeat="deviceId in columnOfIds"
+              ng-repeat="deviceId in deviceIdsInColumn"
               is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
-              ng-click="$ctrl.changeDeviceVisibility(deviceId)"
+              ng-click="$ctrl.invertDeviceVisibility(deviceId)"
             >
                 <uib-accordion-heading>
                   <div class="device-panel__header">
