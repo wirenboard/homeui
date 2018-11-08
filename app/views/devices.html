@@ -13,10 +13,9 @@
               class="panel-default device-panel display-cell-bin"
               ng-repeat="deviceId in deviceIdsInColumn"
               is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
-              ng-click="$ctrl.invertDeviceVisibility(deviceId)"
             >
                 <uib-accordion-heading>
-                  <div class="device-panel__header">
+                  <div class="device-panel__header" ng-click="$ctrl.invertDeviceVisibility(deviceId)">
                       <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
                       <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
                   </div>
