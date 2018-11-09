@@ -1,4 +1,14 @@
-<div class="cell cell-range">
+<div
+  class="cell cell-range"
+  ng-click="cell.copy(cell.value)"
+  tooltip-popup-close-delay="500"
+  uib-tooltip="'{{ cell.value }}' copied to clipboard"
+  tooltip-trigger="{
+    'outsideClick': 'mouseleave',
+    'focus': 'mouseleave'
+  }"
+  tooltip-class="custom-tooltip"
+>
  <!-- <input ng-readonly="cell.readOnly" type="range" ng-model="target.value"
          ng-model-options="{ updateOn: 'default blur', debounce: {'default': 400, 'blur': 0} }">
 -->

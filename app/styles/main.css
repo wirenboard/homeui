@@ -533,16 +533,18 @@ button.show-console span {
 .display-cell {
     width: 100%;
     position: relative;
-    padding-right: 40px;
+    padding-right: 35px;
 }
 
 .display-cell-btn,
 .display-cell-btn:active {
     top: 0;
     right: 0;
+    width: 20px;
+    height: 20px;
     left: auto;
     position: absolute;
-    padding: 0 4px 1px 3px;
+    padding: 0 5px 1px 3px;
 }
 .display-cell-btn i{
     font-size: 10px;

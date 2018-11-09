@@ -67,6 +67,32 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       }
     })
   //...........................................................................
+  .state('currentDevices', {
+    url: '/devices/{deviceId}',
+    controller: 'DevicesCtrl as $ctrl',
+    templateUrl: 'views/devices.html',
+    resolve: {
+      ctrl: ($q, $ocLazyLoad) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(
+          [], 
+          (require) => {
+            let module = require('./controllers/devicesController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            })
+            .then(() => {
+              deferred.resolve(module);
+            });
+          },
+          'devices'
+        );
+        return deferred.promise;
+      }
+    }
+  })
+//...........................................................................
     .state('widgets', {
       url: '/widgets',
       controller: 'WidgetsCtrl as $ctrl',

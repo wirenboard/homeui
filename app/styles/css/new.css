@@ -14,6 +14,14 @@
     max-width: 300px;
 }
 
+.custom-tooltip.cell-name-tooltip {
+  left: 0% !important;
+}
+
+.custom-tooltip.cell-name-tooltip .tooltip-arrow {
+  left: 20px !important;
+}
+
 .show-on-parent-hover {
     display: none;
 }
@@ -126,7 +134,7 @@ div[uib-datepicker-popup-wrap] {
     }
 }
 
-#devices-list .display-cell{
+.device-panel .display-cell{
     cursor: pointer;
 }
 
@@ -174,4 +182,65 @@ div[uib-datepicker-popup-wrap] {
 
 .wb-navbar-brand {
   padding: 7px 10px;
+}
+
+.devices-panel-list .device-panel:not(:last-child) {
+  margin-bottom: 18px;
+}
+
+.devices-panel-list .device-panel + .device-panel {
+  margin-top: 0;
+}
+
+.device-panel {
+  width: 380px;
+  border: none !important;
+  box-shadow: none;
+  margin-right: 18px;
+}
+
+.device-panel > .panel-heading {
+  background-color: #3276b1;
+  color: white;
+  padding: 0;
+  border: none !important;
+}
+
+.device-panel__header {
+  padding: 10px 15px;
+  height: 40px;
+}
+
+.device-panel__header-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+.device-panel__header-glyphicon {
+  font-size: 10px;
+}
+
+.device-panel__header-title,
+.device-panel__header-glyphicon {
+  line-height: 18px;
+}
+
+.device-panel .panel-body {
+  padding: 0;
+  border: none !important;
+}
+
+.device-panel__body {
+  border: 1px solid #3276b1;
+  border-top: 0px;
+  padding: 10px;
+}
+
+.device-panel__body .display-cell + .display-cell {
+  margin-top: 2px;
+}
+
+.panel-group {
+  display: flex;
 }
