@@ -37,7 +37,7 @@ export default class accessLevelController {
 
     apply() {
         this.rolesFactory.setRole(this.level);
-        this.ok = true;
+        this.ok = false;
         this.isLevelUp = false;
         this.activeRole = this.level;
     }
