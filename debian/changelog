@@ -1,3 +1,15 @@
+wb-mqtt-homeui (2.0~beta7) stable; urgency=medium
+
+  * fix access role alert behaviour
+  * temporary delete the yet to be supported controls on Scripts page
+  * rework devices screen: auto-collapse device tiles if they won't fit to the screen
+  * fix default dashboard setting
+  * fix config page for wb-hwconf-manager (wb-hardware)
+  * properly set default settings on first start
+  * copy channel name or value on click, then show a tooltip
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 10 Nov 2018 13:58:46 +0300
+
 wb-mqtt-homeui (2.0~beta6) stable; urgency=medium
 
   * compatibility with newer wb-utils in postinst
