@@ -358,11 +358,15 @@ function deviceDataService(mqttClient) {
         const isUnknownType = !cellTypeMap.hasOwnProperty(type)
         
         if(isUnknownType) {
-          const value = this.value;
-          const canBeValue = value == '0' || parseInt(value) || parseFloat(value) ;
+          const cellValue = this.value.toString().replace(',', '.');
+          const parsedValue = parseFloat(cellValue) || parseInt(cellValue);
+          const parsedUnits = cellValue.replace(parsedValue, '').trim();
+
+          const canBeValue = parsedValue != "" || parsedValue != undefined;
           
           if(canBeValue) {
-            type = "value"
+            type = "value";
+            this.setUnits(parsedUnits);
           }
         }
 
