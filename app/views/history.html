@@ -11,7 +11,7 @@
                     ng-disabled="$ctrl.pend"
                     ng-change="$ctrl.updateUrl($index)"
                     ng-model="$ctrl.selectedTopics[$index]"
-                    ng-options="control.topic as control.name for control in $ctrl.controls">
+                    ng-options="control.topic as control.name group by control.group for control in $ctrl.controls">
                 <option value="">- Please Choose -</option>
             </select>
         </div>
