@@ -229,8 +229,8 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       }
     })
   //...........................................................................
-    .state('ruleEdit', {
-      url: '/rules/edit/{path:.*}',
+    .state('rules.edit', {
+      url: '/edit/{path:.*}',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl',
       resolve: {
@@ -257,15 +257,15 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
                 deferred_2.resolve(module_2);
               });
             },
-            'rule-edit'
+            'rules-edit'
           );
           return $q.all([deferred_1.promise, deferred_2.promise]);
         }
       }
     })
   //...........................................................................
-    .state('ruleNew', {
-      url: '/rules/new',
+    .state('rules.new', {
+      url: '/new',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl',
       resolve: {
@@ -292,7 +292,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
                 deferred_2.resolve(module_2);
               });
             },
-            'rule-new'
+            'rules-new'
           );
           return $q.all([deferred_1.promise, deferred_2.promise]);
         }
