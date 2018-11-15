@@ -326,8 +326,8 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       }}
     })
   //...........................................................................
-    .state('historySample', {
-      url: '/history/{device}/{control}/{start}/{end}',
+    .state('history.sample', {
+      url: '/{device}/{control}/{start}/{end}',
       templateUrl: 'views/history.html',
       controller: 'HistoryCtrl as $ctrl',
       resolve: {

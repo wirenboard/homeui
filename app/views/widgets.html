@@ -35,7 +35,7 @@
         </td>
         <td ng-if="!row.preview" class="cell-history-col">
             <a title="History" class="cell-history"
-               ui-sref="historySample({device: row.cell.device, control: row.cell.control, start: historyStartTS(), end: '-'})"><i
+               ui-sref="history.sample({device: row.cell.device, control: row.cell.control, start: historyStartTS(), end: '-'})"><i
                     class="glyphicon glyphicon-stats"></i></a>
         </td>
         <td ng-if="!!row.widget" class="description-col" rowspan="{{ row.rowSpan }}">{{ row.widget.description }}</td>
