@@ -8,6 +8,7 @@ class DevicesCtrl {
 
         this.$state = $state;
         this.handleData = handleData;
+        this.DeviceData = DeviceData;
 
         // will create object to keep devices open/close condition 
         // in localeStorage, if it's not there.
@@ -33,7 +34,15 @@ class DevicesCtrl {
             if(devicesIdsCount != this.$state.devicesIdsCount) {
                 let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility);
 
-                devicesIdsList.map((deviceId) => {
+                // check localStorage for outdated (deleted) devices 
+                Object.keys(devicesVisibility.devices).forEach((deviceId) => {
+                  if(!devicesIdsList.includes(deviceId)) {
+                    delete devicesVisibility.devices[deviceId]
+                  }
+                })
+
+                // add new devices to localStorage
+                devicesIdsList.forEach((deviceId) => {
                     if(!devicesVisibility.devices.hasOwnProperty(deviceId)) {
                         devicesVisibility.devices[deviceId] = { isOpen : false };
                     }
@@ -170,6 +179,13 @@ class DevicesCtrl {
             'glyphicon-chevron-right':  !isOpen
         }
     }
+
+    deleteDevice(deviceId) { 
+      const deviceName = this.DeviceData.devices[deviceId].name || deviceId;
+      if (confirm(`Remove '${deviceName}'?`)) {
+        this.DeviceData.deleteDevice(deviceId);
+      }  
+    } 
 
     redirect(contr) {
         var [device,control] = contr.split('/');
