@@ -507,6 +507,41 @@ function deviceDataService(mqttClient) {
     devices: devices,
     cells: cells,
 
+    deleteDevice(deviceId) {
+      const deviceTopics = [
+        `devices/${deviceId}`,
+        `devices/${deviceId}/meta`,
+        `devices/${deviceId}/meta/name`,
+      ];
+      const deviceCellsTopics = devices[deviceId].cellIds.map(
+        cellTopic => {
+          const cellId = cellTopic.split("/").slice(1);
+          return [
+            `devices/${deviceId}/controls/${cellId}`,
+            `devices/${deviceId}/controls/${cellId}/meta`,
+            `devices/${deviceId}/controls/${cellId}/meta/type`,
+            `devices/${deviceId}/controls/${cellId}/meta/name`,
+            `devices/${deviceId}/controls/${cellId}/meta/units`,
+            `devices/${deviceId}/controls/${cellId}/meta/readonly`,
+            `devices/${deviceId}/controls/${cellId}/meta/writable`,
+            `devices/${deviceId}/controls/${cellId}/meta/error`,
+            `devices/${deviceId}/controls/${cellId}/meta/min`,
+            `devices/${deviceId}/controls/${cellId}/meta/max`,
+            `devices/${deviceId}/controls/${cellId}/meta/step`,
+            `devices/${deviceId}/controls/${cellId}/meta/order`,
+          ];
+        }
+      );
+      const allTopics = deviceTopics.concat(...deviceCellsTopics);
+      allTopics.forEach(topic => {
+        const payload = '';
+        const retained = true;
+        const qos = 2;
+        
+        mqttClient.send(topic, payload, retained, qos)
+      });
+    },
+
     getCellIds () {
       return filterCellIds();
     },

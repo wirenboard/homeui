@@ -8,6 +8,7 @@ class DevicesCtrl {
 
         this.$state = $state;
         this.handleData = handleData;
+        this.DeviceData = DeviceData;
 
         // will create object to keep devices open/close condition 
         // in localeStorage, if it's not there.
@@ -170,6 +171,13 @@ class DevicesCtrl {
             'glyphicon-chevron-right':  !isOpen
         }
     }
+
+    deleteDevice(deviceId) { 
+      const deviceName = this.DeviceData.devices[deviceId].name || deviceId;
+      if (confirm(`Вы уверены, что хотите удалить устройство '${deviceName}'?`)) {
+        this.DeviceData.deleteDevice(deviceId);
+      }  
+    } 
 
     redirect(contr) {
         var [device,control] = contr.split('/');

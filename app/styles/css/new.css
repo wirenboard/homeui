@@ -204,6 +204,21 @@ div[uib-datepicker-popup-wrap] {
   color: white;
   padding: 0;
   border: none !important;
+  position: relative;
+}
+
+.device-panel__header-delete-button {
+  position: absolute;
+  opacity: 0;
+  top: 8px;
+  right: 40px;
+  padding: 6px;
+  font-size: 12px;
+  transition: opacity .2s;
+}
+
+.device-panel:hover .device-panel__header-delete-button {
+  opacity: 1;
 }
 
 .device-panel__header {
