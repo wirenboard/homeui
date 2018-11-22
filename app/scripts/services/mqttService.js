@@ -189,17 +189,6 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
   };
 
   //...........................................................................
-  service.publish = function(topic, payload) {
-    if (!connected) {
-      // FIXME: should fail hard here
-      console.error("can't publish(): disconnected");
-      return;
-    }
-    client.publish(topic, payload, {retain: true});
-    console.log('publish-Event sent '+ payload + ' with topic: ' + topic + ' ' + client);
-  };
-
-  //...........................................................................
   service.subscribe = function (topic, callback) {
     if (!connected) {
       // FIXME: should fail hard here
