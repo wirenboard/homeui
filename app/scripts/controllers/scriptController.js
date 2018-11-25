@@ -71,7 +71,7 @@ class ScriptCtrl {
           if ($scope.file.isNew || pos !== null) {
             // clear pos in the url after saving to be able
             // to navigate to errors
-            $location.path("/scripts/edit/" + reply.path);
+            $location.path("/rules/edit/" + reply.path);
           } else {
             cm.focus();
             cm.setValue(cm.getValue()); // clear line classes / marks

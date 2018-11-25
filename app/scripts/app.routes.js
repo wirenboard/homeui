@@ -203,8 +203,8 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       controller: 'LoginCtrl as $ctrl'
     })
   //...........................................................................
-    .state('scripts', {
-      url: '/scripts',
+    .state('rules', {
+      url: '/rules',
       controller: 'ScriptsCtrl as $ctrl',
       templateUrl: 'views/scripts.html',
       resolve: {
@@ -222,15 +222,15 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
                 deferred.resolve(module);
               });
             },
-            'scripts'
+            'rules'
           );
           return deferred.promise;
         }
       }
     })
   //...........................................................................
-    .state('scriptEdit', {
-      url: '/scripts/edit/{path:.*}',
+    .state('ruleEdit', {
+      url: '/rules/edit/{path:.*}',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl',
       resolve: {
@@ -257,15 +257,15 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
                 deferred_2.resolve(module_2);
               });
             },
-            'script-edit'
+            'rule-edit'
           );
           return $q.all([deferred_1.promise, deferred_2.promise]);
         }
       }
     })
   //...........................................................................
-    .state('scriptNew', {
-      url: '/scripts/new',
+    .state('ruleNew', {
+      url: '/rules/new',
       templateUrl: 'views/script.html',
       controller: 'ScriptCtrl as $ctrl',
       resolve: {
@@ -292,7 +292,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
                 deferred_2.resolve(module_2);
               });
             },
-            'script-edit'
+            'rule-new'
           );
           return $q.all([deferred_1.promise, deferred_2.promise]);
         }
