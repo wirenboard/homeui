@@ -28,7 +28,7 @@
             <cell-name override="row.cell.name" display-id="true"></cell-name>
         </td>
         <td ng-if="!row.preview" class="cell-type-col" cell="row.cell.id">
-            {{ cell.type }}
+            {{ $ctrl.cell(row.cell.id).type }}
         </td>
         <td ng-if="!row.preview" class="cell-value-col" cell="row.cell">
             <display-cell compact="true"></display-cell>
