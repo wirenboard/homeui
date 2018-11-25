@@ -2,7 +2,7 @@
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, $injector, handleData) {
+    constructor($scope, DeviceData, $injector, handleData) {
         'ngInject';
 
         // 1. Self-reference
@@ -85,7 +85,7 @@ class HistoryCtrl {
         this.originalUrl = this.getUrl();
         // 4. Setup
         uiConfig.whenReady().then((data) => {
-            updateControls(data.widgets);
+            updateControls(data.widgets, DeviceData);
         });
 
         whenMqttReady().then(() => {
@@ -121,17 +121,33 @@ class HistoryCtrl {
         // 6. All the actual implementations go here
 
         //...........................................................................
-        function updateControls(widgets) {
-            vm.controls = orderByFilter(
+        function updateControls(widgets, DeviceData) {
+            const channelsFromWidgets = orderByFilter(
                 Array.prototype.concat.apply(
                     [], widgets.map(widget =>
                         widget.cells.map(cell =>
                             ({
                                 topic: vm.topicFromCellId(cell.id),
-                                name: widget.name + " / " + (cell.name || cell.id)
+                                name: widget.name + " / " + (cell.name || cell.id),
+                                group: "Каналы из виджетов: "
                             })))),
                 "name");
+            const channelsAll = Array.prototype.concat.apply(
+                [], 
+                Object.keys(DeviceData.devices).sort().map(deviceId => {
+                    const device = DeviceData.devices[deviceId];
+                    return device.cellIds.map(cellId => {
+                      const cell = DeviceData.cell(cellId);
+                      return ({
+                          topic: vm.topicFromCellId(cell.id),
+                          name: device.name + " / " + (cell.name || cell.id),
+                          group: "Все каналы: "
+                      });
+                    });
+                })
+            );
 
+            vm.controls = [].concat(channelsFromWidgets, channelsAll);
         }
 
     } // constructor
