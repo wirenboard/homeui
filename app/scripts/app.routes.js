@@ -12,39 +12,39 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('home', {
       url: '/',
-      templateUrl: 'views/home.html',
+      templateUrl: require('../views/home.html'),
       controller: 'HomeCtrl as $ctrl'
     })
       .state('help', {
           url: '/help',
-          templateUrl: 'views/help.html',
+          templateUrl: require('../views/help.html'),
           controller: 'HelpCtrl as $ctrl'
       })
       .state('webUI', {
           url: '/web-ui',
-          templateUrl: 'views/web-ui.html',
+          templateUrl: require('../views/web-ui.html'),
           controller: 'WebUICtrl as $ctrl'
       })
       .state('system', {
           url: '/system',
-          templateUrl: 'views/system.html',
+          templateUrl: require('../views/system.html'),
           controller: 'SystemCtrl as $ctrl'
       })
       .state('MQTTChannels', {
           url: '/MQTTChannels',
-          templateUrl: 'views/MQTTChannels.html',
+          templateUrl: require('../views/MQTTChannels.html'),
           controller: 'MQTTCtrl as $ctrl'
       })
       .state('accessLevel', {
           url: '/access-level',
-          templateUrl: 'views/access-level.html',
+          templateUrl: require('../views/access-level.html'),
           controller: 'AccessLevelCtrl as $ctrl'
       })
   //...........................................................................
     .state('devices', {
       url: '/devices',
       controller: 'DevicesCtrl as $ctrl',
-      templateUrl: 'views/devices.html',
+      templateUrl: require('../views/devices.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -70,7 +70,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   .state('currentDevices', {
     url: '/devices/{deviceId}',
     controller: 'DevicesCtrl as $ctrl',
-    templateUrl: 'views/devices.html',
+    templateUrl: require('../views/devices.html'),
     resolve: {
       ctrl: ($q, $ocLazyLoad) => {
         'ngInject';
@@ -96,7 +96,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('widgets', {
       url: '/widgets',
       controller: 'WidgetsCtrl as $ctrl',
-      templateUrl: 'views/widgets.html',
+      templateUrl: require('../views/widgets.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -122,7 +122,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('dashboards', {
       url: '/dashboards',
       controller: 'DashboardsCtrl as $ctrl',
-      templateUrl: 'views/dashboards.html',
+      templateUrl: require('../views/dashboards.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -148,7 +148,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('dashboard', {
       url: '/dashboards/{id}',
       controller: 'DashboardCtrl as $ctrl',
-      templateUrl: 'views/dashboard.html',
+      templateUrl: require('../views/dashboard.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -174,7 +174,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('settings', {
       url: '/settings',
       controller: 'SettingCtrl as $ctrl',
-      templateUrl: 'views/settings.html',
+      templateUrl: require('../views/settings.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -199,14 +199,14 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('login', {
       url: '/login/{id}',
-      templateUrl: 'views/login.html',
+      templateUrl: require('../views/login.html'),
       controller: 'LoginCtrl as $ctrl'
     })
   //...........................................................................
     .state('rules', {
       url: '/rules',
       controller: 'ScriptsCtrl as $ctrl',
-      templateUrl: 'views/scripts.html',
+      templateUrl: require('../views/scripts.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -231,7 +231,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('ruleEdit', {
       url: '/rules/edit/{path:.*}',
-      templateUrl: 'views/script.html',
+      templateUrl: require('../views/script.html'),
       controller: 'ScriptCtrl as $ctrl',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
@@ -266,7 +266,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('ruleNew', {
       url: '/rules/new',
-      templateUrl: 'views/script.html',
+      templateUrl: require('../views/script.html'),
       controller: 'ScriptCtrl as $ctrl',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
@@ -302,7 +302,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('history', {
       url: '/history',
       controller: 'HistoryCtrl as $ctrl',
-      templateUrl: 'views/history.html',
+      templateUrl: require('../views/history.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -328,7 +328,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   //...........................................................................
     .state('historySample', {
       url: '/history/{device}/{control}/{start}/{end}',
-      templateUrl: 'views/history.html',
+      templateUrl: require('../views/history.html'),
       controller: 'HistoryCtrl as $ctrl',
       resolve: {
           /*load: ['$ocLazyLoad', function($ocLazyLoad) {
@@ -360,7 +360,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('configs', {
       url: '/configs',
       controller: 'ConfigsCtrl as $ctrl',
-      templateUrl: 'views/configs.html',
+      templateUrl: require('../views/configs.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -387,7 +387,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('configEdit', {
       url: '/configs/edit/{path:.*}',
       controller: 'ConfigCtrl as $ctrl',
-      templateUrl: 'views/config.html',
+      templateUrl: require('../views/config.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
