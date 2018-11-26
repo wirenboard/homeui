@@ -120,6 +120,15 @@ module.exports = function makeWebpackConfig() {
             test: require.resolve('angular'),
             use: 'exports-loader?window.angular'
         }, {
+          test: /\.html$/,
+          include: [
+            path.resolve(__dirname, 'app', 'views')
+          ],
+          use: [
+            { loader: 'ngtemplate-loader?relativeTo=' + __dirname + '/' + 'app' },
+            { loader: 'raw-loader' }
+          ]
+        }, {
             // JS LOADER
             // Reference: https://github.com/babel/babel-loader
             // Transpile .js files using babel-loader
