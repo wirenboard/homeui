@@ -3,7 +3,7 @@ class WidgetsCtrl {
     'ngInject';
 
     this.handleData = handleData;
-    $scope.cell = id => {
+    this.cell = id => {
       return DeviceData.proxy(id);
     };
     function wrapWidgetCell (entry) {

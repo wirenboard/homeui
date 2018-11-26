@@ -354,7 +354,26 @@ function deviceDataService(mqttClient) {
     }
 
     setType (type) {
-      this.type = type || "incomplete";
+      if(type) {
+        const isUnknownType = !cellTypeMap.hasOwnProperty(type)
+        
+        if(isUnknownType) {
+          const cellValue = String(this.value).trim().replace(',', '.');
+          const parsedValue = parseFloat(cellValue) || parseInt(cellValue);
+          const isValueNumber = isFinite(parsedValue); // (not NaN, Infinity, -Infinity)
+          const notContainOtherCharacters = cellValue.length === String(parsedValue).length;
+
+          if(isValueNumber && notContainOtherCharacters) {
+            type = "value";
+          }
+        }
+
+        this.type = type;
+      }
+      else {
+        this.type = "incomplete";
+      }
+
       if (this._value !== null)
         this._setCellValue(this._value);
       else if (this._isString())
