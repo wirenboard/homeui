@@ -349,7 +349,6 @@ module.exports = function makeWebpackConfig() {
             // Reference: https://github.com/kevlened/copy-webpack-plugin
             new CopyWebpackPlugin([
                 {from: path.join(__dirname, 'app', 'images'), to: 'images'},
-                {from: path.join(__dirname, 'app', 'views'), to: 'views'},
                 {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
                 {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
                 {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'}
