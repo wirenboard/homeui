@@ -509,26 +509,27 @@ function deviceDataService(mqttClient) {
 
     deleteDevice(deviceId) {
       const deviceTopics = [
-        `devices/${deviceId}`,
-        `devices/${deviceId}/meta`,
-        `devices/${deviceId}/meta/name`,
+        `/devices/${deviceId}`,
+        `/devices/${deviceId}/meta`,
+        `/devices/${deviceId}/meta/name`,
       ];
       const deviceCellsTopics = devices[deviceId].cellIds.map(
         cellTopic => {
+          this.cells[cellTopic]._removeFromDevice();
           const cellId = cellTopic.split("/").slice(1);
           return [
-            `devices/${deviceId}/controls/${cellId}`,
-            `devices/${deviceId}/controls/${cellId}/meta`,
-            `devices/${deviceId}/controls/${cellId}/meta/type`,
-            `devices/${deviceId}/controls/${cellId}/meta/name`,
-            `devices/${deviceId}/controls/${cellId}/meta/units`,
-            `devices/${deviceId}/controls/${cellId}/meta/readonly`,
-            `devices/${deviceId}/controls/${cellId}/meta/writable`,
-            `devices/${deviceId}/controls/${cellId}/meta/error`,
-            `devices/${deviceId}/controls/${cellId}/meta/min`,
-            `devices/${deviceId}/controls/${cellId}/meta/max`,
-            `devices/${deviceId}/controls/${cellId}/meta/step`,
-            `devices/${deviceId}/controls/${cellId}/meta/order`,
+            `/devices/${deviceId}/controls/${cellId}`,
+            `/devices/${deviceId}/controls/${cellId}/meta`,
+            `/devices/${deviceId}/controls/${cellId}/meta/type`,
+            `/devices/${deviceId}/controls/${cellId}/meta/name`,
+            `/devices/${deviceId}/controls/${cellId}/meta/units`,
+            `/devices/${deviceId}/controls/${cellId}/meta/readonly`,
+            `/devices/${deviceId}/controls/${cellId}/meta/writable`,
+            `/devices/${deviceId}/controls/${cellId}/meta/error`,
+            `/devices/${deviceId}/controls/${cellId}/meta/min`,
+            `/devices/${deviceId}/controls/${cellId}/meta/max`,
+            `/devices/${deviceId}/controls/${cellId}/meta/step`,
+            `/devices/${deviceId}/controls/${cellId}/meta/order`,
           ];
         }
       );
