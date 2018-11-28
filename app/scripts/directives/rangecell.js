@@ -35,17 +35,18 @@ function rangeCellDirective() {
         }
       };*/
 
-      $scope._value = isNaN($scope.cell.value)? 0 : $scope.cell.value;
-
       $scope["min"] = !cellCtrl.cell["min"]? DEFAULT_MIN : +cellCtrl.cell["min"];
       $scope["max"] = !cellCtrl.cell["max"]? DEFAULT_MAX : +cellCtrl.cell["max"];
       $scope["step"] = !cellCtrl.cell["step"]? DEFAULT_STEP : +cellCtrl.cell["step"];
 
-      // изза отсутствия debounce присваиваю значение только если отпутить ручку контрола
+      $scope.$watch(() => $scope.cell.value, value => {
+        $scope._value = isNaN(value)? 0 : value;
+      });
+
+      // из-за отсутствия debounce присваиваю значение только если отпуcтить ручку контрола
       $scope.handleUp = function() {
         $scope.cell.value = $scope._value;
       }
-
     }
   };
 }
