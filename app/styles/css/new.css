@@ -244,3 +244,17 @@ div[uib-datepicker-popup-wrap] {
 .panel-group {
   display: flex;
 }
+
+
+.side-nav>li>ul>li>a.active::before {
+  content: "\F0D9";
+  font-family: FontAwesome;
+  display: block;
+  height: 27px;
+  line-height: normal;
+  width: 27px;
+  position: absolute;
+  right: -21px;
+  font-size: 20px;
+  color: #eee;
+}
