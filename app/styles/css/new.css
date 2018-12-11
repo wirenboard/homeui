@@ -218,7 +218,17 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .device-panel:hover .device-panel__header-delete-button {
+  opacity: 0.8;
+}
+
+.device-panel:hover .device-panel__header-delete-button:hover {
   opacity: 1;
+}
+
+.device-panel__header-wrapper {
+  position: relative; 
+  background-color: #3276b1; 
+  color: white;
 }
 
 .device-panel__header {

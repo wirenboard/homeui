@@ -425,6 +425,26 @@ function deviceDataService(mqttClient) {
     dev.explicit = true;
   });
 
+  // собираем все mqtt топики каждого устройства
+  var allDevicesTopics = {};
+  mqttClient.addStickySubscription("/devices/#", msg => {
+    const { topic } = msg;
+
+    if(topic.indexOf('to-delete-device') > -1) {
+      //debugger;
+    }
+
+    const deviceId = splitTopic(topic)[1];
+
+    if(!allDevicesTopics[deviceId]) {
+      allDevicesTopics[deviceId] = [];
+    }
+
+    if(!allDevicesTopics[deviceId].includes(topic)) {
+      allDevicesTopics[deviceId].push(topic)
+    }
+  });
+
   function addCellSubscription(suffix, handler) {
     mqttClient.addStickySubscription("/devices/+/controls/+" + suffix, msg => {
       // console.debug("%s: %s: %s: %s", suffix || "<empty>", msg.topic, cellFromTopic(msg.topic).id, msg.payload);
@@ -508,33 +528,16 @@ function deviceDataService(mqttClient) {
     cells: cells,
 
     deleteDevice(deviceId) {
-      const deviceTopics = [
-        `/devices/${deviceId}`,
-        `/devices/${deviceId}/meta`,
-        `/devices/${deviceId}/meta/name`,
-      ];
-      const deviceCellsTopics = devices[deviceId].cellIds.map(
-        cellTopic => {
-          this.cells[cellTopic]._removeFromDevice();
-          const cellId = cellTopic.split("/").slice(1);
-          return [
-            `/devices/${deviceId}/controls/${cellId}`,
-            `/devices/${deviceId}/controls/${cellId}/meta`,
-            `/devices/${deviceId}/controls/${cellId}/meta/type`,
-            `/devices/${deviceId}/controls/${cellId}/meta/name`,
-            `/devices/${deviceId}/controls/${cellId}/meta/units`,
-            `/devices/${deviceId}/controls/${cellId}/meta/readonly`,
-            `/devices/${deviceId}/controls/${cellId}/meta/writable`,
-            `/devices/${deviceId}/controls/${cellId}/meta/error`,
-            `/devices/${deviceId}/controls/${cellId}/meta/min`,
-            `/devices/${deviceId}/controls/${cellId}/meta/max`,
-            `/devices/${deviceId}/controls/${cellId}/meta/step`,
-            `/devices/${deviceId}/controls/${cellId}/meta/order`,
-          ];
-        }
-      );
-      const allTopics = deviceTopics.concat(...deviceCellsTopics);
-      allTopics.forEach(topic => {
+      const allDeviceTopics = allDevicesTopics[deviceId];
+
+      // удалить ячейки из устройств
+      devices[deviceId].cellIds.map(cellId => {
+        cells[cellId]._removeFromDevice()
+      })
+      // удалить все топики из списка топиков
+      delete allDevicesTopics[deviceId]
+
+      allDeviceTopics.forEach(topic => {
         const payload = '';
         const retained = true;
         const qos = 2;

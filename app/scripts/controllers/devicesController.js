@@ -34,7 +34,15 @@ class DevicesCtrl {
             if(devicesIdsCount != this.$state.devicesIdsCount) {
                 let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility);
 
-                devicesIdsList.map((deviceId) => {
+                // check localStorage for outdated (deleted) devices 
+                Object.keys(devicesVisibility.devices).forEach((deviceId) => {
+                  if(!devicesIdsList.includes(deviceId)) {
+                    delete devicesVisibility.devices[deviceId]
+                  }
+                })
+
+                // add new devices to localStorage
+                devicesIdsList.forEach((deviceId) => {
                     if(!devicesVisibility.devices.hasOwnProperty(deviceId)) {
                         devicesVisibility.devices[deviceId] = { isOpen : false };
                     }
