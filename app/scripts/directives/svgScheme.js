@@ -59,10 +59,12 @@ export function svgSchemeDirective($compile, DeviceData) {
             var regions = element[0].querySelectorAll("*");
             angular.forEach(regions, function (path, key) {
                 var element = angular.element(path);
-                element.attr("svg-compiled-element", "");
 
                 var desc = getDirectChild(element[0], "desc");
-                if (desc != null) {
+                if (desc != null) {         
+                    element.attr("svg-compiled-element", "");
+                    element.attr("ng-clock", "");
+
                     var attrs = parseAttrs(desc.innerHTML);
 
                     if (element[0].nodeName == 'text') {
@@ -107,7 +109,7 @@ export function svgSchemeDirective($compile, DeviceData) {
 }
 
 export  function svgCompiledElementDirective($compile) {
-     'ngInject';
+    'ngInject';
     return {
         restrict: 'A',
         scope: {
@@ -117,8 +119,9 @@ export  function svgCompiledElementDirective($compile) {
             error: "="
         },
         link: function (scope, element, attrs) {
+            scope.devicedata = scope.$parent.devicedata;
             element.removeAttr("svg-compiled-element");
-            $compile(element)(scope);
+            $compile(element)(scope); 
         }
     }
 }
