@@ -425,14 +425,9 @@ function deviceDataService(mqttClient) {
     dev.explicit = true;
   });
 
-  // собираем все mqtt топики каждого устройства
   var allDevicesTopics = {};
   mqttClient.addStickySubscription("/devices/#", msg => {
     const { topic } = msg;
-
-    if(topic.indexOf('to-delete-device') > -1) {
-      //debugger;
-    }
 
     const deviceId = splitTopic(topic)[1];
 
@@ -530,11 +525,10 @@ function deviceDataService(mqttClient) {
     deleteDevice(deviceId) {
       const allDeviceTopics = allDevicesTopics[deviceId];
 
-      // удалить ячейки из устройств
       devices[deviceId].cellIds.map(cellId => {
         cells[cellId]._removeFromDevice()
       })
-      // удалить все топики из списка топиков
+
       delete allDevicesTopics[deviceId]
 
       allDeviceTopics.forEach(topic => {

@@ -182,7 +182,7 @@ class DevicesCtrl {
 
     deleteDevice(deviceId) { 
       const deviceName = this.DeviceData.devices[deviceId].name || deviceId;
-      if (confirm(`Вы уверены, что хотите удалить устройство '${deviceName}'?`)) {
+      if (confirm(`Remove '${deviceName}'?`)) {
         this.DeviceData.deleteDevice(deviceId);
       }  
     } 
