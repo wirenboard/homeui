@@ -109,7 +109,7 @@ export function svgSchemeDirective($compile, DeviceData) {
 }
 
 export  function svgCompiledElementDirective($compile) {
-    'ngInject';
+     'ngInject';
     return {
         restrict: 'A',
         scope: {
@@ -121,7 +121,7 @@ export  function svgCompiledElementDirective($compile) {
         link: function (scope, element, attrs) {
             scope.devicedata = scope.$parent.devicedata;
             element.removeAttr("svg-compiled-element");
-            $compile(element)(scope); 
+            $compile(element)(scope);
         }
     }
 }
