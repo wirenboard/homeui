@@ -54,6 +54,9 @@ class HistoryCtrl {
                 //showgrid: false, // remove the x-axis grid lines
                 //tickformat: "%B, %Y"  // customize the date format to "month, day"
             },
+            yaxis: {
+              automargin: true,
+            },
             margin: {// update the left, bottom, right, top margin
                 l: 40, b: 40, r: 10, t: 20
             },
