@@ -258,7 +258,7 @@ div[uib-datepicker-popup-wrap] {
   color: #eee;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
   .navbar-toggle {
     float: left;
     margin-right: 0;
@@ -281,6 +281,7 @@ div[uib-datepicker-popup-wrap] {
     margin-left: -250px;
     transition-property: margin;    
     transition-duration: .35s;
+    overflow-x: hidden;
   }
   
   .navbar-collapse.in {
