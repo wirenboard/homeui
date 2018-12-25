@@ -270,6 +270,10 @@ module
         });
 
         $rootScope.$on('$stateChangeStart', () => {
+          document.getElementById('overlay').classList.remove('overlay');
+        });
+
+        $rootScope.$on('$stateChangeStart', () => {
             $rootScope.stateIsLoading = true;
         });
 

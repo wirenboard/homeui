@@ -273,35 +273,32 @@ div[uib-datepicker-popup-wrap] {
   .navbar-inverse > * {
     background-color: black;
   }
+
+  .navbar-nav.side-nav {
+    padding-bottom: 50px !important;
+  }
   
   .navbar-collapse {
     min-height: 100vh;
     width: 250px;
     max-width: 250px;
     margin-left: -250px;
-    transition-property: margin;    
-    transition-duration: .35s;
+    transition: margin 0.35s;    
     overflow-x: hidden;
   }
   
   .navbar-collapse.in {
     margin-left: 0px;
   }
+}
 
-  .navbar-collapse::after {
-    position: absolute;
-    content: "";
-    height: 100vh;
-    width: calc(100vw + 250px);
-    background-color: black;
-    opacity: 0.2;
-    top: -1px;
-    z-index: -1;
-    transition: opacity .35s;     
-  }
-
-  .navbar-collapse.in::after {
-    opacity: 0.5;
-  }
-
+.overlay {
+  background-color: rgba(0, 0, 0, .3);
+  transition: all .35s ease-in;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
 }

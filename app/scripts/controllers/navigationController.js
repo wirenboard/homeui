@@ -58,6 +58,15 @@ class NavigationCtrl {
       }
       return configs;
     };
+
+    $scope.toggleNavigation = function () {
+      const pageWrapperClassList = document.getElementById('overlay').classList;
+      const overlayClass = 'overlay';
+
+      pageWrapperClassList.contains(overlayClass) ? 
+        pageWrapperClassList.remove(overlayClass) : 
+        pageWrapperClassList.add(overlayClass);
+    }
   }
 
 //-----------------------------------------------------------------------------
