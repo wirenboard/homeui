@@ -273,11 +273,7 @@ div[uib-datepicker-popup-wrap] {
   .navbar-inverse > * {
     background-color: black;
   }
-
-  .navbar-nav.side-nav {
-    padding-bottom: 50px !important;
-  }
-  
+ 
   .navbar-collapse {
     min-height: 100vh;
     width: 250px;
@@ -289,6 +285,10 @@ div[uib-datepicker-popup-wrap] {
   
   .navbar-collapse.in {
     margin-left: 0px;
+  }
+
+  .nav.navbar-nav.side-nav {
+    padding-bottom: 50px;
   }
 }
 
