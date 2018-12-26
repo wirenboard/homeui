@@ -161,7 +161,7 @@ function deviceDataService(mqttClient) {
       delete devices[id];
   }
 
-  function parsecellTopicBase (topic) {
+  function parseCellTopic (topic) {
     var parts = splitTopic(topic);
     ensureDevice(parts[1]);
     return parts[1] + "/" + parts[3];
@@ -176,7 +176,7 @@ function deviceDataService(mqttClient) {
   }
 
   function cellFromTopic (topic) {
-    return internCell(parsecellTopicBase(topic));
+    return internCell(parseCellTopic(topic));
   }
 
   function colorChannel(value) {
