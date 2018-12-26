@@ -161,7 +161,7 @@ function deviceDataService(mqttClient) {
       delete devices[id];
   }
 
-  function parseCellTopic (topic) {
+  function parsecellTopicBase (topic) {
     var parts = splitTopic(topic);
     ensureDevice(parts[1]);
     return parts[1] + "/" + parts[3];
@@ -176,7 +176,7 @@ function deviceDataService(mqttClient) {
   }
 
   function cellFromTopic (topic) {
-    return internCell(parseCellTopic(topic));
+    return internCell(parsecellTopicBase(topic));
   }
 
   function colorChannel(value) {
@@ -410,101 +410,95 @@ function deviceDataService(mqttClient) {
     }
   }
 
-  mqttClient.addStickySubscription("/devices/+/meta/name", msg => {
-    var deviceId = splitTopic(msg.topic)[1];
-    if (msg.payload == "") {
-      if (!devices.hasOwnProperty(deviceId))
-        return;
-      devices[deviceId].name = deviceId;
-      devices[deviceId].explicit = false;
-      maybeRemoveDevice(deviceId);
-      return;
-    }
-    var dev = ensureDevice(deviceId);
-    dev.name = msg.payload;
-    dev.explicit = true;
-  });
-
-  // список всех топиков устройств вида: 
-  // { deviceId: [topic1, topic2,..] }
+  // list of all device topics: { deviceId: [topic1, topic2, ... ] }
   var allDevicesTopics = {};
 
+  // method to comparing real topic ('/devices/deviceId/controls/controlId/meta/name')
+  // and topicExpression - topic with characters '+' or '#' ('/devices/+/controls/#')
   const isTopicsAreEqual = (realTopic, topicExp) => {
     const reg = new RegExp(topicExp.replace(/[+]/g, '[^\/]+').replace('#', '.+') + '$');
     const result = realTopic.match(reg);
 
-    return result ? true : false
+    return result ? true : false;
   }
 
-  // подписываемся на все топики устройств
+  // add subscription to all the topics of devices
   mqttClient.addStickySubscription("/devices/#", msg => {
     const { topic, payload } = msg;
 
     const deviceId = splitTopic(topic)[1];
 
-    // если в списке всех топиков нет топиков устройства с этим deviceId
-    // объявляем массив, куда они будут записываться
     if(!allDevicesTopics[deviceId]) {
       allDevicesTopics[deviceId] = [];
     }
 
-    // если в массиве топиков устройства с этим deviceId
-    // нет такого топика, сохраняем его
+    // save all received devices topics in allDevicesTopics object
     if(!allDevicesTopics[deviceId].includes(topic)) {
-      allDevicesTopics[deviceId].push(topic)
+      allDevicesTopics[deviceId].push(topic);
     }
 
-    // если это топик контроллера в устройстве 
-    if(isTopicsAreEqual(topic, '/devices/+/controls/#')) {
+    const deviceTopicBase = '/devices/+';
+    const cellTopicBase = deviceTopicBase + '/controls/+';
 
-      // определяем правила обработки топиков контроллеров
-      const cellSubscriptions = [{
-          suffix: "",
-          handler(cell, payload) { cell.receiveValue(payload) }
-        },{
-          suffix: "/meta/type",
-          handler(cell, payload) { cell.setType(payload) }
-        },{
-          suffix: "/meta/name",
-          handler(cell, payload) { cell.setName(payload) }
-        },{
-          suffix: "/meta/units",
-          handler(cell, payload) { cell.setUnits(payload) }
-        },{
-          suffix: "/meta/readonly",
-          handler(cell, payload) { cell.setReadOnly(payload == "1") }
-        },{
-          suffix: "/meta/writable",
-          handler(cell, payload) { cell.setWritable(payload == "1") }
-        },{
-          suffix: "/meta/error",
-          handler(cell, payload) { cell.setError(payload) }
-        },{
-          suffix: "/meta/min",
-          handler(cell, payload) { cell.setMin(payload) }
-        },{
-          suffix: "/meta/max",
-          handler(cell, payload) { cell.setMax(payload) }
-        },{
-          suffix: "/meta/step",
-          handler(cell, payload) { cell.setStep(payload) }
-        },{
-          suffix: "/meta/order",
-          handler(cell, payload) { cell.setOrder(payload) }
+    // define handler functions for each specific topic
+    const subscriptionHandlers = [{
+        handledTopic: deviceTopicBase + '/meta/name',
+        handler() {
+          if (payload === "") {
+            if (devices.hasOwnProperty(deviceId)) {
+              devices[deviceId].name = deviceId;
+              devices[deviceId].explicit = false;
+              maybeRemoveDevice(deviceId);
+            }
+          } else {
+            var dev = ensureDevice(deviceId);
+            dev.name = payload;
+            dev.explicit = true;
+          }
         }
-      ]
+      },{
+        handledTopic: cellTopicBase,
+        handler(payload) { cellFromTopic(topic).receiveValue(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/type',
+        handler(payload) { cellFromTopic(topic).setType(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/name',
+        handler(payload) { cellFromTopic(topic).setName(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/units',
+        handler(payload) { cellFromTopic(topic).setUnits(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/readonly',
+        handler(payload) { cellFromTopic(topic).setReadOnly(payload == '1') }
+      },{
+        handledTopic: cellTopicBase + '/meta/writable',
+        handler(payload) { cellFromTopic(topic).setWritable(payload == '1') }
+      },{
+        handledTopic: cellTopicBase + '/meta/error',
+        handler(payload) { cellFromTopic(topic).setError(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/min',
+        handler(payload) { cellFromTopic(topic).setMin(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/max',
+        handler(payload) { cellFromTopic(topic).setMax(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/step',
+        handler(payload) { cellFromTopic(topic).setStep(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/order',
+        handler(payload) { cellFromTopic(topic).setOrder(payload) }
+      }
+    ]
 
-      cellSubscriptions.forEach(cellSubscription => {
-        const { suffix, handler } = cellSubscription;
+    subscriptionHandlers.forEach(subscriptionHandler => {
+      const { handledTopic, handler } = subscriptionHandler;
         
-        const cell = cellFromTopic(topic);
-        const cellSubscriptionTopic = '/devices/+/controls/+' + suffix;
-
-        if(isTopicsAreEqual(topic, cellSubscriptionTopic)) {
-          handler(cell, payload);
-        }
-      })
-    }
+      if(isTopicsAreEqual(topic, handledTopic)) {
+        handler(payload);
+      }
+    })
   });
 
   function filterCellIds (func) {
@@ -570,7 +564,7 @@ function deviceDataService(mqttClient) {
     cells: cells,
 
     deleteDevice(deviceId) {
-      const allDeviceTopics = allDevicesTopics[deviceId];
+      const alldeviceTopicBases = allDevicesTopics[deviceId];
 
       devices[deviceId].cellIds.map(cellId => {
         cells[cellId]._removeFromDevice()
@@ -578,7 +572,7 @@ function deviceDataService(mqttClient) {
 
       delete allDevicesTopics[deviceId]
 
-      allDeviceTopics.forEach(topic => {
+      alldeviceTopicBases.forEach(topic => {
         const payload = '';
         const retained = true;
         const qos = 2;
