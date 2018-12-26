@@ -425,40 +425,87 @@ function deviceDataService(mqttClient) {
     dev.explicit = true;
   });
 
+  // список всех топиков устройств вида: 
+  // { deviceId: [topic1, topic2,..] }
   var allDevicesTopics = {};
+
+  const isTopicsAreEqual = (realTopic, topicExp) => {
+    const reg = new RegExp(topicExp.replace(/[+]/g, '[^\/]+').replace('#', '.+') + '$');
+    const result = realTopic.match(reg);
+
+    return result ? true : false
+  }
+
+  // подписываемся на все топики устройств
   mqttClient.addStickySubscription("/devices/#", msg => {
-    const { topic } = msg;
+    const { topic, payload } = msg;
 
     const deviceId = splitTopic(topic)[1];
 
+    // если в списке всех топиков нет топиков устройства с этим deviceId
+    // объявляем массив, куда они будут записываться
     if(!allDevicesTopics[deviceId]) {
       allDevicesTopics[deviceId] = [];
     }
 
+    // если в массиве топиков устройства с этим deviceId
+    // нет такого топика, сохраняем его
     if(!allDevicesTopics[deviceId].includes(topic)) {
       allDevicesTopics[deviceId].push(topic)
     }
+
+    // если это топик контроллера в устройстве 
+    if(isTopicsAreEqual(topic, '/devices/+/controls/#')) {
+
+      // определяем правила обработки топиков контроллеров
+      const cellSubscriptions = [{
+          suffix: "",
+          handler(cell, payload) { cell.receiveValue(payload) }
+        },{
+          suffix: "/meta/type",
+          handler(cell, payload) { cell.setType(payload) }
+        },{
+          suffix: "/meta/name",
+          handler(cell, payload) { cell.setName(payload) }
+        },{
+          suffix: "/meta/units",
+          handler(cell, payload) { cell.setUnits(payload) }
+        },{
+          suffix: "/meta/readonly",
+          handler(cell, payload) { cell.setReadOnly(payload == "1") }
+        },{
+          suffix: "/meta/writable",
+          handler(cell, payload) { cell.setWritable(payload == "1") }
+        },{
+          suffix: "/meta/error",
+          handler(cell, payload) { cell.setError(payload) }
+        },{
+          suffix: "/meta/min",
+          handler(cell, payload) { cell.setMin(payload) }
+        },{
+          suffix: "/meta/max",
+          handler(cell, payload) { cell.setMax(payload) }
+        },{
+          suffix: "/meta/step",
+          handler(cell, payload) { cell.setStep(payload) }
+        },{
+          suffix: "/meta/order",
+          handler(cell, payload) { cell.setOrder(payload) }
+        }
+      ]
+
+      cellSubscriptions.forEach(cellSubscription => {
+        const { suffix, handler } = cellSubscription;
+        
+        const cell = cellFromTopic(topic);
+        const cellSubscriptionTopic = '/devices/+/controls/+' + suffix;
+
+        if(isTopicsAreEqual(topic, cellSubscriptionTopic)) {
+          handler(cell, payload);
+        }
+      })
+    }
   });
-
-  function addCellSubscription(suffix, handler) {
-    mqttClient.addStickySubscription("/devices/+/controls/+" + suffix, msg => {
-      // console.debug("%s: %s: %s: %s", suffix || "<empty>", msg.topic, cellFromTopic(msg.topic).id, msg.payload);
-      handler(cellFromTopic(msg.topic), msg.payload);
-    });
-  }
-
-  addCellSubscription("",               (cell, payload) => { cell.receiveValue(payload);       });
-  addCellSubscription("/meta/type",     (cell, payload) => { cell.setType(payload);            });
-  addCellSubscription("/meta/name",     (cell, payload) => { cell.setName(payload);            });
-  addCellSubscription("/meta/units",    (cell, payload) => { cell.setUnits(payload);           });
-  addCellSubscription("/meta/readonly", (cell, payload) => { cell.setReadOnly(payload == "1"); });
-  addCellSubscription("/meta/writable", (cell, payload) => { cell.setWritable(payload == "1"); });
-  addCellSubscription("/meta/error",    (cell, payload) => { cell.setError(payload);         });
-  addCellSubscription("/meta/min",      (cell, payload) => { cell.setMin(payload);             });
-  addCellSubscription("/meta/max",      (cell, payload) => { cell.setMax(payload);             });
-  addCellSubscription("/meta/step",     (cell, payload) => { cell.setStep(payload);            });
-  addCellSubscription("/meta/order",    (cell, payload) => { cell.setOrder(payload);           });
-  // STEP --> precision (округление) ?
 
   function filterCellIds (func) {
     var result = [];
