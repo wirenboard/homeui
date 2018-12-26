@@ -63,7 +63,7 @@ export function svgSchemeDirective($compile, DeviceData) {
                 var desc = getDirectChild(element[0], "desc");
                 if (desc != null) {         
                     element.attr("svg-compiled-element", "");
-                    element.attr("ng-clock", "");
+                    element.attr("ng-cloak", "");
 
                     var attrs = parseAttrs(desc.innerHTML);
 
