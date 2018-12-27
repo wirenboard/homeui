@@ -1,18 +1,16 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 . /etc/wb_env.sh
 
+wb_source "of"
 
-case "$WB_VERSION" in
-    "58" | "55" | "52"|"50" )
-        CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv"
-    ;;
-
-    * ) 
-        CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.tsv"
-    ;;
-esac
-
+if of_machine_match "contactless,imx6ul-wirenboard60"; then
+    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb6.tsv"
+elif of_machine_match "contactless,imx28-wirenboard50"; then
+    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv"
+else
+    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.tsv"
+fi
 
 case "$1" in
     configure)

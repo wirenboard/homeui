@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.7.1) stable; urgency=medium
+
+  * compatibility with wb-utils 2.0 and WB6
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 27 Dec 2018 19:21:43 +0300
+
 wb-mqtt-homeui (1.7) stable; urgency=medium
 
   * config editor: new property option "forceDefault" to always add property which has default value without having to make it required
