@@ -53,6 +53,7 @@ def format_config(config):
 
     widgets = _format_widgets(widgets)
     config['widgets'] = widgets
+    config['defaultDashboardId'] = 'default'
     return config
 
 
