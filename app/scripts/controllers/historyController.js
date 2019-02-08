@@ -536,6 +536,28 @@ class HistoryCtrl {
         }).catch(this.errors.catch("Error getting history"));
     } // loadHistory
 
+    downloadHistoryTable() {
+      const rows = document.querySelectorAll("#history-table tr");
+      let csv = [];
+      for (let i = 0; i < rows.length; i++) {
+          const cols = rows[i].querySelectorAll("td, th");
+          const row = [];
+      
+          for (let j = 0; j < cols.length; j++) 
+              row.push(cols[j].innerText);
+            
+        csv.push(row.join(","));		
+      }
+      const csvFile = new Blob(["\ufeff", csv.join("\n")], {type: "text/csv"});
+      
+      const downloadLink = document.createElement("a");
+      downloadLink.download = 'filename.csv';
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+
+      downloadLink.click();
+    }
 } // class HistoryCtrl
 
 //-----------------------------------------------------------------------------
