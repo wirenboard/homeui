@@ -4869,6 +4869,10 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
       sanitized = this.enum_values[0];
     }
 
+    if(this.options.forceDefault && sanitized === undefined) {
+      sanitized = this.getDefault();
+    }
+
     if(this.value === sanitized) {
       return;
     }

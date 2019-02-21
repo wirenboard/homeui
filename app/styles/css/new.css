@@ -245,8 +245,7 @@ div[uib-datepicker-popup-wrap] {
   display: flex;
 }
 
-
-.side-nav>li>ul>li>a.active::before {
+.side-nav a.active::before {
   content: "\F0D9";
   font-family: FontAwesome;
   display: block;
@@ -257,4 +256,49 @@ div[uib-datepicker-popup-wrap] {
   right: -21px;
   font-size: 20px;
   color: #eee;
+}
+
+@media screen and (max-width: 767px) {
+  .navbar-toggle {
+    float: left;
+    margin-right: 0;
+    margin-left: 13px;
+  }
+
+  .navbar-inverse {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .navbar-inverse > * {
+    background-color: black;
+  }
+ 
+  .navbar-collapse {
+    min-height: 100vh;
+    width: 250px;
+    max-width: 250px;
+    margin-left: -250px;
+    transition: margin 0.35s;    
+    overflow-x: hidden;
+  }
+  
+  .navbar-collapse.in {
+    margin-left: 0px;
+  }
+
+  .nav.navbar-nav.side-nav {
+    padding-bottom: 50px;
+  }
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, .3);
+  transition: all .35s ease-in;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
 }

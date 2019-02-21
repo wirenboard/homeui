@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.0~beta8) stable; urgency=medium
+
+  * merge master: wb6 and wb-utils 2.0 compatibility,
+  *  forceDefault option (needed for tcp ports on wb-mqtt-serial)
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 26 Jan 2019 20:36:13 +0300
+
 wb-mqtt-homeui (2.0~beta7) stable; urgency=medium
 
   * fix access role alert behaviour
@@ -64,13 +71,31 @@ wb-mqtt-homeui (2.0~beta1) stable; urgency=medium
 
  -- Evgeny Boger <boger@contactless.ru>  Sat, 08 Apr 2017 14:20:39 +0300
 
-wb-mqtt-homeui (1.7) stable; urgency=medium
+wb-mqtt-homeui (2.0~alpha) stable; urgency=medium
 
   * json config
   * new dashboards & widgets
   * removed rooms
 
  -- Ivan Shvedunov <ivan4th@gmail.com>  Thu, 06 Jun 2016 01:02:09 +0300
+
+wb-mqtt-homeui (1.7.1) stable; urgency=medium
+
+  * compatibility with wb-utils 2.0 and WB6
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 27 Dec 2018 19:21:43 +0300
+
+wb-mqtt-homeui (1.7) stable; urgency=medium
+
+  * config editor: new property option "forceDefault" to always add property which has default value without having to make it required
+
+ -- Islam Boziev <i.boziev@wirenboard.ru>  Fri, 13 Oct 2017 17:09:24 +0300
+
+wb-mqtt-homeui (1.6.5) stable; urgency=medium
+
+  * do not require wb-mqtt-db
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 26 Oct 2017 02:28:54 +0300
 
 wb-mqtt-homeui (1.6.4) stable; urgency=medium
 
