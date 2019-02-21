@@ -25,6 +25,7 @@ install:
 	cp -a dist/favicon.ico $(DESTDIR)/var/www/favicon.ico
 	cp -a dist/*.js $(DESTDIR)/var/www/
 	cp -a dist/*.svg $(DESTDIR)/var/www/
+	cp -a dist/*.png $(DESTDIR)/var/www/
 	cp -a dist/*.ttf $(DESTDIR)/var/www/
 	cp -a dist/*.woff $(DESTDIR)/var/www/
 	cp -a dist/*.woff2 $(DESTDIR)/var/www/ || :
