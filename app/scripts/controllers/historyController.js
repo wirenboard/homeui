@@ -543,8 +543,15 @@ class HistoryCtrl {
           const cols = rows[i].querySelectorAll("td, th");
           const row = [];
       
-          for (let j = 0; j < cols.length; j++) 
-              row.push(cols[j].innerText);
+          for (let j = 0; j < cols.length; j++) {
+              // warp channel name's in quotes to protect chanel name that contain ',' symbol  
+              if(i === 0 && j > 0) {
+                  row.push(`"${cols[j].innerText}"`);
+              }
+              else {
+                  row.push(cols[j].innerText);
+              }
+          }
             
         csv.push(row.join(","));		
       }
