@@ -1,22 +1,22 @@
 import uiRouter from 'angular-ui-router';
 
-import homeTemplateUrl from 'ngtemplate-loader!../views/home.html';
-import helpTemplateUrl from 'ngtemplate-loader!../views/help.html';
-import webUITemplateUrl from 'ngtemplate-loader!../views/web-ui.html';
-import systemTemplateUrl from 'ngtemplate-loader!../views/system.html';
-import MQTTChannelsTemplateUrl from 'ngtemplate-loader!../views/MQTTChannels.html';
-import accessLevelTemplateUrl from 'ngtemplate-loader!../views/access-level.html';
-import devicesTemplateUrl from 'ngtemplate-loader!../views/devices.html';
-import widgetsTemplateUrl from 'ngtemplate-loader!../views/widgets.html';
-import dashboardsTemplateUrl from 'ngtemplate-loader!../views/dashboards.html';
-import dashboardTemplateUrl from 'ngtemplate-loader!../views/dashboard.html';
-import settingsTemplateUrl from 'ngtemplate-loader!../views/settings.html';
-import loginTemplateUrl from 'ngtemplate-loader!../views/login.html';
-import scriptsTemplateUrl from 'ngtemplate-loader!../views/scripts.html';
-import scriptTemplateUrl from 'ngtemplate-loader!../views/script.html';
-import historyTemplateUrl from 'ngtemplate-loader!../views/history.html';
-import configsTemplateUrl from 'ngtemplate-loader!../views/configs.html';
-import configTemplateUrl from 'ngtemplate-loader!../views/config.html';
+import homeTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/home.html';
+import helpTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/help.html';
+import webUITemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/web-ui.html';
+import systemTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/system.html';
+import MQTTChannelsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/MQTTChannels.html';
+import accessLevelTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/access-level.html';
+import devicesTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/devices.html';
+import widgetsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/widgets.html';
+import dashboardsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboards.html';
+import dashboardTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboard.html';
+import settingsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/settings.html';
+import loginTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/login.html';
+import scriptsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/scripts.html';
+import scriptTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/script.html';
+import historyTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/history.html';
+import configsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/configs.html';
+import configTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/config.html';
 
 function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   'ngInject';
