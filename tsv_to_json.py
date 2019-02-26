@@ -78,8 +78,9 @@ def _format_widgets(widgets):
     new_widgets = []
     for widget in widgets:
         updated_widget = {
+            'name': '',
             'description': '',
-            'compact': False,
+            'compact': True,
             'id': widget.get('uid'),
             'cells': _controls_to_cells(widget)
         }
