@@ -46,6 +46,7 @@ def format_config(config):
             'id': 'default',
             'name': 'Default Dashboard (cfg)',
             'isSvg': False,
+            'compact': True,
             'widgets': []
         }
         config['dashboards'].append(update_value)
