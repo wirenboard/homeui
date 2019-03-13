@@ -140,12 +140,20 @@
         <!--<div class="history-empty"
              ng-show="$ctrl.hasString">
             No points for graph.
-        </div>-->
+        </div>--> 
     </div>
-
+ 
+    <button 
+      class="btn btn-success"
+      ng-if="$ctrl.hasPoints"
+      ng-click="$ctrl.downloadHistoryTable()"
+    >
+      Download history as CSV
+    </button>
+    <br><br>
 
     <div class="col-xs-12 col-md-6 col-lg-4" ng-if="$ctrl.dataPoints.length && $ctrl.hasPoints">
-        <table class="table">
+        <table id="history-table" class="table">
             <thead>
             <tr>
                 <th>Date and time</th>
@@ -162,7 +170,7 @@
     </div>
 
     <div class="col-xs-12" ng-if="$ctrl.dataPointsMultiple.length && $ctrl.hasPoints">
-        <table class="table">
+        <table id="history-table" class="table">
             <thead>
             <tr>
                 <th>Date and time</th>
