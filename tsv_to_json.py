@@ -79,7 +79,7 @@ def _format_widgets(widgets):
     new_widgets = []
     for widget in widgets:
         updated_widget = {
-            'name': '',
+            'name': widget.get('name'),
             'description': '',
             'compact': True,
             'id': widget.get('uid'),
