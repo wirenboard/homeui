@@ -564,20 +564,25 @@ function deviceDataService(mqttClient) {
     cells: cells,
 
     deleteDevice(deviceId) {
-      const alldeviceTopicBases = allDevicesTopics[deviceId];
+      const allDeviceTopicBases = allDevicesTopics[deviceId];
 
-      devices[deviceId].cellIds.map(cellId => {
-        cells[cellId]._removeFromDevice()
-      })
+      // select topics that relate directly to the device sorted by length.
+      // So, first, long device topics (meta) will be deleted, 
+      // and last - the topic of the device itself
+      const deviceTopics = allDeviceTopicBases
+        .filter(topic => !topic.includes('controls'))
+        .sort((a, b) => b.length - a.length)
+      const cellsTopics = allDeviceTopicBases
+        .filter(topic => !deviceTopics.includes(topic))
+      // move the topics of the device to the end, so that the topics 
+      // of the cells are removed first, and then the device itself  
+      const allTopics = cellsTopics.concat(deviceTopics)
 
-      delete allDevicesTopics[deviceId]
-
-      alldeviceTopicBases.forEach(topic => {
+      allTopics.forEach(topic => {
         const payload = '';
         const retained = true;
         const qos = 2;
-        
-        mqttClient.send(topic, payload, retained, qos)
+        mqttClient.send(topic, payload, retained, qos);
       });
     },
 
