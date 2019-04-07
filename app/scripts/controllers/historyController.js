@@ -54,6 +54,12 @@ class HistoryCtrl {
                 //showgrid: false, // remove the x-axis grid lines
                 //tickformat: "%B, %Y"  // customize the date format to "month, day"
             },
+            yaxis: {
+              // with this flag Plotly will automatically increase the margin size 
+              // to prevent ticklabels from being cut off or overlapping with axis titles
+              // https://plot.ly/javascript/setting-graph-size/#automatically-adjust-margins
+              automargin: true,
+            },
             margin: {// update the left, bottom, right, top margin
                 l: 40, b: 40, r: 10, t: 20
             },

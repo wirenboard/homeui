@@ -7,13 +7,16 @@ Each *device* has some *controls* assigned to it, i.e. parameters that can be co
 For example, some room lighting control *device* with one input (for wall switch) and one output (for controlling the lamp) *controls* is represented with MQTT topics as following:
 
 * `/devices/RoomLight/meta/name` - 'Light in my room', human-friendly description of the *device*
+* `/devices/RoomLight/meta/error` - device-level error state, non-null means there was an error (usable as Last Will and Testament)
 * `/devices/RoomLight/controls/Lamp` - contains current lamp state, '0' = off, '1' = on
 * `/devices/RoomLight/controls/Lamp/on` - send a message with this topic and payload of '0'/'1' to turn lamp off or on
 * `/devices/RoomLight/controls/Lamp/meta/type` - 'switch' (binary value)
+* `/devices/RoomLight/controls/Lamp/meta/order` - '1'
 * `/devices/RoomLight/controls/Switch` - contains current wall switch state
 * `/devices/RoomLight/controls/Switch/meta/type` - 'switch'
 * `/devices/RoomLight/controls/Switch/meta/readonly` - '1', it doesn't make sense trying to control a wall switch over MQTT
 * `/devices/RoomLight/controls/Switch/meta/error` - 'r', non-null value means there was an error reading or writing the control. In this case  `/devices/RoomLight/controls/Switch` contains last known good value.
+* `/devices/RoomLight/controls/Switch/meta/order` - '2' a value that is used to arrange controls in some order (Lamp will be before Switch)
 
 Each *device* usually represents the single physical device or one of the integrated peripheral of a complex physical device, although there are some boundary cases where the distinction is not clear. The small and not-so-complex real-world devices (say, wireless wheather sensor) are ought to be represented by a single *device* in the MQTT hierarchy. 
 Each *device* must be handled by a single driver or publisher, though it's not enforced in any way.

@@ -25,6 +25,7 @@ install:
 	cp -a dist/favicon.ico $(DESTDIR)/var/www/favicon.ico
 	cp -a dist/*.js $(DESTDIR)/var/www/
 	cp -a dist/*.svg $(DESTDIR)/var/www/
+	cp -a dist/*.png $(DESTDIR)/var/www/
 	cp -a dist/*.ttf $(DESTDIR)/var/www/
 	cp -a dist/*.woff $(DESTDIR)/var/www/
 	cp -a dist/*.woff2 $(DESTDIR)/var/www/ || :
@@ -36,6 +37,7 @@ install:
 	install -d $(DESTDIR)/usr/share/wb-mqtt-homeui
 	install -m 0644 default_config_dump.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.tsv
 	install -m 0644 default_config_dump.wb5.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv
+	install -m 0644 default_config_dump.wb6.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb6.tsv
 
 	install -d $(DESTDIR)/etc
 	install -m 0644 wb-webui.conf $(DESTDIR)/etc/wb-webui.conf
