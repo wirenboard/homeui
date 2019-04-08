@@ -35,72 +35,84 @@ def _merge_dicts(d1, d2):
     return result
 
 
-def format_config(config):
-    config = config['config']
-    config.pop('rooms', None)
-    dashboards, widgets = _format_dashboards(config['dashboards'])
-    config['dashboards'] = dashboards
-    default_dashboard = config.get('default_dashboard')
+def make_new_config(old_config):
+    old_config = old_config['config']
+    config = {}
 
+    new_dashboards = _format_dashboards(old_config['dashboards'])
+    config['dashboards'] = new_dashboards
+    
+    default_dashboard = old_config.get('default_dashboard')
     if default_dashboard:
-        update_value = {
-            'id': 'default',
-            'name': 'Default Dashboard (cfg)',
-            'isSvg': False,
-            'compact': True,
-            'widgets': []
-        }
-        config['dashboards'].append(update_value)
-        config.pop('default_dashboard')
+        config['defaultDashboardId'] = default_dashboard['uid']
 
-    widgets = _format_widgets(widgets)
-    config['widgets'] = widgets
-    config['defaultDashboardId'] = 'default'
+    config['widgets'] = _format_widgets(old_config['widgets'])
+    
+    # Rooms are converted to dashboards
+    config['dashboards'] += _format_rooms(old_config['rooms'], old_config['widgets'])
+
     return config
+
+def _format_rooms(old_rooms, old_widgets):
+    room_dashboards = []
+    for room_uid, room in old_rooms.items():
+        dashboard = {
+            'name' : room['name'],
+            'id'   : room['uid'],
+            'isSvg': False,
+            'widgets' : [],
+        }
+
+        for w in old_widgets.values():
+            if w['room'] == room['uid']:
+                dashboard['widgets'].append(w['uid'])
+        
+        room_dashboards.append(dashboard)
+    return room_dashboards        
 
 
 def _format_dashboards(dashboards):
     formated_dashboards = []
     widgets = []
-    for key in dashboards.keys():
-        dashboard = dashboards[key]
-        d_widgets = dashboard.pop('widgets')
-        update_value = {
-            'id': dashboard.pop('uid'),
+    for key, old_dashboard in dashboards.items():
+        d_widgets = old_dashboard['widgets']
+        dashboard = {
+            'id': old_dashboard['uid'],
             'isSvg': False,
-            'widgets': [widget['uid'] for widget in d_widgets.values()]
+            'widgets': [widget['uid'] for widget in d_widgets.values()],
+            'name' : old_dashboard['name']
         }
-        dashboard.update(update_value)
         formated_dashboards.append(dashboard)
-        widgets.extend([i for i in d_widgets.values()])
-    return formated_dashboards, widgets
+        
+        
+    return formated_dashboards
 
 
-def _format_widgets(widgets):
+def _format_widgets(old_widgets):
+    old_widgets_list = [old_widgets[k] for k in sorted(old_widgets.keys())]
     new_widgets = []
-    for widget in widgets:
+    for widget in old_widgets_list:
         updated_widget = {
             'name': widget.get('name'),
             'description': '',
             'compact': True,
             'id': widget.get('uid'),
-            'cells': _controls_to_cells(widget)
+            'cells': _controls_to_cells(widget.get('controls'))
         }
         new_widgets.append(updated_widget)
     return new_widgets
 
 
-def _controls_to_cells(widget):
+def _controls_to_cells(controls):
     cells = []
-    controls = widget.get('controls')
     if controls:
         for slot in controls.values():
             topic = slot.get('topic')
             if topic:
-                _topic = topic['topic'][1:].split('/')
-                topic['id'] = '{0}/{1}'.format(_topic[1], _topic[-1])
-                topic.pop('topic')
-                cells.append(topic)
+                _topic = topic[1:].split('/')
+                cell = {}
+                cell['id'] = '{0}/{1}'.format(_topic[1], _topic[-1])
+                cells.append(cell)
     return cells
 
 
@@ -131,7 +143,7 @@ def run_script():
         result = _merge_dicts(result, i)
 
     with open(args.output, 'w') as output_file:
-        output_file.write(json.dumps(format_config(result), indent=4, sort_keys=True, ensure_ascii=False))
+        output_file.write(json.dumps(make_new_config(result), indent=4, sort_keys=True, ensure_ascii=False))
 
 
 parser = argparse.ArgumentParser(
