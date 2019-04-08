@@ -16,12 +16,10 @@ build:
 install:
 	install -d -m 0777 $(DESTDIR)/var/www/css
 	install -d -m 0777 $(DESTDIR)/var/www/images
-	install -d -m 0777 $(DESTDIR)/var/www/views
 	install -d -m 0777 $(DESTDIR)/var/www/uploads
 	
 	cp -a dist/css/*.css $(DESTDIR)/var/www/css
 	cp -a dist/images/* $(DESTDIR)/var/www/images
-	cp -a dist/views/* $(DESTDIR)/var/www/views
 	cp -a dist/favicon.ico $(DESTDIR)/var/www/favicon.ico
 	cp -a dist/*.js $(DESTDIR)/var/www/
 	cp -a dist/*.svg $(DESTDIR)/var/www/

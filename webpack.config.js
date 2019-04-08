@@ -340,14 +340,13 @@ module.exports = function makeWebpackConfig() {
             // Reference: https://github.com/kevlened/copy-webpack-plugin
             new CopyWebpackPlugin([
                 {from: path.join(__dirname, 'app', 'images'), to: 'images'},
-                {from: path.join(__dirname, 'app', 'views'), to: 'views'},
                 {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
                 {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
                 {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'}
             ]),
 
-            new webpack.HashedModuleIdsPlugin(),
-            new WebpackChunkHash({algorithm: 'md5'}),
+            // new webpack.HashedModuleIdsPlugin(),
+            // new WebpackChunkHash({algorithm: 'md5'}),
 
             // Allows exporting a JSON file that maps chunk ids to their resulting
             // asset files. Webpack can then read this mapping, assuming it is
@@ -355,23 +354,23 @@ module.exports = function makeWebpackConfig() {
             // chunk asset hashes) in the bootstrap script, which allows to actually
             // leverage long-term caching.
             // Reference: https://github.com/soundcloud/chunk-manifest-webpack-plugin
-            new ChunkManifestPlugin({
-                filename: 'chunk-manifest.json',
-                manifestVariable: 'webpackManifest'
-            }),
+            // new ChunkManifestPlugin({
+            //     filename: 'chunk-manifest.json',
+            //     manifestVariable: 'webpackManifest'
+            // }),
 
             // This is a webpack plugin that inline your manifest.js with a script tag to save http request.
             // Reference: https://github.com/szrenwei/inline-manifest-webpack-plugin
-            new InlineManifestWebpackPlugin({
-                name: 'webpackManifest'
-            }),
+            // new InlineManifestWebpackPlugin({
+            //     name: 'webpackManifest'
+            // }),
 
             // Inline output JSON chunck manifest from ChunkManifestPlugin into index.ejs template
-            new InlineChunksManifestPlugin({
-                name: 'chunksManifest', // asset name for accessing from HTML template
-                filename: 'chunk-manifest.json',
-                manifestVariable: 'webpackManifest'
-            }),
+            // new InlineChunksManifestPlugin({
+            //     name: 'chunksManifest', // asset name for accessing from HTML template
+            //     filename: 'chunk-manifest.json',
+            //     manifestVariable: 'webpackManifest'
+            // }),
 
             // Writes the stats of a build to a file.
             // Reference: https://github.com/unindented/stats-webpack-plugin/
