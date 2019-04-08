@@ -1,27 +1,35 @@
 #!/bin/bash
 set -e
+set -x
 . /etc/wb_env.sh
 
 wb_source "of"
 
 if of_machine_match "contactless,imx6ul-wirenboard60"; then
-    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb6.tsv"
+    CONF_SUFFIX="wb6"
 elif of_machine_match "contactless,imx28-wirenboard50"; then
-    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv"
+    CONF_SUFFIX="wb5"
 else
-    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.tsv"
+    CONF_SUFFIX="default"
 fi
+BOARD_CONF="/usr/share/wb-mqtt-homeui/config.${CONF_SUFFIX}.json"
+CONFFILE="/etc/wb-webui.conf"
 
 case "$1" in
     configure)
 
-	CONFIG_PRESENT=`mqtt-get-dump '/config/#' | wc -l`
-	if [ $CONFIG_PRESENT = "0" ]; then
-		# no config
+        OLD_VERSION="$2"
 
-		mqtt-upload-dump ${CONF_FILE}
-
-	fi
+        if `dpkg --compare-versions "${OLD_VERSION}" "lt" "2.0~beta9"`; then
+            # convert old config
+            TMPFILE=`mktemp`
+            mqtt-get-dump "/config/#" > $TMPFILE
+            /usr/lib/wb-mqtt-homeui/convert_config_v1v2 $TMPFILE $CONFFILE
+            rm $TMPFILE
+        else
+            # install default config
+            ucf --debconf-ok $BOARD_CONF $CONFFILE
+        fi
 
     ;;
 esac
