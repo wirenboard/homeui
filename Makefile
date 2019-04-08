@@ -33,12 +33,12 @@ install:
 	install -m 0644 dist/index.html $(DESTDIR)/var/www/
 
 	install -d $(DESTDIR)/usr/share/wb-mqtt-homeui
-	install -m 0644 default_config_dump.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.tsv
-	install -m 0644 default_config_dump.wb5.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv
-	install -m 0644 default_config_dump.wb6.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb6.tsv
+	install -m 0644 config.default.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
+	install -m 0644 config.wb5.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
+	install -m 0644 config.wb6.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
 
-	install -d $(DESTDIR)/etc
-	install -m 0644 wb-webui.conf $(DESTDIR)/etc/wb-webui.conf
+	install -d $(DESTDIR)/usr/lib/wb-mqtt-homeui
+	install -m 0755 convert_config_v1v2.py $(DESTDIR)/usr/lib/wb-mqtt-homeui/convert_config_v1v2
 
 	install -d $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
 	install -m 0644 webui.schema.json $(DESTDIR)/usr/share/wb-mqtt-confed/schemas/webui.schema.json
