@@ -42,6 +42,9 @@ install:
 
 	install -d $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
 	install -m 0644 webui.schema.json $(DESTDIR)/usr/share/wb-mqtt-confed/schemas/webui.schema.json
+	
+	install -d  $(DESTDIR)/etc/wb-configs.d
+	install -m 0644 wb-configs.rules $(DESTDIR)/etc/wb-configs.d/20wb-mqtt-homeui
 
 uninstall:
 	rm -fR $(DESTDIR)/var/www/*
