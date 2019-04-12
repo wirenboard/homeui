@@ -1,3 +1,13 @@
+wb-mqtt-homeui (2.0~beta9) stable; urgency=medium
+
+  * ui: add new mobile menu
+  * core: new template loader: fix cache problems when migrating from WebUI 1.0
+  * history: allow to download history as a CSV file
+  * history: fix cutting of long tick labels in Y-axis
+  * dashboards: fix display of SVG dashboards 
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 08 Apr 2019 20:23:53 +0300
+
 wb-mqtt-homeui (2.0~beta8) stable; urgency=medium
 
   * merge master: wb6 and wb-utils 2.0 compatibility,

@@ -1,28 +1,60 @@
 #!/bin/bash
 set -e
+
 . /etc/wb_env.sh
 
 wb_source "of"
 
 if of_machine_match "contactless,imx6ul-wirenboard60"; then
-    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb6.tsv"
+    CONF_SUFFIX="wb6"
 elif of_machine_match "contactless,imx28-wirenboard50"; then
-    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv"
+    CONF_SUFFIX="wb5"
 else
-    CONF_FILE="/usr/share/wb-mqtt-homeui/default_config_dump.tsv"
+    CONF_SUFFIX="default"
 fi
+BOARD_CONF="/usr/share/wb-mqtt-homeui/config.${CONF_SUFFIX}.json"
+CONFFILE="/etc/wb-webui.conf"
+
+function convert_config()
+{
+    TMPFILE=`mktemp`
+    mqtt-get-dump "/config/#" > $TMPFILE
+    NEW_CONFFILE=`mktemp`
+    /usr/lib/wb-mqtt-homeui/convert_config_v1v2 $TMPFILE $NEW_CONFFILE
+    if [ -e $CONFFILE ] && ! `cmp --silent $CONFFILE $NEW_CONFFILE`; then
+        mv $CONFFILE $CONFFILE.bak
+    fi
+    mv $NEW_CONFFILE $CONFFILE            
+    rm $TMPFILE
+}
+
+function install_default_config()
+{
+    ucf --debconf-ok $BOARD_CONF $CONFFILE
+}
 
 case "$1" in
     configure)
 
-	CONFIG_PRESENT=`mqtt-get-dump '/config/#' | wc -l`
-	if [ $CONFIG_PRESENT = "0" ]; then
-		# no config
-
-		mqtt-upload-dump ${CONF_FILE}
-
-	fi
-
+        OLD_VERSION="$2"
+        if [ "$OLD_VERSION" = "" ]; then
+            # fresh install
+            # if conffile (i.e. v2) is present, do nothing
+            if [ ! -e "$CONFFILE" ]; then
+                #check if old config is present
+                if [ ! `mqtt-get-dump '/config/#' | wc -l` = "0" ]; then
+                    convert_config
+                else
+                    install_default_config
+                fi
+            fi
+        else
+            if `dpkg --compare-versions "${OLD_VERSION}" "lt" "2.0~beta9"`; then
+                convert_config
+            else
+                install_default_config
+            fi
+        fi
     ;;
 esac
 
