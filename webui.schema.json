@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "WebUI Configuration schema",
-  "description": "WebUI Schema stub",
+  "title": "WebUI Configuration",
+  "description": "For internal use, edit with caution",
   "properties": {
     "dashboards": {},
     "widgets": {},
@@ -10,5 +10,10 @@
   },
   "configFile": {
     "path": "/etc/wb-webui.conf"
+  },
+  "options" : {
+    "collapsed" : true,
+    "disable_collapse" : true,
+    "disable_properties" : true
   }
 }
