@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0~beta10) stable; urgency=medium
+
+  * disable webui editing
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 12 Apr 2019 22:51:46 +0300
+
 wb-mqtt-homeui (2.0~beta9) stable; urgency=medium
 
   * ui: add new mobile menu
