@@ -429,40 +429,96 @@ function deviceDataService(mqttClient) {
     }
   }
 
-  mqttClient.addStickySubscription("/devices/+/meta/name", msg => {
-    var deviceId = splitTopic(msg.topic)[1];
-    if (msg.payload == "") {
-      if (!devices.hasOwnProperty(deviceId))
-        return;
-      devices[deviceId].name = deviceId;
-      devices[deviceId].explicit = false;
-      maybeRemoveDevice(deviceId);
-      return;
-    }
-    var dev = ensureDevice(deviceId);
-    dev.name = msg.payload;
-    dev.explicit = true;
-  });
+  // list of all device topics: { deviceId: [topic1, topic2, ... ] }
+  var allDevicesTopics = {};
 
-  function addCellSubscription(suffix, handler) {
-    mqttClient.addStickySubscription("/devices/+/controls/+" + suffix, msg => {
-      // console.debug("%s: %s: %s: %s", suffix || "<empty>", msg.topic, cellFromTopic(msg.topic).id, msg.payload);
-      handler(cellFromTopic(msg.topic), msg.payload);
-    });
+  // method to comparing real topic ('/devices/deviceId/controls/controlId/meta/name')
+  // and topicExpression - topic with characters '+' or '#' ('/devices/+/controls/#')
+  const isTopicsAreEqual = (realTopic, topicExp) => {
+    const reg = new RegExp(topicExp.replace(/[+]/g, '[^\/]+').replace('#', '.+') + '$');
+    const result = realTopic.match(reg);
+
+    return result ? true : false;
   }
 
-  addCellSubscription("",               (cell, payload) => { cell.receiveValue(payload);       });
-  addCellSubscription("/meta/type",     (cell, payload) => { cell.setType(payload);            });
-  addCellSubscription("/meta/name",     (cell, payload) => { cell.setName(payload);            });
-  addCellSubscription("/meta/units",    (cell, payload) => { cell.setUnits(payload);           });
-  addCellSubscription("/meta/readonly", (cell, payload) => { cell.setReadOnly(payload == "1"); });
-  addCellSubscription("/meta/writable", (cell, payload) => { cell.setWritable(payload == "1"); });
-  addCellSubscription("/meta/error",    (cell, payload) => { cell.setError(payload);         });
-  addCellSubscription("/meta/min",      (cell, payload) => { cell.setMin(payload);             });
-  addCellSubscription("/meta/max",      (cell, payload) => { cell.setMax(payload);             });
-  addCellSubscription("/meta/step",     (cell, payload) => { cell.setStep(payload);            });
-  addCellSubscription("/meta/order",    (cell, payload) => { cell.setOrder(payload);           });
-  // STEP --> precision (округление) ?
+  // add subscription to all the topics of devices
+  mqttClient.addStickySubscription("/devices/#", msg => {
+    const { topic, payload } = msg;
+
+    const deviceId = splitTopic(topic)[1];
+
+    if(!allDevicesTopics[deviceId]) {
+      allDevicesTopics[deviceId] = [];
+    }
+
+    // save all received devices topics in allDevicesTopics object
+    if(!allDevicesTopics[deviceId].includes(topic)) {
+      allDevicesTopics[deviceId].push(topic);
+    }
+
+    const deviceTopicBase = '/devices/+';
+    const cellTopicBase = deviceTopicBase + '/controls/+';
+
+    // define handler functions for each specific topic
+    const subscriptionHandlers = [{
+        handledTopic: deviceTopicBase + '/meta/name',
+        handler() {
+          if (payload === "") {
+            if (devices.hasOwnProperty(deviceId)) {
+              devices[deviceId].name = deviceId;
+              devices[deviceId].explicit = false;
+              maybeRemoveDevice(deviceId);
+            }
+          } else {
+            var dev = ensureDevice(deviceId);
+            dev.name = payload;
+            dev.explicit = true;
+          }
+        }
+      },{
+        handledTopic: cellTopicBase,
+        handler(payload) { cellFromTopic(topic).receiveValue(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/type',
+        handler(payload) { cellFromTopic(topic).setType(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/name',
+        handler(payload) { cellFromTopic(topic).setName(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/units',
+        handler(payload) { cellFromTopic(topic).setUnits(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/readonly',
+        handler(payload) { cellFromTopic(topic).setReadOnly(payload == '1') }
+      },{
+        handledTopic: cellTopicBase + '/meta/writable',
+        handler(payload) { cellFromTopic(topic).setWritable(payload == '1') }
+      },{
+        handledTopic: cellTopicBase + '/meta/error',
+        handler(payload) { cellFromTopic(topic).setError(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/min',
+        handler(payload) { cellFromTopic(topic).setMin(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/max',
+        handler(payload) { cellFromTopic(topic).setMax(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/step',
+        handler(payload) { cellFromTopic(topic).setStep(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta/order',
+        handler(payload) { cellFromTopic(topic).setOrder(payload) }
+      }
+    ]
+
+    subscriptionHandlers.forEach(subscriptionHandler => {
+      const { handledTopic, handler } = subscriptionHandler;
+        
+      if(isTopicsAreEqual(topic, handledTopic)) {
+        handler(payload);
+      }
+    })
+  });
 
   function filterCellIds (func) {
     var result = [];
@@ -525,6 +581,29 @@ function deviceDataService(mqttClient) {
   return {
     devices: devices,
     cells: cells,
+
+    deleteDevice(deviceId) {
+      const allDeviceTopicBases = allDevicesTopics[deviceId];
+
+      // select topics that relate directly to the device sorted by length.
+      // So, first, long device topics (meta) will be deleted, 
+      // and last - the topic of the device itself
+      const deviceTopics = allDeviceTopicBases
+        .filter(topic => !topic.includes('controls'))
+        .sort((a, b) => b.length - a.length)
+      const cellsTopics = allDeviceTopicBases
+        .filter(topic => !deviceTopics.includes(topic))
+      // move the topics of the device to the end, so that the topics 
+      // of the cells are removed first, and then the device itself  
+      const allTopics = cellsTopics.concat(deviceTopics)
+
+      allTopics.forEach(topic => {
+        const payload = '';
+        const retained = true;
+        const qos = 2;
+        mqttClient.send(topic, payload, retained, qos);
+      });
+    },
 
     getCellIds () {
       return filterCellIds();

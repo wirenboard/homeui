@@ -19,6 +19,13 @@
                       <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
                       <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
                   </div>
+                  <span
+                    ng-click="$ctrl.deleteDevice(deviceId)"
+                    title="Delete device"
+                    class="device-panel__header-delete-button"
+                  >
+                    <i class="glyphicon glyphicon-trash white"></i>
+                  </span>
                 </uib-accordion-heading>
                 <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
                     <display-cell

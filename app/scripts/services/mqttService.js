@@ -1,3 +1,8 @@
+// Mosquitto broker setting: 
+// The maximum number of QoS 1 or 2 messages to hold in the queue (per client) 
+// above those messages that are currently in flight. Defaults to 100.
+const MAX_QUEUED_MESSAGES = 100;
+
 const mqttServiceModule = angular
   .module('homeuiApp.mqttServiceModule', [])
   .factory('whenMqttReady', whenMqttReady)
@@ -142,6 +147,18 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
     client.onMessageDelivered = service.onMessageDelivered;
     client.onMessageArrived = service.onMessageArrived;
 
+    // in-flight messages - messages with QoS 1 or 2,
+    // for which no confirmation message was received from the broker
+    client.inFlightMessages = [];
+    // list of service.send function calls which will be called 
+    // when the number of inFlightMessages decreases
+    client.unsentMessagesQueue = [];
+    // availableSessionCapacity: the number of messages with QoS 1 or 2
+    // that can be sent to the broker without exceeding the MAX_QUEUED_MESSAGES limit.
+    Object.defineProperty(client, 'availableSessionCapacity', {
+      get: () => MAX_QUEUED_MESSAGES - client.inFlightMessages.length,
+    });
+
     client.connect(angular.copy(connectOptions));
   };
 
@@ -239,6 +256,27 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
 
   //...........................................................................
   service.onMessageDelivered = function(message) {
+    if(message.qos > 0) {
+      // trying to find the message in inFlightMessages and remove it
+      const messageIndex = client.inFlightMessages.indexOf(message);
+      if (messageIndex > -1) {
+        client.inFlightMessages.splice(messageIndex, 1);
+      }
+      // if there are messages waiting to be sent and the capacity 
+      // of the session available for sending, send as many messages as we can
+      if (
+        client.unsentMessagesQueue.length &&
+        client.availableSessionCapacity > 0
+      ) {
+        client.unsentMessagesQueue
+          .splice(0, client.availableSessionCapacity)
+          .forEach(message => {
+            const { destination, payload, retained, qos } = message
+            service.send(destination, payload, retained, qos)
+          })
+      }
+    }
+
     console.log("Delivered message: ", JSON.stringify(message));
   };
 
@@ -284,6 +322,12 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
       console.error("can't send(): disconnected");
       return;
     }
+    if(qos > 0 && client.availableSessionCapacity < 1) {
+      const message = { destination, payload, retained, qos };
+      client.unsentMessagesQueue.push(message);
+      return
+    }
+
     var topic = globalPrefix + destination;
     if (payload == null) {
       payload = new ArrayBuffer();
@@ -298,6 +342,10 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
     }
 
     client.send(message);
+
+    if(message.qos > 0) {
+      client.inFlightMessages.push(message);
+    }
   };
 
   //...........................................................................
