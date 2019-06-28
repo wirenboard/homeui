@@ -8,6 +8,7 @@
     'focus': 'mouseleave'
   }"
   tooltip-class="custom-tooltip"
+  tooltip-enable="{{ cell.readOnly }}"
 >
   <input ng-if="cell.valueType == 'number' && !cell.readOnly" type="number"
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"

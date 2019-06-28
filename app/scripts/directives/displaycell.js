@@ -22,7 +22,9 @@ function displayCellDirective(displayCellConfig, $compile) {
     }*/
 
     copy(value) {
-      this.handleData.copyToClipboard(value)
+      if (this.cell.readOnly) {
+        this.handleData.copyToClipboard(value)
+      }
     }
 
     shouldDisplayCellName () {
