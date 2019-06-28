@@ -573,6 +573,15 @@ button.show-console span {
   margin: 0 auto 4px auto;
 }
 
+.display-cell .cell-range .value-wrapper.field {
+    border-bottom: none;
+}
+
+.display-cell .cell-range .value-wrapper.field input {
+    display: inline-block;
+    margin-top: 8px;
+}
+
 .display-cell  button.cell-button {
   margin: 4px 0;
 }
