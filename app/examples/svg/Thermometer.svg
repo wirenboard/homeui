@@ -17,8 +17,16 @@
    inkscape:version="0.91 r13725"
    sodipodi:docname="Thermometer.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
-  <defs
-     id="defs3072" />
+  <defs id="defs3072">
+    <style>
+      .switch {
+        cursor: pointer;
+      }
+      .switch:hover {
+        opacity: 0.6;
+      }
+    </style>
+  </defs>
   <sodipodi:namedview
      inkscape:window-height="1056"
      inkscape:window-width="2560"
@@ -580,7 +588,7 @@ Created by potrace 1.8, written by Peter Selinger 2001-2007
        id="text3401-6"
        sodipodi:linespacing="125%"
        transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277">channel=&quot;wb-ms-thls_2/Temperature&quot;</desc><tspan
+         id="desc4277">channel="wb-ms-thls_2/Temperature"</desc><tspan
          sodipodi:role="line"
          id="tspan3403-7"
          x="188.808"
@@ -605,8 +613,8 @@ Created by potrace 1.8, written by Peter Selinger 2001-2007
        id="text3401-6-6-1"
        sodipodi:linespacing="125%"
        transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277-2-3">channel=&quot;wb-ms-thls_2/Temperature&quot;
-value=&quot;{{val * 1.8  + 32|number:2}}&quot;</desc><tspan
+         id="desc4277-2-3">channel="wb-ms-thls_2/Temperature"
+value="{{val * 1.8  + 32|number:2}}"</desc><tspan
          sodipodi:role="line"
          id="tspan3403-7-0-3"
          x="186.66908"
@@ -620,8 +628,8 @@ value=&quot;{{val * 1.8  + 32|number:2}}&quot;</desc><tspan
        id="text3401-6-6-9"
        sodipodi:linespacing="125%"
        transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277-2-4">channel=&quot;wb-ms-thls_2/Temperature&quot;
-value=&quot;{{val|number:1}}&quot;</desc><tspan
+         id="desc4277-2-4">channel="wb-ms-thls_2/Temperature"
+value="{{val|number:1}}"</desc><tspan
          sodipodi:role="line"
          id="tspan3403-7-0-0"
          x="189.58334"
@@ -635,8 +643,8 @@ value=&quot;{{val|number:1}}&quot;</desc><tspan
        id="text3401-6-6-9-3"
        sodipodi:linespacing="125%"
        transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277-2-4-7">channel=&quot;wb-ms-thls_2/Temperature&quot;
-ng-show=&quot;val &gt; 26&quot;</desc><tspan
+         id="desc4277-2-4-7">channel="wb-ms-thls_2/Temperature"
+ng-show="val &gt; 26"</desc><tspan
          sodipodi:role="line"
          id="tspan3403-7-0-0-6"
          x="264.27759"
@@ -650,8 +658,8 @@ ng-show=&quot;val &gt; 26&quot;</desc><tspan
        x="90.827309"
        y="63.514423">
       <desc
-         id="desc4396">channel=&quot;wb-ms-thls_2/Temperature&quot;
-y=&quot;{{ 64.29 + (-336.02-64.29)/90*val}}&quot;</desc>
+         id="desc4396">channel="wb-ms-thls_2/Temperature"
+y="{{ 64.29 + (-336.02-64.29)/90*val}}"</desc>
     </rect>
     <text
        xml:space="preserve"
@@ -701,50 +709,56 @@ y=&quot;{{ 64.29 + (-336.02-64.29)/90*val}}&quot;</desc>
          x="360.37878"
          y="143.20096"
          style="font-size:55.65074921px">°C</tspan></text>
+  </g>
+  <g
+    inkscape:groupmode="layer"
+    id="layer2"
+    inkscape:label="2"
+    style="display:inline"
+    transform="translate(0.61878033,196.12002)">
     <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none"
-       x="176.13321"
-       y="-419.16727"
-       id="text3401-6-0"
-       sodipodi:linespacing="125%"
-       transform="scale(1.006272,0.99376709)"><tspan
-         sodipodi:role="line"
-         id="tspan3403-7-8"
-         x="176.13321"
-         y="-419.16727"
-         style="font-size:38.08749798px">A1_OUT:</tspan></text>
+        xml:space="preserve"
+        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none"
+        x="176.13321"
+        y="-419.16727"
+        id="text3401-6-0"
+        sodipodi:linespacing="125%"
+        transform="scale(1.006272,0.99376709)"><tspan
+     sodipodi:role="line"
+     id="tspan3403-7-8"
+     x="176.13321"
+     y="-419.16727"
+     style="font-size:38.08749798px">A1_OUT:</tspan></text>
     <rect
-       style="display:inline;opacity:1;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:3.79500031;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect4422-8"
-       width="316.21542"
-       height="137.94092"
-       x="168.685"
-       y="-460.1723" />
+      style="display:inline;opacity:1;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:3.79500031;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+      id="rect4422-8"
+      width="316.21542"
+      height="137.94092"
+      x="168.685"
+      y="-460.1723" />
     <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#ff0000;fill-opacity:1;stroke:none"
-       x="185.15521"
-       y="-367.38754"
-       id="text3401-6-0-8"
-       sodipodi:linespacing="125%"
-       transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277-4-1">channel=&quot;wb-gpio/A1_OUT&quot;
-value=&quot;{{  ((val+ 0) &gt;0) ? 'включен' : 'выключен'   }}&quot;</desc><tspan
-         sodipodi:role="line"
-         id="tspan3403-7-8-4"
-         x="185.15521"
-         y="-367.38754"
-         style="font-size:38.08749771px;fill:#ff0000">|выключен|</tspan></text>
+        xml:space="preserve"
+        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.52757454px;line-height:125%;font-family:Verdana;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#ff0000;fill-opacity:1;stroke:none"
+        x="185.15521"
+        y="-367.38754"
+        id="text3401-6-0-8"
+        sodipodi:linespacing="125%"
+        transform="scale(1.006272,0.99376709)">
+      <desc id="desc4277-4-1">channel="wb-gpio/A1_OUT" value="{{ ((val+ 0) &gt;0) ? 'включен' : 'выключен' }}" topic-switch-name="wb-gpio/A1_OUT" topic-switch-value-on="1" topic-switch-value-off="0" </desc>
+      <tspan
+        sodipodi:role="line"
+        id="tspan3403-7-8-4"
+        x="185.15521"
+        y="-367.38754"
+        style="font-size:38.08749771px;fill:#ff0000">|выключен|</tspan>
+    </text>
     <circle
-       style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:5.25607491;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path4523"
-       cx="444.28821"
-       cy="-428.03198"
-       r="17.112099">
-      <desc
-         id="desc4525">channel=&quot;wb-gpio/A1_OUT&quot;
-append-style=&quot;{{  ((val+ 0) &gt;0) ? ';fill:#00ff00' : ';fill:#ff0000'  }}&quot;</desc>
+        style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:5.25607491;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+        id="path4523"
+        cx="444.28821"
+        cy="-428.03198"
+        r="17.112099">
+      <desc id="desc4525">channel="wb-gpio/A1_OUT"append-style="{{  ((val+ 0) &gt;0) ? ';fill:#00ff00' : ';fill:#ff0000'  }}"</desc>
     </circle>
   </g>
 </svg>
