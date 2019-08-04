@@ -44,9 +44,7 @@ class SvgEditController {
                 }
                 this.editable = editable;
                 this.editableType = editable.tagName;
-
-                console.log(this.editableType);
-
+                
                 angular.element(this.editable).addClass('selected');
 
                 if (!this.editable.hasAttribute(this.attributeIdName)) {

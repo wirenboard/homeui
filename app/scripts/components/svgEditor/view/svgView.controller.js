@@ -82,7 +82,6 @@ class SvgViewController {
         element[0].classList.add('switch');
         element[0].addEventListener('click', (e) => {
             var cell = this.deviceData.cell(param.channel);
-            console.log(cell, cell.value);
             cell.value = (cell.value == param.value.on) ? param.value.off : param.value.on;
         });
     }
@@ -93,9 +92,7 @@ class SvgViewController {
 
         element.attr('svg-view-element', '');
         element.attr('ng-cloak', '');
-
-        console.log(element);
-
+        
         this.appendChannelData(element, param);
     }
 
