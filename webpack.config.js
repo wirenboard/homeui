@@ -13,7 +13,7 @@ const WebpackChunkHash = require("webpack-chunk-hash");
 const InlineManifestWebpackPlugin = require("inline-manifest-webpack-plugin");
 const InlineChunksManifestPlugin = require('./inline-chunks-manifest');
 
-const path = require('path')
+const path = require('path');
 
 process.traceDeprecation = true;
 
@@ -66,7 +66,11 @@ module.exports = function makeWebpackConfig() {
             'angular-plotly',
             'angular-rangeslider',
             './lib/angular-toggle-switch/angular-toggle-switch',
-            'ng-toast'
+            'ng-toast',
+
+            'angular-translate',
+            'angular-translate-loader-partial',
+            'angular-spinkit'
         ]
     };
     /**
@@ -172,7 +176,7 @@ module.exports = function makeWebpackConfig() {
         }, {
             // ASSET LOADER
             // Reference: https://github.com/webpack/file-loader
-            // Copy png, jpg, jpeg, gif, svg, woff, woff2, ttf, eot files to output
+            // Copy png, jpg, jpeg, gif, svgEditor, woff, woff2, ttf, eot files to output
             // Rename the file using the asset hash
             // Pass along the updated reference to your code
             // You can add here any file extension you want to get copied to your output
@@ -191,6 +195,16 @@ module.exports = function makeWebpackConfig() {
                 // Allow loading html through js
                 {loader: 'raw-loader'}
             ]
+        }, {
+            test: /\.scss$/,
+            use: ExtractTextPlugin.extract({
+                use: [{
+                    loader: 'css-loader'
+                }, {
+                    loader: 'sass-loader'
+                }],
+                fallback: 'style-loader'
+            })
         }]
     };
 

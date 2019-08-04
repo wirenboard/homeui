@@ -1,0 +1,134 @@
+svg-editor {
+    .form-group {
+        &.required {
+            .control-label {
+                &:after {
+                    content:"*";
+                    color:red;
+                    padding-left: 5px;
+                }
+            }
+        }
+      }
+}
+
+svg-upload {
+    input[type="file"] {
+        display: inline-block;
+    }
+    button {
+        display: inline-block;
+    }
+}
+
+svg-edit {
+
+    div {
+        display: block;
+        overflow: hidden;
+        
+
+        fieldset {
+            display: block;
+            float: left;
+
+            &.result {
+                width: 50%;
+
+                svg {
+                    .selected {
+                        opacity: 0.6;
+                    }
+
+                    path,
+                    text,
+                    tspan,
+                    circle {
+                        cursor: pointer;
+                    }
+
+                    desc {
+                        display: none;
+                    }
+                }
+            }
+
+            &.edit {
+                width: calc(50% - 50px);
+                margin-left: 50px; 
+
+                legend {
+                    span {
+                        font-weight: bold;
+                        text-transform: uppercase;
+                    }
+                }
+
+
+                svg {
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                .param {
+
+                    &-header {
+                        input[type="checkbox"] {
+                            display: inline-block;
+                            margin: 0;
+                            width: auto;
+                            height: auto;
+                            vertical-align: middle;
+                        }
+                        label {
+                            display: inline-block;
+                            margin: 0 0 0 5px;
+                            font-size: 16px;
+                            font-weight: 300;
+                            vertical-align: middle;
+                        }
+                    }
+
+                    &-control {
+                        margin-top: 10px;
+                    }
+
+                    &::after {
+                        display: block;
+                        content: "";
+                        margin-bottom: 18px;
+                        border-bottom: 1px solid #eee;
+                    }
+                }
+            }
+
+            &.fullwidth {
+                width: 100%;
+            }
+        }
+    }
+}
+
+svg-view {
+    display: block;
+
+    .switch {
+        cursor: pointer;
+
+        &:hover {
+            opacity: 0.6;
+        }
+    }
+}
+
+pulse-spinner {
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin-top: 20px;
+
+    .pulse-spinner {
+        margin: 0;
+        background-color: #222;
+    }
+}

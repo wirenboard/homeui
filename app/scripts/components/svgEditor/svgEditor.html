@@ -1,0 +1,21 @@
+<div ng-if="$ctrl.dashboard">
+    <svg-upload dashboard="$ctrl.dashboard"></svg-upload>
+    <svg-form dashboard="$ctrl.dashboard"></svg-form>
+    <svg-edit dashboard="$ctrl.dashboard"></svg-edit>
+
+    <fieldset>
+        <legend></legend>
+        <div class="row">
+            <div class="col-md-6">
+                <button type="button" class="btn btn-primary" ng-show="$ctrl.canSave()" ng-click="$ctrl.save()" ng-disabled="!$ctrl.isValidate()">{{ 'button.save' | translate }}</button>
+                <button type="button" class="btn btn-default" ng-show="$ctrl.dashboard.isNew" ng-click="$ctrl.cancel()" >{{ 'button.cancel' | translate }}</button>
+                <button type="button" class="btn btn-default" ng-show="!$ctrl.dashboard.isNew" ng-click="$ctrl.back()" >{{ 'button.back' | translate }}</button>
+            </div>
+            <div class="col-md-6 text-right">
+                <button type="button" class="btn btn-danger" ng-click="$ctrl.remove('confirm.remove' | translate)">{{ 'button.remove' | translate }}</button>
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+<pulse-spinner ng-show="!$ctrl.dashboard"></pulse-spinner>

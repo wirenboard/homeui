@@ -43,6 +43,7 @@ export function svgSchemeDirective($compile, DeviceData) {
 
             scope.devicedata = DeviceData;
             var elem = element[0];
+            
             var svg = element[0].querySelector('svg');
             var w = angular.element(svg).width(),
                 h = angular.element(svg).height(),
@@ -69,9 +70,6 @@ export function svgSchemeDirective($compile, DeviceData) {
                     var elm = element[0];
                     var attrs = parseAttrs(desc.innerHTML);
                     
-                    
-                    console.log('attrs', attrs);
-
                     if (elm.nodeName === 'text') {
                         if (attrs.hasOwnProperty('value')) {
                             var tspan = elm.querySelector('tspan');
@@ -98,6 +96,8 @@ export function svgSchemeDirective($compile, DeviceData) {
                         if ((descAttr !== 'channel') && (descAttr !== 'value')) {
                             if (descAttr.indexOf('append-') === 0) {
                                 var replAttr = descAttr.slice(7); //7 == length of "append-"
+                                console.log('replAttr', replAttr);
+                                console.log('1', element.attr(replAttr) + attrs[descAttr]);
                                 element.attr(replAttr, element.attr(replAttr) + attrs[descAttr]);
                             }
                             else {
