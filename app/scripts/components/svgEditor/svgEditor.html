@@ -12,7 +12,7 @@
                 <button type="button" class="btn btn-default" ng-show="!$ctrl.dashboard.isNew" ng-click="$ctrl.back()" >{{ 'button.back' | translate }}</button>
             </div>
             <div class="col-md-6 text-right">
-                <button type="button" class="btn btn-danger" ng-click="$ctrl.remove('confirm.remove' | translate)">{{ 'button.remove' | translate }}</button>
+                <button type="button" class="btn btn-danger" ng-show="!$ctrl.dashboard.isNew" ng-click="$ctrl.remove('confirm.remove' | translate)">{{ 'button.remove' | translate }}</button>
             </div>
         </div>
     </fieldset>

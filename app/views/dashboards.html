@@ -111,14 +111,14 @@
         </button>
       </form>
       <div class="buttons" ng-show="!rowform.$visible">
-        <span ng-show="false">
+        <span ng-show="!dashboard.svg.current.length">
           <a class="btn btn-primary" ng-show="!dashboard.content.svg" ui-sref="dashboard({ id: dashboard.id })">View</a>
           <button name="edit" type="button" class="btn btn-primary"
             ng-disable="!dashboard.svg_url.length"
             user-role="mto" current-role="$ctrl.roles.current.role"
             ng-click="rowform.$show()">Edit</button>
         </span>
-        <span ng-show="true">
+        <span ng-show="dashboard.svg.current.length">
           <a class="btn btn-primary" ui-sref="dashboard-svg({ id: dashboard.id })">View</a>
           <a class="btn btn-primary" user-role="mto" current-role="$ctrl.roles.current.role" ui-sref="dashboard-svg-edit({ id: dashboard.id })">Edit</a>  
         </span>
@@ -134,7 +134,7 @@
   <!--<button name="add"
           type="button"
           ng-click="$ctrl.addDashboardWithSvg()" class="btn btn-default pull-right">Add</button>-->
-  <a class="btn btn-primary" ui-sref="dashboard-svg-add">Add</a>
+  <a class="btn btn-primary" user-role="mto" current-role="$ctrl.roles.current.role" ui-sref="dashboard-svg-add">Add</a>
 </div>
 <!--
 <pre>{{$ctrl.data.dashboards | json}}</pre>-->

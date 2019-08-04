@@ -60,7 +60,8 @@
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="dashboards">List</a>
                           </li>
                           <li ng-repeat="d in dashboards()" dashboard-menu-item>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
+                              <a data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
+                              <a data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
                           </li>
                       </ul>
                   </li>
