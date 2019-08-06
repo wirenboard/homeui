@@ -3,6 +3,7 @@
 class DashboardSvgEditController {
     constructor($scope, uiConfig, $stateParams, rolesFactory) {
         'ngInject';
+        
         $scope.roles = rolesFactory;
 
         var vm = this;

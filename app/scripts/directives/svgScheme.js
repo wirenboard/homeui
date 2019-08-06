@@ -22,13 +22,13 @@ export function svgSchemeDirective($compile, DeviceData) {
 
                 return attr;
             }
+            
             function parseAttrs(attrStr) {
                 var el = {};
                 try {
                     el = angular.element('<div ' + attrStr + ' />');
                 } catch (err) {}
                 return getElementAttributes(el);
-
             }
 
             function getDirectChild(element, nodeName) {
@@ -95,9 +95,7 @@ export function svgSchemeDirective($compile, DeviceData) {
                     for (var descAttr in attrs) {
                         if ((descAttr !== 'channel') && (descAttr !== 'value')) {
                             if (descAttr.indexOf('append-') === 0) {
-                                var replAttr = descAttr.slice(7); //7 == length of "append-"
-                                console.log('replAttr', replAttr);
-                                console.log('1', element.attr(replAttr) + attrs[descAttr]);
+                                var replAttr = descAttr.slice(7); //7 == length of "append-"d
                                 element.attr(replAttr, element.attr(replAttr) + attrs[descAttr]);
                             }
                             else {

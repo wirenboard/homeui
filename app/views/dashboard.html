@@ -1,15 +1,14 @@
 <h1 class="page-header">
-  {{ dashboard.name }}
-  <!-- XXX: restore
-    <a href='#/dashboards/{{dashboard.uid}}/edit' class='pull-right'><i class="glyphicon glyphicon-edit black medium"></i></a>
-    -->
-  <button type="button"
-          user-role="mto" current-role="roles.current.role"
-          name="add-widget"
-          class="btn btn-success pull-right"
-          ng-click="addWidget()">
-    Add widget
-  </button>
+    <div class="row">
+      <div class="col-md-10">
+          {{ dashboard.name }}
+      </div>
+      <div class="col-md-2 text-right">
+        <button type="button" user-role="mto" current-role="roles.current.role" name="add-widget" class="btn btn-success pull-right"  ng-click="addWidget()"  ng-hide="dashboard.content.isSvg"> Add widget</button> 
+        <a class="btn btn-default" user-role="mto" current-role="roles.current.role" target="_self" download="{{ svgDownloadName }}" href="{{ svgDownloadUrl }}">Download</a>
+      </div>     
+  </div>    
+
 </h1>
 
 <div ng-switch="dashboard.content.isSvg">

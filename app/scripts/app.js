@@ -303,6 +303,9 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         });
         $translateProvider.preferredLanguage('ru');
     }])
+    .config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
+    }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
           uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
         'ngInject';

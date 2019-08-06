@@ -8,15 +8,15 @@ class DashboardSvgParam {
         this.read = data.read || {
             enable: false,
             channel: null,
-            value: '[[val]]'
+            value: 'val'
         };
 
         this.write = data.write || {
             enable: false,
             channel: null,
             value: {
-                on: null,
-                off: null
+                on: 1,
+                off: 0
             }
         };
 

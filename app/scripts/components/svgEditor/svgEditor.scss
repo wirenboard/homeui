@@ -37,7 +37,13 @@ svg-edit {
 
                 svg {
                     .selected {
-                        opacity: 0.6;
+                        animation: blinker 1s linear infinite;
+                    }
+
+                    @keyframes blinker {
+                        50% {
+                          opacity: 0;
+                        }
                     }
 
                     path,
@@ -98,6 +104,12 @@ svg-edit {
                         content: "";
                         margin-bottom: 18px;
                         border-bottom: 1px solid #eee;
+                    }
+
+                    .help-block {
+                        &.tip {
+                            color:#737373;
+                        }
                     }
                 }
             }

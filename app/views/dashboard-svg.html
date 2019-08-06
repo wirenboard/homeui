@@ -5,7 +5,8 @@
                 {{ dashboard.name }}
             </div>
             <div class="col-md-2 text-right">
-                <a class="btn btn-primary" ui-sref="dashboard-svg-edit({ id: dashboard.id })">Edit</a>
+                <a class="btn btn-primary" user-role="mto" current-role="roles.current.role" ui-sref="dashboard-svg-edit({ id: dashboard.id })">Edit</a>
+                <a class="btn btn-default" user-role="mto" current-role="roles.current.role" target="_self" download="{{ svgDownloadName }}" href="{{ svgDownloadUrl }}">Download</a>
             </div>     
         </div>    
     </h1>

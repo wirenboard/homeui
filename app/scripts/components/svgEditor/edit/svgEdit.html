@@ -37,6 +37,7 @@
                             placeholder="{{'edit.editable.group.read.placeholder.value' | translate}}" 
                             ng-model="$ctrl.editableParam.read.value" 
                             ng-required="$ctrl.editableParam.read.enable" />
+                        <div class="help-block tip">{{'edit.editable.group.read.tip.value' | translate}}</div>   
                         <div class="help-block with-errors" ng-show="svgEditForm.param_read_value.$dirty && svgEditForm.param_read_value.$error.required">{{'edit.editable.group.read.error.value' | translate}}</div>       
                     </div>
                 </div>
@@ -174,6 +175,7 @@
                             class="form-control"
                             ng-model="$ctrl.editableParam.style.value" 
                             ng-required="$ctrl.editableParam.style.enable"></input>
+                        <div class="help-block tip">{{'edit.editable.group.style.tip.value' | translate}}</div>     
                         <div class="help-block with-errors" ng-show="svgEditForm.param_style_value.$dirty && svgEditForm.param_style_value.$error.required">{{'edit.editable.group.style.error.value' | translate}}</div>       
                     </div>
                 </div>
