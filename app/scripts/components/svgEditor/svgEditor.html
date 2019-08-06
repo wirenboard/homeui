@@ -7,7 +7,8 @@
         <legend></legend>
         <div class="row">
             <div class="col-md-6">
-                <button type="button" class="btn btn-primary" ng-show="$ctrl.canSave()" ng-click="$ctrl.save()" ng-disabled="!$ctrl.isValidate()">{{ 'button.save' | translate }}</button>
+                    <a class="btn btn-primary" ng-show="!$ctrl.dashboard.isNew" ui-sref="dashboard-svg({ id: $ctrl.dashboard.id })">{{ 'button.view' | translate }}</a>
+                <button type="button" class="btn btn-primary" ng-show="$ctrl.canSave() && $ctrl.dashboard.isNew" ng-click="$ctrl.save()" ng-disabled="!$ctrl.isValidate()">{{ 'button.save' | translate }}</button>
                 <button type="button" class="btn btn-default" ng-show="$ctrl.dashboard.isNew" ng-click="$ctrl.cancel()" >{{ 'button.cancel' | translate }}</button>
                 <button type="button" class="btn btn-default" ng-show="!$ctrl.dashboard.isNew" ng-click="$ctrl.back()" >{{ 'button.back' | translate }}</button>
             </div>

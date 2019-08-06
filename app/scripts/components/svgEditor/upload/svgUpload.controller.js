@@ -11,10 +11,17 @@ class SvgUploadController {
         };
         
         this.state = this.states.STATE_NEW;
+
+        this.downloadUrl = null;
+        this.downloadName = null;
         
         $scope.$watch('$viewContentLoaded', () => { 
             if (this.dashboard && this.dashboard.content.svg.current.length) {
                 this.state = this.states.STATE_LOADED;
+
+                var blob = new Blob([this.dashboard.content.svg.current], { type : 'image/svg+xml' });
+                this.downloadUrl = (window.URL || window.webkitURL).createObjectURL(blob);
+                this.downloadName = this.dashboard.name + '.svg';
             }
          });
         

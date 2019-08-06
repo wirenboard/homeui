@@ -2,6 +2,7 @@
     "upload": {
         "button" : {
             "upload": "Upload",
+            "download": "Download",
             "proccess": "Proccess",
             "change": "Change"
         }
@@ -112,7 +113,8 @@
         "cancel": "Cancel",
         "delete": "Delete",
         "remove": "Remove",
-        "back": "Back"
+        "view": "View dashboard",
+        "back": "Dashboards list"
     },
 
     "confirm": {

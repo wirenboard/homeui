@@ -8,10 +8,6 @@ class DashboardSvgController {
         'ngInject';
 
         $scope.roles = rolesFactory;
-        $scope.svgDownloadUrl = null;
-        $scope.svgDownloadName = null;
-
-        $scope.urlData = null;
 
         function getDashboard() {
             return uiConfig.getDashboard($stateParams.id);
@@ -20,12 +16,6 @@ class DashboardSvgController {
         uiConfig.whenReady().then(() => {
             $scope.$watch(getDashboard, newDashboard => {
                 $scope.dashboard = newDashboard;
-
-                if ($scope.dashboard.content.isSvg && $scope.dashboard.content.svg.current.length) {
-                    var blob = new Blob([$scope.dashboard.content.svg.current], { type : 'image/svg+xml' });
-                    $scope.svgDownloadUrl = (window.URL || window.webkitURL).createObjectURL(blob);
-                    $scope.svgDownloadName = $scope.dashboard.id + '.svg';
-                }
             });
         });
     }

@@ -18,9 +18,10 @@ class DashboardCtrl {
                 $scope.dashboard = newDashboard;
  
                 if ($scope.dashboard.content.isSvg && $scope.dashboard.content.svg_url) {
-                    $scope.svgDownloadUrl = $scope.dashboard.content.svg_url;
-                    console.log($scope.svgDownloadUrl);
-                    $scope.svgDownloadName = $scope.dashboard.id + '.svg';
+                    let url = $scope.dashboard.content.svg_url;
+                    var fileName = url.substring(url.lastIndexOf('/') + 1);
+                    $scope.svgDownloadUrl = url;
+                    $scope.svgDownloadName = fileName;
                 }
             });
         });
@@ -30,13 +31,15 @@ class DashboardCtrl {
         };
 
         $scope.removeWidget = (widget) => {
-            if (confirm("Really delete widget from dashboard?"))
+            if (window.confirm('Really delete widget from dashboard?')) {
                 $scope.dashboard.removeWidgetFromDashboard(widget);
+            }
         };
 
         $scope.deleteWidget = (widget) => {
-            if (confirm("Really delete the widget?"))
+            if (window.confirm('Really delete the widget?')) {
                 uiConfig.deleteWidget(widget);
+            }
         };
 
     }
