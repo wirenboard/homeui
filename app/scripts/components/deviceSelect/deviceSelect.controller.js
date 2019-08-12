@@ -45,7 +45,7 @@ class DeviceSelectController {
     }
 
     ready() {
-        window.onclick = e => {
+        window.addEventListener('click', e => {
             e = e || window.event;
             let target = e.target || e.srcElement;
 
@@ -59,7 +59,7 @@ class DeviceSelectController {
                     this.$scope.$apply();
                 }
             }
-        };
+        });
     }
 
     getDevices() {

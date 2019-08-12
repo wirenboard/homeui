@@ -33,7 +33,7 @@ class SvgEditController {
     }
 
     bindClick() {
-        window.onclick = e => {
+        window.addEventListener('click', e => {
             e = e || window.event;
             var target = e.target || e.srcElement;
 
@@ -57,7 +57,7 @@ class SvgEditController {
 
                 this.$scope.$apply();
             }
-        };
+        });
     }
 
     isContent() {

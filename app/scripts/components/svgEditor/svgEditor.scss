@@ -9,7 +9,11 @@ svg-editor {
                 }
             }
         }
-      }
+    }
+    .clear {
+        overflow: hidden;
+        clear: both;
+    }
 }
 
 svg-upload {
@@ -22,12 +26,9 @@ svg-upload {
 }
 
 svg-edit {
-
     div {
         display: block;
-        overflow: hidden;
         
-
         fieldset {
             display: block;
             float: left;
