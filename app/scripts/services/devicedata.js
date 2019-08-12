@@ -637,6 +637,17 @@ function deviceDataService(mqttClient) {
         types[cells[cellId].type] = true;
       });
       return Object.keys(types).sort();
+    },
+
+    cellDevices () {
+      let tmp = []
+      Object.keys(devices).sort().forEach(devId => {
+        tmp.push({
+          id: devId,
+          name: devices[devId].name
+        })
+      });
+      return tmp
     }
   };
 }

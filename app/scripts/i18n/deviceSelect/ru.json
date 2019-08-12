@@ -1,0 +1,13 @@
+{
+    "device-select": {
+        "loading": {
+            "device": "Loading devices...",
+            "type": "Loading types..."
+        },
+        "placeholder": {
+            "device": "Choose a device",
+            "type": "Choose a type",
+            "topic": "Choose a topic"
+        }
+    }
+}

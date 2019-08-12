@@ -19,6 +19,7 @@ import scriptTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/script
 import historyTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/history.html';
 import configsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/configs.html';
 import configTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/config.html';
+import testTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/test.html';
 
 function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   'ngInject';
@@ -506,7 +507,13 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           return deferred.promise;
         }
       }
-    });
+    })
+    
+    .state('test', {
+      url: '/test',
+      templateUrl: testTemplateUrl,
+      controller: 'TestCtrl as $ctrl'
+  });
 };
 
 //-----------------------------------------------------------------------------

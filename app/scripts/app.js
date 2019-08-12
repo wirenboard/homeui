@@ -57,6 +57,7 @@ import WebUICtrl from './controllers/webUiController';
 import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
+import TestCtrl from './controllers/testController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -87,6 +88,7 @@ import routingModule from './app.routes';
 // Internal components
 import LoginFormModule from './components/loginForm/index';
 import SvgEditorModule from './components/svgEditor/index';
+import DeviceSelectModule from './components/deviceSelect/index';
 
 //-----------------------------------------------------------------------------
 /**
@@ -119,11 +121,12 @@ const module = angular
         dumbTemplateModule,
         LoginFormModule,
         SvgEditorModule,
+        DeviceSelectModule,
 
         ///'toggle-switch',
         'plotly',
         'ui-rangeSlider',
-        'ngToast',
+        'ngToast'
     ])
     .value('historyMaxPoints', 1000)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
@@ -165,7 +168,8 @@ module
     .controller('WebUICtrl', WebUICtrl)
     .controller('SystemCtrl', SystemCtrl)
     .controller('MQTTCtrl', MQTTCtrl)
-    .controller('AccessLevelCtrl', AccessLevelCtrl);
+    .controller('AccessLevelCtrl', AccessLevelCtrl)
+    .controller('TestCtrl', TestCtrl);
 
 module
     .controller('NavigationCtrl', NavigationCtrl)
