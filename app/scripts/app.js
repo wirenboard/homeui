@@ -88,7 +88,7 @@ import routingModule from './app.routes';
 // Internal components
 import LoginFormModule from './components/loginForm/index';
 import SvgEditorModule from './components/svgEditor/index';
-import DeviceSelectModule from './components/deviceSelect/index';
+import ChannelSelectModule from './components/channelSelect/index';
 
 //-----------------------------------------------------------------------------
 /**
@@ -121,7 +121,7 @@ const module = angular
         dumbTemplateModule,
         LoginFormModule,
         SvgEditorModule,
-        DeviceSelectModule,
+        ChannelSelectModule,
 
         ///'toggle-switch',
         'plotly',

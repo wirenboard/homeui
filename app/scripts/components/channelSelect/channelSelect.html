@@ -2,9 +2,9 @@
     <div class="simple" ng-show="!$ctrl.isModal">
         <div class="picker-group">
             <div class="picker">
-                <device-select-picker 
-                    placeholder="{{'device-select.placeholder.topic' | translate}}" 
-                    ng-model="$ctrl.value"></device-select-picker>
+                <channel-select-picker 
+                    placeholder="{{'channel-select.placeholder.topic' | translate}}" 
+                    ng-model="$ctrl.value"></channel-select-picker>
             </div>
             <button type="button" class="btn btn-primary" ng-click="$ctrl.filter()"><i class="fa fa-filter"></i></button>
         </div>
@@ -13,8 +13,8 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    <ui-select ng-model="$ctrl.device" theme="bootstrap" title="{{'device-select.placeholder.device' | translate}}" append-to-body="true" ng-disabled="$ctrl.devices.length == 1">
-                        <ui-select-match placeholder="{{($ctrl.devices.length ? 'device-select.placeholder.device' : 'device-select.loading.device') | translate}}">{{ $select.selected.name }}</ui-select-match>
+                    <ui-select ng-model="$ctrl.device" theme="bootstrap" title="{{'channel-select.placeholder.device' | translate}}" append-to-body="true" ng-disabled="$ctrl.devices.length == 1">
+                        <ui-select-match placeholder="{{($ctrl.devices.length ? 'channel-select.placeholder.device' : 'channel-select.loading.device') | translate}}">{{ $select.selected.name }}</ui-select-match>
                         <ui-select-choices repeat="item.id as item in $ctrl.devices | filter: { name: $select.search }" null-option="$ctrl.anyDevice" loose-null>
                             <div ng-bind-html="item.name | hilite: $select.search"></div>
                         </ui-select-choices>
@@ -23,8 +23,8 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <ui-select ng-model="$ctrl.type" theme="bootstrap" title="{{'device-select.placeholder.type' | translate}}" append-to-body="true" ng-disabled="$ctrl.types.length == 1">
-                        <ui-select-match placeholder="{{($ctrl.types.length ? 'device-select.placeholder.type' : 'device-select.loading.type') | translate}}">{{ $select.selected.name }}</ui-select-match>
+                    <ui-select ng-model="$ctrl.type" theme="bootstrap" title="{{'channel-select.placeholder.type' | translate}}" append-to-body="true" ng-disabled="$ctrl.types.length == 1">
+                        <ui-select-match placeholder="{{($ctrl.types.length ? 'channel-select.placeholder.type' : 'channel-select.loading.type') | translate}}">{{ $select.selected.name }}</ui-select-match>
                         <ui-select-choices repeat="item.id as item in $ctrl.types | filter: { name: $select.search }" null-option="$ctrl.anyType" loose-null>
                             <div ng-bind-html="item.name | hilite: $select.search"></div>
                         </ui-select-choices>
@@ -34,11 +34,11 @@
         </div>
         <div class="picker-group">
             <div class="picker">
-                <device-select-picker 
-                    placeholder="{{'device-select.placeholder.topic' | translate}}" 
+                <channel-select-picker 
+                    placeholder="{{'channel-select.placeholder.topic' | translate}}" 
                     ng-model="$ctrl.valueFilter" 
                     filter-by-device="$ctrl.deviceFilter()"
-                    filter-by-type="$ctrl.typeFilter()"></device-select-picker>
+                    filter-by-type="$ctrl.typeFilter()"></channel-select-picker>
             </div>
             <button type="button" class="btn btn-primary" ng-click="$ctrl.apply()"><i class="fa fa-check"></i></button>
         </div>

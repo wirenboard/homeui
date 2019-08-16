@@ -25,7 +25,7 @@
                             ng-required="$ctrl.editableParam.read.enable">
                             <option value="">{{'edit.editable.group.read.placeholder.channel' | translate}}</option>
                         </select>-->
-                        <device-select value="$ctrl.editableParam.read.channel"></device-select>
+                        <channel-select value="$ctrl.editableParam.read.channel"></channel-select>
                         <div class="help-block with-errors" ng-show="svgEditForm.param_read_channel.$dirty && svgEditForm.param_read_channel.$error.required">{{'edit.editable.group.read.error.channel' | translate}}</div>  
                     </div>
                     <div class="form-group required" ng-class="{'has-error': svgEditForm.param_read_value.$invalid, 'has-success': !svgEditForm.param_read_value.$invalid}">
@@ -52,7 +52,7 @@
                 <div class="param-control" ng-show="$ctrl.editableParam.write.enable">
                     <div class="form-group required" ng-class="{'has-error': svgEditForm.param_write_channel.$invalid, 'has-success': !svgEditForm.param_write_channel.$invalid}">
                         <label for="param_write_channel" class="control-label">{{'edit.editable.group.write.field.channel' | translate}}</label>
-                        <device-select value="$ctrl.editableParam.write.channel"></device-select>
+                        <channel-select value="$ctrl.editableParam.write.channel"></channel-select>
                         <div class="help-block with-errors" ng-show="svgEditForm.param_write_channel.$dirty && svgEditForm.param_write_channel.$error.required">{{'edit.editable.group.write.error.channel' | translate}}</div>        
                     </div>
                     <div class="row">
@@ -94,7 +94,7 @@
                 <div class="param-control" ng-show="$ctrl.editableParam.visible.enable">
                     <div class="form-group required" ng-class="{'has-error': svgEditForm.param_visible_channel.$invalid, 'has-success': !svgEditForm.param_visible_channel.$invalid}">
                         <label for="param_visible_channel" class="control-label">{{'edit.editable.group.visible.field.channel' | translate}}</label>
-                        <device-select value="$ctrl.editableParam.visible.channel"></device-select>
+                        <channel-select value="$ctrl.editableParam.visible.channel"></channel-select>
                         <div class="help-block with-errors" ng-show="svgEditForm.param_visible_channel.$dirty && svgEditForm.param_visible_channel.$error.required">{{'edit.editable.group.visible.error.channel' | translate}}</div>      
                     </div>
                     <div class="row">
@@ -140,7 +140,7 @@
                 <div class="param-control" ng-show="$ctrl.editableParam.style.enable">
                     <div class="form-group required" ng-class="{'has-error': svgEditForm.param_style_channel.$invalid, 'has-success': !svgEditForm.param_style_channel.$invalid}">
                         <label for="param_style_channel" class="control-label">{{'edit.editable.group.style.field.channel' | translate}}</label>
-                        <device-select value="$ctrl.editableParam.style.channel"></device-select>
+                        <channel-select value="$ctrl.editableParam.style.channel"></channel-select>
                         <div class="help-block with-errors" ng-show="svgEditForm.param_style_channel.$dirty && svgEditForm.param_style_channel.$error.required">{{'edit.editable.group.style.error.channel' | translate}}</div>      
                     </div>
                     <div class="form-group required" ng-class="{'has-error': svgEditForm.param_style_value.$invalid, 'has-success': !svgEditForm.param_style_value.$invalid}">

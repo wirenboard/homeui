@@ -1,6 +1,6 @@
 'use strict';
 
-class DeviceSelectController {
+class ChannelSelectController {
     
     constructor ($scope, $element, uiConfig, DeviceData) {
         'ngInject';
@@ -12,6 +12,8 @@ class DeviceSelectController {
         this.valueFilter = null;
 
         this.isModal = false;
+        
+        this.elementMap = null;
 
         this.anyDevice = {
             id: 0,
@@ -40,6 +42,9 @@ class DeviceSelectController {
         $scope.$watch('$ctrl.value', (newValue, oldValue) => { 
             if (newValue !== oldValue) {
                 this.valueFilter = newValue;
+                if (this.elementMap) {
+                    this.elementMap.val(newValue);
+                }
             }
         });
     }
@@ -60,6 +65,12 @@ class DeviceSelectController {
                 }
             }
         });
+
+
+        if (this.map) {
+            this.elementMap = angular.element('[name="' + this.map + '"]');
+            this.value = this.elementMap.val();
+        }
     }
 
     getDevices() {
@@ -96,4 +107,4 @@ class DeviceSelectController {
     }
 }
 
-export default DeviceSelectController;
+export default ChannelSelectController;

@@ -1,6 +1,6 @@
 'use strict';
 
-import template from './deviceSelectPicker.html';
+import template from './channelSelectPicker.html';
 
 export default function(DeviceData) {
     'ngInject';

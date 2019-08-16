@@ -1,5 +1,5 @@
 {
-    "device-select": {
+    "channel-select": {
         "loading": {
             "device": "Loading devices...",
             "type": "Loading types..."
