@@ -2,12 +2,16 @@
     "channel-select": {
         "loading": {
             "device": "Loading devices...",
-            "type": "Loading types..."
+            "type": "Loading types...",
+            "default": "Loading ..."
         },
         "placeholder": {
             "device": "Choose a device",
             "type": "Choose a type",
             "topic": "Choose a topic"
+        },
+        "message": {
+            "nofound": "Nothing found. Simplify your search"
         }
     }
 }

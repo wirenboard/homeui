@@ -12,6 +12,7 @@ class ChannelSelectController {
         this.valueFilter = null;
 
         this.isModal = false;
+        this.isLoaded = false;
         
         this.elementMap = null;
 
@@ -33,6 +34,7 @@ class ChannelSelectController {
         uiConfig.whenReady().then(() => {
             this.devices = this.getDevices();
             this.types = this.getTypes();
+            this.isLoaded = true;
         });
 
         $scope.$watch('$viewContentLoaded', () => { 

@@ -2,7 +2,7 @@
 
 import template from './channelSelectPicker.html';
 
-export default function(DeviceData) {
+export default function(uiConfig, DeviceData) {
     'ngInject';
 
     const DEFAULT_PLACEHOLDER = 'Select a control or search for it...';
@@ -20,14 +20,16 @@ export default function(DeviceData) {
         link: (scope, element, attrs, ngModelCtrl) => {
             var items = {};
 
+            var allDevices = [];
+            var allCells = [];
+
             function internCellItem(cellId) {
                 if (!cellId) {
                     return null;
                 }
 
                 var cell = DeviceData.proxy(cellId);
-                
-                var devName = DeviceData.devices.hasOwnProperty(cell.deviceId) ? DeviceData.devices[cell.deviceId].name : cell.deviceId;
+                var devName = allDevices.hasOwnProperty(cell.deviceId) ? allDevices[cell.deviceId].name : cell.deviceId;
                 var fullCellName = cell.id + ' [' + devName + ']';
 
                 if (items.hasOwnProperty(cellId)) {
@@ -46,7 +48,7 @@ export default function(DeviceData) {
             function filteredCells() {
                 let device = scope.filterByDevice();
                 let type = scope.filterByType();
-                let tmp = Object.values(DeviceData.cells);
+                let tmp = Object.values(allCells);
 
                 if (device) {
                     tmp = tmp.filter(cell => cell.deviceId === device);
@@ -59,8 +61,15 @@ export default function(DeviceData) {
             }
 
             scope.choice = {};
+            scope.cells = [];
+            scope.isLoaded = false;
 
-            scope.cells = () => (filteredCells()).map(internCellItem);
+            uiConfig.whenReady().then(() => {
+                allDevices = DeviceData.devices;
+                allCells = DeviceData.cells;
+                scope.cells = filteredCells().map(internCellItem);
+                scope.isLoaded = true;
+            });
 
             scope.actualPlaceholder = () => {
                 return scope.placeholder || DEFAULT_PLACEHOLDER;
@@ -75,12 +84,14 @@ export default function(DeviceData) {
             scope.$watch('filterByDevice()', (newValue, oldValue) => {
                 if (newValue !== oldValue) {
                     scope.choice = {};
+                    scope.cells = filteredCells().map(internCellItem);
                 }
             });
 
             scope.$watch('filterByType()', (newValue, oldValue) => {
                 if (newValue !== oldValue) {
                     scope.choice = {};
+                    scope.cells = filteredCells().map(internCellItem);
                 }
             });
 

@@ -29,3 +29,16 @@ channel-select {
         }        
     }
 }
+
+.ui-select-no-choice {
+    li {
+        padding: 6px 12px;
+        color: #999;
+    }
+}
+
+.open {
+    > .dropdown-menu {
+        animation: none;
+    }
+}
