@@ -1,5 +1,5 @@
 <span class="cell-picker disable-animate">
-    <ui-select tagging="addNew" tagging-label="false" ng-model="choice.selected" theme="bootstrap" title="Choose a control" append-to-body="true" ng-disabled="!isLoaded">
+    <ui-select tagging="addNew" tagging-label="false" ng-model="choice.selected" theme="bootstrap" title="Choose a control" append-to-body="false" ng-disabled="!isLoaded">
         <ui-select-match placeholder="{{ isLoaded ? actualPlaceholder() :  'channel-select.loading.default' | translate }}">{{ $select.selected.name }}</ui-select-match>
         <ui-select-choices repeat="cell in cells | filter: { name: $select.search }">
             <div ng-bind-html="cell.name | hilite: $select.search"></div>

@@ -128,6 +128,7 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
         }
 
         var directive = document.createElement('channel-select');
+        directive.className = 'render';
         directive.setAttribute('map', this.formname);
         if (this.schema.options.pattern) {
             directive.setAttribute('use-pattern', 'true');

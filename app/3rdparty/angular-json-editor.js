@@ -38,10 +38,10 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 schema.format = 'channelSelect';
             }
             if (schema.type === 'string' && schema.title === 'MQTT topic pattern') {
-                schema.format = 'channelSelect';
-                schema.options = {
-                    pattern: true,
-                };
+                //schema.format = 'channelSelect';
+                //schema.options = {
+                //    pattern: true,
+                //};
             }
 
 
@@ -119,6 +119,17 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 }
             }
 
+            function renderDirective() {
+                var components = Object.values(element[0].getElementsByClassName('render'));
+                if (components.length) {
+                    components.forEach((component) => {
+                        angular.element(component).removeClass('render');
+                        $compile(component)(scope);
+                    });
+                }
+                console.log(components);
+            }
+
             // Wait for the start value and schema to resolve before building the editor.
             $q.all([schemaPromise, startValPromise]).then(function (result) {
 
@@ -153,10 +164,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 editor.on('ready', function () {
                     scope.isValid = (editor.validate().length === 0);
 
-                    var components = element[0].querySelectorAll('channel-select');
-                    components.forEach((component) => {
-                        $compile(component)(scope);
-                    });
+                    renderDirective();
                 });
 
                 editor.on('change', function () {
@@ -165,6 +173,9 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                         scope.isValid = (errors.length === 0);
                         // Fire the onChange callback
                         var onChange = scope.onChange();
+
+                        renderDirective();
+
                         if (typeof onChange === 'function') {
                             onChange(editor.getValue(), errors, editor);
                         }
