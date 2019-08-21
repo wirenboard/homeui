@@ -38,12 +38,11 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 schema.format = 'channelSelect';
             }
             if (schema.type === 'string' && schema.title === 'MQTT topic pattern') {
-                //schema.format = 'channelSelect';
-                //schema.options = {
-                //    pattern: true,
-                //};
+                schema.format = 'channelSelect';
+                schema.options = {
+                    pattern: true,
+                };
             }
-
 
             if (schema.type === 'string' && schema.format === 'channelSelect') {
                 return 'channelSelect';
@@ -127,7 +126,6 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                         $compile(component)(scope);
                     });
                 }
-                console.log(components);
             }
 
             // Wait for the start value and schema to resolve before building the editor.

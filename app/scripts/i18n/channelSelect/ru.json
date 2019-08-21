@@ -17,6 +17,9 @@
         },
         "button": {
             "clear": "Clear"
+        },
+        "tip": {
+            "pattern": "Use <b>+</b> for any device or control"
         }
     }
 }

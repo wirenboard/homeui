@@ -3,6 +3,12 @@ channel-select {
     position: relative;
     width: 100%;
 
+    .simple {
+        .help-block {
+            margin-bottom: 0;
+        }
+    }
+
     .extend {
         display: flex;
         position: absolute;
@@ -18,6 +24,10 @@ channel-select {
 
         .form-group {
             min-width: 150px;
+        }
+
+        .help-block {
+            margin-bottom: 0;
         }
     }
 
@@ -79,5 +89,13 @@ channel-select {
 .open {
     > .dropdown-menu {
         animation: none;
+    }
+}
+
+json-editor {
+    td {
+        > .form-group {
+            margin-bottom: 0;
+        }
     }
 }

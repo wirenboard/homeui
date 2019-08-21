@@ -13,6 +13,7 @@
                 ng-click="$ctrl.filter()"
                 ng-disabled="!$ctrl.isLoaded"><i class="fa fa-filter"></i></button>
         </div>
+        <p class="help-block" ng-if="$ctrl.tip" ng-bind-html="$ctrl.tip"></p>
     </div>
     <div class="extend" ng-show="$ctrl.isModal">
         <div class="row">
@@ -48,5 +49,6 @@
             </div>
             <button type="button" class="btn btn-primary" ng-click="$ctrl.apply()"><i class="fa fa-check"></i></button>
         </div>
+        <p class="help-block" ng-if="$ctrl.tip" ng-bind-html="$ctrl.tip"></p>
     </div>
 </div>

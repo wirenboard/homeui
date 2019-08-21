@@ -118,7 +118,7 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
             this.input.setAttribute('data-schemaformat', this.format);
         }
 
-        this.control = this.theme.getFormControl(this.label, this.input, this.description);
+        this.control = this.theme.getFormControl(this.label, this.input, '');
 
         // TEMPORARY SUPPORT
         if (this.schema.title === 'MQTT topic pattern') {
@@ -132,6 +132,9 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
         directive.setAttribute('map', this.formname);
         if (this.schema.options.pattern) {
             directive.setAttribute('use-pattern', 'true');
+        }
+        if (this.schema.description) {
+            directive.setAttribute('tip', this.schema.description);
         }
 
         this.control.appendChild(directive);

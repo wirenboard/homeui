@@ -2,11 +2,12 @@
 
 class ChannelSelectController {
     
-    constructor ($scope, $element, uiConfig, DeviceData) {
+    constructor ($scope, $element, $translate, uiConfig, DeviceData) {
         'ngInject';
 
         this.$scope = $scope;
         this.$element = $element;
+        this.$translate = $translate;
         this.deviceData = DeviceData;
 
         this.valueFilter = null;
@@ -72,6 +73,14 @@ class ChannelSelectController {
         if (this.map) {
             this.elementMap = angular.element('[name="' + this.map + '"]');
             this.value = this.elementMap.val();
+        }
+
+        if (this.usePattern && !this.tip) {
+            this.$translate('channel-select.tip.pattern').then(translation => {
+                this.tip = translation;
+            }, translationId => {
+                this.tip = translationId;
+            });
         }
     }
 
