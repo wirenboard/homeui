@@ -12,7 +12,8 @@ export default function(uiConfig, DeviceData) {
         scope: {
             filterByType: '&',
             filterByDevice: '&',
-            placeholder: '@'
+            placeholder: '@',
+            usePattern: '@'
         },
         require: 'ngModel',
         replace: true,
@@ -29,8 +30,7 @@ export default function(uiConfig, DeviceData) {
                 }
 
                 var cell = DeviceData.proxy(cellId);
-                var devName = allDevices.hasOwnProperty(cell.deviceId) ? allDevices[cell.deviceId].name : cell.deviceId;
-                var fullCellName = cell.id + ' [' + devName + ']';
+                var fullCellName = cell.id;
 
                 if (items.hasOwnProperty(cellId)) {
                     items[cellId].name = fullCellName;
@@ -56,8 +56,52 @@ export default function(uiConfig, DeviceData) {
                 if (type) {
                     tmp = tmp.filter(cell => cell.type === type);
                 }
-                
+
                 return tmp.map(c => c.id);
+            }
+
+            function listCells() {
+                let cells = filteredCells().map(internCellItem);
+
+                if (scope.usePattern === 'true') {
+                    let devices = [];
+                    let controls = [];
+
+                    cells.forEach(cell => {
+                        let tmp = cell.id.split('/');
+                        if (tmp.length === 2) {
+                            devices.push(tmp[0]);
+                            controls.push(tmp[1]);
+                        }
+                    });
+
+                    devices = [...new Set(devices)];
+                    controls = [...new Set(controls)];
+
+                    cells.push({
+                        id: '+/+',
+                        name: '+/+'
+                    });
+
+                    devices.forEach(device => {
+                        cells.push({
+                            id: device + '/+',
+                            name: device + '/+'
+                        });
+                    });
+
+                    controls.forEach(control => {
+                        cells.push({
+                            id: '+/' + control,
+                            name: '+/' + control
+                        });
+                    });
+                }
+
+                let prop = 'id';
+                cells = cells.filter((e, i) => cells.findIndex(a => a[prop] === e[prop]) === i).sort((a, b) => a.name.localeCompare(b.name));
+
+                return cells;
             }
 
             scope.choice = {};
@@ -67,12 +111,16 @@ export default function(uiConfig, DeviceData) {
             uiConfig.whenReady().then(() => {
                 allDevices = DeviceData.devices;
                 allCells = DeviceData.cells;
-                scope.cells = filteredCells().map(internCellItem);
+                scope.cells = listCells();
                 scope.isLoaded = true;
             });
 
             scope.actualPlaceholder = () => {
                 return scope.placeholder || DEFAULT_PLACEHOLDER;
+            };
+
+            scope.addNew = function(newVal) {
+                return {id: newVal, name: newVal};
             };
 
             scope.$watch('choice.selected', (newValue, oldValue) => {
@@ -84,14 +132,14 @@ export default function(uiConfig, DeviceData) {
             scope.$watch('filterByDevice()', (newValue, oldValue) => {
                 if (newValue !== oldValue) {
                     scope.choice = {};
-                    scope.cells = filteredCells().map(internCellItem);
+                    scope.cells = listCells();
                 }
             });
 
             scope.$watch('filterByType()', (newValue, oldValue) => {
                 if (newValue !== oldValue) {
                     scope.choice = {};
-                    scope.cells = filteredCells().map(internCellItem);
+                    scope.cells = listCells();
                 }
             });
 

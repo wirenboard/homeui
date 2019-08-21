@@ -2,6 +2,7 @@
 
 import channelSelectComponent from './channelSelect.component';
 import channelSelectPickerDirective from './directives/channelSelectPicker.directive';
+import channelSelectPatternDirective from './directives/channelSelectPattern.directive';
 
 import './channelSelect.scss';
 
@@ -12,4 +13,5 @@ export default angular
     }])
     .component('channelSelect', channelSelectComponent)
     .directive('channelSelectPicker', channelSelectPickerDirective)
+    .directive('channelSelectPattern', channelSelectPatternDirective)
     .name;

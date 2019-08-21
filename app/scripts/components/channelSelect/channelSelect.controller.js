@@ -41,7 +41,7 @@ class ChannelSelectController {
             this.ready();
         });
 
-        $scope.$watch('$ctrl.value', (newValue, oldValue) => { 
+        $scope.$watch('$ctrl.value', (newValue, oldValue, d) => { 
             if (newValue !== oldValue) {
                 this.valueFilter = newValue;
                 if (this.elementMap) {

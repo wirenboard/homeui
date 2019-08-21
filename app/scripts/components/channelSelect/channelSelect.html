@@ -4,13 +4,15 @@
             <div class="picker">
                 <channel-select-picker 
                     placeholder="{{'channel-select.placeholder.topic' | translate}}" 
-                    ng-model="$ctrl.value"></channel-select-picker>
+                    ng-model="$ctrl.value"
+                    use-pattern="{{$ctrl.usePattern}}"></channel-select-picker>
             </div>
             <button 
                 type="button" 
                 class="btn btn-primary" 
                 ng-click="$ctrl.filter()"
-                ng-disabled="!$ctrl.isLoaded"><i class="fa fa-filter"></i></button>
+                ng-disabled="!$ctrl.isLoaded"
+                ng-if="!$ctrl.usePattern"><i class="fa fa-filter"></i></button>
         </div>
     </div>
     <div class="extend" ng-show="$ctrl.isModal">

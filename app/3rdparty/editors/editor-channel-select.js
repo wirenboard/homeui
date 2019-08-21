@@ -120,8 +120,18 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
 
         this.control = this.theme.getFormControl(this.label, this.input, this.description);
 
+        // TEMPORARY SUPPORT
+        if (this.schema.title === 'MQTT topic pattern') {
+            this.schema.options = {
+                pattern: true
+            };
+        }
+
         var directive = document.createElement('channel-select');
         directive.setAttribute('map', this.formname);
+        if (this.schema.options.pattern) {
+            directive.setAttribute('use-pattern', 'true');
+        }
 
         this.control.appendChild(directive);
 

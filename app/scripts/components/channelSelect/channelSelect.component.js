@@ -7,7 +7,8 @@ export default {
     restrict: 'E',
     bindings: {
         'value': '=?',
-        'map': '@'
+        'map': '@',
+        'usePattern': '='
     },
     template,
     controller

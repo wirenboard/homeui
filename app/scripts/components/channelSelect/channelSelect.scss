@@ -28,6 +28,31 @@ channel-select {
             margin-left: 10px;
         }        
     }
+
+    .channel-select-pattern {
+        display: block;
+
+
+        .form-group {
+            display: inline-block;
+            width: calc(50% - 130px);
+            margin: 0;
+
+            &.divider {
+                width: 30px;
+                text-align: center;
+                vertical-align: 50%;
+                font-size: 16px;
+            }
+        }
+
+        button {
+            display: inline-block;
+            margin-left: 10px;
+            width: 100px;
+            vertical-align: 60%;
+        }
+    }
 }
 
 .ui-select-no-choice {

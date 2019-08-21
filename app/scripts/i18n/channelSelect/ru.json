@@ -3,15 +3,20 @@
         "loading": {
             "device": "Loading devices...",
             "type": "Loading types...",
+            "control": "Loading controls....",
             "default": "Loading ..."
         },
         "placeholder": {
             "device": "Choose a device",
             "type": "Choose a type",
-            "topic": "Choose a topic"
+            "topic": "Choose a topic",
+            "control": "Choose a control"
         },
         "message": {
-            "nofound": "Nothing found. Simplify your search"
+            "nofound": "Nothing found. You can add this value."
+        },
+        "button": {
+            "clear": "Clear"
         }
     }
 }

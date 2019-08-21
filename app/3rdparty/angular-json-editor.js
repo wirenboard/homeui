@@ -32,10 +32,20 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     this.extendEditor = function (JSONEditor) {
 
         JSONEditor.defaults.resolvers.unshift(function (schema) {
-            if (schema.type === 'string' && schema.format === 'channelSelect') {
-                //return 'channelSelect';
-            }
+
+            // TEMPORARY SUPPORT
             if (schema.type === 'string' && schema.title === 'MQTT Device (from topic name)') {
+                schema.format = 'channelSelect';
+            }
+            if (schema.type === 'string' && schema.title === 'MQTT topic pattern') {
+                schema.format = 'channelSelect';
+                schema.options = {
+                    pattern: true,
+                };
+            }
+
+
+            if (schema.type === 'string' && schema.format === 'channelSelect') {
                 return 'channelSelect';
             }
         });

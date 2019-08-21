@@ -1,0 +1,30 @@
+<div class="channel-select-pattern">
+    <div class="form-group">
+        <ui-select 
+            ng-model="choice.device" theme="bootstrap" title="{{'channel-select.placeholder.device' | translate}}" append-to-body="true" ng-disabled="!devices.length">
+            <ui-select-match placeholder="{{(devices.length > 1 ? 'channel-select.placeholder.device' : 'channel-select.loading.device') | translate}}">{{$select.selected.name ? $select.selected.name : 'channel-select.loading.device' | translate}}</ui-select-match>
+            <ui-select-choices repeat="item.id as item in devices | filter: { name: $select.search }" null-option="anyDevice" loose-null>
+                <div ng-bind-html="item.name | hilite: $select.search"></div>
+            </ui-select-choices>
+        </ui-select>
+    </div>
+    <div class="form-group divider">/</div>
+    <div class="form-group">
+        <ui-select ng-model="choice.control" theme="bootstrap" title="{{'channel-select.placeholder.control' | translate}}" append-to-body="true" ng-disabled="!controls.length">
+            <ui-select-match placeholder="{{(controls.length > 1 ? 'channel-select.placeholder.control' : 'channel-select.loading.type') | translate}}">{{$select.selected.name ? $select.selected.name : 'channel-select.loading.control' | translate}}</ui-select-match>
+            <ui-select-choices repeat="item.id as item in controls | filter: { name: $select.search }" null-option="anyControl" loose-null>
+                <div ng-bind-html="item.name | hilite: $select.search"></div>
+            </ui-select-choices>
+        </ui-select>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="form-group">
+                <input type="text" ng-model="value" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary" ng-click="clear()">{{'channel-select.button.clear' | translate}}</button>
+        </div>
+    </div>
+</div>

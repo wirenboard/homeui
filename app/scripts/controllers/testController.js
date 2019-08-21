@@ -7,7 +7,7 @@ class TestController {
 
         this.$scope = $scope;
 
-        this.value = null;
+        this.value = '+/+';
     }
 }
 
