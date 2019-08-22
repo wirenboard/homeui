@@ -61,6 +61,11 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
             this.adjust_height(this.input);
         }
 
+        var prerenderSpan = this.container.getElementsByClassName('prerender-value');
+        if (prerenderSpan.length) {
+            prerenderSpan[0].innerHTML = this.value;
+        }
+
         this.onChange(changed);
     },
     build: function () {
@@ -76,9 +81,8 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
 
         this.format = this.schema.format;
 
-        this.input_type = this.schema.options.pattern ? 'hidden' : 'text';
+        this.input_type = 'hidden'; //this.schema.options.pattern ? 'hidden' : 'text';
         this.input = this.theme.getFormInputField(this.input_type);
-
 
         if (this.options.compact) {
             this.container.className += ' compact';
@@ -132,28 +136,78 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
         var directive = document.createElement('channel-select');
         directive.className = 'render';
         directive.setAttribute('map', this.formname);
+        this.control.appendChild(directive);
+
+        this.container.appendChild(this.control);
+
+        if (this.options.input_width) {
+            this.control.setAttribute('style', 'width: ' + this.options.input_width + ' !important');
+            //directive.setAttribute('style', 'width: ' + this.options.input_width + ' !important');
+        }
 
         if (this.schema.options.pattern) {
+            this.control.className += ' channel-select-pattern';
+
             directive.setAttribute('use-pattern', 'true');
         }
         else {
+
+            this.control.className += ' channel-select-prerender';
+    
             directive.className = 'prerender';
-            this.input.addEventListener('focus', e => {
-                if (directive.className === 'prerender') {
-                    this.input.setAttribute('type', 'hidden');
-                    directive.className = 'render';
-                    self.onChange(true);
-                }
+
+            var str = '' + 
+                '<div class="prerender-value-container ui-select-container ui-select-bootstrap dropdown">' + 
+                '   <div class="ui-select-match">' +
+                '       <span class="btn btn-default form-control ui-select-toggle">' + 
+                '           <span class="ui-select-match-text pull-left prerender-value"></span>' + 
+                '           <i class="caret pull-right"></i>' +
+                '       </span>' +
+                '   </div>' + 
+                '</div>';
+            this.control.insertAdjacentHTML('beforeend', str);
+
+            var prerenderValueContainer = this.control.getElementsByClassName('prerender-value-container')[0];
+            var prerenderValueButton = this.control.getElementsByClassName('ui-select-toggle')[0];
+
+            //var caret = document.createElement('i'); 
+            //caret.className = 'caret pull-right';
+            //this.control.appendChild(caret);
+
+            var prerenderButtonFilter = document.createElement('button');
+            prerenderButtonFilter.setAttribute('type', 'button');
+            prerenderButtonFilter.className = 'btn btn-primary btn-prerender';
+            
+            var icon = document.createElement('i');
+            icon.className = 'fa fa-filter';
+            prerenderButtonFilter.appendChild(icon);    
+            this.control.appendChild(prerenderButtonFilter);
+
+            let preprender = () => {
+                directive.className = 'render';
+
+                this.control.classList.remove('channel-select-prerender');
+
+                this.control.removeChild(prerenderValueContainer);
+                this.control.removeChild(prerenderButtonFilter);
+
+                self.onChange(true);
+            };
+
+            prerenderValueButton.addEventListener('click', e => {
+                directive.setAttribute('prerender', 'select');
+                preprender();
+            });
+
+            prerenderButtonFilter.addEventListener('click', e => {
+                directive.setAttribute('prerender', 'filter');
+                preprender();
             });
         }
 
         if (this.schema.description) {
             directive.setAttribute('tip', this.schema.description);
         }
-
-        this.control.appendChild(directive);
-
-        this.container.appendChild(this.control);
 
         this.refreshValue();
     },

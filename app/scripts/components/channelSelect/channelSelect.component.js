@@ -9,7 +9,8 @@ export default {
         'value': '=?',
         'map': '@',
         'usePattern': '=',
-        'tip': '@'
+        'tip': '@',
+        'prerender': '@'
     },
     template,
     controller

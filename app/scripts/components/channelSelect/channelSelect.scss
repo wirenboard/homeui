@@ -79,6 +79,30 @@ channel-select {
     }
 }
 
+.channel-select-prerender {
+    display: flex;
+    position: relative;
+
+    .prerender-value-container {
+        width: 100%;
+    }
+
+    .ui-select-match {
+        > .btn {
+            padding-right: 26px;
+        }
+    }
+
+    .btn-prerender {
+        display: inline-block;
+        margin-left: 10px; 
+    }
+
+    .prerender {
+        display: none;
+    }
+}
+
 .ui-select-no-choice {
     li {
         padding: 6px 12px;

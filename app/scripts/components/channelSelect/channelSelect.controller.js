@@ -82,6 +82,16 @@ class ChannelSelectController {
                 this.tip = translationId;
             });
         }
+
+        if (this.prerender) {
+            if (this.prerender === 'select') {
+                this.$element.find('.ui-select-container').scope().$select.open = true;
+                this.$element.find('.ui-select-container').find('.ui-select-choices-row').first().find('a').click();
+            }
+            if (this.prerender === 'filter') {
+                this.filter();
+            }
+        }
     }
 
     getDevices() {
