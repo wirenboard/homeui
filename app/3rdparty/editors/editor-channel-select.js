@@ -65,16 +65,18 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
     },
     build: function () {
         var self = this, i;
+
         if (!this.options.compact) {
             this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
         }
+
         if (this.schema.description) {
             this.description = this.theme.getFormInputDescription(this.schema.description);
         }
 
         this.format = this.schema.format;
 
-        this.input_type = 'hidden';
+        this.input_type = this.schema.options.pattern ? 'hidden' : 'text';
         this.input = this.theme.getFormInputField(this.input_type);
 
 
@@ -130,9 +132,21 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
         var directive = document.createElement('channel-select');
         directive.className = 'render';
         directive.setAttribute('map', this.formname);
+
         if (this.schema.options.pattern) {
             directive.setAttribute('use-pattern', 'true');
         }
+        else {
+            directive.className = 'prerender';
+            this.input.addEventListener('focus', e => {
+                if (directive.className === 'prerender') {
+                    this.input.setAttribute('type', 'hidden');
+                    directive.className = 'render';
+                    self.onChange(true);
+                }
+            });
+        }
+
         if (this.schema.description) {
             directive.setAttribute('tip', this.schema.description);
         }
