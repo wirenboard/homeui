@@ -31,6 +31,8 @@
     "angular-sanitize": "^1.6.3",
     "angular-sortable-view": "0.0.15",
     "angular-touch": "^1.6.3",
+    "angular-translate": "^2.18.1",
+    "angular-translate-loader-partial": "^2.18.1",
     "angular-ui-router": "^0.4.2",
     "angular-xeditable": "^0.7.0",
     "bootstrap": "^3.3.7",

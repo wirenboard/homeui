@@ -1,3 +1,5 @@
+'use strict';
+
 // Import slylesheets
 import '../styles/css/bootstrap.min.css'
 //import '../styles/css/demo.min.css'
@@ -106,6 +108,8 @@ const module = angular
         'monospaced.elastic',
         'angular-json-editor',
         'oc.lazyLoad',
+        'pascalprecht.translate',
+        
         routingModule,
         metaTypeFilterModule,
         dumbTemplateModule,
@@ -286,6 +290,14 @@ module
 // Register module with communication
 const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
+    .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
+        $translatePartialLoaderProvider.addPart('app');
+        $translateProvider.useSanitizeValueStrategy('sceParameters');
+        $translateProvider.useLoader('$translatePartialLoader', {
+            urlTemplate: '/scripts/i18n/{part}/{lang}.json'
+        });
+        $translateProvider.preferredLanguage('ru');
+    }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
           uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
         'ngInject';
