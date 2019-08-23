@@ -66,7 +66,10 @@ module.exports = function makeWebpackConfig() {
             'angular-plotly',
             'angular-rangeslider',
             './lib/angular-toggle-switch/angular-toggle-switch',
-            'ng-toast'
+            'ng-toast',
+
+            'angular-translate',
+            'angular-translate-loader-partial'
         ]
     };
     /**
