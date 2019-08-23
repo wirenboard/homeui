@@ -10,7 +10,8 @@ export default {
         'map': '@',
         'usePattern': '=',
         'tip': '@',
-        'prerender': '@'
+        'prerender': '@',
+        'inline': '@'
     },
     template,
     controller

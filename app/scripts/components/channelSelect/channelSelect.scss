@@ -12,7 +12,6 @@ channel-select {
     .extend {
         display: flex;
         position: absolute;
-        _overflow: hidden;
         box-shadow: 0 7px 8px -4px rgba(0,0,0,.2), 0 13px 19px 2px rgba(0,0,0,.14), 0 5px 24px 4px rgba(0,0,0,.12);
         flex-direction: column;
         border-radius: 4px;
@@ -21,6 +20,11 @@ channel-select {
         padding: 20px;
         z-index: 100;
         width: max-content;
+
+        &.inline {
+            position: relative;
+            width: 100%;
+        }
 
         .form-group {
             min-width: 150px;

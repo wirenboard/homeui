@@ -15,7 +15,7 @@
         </div>
         <p class="help-block" ng-if="$ctrl.tip" ng-bind-html="$ctrl.tip"></p>
     </div>
-    <div class="extend" ng-show="$ctrl.isModal">
+    <div class="extend" ng-show="$ctrl.isModal" ng-class="{inline: $ctrl.inline}">
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
