@@ -13,7 +13,7 @@ const WebpackChunkHash = require("webpack-chunk-hash");
 const InlineManifestWebpackPlugin = require("inline-manifest-webpack-plugin");
 const InlineChunksManifestPlugin = require('./inline-chunks-manifest');
 
-const path = require('path')
+const path = require('path');
 
 process.traceDeprecation = true;
 
@@ -194,6 +194,16 @@ module.exports = function makeWebpackConfig() {
                 // Allow loading html through js
                 {loader: 'raw-loader'}
             ]
+        }, {
+            test: /\.scss$/,
+            use: ExtractTextPlugin.extract({
+                use: [{
+                    loader: 'css-loader'
+                }, {
+                    loader: 'sass-loader'
+                }],
+                fallback: 'style-loader'
+            })
         }]
     };
 
