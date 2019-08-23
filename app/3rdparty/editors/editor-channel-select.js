@@ -142,7 +142,6 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
 
         if (this.options.input_width) {
             this.control.setAttribute('style', 'width: ' + this.options.input_width + ' !important');
-            //directive.setAttribute('style', 'width: ' + this.options.input_width + ' !important');
         }
 
         if (this.schema.options.pattern) {
@@ -169,10 +168,6 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
 
             var prerenderValueContainer = this.control.getElementsByClassName('prerender-value-container')[0];
             var prerenderValueButton = this.control.getElementsByClassName('ui-select-toggle')[0];
-
-            //var caret = document.createElement('i'); 
-            //caret.className = 'caret pull-right';
-            //this.control.appendChild(caret);
 
             var prerenderButtonFilter = document.createElement('button');
             prerenderButtonFilter.setAttribute('type', 'button');
