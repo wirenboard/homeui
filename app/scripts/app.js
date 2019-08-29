@@ -84,6 +84,7 @@ import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm/index';
+import WebUIModule from './components/webUI/index';
 
 //-----------------------------------------------------------------------------
 /**
@@ -114,11 +115,13 @@ const module = angular
         metaTypeFilterModule,
         dumbTemplateModule,
         LoginFormModule,
+        WebUIModule,
 
         ///'toggle-switch',
         'plotly',
         'ui-rangeSlider',
-        'ngToast'
+        'ngToast',
+        'ngBootbox',
     ])
     .value('historyMaxPoints', 1000)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
@@ -297,6 +300,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
         });
         $translateProvider.preferredLanguage('ru');
+        $translateProvider.usePostCompiling(true);
     }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
           uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {

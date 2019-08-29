@@ -13,9 +13,15 @@ const WebpackChunkHash = require("webpack-chunk-hash");
 const InlineManifestWebpackPlugin = require("inline-manifest-webpack-plugin");
 const InlineChunksManifestPlugin = require('./inline-chunks-manifest');
 
+const dotenv = require('dotenv').config({
+    path: __dirname + '/.env'
+});
+const DotenvPlugin = require('webpack-dotenv-plugin');
+
 const path = require('path');
 
 process.traceDeprecation = true;
+process.noDeprecation = true;
 
 /**
  * Env
@@ -69,7 +75,8 @@ module.exports = function makeWebpackConfig() {
             'ng-toast',
 
             'angular-translate',
-            'angular-translate-loader-partial'
+            'angular-translate-loader-partial',
+            'ngbootbox'
         ]
     };
     /**
@@ -241,6 +248,18 @@ module.exports = function makeWebpackConfig() {
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
     config.plugins = [
+
+    /**
+     * Dotenv
+     * Reference: https://github.com/nwinch/webpack-dotenv-plugin
+     * Add dotenv support
+     */
+        new DotenvPlugin({
+            path: '.env',
+            sample: '.env.example',
+            allowEmptyValues: true,
+        }),
+
     /**
      * Angular annotate
      * Reference: https://github.com/jeffling/ng-annotate-webpack-plugin
