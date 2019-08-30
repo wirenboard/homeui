@@ -113,7 +113,6 @@ const module = angular
         'oc.lazyLoad',
         'pascalprecht.translate',
         'angular-spinkit',
-        
         routingModule,
         metaTypeFilterModule,
         dumbTemplateModule,

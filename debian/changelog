@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0~beta12) stable; urgency=medium
+
+  * disable widget compact mode by default
+
+ -- Pavel Poglazov <poglazov@contactless.ru>  Wed, 19 Jun 2019 20:37:30 +0300
+
 wb-mqtt-homeui (2.0~beta11) stable; urgency=medium
 
   * add delete device button

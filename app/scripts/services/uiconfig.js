@@ -171,7 +171,7 @@ function uiConfigService($rootScope, $q, $timeout) {
             }
             return new DashboardSvgParam(data);
         }
-
+      
         /**
          * Save svg param
          * 

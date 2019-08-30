@@ -16,7 +16,7 @@ function explicitChangesDirective() {
       }
 
       element.off('input').off('keydown').off('change');
-      element.on('blur', sendValue);
+      element.on('blur, change', sendValue);
       element.on('keydown', e => {
         if (e.keyCode == 13)
           sendValue();
