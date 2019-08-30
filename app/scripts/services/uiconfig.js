@@ -203,7 +203,7 @@ function uiConfigService($rootScope, $q, $timeout) {
     addWidget: () => add("widgets", "widget", {
       name: "",
       description: "",
-      compact: true,
+      compact: false,
       cells: []
     }),
 
