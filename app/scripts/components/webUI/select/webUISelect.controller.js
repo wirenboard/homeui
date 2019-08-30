@@ -13,6 +13,8 @@ class AccountSelectController {
         this.accounts = webUIService.accounts;
         this.current = webUIService.current;
 
+        this.isMultiple = process.env.WEBUI_MULTIPLE === 'true';
+
         $scope.$watch('$ctrl.current', (newValue, oldValue) => {
             if (newValue !== oldValue) {
                 this.login(newValue);

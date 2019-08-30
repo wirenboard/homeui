@@ -16,7 +16,7 @@ class WebUIManageController {
         this.current = webUIService.current;
         this.editable = null;
 
-        this.isMultiple = process.env.WEBUI_MULTIPLE;
+        this.isMultiple = process.env.WEBUI_MULTIPLE === 'true';
         if (!this.isMultiple) {
             this.editable = this.current;
         }
