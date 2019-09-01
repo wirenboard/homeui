@@ -69,7 +69,6 @@
   <tr>
     <th class="idx-col">#</th>
     <th class="name-col">Name</th>
-    <th class="id-col">SVG url</th>
     <th class="id-col">Full width</th>
     <th class="id-col">ID</th>
     <th class="button-col"></th>
@@ -82,13 +81,6 @@
         <span editable-text="dashboard.name"
               e-form="rowform"
               onbeforesave="$ctrl.checkNonEmpty($data, 'Empty name is not allowed')">{{ dashboard.name }}</span>
-    </td>
-    <td>
-      <!--<input ng-show="tblTwo[$index].editable" type="text" ng-model="dashboard.svg_url">
-      <span ng-hide="tblTwo[$index].editable">{{ dashboard.svg_url }}</span>-->
-      <span editable-text="dashboard.svg_url"
-            e-form="rowform"
-            onbeforesave="$ctrl.checkNonEmpty($data, 'Empty svg url is not allowed')">{{ dashboard.svg_url }}</span>
     </td>
     <td>
       <input id="svgSchemeWidth" type="checkbox" ng-model="dashboard.svg_fullwidth"
@@ -111,11 +103,17 @@
         </button>
       </form>
       <div class="buttons" ng-show="!rowform.$visible">
-        <a class="btn btn-primary" ui-sref="dashboard({ id: dashboard.id })">View</a>
-        <button name="edit" type="button" class="btn btn-primary"
-                ng-disable="!dashboard.svg_url.length"
-                user-role="mto" current-role="$ctrl.roles.current.role"
-                ng-click="rowform.$show()">Edit</button>
+        <span ng-show="!dashboard.svg.current.length">
+          <a class="btn btn-primary" ng-show="!dashboard.content.svg" ui-sref="dashboard({ id: dashboard.id })">View</a>
+          <button name="edit" type="button" class="btn btn-primary"
+            ng-disable="!dashboard.svg_url.length"
+            user-role="mto" current-role="$ctrl.roles.current.role"
+            ng-click="rowform.$show()">Edit</button>
+        </span>
+        <span ng-show="dashboard.svg.current.length">
+          <a class="btn btn-primary" ui-sref="dashboard-svg({ id: dashboard.id })">View</a>
+          <a class="btn btn-primary" user-role="mto" current-role="$ctrl.roles.current.role" ui-sref="dashboard-svg-edit({ id: dashboard.id })">Edit</a>  
+        </span>
         <button name="delete" type="button" class="btn btn-danger"
                 user-role="mto" current-role="$ctrl.roles.current.role"
                 ng-click="$ctrl.deleteDashboard(dashboard)">Delete</button>
@@ -125,9 +123,10 @@
   </tbody>
 </table>
 <div class="btn-form" user-role="mto" current-role="$ctrl.roles.current.role">
-  <button name="add"
+  <!--<button name="add"
           type="button"
-          ng-click="$ctrl.addDashboardWithSvg()" class="btn btn-default pull-right">Add</button>
+          ng-click="$ctrl.addDashboardWithSvg()" class="btn btn-default pull-right">Add</button>-->
+  <a class="btn btn-primary" user-role="mto" current-role="$ctrl.roles.current.role" ui-sref="dashboard-svg-add">Add</a>
 </div>
 <!--
 <pre>{{$ctrl.data.dashboards | json}}</pre>-->

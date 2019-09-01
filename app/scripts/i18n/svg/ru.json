@@ -1,0 +1,123 @@
+{
+    "upload": {
+        "button" : {
+            "upload": "Upload",
+            "download": "Download",
+            "proccess": "Proccess",
+            "change": "Change"
+        }
+    },
+
+    "form": {
+        "title": "Data",
+        "field": {
+            "id": "ID",
+            "name": "Name",
+            "fullwidth": "Full width"
+        },
+        "error": {
+            "id": {
+                "empty": "Empty id is not allowed",
+                "unique": "Duplicate dashboard ids are not allowed"
+            },
+            "name": {
+                "empty": "Empty name is not allowed"
+            }
+        }
+    },
+
+    "edit": {
+        "title": "SVG",
+        "editable": {
+            "title": "Bind",
+            "group": {
+                "read": {
+                    "title": "Read",
+                    "field": {
+                        "channel": "Channel",
+                        "value": "Value"
+                    },
+                    "placeholder": {
+                        "channel": "Select channel",
+                        "value": "[[val]]"
+                    },
+                    "tip": {
+                        "value": "Example: ((val + 0) > 0) ? 'On' : 'Off'"
+                    },
+                    "error": {
+                        "channel": "Empty channel is not allowed",
+                        "value": "Empty value is not allowed"
+                    }
+                },
+                "write": {
+                    "title": "Write",
+                    "field": {
+                        "channel": "Channel",
+                        "value": {
+                            "on": "Value on",
+                            "off": "Value off"
+                        }
+                    },
+                    "placeholder": {
+                        "channel": "Select channel"
+                    },
+                    "error": {
+                        "channel": "Empty channel is not allowed",
+                        "value": "Empty value is not allowed"
+                    }
+                },
+                "visible": {
+                    "title": "Visible",
+                    "field": {
+                        "channel": "Channel",
+                        "condition": "Condition",
+                        "value": "Value"
+                    },
+                    "placeholder": {
+                        "channel": "Select channel"
+                    },
+                    "error": {
+                        "channel": "Empty channel is not allowed",
+                        "condition": "Empty condition is not allowed",
+                        "value": "Empty value is not allowed"
+                    }
+                },
+                "style": {
+                    "title": "Style",
+                    "field": {
+                        "channel": "Channel",
+                        "condition": "Condition",
+                        "value": "Value",
+                        "append": "Append"
+                    },
+                    "placeholder": {
+                        "channel": "Select channel"
+                    },
+                    "tip": {
+                        "value": "Example: ((val + 0) > 0) ? ';fill: green' : ';fill: red'"
+                    },
+                    "error": {
+                        "channel": "Empty channel is not allowed",
+                        "value": "Empty value is not allowed"
+                    }
+                }
+            },
+            "confirm": {
+                "remove": "Do you really want to delete bind?"
+            }
+        }
+    },
+
+    "button": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "remove": "Remove",
+        "view": "View dashboard",
+        "back": "Dashboards list"
+    },
+
+    "confirm": {
+        "remove": "Do you really want to delete dashboard?"
+    }
+}
