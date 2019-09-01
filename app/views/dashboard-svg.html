@@ -1,0 +1,15 @@
+<div ng-if="dashboard">
+    <h1 class="page-header">
+        <div class="row">
+            <div class="col-md-12">
+                {{ dashboard.name }}
+            </div>    
+        </div>    
+    </h1>
+    <svg-view dashboard="dashboard"></svg-view>
+
+    <div class="mt-1">
+        <a class="btn btn-primary" user-role="mto" current-role="roles.current.role" ui-sref="dashboard-svg-edit({ id: dashboard.id })">Edit dashboard</a>
+    </div>
+</div>
+<pulse-spinner ng-show="!dashboard"></pulse-spinner>

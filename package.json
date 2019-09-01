@@ -30,6 +30,7 @@
     "angular-resource": "^1.6.3",
     "angular-sanitize": "^1.6.3",
     "angular-sortable-view": "0.0.15",
+    "angular-spinkit": "^0.3.4",
     "angular-touch": "^1.6.3",
     "angular-translate": "^2.18.1",
     "angular-translate-loader-partial": "^2.18.1",
@@ -50,6 +51,8 @@
   },
   "devDependencies": {
     "angular-mocks": "^1.5.0",
+    "angular-translate": "^2.18.1",
+    "angular-translate-loader-partial": "^2.18.1",
     "autoprefixer": "^6.7.7",
     "babel-core": "^6.24.0",
     "babel-eslint": "^7.1.1",

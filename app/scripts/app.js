@@ -1,19 +1,21 @@
 'use strict';
 
 // Import slylesheets
-import '../styles/css/bootstrap.min.css'
+import '../styles/css/bootstrap.min.css';
 //import '../styles/css/demo.min.css'
-import '../styles/css/fixes.css'
-import '../styles/css/font-awesome.min.css'
-import '../styles/css/invoice.min.css'
-import '../styles/css/lockscreen.min.css'
-import '../styles/css/smartadmin-production-plugins.min.css'
-import '../styles/css/smartadmin-production.min.css'
-import '../styles/css/smartadmin-rtl.min.css'
-import '../styles/css/smartadmin-skins.min.css'
+import '../styles/css/fixes.css';
+import '../styles/css/font-awesome.min.css';
+import '../styles/css/invoice.min.css';
+import '../styles/css/lockscreen.min.css';
+import '../styles/css/smartadmin-production-plugins.min.css';
+import '../styles/css/smartadmin-production.min.css';
+import '../styles/css/smartadmin-rtl.min.css';
+import '../styles/css/smartadmin-skins.min.css';
 
-import '../styles/css/new.css'
+import '../styles/css/new.css';
 import '../styles/main.css';
+import '../styles/css/spacing.css';
+
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'angular-xeditable/dist/css/xeditable.css';
@@ -21,6 +23,8 @@ import '../lib/css-spinners/css/spinner/spinner.css';
 import '../styles/css/angular.rangeSlider.css';
 import 'ng-toast/dist/ngToast.css';
 ///import '../lib/angular-toggle-switch/angular-toggle-switch.css';
+
+import 'angular-spinkit/build/angular-spinkit.min.css';
 
 // homeui modules: sevices
 import errorsService from './services/errors';
@@ -39,7 +43,6 @@ import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
 import rolesFactory from './services/roles.factory';
-
 
 import handleDataService from './services/handle-data';
 
@@ -76,7 +79,6 @@ import userRolesDirective from './directives/user-roles.directive';
 import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
 import dashboardPickerDirective from './directives/dashboardpicker';
 
-
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
 // Angular routes
@@ -84,6 +86,7 @@ import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm/index';
+import SvgEditorModule from './components/svgEditor/index';
 
 //-----------------------------------------------------------------------------
 /**
@@ -109,16 +112,17 @@ const module = angular
         'angular-json-editor',
         'oc.lazyLoad',
         'pascalprecht.translate',
-        
+        'angular-spinkit',
         routingModule,
         metaTypeFilterModule,
         dumbTemplateModule,
         LoginFormModule,
+        SvgEditorModule,
 
         ///'toggle-switch',
         'plotly',
         'ui-rangeSlider',
-        'ngToast'
+        'ngToast',
     ])
     .value('historyMaxPoints', 1000)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
@@ -288,7 +292,7 @@ module
 
 //-----------------------------------------------------------------------------
 // Register module with communication
-const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
+const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate'])
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
         $translatePartialLoaderProvider.addPart('app');
@@ -297,6 +301,9 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
         });
         $translateProvider.preferredLanguage('ru');
+    }])
+    .config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
           uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
