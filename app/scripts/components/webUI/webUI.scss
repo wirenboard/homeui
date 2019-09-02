@@ -1,5 +1,15 @@
 web-ui-manage {
-    
+    .form-group {
+        .required {
+            .control-label {
+                &:after {
+                    content: "*";
+                    color: red;
+                    padding-left: 3px;
+                }
+            }
+        }
+    }
 }
 
 web-ui-select {

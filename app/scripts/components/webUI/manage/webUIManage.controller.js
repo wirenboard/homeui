@@ -2,11 +2,12 @@
 
 class WebUIManageController {
     
-    constructor ($scope, $window, $translate, $ngBootbox, rolesFactory, webUIService) {
+    constructor ($scope, $window, $state, $translate, $ngBootbox, rolesFactory, webUIService) {
         'ngInject';
 
         this.$scope = $scope;
         this.$window = $window;
+        this.$state = $state;
         this.$translate = $translate;
         this.$ngBootbox = $ngBootbox;
         this.rolesFactory = rolesFactory;
@@ -19,6 +20,9 @@ class WebUIManageController {
         this.isMultiple = process.env.WEBUI_MULTIPLE === 'true';
         if (!this.isMultiple) {
             this.editable = this.current;
+        }
+        else if ($state.current.name === 'webUIAdd') {
+            this.create();
         }
 
         $scope.$watch('$ctrl.service.getCurrent()', (newValue, oldValue) => {
@@ -52,12 +56,16 @@ class WebUIManageController {
         }
 
         if (this.isMultiple) {
-            this.editable = false;
+            this.cancel();
         }
     }
 
     cancel() {
         this.editable = null;
+
+        if (this.$state.current.name === 'webUIAdd') {
+            this.$state.go('webUI');
+        }
     }
 
     login(account) {

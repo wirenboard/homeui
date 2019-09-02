@@ -41,9 +41,9 @@
     <div class="edit" ng-if="$ctrl.editable">
         <form name="account" novalidate autocomplete="off">
             <div class="form-group">
-                <div class="form-group required" ng-class="{'has-error': account.name.$invalid, 'has-success': !account.name.$invalid && account.name.$touched}">
+                <div class="form-group" ng-class="{'has-error': account.name.$invalid, 'has-success': !account.name.$invalid && account.name.$touched}">
                     <label for="host" class="control-label">{{'webUI.manager.field.name' | translate}}</label>
-                    <input type="text" class="form-control" id="name" name="name" ng-model="$ctrl.editable.name" ng-required="account.name.$touched" />
+                    <input type="text" class="form-control" id="name" name="name" ng-model="$ctrl.editable.name" />
                     <div class="help-block with-errors" ng-show="account.name.$error.required">{{'webUI.manager.error.name.empty' | translate}}</div>
                 </div>
                 <div class="form-group required" ng-class="{'has-error': account.host.$invalid, 'has-success': !account.host.$invalid && account.host.$touched}">

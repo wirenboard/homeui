@@ -23,6 +23,7 @@ function webUIService($rootScope, $location, $window, rolesFactory) {
 
     function create() {
         let account = new Account();
+        account.port = defaultPort;
         account.role = parseInt(rolesFactory.current.role || defaultRole);
         return account;
     }
@@ -32,6 +33,10 @@ function webUIService($rootScope, $location, $window, rolesFactory) {
     }
 
     function save(account) {
+        if (!account.name) {
+            account.name = account.host;
+        }
+
         if (!accounts.find(a => a === account)) {
             accounts.push(account);
         }
@@ -52,6 +57,7 @@ function webUIService($rootScope, $location, $window, rolesFactory) {
         let isCurrent = account === current;
 
         accounts.splice(accounts.indexOf(account), 1);
+        sync();
 
         if (!isCurrent) {
             return;
@@ -60,8 +66,6 @@ function webUIService($rootScope, $location, $window, rolesFactory) {
         if (accounts.length) {
             setCurrent(accounts[accounts.length - 1]);
         }
-
-        sync();
 
         if (current) {
             login(current);

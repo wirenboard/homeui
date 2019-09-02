@@ -1,5 +1,13 @@
 {
     "webUI": {
+        "select": {
+            "tip": {
+                "account": "Choose a account"
+            },
+            "button": {
+                "add": "+ Add account"
+            }
+        },
         "manager": {
             "field": {
                 "name": "Name",
