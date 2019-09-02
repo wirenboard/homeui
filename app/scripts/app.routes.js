@@ -12,6 +12,8 @@ import devicesTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/devic
 import widgetsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/widgets.html';
 import dashboardsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboards.html';
 import dashboardTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboard.html';
+import dashboardSvgTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboard-svg.html';
+import dashboardSvgEditTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboard-svg-edit.html';
 import settingsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/settings.html';
 import loginTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/login.html';
 import scriptsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/scripts.html';
@@ -195,6 +197,84 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
         }
       }
     })
+  //...........................................................................
+  .state('dashboard-svg', {
+    url: '/dashboards/svg/view/{id}',
+    controller: 'DashboardSvgCtrl as $ctrl',
+    templateUrl: dashboardSvgTemplateUrl,
+    resolve: {
+      ctrl: ($q, $ocLazyLoad) => {
+        'ngInject';
+        let deferred = $q.defer();
+        require.ensure(
+          [], 
+          (require) => {
+            let module = require('./controllers/dashboardSvgController.js');
+            $ocLazyLoad.load({
+              name: module.default.name
+            })
+            .then(() => {
+              deferred.resolve(module);
+            });
+          },
+          'dashboard-svg'
+        );
+        return deferred.promise;
+      }
+    }
+  })    
+  //...........................................................................
+    .state('dashboard-svg-add', {
+      url: '/dashboards/svg/add',
+      controller: 'DashboardSvgEditCtrl as $ctrl',
+      templateUrl: dashboardSvgEditTemplateUrl,
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure(
+            [], 
+            (require) => {
+              let module = require('./controllers/dashboardSvgEditController.js');
+              $ocLazyLoad.load({
+                name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
+              });
+            },
+            'dashboard-svg-add'
+          );
+          return deferred.promise;
+        }
+      }
+    })  
+  //...........................................................................
+    .state('dashboard-svg-edit', {
+      url: '/dashboards/svg/edit/{id}',
+      controller: 'DashboardSvgEditCtrl as $ctrl',
+      templateUrl: dashboardSvgEditTemplateUrl,
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure(
+            [], 
+            (require) => {
+              let module = require('./controllers/dashboardSvgEditController.js');
+              $ocLazyLoad.load({
+                name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
+              });
+            },
+            'dashboard-svg-edit'
+          );
+          return deferred.promise;
+        }
+      }
+    })  
   //...........................................................................
     .state('settings', {
       url: '/settings',

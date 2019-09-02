@@ -18,14 +18,6 @@
    sodipodi:docname="Thermometer.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs id="defs3072">
-    <style>
-      .switch {
-        cursor: pointer;
-      }
-      .switch:hover {
-        opacity: 0.6;
-      }
-    </style>
   </defs>
   <sodipodi:namedview
      inkscape:window-height="1056"
@@ -587,8 +579,7 @@ Created by potrace 1.8, written by Peter Selinger 2001-2007
        y="74.418556"
        id="text3401-6"
        sodipodi:linespacing="125%"
-       transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277">channel="wb-ms-thls_2/Temperature"</desc><tspan
+       transform="scale(1.006272,0.99376709)"><tspan
          sodipodi:role="line"
          id="tspan3403-7"
          x="188.808"
@@ -612,9 +603,7 @@ Created by potrace 1.8, written by Peter Selinger 2001-2007
        y="207.35339"
        id="text3401-6-6-1"
        sodipodi:linespacing="125%"
-       transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277-2-3">channel="wb-ms-thls_2/Temperature"
-value="{{val * 1.8  + 32|number:2}}"</desc><tspan
+       transform="scale(1.006272,0.99376709)"><tspan
          sodipodi:role="line"
          id="tspan3403-7-0-3"
          x="186.66908"
@@ -627,9 +616,7 @@ value="{{val * 1.8  + 32|number:2}}"</desc><tspan
        y="143.88379"
        id="text3401-6-6-9"
        sodipodi:linespacing="125%"
-       transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277-2-4">channel="wb-ms-thls_2/Temperature"
-value="{{val|number:1}}"</desc><tspan
+       transform="scale(1.006272,0.99376709)"><tspan
          sodipodi:role="line"
          id="tspan3403-7-0-0"
          x="189.58334"
@@ -642,9 +629,7 @@ value="{{val|number:1}}"</desc><tspan
        y="362.24765"
        id="text3401-6-6-9-3"
        sodipodi:linespacing="125%"
-       transform="scale(1.006272,0.99376709)"><desc
-         id="desc4277-2-4-7">channel="wb-ms-thls_2/Temperature"
-ng-show="val &gt; 26"</desc><tspan
+       transform="scale(1.006272,0.99376709)"><tspan
          sodipodi:role="line"
          id="tspan3403-7-0-0-6"
          x="264.27759"
@@ -657,9 +642,6 @@ ng-show="val &gt; 26"</desc><tspan
        height="2.0166802"
        x="90.827309"
        y="63.514423">
-      <desc
-         id="desc4396">channel="wb-ms-thls_2/Temperature"
-y="{{ 64.29 + (-336.02-64.29)/90*val}}"</desc>
     </rect>
     <text
        xml:space="preserve"
@@ -744,7 +726,6 @@ y="{{ 64.29 + (-336.02-64.29)/90*val}}"</desc>
         id="text3401-6-0-8"
         sodipodi:linespacing="125%"
         transform="scale(1.006272,0.99376709)">
-      <desc id="desc4277-4-1">channel="wb-gpio/A1_OUT" value="{{ ((val+ 0) &gt;0) ? 'включен' : 'выключен' }}" topic-switch-name="wb-gpio/A1_OUT" topic-switch-value-on="1" topic-switch-value-off="0" </desc>
       <tspan
         sodipodi:role="line"
         id="tspan3403-7-8-4"
@@ -758,7 +739,6 @@ y="{{ 64.29 + (-336.02-64.29)/90*val}}"</desc>
         cx="444.28821"
         cy="-428.03198"
         r="17.112099">
-      <desc id="desc4525">channel="wb-gpio/A1_OUT"append-style="{{  ((val+ 0) &gt;0) ? ';fill:#00ff00' : ';fill:#ff0000'  }}"</desc>
     </circle>
   </g>
 </svg>
