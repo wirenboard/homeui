@@ -81,7 +81,7 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
 
         this.format = this.schema.format;
 
-        this.input_type = 'hidden'; //this.schema.options.pattern ? 'hidden' : 'text';
+        this.input_type = 'hidden';
         this.input = this.theme.getFormInputField(this.input_type);
 
         if (this.options.compact) {
@@ -125,13 +125,6 @@ JSONEditor.defaults.editors.channelSelect = JSONEditor.AbstractEditor.extend({
         }
 
         this.control = this.theme.getFormControl(this.label, this.input, '');
-
-        // TEMPORARY SUPPORT
-        if (this.schema.title === 'MQTT topic pattern') {
-            this.schema.options = {
-                pattern: true
-            };
-        }
 
         var directive = document.createElement('channel-select');
         directive.className = 'render';
