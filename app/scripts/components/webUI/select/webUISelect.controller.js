@@ -48,6 +48,10 @@ class AccountSelectController {
     login(account) {
         this.service.login(account);
     }
+
+    tagHelper(tag) {
+        return null;
+    }
 }
 
 export default AccountSelectController;

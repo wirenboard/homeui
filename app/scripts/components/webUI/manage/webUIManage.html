@@ -2,33 +2,36 @@
     <div class="list" ng-show="!$ctrl.editable">
         <div class="table-responsive">
             <table class="table table-hover">
-                <thead>
+                <thead class="hidden-xs">
                     <tr>
                         <th>{{'webUI.manager.table.header.name' | translate}}</th>
-                        <th>{{'webUI.manager.table.header.host' | translate}}</th>
-                        <th>{{'webUI.manager.table.header.port' | translate}}</th>
-                        <th>{{'webUI.manager.table.header.user' | translate}}</th>
-                        <th>{{'webUI.manager.table.header.prefix' | translate}}</th>
+                        <th class="hidden-xs">{{'webUI.manager.table.header.host' | translate}}</th>
+                        <th class="hidden-xs">{{'webUI.manager.table.header.port' | translate}}</th>
+                        <th class="hidden-xs">{{'webUI.manager.table.header.user' | translate}}</th>
+                        <th class="hidden-xs">{{'webUI.manager.table.header.prefix' | translate}}</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="account in $ctrl.accounts track by $index">
-                        <td>{{ account.name }}</td>
-                        <td>{{ account.host }}</td>
-                        <td>{{ account.port }}</td>
-                        <td>{{ account.user }}</td>
-                        <td width="100"><i class="fa fa-check" ng-show="account.prefix"></i></td>
-                        <td width="200" class="text-center">
-                            <button class="btn btn-sm btn-primary" ng-click="$ctrl.update(account)">{{'webUI.manager.button.edit' | translate}}</button>
-                            <button class="btn btn-sm btn-success" 
-                                ng-click="$ctrl.login(account)" 
-                                ng-disabled="account === $ctrl.current">{{'webUI.manager.button.login' | translate}}</button>
-                            <button 
-                                class="btn btn-sm btn-danger" 
-                                ng-click="$ctrl.remove(account)" 
-                                >{{'webUI.manager.button.remove' | translate}}</button>
+                        <td class="visible-xs tap" ng-click="$ctrl.update(account)">{{ account.name }}</td>
+                        <td class="hidden-xs">{{ account.name }}</td>
+                        <td class="hidden-xs">{{ account.host }}</td>
+                        <td class="hidden-xs">{{ account.port }}</td>
+                        <td class="hidden-xs">{{ account.user }}</td>
+                        <td class="hidden-xs" width="100"><i class="fa fa-check" ng-show="account.prefix"></i></td>
+                        <td class="hidden-xs" width="200" class="text-right">
+                            <button class="btn btn-sm btn-primary" ng-click="$ctrl.update(account)">
+                                {{'webUI.manager.button.edit' | translate}}
+                            </button>
+                            <button class="btn btn-sm btn-success" ng-click="$ctrl.login(account)" ng-disabled="account === $ctrl.current">
+                                {{'webUI.manager.button.login' | translate}}
+                            </button>
+                            <button class="btn btn-sm btn-danger" ng-click="$ctrl.remove(account)">
+                                {{'webUI.manager.button.remove' | translate}}
+                            </button>
                         </td>
+                        <td class="visible-xs text-right"><i class="fa fa-check" ng-show="account === $ctrl.current"></i></td>
                     </tr>
                 </tbody>
             </table>
@@ -84,8 +87,14 @@
             </div>
         </form>
         <div class="form-group">
-            <button class="btn btn-primary" ng-click="$ctrl.save()">{{'webUI.manager.button.save' | translate}}</button>
-            <button class="btn btn-default" ng-click="$ctrl.cancel()" ng-if="$ctrl.isMultiple">{{'webUI.manager.button.cancel' | translate}}</button>
+            <div class="pull-left">
+                <button class="btn btn-primary" ng-click="$ctrl.save()">{{'webUI.manager.button.save' | translate}}</button>
+                <button class="btn btn-default" ng-click="$ctrl.cancel()" ng-if="$ctrl.isMultiple">{{'webUI.manager.button.cancel' | translate}}</button>
+            </div>
+            <div class="pull-right">
+                <button class="btn btn-success" ng-click="$ctrl.login($ctrl.editable)" ng-if="$ctrl.isMultiple" ng-disabled="$ctrl.editable === $ctrl.current">{{'webUI.manager.button.login' | translate}}</button>
+                <button class="btn btn-danger" ng-click="$ctrl.remove($ctrl.editable)" ng-if="$ctrl.isMultiple">{{'webUI.manager.button.remove' | translate}}</button>
+            </div>
         </div>
     </div>
 </div>
