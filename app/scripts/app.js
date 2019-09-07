@@ -401,6 +401,14 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
                     });
             }, configSaveDebounceMs);
         }, true);
+
+
+        setTimeout(() => {
+            $('double-bounce-spinner').addClass('ng-hide');
+            $('#wrapper').removeClass('ng-hide');
+        }, 500);
+
+        console.log($('#wrapper'));
     });
 
 export default module.name;
