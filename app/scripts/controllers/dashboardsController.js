@@ -1,7 +1,7 @@
 'use strict';
 
 class DashboardsCtrl {
-    
+
     constructor(uiConfig, rolesFactory) {
         'ngInject';
 
@@ -10,7 +10,9 @@ class DashboardsCtrl {
         this.data = uiConfig.data;
 
         // FIXME: make better use of the model
-        this.model = (dashboard) => { this.uiConfig.getDashboard(dashboard.id) };
+        this.model = (dashboard) => { 
+            this.uiConfig.getDashboard(dashboard.id); 
+        };
     }
 
     //.............................................................................
