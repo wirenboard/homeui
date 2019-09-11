@@ -705,6 +705,10 @@ button.show-console span {
   width: 200px;
 }
 
+#widgets-list .editable-wrap.editable-elastic-textarea .editable-input {
+  width: 100%;
+}
+
 .widgets-table .name-col {
   min-width: 200px;
 }

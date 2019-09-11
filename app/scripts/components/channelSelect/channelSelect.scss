@@ -1,0 +1,129 @@
+channel-select {
+    display: block;
+    position: relative;
+    width: 100%;
+
+    .simple {
+        .help-block {
+            margin-bottom: 0;
+        }
+    }
+
+    .extend {
+        display: flex;
+        position: absolute;
+        box-shadow: 0 7px 8px -4px rgba(0,0,0,.2), 0 13px 19px 2px rgba(0,0,0,.14), 0 5px 24px 4px rgba(0,0,0,.12);
+        flex-direction: column;
+        border-radius: 4px;
+        background-color: rgb(255,255,255);
+        margin-bottom: 20px;
+        padding: 20px;
+        z-index: 100;
+        width: max-content;
+
+        &.inline {
+            position: relative;
+            width: 100%;
+        }
+
+        .form-group {
+            min-width: 150px;
+        }
+
+        .help-block {
+            margin-bottom: 0;
+        }
+    }
+
+    .picker-group {
+        display: flex;
+
+        .picker {
+            display: inline-block;
+            width: 100%;
+        }
+        
+        button[type=button] {
+            display: inline-block;
+            margin-left: 10px;
+        }        
+    }
+
+    .channel-select-pattern {
+        display: block;
+
+
+        .form-group {
+            display: inline-block;
+            width: calc(50% - 130px);
+            margin: 0;
+
+            &.divider {
+                width: 30px;
+                text-align: center;
+                vertical-align: 50%;
+                font-size: 16px;
+            }
+        }
+
+        button {
+            display: inline-block;
+            margin-left: 10px;
+            width: 100px;
+            vertical-align: 60%;
+        }
+    }
+
+    .ui-select-bootstrap {
+        > .ui-select-match {
+            >.btn {
+                padding-right: 26px;
+            }
+        }
+    }
+}
+
+.channel-select-prerender {
+    display: flex;
+    position: relative;
+
+    .prerender-value-container {
+        width: 100%;
+    }
+
+    .ui-select-match {
+        > .btn {
+            padding-right: 26px;
+        }
+    }
+
+    .btn-prerender {
+        display: inline-block;
+        margin-left: 10px; 
+    }
+
+    .prerender {
+        display: none;
+    }
+}
+
+.ui-select-no-choice {
+    li {
+        padding: 6px 12px;
+        color: #999;
+    }
+}
+
+.open {
+    > .dropdown-menu {
+        animation: none;
+    }
+}
+
+json-editor {
+    td {
+        > .form-group {
+            margin-bottom: 0;
+        }
+    }
+}

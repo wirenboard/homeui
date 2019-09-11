@@ -1,13 +1,14 @@
 <div ng-if="$ctrl.dashboard">
     <svg-upload dashboard="$ctrl.dashboard"></svg-upload>
     <svg-edit dashboard="$ctrl.dashboard"></svg-edit>
+    <div class="clear"></div>
     <svg-form dashboard="$ctrl.dashboard"></svg-form>
 
-    <fieldset>
+    <fieldset class="controls">
         <legend></legend>
         <div class="row">
             <div class="col-md-6">
-                    <a class="btn btn-primary" ng-show="!$ctrl.dashboard.isNew" ui-sref="dashboard-svg({ id: $ctrl.dashboard.id })">{{ 'button.view' | translate }}</a>
+                 <a class="btn btn-primary" ng-show="!$ctrl.dashboard.isNew" ui-sref="dashboard-svg({ id: $ctrl.dashboard.id })">{{ 'button.view' | translate }}</a>
                 <button type="button" class="btn btn-primary" ng-show="$ctrl.canSave() && $ctrl.dashboard.isNew" ng-click="$ctrl.save()" ng-disabled="!$ctrl.isValidate()">{{ 'button.save' | translate }}</button>
                 <button type="button" class="btn btn-default" ng-show="$ctrl.dashboard.isNew" ng-click="$ctrl.cancel()" >{{ 'button.cancel' | translate }}</button>
                 <button type="button" class="btn btn-default" ng-show="!$ctrl.dashboard.isNew" ng-click="$ctrl.back()" >{{ 'button.back' | translate }}</button>

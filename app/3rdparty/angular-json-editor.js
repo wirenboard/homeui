@@ -14,31 +14,47 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     };
 
     this.configure = function (options) {
-        extendDeep(configuration, options);
+        this.extendDeep(configuration, options);
     };
 
     this.$get = ['$window', function ($window) {
         var JSONEditor = $window.JSONEditor;
-        extendDeep(JSONEditor, configuration);
+
+
+        this.extendEditor(JSONEditor);
+        this.extendDeep(JSONEditor, configuration);
+
+        require('./editors/editor-channel-select');
+
         return $window.JSONEditor;
     }];
 
-    function extendDeep(dst) {
-        angular.forEach(arguments, function (obj) {
+    this.extendEditor = function (JSONEditor) {
+
+        JSONEditor.defaults.resolvers.unshift(function (schema) {
+            if (schema.type === 'string' && schema.format === 'channelSelect') {
+                return 'channelSelect';
+            }
+        });
+    };
+
+    this.extendDeep = function (dst) {
+        angular.forEach(arguments, (obj) => {
             if (obj !== dst) {
-                angular.forEach(obj, function (value, key) {
+                angular.forEach(obj, (value, key) => {
                     if (dst[key] && dst[key].constructor && dst[key].constructor === Object) {
-                        extendDeep(dst[key], value);
-                    } else {
+                        this.extendDeep(dst[key], value);
+                    }
+                    else {
                         dst[key] = value;
                     }
                 });
             }
         });
         return dst;
-    }
+    };
 
-}).directive('jsonEditor', ['$q', 'JSONEditor', function ($q, JSONEditor) {
+}).directive('jsonEditor', ['$q', 'JSONEditor', '$compile', function ($q, JSONEditor, $compile) {
 
     return {
         restrict: 'E',
@@ -46,7 +62,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         scope: {
             schema: '=',
             startval: '=',
-            options: "=",
+            options: '=',
             buttonsController: '@',
             onChange: '&'
         },
@@ -68,10 +84,9 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
 
         }],
         link: function (scope, element, attrs, controller, transclude) {
-            var valueToResolve,
-                startValPromise = $q.when({}),
-                schemaPromise = $q.when(null);
-
+            var valueToResolve;
+            var startValPromise = $q.when({});
+            var schemaPromise = $q.when(null);
             scope.isValid = false;
 
             if (!angular.isString(attrs.schema)) {
@@ -91,12 +106,22 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 }
             }
 
+            function renderDirective() {
+                var components = Object.values(element[0].getElementsByClassName('render'));
+                if (components.length) {
+                    components.forEach((component) => {
+                        angular.element(component).removeClass('render');
+                        $compile(component)(scope);
+                    });
+                }
+            }
+
             // Wait for the start value and schema to resolve before building the editor.
             $q.all([schemaPromise, startValPromise]).then(function (result) {
 
                 // Support $http promise response with the 'data' property.
-                var schema = result[0] ? result[0].data || result[0] : null,
-                    startVal = result[1];
+                var schema = result[0] ? result[0].data || result[0] : null;
+                var startVal = result[1];
                 if (schema === null) {
                     throw new Error('json-editor: could not resolve schema data.');
                 }
@@ -104,9 +129,9 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 // Commit changes in text fields immediately.
                 // FIXME: should make this an option (and perhaps file a pull request for JSONEditor)
                 // FIXME: ipv4 input type seems to be an invention of JSONEditor author
-                element.on("input", "input[type=text], input[type=ipv4], textarea", function () {
-                    var e = document.createEvent("HTMLEvents");
-                    e.initEvent("change", false, true);
+                element.on('input', 'input[type=text], input[type=ipv4], textarea', function () {
+                    var e = document.createEvent('HTMLEvents');
+                    e.initEvent('change', false, true);
                     this.dispatchEvent(e);
                 });
 
@@ -114,14 +139,18 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                     startval: startVal,
                     schema: schema
                 };
-                if (scope.options)
+                if (scope.options) {
                     angular.extend(options, scope.options);
+                }
+
                 scope.editor = new JSONEditor(element[0], options);
 
                 var editor = scope.editor;
 
                 editor.on('ready', function () {
                     scope.isValid = (editor.validate().length === 0);
+
+                    renderDirective();
                 });
 
                 editor.on('change', function () {
@@ -130,6 +159,9 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                         scope.isValid = (errors.length === 0);
                         // Fire the onChange callback
                         var onChange = scope.onChange();
+
+                        renderDirective();
+
                         if (typeof onChange === 'function') {
                             onChange(editor.getValue(), errors, editor);
                         }
