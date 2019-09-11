@@ -1,4 +1,9 @@
 {
+    "dashboards": {
+        "prompt": {
+            "remove": "Are you sure you want to delete <b>{{name}}</b> dashboard?"
+        }
+    },
     "dashboard": {
         "svg": {
             "edit": {
