@@ -1,7 +1,26 @@
 {
     "dashboards": {
+        "title": {
+            "default": "Dashboards",
+            "svg": "SVG Dashboards"
+        },
+        "field": {
+            "id": "ID",
+            "name": "Name",
+            "fullwidth": "Full width"
+        },
+        "button": {
+            "add": "Add",
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "cancel": "Cancel"
+        },
         "prompt": {
-            "remove": "Are you sure you want to delete <b>{{name}}</b> dashboard?"
+            "delete": "Are you sure you want to delete <b>{{name}}</b> dashboard?"
+        },
+        "message": {
+            "empty": "No dashboards currently defined."
         }
     },
     "dashboard": {

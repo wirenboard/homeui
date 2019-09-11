@@ -27,7 +27,7 @@ class DashboardsCtrl {
     }
 
     deleteDashboard(dashbrd) {
-        this.$translate('dashboards.prompt.remove', { name: dashbrd.name }).then((translation) => {
+        this.$translate('dashboards.prompt.delete', { name: dashbrd.name }).then((translation) => {
             this.$ngBootbox.confirm(translation).then(() => {
                 this.data.dashboards = this.data.dashboards
                     .filter(dashboard => !(dashboard.name === dashbrd.name && dashboard.id === dashbrd.id));
