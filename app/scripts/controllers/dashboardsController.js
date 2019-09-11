@@ -2,9 +2,11 @@
 
 class DashboardsCtrl {
 
-    constructor(uiConfig, rolesFactory) {
+    constructor($translate, $ngBootbox, uiConfig, rolesFactory) {
         'ngInject';
 
+        this.$translate = $translate;
+        this.$ngBootbox = $ngBootbox;
         this.roles = rolesFactory;
         this.uiConfig = uiConfig;
         this.data = uiConfig.data;
@@ -25,8 +27,12 @@ class DashboardsCtrl {
     }
 
     deleteDashboard(dashbrd) {
-        this.data.dashboards = this.data.dashboards
-            .filter(dashboard => !(dashboard.name === dashbrd.name && dashboard.id === dashbrd.id));
+        this.$translate('dashboards.prompt.remove', { name: dashbrd.name }).then((translation) => {
+            this.$ngBootbox.confirm(translation).then(() => {
+                this.data.dashboards = this.data.dashboards
+                    .filter(dashboard => !(dashboard.name === dashbrd.name && dashboard.id === dashbrd.id));
+            });
+        });
     }
 
     //.............................................................................
