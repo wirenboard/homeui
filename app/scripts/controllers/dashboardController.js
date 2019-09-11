@@ -1,7 +1,12 @@
 class DashboardCtrl {
     constructor($scope, uiConfig, $stateParams, rolesFactory) {
         'ngInject';
+
         $scope.roles = rolesFactory;
+
+        $scope.svgDownloadUrl = null;
+        $scope.svgDownloadName = null;
+
         var defaultDashboard = {};
 
         function getDashboard() {
@@ -11,6 +16,13 @@ class DashboardCtrl {
         uiConfig.whenReady().then(() => {
             $scope.$watch(getDashboard, newDashboard => {
                 $scope.dashboard = newDashboard;
+ 
+                if ($scope.dashboard.content.isSvg && $scope.dashboard.content.svg_url) {
+                    let url = $scope.dashboard.content.svg_url;
+                    var fileName = url.substring(url.lastIndexOf('/') + 1);
+                    $scope.svgDownloadUrl = url;
+                    $scope.svgDownloadName = fileName;
+                }
             });
         });
 
@@ -19,13 +31,15 @@ class DashboardCtrl {
         };
 
         $scope.removeWidget = (widget) => {
-            if (confirm("Really delete widget from dashboard?"))
+            if (window.confirm('Really delete widget from dashboard?')) {
                 $scope.dashboard.removeWidgetFromDashboard(widget);
+            }
         };
 
         $scope.deleteWidget = (widget) => {
-            if (confirm("Really delete the widget?"))
+            if (window.confirm('Really delete the widget?')) {
                 uiConfig.deleteWidget(widget);
+            }
         };
 
     }

@@ -6,17 +6,13 @@
 
 /* Global Styles */
 
-[ng\:cloak], [ng-cloak], [data-ng-cloak],  .ng-cloak, .x-ng-cloak {
-  display: none !important;
-}
-
 html, body {
     overflow-x: hidden;
 }
 
 body {
     margin-top: 50px;
-    background-color: #222;
+    background: #222;
 }
 
 @media(min-width:768px) {
@@ -944,4 +940,26 @@ svg:not(:root) {
   .navbar-nav.side-nav {
     margin: 8px 0;
   }
+}
+
+body > double-bounce-spinner {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+body > double-bounce-spinner .double-bounce-spinner {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -20px 0px 0px -20px;
+}
+
+body > double-bounce-spinner .double-bounce-spinner .double-bounce1, 
+body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
+  background-color: #3276b1;
 }

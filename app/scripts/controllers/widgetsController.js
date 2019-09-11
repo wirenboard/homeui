@@ -11,6 +11,7 @@ class WidgetsCtrl {
       var splittedId = entry.id.split('/', 2);
       return {
         id: entry.id,
+        extra: entry.extra,
         device: splittedId[0],
         control: splittedId[1],
         get name() {

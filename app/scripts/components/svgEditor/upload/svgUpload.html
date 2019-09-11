@@ -1,0 +1,9 @@
+<div class="svg-upload">
+    <input type="file" accept="image/svg+xml" ng-model="file" ng-change="$ctrl.onSelect()" input-file />
+    <button class="btn btn-primary" ng-click="$ctrl.loadFile()" ng-disabled="$ctrl.isDisabled()">
+        <span ng-show="$ctrl.isStateNew()">{{'upload.button.upload' | translate}}</span>
+        <span ng-show="$ctrl.isStateProcess()">{{'upload.button.proccess' | translate}}</span>
+        <span ng-show="$ctrl.isStateLoaded()">{{'upload.button.change' | translate}}</span>
+    </button>
+    <a class="btn btn-default" target="_self" download="{{ $ctrl.downloadName }}" href="{{ $ctrl.downloadUrl }}" ng-show="$ctrl.isStateLoaded()">{{'upload.button.download' | translate}}</a>
+</div>

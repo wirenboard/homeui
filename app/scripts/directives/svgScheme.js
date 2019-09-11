@@ -1,10 +1,11 @@
+'use strict';
 
 export function svgSchemeDirective($compile, DeviceData) {
     'ngInject';
     return {
         restrict: 'E',
         scope : {
-            svgFullWidth: "="
+            svgFullWidth: '='
         },
         link: function (scope, element, attrs) {
             function getElementAttributes (elem) {
@@ -13,27 +14,27 @@ export function svgSchemeDirective($compile, DeviceData) {
                     $.each(elem.get(0).attributes, function(v,n) {
                         n = n.nodeName||n.name;
                         v = elem.attr(n); // relay on $.fn.attr, it makes some filtering and checks
-                        if(v != undefined && v !== false) attr[n] = v
-                    })
+                        if(v !== undefined && v !== false) {
+                            attr[n] = v;
+                        }
+                    });
                 }
 
                 return attr;
             }
+            
             function parseAttrs(attrStr) {
+                var el = {};
                 try {
-                    var el = angular.element("<div " + attrStr + " />");
-                } catch (err) {
-                    return {};
-                }
-
+                    el = angular.element('<div ' + attrStr + ' />');
+                } catch (err) {}
                 return getElementAttributes(el);
-
             }
 
             function getDirectChild(element, nodeName) {
                 for (var i = 0; i < element.children.length; i++) {
                     var child = element.children[i];
-                    if (child.nodeName == nodeName) {
+                    if (child.nodeName === nodeName) {
                         return child;
                     }
                 }
@@ -42,7 +43,8 @@ export function svgSchemeDirective($compile, DeviceData) {
 
             scope.devicedata = DeviceData;
             var elem = element[0];
-            var svg = element[0].querySelector("svg");
+            
+            var svg = element[0].querySelector('svg');
             var w = angular.element(svg).width(),
                 h = angular.element(svg).height(),
                 _w = angular.element(elem).width(),
@@ -51,61 +53,75 @@ export function svgSchemeDirective($compile, DeviceData) {
 
 
             if (scope.svgFullWidth) {
-                angular.element(svg).attr("width", w * r);
-                angular.element(elem).attr("height", h * r );
-                angular.element(svg).attr("height", h * r);
+                angular.element(svg).attr('width', w * r);
+                angular.element(elem).attr('height', h * r );
+                angular.element(svg).attr('height', h * r);
             }
 
-            var regions = element[0].querySelectorAll("*");
+            var regions = element[0].querySelectorAll('*');
             angular.forEach(regions, function (path, key) {
                 var element = angular.element(path);
+                
+                var desc = getDirectChild(element[0], 'desc');
+                if (desc !== null) {
+                    element.attr('svg-compiled-element', '');
+                    element.attr('ng-cloak', '');
 
-                var desc = getDirectChild(element[0], "desc");
-                if (desc != null) {         
-                    element.attr("svg-compiled-element", "");
-                    element.attr("ng-cloak", "");
-
+                    var elm = element[0];
                     var attrs = parseAttrs(desc.innerHTML);
-
-                    if (element[0].nodeName == 'text') {
-                        if (attrs.hasOwnProperty("value")) {
-                            var tspan = element[0].querySelector("tspan");
-                            if (tspan != null) {
+                    
+                    if (elm.nodeName === 'text') {
+                        if (attrs.hasOwnProperty('value')) {
+                            var tspan = elm.querySelector('tspan');
+                            if (tspan !== null) {
                                 tspan.innerHTML = attrs.value;
                             }
+                        }
+                        
+                        if (attrs.hasOwnProperty('topic-switch-name') && attrs.hasOwnProperty('topic-switch-value-on') && attrs.hasOwnProperty('topic-switch-value-off')) {
+                        	var data = {
+                        		name: attrs['topic-switch-name'],
+		                        on: attrs['topic-switch-value-on'],
+		                        off: attrs['topic-switch-value-off']
+	                        }
+	                        elm.classList.add('switch');
+	                        elm.addEventListener('click', function() {
+	                            var cell = scope.devicedata.cell(data.name);
+	                            cell.value = cell.value == data.on ? data.off : data.on;
+	                        });
                         }
                     }
 
                     for (var descAttr in attrs) {
-                        if ((descAttr != "channel") && (descAttr != "value")) {
-                            if (descAttr.indexOf("append-") == 0) {
-                                var replAttr = descAttr.slice(7); //7 == length of "append-"
-                                element.attr(replAttr,
-                                    element.attr(replAttr) + attrs[descAttr]);
-                            } else {
+                        if ((descAttr !== 'channel') && (descAttr !== 'value')) {
+                            if (descAttr.indexOf('append-') === 0) {
+                                var replAttr = descAttr.slice(7); //7 == length of "append-"d
+                                element.attr(replAttr, element.attr(replAttr) + attrs[descAttr]);
+                            }
+                            else {
                                 element.attr(descAttr, attrs[descAttr]);
                             }
                         }
                     }
 
-                    if (attrs.hasOwnProperty("channel")) {
+                    if (attrs.hasOwnProperty('channel')) {
                         var channelStr = attrs.channel;
-                        var channelArr = channelStr.split("/");
+                        var channelArr = channelStr.split('/');
 
-                        if (channelArr.length == 2) {
+                        if (channelArr.length === 2) {
                             var channelVar = `devicedata.proxy('${channelStr}')`;
-                            element.attr("val", channelVar + '.value');
-                            element.attr("type", channelVar + '.metaType');
-                            element.attr("units", channelVar + '.metaUnits');
-                            element.attr("error", channelVar + '.metaError');
-                            element.attr("device", channelStr);
+                            element.attr('val', channelVar + '.value');
+                            element.attr('type', channelVar + '.metaType');
+                            element.attr('units', channelVar + '.metaUnits');
+                            element.attr('error', channelVar + '.metaError');
+                            element.attr('device', channelStr);
                         }
                     }
                 }
                 $compile(element)(scope);
-            })
+            });
         }
-    }
+    };
 }
 
 export  function svgCompiledElementDirective($compile) {
@@ -113,15 +129,15 @@ export  function svgCompiledElementDirective($compile) {
     return {
         restrict: 'A',
         scope: {
-            val: "=",
-            type: "=",
-            units: "=",
-            error: "="
+            val: '=',
+            type: '=',
+            units: '=',
+            error: '='
         },
         link: function (scope, element, attrs) {
             scope.devicedata = scope.$parent.devicedata;
-            element.removeAttr("svg-compiled-element");
+            element.removeAttr('svg-compiled-element');
             $compile(element)(scope);
         }
-    }
+    };
 }

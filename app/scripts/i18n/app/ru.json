@@ -1,0 +1,12 @@
+{
+    "dashboard": {
+        "svg": {
+            "edit": {
+                "title": {
+                    "create": "New SVG Dashboard",
+                    "update": "Edit SVG Dashboard"
+                }
+            }
+        }
+    }
+}

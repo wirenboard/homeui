@@ -1,0 +1,11 @@
+<div class="stretch-height">
+    <h1 class="page-header">
+        <div class="row">
+            <div class="col-md-12">
+                <span ng-show="$ctrl.dashboard.isNew">{{"dashboard.svg.edit.title.create" | translate}}</span>
+                <span ng-show="!$ctrl.dashboard.isNew">{{"dashboard.svg.edit.title.update" | translate}}</span>
+            </div>
+        </div>
+    </h1>
+    <svg-editor dashboard="$ctrl.dashboard"></svg-editor>
+</div>
