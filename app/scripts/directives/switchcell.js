@@ -11,8 +11,11 @@ function switchCellDirective() {
         template,
 
         link: (scope, element, attrs, cellCtrl) => {
+            let isInteract = false;
+
             scope.$watch(() => scope._value, (newValue, oldValue) => {
-                if (newValue !== oldValue) {
+                if (newValue !== oldValue && isInteract) {
+                    isInteract = false;
                     scope.cell.value = scope.cell.extra.invert ? !scope._value : scope._value;
                 }
             });
@@ -22,6 +25,10 @@ function switchCellDirective() {
                 }
             });
             scope._value = scope.cell.extra.invert ? !scope.cell.value : scope.cell.value;
+
+            scope.change = () => {
+                isInteract = true;
+            };
         }
     };
 }
