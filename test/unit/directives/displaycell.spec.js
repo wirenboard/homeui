@@ -48,7 +48,7 @@ describe("Directive: display-cell", () => {
   });
 
   it("should display writable text cells as editable inputs with title", () => {
-    publishCell("text", "foobar", { name: CELL_NAME, writable: "1" });
+    publishCell("text", "foobar", { name: CELL_NAME, readonly: "0" });
     var el = find("input.cell.cell-text:visible");
     expect(el).toHaveValue("foobar");
     expect(el.prop("readonly")).toBe(false);
@@ -63,7 +63,7 @@ describe("Directive: display-cell", () => {
   });
 
   it("should display writable value cells as number inputs with title and units", () => {
-    publishCell("value", "42", { name: CELL_NAME, units: "l", writable: "1" });
+    publishCell("value", "42", { name: CELL_NAME, units: "l", readonly: "0" });
     var el = find(".cell.cell-value input[type=number]:visible");
     expect(el).toHaveValue("42");
     expect(el.prop("readonly")).toBe(false);

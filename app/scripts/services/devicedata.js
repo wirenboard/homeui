@@ -227,8 +227,8 @@ function deviceDataService(mqttClient) {
       this.type = "incomplete";
       this._value = null;
       this._explicitUnits = "";
-      this._explicitReadOnly = false;
-      this._writable = false;
+
+      this._explicitReadOnly = null;
       this.error = false;
       this.min = null;
       this.max = null;
@@ -394,11 +394,17 @@ function deviceDataService(mqttClient) {
     }
 
     get readOnly () {
-      return this._explicitReadOnly || (!this._writable && this._typeEntry().readOnly);
+      if (this._explicitReadOnly === null)
+        return this._typeEntry().readOnly;
+      else
+        return this._explicitReadOnly;
     }
 
-    setReadOnly (readOnly) {
-      this._explicitReadOnly = !!readOnly;
+    setExplicitReadOnly (readOnly) {
+      if (readOnly === null)
+        this._explicitReadOnly = readOnly;
+      else
+        this._explicitReadOnly = !!readOnly;
     }
 
     setError (error) {
@@ -415,10 +421,6 @@ function deviceDataService(mqttClient) {
 
     setStep (step) {
       this.step = step == "" ? null: step - 0;
-    }
-
-    setWritable (writable) {
-      this._writable = !!writable;
     }
 
     setOrder (order) {
@@ -489,10 +491,22 @@ function deviceDataService(mqttClient) {
         handler(payload) { cellFromTopic(topic).setUnits(payload) }
       },{
         handledTopic: cellTopicBase + '/meta/readonly',
-        handler(payload) { cellFromTopic(topic).setReadOnly(payload == '1') }
+        handler(payload) { 
+          if (payload === '') {
+            cellFromTopic(topic).setExplicitReadOnly(null);
+          } else if (payload == '1') {
+            cellFromTopic(topic).setExplicitReadOnly(true);
+          } else if (payload == '0') {
+            cellFromTopic(topic).setExplicitReadOnly(false);
+          } else {
+            console.warn(topic + " payload is neither '0', '1' nor empty");
+          }
+        }
       },{
         handledTopic: cellTopicBase + '/meta/writable',
-        handler(payload) { cellFromTopic(topic).setWritable(payload == '1') }
+        handler(payload) {
+          console.warn(topic + ": meta/writable is not supported anymore. Use meta/readonly=0");
+        }
       },{
         handledTopic: cellTopicBase + '/meta/error',
         handler(payload) { cellFromTopic(topic).setError(payload) }

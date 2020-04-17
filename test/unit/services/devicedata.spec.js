@@ -34,7 +34,7 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev1/controls/voltage1", "223", true, 0);
     f.extClient.send("/devices/dev1/controls/volume", "42", true, 0);
     f.extClient.send("/devices/dev1/controls/volume/meta/type", "value", true, 1);
-    f.extClient.send("/devices/dev1/controls/volume/meta/writable", "1", true, 1);
+    f.extClient.send("/devices/dev1/controls/volume/meta/readonly", "0", true, 1);
     f.extClient.send("/devices/dev1/controls/volume/meta/units", "l", true, 1);
     f.extClient.send("/devices/dev2/controls/foo/meta/type", "value", true, 1);
     f.extClient.send("/devices/dev2/controls/foo", "4242", true, 0);
@@ -129,7 +129,7 @@ describe("DeviceData service", () => {
 
   function publishTextCell() {
     f.extClient.send("/devices/dev2/controls/fooText/meta/type", "text", true, 1);
-    f.extClient.send("/devices/dev2/controls/fooText/meta/writable", "1", true, 1);
+    f.extClient.send("/devices/dev2/controls/fooText/meta/readonly", "0", true, 1);
     f.extClient.send("/devices/dev2/controls/fooText", "4242", true, 0);
   }
 
@@ -329,7 +329,7 @@ describe("DeviceData service", () => {
   function publishIncompleteCell () {
     f.extClient.send("/devices/dev2/controls/fooInc", "4242", true, 0);
     f.extClient.send("/devices/dev2/controls/barInc/meta/type", "value", true, 0);
-    f.extClient.send("/devices/dev2/controls/barInc/meta/writable", "1", true, 0);
+    f.extClient.send("/devices/dev2/controls/barInc/meta/readonly", "0", true, 0);
   }
 
   it("should treat cells with no type or no value as incomplete", () => {
@@ -632,10 +632,10 @@ describe("DeviceData service", () => {
     });
   });
 
-  it("should support removal of additional cell properties, such as min/max, units, writable", () => {
+  it("should support removal of additional cell properties, such as min/max, units, readonly", () => {
     publishNumericCells();
     f.extClient.send("/devices/dev1/controls/volume/meta/units", "", true, 1);
-    f.extClient.send("/devices/dev1/controls/volume/meta/writable", "", true, 1);
+    f.extClient.send("/devices/dev1/controls/volume/meta/readonly", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/step", "", true, 1);

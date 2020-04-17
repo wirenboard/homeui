@@ -8,7 +8,7 @@ describe("Directive: text-cell", () => {
   beforeEach(angular.mock.inject((MqttDirectiveFixture) => {
     f = new MqttDirectiveFixture("<text-cell cell=\"'dev1/foobar'\"></text-cell>");
     f.extClient.send("/devices/dev1/controls/foobar/meta/type", "text", true, 1);
-    f.extClient.send("/devices/dev1/controls/foobar/meta/writable", "1", true, 1);
+    f.extClient.send("/devices/dev1/controls/foobar/meta/readonly", "0", true, 1);
     f.extClient.send("/devices/dev1/controls/foobar", "qqq", true, 0);
     f.$scope.$digest();
   }));
