@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.0.0~rc1) stable; urgency=medium
+
+  * fix switch sticking bug #154 #137
+  * all of the below
+
+ -- Evgeny Boger <boger@contactless.ru>  Sun, 19 Apr 2020 23:32:40 +0300
+
 wb-mqtt-homeui (2.0~beta13) stable; urgency=medium
 
   * deprecate meta/writable in favor of meta/readable=false
