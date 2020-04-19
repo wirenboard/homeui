@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0.0~rc2) stable; urgency=medium
+
+  * fix i18n
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 20 Apr 2020 01:44:01 +0300
+
 wb-mqtt-homeui (2.0.0~rc1) stable; urgency=medium
 
   * fix switch sticking bug #154 #137
