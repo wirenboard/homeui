@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0~beta13) stable; urgency=medium
+
+  * deprecate meta/writable in favor of meta/readable=false
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 16 Apr 2020 22:28:47 +0300
+
 wb-mqtt-homeui (2.0~beta12) stable; urgency=medium
 
   * disable widget compact mode by default
