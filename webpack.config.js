@@ -77,7 +77,8 @@ module.exports = function makeWebpackConfig() {
             'angular-translate',
             'angular-translate-loader-partial',
             'ngbootbox',
-            'angular-spinkit'
+            'angular-spinkit',
+            'ngbootbox'
         ]
     };
     /**
