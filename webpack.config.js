@@ -357,7 +357,8 @@ module.exports = function makeWebpackConfig() {
                 {from: path.join(__dirname, 'app', 'images'), to: 'images'},
                 {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
                 {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
-                {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'}
+                {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'},
+                {from: path.join(__dirname, 'app', 'scripts/i18n'), to: 'scripts/i18n'},
             ]),
 
             // new webpack.HashedModuleIdsPlugin(),
