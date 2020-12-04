@@ -175,7 +175,16 @@ class HistoryCtrl {
         this.selectedStartDate = this.startDate? this.startDate : new Date( + (new Date()) - 24*60*60*1000 );
         this.selectedEndDate = this.endDate? this.endDate : new Date();
         this.setDateOptions();
+        this.timeChanged = true;
     };
+
+    updateState() {
+        var device = this.devices.join(';');
+        var control = this.controlIds.join(';');
+        var st = this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-";
+        var en = this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-";
+        this.$state.go('history.sample', { device, control, start: st, end: en}, { reload: true, inherit: false, notify: true });
+    }
 
     // смена урла
     updateUrl(index=0,deleteOne=false,onlyTimeUpdate=false) {
@@ -183,18 +192,25 @@ class HistoryCtrl {
         if(deleteOne) {
             this.devices.splice(index,1);
             this.controlIds.splice(index,1);
-        } else if (!onlyTimeUpdate) {
-            // если меняется или добавляется контрол
-            var parsedTopic = this.parseTopic(this.selectedTopics[index]);
-            // если этот контрол уже загружен в другой селект или нет такого топика
-            if (!parsedTopic ||
-                (this.controlIds.indexOf(parsedTopic.controlId)>=0 && this.devices.indexOf(parsedTopic.deviceId)>=0))
+            this.selectedTopics.splice(index,1);
+        } else {
+            if (!onlyTimeUpdate) {
+                // если меняется или добавляется контрол
+                var parsedTopic = this.parseTopic(this.selectedTopics[index]);
+                // если этот контрол уже загружен в другой селект или нет такого топика
+                if (!parsedTopic ||
+                    (this.controlIds.indexOf(parsedTopic.controlId)>=0 && this.devices.indexOf(parsedTopic.deviceId)>=0))
+                    return;
+                // перезаписываю существующие
+                this.devices[index] = parsedTopic.deviceId;
+                this.controlIds[index] = parsedTopic.controlId;
+            } else {
+                this.resetTime();
+                this.updateState();
+                var url = this.getUrl();
+                this.originalUrl = url;
                 return;
-            // перезаписываю существующие
-            this.devices[index] = parsedTopic.deviceId;
-            this.controlIds[index] = parsedTopic.controlId;
-        } else if (onlyTimeUpdate) {
-
+            }
         }
 
         this.resetTime();
@@ -202,7 +218,7 @@ class HistoryCtrl {
         // изза остановки и возможного возобновления загрузки графика ввожу доп проверку
         // изменился ли урл или нет
         if(this.originalUrl === url || location.href.indexOf(url)>=0) {
-            this.$state.reload();
+            this.updateState();
         } else {
             this.location.path(url);
         }
