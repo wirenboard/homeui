@@ -1,6 +1,8 @@
 wb-mqtt-homeui (2.0.0~rc3) stable; urgency=medium
 
   * history ui bug fixes #126
+  * uniform fonts in "Devices" tab
+  * translation is added to "Dashboards" tab labels
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 04 Dec 2020 15:38:00 +0500
 
