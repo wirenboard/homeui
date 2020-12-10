@@ -584,6 +584,14 @@ button.show-console span {
   width: 120px;
 }
 
+.display-cell .cell-text {
+  margin: 0 0 0px;
+}
+
+.display-cell .cell-title {
+  font-size: 14px;
+}
+
 .cell-error {
   color: red;
 }

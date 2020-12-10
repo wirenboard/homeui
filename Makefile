@@ -17,9 +17,11 @@ install:
 	install -d -m 0777 $(DESTDIR)/var/www/css
 	install -d -m 0777 $(DESTDIR)/var/www/images
 	install -d -m 0777 $(DESTDIR)/var/www/uploads
+	install -d -m 0777 $(DESTDIR)/var/www/scripts/i18n
 	
 	cp -a dist/css/*.css $(DESTDIR)/var/www/css
 	cp -a dist/images/* $(DESTDIR)/var/www/images
+	cp -a -R dist/scripts/i18n/* $(DESTDIR)/var/www/scripts/i18n
 	cp -a dist/favicon.ico $(DESTDIR)/var/www/favicon.ico
 	cp -a dist/*.js $(DESTDIR)/var/www/
 	cp -a dist/*.svg $(DESTDIR)/var/www/

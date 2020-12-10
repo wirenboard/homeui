@@ -14,7 +14,8 @@
             "edit": "Edit",
             "delete": "Delete",
             "view": "View",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "save": "Save"
         },
         "prompt": {
             "delete": "Are you sure you want to delete <b>{{name}}</b> dashboard?"
