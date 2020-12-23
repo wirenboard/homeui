@@ -31,7 +31,6 @@ module.exports = function(config) {
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/angular-touch/angular-touch.js',
       'bower_components/spectrum/spectrum.js',
-      'bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min.js',
       'bower_components/angular-order-object-by/src/ng-order-object-by.js',
       'bower_components/codemirror/lib/codemirror.js',
       'bower_components/angular-ui-codemirror/ui-codemirror.js',
@@ -41,8 +40,9 @@ module.exports = function(config) {
       'bower_components/ng-file-upload/ng-file-upload.js',
       'bower_components/angular-toggle-switch-fix-chrome-527709/angular-toggle-switch.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      // endbower
       'bower_components/codemirror/mode/javascript/javascript.js',
+      // endbower
+      'lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min.js',
       'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
       'app/scripts/**/*.js',
       'app/scripts/**/*.html',

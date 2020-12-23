@@ -547,3 +547,57 @@ button.show-console span {
   color: #fff;
   opacity: 1;
 }
+
+div[data-schemapath] > h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 0px;
+}
+
+div[data-schemapath$="_e"] > h3:first-child {
+  display: none;
+}
+
+div[data-schematype="object"]:not([data-schemapath*="_e."]) > .well-sm {
+  border: none;
+  margin: 0px;
+  box-shadow: none;
+  padding: 0px;
+}
+
+div[data-schematype="object"][data-schemapath*="_e."]:not([data-schemapath$="_e"]) > .well-sm {
+  border: none;
+  margin: 0px;
+  box-shadow: none;
+  padding: 0px;
+}
+
+div[data-schematype="array"][data-schemapath*="_e."] > .well-sm > div:first-child > div:not(:first-child) {
+  border: none;
+  margin: 0px;
+  box-shadow: none;
+  padding: 0px;
+}
+
+div[data-schematype="array"][data-schemapath*="_e."] > .well-sm {
+  border: none;
+  margin: 0px;
+  box-shadow: none;
+  padding: 0px;
+}
+
+div[data-schematype="object"][data-schemapath*="_e."]:not([data-schemapath$=".0"]) > h3 {
+  font-size: 0px;
+  margin-bottom: 5px;
+}
+
+div[data-schematype="array"][data-schemapath*="_e."] > h3:first-child {
+  display: none;
+}
+
+.well .well-sm[data-schematype="object"][data-schemapath*="_e."] {
+  border: none;
+  margin: 0px;
+  box-shadow: none;
+  padding: 0px;
+}
