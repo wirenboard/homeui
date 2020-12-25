@@ -62,8 +62,6 @@ module.exports = function makeWebpackConfig() {
             'angular-sortable-view/src/angular-sortable-view',
             'oclazyload',
             './lib/angular-order-object-by/src/ng-order-object-by',
-
-            'angular-plotly',
             'angular-rangeslider',
             './lib/angular-toggle-switch/angular-toggle-switch',
             'ng-toast',

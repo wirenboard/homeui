@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0.0~rc4) stable; urgency=medium
+
+  * Plotly.js is bundled with the package.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 25 Dec 2020 09:20:00 +0500
+
 wb-mqtt-homeui (2.0.0~rc3) stable; urgency=medium
 
   * history ui bug fixes #126

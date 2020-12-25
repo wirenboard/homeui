@@ -78,6 +78,7 @@ import editableElasticTextareaDirective from './directives/editableelastictextar
 import userRolesDirective from './directives/user-roles.directive';
 import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
 import dashboardPickerDirective from './directives/dashboardpicker';
+import plotlyDirective from "./directives/plotly";
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -120,7 +121,6 @@ const module = angular
         SvgEditorModule,
 
         ///'toggle-switch',
-        'plotly',
         'ui-rangeSlider',
         'ngToast',
         'ngBootbox'
@@ -241,7 +241,8 @@ module
     .directive('userRole', userRolesDirective)
     .directive('svgCompiledElement', svgCompiledElementDirective)
     .directive('svgScheme', svgSchemeDirective)
-    .directive('dashboardPicker', dashboardPickerDirective);
+    .directive('dashboardPicker', dashboardPickerDirective)
+    .directive('plotly', [ '$window', plotlyDirective ] );
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {
