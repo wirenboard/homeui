@@ -1,3 +1,9 @@
+wb-mqtt-homeui (1.8.0) stable; urgency=medium
+
+  * css is modified to support new wb-mqtt-serial UI
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 16 Dec 2020 20:34:00 +0500
+
 wb-mqtt-homeui (1.7.1) stable; urgency=medium
 
   * compatibility with wb-utils 2.0 and WB6
