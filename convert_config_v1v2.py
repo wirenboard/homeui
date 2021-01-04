@@ -75,7 +75,9 @@ def _format_dashboards(dashboards):
     formated_dashboards = []
     widgets = []
     for key, old_dashboard in dashboards.items():
-        d_widgets = old_dashboard['widgets']
+        d_widgets = dict()
+        if 'widgets' in old_dashboard:
+            d_widgets = old_dashboard['widgets']
         dashboard = {
             'id': old_dashboard['uid'],
             'isSvg': False,

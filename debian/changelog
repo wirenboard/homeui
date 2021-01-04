@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0.0~rc5) stable; urgency=medium
+
+  * Error in config conversion from v1.x is fixed.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 29 Dec 2020 21:09:00 +0500
+
 wb-mqtt-homeui (2.0.0~rc4) stable; urgency=medium
 
   * Plotly.js is bundled with the package.
