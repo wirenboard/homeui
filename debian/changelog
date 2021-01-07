@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0.0) stable; urgency=medium
+
+  * mark as stable
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 07 Jan 2021 11:39:10 +0300
+
 wb-mqtt-homeui (2.0.0~rc6) stable; urgency=medium
 
   * css is modified to support new wb-mqtt-serial UI
