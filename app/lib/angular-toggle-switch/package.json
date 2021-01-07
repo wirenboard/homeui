@@ -29,7 +29,7 @@
   "main": "angular-toggle-switch.js",
   "homepage": "http://cgarvis.github.io/angular-toggle-switch",
   "devDependencies": {
-    "bower": "~0.9.2",
+    "bower": ">=1.8.8",
     "grunt": "~0.4.1",
     "grunt-cli": "0.1.7",
     "grunt-ngmin": "0.0.2",
