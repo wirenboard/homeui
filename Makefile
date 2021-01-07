@@ -1,30 +1,56 @@
-.PHONY: all clean
+.PHONY: all build clean install uninstall
 
 PATH := /usr/local/bin:$(PATH)
 
-all:
-	bower install --allow-root
+all: build
 
-clean :
-	#~ /usr/local/bin/bower  cache clean --allow-root
-	#~ rm -rf bower_components
+clean:
+	npm run clean
 
+build:
+	npm install
+	git submodule init
+	git submodule update
+	npm run build
 
-install: all
-	cp -a  bower_components/*  $(DESTDIR)/var/www/bower_components/
-	cp -a  app/images/*  $(DESTDIR)/var/www/images/
-	cp -a  app/lib/*  $(DESTDIR)/var/www/lib/
-	cp -a  app/styles/*  $(DESTDIR)/var/www/styles/
-	cp -a  app/views/*  $(DESTDIR)/var/www/views/
-	cp -a  app/scripts/*  $(DESTDIR)/var/www/scripts/
+install:
+	install -d -m 0777 $(DESTDIR)/var/www/css
+	install -d -m 0777 $(DESTDIR)/var/www/images
+	install -d -m 0777 $(DESTDIR)/var/www/uploads
+	install -d -m 0777 $(DESTDIR)/var/www/scripts/i18n
+	
+	cp -a dist/css/*.css $(DESTDIR)/var/www/css
+	cp -a dist/images/* $(DESTDIR)/var/www/images
+	cp -a -R dist/scripts/i18n/* $(DESTDIR)/var/www/scripts/i18n
+	cp -a dist/favicon.ico $(DESTDIR)/var/www/favicon.ico
+	cp -a dist/*.js $(DESTDIR)/var/www/
+	cp -a dist/*.svg $(DESTDIR)/var/www/
+	cp -a dist/*.png $(DESTDIR)/var/www/
+	cp -a dist/*.ttf $(DESTDIR)/var/www/
+	cp -a dist/*.woff $(DESTDIR)/var/www/
+	cp -a dist/*.woff2 $(DESTDIR)/var/www/ || :
 
-	install  -m 0644 app/404.html  $(DESTDIR)/var/www/
-	install  -m 0644 app/robots.txt  $(DESTDIR)/var/www/
-	install  -m 0644 app/index.html  $(DESTDIR)/var/www/
+	install -m 0644 dist/404.html $(DESTDIR)/var/www/
+	install -m 0644 dist/robots.txt $(DESTDIR)/var/www/
+	install -m 0644 dist/index.html $(DESTDIR)/var/www/
 
-	install -m 0644 default_config_dump.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.tsv
-	install -m 0644 default_config_dump.wb5.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb5.tsv
-	install -m 0644 default_config_dump.wb6.tsv $(DESTDIR)/usr/share/wb-mqtt-homeui/default_config_dump.wb6.tsv
+	install -d $(DESTDIR)/usr/share/wb-mqtt-homeui
+	install -m 0644 config.default.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
+	install -m 0644 config.wb5.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
+	install -m 0644 config.wb6.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
 
-	install -d -m 0777 $(DESTDIR)/var/www/uploads/
+	install -d $(DESTDIR)/usr/lib/wb-mqtt-homeui
+	install -m 0755 convert_config_v1v2.py $(DESTDIR)/usr/lib/wb-mqtt-homeui/convert_config_v1v2
 
+	install -d $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
+	install -m 0644 webui.schema.json $(DESTDIR)/usr/share/wb-mqtt-confed/schemas/webui.schema.json
+	
+	install -d  $(DESTDIR)/etc/wb-configs.d
+	install -m 0644 wb-configs.rules $(DESTDIR)/etc/wb-configs.d/20wb-mqtt-homeui
+
+uninstall:
+	rm -fR $(DESTDIR)/var/www/*
+	rm -f $(DESTDIR)/etc/wb-webui.conf
+	rm -fR $(DESTDIR)/var/www/uploads/
+	rm -fR $(DESTDIR)/usr/share/wb-mqtt-confed
+	rm -fR $(DESTDIR)/usr/share/wb-mqtt-homeui

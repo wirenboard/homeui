@@ -6,17 +6,13 @@
 
 /* Global Styles */
 
-[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-  display: none !important;
-}
-
 html, body {
     overflow-x: hidden;
 }
 
 body {
     margin-top: 50px;
-    background-color: #222;
+    background: #222;
 }
 
 @media(min-width:768px) {
@@ -33,7 +29,8 @@ body {
     width: 100%;
     padding: 0;
     background-color: #fff;
-    min-height: 370px;
+    height: calc(100vh - 50px);
+    overflow: auto;
     position: relative;
 }
 
@@ -264,34 +261,44 @@ ul.alert-dropdown {
 
 /* Devices List */
 
-.multicol-list{
-  position: relative;
-  -webkit-column-width: 390px;
-  -webkit-column-gap: 0;
-  -moz-column-width: 390px;
-  -moz-column-gap: 0;
-  column-width: 390px;
-  column-gap: 0;
+@media(min-width:768px) {
+  .multicol-list{
+    position: relative;
+    -webkit-column-width: 390px;
+    -webkit-column-gap: 0;
+    -moz-column-width: 390px;
+    -moz-column-gap: 0;
+    column-width: 390px;
+    column-gap: 0;
+  }
 }
 
-.multicol-list ul li{
+.multicol-list ul li {
   display: inline-block;
   width: 380px;
 }
 
+@media(max-width: 390px) {
+  .multicol-list ul li {
+    display: inline-block;
+    width: 100% !important;
+  }
+}
 
 
 
 
-/* Form Validation */
 
-.ng-invalid{
+/* Form Validation -- disabled for now
+
+.ng-invalid {
   border-color: #FA787E;
 }
 
 .ng-valid.ng-dirty{
   border-color: #78FA89;
 }
+-->
 
 /* NavBar Items */
 
@@ -333,51 +340,6 @@ footer{
   bottom: 0;
   right:25px;
   opacity: 0.5;
-}
-
-.control-wrapper h4{
-  display:inline-block;
-  width: 200px;
-  float: left;
-}
-
-
-.control-wrapper.control-error h4{
-	color: red;
-}
-
-
-.control-wrapper input[type="text"].control-value {
-    width: 120px;
-}
-
-.control-value {
-    float: right;
-}
-.control-wrapper input[type="range"] {
-    width: 102px;
-}
-
-.control-wrapper .control-range-text-value {
-	margin-left: 3px;
-    max-width: 20px;
-    min-width: 20px;
-/*
-    float: right;
-*/
-    display: inline;
-}
-
-
-
-
-
-.control-rgb > span{
-  float: right;
-}
-
-.control-pushbutton{
-  clear: both;
 }
 
 .widget-caption-button {
@@ -548,9 +510,384 @@ button.show-console span {
   opacity: 1;
 }
 
-div[data-schemapath] > h3 {
+.color-indicator {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.icon-button {
+  -webkit-appearance: none;
+  outline: none;
+  border: 0;
+  background: transparent;
+}
+
+.devices-control.alert {
+    padding: 0;
+}
+
+.display-cell {
+    width: 100%;
+    position: relative;
+    padding-right: 35px;
+}
+
+.display-cell-btn,
+.display-cell-btn:active {
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    left: auto;
+    position: absolute;
+    padding: 0 5px 1px 3px;
+}
+.display-cell-btn i{
+    font-size: 10px;
+}
+.display-cell .value,
+.display-cell .units,
+.display-cell input {
+  font-family: monospace;
+}
+
+.display-cell-bin .display-cell:not(.cell-type-range) {
+  display: flex;
+  align-items: center;
+}
+
+.display-cell-bin .display-cell:not(.cell-type-range) h4 {
+  flex-grow: 1;
+}
+
+.display-cell .cell-range .value-wrapper {
+  display: block;
+  text-align: center;
+  border-bottom: 1px dotted #ccc;
+  width: 80%;
+  margin: 0 auto 4px auto;
+}
+
+.display-cell  button.cell-button {
+  margin: 4px 0;
+}
+
+.display-cell  button.cell-button h4 {
+  font-size: 13px;
+}
+.display-cell input.cell-text {
+  width: 120px;
+}
+
+.display-cell .cell-value input {
+  width: 120px;
+}
+
+.display-cell .cell-text {
+  margin: 0 0 0px;
+}
+
+.display-cell .cell-title {
   font-size: 14px;
-  font-weight: 700;
+}
+
+.cell-error {
+  color: red;
+}
+
+.widget .panel-heading {
+  display: flex;
+}
+
+.widget-caption-button {
+  cursor: pointer;
+  visibility: hidden;
+}
+
+.widget:hover .widget-caption-button {
+  visibility: visible;
+}
+
+.widget .panel-heading .widget-name,
+.widget .panel-heading .editable-text {
+  flex-grow: 1;
+}
+
+.widget .panel-heading .editable-wrap {
+  display: block;
+}
+
+.widget .panel-heading input[type=text] {
+  width: 100%;
+  color: #555;
+  border: none;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.widget .panel-heading input[type=text]:focus {
+  outline: none;
+}
+
+.widget .add-cell label select {
+  display: inline-block;
+  width: 140px;
+}
+.widget .cells-list .cell-actions {
+  text-align: center;
+}
+.widget .cells-list .cell-actions label {
+  cursor: pointer;
+}
+.widget .cells-list .cell-actions .action-name {
+  display: block;
+  color: #555555;
+}
+.widget .cells-list .editable-input {
+  width: 140px;
+}
+.widget .cells-list .cell-name {
+  padding-left: 0;
+}
+.widget .cells-list .cell-id {
+  padding-left: 0;
+  padding-right: 0;
+}
+.widget .cells-list .remove-cell {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.widget .widget-json-settings {
+  width: 100%;
+  height: 400px;
+}
+
+.widget .cells-list .cell-id {
+  padding-left: 0;
+  padding-right: 0;
+}
+.widget .cells-list .cell-id span {
+  display: block;
+  width: 102px;
+  word-wrap: break-word;
+}
+
+.widget .btn-form {
+  margin-top: 10px;
+}
+
+.widget .ui-select-container {
+  max-width: 100%;
+}
+
+.widget.compact .display-cell.cell-type-range {
+  margin-top: 4px;
+}
+
+.widget.compact .display-cell:not(.cell-type-range) {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+.idx-col {
+  width: 30px;
+}
+
+.name-col input[type=text] {
+  display: inline-block;
+  width: 400px;
+}
+
+.id-col {
+  width: 100px;
+}
+
+.button-col {
+  width: 200px;
+}
+
+.widgets-table .name-col {
+  min-width: 200px;
+}
+
+.widgets-table .description-col {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.widgets-table ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.widgets-table .cell-name-col {
+  min-width: 200px;
+}
+
+.widgets-table h4.cell-title .name {
+  font-size: 14px;
+}
+
+.widgets-table h4.cell-title .id {
+  font-size: 10px;
+  display: block;
+  margin-top: 2px;
+}
+
+.widgets-table .dashboards-col {
+  width: 200px
+}
+
+.widgets-table .cell-type-col {
+  width: 100px;
+}
+
+.widgets-table .cell-value-col {
+  width: 200px;
+}
+
+.widgets-table .cell-history-col {
+  width: 21px;
+}
+
+.widgets-table .cell-history-col {
+  width: 21px;
+}
+
+.widgets-table .button-col button {
+  color: #337ab7;
+  margin: 0;
+  padding: 2px;
+}
+
+.widgets-table .button-col button[name=delete] {
+  color: #c00;
+}
+
+.widgets-table td .widget {
+  margin: 10px auto;
+  max-width: 378px;
+}
+
+.widgets-table .button-col {
+  width: 60px;
+}
+
+.editable-error {
+  color: red;
+}
+
+.editable-wrap.editable-elastic-textarea {
+  display: block;
+  margin-top: 10px;
+}
+
+.table.webui-table td,
+.table.webui-table th {
+  vertical-align: middle;
+}
+
+.history-time-col-l {
+    padding-top: 42px;
+}
+
+.history-time-col-r {
+    padding-top: 34px;
+}
+
+.jarviswidget > div {
+    border-width: 1px;
+}
+
+svg-scheme {
+    display: block;
+}
+
+svg:not(:root) {
+    overflow: auto;
+}
+/*переназначаю цвета кнопок*/
+.uib-datepicker-popup .btn-success {
+    background-color: white;
+    border-color: lightgrey;
+    color: black;
+}
+.uib-datepicker-popup .btn-danger {
+    background-color: #456b7b;
+    border-color: #456b7b;
+}
+.uib-datepicker-popup .btn-info {
+    background-color: #5b835b;
+    border-color: #5b835b;
+}
+
+/*разъединяю btn-group */
+.uib-datepicker-popup .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+}
+.uib-datepicker-popup .btn-group>.btn:last-child:not(:first-child) {
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+}
+.uib-datepicker-popup .btn-group>.btn {
+     float: none;
+}
+
+/*активная кнопка сегодня*/
+.uib-datepicker-popup .btn-info .text-info {
+    color: white;
+}
+/*выключаю нажим кнопки*/
+[uib-datepicker-popup-wrap] + span .btn:active {
+     top: 0;
+     left: 0;
+}
+
+[uib-datepicker] .btn {
+    /*border-color: rgba(0,0,0,0);*/
+    border: none;
+}
+
+@media (max-width: 767px) {
+  .navbar-collapse {
+    padding: 0;
+  }
+
+  .navbar-nav.side-nav {
+    margin: 8px 0;
+  }
+}
+
+body > double-bounce-spinner {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+body > double-bounce-spinner .double-bounce-spinner {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -20px 0px 0px -20px;
+}
+
+body > double-bounce-spinner .double-bounce-spinner .double-bounce1, 
+body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
+  background-color: #3276b1;
+}
+
+/* Для совместимости с wb-mqtt-serial >= 2.7.0 */
+div[data-schemapath] > h3 {
+  font-size: 13px;
   margin-top: 0px;
 }
 

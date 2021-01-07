@@ -1,14 +1,17 @@
-"use strict";
+class ConfigCtrl {
+  constructor($scope, $stateParams, rolesFactory, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
+    'ngInject';
 
-angular.module("homeuiApp")
-  .controller("ConfigCtrl", function ($scope, $routeParams, $timeout, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
+    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
+    if(!this.haveRights) return;
     $scope.file = {
-      schemaPath: $routeParams.path,
+      schemaPath: $stateParams.path,
       configPath: "",
       loaded: false,
       valid: true,
       content: {}
     };
+
     $scope.editorOptions = {};
     if (!/^\//.test($scope.file.schemaPath))
       $scope.file.schemaPath = "/" + $scope.file.schemaPath;
@@ -56,4 +59,10 @@ angular.module("homeuiApp")
     };
 
     whenMqttReady().then(load);
-  });
+  }
+}
+
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.config', [])
+    .controller('ConfigCtrl', ConfigCtrl);

@@ -1,25 +1,20 @@
-"use strict";
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/javascript/javascript';
 
-angular.module("homeuiApp")
-  .directive("scriptForm", function (PageState) {
-    return {
-      restrict: "A",
-      link: function (scope, element) {
-        var formCtrl = scope[element.attr("name")];
-        scope.$watch(element.attr("name") + ".$dirty", function (newValue) {
-          PageState.setDirty(newValue);
-        });
-      }
-    };
-  })
-  .controller("ScriptCtrl", function ($scope, $routeParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
+class ScriptCtrl {
+  constructor($scope, $stateParams, $timeout, EditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors, rolesFactory) {
+    'ngInject';
+
+    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
+    if(!this.haveRights) return;
+
     var cm, pos = null;
     $scope.canSave = function () {
       return PageState.isDirty();
     };
     $scope.file = {
-      isNew: !$routeParams.hasOwnProperty("path"),
-      path: $routeParams.path,
+      isNew: !$stateParams.hasOwnProperty("path"),
+      path: $stateParams.path,
       loaded: false,
       content: ""
     };
@@ -76,7 +71,7 @@ angular.module("homeuiApp")
           if ($scope.file.isNew || pos !== null) {
             // clear pos in the url after saving to be able
             // to navigate to errors
-            $location.path("/scripts/edit/" + reply.path);
+            $location.path("/rules/edit/" + reply.path);
           } else {
             cm.focus();
             cm.setValue(cm.getValue()); // clear line classes / marks
@@ -113,4 +108,10 @@ angular.module("homeuiApp")
             pos === null);
       }).catch(errors.catch("Error loading the file"));
     }
-  });
+  }
+}
+
+//-----------------------------------------------------------------------------
+export default angular
+    .module('homeuiApp.script', [])
+    .controller('ScriptCtrl', ScriptCtrl);

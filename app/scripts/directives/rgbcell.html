@@ -1,0 +1,12 @@
+<span class="cell cell-rgb">
+  <spectrum-colorpicker ng-if="cell.valueType == 'rgb' && !cell.readOnly"
+                        format="rgb"
+                        options="rgbCtrl.colorPickerOptions"
+                        on-show-options="{ update : false }"
+                        on-hide-options="{ update : false }"
+                        on-move-options="{ update : false }"
+                        transform-rgb ng-model="cell.value">
+  </spectrum-colorpicker>
+  <span ng-if="cell.valueType == 'rgb' && cell.readOnly"
+        class="color-indicator" ng-style="rgbCtrl.indicatorStyle()"></span>
+</span>

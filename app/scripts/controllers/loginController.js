@@ -1,11 +1,11 @@
-'use strict';
+class LoginCtrl {
+  constructor($window, $location, $routeParams) {
+    'ngInject';
 
-angular.module('homeuiApp')
-  .controller('LoginCtrl', ['$window', '$location', '$routeParams', function($window, $location, $routeParams){
-    if($routeParams.id && $routeParams.id === 'wb_008641ccdc3d'){
-      if($window.localStorage['user'] === $routeParams.id){
+    if ($routeParams.id && $routeParams.id === 'wb_008641ccdc3d') {
+      if ($window.localStorage['user'] === $routeParams.id) {
         $location.path('/');
-      }else{
+      } else {
         $window.localStorage.setItem('host', 'mqtt.carbonfay.ru');
         $window.localStorage.setItem('port', '18883');
         $window.localStorage.setItem('user', 'wb_008641ccdc3d');
@@ -13,10 +13,10 @@ angular.module('homeuiApp')
         $window.localStorage.setItem('prefix', 'true');
         $window.location.reload();
       };
-    }else{
-      if($window.localStorage['user'] === undefined){
+    } else {
+      if ($window.localStorage['user'] === undefined) {
         $location.path('/settings');
-      }else{
+      } else {
         $window.localStorage.removeItem('host');
         $window.localStorage.removeItem('port');
         $window.localStorage.removeItem('user');
@@ -25,4 +25,7 @@ angular.module('homeuiApp')
         $window.location.reload();
       };
     };
-  }]);
+  }
+}
+
+export default LoginCtrl;

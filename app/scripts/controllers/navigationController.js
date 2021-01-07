@@ -1,15 +1,17 @@
-'use strict';
+class NavigationCtrl {
+  constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig, rolesFactory) {
+    'ngInject';
 
-angular.module('homeuiApp')
-  .controller('NavigationCtrl', function($scope, $location, CommonCode, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors) {
+    $scope.roles = rolesFactory;
+
     $scope.isActive = function(viewLocation){
       return viewLocation === $location.path();
     };
-    $scope.data = CommonCode.data;
-    $scope.rooms = $scope.data.rooms;
-    $scope.dashboards = $scope.data.dashboards;
-    $scope.widgets = $scope.data.widgets;
-    $scope.widget_templates = $scope.data.widget_templates;
+
+    $scope.dashboards = () => {
+      return uiConfig.data.dashboards.filter(dashboard => !dashboard.isNew);
+    };
+
     $scope.isConnected = function () {
       return mqttClient.isConnected();
     };
@@ -25,31 +27,13 @@ angular.module('homeuiApp')
       });
     });
 
-    function collectLocs(scripts, member) {
-      var m = {};
-      scripts.forEach(function (script) {
-        (script[member] || []).forEach(function (loc) {
-          m[loc.name] = {
-            virtualPath: script.virtualPath,
-            name: loc.name,
-            line: loc.line
-          };
-        });
-      });
-      var r = [];
-      Object.keys(m).sort().forEach(function (name) {
-        r.push(m[name]);
-      });
-      return r;
-    }
-
     $scope.getScripts = function () {
       if (needToLoadScripts) {
         needToLoadScripts = false;
         EditorProxy.List().then(function (result) {
           scripts = result;
-          rules = collectLocs(scripts, "rules");
-          devices = collectLocs(scripts, "devices");
+          rules = this.collectLocs(scripts, "rules");
+          devices = this.collectLocs(scripts, "devices");
         }).catch(errors.catch("Error listing the scripts"));
       }
       return scripts;
@@ -74,28 +58,36 @@ angular.module('homeuiApp')
       }
       return configs;
     };
-  })
-  .directive('roomMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/rooms/menu-item.html'
-    };
-  })
-  .directive('dashboardMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/dashboards/menu-item.html'
-    };
-  })
-  .directive('widgetMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/widgets/menu-item.html'
-    };
-  })
-  .directive('widgetTemplateMenuItem', function(){
-    return{
-      restrict: 'A',
-      templateUrl: 'views/widgets/template-menu-item.html'
-    };
-  });
+
+    $scope.toggleNavigation = function () {
+      const pageWrapperClassList = document.getElementById('overlay').classList;
+      const overlayClass = 'overlay';
+
+      pageWrapperClassList.contains(overlayClass) ? 
+        pageWrapperClassList.remove(overlayClass) : 
+        pageWrapperClassList.add(overlayClass);
+    }
+  }
+
+//-----------------------------------------------------------------------------
+  collectLocs(scripts, member) {
+    var m = {};
+    scripts.forEach(function (script) {
+      (script[member] || []).forEach(function (loc) {
+        m[loc.name] = {
+          virtualPath: script.virtualPath,
+          name: loc.name,
+          line: loc.line
+        };
+      });
+    });
+    var r = [];
+    Object.keys(m).sort().forEach(function (name) {
+      r.push(m[name]);
+    });
+    return r;
+  }
+}
+
+//-----------------------------------------------------------------------------
+export default NavigationCtrl;

@@ -1,8 +1,11 @@
 node_modules
 dist
+*.tgz
+*.tar.*
 .tmp
 .sass-cache
 /bower_components
+app/bower_components
 npm-debug.log
 .tern-port
 
@@ -10,5 +13,11 @@ debian/files
 debian/wb-mqtt-homeui.debhelper.log
 debian/wb-mqtt-homeui.substvars
 debian/wb-mqtt-homeui/
-				
+
 debian/wb-mqtt-homeui*
+
+grunt.log
+.fuse*
+coverage
+*.sh
+*.tsv

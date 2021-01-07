@@ -1,6 +1,13 @@
-'use strict';
+class HomeCtrl {
+  constructor(uiConfig,rolesFactory) {
+    'ngInject';
 
-angular.module('homeuiApp')
-  .controller('HomeCtrl', ['$scope', 'CommonCode', function ($scope, CommonCode){
-    $scope.data = CommonCode.data;
-  }]);
+    this.roles = rolesFactory;
+    uiConfig.whenReady()
+    .then((data) => {
+      this.dashboard = uiConfig.getDashboard(data.defaultDashboardId);
+    });
+  }
+}
+
+export default HomeCtrl;

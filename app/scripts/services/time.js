@@ -1,8 +1,5 @@
-"use strict";
+function getTimeService() {
+  return () => new Date().getTime();
+}
 
-angular.module("homeuiApp")
-  .factory("getTime", function () {
-    return function getTime () {
-      return new Date().getTime();
-    };
-  });
+export default getTimeService;

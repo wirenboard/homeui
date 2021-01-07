@@ -1,3 +1,163 @@
+wb-mqtt-homeui (2.0.0) stable; urgency=medium
+
+  * mark as stable
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 07 Jan 2021 11:39:10 +0300
+
+wb-mqtt-homeui (2.0.0~rc6) stable; urgency=medium
+
+  * css is modified to support new wb-mqtt-serial UI
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 25 Dec 2020 16:55:00 +0500
+
+wb-mqtt-homeui (2.0.0~rc5) stable; urgency=medium
+
+  * Error in config conversion from v1.x is fixed.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 29 Dec 2020 21:09:00 +0500
+
+wb-mqtt-homeui (2.0.0~rc4) stable; urgency=medium
+
+  * Plotly.js is bundled with the package.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 25 Dec 2020 09:20:00 +0500
+
+wb-mqtt-homeui (2.0.0~rc3) stable; urgency=medium
+
+  * history ui bug fixes #126
+  * uniform fonts in "Devices" tab
+  * translation is added to "Dashboards" tab labels
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 04 Dec 2020 15:38:00 +0500
+
+wb-mqtt-homeui (2.0.0~rc2) stable; urgency=medium
+
+  * fix i18n
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 20 Apr 2020 01:44:01 +0300
+
+wb-mqtt-homeui (2.0.0~rc1) stable; urgency=medium
+
+  * fix switch sticking bug #154 #137
+  * all of the below
+
+ -- Evgeny Boger <boger@contactless.ru>  Sun, 19 Apr 2020 23:32:40 +0300
+
+wb-mqtt-homeui (2.0~beta13) stable; urgency=medium
+
+  * deprecate meta/writable in favor of meta/readable=false
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 16 Apr 2020 22:28:47 +0300
+
+wb-mqtt-homeui (2.0~beta12) stable; urgency=medium
+
+  * disable widget compact mode by default
+
+ -- Pavel Poglazov <poglazov@contactless.ru>  Wed, 19 Jun 2019 20:37:30 +0300
+
+wb-mqtt-homeui (2.0~beta11) stable; urgency=medium
+
+  * add delete device button
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 12 Apr 2019 23:26:01 +0300
+
+wb-mqtt-homeui (2.0~beta10) stable; urgency=medium
+
+  * disable webui editing
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 12 Apr 2019 22:51:46 +0300
+
+wb-mqtt-homeui (2.0~beta9) stable; urgency=medium
+
+  * ui: add new mobile menu
+  * core: new template loader: fix cache problems when migrating from WebUI 1.0
+  * history: allow to download history as a CSV file
+  * history: fix cutting of long tick labels in Y-axis
+  * dashboards: fix display of SVG dashboards 
+
+ -- Evgeny Boger <boger@contactless.ru>  Mon, 08 Apr 2019 20:23:53 +0300
+
+wb-mqtt-homeui (2.0~beta8) stable; urgency=medium
+
+  * merge master: wb6 and wb-utils 2.0 compatibility,
+  *  forceDefault option (needed for tcp ports on wb-mqtt-serial)
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 26 Jan 2019 20:36:13 +0300
+
+wb-mqtt-homeui (2.0~beta7) stable; urgency=medium
+
+  * fix access role alert behaviour
+  * temporary delete the yet to be supported controls on Scripts page
+  * rework devices screen: auto-collapse device tiles if they won't fit to the screen
+  * fix default dashboard setting
+  * fix config page for wb-hwconf-manager (wb-hardware)
+  * properly set default settings on first start
+  * copy channel name or value on click, then show a tooltip
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 10 Nov 2018 13:58:46 +0300
+
+wb-mqtt-homeui (2.0~beta6) stable; urgency=medium
+
+  * compatibility with newer wb-utils in postinst
+  * fix pushbutton renaming in widgets
+  * show text controls as labels
+  * change favicon and logos
+  * changed css rules for displaying rows with values
+  * add menu collapsing to all end menu items
+  * changed the styles of items in the mobile menu to fit full wight
+  * change min-height of main page-wrapper
+  * change behavior of 'copy to clipboard' popup
+  * fix styles for readonly switch
+  * add history btn to dashboards/widgets
+  * fix menu width for mobile
+
+ -- Evgeny Boger <boger@contactless.ru>  Wed, 17 Oct 2018 18:32:47 +0300
+
+wb-mqtt-homeui (2.0~beta5) stable; urgency=medium
+
+  * Allow to invert switch state in widgets
+  * Mark widgets present on multiple dashboards
+  * Increase default RPC timeout
+  * Fixes SVG dashboards
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 24 Feb 2018 14:30:12 +0300
+
+wb-mqtt-homeui (2.0~beta4) stable; urgency=medium
+
+  * Allow to edit widget as JSON
+  * Autologin
+  * Adding the ability to add widget to several dashboards
+  * Add widget delete and remove from dashboard confirmation
+  * Add topic instead meta-type to widget in edit mode
+
+ -- Evgeny Boger <boger@contactless.ru>  Tue, 13 Feb 2018 12:27:13 +0300
+
+wb-mqtt-homeui (2.0~beta3) stable; urgency=medium
+
+  * do not require wb-mqtt-db
+
+ -- Evgeny Boger <boger@contactless.ru>  Thu, 26 Oct 2017 02:28:54 +0300
+
+wb-mqtt-homeui (2.0~beta2) testing; urgency=medium
+
+  * carbonfay development version, round 1
+
+ -- Evgeny Boger <boger@contactless.ru>  Fri, 20 Oct 2017 23:09:21 +0300
+
+wb-mqtt-homeui (2.0~beta1) stable; urgency=medium
+
+  * webpack build
+
+ -- Evgeny Boger <boger@contactless.ru>  Sat, 08 Apr 2017 14:20:39 +0300
+
+wb-mqtt-homeui (2.0~alpha) stable; urgency=medium
+
+  * json config
+  * new dashboards & widgets
+  * removed rooms
+
+ -- Ivan Shvedunov <ivan4th@gmail.com>  Thu, 06 Jun 2016 01:02:09 +0300
+
 wb-mqtt-homeui (1.8.0) stable; urgency=medium
 
   * css is modified to support new wb-mqtt-serial UI

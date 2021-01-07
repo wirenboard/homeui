@@ -1,0 +1,37 @@
+{
+    "dashboards": {
+        "title": {
+            "default": "Dashboards",
+            "svg": "SVG Dashboards"
+        },
+        "field": {
+            "id": "ID",
+            "name": "Name",
+            "fullwidth": "Full width"
+        },
+        "button": {
+            "add": "Add",
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "cancel": "Cancel",
+            "save": "Save"
+        },
+        "prompt": {
+            "delete": "Are you sure you want to delete <b>{{name}}</b> dashboard?"
+        },
+        "message": {
+            "empty": "No dashboards currently defined."
+        }
+    },
+    "dashboard": {
+        "svg": {
+            "edit": {
+                "title": {
+                    "create": "New SVG Dashboard",
+                    "update": "Edit SVG Dashboard"
+                }
+            }
+        }
+    }
+}
