@@ -21,6 +21,10 @@ def _generate_dict(path, value):
 def _merge_dicts(d1, d2):
     if d1 == d2:
         return d1
+    if d1 == 'undefined':
+        return d2
+    if d2 == 'undefined':
+        return d1
     d1_keys = set(d1.keys())
     d2_keys = set(d2.keys())
     is_same_keys = d2_keys.issubset(d1)
