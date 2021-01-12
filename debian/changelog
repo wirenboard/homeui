@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0.2) stable; urgency=medium
+
+  * Replace logo with svg
+
+ -- Pavel Poglazov <poglazov@contactless.ru>  Tue, 12 Jan 2021 17:42:39 +0300
+
 wb-mqtt-homeui (2.0.1) stable; urgency=medium
 
   * Error in config conversion from v1.x is fixed.
