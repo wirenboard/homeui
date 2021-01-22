@@ -2,7 +2,7 @@
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, DeviceData, $injector, handleData) {
+    constructor($scope, DeviceData, $injector, handleData, $q) {
         'ngInject';
 
         // 1. Self-reference
@@ -89,12 +89,18 @@ class HistoryCtrl {
         this.ready = false;
         this.loadPending = !!this.topics.length;
         this.originalUrl = this.getUrl();
+        
         // 4. Setup
+        var controlsAreLoaded = $q.defer();
         uiConfig.whenReady().then((data) => {
             updateControls(data.widgets, DeviceData);
+            controlsAreLoaded.resolve();
         });
 
-        whenMqttReady().then(() => {
+        $q.all([
+            controlsAreLoaded.promise,
+            whenMqttReady()
+          ]).then(() => {
             vm.ready = true;
             if (vm.loadPending) {
                 vm.beforeLoadChunkedHistory();
@@ -135,7 +141,9 @@ class HistoryCtrl {
                             ({
                                 topic: vm.topicFromCellId(cell.id),
                                 name: widget.name + " / " + (cell.name || cell.id),
-                                group: "Каналы из виджетов: "
+                                group: "Каналы из виджетов: ",
+                                valueType: cell.valueType,
+                                deviceControl: cell.id
                             })))),
                 "name");
             const channelsAll = Array.prototype.concat.apply(
@@ -147,7 +155,9 @@ class HistoryCtrl {
                       return ({
                           topic: vm.topicFromCellId(cell.id),
                           name: device.name + " / " + (cell.name || cell.id),
-                          group: "Все каналы: "
+                          group: "Все каналы: ",
+                          valueType: cell.valueType,
+                          deviceControl: cellId
                       });
                     });
                 })
@@ -491,9 +501,14 @@ class HistoryCtrl {
 
             // если это первый чанк то создаю график
             if(indexOfChunk==0) {
-
+                var nameCn = params.channels[0][0] + '/' + params.channels[0][1];
+                var cn = this.controls.find(element => ((element.deviceControl === nameCn) && (element.valueType === "boolean")));
+                var shapeMode = 'linear';
+                if (cn != undefined) {
+                    shapeMode = 'hv';
+                }
                 this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
-                    name: params.channels[0][0] + ' / ' + params.channels[0][1],
+                    name: nameCn,
                     x: this.xValues,
                     y: this.yValues,
                     error_y: {//построит график  типа "ОШИБКИ"(error-bars)
@@ -509,7 +524,8 @@ class HistoryCtrl {
                         opacity: 0.5
                     },
                     type: 'scatter',
-                    mode: 'lines'
+                    mode: 'lines',
+                    line: {shape: shapeMode}
                 }
             } else {
                 // если последущие то просто добавляю дату
