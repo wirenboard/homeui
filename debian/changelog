@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0.3) stable; urgency=medium
+
+  * Special line shapes for discrete values on history page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 21 Jan 2021 18:25:00 +0500
+
 wb-mqtt-homeui (2.0.2) stable; urgency=medium
 
   * Replace logo with svg
