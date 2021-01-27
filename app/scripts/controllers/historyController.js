@@ -2,7 +2,7 @@
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, DeviceData, $injector, handleData) {
+    constructor($scope, DeviceData, $injector, handleData, $q) {
         'ngInject';
 
         // 1. Self-reference
@@ -89,12 +89,18 @@ class HistoryCtrl {
         this.ready = false;
         this.loadPending = !!this.topics.length;
         this.originalUrl = this.getUrl();
+        
         // 4. Setup
+        var controlsAreLoaded = $q.defer();
         uiConfig.whenReady().then((data) => {
             updateControls(data.widgets, DeviceData);
+            controlsAreLoaded.resolve();
         });
 
-        whenMqttReady().then(() => {
+        $q.all([
+            controlsAreLoaded.promise,
+            whenMqttReady()
+          ]).then(() => {
             vm.ready = true;
             if (vm.loadPending) {
                 vm.beforeLoadChunkedHistory();
