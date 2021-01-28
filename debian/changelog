@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.0.4) stable; urgency=medium
+
+  * Another error in config conversion from v1.x is fixed.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 28 Jan 2021 09:35:00 +0500
+
 wb-mqtt-homeui (2.0.2) stable; urgency=medium
 
   * Replace logo with svg

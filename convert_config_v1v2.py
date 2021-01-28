@@ -142,7 +142,9 @@ def run_script():
                 continue
             path, value = splited
 
-        dicts.append(_generate_dict([i for i in path.split('/') if i], value))
+        parsed_dict = _generate_dict([i for i in path.split('/') if i], value)
+        if parsed_dict['config'].keys()[0] in ['widgets', 'dashboards', 'default_dashboard', 'rooms'] :
+            dicts.append(parsed_dict)
 
     result = dicts[0]
     for i in dicts[1:]:
