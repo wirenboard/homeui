@@ -134,7 +134,6 @@ class HistoryCtrl {
 
         //...........................................................................
         function updateControls(widgets, DeviceData) {
-            console.log("updateControls start");
             const channelsFromWidgets = orderByFilter(
                 Array.prototype.concat.apply(
                     [], widgets.map(widget =>
@@ -165,7 +164,6 @@ class HistoryCtrl {
             );
 
             vm.controls = [].concat(channelsFromWidgets, channelsAll);
-            vm.controls.forEach(element => console.log(element));
         }
 
     } // constructor
@@ -504,14 +502,11 @@ class HistoryCtrl {
             // если это первый чанк то создаю график
             if(indexOfChunk==0) {
                 var nameCn = params.channels[0][0] + '/' + params.channels[0][1];
-                var cn = this.controls.find(element => element.deviceControl === nameCn);
+                var cn = this.controls.find(element => ((element.deviceControl === nameCn) && (element.valueType === "boolean")));
                 var shapeMode = 'linear';
                 if (cn != undefined) {
-                    if (cn.valueType == "boolean") {
-                        shapeMode = 'hv';
-                    }
+                    shapeMode = 'hv';
                 }
-                console.log(nameCn + ' shape ' + shapeMode);
                 this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
                     name: nameCn,
                     x: this.xValues,
