@@ -12,6 +12,7 @@ const ChunkManifestPlugin = require('chunk-manifest-webpack-plugin');
 const WebpackChunkHash = require("webpack-chunk-hash");
 const InlineManifestWebpackPlugin = require("inline-manifest-webpack-plugin");
 const InlineChunksManifestPlugin = require('./inline-chunks-manifest');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const path = require('path');
 
@@ -316,38 +317,16 @@ module.exports = function makeWebpackConfig() {
         config.plugins.push(
             // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
             // Minify all javascript, switch loaders to minimizing mode
-            new webpack.optimize.UglifyJsPlugin({
-                compress: {
-                    warnings: false,
-                    properties: true,
-                    sequences: true,
-                    dead_code: true,
-                    conditionals: true,
-                    comparisons: true,
-                    evaluate: true,
-                    booleans: true,
-                    unused: true,
-                    loops: true,
-                    hoist_funs: true,
-                    cascade: true,
-                    if_return: true,
-                    join_vars: true,
-                    drop_debugger: true,
-                    unsafe: true,
-                    hoist_vars: true,
-                    negate_iife: true
-                },
-                comments: false,
-                sourceMap: false,
-                mangle: {
-                    screw_ie8: true,
-                    keep_fnames: false,
-                    toplevel: true,
-                    sort: true,
-                    eval: true,
-                    properties: true
-                },
-            }),
+            new UglifyJsPlugin({
+                uglifyOptions:
+                    {
+                        compress: {
+                            warnings: false,
+                        },
+                        sourceMap: false
+                    }
+                }
+            ),
 
             // Copy assets from the public folder
             // Reference: https://github.com/kevlened/copy-webpack-plugin
