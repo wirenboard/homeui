@@ -880,7 +880,7 @@ body > double-bounce-spinner .double-bounce-spinner {
   margin: -20px 0px 0px -20px;
 }
 
-body > double-bounce-spinner .double-bounce-spinner .double-bounce1, 
+body > double-bounce-spinner .double-bounce-spinner .double-bounce1,
 body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
   background-color: #3276b1;
 }
@@ -913,4 +913,8 @@ table.table-bordered {
 
 .je-object__container[data-schemapath="root"] {
   margin-top: 20px;
+}
+
+ul.col-md-2.nav.nav-pills.nav-stacked {
+    margin-bottom: 9px;
 }
