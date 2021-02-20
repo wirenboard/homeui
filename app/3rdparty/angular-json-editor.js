@@ -3,7 +3,6 @@
 
 'use strict';
 
-//const JSONEditor = require("@json-editor/json-editor").JSONEditor;
 import { JSONEditor} from "./jsoneditor";
 
 angular.module('angular-json-editor', []).provider('JSONEditor', function () {

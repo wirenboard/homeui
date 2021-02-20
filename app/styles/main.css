@@ -885,8 +885,8 @@ body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
   background-color: #3276b1;
 }
 
-/* Для совместимости с wb-mqtt-serial >= 2.8.0 */
-.je-header {
+/* Для совместимости с wb-mqtt-serial >= 2.9.0 */
+h3.je-header {
   margin-top: 0px;
 }
 
@@ -894,6 +894,23 @@ body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
   font-size: 13px;
 }
 
+h3.je-header.je-object__title.disable_collapse {
+  margin-bottom: 0px;
+  font-size: 15px;
+}
+
+div.tab-content {
+  padding-top: 9px;
+}
+
+div.tab-pane > select.form-control.je-switcher {
+  margin-bottom: 12px;
+}
+
+table.table-bordered {
+  margin-top: 2px;
+}
+
 .je-object__container[data-schemapath="root"] {
-    margin-top: 20px;
+  margin-top: 20px;
 }
