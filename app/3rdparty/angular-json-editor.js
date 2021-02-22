@@ -3,6 +3,8 @@
 
 'use strict';
 
+import { JSONEditor} from "./jsoneditor";
+
 angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
         defaults: {
@@ -13,14 +15,16 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         }
     };
 
+    overrideJSONEditor();
+
     this.configure = function (options) {
         extendDeep(configuration, options);
     };
 
     this.$get = ['$window', function ($window) {
-        var JSONEditor = $window.JSONEditor;
-        extendDeep(JSONEditor, configuration);
-        return $window.JSONEditor;
+        var jse = JSONEditor;
+        extendDeep(jse, configuration);
+        return jse;
     }];
 
     function extendDeep(dst) {
@@ -147,3 +151,21 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     };
 
 }]);
+
+function overrideJSONEditor() {
+    JSONEditor.defaults.custom_validators.push((schema, value, path) => {
+        const errors = [];
+        if (   schema.required
+            && schema.properties 
+            && schema.properties[schema.required[0]] 
+            && schema.properties[schema.required[0]].options
+            && schema.properties[schema.required[0]].options.hidden
+            && schema.properties[schema.required[0]].enum
+            && (schema.properties[schema.required[0]].enum.length == 1)
+            && (   !value[schema.required[0]]
+                || !(value[schema.required[0]] === schema.properties[schema.required[0]].enum[0]))) {
+              throw new Error("Stop object validation");
+        }
+        return errors;
+    });
+}

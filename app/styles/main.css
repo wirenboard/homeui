@@ -880,61 +880,41 @@ body > double-bounce-spinner .double-bounce-spinner {
   margin: -20px 0px 0px -20px;
 }
 
-body > double-bounce-spinner .double-bounce-spinner .double-bounce1, 
+body > double-bounce-spinner .double-bounce-spinner .double-bounce1,
 body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
   background-color: #3276b1;
 }
 
-/* Для совместимости с wb-mqtt-serial >= 2.7.0 */
-div[data-schemapath] > h3 {
-  font-size: 13px;
+/* Для совместимости с wb-mqtt-serial >= 2.9.0 */
+h3.je-header {
   margin-top: 0px;
 }
 
-div[data-schemapath$="_e"] > h3:first-child {
-  display: none;
+.je-header > label {
+  font-size: 13px;
 }
 
-div[data-schematype="object"]:not([data-schemapath*="_e."]) > .well-sm {
-  border: none;
-  margin: 0px;
-  box-shadow: none;
-  padding: 0px;
+h3.je-header.je-object__title.disable_collapse {
+  margin-bottom: 0px;
+  font-size: 15px;
 }
 
-div[data-schematype="object"][data-schemapath*="_e."]:not([data-schemapath$="_e"]) > .well-sm {
-  border: none;
-  margin: 0px;
-  box-shadow: none;
-  padding: 0px;
+div.tab-content {
+  padding-top: 9px;
 }
 
-div[data-schematype="array"][data-schemapath*="_e."] > .well-sm > div:first-child > div:not(:first-child) {
-  border: none;
-  margin: 0px;
-  box-shadow: none;
-  padding: 0px;
+div.tab-pane > select.form-control.je-switcher {
+  margin-bottom: 12px;
 }
 
-div[data-schematype="array"][data-schemapath*="_e."] > .well-sm {
-  border: none;
-  margin: 0px;
-  box-shadow: none;
-  padding: 0px;
+table.table-bordered {
+  margin-top: 2px;
 }
 
-div[data-schematype="object"][data-schemapath*="_e."]:not([data-schemapath$=".0"]) > h3 {
-  font-size: 0px;
-  margin-bottom: 5px;
+.je-object__container[data-schemapath="root"] {
+  margin-top: 20px;
 }
 
-div[data-schematype="array"][data-schemapath*="_e."] > h3:first-child {
-  display: none;
-}
-
-.well .well-sm[data-schematype="object"][data-schemapath*="_e."] {
-  border: none;
-  margin: 0px;
-  box-shadow: none;
-  padding: 0px;
+ul.col-md-2.nav.nav-pills.nav-stacked {
+    margin-bottom: 9px;
 }

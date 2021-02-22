@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.1.0) stable; urgency=medium
+
+  * Support for wb-mqtt-serial 2.9.0 (Json-editor updated from 0.7.22 to 2.5.2-wb).
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 11 Feb 2021 17:43:00 +0500
+
 wb-mqtt-homeui (2.0.4) stable; urgency=medium
 
   * Another error in config conversion from v1.x is fixed.
