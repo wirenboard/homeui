@@ -105,6 +105,14 @@
             "confirm": {
                 "remove": "Do you really want to delete bind?"
             }
+        },
+        "params-json": {
+            "title" : "SVG Bindings",
+            "button": {
+                "show" : "Edit bindings as JSON",
+                "save" : "Save",
+                "cancel" : "Cancel"
+            }
         }
     },
 

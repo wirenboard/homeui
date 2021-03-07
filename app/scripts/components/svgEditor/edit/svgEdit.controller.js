@@ -1,3 +1,6 @@
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/javascript/javascript';
+
 class SvgEditController {
 
     constructor($scope, $sce, DeviceData) {
@@ -151,6 +154,31 @@ class SvgEditController {
             this.saveSVG();
         }
     }
+
+    enableEditJsonMode () {
+        this.jsonSource = angular.toJson(this.dashboard.content.svg.params, true);
+        this.editJsonMode = true;
+    }
+
+    disableEditJsonMode () {
+        this.editJsonMode = false;
+    }
+
+    updateSourceFromJson () {
+        let newSource = null;
+        try {
+            newSource = angular.fromJson(this.jsonSource);
+        } catch (e) {
+            alert(e);
+            return;
+        }
+        if (!newSource) { return; }
+
+        this.dashboard.content.svg.params = angular.copy(newSource);
+
+        this.disableEditJsonMode();
+    }
+
 }
 
 export default SvgEditController;
