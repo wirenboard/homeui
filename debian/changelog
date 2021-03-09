@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.3.0) stable; urgency=medium
+
+  * Allow to edit SVG params (bindings) as JSON
+
+ -- Evgeny Boger <boger@contactless.ru>  Sun, 07 Mar 2021 20:25:10 +0300
+
 wb-mqtt-homeui (2.2.0) stable; urgency=medium
 
   * Special line shapes for discrete values on history page

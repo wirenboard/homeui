@@ -251,6 +251,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
           let deferred = $q.defer();
+          let deferred_2 = $q.defer();
           require.ensure(
             [], 
             (require) => {
@@ -261,6 +262,15 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
               .then(() => {
                 deferred.resolve(module);
               });
+
+              let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
+              $ocLazyLoad.load({
+                name: 'ui.codemirror'
+              })
+              .then(() => {
+                deferred_2.resolve(module_2);
+              });
+
             },
             'dashboard-svg-edit'
           );
