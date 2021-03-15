@@ -1,3 +1,10 @@
+
+wb-mqtt-homeui (2.3.1) stable; urgency=medium
+
+  * IP validation error in configs editor is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 15 Mar 2021 14:12:00 +0300
+
 wb-mqtt-homeui (2.3.0) stable; urgency=medium
 
   * Allow to edit SVG params (bindings) as JSON
