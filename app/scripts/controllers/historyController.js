@@ -40,8 +40,13 @@ class HistoryCtrl {
 
         this.topics = [];// все топики из урла
         this.chartConfig = [];// данные графика
-        this.controlIds = [];// контролы из урла
-        this.devices = [];// девайсы из урла
+
+        // контролы из урла, массив объектов
+        // {
+        //     device: ...
+        //     control: ...
+        // } 
+        this.controlsFromUrl = [];
         this.channelShortNames = [];
         this.channelNames = [];
         this.dataPoints = [];
@@ -71,14 +76,16 @@ class HistoryCtrl {
 
         // ищу в урле контролы
         if($stateParams.device && $stateParams.control) {
-            this.devices = $stateParams.device.split(';');
-            this.controlIds = $stateParams.control.split(';');
+            const parsedDevices = $stateParams.device.split(';');
+            const parsedControls = $stateParams.control.split(';');
             // только если количество параметров сходится
-            if(this.devices.length === this.controlIds.length) {
-                for (var i = 0; i < this.devices.length; i++) {
-                    this.topics.push("/devices/" + this.devices[i] + "/controls/" + this.controlIds[i]);
+            if(parsedDevices.length === parsedControls.length) {
+                this.controlsFromUrl = []
+                for (var i = 0; i < parsedDevices.length; i++) {
+                    this.topics.push("/devices/" + parsedDevices[i] + "/controls/" + parsedControls[i]);
                     // инициализирую все прогрес бары
                     this.progreses[i] = {value: 0, isLoaded: false};
+                    this.controlsFromUrl[i] = {device: parsedDevices[i], control: parsedControls[i]}
                 }
             }
         }
@@ -189,8 +196,8 @@ class HistoryCtrl {
     };
 
     updateState() {
-        var device = this.devices.join(';');
-        var control = this.controlIds.join(';');
+        var device  = this.controlsFromUrl.map(el => { return el.device  }).join(';');
+        var control = this.controlsFromUrl.map(el => { return el.control }).join(';');
         var st = this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-";
         var en = this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-";
         this.$state.go('history.sample', { device, control, start: st, end: en}, { reload: true, inherit: false, notify: true });
@@ -200,8 +207,7 @@ class HistoryCtrl {
     updateUrl(index=0,deleteOne=false,onlyTimeUpdate=false) {
         //  если удаляется селект
         if(deleteOne) {
-            this.devices.splice(index,1);
-            this.controlIds.splice(index,1);
+            this.controlsFromUrl.splice(index,1);
             this.selectedTopics.splice(index,1);
         } else {
             if (!onlyTimeUpdate) {
@@ -209,11 +215,12 @@ class HistoryCtrl {
                 var parsedTopic = this.parseTopic(this.selectedTopics[index]);
                 // если этот контрол уже загружен в другой селект или нет такого топика
                 if (!parsedTopic ||
-                    (this.controlIds.indexOf(parsedTopic.controlId)>=0 && this.devices.indexOf(parsedTopic.deviceId)>=0))
+                    (this.controlsFromUrl.some( el => {return (el.device === parsedTopic.deviceId) && (el.control === parsedTopic.controlId)})))
+                {
                     return;
+                }
                 // перезаписываю существующие
-                this.devices[index] = parsedTopic.deviceId;
-                this.controlIds[index] = parsedTopic.controlId;
+                this.controlsFromUrl[index] = {device: parsedTopic.deviceId, control: parsedTopic.controlId};
             } else {
                 this.resetTime();
                 this.updateState();
@@ -225,7 +232,7 @@ class HistoryCtrl {
 
         this.resetTime();
         var url = this.getUrl();
-        // изза остановки и возможного возобновления загрузки графика ввожу доп проверку
+        // из-за остановки и возможного возобновления загрузки графика ввожу доп проверку
         // изменился ли урл или нет
         if(this.originalUrl === url || location.href.indexOf(url)>=0) {
             this.updateState();
@@ -247,8 +254,8 @@ class HistoryCtrl {
     getUrl() {
         return [
             "/history",
-            this.devices.join(';'),
-            this.controlIds.join(';'),
+            this.controlsFromUrl.map(el => { return el.device  }).join(';'),
+            this.controlsFromUrl.map(el => { return el.control }).join(';'),
             this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-",
             this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-"
         ].join("/")
