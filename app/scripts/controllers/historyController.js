@@ -78,9 +78,9 @@ class HistoryCtrl {
         if($stateParams.device && $stateParams.control) {
             const parsedDevices = $stateParams.device.split(';');
             const parsedControls = $stateParams.control.split(';');
-            this.controlsFromUrl = []
             // только если количество параметров сходится
             if(parsedDevices.length === parsedControls.length) {
+                this.controlsFromUrl = []
                 for (var i = 0; i < parsedDevices.length; i++) {
                     this.topics.push("/devices/" + parsedDevices[i] + "/controls/" + parsedControls[i]);
                     // инициализирую все прогрес бары
