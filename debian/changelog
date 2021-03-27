@@ -1,3 +1,8 @@
+wb-mqtt-homeui (2.3.2) stable; urgency=medium
+
+  * Selection of similar topics in history is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sat, 27 Mar 2021 11:07:00 +0300
 
 wb-mqtt-homeui (2.3.1) stable; urgency=medium
 
