@@ -40,8 +40,11 @@ def _merge_dicts(d1, d2):
 
 
 def make_new_config(old_config):
-    old_config = old_config['config']
     config = {}
+    if not old_config:
+        return config
+
+    old_config = old_config['config']
 
     new_dashboards = _format_dashboards(old_config['dashboards'])
     config['dashboards'] = new_dashboards
@@ -146,9 +149,11 @@ def run_script():
         if parsed_dict['config'].keys()[0] in ['widgets', 'dashboards', 'default_dashboard', 'rooms'] :
             dicts.append(parsed_dict)
 
-    result = dicts[0]
-    for i in dicts[1:]:
-        result = _merge_dicts(result, i)
+    result = {}
+    if len(dicts) > 0:
+        result = dicts[0]
+        for i in dicts[1:]:
+            result = _merge_dicts(result, i)
 
     with open(args.output, 'w') as output_file:
         output_file.write(json.dumps(make_new_config(result), indent=4, sort_keys=True, ensure_ascii=False))
