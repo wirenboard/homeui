@@ -1,3 +1,8 @@
+wb-mqtt-homeui (2.3.2) stable; urgency=medium
+
+  * Another error in config conversion from v1.x is fixed.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 24 Mar 2021 18:22:00 +0300
 
 wb-mqtt-homeui (2.3.1) stable; urgency=medium
 
