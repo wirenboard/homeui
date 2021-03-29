@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.3.4) stable; urgency=medium
+
+  * Configs editor faster handles user's input
+  * A bug that prevents some validation errors from being displayed is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 29 Mar 2021 11:31:00 +0300
+
 wb-mqtt-homeui (2.3.3) stable; urgency=medium
 
   * Selection of similar topics in history is fixed
