@@ -32,6 +32,7 @@ import mqttServiceModule from './services/mqttService';
 import editorProxyService from './services/editorProxy';
 import configEditorProxyService from './services/configEditorProxy';
 import historyProxyService from './services/historyProxy';
+import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
 import gotoDefStartService from './services/gotoDefStart';
 import getTimeService from './services/time';
@@ -126,6 +127,7 @@ const module = angular
         'ngBootbox'
     ])
     .value('historyMaxPoints', 1000)
+    .value('logsMaxRows', 50)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
     .value('configSaveDebounceMs', 300);
 
@@ -135,6 +137,7 @@ module
     .factory('EditorProxy', editorProxyService)
     .factory('ConfigEditorProxy', configEditorProxyService)
     .factory('HistoryProxy', historyProxyService)
+    .factory('LogsProxy', logsProxyService)
     .factory('gotoDefStart', gotoDefStartService)
     .factory('getTime', getTimeService)
     .factory('Spinner', spinnerService)
