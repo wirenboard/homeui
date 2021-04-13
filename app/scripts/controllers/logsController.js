@@ -58,7 +58,7 @@ class LogsCtrl {
                 if (obj.end) {
                     var en = new Date();
                     en.setTime(obj.end * 1000);
-                    desc = st.toLocaleString() + ' - ' + en.toLocaletring();
+                    desc = st.toLocaleString() + ' - ' + en.toLocaleString();
                 } else {
                     desc = 'Current boot from ' + st.toLocaleString();
                 }
