@@ -98,11 +98,12 @@ class LogsCtrl {
             return;
         }
 
-        var params = {
-            service: this.selectedService
+        var params = {};
+        if (this.selectedService != 'All services') {
+            params.service = this.selectedService;
         };
-        if (this.selectedBoot != 'all') {
-            params.boot = this.selectedBoot;
+        if (this.selectedBoot.hash != 'all') {
+            params.boot = this.selectedBoot.hash;
         }
 
         // Reload logs
@@ -167,10 +168,11 @@ class LogsCtrl {
                 }
                 return { hash: obj.hash, desc: desc };
             });
-            this.boots.unshift({ hash: 'all', desc: 'All' });
+            this.boots.unshift({ hash: 'all', desc: 'All boots' });
             this.services = result.services;
+            this.services.unshift('All services');
             this.waitBootsAndServices = false;
-            this.selectedBoot = this.boots[0].hash;
+            this.selectedBoot = this.boots[0];
             this.selectedService = this.services[0];
         }).catch((err) => {
             this.waitBootsAndServices = false;

@@ -957,6 +957,16 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   .logs-radio-item {
     margin-top: 7px;
   }
+
+  .logs-time {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1200px) {
+  .logs-time-column {
+    white-space: nowrap;
+  }
 }
 
 .logs-load-button {
@@ -967,6 +977,10 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   color: GrayText;
 }
 
+.logs-service {
+  white-space: nowrap;
+}
+
 .logs-message-column {
   white-space: pre-wrap;
   padding-left: 5px;
@@ -975,4 +989,8 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
 .logs-view {
   height: 500px;
   width: 100%;
+}
+
+.logs-page .ui-select-container{
+  margin-bottom: 5px;
 }
