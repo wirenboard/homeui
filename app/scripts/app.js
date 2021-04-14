@@ -124,7 +124,8 @@ const module = angular
         ///'toggle-switch',
         'ui-rangeSlider',
         'ngToast',
-        'ngBootbox'
+        'ngBootbox',
+        'ui.scroll'
     ])
     .value('historyMaxPoints', 1000)
     .value('logsMaxRows', 50)

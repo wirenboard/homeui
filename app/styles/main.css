@@ -919,6 +919,12 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
     margin-bottom: 9px;
 }
 
+@media (max-width: 767px) {
+  .logs-load-button {
+    margin-left: 10px;
+  }
+}
+
 @media (max-width: 990px) {
   .logs-datetime-label {
     margin-top: 10px;
@@ -953,11 +959,20 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   }
 }
 
+.logs-load-button {
+  margin-top: -27px;
+}
+
 .logs-time-column {
   color: GrayText;
 }
 
 .logs-message-column {
-  white-space: pre;
+  white-space: pre-wrap;
   padding-left: 5px;
+}
+
+.logs-view {
+  height: 500px;
+  width: 100%;
 }

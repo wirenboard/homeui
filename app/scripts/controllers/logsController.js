@@ -12,7 +12,6 @@ class LogsCtrl {
         var errors = $injector.get('errors');
         var logsMaxRows = $injector.get('logsMaxRows');
         var dateFilter = $injector.get('dateFilter');
-        this.$timeout = $injector.get('$timeout');
         this.$state = $injector.get('$state');
 
         angular.extend(this, {
@@ -24,17 +23,23 @@ class LogsCtrl {
             errors: errors
         });
 
-        this.waitBootsAndServices = true
-        this.waitLogsLoading = false
-        this.requestLatestLogs = '1'
+        this.waitBootsAndServices = true;
+        this.logs = [];
+        this.requestLatestLogs = true;
         this.startDate = new Date();
-        this.selectedStartDateMinute = this.startDate;
+        this.selectedStartDateMinute = new Date();
 
         $q.all([
             whenMqttReady()
           ]).then(() => {
             vm.loadBootsAndServices();
         });
+
+        $scope.adapter = {};
+        $scope.datasource = {};
+        $scope.datasource.get = function (index, count, success) { 
+            return vm.getChunk(index, count, success);
+        };
 
         $scope.$on('$destroy', () => {
             // Do whatever cleanup might be necessary
@@ -44,12 +49,110 @@ class LogsCtrl {
 
     } // constructor
 
+    reload() {
+        this.logs = [];
+        this.scope.adapter.reload();
+    }
+
+    toLogsArrayIndex(uiScrollIndex) {
+        return uiScrollIndex - this.logsTopUiScrollIndex;
+    }
+
+    convertTimeToStr(entry) {
+        if (entry.time) {
+            var t = new Date();
+            t.setTime(entry.time);
+            entry.time = this.dateFilter(t, "dd-MM-yyyy HH:mm:ss.sss");
+        }
+        return entry;
+    }
+
+    getLogsSlice(uiScrollIndex, count) {
+        var start = this.toLogsArrayIndex(uiScrollIndex);
+        var end = start + count;
+        if (start < 0) {
+            start = 0;
+        }
+        return this.logs.slice(start, end);
+    }
+
+    setForwardCursor(params, logsArrayIndex) {
+        params.cursor = {
+            id: this.logs[0].cursor,
+            direction: 'forward'
+        };
+        params.limit = -logsArrayIndex;
+    }
+
+    setBackwardCursor(params, logsArrayIndex, count) {
+        params.cursor = {
+            id: this.logs[this.logs.length - 1].cursor,
+            direction: 'backward'
+        };
+        params.limit = count + logsArrayIndex - this.logs.length;
+    }
+
+    getChunk(uiScrollIndex, count, success) {
+        if (this.waitBootsAndServices) {
+            success([]);
+            return;
+        }
+
+        var params = {
+            service: this.selectedService
+        };
+        if (this.selectedBoot != 'all') {
+            params.boot = this.selectedBoot;
+        }
+
+        // Reload logs
+        if (this.logs.length == 0) {
+            this.logsTopUiScrollIndex = uiScrollIndex;
+            params.limit = count;
+            if (!this.requestLatestLogs) {
+                this.startDate.setHours(0);
+                this.startDate.setMinutes(0);
+                this.startDate.setSeconds(1);
+                params.time = (this.startDate.getTime() + this.convertHoursAndMinutesToMilliseconds(this.selectedStartDateMinute))/1000;
+            }
+        } else {
+            var logsArrayIndex = this.toLogsArrayIndex(uiScrollIndex);
+            // Requested interval is inside this.logs array, so get cached values
+            if ((logsArrayIndex >= 0) && (count + logsArrayIndex <= this.logs.length)) {
+                success(this.logs.slice(logsArrayIndex, logsArrayIndex + count));
+                return;
+            }
+            if (logsArrayIndex < 0) {
+                this.setForwardCursor(params, logsArrayIndex);         // Requested interval is before this.logs array
+            } else {
+                this.setBackwardCursor(params, logsArrayIndex, count); // Requested interval is after this.logs array
+            }
+            if (!params.cursor.id) {
+                success(this.getLogsSlice(uiScrollIndex, count));
+                return;
+            }
+        }
+
+        this.LogsProxy.Load(params).then(result => {
+            var res = result.map((entry) => {return this.convertTimeToStr(entry);});
+            if (uiScrollIndex < this.logsTopUiScrollIndex) {
+                this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
+                this.logs.unshift(...res);
+            } else {
+                this.logs.push(...res);
+            }
+            success(this.getLogsSlice(uiScrollIndex, count));
+        }).catch( (err) => {
+            success([]);
+            this.errors.catch("Error getting logs")(err);
+        });
+    }
+
     convertHoursAndMinutesToMilliseconds(date) {
         return (date.getHours()*60 + date.getMinutes())*60*1000;
     }
 
-    loadBootsAndServices()
-    {
+    loadBootsAndServices() {
         this.LogsProxy.List().then(result => {
             this.boots = result.boots.map(obj => {
                 var st = new Date();
@@ -72,64 +175,6 @@ class LogsCtrl {
         }).catch((err) => {
             this.waitBootsAndServices = false;
             this.errors.catch("Error getting boots and services")(err);
-        });
-    }
-
-    setCommonParams() {
-        var params = {
-            service: this.selectedService,
-            limit: this.logsMaxRows
-        };
-        if (this.selectedBoot != 'all') {
-            params.boot = this.selectedBoot;
-        }
-        return params;
-    }
-
-    startLoadingLogs() {
-        var params = this.setCommonParams();
-        if (this.requestLatestLogs != '1') {
-            this.startDate.setHours(0);
-            this.startDate.setMinutes(0);
-            this.startDate.setSeconds(1);
-            params.time = (this.startDate.getTime() + this.convertHoursAndMinutesToMilliseconds(this.selectedStartDateMinute))/1000;
-        }
-        this.loadLog(params);
-    }
-
-    moveForward() {
-        var params = this.setCommonParams();
-        params.cursor = {
-            id: this.logs[0].cursor,
-            direction: 'forward'
-        };
-        this.loadLog(params);
-    }
-
-    moveBackward() {
-        var params = this.setCommonParams();
-        params.cursor = {
-            id: this.logs[this.logs.length - 1].cursor,
-            direction: 'backward'
-        };
-        this.loadLog(params);
-    }
-
-    loadLog(params) {
-        this.waitLogsLoading = true;
-        this.LogsProxy.Load(params).then(result => {
-            this.logs = result.map(entry => {
-                if (entry.time) {
-                    var t = new Date();
-                    t.setTime(entry.time);
-                    entry.time = this.dateFilter(t, "dd-MM-yyyy HH:mm:ss.sss");
-                }
-                return entry;
-            });
-            this.waitLogsLoading = false;
-        }).catch( (err) => {
-            this.waitLogsLoading = false;
-            this.errors.catch("Error getting logs")(err);
         });
     }
 
