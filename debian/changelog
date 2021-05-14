@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.3.6) stable; urgency=medium
+
+  * Links are updated on "Help" page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 09 Apr 2021 09:35:00 +0300
+
 wb-mqtt-homeui (2.3.5) stable; urgency=medium
 
   * Dashboards deletion is fixed
