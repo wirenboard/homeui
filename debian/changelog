@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.4.1) stable; urgency=medium
+
+  * Links are updated on "Help" page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 09 Apr 2021 09:35:00 +0300
+
 wb-mqtt-homeui (2.4.0) stable; urgency=medium
 
  * Optional parameters in config editor are marked as "unknown" until explicitly set
