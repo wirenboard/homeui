@@ -24,6 +24,17 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     this.$get = ['$window', function ($window) {
         var jse = JSONEditor;
         extendDeep(jse, configuration);
+        jse.defaults.resolvers.unshift(schema => {
+            if(schema.options && schema.options.show_opt_in) {
+                switch (schema.type) {
+                    case "integer": return schema.enum ? "slWb" : "inWb";
+                    case "number": return "nmWb";
+                }
+            }
+        });
+        jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
+        jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
+        jse.defaults.editors["slWb"] = makeDisabledEditorWrapper(jse.defaults.editors["select"]);
         return jse;
     }];
 
@@ -169,3 +180,28 @@ function overrideJSONEditor() {
         return errors;
     });
 }
+
+function makeDisabledEditorWrapper (Base) {
+    return class extends Base {
+      build () {
+        super.build()
+        this.disabledEditor = this.theme.getFormInputField(this.input_type)
+        this.disabledEditor.style.display = 'none'
+        this.disabledEditor.disabled = true
+        this.disabledEditor.value = 'unknown'
+        this.control.insertBefore(this.disabledEditor, this.description)
+      }
+  
+      enable () {
+        this.input.style.display = ''
+        this.disabledEditor.style.display = 'none'
+        super.enable()
+      }
+  
+      disable (alwaysDisabled) {
+        super.disable(alwaysDisabled)
+        this.input.style.display = 'none'
+        this.disabledEditor.style.display = ''
+      }
+    }
+  }

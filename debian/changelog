@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.4.0) stable; urgency=medium
+
+ * Optional parameters in config editor are marked as "unknown" until explicitly set
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 19 May 2021 17:35:00 +0300
+
 wb-mqtt-homeui (2.3.5) stable; urgency=medium
 
   * Dashboards deletion is fixed
