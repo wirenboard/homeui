@@ -39,12 +39,12 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-5">
             <div class="row" ng-show="$ctrl.topics.length">
-                <div class="col-xs-1 history-time-col-l">
+                <div class="col-xs-1 col-md-1 history-time-col-l">
                     <label for="history-start">Start</label>
                 </div>
-                <div class="col-xs-8 history-time-col-r">
+                <div class="col-xs-6 col-sm-4 col-md-6 history-time-col-r">
                     <div class="input-group">
                         <input id="history-start"
                                type="text"
@@ -60,7 +60,7 @@
                           </span>
                     </div>
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-3 col-md-2">
                     <div uib-timepicker
                          ng-model="$ctrl.selectedStartDateMinute"
                          ng-change="$ctrl.timeChange('start')"
@@ -70,12 +70,12 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-5">
             <div class="row" ng-show="$ctrl.topics.length">
-                <div class="col-xs-1 history-time-col-l">
-                    <label for="history-start">End</label>
+                <div class="col-xs-1 col-md-1 history-time-col-l">
+                    <label for="history-end">End</label>
                 </div>
-                <div class="col-xs-8 history-time-col-r">
+                <div class="col-xs-6 col-sm-4 col-md-6 history-time-col-r">
                     <div class="input-group">
                         <input id="history-end"
                                type="text"
@@ -91,7 +91,7 @@
                           </span>
                     </div>
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-3 col-md-2">
                     <div uib-timepicker
                          ng-model="$ctrl.selectedEndDateMinute"
                          ng-change="$ctrl.timeChange('end')"
