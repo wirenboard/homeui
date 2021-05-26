@@ -38,14 +38,12 @@
                 <img src="images/logo.svg" alt="Wiren Board Web UI">
               </a>
               <p class="navbar-text navbar-right connection-status">
-                  <!--<a ui-sref="help">label label-warning
-                    <i class="glyphicon glyphicon-question-sign"></i>
-                  </a>-->
-                  <span class="label label-warning label-custom"
-                        ng-show="roles.current.roles.shortName"
-                        title="access level: {{roles.current.roles.name}}">
-                      {{roles.current.roles.shortName}}
-                  </span>
+                <span class="label label-custom" ng-class="roles.current.roles.isAdmin ? 'label label-custom label-danger' : 'label label-custom label-warning'"
+                      ng-show="roles.current.roles.shortName"
+                      title="access level: {{roles.current.roles.name}}">
+                      <span class="mobile-screen-access-level">{{roles.current.roles.shortName}}</span>
+                      <span class="big-screen-access-level">Access level: {{roles.current.roles.name}}</span>
+                </span>
                   <span class="connected-status" ng-class="(isConnected()) ? 'label label-success' : 'label label-danger'"
                         ng-bind="isConnected() ? 'Connected' : 'Disconnected'"></span>
               </p>

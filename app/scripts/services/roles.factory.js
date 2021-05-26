@@ -6,9 +6,9 @@ export default function rolesFactory () {
     'ngInject';
     var roles = {};
 
-    roles._ROLE_ONE = {id: 1, name: 'User', shortName: 'U'};
-    roles._ROLE_TWO = {id: 2, name: 'Operator', shortName: 'O'};
-    roles._ROLE_THREE = {id: 3, name: 'Administrator', shortName: 'A'};
+    roles._ROLE_ONE = {id: 1, name: 'User', shortName: 'U', description: 'Can view dashboards and history', isAdmin: false};
+    roles._ROLE_TWO = {id: 2, name: 'Operator', shortName: 'O', description: 'Can create and edit dashboards', isAdmin: false};
+    roles._ROLE_THREE = {id: 3, name: 'Administrator', shortName: 'A', description: 'Has full access to device settings and rules', isAdmin: true};
     roles.ROLE_ONE = roles._ROLE_ONE.id;
     roles.ROLE_TWO = roles._ROLE_TWO.id;
     roles.ROLE_THREE = roles._ROLE_THREE.id;
