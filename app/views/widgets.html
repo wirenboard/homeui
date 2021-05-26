@@ -39,16 +39,18 @@
                     class="glyphicon glyphicon-stats"></i></a>
         </td>
         <td ng-if="!!row.widget" class="description-col" rowspan="{{ row.rowSpan }}">{{ row.widget.description }}</td>
-        <td ng-if="!!row.widget" class="dashboards-col" rowspan="{{ row.rowSpan }}">
+        <td ng-if="!!row.widget" class="dashboards-col" rowspan="{{ row.rowSpan }}" >
             <ul ng-if="row.dashboards.length">
                 <li ng-repeat="dashboard in row.dashboards">
                     <a ui-sref="dashboard({ id: dashboard.id })">{{ dashboard.name }}</a>
                 </li>
             </ul>
-            <dashboard-picker items="row.availableDashboards" on-select="row.addDashboard"></dashboard-picker>
+            <div user-role="mto" current-role="roles.current.role">
+                <dashboard-picker items="row.availableDashboards" on-select="row.addDashboard" ></dashboard-picker>
+            </div>
         </td>
         <td ng-if="!!row.widget" class="button-col" rowspan="{{ row.rowSpan }}">
-            <button type="button" class="icon-button" name="delete" ng-click="row.deleteWidget()"><i
+            <button type="button" class="icon-button" name="delete" ng-click="row.deleteWidget()" user-role="mto" current-role="roles.current.role"><i
                     class="glyphicon glyphicon-trash medium"></i></button>
             <button ng-if="!row.preview"
                     type="button"
