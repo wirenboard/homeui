@@ -531,6 +531,7 @@ button.show-console span {
     width: 100%;
     position: relative;
     padding-right: 35px;
+    overflow-x:auto;
 }
 
 .display-cell-btn,
