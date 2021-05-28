@@ -120,13 +120,17 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
         }
         var callId = nextId++;
         var topic = this._prefix + method + "/" + mqttClient.getID();
-        mqttClient.send(
-          topic,
-          JSON.stringify({
-            id: callId,
-            params: params || {}
-          }),
-          false);
+        try {
+          mqttClient.send(
+            topic,
+            JSON.stringify({
+              id: callId,
+              params: params || {}
+            }),
+            false);
+        } catch (err) {
+          reject(err)
+        }
         var timeout = mqttClient.timeout(invokeResponseHandler.bind(null, callId, null, {
           error: timeoutError
         }), mqttRpcTimeout);
