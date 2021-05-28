@@ -9,6 +9,8 @@
                    ng-model="$ctrl.level"
                    ng-change="$ctrl.select($ctrl.one)"> {{$ctrl.one.name}}
             <span ng-show="$ctrl.activeRole == 1" class="label label-info"> active</span>
+            <br/>
+            <span style="color: GrayText">{{$ctrl.one.description}}</span>
         </label>
     </div>
 </div>
@@ -19,6 +21,8 @@
                    ng-model="$ctrl.level"
                    ng-change="$ctrl.select($ctrl.two)"> {{$ctrl.two.name}}
             <span ng-show="$ctrl.activeRole == 2" class="label label-info"> active</span>
+            <br/>
+            <span style="color: GrayText">{{$ctrl.two.description}}</span>
         </label>
     </div>
 </div>
@@ -29,6 +33,8 @@
                    ng-model="$ctrl.level"
                    ng-change="$ctrl.select($ctrl.three)"> {{$ctrl.three.name}}
             <span ng-show="$ctrl.activeRole == 3" class="label label-info"> active</span>
+            <br/>
+            <span style="color: GrayText">{{$ctrl.three.description}}</span>
         </label>
     </div>
 </div>

@@ -10,7 +10,7 @@ class ScriptCtrl {
 
     var cm, pos = null;
     $scope.canSave = function () {
-      return PageState.isDirty();
+      return PageState.isDirty() || $scope.file.isNew;
     };
     $scope.file = {
       isNew: !$stateParams.hasOwnProperty("path"),

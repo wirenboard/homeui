@@ -1,3 +1,19 @@
+wb-mqtt-homeui (2.4.1) stable; urgency=medium
+
+  * Links are updated on "Help" page
+  * "Updated at" column is removed from "Configs" page
+  * Widget reorder button is removed as it does nothing
+  * Widget deletion is prohibited for User and Operator access levels
+  * Scroll bar for long text in widgets is added
+  * A bug with disabling Save button on Script page is fixed
+  * Date editors on History page are made smaller
+  * Delete button on History page is moved close to topic selects
+  * Access level label shows more information
+  * Information about access levels is added
+  * SVG dasboards are excluded from selection for Home page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 26 May 2021 09:22:00 +0300
+
 wb-mqtt-homeui (2.4.0) stable; urgency=medium
 
  * Optional parameters in config editor are marked as "unknown" until explicitly set

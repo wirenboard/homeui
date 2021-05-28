@@ -1,7 +1,8 @@
 class WidgetsCtrl {
-  constructor($scope, uiConfig, DeviceData, handleData) {
+  constructor($scope, uiConfig, DeviceData, handleData, rolesFactory) {
     'ngInject';
 
+    
     this.handleData = handleData;
     this.cell = id => {
       return DeviceData.proxy(id);
@@ -20,7 +21,8 @@ class WidgetsCtrl {
         proxy: proxy
       };
     }
-
+    
+    $scope.roles = rolesFactory;
     $scope.historyStartTS = () => this.handleData.historyStartTS();
     $scope.rows = [];
     $scope.$watch(uiConfig.version, () => {

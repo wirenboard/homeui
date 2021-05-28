@@ -531,6 +531,7 @@ button.show-console span {
     width: 100%;
     position: relative;
     padding-right: 35px;
+    overflow-x:auto;
 }
 
 .display-cell-btn,
@@ -884,6 +885,19 @@ body > double-bounce-spinner .double-bounce-spinner .double-bounce1,
 body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
   background-color: #3276b1;
 }
+
+@media (max-width: 500px) {
+  .big-screen-access-level {
+    display: none;
+  }
+}
+
+@media (min-width: 501px) {
+  .mobile-screen-access-level {
+    display: none;
+  }
+}
+
 
 /* Для совместимости с wb-mqtt-serial >= 2.9.0 */
 h3.je-header {
