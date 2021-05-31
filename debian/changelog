@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.5.2) stable; urgency=medium
+
+  * Widget id in json editing mode is preserved
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 31 May 2021 10:45:00 +0500
+
 wb-mqtt-homeui (2.5.1) stable; urgency=medium
 
   * Error message on webui.conf saving failure is added
@@ -123,7 +129,7 @@ wb-mqtt-homeui (2.0.1) stable; urgency=medium
 
   * Error in config conversion from v1.x is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 11 Jan 2021 12:20:10 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 11 Jan 2021 12:20:10 +0500
 
 wb-mqtt-homeui (2.0.0) stable; urgency=medium
 
