@@ -142,6 +142,16 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
 
     console.log("Try to connect to MQTT Broker on " + host + ":" + port + " with username " + user + " and clientid " + clientid);
 
+    // Clean up localStorage from old messages
+    // Without cleaning localStorage could be filled casing errors in transmission
+    var keysToRemove = []
+    for ( var key in localStorage) {
+      if (key.indexOf('Sent:') == 0 || key.indexOf('Received:') == 0) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((key) => { localStorage.removeItem(key); });
+
     client = new Paho.MQTT.Client(host, parseInt(port), '/mqtt', clientid);
     client.onConnectionLost = service.onConnectionLost;
     client.onMessageDelivered = service.onMessageDelivered;
