@@ -74,6 +74,10 @@ class HistoryCtrl {
             }
         };
 
+        this.options = {
+            displayModeBar: true
+        }
+
         // ищу в урле контролы
         if($stateParams.device && $stateParams.control) {
             const parsedDevices = $stateParams.device.split(';');
@@ -532,7 +536,8 @@ class HistoryCtrl {
                     },
                     type: 'scatter',
                     mode: 'lines',
-                    line: {shape: shapeMode}
+                    line: {shape: shapeMode},
+                    hovertemplate: '%{y:.6f} ∆ +%{error_y.array:.6f}/-%{error_y.arrayminus:.6f}<extra></extra>'
                 }
             } else {
                 // если последущие то просто добавляю дату
