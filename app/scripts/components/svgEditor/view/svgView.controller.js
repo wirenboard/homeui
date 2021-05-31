@@ -65,16 +65,24 @@ class SvgViewController {
     }
 
     appendRead(element, param) {
+        var elem = null;
         var tspan = element[0].querySelector('tspan');
         if (tspan !== null) {
+            elem = angular.element(tspan);
+        } else {
+            if (element[0].nodeName === 'text') {
+                elem = element;
+            }
+        }
+        if (elem !== null) {
+            console.log('aaa', elem)
             var val = '{{' + param.value + '}}';
-            tspan.innerHTML = val;
+            elem[0].innerHTML = val;
 
-            var $tspan = angular.element(tspan);
-            $tspan.attr('svg-view-element', '');
-            $tspan.attr('ng-cloak', '');
+            elem.attr('svg-view-element', '');
+            elem.attr('ng-cloak', '');
 
-            this.appendChannelData($tspan, param);
+            this.appendChannelData(elem, param);
         }
     }
 
