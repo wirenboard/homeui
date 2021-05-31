@@ -932,3 +932,8 @@ table.table-bordered {
 ul.col-md-2.nav.nav-pills.nav-stacked {
     margin-bottom: 9px;
 }
+
+.svg-edit-result > svg {
+    width: 100%;
+    height: 100%;
+}
