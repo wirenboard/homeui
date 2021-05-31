@@ -932,3 +932,8 @@ table.table-bordered {
 ul.col-md-2.nav.nav-pills.nav-stacked {
     margin-bottom: 9px;
 }
+
+.modebar-btn .icon {
+  width: 1.5em;
+  height: 1.5em;
+}
