@@ -517,7 +517,7 @@ function deviceDataService(mqttClient) {
         handledTopic: cellTopicBase + '/meta/max',
         handler(payload) { cellFromTopic(topic).setMax(payload) }
       },{
-        handledTopic: cellTopicBase + '/meta/step',
+        handledTopic: cellTopicBase + '/meta/precision',
         handler(payload) { cellFromTopic(topic).setStep(payload) }
       },{
         handledTopic: cellTopicBase + '/meta/order',

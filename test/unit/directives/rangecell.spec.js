@@ -10,7 +10,7 @@ describe("Directive: range-cell", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "1000", true, 1);
-    f.extClient.send("/devices/dev2/controls/bar/meta/step", "1", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/precision", "1", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/units", "Unit", true, 1);
     f.extClient.send("/devices/dev2/controls/bar", "123", true, 0);
     f.$scope.$digest();
