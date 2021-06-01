@@ -74,7 +74,7 @@ describe("Directive: value-cell", () => {
 
   it("should support increment for value controls", () => {
     expect(input().attr("step")).toBeFalsy();
-    f.extClient.send("/devices/dev1/controls/voltage1/meta/step", "10", true, 1);
+    f.extClient.send("/devices/dev1/controls/voltage1/meta/precision", "10", true, 1);
     f.$scope.$digest();
     expect(input().attr("step")).toBe("10");
   });

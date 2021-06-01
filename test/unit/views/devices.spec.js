@@ -23,7 +23,7 @@ describe("Devices view", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "1000", true, 1);
-    f.extClient.send("/devices/dev2/controls/bar/meta/step", "10", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/precision", "10", true, 1);
     f.extClient.send("/devices/dev2/controls/bar", "123", true, 0);
     f.$rootScope.$digest();
   }));

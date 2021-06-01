@@ -10,7 +10,7 @@ function rangeCellDirective() {
     template,
     link: ($scope, element, attr, cellCtrl) => {
       /*function relayAttr (name, defaultValue) {
-        // Make sure min/max/step are initialized to a range that is
+        // Make sure min/max/precision are initialized to a range that is
         // broad enough for the range control to initialize correctly.
         // See https://github.com/angular/angular.js/issues/6726
         $scope.$watch(() => cellCtrl.cell[name], newValue => {

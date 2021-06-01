@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.5.0) stable; urgency=medium
+
+ * Support for /meta/precision is added.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 01 Jun 2021 10:34:00 +0500
+
 wb-mqtt-homeui (2.4.5) stable; urgency=medium
 
  * Always show chart toolbar
