@@ -937,3 +937,8 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
     width: 100%;
     height: 100%;
 }
+
+.modebar-btn .icon {
+  width: 1.5em;
+  height: 1.5em;
+}
