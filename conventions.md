@@ -47,9 +47,10 @@ A stateless push button
 #### Range
 A range slider that takes integer values between 0 and any other integer that is greater 1
 * Meta topic value: range
-* Possible values: 0 - max
+* Possible values: min - max
 * Default max: 255
-Different values can be set by publishing an arbitrary integer that is greater than 1 to ```/devices/<device_id>/controls/<control_id>/meta/max```.
+* Defailt min: 0
+Different values can be set by publishing an arbitrary integer that is in range from ```/devices/<device_id>/controls/<control_id>/meta/min``` to ```/devices/<device_id>/controls/<control_id>/meta/max```.
 
 #### RGB color control
 R/W control for color
@@ -65,14 +66,13 @@ A read-only control that displays it's value as text.
 
 #### Generic value type control
 
-A read-only control for a arbitrary value.
+A control for a arbitrary value.
 
 * Meta type value: value
 * Possible values: float
-
-Units should be specified in "meta/units" topic.
-
-
+Different values can be set by publishing an arbitrary float that is in range from ```/devices/<device_id>/controls/<control_id>/meta/min``` to ```/devices/<device_id>/controls/<control_id>/meta/max```.
+Units should be specified in ```/devices/<device_id>/controls/<control_id>/units``` topic.
+Precision could be specified in ```/devices/<device_id>/controls/<control_id>/meta/precision``` topic. The value is rounded to defined precision by a driver and it is also used by `wb-mqtt-homeui` during user input validation.
 
 #### Specific value type controls
 
