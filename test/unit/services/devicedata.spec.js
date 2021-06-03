@@ -41,7 +41,7 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev2/controls/bar/meta/type", "range", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "-1000", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "1000", true, 1);
-    f.extClient.send("/devices/dev2/controls/bar/meta/step", "10", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/precision", "10", true, 1);
     f.extClient.send("/devices/dev2/controls/bar", "123", true, 0);
   }
 
@@ -638,7 +638,7 @@ describe("DeviceData service", () => {
     f.extClient.send("/devices/dev1/controls/volume/meta/readonly", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/min", "", true, 1);
     f.extClient.send("/devices/dev2/controls/bar/meta/max", "", true, 1);
-    f.extClient.send("/devices/dev2/controls/bar/meta/step", "", true, 1);
+    f.extClient.send("/devices/dev2/controls/bar/meta/precision", "", true, 1);
     expect(DeviceData.devices).toEqual({
       "dev1": { name: "Device One", explicit: true, cellIds: ["dev1/voltage1", "dev1/volume"] },
       "dev2": { name: "dev2", explicit: false, cellIds: ["dev2/foo", "dev2/bar"] }
