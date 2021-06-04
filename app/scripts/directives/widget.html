@@ -80,7 +80,7 @@
       <div class="btn-form">
       <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length">Save</button>
       <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default">Cancel</button>
-        <button name="cancel" type="button" ng-click="widgetForm.$submit() || ctrl.enableEditJsonMode()" class="btn btn-default pull-right">Edit as JSON</button>
+      <button name="cancel" type="button" ng-click="ctrl.enableEditJsonMode()" class="btn btn-default pull-right">Edit as JSON</button>
     </div>
     </div>
     <div ng-if="ctrl.editJsonMode">

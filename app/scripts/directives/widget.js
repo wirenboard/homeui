@@ -65,8 +65,11 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
     }
 
     enableEditJsonMode () {
-        this.jsonSource = angular.toJson(this.source, true);
-        this.editJsonMode = true;
+      var forJson = angular.copy(this.source);
+      delete forJson.id;
+      delete forJson.isNew;
+      this.jsonSource = angular.toJson(forJson, true);
+      this.editJsonMode = true;
     }
 
     disableEditJsonMode () {
@@ -82,6 +85,12 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
         return;
       }
       if (!newSource) { return; }
+      newSource.id = this._source().id;
+      if (this._source().isNew) {
+        newSource.isNew = this._source().isNew;
+      } else {
+        delete newSource.isNew;
+      }
       if (needSave) {
         angular.extend(this._source(), newSource);
         this.updateSource();
