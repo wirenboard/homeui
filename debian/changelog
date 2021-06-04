@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.5.1) stable; urgency=medium
+
+  * Error message on webui.conf saving failure is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 28 May 2021 14:09:00 +0500
+
 wb-mqtt-homeui (2.5.0) stable; urgency=medium
 
  * Support for /meta/precision is added.
@@ -44,44 +50,44 @@ wb-mqtt-homeui (2.4.1) stable; urgency=medium
   * Information about access levels is added
   * SVG dasboards are excluded from selection for Home page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 26 May 2021 09:22:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 26 May 2021 09:22:00 +0500
 
 wb-mqtt-homeui (2.4.0) stable; urgency=medium
 
  * Optional parameters in config editor are marked as "unknown" until explicitly set
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 19 May 2021 17:35:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 19 May 2021 17:35:00 +0500
 
 wb-mqtt-homeui (2.3.5) stable; urgency=medium
 
   * Dashboards deletion is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 02 Apr 2021 18:19:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 02 Apr 2021 18:19:00 +0500
 
 wb-mqtt-homeui (2.3.4) stable; urgency=medium
 
   * Configs editor faster handles user's input
   * A bug that prevents some validation errors from being displayed is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 29 Mar 2021 11:31:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 29 Mar 2021 11:31:00 +0500
 
 wb-mqtt-homeui (2.3.3) stable; urgency=medium
 
   * Selection of similar topics in history is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sat, 27 Mar 2021 11:07:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sat, 27 Mar 2021 11:07:00 +0500
 
 wb-mqtt-homeui (2.3.2) stable; urgency=medium
 
   * Another error in config conversion from v1.x is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 24 Mar 2021 18:22:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 24 Mar 2021 18:22:00 +0500
 
 wb-mqtt-homeui (2.3.1) stable; urgency=medium
 
   * IP validation error in configs editor is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 15 Mar 2021 14:12:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 15 Mar 2021 14:12:00 +0500
 
 wb-mqtt-homeui (2.3.0) stable; urgency=medium
 

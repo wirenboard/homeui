@@ -397,9 +397,17 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
                 $timeout.cancel(configSaveDebounce);
             }
             configSaveDebounce = $timeout(() => {
+                errors.hideError();
                 ConfigEditorProxy.Save({path: webuiConfigPath, content: newData})
                     .then(() => {
                         console.log('config saved');
+                    })
+                    .catch((err) => {
+                        if (err.name === 'QuotaExceededError') {
+                            errors.showError("Config saving failed", "config is too big, try to reduce SVG size");
+                        } else {
+                            errors.showError("Config saving failed", err);
+                        }
                     });
             }, configSaveDebounceMs);
         }, true);
