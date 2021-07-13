@@ -2,7 +2,7 @@
 
 class DashboardsCtrl {
 
-    constructor($translate, $ngBootbox, uiConfig, rolesFactory) {
+    constructor($scope, $translate, $ngBootbox, uiConfig, rolesFactory) {
         'ngInject';
 
         this.$translate = $translate;
@@ -11,10 +11,11 @@ class DashboardsCtrl {
         this.uiConfig = uiConfig;
         this.data = uiConfig.data;
 
-        // FIXME: make better use of the model
-        this.model = (dashboard) => { 
-            this.uiConfig.getDashboard(dashboard.id); 
-        };
+        $scope.cancel = (dashboard) => {
+            if (dashboard.isNew) {
+                uiConfig.getDashboard(dashboard.id).remove();
+            }
+        }
     }
 
     //.............................................................................
@@ -41,13 +42,6 @@ class DashboardsCtrl {
             return msg;
         }
         return true;
-    }
-
-    //.............................................................................
-    cancel(dashboard) {
-        if (dashboard.isNew) {
-            this.model(dashboard).remove();
-        }
     }
 
     //.............................................................................
