@@ -54,10 +54,7 @@ class HistoryCtrl {
         this.progreses = [];
         this.progresMax = 100;
         this.layoutConfig = {
-            // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
-                //showgrid: false, // remove the x-axis grid lines
-                //tickformat: "%B, %Y"  // customize the date format to "month, day"
             },
             yaxis: {
               // with this flag Plotly will automatically increase the margin size 
@@ -182,11 +179,6 @@ class HistoryCtrl {
     // Class methods
     //...........................................................................
 
-    // опции ограничивающие выбор. пока отключено
-    setDateOptions() {
-        /*this.dateOptionsEnd = {minDate:this.selectedStartDate, maxDate: new Date()};
-        this.dateOptionsStart = {maxDate:this.selectedEndDate || new Date()};*/
-    }
     // читает из урла даты
     readDatesFromUrl() {
         this.startDate = this.convDate(this.$stateParams.start);
@@ -195,7 +187,6 @@ class HistoryCtrl {
         // по умолчанию дата равна сегодня минус один день
         this.selectedStartDate = this.startDate? this.startDate : new Date( + (new Date()) - 24*60*60*1000 );
         this.selectedEndDate = this.endDate? this.endDate : new Date();
-        this.setDateOptions();
         this.timeChanged = true;
     };
 
@@ -286,7 +277,6 @@ class HistoryCtrl {
     }
 
     timeChange(type) {
-        this.setDateOptions();
         this.timeChanged = true;
     }
 
@@ -496,19 +486,11 @@ class HistoryCtrl {
                 return this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
             });
             this.yValues = result.values.map(item => item.v - 0);
-            //var minValues = result.values.map(item => item.min - 0);
-            //var maxValues = result.values.map(item => item.max - 0);
 
             // изза особенности графика типа "ОШИБКИ" отображать экстремумы надо
             // высчитывая отклонение от основных значений
             var minValuesErr = result.values.map(item => item.min && item.v? (item.v-item.min).toFixed(6) : null);
             var maxValuesErr = result.values.map(item => item.max && item.v? (item.max-item.v).toFixed(6) : null);
-            /*var trace1 = {//простой график
-                x: this.xValues,
-                y: maxValues,
-                type: 'scatter'
-            };*/
-
 
             // если это первый чанк то создаю график
             if(indexOfChunk==0) {
@@ -531,7 +513,6 @@ class HistoryCtrl {
                         thickness: 0.5,
                         width: 0,
                         value: 0.1,
-                        //color: '#85144B',
                         opacity: 0.5
                     },
                     type: 'scatter',
@@ -545,9 +526,6 @@ class HistoryCtrl {
                 this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(this.yValues);
                 this.chartConfig[indexOfControl].error_y.array = this.chartConfig[indexOfControl].error_y.array.concat(maxValuesErr);
                 this.chartConfig[indexOfControl].error_y.arrayminus = this.chartConfig[indexOfControl].error_y.arrayminus.concat(minValuesErr);
-
-                // для таблицы под графиком для первого контрола
-                //if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(this.xValues.map((x, i) => ({x: x, y: this.yValues[i]})))
             }
 
             if(indexOfControl==0) {
