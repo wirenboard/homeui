@@ -501,8 +501,8 @@ class HistoryCtrl {
 
             // изза особенности графика типа "ОШИБКИ" отображать экстремумы надо
             // высчитывая отклонение от основных значений
-            var minValuesErr = result.values.map(item => item.min && item.v? item.v-item.min : null);
-            var maxValuesErr = result.values.map(item => item.max && item.v? item.max-item.v : null);
+            var minValuesErr = result.values.map(item => item.min && item.v? (item.v-item.min).toFixed(6) : null);
+            var maxValuesErr = result.values.map(item => item.max && item.v? (item.max-item.v).toFixed(6) : null);
             /*var trace1 = {//простой график
                 x: this.xValues,
                 y: maxValues,
@@ -537,7 +537,7 @@ class HistoryCtrl {
                     type: 'scatter',
                     mode: 'lines',
                     line: {shape: shapeMode},
-                    hovertemplate: '%{y:.6f} ∆ +%{error_y.array:.6f}/-%{error_y.arrayminus:.6f}<extra></extra>'
+                    hovertemplate: '%{y:} ∆ +%{error_y.array:}/-%{error_y.arrayminus:}<extra></extra>'
                 }
             } else {
                 // если последущие то просто добавляю дату
