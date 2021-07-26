@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.6.0) stable; urgency=medium
+
+  * Displaying of string values in chart on History page is implemented
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 26 Jul 2021 11:13:21 +0500
+
 wb-mqtt-homeui (2.5.6) stable; urgency=medium
 
   * Values on History page are displayed without trailing zeros in fractional part
