@@ -5,7 +5,15 @@ function errorsService($rootScope) {
   'ngInject';
   
   function showError (message, reason) {
-    $rootScope.$broadcast("alert", message + ": " + ((reason && reason.message) || reason), true);
+    if (reason) {
+      message = message + ": "
+      if (reason.message) {
+        message = message + reason.message + (reason.data && (" " + reason.data))
+      } else {
+        message = message + reason
+      }
+    }
+    $rootScope.$broadcast("alert", message, true);
   }
 
   return {
