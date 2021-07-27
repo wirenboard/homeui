@@ -86,7 +86,7 @@ export default function handleDataService() {
         var ret = date.getFullYear()
             + "-" + this.addZeroToDate(date.getMonth() + 1)
             + "-" + this.addZeroToDate(date.getDate());
-        ret = !withTime? ret : `${ret} ${this.addZeroToDate(date.getHours())}:${this.addZeroToDate(date.getMinutes())}:00`;
+        ret = !withTime? ret : `${ret}T${this.addZeroToDate(date.getHours())}:${this.addZeroToDate(date.getMinutes())}:00`;
         return ret
     };
 

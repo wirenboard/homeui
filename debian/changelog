@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.5.7) stable; urgency=medium
+
+  * History chart not showing in Safari is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 27 Jul 2021 13:02:29 +0500
+
 wb-mqtt-homeui (2.5.6) stable; urgency=medium
 
   * Values on History page are displayed without trailing zeros in fractional part
