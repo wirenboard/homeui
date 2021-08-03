@@ -111,7 +111,7 @@
             ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedTopics[0]"
             ng-click="$ctrl.readDatesFromUrl()">
         Reset
-    </button><!-- ng-if="$ctrl.pend"-->
+    </button>
     <button class="btn btn-success"
             ng-disabled="!$ctrl.pend"
             ng-click="$ctrl.stopLoadingData()">
@@ -130,17 +130,13 @@
                     plotly-data="$ctrl.chartConfig"
                     plotly-layout="$ctrl.layoutConfig"
                     plotly-options="$ctrl.options"
-                    ng-hide="$ctrl.hasString || !$ctrl.hasPoints"></plotly>
+                    ng-hide="!$ctrl.hasPoints"></plotly>
             <br>
             <div class="history-empty"
-                 ng-show="(this.chartConfig[0].x.length && !$ctrl.dataPoints.length) || !$ctrl.hasPoints">
+                 ng-show="this.chartConfig[0].x.length || !$ctrl.hasPoints">
                 No data points to display.
             </div>
         </div>
-        <!--<div class="history-empty"
-             ng-show="$ctrl.hasString">
-            No points for graph.
-        </div>--> 
     </div>
  
     <button 
@@ -151,23 +147,6 @@
       Download history as CSV
     </button>
     <br><br>
-
-    <div class="col-xs-12 col-md-6 col-lg-4" ng-if="$ctrl.dataPoints.length && $ctrl.hasPoints">
-        <table id="history-table" class="table">
-            <thead>
-            <tr>
-                <th>Date and time</th>
-                <th>{{$ctrl.channelNames[0]}}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="p in $ctrl.dataPoints track by $index">
-                <td>{{ p.x | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                <td>{{ p.y }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
 
     <div class="col-xs-12" ng-if="$ctrl.dataPointsMultiple.length && $ctrl.hasPoints">
         <table id="history-table" class="table">

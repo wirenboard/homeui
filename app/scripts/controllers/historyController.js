@@ -49,15 +49,11 @@ class HistoryCtrl {
         this.controlsFromUrl = [];
         this.channelShortNames = [];
         this.channelNames = [];
-        this.dataPoints = [];
-        this.hasStrings = [];
+        this.stringValues = [];
         this.progreses = [];
         this.progresMax = 100;
         this.layoutConfig = {
-            // yaxis: {title: "7777"},       // set the y axis title
             xaxis: {
-                //showgrid: false, // remove the x-axis grid lines
-                //tickformat: "%B, %Y"  // customize the date format to "month, day"
             },
             yaxis: {
               // with this flag Plotly will automatically increase the margin size 
@@ -182,11 +178,6 @@ class HistoryCtrl {
     // Class methods
     //...........................................................................
 
-    // опции ограничивающие выбор. пока отключено
-    setDateOptions() {
-        /*this.dateOptionsEnd = {minDate:this.selectedStartDate, maxDate: new Date()};
-        this.dateOptionsStart = {maxDate:this.selectedEndDate || new Date()};*/
-    }
     // читает из урла даты
     readDatesFromUrl() {
         this.startDate = this.convDate(this.$stateParams.start);
@@ -195,7 +186,6 @@ class HistoryCtrl {
         // по умолчанию дата равна сегодня минус один день
         this.selectedStartDate = this.startDate? this.startDate : new Date( + (new Date()) - 24*60*60*1000 );
         this.selectedEndDate = this.endDate? this.endDate : new Date();
-        this.setDateOptions();
         this.timeChanged = true;
     };
 
@@ -286,7 +276,6 @@ class HistoryCtrl {
     }
 
     timeChange(type) {
-        this.setDateOptions();
         this.timeChanged = true;
     }
 
@@ -394,39 +383,37 @@ class HistoryCtrl {
     }
 
     calculateTable() {
-        // для таблицы под графиком для одного контрола
-        this.dataPoints = true;
-        if(this.topics.length === 1) {
-            this.dataPoints = this.xValues.map((x, i) => ({x: x, y: this.yValues[i]}));
-        } else {
-            // и для нескольких
-            var objX = {},graph = [];
-            this.chartConfig.forEach((ctrl,i) => {
-                ctrl.x.forEach(x=> {
-                    objX[x] = null
-                })
-            });
+        //TODO: use merge sort as we have here n^2 complexity
+        var objX = {},graph = [];
+        this.chartConfig.forEach((ctrl,i) => {
+            ctrl.x.forEach(x=> {
+                objX[x] = null
+            })
+        });
 
-            var arrX = Object.keys(objX);
-            var _arrX = arrX.sort();
-            _arrX.forEach(date=> {
-                graph.push({
-                    date,
-                    value: Array(this.chartConfig.length).fill(null)
-                });
-                // ищу совпадения в каждом канале
-                this.chartConfig.forEach((ctrl,iCtrl)=> {
-                    for (var i = 0; i < ctrl.x.length; i++) {
-                        // если не нахожу то останется null
-                        if(date === ctrl.x[i]) {
-                            graph[graph.length-1].value[iCtrl] = ctrl.y[i];
-                            break
-                        }
-                    }
-                });
+        var arrX = Object.keys(objX);
+        var _arrX = arrX.sort();
+        _arrX.forEach(date=> {
+            graph.push({
+                date,
+                value: Array(this.chartConfig.length).fill(null)
             });
-            this.dataPointsMultiple = graph;
-        }
+            // ищу совпадения в каждом канале
+            this.chartConfig.forEach((ctrl,iCtrl)=> {
+                for (var i = 0; i < ctrl.x.length; i++) {
+                    // если не нахожу то останется null
+                    if(date === ctrl.x[i]) {
+                        if (this.stringValues[iCtrl]) {
+                            graph[graph.length-1].value[iCtrl] = ctrl.text[i];
+                        } else {
+                            graph[graph.length-1].value[iCtrl] = ctrl.y[i];
+                        }
+                        break
+                    }
+                }
+            });
+        });
+        this.dataPointsMultiple = graph;
     }
 
     loadChunkedHistory(indexOfControl,indexOfChunk, chunks) {
@@ -468,6 +455,10 @@ class HistoryCtrl {
         })
     }
 
+    hasStringValues(ar) {
+        return ar.values.some(item => item.v != parseFloat(item.v))
+    }
+
     loadHistory(params,indexOfControl,indexOfChunk,chunks) {
         if(this.stopLoadData) return;
         this.channelShortNames[indexOfControl] = params.channels[0][1];
@@ -482,11 +473,6 @@ class HistoryCtrl {
             }
             
             this.pend = false;
-            // проверить есть ли строковые значения
-            // проверяю только если еще не нашел строки
-            if(!this.hasString) {
-                this.hasString = result.values.some(item => item.v != parseFloat(item.v)/*typeof item.v === 'string'*/);
-            }
 
             if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
 
@@ -495,33 +481,43 @@ class HistoryCtrl {
                 ts.setTime(item.t * 1000);
                 return this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
             });
-            this.yValues = result.values.map(item => item.v - 0);
-            //var minValues = result.values.map(item => item.min - 0);
-            //var maxValues = result.values.map(item => item.max - 0);
 
-            // изза особенности графика типа "ОШИБКИ" отображать экстремумы надо
-            // высчитывая отклонение от основных значений
-            var minValuesErr = result.values.map(item => item.min && item.v? (item.v-item.min).toFixed(6) : null);
-            var maxValuesErr = result.values.map(item => item.max && item.v? (item.max-item.v).toFixed(6) : null);
-            /*var trace1 = {//простой график
-                x: this.xValues,
-                y: maxValues,
-                type: 'scatter'
-            };*/
+            if(indexOfChunk==0 && this.hasStringValues(result)) {
+                this.stringValues[indexOfControl] = new Map();
+            }
 
+            this.text = []
+            var minValuesErr = []
+            var maxValuesErr = []
+            if (this.stringValues[indexOfControl]) {
+                this.yValues = result.values.map((item) => {
+                    this.text.push(item.v);
+                    if (!this.stringValues[indexOfControl].has(item.v)) {
+                        this.stringValues[indexOfControl].set(item.v, this.stringValues[indexOfControl].size + 1)
+                    }
+                    return this.stringValues[indexOfControl].get(item.v);
+                });
+            } else {
+                this.yValues = result.values.map(item => item.v);
+                // изза особенности графика типа "ОШИБКИ" отображать экстремумы надо
+                // высчитывая отклонение от основных значений
+                minValuesErr = result.values.map(item => item.min && item.v? (item.v-item.min).toFixed(6) : null);
+                maxValuesErr = result.values.map(item => item.max && item.v? (item.max-item.v).toFixed(6) : null);
+            }
 
             // если это первый чанк то создаю график
             if(indexOfChunk==0) {
                 var nameCn = params.channels[0][0] + '/' + params.channels[0][1];
                 var cn = this.controls.find(element => ((element.deviceControl === nameCn) && (element.valueType === "boolean")));
                 var shapeMode = 'linear';
-                if (cn != undefined) {
+                if (cn != undefined || this.stringValues[indexOfControl]) {
                     shapeMode = 'hv';
                 }
                 this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
                     name: nameCn,
                     x: this.xValues,
                     y: this.yValues,
+                    text: this.text,
                     error_y: {//построит график  типа "ОШИБКИ"(error-bars)
                         type: 'data',
                         symmetric: false,
@@ -531,23 +527,24 @@ class HistoryCtrl {
                         thickness: 0.5,
                         width: 0,
                         value: 0.1,
-                        //color: '#85144B',
                         opacity: 0.5
                     },
                     type: 'scatter',
                     mode: 'lines',
-                    line: {shape: shapeMode},
-                    hovertemplate: '%{y:} ∆ +%{error_y.array:}/-%{error_y.arrayminus:}<extra></extra>'
+                    line: {shape: shapeMode}
+                }
+                if (!this.stringValues[indexOfControl]) {
+                    this.chartConfig[indexOfControl].hovertemplate = '%{y:} ∆ +%{error_y.array:}/-%{error_y.arrayminus:}<extra></extra>'
+                } else {
+                    this.chartConfig[indexOfControl].hovertemplate = '%{text}<extra></extra>'
                 }
             } else {
                 // если последущие то просто добавляю дату
                 this.chartConfig[indexOfControl].x = this.chartConfig[indexOfControl].x.concat(this.xValues);
                 this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(this.yValues);
+                this.chartConfig[indexOfControl].text = this.chartConfig[indexOfControl].text.concat(this.text);
                 this.chartConfig[indexOfControl].error_y.array = this.chartConfig[indexOfControl].error_y.array.concat(maxValuesErr);
                 this.chartConfig[indexOfControl].error_y.arrayminus = this.chartConfig[indexOfControl].error_y.arrayminus.concat(minValuesErr);
-
-                // для таблицы под графиком для первого контрола
-                //if(indexOfControl==0) this.dataPoints = this.dataPoints.concat(this.xValues.map((x, i) => ({x: x, y: this.yValues[i]})))
             }
 
             if(indexOfControl==0) {
@@ -555,7 +552,7 @@ class HistoryCtrl {
             }
 
             if(this.topics.length === 1) {
-                // провериь есть ли точки в контроллах
+                // проверить есть ли точки в контроллах
                 // ниже point.y == 0 специально выставлено не жесткое сравнение / не менять!!!
                 this.hasPoints = this.chartConfig[indexOfControl].y.some(y => {
                   return  !!y || y == 0

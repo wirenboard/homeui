@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.6.0) stable; urgency=medium
+
+  * Displaying of string values in chart on History page is implemented
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 03 Aug 2021 09:34:57 +0500
+
 wb-mqtt-homeui (2.5.7) stable; urgency=medium
 
   * History chart not showing in Safari is fixed
