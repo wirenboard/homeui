@@ -8,7 +8,7 @@
         <div class="col-xs-8 col-md-5">
             <select id="control-select"
                     class="form-control"
-                    ng-disabled="$ctrl.pend"
+                    ng-disabled="$ctrl.disableUi"
                     ng-change="$ctrl.updateUrl($index)"
                     ng-model="$ctrl.selectedTopics[$index]"
                     ng-options="control.topic as control.name group by control.group for control in $ctrl.controls">
@@ -18,21 +18,22 @@
         <div class="col-xs-4 col-md-3">
             <div>
                 <div ng-hide="($index==0 && $ctrl.selectedTopics.length==1) || !$ctrl.selectedTopics[1]"
+                     ng-disabled="$ctrl.disableUi"
                      class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)">delete
                 </div>
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-4" ng-if="$ctrl.chunksN>1">
-            <uib-progressbar ng-if="$ctrl.selectedTopics[$index] && !$ctrl.progreses[$index].isLoaded"
-                             value="$ctrl.progreses[$index].value"
+            <uib-progressbar ng-if="$ctrl.selectedTopics[$index] && !$ctrl.charts[$index].progress.isLoaded && $ctrl.loadPending"
+                             value="$ctrl.charts[$index].progress.value"
                              min="0" max="::$ctrl.chunksN">
-                <div>{{$ctrl.progreses[$index].value}}/{{::$ctrl.chunksN}}</div>
+                <div>{{$ctrl.charts[$index].progress.value}}/{{::$ctrl.chunksN}}</div>
             </uib-progressbar>
         </div>
     </div>
     <div ng-hide="$ctrl.selectedTopics.length==1 && !$ctrl.selectedTopics[$ctrl.selectedTopics.length-1]">
         <br>
-        <button class="btn btn-success" ng-click="$ctrl.addTopic()">
+        <button class="btn btn-success" ng-click="$ctrl.addTopic()" ng-disabled="$ctrl.disableUi">
             Add channel
         </button>
         <br>
@@ -52,11 +53,16 @@
                                uib-datepicker-popup="{{format}}"
                                ng-change="$ctrl.timeChange('start')"
                                ng-model="$ctrl.selectedStartDate"
+                               ng-disabled="$ctrl.disableUi"
                                is-open="$ctrl.popups.start"
                                close-text="Close"/>
                           <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.start = true"><i
-                                    class="glyphicon glyphicon-calendar"></i></button>
+                            <button type="button"
+                                    class="btn btn-default"
+                                    ng-click="$ctrl.popups.start = true"
+                                    ng-disabled="$ctrl.disableUi">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </button>
                           </span>
                     </div>
                 </div>
@@ -64,6 +70,7 @@
                     <div uib-timepicker
                          ng-model="$ctrl.selectedStartDateMinute"
                          ng-change="$ctrl.timeChange('start')"
+                         ng-disabled="$ctrl.disableUi"
                          minute-step="5" hour-step="1"
                          show-meridian="false"></div>
                 </div>
@@ -83,11 +90,16 @@
                                uib-datepicker-popup="{{format}}"
                                ng-change="$ctrl.timeChange('end')"
                                ng-model="$ctrl.selectedEndDate"
+                               ng-disabled="$ctrl.disableUi"
                                is-open="$ctrl.popups.end"
                                close-text="Close"/>
                           <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="$ctrl.popups.end = true"><i
-                                    class="glyphicon glyphicon-calendar"></i></button>
+                            <button type="button"
+                                    class="btn btn-default"
+                                    ng-click="$ctrl.popups.end = true"
+                                    ng-disabled="$ctrl.disableUi">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </button>
                           </span>
                     </div>
                 </div>
@@ -96,44 +108,45 @@
                          ng-model="$ctrl.selectedEndDateMinute"
                          ng-change="$ctrl.timeChange('end')"
                          minute-step="5" hour-step="1"
-                         show-meridian="false"></div>
+                         show-meridian="false"
+                         ng-disabled="$ctrl.disableUi"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <button class="btn btn-success"
-            ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedTopics[0]"
+            ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedTopics[0] || $ctrl.disableUi"
             ng-click="$ctrl.updateDateRange()">
         Load data
     </button>
     <button class="btn btn-success"
-            ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedTopics[0]"
+            ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedTopics[0] || $ctrl.disableUi"
             ng-click="$ctrl.readDatesFromUrl()">
         Reset
     </button>
     <button class="btn btn-success"
-            ng-disabled="!$ctrl.pend"
+            ng-disabled="$ctrl.disableUi"
             ng-click="$ctrl.stopLoadingData()">
         Stop loading
     </button>
     <br><br>
 
     <div class="col-sm-12 spinner" ng-cloak ng-if="!$ctrl.stopLoadData"
-         ng-show="$ctrl.pend || (!$ctrl.firstChunkIsLoaded && !$ctrl.selectedTopics.length)">
+         ng-show="$ctrl.disableUi">
         <span class="spinner-loader">Loading...</span>
     </div>
 
     <div>
-        <div class="col-sm-12" ng-if="$ctrl.firstChunkIsLoaded">
+        <div class="col-sm-12">
             <plotly plotly-events="$ctrl.plotlyEvents"
                     plotly-data="$ctrl.chartConfig"
                     plotly-layout="$ctrl.layoutConfig"
                     plotly-options="$ctrl.options"
-                    ng-hide="!$ctrl.hasPoints"></plotly>
+                    ng-hide = "$ctrl.loadPending || !$ctrl.chartConfig.length"></plotly>
             <br>
             <div class="history-empty"
-                 ng-show="this.chartConfig[0].x.length || !$ctrl.hasPoints">
+                 ng-show="!$ctrl.chartConfig.length && !$ctrl.loadPending">
                 No data points to display.
             </div>
         </div>
@@ -148,12 +161,12 @@
     </button>
     <br><br>
 
-    <div class="col-xs-12" ng-if="$ctrl.dataPointsMultiple.length && $ctrl.hasPoints">
+    <div class="col-xs-12" ng-if="$ctrl.dataPointsMultiple.length">
         <table id="history-table" class="table">
             <thead>
             <tr>
                 <th>Date and time</th>
-                <th ng-repeat="name in $ctrl.channelNames">{{name}}</th>
+                <th ng-repeat="channel in $ctrl.charts">{{channel.channelName}}</th>
             </tr>
             </thead>
             <tbody>

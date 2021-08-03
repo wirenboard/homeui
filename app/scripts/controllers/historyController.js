@@ -1,4 +1,47 @@
+class ChartTraits {
+    constructor(name) {
+        this.channelName = name;
+        this.progress = {
+            value: 0,
+            isLoaded: false
+        };
+        this.stringValues = undefined;
+        this.hasErrors = true;
+        this.isBoolean = false;
+        this.xValues = [];
+        this.yValues = [];
+        this.text = [];
+        this.maxErrors = [];
+        this.minErrors = [];
+    }
+}
 
+class ChartColors {
+    constructor() {
+        this.colors = [
+            { chartColor: 'rgb(31,119,180)',  minMaxColor: 'rgba(31,119,180,0.2)' },
+            { chartColor: 'rgb(255,127,14)',  minMaxColor: 'rgba(255,127,14,0.2)' },
+            { chartColor: 'rgb(44,160,44)',   minMaxColor: 'rgba(44,160,44,0.2)'  },
+            { chartColor: 'rgb(214,39,40)',   minMaxColor: 'rgba(214,39,40,0.2)'  },
+            { chartColor: 'rgb(148,103,189)', minMaxColor: 'rgba(148,103,189,0.2)'},
+            { chartColor: 'rgb(140,86,75)',   minMaxColor: 'rgba(140,86,75,0.2)'  },
+            { chartColor: 'rgb(227,119,194)', minMaxColor: 'rgba(227,119,194,0.2)'},
+            { chartColor: 'rgb(127,127,127)', minMaxColor: 'rgba(127,127,127,0.2)'},
+            { chartColor: 'rgb(188,189,34)',  minMaxColor: 'rgba(188,189,34,0.2)' },
+            { chartColor: 'rgb(23,190,207)',  minMaxColor: 'rgba(23,190,207,0.2)' },
+        ];
+        this.index = 0;
+    }
+
+    nextColor() {
+        var color = this.colors[this.index];
+        this.index = this.index + 1;
+        if (this.index >= this.colors.length) {
+            this.index = 0;
+        }
+        return color;
+    }
+}
 
 class HistoryCtrl {
     //...........................................................................
@@ -47,10 +90,9 @@ class HistoryCtrl {
         //     control: ...
         // } 
         this.controlsFromUrl = [];
-        this.channelShortNames = [];
-        this.channelNames = [];
-        this.stringValues = [];
-        this.progreses = [];
+        
+        // Array of ChartTraits
+        this.charts = [];
         this.progresMax = 100;
         this.layoutConfig = {
             xaxis: {
@@ -74,6 +116,8 @@ class HistoryCtrl {
             displayModeBar: true
         }
 
+        this.colors = new ChartColors();
+
         // ищу в урле контролы
         if($stateParams.device && $stateParams.control) {
             const parsedDevices = $stateParams.device.split(';');
@@ -83,8 +127,6 @@ class HistoryCtrl {
                 this.controlsFromUrl = []
                 for (var i = 0; i < parsedDevices.length; i++) {
                     this.topics.push("/devices/" + parsedDevices[i] + "/controls/" + parsedControls[i]);
-                    // инициализирую все прогрес бары
-                    this.progreses[i] = {value: 0, isLoaded: false};
                     this.controlsFromUrl[i] = {device: parsedDevices[i], control: parsedControls[i]}
                 }
             }
@@ -93,10 +135,13 @@ class HistoryCtrl {
         this.topics = this.topics.length? this.topics : [null];
         this.selectedTopics = this.topics;
 
-        this.ready = false;
+        // Wait for data loading for charts
         this.loadPending = !!this.topics.length;
+        this.disableUi = true;
         this.originalUrl = this.getUrl();
-        
+
+        this.dataPointsMultiple = []
+
         // 4. Setup
         var controlsAreLoaded = $q.defer();
         uiConfig.whenReady().then((data) => {
@@ -108,14 +153,23 @@ class HistoryCtrl {
             controlsAreLoaded.promise,
             whenMqttReady()
           ]).then(() => {
-            vm.ready = true;
             if (vm.loadPending) {
+                vm.charts = vm.controlsFromUrl.map(control => {
+                    var chart = new ChartTraits(control.device + "/" + control.control);
+                    var cn = vm.controls.find(element => ((element.deviceControl === chart.channelName)));
+                    if (cn && (cn.valueType === "boolean")) {
+                        chart.isBoolean = true;
+                    }
+                    return chart;
+                })
                 vm.beforeLoadChunkedHistory();
+            } else {
+                vm.disableUi = false;
             }
         });
 
         this.plotlyEvents = (graph) => {
-            // !!!!! метод обязтельно должен быть в конструкторе иначе контекст будет непонятно чей
+            // !!!!! метод обязательно должен быть в конструкторе иначе контекст будет непонятно чей
             graph.on('plotly_relayout', (event) => {
                 if(event['xaxis.range[0]']) {
                     this.timeChange();
@@ -189,12 +243,17 @@ class HistoryCtrl {
         this.timeChanged = true;
     };
 
+    getStateDescription() {
+        return {
+            device:  this.controlsFromUrl.filter(el => el).map(el => { return el.device  }).join(';'),
+            control: this.controlsFromUrl.filter(el => el).map(el => { return el.control }).join(';'),
+            start:   this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-",
+            end:     this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-"
+        }
+    }
+
     updateState() {
-        var device  = this.controlsFromUrl.map(el => { return el.device  }).join(';');
-        var control = this.controlsFromUrl.map(el => { return el.control }).join(';');
-        var st = this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-";
-        var en = this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-";
-        this.$state.go('history.sample', { device, control, start: st, end: en}, { reload: true, inherit: false, notify: true });
+        this.$state.go('history.sample', this.getStateDescription(), { reload: true, inherit: false, notify: true });
     }
 
     // смена урла
@@ -229,7 +288,9 @@ class HistoryCtrl {
         // из-за остановки и возможного возобновления загрузки графика ввожу доп проверку
         // изменился ли урл или нет
         if(this.originalUrl === url || location.href.indexOf(url)>=0) {
-            this.updateState();
+            if (!deleteOne) {
+                this.updateState();
+            }
         } else {
             this.location.path(url);
         }
@@ -246,13 +307,8 @@ class HistoryCtrl {
     }
 
     getUrl() {
-        return [
-            "/history",
-            this.controlsFromUrl.map(el => { return el.device  }).join(';'),
-            this.controlsFromUrl.map(el => { return el.control }).join(';'),
-            this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-",
-            this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-"
-        ].join("/")
+        const st = this.getStateDescription();
+        return ["/history", st.device, st.control, st.start, st.end].join("/");
     }
 
     resetTime() {
@@ -365,17 +421,11 @@ class HistoryCtrl {
     } // parseTopic
 
     beforeLoadChunkedHistory(indexOfControl=0) {
-        if (!this.ready) {
-            this.loadPending = true;
-            return
-        }
-        this.loadPending = false;
         if (!this.topics[indexOfControl]) {
-            // если это последний контрол + 1 то надо
-            // и посчитать таблицу данных внизу страницы
-            if (this.topics[indexOfControl-1]) {
-                this.calculateTable();
-            } else  return
+            this.loadPending = false;
+            this.calculateTable();
+            this.disableUi = false;
+            return
         }
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
         this.chunksN = chunks.length - 1;
@@ -385,8 +435,8 @@ class HistoryCtrl {
     calculateTable() {
         //TODO: use merge sort as we have here n^2 complexity
         var objX = {},graph = [];
-        this.chartConfig.forEach((ctrl,i) => {
-            ctrl.x.forEach(x=> {
+        this.charts.forEach((ctrl,i) => {
+            ctrl.xValues.forEach(x=> {
                 objX[x] = null
             })
         });
@@ -396,17 +446,17 @@ class HistoryCtrl {
         _arrX.forEach(date=> {
             graph.push({
                 date,
-                value: Array(this.chartConfig.length).fill(null)
+                value: Array(this.charts.length).fill(null)
             });
             // ищу совпадения в каждом канале
-            this.chartConfig.forEach((ctrl,iCtrl)=> {
-                for (var i = 0; i < ctrl.x.length; i++) {
+            this.charts.forEach((ctrl,iCtrl)=> {
+                for (var i = 0; i < ctrl.xValues.length; i++) {
                     // если не нахожу то останется null
-                    if(date === ctrl.x[i]) {
-                        if (this.stringValues[iCtrl]) {
+                    if(date === ctrl.xValues[i]) {
+                        if (this.charts[iCtrl].stringValues) {
                             graph[graph.length-1].value[iCtrl] = ctrl.text[i];
                         } else {
-                            graph[graph.length-1].value[iCtrl] = ctrl.y[i];
+                            graph[graph.length-1].value[iCtrl] = ctrl.yValues[i];
                         }
                         break
                     }
@@ -459,123 +509,96 @@ class HistoryCtrl {
         return ar.values.some(item => item.v != parseFloat(item.v))
     }
 
+    createMainChart(chart, lineColor) {
+        return {
+            name: chart.channelName,
+            x: chart.xValues,
+            y: chart.yValues,
+            text: chart.text,
+            type: 'scatter',
+            mode: 'lines',
+            line: {
+                shape: (chart.stringValues || chart.isBoolean ? 'hv' : 'linear'),
+                color: lineColor
+            },
+            hovertemplate: '%{text}<extra></extra>'
+        };
+    }
+
+    createErrorChart(chart, fillColor) {
+        return {//https://plotly.com/javascript/continuous-error-bars/
+            name: "min/max "+ chart.channelName,
+            x: [...chart.xValues, ...[...chart.xValues].reverse()],
+            y: [...chart.maxErrors, ...[...chart.minErrors].reverse()],
+            type: "scatter",
+            fill: "toself", 
+            fillcolor: fillColor, 
+            line: {color: "transparent"},
+            hoverinfo: "none"
+        };
+    }
+
+    processDbRecord(record, chart) {
+        var ts = new Date();
+        ts.setTime(record.t * 1000);
+        chart.xValues.push(this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss"));
+        if (chart.stringValues) {
+            chart.text.push(record.v);
+            if (!chart.stringValues.has(record.v)) {
+                chart.stringValues.set(record.v, chart.stringValues.size + 1)
+            }
+            chart.yValues.push(chart.stringValues.get(record.v));
+        } else {
+            if (record.min) {
+                chart.text.push(record.v + " [" + record.min + ", " + record.max + "]");
+            } else {
+                chart.text.push(record.v);
+            }
+            chart.yValues.push(record.v);
+            chart.maxErrors.push(record.max ? record.max : record.v);
+            chart.minErrors.push(record.min ? record.min : record.v);
+        }
+    }
+
+    processChunk(chunk, indexOfControl, indexOfChunk, chunks) {
+        var chart = this.charts[indexOfControl];
+        chart.progress.value = indexOfChunk + 1;
+
+        if (chunk.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
+
+        if (indexOfChunk==0 && this.hasStringValues(chunk)) {
+            chart.stringValues = new Map();
+            chart.hasErrors = false;
+        }
+
+        chunk.values.forEach(item => this.processDbRecord(item, chart));
+
+        // если еще есть части интервала
+        if (indexOfChunk + 2 < chunks.length) {
+            this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
+        // запрашиваю следущий контол если есть
+        } else {
+            if (chart.xValues.length) {
+                var colors = this.colors.nextColor();
+                this.chartConfig.push(this.createMainChart(chart, colors.chartColor));
+                if (chart.hasErrors) {
+                    this.chartConfig.push(this.createErrorChart(chart, colors.minMaxColor));
+                }
+            }
+            chart.progress.isLoaded = true;
+            this.beforeLoadChunkedHistory(indexOfControl + 1);
+        }
+    }
+
     loadHistory(params,indexOfControl,indexOfChunk,chunks) {
-        if(this.stopLoadData) return;
-        this.channelShortNames[indexOfControl] = params.channels[0][1];
-        this.channelNames[indexOfControl] = params.channels[0][0] + ' / ' + params.channels[0][1];
-        this.pend = true;
-
-        this.HistoryProxy.get_values(params).then(result => {
-
-            this.progreses[indexOfControl].value = indexOfChunk + 1;
-            if(indexOfChunk === chunks.length - 2) {
-                this.$timeout( () => {this.progreses[indexOfControl].isLoaded = true}, 500)
-            }
-            
-            this.pend = false;
-
-            if (result.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
-
-            this.xValues = result.values.map(item => {
-                var ts = new Date();
-                ts.setTime(item.t * 1000);
-                return this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss");
-            });
-
-            if(indexOfChunk==0 && this.hasStringValues(result)) {
-                this.stringValues[indexOfControl] = new Map();
-            }
-
-            this.text = []
-            var minValuesErr = []
-            var maxValuesErr = []
-            if (this.stringValues[indexOfControl]) {
-                this.yValues = result.values.map((item) => {
-                    this.text.push(item.v);
-                    if (!this.stringValues[indexOfControl].has(item.v)) {
-                        this.stringValues[indexOfControl].set(item.v, this.stringValues[indexOfControl].size + 1)
-                    }
-                    return this.stringValues[indexOfControl].get(item.v);
-                });
-            } else {
-                this.yValues = result.values.map(item => item.v);
-                // изза особенности графика типа "ОШИБКИ" отображать экстремумы надо
-                // высчитывая отклонение от основных значений
-                minValuesErr = result.values.map(item => item.min && item.v? (item.v-item.min).toFixed(6) : null);
-                maxValuesErr = result.values.map(item => item.max && item.v? (item.max-item.v).toFixed(6) : null);
-            }
-
-            // если это первый чанк то создаю график
-            if(indexOfChunk==0) {
-                var nameCn = params.channels[0][0] + '/' + params.channels[0][1];
-                var cn = this.controls.find(element => ((element.deviceControl === nameCn) && (element.valueType === "boolean")));
-                var shapeMode = 'linear';
-                if (cn != undefined || this.stringValues[indexOfControl]) {
-                    shapeMode = 'hv';
-                }
-                this.chartConfig[indexOfControl] = {//https://plot.ly/javascript/error-bars/
-                    name: nameCn,
-                    x: this.xValues,
-                    y: this.yValues,
-                    text: this.text,
-                    error_y: {//построит график  типа "ОШИБКИ"(error-bars)
-                        type: 'data',
-                        symmetric: false,
-                        array: maxValuesErr,
-                        arrayminus: minValuesErr,
-                        // styling error-bars https://plot.ly/javascript/error-bars/#colored-and-styled-error-bars
-                        thickness: 0.5,
-                        width: 0,
-                        value: 0.1,
-                        opacity: 0.5
-                    },
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {shape: shapeMode}
-                }
-                if (!this.stringValues[indexOfControl]) {
-                    this.chartConfig[indexOfControl].hovertemplate = '%{y:} ∆ +%{error_y.array:}/-%{error_y.arrayminus:}<extra></extra>'
-                } else {
-                    this.chartConfig[indexOfControl].hovertemplate = '%{text}<extra></extra>'
-                }
-            } else {
-                // если последущие то просто добавляю дату
-                this.chartConfig[indexOfControl].x = this.chartConfig[indexOfControl].x.concat(this.xValues);
-                this.chartConfig[indexOfControl].y = this.chartConfig[indexOfControl].y.concat(this.yValues);
-                this.chartConfig[indexOfControl].text = this.chartConfig[indexOfControl].text.concat(this.text);
-                this.chartConfig[indexOfControl].error_y.array = this.chartConfig[indexOfControl].error_y.array.concat(maxValuesErr);
-                this.chartConfig[indexOfControl].error_y.arrayminus = this.chartConfig[indexOfControl].error_y.arrayminus.concat(minValuesErr);
-            }
-
-            if(indexOfControl==0) {
-                this.firstChunkIsLoaded = true;
-            }
-
-            if(this.topics.length === 1) {
-                // проверить есть ли точки в контроллах
-                // ниже point.y == 0 специально выставлено не жесткое сравнение / не менять!!!
-                this.hasPoints = this.chartConfig[indexOfControl].y.some(y => {
-                  return  !!y || y == 0
-                } )
-                
-            } else {
-                this.dataPointsArr = [];
-                this.chartConfig.forEach((ctrl,i) => {
-                    this.dataPointsArr[i] = ctrl.y.some(point =>  !!point);
-                });
-                this.hasPoints = this.dataPointsArr.some(boolin => boolin);
-            }
-
-
-            // если еще есть части интервала
-            if(indexOfChunk + 2 < chunks.length) {
-                this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
-            // запрашиваю следущий контол если есть
-            } else if(indexOfControl < this.selectedTopics.length){
-                 this.beforeLoadChunkedHistory(indexOfControl + 1);
-            }
-        }).catch(this.errors.catch("Error getting history"));
-    } // loadHistory
+        if(this.stopLoadData) {
+            this.loadPending = false;
+            return;
+        }
+        this.HistoryProxy.get_values(params)
+                         .then(result => this.processChunk(result, indexOfControl, indexOfChunk, chunks))
+                         .catch(this.errors.catch("Error getting history"));
+    }
 
     downloadHistoryTable() {
       const rows = document.querySelectorAll("#history-table tr");
