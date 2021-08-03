@@ -1,5 +1,5 @@
 class WidgetsCtrl {
-  constructor($scope, uiConfig, DeviceData, handleData, rolesFactory) {
+  constructor($scope, $state, uiConfig, DeviceData, handleData, rolesFactory, historyUrlService) {
     'ngInject';
 
     
@@ -23,8 +23,11 @@ class WidgetsCtrl {
     }
     
     $scope.roles = rolesFactory;
-    $scope.historyStartTS = () => this.handleData.historyStartTS();
     $scope.rows = [];
+    $scope.goToHistory = (cell) => {
+      const data = historyUrlService.encodeControl(cell.device, cell.control, handleData.historyStartTS());
+      $state.go('history.sample', { data })
+    }
     $scope.$watch(uiConfig.version, () => {
       var dashboardMap = Object.create(null);
       var dashboards = uiConfig.data.dashboards;

@@ -43,6 +43,7 @@ import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
 import rolesFactory from './services/roles.factory';
+import historyUrlService from './services/historyUrl';
 
 import handleDataService from './services/handle-data';
 
@@ -146,6 +147,7 @@ module
     .service('handleData', handleDataService)
     .service('userAgentFactory', userAgentFactory)
     .service('rolesFactory', rolesFactory)
+    .service('historyUrlService', historyUrlService)
 
 
     .run(DeviceData => {
