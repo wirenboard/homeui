@@ -111,7 +111,7 @@
             ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedTopics[0]"
             ng-click="$ctrl.readDatesFromUrl()">
         Reset
-    </button><!-- ng-if="$ctrl.pend"-->
+    </button>
     <button class="btn btn-success"
             ng-disabled="!$ctrl.pend"
             ng-click="$ctrl.stopLoadingData()">
@@ -137,10 +137,6 @@
                 No data points to display.
             </div>
         </div>
-        <!--<div class="history-empty"
-             ng-show="$ctrl.hasString">
-            No points for graph.
-        </div>--> 
     </div>
  
     <button 
