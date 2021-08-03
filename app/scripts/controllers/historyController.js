@@ -1,13 +1,51 @@
+class ControlFromUrl {
+    constructor(deviceOrWidget, control) {
+        if (control) {
+            this.device = deviceOrWidget;
+        } else {
+            this.widgetName = deviceOrWidget;
+        }
+        this.control = control;
+    }
+}
+
+class ChartsControl {
+    constructor(cell, groupName, deviceName, widgetName) {
+        this.cell = cell;
+        this.name = deviceName + " / " + (cell.name || cell.controlId);
+        if (widgetName) {
+            this.name = widgetName + " (" + this.name + ")";
+        }
+        this.widgetName = widgetName;
+        this.group = groupName;
+    }
+
+    match(controlFromUrl) {
+        if (this.widgetName) {
+            return this.widgetName === controlFromUrl.widgetName;
+        }
+        return this.widgetName === controlFromUrl.widgetName && this.cell.deviceId === controlFromUrl.device && this.cell.controlId === controlFromUrl.control;
+    }
+
+    getDeviceForUrl() {
+        return (this.widgetName ? this.widgetName : this.cell.deviceId);
+    }
+
+    getControlForUrl() {
+        return (this.widgetName ? "" : this.cell.controlId);
+    }
+}
+
 class ChartTraits {
-    constructor(name) {
-        this.channelName = name;
+    constructor(chartsControl) {
+        this.channelName = chartsControl.name;
         this.progress = {
             value: 0,
             isLoaded: false
         };
         this.stringValues = undefined;
         this.hasErrors = true;
-        this.isBoolean = false;
+        this.isBoolean = (chartsControl.cell.valueType === "boolean");
         this.xValues = [];
         this.yValues = [];
         this.text = [];
@@ -48,9 +86,7 @@ class HistoryCtrl {
     constructor($scope, DeviceData, $injector, handleData, $q) {
         'ngInject';
 
-        // 1. Self-reference
-        var vm = this;
-        // интервал загрузки частей графика
+        // 1. интервал загрузки частей графика
         this.CHUNK_INTERVAL = 1;
         // 2. requirements
         var $stateParams = $injector.get('$stateParams');
@@ -62,7 +98,7 @@ class HistoryCtrl {
         var historyMaxPoints = $injector.get('historyMaxPoints');
         var dateFilter = $injector.get('dateFilter');
         var uiConfig = $injector.get('uiConfig');
-        var orderByFilter = $injector.get('orderByFilter');
+        this.orderByFilter = $injector.get('orderByFilter');
         this.$timeout = $injector.get('$timeout');
         this.$state = $injector.get('$state');
 
@@ -81,16 +117,9 @@ class HistoryCtrl {
         // читаем из урла даты
         this.readDatesFromUrl();
 
-        this.topics = [];// все топики из урла
-        this.chartConfig = [];// данные графика
+        // данные графика в формате plotly.js
+        this.chartConfig = [];
 
-        // контролы из урла, массив объектов
-        // {
-        //     device: ...
-        //     control: ...
-        // } 
-        this.controlsFromUrl = [];
-        
         // Array of ChartTraits
         this.charts = [];
         this.progresMax = 100;
@@ -118,36 +147,34 @@ class HistoryCtrl {
 
         this.colors = new ChartColors();
 
-        // ищу в урле контролы
+        // контролы из урла, массив объектов ControlFromUrl
+        var controlsFromUrl = [];
         if($stateParams.device && $stateParams.control) {
             const parsedDevices = $stateParams.device.split(';');
             const parsedControls = $stateParams.control.split(';');
             // только если количество параметров сходится
             if(parsedDevices.length === parsedControls.length) {
-                this.controlsFromUrl = []
                 for (var i = 0; i < parsedDevices.length; i++) {
-                    this.topics.push("/devices/" + parsedDevices[i] + "/controls/" + parsedControls[i]);
-                    this.controlsFromUrl[i] = {device: parsedDevices[i], control: parsedControls[i]}
+                    controlsFromUrl[i] = new ControlFromUrl(parsedDevices[i], parsedControls[i]);
                 }
             }
         }
-        // если массив пустой то создаю первый элемент
-        this.topics = this.topics.length? this.topics : [null];
-        this.selectedTopics = this.topics;
+
+        // контролы, выбранные для отображения в графике, массив объектов ChartsControl
+        this.selectedControls = [];
 
         // ui is ready for interaction with user, all data is loaded
         this.ready = false;
 
         // Wait for data loading for charts
-        this.loadPending = !!this.topics.length;
-        this.originalUrl = this.getUrl();
+        this.loadPending = controlsFromUrl.length;
 
         this.dataPointsMultiple = []
 
         // 4. Setup
         var controlsAreLoaded = $q.defer();
         uiConfig.whenReady().then((data) => {
-            updateControls(data.widgets, DeviceData);
+            this.updateControls(data.widgets, DeviceData);
             controlsAreLoaded.resolve();
         });
 
@@ -155,18 +182,8 @@ class HistoryCtrl {
             controlsAreLoaded.promise,
             whenMqttReady()
           ]).then(() => {
-            vm.ready = true;
-            if (vm.loadPending) {
-                vm.charts = vm.controlsFromUrl.map(control => {
-                    var chart = new ChartTraits(control.device + "/" + control.control);
-                    var cn = vm.controls.find(element => ((element.deviceControl === chart.channelName)));
-                    if (cn && (cn.valueType === "boolean")) {
-                        chart.isBoolean = true;
-                    }
-                    return chart;
-                })
-                vm.beforeLoadChunkedHistory();
-            }
+            this.ready = true;
+            this.setSelectedControlsAndStartLoading(controlsFromUrl);
         });
 
         this.plotlyEvents = (graph) => {
@@ -188,50 +205,51 @@ class HistoryCtrl {
         // 5. Clean up
         $scope.$on('$destroy', () => {
             // Do whatever cleanup might be necessary
-            vm = null; // MEMLEAK FIX
             $scope = null; // MEMLEAK FIX
         });
-
-        // 6. All the actual implementations go here
-
-        //...........................................................................
-        function updateControls(widgets, DeviceData) {
-            const channelsFromWidgets = orderByFilter(
-                Array.prototype.concat.apply(
-                    [], widgets.map(widget =>
-                        widget.cells.map(cell =>
-                            ({
-                                topic: vm.topicFromCellId(cell.id),
-                                name: widget.name + " / " + (cell.name || cell.id),
-                                group: "Каналы из виджетов: ",
-                                valueType: cell.valueType,
-                                deviceControl: cell.id
-                            })))),
-                "name");
-            const channelsAll = Array.prototype.concat.apply(
-                [], 
-                Object.keys(DeviceData.devices).sort().map(deviceId => {
-                    const device = DeviceData.devices[deviceId];
-                    return device.cellIds.map(cellId => {
-                      const cell = DeviceData.cell(cellId);
-                      return ({
-                          topic: vm.topicFromCellId(cell.id),
-                          name: device.name + " / " + (cell.name || cell.id),
-                          group: "Все каналы: ",
-                          valueType: cell.valueType,
-                          deviceControl: cellId
-                      });
-                    });
-                })
-            );
-
-            vm.controls = [].concat(channelsFromWidgets, channelsAll);
-        }
-
     } // constructor
-
+    
     // Class methods
     //...........................................................................
+    updateControls(widgets, DeviceData) {
+        this.controls = this.orderByFilter(
+            widgets.map(widget =>
+                widget.cells.map(item => {
+                    const cell = DeviceData.cell(item.id);
+                    const device = DeviceData.devices[cell.deviceId];
+                    return new ChartsControl(cell, "Каналы из виджетов: ", device.name, widget.name);
+                })
+            ),
+            "name");
+        this.controls.push(...Object.keys(DeviceData.devices).sort().map(deviceId => {
+                const device = DeviceData.devices[deviceId];
+                return device.cellIds.map(cellId => {
+                    const cell = DeviceData.cell(cellId);
+                    return new ChartsControl(cell, "Все каналы: ", device.name);
+                });
+            })
+        );
+    }
+
+    setSelectedControlsAndStartLoading(controlsFromUrl) {
+        if (controlsFromUrl.length) {
+            controlsFromUrl.forEach(control => {
+                const cn = this.controls.find(element => element.match(control));
+                if (cn) {
+                    this.selectedControls.push(cn);
+                    this.charts.push(new ChartTraits(cn));
+                }
+            })
+            if (this.charts.length) {
+                this.beforeLoadChunkedHistory();
+            } else {
+                this.loadPending = false;
+            }
+        } else {
+            // если массив пустой, то создаю первый элемент
+            this.selectedControls = [null];
+        }
+    }
 
     // читает из урла даты
     readDatesFromUrl() {
@@ -244,59 +262,15 @@ class HistoryCtrl {
         this.timeChanged = true;
     };
 
-    getStateDescription() {
-        return {
-            device:  this.controlsFromUrl.filter(el => el).map(el => { return el.device  }).join(';'),
-            control: this.controlsFromUrl.filter(el => el).map(el => { return el.control }).join(';'),
+    updateState() {
+        const controls = this.selectedControls.filter(el => el);
+        var state = {
+            device:  controls.map(el => el.getDeviceForUrl()).join(';'),
+            control: controls.map(el => el.getControlForUrl()).join(';'),
             start:   this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-",
             end:     this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-"
         }
-    }
-
-    updateState() {
-        this.$state.go('history.sample', this.getStateDescription(), { reload: true, inherit: false, notify: true });
-    }
-
-    // смена урла
-    updateUrl(index=0,deleteOne=false,onlyTimeUpdate=false) {
-        //  если удаляется селект
-        if(deleteOne) {
-            this.controlsFromUrl.splice(index,1);
-            this.selectedTopics.splice(index,1);
-        } else {
-            if (!onlyTimeUpdate) {
-                // если меняется или добавляется контрол
-                var parsedTopic = this.parseTopic(this.selectedTopics[index]);
-                // если этот контрол уже загружен в другой селект или нет такого топика
-                if (!parsedTopic ||
-                    (this.controlsFromUrl.some( el => {return (el.device === parsedTopic.deviceId) && (el.control === parsedTopic.controlId)})))
-                {
-                    return;
-                }
-                // перезаписываю существующие
-                this.controlsFromUrl[index] = {device: parsedTopic.deviceId, control: parsedTopic.controlId};
-            } else {
-                this.resetTime();
-                this.updateState();
-                var url = this.getUrl();
-                this.originalUrl = url;
-                return;
-            }
-        }
-
-        this.resetTime();
-        var url = this.getUrl();
-        // из-за остановки и возможного возобновления загрузки графика ввожу доп проверку
-        // изменился ли урл или нет
-        if(this.originalUrl === url || location.href.indexOf(url)>=0) {
-            if (!deleteOne) {
-                this.updateState();
-            }
-        } else {
-            this.location.path(url);
-        }
-        //перезаписываю
-        this.originalUrl = url;
+        this.$state.go('history.sample', state, { reload: true, inherit: false, notify: true });
     }
 
     // считаю часы + минуты в мсек
@@ -305,11 +279,6 @@ class HistoryCtrl {
         num += date.getHours()*60*60*1000;
         num += date.getMinutes()*60*1000;
         return num
-    }
-
-    getUrl() {
-        const st = this.getStateDescription();
-        return ["/history", st.device, st.control, st.start, st.end].join("/");
     }
 
     resetTime() {
@@ -325,11 +294,11 @@ class HistoryCtrl {
     }
 
     addTopic() {
-        this.selectedTopics.push(null)
+        this.selectedControls.push(null)
     }
 
     deleteTopic(i) {
-        this.updateUrl(i,true)
+        this.selectedControls.splice(index, 1)
     }
 
     timeChange(type) {
@@ -340,7 +309,10 @@ class HistoryCtrl {
         if(this.isValidDatesRange()) {
             // доп проверки на минуты можно не ставить. если менять минуты например старта когда дата старта
             // не определена то урл не сменится так как все равно подставится "-" вместо даты старта
-            if(this.selectedStartDate || this.selectedEndDate) this.updateUrl(false,false,true)
+            if(this.selectedStartDate || this.selectedEndDate) {
+                this.resetTime();
+                this.updateState();
+            }
         } else {
             alert('Date range is invalid. Change one of dates')
         }
@@ -399,30 +371,8 @@ class HistoryCtrl {
         this.selectedEndDateMinute = _e;
     }
 
-    //...........................................................................
-    topicFromCellId(cellId) {
-        return "/devices/" + cellId.replace("/", "/controls/");
-    }
-
-    //...........................................................................
-    parseTopic(topic) {
-        if (!topic) {
-            return null;
-        }
-
-        var m = topic.match(/^\/devices\/([^\/]+)\/controls\/([^\/]+)/);
-        if (!m) {
-            console.warn("bad topic: %s", topic);
-            return null;
-        }
-        return {
-            deviceId: m[1],
-            controlId: m[2]
-        };
-    } // parseTopic
-
     beforeLoadChunkedHistory(indexOfControl=0) {
-        if (!this.topics[indexOfControl]) {
+        if (!this.selectedControls[indexOfControl]) {
             this.loadPending = false;
             this.calculateTable();
             return
@@ -466,15 +416,12 @@ class HistoryCtrl {
         this.dataPointsMultiple = graph;
     }
 
-    loadChunkedHistory(indexOfControl,indexOfChunk, chunks) {
-        var parsedTopic = this.parseTopic(this.topics[indexOfControl]);
-        if (!parsedTopic) {
-            return
-        }
+    loadChunkedHistory(indexOfControl, indexOfChunk, chunks) {
+        var control = this.selectedControls[indexOfControl];
 
         var params = {
             channels: [
-                [parsedTopic.deviceId, parsedTopic.controlId]
+                [control.cell.deviceId, control.cell.controlId]
             ],
             limit: this.historyMaxPoints,
             ver: 1
@@ -525,9 +472,10 @@ class HistoryCtrl {
         };
     }
 
+    //https://plotly.com/javascript/continuous-error-bars/
     createErrorChart(chart, fillColor) {
-        return {//https://plotly.com/javascript/continuous-error-bars/
-            name: "min/max "+ chart.channelName,
+        return {
+            name: "∆ "+ chart.channelName,
             x: [...chart.xValues, ...[...chart.xValues].reverse()],
             y: [...chart.maxErrors, ...[...chart.minErrors].reverse()],
             type: "scatter",
