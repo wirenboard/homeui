@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.7.0) stable; urgency=medium
+
+  * Minimum and maximum values in charts on History page are shown as bands not as lines
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 03 Aug 2021 09:40:20 +0500
+
 wb-mqtt-homeui (2.6.0) stable; urgency=medium
 
   * Displaying of string values in chart on History page is implemented
