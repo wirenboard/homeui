@@ -213,22 +213,26 @@ class HistoryCtrl {
     //...........................................................................
     updateControls(widgets, DeviceData) {
         this.controls = this.orderByFilter(
-            widgets.map(widget =>
-                widget.cells.map(item => {
-                    const cell = DeviceData.cell(item.id);
-                    const device = DeviceData.devices[cell.deviceId];
-                    return new ChartsControl(cell, "Каналы из виджетов: ", device.name, widget.name);
-                })
-            ),
-            "name");
-        this.controls.push(...Object.keys(DeviceData.devices).sort().map(deviceId => {
+            Array.prototype.concat.apply(
+                [], 
+                widgets.map(widget =>
+                    widget.cells.map(item => {
+                        const cell = DeviceData.cell(item.id);
+                        const device = DeviceData.devices[cell.deviceId];
+                        return new ChartsControl(cell, "Каналы из виджетов: ", device.name, widget.name);
+                    })
+                ),
+            "name"));
+        this.controls.push(...Array.prototype.concat.apply(
+            [],
+            Object.keys(DeviceData.devices).sort().map(deviceId => {
                 const device = DeviceData.devices[deviceId];
                 return device.cellIds.map(cellId => {
                     const cell = DeviceData.cell(cellId);
                     return new ChartsControl(cell, "Все каналы: ", device.name);
                 });
             })
-        );
+        ));
     }
 
     setSelectedControlsAndStartLoading(controlsFromUrl) {
