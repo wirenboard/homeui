@@ -149,9 +149,9 @@ class HistoryCtrl {
 
         // контролы из урла, массив объектов ControlFromUrl
         var controlsFromUrl = [];
-        if($stateParams.device && $stateParams.control) {
+        if($stateParams.device) {
             const parsedDevices = $stateParams.device.split(';');
-            const parsedControls = $stateParams.control.split(';');
+            const parsedControls = $stateParams.control ? $stateParams.control.split(';') : [""];
             // только если количество параметров сходится
             if(parsedDevices.length === parsedControls.length) {
                 for (var i = 0; i < parsedDevices.length; i++) {
