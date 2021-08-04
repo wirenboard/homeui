@@ -135,11 +135,9 @@ class HistoryCtrl {
         this.topics = this.topics.length? this.topics : [null];
         this.selectedTopics = this.topics;
 
-        // ui is ready for interaction with user, all data is loaded
-        this.ready = false;
-
         // Wait for data loading for charts
         this.loadPending = !!this.topics.length;
+        this.disableUi = true;
         this.originalUrl = this.getUrl();
 
         this.dataPointsMultiple = []
@@ -155,7 +153,6 @@ class HistoryCtrl {
             controlsAreLoaded.promise,
             whenMqttReady()
           ]).then(() => {
-            vm.ready = true;
             if (vm.loadPending) {
                 vm.charts = vm.controlsFromUrl.map(control => {
                     var chart = new ChartTraits(control.device + "/" + control.control);
@@ -166,6 +163,8 @@ class HistoryCtrl {
                     return chart;
                 })
                 vm.beforeLoadChunkedHistory();
+            } else {
+                vm.disableUi = false;
             }
         });
 
@@ -425,6 +424,7 @@ class HistoryCtrl {
         if (!this.topics[indexOfControl]) {
             this.loadPending = false;
             this.calculateTable();
+            this.disableUi = false;
             return
         }
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
