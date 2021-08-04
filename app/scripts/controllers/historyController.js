@@ -301,7 +301,7 @@ class HistoryCtrl {
         this.selectedControls.push(null)
     }
 
-    deleteTopic(i) {
+    deleteTopic(index) {
         this.selectedControls.splice(index, 1)
     }
 
