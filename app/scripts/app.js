@@ -32,6 +32,7 @@ import mqttServiceModule from './services/mqttService';
 import editorProxyService from './services/editorProxy';
 import configEditorProxyService from './services/configEditorProxy';
 import historyProxyService from './services/historyProxy';
+import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
 import gotoDefStartService from './services/gotoDefStart';
 import getTimeService from './services/time';
@@ -58,6 +59,7 @@ import WebUICtrl from './controllers/webUiController';
 import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
+import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -80,6 +82,7 @@ import userRolesDirective from './directives/user-roles.directive';
 import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
 import dashboardPickerDirective from './directives/dashboardpicker';
 import plotlyDirective from "./directives/plotly";
+import onResizeDirective from "./directives/resize";
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -124,9 +127,11 @@ const module = angular
         ///'toggle-switch',
         'ui-rangeSlider',
         'ngToast',
-        'ngBootbox'
+        'ngBootbox',
+        'ui.scroll'
     ])
     .value('historyMaxPoints', 1000)
+    .value('logsMaxRows', 50)
     .value('webuiConfigPath', '/etc/wb-webui.conf')
     .value('configSaveDebounceMs', 300);
 
@@ -136,6 +141,7 @@ module
     .factory('EditorProxy', editorProxyService)
     .factory('ConfigEditorProxy', configEditorProxyService)
     .factory('HistoryProxy', historyProxyService)
+    .factory('LogsProxy', logsProxyService)
     .factory('gotoDefStart', gotoDefStartService)
     .factory('getTime', getTimeService)
     .factory('Spinner', spinnerService)
@@ -167,7 +173,8 @@ module
     .controller('WebUICtrl', WebUICtrl)
     .controller('SystemCtrl', SystemCtrl)
     .controller('MQTTCtrl', MQTTCtrl)
-    .controller('AccessLevelCtrl', AccessLevelCtrl);
+    .controller('AccessLevelCtrl', AccessLevelCtrl)
+    .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl);
 
 module
     .controller('NavigationCtrl', NavigationCtrl)
@@ -244,7 +251,8 @@ module
     .directive('svgCompiledElement', svgCompiledElementDirective)
     .directive('svgScheme', svgSchemeDirective)
     .directive('dashboardPicker', dashboardPickerDirective)
-    .directive('plotly', [ '$window', plotlyDirective ] );
+    .directive('plotly', [ '$window', plotlyDirective ] )
+    .directive('onResize', [ '$parse', onResizeDirective] );
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {
@@ -419,8 +427,6 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             $('double-bounce-spinner').addClass('ng-hide');
             $('#wrapper').removeClass('ng-hide');
         }, 500);
-
-        console.log($('#wrapper'));
     });
 
 export default module.name;
