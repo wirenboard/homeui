@@ -1,38 +1,19 @@
-class ControlFromUrl {
-    constructor(deviceOrWidget, control) {
-        if (control) {
-            this.device = deviceOrWidget;
-        } else {
-            this.widgetName = deviceOrWidget;
-        }
-        this.control = control;
-    }
-}
-
 class ChartsControl {
-    constructor(cell, groupName, deviceName, widgetName) {
+    constructor(cell, groupName, deviceName, widget) {
         this.cell = cell;
         this.name = deviceName + " / " + (cell.name || cell.controlId);
-        if (widgetName) {
-            this.name = widgetName + " (" + this.name + ")";
+        if (widget) {
+            this.name = widget.name + " (" + this.name + ")";
         }
-        this.widgetName = widgetName;
+        this.widget = widget;
         this.group = groupName;
     }
 
     match(controlFromUrl) {
-        if (this.widgetName) {
-            return this.widgetName === controlFromUrl.widgetName;
+        if (this.cell.deviceId === controlFromUrl.d && this.cell.controlId === controlFromUrl.c) {
+            return this.widget ? this.widget.id === controlFromUrl.w : !controlFromUrl.w;
         }
-        return this.widgetName === controlFromUrl.widgetName && this.cell.deviceId === controlFromUrl.device && this.cell.controlId === controlFromUrl.control;
-    }
-
-    getDeviceForUrl() {
-        return (this.widgetName ? this.widgetName : this.cell.deviceId);
-    }
-
-    getControlForUrl() {
-        return (this.widgetName ? "" : this.cell.controlId);
+        return false;
     }
 }
 
@@ -83,7 +64,7 @@ class ChartColors {
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, DeviceData, $injector, handleData, $q) {
+    constructor($scope, DeviceData, $injector, handleData, $q, historyUrlService) {
         'ngInject';
 
         // 1. интервал загрузки частей графика
@@ -101,6 +82,7 @@ class HistoryCtrl {
         this.orderByFilter = $injector.get('orderByFilter');
         this.$timeout = $injector.get('$timeout');
         this.$state = $injector.get('$state');
+        this.historyUrlService = historyUrlService;
 
         angular.extend(this, {
             scope: $scope,
@@ -113,9 +95,6 @@ class HistoryCtrl {
         });
 
         this.handleData = handleData;
-
-        // читаем из урла даты
-        this.readDatesFromUrl();
 
         // данные графика в формате plotly.js
         this.chartConfig = [];
@@ -147,18 +126,11 @@ class HistoryCtrl {
 
         this.colors = new ChartColors();
 
-        // контролы из урла, массив объектов ControlFromUrl
-        var controlsFromUrl = [];
-        if($stateParams.device) {
-            const parsedDevices = $stateParams.device.split(';');
-            const parsedControls = $stateParams.control ? $stateParams.control.split(';') : [""];
-            // только если количество параметров сходится
-            if(parsedDevices.length === parsedControls.length) {
-                for (var i = 0; i < parsedDevices.length; i++) {
-                    controlsFromUrl[i] = new ControlFromUrl(parsedDevices[i], parsedControls[i]);
-                }
-            }
-        }
+        // контролы из урла
+        var stateFromUrl = historyUrlService.decode($stateParams.data);
+
+        // читаем из урла даты
+        this.readDatesFromUrl(stateFromUrl);
 
         // контролы, выбранные для отображения в графике, массив объектов ChartsControl
         this.selectedControls = [];
@@ -167,7 +139,7 @@ class HistoryCtrl {
         this.ready = false;
 
         // Wait for data loading for charts
-        this.loadPending = controlsFromUrl.length;
+        this.loadPending = stateFromUrl.c && stateFromUrl.c.length;
 
         this.dataPointsMultiple = []
 
@@ -183,7 +155,7 @@ class HistoryCtrl {
             whenMqttReady()
           ]).then(() => {
             this.ready = true;
-            this.setSelectedControlsAndStartLoading(controlsFromUrl);
+            this.setSelectedControlsAndStartLoading(stateFromUrl.c);
         });
 
         this.plotlyEvents = (graph) => {
@@ -219,7 +191,7 @@ class HistoryCtrl {
                     widget.cells.map(item => {
                         const cell = DeviceData.cell(item.id);
                         const device = DeviceData.devices[cell.deviceId];
-                        return new ChartsControl(cell, "Каналы из виджетов: ", device.name, widget.name);
+                        return new ChartsControl(cell, "Каналы из виджетов: ", device.name, widget);
                     })
                 ),
             "name"));
@@ -236,7 +208,7 @@ class HistoryCtrl {
     }
 
     setSelectedControlsAndStartLoading(controlsFromUrl) {
-        if (controlsFromUrl.length) {
+        if (controlsFromUrl && controlsFromUrl.length) {
             controlsFromUrl.forEach(control => {
                 const cn = this.controls.find(element => element.match(control));
                 if (cn) {
@@ -256,9 +228,9 @@ class HistoryCtrl {
     }
 
     // читает из урла даты
-    readDatesFromUrl() {
-        this.startDate = this.convDate(this.$stateParams.start);
-        this.endDate = this.convDate(this.$stateParams.end);
+    readDatesFromUrl(stateFromUrl) {
+        this.startDate = stateFromUrl.s;
+        this.endDate = stateFromUrl.e;
         this.setDefaultTime(this.startDate,this.endDate);
         // по умолчанию дата равна сегодня минус один день
         this.selectedStartDate = this.startDate? this.startDate : new Date( + (new Date()) - 24*60*60*1000 );
@@ -267,14 +239,28 @@ class HistoryCtrl {
     };
 
     updateState() {
-        const controls = this.selectedControls.filter(el => el);
-        var state = {
-            device:  controls.map(el => el.getDeviceForUrl()).join(';'),
-            control: controls.map(el => el.getControlForUrl()).join(';'),
-            start:   this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : "-",
-            end:     this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : "-"
-        }
-        this.$state.go('history.sample', state, { reload: true, inherit: false, notify: true });
+        var controls = [];
+
+        // Remove duplicates
+        var uniqueCells = new Set;
+        this.selectedControls.forEach((control) => {
+            if (!uniqueCells.has(control.cell.id)) {
+                uniqueCells.add(control.cell.id);
+                controls.push(
+                    {
+                        d: control.cell.deviceId,
+                        c: control.cell.controlId,
+                        w: control.widget && control.widget.id
+                    }
+                )
+            }
+        });
+
+        const data = this.historyUrlService.encodeControls(controls,
+                                     this.selectedStartDate ? this.selectedStartDate.getTime() + this.addHoursAndMinutes(this.selectedStartDateMinute) : undefined,
+                                     this.selectedEndDate ? this.selectedEndDate.getTime() + this.addHoursAndMinutes(this.selectedEndDateMinute) : undefined)
+
+        this.$state.go('history.sample', { data }, { reload: true, inherit: false, notify: true });
     }
 
     // считаю часы + минуты в мсек
@@ -350,15 +336,6 @@ class HistoryCtrl {
     }
 
     //...........................................................................
-    convDate(ts) {
-        if (ts == null || ts == "-") {
-            return null;
-        }
-        var d = new Date();
-        d.setTime(ts - 0);
-        return d;
-    }
-
     // проставляет только время
     setDefaultTime(start,end) {
         // вычитываю из урла или ставлю дефолтное
