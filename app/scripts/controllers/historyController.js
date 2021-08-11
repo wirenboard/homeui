@@ -113,7 +113,8 @@ class HistoryCtrl {
         };
 
         this.options = {
-            displayModeBar: true
+            displayModeBar: true,
+            displaylogo: false
         }
 
         this.colors = new ChartColors();

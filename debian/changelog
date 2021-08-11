@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.8.0) stable; urgency=medium
+
+  * Logs page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 11 Aug 2021 10:53:36 +0500
+
 wb-mqtt-homeui (2.7.0) stable; urgency=medium
 
   * Minimum and maximum values in charts on History page are shown as bands not as lines
