@@ -825,7 +825,10 @@ svg:not(:root) {
     background-color: #5b835b;
     border-color: #5b835b;
 }
-
+.uib-daypicker .btn-info {
+  background-color: #5b835b;
+  border-color: #5b835b;
+}
 /*разъединяю btn-group */
 .uib-datepicker-popup .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
     border-bottom-right-radius: 2px;
@@ -842,6 +845,9 @@ svg:not(:root) {
 /*активная кнопка сегодня*/
 .uib-datepicker-popup .btn-info .text-info {
     color: white;
+}
+.uib-daypicker .btn-info .text-info {
+  color: white;
 }
 /*выключаю нажим кнопки*/
 [uib-datepicker-popup-wrap] + span .btn:active {
@@ -945,43 +951,11 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
 
 @media (max-width: 767px) {
   .logs-load-button {
-    margin-left: 10px;
-  }
-}
-
-@media (max-width: 990px) {
-  .logs-datetime-label {
-    margin-top: 10px;
-  }
-
-  .logs-timepicker {
-    margin-top: -34px;
+    margin-top: 15px;
   }
 }
 
 @media (min-width: 991px) {
-  .logs-parameter-label {
-    text-align: right;
-    margin-top: 7px;
-  }
-
-  .logs-datetime-label {
-    text-align: right;
-    margin-top: 30px;
-  }
-
-  .logs-date-picker {
-    margin-top: 23px;
-  }
-
-  .logs-timepicker {
-    margin-top: -27px;
-  }
-
-  .logs-radio-item {
-    margin-top: 7px;
-  }
-
   .logs-time {
     white-space: nowrap;
   }
@@ -991,10 +965,6 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   .logs-time-column {
     white-space: nowrap;
   }
-}
-
-.logs-load-button {
-  margin-top: -27px;
 }
 
 .logs-time-column {
@@ -1013,8 +983,4 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
 .logs-view {
   height: 500px;
   width: 100%;
-}
-
-.logs-page .ui-select-container{
-  margin-bottom: 5px;
 }

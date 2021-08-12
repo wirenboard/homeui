@@ -1,5 +1,5 @@
 class LogsCtrl {
-    constructor($scope, $injector, $q) {
+    constructor($scope, $injector, $q, $uibModal) {
         'ngInject';
 
         var vm = this;
@@ -13,6 +13,7 @@ class LogsCtrl {
         var logsMaxRows = $injector.get('logsMaxRows');
         var dateFilter = $injector.get('dateFilter');
         this.$state = $injector.get('$state');
+        this.$uibModal = $uibModal;
 
         angular.extend(this, {
             scope: $scope,
@@ -25,9 +26,18 @@ class LogsCtrl {
 
         this.waitBootsAndServices = true;
         this.logs = [];
-        this.requestLatestLogs = true;
-        this.startDate = new Date();
-        this.selectedStartDateMinute = new Date();
+        this.logDates = [
+            {
+                "name": "Latest",
+                "date": undefined
+            },
+            {
+                "name": "Set start date",
+                "date": null
+            }
+        ];
+        this.startDateMs = undefined;
+        this.selectedStartDateMs = undefined;
 
         $q.all([
             whenMqttReady()
@@ -110,11 +120,8 @@ class LogsCtrl {
         if (this.logs.length == 0) {
             this.logsTopUiScrollIndex = uiScrollIndex;
             params.limit = count;
-            if (!this.requestLatestLogs) {
-                this.startDate.setHours(0);
-                this.startDate.setMinutes(0);
-                this.startDate.setSeconds(1);
-                params.time = (this.startDate.getTime() + this.convertHoursAndMinutesToMilliseconds(this.selectedStartDateMinute))/1000;
+            if (this.startDateMs) {
+                params.time = this.startDateMs/1000;
             }
         } else {
             var logsArrayIndex = this.toLogsArrayIndex(uiScrollIndex);
@@ -149,10 +156,6 @@ class LogsCtrl {
         });
     }
 
-    convertHoursAndMinutesToMilliseconds(date) {
-        return (date.getHours()*60 + date.getMinutes())*60*1000;
-    }
-
     loadBootsAndServices() {
         this.LogsProxy.List().then(result => {
             this.boots = result.boots.map(obj => {
@@ -164,7 +167,7 @@ class LogsCtrl {
                     en.setTime(obj.end * 1000);
                     desc = st.toLocaleString() + ' - ' + en.toLocaleString();
                 } else {
-                    desc = 'Current boot from ' + st.toLocaleString();
+                    desc = st.toLocaleString() + ' - now';
                 }
                 return { hash: obj.hash, desc: desc };
             });
@@ -178,6 +181,32 @@ class LogsCtrl {
             this.waitBootsAndServices = false;
             this.errors.catch("Error getting boots and services")(err);
         });
+    }
+
+    periodChanged() {
+        if (this.selectedStartDateMs === null) {
+            var modalInstance = this.$uibModal.open({
+                animation: false,
+                ariaDescribedBy: 'modal-body',
+                templateUrl: 'views/dateTimePickerModal.html',
+                controller: 'DateTimePickerModalCtrl',
+                controllerAs: '$ctrl',
+                size: 'sm'
+            });
+            modalInstance.result.then((selectedDate) => {
+                                        if (!this.logDates.some(el => el.date === selectedDate.getTime())) {
+                                            this.logDates.push({ name: "Since " + selectedDate.toLocaleString(), date: selectedDate.getTime()});
+                                            if (this.logDates.length > 12) {
+                                                this.logDates.splice(2, 1);
+                                            }
+                                        }
+                                        this.selectedStartDateMs = selectedDate.getTime();
+                                        this.startDateMs = selectedDate.getTime();
+                                      },
+                                      () => this.selectedStartDateMs = this.startDateMs);
+        } else {
+            this.startDateMs = this.selectedStartDateMs;
+        }
     }
 
 } // class LogsCtrl
