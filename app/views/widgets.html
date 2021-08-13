@@ -34,9 +34,9 @@
             <display-cell compact="true"></display-cell>
         </td>
         <td ng-if="!row.preview" class="cell-history-col">
-            <a title="History" class="cell-history"
-               ui-sref="history.sample({device: row.cell.device, control: row.cell.control, start: historyStartTS(), end: '-'})"><i
-                    class="glyphicon glyphicon-stats"></i></a>
+            <a title="History" class="cell-history" ng-click="goToHistory(row.cell)">
+                <i class="glyphicon glyphicon-stats"></i>
+            </a>
         </td>
         <td ng-if="!!row.widget" class="description-col" rowspan="{{ row.rowSpan }}">{{ row.widget.description }}</td>
         <td ng-if="!!row.widget" class="dashboards-col" rowspan="{{ row.rowSpan }}" >

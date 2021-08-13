@@ -435,13 +435,10 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     })
   //...........................................................................
     .state('history.sample', {
-      url: '/{device}/{control}/{start}/{end}',
+      url: '/{data}',
       templateUrl: historyTemplateUrl,
       controller: 'HistoryCtrl as $ctrl',
       resolve: {
-          /*load: ['$ocLazyLoad', function($ocLazyLoad) {
-              return $ocLazyLoad.load(['plotly','historyController'])
-          }],*/
         ctrl: ($q, $ocLazyLoad) => {
             'ngInject';
             let deferred_1 = $q.defer();

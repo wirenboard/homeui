@@ -1,6 +1,6 @@
 
 class DevicesCtrl {
-    constructor($scope, $state, $injector, DeviceData, handleData, rolesFactory) {
+    constructor($scope, $state, $injector, DeviceData, handleData, rolesFactory, historyUrlService) {
         'ngInject';
 
         this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
@@ -9,6 +9,7 @@ class DevicesCtrl {
         this.$state = $state;
         this.handleData = handleData;
         this.DeviceData = DeviceData;
+        this.historyUrlService = historyUrlService;
 
         // will create object to keep devices open/close condition 
         // in localeStorage, if it's not there.
@@ -189,7 +190,7 @@ class DevicesCtrl {
 
     redirect(contr) {
         var [device,control] = contr.split('/');
-        this.$state.go('history.sample', {device, control, start: '-', end: '-'})
+        this.$state.go('history.sample', { data: this.historyUrlService.encodeControl(device, control) })
     }
 }
 
