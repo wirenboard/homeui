@@ -949,7 +949,7 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   height: 1.5em;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 990px) {
   .logs-load-button {
     margin-top: 15px;
   }

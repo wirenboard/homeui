@@ -6,7 +6,20 @@
     </h1>
 
     <div class="row" ng-cloak ng-show="!$ctrl.waitBootsAndServices">
-        <div class="form-group col-sm-6 col-xs-12 col-lg-3">
+        <div class="form-group col-xs-12 col-md-12 col-lg-4">
+            <label>Service</label>
+            <ui-select ng-model="$ctrl.selectedService"
+                    theme="bootstrap"
+                    title="Choose a service"
+                    append-to-body="true">
+                <ui-select-match placeholder="Choose a service">{{ $select.selected }}</ui-select-match>
+                <ui-select-choices repeat="service in $ctrl.services | filter: $select.search">
+                    <div ng-bind-html="service | hilite: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+        <div class="form-group col-xs-12 col-md-5 col-lg-4">
             <label>Boot</label>
             <ui-select ng-model="$ctrl.selectedBoot" 
                     theme="bootstrap"
@@ -19,30 +32,17 @@
             </ui-select>
         </div>
 
-        <div class="form-group col-sm-6 col-xs-12 col-lg-3">
+        <div class="form-group col-xs-12 col-md-7 col-lg-4">
             <label>Period</label>
-            <select class="form-control" 
-                    ng-model="$ctrl.selectedStartDateMs" 
-                    ng-options="date.date as date.name for date in $ctrl.logDates"
-                    ng-change="$ctrl.periodChanged()">
-            </select>
-        </div>
-
-        <div class="form-group col-sm-12 col-xs-12 col-lg-6">
-            <label>Service</label>
             <div class="row">
-                <div class="col-sm-10">
-                    <ui-select ng-model="$ctrl.selectedService"
-                            theme="bootstrap"
-                            title="Choose a service"
-                            append-to-body="true">
-                        <ui-select-match placeholder="Choose a service">{{ $select.selected }}</ui-select-match>
-                        <ui-select-choices repeat="service in $ctrl.services | filter: $select.search">
-                            <div ng-bind-html="service | hilite: $select.search"></div>
-                        </ui-select-choices>
-                    </ui-select>
+                <div class="col-xs-12 col-md-8 col-lg-8">
+                    <select class="form-control" 
+                            ng-model="$ctrl.selectedStartDateMs" 
+                            ng-options="date.date as date.name for date in $ctrl.logDates"
+                            ng-change="$ctrl.periodChanged()">
+                    </select>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-xs-12 col-md-4 col-lg-4">
                     <button class="btn btn-success btn-block logs-load-button"
                             ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService"
                             ng-click="$ctrl.reload()">
