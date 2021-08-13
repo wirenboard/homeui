@@ -24,9 +24,9 @@ class ChartTraits {
             value: 0,
             isLoaded: false
         };
-        this.stringValues = undefined;
-        this.hasErrors = true;
-        this.isBoolean = (chartsControl.cell.valueType === "boolean");
+        this.hasStringValues = false;
+        this.hasErrors = false;
+        this.hasBooleanValues = (chartsControl.cell.valueType === "boolean");
         this.xValues = [];
         this.yValues = [];
         this.text = [];
@@ -103,16 +103,9 @@ class HistoryCtrl {
         this.charts = [];
         this.progresMax = 100;
         this.layoutConfig = {
-            xaxis: {
-            },
-            yaxis: {
-              // with this flag Plotly will automatically increase the margin size 
-              // to prevent ticklabels from being cut off or overlapping with axis titles
-              // https://plot.ly/javascript/setting-graph-size/#automatically-adjust-margins
-              automargin: true,
-            },
-            margin: {// update the left, bottom, right, top margin
-                l: 40, b: 40, r: 10, t: 20
+            margin: {
+                b: 40,
+                t: 20
             },
             legend: {//https://plot.ly/javascript/legend/
                 x: 0,
@@ -351,9 +344,12 @@ class HistoryCtrl {
 
     beforeLoadChunkedHistory(indexOfControl=0) {
         if (!this.selectedControls[indexOfControl]) {
-            this.loadPending = false;
-            this.calculateTable();
-            this.disableUi = false;
+            this.$timeout(() => {
+                this.loadPending = false;
+                this.createCharts();
+                this.calculateTable();
+                this.disableUi = false;
+            }, 100);
             return
         }
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
@@ -382,11 +378,7 @@ class HistoryCtrl {
                 for (var i = 0; i < ctrl.xValues.length; i++) {
                     // если не нахожу то останется null
                     if(date === ctrl.xValues[i]) {
-                        if (this.charts[iCtrl].stringValues) {
-                            graph[graph.length-1].value[iCtrl] = ctrl.text[i];
-                        } else {
-                            graph[graph.length-1].value[iCtrl] = ctrl.yValues[i];
-                        }
+                        graph[graph.length-1].value[iCtrl] = ctrl.yValues[i];
                         break
                     }
                 }
@@ -435,25 +427,31 @@ class HistoryCtrl {
         return ar.values.some(item => item.v != parseFloat(item.v))
     }
 
-    createMainChart(chart, lineColor) {
-        return {
+    createMainChart(chart, lineColor, axisName) {
+        var chart = {
             name: chart.channelName,
             x: chart.xValues,
             y: chart.yValues,
             text: chart.text,
             type: 'scatter',
-            mode: 'lines',
-            line: {
-                shape: (chart.stringValues || chart.isBoolean ? 'hv' : 'linear'),
-                color: lineColor
+            mode: 'lines+markers',
+            marker: {
+                size: 3
             },
-            hovertemplate: '%{text}<extra></extra>'
-        };
+            line: {
+                shape: (chart.hasStringValues || chart.hasBooleanValues ? 'hv' : 'linear'),
+                color: lineColor,
+                width: 1
+            },
+            hovertemplate: '%{text}<extra></extra>',
+            yaxis: axisName
+        }; 
+        return chart;
     }
 
     //https://plotly.com/javascript/continuous-error-bars/
-    createErrorChart(chart, fillColor) {
-        return {
+    createErrorChart(chart, fillColor, axisName) {
+        var chart = {
             name: "∆ "+ chart.channelName,
             x: [...chart.xValues, ...[...chart.xValues].reverse()],
             y: [...chart.maxErrors, ...[...chart.minErrors].reverse()],
@@ -461,30 +459,138 @@ class HistoryCtrl {
             fill: "toself", 
             fillcolor: fillColor, 
             line: {color: "transparent"},
-            hoverinfo: "none"
+            hoverinfo: "none",
+            yaxis: axisName
         };
+        return chart;
+    }
+
+    makeStringAxis(isSecond) {
+        var axis = {
+            type: 'category'
+        };
+        if (isSecond) {
+            axis.overlaying = 'y';
+            axis.side = 'right';
+        }
+        return axis;
+    }
+
+    makeBoolAxis(isSecond, index, axisCount) {
+        var axis = {
+            tickmode: 'array',
+            tickvals: [0, 1],
+            range: [0, 1.2]
+        };
+        if (isSecond) {
+            axis.overlaying = 'y';
+            axis.side = 'right';
+            axis.zeroline = false;
+            axis.range = [-0.2, 1.2];
+        }
+        if (axisCount > 1) {
+            axis.domain = [index / axisCount, (index + 1) / axisCount];
+        }
+        return axis;
+    }
+
+    makeCommonAxis(isSecond) {
+        var axis = {
+            // with this flag Plotly will automatically increase the margin size 
+            // to prevent ticklabels from being cut off or overlapping with axis titles
+            // https://plot.ly/javascript/setting-graph-size/#automatically-adjust-margins
+            automargin: true,
+        };
+        if (isSecond) {
+            axis.overlaying = 'y';
+            axis.side = 'right';
+        }
+        return axis;
+    }
+
+    createCharts() {
+        var commonCharsCount = 0;
+        var boolChartsCount = 0;
+        var stringChartsCount = 0;
+        this.charts.forEach(chart => {
+            if (chart.xValues.length) {
+                if (chart.hasBooleanValues) {
+                    ++boolChartsCount;
+                } else if (chart.hasStringValues) {
+                    ++stringChartsCount;
+                } else {
+                    ++commonCharsCount;
+                }
+            }
+        });
+
+        if (stringChartsCount == 1 && boolChartsCount == 0 && commonCharsCount == 0) {       // Один строковый
+            this.layoutConfig.yaxis = this.makeStringAxis();
+        } else if (stringChartsCount == 1 && boolChartsCount == 0 && commonCharsCount != 0) { // Один строковый и обычные
+            this.layoutConfig.yaxis = this.makeCommonAxis();
+            this.layoutConfig.yaxis2 = this.makeStringAxis(true);
+        } else if (stringChartsCount == 2 && boolChartsCount == 0 && commonCharsCount == 0) { // 2 строковых
+            this.layoutConfig.yaxis = this.makeStringAxis();
+            this.layoutConfig.yaxis2 = this.makeStringAxis(true);
+        } else if (stringChartsCount == 1 && boolChartsCount != 0 && commonCharsCount == 0) { // Дискретные и один строковый
+            this.layoutConfig.yaxis = this.makeStringAxis();
+            this.layoutConfig.yaxis2 = this.makeBoolAxis(true);
+        } else if (boolChartsCount != 0 && (stringChartsCount != 0 || commonCharsCount != 0)) { // Дискретные и любые
+            this.layoutConfig.yaxis = this.makeCommonAxis();
+            this.layoutConfig.yaxis2 = this.makeBoolAxis(true);
+        } else if (stringChartsCount == 0 && boolChartsCount != 0 && commonCharsCount == 0) { // Только дискретные
+            this.layoutConfig.yaxis = this.makeBoolAxis(false, 0, boolChartsCount);
+            for (var i = 1; i < boolChartsCount; ++i) {
+                this.layoutConfig["yaxis" + (i + 1)] = this.makeBoolAxis(false, i, boolChartsCount);
+            }
+        } else {                                                                            // Все остальные варианты, настройки по умолчанию
+            this.layoutConfig.yaxis = this.makeCommonAxis();
+        }
+
+        var isSecondStringChart = false;
+        var booleanChartIndex = 0;
+        this.charts.forEach(chart => {
+            if (chart.xValues.length) {
+                var colors = this.colors.nextColor();
+                var axisName = 'y';
+                if (stringChartsCount == 1 && boolChartsCount == 0 && commonCharsCount != 0) { // Один строковый и обычные
+                    axisName = chart.hasStringValues ? 'y2' : 'y';
+                } else if (stringChartsCount == 2 && boolChartsCount == 0 && commonCharsCount == 0) { // 2 строковых
+                    axisName = isSecondStringChart ? 'y' : 'y2';
+                    isSecondStringChart = true;
+                } else if (stringChartsCount == 1 && boolChartsCount != 0 && commonCharsCount == 0) { // Дискретные и один строковый
+                    axisName = chart.hasStringValues ? 'y' : 'y2';
+                } else if (boolChartsCount > 0 && (stringChartsCount != 0 || commonCharsCount != 0)) { // Дискретные и любые
+                    axisName = chart.hasBooleanValues ? 'y2' : 'y';
+                } else if (stringChartsCount == 0 && boolChartsCount != 0 && commonCharsCount == 0) { // Только дискретные
+                    axisName = booleanChartIndex == 0 ? 'y' : 'y' + (booleanChartIndex + 1);
+                    ++booleanChartIndex;
+                }
+                this.chartConfig.push(this.createMainChart(chart, colors.chartColor, axisName));
+                if (chart.hasErrors) {
+                    this.chartConfig.push(this.createErrorChart(chart, colors.minMaxColor, axisName));
+                }
+            }
+        });
     }
 
     processDbRecord(record, chart) {
         var ts = new Date();
         ts.setTime(record.t * 1000);
         chart.xValues.push(this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss"));
-        if (chart.stringValues) {
-            chart.text.push(record.v);
-            if (!chart.stringValues.has(record.v)) {
-                chart.stringValues.set(record.v, chart.stringValues.size + 1)
-            }
-            chart.yValues.push(chart.stringValues.get(record.v));
+        chart.yValues.push(record.v);
+        if ((record.max && record.max != record.v) || (record.min && record.min != record.v)) {
+            chart.text.push(record.v + " [" + record.min + ", " + record.max + "]");
+            chart.hasErrors = true;
         } else {
-            if (record.min) {
-                chart.text.push(record.v + " [" + record.min + ", " + record.max + "]");
+            if (chart.hasBooleanValues) {
+                chart.text.push(parseInt(record.v));
             } else {
                 chart.text.push(record.v);
             }
-            chart.yValues.push(record.v);
-            chart.maxErrors.push(record.max ? record.max : record.v);
-            chart.minErrors.push(record.min ? record.min : record.v);
         }
+        chart.maxErrors.push(record.max ? record.max : record.v);
+        chart.minErrors.push(record.min ? record.min : record.v);
     }
 
     processChunk(chunk, indexOfControl, indexOfChunk, chunks) {
@@ -493,25 +599,17 @@ class HistoryCtrl {
 
         if (chunk.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
 
-        if (indexOfChunk==0 && this.hasStringValues(chunk)) {
-            chart.stringValues = new Map();
-            chart.hasErrors = false;
+        if (!chart.xValues.length && this.hasStringValues(chunk)) {
+            chart.hasStringValues = true;
         }
 
         chunk.values.forEach(item => this.processDbRecord(item, chart));
 
         // если еще есть части интервала
         if (indexOfChunk + 2 < chunks.length) {
-            this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
+            this.loadChunkedHistory(indexOfControl, indexOfChunk + 1, chunks);
         // запрашиваю следущий контол если есть
         } else {
-            if (chart.xValues.length) {
-                var colors = this.colors.nextColor();
-                this.chartConfig.push(this.createMainChart(chart, colors.chartColor));
-                if (chart.hasErrors) {
-                    this.chartConfig.push(this.createErrorChart(chart, colors.minMaxColor));
-                }
-            }
             chart.progress.isLoaded = true;
             this.beforeLoadChunkedHistory(indexOfControl + 1);
         }
