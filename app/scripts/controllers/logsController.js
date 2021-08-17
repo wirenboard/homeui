@@ -1,5 +1,5 @@
 class LogsCtrl {
-    constructor($scope, $injector, $q, $uibModal) {
+    constructor($scope, $injector, $q, $uibModal, $element) {
         'ngInject';
 
         var vm = this;
@@ -14,6 +14,7 @@ class LogsCtrl {
         var dateFilter = $injector.get('dateFilter');
         this.$state = $injector.get('$state');
         this.$uibModal = $uibModal;
+        this.$element = $element;
 
         angular.extend(this, {
             scope: $scope,
@@ -206,6 +207,19 @@ class LogsCtrl {
                                       () => this.selectedStartDateMs = this.startDateMs);
         } else {
             this.startDateMs = this.selectedStartDateMs;
+        }
+    }
+
+    logsResize(size) {
+        if (size.h && size.w) {
+            const hpx = size.h + "px";
+            const wpx = size.w + "px";
+            var lt = this.$element[0].querySelector('#logs-table');
+            lt.style.height = hpx;
+            lt.style.width = wpx;
+            var ltb = this.$element[0].querySelector('#logs-table tbody');
+            ltb.style.height = hpx;
+            ltb.style.width = wpx;
         }
     }
 

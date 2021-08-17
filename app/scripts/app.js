@@ -81,6 +81,7 @@ import userRolesDirective from './directives/user-roles.directive';
 import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
 import dashboardPickerDirective from './directives/dashboardpicker';
 import plotlyDirective from "./directives/plotly";
+import onResizeDirective from "./directives/resize";
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -248,7 +249,8 @@ module
     .directive('svgCompiledElement', svgCompiledElementDirective)
     .directive('svgScheme', svgSchemeDirective)
     .directive('dashboardPicker', dashboardPickerDirective)
-    .directive('plotly', [ '$window', plotlyDirective ] );
+    .directive('plotly', [ '$window', plotlyDirective ] )
+    .directive('onResize', [ '$parse', onResizeDirective] );
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {
@@ -423,8 +425,6 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             $('double-bounce-spinner').addClass('ng-hide');
             $('#wrapper').removeClass('ng-hide');
         }, 500);
-
-        console.log($('#wrapper'));
     });
 
 export default module.name;
