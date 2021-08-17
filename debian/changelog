@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.8.0) stable; urgency=medium
 
-  * Logs page
+  * An interface for querying device's logs is added.
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 11 Aug 2021 10:53:36 +0500
 
