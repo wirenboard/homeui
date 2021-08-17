@@ -40,6 +40,16 @@ class LogsCtrl {
         this.startDateMs = undefined;
         this.selectedStartDateMs = undefined;
 
+        this.boots = [
+            {
+                hash: undefined,
+                desc: 'All boots'
+            }
+        ];
+
+        this.ALL_SERVICES = 'All services';
+        this.services = [ this.ALL_SERVICES ];
+
         $q.all([
             whenMqttReady()
           ]).then(() => {
@@ -110,12 +120,10 @@ class LogsCtrl {
         }
 
         var params = {};
-        if (this.selectedService != 'All services') {
+        if (this.selectedService != this.ALL_SERVICES) {
             params.service = this.selectedService;
         };
-        if (this.selectedBoot.hash != 'all') {
-            params.boot = this.selectedBoot.hash;
-        }
+        params.boot = this.selectedBoot.hash;
 
         // Reload logs
         if (this.logs.length == 0) {
@@ -159,7 +167,7 @@ class LogsCtrl {
 
     loadBootsAndServices() {
         this.LogsProxy.List().then(result => {
-            this.boots = result.boots.map(obj => {
+            this.boots.push(...result.boots.map(obj => {
                 var st = new Date();
                 st.setTime(obj.start * 1000);
                 var desc;
@@ -171,10 +179,8 @@ class LogsCtrl {
                     desc = st.toLocaleString() + ' - now';
                 }
                 return { hash: obj.hash, desc: desc };
-            });
-            this.boots.unshift({ hash: 'all', desc: 'All boots' });
-            this.services = result.services;
-            this.services.unshift('All services');
+            }));
+            this.services.push(...result.services);
             this.waitBootsAndServices = false;
             this.selectedBoot = this.boots[0];
             this.selectedService = this.services[0];
