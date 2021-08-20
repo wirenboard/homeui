@@ -284,7 +284,6 @@ module
         };
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-            if (fromState.name.split('/').pop() != 'edit' && fromState.name.split('/').pop() != 'new') $rootScope.showCreated = false;
             $rootScope.refererLocation = fromState;
         });
 
@@ -308,6 +307,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
         $translatePartialLoaderProvider.addPart('app');
         $translatePartialLoaderProvider.addPart('console');
+        $translatePartialLoaderProvider.addPart('help');
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'

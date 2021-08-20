@@ -1,4 +1,30 @@
 {
+    "navigation":{
+        "menu": {
+            "toggle": "Переключить меню",
+            "home": "Домашняя страница",
+            "dashboards": "Панели",
+            "list": "Список",
+            "devices": "Устройства",
+            "widgets": "Виджеты",
+            "history": "История",
+            "rules": "Правила",
+            "settings": "Настройки",
+            "help": "Помощь",
+            "configs": "Конфигурационные файлы",
+            "ui": "Web интерфейс",
+            "system": "Система",
+            "channels": "Каналы MQTT",
+            "access": "Права доступа"
+        },
+        "access": {
+            "title": "Уровень доступа:"
+        },
+        "connection": {
+            "active": "Подключено",
+            "inactive": "Отключено"
+        }
+    },
     "dashboards": {
         "title": {
             "default": "Панели",
