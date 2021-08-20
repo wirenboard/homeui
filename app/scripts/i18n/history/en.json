@@ -1,0 +1,29 @@
+{
+    "history":{
+        "title": "History",
+        "labels": {
+            "choose": "- Please Choose -",
+            "start": "Start",
+            "end": "End",
+            "loading": "Loading...",
+            "nothing": "No data points to display",
+            "date": "Date and time",
+            "all_channels": "All channels: ",
+            "widget_channels": "Channels used in widgets: "
+        },
+        "buttons": {
+            "delete": "delete",
+            "add": "Add channel",
+            "load": "Load data",
+            "reset": "Reset",
+            "stop": "Stop loading",
+            "download": "Download history as CSV"
+        },
+        "errors": {
+            "dates": "Date range is invalid. Change one of dates",
+            "load": "Error getting history",
+            "warning": "Warning", 
+            "points": "maximum number of points exceeded. Please select start date."
+        }
+    }
+}

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Foxandxss/angular-webpack-workflow",
   "dependencies": {
     "angular": "^1.6.3",
+    "angular-dynamic-locale": "^0.1.37",
     "angular-elastic": "^2.5.1",
     "angular-mocks": "^1.6.3",
     "angular-rangeslider": "0.0.14",

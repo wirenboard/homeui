@@ -67,5 +67,13 @@
         "buttons": {
             "add": "Добавить виджет"
         }
+    },
+    "datepicker": {
+        "format": "dd.MM.yyyy",
+        "buttons": {
+            "today": "Сегодня",
+            "clear": "Сброс",
+            "close": "Закрыть"
+        }
     }
 }
