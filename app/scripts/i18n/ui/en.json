@@ -1,0 +1,12 @@
+{
+    "ui": {
+        "title": "Web UI",
+        "common": {
+            "title": "Common Info",
+            "name": "Name",
+            "value": "Value",
+            "default": "Default Dashboard",
+            "choose": "- Please Choose / None -"
+        }
+    }
+}
