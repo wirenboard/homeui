@@ -2,7 +2,6 @@ class WidgetsCtrl {
   constructor($scope, $state, uiConfig, DeviceData, handleData, rolesFactory, historyUrlService) {
     'ngInject';
 
-    
     this.handleData = handleData;
     this.cell = id => {
       return DeviceData.proxy(id);
@@ -56,7 +55,6 @@ class WidgetsCtrl {
             dashboard.widgets.push(widget.id);
           },
           deleteWidget: () => {
-            if (confirm("Really delete the widget?"))
               uiConfig.deleteWidget(widget);
           }
         };

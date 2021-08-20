@@ -15,7 +15,7 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
 
 //-----------------------------------------------------------------------------
   class WidgetController {
-    constructor ($scope, $element, $attrs) {
+    constructor ($scope, $element, $attrs, $translate, $rootScope) {
       'ngInject';
       this.roles = rolesFactory;
       this.cellType = "any";
@@ -24,6 +24,7 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
       this.originalSource = {};
       this.editJsonMode = false;
       this.multipleDashboards = false;
+      this.$translate = $translate;
       $scope.$watch(() => this._source(), newSource => {
         if (!$scope.widgetForm.$visible)
           this.updateSource();
@@ -52,6 +53,15 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
         const el = $element.find(".panel-heading input[type=text]");
         el.attr('disabled', isJsonMode);
       });
+
+      this.updateTranslations();
+      $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+    }
+
+    updateTranslations() {
+        this.$translate('widgets.errors.empty-name').then(translation => {
+          this.emptyNameErrorMsg = translation;
+        });
     }
 
     updateSource () {
@@ -146,9 +156,9 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
         this.updateSource();
     }
 
-    checkNonEmpty (value, msg) {
+    checkNonEmpty (value) {
       if (!/\S/.test(value))
-        return msg;
+        return this.emptyNameErrorMsg;
       return true;
     }
 
