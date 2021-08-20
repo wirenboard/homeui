@@ -21,7 +21,6 @@ import 'ng-file-upload';
 import 'angular-sortable-view/src/angular-sortable-view';
 import 'oclazyload';
 import '../app/lib/angular-order-object-by/src/ng-order-object-by';
-import '../app/lib/angular-toggle-switch/angular-toggle-switch';
 import 'jquery-simulate-ext/libs/jquery.simulate';
 
 var testsContext = require.context('./unit', true, /.*\.spec\.js$/);

@@ -64,7 +64,6 @@ module.exports = function makeWebpackConfig() {
             'oclazyload',
             './lib/angular-order-object-by/src/ng-order-object-by',
             'angular-rangeslider',
-            './lib/angular-toggle-switch/angular-toggle-switch',
             'ng-toast',
 
             'angular-translate',
