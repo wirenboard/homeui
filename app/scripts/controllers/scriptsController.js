@@ -6,6 +6,7 @@ class ScriptsCtrl {
     this.errors = errors;
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
     if(!this.haveRights) return;
+
     /*
      get list
      /rpc/v1/wbrules/Editor/List/contactless-uLo93IW6a0 {"id":1,"params":{}}
@@ -24,15 +25,13 @@ class ScriptsCtrl {
         script.processingRequest = false;
         return script
       })
-    }).catch(errors.catch("Error listing the scripts"));
+    }).catch('rules.errors.list');
   }
 
   deleteScript(index) {
-    if(confirm('Are you sure?')) {
-      this.EditorProxy.Remove({path: this.scripts[index].virtualPath}).then(script=>{
-        this.scripts.splice(index,1);
-      },err=>alert("error"))
-    }
+    var path = this.scripts[index].virtualPath;
+    this.EditorProxy.Remove({path: path}).then(script=>{this.scripts.splice(index,1);}, 
+                                               err=>alert(err))
   }
 }
 

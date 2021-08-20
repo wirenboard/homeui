@@ -1,7 +1,7 @@
 
 <div class="alert alert-danger alert-dismissible" role="alert"
-     ng-hide="$ctrl.haveRights">
-  You cannot view this page. You can change <a ui-sref="accessLevel">access level</a>.
+ng-hide="$ctrl.haveRights">{{'rules.labels.notice' | translate}}
+   <a ui-sref="accessLevel">{{'rules.labels.access' | translate}}</a>.
 </div>
 
 <section ng-if="$ctrl.haveRights">
@@ -11,11 +11,11 @@
   </h1>
 
   <div class="spinner" ng-show="spinnerActive('editorProxy')" ng-cloak>
-    <span class="spinner-loader">Loading...</span>
+    <span class="spinner-loader" translate>{{'rules.labels.loading'}}</span>
   </div>
 
   <form class="script-editor" ng-if="!spinnerActive('editorProxy')" name="scriptEditor" script-form>
-    <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()">Save</button>
+    <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()" translate>{{'rules.labels.save'}}</button>
   <textarea ui-codemirror
             ui-codemirror-opts="{ mode: 'javascript', lineNumbers: true, viewportMargin: vpMargin, scrollbarStyle: null, onLoad: codeMirrorLoaded }"
             ng-model="file.content"></textarea>

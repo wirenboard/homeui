@@ -34,7 +34,7 @@ class ScriptCtrl {
 
     function showError (message, traceback, setCursor) {
       var errorLine = null;
-      errors.showError("Script error", message);
+      errors.showError('rules.errors.error', message);
 
       if (!traceback || !traceback.length)
         return;
@@ -81,7 +81,7 @@ class ScriptCtrl {
               errors.hideError();
           }
         })
-        .catch(errors.catch("Error saving the file"));
+        .catch(errors.catch('rules.errors.save'));
     };
 
     if (!$scope.file.isNew) {
@@ -106,7 +106,7 @@ class ScriptCtrl {
             r.error.traceback,
             // only jump to error location if postition wasn't specified
             pos === null);
-      }).catch(errors.catch("Error loading the file"));
+      }).catch(errors.catch('rules.errors.load'));
     }
   }
 }
