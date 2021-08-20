@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.11.0) stable; urgency=medium
+
+  * Russian localization is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 20 Aug 2021 15:09:57 +0500
+
 wb-mqtt-homeui (2.10.0) stable; urgency=medium
 
   * An interface for querying device's logs is added.
