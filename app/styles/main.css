@@ -27,7 +27,7 @@ body {
 
 #page-wrapper {
     width: 100%;
-    padding: 0;
+    padding: 0px 13px 0px 13px;
     background-color: #fff;
     height: calc(100vh - 50px);
     overflow: auto;
@@ -45,7 +45,7 @@ body {
     }
 
     #page-wrapper {
-        padding: 10px;
+        padding: 10px 23px 10px 23px;
     }
 }
 
@@ -825,7 +825,10 @@ svg:not(:root) {
     background-color: #5b835b;
     border-color: #5b835b;
 }
-
+.uib-daypicker .btn-info {
+  background-color: #5b835b;
+  border-color: #5b835b;
+}
 /*разъединяю btn-group */
 .uib-datepicker-popup .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
     border-bottom-right-radius: 2px;
@@ -842,6 +845,9 @@ svg:not(:root) {
 /*активная кнопка сегодня*/
 .uib-datepicker-popup .btn-info .text-info {
     color: white;
+}
+.uib-daypicker .btn-info .text-info {
+  color: white;
 }
 /*выключаю нажим кнопки*/
 [uib-datepicker-popup-wrap] + span .btn:active {
@@ -941,4 +947,50 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
 .modebar-btn .icon {
   width: 1.5em;
   height: 1.5em;
+}
+
+@media (max-width: 990px) {
+  .logs-load-button {
+    margin-top: 15px;
+  }
+}
+
+@media (min-width: 991px) {
+  .logs-time {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1200px) {
+  .logs-time-column {
+    white-space: nowrap;
+  }
+}
+
+.logs-time-column {
+  color: GrayText;
+}
+
+.logs-service {
+  white-space: nowrap;
+}
+
+.logs-message-column {
+  white-space: pre-wrap;
+  padding-left: 5px;
+}
+
+.logs-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#logs-table {
+  height: 500px;
+}
+
+#logs-wrapper {
+  overflow: hidden;
+  height: 100%;
 }

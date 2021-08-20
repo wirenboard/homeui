@@ -1,0 +1,74 @@
+
+<div class="stretch-height logs-page">
+
+    <h1 class="page-header">
+        Logs
+    </h1>
+
+    <div class="row" ng-cloak ng-show="!$ctrl.waitBootsAndServices">
+        <div class="form-group col-xs-12 col-md-12 col-lg-4">
+            <label>Service</label>
+            <ui-select ng-model="$ctrl.selectedService"
+                    theme="bootstrap"
+                    title="Choose a service"
+                    append-to-body="true">
+                <ui-select-match placeholder="Choose a service">{{ $select.selected }}</ui-select-match>
+                <ui-select-choices repeat="service in $ctrl.services | filter: $select.search">
+                    <div ng-bind-html="service | hilite: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+        <div class="form-group col-xs-12 col-md-5 col-lg-4">
+            <label>Boot</label>
+            <ui-select ng-model="$ctrl.selectedBoot" 
+                    theme="bootstrap"
+                    title="Choose a boot"
+                    append-to-body="true">
+                <ui-select-match placeholder="Choose a boot">{{ $select.selected.desc }}</ui-select-match>
+                <ui-select-choices repeat="boot in ($ctrl.boots | filter: {desc: $select.search}) track by boot.hash">
+                    <div ng-bind-html="boot.desc | hilite: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+        <div class="form-group col-xs-12 col-md-7 col-lg-4">
+            <label>Period</label>
+            <div class="row">
+                <div class="col-xs-12 col-md-8 col-lg-8">
+                    <select class="form-control" 
+                            ng-model="$ctrl.selectedStartDateMs" 
+                            ng-options="date.date as date.name for date in $ctrl.logDates"
+                            ng-change="$ctrl.periodChanged()">
+                    </select>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-4">
+                    <button class="btn btn-success btn-block logs-load-button"
+                            ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService"
+                            ng-click="$ctrl.reload()">
+                        Load
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="logs-wrapper" ng-cloak ng-show="!$ctrl.waitBootsAndServices && $ctrl.logs.length" on-resize="$ctrl.logsResize(size)">
+        <table id="logs-table" ui-scroll-viewport>
+            <tr ui-scroll="log in datasource" adapter="adapter">
+                <td class="logs-time-column">
+                    <span class="logs-time">{{log.time}}</span>
+                    <span ng-if="log.service" class="logs-service">[{{log.service}}]</span>
+                </td>
+                <td class="logs-message-column"
+                    ng-style="{color: {0: 'red', 1: 'red', 2:'red', 3:'red', 4:'#997300'}[log.level], 'font-weight': {7: 'bold'}[log.level]}">{{log.msg}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-xs-12 spinner" ng-show="$ctrl.waitBootsAndServices">
+        <span class="spinner-loader">Loading...</span>
+    </div>
+
+</div>
+

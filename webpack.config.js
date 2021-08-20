@@ -71,7 +71,8 @@ module.exports = function makeWebpackConfig() {
             'angular-translate-loader-partial',
             'angular-spinkit',
             'ngbootbox',
-            'lz-string'
+            'lz-string',
+            'angular-ui-scroll'
         ]
     };
     /**
