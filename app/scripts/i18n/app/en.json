@@ -1,4 +1,11 @@
 {
+    "app": {
+        "errors": {
+            "load": "Cannot load WebUI config.",
+            "save": "Config saving failed",
+            "overflow": "Config saving failed: config is too big, try to reduce SVG size"
+        }
+    },
     "home": {
         "labels": {
             "warning": "You can select default dashboard in ",
