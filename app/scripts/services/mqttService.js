@@ -59,7 +59,7 @@ function topicMatches() {
 
 //-----------------------------------------------------------------------------
 function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnectTimeout,
-                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast, uiConfig) {
+                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast, uiConfig, $translate) {
   'ngInject';
   var globalPrefix = '',
       service = {},
@@ -208,10 +208,12 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
     // ставлю флаг что ошибка показана чтобы позже при коннекте
     // почистить именно ее а не другую ошибку
     showConnectError = true;
-    var m = "Failure to connect to " + client.host + ":" + client.port +
-        " as " + client.clientId + ". error code " + context.errorCode +
-        ", error message \"" + context.errorMessage + "\"";
-    ngToast.danger(m);
+    const params = {
+      host: client.host + ":" + client.port,
+      id: client.clientId,
+      error: "\"" + context.errorMessage + "\" (" + context.errorCode + ")"
+    };
+    $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
     reconnectAfterTimeout();
   };
 

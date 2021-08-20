@@ -1,15 +1,15 @@
-<h1 class="page-header">MQTT Channels</h1>
+<h1 class="page-header" translate> {{'mqtt.title'}}</h1>
 
 <div class="table-responsive">
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
-            <th>Device</th>
-            <th>Control</th>
-            <th>Type</th>
-            <th>Topic</th>
-            <th>Value</th>
-            <th>Status</th>
+            <th translate>{{'mqtt.header.device'}}</th>
+            <th translate>{{'mqtt.header.control'}}</th>
+            <th translate>{{'mqtt.header.type'}}</th>
+            <th translate>{{'mqtt.header.topic'}}</th>
+            <th translate>{{'mqtt.header.value'}}</th>
+            <th translate>{{'mqtt.header.status'}}</th>
         </tr>
         </thead>
         <tbody>
@@ -24,7 +24,7 @@
             <td>{{row._value}}</td>
             <td>
                 <span ng-show="row.error" class="label label-danger">
-                  Error: {{row.error }}
+                  {{'mqtt.error' | translate}}: {{row.error }}
                 </span>
                 <span ng-show="!row.error" class="label label-success">
                   OK
