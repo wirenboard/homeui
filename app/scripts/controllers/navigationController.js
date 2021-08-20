@@ -67,16 +67,6 @@ class NavigationCtrl {
         pageWrapperClassList.remove(overlayClass) : 
         pageWrapperClassList.add(overlayClass);
     }
-
-    $scope.setEn = function () {
-      $translate.use("en");
-      tmhDynamicLocale.set('en');
-    }
-
-    $scope.setRu = function () {
-      $translate.use("ru");
-      tmhDynamicLocale.set('ru');
-    }
   }
 
 //-----------------------------------------------------------------------------

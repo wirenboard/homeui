@@ -6,7 +6,8 @@
             "name": "Name",
             "value": "Value",
             "default": "Default Dashboard",
-            "choose": "- Please Choose / None -"
+            "choose": "- Please Choose / None -",
+            "language": "UI locale"
         }
     }
 }

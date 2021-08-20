@@ -305,36 +305,23 @@ module
 const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate', 'tmh.dynamicLocale'])
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
-        $translatePartialLoaderProvider.addPart('app');
-        $translatePartialLoaderProvider.addPart('console');
-        $translatePartialLoaderProvider.addPart('help');
-        $translatePartialLoaderProvider.addPart('access');
-        $translatePartialLoaderProvider.addPart('mqtt');
-        $translatePartialLoaderProvider.addPart('system');
-        $translatePartialLoaderProvider.addPart('ui');
-        $translatePartialLoaderProvider.addPart('configurations');
-        $translatePartialLoaderProvider.addPart('rules');
-        $translatePartialLoaderProvider.addPart('history');
-        $translatePartialLoaderProvider.addPart('widgets');
-        $translatePartialLoaderProvider.addPart('devices');
-        $translatePartialLoaderProvider.addPart('units');
+        ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui',
+         'configurations', 'rules', 'history', 'widgets', 'devices', 'units'].forEach(el => $translatePartialLoaderProvider.addPart(el));
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
         });
-        //TODO: define language on first start
-        $translateProvider.preferredLanguage('ru');
+        $translateProvider.preferredLanguage('en');
         $translateProvider.fallbackLanguage('en');
     }])
     .config(['tmhDynamicLocaleProvider', function(tmhDynamicLocaleProvider) {
         tmhDynamicLocaleProvider.localeLocationPattern('/scripts/i18n/angular-locale_{{locale}}.js');
-        tmhDynamicLocaleProvider.defaultLocale('ru');
     }])
     .config(['$compileProvider', function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig, tmhDynamicLocale) => {
         'ngInject';
 
         $rootScope.$on('$translateChangeSuccess', () => {
@@ -407,6 +394,14 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             password: $window.localStorage['password'],
             prefix: $window.localStorage['prefix']
         };
+
+        var language =  $window.localStorage['language'];
+        if (!language) {
+            language = window.navigator.language.startsWith('ru') ? 'ru' : 'en';
+            $window.localStorage.setItem('language', language);
+        }
+        $translate.use(language);
+        tmhDynamicLocale.set(language);
 
         $rootScope.requestConfig(loginData);
 

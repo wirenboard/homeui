@@ -38,6 +38,17 @@
                                 </select>
                             </td>
                         </tr>
+                        <tr>
+                            <td translate>
+                                {{'ui.common.language'}}
+                            </td>
+                            <td class="text-center">
+                                <select ng-model="$ctrl.language" ng-change="$ctrl.changeLanguage()">
+                                    <option value="en">English</option>
+                                    <option value="ru">Русский</option>
+                                </select>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
