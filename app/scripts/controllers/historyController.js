@@ -24,14 +24,16 @@ class ChartTraits {
             value: 0,
             isLoaded: false
         };
-        this.stringValues = undefined;
-        this.hasErrors = true;
-        this.isBoolean = (chartsControl.cell.valueType === "boolean");
+        this.hasStringValues = false;
+        this.hasErrors = false;
+        this.hasBooleanValues = (chartsControl.cell.valueType === "boolean");
         this.xValues = [];
         this.yValues = [];
         this.text = [];
         this.maxErrors = [];
         this.minErrors = [];
+        this.minValue = undefined; // Minimum value for charts of number values
+        this.maxValue = undefined; // Maximum value for charts of number values
     }
 }
 
@@ -96,23 +98,22 @@ class HistoryCtrl {
 
         this.handleData = handleData;
 
+        this.Y_CHART_MARGIN = 25;
+
         // данные графика в формате plotly.js
         this.chartConfig = [];
+
+        this.BOOL_AXIS   = 'b';
+        this.COMMON_AXIS = 'c';
+        this.STRING_AXIS = 's';
 
         // Array of ChartTraits
         this.charts = [];
         this.progresMax = 100;
         this.layoutConfig = {
-            xaxis: {
-            },
-            yaxis: {
-              // with this flag Plotly will automatically increase the margin size 
-              // to prevent ticklabels from being cut off or overlapping with axis titles
-              // https://plot.ly/javascript/setting-graph-size/#automatically-adjust-margins
-              automargin: true,
-            },
-            margin: {// update the left, bottom, right, top margin
-                l: 40, b: 40, r: 10, t: 20
+            margin: {
+                b: 40,
+                t: 20
             },
             legend: {//https://plot.ly/javascript/legend/
                 x: 0,
@@ -351,9 +352,12 @@ class HistoryCtrl {
 
     beforeLoadChunkedHistory(indexOfControl=0) {
         if (!this.selectedControls[indexOfControl]) {
-            this.loadPending = false;
-            this.calculateTable();
-            this.disableUi = false;
+            this.$timeout(() => {
+                this.loadPending = false;
+                this.createCharts();
+                this.calculateTable();
+                this.disableUi = false;
+            }, 100);
             return
         }
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
@@ -382,11 +386,7 @@ class HistoryCtrl {
                 for (var i = 0; i < ctrl.xValues.length; i++) {
                     // если не нахожу то останется null
                     if(date === ctrl.xValues[i]) {
-                        if (this.charts[iCtrl].stringValues) {
-                            graph[graph.length-1].value[iCtrl] = ctrl.text[i];
-                        } else {
-                            graph[graph.length-1].value[iCtrl] = ctrl.yValues[i];
-                        }
+                        graph[graph.length-1].value[iCtrl] = ctrl.yValues[i];
                         break
                     }
                 }
@@ -435,24 +435,29 @@ class HistoryCtrl {
         return ar.values.some(item => item.v != parseFloat(item.v))
     }
 
-    createMainChart(chart, lineColor) {
+    createMainChart(chart, lineColor, axisName) {
         return {
             name: chart.channelName,
             x: chart.xValues,
             y: chart.yValues,
             text: chart.text,
             type: 'scatter',
-            mode: 'lines',
-            line: {
-                shape: (chart.stringValues || chart.isBoolean ? 'hv' : 'linear'),
-                color: lineColor
+            mode: 'lines+markers',
+            marker: {
+                size: 3
             },
-            hovertemplate: '%{text}<extra></extra>'
+            line: {
+                shape: (chart.hasStringValues || chart.hasBooleanValues ? 'hv' : 'linear'),
+                color: lineColor,
+                width: 1
+            },
+            hovertemplate: '%{text}<extra></extra>',
+            yaxis: axisName
         };
     }
 
     //https://plotly.com/javascript/continuous-error-bars/
-    createErrorChart(chart, fillColor) {
+    createErrorChart(chart, fillColor, axisName) {
         return {
             name: "∆ "+ chart.channelName,
             x: [...chart.xValues, ...[...chart.xValues].reverse()],
@@ -461,29 +466,199 @@ class HistoryCtrl {
             fill: "toself", 
             fillcolor: fillColor, 
             line: {color: "transparent"},
-            hoverinfo: "none"
+            hoverinfo: "none",
+            yaxis: axisName
         };
+    }
+
+    setAsSecond(axis) {
+        axis.overlaying = 'y';
+        axis.side = 'right';
+    }
+
+    makeStringAxis() {
+        return {
+            type: 'category',
+            customdata: this.STRING_AXIS
+        };
+    }
+
+    makeBoolAxis(index, axisCount, calcRange) {
+        var axis = {
+            type: 'linear',
+            tickmode: 'array',
+            tickvals: [0, 1],
+            customdata: this.BOOL_AXIS
+        };
+        if (axisCount > 1) {
+            axis.domain = [index / axisCount, (index + 1) / axisCount];
+            axis.range = [-0.1, 1.1];
+        }
+        if (calcRange) {
+            axis.autorange = false;
+            axis.range = [-1/this.Y_CHART_MARGIN, 1 + 1/this.Y_CHART_MARGIN];
+        }
+        return axis;
+    }
+
+    makeCommonAxis(minValue, maxValue) {
+        var axis = {
+            // with this flag Plotly will automatically increase the margin size 
+            // to prevent ticklabels from being cut off or overlapping with axis titles
+            // https://plot.ly/javascript/setting-graph-size/#automatically-adjust-margins
+            automargin: true,
+            type: 'linear',
+            customdata: this.COMMON_AXIS
+        };
+        if (minValue !== undefined && maxValue !== undefined) {
+            const d = (maxValue - minValue);
+            if (d >= 1) {
+                minValue = Math.floor(minValue);
+                maxValue = Math.ceil(maxValue);
+            } else {
+                const k = Math.pow(10, -Math.round(Math.log10(d)));
+                minValue = Math.floor(minValue*k)/k;
+                maxValue = Math.ceil(maxValue*k)/k;
+            }
+            const delta = (maxValue - minValue) / this.Y_CHART_MARGIN;
+            axis.range = [minValue - delta, maxValue + delta];
+        }
+        return axis;
+    }
+
+    makeAxis(chart) {
+        if (chart.hasStringValues) {
+            return this.makeStringAxis();
+        } 
+        if (chart.hasBooleanValues) {
+            return this.makeBoolAxis(0, 1);
+        }
+        return this.makeCommonAxis();
+    }
+
+    getAxis(chart) {
+        var axisType = this.COMMON_AXIS;
+        if (chart.hasStringValues) {
+            axisType = this.STRING_AXIS;
+        } else if (chart.hasBooleanValues) {
+            axisType = this.BOOL_AXIS;
+        }
+
+        if (!this.layoutConfig.yaxis.customdata) {
+            this.layoutConfig.yaxis = this.makeAxis(chart);
+            return 'y';
+        }
+        if (axisType == this.layoutConfig.yaxis.customdata && !chart.hasStringValues) {
+            return 'y';
+        }
+        if (!this.layoutConfig.yaxis2 || axisType != this.layoutConfig.yaxis2.customdata || chart.hasStringValues) {
+            this.layoutConfig.yaxis2 = this.makeAxis(chart);
+            this.setAsSecond(this.layoutConfig.yaxis2);
+        }
+        return 'y2';
+    };
+
+    isBoolAxis(axis) {
+        return axis && axis.customdata && axis.customdata == this.BOOL_AXIS;
+    }
+
+    isCommonAxis(axis) {
+        return axis && axis.customdata && axis.customdata == this.COMMON_AXIS;
+    }
+
+    fixAxes(minValue, maxValue) {
+        // Bool axis in combination with common axis has additional range attribute
+        // It is used to scale bool axis to the full height of plot
+        // Unfortunately plolty.js drows two 0X axes: one for bool, other for common axis.
+        // It also drows different tick lines for each axis
+        // So we calculate 0X axis and tick lines positions ourself
+        if (this.isBoolAxis(this.layoutConfig.yaxis) && this.isCommonAxis(this.layoutConfig.yaxis2)) {
+            this.layoutConfig.yaxis = this.makeBoolAxis(0, 1, true);
+            this.layoutConfig.yaxis2 = this.makeCommonAxis(minValue, maxValue);
+            this.setAsSecond(this.layoutConfig.yaxis2);
+            return;
+        }
+        if (this.isCommonAxis(this.layoutConfig.yaxis) && this.isBoolAxis(this.layoutConfig.yaxis2)) {
+            this.layoutConfig.yaxis = this.makeCommonAxis(minValue, maxValue);
+            this.layoutConfig.yaxis2 = this.makeBoolAxis(0, 1, true);
+            this.setAsSecond(this.layoutConfig.yaxis2);
+            return;
+        }
+
+        // We have only bool charts, let's show them separately
+        if (this.isBoolAxis(this.layoutConfig.yaxis) && !this.layoutConfig.yaxis2) {
+            this.chartConfig.forEach((chart, index) => {
+                const axisProp = (index == 0 ? 'yaxis' : 'yaxis' + (index + 1));
+                this.layoutConfig[axisProp] = this.makeBoolAxis(index, this.chartConfig.length);
+                chart.yaxis = (index == 0 ? 'y' : 'y' + (index + 1));
+            });
+        }
+    }
+
+    createCharts() {
+        var minValue = undefined;
+        var maxValue = undefined;
+        this.charts.forEach(chart => {
+            if (chart.xValues.length) {
+                minValue = this.getMin(minValue, chart.minValue);
+                maxValue = this.getMax(maxValue, chart.maxValue);
+                const axisName = this.getAxis(chart);
+                const colors = this.colors.nextColor();
+                this.chartConfig.push(this.createMainChart(chart, colors.chartColor, axisName));
+                if (chart.hasErrors) {
+                    this.chartConfig.push(this.createErrorChart(chart, colors.minMaxColor, axisName));
+                }
+            }
+        });
+        this.fixAxes(minValue, maxValue);
+    }
+
+    getMax(v1, v2) {
+        var vf1 = parseFloat(v1);
+        var vf2 = parseFloat(v2);
+        if (!isNaN(vf1)) {
+            if (!isNaN(vf2)) {
+                return (vf2 > vf1) ? vf2 : vf1;
+            }
+            return vf1;
+        }
+        return !isNaN(vf2) ? vf2 : undefined;
+    }
+
+    getMin(v1, v2) {
+        var vf1 = parseFloat(v1);
+        var vf2 = parseFloat(v2);
+        if (!isNaN(vf1)) {
+            if (!isNaN(vf2)) {
+                return (vf2 < vf1) ? vf2 : vf1;
+            }
+            return vf1;
+        }
+        return !isNaN(vf2) ? vf2 : undefined;
     }
 
     processDbRecord(record, chart) {
         var ts = new Date();
         ts.setTime(record.t * 1000);
         chart.xValues.push(this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss"));
-        if (chart.stringValues) {
-            chart.text.push(record.v);
-            if (!chart.stringValues.has(record.v)) {
-                chart.stringValues.set(record.v, chart.stringValues.size + 1)
+        chart.yValues.push(record.v);
+        if ((record.max && record.max != record.v) || (record.min && record.min != record.v)) {
+            chart.text.push(record.v + " [" + record.min + ", " + record.max + "]");
+            if (!chart.hasBooleanValues) {
+                chart.hasErrors = true;
             }
-            chart.yValues.push(chart.stringValues.get(record.v));
         } else {
-            if (record.min) {
-                chart.text.push(record.v + " [" + record.min + ", " + record.max + "]");
+            if (chart.hasBooleanValues) {
+                chart.text.push(parseInt(record.v));
             } else {
                 chart.text.push(record.v);
             }
-            chart.yValues.push(record.v);
-            chart.maxErrors.push(record.max ? record.max : record.v);
-            chart.minErrors.push(record.min ? record.min : record.v);
+        }
+        chart.maxErrors.push(record.max ? record.max : record.v);
+        chart.minErrors.push(record.min ? record.min : record.v);
+        if (!chart.hasBooleanValues && !chart.hasStringValues) {
+            chart.minValue = this.getMin(this.getMin(chart.minValue, record.v), record.min);
+            chart.maxValue = this.getMax(this.getMax(chart.maxValue, record.v), record.max);
         }
     }
 
@@ -493,25 +668,17 @@ class HistoryCtrl {
 
         if (chunk.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
 
-        if (indexOfChunk==0 && this.hasStringValues(chunk)) {
-            chart.stringValues = new Map();
-            chart.hasErrors = false;
+        if (!chart.xValues.length && this.hasStringValues(chunk)) {
+            chart.hasStringValues = true;
         }
 
         chunk.values.forEach(item => this.processDbRecord(item, chart));
 
         // если еще есть части интервала
         if (indexOfChunk + 2 < chunks.length) {
-            this.loadChunkedHistory(indexOfControl,indexOfChunk + 1,chunks);
+            this.loadChunkedHistory(indexOfControl, indexOfChunk + 1, chunks);
         // запрашиваю следущий контол если есть
         } else {
-            if (chart.xValues.length) {
-                var colors = this.colors.nextColor();
-                this.chartConfig.push(this.createMainChart(chart, colors.chartColor));
-                if (chart.hasErrors) {
-                    this.chartConfig.push(this.createErrorChart(chart, colors.minMaxColor));
-                }
-            }
             chart.progress.isLoaded = true;
             this.beforeLoadChunkedHistory(indexOfControl + 1);
         }

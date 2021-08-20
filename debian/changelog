@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.9.0) stable; urgency=medium
+
+  * Multiple axes are added to charts on History page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 04 Aug 2021 17:49:32 +0500
+
 wb-mqtt-homeui (2.8.0) stable; urgency=medium
 
   * Widget names are preserved in charts legend on History page
