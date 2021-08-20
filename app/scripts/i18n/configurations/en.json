@@ -1,0 +1,13 @@
+{
+    "configurations": {
+        "title": "Configuration Files",
+        "labels": {
+            "loading": "Loading...",
+            "file": "File",
+            "title": "Title",
+            "description": "Description",
+            "notice": "You cannot view this page. You can change",
+            "access": "access level"
+        }
+    }
+}
