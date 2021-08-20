@@ -1,5 +1,5 @@
 class LogsCtrl {
-    constructor($scope, $injector, $q, $uibModal, $element) {
+    constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope) {
         'ngInject';
 
         var vm = this;
@@ -15,6 +15,7 @@ class LogsCtrl {
         this.$state = $injector.get('$state');
         this.$uibModal = $uibModal;
         this.$element = $element;
+        this.$translate = $translate;
 
         angular.extend(this, {
             scope: $scope,
@@ -47,8 +48,12 @@ class LogsCtrl {
             }
         ];
 
-        this.ALL_SERVICES = 'All services';
-        this.services = [ this.ALL_SERVICES ];
+        this.services = [
+            {
+                name: undefined,
+                desc: "All services"
+            }
+        ];
 
         $q.all([
             whenMqttReady()
@@ -62,6 +67,9 @@ class LogsCtrl {
             return vm.getChunk(index, count, success);
         };
 
+        this.updateTranslations();
+        $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+
         $scope.$on('$destroy', () => {
             // Do whatever cleanup might be necessary
             vm = null; // MEMLEAK FIX
@@ -69,6 +77,23 @@ class LogsCtrl {
         });
 
     } // constructor
+
+    updateTranslations() {
+        this.$translate(['logs.labels.latest',
+                         'logs.labels.set-date',
+                         'logs.labels.all-boots',
+                         'logs.labels.all-services',
+                         'logs.labels.now',
+                         'logs.labels.since'
+                        ]).then(translations => {
+          this.logDates[0].name = translations['logs.labels.latest'];
+          this.logDates[1].name = translations['logs.labels.set-date'];
+          this.boots[0].desc = translations['logs.labels.all-boots'];
+          this.services[0].desc = translations['logs.labels.all-services'];
+          this.nowMsg = translations['logs.labels.now'];
+          this.sinceMsg = translations['logs.labels.since'];
+        });
+    }
 
     reload() {
         this.logs = [];
@@ -120,9 +145,7 @@ class LogsCtrl {
         }
 
         var params = {};
-        if (this.selectedService != this.ALL_SERVICES) {
-            params.service = this.selectedService;
-        };
+        params.service = this.selectedService.name;
         params.boot = this.selectedBoot.hash;
 
         // Reload logs
@@ -161,7 +184,7 @@ class LogsCtrl {
             success(this.getLogsSlice(uiScrollIndex, count));
         }).catch( (err) => {
             success([]);
-            this.errors.catch("Error getting logs")(err);
+            this.errors.catch('logs.errors.load')(err);
         });
     }
 
@@ -176,17 +199,17 @@ class LogsCtrl {
                     en.setTime(obj.end * 1000);
                     desc = st.toLocaleString() + ' - ' + en.toLocaleString();
                 } else {
-                    desc = st.toLocaleString() + ' - now';
+                    desc = st.toLocaleString() + ' - ' + this.nowMsg;
                 }
                 return { hash: obj.hash, desc: desc };
             }));
-            this.services.push(...result.services);
+            this.services.push(...result.services.map(s => { return {name: s, desc: s}}));
             this.waitBootsAndServices = false;
             this.selectedBoot = this.boots[0];
             this.selectedService = this.services[0];
         }).catch((err) => {
             this.waitBootsAndServices = false;
-            this.errors.catch("Error getting boots and services")(err);
+            this.errors.catch('logs.errors.services')(err);
         });
     }
 
@@ -202,7 +225,7 @@ class LogsCtrl {
             });
             modalInstance.result.then((selectedDate) => {
                                         if (!this.logDates.some(el => el.date === selectedDate.getTime())) {
-                                            this.logDates.push({ name: "Since " + selectedDate.toLocaleString(), date: selectedDate.getTime()});
+                                            this.logDates.push({ name: this.sinceMsg+ " " + selectedDate.toLocaleString(), date: selectedDate.getTime()});
                                             if (this.logDates.length > 12) {
                                                 this.logDates.splice(2, 1);
                                             }

@@ -1,0 +1,26 @@
+{
+    "logs":{
+        "title": "Logs",
+        "labels": {
+            "service": "Service",
+            "choose-service": "Choose a service",
+            "boot": "Boot",
+            "choose-boot": "Choose a boot",
+            "period": "Period",
+            "loading": "Loading...",
+            "latest": "Latest",
+            "set-date": "Set start date",
+            "all-boots": "All boots",
+            "all-services": "All services",
+            "now": "now",
+            "since": "Since"
+        },
+        "buttons": {
+            "load": "Load"
+        },
+        "errors": {
+            "services": "Error getting boots and services",
+            "load": "Error getting logs"
+        }
+    }
+}
