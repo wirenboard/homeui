@@ -804,10 +804,6 @@ button.show-console span {
     border-width: 1px;
 }
 
-svg-scheme {
-    display: block;
-}
-
 svg:not(:root) {
     overflow: auto;
 }
