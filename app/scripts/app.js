@@ -307,6 +307,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
         $translatePartialLoaderProvider.addPart('app');
+        $translatePartialLoaderProvider.addPart('console');
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
