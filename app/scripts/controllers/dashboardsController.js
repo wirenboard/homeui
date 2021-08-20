@@ -2,20 +2,33 @@
 
 class DashboardsCtrl {
 
-    constructor($scope, $translate, $ngBootbox, uiConfig, rolesFactory) {
+    constructor($scope, $translate, uiConfig, rolesFactory, $rootScope) {
         'ngInject';
 
         this.$translate = $translate;
-        this.$ngBootbox = $ngBootbox;
         this.roles = rolesFactory;
         this.uiConfig = uiConfig;
         this.data = uiConfig.data;
+        this.updateTranslations();
+
+        $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
 
         $scope.cancel = (dashboard) => {
             if (dashboard.isNew) {
                 uiConfig.getDashboard(dashboard.id).remove();
             }
         }
+    }
+
+    //.............................................................................
+    updateTranslations() {
+        this.$translate(['dashboards.error.duplicate',
+                         'dashboards.error.emptyId',
+                         'dashboards.error.emptyName']).then(translations => {
+          this.duplicateDashboardErrorMsg = translations['dashboards.error.duplicate'];
+          this.emptyIdErrorMsg = translations['dashboards.error.emptyId'];
+          this.emptyNameErrorMsg = translations['dashboards.error.emptyName'];
+        });
     }
 
     //.............................................................................
@@ -28,12 +41,8 @@ class DashboardsCtrl {
     }
 
     deleteDashboard(dashbrd) {
-        this.$translate('dashboards.prompt.delete', { name: dashbrd.name }).then((translation) => {
-            this.$ngBootbox.confirm(translation).then(() => {
-                this.data.dashboards = this.data.dashboards
-                    .filter(dashboard => !(dashboard.name === dashbrd.name && dashboard.id === dashbrd.id));
-            });
-        });
+        this.data.dashboards = this.data.dashboards.filter(dashboard => 
+            !(dashboard.name === dashbrd.name && dashboard.id === dashbrd.id));
     }
 
     //.............................................................................
@@ -45,23 +54,26 @@ class DashboardsCtrl {
     }
 
     //.............................................................................
+    checkName(name) {
+        return this.checkNonEmpty(name, this.emptyNameErrorMsg);
+    }
+
+    //.............................................................................
     checkId(value, dashboard) {
-        var r = this.checkNonEmpty(value, "Empty dashboard id is not allowed");
+        var r = this.checkNonEmpty(value, this.emptyIdErrorMsg);
         if (r !== true) {
             return r;
         }
         value = value.replace(/^\s+|\s+$/g, '');
         return this.data.dashboards.some(function (otherDashboard) {
             return otherDashboard !== dashboard && otherDashboard.id == value;
-        }) ? 'Duplicate dashboard ids are not allowed' : true;
+        }) ? this.duplicateDashboardErrorMsg : true;
     }
 
     //.............................................................................
     afterSave(dashboard) {
         delete dashboard.isNew;
     }
-
-    // TBD: add uiconfig methods to save/revert dashboards
 }
 
 //-----------------------------------------------------------------------------

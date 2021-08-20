@@ -127,8 +127,8 @@ const module = angular
         ///'toggle-switch',
         'ui-rangeSlider',
         'ngToast',
-        'ngBootbox',
-        'ui.scroll'
+        'ui.scroll',
+        'tmh.dynamicLocale'
     ])
     .value('historyMaxPoints', 1000)
     .value('logsMaxRows', 50)
@@ -311,7 +311,9 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
         });
+        //TODO: define language on first start
         $translateProvider.preferredLanguage('ru');
+        $translateProvider.fallbackLanguage('en');
     }])
     .config(['$compileProvider', function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
