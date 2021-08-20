@@ -1,27 +1,27 @@
 {
     "upload": {
         "button" : {
-            "upload": "Upload",
-            "download": "Download",
-            "proccess": "Proccess",
-            "change": "Change"
+            "upload": "Загрузить",
+            "download": "Скачать загруженный SVG файл",
+            "proccess": "Загружается",
+            "change": "Заменить"
         }
     },
 
     "form": {
-        "title": "Data",
+        "title": "Параметры панели",
         "field": {
-            "id": "ID",
-            "name": "Name",
-            "fullwidth": "Full width"
+            "id": "Идентификатор",
+            "name": "Название",
+            "fullwidth": "Растягивать во всю ширину экрана"
         },
         "error": {
             "id": {
-                "empty": "Empty id is not allowed",
-                "unique": "Duplicate dashboard ids are not allowed"
+                "empty": "Необходимо задать идентификатор",
+                "unique": "Идентификаторы должны быть уникальными"
             },
             "name": {
-                "empty": "Empty name is not allowed"
+                "empty": "Необходимо задать назване"
             }
         }
     },
@@ -29,103 +29,100 @@
     "edit": {
         "title": "SVG",
         "editable": {
-            "title": "Bind",
+            "title": "Тип элемента",
             "group": {
                 "read": {
-                    "title": "Read",
+                    "title": "Чтение",
                     "field": {
-                        "channel": "Channel",
-                        "value": "Value"
+                        "channel": "Канал",
+                        "value": "Значение"
                     },
                     "placeholder": {
-                        "channel": "Select channel",
+                        "channel": "Выберите канал",
                         "value": "[[val]]"
                     },
                     "tip": {
-                        "value": "Example: ((val + 0) > 0) ? 'On' : 'Off'"
+                        "value": "Например: ((val + 0) > 0) ? 'On' : 'Off'"
                     },
                     "error": {
-                        "channel": "Empty channel is not allowed",
-                        "value": "Empty value is not allowed"
+                        "channel": "Необходимо выбрать канал",
+                        "value": "Необходимо выбрать значение"
                     }
                 },
                 "write": {
-                    "title": "Write",
+                    "title": "Запись",
                     "field": {
-                        "channel": "Channel",
+                        "channel": "Канал",
                         "value": {
-                            "on": "Value on",
-                            "off": "Value off"
+                            "on": "Значение включенного состояния",
+                            "off": "Значение выключенного состояния"
                         }
                     },
                     "placeholder": {
-                        "channel": "Select channel"
+                        "channel": "Выберите канал"
                     },
                     "error": {
-                        "channel": "Empty channel is not allowed",
-                        "value": "Empty value is not allowed"
+                        "channel": "Необходимо выбрать канал",
+                        "value": "Необходимо выбрать значение"
                     }
                 },
                 "visible": {
-                    "title": "Visible",
+                    "title": "Видимость",
                     "field": {
-                        "channel": "Channel",
-                        "condition": "Condition",
-                        "value": "Value"
+                        "channel": "Канал",
+                        "condition": "Условие",
+                        "value": "Значение"
                     },
                     "placeholder": {
-                        "channel": "Select channel"
+                        "channel": "Выберите канал"
                     },
                     "error": {
-                        "channel": "Empty channel is not allowed",
-                        "condition": "Empty condition is not allowed",
-                        "value": "Empty value is not allowed"
+                        "channel": "Необходимо выбрать канал",
+                        "condition": "Необходимо выбрать условие",
+                        "value": "Необходимо выбрать значение"
                     }
                 },
                 "style": {
-                    "title": "Style",
+                    "title": "Стиль оформления",
                     "field": {
-                        "channel": "Channel",
-                        "condition": "Condition",
-                        "value": "Value",
-                        "append": "Append"
+                        "channel": "Канал",
+                        "condition": "Условие",
+                        "value": "Значение",
+                        "append": "Добавить"
                     },
                     "placeholder": {
-                        "channel": "Select channel"
+                        "channel": "Выберите канал"
                     },
                     "tip": {
-                        "value": "Example: ((val + 0) > 0) ? ';fill: green' : ';fill: red'"
+                        "value": "Например: ((val + 0) > 0) ? ';fill: green' : ';fill: red'"
                     },
                     "error": {
-                        "channel": "Empty channel is not allowed",
-                        "value": "Empty value is not allowed"
+                        "channel": "Необходимо выбрать канал",
+                        "value": "Необходимо выбрать значение"
                     }
                 }
             },
             "confirm": {
-                "remove": "Do you really want to delete bind?"
+                "remove": "Вы действительно хотите удалить эту привязку?"
             }
         },
         "params-json": {
-            "title" : "SVG Bindings",
+            "title" : "SVG привязки",
             "button": {
-                "show" : "Edit bindings as JSON",
-                "save" : "Save",
-                "cancel" : "Cancel"
+                "show" : "Редактировать в виде JSON"
             }
         }
     },
 
     "button": {
-        "save": "Save",
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "remove": "Remove",
-        "view": "View dashboard",
-        "back": "Dashboards list"
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "remove": "Удалить",
+        "view": "Показать панель",
+        "back": "Список панелей"
     },
 
     "confirm": {
-        "remove": "Do you really want to delete dashboard?"
+        "remove": "Вы действительно хотите удалить эту панель?"
     }
 }
