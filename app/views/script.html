@@ -15,7 +15,7 @@ ng-hide="$ctrl.haveRights">{{'rules.labels.notice' | translate}}
   </div>
 
   <form class="script-editor" ng-if="!spinnerActive('editorProxy')" name="scriptEditor" script-form>
-    <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()" translate>{{'rules.labels.save'}}</button>
+    <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()" translate>{{'rules.buttons.save'}}</button>
   <textarea ui-codemirror
             ui-codemirror-opts="{ mode: 'javascript', lineNumbers: true, viewportMargin: vpMargin, scrollbarStyle: null, onLoad: codeMirrorLoaded }"
             ng-model="file.content"></textarea>
