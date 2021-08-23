@@ -20,6 +20,7 @@
         },
         "errors": {
             "services": "Error getting boots and services",
+            "unavailable": "check that wb-mqtt-logs service is installed and running properly",
             "load": "Error getting logs"
         }
     }

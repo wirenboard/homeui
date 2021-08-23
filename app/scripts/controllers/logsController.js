@@ -27,6 +27,7 @@ class LogsCtrl {
         });
 
         this.waitBootsAndServices = true;
+        this.enableSpinner = true;
         this.logs = [];
         this.logDates = [
             {
@@ -84,7 +85,8 @@ class LogsCtrl {
                          'logs.labels.all-boots',
                          'logs.labels.all-services',
                          'logs.labels.now',
-                         'logs.labels.since'
+                         'logs.labels.since',
+                         'logs.errors.unavailable'
                         ]).then(translations => {
           this.logDates[0].name = translations['logs.labels.latest'];
           this.logDates[1].name = translations['logs.labels.set-date'];
@@ -92,6 +94,7 @@ class LogsCtrl {
           this.services[0].desc = translations['logs.labels.all-services'];
           this.nowMsg = translations['logs.labels.now'];
           this.sinceMsg = translations['logs.labels.since'];
+          this.logsServiceUnavailableMsg = translations['logs.errors.unavailable'];
         });
     }
 
@@ -208,8 +211,12 @@ class LogsCtrl {
             this.selectedBoot = this.boots[0];
             this.selectedService = this.services[0];
         }).catch((err) => {
-            this.waitBootsAndServices = false;
-            this.errors.catch('logs.errors.services')(err);
+            this.enableSpinner = false;
+            if ("MqttTimeoutError".localeCompare(err.data) == 0) {
+                this.errors.catch('logs.errors.services')(this.logsServiceUnavailableMsg);
+            } else {
+                this.errors.catch('logs.errors.services')(err);
+            }
         });
     }
 
