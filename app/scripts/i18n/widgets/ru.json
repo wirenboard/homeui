@@ -40,7 +40,8 @@
         "cells": {
             "on": "ВКЛ",
             "off": "ВЫКЛ",
-            "history": "История"
+            "history": "История",
+            "size": "{width: '58px'}"
         }
     }
 }

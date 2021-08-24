@@ -40,7 +40,8 @@
         "cells": {
             "on": "ON",
             "off": "OFF",
-            "history": "History"
+            "history": "History",
+            "size": "{width: '50px'}"
         }
     }
 }

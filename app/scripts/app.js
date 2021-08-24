@@ -16,7 +16,7 @@ import '../styles/css/new.css';
 import '../styles/main.css';
 import '../styles/css/spacing.css';
 
-import '../styles/css/vc-toggle-switch.css';
+import '../styles/css/wb-switch.css';
 
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';

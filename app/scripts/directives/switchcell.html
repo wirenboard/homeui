@@ -1,9 +1,6 @@
 <span class="cell cell-switch">
-  <div class="vc-toggle-container">
-    <label class="vc-switch">
-      <input type="checkbox" class="vc-switch-input" ng-model="_value" id="{{id}}"/>
-      <span class="vc-switch-label" data-on="{{'widgets.cells.on' | translate}}" data-off="{{'widgets.cells.off' | translate}}"></span>
-      <span class="vc-handle"></span>
-    </label>
-  </div>
+  <label class="wb-switch" ng-class="{'pointer-none text-muted':cell.readOnly==true}" ng-style="{{'widgets.cells.size' | translate}}">
+    <input type="checkbox" class="wb-switch-input" ng-model="_value" id="{{id}}"/>
+    <span class="wb-switch-label" data-on="{{'widgets.cells.on' | translate}}" data-off="{{'widgets.cells.off' | translate}}"></span>
+  </label>
 </span>
