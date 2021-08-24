@@ -84,6 +84,7 @@ class HistoryCtrl {
         this.$state = $injector.get('$state');
         this.historyUrlService = historyUrlService;
         this.$translate = $translate;
+        this.$locale = $locale;
 
         angular.extend(this, {
             scope: $scope,
@@ -182,7 +183,7 @@ class HistoryCtrl {
                     widget.cells.map(item => {
                         const cell = DeviceData.cell(item.id);
                         const device = DeviceData.devices[cell.deviceId];
-                        return new ChartsControl(cell, this.widgetChannelsMsg, device.name, widget);
+                        return new ChartsControl(cell, this.widgetChannelsMsg, device.getName(this.$locale.id), widget);
                     })
                 ),
             "name"));
@@ -192,7 +193,7 @@ class HistoryCtrl {
                 const device = DeviceData.devices[deviceId];
                 return device.cellIds.map(cellId => {
                     const cell = DeviceData.cell(cellId);
-                    return new ChartsControl(cell, this.allChannelsMsg, device.name);
+                    return new ChartsControl(cell, this.allChannelsMsg, device.getName(this.$locale.id));
                 });
             })
         ));

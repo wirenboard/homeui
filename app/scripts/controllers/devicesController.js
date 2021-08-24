@@ -1,6 +1,6 @@
 
 class DevicesCtrl {
-    constructor($scope, $state, $injector, DeviceData, handleData, rolesFactory, historyUrlService) {
+    constructor($scope, $state, $injector, DeviceData, handleData, rolesFactory, historyUrlService, $locale) {
         'ngInject';
 
         this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
@@ -20,6 +20,7 @@ class DevicesCtrl {
         // this listener needed to redraw columns and devices on window resize.
         $(window).resize(() => { this.$state.devicesIdsCount = 0 });
 
+        $scope.$locale = $locale;
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
         $scope.devicesCount = () => Object.keys(DeviceData.devices).length,

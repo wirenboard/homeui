@@ -15,11 +15,11 @@
             >
                 <uib-accordion-heading>
                   <div class="device-panel__header" ng-click="$ctrl.invertDeviceVisibility(deviceId)">
-                      <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
+                      <span class="device-panel__header-title">{{ dev(deviceId).getName($locale.id) }}</span>
                       <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
                   </div>
                   <span
-                    ng-confirm="{{'devices.prompt.delete' | translate: { name: dev(deviceId).name || deviceId } }}"
+                    ng-confirm="{{'devices.prompt.delete' | translate: { name: dev(deviceId).getName($locale.id) || deviceId } }}"
                     confirmed-click="$ctrl.deleteDevice(deviceId)"
                     title="{{'devices.labels.delete' | translate}}"
                     class="device-panel__header-delete-button"
