@@ -1,3 +1,32 @@
+class Device {
+  constructor(id) {
+    this.id = id;
+    this.name = id;
+    this.cellIds = [];
+    this._nameTranslations = {};
+    this.explicit = false;
+  }
+
+  getName(lang) {
+    if (this._nameTranslations.hasOwnProperty(lang)) {
+      return this._nameTranslations[lang];
+    }
+    return this.name;
+  }
+
+  // meta must be a string with JSON
+  // {
+  //   title: {
+  //    en: ...,
+  //    ru: ...,
+  //    ...
+  //  }
+  // }
+  setMeta(meta) {
+    this._nameTranslations = JSON.parse(meta).title;
+  }
+}
+
 function deviceDataService(mqttClient) {
   'ngInject';
 
@@ -150,7 +179,7 @@ function deviceDataService(mqttClient) {
 
   function ensureDevice (id) {
     if (!devices.hasOwnProperty(id))
-      devices[id] = { name: id, explicit: false, cellIds: [] };
+      devices[id] = new Device(id);
     return devices[id];
   }
 
@@ -462,7 +491,22 @@ function deviceDataService(mqttClient) {
     const cellTopicBase = deviceTopicBase + '/controls/+';
 
     // define handler functions for each specific topic
-    const subscriptionHandlers = [{
+    const subscriptionHandlers = [
+      {
+        handledTopic: deviceTopicBase + '/meta',
+        handler() {
+          if (payload === "") {
+            if (devices.hasOwnProperty(deviceId)) {
+              devices[deviceId].explicit = false;
+              maybeRemoveDevice(deviceId);
+            }
+          } else {
+            var dev = ensureDevice(deviceId);
+            dev.setMeta(payload);
+            dev.explicit = true;
+          }
+        }
+      },{
         handledTopic: deviceTopicBase + '/meta/name',
         handler() {
           if (payload === "") {
