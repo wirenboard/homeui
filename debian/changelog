@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.10.1) stable; urgency=medium
+
+  * Display of  date labels when hovering points on history charts is restored. 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 25 Aug 2021 11:32:22 +0500
+
 wb-mqtt-homeui (2.10.0) stable; urgency=medium
 
   * An interface for querying device's logs is added.
