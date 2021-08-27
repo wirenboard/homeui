@@ -466,7 +466,7 @@ class HistoryCtrl {
             fill: "toself", 
             fillcolor: fillColor, 
             line: {color: "transparent"},
-            hoverinfo: "none",
+            hoverinfo: "skip",
             yaxis: axisName
         };
     }
