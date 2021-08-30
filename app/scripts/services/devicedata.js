@@ -48,67 +48,67 @@ function deviceDataService(mqttClient) {
     },
     "atmospheric_pressure": {
       valueType: "number",
-      units: "millibar (100 Pa)",
+      units: "units.millibar",
       readOnly: true,
       displayType: "value"
     },
     "rainfall": {
       valueType: "number",
-      units: "mm/h",
+      units: "units.mm-h",
       readOnly: true,
       displayType: "value"
     },
     "wind_speed": {
       valueType: "number",
-      units: "m/s",
+      units: "units.m-s",
       readOnly: true,
       displayType: "value"
     },
     "power": {
       valueType: "number",
-      units: "W",
+      units: "units.w",
       readOnly: true,
       displayType: "value"
     },
     "power_consumption": {
       valueType: "number",
-      units: "kWh",
+      units: "units.kwh",
       readOnly: true,
       displayType: "value"
     },
     "voltage": {
       valueType: "number",
-      units: "V",
+      units: "units.v",
       readOnly: true,
       displayType: "value"
     },
     "water_flow": {
       valueType: "number",
-      units: "m³/h",
+      units: "units.m3-h",
       readOnly: true,
       displayType: "value"
     },
     "water_consumption": {
       valueType: "number",
-      units: "m³",
+      units: "units.m3",
       readOnly: true,
       displayType: "value"
     },
     "heat_power": {
       valueType: "number",
-      units: "Gcal/h",
+      units: "units.gcal-h",
       readOnly: true,
       displayType: "value"
     },
     "heat_energy": {
       valueType: "number",
-      units: "Gcal",
+      units: "units-gcal",
       readOnly: true,
       displayType: "value"
     },
     "resistance": {
       valueType: "number",
-      units: "Ohm",
+      units: "units.ohm",
       readOnly: true,
       displayType: "value"
     },
@@ -120,7 +120,7 @@ function deviceDataService(mqttClient) {
     },
     "pressure": {
       valueType: "number",
-      units: "bar",
+      units: "units.bar",
       readOnly: true,
       displayType: "value"
     },

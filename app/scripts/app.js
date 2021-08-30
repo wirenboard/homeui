@@ -317,6 +317,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $translatePartialLoaderProvider.addPart('history');
         $translatePartialLoaderProvider.addPart('widgets');
         $translatePartialLoaderProvider.addPart('devices');
+        $translatePartialLoaderProvider.addPart('units');
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
