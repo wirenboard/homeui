@@ -46,6 +46,7 @@ import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
 import rolesFactory from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
+import diagnosticProxyService from './services/diagnosticProxy';
 
 import handleDataService from './services/handle-data';
 
@@ -61,6 +62,7 @@ import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
+import DiagnosticCtrl from './controllers/diagnosticController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -148,6 +150,7 @@ module
     .value('forceBeforeUnloadConfirmationForTests', false)
     .factory('PageState', pageStateService)
     .factory('DeviceData', deviceDataService)
+    .factory('DiagnosticProxy', diagnosticProxyService)
 
 
     .service('handleData', handleDataService)
@@ -174,7 +177,8 @@ module
     .controller('SystemCtrl', SystemCtrl)
     .controller('MQTTCtrl', MQTTCtrl)
     .controller('AccessLevelCtrl', AccessLevelCtrl)
-    .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl);
+    .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
+    .controller('DiagnosticCtrl', DiagnosticCtrl);
 
 module
     .controller('NavigationCtrl', NavigationCtrl)

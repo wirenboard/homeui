@@ -22,3 +22,23 @@
         <button class="btn btn-lg btn-default" ng-show="done" ng-click="doneClick()" translate>"{{doneLabel}}"></button>
     </div>
 </div>
+
+
+<div class="panel panel-default" ng-controller="DiagnosticCtrl">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <i class="glyphicon glyphicon-download"></i> {{'collector.title' | translate}}
+        </h3>
+    </div>
+    <div class="panel-body">
+
+    <div class="col-xs-12 spinner" ng-show="!btnVisible">
+        <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
+    </div>
+
+    <button type="button"  class="btn btn-success btn-lg"
+            ng-click="btnMethod()" ng-disabled="!btnEnabled" ng-show="btnVisible" translate>
+        {{ text }}
+    </button>
+    </div>
+</div>

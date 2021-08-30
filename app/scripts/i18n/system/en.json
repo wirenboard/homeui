@@ -20,5 +20,20 @@
             "uploading": "Uploading firmware file",
             "uploaded": "Upload complete"
         }
+    },
+    "collector": {
+        "title" : "Diagnostic collector",
+        "errors": {
+            "timeout": "Timeout exceed. Reload page and try again",
+            "unavailableToDownload": "Can't reach file. Copy it from"
+        },
+        "buttons": {
+            "download": "Download",
+            "collect": "Collect diagnostic data"
+        },
+        "states": {
+            "checking": "Check access to service...",
+            "collecting": "Data is collecting..."
+        }
     }
 }
