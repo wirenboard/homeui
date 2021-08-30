@@ -370,7 +370,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
                         console.log('LOAD CONF: %o', result.content);
                         uiConfig.ready(result.content);
                     })
-                    .catch(errors.catch('Cannot load WebUI config.'));
+                    .catch(errors.catch('app.errors.load'));
 
                 return true;
 
@@ -441,9 +441,9 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
                     })
                     .catch((err) => {
                         if (err.name === 'QuotaExceededError') {
-                            errors.showError("Config saving failed", "config is too big, try to reduce SVG size");
+                            errors.showError("app.errors.overflow");
                         } else {
-                            errors.showError("Config saving failed", err);
+                            errors.showError("app.errors.save", err);
                         }
                     });
             }, configSaveDebounceMs);
