@@ -1,37 +1,45 @@
 {
     "dashboards": {
         "title": {
-            "default": "Dashboards",
-            "svg": "SVG Dashboards"
+            "default": "Панели",
+            "svg": "SVG панели"
         },
         "field": {
             "id": "ID",
-            "name": "Name",
-            "fullwidth": "Full width"
+            "name": "Название",
+            "fullwidth": "Во всю ширину экрана"
         },
         "button": {
-            "add": "Add",
-            "edit": "Edit",
-            "delete": "Delete",
-            "view": "View",
-            "cancel": "Cancel",
-            "save": "Save"
+            "add": "Добавить",
+            "edit": "Редактировать",
+            "delete": "Удалить",
+            "view": "Открыть",
+            "cancel": "Отмена",
+            "save": "Сохранить"
         },
         "prompt": {
-            "delete": "Are you sure you want to delete <b>{{name}}</b> dashboard?"
+            "delete": "Вы действительно хотите удалить панель \"{{name}}\"?"
         },
         "message": {
-            "empty": "No dashboards currently defined."
+            "empty": "Не создано ни одной панели."
+        },
+        "error": {
+            "duplicate": "Идентификатор должен быть уникальным",
+            "emptyId": "Введите идентификатор панели",
+            "emptyName": "Введите название панели"
         }
     },
     "dashboard": {
         "svg": {
             "edit": {
                 "title": {
-                    "create": "New SVG Dashboard",
-                    "update": "Edit SVG Dashboard"
+                    "create": "Создать SVG панель",
+                    "update": "Редактировать SVG панель"
                 }
             }
+        },
+        "buttons": {
+            "add": "Добавить виджет"
         }
     }
 }
