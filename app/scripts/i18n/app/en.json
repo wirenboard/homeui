@@ -1,4 +1,10 @@
 {
+    "home": {
+        "labels": {
+            "warning": "You can select default dashboard in ",
+            "settings": "settings"
+        }
+    },
     "navigation":{
         "menu": {
             "toggle": "Toggle navigation",
