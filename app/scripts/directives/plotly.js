@@ -1,5 +1,6 @@
 // Based on the code from angular-plotly https://github.com/alonho/angular-plotly
 
+import 'plotly.js/dist/plotly-locale-ru.js';
 import Plotly from "plotly.js/dist/plotly";
 
 function plotlyDirective($window) {

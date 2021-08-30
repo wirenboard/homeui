@@ -70,5 +70,13 @@
         "buttons": {
             "add": "Add widget"
         }
+    },
+    "datepicker": {
+        "format": "yyyy-MM-dd",
+        "buttons": {
+            "today": "Today",
+            "clear": "Clear",
+            "close": "Close"
+        }
     }
 }

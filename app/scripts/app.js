@@ -302,7 +302,7 @@ module
 
 //-----------------------------------------------------------------------------
 // Register module with communication
-const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate'])
+const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate', 'tmh.dynamicLocale'])
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
         $translatePartialLoaderProvider.addPart('app');
@@ -314,6 +314,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $translatePartialLoaderProvider.addPart('ui');
         $translatePartialLoaderProvider.addPart('configurations');
         $translatePartialLoaderProvider.addPart('rules');
+        $translatePartialLoaderProvider.addPart('history');
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
@@ -322,12 +323,28 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $translateProvider.preferredLanguage('ru');
         $translateProvider.fallbackLanguage('en');
     }])
+    .config(['tmhDynamicLocaleProvider', function(tmhDynamicLocaleProvider) {
+        tmhDynamicLocaleProvider.localeLocationPattern('/scripts/i18n/angular-locale_{{locale}}.js');
+        tmhDynamicLocaleProvider.defaultLocale('ru');
+    }])
     .config(['$compileProvider', function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig) => {
         'ngInject';
+
+        $rootScope.$on('$translateChangeSuccess', () => {
+            $translate(['datepicker.buttons.close',
+                        'datepicker.buttons.today',
+                        'datepicker.buttons.clear',
+                        'datepicker.format']).then(translations => {
+                            uibDatepickerPopupConfig.closeText = translations['datepicker.buttons.close'];
+                            uibDatepickerPopupConfig.currentText = translations['datepicker.buttons.today'];
+                            uibDatepickerPopupConfig.clearText = translations['datepicker.buttons.clear'];
+                            uibDatepickerPopupConfig.datepickerPopup =  translations['datepicker.format'];
+                        });
+        });
 
         //.........................................................................
         function configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig) {

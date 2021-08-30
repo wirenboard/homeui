@@ -1,5 +1,5 @@
 class NavigationCtrl {
-  constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig, rolesFactory) {
+  constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig, rolesFactory, $translate, tmhDynamicLocale) {
     'ngInject';
 
     $scope.roles = rolesFactory;
@@ -66,6 +66,16 @@ class NavigationCtrl {
       pageWrapperClassList.contains(overlayClass) ? 
         pageWrapperClassList.remove(overlayClass) : 
         pageWrapperClassList.add(overlayClass);
+    }
+
+    $scope.setEn = function () {
+      $translate.use("en");
+      tmhDynamicLocale.set('en');
+    }
+
+    $scope.setRu = function () {
+      $translate.use("ru");
+      tmhDynamicLocale.set('ru');
     }
   }
 

@@ -1,8 +1,6 @@
 
 <div class="stretch-height history-page">
-    <h1 class="page-header">
-        History
-    </h1>
+    <h1 class="page-header" translate>{{'history.title'}}</h1>
 
     <div class="row" ng-repeat="sel in $ctrl.selectedControls track by $index">
         <div class="col-xs-8 col-md-5">
@@ -11,14 +9,14 @@
                     ng-disabled="$ctrl.disableUi"
                     ng-model="$ctrl.selectedControls[$index]"
                     ng-options="control as control.name group by control.group for control in $ctrl.controls track by control.name">
-                <option value="">- Please Choose -</option>
+                <option value="" translate>{{'history.labels.choose'}}</option>
             </select>
         </div>
         <div class="col-xs-4 col-md-2">
             <div>
                 <div ng-hide="($index==0 && $ctrl.selectedControls.length==1) || !$ctrl.selectedControls[1]"
                      ng-disabled="$ctrl.disableUi"
-                     class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)">delete
+                     class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)" translate>{{'history.buttons.delete'}}
                 </div>
             </div>
         </div>
@@ -32,8 +30,8 @@
     </div>
     <div ng-hide="$ctrl.selectedControls.length==1 && !$ctrl.selectedControls[$ctrl.selectedControls.length-1]">
         <br>
-        <button class="btn btn-success" ng-click="$ctrl.addTopic()" ng-disabled="$ctrl.disableUi">
-            Add channel
+        <button class="btn btn-success" ng-click="$ctrl.addTopic()" ng-disabled="$ctrl.disableUi" translate>
+            {{'history.buttons.add'}}
         </button>
         <br>
     </div>
@@ -42,7 +40,7 @@
         <div class="col-md-6 col-lg-5">
             <div class="row">
                 <div class="col-xs-1 col-md-1 history-time-col-l">
-                    <label for="history-start">Start</label>
+                    <label for="history-start" translate>{{'history.labels.start'}}</label>
                 </div>
                 <div class="col-xs-6 col-sm-4 col-md-6 history-time-col-r">
                     <div class="input-group">
@@ -53,8 +51,7 @@
                                ng-change="$ctrl.timeChange('start')"
                                ng-model="$ctrl.selectedStartDate"
                                ng-disabled="$ctrl.disableUi"
-                               is-open="$ctrl.popups.start"
-                               close-text="Close"/>
+                               is-open="$ctrl.popups.start"/>
                           <span class="input-group-btn">
                             <button type="button"
                                     class="btn btn-default"
@@ -79,19 +76,18 @@
         <div class="col-md-6 col-lg-5">
             <div class="row">
                 <div class="col-xs-1 col-md-1 history-time-col-l">
-                    <label for="history-end">End</label>
+                    <label for="history-end" translate>{{'history.labels.end'}}</label>
                 </div>
                 <div class="col-xs-6 col-sm-4 col-md-6 history-time-col-r">
                     <div class="input-group">
                         <input id="history-end"
                                type="text"
                                class="form-control"
-                               uib-datepicker-popup="{{format}}"
+                               uib-datepicker-popup
                                ng-change="$ctrl.timeChange('end')"
                                ng-model="$ctrl.selectedEndDate"
                                ng-disabled="$ctrl.disableUi"
-                               is-open="$ctrl.popups.end"
-                               close-text="Close"/>
+                               is-open="$ctrl.popups.end"/>
                           <span class="input-group-btn">
                             <button type="button"
                                     class="btn btn-default"
@@ -116,24 +112,24 @@
 
     <button class="btn btn-success"
             ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedControls[0] || $ctrl.disableUi"
-            ng-click="$ctrl.updateDateRange()">
-        Load data
+            ng-click="$ctrl.updateDateRange()" translate>
+        {{'history.buttons.load'}}
     </button>
     <button class="btn btn-success"
             ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedControls[0] || $ctrl.disableUi"
-            ng-click="$ctrl.readDatesFromUrl()">
-        Reset
+            ng-click="$ctrl.readDatesFromUrl()" translate>
+        {{'history.buttons.reset'}}
     </button>
     <button class="btn btn-success"
             ng-disabled="!$ctrl.loadPending"
-            ng-click="$ctrl.stopLoadingData()">
-        Stop loading
+            ng-click="$ctrl.stopLoadingData()" translate>
+        {{'history.buttons.stop'}}
     </button>
     <br><br>
 
     <div class="col-sm-12 spinner" ng-cloak ng-if="!$ctrl.stopLoadData"
          ng-show="$ctrl.disableUi">
-        <span class="spinner-loader">Loading...</span>
+        <span class="spinner-loader" translate>{{'history.labels.loading'}}</span>
     </div>
 
     <div>
@@ -145,8 +141,9 @@
                     ng-hide = "$ctrl.loadPending || !$ctrl.chartConfig.length"></plotly>
             <br>
             <div class="history-empty"
-                 ng-show="!$ctrl.chartConfig.length && !$ctrl.loadPending">
-                No data points to display.
+                 ng-show="!$ctrl.chartConfig.length && !$ctrl.loadPending"
+                 translate>
+                {{'history.labels.nothing'}}
             </div>
         </div>
     </div>
@@ -155,8 +152,8 @@
       class="btn btn-success"
       ng-if="$ctrl.hasPoints"
       ng-click="$ctrl.downloadHistoryTable()"
-    >
-      Download history as CSV
+      translate>
+      {{'history.buttons.download'}}
     </button>
     <br><br>
 
@@ -164,13 +161,13 @@
         <table id="history-table" class="table">
             <thead>
             <tr>
-                <th>Date and time</th>
+                <th translate>{{'history.labels.date'}}</th>
                 <th ng-repeat="channel in $ctrl.charts">{{channel.channelName}}</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="p in $ctrl.dataPointsMultiple track by p.date">
-                <td>{{ p.date | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td>{{ p.date | date:'medium' }}</td>
                 <td ng-repeat="_x in p.value track by $index">{{ _x }}</td>
             </tr>
             </tbody>
