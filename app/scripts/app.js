@@ -60,6 +60,7 @@ import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
+import DiagnosticCtrl from './controllers/diagnosticController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -174,7 +175,8 @@ module
     .controller('SystemCtrl', SystemCtrl)
     .controller('MQTTCtrl', MQTTCtrl)
     .controller('AccessLevelCtrl', AccessLevelCtrl)
-    .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl);
+    .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
+    .controller('DiagnosticCtrl', DiagnosticCtrl);
 
 module
     .controller('NavigationCtrl', NavigationCtrl)
