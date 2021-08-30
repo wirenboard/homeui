@@ -12,7 +12,6 @@ import dashboardsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/da
 import dashboardTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboard.html';
 import dashboardSvgTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboard-svg.html';
 import dashboardSvgEditTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/dashboard-svg-edit.html';
-import settingsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/settings.html';
 import loginTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/login.html';
 import scriptsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/scripts.html';
 import scriptTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/script.html';
@@ -279,32 +278,6 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
         }
       }
     })  
-  //...........................................................................
-    .state('settings', {
-      url: '/settings',
-      controller: 'SettingCtrl as $ctrl',
-      templateUrl: settingsTemplateUrl,
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [], 
-            (require) => {
-              let module = require('./controllers/settingController.js');
-              $ocLazyLoad.load({
-                name: module.default.name
-              })
-              .then(() => {
-                deferred.resolve(module);
-              });
-            },
-            'settings'
-          );
-          return deferred.promise;
-        }
-      }
-    })
   //...........................................................................
     .state('login', {
       url: '/login/{id}',
