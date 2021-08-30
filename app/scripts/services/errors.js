@@ -1,19 +1,22 @@
 // Loosely based on
 // http://odetocode.com/blogs/scott/archive/2014/04/21/better-error-handling-in-angularjs.aspx
 
-function errorsService($rootScope) {
+function errorsService($rootScope, $translate) {
   'ngInject';
-  
-  function showError (message, reason) {
-    if (reason) {
-      message = message + ": "
-      if (reason.message) {
-        message = message + reason.message + (reason.data && (" " + reason.data))
-      } else {
-        message = message + reason
+
+  // msg could be string or {msg:..., data:...} object for passing to $translate
+  function showError (msg, reason) {
+    $translate(msg.msg ? msg.msg : msg, msg.data).then(message => {
+      if (reason) {
+        message = message + ": "
+        if (reason.message) {
+          message = message + reason.message + (reason.data && (" " + reason.data))
+        } else {
+          message = message + reason
+        }
       }
-    }
-    $rootScope.$broadcast("alert", message, true);
+      $rootScope.$broadcast("alert", message, true);
+    });
   }
 
   return {
