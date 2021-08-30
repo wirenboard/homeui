@@ -31,7 +31,8 @@
             "ui": "Web UI",
             "system": "System",
             "channels": "MQTT Channels",
-            "access": "Change access level"
+            "access": "Change access level",
+            "logs": "Logs"
         },
         "access": {
             "title": "Access level:"
@@ -92,7 +93,8 @@
         "buttons": {
             "today": "Today",
             "clear": "Clear",
-            "close": "Close"
+            "close": "Close",
+            "cancel": "Cancel"
         }
     }
 }

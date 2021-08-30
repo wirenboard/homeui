@@ -305,7 +305,7 @@ module
 const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate', 'tmh.dynamicLocale'])
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
-        ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui',
+        ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui', "logs",
          'configurations', 'rules', 'history', 'widgets', 'devices', 'units'].forEach(el => $translatePartialLoaderProvider.addPart(el));
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
@@ -401,7 +401,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             $window.localStorage.setItem('language', language);
         }
         $translate.use(language);
-        tmhDynamicLocale.set(language);
+        tmhDynamicLocale.set('ru');
 
         $rootScope.requestConfig(loginData);
 
