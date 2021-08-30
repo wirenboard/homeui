@@ -39,7 +39,9 @@
         },
         "cells": {
             "on": "ON",
-            "off": "OFF"
+            "off": "OFF",
+            "history": "History",
+            "size": "{width: '50px'}"
         }
     }
 }
