@@ -1,8 +1,16 @@
-function pageStateService($rootScope, $window, $timeout, $location, forceBeforeUnloadConfirmationForTests) {
+function pageStateService($rootScope, $window, forceBeforeUnloadConfirmationForTests, $translate) {
   'ngInject';
   
-  var dirty = false,
-      CONFIRMATION_MSG = "The page has unsaved changes. Are you sure you want to leave?";
+  var dirty = false;
+  var CONFIRMATION_MSG;
+
+  var updateTranslations = () => {
+    $translate('app.prompt.dirty').then(translation => {
+      CONFIRMATION_MSG = translation;
+    });
+  }
+  updateTranslations();
+  $rootScope.$on('$translateChangeSuccess', () => updateTranslations());
 
   $rootScope.$on('$locationChangeStart', (event, newUrl, oldUrl) => {
     if (!dirty)
