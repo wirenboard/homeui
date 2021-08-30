@@ -1,4 +1,33 @@
 {
+    "navigation":{
+        "menu": {
+            "toggle": "Toggle navigation",
+            "home": "Home",
+            "dashboards": "Dashboards",
+            "list": "List",
+            "devices": "Devices",
+            "widgets": "Widgets",
+            "history": "History",
+            "rules": "Rules",
+            "settings": "Settings",
+            "help": "Help",
+            "configs": "Configs",
+            "ui": "Web UI",
+            "system": "System",
+            "channels": "MQTT Channels",
+            "access": "Change access level"
+        },
+        "access": {
+            "title": "Access level:"
+        },
+        "connection": {
+            "active": "Connected",
+            "inactive": "Disconnected"
+        }
+    },
+    "heading": {
+        "loading": "Loading..."
+    },
     "dashboards": {
         "title": {
             "default": "Dashboards",
