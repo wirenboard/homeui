@@ -79,7 +79,6 @@ import cellPickerDirective from './directives/cellpicker';
 import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
 import userRolesDirective from './directives/user-roles.directive';
-import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
 import dashboardPickerDirective from './directives/dashboardpicker';
 import plotlyDirective from "./directives/plotly";
 import onResizeDirective from "./directives/resize";
@@ -248,8 +247,6 @@ module
     .directive('explicitChanges', explicitChangesDirective)
     .directive('editableElasticTextarea', editableElasticTextareaDirective)
     .directive('userRole', userRolesDirective)
-    .directive('svgCompiledElement', svgCompiledElementDirective)
-    .directive('svgScheme', svgSchemeDirective)
     .directive('dashboardPicker', dashboardPickerDirective)
     .directive('plotly', [ '$window', plotlyDirective ] )
     .directive('onResize', [ '$parse', onResizeDirective] );
