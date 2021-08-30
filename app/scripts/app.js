@@ -82,6 +82,7 @@ import userRolesDirective from './directives/user-roles.directive';
 import dashboardPickerDirective from './directives/dashboardpicker';
 import plotlyDirective from "./directives/plotly";
 import onResizeDirective from "./directives/resize";
+import confirmDirective from "./directives/confirm";
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -249,7 +250,8 @@ module
     .directive('userRole', userRolesDirective)
     .directive('dashboardPicker', dashboardPickerDirective)
     .directive('plotly', [ '$window', plotlyDirective ] )
-    .directive('onResize', [ '$parse', onResizeDirective] );
+    .directive('onResize', [ '$parse', onResizeDirective] )
+    .directive('ngConfirm', confirmDirective);
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {
