@@ -9,13 +9,6 @@ class LoginFormCtrl {
     this.rolesFactory = rolesFactory;
     this.currentHost = $location.host();
 
-    // this.errors = errors;
-    // this.mqttClient = mqttClient;
-    // this.whenMqttReady = whenMqttReady;
-    // this.ConfigEditorProxy = ConfigEditorProxy;
-    // this.uiConfig = uiConfig;
-    // this.webuiConfigPath = webuiConfigPath;
-
     this.loginSettings = {};
     this.loginSettings.host = this.localStorage['host'];
     this.loginSettings.port = this.localStorage['port'];
