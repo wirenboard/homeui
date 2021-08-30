@@ -140,6 +140,7 @@ class SvgViewController {
 
         svgElem.attr('width', w * r);
         svgElem.attr('height', h * r);
+        svgElem.attr('style', '')
     }
 
     getSvgElement() {
