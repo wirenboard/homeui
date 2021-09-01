@@ -3,7 +3,7 @@ class DiagnosticCtrl {
     'ngInject';
 
     $scope.getData = function() {
-        url = window.location.href;
+        var url = window.location.href;
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
         $scope.httpGetAsync("http://" + url + ":5000/diagcollect", alert, 'GET');
