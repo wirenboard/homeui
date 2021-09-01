@@ -7,11 +7,11 @@ class DiagnosticCtrl {
     $scope.getData = function() {
         console.log(1)
 
-        $scope.httpGetAsync("http://127.0.0.1:5000/diagcollect", console.log , 'OPTIONS');
+//        $scope.httpGetAsync("http://192.168.0.54:5000/diagcollect", console.log , 'OPTIONS');
 
-        console.log(1.5)
+//        console.log(1.5)
 
-        $scope.httpGetAsync("http://127.0.0.1:5000/diagcollect", alert, 'GET');
+        $scope.httpGetAsync("http://192.168.0.54:5000/diagcollect", alert, 'GET');
 
         console.log(2)
     }
