@@ -1,21 +1,13 @@
-
-
 class DiagnosticCtrl {
   constructor($scope, $timeout, Upload, mqttClient, whenMqttReady) {
     'ngInject';
 
     $scope.getData = function() {
-        console.log(1)
-
-//        $scope.httpGetAsync("http://192.168.0.54:5000/diagcollect", console.log , 'OPTIONS');
-
-//        console.log(1.5)
-
-        $scope.httpGetAsync("http://192.168.0.54:5000/diagcollect", alert, 'GET');
-
-        console.log(2)
+        url = window.location.href;
+        url = url.substring(url.indexOf('//') + 2);
+        url = url.substring(0, url.indexOf('/'));
+        $scope.httpGetAsync("http://" + url + ":5000/diagcollect", alert, 'GET');
     }
-
 
     $scope.httpGetAsync = function(theUrl, callback, method) {
         var xmlHttp = new XMLHttpRequest();
@@ -26,11 +18,7 @@ class DiagnosticCtrl {
         xmlHttp.open(method, theUrl, true);
         xmlHttp.send(null);
     }
-
-
   }
 }
-
-console.log('loaded')
 
 export default DiagnosticCtrl;
