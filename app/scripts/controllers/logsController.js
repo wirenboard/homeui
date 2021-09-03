@@ -30,29 +30,34 @@ class LogsCtrl {
         this.enableSpinner = true;
         this.logs = [];
         this.logDates = [
+            // Object for "Latest logs" item
             {
-                "name": "Latest",
-                "date": undefined
+                name: undefined, // Will be replaced by 'logs.labels.latest' translation
+                date: undefined
             },
+
+            // Object for "Set start date" item
             {
-                "name": "Set start date",
-                "date": null
+                name: undefined, // Will be replaced by 'logs.labels.set-date' translation
+                date: null
             }
         ];
         this.startDateMs = undefined;
         this.selectedStartDateMs = undefined;
 
         this.boots = [
+            // Object for "All boots" item
             {
                 hash: undefined,
-                desc: 'All boots'
+                desc: undefined // Will be replaced by 'logs.labels.all-boots' translation
             }
         ];
 
         this.services = [
+            // Object for "All services" item
             {
                 name: undefined,
-                desc: "All services"
+                desc: undefined // Will be replaced by 'logs.labels.all-services' translation
             }
         ];
 
