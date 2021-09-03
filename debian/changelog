@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.11.1) stable; urgency=medium
+
+  * Widget's editor's button text is replaced by icons
+  * Dashboard buttons are replaced by icons 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Sep 2021 11:11:45 +0500
+
 wb-mqtt-homeui (2.11.0) stable; urgency=medium
 
   * Russian localization is added
