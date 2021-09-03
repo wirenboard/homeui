@@ -28,12 +28,17 @@
             <td class="button-col">
                 <form editable-form name="rowform" ng-show="rowform.$visible" class="form-buttons form-inline"
                     shown="dashboard.isNew" onaftersave="$ctrl.afterSave(dashboard)" oncancel="cancel(dashboard)">
-                    <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary" translate>
-                        {{'dashboards.button.save'}}
+                    <button type="submit"
+                            ng-disabled="rowform.$waiting"
+                            class="btn btn-success glyphicon glyphicon-ok"
+                            title="{{'dashboards.button.save' | translate}}">
                     </button>
-                    <button type="button" name="cancel" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()"
-                        class="btn btn-default" translate>
-                        {{'dashboards.button.cancel'}}
+                    <button type="button"
+                            name="cancel"
+                            ng-disabled="rowform.$waiting"
+                            ng-click="rowform.$cancel()"
+                            class="btn btn-danger glyphicon glyphicon-remove"
+                            title="{{'dashboards.button.cancel' | translate}}">
                     </button>
                 </form>
                 <div class="buttons" ng-show="!rowform.$visible">
