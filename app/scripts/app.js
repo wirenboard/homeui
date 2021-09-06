@@ -401,7 +401,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             $window.localStorage.setItem('language', language);
         }
         $translate.use(language);
-        tmhDynamicLocale.set('ru');
+        tmhDynamicLocale.set(language);
 
         $rootScope.requestConfig(loginData);
 

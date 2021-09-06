@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.11.1) stable; urgency=medium
+
+  * Set angular locale on startup 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Sep 2021 11:09:46 +0500
+
 wb-mqtt-homeui (2.11.0) stable; urgency=medium
 
   * Russian localization is added
