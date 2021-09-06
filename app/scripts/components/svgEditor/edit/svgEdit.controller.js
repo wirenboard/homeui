@@ -86,7 +86,7 @@ class SvgEditController {
             var d = this.deviceData.devices[c.deviceId];
             let cell = {
                 id: c.id,
-                name: c.name,
+                name: c.getName(this.$locale.id),
                 device: d.getName(this.$locale.id)
             };
             tmp.push(cell);

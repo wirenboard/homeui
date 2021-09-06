@@ -1,7 +1,7 @@
 class ChartsControl {
-    constructor(cell, groupName, deviceName, widget) {
+    constructor(cell, groupName, device, lang, widget) {
         this.cell = cell;
-        this.name = deviceName + " / " + (cell.name || cell.controlId);
+        this.name = device.getName(lang) + " / " + cell.getName(lang);
         if (widget) {
             this.name = widget.name + " (" + this.name + ")";
         }
@@ -183,7 +183,7 @@ class HistoryCtrl {
                     widget.cells.map(item => {
                         const cell = DeviceData.cell(item.id);
                         const device = DeviceData.devices[cell.deviceId];
-                        return new ChartsControl(cell, this.widgetChannelsMsg, device.getName(this.$locale.id), widget);
+                        return new ChartsControl(cell, this.widgetChannelsMsg, device, this.$locale.id, widget);
                     })
                 ),
             "name"));
@@ -193,7 +193,7 @@ class HistoryCtrl {
                 const device = DeviceData.devices[deviceId];
                 return device.cellIds.map(cellId => {
                     const cell = DeviceData.cell(cellId);
-                    return new ChartsControl(cell, this.allChannelsMsg, device.getName(this.$locale.id));
+                    return new ChartsControl(cell, this.allChannelsMsg, device, this.$locale.id);
                 });
             })
         ));

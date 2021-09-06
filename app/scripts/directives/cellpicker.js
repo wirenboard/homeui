@@ -24,7 +24,7 @@ function cellPickerDirective(DeviceData, $locale) {
         var cell = DeviceData.proxy(cellId),
             devName = DeviceData.devices.hasOwnProperty(cell.deviceId) ?
             DeviceData.devices[cell.deviceId].getName($locale.id) : cell.deviceId,
-            fullCellName = devName + ' / ' + cell.name;
+            fullCellName = devName + ' / ' + cell.getName($locale.id);
 
         if (items.hasOwnProperty(cellId))
           items[cellId].name = fullCellName;

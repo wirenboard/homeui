@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.12.0) stable; urgency=medium
+
+  * Support for /meta topics with device and control title translations is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Sep 2021 11:19:56 +0500
+
 wb-mqtt-homeui (2.11.0) stable; urgency=medium
 
   * Russian localization is added
