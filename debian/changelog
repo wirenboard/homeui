@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.13.0) stable; urgency=medium
+
+  * Configs translation support is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 09:36:35 +0500
+
 wb-mqtt-homeui (2.12.5) stable; urgency=medium
 
   * Loading of history data for widgets with channels unavailable in MQTT brocker is fixed
