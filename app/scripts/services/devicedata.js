@@ -264,6 +264,7 @@ function deviceDataService(mqttClient) {
       this.step = null;
       this.order = null;
       this._seq = nextCellSeq++;
+      this._nameTranslations = {};
     }
 
     get value () {
@@ -430,8 +431,8 @@ function deviceDataService(mqttClient) {
     }
 
     setExplicitReadOnly (readOnly) {
-      if (readOnly === null)
-        this._explicitReadOnly = readOnly;
+      if (readOnly === null || readOnly === undefined)
+        this._explicitReadOnly = null;
       else
         this._explicitReadOnly = !!readOnly;
     }
@@ -441,15 +442,15 @@ function deviceDataService(mqttClient) {
     }
 
     setMin (min) {
-      this.min = min == "" ? null: min - 0;
+      this.min = (min == "" || min === undefined) ? null: min - 0;
     }
 
     setMax (max) {
-      this.max = max == "" ? null : max - 0;
+      this.max = (max == "" || max === undefined) ? null : max - 0;
     }
 
     setStep (step) {
-      this.step = step == "" ? null: step - 0;
+      this.step = (step == "" || step === undefined) ? null: step - 0;
     }
 
     setOrder (order) {
@@ -457,6 +458,38 @@ function deviceDataService(mqttClient) {
       if (!this.isComplete())
         return;
       ensureDevice(this.deviceId).cellIds.sort(compareCellIds);
+    }
+
+    // meta must be a string with JSON
+    // {
+    //   title: {
+    //    en: ...,
+    //    ru: ...,
+    //    ...
+    //  },
+    //  readonly: ...,
+    //  type: ...,
+    //  min: ...,
+    //  max: ...,
+    //  precision: ...,
+    //  units: ...
+    // }
+    setMeta(meta) {
+      const m = JSON.parse(meta);
+      this._nameTranslations = m.title;
+      this.setExplicitReadOnly(m.readonly);
+      this.setType(m.type);
+      this.setMin(m.min);
+      this.setMax(m.min);
+      this.setStep(m.precision);
+      this.setUnits(m.units)
+    }
+
+    getName(lang) {
+      if (this._nameTranslations.hasOwnProperty(lang)) {
+        return this._nameTranslations[lang];
+      }
+      return this.name;
     }
   }
 
@@ -524,6 +557,9 @@ function deviceDataService(mqttClient) {
       },{
         handledTopic: cellTopicBase,
         handler(payload) { cellFromTopic(topic).receiveValue(payload) }
+      },{
+        handledTopic: cellTopicBase + '/meta',
+        handler(payload) { cellFromTopic(topic).setMeta(payload) }
       },{
         handledTopic: cellTopicBase + '/meta/type',
         handler(payload) { cellFromTopic(topic).setType(payload) }
@@ -622,7 +658,6 @@ function deviceDataService(mqttClient) {
     }
 
     get type () { return this.cell.type; }
-    get name () { return this.cell.name; }
     get units () { return this.cell.units; }
     get readOnly () { return this.cell.readOnly; }
     get error () { return this.cell.error; }
@@ -634,6 +669,8 @@ function deviceDataService(mqttClient) {
     get order () { return this.cell.order; }
     get deviceId () { return this.id.split("/")[0]; }
     get controlId () { return this.id.split("/")[1]; }
+
+    getName (lang) { return this.cell.getName(lang); }
   }
 
   return {
