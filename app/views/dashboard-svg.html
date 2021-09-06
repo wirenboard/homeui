@@ -9,7 +9,7 @@
     <svg-view dashboard="dashboard"></svg-view>
 
     <div class="mt-1">
-        <a class="btn btn-primary" user-role="mto" current-role="roles.current.role" ui-sref="dashboard-svg-edit({ id: dashboard.id })" translate>{{'dashboards.button.edit'}}</a>
+        <a class="btn btn-primary" user-role="mto" current-role="roles.current.role" ui-sref="dashboard-svg-edit({ id: dashboard.id })">{{'dashboards.button.edit' | translate}}</a>
     </div>
 </div>
 <pulse-spinner ng-show="!dashboard"></pulse-spinner>
