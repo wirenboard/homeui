@@ -16,13 +16,14 @@ import '../styles/css/new.css';
 import '../styles/main.css';
 import '../styles/css/spacing.css';
 
+import '../styles/css/wb-switch.css';
+
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'angular-xeditable/dist/css/xeditable.css';
 import '../lib/css-spinners/css/spinner/spinner.css';
 import '../styles/css/angular.rangeSlider.css';
 import 'ng-toast/dist/ngToast.css';
-///import '../lib/angular-toggle-switch/angular-toggle-switch.css';
 
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
@@ -79,10 +80,10 @@ import cellPickerDirective from './directives/cellpicker';
 import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
 import userRolesDirective from './directives/user-roles.directive';
-import {svgSchemeDirective, svgCompiledElementDirective} from './directives/svgScheme';
 import dashboardPickerDirective from './directives/dashboardpicker';
 import plotlyDirective from "./directives/plotly";
 import onResizeDirective from "./directives/resize";
+import confirmDirective from "./directives/confirm";
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -124,11 +125,10 @@ const module = angular
         LoginFormModule,
         SvgEditorModule,
 
-        ///'toggle-switch',
         'ui-rangeSlider',
         'ngToast',
-        'ngBootbox',
-        'ui.scroll'
+        'ui.scroll',
+        'tmh.dynamicLocale'
     ])
     .value('historyMaxPoints', 1000)
     .value('logsMaxRows', 50)
@@ -248,11 +248,10 @@ module
     .directive('explicitChanges', explicitChangesDirective)
     .directive('editableElasticTextarea', editableElasticTextareaDirective)
     .directive('userRole', userRolesDirective)
-    .directive('svgCompiledElement', svgCompiledElementDirective)
-    .directive('svgScheme', svgSchemeDirective)
     .directive('dashboardPicker', dashboardPickerDirective)
     .directive('plotly', [ '$window', plotlyDirective ] )
-    .directive('onResize', [ '$parse', onResizeDirective] );
+    .directive('onResize', [ '$parse', onResizeDirective] )
+    .directive('ngConfirm', confirmDirective);
 
 module
     .config((JSONEditorProvider, DumbTemplateProvider) => {
@@ -285,7 +284,6 @@ module
         };
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-            if (fromState.name.split('/').pop() != 'edit' && fromState.name.split('/').pop() != 'new') $rootScope.showCreated = false;
             $rootScope.refererLocation = fromState;
         });
 
@@ -304,22 +302,39 @@ module
 
 //-----------------------------------------------------------------------------
 // Register module with communication
-const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate'])
+const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate', 'tmh.dynamicLocale'])
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
-        $translatePartialLoaderProvider.addPart('app');
+        ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui', "logs",
+         'configurations', 'rules', 'history', 'widgets', 'devices', 'units'].forEach(el => $translatePartialLoaderProvider.addPart(el));
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json'
         });
-        $translateProvider.preferredLanguage('ru');
+        $translateProvider.preferredLanguage('en');
+        $translateProvider.fallbackLanguage('en');
+    }])
+    .config(['tmhDynamicLocaleProvider', function(tmhDynamicLocaleProvider) {
+        tmhDynamicLocaleProvider.localeLocationPattern('/scripts/i18n/angular-locale_{{locale}}.js');
     }])
     .config(['$compileProvider', function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig, tmhDynamicLocale) => {
         'ngInject';
+
+        $rootScope.$on('$translateChangeSuccess', () => {
+            $translate(['datepicker.buttons.close',
+                        'datepicker.buttons.today',
+                        'datepicker.buttons.clear',
+                        'datepicker.format']).then(translations => {
+                            uibDatepickerPopupConfig.closeText = translations['datepicker.buttons.close'];
+                            uibDatepickerPopupConfig.currentText = translations['datepicker.buttons.today'];
+                            uibDatepickerPopupConfig.clearText = translations['datepicker.buttons.clear'];
+                            uibDatepickerPopupConfig.datepickerPopup =  translations['datepicker.format'];
+                        });
+        });
 
         //.........................................................................
         function configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig) {
@@ -343,7 +358,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
                         console.log('LOAD CONF: %o', result.content);
                         uiConfig.ready(result.content);
                     })
-                    .catch(errors.catch('Cannot load WebUI config.'));
+                    .catch(errors.catch('app.errors.load'));
 
                 return true;
 
@@ -380,6 +395,14 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             prefix: $window.localStorage['prefix']
         };
 
+        var language =  $window.localStorage['language'];
+        if (!language) {
+            language = window.navigator.language.startsWith('ru') ? 'ru' : 'en';
+            $window.localStorage.setItem('language', language);
+        }
+        $translate.use(language);
+        tmhDynamicLocale.set('ru');
+
         $rootScope.requestConfig(loginData);
 
         if (loginData['host'] === demoLoginData['host'] && loginData['port'] === demoLoginData['port']) {
@@ -414,9 +437,9 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
                     })
                     .catch((err) => {
                         if (err.name === 'QuotaExceededError') {
-                            errors.showError("Config saving failed", "config is too big, try to reduce SVG size");
+                            errors.showError("app.errors.overflow");
                         } else {
-                            errors.showError("Config saving failed", err);
+                            errors.showError("app.errors.save", err);
                         }
                     });
             }, configSaveDebounceMs);

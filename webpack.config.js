@@ -64,15 +64,18 @@ module.exports = function makeWebpackConfig() {
             'oclazyload',
             './lib/angular-order-object-by/src/ng-order-object-by',
             'angular-rangeslider',
-            './lib/angular-toggle-switch/angular-toggle-switch',
             'ng-toast',
 
             'angular-translate',
             'angular-translate-loader-partial',
             'angular-spinkit',
-            'ngbootbox',
             'lz-string',
-            'angular-ui-scroll'
+            'angular-ui-scroll',
+            'angular-dynamic-locale',
+
+            // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
+            './scripts/i18n/angular-locale_en.js',
+            './scripts/i18n/angular-locale_ru.js'
         ]
     };
     /**

@@ -66,7 +66,7 @@ class ChartColors {
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, DeviceData, $injector, handleData, $q, historyUrlService) {
+    constructor($scope, DeviceData, $injector, handleData, historyUrlService, $locale, $translate) {
         'ngInject';
 
         // 1. интервал загрузки частей графика
@@ -76,22 +76,20 @@ class HistoryCtrl {
         this.$stateParams = $stateParams;
         var $location = $injector.get('$location');
         var HistoryProxy = $injector.get('HistoryProxy');
-        var whenMqttReady = $injector.get('whenMqttReady');
         var errors = $injector.get('errors');
         var historyMaxPoints = $injector.get('historyMaxPoints');
-        var dateFilter = $injector.get('dateFilter');
         var uiConfig = $injector.get('uiConfig');
         this.orderByFilter = $injector.get('orderByFilter');
         this.$timeout = $injector.get('$timeout');
         this.$state = $injector.get('$state');
         this.historyUrlService = historyUrlService;
+        this.$translate = $translate;
 
         angular.extend(this, {
             scope: $scope,
             location: $location,
             historyMaxPoints: historyMaxPoints,
             HistoryProxy: HistoryProxy,
-            dateFilter: dateFilter,
             errors: errors,
             controls: []
         });
@@ -122,7 +120,8 @@ class HistoryCtrl {
         };
 
         this.options = {
-            displayModeBar: true
+            displayModeBar: true,
+            locale: $locale.id
         }
 
         this.colors = new ChartColors();
@@ -143,18 +142,12 @@ class HistoryCtrl {
         this.dataPointsMultiple = []
 
         // 4. Setup
-        var controlsAreLoaded = $q.defer();
-        uiConfig.whenReady().then((data) => {
-            this.updateControls(data.widgets, DeviceData);
-            controlsAreLoaded.resolve();
-        });
-
-        $q.all([
-            controlsAreLoaded.promise,
-            whenMqttReady()
-          ]).then(() => {
-            this.setSelectedControlsAndStartLoading(stateFromUrl.c);
-        });
+        this.updateTranslations()
+            .then(() => uiConfig.whenReady())
+            .then((data) => {
+                this.updateControls(data.widgets, DeviceData);
+                this.setSelectedControlsAndStartLoading(stateFromUrl.c);
+            });
 
         this.plotlyEvents = (graph) => {
             // !!!!! метод обязательно должен быть в конструкторе иначе контекст будет непонятно чей
@@ -189,7 +182,7 @@ class HistoryCtrl {
                     widget.cells.map(item => {
                         const cell = DeviceData.cell(item.id);
                         const device = DeviceData.devices[cell.deviceId];
-                        return new ChartsControl(cell, "Каналы из виджетов: ", device.name, widget);
+                        return new ChartsControl(cell, this.widgetChannelsMsg, device.name, widget);
                     })
                 ),
             "name"));
@@ -199,10 +192,24 @@ class HistoryCtrl {
                 const device = DeviceData.devices[deviceId];
                 return device.cellIds.map(cellId => {
                     const cell = DeviceData.cell(cellId);
-                    return new ChartsControl(cell, "Все каналы: ", device.name);
+                    return new ChartsControl(cell, this.allChannelsMsg, device.name);
                 });
             })
         ));
+    }
+
+    updateTranslations() {
+        var t = this.$translate(['history.labels.all_channels',
+                                 'history.labels.widget_channels',
+                                 'history.errors.dates',
+                                 'history.errors.points']);
+        t.then(translations => {
+            this.allChannelsMsg = translations['history.labels.all_channels'];
+            this.widgetChannelsMsg = translations['history.labels.widget_channels'];
+            this.invalidDateRangeMsg = translations['history.errors.dates'];
+            this.maxPointsLimitMsg = translations['history.errors.points'];
+        });
+        return t;
     }
 
     setSelectedControlsAndStartLoading(controlsFromUrl) {
@@ -302,7 +309,7 @@ class HistoryCtrl {
                 this.updateState();
             }
         } else {
-            alert('Date range is invalid. Change one of dates')
+            alert(this.invalidDateRangeMsg)
         }
     }
 
@@ -367,16 +374,16 @@ class HistoryCtrl {
 
     calculateTable() {
         //TODO: use merge sort as we have here n^2 complexity
-        var objX = {},graph = [];
-        this.charts.forEach((ctrl,i) => {
-            ctrl.xValues.forEach(x=> {
-                objX[x] = null
+        var graph = [];
+        var dates = new Set;
+        this.chartConfig.forEach((ctrl,i) => {
+            ctrl.x.forEach(x => {
+                dates.add(x)
             })
         });
 
-        var arrX = Object.keys(objX);
-        var _arrX = arrX.sort();
-        _arrX.forEach(date=> {
+        var arrX = Array.from(dates).sort();
+        arrX.forEach(date=> {
             graph.push({
                 date,
                 value: Array(this.charts.length).fill(null)
@@ -640,7 +647,7 @@ class HistoryCtrl {
     processDbRecord(record, chart) {
         var ts = new Date();
         ts.setTime(record.t * 1000);
-        chart.xValues.push(this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss"));
+        chart.xValues.push(ts);
         chart.yValues.push(record.v);
         if ((record.max && record.max != record.v) || (record.min && record.min != record.v)) {
             chart.text.push(record.v + " [" + record.min + ", " + record.max + "]");
@@ -666,10 +673,11 @@ class HistoryCtrl {
         var chart = this.charts[indexOfControl];
         chart.progress.value = indexOfChunk + 1;
 
-        if (chunk.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
+        if (chunk.has_more) this.errors.showError('history.errors.warning', this.maxPointsLimitMsg);
 
         if (!chart.xValues.length && this.hasStringValues(chunk)) {
             chart.hasStringValues = true;
+            chart.hasErrors = false;
         }
 
         chunk.values.forEach(item => this.processDbRecord(item, chart));
@@ -692,7 +700,7 @@ class HistoryCtrl {
         }
         this.HistoryProxy.get_values(params)
                          .then(result => this.processChunk(result, indexOfControl, indexOfChunk, chunks))
-                         .catch(this.errors.catch("Error getting history"));
+                         .catch(this.errors.catch('history.errors.load'));
     }
 
     downloadHistoryTable() {

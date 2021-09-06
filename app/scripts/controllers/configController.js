@@ -1,5 +1,5 @@
 class ConfigCtrl {
-  constructor($scope, $stateParams, rolesFactory, ConfigEditorProxy, whenMqttReady, gotoDefStart, $location, PageState, errors) {
+  constructor($scope, $stateParams, rolesFactory, ConfigEditorProxy, whenMqttReady, PageState, errors) {
     'ngInject';
 
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
@@ -42,7 +42,7 @@ class ConfigCtrl {
         $scope.file.schema = r.schema;
         $scope.file.loaded = true;
       })
-      .catch(errors.catch("Error loading the file"));
+      .catch(errors.catch('configuration.errors.load'));
     };
 
     $scope.save = function () {
@@ -54,7 +54,7 @@ class ConfigCtrl {
         })
         .catch(function (e) {
           PageState.setDirty(true);
-          errors.showError("Error saving " + $scope.file.configPath, e);
+          errors.showError({ msg:'configuration.errors.save', data: { name: $scope.file.configPath }}, e);
         });
     };
 

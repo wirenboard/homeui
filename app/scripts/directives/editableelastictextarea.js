@@ -4,7 +4,7 @@ function editableElasticTextareaDirective(editableDirectiveFactory) {
 
   var directive = editableDirectiveFactory({
     directiveName: 'editableElasticTextarea',
-    inputTpl: '<textarea class="form-control" placeholder="{{ placeholder }}" msd-elastic></textarea>',
+    inputTpl: '<textarea class="form-control" placeholder="{{ placeholder }}" style="width:100%" msd-elastic></textarea>',
     addListeners: function () {
       var self = this;
       self.parent.addListeners.call(self);
@@ -27,7 +27,9 @@ function editableElasticTextareaDirective(editableDirectiveFactory) {
   var oldLink = directive.link || (() => {});
   directive.link = (scope, element, attrs, ctrl) => {
     oldLink.call(this, scope, element, attrs, ctrl);
-    scope.placeholder = element.attr("placeholder") || "";
+    attrs.$observe('placeholder', function (interpolated) {
+      scope.placeholder = interpolated;
+    });
   };
   return directive;
 }

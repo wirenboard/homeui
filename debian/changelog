@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.11.0) stable; urgency=medium
+
+  * Russian localization is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Sep 2021 10:09:20 +0500
+
 wb-mqtt-homeui (2.10.2) stable; urgency=medium
 
   * Display of date labels when hovering points on history charts is restored. 

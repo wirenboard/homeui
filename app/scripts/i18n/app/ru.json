@@ -1,37 +1,100 @@
 {
+    "app": {
+        "errors": {
+            "load": "Не удалось загрузить настройки WebUI.",
+            "save": "Не удалось сохранить настройки",
+            "overflow": "Не удалось сохранить настройки: конфигурационный файл имеет слишком большой размер, попробуйте уменьшить размер использованных SVG-картинок"
+        },
+        "prompt" : {
+            "dirty": "На странице остались несохранённые изменения. Вы действительно хотите покинуть страницу?"
+        }
+    },
+    "home": {
+        "labels": {
+            "warning": "Вы можете выбрать доиашнюю панель в ",
+            "settings": "настройках"
+        }
+    },
+    "navigation":{
+        "menu": {
+            "toggle": "Переключить меню",
+            "home": "Домашняя страница",
+            "dashboards": "Панели",
+            "list": "Список",
+            "devices": "Устройства",
+            "widgets": "Виджеты",
+            "history": "История",
+            "rules": "Правила",
+            "settings": "Настройки",
+            "help": "Помощь",
+            "configs": "Конфигурационные файлы",
+            "ui": "Web интерфейс",
+            "system": "Система",
+            "channels": "Каналы MQTT",
+            "access": "Права доступа",
+            "logs": "Логи"
+        },
+        "access": {
+            "title": "Уровень доступа:"
+        },
+        "connection": {
+            "active": "Подключено",
+            "inactive": "Отключено"
+        }
+    },
+    "heading": {
+        "loading": "Загрузка..."
+    },
     "dashboards": {
         "title": {
-            "default": "Dashboards",
-            "svg": "SVG Dashboards"
+            "default": "Панели",
+            "svg": "SVG панели"
         },
         "field": {
             "id": "ID",
-            "name": "Name",
-            "fullwidth": "Full width"
+            "name": "Название",
+            "fullwidth": "Во всю ширину экрана"
         },
         "button": {
-            "add": "Add",
-            "edit": "Edit",
-            "delete": "Delete",
-            "view": "View",
-            "cancel": "Cancel",
-            "save": "Save"
+            "add": "Добавить",
+            "edit": "Редактировать",
+            "delete": "Удалить",
+            "view": "Открыть",
+            "cancel": "Отменить",
+            "save": "Сохранить"
         },
         "prompt": {
-            "delete": "Are you sure you want to delete <b>{{name}}</b> dashboard?"
+            "delete": "Вы действительно хотите удалить панель \"{{name}}\"?"
         },
         "message": {
-            "empty": "No dashboards currently defined."
+            "empty": "Не создано ни одной панели."
+        },
+        "error": {
+            "duplicate": "Идентификатор должен быть уникальным",
+            "emptyId": "Введите идентификатор панели",
+            "emptyName": "Введите название панели"
         }
     },
     "dashboard": {
         "svg": {
             "edit": {
                 "title": {
-                    "create": "New SVG Dashboard",
-                    "update": "Edit SVG Dashboard"
+                    "create": "Создать SVG панель",
+                    "update": "Редактировать SVG панель"
                 }
             }
+        },
+        "buttons": {
+            "add": "Добавить виджет"
+        }
+    },
+    "datepicker": {
+        "format": "dd.MM.yyyy",
+        "buttons": {
+            "today": "Сегодня",
+            "clear": "Сбросить",
+            "close": "Закрыть",
+            "cancel": "Отменить"
         }
     }
 }

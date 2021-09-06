@@ -182,10 +182,7 @@ class DevicesCtrl {
     }
 
     deleteDevice(deviceId) { 
-      const deviceName = this.DeviceData.devices[deviceId].name || deviceId;
-      if (confirm(`Remove '${deviceName}'?`)) {
         this.DeviceData.deleteDevice(deviceId);
-      }  
     } 
 
     redirect(contr) {
