@@ -81,7 +81,7 @@
       <div class="btn-form">
       <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length" translate>{{'widgets.buttons.save'}}</button>
       <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default" translate>{{'widgets.buttons.cancel'}}</button>
-      <button name="cancel" type="button" ng-click="ctrl.enableEditJsonMode()" class="btn btn-default pull-right" translate>{{'widgets.buttons.edit-json'}}</button>
+      <button name="cancel" type="button" ng-click="ctrl.enableEditJsonMode()" class="btn btn-default pull-right glyphicon glyphicon-edit" title="{{'widgets.buttons.edit-json' | translate}}"></button>
     </div>
     </div>
     <div ng-if="ctrl.editJsonMode">
@@ -89,7 +89,7 @@
       <div class="btn-form">
         <button name="submit" type="submit" ng-click="ctrl.updateSourceFromJson(true) || widgetForm.$hide()" class="btn btn-primary" ng-disabled="!ctrl.jsonSource.length" translate>{{'widgets.buttons.save'}}</button>
         <button name="cancel" type="button" ng-click="widgetForm.$cancel() || ctrl.disableEditJsonMode()" class="btn btn-default" translate>{{'widgets.buttons.cancel'}}</button>
-        <button name="cancel" type="button" ng-click="ctrl.updateSourceFromJson() || widgetForm.$show()" class="btn btn-default pull-right" translate>{{'widgets.buttons.editor'}}</button>
+        <button name="cancel" type="button" ng-click="ctrl.updateSourceFromJson() || widgetForm.$show()" class="btn btn-default pull-right glyphicon glyphicon-list-alt" title="{{'widgets.buttons.editor' | translate}}"></button>
       </div>
     </div>
 
