@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.12.2) stable; urgency=medium
+
+  * Control type filter in widget's properties dialog is restored 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:21:18 +0500
+
 wb-mqtt-homeui (2.12.1) stable; urgency=medium
 
   * SVG dashboard edit button translation is fixed
