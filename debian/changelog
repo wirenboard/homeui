@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.12.0) stable; urgency=medium
+
+  * Config titles and descriptions translation support is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 11:14:47 +0500
+
 wb-mqtt-homeui (2.11.1) stable; urgency=medium
 
   * Set angular locale on startup 

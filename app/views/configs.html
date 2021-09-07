@@ -23,11 +23,11 @@
                 <td>{{ config.configPath }}</td>
                 <td>
                     <a ui-sref="configEdit({path: config.schemaPath})">
-                        {{ config.title }}
+                        {{ config.titleTranslations[$locale.id] || config.title }}
                     </a>
                 </td>
                 <td>
-                    {{ config.description }}
+                    {{ config.descriptionTranslations[$locale.id] || config.description }}
                 </td>
             </tr>
             </tbody>
