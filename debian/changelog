@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.12.3) stable; urgency=medium
+
+  * Widget deletion prompt message translation is fixed 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:38:44 +0500
+
 wb-mqtt-homeui (2.12.2) stable; urgency=medium
 
   * Widget's editor's button text is replaced by icons
