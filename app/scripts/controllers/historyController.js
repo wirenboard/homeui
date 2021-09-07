@@ -1,16 +1,19 @@
 class ChartsControl {
-    constructor(cell, groupName, deviceName, widget) {
-        this.cell = cell;
-        this.name = deviceName + " / " + (cell.name || cell.controlId);
+
+    constructor(deviceId, controlId, deviceName, controlName, valueType, groupName, widget) {
+        this.name = (deviceName || deviceId) + " / " + (controlName || controlId);
         if (widget) {
             this.name = widget.name + " (" + this.name + ")";
         }
         this.widget = widget;
         this.group = groupName;
+        this.deviceId = deviceId;
+        this.controlId = controlId;
+        this.valueType = valueType;
     }
 
     match(controlFromUrl) {
-        if (this.cell.deviceId === controlFromUrl.d && this.cell.controlId === controlFromUrl.c) {
+        if (this.deviceId === controlFromUrl.d && this.controlId === controlFromUrl.c) {
             return this.widget ? this.widget.id === controlFromUrl.w : !controlFromUrl.w;
         }
         return false;
@@ -26,7 +29,7 @@ class ChartTraits {
         };
         this.hasStringValues = false;
         this.hasErrors = false;
-        this.hasBooleanValues = (chartsControl.cell.valueType === "boolean");
+        this.hasBooleanValues = (chartsControl.valueType === "boolean");
         this.xValues = [];
         this.yValues = [];
         this.text = [];
@@ -174,15 +177,24 @@ class HistoryCtrl {
     
     // Class methods
     //...........................................................................
+    makeChartsControlFromCell(device, cell, groupName, widget) {
+        return new ChartsControl(cell.deviceId, cell.controlId, device.name, cell.name, cell.valueType, groupName, widget);
+    }
+
     updateControls(widgets, DeviceData) {
         this.controls = this.orderByFilter(
             Array.prototype.concat.apply(
                 [], 
                 widgets.map(widget =>
                     widget.cells.map(item => {
-                        const cell = DeviceData.cell(item.id);
-                        const device = DeviceData.devices[cell.deviceId];
-                        return new ChartsControl(cell, this.widgetChannelsMsg, device.name, widget);
+                        try {
+                            const cell = DeviceData.cell(item.id);
+                            const device = DeviceData.devices[cell.deviceId];
+                            return this.makeChartsControlFromCell(device, cell, this.widgetChannelsMsg, widget);
+                        } catch (er) {
+                            const deviceControl = item.id.split('/');
+                            return new ChartsControl(deviceControl[0], deviceControl[1], undefined, undefined, undefined, this.widgetChannelsMsg, widget);
+                        }
                     })
                 ),
             "name"));
@@ -192,7 +204,7 @@ class HistoryCtrl {
                 const device = DeviceData.devices[deviceId];
                 return device.cellIds.map(cellId => {
                     const cell = DeviceData.cell(cellId);
-                    return new ChartsControl(cell, this.allChannelsMsg, device.name);
+                    return this.makeChartsControlFromCell(device, cell, this.allChannelsMsg);
                 });
             })
         ));
@@ -249,12 +261,13 @@ class HistoryCtrl {
         // Remove duplicates
         var uniqueCells = new Set;
         this.selectedControls.forEach((control) => {
-            if (!uniqueCells.has(control.cell.id)) {
-                uniqueCells.add(control.cell.id);
+            const id = control.deviceId + '/' + control.controlId;
+            if (!uniqueCells.has(id)) {
+                uniqueCells.add(id);
                 controls.push(
                     {
-                        d: control.cell.deviceId,
-                        c: control.cell.controlId,
+                        d: control.deviceId,
+                        c: control.controlId,
                         w: control.widget && control.widget.id
                     }
                 )
@@ -407,7 +420,7 @@ class HistoryCtrl {
 
         var params = {
             channels: [
-                [control.cell.deviceId, control.cell.controlId]
+                [control.deviceId, control.controlId]
             ],
             limit: this.historyMaxPoints,
             ver: 1
@@ -435,6 +448,8 @@ class HistoryCtrl {
         this.$timeout( () => {
             this.timeChanged = true;
             this.stopLoadData = true;
+            this.loadPending = false;
+            this.disableUi = false;
         })
     }
 
@@ -700,7 +715,11 @@ class HistoryCtrl {
         }
         this.HistoryProxy.get_values(params)
                          .then(result => this.processChunk(result, indexOfControl, indexOfChunk, chunks))
-                         .catch(this.errors.catch('history.errors.load'));
+                         .catch(er => {
+                            this.loadPending = false;
+                            this.disableUi = false;
+                            this.errors.catch('history.errors.load')(er);
+                         });
     }
 
     downloadHistoryTable() {
