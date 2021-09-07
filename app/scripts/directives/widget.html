@@ -17,13 +17,13 @@
           class="widget-button widget-button-edit"><i class="glyphicon glyphicon-edit white widget-caption-button"></i></span>
     <span ng-if="ctrl.canDelete()"
           user-role="mto" current-role="ctrl.roles.current.role"
-          ng-confirm="{{'widgets.propmt.delete' | translate}}"
+          ng-confirm="{{'widgets.prompt.delete' | translate}}"
           confirmed-click="ctrl.onDelete()"
           title="{{'widgets.buttons.delete' | translate}}"
           class="widget-button widget-button-delete"><i class="glyphicon glyphicon-trash white widget-caption-button"></i></span>
     <span ng-if="ctrl.canRemove()"
           user-role="mto" current-role="ctrl.roles.current.role"
-          ng-confirm="{{'widgets.propmt.remove' | translate}}"
+          ng-confirm="{{'widgets.prompt.remove' | translate}}"
           confirmed-click="ctrl.onRemove()"
           title="{{'widgets.buttons.remove' | translate}}"
           class="widget-button widget-button-remove"><i class="glyphicon glyphicon-remove white widget-caption-button"></i></span>
