@@ -4,6 +4,7 @@ class Device {
     this.name = id;
     this.cellIds = [];
     this._nameTranslations = {};
+    this.explicit = false;
   }
 
   getName(lang) {
