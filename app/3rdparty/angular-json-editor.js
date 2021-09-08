@@ -35,6 +35,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
         jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
         jse.defaults.editors["slWb"] = makeDisabledEditorWrapper(jse.defaults.editors["select"]);
+        jse.defaults.editors["info"] = makeTranslatedInfoEditor();
         return jse;
     }];
 
@@ -205,3 +206,21 @@ function makeDisabledEditorWrapper (Base) {
       }
     }
   }
+
+  function makeTranslatedInfoEditor () {
+    return class extends JSONEditor.AbstractEditor {
+        constructor (options, defaults) {
+          super(options, defaults)
+        }
+
+        build () {
+          this.input = this.theme.getFormInputField("text")
+          this.input.disabled = true
+          this.container.appendChild(this.input)
+        }
+
+        setValue (value) {
+          this.input.value = this.translateProperty(value);
+        }
+    }
+}
