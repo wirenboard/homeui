@@ -189,7 +189,7 @@ function makeDisabledEditorWrapper (Base) {
         this.disabledEditor = this.theme.getFormInputField(this.input_type)
         this.disabledEditor.style.display = 'none'
         this.disabledEditor.disabled = true
-        this.disabledEditor.value = 'unknown'
+        this.disabledEditor.value = this.translate('unknown')
         this.control.insertBefore(this.disabledEditor, this.description)
       }
   
