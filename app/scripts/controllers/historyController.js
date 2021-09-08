@@ -376,9 +376,9 @@ class HistoryCtrl {
         //TODO: use merge sort as we have here n^2 complexity
         var graph = [];
         var dates = new Set;
-        this.chartConfig.forEach((ctrl,i) => {
+        this.chartConfig.forEach(ctrl => {
             ctrl.x.forEach(x => {
-                dates.add(x)
+                dates.add(x.valueOf())
             })
         });
 
@@ -392,7 +392,7 @@ class HistoryCtrl {
             this.charts.forEach((ctrl,iCtrl)=> {
                 for (var i = 0; i < ctrl.xValues.length; i++) {
                     // если не нахожу то останется null
-                    if(date === ctrl.xValues[i]) {
+                    if(date === ctrl.xValues[i].valueOf()) {
                         graph[graph.length-1].value[iCtrl] = ctrl.yValues[i];
                         break
                     }
