@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.12.5) stable; urgency=medium
+
+  * Loading of history data for widgets with channels unavailable in MQTT brocker is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 09:23:58 +0500
+
 wb-mqtt-homeui (2.12.4) stable; urgency=medium
 
   * Dates calculation for history table is fixed 
