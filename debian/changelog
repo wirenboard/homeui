@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.13.3) stable; urgency=medium
+
+  * Browser cache invalidation for files with translated strings is implemented.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 09:32:14 +0500
+
 wb-mqtt-homeui (2.13.2) stable; urgency=medium
 
   * Russian translation for json-editor built-in messages is added

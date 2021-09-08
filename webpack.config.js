@@ -94,11 +94,11 @@ module.exports = function makeWebpackConfig() {
 
         // Filename for entry points
         // Only adds hash in build mode
-        filename: isProd ? '[name].[chunkhash].js' : '[name].bundle.js',
+        filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
 
         // Filename for non-entry points
         // Only adds hash in build mode
-        chunkFilename: isProd ? '[name].[chunkhash].js' : '[name].bundle.js'
+        chunkFilename: isProd ? '[name].[hash].js' : '[name].bundle.js'
     };
 
     /**
@@ -247,6 +247,7 @@ module.exports = function makeWebpackConfig() {
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
     config.plugins = [
+        new webpack.ExtendedAPIPlugin(),
     /**
      * Angular annotate
      * Reference: https://github.com/jeffling/ng-annotate-webpack-plugin
