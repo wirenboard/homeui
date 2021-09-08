@@ -21,7 +21,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         extendDeep(configuration, options);
     };
 
-    this.$get = ['$window', function ($window) {
+    this.$get = ['$locale', function ($locale) {
         var jse = JSONEditor;
         extendDeep(jse, configuration);
         jse.defaults.resolvers.unshift(schema => {
@@ -35,6 +35,8 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
         jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
         jse.defaults.editors["slWb"] = makeDisabledEditorWrapper(jse.defaults.editors["select"]);
+        jse.defaults.editors["info"] = makeTranslatedInfoEditor();
+        jse.defaults.language = $locale.id;
         return jse;
     }];
 
@@ -53,7 +55,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         return dst;
     }
 
-}).directive('jsonEditor', ['$q', 'JSONEditor', function ($q, JSONEditor) {
+}).directive('jsonEditor', ['$q', 'JSONEditor', '$locale', function ($q, JSONEditor, $locale) {
 
     return {
         restrict: 'E',
@@ -127,7 +129,25 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
 
                 var options = {
                     startval: startVal,
-                    schema: schema
+                    schema: schema,
+                    translateProperty: function(msg) {
+                        var langs = [];
+                        if (schema.translations) {
+                            langs.push($locale.id);
+                            if ($locale.id !== "en") {
+                                langs.push("en");
+                            }
+                        }
+                        for (const lang of langs) {
+                            if (schema.translations[lang]) {
+                                const tr = schema.translations[lang][msg];
+                                if (tr !== undefined) {
+                                    return tr;
+                                }
+                            }
+                        }
+                        return msg;
+                    }
                 };
                 if (scope.options)
                     angular.extend(options, scope.options);
@@ -188,7 +208,7 @@ function makeDisabledEditorWrapper (Base) {
         this.disabledEditor = this.theme.getFormInputField(this.input_type)
         this.disabledEditor.style.display = 'none'
         this.disabledEditor.disabled = true
-        this.disabledEditor.value = 'unknown'
+        this.disabledEditor.value = this.translate('unknown')
         this.control.insertBefore(this.disabledEditor, this.description)
       }
   
@@ -205,3 +225,21 @@ function makeDisabledEditorWrapper (Base) {
       }
     }
   }
+
+  function makeTranslatedInfoEditor () {
+    return class extends JSONEditor.AbstractEditor {
+        constructor (options, defaults) {
+          super(options, defaults)
+        }
+
+        build () {
+          this.input = this.theme.getFormInputField("text")
+          this.input.disabled = true
+          this.container.appendChild(this.input)
+        }
+
+        setValue (value) {
+          this.input.value = this.translateProperty(value);
+        }
+    }
+}
