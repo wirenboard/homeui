@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.13.2) stable; urgency=medium
+
+  * Russian translation for json-editor built-in messages is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 09:00:16 +0500
+
 wb-mqtt-homeui (2.13.1) stable; urgency=medium
 
   * Control type filter in widget's properties dialog is restored 
