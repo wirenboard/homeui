@@ -4,16 +4,16 @@ class DiagnosticCtrl {
 
 
     whenMqttReady().then(function () {
-      console.log(mqttClient.clientId)
-      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.clientId + "/+", function(msg) {
+      console.log(mqttClient.getID())
+      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
           console.log(msg.payload);
         });
     });
 
 
     $scope.getData = function() {
-          console.log('{"id":  "'+  mqttClient.clientId + '"}');
-          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.clientId, '{"id":  "'+  mqttClient.clientId + '"}');
+          console.log('{"id":  "'+  mqttClient.getID() + '"}');
+          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.getID(), '{"id":  "'+  mqttClient.getID() + '"}');
     }
 
   }
