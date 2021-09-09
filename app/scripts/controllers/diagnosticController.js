@@ -4,7 +4,6 @@ class DiagnosticCtrl {
 
 
     whenMqttReady().then(function () {
-
       console.log(mqttClient.clientId)
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.clientId + "/+", function(msg) {
           console.log(msg.payload);
@@ -13,22 +12,10 @@ class DiagnosticCtrl {
 
 
     $scope.getData = function() {
-          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.clientId, '{"id":  '+  mqttClient.clientId + '}');
-//        var url = window.location.href;
-//        url = url.substring(url.indexOf('//') + 2);
-//        url = url.substring(0, url.indexOf('/'));
-//        $scope.httpGetAsync("http://" + url + ":5000/diagcollect", alert, 'GET');
+          console.log('{"id":  "'+  mqttClient.clientId + '"}');
+          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.clientId, '{"id":  "'+  mqttClient.clientId + '"}');
     }
 
-//    $scope.httpGetAsync = function(theUrl, callback, method) {
-//        var xmlHttp = new XMLHttpRequest();
-//        xmlHttp.onreadystatechange = function() {
-//            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-//                callback(xmlHttp.responseText);
-//        }
-//        xmlHttp.open(method, theUrl, true);
-//        xmlHttp.send(null);
-//    }
   }
 }
 
