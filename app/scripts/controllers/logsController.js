@@ -1,3 +1,5 @@
+import dtPickerTemplate from '../../views/dateTimePickerModal.html';
+
 class LogsCtrl {
     constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope) {
         'ngInject';
@@ -230,7 +232,7 @@ class LogsCtrl {
             var modalInstance = this.$uibModal.open({
                 animation: false,
                 ariaDescribedBy: 'modal-body',
-                templateUrl: 'views/dateTimePickerModal.html',
+                template: dtPickerTemplate,
                 controller: 'DateTimePickerModalCtrl',
                 controllerAs: '$ctrl',
                 size: 'sm'

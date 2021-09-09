@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.13.4) stable; urgency=medium
+
+  * Start date selection dialog on Logs page is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 14:12:18 +0500
+
 wb-mqtt-homeui (2.13.3) stable; urgency=medium
 
   * Browser cache invalidation for files with translated strings is implemented.
