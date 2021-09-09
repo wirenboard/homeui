@@ -2,16 +2,18 @@ class DiagnosticCtrl {
   constructor($scope, $timeout, mqttClient, whenMqttReady) {
     'ngInject';
 
+
     whenMqttReady().then(function () {
-      console.log('whenMqttReady - doing')
-      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/+", function(msg) {
+
+      console.log(mqttClient.clientId)
+      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.clientId + "/+", function(msg) {
           console.log(msg.payload);
         });
     });
 
 
     $scope.getData = function() {
-          mqttClient.send("/rpc/v1/diag/main/diag/", '{"id": 150}')
+          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.clientId, '{"id":  '+  mqttClient.clientId + '}');
 //        var url = window.location.href;
 //        url = url.substring(url.indexOf('//') + 2);
 //        url = url.substring(0, url.indexOf('/'));
