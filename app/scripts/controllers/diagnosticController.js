@@ -21,7 +21,8 @@ class DiagnosticCtrl {
     $scope.downloadDiag = function() {
         const link = document.createElement('a');
         link.setAttribute('target', '_blank');
-        link.setAttribute('href',   $element[0].querySelector('#downloadDiag').value);
+        console.log($element[0].querySelector('#downloadDiag').value)
+        link.setAttribute('href',   'file://' + $element[0].querySelector('#downloadDiag').value);
         link.setAttribute('download', 'file.zip');
         document.body.appendChild(link);
         link.click();
