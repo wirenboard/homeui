@@ -1,8 +1,75 @@
-wb-mqtt-homeui (2.12.0) stable; urgency=medium
+wb-mqtt-homeui (2.14.0) stable; urgency=medium
 
   * Config titles and descriptions translation support is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 11:14:47 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 13 Sep 2021 20:36:58 +0500
+
+wb-mqtt-homeui (2.13.4) stable; urgency=medium
+
+  * Start date selection dialog on Logs page is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 14:12:18 +0500
+
+wb-mqtt-homeui (2.13.3) stable; urgency=medium
+
+  * Browser cache invalidation for files with translated strings is implemented.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 09:32:14 +0500
+
+wb-mqtt-homeui (2.13.2) stable; urgency=medium
+
+  * Russian translation for json-editor built-in messages is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 09:00:16 +0500
+
+wb-mqtt-homeui (2.13.1) stable; urgency=medium
+
+  * Control type filter in widget's properties dialog is restored 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 20:03:46 +0500
+
+wb-mqtt-homeui (2.13.0) stable; urgency=medium
+
+  * Configs translation support is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 09:36:35 +0500
+
+wb-mqtt-homeui (2.12.5) stable; urgency=medium
+
+  * Loading of history data for widgets with channels unavailable in MQTT brocker is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 09:23:58 +0500
+
+wb-mqtt-homeui (2.12.4) stable; urgency=medium
+
+  * Dates calculation for history table is fixed 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 20:01:30 +0500
+
+wb-mqtt-homeui (2.12.3) stable; urgency=medium
+
+  * Widget deletion prompt message translation is fixed 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:38:44 +0500
+
+wb-mqtt-homeui (2.12.2) stable; urgency=medium
+
+  * Widget's editor's button text is replaced by icons
+  * Dashboard buttons are replaced by icons 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:25:47 +0500
+
+wb-mqtt-homeui (2.12.1) stable; urgency=medium
+
+  * SVG dashboard edit button translation is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 17:38:56 +0500
+
+wb-mqtt-homeui (2.12.0) stable; urgency=medium
+
+  * Translation support for config editor elements (json-editor updated to 2.5.3-wb3)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 11:20:17 +0500
 
 wb-mqtt-homeui (2.11.1) stable; urgency=medium
 
