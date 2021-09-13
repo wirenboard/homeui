@@ -1,4 +1,5 @@
 var/www/images
 var/www/css
 var/www/views
+var/www
 usr/share/wb-mqtt-homeui
