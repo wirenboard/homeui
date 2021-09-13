@@ -8,6 +8,7 @@ class DiagnosticCtrl {
           var path = JSON.parse(msg.payload)["result"];
           $element[0].querySelector('#downloadDiag').disabled = false;
           $element[0].querySelector('#downloadDiag').value = path;
+          $element[0].querySelector('#downloadDiag').innerHTML = "Download";
         });
     });
 
@@ -17,13 +18,16 @@ class DiagnosticCtrl {
     }
 
     $scope.downloadDiag = function() {
-        const link = document.createElement('a');
-        link.setAttribute('target', '_blank');
         var url = window.location.href;
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
-        link.setAttribute('href', 'http://' + url + $element[0].querySelector('#downloadDiag').value.substring(8));
-        link.setAttribute('download', $element[0].querySelector('#downloadDiag').value.substring(8));
+        filename = $element[0].querySelector('#downloadDiag').value.substring(9)
+
+        const link = document.createElement('a');
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', 'http://' + url + '/' + filename);
+        link.setAttribute('download', filename);
+        // TODO: серийник контроллера в имя файла
         document.body.appendChild(link);
         link.click();
         link.remove();
