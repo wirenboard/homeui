@@ -22,7 +22,7 @@ class DiagnosticCtrl {
         const link = document.createElement('a');
         link.setAttribute('target', '_blank');
         console.log($element[0].querySelector('#downloadDiag').value)
-        link.setAttribute('href',   'file:/' + $element[0].querySelector('#downloadDiag').value);
+        link.setAttribute('href',    URL.createObjectURL('file:/' + $element[0].querySelector('#downloadDiag').value));
         link.setAttribute('download', 'file.zip');
         document.body.appendChild(link);
         link.click();
