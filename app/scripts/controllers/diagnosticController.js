@@ -13,7 +13,6 @@ class DiagnosticCtrl {
 
 
     $scope.getData = function() {
-          console.log('{"id":  "'+  mqttClient.getID() + '"}');
           mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.getID(), '{"id":  "'+  mqttClient.getID() + '"}');
     }
 
@@ -24,7 +23,7 @@ class DiagnosticCtrl {
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
         link.setAttribute('href', 'http://' + url + $element[0].querySelector('#downloadDiag').value.substring(8));
-        link.setAttribute('download', 'file.zip');
+        link.setAttribute('download', $element[0].querySelector('#downloadDiag').value.substring(8));
         document.body.appendChild(link);
         link.click();
         link.remove();
