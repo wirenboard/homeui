@@ -5,7 +5,7 @@ class DiagnosticCtrl {
 
     whenMqttReady().then(function () {
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
-          path = JSON.parse(msg.payload)["result"];
+          var path = JSON.parse(msg.payload)["result"];
           console.log(path);
           $element[0].querySelector('#downloadDiag').disabled = false;
           $element[0].querySelector('#downloadDiag').value = path;
