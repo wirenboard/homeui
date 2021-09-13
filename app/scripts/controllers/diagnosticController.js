@@ -1,5 +1,5 @@
 class DiagnosticCtrl {
-  constructor($scope, $timeout, $downloadDiag, mqttClient, whenMqttReady) {
+  constructor($scope, $timeout, $element, mqttClient, whenMqttReady) {
     'ngInject';
 
 
@@ -7,8 +7,8 @@ class DiagnosticCtrl {
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
           path = JSON.parse(msg.payload)["result"];
           console.log(path);
-          $downloadDiag.disabled = false;
-          $downloadDiag.value = path;
+          $element[0].querySelector('#downloadDiag').disabled = false;
+          $element[0].querySelector('#downloadDiag').value = path;
         });
     });
 
@@ -21,7 +21,7 @@ class DiagnosticCtrl {
     $scope.downloadDiag = function() {
         const link = document.createElement('a');
         link.setAttribute('target', '_blank');
-        link.setAttribute('href',   $downloadDiag.value);
+        link.setAttribute('href',   $element[0].querySelector('#downloadDiag').value);
         link.setAttribute('download', 'file.zip');
         document.body.appendChild(link);
         link.click();
