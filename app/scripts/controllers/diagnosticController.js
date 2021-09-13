@@ -31,8 +31,6 @@ class DiagnosticCtrl {
         link.remove();
     }
 }
-
-  }
 }
 
 export default DiagnosticCtrl;
