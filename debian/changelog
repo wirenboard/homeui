@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.14.0) stable; urgency=medium
+
+  * Config titles and descriptions translation support is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 13 Sep 2021 20:36:58 +0500
+
 wb-mqtt-homeui (2.13.4) stable; urgency=medium
 
   * Start date selection dialog on Logs page is fixed
