@@ -21,7 +21,7 @@ class DiagnosticCtrl {
         var url = window.location.href;
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
-        filename = $element[0].querySelector('#downloadDiag').value.substring(8)
+        var filename = $element[0].querySelector('#downloadDiag').value.substring(9)
         console.log(filename)
 
         const link = document.createElement('a');
