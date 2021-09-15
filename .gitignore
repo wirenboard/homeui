@@ -21,3 +21,4 @@ grunt.log
 coverage
 *.sh
 *.tsv
+.vscode

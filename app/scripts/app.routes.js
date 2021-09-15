@@ -19,6 +19,7 @@ import historyTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/histo
 import logsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/logs.html';
 import configsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/configs.html';
 import configTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/config.html';
+import serialMetricsTemplateUrl from 'ngtemplate-loader?relativeTo=/app!../views/serial-metrics.html';
 
 function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   'ngInject';
@@ -508,6 +509,31 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
           );
           return deferred_1.promise
       }}
+    })
+    //...........................................................................
+      .state('serial-metrics', {
+        url: '/serial-metrics',
+        controller: 'SerialMetricsCtrl as $ctrl',
+        templateUrl: serialMetricsTemplateUrl,
+        resolve: {
+          ctrl: ($q, $ocLazyLoad) => {
+            'ngInject';
+            let deferred_1 = $q.defer();
+            require.ensure(
+              [],
+              (require) => {
+                let module_1 = require('./controllers/serialMetricsController.js');
+                $ocLazyLoad.load({
+                  name: module_1.default.name,
+                })
+                .then(() => {
+                  deferred_1.resolve(module_1);
+                });
+              }, 
+              'serial-metrics'
+            );
+            return deferred_1.promise
+        }}
     });
 };
 
