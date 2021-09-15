@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.15.0) stable; urgency=medium
+
+  * wb-mqtt-serial metrics page is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 15 Sep 2021 16:15:59 +0500
+
 wb-mqtt-homeui (2.14.0) stable; urgency=medium
 
   * Config titles and descriptions translation support is added
