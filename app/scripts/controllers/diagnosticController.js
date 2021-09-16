@@ -42,10 +42,7 @@ class DiagnosticCtrl {
 
         const link = document.createElement('a');
         link.setAttribute('target', '_blank');
-
-        console.log('http://' + url + '/var/www/diag/' + filename);
-
-        link.setAttribute('href', 'http://' + url + '/var/www/diag/' + filename);
+        link.setAttribute('href', 'http://' + url + '/diag/' + filename);
         link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
