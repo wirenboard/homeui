@@ -6,10 +6,9 @@ class DiagnosticCtrl {
     $scope.collectDataBtn = $element[0].querySelector('#collectDiag');
     $scope.timePromise;
     $scope.waitingResponse = false;
+    $scope.downloadDataBtn.style.visibility="hidden";
 
     whenMqttReady().then(function () {
-      $scope.downloadDataBtn.style.visibility="hidden";
-
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
           if ($scope.waitingResponse) {
               var path = JSON.parse(msg.payload)["result"];
@@ -40,6 +39,9 @@ class DiagnosticCtrl {
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
         var filename = $scope.downloadDataBtn.value.substring(14)
+
+        console.log(url);
+        console.log(filename);
 
         const link = document.createElement('a');
         link.setAttribute('target', '_blank');
