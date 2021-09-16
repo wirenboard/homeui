@@ -10,6 +10,21 @@ class DiagnosticCtrl {
 
     var timePromise = undefined;
 
+    var fileIsOk =  function httpGet(theUrl){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false );
+        xmlHttp.send( null );
+        return xmlHttp.status < 400;
+    }
+
+    var getUrl =  function getUrl(){
+        var url = window.location.href;
+        url = url.substring(url.indexOf('//') + 2);
+        url = url.substring(0, url.indexOf('/'));
+        return url;
+    }
+
+
     mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
             if (msg.payload == "1") {
                 $scope.ready = true;
@@ -20,11 +35,20 @@ class DiagnosticCtrl {
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
           if ($scope.waitingResponse) {
               var path = JSON.parse(msg.payload)["result"];
-              $scope.downloadDataBtn.disabled = false;
               $scope.downloadDataBtn.value = path;
-              $scope.downloadDataBtn.innerHTML = "Download";
               $scope.waitingResponse = false;
               $timeout.cancel(timePromise);
+
+
+              var url = getUrl();
+              var filename = $scope.downloadDataBtn.value.substring(14)
+
+              if(fileIsOk('http://' + url + '/diag/' + filename)){
+                    $scope.downloadDataBtn.disabled = false;
+                    $scope.downloadDataBtn.innerHTML = "Download";
+              } else {
+                    $scope.downloadDataBtn.innerHTML = "Cannot download file. Copy it from '"  + filename + "'";
+              }
           }
       });
     });
@@ -43,9 +67,7 @@ class DiagnosticCtrl {
     }
 
     $scope.downloadDiag = function() {
-        var url = window.location.href;
-        url = url.substring(url.indexOf('//') + 2);
-        url = url.substring(0, url.indexOf('/'));
+        var url = getUrl();
         var filename = $scope.downloadDataBtn.value.substring(14)
 
         const link = document.createElement('a');
