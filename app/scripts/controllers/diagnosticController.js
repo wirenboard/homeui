@@ -14,6 +14,7 @@ class DiagnosticCtrl {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4)
+            console.log(xmlHttp.status);
             callback(xmlHttp.status);
         }
         xmlHttp.open("GET", theUrl, true);
@@ -25,6 +26,15 @@ class DiagnosticCtrl {
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
         return url;
+    }
+
+    var callbackFileIsOk =  function callbackFileIsOk(status){
+        if (status < 400) {
+            $scope.downloadDataBtn.disabled = false;
+            $scope.downloadDataBtn.innerHTML = "Download";
+        } else {
+            $scope.downloadDataBtn.innerHTML = "Cannot download file. Copy it from '"  + $scope.downloadDataBtn.value + "'";
+        }
     }
 
 
@@ -42,16 +52,10 @@ class DiagnosticCtrl {
               $scope.waitingResponse = false;
               $timeout.cancel(timePromise);
 
-
               var url = getUrl();
-              var filename = $scope.downloadDataBtn.value.substring(14)
+              var filename = $scope.downloadDataBtn.value.substring(14);
 
-              if(fileIsOk('http://' + url + '/diag/' + filename, function(status){return status < 400;})){
-                    $scope.downloadDataBtn.disabled = false;
-                    $scope.downloadDataBtn.innerHTML = "Download";
-              } else {
-                    $scope.downloadDataBtn.innerHTML = "Cannot download file. Copy it from '"  + filename + "'";
-              }
+              fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
           }
       });
     });
