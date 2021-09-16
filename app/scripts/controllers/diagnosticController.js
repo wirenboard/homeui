@@ -4,9 +4,11 @@ class DiagnosticCtrl {
 
     $scope.downloadDataBtn = $element[0].querySelector('#downloadDiag');
     $scope.collectDataBtn = $element[0].querySelector('#collectDiag');
-    $scope.timePromise;
     $scope.waitingResponse = false;
+    $scope.ready = false;
     $scope.downloadDataBtn.style.visibility="hidden";
+
+    timePromise = undefined;
 
     whenMqttReady().then(function () {
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
@@ -16,9 +18,14 @@ class DiagnosticCtrl {
               $scope.downloadDataBtn.value = path;
               $scope.downloadDataBtn.innerHTML = "Download";
               $scope.waitingResponse = false;
-              $timeout.cancel($scope.timePromise);
+              $timeout.cancel(timePromise);
           }
       });
+      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
+            if (msg == "1") {
+                $scope.ready = true;
+            }
+      }
     });
 
     $scope.getData = function() {
@@ -28,7 +35,7 @@ class DiagnosticCtrl {
           $scope.collectDataBtn.disabled=true;
           $scope.downloadDataBtn.innerHTML = "Collecting...";
           $scope.waitingResponse = true;
-          $scope.timePromise = $timeout(function(){
+          timePromise = $timeout(function(){
                         $scope.waitingResponse = false;
                         $scope.downloadDataBtn.innerHTML = "Timeout exceed";
                      }, 10000);
