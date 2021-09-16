@@ -10,6 +10,13 @@ class DiagnosticCtrl {
 
     var timePromise = undefined;
 
+    mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
+            console.log(msg);
+            if (msg == "1") {
+                $scope.ready = true;
+            }
+    });
+
     whenMqttReady().then(function () {
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
           if ($scope.waitingResponse) {
@@ -20,11 +27,6 @@ class DiagnosticCtrl {
               $scope.waitingResponse = false;
               $timeout.cancel(timePromise);
           }
-      });
-      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
-            if (msg == "1") {
-                $scope.ready = true;
-            }
       });
     });
 
