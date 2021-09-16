@@ -14,7 +14,6 @@ class DiagnosticCtrl {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4)
-            console.log(xmlHttp.status);
             callback(xmlHttp.status);
         }
         xmlHttp.open("GET", theUrl, true);
