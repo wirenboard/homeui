@@ -11,8 +11,7 @@ class DiagnosticCtrl {
     var timePromise = undefined;
 
     mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
-            console.log(msg);
-            if (msg == "1") {
+            if (msg.payload == "1") {
                 $scope.ready = true;
             }
     });
