@@ -8,7 +8,7 @@ class DiagnosticCtrl {
     $scope.ready = false;
     $scope.downloadDataBtn.style.visibility="hidden";
 
-    timePromise = undefined;
+    var timePromise = undefined;
 
     whenMqttReady().then(function () {
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
