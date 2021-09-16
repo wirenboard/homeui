@@ -10,11 +10,14 @@ class DiagnosticCtrl {
 
     var timePromise = undefined;
 
-    var fileIsOk = async function httpGet(theUrl){
+    var fileIsOk = function httpGet(theUrl, callback){
         var xmlHttp = new XMLHttpRequest();
-        await xmlHttp.open( "GET", theUrl, false );
-        xmlHttp.send( null );
-        return xmlHttp.status < 400;
+        xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4)
+            callback(xmlHttp.status);
+        }
+        xmlHttp.open("GET", theUrl, true);
+        xmlHttp.send(null);
     }
 
     var getUrl =  function getUrl(){
@@ -43,7 +46,7 @@ class DiagnosticCtrl {
               var url = getUrl();
               var filename = $scope.downloadDataBtn.value.substring(14)
 
-              if(fileIsOk('http://' + url + '/diag/' + filename)){
+              if(fileIsOk('http://' + url + '/diag/' + filename, function(status){return status < 400;})){
                     $scope.downloadDataBtn.disabled = false;
                     $scope.downloadDataBtn.innerHTML = "Download";
               } else {
