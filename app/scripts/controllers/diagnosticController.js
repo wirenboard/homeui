@@ -10,9 +10,9 @@ class DiagnosticCtrl {
 
     var timePromise = undefined;
 
-    var fileIsOk =  function httpGet(theUrl){
+    var fileIsOk = async function httpGet(theUrl){
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl, false );
+        await xmlHttp.open( "GET", theUrl, false );
         xmlHttp.send( null );
         return xmlHttp.status < 400;
     }
