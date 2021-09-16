@@ -40,12 +40,9 @@ class DiagnosticCtrl {
         url = url.substring(0, url.indexOf('/'));
         var filename = $scope.downloadDataBtn.value.substring(14)
 
-        console.log(url);
-        console.log(filename);
-
         const link = document.createElement('a');
         link.setAttribute('target', '_blank');
-        link.setAttribute('href', 'http://' + url + '/' + filename);
+        link.setAttribute('href', 'http://' + url + '/var/www/diag/' + filename);
         link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
