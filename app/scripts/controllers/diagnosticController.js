@@ -25,7 +25,7 @@ class DiagnosticCtrl {
             if (msg == "1") {
                 $scope.ready = true;
             }
-      }
+      });
     });
 
     $scope.getData = function() {
