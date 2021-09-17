@@ -1,6 +1,6 @@
 import template from './cellpicker.html';
 
-function cellPickerDirective(DeviceData) {
+function cellPickerDirective(DeviceData, $locale) {
   'ngInject';
 
   const DEFAULT_PLACEHOLDER = 'Select a control or search for it...';
@@ -23,8 +23,8 @@ function cellPickerDirective(DeviceData) {
 
         var cell = DeviceData.proxy(cellId),
             devName = DeviceData.devices.hasOwnProperty(cell.deviceId) ?
-              DeviceData.devices[cell.deviceId].name : cell.deviceId,
-            fullCellName = devName + ' / ' + cell.name;
+            DeviceData.devices[cell.deviceId].getName($locale.id) : cell.deviceId,
+            fullCellName = devName + ' / ' + cell.getName($locale.id);
 
         if (items.hasOwnProperty(cellId))
           items[cellId].name = fullCellName;
