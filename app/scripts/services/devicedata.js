@@ -23,7 +23,7 @@ class Device {
   //  }
   // }
   setMeta(meta) {
-    this._nameTranslations = JSON.parse(meta).title;
+    this._nameTranslations = JSON.parse(meta).title || {};
   }
 }
 
@@ -476,7 +476,7 @@ function deviceDataService(mqttClient) {
     // }
     setMeta(meta) {
       const m = JSON.parse(meta);
-      this._nameTranslations = m.title;
+      this._nameTranslations = m.title || {};
       this.setExplicitReadOnly(m.readonly);
       this.setType(m.type);
       this.setMin(m.min);
