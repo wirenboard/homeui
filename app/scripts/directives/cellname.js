@@ -1,4 +1,6 @@
 function cellNameDirective($locale) {
+  'ngInject';
+
   return {
     restrict: 'EA',
     scope: {
