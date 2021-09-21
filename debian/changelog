@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.16.0) stable; urgency=medium
+
+  * New editor for poll_interval properties in wb-mqtt-serial.conf
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 21 Sep 2021 16:39:52 +0500
+
 wb-mqtt-homeui (2.15.2) stable; urgency=medium
 
   * Devices page width is adjusted. Horizontal scroll on mobile phones is removed
