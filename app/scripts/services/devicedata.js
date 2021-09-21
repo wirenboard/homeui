@@ -11,6 +11,9 @@ class Device {
     if (this._nameTranslations.hasOwnProperty(lang)) {
       return this._nameTranslations[lang];
     }
+    if (this._nameTranslations.hasOwnProperty("en")) {
+      return this._nameTranslations["en"];
+    }
     return this.name;
   }
 
@@ -488,6 +491,9 @@ function deviceDataService(mqttClient) {
     getName(lang) {
       if (this._nameTranslations.hasOwnProperty(lang)) {
         return this._nameTranslations[lang];
+      }
+      if (this._nameTranslations.hasOwnProperty("en")) {
+        return this._nameTranslations["en"];
       }
       return this.name;
     }

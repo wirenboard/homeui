@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.15.3) stable; urgency=medium
+
+  * Show english name for control if localized is not available 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 21 Sep 2021 18:13:53 +0500
+
 wb-mqtt-homeui (2.15.2) stable; urgency=medium
 
   * Devices page width is adjusted. Horizontal scroll on mobile phones is removed
