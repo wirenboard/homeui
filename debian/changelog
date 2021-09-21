@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.15.2) stable; urgency=medium
+
+  * Devices page width is adjusted. Horizontal scroll on mobile phones is removed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 20 Sep 2021 15:40:45 +0500
+
 wb-mqtt-homeui (2.15.1) stable; urgency=medium
 
   * Control names displaying is fixed
