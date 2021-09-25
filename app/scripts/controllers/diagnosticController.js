@@ -1,5 +1,5 @@
 class DiagnosticCtrl {
-  constructor($scope, $timeout, $element, mqttClient, whenMqttReady) {
+  constructor($scope, $timeout, $element, DiagnosticProxy, MqttRpc, whenMqttReady) {
     'ngInject';
 
     $scope.downloadDataBtn = $element[0].querySelector('#downloadDiag');
@@ -11,37 +11,46 @@ class DiagnosticCtrl {
     var timePromise = undefined;
 
     var fileIsOk = function httpGet(theUrl, callback){
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4)
-            callback(xmlHttp.status);
+        fetch(theUrl)
+          .then(
+            function(response) {
+                callback(response);
+            }
+          )
+          .catch(function(err) {
+            console.log('Fetch Error :-S', err);
+          });
+    };
+
+    var callbackFileIsOk =  function callbackFileIsOk(status){
+        if (status < 400) {
+            $scope.downloadDataBtn.disabled = false;
+            $scope.downloadDataBtn.innerHTML = "Скачать";
+        } else {
+            $scope.downloadDataBtn.innerHTML = "Невозможно скачать файл. Скопируйте его с контроллера по адресу '"  + $scope.downloadDataBtn.value + "'";
         }
-        xmlHttp.open("GET", theUrl, true);
-        xmlHttp.send(null);
-    }
+    };
 
     var getUrl =  function getUrl(){
         var url = window.location.href;
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
         return url;
-    }
+    };
 
-    var callbackFileIsOk =  function callbackFileIsOk(status){
-        if (status < 400) {
-            $scope.downloadDataBtn.disabled = false;
-            $scope.downloadDataBtn.innerHTML = "Download";
-        } else {
-            $scope.downloadDataBtn.innerHTML = "Cannot download file. Copy it from '"  + $scope.downloadDataBtn.value + "'";
-        }
-    }
-
-
-    mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
-            if (msg.payload == "1") {
+    whenMqttReady().then( ()=>
+        DiagnosticProxy.diag()
+    ).then(payload => {
+        if (payload == "1"){
                 $scope.ready = true;
             }
-    });
+    }).catch(errors.catch("Ошибка"));
+
+//    mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
+//            if (msg.payload == "1") {
+//                $scope.ready = true;
+//            }
+//    });
 
     whenMqttReady().then(function () {
       mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
@@ -59,6 +68,14 @@ class DiagnosticCtrl {
       });
     });
 
+//    $scope.diag = function() {
+//        DiagnosticProxy.diag({ id: mqttClient.getID() })
+//            .then(function(r) {
+//
+//            })
+//            .catch(errors.catch("Ошибка"));
+//    };
+
     $scope.getData = function() {
           mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.getID(),
            '{"id":  "'+  mqttClient.getID() + '"}', false, 1);
@@ -68,9 +85,9 @@ class DiagnosticCtrl {
           $scope.waitingResponse = true;
           timePromise = $timeout(function(){
                         $scope.waitingResponse = false;
-                        $scope.downloadDataBtn.innerHTML = "Timeout exceed";
+                        $scope.downloadDataBtn.innerHTML = "Время ожидания вышло";
                      }, 10000);
-    }
+    };
 
     $scope.downloadDiag = function() {
         var url = getUrl();
@@ -83,7 +100,9 @@ class DiagnosticCtrl {
         document.body.appendChild(link);
         link.click();
         link.remove();
-    }
+    };
+
+
   }
 }
 
