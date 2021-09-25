@@ -45,6 +45,7 @@ import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
 import rolesFactory from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
+import diagnosticProxyService from './services/diagnosticProxy';
 
 import handleDataService from './services/handle-data';
 
@@ -149,6 +150,7 @@ module
     .value('forceBeforeUnloadConfirmationForTests', false)
     .factory('PageState', pageStateService)
     .factory('DeviceData', deviceDataService)
+    .factory('DiagnosticProxy', diagnosticProxyService)
 
 
     .service('handleData', handleDataService)
