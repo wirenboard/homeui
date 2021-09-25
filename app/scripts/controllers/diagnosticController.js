@@ -44,7 +44,7 @@ class DiagnosticCtrl {
         if (payload == "1"){
                 $scope.ready = true;
             }
-    }).catch(errors.catch("Ошибка"));
+    });
 
 //    mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
 //            if (msg.payload == "1") {
