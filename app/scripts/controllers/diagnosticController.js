@@ -38,9 +38,11 @@ class DiagnosticCtrl {
         return url;
     };
 
+    //todo: понять чо происходит
     whenMqttReady().then( ()=>
         DiagnosticProxy.diag()
     ).then(payload => {
+        console.log(payload); // это не впушено
         if (payload == "1"){
                 $scope.ready = true;
             }
