@@ -4,11 +4,9 @@ class DiagnosticCtrl {
 
     $scope.downloadDataBtn = $element[0].querySelector('#downloadDiag');
     $scope.collectDataBtn = $element[0].querySelector('#collectDiag');
-    $scope.waitingResponse = false;
     $scope.ready = false;
     $scope.downloadDataBtn.style.visibility="hidden";
 
-    var timePromise = undefined;
 
     var fileIsOk = function httpGet(theUrl, callback){
         fetch(theUrl)
@@ -39,59 +37,60 @@ class DiagnosticCtrl {
     };
 
     whenMqttReady().then( function() {
-        console.log("check1");
-        return DiagnosticProxy.status(); // { path: "" }
+        return DiagnosticProxy.status();
     }
     ).then(function(payload) {
-        console.log("check2");
-        console.log(payload);
         if (payload == "1"){
                 $scope.ready = true;
             }
     });
 
-//    mqttClient.addStickySubscription("/rpc/v1/diag/main/diag", function(msg) {
-//            if (msg.payload == "1") {
-//                $scope.ready = true;
-//            }
+//    whenMqttReady().then(function () {
+//      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
+//          if ($scope.waitingResponse) {
+//              var path = JSON.parse(msg.payload)["result"];
+//              $scope.downloadDataBtn.value = path;
+//              $scope.waitingResponse = false;
+//              $timeout.cancel(timePromise);
+//
+//              var url = getUrl();
+//              var filename = $scope.downloadDataBtn.value.substring(14);
+//
+//              fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
+//          }
+//      });
 //    });
 
-    whenMqttReady().then(function () {
-      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
-          if ($scope.waitingResponse) {
+    $scope.diag = function() {
+        scope.downloadDataBtn.style.visibility="visible";
+        $scope.collectDataBtn.disabled=true;
+        $scope.downloadDataBtn.innerHTML = "Collecting...";
+        $scope.waitingResponse = true;
+        DiagnosticProxy.diag()
+            .then( path => {
               var path = JSON.parse(msg.payload)["result"];
               $scope.downloadDataBtn.value = path;
-              $scope.waitingResponse = false;
-              $timeout.cancel(timePromise);
-
               var url = getUrl();
               var filename = $scope.downloadDataBtn.value.substring(14);
-
               fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
-          }
-      });
-    });
-
-//    $scope.diag = function() {
-//        DiagnosticProxy.diag({ id: mqttClient.getID() })
-//            .then(function(r) {
-//
-//            })
-//            .catch(errors.catch("Ошибка"));
-//    };
-
-    $scope.getData = function() {
-          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.getID(),
-           '{"id":  "'+  mqttClient.getID() + '"}', false, 1);
-          $scope.downloadDataBtn.style.visibility="visible";
-          $scope.collectDataBtn.disabled=true;
-          $scope.downloadDataBtn.innerHTML = "Collecting...";
-          $scope.waitingResponse = true;
-          timePromise = $timeout(function(){
-                        $scope.waitingResponse = false;
-                        $scope.downloadDataBtn.innerHTML = "Время ожидания вышло";
-                     }, 10000);
+            }, err=> {
+              $scope.waitingResponse = false;
+              $scope.downloadDataBtn.innerHTML = "Время ожидания вышло";
+            })
     };
+
+//    $scope.getData = function() {
+//          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.getID(),
+//           '{"id":  "'+  mqttClient.getID() + '"}', false, 1);
+//          $scope.downloadDataBtn.style.visibility="visible";
+//          $scope.collectDataBtn.disabled=true;
+//          $scope.downloadDataBtn.innerHTML = "Collecting...";
+//          $scope.waitingResponse = true;
+//          timePromise = $timeout(function(){
+//                        $scope.waitingResponse = false;
+//                        $scope.downloadDataBtn.innerHTML = "Время ожидания вышло";
+//                     }, 10000);
+//    };
 
     $scope.downloadDiag = function() {
         var url = getUrl();
