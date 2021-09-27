@@ -34,27 +34,27 @@
         </span>
 
         <button type="button" class="btn btn-success btn-lg"
-                 ng-click="diag()" ng-show="ready && !(waitingResponse || archiveReady || error)">
+                 ng-click="diag()" ng-show="ready && !(waitingResponse || archiveReady || timeout)">
             Собрать данные для диагностики
         </button>
 
         <button type="button" disabled class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="waitingResponse">
+                 ng-click="downloadDiag()" ng-show="waitingResponse && !timeout">
             Данные собираются...
         </button>
 
         <button type="button"  class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="archiveReady && canDownload">
+                 ng-click="downloadDiag()" ng-show="archiveReady && canDownload && !timeout">
             Скачать
         </button>
 
         <button type="button" disabled class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="archiveReady && !canDownload">
+                 ng-click="downloadDiag()" ng-show="archiveReady && !canDownload && !timeout">
             Невозможно скачать файл. Скопируйте его с контроллера по пути {{ path }}
         </button>
 
         <button type="button" disabled class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="error">
+                 ng-click="downloadDiag()" ng-show="timeout">
             Время ожидания вышло
         </button>
     </div>
