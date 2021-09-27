@@ -38,9 +38,9 @@ class DiagnosticCtrl {
         return url;
     };
 
-    whenMqttReady().then( ()=>{
+    whenMqttReady().then( function() {
         console.log("check1");
-        return DiagnosticProxy.diag();
+        return DiagnosticProxy.diag(); // { path: "" }
     }
     ).then(function(payload) {
         console.log("check2");
