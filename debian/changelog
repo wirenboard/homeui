@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.16.1) stable; urgency=medium
+
+  * Displaying of tooltip after widget's cell data copying to clipboard is fixed 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 22:17:05 +0500
+
 wb-mqtt-homeui (2.16.0) stable; urgency=medium
 
   * New editor for poll_interval properties in wb-mqtt-serial.conf

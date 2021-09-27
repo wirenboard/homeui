@@ -6,7 +6,7 @@
                override="displayCellCtrl.overrideName()"
                ng-click="displayCellCtrl.copy(cell.id)"
                tooltip-popup-close-delay="500"
-               uib-tooltip="'{{ cell.id }}' copied to clipboard"
+               uib-tooltip="'{{ cell.id }}' {{ 'widgets.labels.copy' | translate}}"
                tooltip-trigger="{
                  'outsideClick': 'mouseleave',
                  'focus': 'mouseleave'
