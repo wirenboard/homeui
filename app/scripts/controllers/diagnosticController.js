@@ -62,7 +62,7 @@ class DiagnosticCtrl {
 //    });
 
     $scope.diag = function() {
-        scope.downloadDataBtn.style.visibility="visible";
+        $scope.downloadDataBtn.style.visibility="visible";
         $scope.collectDataBtn.disabled=true;
         $scope.downloadDataBtn.innerHTML = "Collecting...";
         $scope.waitingResponse = true;
