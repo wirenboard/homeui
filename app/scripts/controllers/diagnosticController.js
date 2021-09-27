@@ -6,7 +6,7 @@ class DiagnosticCtrl {
     $scope.archiveReady = false;
     $scope.canDownload = false;
     $scope.waitingResponse = false;
-    scope.timeout = false;
+    $scope.timeout = false;
 
     $scope.path = undefined;
 
@@ -15,7 +15,8 @@ class DiagnosticCtrl {
         fetch(theUrl)
           .then(
             function(response) {
-                callback(response.status);
+//                callback(response.status);
+                callback(400);
             }
           )
           .catch(function(err) {
