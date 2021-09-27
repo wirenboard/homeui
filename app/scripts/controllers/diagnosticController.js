@@ -40,12 +40,11 @@ class DiagnosticCtrl {
 
     whenMqttReady().then( function() {
         console.log("check1");
-        return DiagnosticProxy.diag(); // { path: "" }
+        return DiagnosticProxy.status(); // { path: "" }
     }
     ).then(function(payload) {
         console.log("check2");
         console.log(payload);
-        console.log(payload.payload);
         if (payload == "1"){
                 $scope.ready = true;
             }
