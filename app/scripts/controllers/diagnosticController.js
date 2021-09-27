@@ -42,7 +42,7 @@ class DiagnosticCtrl {
         console.log("check1");
         return DiagnosticProxy.diag();
     }
-    ).then(payload => {
+    ).then(function(payload) {
         console.log("check2");
         console.log(payload);
         console.log(payload.payload);
