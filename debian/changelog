@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.16.0) stable; urgency=medium
+
+  * New editor for poll_interval properties in wb-mqtt-serial.conf
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 10:23:31 +0500
+
 wb-mqtt-homeui (2.15.3) stable; urgency=medium
 
   * Show english name for control if localized is not available 
