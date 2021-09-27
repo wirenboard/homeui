@@ -32,10 +32,30 @@
         <span ng-show="!ready" class="label label-warning">
           Сервис диагностики недоступен
         </span>
-        <button id="collectDiag" type="button" class="btn btn-success btn-lg"
-                 ng-click="diag()" ng-show="ready">Собрать данные для диагностики</button>
 
-        <button id="downloadDiag" type="button" disabled class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()">Нет данных</button>
+        <button type="button" class="btn btn-success btn-lg"
+                 ng-click="diag()" ng-show="ready && !(waitingResponse || archiveReady || error)">
+            Собрать данные для диагностики
+        </button>
+
+        <button type="button" disabled class="btn btn-success btn-lg"
+                 ng-click="downloadDiag()" ng-show="waitingResponse">
+            Данные собираются...
+        </button>
+
+        <button type="button"  class="btn btn-success btn-lg"
+                 ng-click="downloadDiag()" ng-show="archiveReady && canDownload">
+            Скачать
+        </button>
+
+        <button type="button" disabled class="btn btn-success btn-lg"
+                 ng-click="downloadDiag()" ng-show="archiveReady && !canDownload">
+            Невозможно скачать файл. Скопируйте его с контроллера по пути {{ path }}
+        </button>
+
+        <button type="button" disabled class="btn btn-success btn-lg"
+                 ng-click="downloadDiag()" ng-show="error">
+            Время ожидания вышло
+        </button>
     </div>
 </div>
