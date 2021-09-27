@@ -15,8 +15,7 @@ class DiagnosticCtrl {
         fetch(theUrl)
           .then(
             function(response) {
-            callback(400);
-//                callback(response.status);
+                callback(response.status);
             }
           )
           .catch(function(err) {
