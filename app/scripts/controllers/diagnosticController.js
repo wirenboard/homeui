@@ -6,13 +6,14 @@ class DiagnosticCtrl {
     $scope.collectDataBtn = $element[0].querySelector('#collectDiag');
     $scope.ready = false;
     $scope.downloadDataBtn.style.visibility="hidden";
+    $scope.path = undefined;
 
 
     var fileIsOk = function httpGet(theUrl, callback){
         fetch(theUrl)
           .then(
             function(response) {
-                callback(response);
+                callback(response, path);
             }
           )
           .catch(function(err) {
@@ -25,7 +26,7 @@ class DiagnosticCtrl {
             $scope.downloadDataBtn.disabled = false;
             $scope.downloadDataBtn.innerHTML = "Скачать";
         } else {
-            $scope.downloadDataBtn.innerHTML = "Невозможно скачать файл. Скопируйте его с контроллера по адресу '"  + $scope.downloadDataBtn.value + "'";
+            $scope.downloadDataBtn.innerHTML = "Невозможно скачать файл. Скопируйте его с контроллера по адресу '"  + $scope.path  + "'";
         }
     };
 
@@ -64,17 +65,15 @@ class DiagnosticCtrl {
     $scope.diag = function() {
         $scope.downloadDataBtn.style.visibility="visible";
         $scope.collectDataBtn.disabled=true;
-        $scope.downloadDataBtn.innerHTML = "Collecting...";
+        $scope.downloadDataBtn.innerHTML = "Данные собираются...";
         $scope.waitingResponse = true;
         DiagnosticProxy.diag()
             .then( path => {
-              var path = JSON.parse(msg.payload)["result"];
-              $scope.downloadDataBtn.value = path;
+              $scope.path = path;
               var url = getUrl();
-              var filename = $scope.downloadDataBtn.value.substring(14);
+              var filename = path.substring(14);
               fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
             }, err=> {
-              $scope.waitingResponse = false;
               $scope.downloadDataBtn.innerHTML = "Время ожидания вышло";
             })
     };
@@ -94,7 +93,7 @@ class DiagnosticCtrl {
 
     $scope.downloadDiag = function() {
         var url = getUrl();
-        var filename = $scope.downloadDataBtn.value.substring(14)
+        var filename = $scope.path.substring(14)
 
         const link = document.createElement('a');
         link.setAttribute('target', '_blank');
