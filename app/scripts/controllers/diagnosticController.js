@@ -2,10 +2,12 @@ class DiagnosticCtrl {
   constructor($scope, $timeout, $element, DiagnosticProxy, MqttRpc, whenMqttReady) {
     'ngInject';
 
-    $scope.downloadDataBtn = $element[0].querySelector('#downloadDiag');
-    $scope.collectDataBtn = $element[0].querySelector('#collectDiag');
     $scope.ready = false;
-    $scope.downloadDataBtn.style.visibility="hidden";
+    $scope.archiveReady = false;
+    $scope.canDownload = false;
+    $scope.waitingResponse = false;
+    scope.timeout = false;
+
     $scope.path = undefined;
 
 
@@ -13,7 +15,8 @@ class DiagnosticCtrl {
         fetch(theUrl)
           .then(
             function(response) {
-                callback(response.status);
+            callback(400);
+//                callback(response.status);
             }
           )
           .catch(function(err) {
@@ -23,10 +26,7 @@ class DiagnosticCtrl {
 
     var callbackFileIsOk =  function callbackFileIsOk(status){
         if (status < 400) {
-            $scope.downloadDataBtn.disabled = false;
-            $scope.downloadDataBtn.innerHTML = "Скачать";
-        } else {
-            $scope.downloadDataBtn.innerHTML = "Невозможно скачать файл. Скопируйте его с контроллера по адресу '"  + $scope.path  + "'";
+            $scope.canDownload = true;
         }
     };
 
@@ -46,50 +46,21 @@ class DiagnosticCtrl {
             }
     });
 
-//    whenMqttReady().then(function () {
-//      mqttClient.addStickySubscription("/rpc/v1/diag/main/diag/" + mqttClient.getID() + "/+", function(msg) {
-//          if ($scope.waitingResponse) {
-//              var path = JSON.parse(msg.payload)["result"];
-//              $scope.downloadDataBtn.value = path;
-//              $scope.waitingResponse = false;
-//              $timeout.cancel(timePromise);
-//
-//              var url = getUrl();
-//              var filename = $scope.downloadDataBtn.value.substring(14);
-//
-//              fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
-//          }
-//      });
-//    });
-
     $scope.diag = function() {
-        $scope.downloadDataBtn.style.visibility="visible";
-        $scope.collectDataBtn.disabled=true;
-        $scope.downloadDataBtn.innerHTML = "Данные собираются...";
         $scope.waitingResponse = true;
         DiagnosticProxy.diag()
             .then( path => {
               $scope.path = path;
               var url = getUrl();
               var filename = path.substring(14);
+              $scope.archiveReady = true;
+              $scope.waitingResponse = false;
               fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
             }, err=> {
-              $scope.downloadDataBtn.innerHTML = "Время ожидания вышло";
+              $scope.waitingResponse = false;
+              $scope.timeout = true;
             })
     };
-
-//    $scope.getData = function() {
-//          mqttClient.send("/rpc/v1/diag/main/diag/"  + mqttClient.getID(),
-//           '{"id":  "'+  mqttClient.getID() + '"}', false, 1);
-//          $scope.downloadDataBtn.style.visibility="visible";
-//          $scope.collectDataBtn.disabled=true;
-//          $scope.downloadDataBtn.innerHTML = "Collecting...";
-//          $scope.waitingResponse = true;
-//          timePromise = $timeout(function(){
-//                        $scope.waitingResponse = false;
-//                        $scope.downloadDataBtn.innerHTML = "Время ожидания вышло";
-//                     }, 10000);
-//    };
 
     $scope.downloadDiag = function() {
         var url = getUrl();
