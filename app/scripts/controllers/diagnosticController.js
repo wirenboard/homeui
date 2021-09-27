@@ -13,7 +13,7 @@ class DiagnosticCtrl {
         fetch(theUrl)
           .then(
             function(response) {
-                callback(response, path);
+                callback(response);
             }
           )
           .catch(function(err) {
