@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.16.1) stable; urgency=medium
+
+  * RPC methods availability check is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 16:48:01 +0500
+
 wb-mqtt-homeui (2.16.0) stable; urgency=medium
 
   * New editor for poll_interval properties in wb-mqtt-serial.conf

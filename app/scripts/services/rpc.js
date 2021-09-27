@@ -4,11 +4,12 @@ import mqttServiceModule from './mqttService';
 const mqttRpcServiceModule = angular
   .module('homeuiApp.MqttRpc', [mqttServiceModule])
   .value("mqttRpcTimeout", 60000)
+  .value("mqttRpcMethodAvailableTimeout", 3000)
   .factory("MqttRpc", mqttRpc)
   .name;
 
 //-----------------------------------------------------------------------------
-function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
+function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, mqttRpcMethodAvailableTimeout, Spinner) {
   'ngInject';
 
   var disconnectedError = {
@@ -24,7 +25,8 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
   var nextId = 1,
       inflight = {},
       watchStopper = null,
-      subs = Object.create(null);
+      subs = Object.create(null),
+      methods = {};
 
 //.............................................................................
   function invokeResponseHandler (id, topic, reply) {
@@ -43,6 +45,13 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
         error: disconnectedError
       });
     });
+    Object.keys(methods).forEach(method => {
+      if (methods[method].timeout) {
+        mqttClient.cancel(methods[method].timeout);
+      }
+      methods[method].defered.reject(disconnectedError);
+    });
+    methods = {};
     if (Object.keys(inflight).length)
       throw new Error("Proxy._handleDisconnection(): pending requests remained");
     maybeStopWatching();
@@ -148,6 +157,37 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
         };
       });
     }
+
+//.............................................................................
+    _hasMethod (method) {
+      var topic = this._prefix + method
+      if (!subs[topic]) {
+        subs[topic] = true;
+        mqttClient.addStickySubscription(topic, () => {
+          if (methods[method].timeout) {
+            mqttClient.cancel(methods[method].timeout);
+          }
+          methods[method].available = true;
+          methods[method].defered.resolve(true);
+        });
+      }
+      maybeStartWatching();
+      if (methods[method] === undefined) {
+        methods[method] = {};
+        var defered = $q.defer();
+        methods[method].defered = defered;
+        if (methods[method].available !== undefined) {
+          defered.resolve(methods[method].available);
+          return defered.promise;
+        }
+        methods[method].timeout = mqttClient.timeout(() => {
+            methods[method].available = false;
+            defered.resolve(false);
+          },
+          mqttRpcMethodAvailableTimeout);
+      }
+      return methods[method].defered.promise;
+    }
   }
 
 //-----------------------------------------------------------------------------
@@ -157,6 +197,7 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
           outer = Object.create(proxy);
       methods.forEach(method => {
         outer[method] = proxy._call.bind(proxy, method);
+        outer['has' + method] = proxy._hasMethod.bind(proxy, method);
       });
       return outer;
     }
@@ -165,4 +206,3 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, Spinner) {
 
 //-----------------------------------------------------------------------------
 export default mqttRpcServiceModule;
-
