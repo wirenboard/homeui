@@ -1,6 +1,6 @@
 function diagnosticProxyService(MqttRpc) {
   'ngInject';
-  return MqttRpc.getProxy("diag/main/", [
+  return MqttRpc.getProxy("diag/main", [
     "diag",
   ], "diagnosticProxy");
 }
