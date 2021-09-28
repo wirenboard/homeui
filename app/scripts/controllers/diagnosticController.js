@@ -13,15 +13,12 @@ class DiagnosticCtrl {
 
 
     var fileIsOk = function httpGet(theUrl, callback){
-        fetch(theUrl)
+        fetch(theUrl, {method: 'HEAD'})
           .then(
             function(response) {
                 callback(response.status);
             }
-          )
-          .catch(function(err) {
-            console.log('Fetch Error :-S', err);
-          });
+          );
     };
 
     var callbackFileIsOk =  function callbackFileIsOk(status){
