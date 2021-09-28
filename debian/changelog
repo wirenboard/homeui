@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.17.0) stable; urgency=medium
+
+  * Support for translations in JSON Schema templated parameters is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 28 Sep 2021 18:09:36 +0500
+
 wb-mqtt-homeui (2.16.2) stable; urgency=medium
 
   * RPC methods availability check is added
