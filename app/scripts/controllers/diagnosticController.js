@@ -62,7 +62,7 @@ class DiagnosticCtrl {
 
     $scope.downloadDiag = function() {
         var filename = $scope.path.substring(14);
-        window.location.href = 'diag/' + filename);
+        window.location.href = 'diag/' + filename;
     };
 
 
