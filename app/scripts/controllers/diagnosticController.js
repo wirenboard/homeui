@@ -5,7 +5,6 @@ class DiagnosticCtrl {
     $scope.btnVisible = false;
     $scope.btnEnabled = true;
     $scope.text = "";
-    $scope.btnMethod = $scope.diag;
 
     $scope.path = undefined;
 
@@ -29,7 +28,7 @@ class DiagnosticCtrl {
         if (status < 400) {
             $scope.btnEnabled = true;
             changeBtnText('collector.states.collecting');
-            $scope.btnMethod = $scope.downloadDiag;
+            $scope.btnMethod = downloadDiag;
         }
         else {
             $translate(['collector.errors.unavailableToDownload'])
@@ -56,7 +55,7 @@ class DiagnosticCtrl {
             }
     });
 
-    $scope.diag = function() {
+    var diag = function() {
         $scope.btnEnabled = false;
         changeBtnText('collector.states.collecting');
         DiagnosticProxy.diag()
@@ -70,10 +69,12 @@ class DiagnosticCtrl {
             })
     };
 
-    $scope.downloadDiag = function() {
+    var downloadDiag = function() {
         var filename = $scope.path.substring(14);
         window.location.href = 'diag/' + filename;
     };
+
+    $scope.btnMethod = diag;
   }
 }
 
