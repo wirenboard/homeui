@@ -17,7 +17,8 @@
             "warning": "Сhanges affect other dashboards",
             "invert": "Invert",
             "find": "Find controls of type",
-            "add": "Add control..."
+            "add": "Add control...",
+            "copy": "copied to clipboard"
         },
         "errors": {
             "nothing": "No widgets are currently defined",
