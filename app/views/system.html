@@ -37,29 +37,9 @@
         <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
     </div>
 
-        <button type="button" class="btn btn-success btn-lg"
-                 ng-click="diag()" ng-show="ready && !(waitingResponse || archiveReady || timeout)" translate>
-            {{'collector.buttons.collect'}}
-        </button>
-
-        <button type="button" disabled class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="waitingResponse && !timeout" translate>
-            {{'collector.states.collecting'}}
-        </button>
-
-        <button type="button"  class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="archiveReady && canDownload && !timeout" translate>
-            {{'collector.buttons.download'}}
-        </button>
-
-        <button type="button" disabled class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="archiveReady && !canDownload && !timeout" translate>
-            {{'collector.errors.unavailableToDownload'}} {{ path }}
-        </button>
-
-        <button type="button" disabled class="btn btn-success btn-lg"
-                 ng-click="downloadDiag()" ng-show="timeout" translate>
-            {{'collector.errors.timeout'}}
-        </button>
+    <button type="button"  class="btn btn-success btn-lg"
+            ng-click="downloadDiag()" ng-disabled="!btnEnabled" ng-show="btnVisible" translate>
+        {{ text }}
+    </button>
     </div>
 </div>
