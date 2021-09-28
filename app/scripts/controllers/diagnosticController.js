@@ -61,16 +61,8 @@ class DiagnosticCtrl {
     };
 
     $scope.downloadDiag = function() {
-        var url = getUrl();
-        var filename = $scope.path.substring(14)
-
-        const link = document.createElement('a');
-        link.setAttribute('target', '_blank');
-        link.setAttribute('href', 'http://' + url + '/diag/' + filename);
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        var filename = $scope.path.substring(14);
+        window.location.href = '/diag/' + filename);
     };
 
 
