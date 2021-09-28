@@ -7,14 +7,15 @@
             "load": "Bus load",
             "percent": "last minute",
             "percent15": "last 15 minutes",
-            "interval": "Requests interval",
+            "interval": "Requests interval during last minute",
             "interval50": "50% less than",
             "interval95": "95% less than",
             "idle": "Idle",
-            "ms": "ms"
+            "ms": "ms",
+            "unavailable": "wb-mqtt-serial metrics service is unavailable"
         },
         "buttons": {
-            "load": "Load"
+            "reload": "Reload"
         },
         "errors": {
             "load": "Error getting metrics"

@@ -32,7 +32,8 @@
             "system": "System",
             "channels": "MQTT Channels",
             "access": "Change access level",
-            "logs": "Logs"
+            "logs": "Logs",
+            "serial-metrics": "wb-mqtt-serial metrics"
         },
         "access": {
             "title": "Access level:"
