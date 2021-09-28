@@ -32,7 +32,7 @@ class DiagnosticCtrl {
         else {
             $translate(['collector.errors.unavailableToDownload'])
             .then(translations => {
-                $scope.text = translations['collector.errors.unavailableToDownload'] + ' ' + path;
+                $scope.text = translations['collector.errors.unavailableToDownload'] + ' ' + $scope.path;
             });
         };
     };
