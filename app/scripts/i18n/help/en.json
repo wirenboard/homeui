@@ -1,0 +1,9 @@
+{
+    "help": {
+        "title": "Help",
+        "list": {
+            "forum": "Technical support",
+            "docs": "Documentation"
+        }
+    }
+}

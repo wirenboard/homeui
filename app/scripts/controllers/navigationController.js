@@ -1,5 +1,5 @@
 class NavigationCtrl {
-  constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig, rolesFactory) {
+  constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig, rolesFactory, $translate, tmhDynamicLocale) {
     'ngInject';
 
     $scope.roles = rolesFactory;

@@ -1,8 +1,7 @@
 class WidgetsCtrl {
-  constructor($scope, $state, uiConfig, DeviceData, handleData, rolesFactory, historyUrlService) {
+  constructor($scope, $state, uiConfig, DeviceData, handleData, rolesFactory, historyUrlService, $locale) {
     'ngInject';
 
-    
     this.handleData = handleData;
     this.cell = id => {
       return DeviceData.proxy(id);
@@ -15,13 +14,14 @@ class WidgetsCtrl {
         extra: entry.extra,
         device: splittedId[0],
         control: splittedId[1],
-        get name() {
-          return (entry.hasOwnProperty("name") && entry.name) || proxy.name;
+        getName(lang) {
+          return (entry.hasOwnProperty("name") && entry.name) || proxy.getName(lang);
         },
         proxy: proxy
       };
     }
     
+    $scope.$locale = $locale;
     $scope.roles = rolesFactory;
     $scope.rows = [];
     $scope.goToHistory = (cell) => {
@@ -56,7 +56,6 @@ class WidgetsCtrl {
             dashboard.widgets.push(widget.id);
           },
           deleteWidget: () => {
-            if (confirm("Really delete the widget?"))
               uiConfig.deleteWidget(widget);
           }
         };

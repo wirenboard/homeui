@@ -8,22 +8,24 @@
       oncancel="ctrl.cancel()">
   <div class="panel-heading">
     <span editable-text="ctrl.source.name"
-          onbeforesave="ctrl.checkNonEmpty($data, 'Empty widget name is not allowed')"
+          onbeforesave="ctrl.checkNonEmpty($data)"
           class="widget-name">{{ ctrl.source.name }}</span>
     <span ng-show="!widgetForm.$visible"
           user-role="mto" current-role="ctrl.roles.current.role"
           ng-click="widgetForm.$show()"
-          title="Edit widget"
+          title="{{'widgets.buttons.edit' | translate}}"
           class="widget-button widget-button-edit"><i class="glyphicon glyphicon-edit white widget-caption-button"></i></span>
     <span ng-if="ctrl.canDelete()"
           user-role="mto" current-role="ctrl.roles.current.role"
-          ng-click="ctrl.onDelete()"
-          title="Delete widget"
+          ng-confirm="{{'widgets.prompt.delete' | translate}}"
+          confirmed-click="ctrl.onDelete()"
+          title="{{'widgets.buttons.delete' | translate}}"
           class="widget-button widget-button-delete"><i class="glyphicon glyphicon-trash white widget-caption-button"></i></span>
     <span ng-if="ctrl.canRemove()"
           user-role="mto" current-role="ctrl.roles.current.role"
-          ng-click="ctrl.onRemove()"
-          title="Remove from this dashboard"
+          ng-confirm="{{'widgets.prompt.remove' | translate}}"
+          confirmed-click="ctrl.onRemove()"
+          title="{{'widgets.buttons.remove' | translate}}"
           class="widget-button widget-button-remove"><i class="glyphicon glyphicon-remove white widget-caption-button"></i></span>
   </div>
   <div class="panel-body">
@@ -31,20 +33,20 @@
                   ng-repeat="item in ctrl.source.cells"
                   compact="ctrl.source.compact" cell="item" override-name="item.name"></display-cell>
     <div ng-if="widgetForm.$visible && !ctrl.editJsonMode">
+      <div class="text-danger" popover-trigger="'mouseenter'" ng-if="ctrl.multipleDashboards"
+            uib-popover="{{'widgets.labels.warning-popup' | translate}}" translate>
+          {{'widgets.labels.warning'}}
+    </div>
       <label>
-      <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
-      Compact mode
-    </label>
-      <span class="pull-right text-danger" popover-trigger="'mouseenter'" ng-if="ctrl.multipleDashboards"
-            uib-popover="You added this widget to several dashboards, so when applying changes, they will be applied on each.">
-        Сhanges affect other dashboards
-      </span>
+        <input name="compact" type="checkbox" ng-model="ctrl.source.compact">
+        {{'widgets.labels.compact' | translate}}
+      </label>
       <table class="table cells-list" ng-if="ctrl.source.cells.length > 0">
       <thead>
         <tr>
-          <th>Actions</th>
-          <th>Name</th>
-          <th>Type</th>
+          <th title="{{'widgets.labels.invert' | translate}}"><i class="glyphicon glyphicon-retweet"></i></th>
+          <th translate>{{'widgets.labels.name'}}</th>
+          <th translate>{{'widgets.labels.type'}}</th>
           <th></th>
         </tr>
       </thead>
@@ -53,7 +55,6 @@
           <td scope="row" class="cell-actions">
             <label ng-if="ctrl.cellTypeFromId(cell.id) == 'switch'">
               <input type="checkbox" ng-model="cell.extra.invert">
-              <span class="action-name"> Invert </span>
             </label>
           </td>
           <td class="cell-name"><span editable-text="cell.name">{{ cell.name }}</span></td>
@@ -67,28 +68,28 @@
     </table>
       <div class="add-cell">
       <label>
-        Find controls of type
+        {{'widgets.labels.find' | translate}}
         <select name="type-filter" ng-options="name for name in ctrl.cellTypesUsed track by name"
                 ng-model="ctrl.cellType" class="form-control"></select>
       </label>
-      <cell-picker placeholder="Add control..."
+      <cell-picker placeholder="{{'widgets.labels.add' | translate}}"
                    ng-model="ctrl.newCellId" filter-by-type="ctrl.cellTypeFilter()"></cell-picker>
     </div>
       <div class="widget-description"
-         placeholder="Widget description"
+         placeholder="{{'widgets.labels.description' | translate}}"
          editable-elastic-textarea="ctrl.source.description">{{ ctrl.source.description }}</div>
       <div class="btn-form">
-      <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length">Save</button>
-      <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default">Cancel</button>
-      <button name="cancel" type="button" ng-click="ctrl.enableEditJsonMode()" class="btn btn-default pull-right">Edit as JSON</button>
+      <button type="submit" class="btn btn-primary" ng-disabled="!ctrl.source.cells.length" translate>{{'widgets.buttons.save'}}</button>
+      <button name="cancel" type="button" ng-click="widgetForm.$cancel()" class="btn btn-default" translate>{{'widgets.buttons.cancel'}}</button>
+      <button name="cancel" type="button" ng-click="ctrl.enableEditJsonMode()" class="btn btn-default pull-right glyphicon glyphicon-edit" title="{{'widgets.buttons.edit-json' | translate}}"></button>
     </div>
     </div>
     <div ng-if="ctrl.editJsonMode">
       <textarea class="widget-json-settings" ng-model="ctrl.jsonSource">{{ ctrl.jsonSource }}</textarea>
       <div class="btn-form">
-        <button name="submit" type="submit" ng-click="ctrl.updateSourceFromJson(true) || widgetForm.$hide()" class="btn btn-primary" ng-disabled="!ctrl.jsonSource.length">Save</button>
-        <button name="cancel" type="button" ng-click="widgetForm.$cancel() || ctrl.disableEditJsonMode()" class="btn btn-default">Cancel</button>
-        <button name="cancel" type="button" ng-click="ctrl.updateSourceFromJson() || widgetForm.$show()" class="btn btn-default pull-right">Visual editor</button>
+        <button name="submit" type="submit" ng-click="ctrl.updateSourceFromJson(true) || widgetForm.$hide()" class="btn btn-primary" ng-disabled="!ctrl.jsonSource.length" translate>{{'widgets.buttons.save'}}</button>
+        <button name="cancel" type="button" ng-click="widgetForm.$cancel() || ctrl.disableEditJsonMode()" class="btn btn-default" translate>{{'widgets.buttons.cancel'}}</button>
+        <button name="cancel" type="button" ng-click="ctrl.updateSourceFromJson() || widgetForm.$show()" class="btn btn-default pull-right glyphicon glyphicon-list-alt" title="{{'widgets.buttons.editor' | translate}}"></button>
       </div>
     </div>
 

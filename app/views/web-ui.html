@@ -1,5 +1,5 @@
 
-<h1 class="page-header">Web UI</h1>
+<h1 class="page-header" translate>{{'ui.title'}}</h1>
 
 <div class="row">
     <login-form></login-form>
@@ -7,15 +7,15 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title"><i class="glyphicon glyphicon-wrench"></i> Common Info</h3>
+                <h3 class="panel-title"><i class="glyphicon glyphicon-wrench"></i> {{'ui.common.title' | translate}}</h3>
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Value</th>
+                            <th translate>{{'ui.common.name'}}</th>
+                            <th translate>{{'ui.common.value'}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -24,8 +24,8 @@
                             <td>{{ setting.value }}</td>
                         </tr>
                         <tr>
-                            <td>
-                                Default Dashboard
+                            <td translate>
+                                {{'ui.common.default'}}
                                 <a ng-show='$ctrl.defaultDashboard'
                                    user-role="mto" current-role="$ctrl.roles.current.role"
                                    ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-edit black medium"></i></a>
@@ -34,7 +34,18 @@
                             </td>
                             <td class="text-center">
                                 <select ng-model="$ctrl.defaultDashboard" ng-options="dashboard.name for dashboard in $ctrl.dashboards | filter:{isSvg:'false'} track by dashboard.id" ng-change="$ctrl.changeDefaultDashboard()">
-                                    <option value="">- Please Choose / None -</option>
+                                    <option value="" translate>{{'ui.common.choose'}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td translate>
+                                {{'ui.common.language'}}
+                            </td>
+                            <td class="text-center">
+                                <select ng-model="$ctrl.language" ng-change="$ctrl.changeLanguage()">
+                                    <option value="en">English</option>
+                                    <option value="ru">Русский</option>
                                 </select>
                             </td>
                         </tr>

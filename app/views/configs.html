@@ -1,23 +1,21 @@
-<h1 class="page-header">
-    Configuration Files
-</h1>
+<h1 class="page-header" translate>{{'configurations.title'}}</h1>
 
 <div class="alert alert-danger alert-dismissible" role="alert"
-     ng-hide="$ctrl.haveRights">
-    You cannot view this page. You can change <a ui-sref="accessLevel">access level</a>.
+     ng-hide="$ctrl.haveRights">{{'configurations.labels.notice' | translate}}
+        <a ui-sref="accessLevel">{{'configurations.labels.access' | translate}}</a>.
 </div>
 <section ng-if="$ctrl.haveRights">
     <div class="spinner" ng-show="spinnerActive('configEditorProxy')" ng-cloak>
-        <span class="spinner-loader">Loading...</span>
+        <span class="spinner-loader" translate>{{'configurations.labels.loading'}}</span>
     </div>
 
     <div class="configs" ng-show="!spinnerActive('configEditorProxy')" ng-cloak>
         <table class="table">
             <thead>
             <tr>
-                <th>File</th>
-                <th>Title</th>
-                <th>Description</th>
+                <th translate>{{'configurations.labels.file'}}</th>
+                <th translate>{{'configurations.labels.title'}}</th>
+                <th translate>{{'configurations.labels.description'}}</th>
             </tr>
             </thead>
             <tbody>
@@ -25,11 +23,11 @@
                 <td>{{ config.configPath }}</td>
                 <td>
                     <a ui-sref="configEdit({path: config.schemaPath})">
-                        {{ config.title }}
+                        {{ config.titleTranslations[$locale.id] || config.title }}
                     </a>
                 </td>
                 <td>
-                    {{ config.description }}
+                    {{ config.descriptionTranslations[$locale.id] || config.description }}
                 </td>
             </tr>
             </tbody>

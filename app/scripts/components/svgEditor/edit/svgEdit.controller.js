@@ -3,12 +3,14 @@ import 'codemirror/mode/javascript/javascript';
 
 class SvgEditController {
 
-    constructor($scope, $sce, DeviceData) {
+    constructor($scope, $sce, DeviceData, $element, $locale) {
         'ngInject';
 
         this.$scope = $scope;
+        this.$element = $element;
         this.$sce = $sce;
         this.deviceData = DeviceData;
+        this.$locale = $locale;
 
         this.editable = null;
         this.editableParam = null;
@@ -25,6 +27,12 @@ class SvgEditController {
         this.attributeIdName = 'data-svg-param-id';
 
         $scope.$watch('$viewContentLoaded', () => { 
+            this.$scope.$watch('$ctrl.getSvgElement()', () => {
+                var elm = this.getSvgElement();
+                if (elm) {
+                    angular.element(elm).attr('style', '');
+                }
+            });
            this.ready();
         });
     }
@@ -78,8 +86,8 @@ class SvgEditController {
             var d = this.deviceData.devices[c.deviceId];
             let cell = {
                 id: c.id,
-                name: c.name,
-                device: d.name
+                name: c.getName(this.$locale.id),
+                device: d.getName(this.$locale.id)
             };
             tmp.push(cell);
         }
@@ -177,6 +185,10 @@ class SvgEditController {
         this.dashboard.content.svg.params = angular.copy(newSource);
 
         this.disableEditJsonMode();
+    }
+
+    getSvgElement() {
+        return this.$element[0].querySelector('svg');
     }
 
 }

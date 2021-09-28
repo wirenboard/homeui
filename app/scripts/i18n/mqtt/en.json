@@ -1,0 +1,17 @@
+{
+    "mqtt": {
+        "title": "MQTT Channels",
+        "header": {
+            "device": "Device",
+            "control": "Control",
+            "type": "Type",
+            "topic": "Topic",
+            "value": "Value",
+            "status": "Status"
+        },
+        "error": "Error",
+        "errors": {
+            "connect": "Failure to connect to {{host}} as {{id}}. {{error}}"
+        }
+    }
+}

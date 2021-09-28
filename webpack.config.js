@@ -64,15 +64,18 @@ module.exports = function makeWebpackConfig() {
             'oclazyload',
             './lib/angular-order-object-by/src/ng-order-object-by',
             'angular-rangeslider',
-            './lib/angular-toggle-switch/angular-toggle-switch',
             'ng-toast',
 
             'angular-translate',
             'angular-translate-loader-partial',
             'angular-spinkit',
-            'ngbootbox',
             'lz-string',
-            'angular-ui-scroll'
+            'angular-ui-scroll',
+            'angular-dynamic-locale',
+
+            // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
+            './scripts/i18n/angular-locale_en.js',
+            './scripts/i18n/angular-locale_ru.js'
         ]
     };
     /**
@@ -91,11 +94,11 @@ module.exports = function makeWebpackConfig() {
 
         // Filename for entry points
         // Only adds hash in build mode
-        filename: isProd ? '[name].[chunkhash].js' : '[name].bundle.js',
+        filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
 
         // Filename for non-entry points
         // Only adds hash in build mode
-        chunkFilename: isProd ? '[name].[chunkhash].js' : '[name].bundle.js'
+        chunkFilename: isProd ? '[name].[hash].js' : '[name].bundle.js'
     };
 
     /**
@@ -244,6 +247,7 @@ module.exports = function makeWebpackConfig() {
      * List: http://webpack.github.io/docs/list-of-plugins.html
      */
     config.plugins = [
+        new webpack.ExtendedAPIPlugin(),
     /**
      * Angular annotate
      * Reference: https://github.com/jeffling/ng-annotate-webpack-plugin

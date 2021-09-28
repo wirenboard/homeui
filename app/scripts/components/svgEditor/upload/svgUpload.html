@@ -5,5 +5,10 @@
         <span ng-show="$ctrl.isStateProcess()">{{'upload.button.proccess' | translate}}</span>
         <span ng-show="$ctrl.isStateLoaded()">{{'upload.button.change' | translate}}</span>
     </button>
-    <a class="btn btn-default" target="_self" download="{{ $ctrl.downloadName }}" href="{{ $ctrl.downloadUrl }}" ng-show="$ctrl.isStateLoaded()">{{'upload.button.download' | translate}}</a>
+    <a class="btn btn-default glyphicon glyphicon-download-alt"
+       target="_self"
+       download="{{ $ctrl.downloadName }}"
+       href="{{ $ctrl.downloadUrl }}"
+       ng-show="$ctrl.isStateLoaded() &&  $ctrl.downloadUrl"
+       title="{{'upload.button.download' | translate}}"></a>
 </div>

@@ -1,0 +1,20 @@
+{
+    "configurations": {
+        "title": "Configuration Files",
+        "labels": {
+            "loading": "Loading...",
+            "file": "File",
+            "title": "Title",
+            "description": "Description",
+            "notice": "You cannot view this page. You can change",
+            "access": "access level"
+        },
+        "buttons": {
+            "save": "Save"
+        },
+        "errors": {
+            "load": "Error loading the file",
+            "save": "Error saving {{name}}"
+        }
+    }
+}

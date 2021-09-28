@@ -1,0 +1,47 @@
+{
+    "widgets": {
+        "title": "Widgets",
+        "labels": {
+            "name": "Name",
+            "cells": "Cells",
+            "types": "Types",
+            "type": "Type",
+            "values": "Values",
+            "graph": "Graph",
+            "description": "Description",
+            "dashboards": "Dashboards",
+            "widget_view": "Widget view",
+            "table_view": "Table view",
+            "compact": "Compact mode",
+            "warning-popup": "You added this widget to several dashboards, so when applying changes, they will be applied on each.",
+            "warning": "Сhanges affect other dashboards",
+            "invert": "Invert",
+            "find": "Find controls of type",
+            "add": "Add control..."
+        },
+        "errors": {
+            "nothing": "No widgets are currently defined",
+            "empty-name": "Empty widget name is not allowed"
+        },
+        "prompt": {
+            "delete": "Really delete the widget?",
+            "remove": "Really remove widget from dashboard?"
+        },
+        "buttons": {
+            "add": "Add dashboard",
+            "edit": "Edit widget",
+            "delete": "Delete widget",
+            "remove": "Remove from this dashboard",
+            "save": "Save",
+            "cancel": "Cancel",
+            "edit-json": "Edit as JSON",
+            "editor": "Visual editor"
+        },
+        "cells": {
+            "on": "ON",
+            "off": "OFF",
+            "history": "History",
+            "size": "{width: '50px'}"
+        }
+    }
+}

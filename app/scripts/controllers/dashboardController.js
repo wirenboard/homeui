@@ -30,18 +30,8 @@ class DashboardCtrl {
             $scope.dashboard.widgets.push(uiConfig.addWidget());
         };
 
-        $scope.removeWidget = (widget) => {
-            if (window.confirm('Really delete widget from dashboard?')) {
-                $scope.dashboard.removeWidgetFromDashboard(widget);
-            }
-        };
-
-        $scope.deleteWidget = (widget) => {
-            if (window.confirm('Really delete the widget?')) {
-                uiConfig.deleteWidget(widget);
-            }
-        };
-
+        $scope.removeWidget = (widget) => $scope.dashboard.removeWidgetFromDashboard(widget);
+        $scope.deleteWidget = (widget) => uiConfig.deleteWidget(widget);
     }
 }
 

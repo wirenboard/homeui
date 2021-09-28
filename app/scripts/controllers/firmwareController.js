@@ -33,12 +33,12 @@ class FirmwareCtrl {
       timeout = $timeout(function() {
         timeout = undefined;
         showState('danger', msg);
-        showDoneButton('Dismiss');
+        showDoneButton('system.buttons.dismiss');
       }, seconds * 1000);
     };
 
     var setProgressTimeout = function() {
-      setTimeout(60, 'Firmware update stalled, something gone wrong')
+      setTimeout(60, 'system.errors.stalled')
     };
 
     mqttClient.addStickySubscription('/firmware/status', function(msg) {
@@ -50,9 +50,9 @@ class FirmwareCtrl {
         if ($scope.running) {
           $timeout.cancel(timeout);
           if (!$scope.error) {
-            showState('success', 'Firmware update complete');
+            showState('success', 'system.states.complete');
           }
-          showDoneButton('Hide');
+          showDoneButton('system.buttons.hide');
         }
       } else if (type == 'INFO') {
         showState('info', payload);
@@ -62,8 +62,8 @@ class FirmwareCtrl {
         showState('danger', payload);
         setProgressTimeout();
       } else if (type == 'REBOOT') {
-        showState('warning', 'Rebooting, please wait');
-        setTimeout(300, 'It tooks too long to reboot');
+        showState('warning', 'system.states.reboot');
+        setTimeout(300, 'system.errors.reboot');
       }
     });
 
@@ -84,7 +84,7 @@ class FirmwareCtrl {
       if (file && !file.$error) {
         $scope.uploading = true;
         log.text('');
-        showState('info', 'Uploading firmware file');
+        showState('info', 'system.states.uploading');
         file.upload = Upload.upload({
           url: '/fwupdate/upload',
           file: file
@@ -94,7 +94,7 @@ class FirmwareCtrl {
         .success(function (data, status, headers, config) {
           $scope.uploading = false;
           setProgressTimeout();
-          showState('info', 'Upload complete')
+          showState('info', 'system.states.uploaded')
         })
         .error(function (data, status, headers, config) {
           $scope.uploading = false;

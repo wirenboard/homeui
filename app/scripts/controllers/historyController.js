@@ -1,16 +1,19 @@
 class ChartsControl {
-    constructor(cell, groupName, deviceName, widget) {
-        this.cell = cell;
-        this.name = deviceName + " / " + (cell.name || cell.controlId);
+
+    constructor(deviceId, controlId, deviceName, controlName, valueType, groupName, widget) {
+        this.name = (deviceName || deviceId) + " / " + (controlName || controlId);
         if (widget) {
             this.name = widget.name + " (" + this.name + ")";
         }
         this.widget = widget;
         this.group = groupName;
+        this.deviceId = deviceId;
+        this.controlId = controlId;
+        this.valueType = valueType;
     }
 
     match(controlFromUrl) {
-        if (this.cell.deviceId === controlFromUrl.d && this.cell.controlId === controlFromUrl.c) {
+        if (this.deviceId === controlFromUrl.d && this.controlId === controlFromUrl.c) {
             return this.widget ? this.widget.id === controlFromUrl.w : !controlFromUrl.w;
         }
         return false;
@@ -26,7 +29,7 @@ class ChartTraits {
         };
         this.hasStringValues = false;
         this.hasErrors = false;
-        this.hasBooleanValues = (chartsControl.cell.valueType === "boolean");
+        this.hasBooleanValues = (chartsControl.valueType === "boolean");
         this.xValues = [];
         this.yValues = [];
         this.text = [];
@@ -66,7 +69,7 @@ class ChartColors {
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, DeviceData, $injector, handleData, $q, historyUrlService) {
+    constructor($scope, DeviceData, $injector, handleData, historyUrlService, $locale, $translate) {
         'ngInject';
 
         // 1. интервал загрузки частей графика
@@ -76,22 +79,21 @@ class HistoryCtrl {
         this.$stateParams = $stateParams;
         var $location = $injector.get('$location');
         var HistoryProxy = $injector.get('HistoryProxy');
-        var whenMqttReady = $injector.get('whenMqttReady');
         var errors = $injector.get('errors');
         var historyMaxPoints = $injector.get('historyMaxPoints');
-        var dateFilter = $injector.get('dateFilter');
         var uiConfig = $injector.get('uiConfig');
         this.orderByFilter = $injector.get('orderByFilter');
         this.$timeout = $injector.get('$timeout');
         this.$state = $injector.get('$state');
         this.historyUrlService = historyUrlService;
+        this.$translate = $translate;
+        this.$locale = $locale;
 
         angular.extend(this, {
             scope: $scope,
             location: $location,
             historyMaxPoints: historyMaxPoints,
             HistoryProxy: HistoryProxy,
-            dateFilter: dateFilter,
             errors: errors,
             controls: []
         });
@@ -122,7 +124,8 @@ class HistoryCtrl {
         };
 
         this.options = {
-            displayModeBar: true
+            displayModeBar: true,
+            locale: $locale.id
         }
 
         this.colors = new ChartColors();
@@ -143,18 +146,12 @@ class HistoryCtrl {
         this.dataPointsMultiple = []
 
         // 4. Setup
-        var controlsAreLoaded = $q.defer();
-        uiConfig.whenReady().then((data) => {
-            this.updateControls(data.widgets, DeviceData);
-            controlsAreLoaded.resolve();
-        });
-
-        $q.all([
-            controlsAreLoaded.promise,
-            whenMqttReady()
-          ]).then(() => {
-            this.setSelectedControlsAndStartLoading(stateFromUrl.c);
-        });
+        this.updateTranslations()
+            .then(() => uiConfig.whenReady())
+            .then((data) => {
+                this.updateControls(data.widgets, DeviceData);
+                this.setSelectedControlsAndStartLoading(stateFromUrl.c);
+            });
 
         this.plotlyEvents = (graph) => {
             // !!!!! метод обязательно должен быть в конструкторе иначе контекст будет непонятно чей
@@ -181,15 +178,30 @@ class HistoryCtrl {
     
     // Class methods
     //...........................................................................
+    makeChartsControlFromCell(device, cell, groupName, widget) {
+        return new ChartsControl(cell.deviceId, 
+                                 cell.controlId,
+                                 device.getName(this.$locale.id),
+                                 cell.getName(this.$locale.id),
+                                 cell.valueType,
+                                 groupName,
+                                 widget);
+    }
+
     updateControls(widgets, DeviceData) {
         this.controls = this.orderByFilter(
             Array.prototype.concat.apply(
                 [], 
                 widgets.map(widget =>
                     widget.cells.map(item => {
-                        const cell = DeviceData.cell(item.id);
-                        const device = DeviceData.devices[cell.deviceId];
-                        return new ChartsControl(cell, "Каналы из виджетов: ", device.name, widget);
+                        try {
+                            const cell = DeviceData.cell(item.id);
+                            const device = DeviceData.devices[cell.deviceId];
+                            return this.makeChartsControlFromCell(device, cell, this.widgetChannelsMsg, widget);
+                        } catch (er) {
+                            const deviceControl = item.id.split('/');
+                            return new ChartsControl(deviceControl[0], deviceControl[1], undefined, undefined, undefined, this.widgetChannelsMsg, widget);
+                        }
                     })
                 ),
             "name"));
@@ -199,10 +211,24 @@ class HistoryCtrl {
                 const device = DeviceData.devices[deviceId];
                 return device.cellIds.map(cellId => {
                     const cell = DeviceData.cell(cellId);
-                    return new ChartsControl(cell, "Все каналы: ", device.name);
+                    return this.makeChartsControlFromCell(device, cell, this.allChannelsMsg);
                 });
             })
         ));
+    }
+
+    updateTranslations() {
+        var t = this.$translate(['history.labels.all_channels',
+                                 'history.labels.widget_channels',
+                                 'history.errors.dates',
+                                 'history.errors.points']);
+        t.then(translations => {
+            this.allChannelsMsg = translations['history.labels.all_channels'];
+            this.widgetChannelsMsg = translations['history.labels.widget_channels'];
+            this.invalidDateRangeMsg = translations['history.errors.dates'];
+            this.maxPointsLimitMsg = translations['history.errors.points'];
+        });
+        return t;
     }
 
     setSelectedControlsAndStartLoading(controlsFromUrl) {
@@ -242,12 +268,13 @@ class HistoryCtrl {
         // Remove duplicates
         var uniqueCells = new Set;
         this.selectedControls.forEach((control) => {
-            if (!uniqueCells.has(control.cell.id)) {
-                uniqueCells.add(control.cell.id);
+            const id = control.deviceId + '/' + control.controlId;
+            if (!uniqueCells.has(id)) {
+                uniqueCells.add(id);
                 controls.push(
                     {
-                        d: control.cell.deviceId,
-                        c: control.cell.controlId,
+                        d: control.deviceId,
+                        c: control.controlId,
                         w: control.widget && control.widget.id
                     }
                 )
@@ -302,7 +329,7 @@ class HistoryCtrl {
                 this.updateState();
             }
         } else {
-            alert('Date range is invalid. Change one of dates')
+            alert(this.invalidDateRangeMsg)
         }
     }
 
@@ -367,16 +394,16 @@ class HistoryCtrl {
 
     calculateTable() {
         //TODO: use merge sort as we have here n^2 complexity
-        var objX = {},graph = [];
-        this.charts.forEach((ctrl,i) => {
-            ctrl.xValues.forEach(x=> {
-                objX[x] = null
+        var graph = [];
+        var dates = new Set;
+        this.chartConfig.forEach(ctrl => {
+            ctrl.x.forEach(x => {
+                dates.add(x.valueOf())
             })
         });
 
-        var arrX = Object.keys(objX);
-        var _arrX = arrX.sort();
-        _arrX.forEach(date=> {
+        var arrX = Array.from(dates).sort();
+        arrX.forEach(date=> {
             graph.push({
                 date,
                 value: Array(this.charts.length).fill(null)
@@ -385,7 +412,7 @@ class HistoryCtrl {
             this.charts.forEach((ctrl,iCtrl)=> {
                 for (var i = 0; i < ctrl.xValues.length; i++) {
                     // если не нахожу то останется null
-                    if(date === ctrl.xValues[i]) {
+                    if(date === ctrl.xValues[i].valueOf()) {
                         graph[graph.length-1].value[iCtrl] = ctrl.yValues[i];
                         break
                     }
@@ -400,7 +427,7 @@ class HistoryCtrl {
 
         var params = {
             channels: [
-                [control.cell.deviceId, control.cell.controlId]
+                [control.deviceId, control.controlId]
             ],
             limit: this.historyMaxPoints,
             ver: 1
@@ -428,6 +455,8 @@ class HistoryCtrl {
         this.$timeout( () => {
             this.timeChanged = true;
             this.stopLoadData = true;
+            this.loadPending = false;
+            this.disableUi = false;
         })
     }
 
@@ -640,7 +669,7 @@ class HistoryCtrl {
     processDbRecord(record, chart) {
         var ts = new Date();
         ts.setTime(record.t * 1000);
-        chart.xValues.push(this.dateFilter(ts, "yyyy-MM-dd HH:mm:ss"));
+        chart.xValues.push(ts);
         chart.yValues.push(record.v);
         if ((record.max && record.max != record.v) || (record.min && record.min != record.v)) {
             chart.text.push(record.v + " [" + record.min + ", " + record.max + "]");
@@ -666,10 +695,11 @@ class HistoryCtrl {
         var chart = this.charts[indexOfControl];
         chart.progress.value = indexOfChunk + 1;
 
-        if (chunk.has_more) this.errors.showError("Warning", "maximum number of points exceeded. Please select start date.");
+        if (chunk.has_more) this.errors.showError('history.errors.warning', this.maxPointsLimitMsg);
 
         if (!chart.xValues.length && this.hasStringValues(chunk)) {
             chart.hasStringValues = true;
+            chart.hasErrors = false;
         }
 
         chunk.values.forEach(item => this.processDbRecord(item, chart));
@@ -692,7 +722,11 @@ class HistoryCtrl {
         }
         this.HistoryProxy.get_values(params)
                          .then(result => this.processChunk(result, indexOfControl, indexOfChunk, chunks))
-                         .catch(this.errors.catch("Error getting history"));
+                         .catch(er => {
+                            this.loadPending = false;
+                            this.disableUi = false;
+                            this.errors.catch('history.errors.load')(er);
+                         });
     }
 
     downloadHistoryTable() {

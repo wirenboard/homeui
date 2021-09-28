@@ -4,9 +4,9 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
   'ngInject';
 
 //-----------------------------------------------------------------------------
-  function cellName (id) {
+  function cellName (id, lang) {
     try {
-      return DeviceData.proxy(id).name;
+      return DeviceData.proxy(id).getName(lang);
     } catch (e) {
       console.error("bad cell id: " + id);
       return id;
@@ -15,7 +15,7 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
 
 //-----------------------------------------------------------------------------
   class WidgetController {
-    constructor ($scope, $element, $attrs) {
+    constructor ($scope, $element, $attrs, $translate, $rootScope, $locale) {
       'ngInject';
       this.roles = rolesFactory;
       this.cellType = "any";
@@ -24,6 +24,8 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
       this.originalSource = {};
       this.editJsonMode = false;
       this.multipleDashboards = false;
+      this.$translate = $translate;
+      this.$locale = $locale;
       $scope.$watch(() => this._source(), newSource => {
         if (!$scope.widgetForm.$visible)
           this.updateSource();
@@ -34,14 +36,14 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
           this.newCellId = null;
           return;
         }
-        this.source.cells.push({ id: newCellId, name: cellName(newCellId), extra: {}, type: DeviceData.proxy(newCellId).type});
+        this.source.cells.push({ id: newCellId, name: cellName(newCellId, $locale.id), extra: {}, type: DeviceData.proxy(newCellId).type});
         this.newCellId = null;
         // XXX the following is a hack, but we can't just set the name
         // in scope because we're using xeditable
         $scope.$evalAsync(() => {
           var el = $element.find(".panel-heading input[type=text]");
           if (el.length && !el.val())
-            el.val(cellName(newCellId)).change();
+            el.val(cellName(newCellId, $locale.id)).change();
         });
       });
       $scope.$watch(() => this.source.isNew && !$scope.widgetForm.$visible, shouldEdit => {
@@ -52,6 +54,15 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
         const el = $element.find(".panel-heading input[type=text]");
         el.attr('disabled', isJsonMode);
       });
+
+      this.updateTranslations();
+      $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+    }
+
+    updateTranslations() {
+        this.$translate('widgets.errors.empty-name').then(translation => {
+          this.emptyNameErrorMsg = translation;
+        });
     }
 
     updateSource () {
@@ -121,7 +132,7 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
       this.checkMultipleDashboards();
       this.source.cells.forEach(cell => {
         if (!cell.hasOwnProperty("name") || !cell.name)
-          cell.name = cellName(cell.id);
+          cell.name = cellName(cell.id, this.$locale.id);
       });
     }
 
@@ -129,7 +140,7 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
       if (this._source()) {
         // clear cell names that are the same as original
         this.source.cells.forEach(cell => {
-          var oldName = cellName(cell.id),
+          var oldName = cellName(cell.id, this.$locale.id),
               newName = (cell.name || "").replace(/^s+|\s+$/g, "");
           if (!newName || oldName == newName)
             delete cell.name;
@@ -146,9 +157,9 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
         this.updateSource();
     }
 
-    checkNonEmpty (value, msg) {
+    checkNonEmpty (value) {
       if (!/\S/.test(value))
-        return msg;
+        return this.emptyNameErrorMsg;
       return true;
     }
 

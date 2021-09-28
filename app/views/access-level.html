@@ -1,16 +1,14 @@
-<h1 class="page-header">
-    Access level
-</h1>
+<h1 class="page-header" translate>{{'access.title'}}</h1>
 
 <div class="form-group">
     <div class="radio">
         <label>
             <input type="radio" value="1" name="level"
                    ng-model="$ctrl.level"
-                   ng-change="$ctrl.select($ctrl.one)"> {{$ctrl.one.name}}
-            <span ng-show="$ctrl.activeRole == 1" class="label label-info"> active</span>
+                   ng-change="$ctrl.select($ctrl.one)"> {{$ctrl.one.name | translate}}
+            <span ng-show="$ctrl.activeRole == 1" class="label label-info" translate> {{'access.labels.active'}}</span>
             <br/>
-            <span style="color: GrayText">{{$ctrl.one.description}}</span>
+            <span style="color: GrayText" translate>{{$ctrl.one.description}}</span>
         </label>
     </div>
 </div>
@@ -19,10 +17,10 @@
         <label>
             <input type="radio" value="2" name="level"
                    ng-model="$ctrl.level"
-                   ng-change="$ctrl.select($ctrl.two)"> {{$ctrl.two.name}}
-            <span ng-show="$ctrl.activeRole == 2" class="label label-info"> active</span>
+                   ng-change="$ctrl.select($ctrl.two)" translate> {{$ctrl.two.name | translate}}
+            <span ng-show="$ctrl.activeRole == 2" class="label label-info" translate> {{'access.labels.active'}}</span>
             <br/>
-            <span style="color: GrayText">{{$ctrl.two.description}}</span>
+            <span style="color: GrayText" translate>{{$ctrl.two.description}}</span>
         </label>
     </div>
 </div>
@@ -31,10 +29,10 @@
         <label>
             <input type="radio" value="3" name="level"
                    ng-model="$ctrl.level"
-                   ng-change="$ctrl.select($ctrl.three)"> {{$ctrl.three.name}}
-            <span ng-show="$ctrl.activeRole == 3" class="label label-info"> active</span>
+                   ng-change="$ctrl.select($ctrl.three)" translate> {{$ctrl.three.name |translate}}
+            <span ng-show="$ctrl.activeRole == 3" class="label label-info" translate> {{'access.labels.active'}}</span>
             <br/>
-            <span style="color: GrayText">{{$ctrl.three.description}}</span>
+            <span style="color: GrayText" translate>{{$ctrl.three.description}}</span>
         </label>
     </div>
 </div>
@@ -42,9 +40,9 @@
 <div class="form-group alert alert-danger" ng-show="$ctrl.isLevelUp">
     <div class="checkbox">
         <label>
-            <input type="checkbox" ng-model="$ctrl.ok"> I take full responsibility for my actions
+            <input type="checkbox" ng-model="$ctrl.ok"> {{'access.labels.confirm' | translate}}
         </label>
     </div>
 </div>
 
-<button ng-click="$ctrl.apply()" ng-disabled="!$ctrl.ok" class="btn btn-success">Apply</button>
+<button ng-click="$ctrl.apply()" ng-disabled="!$ctrl.ok" class="btn btn-success" translate>{{'access.buttons.apply'}}</button>

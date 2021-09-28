@@ -1,0 +1,100 @@
+{
+    "app": {
+        "errors": {
+            "load": "Cannot load WebUI config.",
+            "save": "Config saving failed",
+            "overflow": "Config saving failed: config is too big, try to reduce SVG size"
+        },
+        "prompt" : {
+            "dirty": "The page has unsaved changes. Are you sure you want to leave?"
+        }
+    },
+    "home": {
+        "labels": {
+            "warning": "You can select default dashboard in ",
+            "settings": "settings"
+        }
+    },
+    "navigation":{
+        "menu": {
+            "toggle": "Toggle navigation",
+            "home": "Home",
+            "dashboards": "Dashboards",
+            "list": "List",
+            "devices": "Devices",
+            "widgets": "Widgets",
+            "history": "History",
+            "rules": "Rules",
+            "settings": "Settings",
+            "help": "Help",
+            "configs": "Configs",
+            "ui": "Web UI",
+            "system": "System",
+            "channels": "MQTT Channels",
+            "access": "Change access level",
+            "logs": "Logs"
+        },
+        "access": {
+            "title": "Access level:"
+        },
+        "connection": {
+            "active": "Connected",
+            "inactive": "Disconnected"
+        }
+    },
+    "heading": {
+        "loading": "Loading..."
+    },
+    "dashboards": {
+        "title": {
+            "default": "Dashboards",
+            "svg": "SVG Dashboards"
+        },
+        "field": {
+            "id": "ID",
+            "name": "Name",
+            "fullwidth": "Full width"
+        },
+        "button": {
+            "add": "Add",
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "cancel": "Cancel",
+            "save": "Save"
+        },
+        "prompt": {
+            "delete": "Are you sure you want to delete \"{{name}}\" dashboard?"
+        },
+        "message": {
+            "empty": "No dashboards currently defined."
+        },
+        "error": {
+            "duplicate": "Duplicate dashboard ids are not allowed",
+            "emptyId": "Empty dashboard id is not allowed",
+            "emptyName": "Empty dashboard name is not allowed"
+        }
+    },
+    "dashboard": {
+        "svg": {
+            "edit": {
+                "title": {
+                    "create": "New SVG Dashboard",
+                    "update": "Edit SVG Dashboard"
+                }
+            }
+        },
+        "buttons": {
+            "add": "Add widget"
+        }
+    },
+    "datepicker": {
+        "format": "yyyy-MM-dd",
+        "buttons": {
+            "today": "Today",
+            "clear": "Clear",
+            "close": "Close",
+            "cancel": "Cancel"
+        }
+    }
+}

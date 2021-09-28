@@ -1,0 +1,16 @@
+{
+    "units": {
+        "millibar": "millibar (100 Pa)",
+        "mm-h": "mm/h",
+        "m-s": "m/s",
+        "w": "W",
+        "kwh": "kWh",
+        "v": "V",
+        "m3-h": "m³/h",
+        "m3": "m³",
+        "gcal-h": "Gcal/h",
+        "gcal": "Gcal",
+        "ohm": "Ohm",
+        "bar": "bar"
+    }
+}

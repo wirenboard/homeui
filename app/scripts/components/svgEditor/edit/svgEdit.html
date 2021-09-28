@@ -206,8 +206,8 @@
         ui-codemirror-opts="{ autofocus: true, mode: 'javascript', json:true, lineNumbers: true, viewportMargin: 100000}"     
         ng-model="$ctrl.jsonSource">{{ $ctrl.jsonSource }}</textarea>
         <div class="btn-form">
-          <button name="submit" type="submit" ng-click="$ctrl.updateSourceFromJson()" class="btn btn-primary" ng-disabled="!$ctrl.jsonSource.length">{{ 'edit.params-json.button.save' | translate}}</button>
-          <button name="cancel" type="button" ng-click="$ctrl.disableEditJsonMode()" class="btn btn-cancel">{{ 'edit.params-json.button.cancel' | translate}}</button>
+          <button name="submit" type="submit" ng-click="$ctrl.updateSourceFromJson()" class="btn btn-primary" ng-disabled="!$ctrl.jsonSource.length">{{ 'button.save' | translate}}</button>
+          <button name="cancel" type="button" ng-click="$ctrl.disableEditJsonMode()" class="btn btn-cancel">{{ 'button.cancel' | translate}}</button>
         </div>
       </div>
 </div>

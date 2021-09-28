@@ -1,10 +1,9 @@
-
 <div class="alert alert-danger alert-dismissible" role="alert"
-     ng-hide="$ctrl.haveRights">
-    You cannot view this page. You can change <a ui-sref="accessLevel">access level</a>.
+  ng-hide="$ctrl.haveRights">{{'devices.labels.notice' | translate}}
+    <a ui-sref="accessLevel">{{'devices.labels.access' | translate}}</a>.
 </div>
 <section ng-if="$ctrl.haveRights" id="devices-list">
-    <div class="empty-list well" ng-if="devicesCount() == 0">No devices available for this moment.</div>
+    <div class="empty-list well" ng-if="devicesCount() == 0" translate>{{'devices.labels.nothing'}}</div>
 
     <uib-accordion close-others="false" class="devices-panel-list" >
         <div ng-repeat="deviceIdsInColumn in deviceIdsInColumns()">
@@ -16,12 +15,13 @@
             >
                 <uib-accordion-heading>
                   <div class="device-panel__header" ng-click="$ctrl.invertDeviceVisibility(deviceId)">
-                      <span class="device-panel__header-title">{{ dev(deviceId).name }}</span>
+                      <span class="device-panel__header-title">{{ dev(deviceId).getName($locale.id) }}</span>
                       <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
                   </div>
                   <span
-                    ng-click="$ctrl.deleteDevice(deviceId)"
-                    title="Delete device"
+                    ng-confirm="{{'devices.prompt.delete' | translate: { name: dev(deviceId).getName($locale.id) || deviceId } }}"
+                    confirmed-click="$ctrl.deleteDevice(deviceId)"
+                    title="{{'devices.labels.delete' | translate}}"
                     class="device-panel__header-delete-button"
                   >
                     <i class="glyphicon glyphicon-trash white"></i>
