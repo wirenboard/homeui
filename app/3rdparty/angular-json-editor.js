@@ -9,6 +9,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
         defaults: {
             options: {
+                show_errors: "always",
                 iconlib: 'bootstrap3',
                 theme: 'bootstrap3'
             }
@@ -57,7 +58,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         return dst;
     }
 
-}).directive('jsonEditor', ['$q', 'JSONEditor', '$locale', function ($q, JSONEditor, $locale) {
+}).directive('jsonEditor', ['$q', 'JSONEditor', '$locale', 'DumbTemplate', function ($q, JSONEditor, $locale, DumbTemplate) {
 
     return {
         restrict: 'E',
@@ -129,26 +130,33 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                     this.dispatchEvent(e);
                 });
 
+                var translateFn = function(msg) {
+                    var langs = [];
+                    if (schema.translations) {
+                        langs.push($locale.id);
+                        if ($locale.id !== "en") {
+                            langs.push("en");
+                        }
+                    }
+                    for (const lang of langs) {
+                        if (schema.translations[lang]) {
+                            const tr = schema.translations[lang][msg];
+                            if (tr !== undefined) {
+                                return tr;
+                            }
+                        }
+                    }
+                    return msg;
+                };
+
                 var options = {
                     startval: startVal,
                     schema: schema,
-                    translateProperty: function(msg) {
-                        var langs = [];
-                        if (schema.translations) {
-                            langs.push($locale.id);
-                            if ($locale.id !== "en") {
-                                langs.push("en");
-                            }
+                    translateProperty: translateFn,
+                    template: {
+                        compile: function (template) {
+                            return DumbTemplate.compile(template, translateFn);
                         }
-                        for (const lang of langs) {
-                            if (schema.translations[lang]) {
-                                const tr = schema.translations[lang][msg];
-                                if (tr !== undefined) {
-                                    return tr;
-                                }
-                            }
-                        }
-                        return msg;
                     }
                 };
                 if (scope.options)

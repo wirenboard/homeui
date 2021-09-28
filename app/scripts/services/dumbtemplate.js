@@ -6,7 +6,7 @@ const dumbTemplateModule = angular
 //-----------------------------------------------------------------------------
 function dumbTemplateService() {
   return {
-    compile: function (src) {
+    compile: function (src, translateFn) {
       // sorry, no actual compilation at the moment
       return function (vars) {
 
@@ -58,6 +58,7 @@ function dumbTemplateService() {
         }
 
           return src
+            // {{if VARIABLE1 COMPARE_OPERATION VARIABLE2}}...{{else}}...{{endif}}
             .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in|intersect)\s*([\w.\[\]]+?|".*?")\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, function (m, left, op, right, ifTrue, ifFalse) {
               left = expandVar(left);
               right = expandVar(right);
@@ -75,6 +76,13 @@ function dumbTemplateService() {
               }
               return result ? (ifTrue || "") : (ifFalse || "");
             })
+            // {{translate VARIABLE}}
+            // The variable value will be passed to translateFn and replaced by found translation
+            .replace(/\{\{\s*translate\s+([\w.\[\]]+?)\s*\}\}/g, function (m, expr) {
+              var v = stringify(expandVar(expr));
+              return translateFn ? translateFn(v) : v;
+            })
+            // {{PREFIX|VARIABLE|POSTFIX}}
             .replace(/\{\{(?:([^{]*?)\|)?\s*([\w.\[\]]+?)\s*(?:\|([^}]*?))?\}\}/g, function (m, prefix, expr, suffix) {
               var v = stringify(expandVar(expr));
               return v === "" ? "" : (prefix || "") + v + (suffix || "");
