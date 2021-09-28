@@ -27,7 +27,7 @@ class DiagnosticCtrl {
     var callbackFileIsOk =  function callbackFileIsOk(status){
         if (status < 400) {
             $scope.btnEnabled = true;
-            changeBtnText('collector.states.collecting');
+            changeBtnText('collector.buttons.download');
             $scope.btnMethod = downloadDiag;
         }
         else {
