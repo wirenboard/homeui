@@ -199,6 +199,14 @@ div[uib-datepicker-popup-wrap] {
   margin-right: 18px;
 }
 
+@media (max-width: 410px) {
+  .devices-panel-list > div,
+  .panel-group > div,
+  .device-panel {
+    width: 100%;
+  }
+}
+
 .device-panel > .panel-heading {
   background-color: #3276b1;
   color: white;

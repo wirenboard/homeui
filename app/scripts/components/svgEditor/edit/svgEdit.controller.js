@@ -3,13 +3,14 @@ import 'codemirror/mode/javascript/javascript';
 
 class SvgEditController {
 
-    constructor($scope, $sce, DeviceData, $element) {
+    constructor($scope, $sce, DeviceData, $element, $locale) {
         'ngInject';
 
         this.$scope = $scope;
         this.$element = $element;
         this.$sce = $sce;
         this.deviceData = DeviceData;
+        this.$locale = $locale;
 
         this.editable = null;
         this.editableParam = null;
@@ -85,8 +86,8 @@ class SvgEditController {
             var d = this.deviceData.devices[c.deviceId];
             let cell = {
                 id: c.id,
-                name: c.name,
-                device: d.name
+                name: c.getName(this.$locale.id),
+                device: d.getName(this.$locale.id)
             };
             tmp.push(cell);
         }

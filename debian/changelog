@@ -1,8 +1,50 @@
-wb-mqtt-homeui (2.15.0) stable; urgency=medium
+wb-mqtt-homeui (2.17.0) stable; urgency=medium
 
   * wb-mqtt-serial metrics page is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 15 Sep 2021 16:15:59 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 28 Sep 2021 17:54:26 +0500
+
+wb-mqtt-homeui (2.16.2) stable; urgency=medium
+
+  * RPC methods availability check is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 28 Sep 2021 17:17:15 +0500
+
+wb-mqtt-homeui (2.16.1) stable; urgency=medium
+
+  * Displaying of tooltip after widget's cell data copying to clipboard is fixed 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 22:17:05 +0500
+
+wb-mqtt-homeui (2.16.0) stable; urgency=medium
+
+  * New editor for poll_interval properties in wb-mqtt-serial.conf
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 10:23:31 +0500
+
+wb-mqtt-homeui (2.15.3) stable; urgency=medium
+
+  * Show english name for control if localized is not available 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 21 Sep 2021 18:13:53 +0500
+
+wb-mqtt-homeui (2.15.2) stable; urgency=medium
+
+  * Devices page width is adjusted. Horizontal scroll on mobile phones is removed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 20 Sep 2021 15:40:45 +0500
+
+wb-mqtt-homeui (2.15.1) stable; urgency=medium
+
+  * Control names displaying is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 17 Sep 2021 19:10:51 +0500
+
+wb-mqtt-homeui (2.15.0) stable; urgency=medium
+
+  * Support for /meta topics for devices and controls
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 17 Sep 2021 17:37:08 +0500
 
 wb-mqtt-homeui (2.14.0) stable; urgency=medium
 

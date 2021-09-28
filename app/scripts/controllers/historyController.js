@@ -87,6 +87,7 @@ class HistoryCtrl {
         this.$state = $injector.get('$state');
         this.historyUrlService = historyUrlService;
         this.$translate = $translate;
+        this.$locale = $locale;
 
         angular.extend(this, {
             scope: $scope,
@@ -178,7 +179,13 @@ class HistoryCtrl {
     // Class methods
     //...........................................................................
     makeChartsControlFromCell(device, cell, groupName, widget) {
-        return new ChartsControl(cell.deviceId, cell.controlId, device.name, cell.name, cell.valueType, groupName, widget);
+        return new ChartsControl(cell.deviceId, 
+                                 cell.controlId,
+                                 device.getName(this.$locale.id),
+                                 cell.getName(this.$locale.id),
+                                 cell.valueType,
+                                 groupName,
+                                 widget);
     }
 
     updateControls(widgets, DeviceData) {

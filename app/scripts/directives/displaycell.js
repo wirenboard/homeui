@@ -6,7 +6,7 @@ function displayCellDirective(displayCellConfig, $compile) {
   class DisplayCellController {
     constructor ($scope, $state, $element, $attrs, handleData, historyUrlService) {
       'ngInject';
-      //this.$scope = $scope;
+      this.$scope = $scope;
       this.cell = $scope.cell;
       this.cell.copy = this.copy.bind(this);
       this.$state = $state;
@@ -22,8 +22,14 @@ function displayCellDirective(displayCellConfig, $compile) {
       if(this.parentName && this.cell.id) this.handleData.copyToClipboard(this.$scope.parentName + '/' + this.$scope.cell.id)
     }*/
 
-    copy(value) {
-      if (this.cell.readOnly) {
+    copy(value, allowCopy) {
+      if (allowCopy) {
+        var textValue = String(value);
+        const MAX_TOOLTIP_VALUE_LENGTH = 20;
+        if (textValue.length > MAX_TOOLTIP_VALUE_LENGTH) {
+          textValue = textValue.substr(0, MAX_TOOLTIP_VALUE_LENGTH) + '...';
+        }
+        this.$scope.copyText = textValue;
         this.handleData.copyToClipboard(value)
       }
     }

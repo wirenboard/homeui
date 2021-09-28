@@ -32,10 +32,13 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 }
             }
         });
+        jse.defaults.resolvers.unshift(schema => schema.type === 'integer' && schema.format === 'siWb' && 'siWb');
+
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
         jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
         jse.defaults.editors["slWb"] = makeDisabledEditorWrapper(jse.defaults.editors["select"]);
         jse.defaults.editors["info"] = makeTranslatedInfoEditor();
+        jse.defaults.editors["siWb"] = makeIntegerEditorWithSpecialValue(jse.defaults.editors["integer"]);
         jse.defaults.language = $locale.id;
         return jse;
     }];
@@ -314,7 +317,7 @@ function overrideJSONEditor() {
         * When there are not enough properties in an object
         * @variables This key takes one variable: The minimum property count
         */
-        error_minProperties: 'Объект должне содерзать не менее {{0}} свойств',
+        error_minProperties: 'Объект должен содержать не менее {{0}} свойств',
         /**
         * When a required property is not defined
         * @variables This key takes one variable: The name of the missing property
@@ -456,7 +459,7 @@ function overrideJSONEditor() {
         /**
         * Text on Object Properties buttons
         */
-        properties: 'cвойства',
+        properties: 'свойства',
         property_name_placeholder: 'Название свойства...',
         duplicate_property_error: 'Свойство с таким названием уже задано',
         /**
@@ -551,7 +554,7 @@ function makeDisabledEditorWrapper (Base) {
     }
   }
 
-  function makeTranslatedInfoEditor () {
+function makeTranslatedInfoEditor () {
     return class extends JSONEditor.AbstractEditor {
         constructor (options, defaults) {
           super(options, defaults)
@@ -565,6 +568,36 @@ function makeDisabledEditorWrapper (Base) {
 
         setValue (value) {
           this.input.value = this.translateProperty(value);
+        }
+    }
+}
+
+// The editor is used for poll_interval setting of a channel.
+// poll_interval is edited in table's cell.
+// We want to show empty editors for poll_intervals that are not set, but
+// json-editor sets default values to properties in tables cells.
+// -1 is used as a default value to mark that poll_interval is not set.
+// The editor handles the special case and shows an empty edit
+function makeIntegerEditorWithSpecialValue (Base) {
+    return class extends Base {
+        build() {
+            super.build();
+            if (this.input) {
+                this.input.setAttribute('size', this.input.getAttribute('placeholder').length);
+            }
+        }
+
+        setValue (value) {
+            if (value != -1) {
+                super.setValue(value);
+            }
+        }
+
+        getValue () {
+            if (!(this.input && this.input.value)) {
+              return undefined;
+            }
+            return super.getValue();
         }
     }
 }

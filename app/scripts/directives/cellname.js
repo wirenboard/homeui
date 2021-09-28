@@ -1,4 +1,6 @@
-function cellNameDirective() {
+function cellNameDirective($locale) {
+  'ngInject';
+
   return {
     restrict: 'EA',
     scope: {
@@ -16,7 +18,7 @@ function cellNameDirective() {
 
     link: (scope, element, attrs, cellCtrl) => {
       scope.cellId = () => cellCtrl.cell.id;
-      scope.name = () => scope.override() || cellCtrl.cell.name;
+      scope.name = () => scope.override() || cellCtrl.cell.getName($locale.id);
     }
   };
 }

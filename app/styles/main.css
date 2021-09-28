@@ -27,7 +27,7 @@ body {
 
 #page-wrapper {
     width: 100%;
-    padding: 0px 13px 0px 13px;
+    padding: 10px 13px 0px 13px;
     background-color: #fff;
     height: calc(100vh - 50px);
     overflow: auto;
@@ -531,7 +531,6 @@ button.show-console span {
     width: 100%;
     position: relative;
     padding-right: 35px;
-    overflow-x:auto;
 }
 
 .display-cell-btn,
@@ -591,6 +590,10 @@ button.show-console span {
 
 .display-cell .cell-title {
   font-size: 14px;
+}
+
+.text-cell {
+  overflow-x: auto;
 }
 
 .cell-error {
