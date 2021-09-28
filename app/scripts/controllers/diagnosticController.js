@@ -7,6 +7,7 @@ class DiagnosticCtrl {
     $scope.text = "";
 
     $scope.path = undefined;
+    $scope.basename = undefined;
 
     var changeBtnText = function changeBtnText(name){
         $translate([name])
@@ -59,19 +60,18 @@ class DiagnosticCtrl {
         $scope.btnEnabled = false;
         changeBtnText('collector.states.collecting');
         DiagnosticProxy.diag()
-            .then( path => {
-              console.log(path);
-              $scope.path = path;
+            .then( names => {
+              $scope.path = names['fullname'];
+              $scope.basename = names['basename'];
               var url = getUrl();
-              var filename = path.substring(14);
-              fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
+              fileIsOk('http://' + url + '/diag/' + $scope.basename, callbackFileIsOk);
             }, err=> {
               changeBtnText('collector.errors.timeout');
             })
     };
 
     var downloadDiag = function() {
-        var filename = $scope.path.substring(14);
+        var filename = $scope.basename;
         window.location.href = 'diag/' + filename;
     };
 
