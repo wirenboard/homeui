@@ -197,7 +197,7 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, mqttRpcMethodAvaila
           outer = Object.create(proxy);
       methods.forEach(method => {
         outer[method] = proxy._call.bind(proxy, method);
-        outer['has' + method] = proxy._hasMethod.bind(proxy, method);
+        outer.hasMethod = (methodName) => proxy._hasMethod(methodName);
       });
       return outer;
     }
