@@ -5,6 +5,7 @@ class DiagnosticCtrl {
     $scope.btnVisible = false;
     $scope.btnEnabled = true;
     $scope.text = "";
+    $scope.btnMethod = $scope.diag;
 
     $scope.path = undefined;
 
@@ -28,6 +29,7 @@ class DiagnosticCtrl {
         if (status < 400) {
             $scope.btnEnabled = true;
             changeBtnText('collector.states.collecting');
+            $scope.btnMethod = $scope.downloadDiag;
         }
         else {
             $translate(['collector.errors.unavailableToDownload'])
