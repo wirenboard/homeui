@@ -60,6 +60,7 @@ class DiagnosticCtrl {
         changeBtnText('collector.states.collecting');
         DiagnosticProxy.diag()
             .then( path => {
+              console.log(path);
               $scope.path = path;
               var url = getUrl();
               var filename = path.substring(14);
