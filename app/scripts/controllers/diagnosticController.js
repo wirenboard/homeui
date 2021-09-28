@@ -7,6 +7,7 @@ class DiagnosticCtrl {
     $scope.canDownload = false;
     $scope.waitingResponse = false;
     $scope.timeout = false;
+    $scope.waitStarting = true;
 
     $scope.path = undefined;
 
@@ -42,6 +43,7 @@ class DiagnosticCtrl {
     ).then(function(payload) {
         if (payload == "1"){
                 $scope.ready = true;
+                $scope.waitStarting = false;
             }
     });
 
