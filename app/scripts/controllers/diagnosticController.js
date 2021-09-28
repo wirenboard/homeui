@@ -1,5 +1,5 @@
 class DiagnosticCtrl {
-  constructor($scope, $timeout, $element, DiagnosticProxy, MqttRpc, whenMqttReady) {
+  constructor($scope, $translate, DiagnosticProxy, whenMqttReady) {
     'ngInject';
 
     $scope.ready = false;
