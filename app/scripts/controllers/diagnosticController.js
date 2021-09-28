@@ -2,15 +2,18 @@ class DiagnosticCtrl {
   constructor($scope, $translate, DiagnosticProxy, whenMqttReady) {
     'ngInject';
 
-    $scope.ready = false;
-    $scope.archiveReady = false;
-    $scope.canDownload = false;
-    $scope.waitingResponse = false;
-    $scope.timeout = false;
-    $scope.waitStarting = true;
+    $scope.btnVisible = false;
+    $scope.btnEnabled = true;
+    $scope.text = "";
 
     $scope.path = undefined;
 
+    var changeBtnText = function changeBtnText(name){
+        $translate([name])
+          .then(translations => {
+                $scope.text = translations[name];
+        });
+    };
 
     var fileIsOk = function httpGet(theUrl, callback){
         fetch(theUrl, {method: 'HEAD'})
@@ -23,8 +26,15 @@ class DiagnosticCtrl {
 
     var callbackFileIsOk =  function callbackFileIsOk(status){
         if (status < 400) {
-            $scope.canDownload = true;
+            $scope.btnEnabled = true;
+            changeBtnText('collector.states.collecting');
         }
+        else {
+            $translate(['collector.errors.unavailableToDownload'])
+            .then(translations => {
+                $scope.text = translations['collector.errors.unavailableToDownload'] + ' ' + path;
+            });
+        };
     };
 
     var getUrl =  function getUrl(){
@@ -35,28 +45,26 @@ class DiagnosticCtrl {
     };
 
     whenMqttReady().then( function() {
+        changeBtnText('collector.buttons.collect');
         return DiagnosticProxy.status();
     }
     ).then(function(payload) {
         if (payload == "1"){
-                $scope.ready = true;
-                $scope.waitStarting = false;
+                $scope.btnVisible = true;
             }
     });
 
     $scope.diag = function() {
-        $scope.waitingResponse = true;
+        $scope.btnEnabled = false;
+        changeBtnText('collector.states.collecting');
         DiagnosticProxy.diag()
             .then( path => {
               $scope.path = path;
               var url = getUrl();
               var filename = path.substring(14);
-              $scope.archiveReady = true;
-              $scope.waitingResponse = false;
               fileIsOk('http://' + url + '/diag/' + filename, callbackFileIsOk);
             }, err=> {
-              $scope.waitingResponse = false;
-              $scope.timeout = true;
+              changeBtnText('collector.errors.timeout');
             })
     };
 
@@ -64,8 +72,6 @@ class DiagnosticCtrl {
         var filename = $scope.path.substring(14);
         window.location.href = 'diag/' + filename;
     };
-
-
   }
 }
 
