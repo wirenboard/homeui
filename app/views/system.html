@@ -29,9 +29,13 @@
         <h3 class="panel-title"><i class="glyphicon glyphicon-download"></i> Сборщик данных для диагностики</h3>
     </div>
     <div class="panel-body">
-        <span ng-show="!ready" class="label label-warning">
+        <span ng-show="!ready && !waitStarting" class="label label-warning">
           Сервис диагностики недоступен
         </span>
+
+    <div class="col-xs-12 spinner" ng-show="!ready && waitStarting">
+        <span class="spinner-loader">Проверка доступа к сервису...</span>
+    </div>
 
         <button type="button" class="btn btn-success btn-lg"
                  ng-click="diag()" ng-show="ready && !(waitingResponse || archiveReady || timeout)">
@@ -55,7 +59,7 @@
 
         <button type="button" disabled class="btn btn-success btn-lg"
                  ng-click="downloadDiag()" ng-show="timeout">
-            Время ожидания вышло
+            Время ожидания вышло. Обновите страницу для повторной попытки
         </button>
     </div>
 </div>
