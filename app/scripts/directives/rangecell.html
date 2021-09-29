@@ -1,8 +1,8 @@
 <div
   class="cell cell-range"
-  ng-click="cell.copy(cell.value)"
+  ng-click="cell.copy(cell.value, true)"
   tooltip-popup-close-delay="500"
-  uib-tooltip="'{{ cell.value }}' copied to clipboard"
+  uib-tooltip="'{{ copyText }}' {{ 'widgets.labels.copy' | translate}}"
   tooltip-trigger="{
     'outsideClick': 'mouseleave',
     'focus': 'mouseleave'
