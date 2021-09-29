@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.16.3) stable; urgency=medium
+
+  * Translation switch in config editors without page reloading 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 29 Sep 2021 08:23:52 +0500
+
 wb-mqtt-homeui (2.16.2) stable; urgency=medium
 
   * RPC methods availability check is added
