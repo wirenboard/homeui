@@ -21,7 +21,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         extendDeep(configuration, options);
     };
 
-    this.$get = ['$locale', function ($locale) {
+    this.$get = [function () {
         var jse = JSONEditor;
         extendDeep(jse, configuration);
         jse.defaults.resolvers.unshift(schema => {
@@ -39,7 +39,6 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         jse.defaults.editors["slWb"] = makeDisabledEditorWrapper(jse.defaults.editors["select"]);
         jse.defaults.editors["info"] = makeTranslatedInfoEditor();
         jse.defaults.editors["siWb"] = makeIntegerEditorWithSpecialValue(jse.defaults.editors["integer"]);
-        jse.defaults.language = $locale.id;
         return jse;
     }];
 
@@ -154,6 +153,7 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
                 };
                 if (scope.options)
                     angular.extend(options, scope.options);
+                JSONEditor.defaults.language = $locale.id;
                 scope.editor = new JSONEditor(element[0], options);
 
                 var editor = scope.editor;
