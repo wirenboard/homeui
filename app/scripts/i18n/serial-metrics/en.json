@@ -1,0 +1,24 @@
+{
+    "serial-metrics":{
+        "title": "wb-mqtt-serial metrics",
+        "labels": {
+            "port": "Port",
+            "channel": "Channel",
+            "load": "Bus load",
+            "percent": "last minute",
+            "percent15": "last 15 minutes",
+            "interval": "Requests interval during last minute",
+            "interval50": "50% less than",
+            "interval95": "95% less than",
+            "idle": "Idle",
+            "ms": "ms",
+            "unavailable": "wb-mqtt-serial metrics service is unavailable"
+        },
+        "buttons": {
+            "reload": "Reload"
+        },
+        "errors": {
+            "load": "Error getting metrics"
+        }
+    }
+}

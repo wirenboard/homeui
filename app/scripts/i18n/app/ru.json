@@ -32,7 +32,8 @@
             "system": "Система",
             "channels": "Каналы MQTT",
             "access": "Права доступа",
-            "logs": "Логи"
+            "logs": "Логи",
+            "serial-metrics": "Метрики wb-mqtt-serial"
         },
         "access": {
             "title": "Уровень доступа:"

@@ -46,6 +46,7 @@ import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
 import rolesFactory from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
+import serialMetricsProxyService from './services/serialMetricsProxy';
 
 import handleDataService from './services/handle-data';
 
@@ -142,6 +143,7 @@ module
     .factory('ConfigEditorProxy', configEditorProxyService)
     .factory('HistoryProxy', historyProxyService)
     .factory('LogsProxy', logsProxyService)
+    .factory('SerialMetricsProxy', serialMetricsProxyService)
     .factory('gotoDefStart', gotoDefStartService)
     .factory('getTime', getTimeService)
     .factory('Spinner', spinnerService)
@@ -306,7 +308,8 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
     .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
         ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui', "logs",
-         'configurations', 'rules', 'history', 'widgets', 'devices', 'units'].forEach(el => $translatePartialLoaderProvider.addPart(el));
+         'configurations', 'rules', 'history', 'widgets', 'devices', 'units',
+         'serial-metrics'].forEach(el => $translatePartialLoaderProvider.addPart(el));
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json?v=' + __webpack_hash__
