@@ -33,7 +33,7 @@
         },
         "states": {
             "checking": "Check access to service...",
-            "collecting": "Data is collecting..."
+            "collecting": "Collecting data"
         }
     }
 }
