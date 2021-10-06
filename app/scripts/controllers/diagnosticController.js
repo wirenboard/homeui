@@ -48,7 +48,7 @@ class DiagnosticCtrl {
     };
 
     whenMqttReady()
-    .then( () => this.DiagnosticProxy.hasMethod('diag'))
+    .then( () => this.DiagnosticProxy.hasMethod('diag') )
     .then(function (result) {
       console.log(result);
       if (!result) {
@@ -60,7 +60,8 @@ class DiagnosticCtrl {
     ).then(function (payload) {
       if (payload != "1") {
         console.log(payload);
-        changeBtnText('collector.states.unavailable');
+        changeBtnText('collector.errors.unavailable');
+        $scope.btnEnabled = false;
       } else {
         console.log(payload);
         changeBtnText('collector.buttons.collect');
