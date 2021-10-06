@@ -49,19 +49,20 @@ class DiagnosticCtrl {
     whenMqttReady()
     .then( () => DiagnosticProxy.hasMethod('diag'))
     .then(function (result) {
+      console.log(result);
       if (!result) {
-          changeBtnText('collector.states.unavailable');
-          $scope.btnEnabled = false;
-          $scope.btnVisible = true;
+          return -1;
       } else {
-          changeBtnText('collector.buttons.collect');
           return DiagnosticProxy.status();
       }
     }
     ).then(function (payload) {
-      if (payload == "1") {
-        $scope.btnVisible = true;
-      }
+      if (payload != "1") {
+        changeBtnText('collector.states.unavailable');
+      } else {
+         changeBtnText('collector.buttons.collect');
+      };
+      $scope.btnVisible = true;
     });
 
     var diag = function () {
