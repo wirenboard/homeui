@@ -1,5 +1,5 @@
 class DiagnosticCtrl {
-  constructor($scope, $translate, DiagnosticProxy, SerialMetricsProxy, whenMqttReady) {
+  constructor($scope, $translate, DiagnosticProxy, whenMqttReady) {
     'ngInject';
 
     $scope.btnVisible = false;
@@ -47,10 +47,12 @@ class DiagnosticCtrl {
     };
 
     whenMqttReady()
-    .then( () => SerialMetricsProxy.hasMethod('diag'))
+    .then( () => DiagnosticProxy.hasMethod('diag'))
     .then(function (result) {
       if (!result) {
           changeBtnText('collector.states.unavailable');
+          $scope.btnEnabled = false;
+          $scope.btnVisible = true;
       } else {
           changeBtnText('collector.buttons.collect');
           return DiagnosticProxy.status();
