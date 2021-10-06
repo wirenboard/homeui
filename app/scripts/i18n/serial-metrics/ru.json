@@ -1,0 +1,24 @@
+{
+    "serial-metrics":{
+        "title": "Метрики wb-mqtt-serial",
+        "labels": {
+            "port": "Порт",
+            "channel": "Канал",
+            "load": "Загрузка шины",
+            "percent": "за минуту",
+            "percent15": "за 15 минут",
+            "interval": "Интервал опроса за последнюю минуту",
+            "interval50": "50% менее",
+            "interval95": "95% менее",
+            "idle": "Шина свободна",
+            "ms": "мс",
+            "unavailable": "Сервис метрик wb-mqtt-serial недоступен"
+        },
+        "buttons": {
+            "reload": "Перезагрузить"
+        },
+        "errors": {
+            "load": "Ошибка запроса метрик"
+        }
+    }
+}
