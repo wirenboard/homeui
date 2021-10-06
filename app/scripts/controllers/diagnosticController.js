@@ -51,18 +51,22 @@ class DiagnosticCtrl {
     .then(function (result) {
       console.log(result);
       if (!result) {
-          return -1;
+          return "-1";
       } else {
           return DiagnosticProxy.status();
-      }
+      };
     }
     ).then(function (payload) {
       if (payload != "1") {
+        console.log(payload);
         changeBtnText('collector.states.unavailable');
       } else {
-         changeBtnText('collector.buttons.collect');
+        console.log(payload);
+        changeBtnText('collector.buttons.collect');
       };
       $scope.btnVisible = true;
+      console.log("finished");
+      console.log($scope.text);
     });
 
     var diag = function () {
