@@ -24,6 +24,7 @@
     "collector": {
         "title" : "Diagnostic collector",
         "errors": {
+            "unavailable": "Diagnostic service is unavailable",
             "timeout": "Timeout exceed. Reload page and try again",
             "unavailableToDownload": "Can't reach file. Copy it from"
         },
