@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.19.0) stable; urgency=medium
+
+  * Total bus load is added to wb-mqtt-serial metrics page
+  * Sorting of wb-mqtt-serial metrics by clicking on appropriate column's header is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 06 Oct 2021 17:23:48 +0500
+
 wb-mqtt-homeui (2.18.0) stable; urgency=medium
 
   * Support for translations in JSON Schema templated parameters is added
