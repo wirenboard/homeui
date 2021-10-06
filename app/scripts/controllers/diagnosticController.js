@@ -1,8 +1,7 @@
 class DiagnosticCtrl {
-  constructor($scope, $injector, $translate, DiagnosticProxy, whenMqttReady) {
+  constructor($scope, $translate, DiagnosticProxy, whenMqttReady) {
     'ngInject';
 
-    this.DiagnosticProxy = $injector.get('DiagnosticProxy');
     $scope.btnVisible = false;
     $scope.btnEnabled = true;
     $scope.text = "";
@@ -48,7 +47,7 @@ class DiagnosticCtrl {
     };
 
     whenMqttReady()
-    .then( () => this.DiagnosticProxy.hasMethod('diag') )
+    .then( () => DiagnosticProxy.hasMethod('diag') )
     .then(function (result) {
       console.log(result);
       if (!result) {
