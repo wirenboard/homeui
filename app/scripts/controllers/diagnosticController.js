@@ -20,7 +20,7 @@ class DiagnosticCtrl {
       fetch(theUrl, { method: 'HEAD' })
         .then(
           function (response) {
-            print(response.headers.get('Content-Type')); // TODO: понять что в каких ситуациях
+            print(response.headers.get('Content-Type'));
             callback(response.status);
           }
         );
@@ -68,7 +68,6 @@ class DiagnosticCtrl {
       };
       $scope.btnVisible = true;
       console.log("finished");
-      console.log($scope.text);
     });
 
     var diag = function () {
