@@ -20,6 +20,7 @@ class DiagnosticCtrl {
       fetch(theUrl, { method: 'HEAD' })
         .then(
           function (response) {
+            print(response.headers.get('Content-Type')); // TODO: понять что в каких ситуациях
             callback(response.status);
           }
         );
