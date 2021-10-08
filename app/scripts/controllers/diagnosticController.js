@@ -20,14 +20,13 @@ class DiagnosticCtrl {
       fetch(theUrl, { method: 'HEAD' })
         .then(
           function (response) {
-            print(response.headers.get('Content-Type'));
-            callback(response.status);
+            callback(response.headers.get('Content-Type'));
           }
         );
     };
 
-    var callbackFileIsOk = function callbackFileIsOk(status) {
-      if (status < 400) {
+    var callbackFileIsOk = function callbackFileIsOk(contentType) {
+      if (contentType == 'application/zip') {
         $scope.btnEnabled = true;
         changeBtnText('collector.buttons.download');
         $scope.btnMethod = downloadDiag;
