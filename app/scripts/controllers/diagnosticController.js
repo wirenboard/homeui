@@ -49,7 +49,6 @@ class DiagnosticCtrl {
     whenMqttReady()
     .then( () => DiagnosticProxy.hasMethod('diag') )
     .then(function (result) {
-      console.log(result);
       if (!result) {
           return "-1";
       } else {
@@ -58,15 +57,12 @@ class DiagnosticCtrl {
     }
     ).then(function (payload) {
       if (payload != "1") {
-        console.log(payload);
         changeBtnText('collector.errors.unavailable');
         $scope.btnEnabled = false;
       } else {
-        console.log(payload);
         changeBtnText('collector.buttons.collect');
       };
       $scope.btnVisible = true;
-      console.log("finished");
     });
 
     var diag = function () {
