@@ -4,6 +4,7 @@ class DiagnosticCtrl {
 
     $scope.btnVisible = false;
     $scope.btnEnabled = true;
+    $scope.collecting = false;
     $scope.text = "";
 
     $scope.path = undefined;
@@ -26,6 +27,7 @@ class DiagnosticCtrl {
     };
 
     var callbackFileIsOk = function callbackFileIsOk(contentType) {
+      $scope.collecting = false;
       if (contentType == 'application/zip') {
         $scope.btnEnabled = true;
         changeBtnText('collector.buttons.download');
@@ -68,6 +70,7 @@ class DiagnosticCtrl {
     var diag = function () {
       $scope.btnEnabled = false;
       changeBtnText('collector.states.collecting');
+      $scope.collecting = true;
       DiagnosticProxy.diag()
         .then(names => {
           $scope.path = names['fullname'];
@@ -75,6 +78,7 @@ class DiagnosticCtrl {
           var url = getUrl();
           fileIsOk('http://' + url + '/diag/' + $scope.basename, callbackFileIsOk);
         }, err => {
+          $scope.collecting = false;
           changeBtnText('collector.errors.timeout');
         })
     };
