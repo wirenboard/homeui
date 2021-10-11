@@ -576,6 +576,7 @@ function makeTranslatedInfoEditor () {
 
         setValue (value) {
           this.input.value = this.translateProperty(value);
+          this.input.setAttribute('size', this.input.value.length);
         }
     }
 }

@@ -83,13 +83,17 @@ class SvgEditController {
         var tmp = [];
         for (var key in this.deviceData.cells) {
             var c = this.deviceData.cells[key];
-            var d = this.deviceData.devices[c.deviceId];
-            let cell = {
-                id: c.id,
-                name: c.getName(this.$locale.id),
-                device: d.getName(this.$locale.id)
-            };
-            tmp.push(cell);
+            if (c.isComplete()) {
+                var d = this.deviceData.devices[c.deviceId];
+                if (d !== undefined) {
+                    let cell = {
+                        id: c.id,
+                        name: c.getName(this.$locale.id),
+                        device: d.getName(this.$locale.id)
+                    };
+                    tmp.push(cell);
+                }
+            }
         }
         return tmp;
     }
