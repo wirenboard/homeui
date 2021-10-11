@@ -1,4 +1,3 @@
-
 <h1 class="page-header" translate>{{'system.title'}}</h1>
 
 <div class="panel panel-default" ng-controller="FirmwareCtrl">
@@ -6,15 +5,12 @@
         <h3 class="panel-title"><i class="glyphicon glyphicon-upload"></i> {{'system.update.title' | translate}}</h3>
     </div>
     <div class="panel-body">
-    <span ng-show="!canUpload" class="label label-warning" translate> {{'system.errors.unavailable'}}</span>
-        <button type="file" class="btn btn-success btn-lg"
-                ng-show="canUpload && !(running || uploading)"
-                ngf-select="upload($file)"
-                ngf-max-size="300MB"
-                ngf-pattern="'.fit,.*'" translate>{{'system.buttons.select'}}</button>
+        <span ng-show="!canUpload" class="label label-warning" translate> {{'system.errors.unavailable'}}</span>
+        <button type="file" class="btn btn-success btn-lg" ng-show="canUpload && !(running || uploading)"
+            ngf-select="upload($file)" ngf-max-size="300MB" ngf-pattern="'.fit,.*'"
+            translate>{{'system.buttons.select'}}</button>
         <div class="progress" ng-show="running || uploading">
-            <div class="progress-bar progress-bar-{{stateType}}"
-                 ng-style="{'width':progress + '%'};">
+            <div class="progress-bar progress-bar-{{stateType}}" ng-style="{'width':progress + '%'};">
                 <span translate>{{stateMsg}}</span>
             </div>
         </div>
@@ -32,21 +28,21 @@
     </div>
     <div class="panel-body">
 
-    <div class="col-xs-12 spinner" ng-show="!btnVisible && !started">
-        <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
-    </div>
+        <div class="col-xs-12 spinner" ng-show="!btnVisible && !started">
+            <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
+        </div>
 
-    <button type="button"  class="col-xs-3 btn btn-success btn-lg"
-            ng-click="btnMethod()" ng-disabled="!btnEnabled" ng-show="btnVisible" translate>
-        {{ text }}
-    </button>
-    <div class="col-xs-9" ng-show="collecting">
-        <span class="spinner-loader" ></span>
-    </div>
+        <button type="button" class="col-xs-3 btn btn-success btn-lg" ng-click="btnMethod()" ng-disabled="!btnEnabled"
+            ng-show="btnVisible" translate>
+            {{ text }}
+        </button>
+        <div class="col-xs-9" ng-show="collecting">
+            <span class="spinner-loader"></span>
+        </div>
 
-    <div ng-show="pathMessage">
-        <span translate> {{'collector.errors.unavailableToDownload'}} <code> {{path}} </code> </span>
-    </div>
+        <div ng-show="pathMessage">
+            <span> <span translate>{{'collector.errors.unavailableToDownload'}}</span> <code> {{path}} </code> </span>
+        </div>
 
     </div>
 </div>

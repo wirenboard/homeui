@@ -52,24 +52,24 @@ class DiagnosticCtrl {
     };
 
     whenMqttReady()
-    .then( () => DiagnosticProxy.hasMethod('diag') )
-    .then(function (result) {
-      if (!result) {
+      .then(() => DiagnosticProxy.hasMethod('diag'))
+      .then(function (result) {
+        if (!result) {
           return "-1";
-      } else {
+        } else {
           return DiagnosticProxy.status();
-      };
-    }
-    ).then(function (payload) {
-      if (payload != "1") {
-        changeBtnText('collector.errors.unavailable');
-        $scope.btnEnabled = false;
-      } else {
-        changeBtnText('collector.buttons.collect');
-        $scope.started = true;
-      };
-      $scope.btnVisible = true;
-    });
+        };
+      }
+      ).then(function (payload) {
+        if (payload != "1") {
+          changeBtnText('collector.errors.unavailable');
+          $scope.btnEnabled = false;
+        } else {
+          changeBtnText('collector.buttons.collect');
+          $scope.started = true;
+        };
+        $scope.btnVisible = true;
+      });
 
     var diag = function () {
       $scope.btnEnabled = false;
