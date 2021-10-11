@@ -2,9 +2,11 @@ class DiagnosticCtrl {
   constructor($scope, $translate, DiagnosticProxy, whenMqttReady) {
     'ngInject';
 
+    $scope.started = false;
     $scope.btnVisible = false;
     $scope.btnEnabled = true;
     $scope.collecting = false;
+    $scope.pathMessage = false;
     $scope.text = "";
 
     $scope.path = undefined;
@@ -36,7 +38,8 @@ class DiagnosticCtrl {
       else {
         $translate(['collector.errors.unavailableToDownload'])
           .then(translations => {
-            $scope.text = translations['collector.errors.unavailableToDownload'] + ' ' + $scope.path;
+            btnVisible = false;
+            $scope.pathMessage = true;
           });
       };
     };
@@ -63,6 +66,7 @@ class DiagnosticCtrl {
         $scope.btnEnabled = false;
       } else {
         changeBtnText('collector.buttons.collect');
+        $scope.started = true;
       };
       $scope.btnVisible = true;
     });

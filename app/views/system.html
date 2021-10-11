@@ -32,7 +32,7 @@
     </div>
     <div class="panel-body">
 
-    <div class="col-xs-12 spinner" ng-show="!btnVisible">
+    <div class="col-xs-12 spinner" ng-show="!btnVisible && started">
         <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
     </div>
 
@@ -43,6 +43,8 @@
 
     <div class="spinner" ng-show="collecting">
     </div>
+
+    <p ng-show="pathMessage" translate> {{'collector.errors.unavailableToDownload'}} <code> {path} </code> </p>
 
     </div>
 </div>
