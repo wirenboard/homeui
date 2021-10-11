@@ -54,7 +54,6 @@ class DiagnosticCtrl {
     whenMqttReady()
     .then( () => DiagnosticProxy.hasMethod('diag') )
     .then(function (result) {
-      console.log(result);
       if (!result) {
           return "-1";
       } else {

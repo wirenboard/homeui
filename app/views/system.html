@@ -40,11 +40,13 @@
             ng-click="btnMethod()" ng-disabled="!btnEnabled" ng-show="btnVisible" translate>
         {{ text }}
     </button>
-
-    <div class="col-xs-9 spinner" ng-show="collecting">
+    <div class="col-xs-9" ng-show="collecting">
+        <span class="spinner-loader" ></span>
     </div>
 
-    <p ng-show="pathMessage" translate> {{'collector.errors.unavailableToDownload'}} <code> {path} </code> </p>
+    <div ng-show="pathMessage">
+        <span translate> {{'collector.errors.unavailableToDownload'}} <code> {path}} </code> </span>
+    </div>
 
     </div>
 </div>
