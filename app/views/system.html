@@ -32,16 +32,16 @@
     </div>
     <div class="panel-body">
 
-    <div class="col-xs-12 spinner" ng-show="!btnVisible && started">
+    <div class="col-xs-12 spinner" ng-show="!btnVisible && !started">
         <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
     </div>
 
-    <button type="button"  class="btn btn-success btn-lg"
+    <button type="button"  class="col-xs-3 btn btn-success btn-lg"
             ng-click="btnMethod()" ng-disabled="!btnEnabled" ng-show="btnVisible" translate>
         {{ text }}
     </button>
 
-    <div class="spinner" ng-show="collecting">
+    <div class="col-xs-9 spinner" ng-show="collecting">
     </div>
 
     <p ng-show="pathMessage" translate> {{'collector.errors.unavailableToDownload'}} <code> {path} </code> </p>
