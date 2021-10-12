@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.19.0) stable; urgency=medium
+
+  * Diagnostic collector button added at System section
+
+ -- Semen Sokolov <s.sokolov@wirenboard.ru>  Tue, 28 Sep 2021 15:09:58 +0300
+
 wb-mqtt-homeui (2.18.2) stable; urgency=medium
 
   * Do not show in SVG dashboard editor controls without complete meta information
@@ -30,7 +36,7 @@ wb-mqtt-homeui (2.17.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.16.3) stable; urgency=medium
 
-  * Translation switch in config editors without page reloading 
+  * Translation switch in config editors without page reloading
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 29 Sep 2021 08:23:52 +0500
 
@@ -42,7 +48,7 @@ wb-mqtt-homeui (2.16.2) stable; urgency=medium
 
 wb-mqtt-homeui (2.16.1) stable; urgency=medium
 
-  * Displaying of tooltip after widget's cell data copying to clipboard is fixed 
+  * Displaying of tooltip after widget's cell data copying to clipboard is fixed
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 22:17:05 +0500
 
@@ -54,7 +60,7 @@ wb-mqtt-homeui (2.16.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.15.3) stable; urgency=medium
 
-  * Show english name for control if localized is not available 
+  * Show english name for control if localized is not available
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 21 Sep 2021 18:13:53 +0500
 
@@ -102,7 +108,7 @@ wb-mqtt-homeui (2.13.2) stable; urgency=medium
 
 wb-mqtt-homeui (2.13.1) stable; urgency=medium
 
-  * Control type filter in widget's properties dialog is restored 
+  * Control type filter in widget's properties dialog is restored
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 20:03:46 +0500
 
@@ -120,20 +126,20 @@ wb-mqtt-homeui (2.12.5) stable; urgency=medium
 
 wb-mqtt-homeui (2.12.4) stable; urgency=medium
 
-  * Dates calculation for history table is fixed 
+  * Dates calculation for history table is fixed
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 20:01:30 +0500
 
 wb-mqtt-homeui (2.12.3) stable; urgency=medium
 
-  * Widget deletion prompt message translation is fixed 
+  * Widget deletion prompt message translation is fixed
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:38:44 +0500
 
 wb-mqtt-homeui (2.12.2) stable; urgency=medium
 
   * Widget's editor's button text is replaced by icons
-  * Dashboard buttons are replaced by icons 
+  * Dashboard buttons are replaced by icons
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:25:47 +0500
 
@@ -151,7 +157,7 @@ wb-mqtt-homeui (2.12.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.11.1) stable; urgency=medium
 
-  * Set angular locale on startup 
+  * Set angular locale on startup
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Sep 2021 11:09:46 +0500
 
@@ -163,7 +169,7 @@ wb-mqtt-homeui (2.11.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.10.2) stable; urgency=medium
 
-  * Display of date labels when hovering points on history charts is restored. 
+  * Display of date labels when hovering points on history charts is restored.
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 27 Aug 2021 18:17:10 +0500
 
@@ -442,7 +448,7 @@ wb-mqtt-homeui (2.0~beta9) stable; urgency=medium
   * core: new template loader: fix cache problems when migrating from WebUI 1.0
   * history: allow to download history as a CSV file
   * history: fix cutting of long tick labels in Y-axis
-  * dashboards: fix display of SVG dashboards 
+  * dashboards: fix display of SVG dashboards
 
  -- Evgeny Boger <boger@contactless.ru>  Mon, 08 Apr 2019 20:23:53 +0300
 
@@ -655,13 +661,13 @@ wb-mqtt-homeui (1.2.1) stable; urgency=medium
 
 wb-mqtt-homeui (1.2) stable; urgency=medium
 
-  * history viewer 
+  * history viewer
 
  -- Evgeny Boger <boger@contactless.ru>  Thu, 10 Sep 2015 18:52:14 +0300
 
 wb-mqtt-homeui (1.1.1) stable; urgency=medium
 
-  * create /var/www/uploads directory 
+  * create /var/www/uploads directory
 
  -- Alexey Ignatov <lexszero@gmail.com>  Wed, 23 Sep 2015 18:42:06 +0000
 
@@ -735,7 +741,7 @@ wb-mqtt-homeui (1.0.4) stable; urgency=medium
 
 wb-mqtt-homeui (1.0.3) stable; urgency=medium
 
-  * fix error on nonexistent device referenced by widget 
+  * fix error on nonexistent device referenced by widget
 
 
  -- Evgeny Boger <boger@contactless.ru>  Tue, 05 May 2015 02:45:29 +0300
@@ -756,6 +762,6 @@ wb-mqtt-homeui (1.0.1) stable; urgency=medium
 
 wb-mqtt-homeui (1.0) stable; urgency=medium
 
-  * Initial release. 
+  * Initial release.
 
  -- Evgeny Boger <boger@contactless.ru>  Mon, 27 Apr 2015 17:16:00 +0300
