@@ -36,7 +36,7 @@ class DiagnosticCtrl {
         $scope.btnMethod = downloadDiag;
       }
       else {
-        btnVisible = false;
+        $scope.btnVisible = false;
         $scope.pathMessage = true;
       };
     };
