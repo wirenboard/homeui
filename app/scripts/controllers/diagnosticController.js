@@ -36,11 +36,8 @@ class DiagnosticCtrl {
         $scope.btnMethod = downloadDiag;
       }
       else {
-        $translate(['collector.errors.unavailableToDownload'])
-          .then(translations => {
-            btnVisible = false;
-            $scope.pathMessage = true;
-          });
+        btnVisible = false;
+        $scope.pathMessage = true;
       };
     };
 
