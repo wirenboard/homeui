@@ -36,11 +36,11 @@
             <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
         </div>
 
-        <button type="button" class="col-xs-3 btn btn-success btn-lg" ng-click="btnMethod()" ng-disabled="!btnEnabled"
+        <button type="button" class="btn btn-success btn-lg pull-left" ng-click="btnMethod()" ng-disabled="!btnEnabled"
             ng-show="btnVisible" translate>
             {{ text }}
         </button>
-        <div class="col-xs-9" ng-show="collecting">
+        <div class="col-xs-1" ng-show="collecting">
             <span class="spinner-loader"></span>
         </div>
 
