@@ -1,5 +1,5 @@
 class DiagnosticCtrl {
-  constructor($scope, $translate, DiagnosticProxy, whenMqttReady) {
+  constructor($scope, $translate, DiagnosticProxy, errors, whenMqttReady) {
     'ngInject';
 
     $scope.started = false;
@@ -66,7 +66,7 @@ class DiagnosticCtrl {
           $scope.started = true;
         };
         $scope.btnVisible = true;
-      });
+      }).catch(errors.catch("Error while checking availableness of service"));
 
     var diag = function () {
       $scope.btnEnabled = false;
