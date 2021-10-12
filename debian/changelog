@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.20.0) stable; urgency=medium
+
+  * Faster loading of the tabbed configs editing GUI
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 13 Oct 2021 12:03:10 +0500
+
 wb-mqtt-homeui (2.19.0) stable; urgency=medium
 
   * Diagnostic collector button added at System section
