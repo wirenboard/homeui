@@ -42,7 +42,7 @@ class ConfigCtrl {
         $scope.file.schema = r.schema;
         $scope.file.loaded = true;
       })
-      .catch(errors.catch('configuration.errors.load'));
+      .catch(errors.catch('configurations.errors.load'));
     };
 
     $scope.save = function () {
