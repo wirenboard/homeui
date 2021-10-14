@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.20.0) stable; urgency=medium
+
+  * Faster loading of the tabbed configs editing GUI
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 14 Oct 2021 15:34:40 +0500
+
 wb-mqtt-homeui (2.19.1) stable; urgency=medium
 
   * Correct message about invalid configuration file is added
