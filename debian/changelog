@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.19.1) stable; urgency=medium
+
+  * Correct message about invalid configuration file is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 14 Oct 2021 14:00:33 +0500
+
 wb-mqtt-homeui (2.19.0) stable; urgency=medium
 
   * Diagnostic collector button added at System section
