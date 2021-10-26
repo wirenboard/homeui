@@ -913,16 +913,19 @@ function makeReadonlyOneOfEditor (Base) {
             super.build();
             this.switcher.style.display = 'none';
             this.header.style.display = 'none';
-            this.title_controls = this.theme.getButtonHolder()
         }
 
         switchEditor(i) {
-            super.switchEditor(i);
+            // Remove previous editor from DOM
+            if (this.type) {
+                this.editor_holder.removeChild(this.editor_holder.childNodes[0]);
+                this.editors[this.type] = null;
+            }
+
+            super.switchEditor(i)
+
             if (this.editors[i].header) {
                 this.editors[i].header.style.display = ''
-            }
-            if (this.editors[i].title) {
-                this.editors[i].title.style["margin-bottom"] = '9px';
             }
         }
     }
