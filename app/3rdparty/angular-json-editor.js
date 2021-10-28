@@ -789,10 +789,14 @@ function makeLazyTabsArrayEditor (Base) {
             }
             this.rows[i].has_editor = true
 
-            const controlsHolder = (this.schema.options &&
-                this.schema.options.wb &&
-                this.schema.options.wb.buttons_on_top &&
-                this.rows[i].controls) || this.rows[i].title_controls || this.rows[i].array_controls
+            if (!this.rows[i].title_controls) {
+                this.rows[i].array_controls = this.theme.getButtonHolder()
+                if (!this.hide_delete_buttons || this.show_copy_button || !this.hide_move_buttons) {
+                    this.rows[i].container.appendChild(this.rows[i].array_controls)
+                }
+            }
+
+            const controlsHolder = this.rows[i].title_controls || this.rows[i].array_controls
 
             /* Buttons to delete row, move row up, and move row down */
             if (!this.hide_delete_buttons) {
@@ -926,6 +930,12 @@ function makeReadonlyOneOfEditor (Base) {
 
             if (this.editors[i].header) {
                 this.editors[i].header.style.display = ''
+            }
+
+            if (this.editors[i].schema.options && this.editors[i].schema.options.wb && this.editors[i].schema.options.wb.controls_on_top) {
+                this.title_controls = this.editors[i].controls;
+            } else {
+                this.title_controls = undefined;
             }
         }
     }
