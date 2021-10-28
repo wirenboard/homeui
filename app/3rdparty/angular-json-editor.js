@@ -824,7 +824,7 @@ function makeLazyTabsArrayEditor (Base) {
             schema = this.jsoneditor.expandRefs(schema)
             if (schema.headerTemplate) {
                 var header_template = this.jsoneditor.compileTemplate(this.translateProperty(schema.headerTemplate), this.template_engine)
-                this.rows[i].tab_text.textContent = header_template({self:value});
+                this.rows[i].tab_text.textContent = header_template({self:value, i0: i, i1: i + 1});
             } else {
                 this.rows[i].tab_text.textContent = 'tab';
             }
