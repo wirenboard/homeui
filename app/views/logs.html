@@ -43,10 +43,16 @@
                     </select>
                 </div>
                 <div class="col-xs-12 col-md-4 col-lg-4">
-                    <button class="btn btn-success btn-block logs-load-button"
+                    <button class="btn btn-success"
                             ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService"
                             ng-click="$ctrl.reload()" translate>
                         {{'logs.buttons.load'}}
+                    </button>
+                    <button class="btn btn-default"
+                            ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService || !$ctrl.logs.length"
+                            ng-click="$ctrl.save()"
+                            title="{{'logs.buttons.save' | translate}}">
+                            <i class="glyphicon glyphicon-download-alt"></i>
                     </button>
                 </div>
             </div>

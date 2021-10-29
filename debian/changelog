@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.21.0) stable; urgency=medium
+
+  * Ability to save logs into a file is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 29 Oct 2021 12:40:34 +0500
+
 wb-mqtt-homeui (2.20.0) stable; urgency=medium
 
   * Faster loading of the tabbed configs editing GUI

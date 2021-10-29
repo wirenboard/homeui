@@ -266,6 +266,26 @@ class LogsCtrl {
         }
     }
 
+    save() {
+        var formatFn = (l) => {
+            var res = l.time || ""
+            if (l.service) {
+                res = res + " [" + l.service + "]"
+            }
+            if (l.msg) {
+                res = res + " " + l.msg
+            }
+            return res
+        }
+        const file = new Blob([this.logs.filter(l => l && l.msg).map(formatFn).join("\n")], {type: "text/txt"});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = 'log.txt';
+        downloadLink.href = window.URL.createObjectURL(file);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+
 } // class LogsCtrl
 
 //-----------------------------------------------------------------------------
