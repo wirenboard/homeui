@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.22.0) stable; urgency=medium
+
+  * Ability to save logs into a file is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 02 Nov 2021 11:06:57 +0500
+
 wb-mqtt-homeui (2.21.0) stable; urgency=medium
 
   * wb-mqtt-serial metrics page is made accessible by direct link only

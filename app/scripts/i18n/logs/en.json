@@ -16,7 +16,8 @@
             "since": "Since"
         },
         "buttons": {
-            "load": "Load"
+            "load": "Load",
+            "save": "Save loaded log to file"
         },
         "errors": {
             "services": "Error getting boots and services",

@@ -1,7 +1,7 @@
 import dtPickerTemplate from '../../views/dateTimePickerModal.html';
 
 class LogsCtrl {
-    constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope) {
+    constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope, $filter) {
         'ngInject';
 
         var vm = this;
@@ -18,6 +18,7 @@ class LogsCtrl {
         this.$uibModal = $uibModal;
         this.$element = $element;
         this.$translate = $translate;
+        this.$filter = $filter;
 
         angular.extend(this, {
             scope: $scope,
@@ -114,11 +115,11 @@ class LogsCtrl {
         return uiScrollIndex - this.logsTopUiScrollIndex;
     }
 
-    convertTimeToStr(entry) {
+    convertTime(entry) {
         if (entry.time) {
             var t = new Date();
             t.setTime(entry.time);
-            entry.time = this.dateFilter(t, "dd-MM-yyyy HH:mm:ss.sss");
+            entry.time = t;
         }
         return entry;
     }
@@ -184,7 +185,7 @@ class LogsCtrl {
         }
 
         this.LogsProxy.Load(params).then(result => {
-            var res = result.map((entry) => {return this.convertTimeToStr(entry);});
+            var res = result.map((entry) => {return this.convertTime(entry);});
             if (uiScrollIndex < this.logsTopUiScrollIndex) {
                 this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
                 this.logs.unshift(...res);
@@ -264,6 +265,38 @@ class LogsCtrl {
             ltb.style.height = hpx;
             ltb.style.width = wpx;
         }
+    }
+
+    removeServicePostfix(service) {
+        var pos = service.lastIndexOf('.');
+        if (pos < 0) {
+            return service;
+        }
+        return service.substr(0, pos)
+    }
+
+    makeLogName(service, time) {
+        return this.removeServicePostfix(service || 'log') + '_' + this.$filter('date')(time, 'yyyyMMddTHHmmss') + '.log';
+    }
+
+    makeLogHeader(service, begin, end) {
+        return (service || 'All services') + ' (' + begin.time.toISOString() + ' - ' + end.time.toISOString() + ')\n\n';
+    }
+
+    formatLogRow(l, service) {
+        return l.time.toISOString() + ' [' + this.removeServicePostfix(service || l.service) + '] ' + l.msg;
+    }
+
+    save() {
+        var l = this.logs.filter(l => l && l.msg);
+        const header = this.makeLogHeader(this.selectedService.name, l[0], l[l.length - 1]); 
+        const file = new Blob([header, l.map(l => this.formatLogRow(l, this.selectedService.name)).join("\n")], {type: "text/txt"});
+        const downloadLink = document.createElement("a");
+        downloadLink.download = this.makeLogName(this.selectedService.name, l[0].time);
+        downloadLink.href = window.URL.createObjectURL(file);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
     }
 
 } // class LogsCtrl
