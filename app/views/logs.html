@@ -63,7 +63,7 @@
         <table id="logs-table" ui-scroll-viewport>
             <tr ui-scroll="log in datasource" adapter="adapter">
                 <td class="logs-time-column">
-                    <span class="logs-time">{{log.time}}</span>
+                    <span class="logs-time">{{log.time | date : "dd-MM-yyyy HH:mm:ss.sss"}}</span>
                     <span ng-if="log.service" class="logs-service">[{{log.service}}]</span>
                 </td>
                 <td class="logs-message-column"

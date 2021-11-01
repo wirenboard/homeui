@@ -1,7 +1,7 @@
 import dtPickerTemplate from '../../views/dateTimePickerModal.html';
 
 class LogsCtrl {
-    constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope) {
+    constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope, $filter) {
         'ngInject';
 
         var vm = this;
@@ -18,6 +18,7 @@ class LogsCtrl {
         this.$uibModal = $uibModal;
         this.$element = $element;
         this.$translate = $translate;
+        this.$filter = $filter;
 
         angular.extend(this, {
             scope: $scope,
@@ -114,11 +115,11 @@ class LogsCtrl {
         return uiScrollIndex - this.logsTopUiScrollIndex;
     }
 
-    convertTimeToStr(entry) {
+    convertTime(entry) {
         if (entry.time) {
             var t = new Date();
             t.setTime(entry.time);
-            entry.time = this.dateFilter(t, "dd-MM-yyyy HH:mm:ss.sss");
+            entry.time = t;
         }
         return entry;
     }
@@ -184,7 +185,7 @@ class LogsCtrl {
         }
 
         this.LogsProxy.Load(params).then(result => {
-            var res = result.map((entry) => {return this.convertTimeToStr(entry);});
+            var res = result.map((entry) => {return this.convertTime(entry);});
             if (uiScrollIndex < this.logsTopUiScrollIndex) {
                 this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
                 this.logs.unshift(...res);
@@ -266,20 +267,34 @@ class LogsCtrl {
         }
     }
 
-    save() {
-        var formatFn = (l) => {
-            var res = l.time || ""
-            if (l.service) {
-                res = res + " [" + l.service + "]"
-            }
-            if (l.msg) {
-                res = res + " " + l.msg
-            }
-            return res
+    makeLogName(service, time) {
+        service = service || 'log';
+        var pos = service.lastIndexOf('.');
+        if (pos < 0) {
+            pos = service.length;
         }
-        const file = new Blob([this.logs.filter(l => l && l.msg).map(formatFn).join("\n")], {type: "text/txt"});
+        return service.substr(0, pos) + '_' + this.$filter('date')(time, 'yyyyMMddTHHmmss') + '.log';
+    }
+
+    makeLogHeader(service, start, end) {
+        return (service || 'All services') + ' (' + start.time.toISOString() + ' - ' + end.time.toISOString() + ')\n\n';
+    }
+
+    formatLogRow(l) {
+        var res = [l.time.toISOString()];
+        if (l.service) {
+            res.push('[' + l.service + ']');
+        }
+        res.push(l.msg);
+        return res.join(' ');
+    }
+
+    save() {
+        var l = this.logs.filter(l => l && l.msg);
+        const header = this.makeLogHeader(this.selectedService.name, l[0], l[l.length - 1]); 
+        const file = new Blob([header, l.map(this.formatLogRow).join("\n")], {type: "text/txt"});
         const downloadLink = document.createElement("a");
-        downloadLink.download = 'log.txt';
+        downloadLink.download = this.makeLogName(this.selectedService.name, l[0].time);
         downloadLink.href = window.URL.createObjectURL(file);
         downloadLink.style.display = "none";
         document.body.appendChild(downloadLink);
