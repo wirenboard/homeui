@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.21.0) stable; urgency=medium
+
+  * wb-mqtt-serial metrics page is made accessible by direct link only
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Nov 2021 15:27:56 +0500
+
 wb-mqtt-homeui (2.20.0) stable; urgency=medium
 
   * Faster loading of the tabbed configs editing GUI

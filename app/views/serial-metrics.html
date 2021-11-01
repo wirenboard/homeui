@@ -21,25 +21,39 @@
                     <tr>
                         <th rowspan="2" colspan="2">
                             <h6>{{'serial-metrics.labels.port' | translate}} {{port.port}}</h6>
+                            <span ng-show="port.idle && port.idle.length"> {{'serial-metrics.labels.bus-load' | translate : port.idle[0]}}
                         </th>
-                        <th colspan="2" translate>{{'serial-metrics.labels.load'}}</th>
-                        <th colspan="2" translate>{{'serial-metrics.labels.interval'}}</th>
+                        <th class='text-right' colspan="2" translate>{{'serial-metrics.labels.interval'}}</th>
+                        <th class='text-right' colspan="2" translate>{{'serial-metrics.labels.load'}}</th>
                     </tr>
                     <tr>
-                        <th translate>{{'serial-metrics.labels.percent'}}</th>
-                        <th translate>{{'serial-metrics.labels.percent15'}}</th>
-                        <th translate>{{'serial-metrics.labels.interval50'}}</th>
-                        <th translate>{{'serial-metrics.labels.interval95'}}</th>
+                        <th class='text-right'>
+                            {{'serial-metrics.labels.interval50' | translate}}
+                            <button ng-click="$ctrl.sortToggle('i50')"  class="icon-button glyphicon" ng-class="$ctrl.sortColumn=='i50' ? $ctrl.sortAsc ? 'glyphicon-sort-by-attributes-alt' : 'glyphicon-sort-by-attributes' : 'glyphicon-sort'"></button>
+                        </th>
+                        <th class='text-right'>
+                            {{'serial-metrics.labels.interval95' | translate}}
+                            <button ng-click="$ctrl.sortToggle('i95')"  class="icon-button glyphicon" ng-class="$ctrl.sortColumn=='i95' ? $ctrl.sortAsc ? 'glyphicon-sort-by-attributes-alt' : 'glyphicon-sort-by-attributes' : 'glyphicon-sort'"></button>
+                        </th>
+                        <th class='text-right'>
+                            {{'serial-metrics.labels.percent' | translate}}
+                            <button ng-click="$ctrl.sortToggle('bl')" class="icon-button glyphicon" ng-class="$ctrl.sortColumn=='bl' ? $ctrl.sortAsc ? 'glyphicon-sort-by-attributes-alt' : 'glyphicon-sort-by-attributes' : 'glyphicon-sort'"></button>
+                        </th>
+                        <th class='text-right'>
+                            {{'serial-metrics.labels.percent15' | translate}}
+                            <button ng-click="$ctrl.sortToggle('bl15')"  class="icon-button glyphicon" ng-class="$ctrl.sortColumn=='bl15' ? $ctrl.sortAsc ? 'glyphicon-sort-by-attributes-alt' : 'glyphicon-sort-by-attributes' : 'glyphicon-sort'"></button>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat='item in port.channels'>
-                        <td translate> {{ $ctrl.getDeviceName(item.names) }}</td>
-                        <td> {{ $ctrl.formatNames(item.names) }}</td>
-                        <td>{{ item.bl }}%</td>
-                        <td>{{ item.bl15 }}%</td>
-                        <td>{{ item.i50 }}{{'serial-metrics.labels.ms' | translate}}</td>
-                        <td>{{ item.i95 }}{{'serial-metrics.labels.ms' | translate}}</td>
+                    <tr ng-repeat="item in port.channels | orderBy:$ctrl.sortColumn:$ctrl.sortAsc">
+                        <td ng-show='item.serial' colspan="2" translate>{{ item.device }}</td>
+                        <td ng-show='!item.serial'>{{ item.device }}</td>
+                        <td ng-show='!item.serial'>{{ item.controls }}</td>
+                        <td class='text-right'>{{ item.i50 }}</td>
+                        <td class='text-right'>{{ item.i95 }}</td>
+                        <td class='text-right'>{{ item.bl | number : 2 }}</td>
+                        <td class='text-right'>{{ item.bl15 | number : 2 }}</td>
                     </tr>
                 </tbody>
             </table>
