@@ -267,32 +267,30 @@ class LogsCtrl {
         }
     }
 
-    makeLogName(service, time) {
-        service = service || 'log';
+    removeServicePostfix(service) {
         var pos = service.lastIndexOf('.');
         if (pos < 0) {
-            pos = service.length;
+            return service;
         }
-        return service.substr(0, pos) + '_' + this.$filter('date')(time, 'yyyyMMddTHHmmss') + '.log';
+        return service.substr(0, pos)
     }
 
-    makeLogHeader(service, start, end) {
-        return (service || 'All services') + ' (' + start.time.toISOString() + ' - ' + end.time.toISOString() + ')\n\n';
+    makeLogName(service, time) {
+        return this.removeServicePostfix(service || 'log') + '_' + this.$filter('date')(time, 'yyyyMMddTHHmmss') + '.log';
     }
 
-    formatLogRow(l) {
-        var res = [l.time.toISOString()];
-        if (l.service) {
-            res.push('[' + l.service + ']');
-        }
-        res.push(l.msg);
-        return res.join(' ');
+    makeLogHeader(service, begin, end) {
+        return (service || 'All services') + ' (' + begin.time.toISOString() + ' - ' + end.time.toISOString() + ')\n\n';
+    }
+
+    formatLogRow(l, service) {
+        return l.time.toISOString() + ' [' + this.removeServicePostfix(service || l.service) + '] ' + l.msg;
     }
 
     save() {
         var l = this.logs.filter(l => l && l.msg);
         const header = this.makeLogHeader(this.selectedService.name, l[0], l[l.length - 1]); 
-        const file = new Blob([header, l.map(this.formatLogRow).join("\n")], {type: "text/txt"});
+        const file = new Blob([header, l.map(l => this.formatLogRow(l, this.selectedService.name)).join("\n")], {type: "text/txt"});
         const downloadLink = document.createElement("a");
         downloadLink.download = this.makeLogName(this.selectedService.name, l[0].time);
         downloadLink.href = window.URL.createObjectURL(file);
