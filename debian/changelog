@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.21.1) stable; urgency=medium
+
+  * Homeui schema title translation to Russian
+
+ -- Dmitry Vorobjev <d.vorobjev@wirenboard.ru>  Tue, 02 Nov 2021 14:54:50 +0300
+
 wb-mqtt-homeui (2.21.0) stable; urgency=medium
 
   * wb-mqtt-serial metrics page is made accessible by direct link only
