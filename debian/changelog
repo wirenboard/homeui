@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.22.1) stable; urgency=medium
+
+  * Homeui schema title translation to Russian
+
+ -- Dmitry Vorobjev <d.vorobjev@wirenboard.ru>  Tue, 02 Nov 2021 14:54:50 +0300
+
 wb-mqtt-homeui (2.22.0) stable; urgency=medium
 
   * Ability to save logs into a file is added
