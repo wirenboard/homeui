@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.22.2) stable; urgency=medium
+
+  * Array controls translation bug in configs editor is fixed (json-editor is updated to 2.5.3-wb7)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 03 Nov 2021 15:02:37 +0500
+
 wb-mqtt-homeui (2.22.1) stable; urgency=medium
 
   * Homeui schema title translation to Russian
