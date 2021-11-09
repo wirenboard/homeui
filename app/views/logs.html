@@ -6,9 +6,9 @@
     </h1>
 
     <div class="row" ng-cloak ng-show="!$ctrl.waitBootsAndServices">
-        <div class="form-group col-xs-12 col-md-12 col-lg-4">
-            <label translate>{{'logs.labels.service'}}</label>
-            <ui-select ng-model="$ctrl.selectedService"
+        <div class="col-xs-12 col-md-6 col-lg-5">
+            <ui-select class="log-filter"
+                    ng-model="$ctrl.selectedService"
                     theme="bootstrap"
                     title="{{'logs.labels.choose-service' | translate}}"
                     append-to-body="true">
@@ -19,12 +19,12 @@
             </ui-select>
         </div>
 
-        <div class="form-group col-xs-12 col-md-5 col-lg-4">
-            <label translate>{{'logs.labels.boot'}}</label>
-            <ui-select ng-model="$ctrl.selectedBoot" 
-                    theme="bootstrap"
-                    title="{{'logs.labels.choose-boot' | translate}}"
-                    append-to-body="true">
+        <div class="col-xs-12 col-md-6 col-lg-4">
+            <ui-select class="log-filter"
+                       ng-model="$ctrl.selectedBoot" 
+                       theme="bootstrap"
+                       title="{{'logs.labels.choose-boot' | translate}}"
+                       append-to-body="true">
                 <ui-select-match placeholder="{{'logs.labels.choose-boot' | translate}}">{{ $select.selected.desc }}</ui-select-match>
                 <ui-select-choices repeat="boot in ($ctrl.boots | filter: {desc: $select.search}) track by boot.hash">
                     <div ng-bind-html="boot.desc | hilite: $select.search"></div>
@@ -32,30 +32,35 @@
             </ui-select>
         </div>
 
-        <div class="form-group col-xs-12 col-md-7 col-lg-4">
-            <label translate>{{'logs.labels.period'}}</label>
-            <div class="row">
-                <div class="col-xs-12 col-md-8 col-lg-8">
-                    <select class="form-control" 
-                            ng-model="$ctrl.selectedStartDateMs" 
-                            ng-options="date.date as date.name for date in $ctrl.logDates"
-                            ng-change="$ctrl.periodChanged()">
-                    </select>
-                </div>
-                <div class="col-xs-12 col-md-4 col-lg-4">
-                    <button class="btn btn-success"
-                            ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService"
-                            ng-click="$ctrl.reload()" translate>
-                        {{'logs.buttons.load'}}
-                    </button>
-                    <button class="btn btn-default"
-                            ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService || !$ctrl.logs.length"
-                            ng-click="$ctrl.save()"
-                            title="{{'logs.buttons.save' | translate}}">
-                            <i class="glyphicon glyphicon-download-alt"></i>
-                    </button>
-                </div>
-            </div>
+
+        <div class="col-xs-12 col-md-6 col-lg-3">
+            <select class="form-control log-filter" 
+                    ng-model="$ctrl.selectedStartDateMs" 
+                    ng-options="date.date as date.name for date in $ctrl.logDates"
+                    ng-change="$ctrl.periodChanged()">
+            </select>
+        </div>
+
+        <div class="col-xs-12 col-md-6 col-lg-5">
+            <div class="log-filter" ng-dropdown-multiselect="" options="$ctrl.availableLevels" selected-model="$ctrl.selectedLevels" extra-settings="$ctrl.levelsSettings" translation-texts="$ctrl.levelsTexts"></div>
+        </div>
+
+        <div class="col-xs-12 col-sm-8 col-md-9 col-lg-5">
+            <input class="form-control log-filter" placeholder="{{'logs.labels.pattern' | translate}}" ng-model="$ctrl.messagePattern"></input>
+        </div>
+
+        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 flex">
+            <button class="btn btn-success logs-load-button"
+                    ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService"
+                    ng-click="$ctrl.reload()" translate>
+                {{'logs.buttons.load'}}
+            </button>
+            <button class="btn btn-default pull-right"
+                    ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService || !$ctrl.logs.length"
+                    ng-click="$ctrl.save()"
+                    title="{{'logs.buttons.save' | translate}}">
+                    <i class="glyphicon glyphicon-download-alt"></i>
+            </button>
         </div>
     </div>
 

@@ -29,6 +29,19 @@ class LogsCtrl {
             errors: errors
         });
 
+        this.selectedLevels = [];
+        this.availableLevels = [
+            { id: 0, label: "emergency" },
+            { id: 1, label: "alert" },
+            { id: 2, label: "critical" },
+            { id: 3, label: "error" },
+            { id: 4, label: "warning" },
+            { id: 5, label: "notice" },
+            { id: 6, label: "info" },
+            { id: 7, label: "debug" }
+        ]; 
+        this.levelsSettings = { smartButtonMaxItems: 6, buttonClasses: "form-control" };
+
         this.waitBootsAndServices = true;
         this.enableSpinner = true;
         this.logs = [];
@@ -94,7 +107,10 @@ class LogsCtrl {
                          'logs.labels.all-services',
                          'logs.labels.now',
                          'logs.labels.since',
-                         'logs.errors.unavailable'
+                         'logs.errors.unavailable',
+                         'logs.labels.levels',
+                         'logs.labels.check',
+                         'logs.labels.uncheck'
                         ]).then(translations => {
           this.logDates[0].name = translations['logs.labels.latest'];
           this.logDates[1].name = translations['logs.labels.set-date'];
@@ -103,6 +119,11 @@ class LogsCtrl {
           this.nowMsg = translations['logs.labels.now'];
           this.sinceMsg = translations['logs.labels.since'];
           this.logsServiceUnavailableMsg = translations['logs.errors.unavailable'];
+          this.levelsTexts = { 
+                buttonDefaultText: translations['logs.labels.levels'],
+                checkAll: translations['logs.labels.check'],
+                uncheckAll: translations['logs.labels.uncheck']
+            };
         });
     }
 
@@ -158,6 +179,12 @@ class LogsCtrl {
         var params = {};
         params.service = this.selectedService.name;
         params.boot = this.selectedBoot.hash;
+        if (this.selectedLevels.length) {
+            params.levels = this.selectedLevels.map(l => l.id);
+        }
+        if (this.messagePattern) {
+            params.pattern = this.messagePattern;
+        }
 
         // Reload logs
         if (this.logs.length == 0) {
@@ -165,6 +192,11 @@ class LogsCtrl {
             params.limit = count;
             if (this.startDateMs) {
                 params.time = this.startDateMs/1000;
+            }
+            if (uiScrollIndex < 0) {
+                params.cursor = {
+                    direction: 'forward'
+                };
             }
         } else {
             var logsArrayIndex = this.toLogsArrayIndex(uiScrollIndex);

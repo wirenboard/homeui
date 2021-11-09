@@ -13,7 +13,11 @@
             "all-boots": "All boots",
             "all-services": "All services",
             "now": "now",
-            "since": "Since"
+            "since": "Since",
+            "pattern": "Enter string or regex to find...",
+            "levels": "All log levels",
+            "check": "Check All",
+            "uncheck": "Uncheck All"
         },
         "buttons": {
             "load": "Load",
