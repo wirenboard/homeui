@@ -21,7 +21,8 @@
         },
         "buttons": {
             "load": "Load",
-            "save": "Save loaded log to file"
+            "save": "Save loaded log to file",
+            "cancel": "Cancel"
         },
         "errors": {
             "services": "Error getting boots and services",

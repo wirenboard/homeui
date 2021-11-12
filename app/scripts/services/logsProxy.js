@@ -3,7 +3,8 @@ function logsProxyService(MqttRpc) {
 
   return MqttRpc.getProxy("wb_logs/logs", [
     "Load",
-    "List"
+    "List",
+    "CancelLoad"
   ], "logsProxy");
 }
 

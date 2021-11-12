@@ -50,10 +50,15 @@
         </div>
 
         <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 flex">
-            <button class="btn btn-success logs-load-button"
-                    ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService"
-                    ng-click="$ctrl.reload()" translate>
-                {{'logs.buttons.load'}}
+            <button class="btn btn-success logs-load-button" style="display: flex;"
+            ng-disabled="!$ctrl.selectedBoot || !$ctrl.selectedService || (adapter.isLoading && !$ctrl.canCancelLoad)"
+            ng-click="$ctrl.reload()">
+                <div ng-show="adapter.isLoading" class="spinner" style="padding: 0px; position: absolute;">
+                    <span class="spinner-loader" style="font-size: 5px;" translate>{{'logs.labels.loading'}}</span>
+                </div>
+                <span style="width: 100%;">
+                    {{(adapter.isLoading && $ctrl.canCancelLoad ? 'logs.buttons.cancel' : 'logs.buttons.load') | translate}}
+                </span>
             </button>
             <button class="btn btn-default pull-right"
                     ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService || !$ctrl.logs.length"

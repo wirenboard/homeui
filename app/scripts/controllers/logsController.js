@@ -19,6 +19,7 @@ class LogsCtrl {
         this.$element = $element;
         this.$translate = $translate;
         this.$filter = $filter;
+        this.$q = $q;
 
         angular.extend(this, {
             scope: $scope,
@@ -77,10 +78,29 @@ class LogsCtrl {
             }
         ];
 
+        this.canCancelLoad = false;
+
         $q.all([
             whenMqttReady()
           ]).then(() => {
+            this.LogsProxy.hasMethod('CancelLoad').then(result => this.canCancelLoad = result);
             vm.loadBootsAndServices();
+        });
+
+        $injector.get('whenMqttReady')()
+        .then( () => this.SerialMetricsProxy.hasMethod('Load') )
+        .then(result => {
+            this.available = result;
+            if (!result) {
+                this.enableSpinner = false;
+                this.errors.catch('serial-metrics.labels.unavailable')();
+            } else {
+                this.getBusLoad();
+            }
+        })
+        .catch( () => {
+            this.enableSpinner = false;
+            this.errors.catch('serial-metrics.labels.unavailable')(err);
         });
 
         $scope.adapter = {};
@@ -128,8 +148,12 @@ class LogsCtrl {
     }
 
     reload() {
-        this.logs = [];
-        this.scope.adapter.reload();
+        if (this.scope.adapter.isLoading) {
+            this.stopLoading();
+        } else {
+            this.logs = [];
+            this.scope.adapter.reload();
+        }
     }
 
     toLogsArrayIndex(uiScrollIndex) {
@@ -216,19 +240,36 @@ class LogsCtrl {
             }
         }
 
-        this.LogsProxy.Load(params).then(result => {
-            var res = result.map((entry) => {return this.convertTime(entry);});
-            if (uiScrollIndex < this.logsTopUiScrollIndex) {
-                this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
-                this.logs.unshift(...res);
-            } else {
-                this.logs.push(...res);
+        this.stopDeferred = this.$q.defer();
+
+        this.$q.race([this.LogsProxy.Load(params), this.stopDeferred.promise])
+                .then(result => {
+                    if (result) {
+                        var res = result.map((entry) => {return this.convertTime(entry);});
+                        if (uiScrollIndex < this.logsTopUiScrollIndex) {
+                            this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
+                            this.logs.unshift(...res);
+                        } else {
+                            this.logs.push(...res);
+                        }
+                        success(this.getLogsSlice(uiScrollIndex, count));
+                    } else {
+                        success()
+                        this.stopDeferred = undefined
+                    }
+                }).catch( (err) => {
+                    success([]);
+                    this.errors.catch('logs.errors.load')(err);
+                });
+    }
+
+    stopLoading() {
+        if (this.stopDeferred) {
+            if (this.canCancelLoad) {
+                this.LogsProxy.CancelLoad();
             }
-            success(this.getLogsSlice(uiScrollIndex, count));
-        }).catch( (err) => {
-            success([]);
-            this.errors.catch('logs.errors.load')(err);
-        });
+            this.stopDeferred.resolve();
+        }
     }
 
     loadBootsAndServices() {
