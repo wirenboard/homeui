@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.23.0) stable; urgency=medium
+
+  * Support for editing confings of wb-mqtt-adc 2.4.0 and wb-mqtt-gpio 2.8.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 12 Nov 2021 15:54:10 +0500
+
 wb-mqtt-homeui (2.22.3) stable; urgency=medium
 
   * Russian translation is updated
