@@ -1,3 +1,33 @@
+wb-mqtt-homeui (2.22.3) stable; urgency=medium
+
+  * Russian translation is updated
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 10 Nov 2021 17:25:16 +0500
+
+wb-mqtt-homeui (2.22.2) stable; urgency=medium
+
+  * Array controls translation bug in configs editor is fixed (json-editor is updated to 2.5.3-wb7)
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 03 Nov 2021 15:02:37 +0500
+
+wb-mqtt-homeui (2.22.1) stable; urgency=medium
+
+  * Homeui schema title translation to Russian
+
+ -- Dmitry Vorobjev <d.vorobjev@wirenboard.ru>  Tue, 02 Nov 2021 14:54:50 +0300
+
+wb-mqtt-homeui (2.22.0) stable; urgency=medium
+
+  * Ability to save logs into a file is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 02 Nov 2021 11:06:57 +0500
+
+wb-mqtt-homeui (2.21.0) stable; urgency=medium
+
+  * wb-mqtt-serial metrics page is made accessible by direct link only
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Nov 2021 15:27:56 +0500
+
 wb-mqtt-homeui (2.20.0) stable; urgency=medium
 
   * Faster loading of the tabbed configs editing GUI

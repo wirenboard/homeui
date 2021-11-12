@@ -226,7 +226,7 @@ function overrideJSONEditor() {
         /**
         * When a string must not be empty
         */
-        error_notempty: 'Необходимо задать значение',
+        error_notempty: 'Введите значение',
         /**
         * When a value is not one of the enumerated values
         */
@@ -415,11 +415,11 @@ function overrideJSONEditor() {
         /**
         * When an IPv4 is in incorrect format
         */
-        error_ipv4: 'Необходимо задать корректный адрес IPv4 в виде 4 чисел, разделённых точкой',
+        error_ipv4: 'Задайте IP-адрес в формате IPv4, например 192.168.0.1',
         /**
         * When an IPv6 is in incorrect format
         */
-        error_ipv6: 'Необходимо задать корректный адрес IPv6',
+        error_ipv6: 'Задайте IP-адрес в формате IPv6',
         /**
         * When a hostname is in incorrect format
         */

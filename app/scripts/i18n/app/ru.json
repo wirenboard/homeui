@@ -28,11 +28,11 @@
             "settings": "Настройки",
             "help": "Помощь",
             "configs": "Конфигурационные файлы",
-            "ui": "Web интерфейс",
+            "ui": "Веб-интерфейс",
             "system": "Система",
             "channels": "Каналы MQTT",
             "access": "Права доступа",
-            "logs": "Логи",
+            "logs": "Системный журнал",
             "serial-metrics": "Метрики wb-mqtt-serial"
         },
         "access": {
