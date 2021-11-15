@@ -79,6 +79,7 @@ class LogsCtrl {
         ];
 
         this.canCancelLoad = false;
+        this.allowLoading = false;
 
         $q.all([
             whenMqttReady()
@@ -147,11 +148,19 @@ class LogsCtrl {
         });
     }
 
-    reload() {
+    reloadOrStopLoading() {
         if (this.scope.adapter.isLoading) {
-            this.stopLoading();
+            this.allowLoading = false;
+            if (this.canCancelLoad) {
+                this.LogsProxy.CancelLoad();
+            }
+            if (this.stopDeferred) {
+                this.stopDeferred.resolve();
+            }
         } else {
             this.logs = [];
+            this.stopDeferred = this.$q.defer();
+            this.allowLoading = true;
             this.scope.adapter.reload();
         }
     }
@@ -195,7 +204,7 @@ class LogsCtrl {
     }
 
     getChunk(uiScrollIndex, count, success) {
-        if (this.waitBootsAndServices) {
+        if (this.waitBootsAndServices || !this.allowLoading) {
             success([]);
             return;
         }
@@ -240,11 +249,9 @@ class LogsCtrl {
             }
         }
 
-        this.stopDeferred = this.$q.defer();
-
         this.$q.race([this.LogsProxy.Load(params), this.stopDeferred.promise])
                 .then(result => {
-                    if (result) {
+                    if (this.allowLoading) {
                         var res = result.map((entry) => {return this.convertTime(entry);});
                         if (uiScrollIndex < this.logsTopUiScrollIndex) {
                             this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
@@ -254,22 +261,12 @@ class LogsCtrl {
                         }
                         success(this.getLogsSlice(uiScrollIndex, count));
                     } else {
-                        success()
-                        this.stopDeferred = undefined
+                        success([]);
                     }
                 }).catch( (err) => {
                     success([]);
                     this.errors.catch('logs.errors.load')(err);
                 });
-    }
-
-    stopLoading() {
-        if (this.stopDeferred) {
-            if (this.canCancelLoad) {
-                this.LogsProxy.CancelLoad();
-            }
-            this.stopDeferred.resolve();
-        }
     }
 
     loadBootsAndServices() {
