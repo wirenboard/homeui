@@ -17,12 +17,16 @@
             "pattern": "Enter string or regex to find...",
             "levels": "All log levels",
             "check": "Check All",
-            "uncheck": "Uncheck All"
+            "uncheck": "Uncheck All",
+            "unavailable": "wb-mqtt-logs service is unavailable",
+            "help": "Regular expressions user guide"
         },
         "buttons": {
             "load": "Load",
             "save": "Save loaded log to file",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "case": "Match case",
+            "regex": "Regular expression"
         },
         "errors": {
             "services": "Error getting boots and services",

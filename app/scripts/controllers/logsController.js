@@ -80,29 +80,24 @@ class LogsCtrl {
 
         this.canCancelLoad = false;
         this.allowLoading = false;
+        this.caseSensitive = true;
+        this.regex = false;
 
-        $q.all([
-            whenMqttReady()
-          ]).then(() => {
-            this.LogsProxy.hasMethod('CancelLoad').then(result => this.canCancelLoad = result);
-            vm.loadBootsAndServices();
-        });
-
-        $injector.get('whenMqttReady')()
-        .then( () => this.SerialMetricsProxy.hasMethod('Load') )
-        .then(result => {
-            this.available = result;
-            if (!result) {
+        whenMqttReady()
+            .then( () => this.LogsProxy.hasMethod('Load') )
+            .then(result => {
+                if (result) {
+                    this.LogsProxy.hasMethod('CancelLoad').then(result => this.canCancelLoad = result);
+                    vm.loadBootsAndServices();
+                } else {
+                    this.enableSpinner = false;
+                    this.errors.catch('log.labels.unavailable')();
+                }
+            })
+            .catch( (err) => {
                 this.enableSpinner = false;
-                this.errors.catch('serial-metrics.labels.unavailable')();
-            } else {
-                this.getBusLoad();
-            }
-        })
-        .catch( () => {
-            this.enableSpinner = false;
-            this.errors.catch('serial-metrics.labels.unavailable')(err);
-        });
+                this.errors.catch('logs.labels.unavailable')(err);
+            });
 
         $scope.adapter = {};
         $scope.datasource = {};
@@ -218,6 +213,14 @@ class LogsCtrl {
         if (this.messagePattern) {
             params.pattern = this.messagePattern;
         }
+        if (this.regex) {
+            params.regex = true;
+        }
+        if (!this.caseSensitive) {
+            params["case-sensitive"] = false;
+        }
+
+        console.log(this.regex);
 
         // Reload logs
         if (this.logs.length == 0) {

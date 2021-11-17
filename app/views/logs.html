@@ -45,8 +45,19 @@
             <div class="log-filter" ng-dropdown-multiselect="" options="$ctrl.availableLevels" selected-model="$ctrl.selectedLevels" extra-settings="$ctrl.levelsSettings" translation-texts="$ctrl.levelsTexts"></div>
         </div>
 
-        <div class="col-xs-12 col-sm-8 col-md-9 col-lg-5">
-            <input class="form-control log-filter" placeholder="{{'logs.labels.pattern' | translate}}" ng-model="$ctrl.messagePattern"></input>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-lg-5 flex log-filter">
+            <div class="input-group" style="flex-grow: 1;">
+                <input class="form-control" placeholder="{{'logs.labels.pattern' | translate}}" ng-model="$ctrl.messagePattern"></input>
+                <span class="input-group-btn">
+                    <label ng-model="$ctrl.caseSensitive" class="btn btn-default logs-button" title="{{'logs.buttons.case' | translate}}" uib-btn-checkbox>Aa</label>
+                    <label ng-model="$ctrl.regex" class="btn btn-default logs-button" title="{{'logs.buttons.regex' | translate}}" uib-btn-checkbox>Re  </label>
+                </span>
+            </div>
+            <a style="font-size: 12pt; padding: 7px 0px 0px 3px;"
+                class="glyphicon glyphicon-question-sign"
+                title="{{'logs.labels.help' | translate}}"
+                href="https://unicode-org.github.io/icu/userguide/strings/regexp.html">
+            </a>
         </div>
 
         <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 flex">
