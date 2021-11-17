@@ -953,6 +953,10 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   flex-grow: 1;
 }
 
+.logs-button {
+  height: 32px;
+}
+
 @media (min-width: 991px) {
   .logs-time {
     white-space: nowrap;

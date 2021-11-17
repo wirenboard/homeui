@@ -47,7 +47,7 @@
 
         <div class="col-xs-12 col-sm-8 col-md-9 col-lg-5 flex log-filter">
             <div class="input-group" style="flex-grow: 1;">
-                <input class="form-control" placeholder="{{'logs.labels.pattern' | translate}}" ng-model="$ctrl.messagePattern"></input>
+                <input class="form-control" placeholder="{{'logs.labels.pattern' | translate}}" ng-model="$ctrl.messagePattern" ng-keyup="$event.keyCode == 13 && $ctrl.reload()"></input>
                 <span class="input-group-btn">
                     <label ng-model="$ctrl.caseSensitive" class="btn btn-default logs-button" title="{{'logs.buttons.case' | translate}}" uib-btn-checkbox>Aa</label>
                     <label ng-model="$ctrl.regex" class="btn btn-default logs-button" title="{{'logs.buttons.regex' | translate}}" uib-btn-checkbox>Re  </label>
@@ -61,7 +61,7 @@
         </div>
 
         <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 flex">
-            <button class="btn btn-success logs-load-button" style="display: flex;"
+            <button class="btn btn-success logs-load-button logs-button" style="display: flex;"
             ng-disabled="!$ctrl.selectedBoot || !$ctrl.selectedService || (adapter.isLoading && !$ctrl.canCancelLoad)"
             ng-click="$ctrl.reloadOrStopLoading()">
                 <div ng-show="adapter.isLoading" class="spinner" style="padding: 0px; position: absolute;">
@@ -71,7 +71,7 @@
                     {{(adapter.isLoading && $ctrl.canCancelLoad ? 'logs.buttons.cancel' : 'logs.buttons.load') | translate}}
                 </span>
             </button>
-            <button class="btn btn-default pull-right"
+            <button class="btn btn-default pull-right logs-button"
                     ng-disabled="adapter.isLoading || !$ctrl.selectedBoot || !$ctrl.selectedService || !$ctrl.logs.length"
                     ng-click="$ctrl.save()"
                     title="{{'logs.buttons.save' | translate}}">

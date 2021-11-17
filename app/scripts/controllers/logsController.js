@@ -153,6 +153,12 @@ class LogsCtrl {
                 this.stopDeferred.resolve();
             }
         } else {
+            this.reload();
+        }
+    }
+
+    reload() {
+        if (!this.scope.adapter.isLoading) {
             this.logs = [];
             this.stopDeferred = this.$q.defer();
             this.allowLoading = true;
