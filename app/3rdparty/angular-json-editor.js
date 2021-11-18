@@ -695,8 +695,17 @@ function makeLazyTabsArrayEditor (Base) {
         }
 
         refreshTabs (refreshHeaders) {
-            this.rows.forEach(row => {
-                if (!row.has_editor || !row.tab) return
+            this.rows.forEach((row, i) => {
+                if (!row.tab) {
+                    return
+                }
+
+                if (!row.has_editor) {
+                    if (refreshHeaders && this.valueToSet) {
+                        this.updateTabTextContent(i, this.valueToSet[i]);
+                    }
+                    return
+                }
 
                 if (refreshHeaders) {
                     row.tab_text.textContent = row.getHeaderText()
@@ -710,6 +719,8 @@ function makeLazyTabsArrayEditor (Base) {
 
         setValue (value = [], initial) {
             value = this.ensureArraySize(value)
+            const serialized = JSON.stringify(value)
+            if (serialized === this.serialized) return
             this.valueToSet = value
             value.forEach((val, i) => {
                 if (this.rows[i]) {
@@ -742,7 +753,7 @@ function makeLazyTabsArrayEditor (Base) {
             const oldi = this.value ? this.value.length : 0
             
             /* Get the value for this editor */
-            this.value = this.valueToSet
+            this.value = (this.valueToSet || []).map(i => i);
             this.rows.forEach((row, i) => {
                 if (row.has_editor) {
                     this.value[i] = row.getValue()
@@ -817,13 +828,10 @@ function makeLazyTabsArrayEditor (Base) {
             }
         }
 
-        addRow (value, initial, force) {
-            const i = this.rows.length
-            this.rows[i] = {}
-            if (i == 0 || force) {
-                this.reallyAddRow(i, value, initial)
+        updateTabTextContent(i, value) {
+            if (typeof value === 'undefined') {
+                return
             }
-            this.rows[i].tab_text = document.createElement('span')
             var schema = this.getItemSchema(i)
             schema = this.jsoneditor.expandRefs(schema)
             if (schema.headerTemplate) {
@@ -832,6 +840,16 @@ function makeLazyTabsArrayEditor (Base) {
             } else {
                 this.rows[i].tab_text.textContent = 'tab';
             }
+        }
+
+        addRow (value, initial, force) {
+            const i = this.rows.length
+            this.rows[i] = {}
+            if (i == 0 || force) {
+                this.reallyAddRow(i, value, initial)
+            }
+            this.rows[i].tab_text = document.createElement('span')
+            this.updateTabTextContent(i, value)
             this.rows[i].path = `${this.path}.${i}`
             this.rows[i].tab = this.theme.getTab(this.rows[i].tab_text, this.getValidId(this.rows[i].path))
             this.theme.addTab(this.tabs_holder, this.rows[i].tab)
@@ -866,6 +884,7 @@ function makeLazyTabsArrayEditor (Base) {
                     editor = this.addRow([], true, true)
                 }
                 this.active_tab = this.rows[i].tab
+                this.refreshTabs(true)
                 this.refreshTabs()
                 this.refreshValue()
                 this.onChange(true)
@@ -873,7 +892,90 @@ function makeLazyTabsArrayEditor (Base) {
             })
             this.controls.appendChild(button)
             return button
+        }
+
+        _createMoveButton(i, holder, name, title, step) {
+            const button = this.getButton('', name, title)
+            button.classList.add(name, 'json-editor-btntype-move')
+            button.setAttribute('data-i', i)
+            button.addEventListener('click', e => {
+                e.preventDefault()
+                e.stopPropagation()
+                const i = e.currentTarget.getAttribute('data-i') * 1
+
+                const rows = this.getValue()
+                if (step == 0 || (step < 0 && i <= 0) || (step > 0 && i >= rows.length - 1)) return
+                const newIndex = i + step
+                const tmp = rows[newIndex]
+                rows[newIndex] = rows[i]
+                rows[i] = tmp
+
+                this.setValue(rows)
+                this.active_tab = this.rows[newIndex].tab
+                if (!this.rows[newIndex].has_editor) {
+                    this.reallyAddRow(newIndex, rows[newIndex], true)
+                    this.refreshTabs(true)
+                }
+                this.refreshTabs()
+                this.onChange(true)
+                this.jsoneditor.trigger('moveRow', this.rows[newIndex])
+            })
+        
+            if (holder) {
+                holder.appendChild(button)
             }
+            return button
+        }
+
+        _createMoveUpButton (i, holder) {
+            return this._createMoveButton(i, holder, 'moveup', 'button_move_up_title', -1);
+        }
+
+        _createMoveDownButton (i, holder) {
+            return this._createMoveButton(i, holder, 'movedown', 'button_move_down_title', 1);
+        }
+
+        _createDeleteButton (i, holder) {
+            const button = this.getButton(this.getItemTitle(), 'delete', 'button_delete_row_title', [this.getItemTitle()])
+            button.classList.add('delete', 'json-editor-btntype-delete')
+            button.setAttribute('data-i', i)
+            button.addEventListener('click', e => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                if (!this.askConfirmation()) {
+                    return false
+                }
+
+                const i = e.currentTarget.getAttribute('data-i') * 1
+                const newval = this.getValue().filter((row, j) => j !== i)
+                const editor = this.rows[i]
+
+                var newTabIndex = -1
+                if (this.rows[i]) {
+                    newTabIndex = i
+                } else if (this.rows[i - 1]) {
+                    newTabIndex = i - 1
+                }
+
+                if (newTabIndex >= 0) {
+                    this.active_tab = this.rows[newTabIndex].tab
+                    if (!this.rows[newTabIndex].has_editor) {
+                        this.reallyAddRow(newTabIndex, this.valueToSet[newTabIndex], true)
+                    }
+                    this.refreshTabs(true)
+                    this.refreshTabs()
+                }
+                this.setValue(newval)
+                this.onChange(true)
+                this.jsoneditor.trigger('deleteRow', editor)
+            })
+        
+            if (holder) {
+                holder.appendChild(button)
+            }
+            return button
+        }
 
         showValidationErrors (errors) {
             /* Get all the errors that pertain to this editor */
