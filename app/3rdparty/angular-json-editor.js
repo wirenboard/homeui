@@ -669,6 +669,11 @@ function makeLazyTabsArrayEditor (Base) {
             this.disabled = true
         }
 
+        preBuild () {
+            this.valueToSet = []
+            super.preBuild()
+        }
+
         build () {
             this.schema.format = 'tabs'
             super.build()
@@ -701,7 +706,7 @@ function makeLazyTabsArrayEditor (Base) {
                 }
 
                 if (!row.has_editor) {
-                    if (refreshHeaders && this.valueToSet) {
+                    if (refreshHeaders) {
                         this.updateTabTextContent(i, this.valueToSet[i]);
                     }
                     return
@@ -829,9 +834,6 @@ function makeLazyTabsArrayEditor (Base) {
         }
 
         updateTabTextContent(i, value) {
-            if (typeof value === 'undefined') {
-                return
-            }
             var schema = this.getItemSchema(i)
             schema = this.jsoneditor.expandRefs(schema)
             if (schema.headerTemplate) {
