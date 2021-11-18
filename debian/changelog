@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.23.1) stable; urgency=medium
+
+  * Updated default dashboard for Wiren Board 6
+
+ -- Alexander Gegtyarev <a.degtyarev@wirenboard.com>  Thu, 18 Nov 2021 20:26:00 +0400
+
 wb-mqtt-homeui (2.23.0) stable; urgency=medium
 
   * Support for editing confings of wb-mqtt-adc 2.4.0 and wb-mqtt-gpio 2.8.0
