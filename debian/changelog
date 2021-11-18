@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.23.1) stable; urgency=medium
 
   * Updated default dashboard for Wiren Board 6
 
- -- Alexander Gegtyarev <a.degtyarev@wirenboard.com>  Thu, 18 Nov 2021 20:26:00 +0400
+ -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Thu, 18 Nov 2021 20:26:00 +0400
 
 wb-mqtt-homeui (2.23.0) stable; urgency=medium
 
