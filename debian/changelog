@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.23.2) stable; urgency=medium
+
+  * Updated default dashboard for Wiren Board 6
+
+ -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Fri, 19 Nov 2021 18:07:00 +0400
+ 
 wb-mqtt-homeui (2.23.1) stable; urgency=medium
 
   * Deletion of array items in config editors is fixed
