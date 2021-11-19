@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.23.1) stable; urgency=medium
+
+  * Deletion of array items in config editors is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 18 Nov 2021 15:04:31 +0500
+
 wb-mqtt-homeui (2.23.0) stable; urgency=medium
 
   * Support for editing confings of wb-mqtt-adc 2.4.0 and wb-mqtt-gpio 2.8.0
