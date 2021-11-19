@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.23.2) stable; urgency=medium
+
+  * A hash is added to main.css file name, so it will be reloaded from server if content changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 19 Nov 2021 18:15:31 +0500
+
 wb-mqtt-homeui (2.23.1) stable; urgency=medium
 
   * Deletion of array items in config editors is fixed
