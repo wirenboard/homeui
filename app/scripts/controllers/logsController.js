@@ -226,8 +226,6 @@ class LogsCtrl {
             params["case-sensitive"] = false;
         }
 
-        console.log(this.regex);
-
         // Reload logs
         if (this.logs.length == 0) {
             this.logsTopUiScrollIndex = uiScrollIndex;
