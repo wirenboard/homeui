@@ -345,6 +345,9 @@ class LogsCtrl {
     }
 
     removeServicePostfix(service) {
+        if (!service) {
+            return ''
+        }
         var pos = service.lastIndexOf('.');
         if (pos < 0) {
             return service;
