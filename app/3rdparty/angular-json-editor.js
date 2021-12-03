@@ -3,6 +3,7 @@
 
 'use strict';
 
+import angular from "angular";
 import { JSONEditor} from "./jsoneditor";
 
 angular.module('angular-json-editor', []).provider('JSONEditor', function () {
@@ -35,6 +36,8 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         });
         jse.defaults.resolvers.unshift(schema => schema.type === 'integer' && schema.format === 'siWb' && 'siWb');
         jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'tabs' && 'lazy-tabs');
+        jse.defaults.resolvers.unshift(schema => schema.oneOf && schema.format === 'roMultiple' && 'roMultiple');
+        jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'merge-default' && 'merge-default');
 
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
         jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
@@ -42,6 +45,8 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         jse.defaults.editors["info"] = makeTranslatedInfoEditor();
         jse.defaults.editors["siWb"] = makeIntegerEditorWithSpecialValue(jse.defaults.editors["integer"]);
         jse.defaults.editors["lazy-tabs"] = makeLazyTabsArrayEditor(jse.defaults.editors["array"]);
+        jse.defaults.editors["roMultiple"] = makeReadonlyOneOfEditor(jse.defaults.editors["multiple"]);
+        jse.defaults.editors["merge-default"] = makeMergedDefaultValuesEditor(jse.defaults.editors["object"]);
         return jse;
     }];
 
@@ -221,7 +226,7 @@ function overrideJSONEditor() {
         /**
         * When a string must not be empty
         */
-        error_notempty: 'Необходимо задать значение',
+        error_notempty: 'Введите значение',
         /**
         * When a value is not one of the enumerated values
         */
@@ -410,11 +415,11 @@ function overrideJSONEditor() {
         /**
         * When an IPv4 is in incorrect format
         */
-        error_ipv4: 'Необходимо задать корректный адрес IPv4 в виде 4 чисел, разделённых точкой',
+        error_ipv4: 'Задайте IP-адрес в формате IPv4, например 192.168.0.1',
         /**
         * When an IPv6 is in incorrect format
         */
-        error_ipv6: 'Необходимо задать корректный адрес IPv6',
+        error_ipv6: 'Задайте IP-адрес в формате IPv6',
         /**
         * When a hostname is in incorrect format
         */
@@ -664,6 +669,11 @@ function makeLazyTabsArrayEditor (Base) {
             this.disabled = true
         }
 
+        preBuild () {
+            this.valueToSet = []
+            super.preBuild()
+        }
+
         build () {
             this.schema.format = 'tabs'
             super.build()
@@ -690,8 +700,17 @@ function makeLazyTabsArrayEditor (Base) {
         }
 
         refreshTabs (refreshHeaders) {
-            this.rows.forEach(row => {
-                if (!row.has_editor || !row.tab) return
+            this.rows.forEach((row, i) => {
+                if (!row.tab) {
+                    return
+                }
+
+                if (!row.has_editor) {
+                    if (refreshHeaders) {
+                        this.updateTabTextContent(i, this.valueToSet[i]);
+                    }
+                    return
+                }
 
                 if (refreshHeaders) {
                     row.tab_text.textContent = row.getHeaderText()
@@ -705,6 +724,8 @@ function makeLazyTabsArrayEditor (Base) {
 
         setValue (value = [], initial) {
             value = this.ensureArraySize(value)
+            const serialized = JSON.stringify(value)
+            if (serialized === this.serialized) return
             this.valueToSet = value
             value.forEach((val, i) => {
                 if (this.rows[i]) {
@@ -737,7 +758,7 @@ function makeLazyTabsArrayEditor (Base) {
             const oldi = this.value ? this.value.length : 0
             
             /* Get the value for this editor */
-            this.value = this.valueToSet
+            this.value = (this.valueToSet || []).map(i => i);
             this.rows.forEach((row, i) => {
                 if (row.has_editor) {
                     this.value[i] = row.getValue()
@@ -784,10 +805,14 @@ function makeLazyTabsArrayEditor (Base) {
             }
             this.rows[i].has_editor = true
 
-            const controlsHolder = (this.schema.options &&
-                this.schema.options.wb &&
-                this.schema.options.wb.buttons_on_top &&
-                this.rows[i].controls) || this.rows[i].title_controls || this.rows[i].array_controls
+            if (!this.rows[i].title_controls) {
+                this.rows[i].array_controls = this.theme.getButtonHolder()
+                if (!this.hide_delete_buttons || this.show_copy_button || !this.hide_move_buttons) {
+                    this.rows[i].container.appendChild(this.rows[i].array_controls)
+                }
+            }
+
+            const controlsHolder = this.rows[i].title_controls || this.rows[i].array_controls
 
             /* Buttons to delete row, move row up, and move row down */
             if (!this.hide_delete_buttons) {
@@ -808,6 +833,17 @@ function makeLazyTabsArrayEditor (Base) {
             }
         }
 
+        updateTabTextContent(i, value) {
+            var schema = this.getItemSchema(i)
+            schema = this.jsoneditor.expandRefs(schema)
+            if (schema.headerTemplate) {
+                var header_template = this.jsoneditor.compileTemplate(this.translateProperty(schema.headerTemplate), this.template_engine)
+                this.rows[i].tab_text.textContent = header_template({self:value, i0: i, i1: i + 1});
+            } else {
+                this.rows[i].tab_text.textContent = 'tab';
+            }
+        }
+
         addRow (value, initial, force) {
             const i = this.rows.length
             this.rows[i] = {}
@@ -815,14 +851,7 @@ function makeLazyTabsArrayEditor (Base) {
                 this.reallyAddRow(i, value, initial)
             }
             this.rows[i].tab_text = document.createElement('span')
-            var schema = this.getItemSchema(i)
-            schema = this.jsoneditor.expandRefs(schema)
-            if (schema.headerTemplate) {
-                var header_template = this.jsoneditor.compileTemplate(this.translateProperty(schema.headerTemplate), this.template_engine)
-                this.rows[i].tab_text.textContent = header_template({self:value});
-            } else {
-                this.rows[i].tab_text.textContent = 'tab';
-            }
+            this.updateTabTextContent(i, value)
             this.rows[i].path = `${this.path}.${i}`
             this.rows[i].tab = this.theme.getTab(this.rows[i].tab_text, this.getValidId(this.rows[i].path))
             this.theme.addTab(this.tabs_holder, this.rows[i].tab)
@@ -857,6 +886,7 @@ function makeLazyTabsArrayEditor (Base) {
                     editor = this.addRow([], true, true)
                 }
                 this.active_tab = this.rows[i].tab
+                this.refreshTabs(true)
                 this.refreshTabs()
                 this.refreshValue()
                 this.onChange(true)
@@ -864,7 +894,90 @@ function makeLazyTabsArrayEditor (Base) {
             })
             this.controls.appendChild(button)
             return button
+        }
+
+        _createMoveButton(i, holder, name, title, step) {
+            const button = this.getButton('', name, title)
+            button.classList.add(name, 'json-editor-btntype-move')
+            button.setAttribute('data-i', i)
+            button.addEventListener('click', e => {
+                e.preventDefault()
+                e.stopPropagation()
+                const i = e.currentTarget.getAttribute('data-i') * 1
+
+                const rows = this.getValue()
+                if (step == 0 || (step < 0 && i <= 0) || (step > 0 && i >= rows.length - 1)) return
+                const newIndex = i + step
+                const tmp = rows[newIndex]
+                rows[newIndex] = rows[i]
+                rows[i] = tmp
+
+                this.setValue(rows)
+                this.active_tab = this.rows[newIndex].tab
+                if (!this.rows[newIndex].has_editor) {
+                    this.reallyAddRow(newIndex, rows[newIndex], true)
+                    this.refreshTabs(true)
+                }
+                this.refreshTabs()
+                this.onChange(true)
+                this.jsoneditor.trigger('moveRow', this.rows[newIndex])
+            })
+        
+            if (holder) {
+                holder.appendChild(button)
             }
+            return button
+        }
+
+        _createMoveUpButton (i, holder) {
+            return this._createMoveButton(i, holder, 'moveup', 'button_move_up_title', -1);
+        }
+
+        _createMoveDownButton (i, holder) {
+            return this._createMoveButton(i, holder, 'movedown', 'button_move_down_title', 1);
+        }
+
+        _createDeleteButton (i, holder) {
+            const button = this.getButton(this.getItemTitle(), 'delete', 'button_delete_row_title', [this.getItemTitle()])
+            button.classList.add('delete', 'json-editor-btntype-delete')
+            button.setAttribute('data-i', i)
+            button.addEventListener('click', e => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                if (!this.askConfirmation()) {
+                    return false
+                }
+
+                const i = e.currentTarget.getAttribute('data-i') * 1
+                const newval = this.getValue().filter((row, j) => j !== i)
+                const editor = this.rows[i]
+
+                var newTabIndex = -1
+                if (this.rows[i]) {
+                    newTabIndex = i
+                } else if (this.rows[i - 1]) {
+                    newTabIndex = i - 1
+                }
+
+                if (newTabIndex >= 0) {
+                    this.active_tab = this.rows[newTabIndex].tab
+                    if (!this.rows[newTabIndex].has_editor) {
+                        this.reallyAddRow(newTabIndex, this.valueToSet[newTabIndex], true)
+                    }
+                    this.refreshTabs(true)
+                    this.refreshTabs()
+                }
+                this.setValue(newval)
+                this.onChange(true)
+                this.jsoneditor.trigger('deleteRow', editor)
+            })
+        
+            if (holder) {
+                holder.appendChild(button)
+            }
+            return button
+        }
 
         showValidationErrors (errors) {
             /* Get all the errors that pertain to this editor */
@@ -896,6 +1009,74 @@ function makeLazyTabsArrayEditor (Base) {
             this.rows.forEach(row =>
                 row.has_editor && row.showValidationErrors(otherErrors)
             )
+        }
+    }
+}
+
+// The editor is derived from multiple editor.
+// It is used with oneOf nodes when changing of type is prohibited
+function makeReadonlyOneOfEditor (Base) {
+    return class extends Base {
+        build() {
+            super.build();
+            this.switcher.style.display = 'none';
+            this.header.style.display = 'none';
+        }
+
+        switchEditor(i) {
+            // Remove previous editor from DOM
+            if (this.type) {
+                this.editor_holder.removeChild(this.editor_holder.childNodes[0]);
+                this.editors[this.type] = null;
+            }
+
+            super.switchEditor(i)
+
+            if (this.editors[i].header) {
+                this.editors[i].header.style.display = ''
+            }
+
+            if (this.editors[i].schema.options && this.editors[i].schema.options.wb && this.editors[i].schema.options.wb.controls_on_top) {
+                this.title_controls = this.editors[i].controls;
+            } else {
+                this.title_controls = undefined;
+            }
+        }
+    }
+}
+
+// The editor merges default value to a value passed to setValue function
+// and also removes all default values from result.
+// It can be used to show editors for all possible object's properties even if they are not set.
+function makeMergedDefaultValuesEditor (Base) {
+    return class extends Base {
+
+        setValue (value, initial) {
+            value = angular.merge(this.getDefault(), value)
+            super.setValue(value, initial)
+        }
+
+        getValue() {
+            var subtractValue = function (v1, v2) {
+                if (!angular.isObject(v1) || !angular.isObject(v2)) {
+                    return
+                }
+                Object.entries(v2).forEach(([k, v]) => {
+                    if (v1.hasOwnProperty(k)) {
+                        if (v1[k] === v) {
+                            delete v1[k];
+                        } else {
+                            subtractValue(v1[k], v);
+                            if (angular.isObject(v1[k]) && Object.keys(v1[k]).length == 0) {
+                                delete v1[k]
+                            }
+                        }
+                    }
+                });
+            };
+            var value = super.getValue();
+            subtractValue(value, this.getDefault());
+            return value;
         }
     }
 }

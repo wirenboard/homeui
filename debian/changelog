@@ -1,8 +1,38 @@
-wb-mqtt-homeui (2.23.0) stable; urgency=medium
+wb-mqtt-homeui (2.24.0) stable; urgency=medium
 
   * Syslog levels range and message pattern filters are added to "Logs" page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 09 Nov 2021 18:37:06 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 03 Dec 2021 13:17:37 +0500
+
+wb-mqtt-homeui (2.23.3) stable; urgency=medium
+
+  * A hash is added to main.css file name, so it will be reloaded from server if content changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 22 Nov 2021 10:37:52 +0500
+
+wb-mqtt-homeui (2.23.2) stable; urgency=medium
+
+  * Updated default dashboard for Wiren Board 6
+
+ -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Fri, 19 Nov 2021 18:07:00 +0400
+
+wb-mqtt-homeui (2.23.1) stable; urgency=medium
+
+  * Deletion of array items in config editors is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 18 Nov 2021 15:04:31 +0500
+
+wb-mqtt-homeui (2.23.0) stable; urgency=medium
+
+  * Support for editing confings of wb-mqtt-adc 2.4.0 and wb-mqtt-gpio 2.8.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 12 Nov 2021 15:54:10 +0500
+
+wb-mqtt-homeui (2.22.3) stable; urgency=medium
+
+  * Russian translation is updated
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 10 Nov 2021 17:25:16 +0500
 
 wb-mqtt-homeui (2.22.2) stable; urgency=medium
 
