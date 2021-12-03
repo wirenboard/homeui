@@ -19,6 +19,7 @@ class LogsCtrl {
         this.$element = $element;
         this.$translate = $translate;
         this.$filter = $filter;
+        this.$q = $q;
 
         angular.extend(this, {
             scope: $scope,
@@ -28,6 +29,19 @@ class LogsCtrl {
             dateFilter: dateFilter,
             errors: errors
         });
+
+        this.selectedLevels = [];
+        this.availableLevels = [
+            { id: 0, label: "emergency" },
+            { id: 1, label: "alert" },
+            { id: 2, label: "critical" },
+            { id: 3, label: "error" },
+            { id: 4, label: "warning" },
+            { id: 5, label: "notice" },
+            { id: 6, label: "info" },
+            { id: 7, label: "debug" }
+        ]; 
+        this.levelsSettings = { smartButtonMaxItems: 6, buttonClasses: "form-control" };
 
         this.waitBootsAndServices = true;
         this.enableSpinner = true;
@@ -64,11 +78,26 @@ class LogsCtrl {
             }
         ];
 
-        $q.all([
-            whenMqttReady()
-          ]).then(() => {
-            vm.loadBootsAndServices();
-        });
+        this.canCancelLoad = false;
+        this.allowLoading = false;
+        this.caseSensitive = true;
+        this.regex = false;
+
+        whenMqttReady()
+            .then( () => this.LogsProxy.hasMethod('Load') )
+            .then(result => {
+                if (result) {
+                    this.LogsProxy.hasMethod('CancelLoad').then(result => this.canCancelLoad = result);
+                    vm.loadBootsAndServices();
+                } else {
+                    this.enableSpinner = false;
+                    this.errors.catch('log.labels.unavailable')();
+                }
+            })
+            .catch( (err) => {
+                this.enableSpinner = false;
+                this.errors.catch('logs.labels.unavailable')(err);
+            });
 
         $scope.adapter = {};
         $scope.datasource = {};
@@ -94,7 +123,10 @@ class LogsCtrl {
                          'logs.labels.all-services',
                          'logs.labels.now',
                          'logs.labels.since',
-                         'logs.errors.unavailable'
+                         'logs.errors.unavailable',
+                         'logs.labels.levels',
+                         'logs.labels.check',
+                         'logs.labels.uncheck'
                         ]).then(translations => {
           this.logDates[0].name = translations['logs.labels.latest'];
           this.logDates[1].name = translations['logs.labels.set-date'];
@@ -103,12 +135,35 @@ class LogsCtrl {
           this.nowMsg = translations['logs.labels.now'];
           this.sinceMsg = translations['logs.labels.since'];
           this.logsServiceUnavailableMsg = translations['logs.errors.unavailable'];
+          this.levelsTexts = { 
+                buttonDefaultText: translations['logs.labels.levels'],
+                checkAll: translations['logs.labels.check'],
+                uncheckAll: translations['logs.labels.uncheck']
+            };
         });
     }
 
+    reloadOrStopLoading() {
+        if (this.scope.adapter.isLoading) {
+            this.allowLoading = false;
+            if (this.canCancelLoad) {
+                this.LogsProxy.CancelLoad();
+            }
+            if (this.stopDeferred) {
+                this.stopDeferred.resolve();
+            }
+        } else {
+            this.reload();
+        }
+    }
+
     reload() {
-        this.logs = [];
-        this.scope.adapter.reload();
+        if (!this.scope.adapter.isLoading) {
+            this.logs = [];
+            this.stopDeferred = this.$q.defer();
+            this.allowLoading = true;
+            this.scope.adapter.reload();
+        }
     }
 
     toLogsArrayIndex(uiScrollIndex) {
@@ -150,7 +205,7 @@ class LogsCtrl {
     }
 
     getChunk(uiScrollIndex, count, success) {
-        if (this.waitBootsAndServices) {
+        if (this.waitBootsAndServices || !this.allowLoading) {
             success([]);
             return;
         }
@@ -158,6 +213,18 @@ class LogsCtrl {
         var params = {};
         params.service = this.selectedService.name;
         params.boot = this.selectedBoot.hash;
+        if (this.selectedLevels.length) {
+            params.levels = this.selectedLevels.map(l => l.id);
+        }
+        if (this.messagePattern) {
+            params.pattern = this.messagePattern;
+        }
+        if (this.regex) {
+            params.regex = true;
+        }
+        if (!this.caseSensitive) {
+            params["case-sensitive"] = false;
+        }
 
         // Reload logs
         if (this.logs.length == 0) {
@@ -165,6 +232,11 @@ class LogsCtrl {
             params.limit = count;
             if (this.startDateMs) {
                 params.time = this.startDateMs/1000;
+            }
+            if (uiScrollIndex < 0) {
+                params.cursor = {
+                    direction: 'forward'
+                };
             }
         } else {
             var logsArrayIndex = this.toLogsArrayIndex(uiScrollIndex);
@@ -184,19 +256,24 @@ class LogsCtrl {
             }
         }
 
-        this.LogsProxy.Load(params).then(result => {
-            var res = result.map((entry) => {return this.convertTime(entry);});
-            if (uiScrollIndex < this.logsTopUiScrollIndex) {
-                this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
-                this.logs.unshift(...res);
-            } else {
-                this.logs.push(...res);
-            }
-            success(this.getLogsSlice(uiScrollIndex, count));
-        }).catch( (err) => {
-            success([]);
-            this.errors.catch('logs.errors.load')(err);
-        });
+        this.$q.race([this.LogsProxy.Load(params), this.stopDeferred.promise])
+                .then(result => {
+                    if (this.allowLoading) {
+                        var res = result.map((entry) => {return this.convertTime(entry);});
+                        if (uiScrollIndex < this.logsTopUiScrollIndex) {
+                            this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
+                            this.logs.unshift(...res);
+                        } else {
+                            this.logs.push(...res);
+                        }
+                        success(this.getLogsSlice(uiScrollIndex, count));
+                    } else {
+                        success([]);
+                    }
+                }).catch( (err) => {
+                    success([]);
+                    this.errors.catch('logs.errors.load')(err);
+                });
     }
 
     loadBootsAndServices() {
@@ -268,6 +345,9 @@ class LogsCtrl {
     }
 
     removeServicePostfix(service) {
+        if (!service) {
+            return ''
+        }
         var pos = service.lastIndexOf('.');
         if (pos < 0) {
             return service;
@@ -279,8 +359,19 @@ class LogsCtrl {
         return this.removeServicePostfix(service || 'log') + '_' + this.$filter('date')(time, 'yyyyMMddTHHmmss') + '.log';
     }
 
-    makeLogHeader(service, begin, end) {
-        return (service || 'All services') + ' (' + begin.time.toISOString() + ' - ' + end.time.toISOString() + ')\n\n';
+    makeLogHeader(service, begin, end, pattern, matchCase, isRegex) {
+        var header = (service || 'All services') + ' (' + begin.time.toISOString() + ' - ' + end.time.toISOString() + ')';
+        if (pattern) {
+            if (isRegex) {
+                header = header + `, regular expression \"${pattern}\"`;
+            } else {
+                header = header + `, pattern \"${pattern}\"`;
+            }
+            if (matchCase) {
+                header = header + ', match case';
+            }
+        }
+        return header + '\n\n';
     }
 
     formatLogRow(l, service) {
@@ -289,7 +380,7 @@ class LogsCtrl {
 
     save() {
         var l = this.logs.filter(l => l && l.msg);
-        const header = this.makeLogHeader(this.selectedService.name, l[0], l[l.length - 1]); 
+        const header = this.makeLogHeader(this.selectedService.name, l[0], l[l.length - 1], this.messagePattern, this.caseSensitive, this.regex); 
         const file = new Blob([header, l.map(l => this.formatLogRow(l, this.selectedService.name)).join("\n")], {type: "text/txt"});
         const downloadLink = document.createElement("a");
         downloadLink.download = this.makeLogName(this.selectedService.name, l[0].time);

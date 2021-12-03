@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.24.0) stable; urgency=medium
+
+  * Syslog levels range and message pattern filters are added to "Logs" page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 03 Dec 2021 13:17:37 +0500
+
 wb-mqtt-homeui (2.23.3) stable; urgency=medium
 
   * A hash is added to main.css file name, so it will be reloaded from server if content changes
