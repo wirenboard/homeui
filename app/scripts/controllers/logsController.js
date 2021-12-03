@@ -359,8 +359,19 @@ class LogsCtrl {
         return this.removeServicePostfix(service || 'log') + '_' + this.$filter('date')(time, 'yyyyMMddTHHmmss') + '.log';
     }
 
-    makeLogHeader(service, begin, end) {
-        return (service || 'All services') + ' (' + begin.time.toISOString() + ' - ' + end.time.toISOString() + ')\n\n';
+    makeLogHeader(service, begin, end, pattern, matchCase, isRegex) {
+        var header = (service || 'All services') + ' (' + begin.time.toISOString() + ' - ' + end.time.toISOString() + ')';
+        if (pattern) {
+            if (isRegex) {
+                header = header + `, regular expression \"${pattern}\"`;
+            } else {
+                header = header + `, pattern \"${pattern}\"`;
+            }
+            if (matchCase) {
+                header = header + ', match case';
+            }
+        }
+        return header + '\n\n';
     }
 
     formatLogRow(l, service) {
@@ -369,7 +380,7 @@ class LogsCtrl {
 
     save() {
         var l = this.logs.filter(l => l && l.msg);
-        const header = this.makeLogHeader(this.selectedService.name, l[0], l[l.length - 1]); 
+        const header = this.makeLogHeader(this.selectedService.name, l[0], l[l.length - 1], this.messagePattern, this.caseSensitive, this.regex); 
         const file = new Blob([header, l.map(l => this.formatLogRow(l, this.selectedService.name)).join("\n")], {type: "text/txt"});
         const downloadLink = document.createElement("a");
         downloadLink.download = this.makeLogName(this.selectedService.name, l[0].time);
