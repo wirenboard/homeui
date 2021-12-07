@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.24.1) stable; urgency=medium
+
+  * Fixed typo in Ru translation about default panel at homepage
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 07 Dec 2021 15:06:51 +0300
+
 wb-mqtt-homeui (2.24.0) stable; urgency=medium
 
   * Syslog levels range and message pattern filters are added to "Logs" page
