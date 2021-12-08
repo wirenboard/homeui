@@ -463,7 +463,7 @@ function deviceDataService(mqttClient) {
       ensureDevice(this.deviceId).cellIds.sort(compareCellIds);
     }
 
-    // meta must be a string with JSON
+    // meta must be a string with JSON or empty string or undefined
     // {
     //   title: {
     //    en: ...,
@@ -478,14 +478,26 @@ function deviceDataService(mqttClient) {
     //  units: ...
     // }
     setMeta(meta) {
-      const m = JSON.parse(meta);
-      this._nameTranslations = m.title || {};
-      this.setExplicitReadOnly(m.readonly);
-      this.setType(m.type);
-      this.setMin(m.min);
-      this.setMax(m.min);
-      this.setStep(m.precision);
-      this.setUnits(m.units)
+      if (meta) {
+        try {
+          const m = JSON.parse(meta);
+          this._nameTranslations = m.title || {};
+          this.setExplicitReadOnly(m.readonly);
+          this.setType(m.type);
+          this.setMin(m.min);
+          this.setMax(m.min);
+          this.setStep(m.precision);
+          this.setUnits(m.units)
+        } catch (e) {}
+      } else {
+        this._nameTranslations = {};
+        this.setExplicitReadOnly(null);
+        this.setType("");
+        this.setMin("");
+        this.setMax("");
+        this.setStep("");
+        this.setUnits("")
+      }
     }
 
     getName(lang) {
@@ -534,7 +546,7 @@ function deviceDataService(mqttClient) {
       {
         handledTopic: deviceTopicBase + '/meta',
         handler() {
-          if (payload === "") {
+          if (!payload) {
             if (devices.hasOwnProperty(deviceId)) {
               devices[deviceId].explicit = false;
               maybeRemoveDevice(deviceId);
@@ -548,7 +560,7 @@ function deviceDataService(mqttClient) {
       },{
         handledTopic: deviceTopicBase + '/meta/name',
         handler() {
-          if (payload === "") {
+          if (!payload) {
             if (devices.hasOwnProperty(deviceId)) {
               devices[deviceId].name = deviceId;
               devices[deviceId].explicit = false;
