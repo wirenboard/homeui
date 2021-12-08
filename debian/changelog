@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.23.1-wb3) stable; urgency=medium
+
+  * A disconnection from MQTT broker after receiving null in control's meta topic is fixed.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Dec 2021 13:37:05 +0500
+
 wb-mqtt-homeui (2.23.1-wb2) stable; urgency=medium
 
   * Fixed typo in Ru translation about default panel at homepage
