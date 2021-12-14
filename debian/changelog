@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.24.3) stable; urgency=medium
+
+  * wb-webui.conf is hided from direct editing
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 14 Dec 2021 11:30:38 +0500
+
 wb-mqtt-homeui (2.24.2) stable; urgency=medium
 
   * A disconnection from MQTT broker after receiving null in control's meta topic is fixed.
