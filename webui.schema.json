@@ -9,7 +9,8 @@
         "defaultDashboard": {}
     },
     "configFile": {
-        "path": "/etc/wb-webui.conf"
+        "path": "/etc/wb-webui.conf",
+        "hide": true
     },
     "options": {
         "collapsed": true,
