@@ -5,7 +5,9 @@ set -e
 
 wb_source "of"
 
-if of_machine_match "contactless,imx6ul-wirenboard60"; then
+if of_machine_match "wirenboard,wirenboard-720"; then
+    CONF_SUFFIX="wb7"
+elif of_machine_match "contactless,imx6ul-wirenboard60"; then
     CONF_SUFFIX="wb6"
 elif of_machine_match "contactless,imx28-wirenboard50"; then
     CONF_SUFFIX="wb5"

@@ -43,6 +43,7 @@ install:
 	install -m 0644 config.default.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
 	install -m 0644 config.wb5.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
 	install -m 0644 config.wb6.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
+	install -m 0644 config.wb7.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
 
 	install -d $(DESTDIR)/usr/lib/wb-mqtt-homeui
 	install -m 0755 convert_config_v1v2.py $(DESTDIR)/usr/lib/wb-mqtt-homeui/convert_config_v1v2
