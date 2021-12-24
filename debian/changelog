@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.26.0) stable; urgency=medium
+wb-mqtt-homeui (2.25.1) stable; urgency=medium
 
   * Added rounding min_interval in a RPC request to wb-mqtt-db
 
