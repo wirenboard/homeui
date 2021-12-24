@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.26.0) stable; urgency=medium
+
+  * Added rounding min_interval in a RPC request to wb-mqtt-db
+
+ -- Roman Kochkin <roman.kochkin@wirenboard.ru>  Fri, 24 Dec 2021 09:40:00 +0300
+
 wb-mqtt-homeui (2.25.0) stable; urgency=medium
 
   * wb-webui.conf is hidden from direct editing
