@@ -387,7 +387,7 @@ footer{
 }
 
 .script-editor .CodeMirror .script-error-line {
-  background-color: #f00;
+  background-color: #ffd5d5;
 }
 
 button.show-console {
