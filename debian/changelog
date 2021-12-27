@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.25.2) stable; urgency=medium
+
+  * Change the color of the error line in the rules script editor
+
+ -- Roman Kochkin <roman.kochkin@wirenboard.ru>  Mon, 27 Dec 2021 20:13:00 +0300
+
 wb-mqtt-homeui (2.25.1) stable; urgency=medium
 
   * Added rounding min_interval in a RPC request to wb-mqtt-db
