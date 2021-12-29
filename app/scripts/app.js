@@ -96,6 +96,7 @@ import routingModule from './app.routes';
 // Internal components
 import LoginFormModule from './components/loginForm/index';
 import SvgEditorModule from './components/svgEditor/index';
+import AngularJsonEditorModule from './components/json-editor/angular-json-editor';
 
 //-----------------------------------------------------------------------------
 /**
@@ -118,7 +119,7 @@ const module = angular
         'xeditable',
         'ui.select',
         'monospaced.elastic',
-        'angular-json-editor',
+        AngularJsonEditorModule,
         'oc.lazyLoad',
         'pascalprecht.translate',
         'angular-spinkit',

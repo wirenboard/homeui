@@ -4,9 +4,9 @@
 'use strict';
 
 import angular from "angular";
-import { JSONEditor} from "./jsoneditor";
+import { JSONEditor} from "../../../3rdparty/jsoneditor";
 
-angular.module('angular-json-editor', []).provider('JSONEditor', function () {
+const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
         defaults: {
             options: {
@@ -199,7 +199,9 @@ angular.module('angular-json-editor', []).provider('JSONEditor', function () {
         }
     };
 
-}]);
+}]).name;
+
+export default AngularJsonEditorModule;
 
 function overrideJSONEditor() {
     JSONEditor.defaults.custom_validators.push((schema, value, path) => {
