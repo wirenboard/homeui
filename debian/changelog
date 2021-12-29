@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.26.0) stable; urgency=medium
+
+  * Added default dashboards for Wiren Board 7
+
+ -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Wed, 29 Dec 2021 15:34:00 +0400
+
 wb-mqtt-homeui (2.25.2) stable; urgency=medium
 
   * Change the color of the error line in the rules script editor
