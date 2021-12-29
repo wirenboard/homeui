@@ -4,7 +4,7 @@
 'use strict';
 
 import angular from "angular";
-import { JSONEditor} from "../../../3rdparty/jsoneditor";
+import {JSONEditor} from "@json-editor/json-editor";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {

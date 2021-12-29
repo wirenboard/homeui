@@ -49,7 +49,6 @@ module.exports = function makeWebpackConfig() {
         main: './scripts/app.js',
         libs: [
             'angular', 'jquery', './lib/mqttws31', 'bootstrap',
-            './3rdparty/jsoneditor',
             './3rdparty/ui-bootstrap',
             'spectrum-colorpicker', './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker',
             'angular-resource',
@@ -72,6 +71,7 @@ module.exports = function makeWebpackConfig() {
             'angular-ui-scroll',
             'angular-dynamic-locale',
             'angularjs-dropdown-multiselect',
+            '@json-editor/json-editor',
 
             // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
             './scripts/i18n/angular-locale_en.js',
