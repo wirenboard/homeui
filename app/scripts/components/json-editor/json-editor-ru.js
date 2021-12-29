@@ -322,7 +322,9 @@ const JsonEditorRussianTranslation = {
     */
     button_delete_node_warning: 'Вы уверены, что хотите удалить этот элемент?',
 
-    unknown: 'неизвестно'
+    unknown: 'неизвестно',
+
+    collapse_all: 'Свернуть все элементы'
 };
 
 export default JsonEditorRussianTranslation;
