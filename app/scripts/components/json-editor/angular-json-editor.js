@@ -12,6 +12,7 @@ import makeTranslatedInfoEditor from "./translated-info-editor";
 import makeIntegerEditorWithSpecialValue from "./integer-editor-with-special-value";
 import makeReadonlyOneOfEditor from "./readonly-oneof-editor";
 import makeMergedDefaultValuesEditor from "./merged-default-values-editor";
+import makeEditWithDropdownEditor from "./edit-with-dropdown";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
@@ -42,6 +43,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
             }
         });
         jse.defaults.resolvers.unshift(schema => schema.type === 'integer' && schema.format === 'siWb' && 'siWb');
+        jse.defaults.resolvers.unshift(schema => schema.type === 'integer' && schema.format === 'edWb' && 'edWb');
         jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'tabs' && 'lazy-tabs');
         jse.defaults.resolvers.unshift(schema => schema.oneOf && schema.format === 'roMultiple' && 'roMultiple');
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'merge-default' && 'merge-default');
@@ -54,6 +56,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["lazy-tabs"] = makeLazyTabsArrayEditor();
         jse.defaults.editors["roMultiple"] = makeReadonlyOneOfEditor();
         jse.defaults.editors["merge-default"] = makeMergedDefaultValuesEditor();
+        jse.defaults.editors["edWb"] = makeEditWithDropdownEditor();
         return jse;
     }];
 
