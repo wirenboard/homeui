@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.27.0) stable; urgency=medium
+
+  * Text input with dropdown list of options for setting integer values is added to config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 29 Dec 2021 16:43:56 +0500
+
 wb-mqtt-homeui (2.26.0) stable; urgency=medium
 
   * Added default dashboards for Wiren Board 7
