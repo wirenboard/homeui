@@ -447,7 +447,7 @@ class HistoryCtrl {
         var intervalMs = endDate - startDate; // duration of requested interval, in ms
         // we want to request  no more than "limit" data points.
         // Additional divider 1.1 is here just to be on the safe side
-        params.min_interval = intervalMs / params.limit * 1.1;
+        params.min_interval = Math.trunc(intervalMs / params.limit * 1.1);
         this.loadHistory(params,indexOfControl,indexOfChunk,chunks)
     }
 

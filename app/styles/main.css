@@ -387,7 +387,7 @@ footer{
 }
 
 .script-editor .CodeMirror .script-error-line {
-  background-color: #f00;
+  background-color: #ffd5d5;
 }
 
 button.show-console {
@@ -948,10 +948,13 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   height: 1.5em;
 }
 
-@media (max-width: 990px) {
-  .logs-load-button {
-    margin-top: 15px;
-  }
+.logs-load-button {
+  margin-right: 10px;
+  flex-grow: 1;
+}
+
+.logs-button {
+  height: 32px;
 }
 
 @media (min-width: 991px) {
@@ -992,4 +995,28 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
 #logs-wrapper {
   overflow: hidden;
   height: 100%;
+}
+
+.dropdown-multiselect {
+  width: 100%;
+}
+
+.dropdown-multiselect .caret {
+  position: absolute;
+  height: 10px;
+  top: 50%;
+  right: 10px;
+  margin-top: -2px;
+}
+
+.dropdown-multiselect button {
+  text-align: left;
+}
+
+.log-filter {
+  margin-bottom: 15px;
+}
+
+.flex {
+  display: flex;
 }

@@ -131,7 +131,8 @@ const module = angular
         'ui-rangeSlider',
         'ngToast',
         'ui.scroll',
-        'tmh.dynamicLocale'
+        'tmh.dynamicLocale',
+        'angularjs-dropdown-multiselect'
     ])
     .value('historyMaxPoints', 1000)
     .value('logsMaxRows', 50)

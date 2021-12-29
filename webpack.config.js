@@ -72,6 +72,7 @@ module.exports = function makeWebpackConfig() {
             'lz-string',
             'angular-ui-scroll',
             'angular-dynamic-locale',
+            'angularjs-dropdown-multiselect',
 
             // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
             './scripts/i18n/angular-locale_en.js',
