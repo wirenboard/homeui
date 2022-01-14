@@ -2,6 +2,8 @@
 
 import { JSONEditor } from "../../../3rdparty/jsoneditor";
 
+// TODO: replace by implementation that has getDefault method returning undefined
+
 // The editor is used for poll_interval setting of a channel.
 // poll_interval is edited in table's cell.
 // We want to show empty editors for poll_intervals that are not set, but

@@ -1,4 +1,4 @@
-// Based off 0.1.8 version of https://github.com/rodikh/angular-json-editor
+// Based on 0.1.8 version of https://github.com/rodikh/angular-json-editor
 // This version does actually call onChange handler
 
 'use strict';
@@ -12,7 +12,7 @@ import makeTranslatedInfoEditor from "./translated-info-editor";
 import makeIntegerEditorWithSpecialValue from "./integer-editor-with-special-value";
 import makeReadonlyOneOfEditor from "./readonly-oneof-editor";
 import makeMergedDefaultValuesEditor from "./merged-default-values-editor";
-import makeEditWithDropdownEditor from "./edit-with-dropdown";
+import makeIntegerEditWithDropdownEditor from "./edit-with-dropdown";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
@@ -56,7 +56,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["lazy-tabs"] = makeLazyTabsArrayEditor();
         jse.defaults.editors["roMultiple"] = makeReadonlyOneOfEditor();
         jse.defaults.editors["merge-default"] = makeMergedDefaultValuesEditor();
-        jse.defaults.editors["edWb"] = makeEditWithDropdownEditor();
+        jse.defaults.editors["edWb"] = makeIntegerEditWithDropdownEditor();
         return jse;
     }];
 

@@ -176,7 +176,7 @@ function makeLazyTabsArrayEditor () {
             this.serialized = JSON.stringify(this.value)
         }
 
-        reallyAddRow(i, value, initial) {
+        renderRow(i, value, initial) {
             var tab_text = this.rows[i].tab_text
             var tab = this.rows[i].tab
             this.rows[i] = this.getElementEditor(i)
@@ -232,7 +232,7 @@ function makeLazyTabsArrayEditor () {
             const i = this.rows.length
             this.rows[i] = {}
             if (i == 0 || force) {
-                this.reallyAddRow(i, value, initial)
+                this.renderRow(i, value, initial)
             }
             this.rows[i].tab_text = document.createElement('span')
             this.updateTabTextContent(i, value)
@@ -241,7 +241,7 @@ function makeLazyTabsArrayEditor () {
             this.theme.addTab(this.tabs_holder, this.rows[i].tab)
             this.rows[i].tab.addEventListener('click', (e) => {
                 if (!this.rows[i].has_editor) {
-                    this.reallyAddRow(i, this.valueToSet[i], true)
+                    this.renderRow(i, this.valueToSet[i], true)
                 }
                 this.active_tab = this.rows[i].tab
                 this.refreshTabs(true)
@@ -299,7 +299,7 @@ function makeLazyTabsArrayEditor () {
                 this.setValue(rows)
                 this.active_tab = this.rows[newIndex].tab
                 if (!this.rows[newIndex].has_editor) {
-                    this.reallyAddRow(newIndex, rows[newIndex], true)
+                    this.renderRow(newIndex, rows[newIndex], true)
                     this.refreshTabs(true)
                 }
                 this.refreshTabs()
@@ -347,7 +347,7 @@ function makeLazyTabsArrayEditor () {
                 if (newTabIndex >= 0) {
                     this.active_tab = this.rows[newTabIndex].tab
                     if (!this.rows[newTabIndex].has_editor) {
-                        this.reallyAddRow(newTabIndex, this.valueToSet[newTabIndex], true)
+                        this.renderRow(newTabIndex, this.valueToSet[newTabIndex], true)
                     }
                     this.refreshTabs(true)
                     this.refreshTabs()

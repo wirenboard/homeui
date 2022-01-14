@@ -6,7 +6,7 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 // It allows free value editing and has additional dropdown list with possible values.
 // Values in dropdown are defined by options.enum_values array.
 // Titles for values could be set in options.enum_titles array.
-function makeEditWithDropdownEditor () {
+function makeIntegerEditWithDropdownEditor () {
     return class extends JSONEditor.AbstractEditor {
         constructor (options, defaults) {
           super(options, defaults)
@@ -147,4 +147,4 @@ function makeEditWithDropdownEditor () {
     }
 }
 
-export default makeEditWithDropdownEditor
+export default makeIntegerEditWithDropdownEditor

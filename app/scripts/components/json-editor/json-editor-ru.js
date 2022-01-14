@@ -154,7 +154,7 @@ const JsonEditorRussianTranslation = {
     * When the propertyName specifies a maxLength that is not a number
     * @variables This key takes one variable: The name of the current property
     */
-    error_property_names_maxlength: 'Property name {{0}} cannot match invalid maxLength',
+    error_property_names_maxlength: 'Параметр maxLength у свойства {{0}} должен быть числом',
     /**
     * When the propertyName specifies an enum that is not an array
     * @variables This key takes one variable: The name of the current property
