@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.28.0) stable; urgency=medium
+
+  * "Collapse all items" button is added to devices list in wb-mqtt-serial.conf
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 17 Jan 2022 09:52:34 +0500
+
 wb-mqtt-homeui (2.27.0) stable; urgency=medium
 
   * Text input with dropdown list of options for setting integer values is added to config editor
