@@ -7,8 +7,8 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 // Has additional "Collapse all items" button
 // To get full functionality item editors must have expandEditor and collapseEditor functions
 function makeCollapsibleArrayEditor () {
-    return class extends JSONEditor.defaults.editors["array"] {
-
+  JSONEditor.defaults.languages.en.collapse_all = 'Collapse all items'
+  return class extends JSONEditor.defaults.editors["array"] {
         build () {
             super.build()
             this.collapse_all_button = this._createCollapseAllButton()
@@ -24,11 +24,7 @@ function makeCollapsibleArrayEditor () {
         }
 
         _createCollapseAllButton () {
-            var msg = 'Collapse all items'
-            if (JSONEditor.defaults.language === 'ru') {
-                msg = 'Свернуть все элементы'
-            }
-            const button = this.getButton(msg, 'expand', 'button_collapse')
+            const button = this.getButton(this.translate('collapse_all'), 'expand', 'button_collapse')
             button.classList.add('json-editor-btntype-toggle')
             button.addEventListener('click', (e) => {
                 e.preventDefault()
