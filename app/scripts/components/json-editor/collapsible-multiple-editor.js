@@ -145,7 +145,7 @@ function makeCollapsibleMultipleEditor () {
                 this.refreshValue()
             }
             this._adjustControls(this.editors[this.type])
-            this.editors[this.type].editor_holder.style = ''
+            this.editors[this.type].editor_holder.style.display = ''
             this.collapsed = false
             this.setButtonText(this.collapse_control, '', 'collapse', 'button_collapse')
             this.container.style.paddingBottom = 0
