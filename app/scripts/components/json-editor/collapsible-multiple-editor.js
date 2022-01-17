@@ -116,11 +116,6 @@ function makeCollapsibleMultipleEditor () {
               this.switchEditor(this.type)
             }
 
-            if (!this.editors[this.type]) {
-                if (!this.collapsed || !this.schema.options || this.schema.options.disable_collapse) {
-                    this.buildChildEditor(i)
-                }
-            }
             if (this.editors[this.type]) {
                 this.editors[this.type].setValue(val, initial)
                 this.refreshValue()
