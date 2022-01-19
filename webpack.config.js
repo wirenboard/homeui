@@ -49,7 +49,6 @@ module.exports = function makeWebpackConfig() {
         main: './scripts/app.js',
         libs: [
             'angular', 'jquery', './lib/mqttws31', 'bootstrap',
-            './3rdparty/angular-json-editor',
             './3rdparty/jsoneditor',
             './3rdparty/ui-bootstrap',
             'spectrum-colorpicker', './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker',

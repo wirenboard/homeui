@@ -1020,3 +1020,25 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
 .flex {
   display: flex;
 }
+
+.editable-dropdown {
+  position: relative;
+}
+
+.editable-dropdown select {
+  width: 100%;
+}
+
+.editable-dropdown > * {
+  box-sizing: border-box;
+}
+
+.editable-dropdown input {
+  position: absolute;
+  width: calc(100% - 20px);
+  border-right: none;
+}
+
+.editable-dropdown-focused {
+  border-color: #66afe9;
+}
