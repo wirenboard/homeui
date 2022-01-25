@@ -48,6 +48,7 @@ import rolesFactory from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import serialMetricsProxyService from './services/serialMetricsProxy';
+import translationService from './services/translationService';
 
 import handleDataService from './services/handle-data';
 
@@ -155,6 +156,7 @@ module
     .factory('PageState', pageStateService)
     .factory('DeviceData', deviceDataService)
     .factory('DiagnosticProxy', diagnosticProxyService)
+    .factory('TranslationService', translationService)
 
 
     .service('handleData', handleDataService)

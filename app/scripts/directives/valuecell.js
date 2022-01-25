@@ -1,12 +1,25 @@
 import template from './valuecell.html';
 
 function valueCellDirective() {
+
+  class ValueCellController {
+    constructor (TranslationService) {
+      this.TranslationService = TranslationService
+    }
+
+    getUnitsName(c) {
+      return this.TranslationService.getUnitsName(c);
+    }
+  }
+
   return {
     restrict: "EA",
     scope: false,
     require: "^cell",
     replace: true,
-    template
+    template,
+    controllerAs: "vCtrl",
+    controller: ValueCellController
   };
 }
 
