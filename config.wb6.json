@@ -1435,7 +1435,7 @@
                         "read": {
                             "enable": true,
                             "channel": "network/Wi-Fi IP",
-                            "value": "'Wi-Fi AP: ' + val"
+                            "value": "'Wi-Fi IP: ' + val"
                         },
                         "write": {
                             "enable": false,
@@ -1462,7 +1462,7 @@
                         "read": {
                             "enable": true,
                             "channel": "network/Wi-Fi 2 IP",
-                            "value": "'Wi-Fi Client: ' + val"
+                            "value": "'Wi-Fi 2 IP: ' + val"
                         },
                         "write": {
                             "enable": false,
@@ -1811,13 +1811,11 @@
                 },
                 {
                     "id": "network/Wi-Fi IP",
-                    "name": "Wi-Fi AP",
                     "extra": {},
                     "type": "text"
                 },
                 {
                     "id": "network/Wi-Fi 2 IP",
-                    "name": "Wi-Fi Client",
                     "extra": {},
                     "type": "text"
                 },
