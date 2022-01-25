@@ -31,3 +31,7 @@ Run `grunt` for building and `grunt serve` for preview.
 ## Testing
 
 Running `grunt test` will run the unit tests with karma.
+
+## Default SVG-Dashboards
+
+In default svg-dashboards, the text is converted to curves. If you need to add something - add new text and select the Ubuntu font.

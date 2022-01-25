@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.29.0) stable; urgency=medium
+
+  * Rename Wi-Fi channels in default dashboards
+
+ -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Tue, 25 Jan 2021 13:48:00 +0400
+ 
 wb-mqtt-homeui (2.28.0) stable; urgency=medium
 
   * "Collapse all items" button is added to array editor on "Configs" page
