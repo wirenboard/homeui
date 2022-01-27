@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.30.0) stable; urgency=medium
+
+  * "unknown-device" editor for editing configs of devices with invalid templates
+  * wb.hide_from_selection option is added for "wb-multiple" editor. It hides element from selection list
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 27 Jan 2022 16:11:42 +0500
+
 wb-mqtt-homeui (2.29.0) stable; urgency=medium
 
   * Rename Wi-Fi channels in default dashboards

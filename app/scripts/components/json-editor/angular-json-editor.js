@@ -16,6 +16,7 @@ import makeIntegerEditWithDropdownEditor from "./edit-with-dropdown";
 import makeCollapsibleArrayEditor from "./collapsible-array-editor";
 import makeCollapsibleMultipleEditor from "./collapsible-multiple-editor";
 import makeObjectEditorWithButtonsOnTop from "./object-editor-with-buttons-on-top"
+import makeUnknownDeviceEditor from "./unknown-device-editor";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
@@ -53,6 +54,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.resolvers.unshift(schema => schema.oneOf && schema.format === 'wb-multiple' && 'wb-multiple');
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'merge-default' && 'merge-default');
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'wb-object' && 'wb-object');
+        jse.defaults.resolvers.unshift(schema => schema.format === 'unknown-device' && 'unknown-device');
 
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
         jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
@@ -66,6 +68,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["collapsible-list"] = makeCollapsibleArrayEditor();
         jse.defaults.editors["wb-multiple"] = makeCollapsibleMultipleEditor();
         jse.defaults.editors["wb-object"] = makeObjectEditorWithButtonsOnTop();
+        jse.defaults.editors["unknown-device"] = makeUnknownDeviceEditor();
         return jse;
     }];
 
