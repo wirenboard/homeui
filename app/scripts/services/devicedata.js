@@ -100,7 +100,7 @@ function deviceDataService(mqttClient) {
     },
     "power_consumption": {
       valueType: "number",
-      baseUnits: "kw*h",
+      baseUnits: "kWh",
       readOnly: true,
       displayType: "value"
     },
