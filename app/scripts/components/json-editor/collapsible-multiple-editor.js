@@ -16,7 +16,16 @@ function makeCollapsibleMultipleEditor () {
             if (!this.schema.options || !this.schema.options.disable_collapse) {
                 this.collapsed = true
             }
+
             super.build()
+
+            this.switcher_options.forEach((op ,i) => {
+                const ops = this.types[i].options
+                if (ops && ops.wb && ops.wb.hide_from_selection) {
+                    op.hidden = 'hidden'
+                }
+            })
+
             if (!this.schema.options || !this.schema.options.disable_collapse) {
                 this.collapse_control = this._createCollapseButton()
                 this.switcher.disabled = true
@@ -35,9 +44,14 @@ function makeCollapsibleMultipleEditor () {
         }
 
         switchEditor (i) {
+            var collapse = false
             if (!this.editors[i]) {
                 if (!this.collapsed || (this.schema.options && this.schema.options.disable_collapse)) {
                     this.buildChildEditor(i)
+                }
+                if (this._isUnknownDeviceType(i)) {
+                    this.buildChildEditor(i)
+                    collapse = true
                 }
             }
             const currentValue = this.getValue()
@@ -58,6 +72,10 @@ function makeCollapsibleMultipleEditor () {
                 this.refreshValue()
             }
             this.refreshHeaderText()
+            if (collapse) {
+                this.collapsed = false
+                this.collapseEditor()
+            }
         }
 
         setValue (val, initial) {
@@ -127,6 +145,7 @@ function makeCollapsibleMultipleEditor () {
             if (this.collapsed) {
                 return
             }
+            // hide only editor, error_holder still be shown
             this.editors[this.type].editor_holder.style.display = 'none'
             this.collapsed = true
             this.setButtonText(this.collapse_control, '', 'expand', 'button_expand')
@@ -161,8 +180,10 @@ function makeCollapsibleMultipleEditor () {
             if (this.childEditorControls) {
                 this.container.removeChild(this.childEditorControls)
             }
-            this.childEditorControls = editor.controls
-            this.container.insertBefore(this.childEditorControls, this.switcher.nextSibling)
+            if (editor.controls) {
+                this.childEditorControls = editor.controls
+                this.container.insertBefore(this.childEditorControls, this.switcher.nextSibling)
+            }
         }
 
         _createCollapseButton () {
@@ -180,6 +201,11 @@ function makeCollapsibleMultipleEditor () {
 
             this.container.insertBefore(button, this.container.childNodes[0])
             return button
+        }
+
+        _isUnknownDeviceType(i) {
+            const props = this.types[i].properties;
+            return (props && props.device_type && props.device_type.enum && props.device_type.enum[0] === 'unknown');
         }
     }
 }
