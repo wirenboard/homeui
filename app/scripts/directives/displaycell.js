@@ -69,7 +69,7 @@ function displayCellDirective(displayCellConfig, $compile) {
                          displayCellConfig.displayTypes['text']).directive;
 
         $compile('<' + directive + '></' + directive + '>')(scope, (clonedElement) => {
-          angular.element(element[0].firstElementChild).after(clonedElement);
+          angular.element(element[0].firstElementChild.nextElementSibling).after(clonedElement);
         });
       });
     }

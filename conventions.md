@@ -94,3 +94,11 @@ A read-only control for a certain type of value.
 | Gas concentration | concentration | ppm  | float (unsigned) ||
 | Heat power | heat_power | Gcal / hour | float ||
 | Heat energy | heat_energy | Gcal | float ||
+
+
+#### Errors
+
+`/devices/+/controls/+/meta/error` topics can contain a combination of values:
+- `r` - read from device error
+- `w` - write to device error
+- `p` - read period miss

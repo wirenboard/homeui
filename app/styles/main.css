@@ -1042,3 +1042,8 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
 .editable-dropdown-focused {
   border-color: #66afe9;
 }
+
+.warning-sign {
+  color: #f0ad4e !important;
+  padding-right: 5px;
+}

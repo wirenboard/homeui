@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.31.0) stable; urgency=medium
+
+  * 'p' from /meta/error indicating missed read period is shown as alert sign near control name
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sun, 06 Feb 2022 12:49:26 +0500
+
 wb-mqtt-homeui (2.30.0) stable; urgency=medium
 
   * "unknown-device" editor for editing configs of devices with invalid templates
