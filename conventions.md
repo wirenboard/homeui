@@ -8,17 +8,20 @@ For example, some room lighting control *device* with one input (for wall switch
 
 * `/devices/RoomLight/meta/name` - 'Light in my room', human-friendly description of the *device*
 * `/devices/RoomLight/meta/error` - device-level error state, non-null means there was an error (usable as Last Will and Testament)
+* `/devices/RoomLight/meta` - JSON with all meta information about *device*
 * `/devices/RoomLight/controls/Lamp` - contains current lamp state, '0' = off, '1' = on
 * `/devices/RoomLight/controls/Lamp/on` - send a message with this topic and payload of '0'/'1' to turn lamp off or on
+* `/devices/RoomLight/controls/Lamp/meta` - JSON with all meta information about control
 * `/devices/RoomLight/controls/Lamp/meta/type` - 'switch' (binary value)
 * `/devices/RoomLight/controls/Lamp/meta/order` - '1'
 * `/devices/RoomLight/controls/Switch` - contains current wall switch state
+* `/devices/RoomLight/controls/Switch/meta` - JSON with all meta information about control
 * `/devices/RoomLight/controls/Switch/meta/type` - 'switch'
 * `/devices/RoomLight/controls/Switch/meta/readonly` - '1', it doesn't make sense trying to control a wall switch over MQTT
 * `/devices/RoomLight/controls/Switch/meta/error` - 'r', non-null value means there was an error reading or writing the control. In this case  `/devices/RoomLight/controls/Switch` contains last known good value.
 * `/devices/RoomLight/controls/Switch/meta/order` - '2' a value that is used to arrange controls in some order (Lamp will be before Switch)
 
-Each *device* usually represents the single physical device or one of the integrated peripheral of a complex physical device, although there are some boundary cases where the distinction is not clear. The small and not-so-complex real-world devices (say, wireless wheather sensor) are ought to be represented by a single *device* in the MQTT hierarchy. 
+Each *device* usually represents the single physical device or one of the integrated peripheral of a complex physical device, although there are some boundary cases where the distinction is not clear. The small and not-so-complex real-world devices (say, wireless weather sensor) are ought to be represented by a single *device* in the MQTT hierarchy. 
 Each *device* must be handled by a single driver or publisher, though it's not enforced in any way.
 
 The *Conventions* are based on [HomA MQTT Conventions](https://github.com/binarybucks/homA/wiki/Conventions). The main changes are: no configuration is stored in MQTT (as MQTT is not so good as a database) and the *control* types system is more developed and complicated.
@@ -94,3 +97,81 @@ A read-only control for a certain type of value.
 | Gas concentration | concentration | ppm  | float (unsigned) ||
 | Heat power | heat_power | Gcal / hour | float ||
 | Heat energy | heat_energy | Gcal | float ||
+
+### Device's `/meta` topic
+
+The topic contains all meta information in one JSON
+
+```jsonc
+{
+    "driver": DRIVER_NAME,     // The name of a driver publishing the device
+    "title": {
+        "en": DEVICE_TITLE,    // English title of the device
+        "ru": DEVICE_TITLE_RU, // Russian title of the device
+        ...
+    }
+}
+```
+
+### Controls's `/meta` topic
+
+The topic contains all meta information in one JSON
+
+```jsonc
+{
+    // Control's type, same as /devices/+/controls/+/meta/type
+    "type": "switch",
+
+    // Value's unit
+    "units": "W",
+
+    // Power of 10 of a unit. 3 - kilo. So resulting unit is kW.
+    "units_power": 3,
+
+    // Maximum allowed control's value
+    "max": 100,
+
+    // Minimum allowed control's value
+    "min": -100.1,
+
+    // Control's value is rounded to defined precision by a driver and it is also used during user input validation
+    "precision": 0.1,
+
+    // Display order in user interface
+    "order": 10,
+
+    // The control doesn't have /on topic
+    "readonly": true,
+
+    "title": {
+        "en": CONTROL_TITLE,    // English title of the control
+        "ru": CONTROL_TITLE_RU, // Russian title of the control
+        ...
+    }
+}
+```
+
+#### Units
+
+| Unit name | description |
+|---        |---          |
+| mm/h      | mm per hour, precipitation rate (rainfall rate) |
+| m/s       | meter per second, speed |
+| W         | watt, power |
+| kWh       | kilowatt hour, power consumption |
+| V         | voltage |
+| m3/h      | cubic meters per hour, flow |
+| m3        | cubic meters, volume |
+| Gcal/h    | giga calories per hour, heat power |
+| cal       | calories, energy |
+| Ohm       | resistance |
+| bar       | pressure |
+| s         | second |
+| min       | minute |
+| hour      | hour |
+| m         | meter |
+| g         | gram |
+| mol       | mole, amount of substance |
+| cd        | candela, luminous intensity |
+| %, RH     | relative humidity |
+| °C        | temperature |
