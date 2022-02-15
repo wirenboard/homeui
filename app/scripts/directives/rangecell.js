@@ -11,10 +11,6 @@ function rangeCellDirective() {
     getUnitsName(c) {
       return this.TranslationService.getUnitsName(c);
     }
-
-    hasUnits(c) {
-      return c.units || c.baseUnits;
-    }
   }
 
   return {

@@ -74,7 +74,6 @@ A control for a arbitrary value.
 * Meta type value: value
 * Possible values: float
 Different values can be set by publishing an arbitrary float that is in range from ```/devices/<device_id>/controls/<control_id>/meta/min``` to ```/devices/<device_id>/controls/<control_id>/meta/max```.
-Units should be specified in ```/devices/<device_id>/controls/<control_id>/meta/units``` topic.
 Precision could be specified in ```/devices/<device_id>/controls/<control_id>/meta/precision``` topic. The value is rounded to defined precision by a driver and it is also used by `wb-mqtt-homeui` during user input validation.
 
 #### Specific value type controls
@@ -125,9 +124,6 @@ The topic contains all meta information in one JSON
     // Value's unit
     "units": "W",
 
-    // Power of 10 of a unit. 3 - kilo. So resulting unit is kW.
-    "units_power": 3,
-
     // Maximum allowed control's value
     "max": 100,
 
@@ -160,18 +156,25 @@ The topic contains all meta information in one JSON
 | W         | watt, power |
 | kWh       | kilowatt hour, power consumption |
 | V         | voltage |
-| m3/h      | cubic meters per hour, flow |
-| m3        | cubic meters, volume |
+| m^3/h     | cubic meters per hour, flow |
+| m^3       | cubic meters, volume |
 | Gcal/h    | giga calories per hour, heat power |
 | cal       | calories, energy |
+| Gcal      | giga calories, energy |
 | Ohm       | resistance |
 | bar       | pressure |
+| mbar      | pressure (100Pa) |
 | s         | second |
 | min       | minute |
 | hour      | hour |
 | m         | meter |
 | g         | gram |
+| kg        | kilo gram |
 | mol       | mole, amount of substance |
 | cd        | candela, luminous intensity |
 | %, RH     | relative humidity |
-| °C        | temperature |
+| deg C     | temperature |
+| %         | percent |
+| A         | ampere, current |
+| deg       | degree, angle |
+| rad       | radian, angle |

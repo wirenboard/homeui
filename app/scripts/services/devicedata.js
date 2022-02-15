@@ -63,93 +63,91 @@ function deviceDataService(mqttClient) {
     },
     "temperature": {
       valueType: "number",
-      baseUnits: "°C",
+      units: "deg C",
       readOnly: true,
       displayType: "value"
     },
     "rel_humidity": {
       valueType: "number",
-      baseUnits: "%, RH",
+      units: "%, RH",
       readOnly: true,
       displayType: "value"
     },
     "atmospheric_pressure": {
       valueType: "number",
-      baseUnits: "bar",
-      unitsPower: -3,
+      units: "mbar",
       readOnly: true,
       displayType: "value"
     },
     "rainfall": {
       valueType: "number",
-      baseUnits: "mm/h",
+      units: "mm/h",
       readOnly: true,
       displayType: "value"
     },
     "wind_speed": {
       valueType: "number",
-      baseUnits: "m/s",
+      units: "m/s",
       readOnly: true,
       displayType: "value"
     },
     "power": {
       valueType: "number",
-      baseUnits: "W",
+      units: "W",
       readOnly: true,
       displayType: "value"
     },
     "power_consumption": {
       valueType: "number",
-      baseUnits: "kWh",
+      units: "kWh",
       readOnly: true,
       displayType: "value"
     },
     "voltage": {
       valueType: "number",
-      baseUnits: "V",
+      units: "V",
       readOnly: true,
       displayType: "value"
     },
     "water_flow": {
       valueType: "number",
-      baseUnits: "m3/h",
+      units: "m^3/h",
       readOnly: true,
       displayType: "value"
     },
     "water_consumption": {
       valueType: "number",
-      baseUnits: "m3",
+      units: "m^3",
       readOnly: true,
       displayType: "value"
     },
     "heat_power": {
       valueType: "number",
-      baseUnits: "Gcal/h",
+      units: "Gcal/h",
       readOnly: true,
       displayType: "value"
     },
     "heat_energy": {
       valueType: "number",
-      baseUnits: "cal",
-      unitsPower: 9,
+      units: "Gcal",
       readOnly: true,
       displayType: "value"
     },
     "resistance": {
       valueType: "number",
-      baseUnits: "Ohm",
+      units: "Ohm",
       readOnly: true,
       displayType: "value"
     },
     "concentration": {
       valueType: "number",
-      baseUnits: "ppm",
+      units: "ppm",
       readOnly: true,
       displayType: "value"
     },
     "pressure": {
       valueType: "number",
-      baseUnits: "bar",
+      units: "bar",
       readOnly: true,
       displayType: "value"
     },
@@ -416,25 +414,8 @@ function deviceDataService(mqttClient) {
       this._explicitUnits = units;
     }
 
-    setBaseUnits(units) {
-      this._explicitBaseUnits = units;
-      this._explicitUnitsPower = 0;
-    }
-
-    setUnitsPower (power) {
-      this._explicitUnitsPower = power;
-    }
-
     get units () {
       return this._explicitUnits || this._typeEntry().units || "";
-    }
-
-    get baseUnits () {
-      return this._explicitBaseUnits || this._typeEntry().baseUnits || "";
-    }
-
-    get unitsPower () {
-      return this._explicitUnitsPower || this._typeEntry().unitsPower || 0;
     }
 
     get readOnly () {
@@ -498,8 +479,7 @@ function deviceDataService(mqttClient) {
           this.setMin(m.min);
           this.setMax(m.min);
           this.setStep(m.precision);
-          this.setBaseUnits(m.units);
-          this.setUnitsPower(m.units_power);
+          this.setUnits(m.units);
         } catch (e) {}
       } else {
         this._nameTranslations = {};
@@ -508,8 +488,7 @@ function deviceDataService(mqttClient) {
         this.setMin("");
         this.setMax("");
         this.setStep("");
-        this.setBaseUnits("");
-        this.setUnitsPower(0);
+        this.setUnits("");
       }
     }
 
@@ -690,8 +669,6 @@ function deviceDataService(mqttClient) {
 
     get type () { return this.cell.type; }
     get units () { return this.cell.units; }
-    get baseUnits () { return this.cell.baseUnits; }
-    get unitsPower () { return this.cell.unitsPower; }
     get readOnly () { return this.cell.readOnly; }
     get error () { return this.cell.error; }
     get min () { return this.cell.min; }
