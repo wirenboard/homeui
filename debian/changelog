@@ -1,8 +1,21 @@
-wb-mqtt-homeui (2.30.0) stable; urgency=medium
+wb-mqtt-homeui (2.32.0) stable; urgency=medium
 
   * Support for units in /meta JSON
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 25 Jan 2022 18:50:52 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 21 Feb 2022 16:04:20 +0500
+
+wb-mqtt-homeui (2.31.0) stable; urgency=medium
+
+  * 'p' from /meta/error indicating missed read period is shown as alert sign near control name
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sun, 06 Feb 2022 12:49:26 +0500
+
+wb-mqtt-homeui (2.30.0) stable; urgency=medium
+
+  * "unknown-device" editor for editing configs of devices with invalid templates
+  * wb.hide_from_selection option is added for "wb-multiple" editor. It hides element from selection list
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 27 Jan 2022 16:11:42 +0500
 
 wb-mqtt-homeui (2.29.0) stable; urgency=medium
 

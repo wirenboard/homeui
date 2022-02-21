@@ -22,7 +22,8 @@
         },
         "errors": {
             "nothing": "No widgets are currently defined",
-            "empty-name": "Empty widget name is not allowed"
+            "empty-name": "Empty widget name is not allowed",
+            "poll": "Desired read period is missed"
         },
         "prompt": {
             "delete": "Really delete the widget?",

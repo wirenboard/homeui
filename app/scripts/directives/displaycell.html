@@ -2,7 +2,8 @@
      ng-switch on="cell.displayType"
      ng-class="{ 'cell-error': cell.error }"
      data-cell-id="{{ cell.id }}">
-    <cell-name ng-if="displayCellCtrl.shouldDisplayCellName()"
+     <i title="{{'widgets.errors.poll' | translate}}" ng-show="cell.pollMissError" class="warning-sign glyphicon glyphicon-exclamation-sign"></i>
+     <cell-name ng-if="displayCellCtrl.shouldDisplayCellName()"
                override="displayCellCtrl.overrideName()"
                ng-click="displayCellCtrl.copy(cell.id, true)"
                tooltip-popup-close-delay="500"

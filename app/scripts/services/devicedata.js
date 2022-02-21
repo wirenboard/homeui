@@ -433,6 +433,15 @@ function deviceDataService(mqttClient) {
     }
 
     setError (error) {
+      if (typeof error == "string") {
+        const pos = error.indexOf('p');
+        if (pos !== -1) {
+          this.pollMissError = true
+          error = error.replace('p', '')
+        } else {
+          this.pollMissError = false
+        }
+      }
       this.error = error;
     }
 
@@ -671,6 +680,7 @@ function deviceDataService(mqttClient) {
     get units () { return this.cell.units; }
     get readOnly () { return this.cell.readOnly; }
     get error () { return this.cell.error; }
+    get pollMissError () { return this.cell.pollMissError; }
     get min () { return this.cell.min; }
     get max () { return this.cell.max; }
     get step () { return this.cell.step; }
