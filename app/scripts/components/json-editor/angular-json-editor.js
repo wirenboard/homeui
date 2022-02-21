@@ -12,7 +12,7 @@ import makeTranslatedInfoEditor from "./translated-info-editor";
 import makeIntegerEditorWithSpecialValue from "./integer-editor-with-special-value";
 import makeReadonlyOneOfEditor from "./readonly-oneof-editor";
 import makeMergedDefaultValuesEditor from "./merged-default-values-editor";
-import makeIntegerEditWithDropdownEditor from "./edit-with-dropdown";
+import makeEditWithDropdownEditor from "./edit-with-dropdown";
 import makeCollapsibleArrayEditor from "./collapsible-array-editor";
 import makeCollapsibleMultipleEditor from "./collapsible-multiple-editor";
 import makeObjectEditorWithButtonsOnTop from "./object-editor-with-buttons-on-top"
@@ -46,7 +46,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
             }
         });
         jse.defaults.resolvers.unshift(schema => schema.type === 'integer' && schema.format === 'siWb' && 'siWb');
-        jse.defaults.resolvers.unshift(schema => schema.type === 'integer' && schema.format === 'edWb' && 'edWb');
+        jse.defaults.resolvers.unshift(schema => (schema.type === 'integer' || schema.type === 'string') && schema.format === 'edWb' && 'edWb');
         jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'tabs' && 'lazy-tabs');
         jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'collapsible-list' && 'collapsible-list');
         jse.defaults.resolvers.unshift(schema => schema.oneOf && schema.format === 'roMultiple' && 'roMultiple');
@@ -62,7 +62,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["lazy-tabs"] = makeLazyTabsArrayEditor();
         jse.defaults.editors["roMultiple"] = makeReadonlyOneOfEditor();
         jse.defaults.editors["merge-default"] = makeMergedDefaultValuesEditor();
-        jse.defaults.editors["edWb"] = makeIntegerEditWithDropdownEditor();
+        jse.defaults.editors["edWb"] = makeEditWithDropdownEditor();
         jse.defaults.editors["collapsible-list"] = makeCollapsibleArrayEditor();
         jse.defaults.editors["wb-multiple"] = makeCollapsibleMultipleEditor();
         jse.defaults.editors["wb-object"] = makeObjectEditorWithButtonsOnTop();
