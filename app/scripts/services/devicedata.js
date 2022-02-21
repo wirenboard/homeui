@@ -38,37 +38,32 @@ function deviceDataService(mqttClient) {
   var cellTypeMap = {
     "text": {
       valueType: "string",
-      units: "",
       readOnly: true,
       displayType: "text"
     },
     "switch": {
       valueType: "boolean",
-      units: "",
       readOnly: false,
       displayType: "switch"
     },
     "wo-switch": {
       valueType: "boolean",
-      units: "",
       readOnly: false,
       displayType: "switch"
     },
     "alarm": {
       valueType: "boolean",
-      units: "",
       readOnly: true,
       displayType: "alarm"
     },
     "pushbutton": {
       valueType: "pushbutton",
-      units: "",
       readOnly: false,
       displayType: "button"
     },
     "temperature": {
       valueType: "number",
-      units: "°C",
+      units: "deg C",
       readOnly: true,
       displayType: "value"
     },
@@ -80,67 +75,67 @@ function deviceDataService(mqttClient) {
     },
     "atmospheric_pressure": {
       valueType: "number",
-      units: "units.millibar",
+      units: "mbar",
       readOnly: true,
       displayType: "value"
     },
     "rainfall": {
       valueType: "number",
-      units: "units.mm-h",
+      units: "mm/h",
       readOnly: true,
       displayType: "value"
     },
     "wind_speed": {
       valueType: "number",
-      units: "units.m-s",
+      units: "m/s",
       readOnly: true,
       displayType: "value"
     },
     "power": {
       valueType: "number",
-      units: "units.w",
+      units: "W",
       readOnly: true,
       displayType: "value"
     },
     "power_consumption": {
       valueType: "number",
-      units: "units.kwh",
+      units: "kWh",
       readOnly: true,
       displayType: "value"
     },
     "voltage": {
       valueType: "number",
-      units: "units.v",
+      units: "V",
       readOnly: true,
       displayType: "value"
     },
     "water_flow": {
       valueType: "number",
-      units: "units.m3-h",
+      units: "m^3/h",
       readOnly: true,
       displayType: "value"
     },
     "water_consumption": {
       valueType: "number",
-      units: "units.m3",
+      units: "m^3",
       readOnly: true,
       displayType: "value"
     },
     "heat_power": {
       valueType: "number",
-      units: "units.gcal-h",
+      units: "Gcal/h",
       readOnly: true,
       displayType: "value"
     },
     "heat_energy": {
       valueType: "number",
-      units: "units-gcal",
+      units: "Gcal",
       readOnly: true,
       displayType: "value"
     },
     "resistance": {
       valueType: "number",
-      units: "units.ohm",
+      units: "Ohm",
       readOnly: true,
       displayType: "value"
     },
@@ -152,25 +147,22 @@ function deviceDataService(mqttClient) {
     },
     "pressure": {
       valueType: "number",
-      units: "units.bar",
+      units: "bar",
       readOnly: true,
       displayType: "value"
     },
     "range": {
       valueType: "number",
-      units: "",
       readOnly: false,
       displayType: "range"
     },
     "value": {
       valueType: "number",
-      units: "",
       readOnly: true,
       displayType: "value"
     },
     "rgb": {
       valueType: "rgb",
-      units: "",
       readOnly: false,
       displayType: "rgb"
     }
@@ -496,7 +488,7 @@ function deviceDataService(mqttClient) {
           this.setMin(m.min);
           this.setMax(m.min);
           this.setStep(m.precision);
-          this.setUnits(m.units)
+          this.setUnits(m.units);
         } catch (e) {}
       } else {
         this._nameTranslations = {};
@@ -505,7 +497,7 @@ function deviceDataService(mqttClient) {
         this.setMin("");
         this.setMax("");
         this.setStep("");
-        this.setUnits("")
+        this.setUnits("");
       }
     }
 

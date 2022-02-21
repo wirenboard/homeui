@@ -22,7 +22,7 @@ version 0.11.1.
 
 # MQTT naming conventions
 
-See into conventions.md to understand how to organize devices and controls (what write to /meta/type for example).
+See into [conventions](https://github.com/wirenboard/conventions/blob/main/README.md) to understand how to organize devices and controls (what write to /meta/type for example).
 
 ## Build & development
 

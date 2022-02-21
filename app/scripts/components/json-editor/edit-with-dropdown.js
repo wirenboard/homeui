@@ -2,11 +2,11 @@
 
 import { JSONEditor } from "../../../3rdparty/jsoneditor";
 
-// Editor for integer values.
+// Editor for integer or string values.
 // It allows free value editing and has additional dropdown list with possible values.
 // Values in dropdown are defined by options.enum_values array.
 // Titles for values could be set in options.enum_titles array.
-function makeIntegerEditWithDropdownEditor () {
+function makeEditWithDropdownEditor () {
     return class extends JSONEditor.AbstractEditor {
         constructor (options, defaults) {
           super(options, defaults)
@@ -97,13 +97,16 @@ function makeIntegerEditWithDropdownEditor () {
           if (typeof this.input === 'undefined') {
             return undefined
           }
-          // taken from isInteger function from json-editor's utilities.js
-          const INTEGER_REGEXP = /^\s*(-|\+)?(\d+)\s*$/
-          if (typeof this.input.value !== 'undefined' && this.input.value !== null) {
-            if(this.input.value.match(INTEGER_REGEXP) !== null) {
-              const v = parseInt(this.input.value)
-              if (!isNaN(v) && isFinite(v)) {
-                return v
+
+          if (this.schema.type === 'integer') {
+            // taken from isInteger function from json-editor's utilities.js
+            const INTEGER_REGEXP = /^\s*(-|\+)?(\d+)\s*$/
+            if (typeof this.input.value !== 'undefined' && this.input.value !== null) {
+              if(this.input.value.match(INTEGER_REGEXP) !== null) {
+                const v = parseInt(this.input.value)
+                if (!isNaN(v) && isFinite(v)) {
+                  return v
+                }
               }
             }
           }
@@ -147,4 +150,4 @@ function makeIntegerEditWithDropdownEditor () {
     }
 }
 
-export default makeIntegerEditWithDropdownEditor
+export default makeEditWithDropdownEditor

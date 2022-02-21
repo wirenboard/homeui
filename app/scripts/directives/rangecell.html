@@ -17,6 +17,6 @@
          on-handle-up='handleUp()'></div>
   <span class="value-wrapper">
     <span class="value">{{ cell.value }}</span>
-    <span ng-if="!!cell.units" class="units" translate>{{ cell.units }}</span>
+    <span ng-if="!!cell.units" class="units">{{ rCtrl.getUnitsName(cell) }}</span>
   </span>
 </div>

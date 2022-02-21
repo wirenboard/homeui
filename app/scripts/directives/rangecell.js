@@ -2,12 +2,25 @@ import template from './rangecell.html';
 
 function rangeCellDirective() {
   const DEFAULT_MIN = 0, DEFAULT_MAX = 1e9, DEFAULT_STEP = 1;
+
+  class RangeCellController {
+    constructor (TranslationService) {
+      this.TranslationService = TranslationService
+    }
+
+    getUnitsName(c) {
+      return this.TranslationService.getUnitsName(c);
+    }
+  }
+
   return {
     restrict: "EA",
     scope: false,
     require: "^cell",
     replace: true,
     template,
+    controllerAs: "rCtrl",
+    controller: RangeCellController,
     link: ($scope, element, attr, cellCtrl) => {
       /*function relayAttr (name, defaultValue) {
         // Make sure min/max/precision are initialized to a range that is
