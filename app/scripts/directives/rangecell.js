@@ -5,6 +5,8 @@ function rangeCellDirective() {
 
   class RangeCellController {
     constructor (TranslationService) {
+      'ngInject';
+
       this.TranslationService = TranslationService
     }
 

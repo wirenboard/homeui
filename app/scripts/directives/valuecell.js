@@ -4,6 +4,8 @@ function valueCellDirective() {
 
   class ValueCellController {
     constructor (TranslationService) {
+      'ngInject';
+
       this.TranslationService = TranslationService
     }
 
