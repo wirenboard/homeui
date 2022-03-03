@@ -326,7 +326,16 @@ const JsonEditorRussianTranslation = {
 
     collapse_all: 'Свернуть все элементы',
 
-    unknown_device_warning: 'Шаблон для устройства отсутствует или содержит ошибки'
+    unknown_device_warning: 'Шаблон для устройства отсутствует или содержит ошибки',
+
+    in_queue_order: 'в порядке общей очереди',
+    fast_100: 'быстрый (200 мс)',
+    fast_200: 'быстрый (100 мс)',
+    fast_custom: 'быстрый (мс)',
+    do_not_read: 'не опрашивать',
+
+    parameter: 'Параметр',
+    poll: 'Опрос'
 };
 
 export default JsonEditorRussianTranslation;
