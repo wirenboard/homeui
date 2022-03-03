@@ -77,6 +77,7 @@ function makeChannelEditor () {
                 this.input.setValue('')
                 this.input.input.style.display = 'none'
               }
+              this.onChange(true)
             })
           }
 
