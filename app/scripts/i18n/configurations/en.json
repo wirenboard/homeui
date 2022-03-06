@@ -15,6 +15,10 @@
         "errors": {
             "load": "Error loading the file",
             "save": "Error saving {{name}}"
+        },
+        "log": {
+            "normal": "Logs",
+            "error": "Has errors"
         }
     }
 }

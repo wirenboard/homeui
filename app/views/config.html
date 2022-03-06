@@ -1,5 +1,5 @@
-<div class="alert alert-danger alert-dismissible" role="alert"
-ng-hide="$ctrl.haveRights">{{'configurations.labels.notice' | translate}}
+<div class="alert alert-danger alert-dismissible" role="alert" ng-hide="$ctrl.haveRights">
+    {{'configurations.labels.notice' | translate}}
    <a ui-sref="accessLevel">{{'configurations.labels.access' | translate}}</a>.
 </div>
 
@@ -7,16 +7,53 @@ ng-hide="$ctrl.haveRights">{{'configurations.labels.notice' | translate}}
     <h1 class="page-header">
         <span>{{ file.configPath }}</span>
     </h1>
+
+    <uib-accordion close-others="false" class="logs-panel-list" ng-if="!spinnerActive('configEditorProxy') && !$ctrl.waitBootsAndServices">
+        <div>
+            <div uib-accordion-group class="panel-default device-panel display-cell-bin" is-open="$ctrl.getLogsVisibility().isOpen" ng-class="$ctrl.getLogsClasses()">
+                <uib-accordion-heading>
+                  <div class="device-panel__header" ng-click="$ctrl.invertLogsVisibility()">
+                      <span class="device-panel__header-title">
+                          <span ng-if="!$ctrl.isError">
+                              {{'configurations.log.normal' | translate}}
+                          </span>
+                          <span ng-if="$ctrl.isError">
+                              {{'configurations.log.error' | translate}}
+                          </span>
+                      </span>
+                      <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getLogsShevronClasses()"></i>
+                  </div>
+                </uib-accordion-heading>
+                <div class="device-panel__body" ng-if="$ctrl.getLogsVisibility().isOpen">
+                    <div id="logs-wrapper" ng-cloak ng-show="!$ctrl.waitBootsAndServices && $ctrl.logs.length" on-resize="$ctrl.logsResize(size)">
+                        <table id="logs-table" ui-scroll-viewport>
+                            <tr ui-scroll="log in datasource" adapter="adapter">
+                                <td class="logs-time-column">
+                                    <span class="logs-time">{{log.time | date : "dd-MM-yyyy HH:mm:ss.sss"}}</span>
+                                    <span ng-if="log.service" class="logs-service">[{{log.service}}]</span>
+                                </td>
+                                <td class="logs-message-column" ng-style="{color: {0: 'red', 1: 'red', 2:'red', 3:'red', 4:'#997300'}[log.level], 'font-weight': {7: 'bold'}[log.level]}">{{log.msg}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </uib-accordion>
+
     <div class="spinner" ng-show="spinnerActive('configEditorProxy')" ng-cloak>
         <span class="spinner-loader" translate>{{'configurations.labels.loading'}}</span>
     </div>
 
     <div class="config-editor" ng-if="file.schema && !spinnerActive('configEditorProxy')">
         <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()" translate>{{'configurations.buttons.save'}}</button>
-        <json-editor class="turn-off-group-button"
-                schema="file.schema"
-                startval="file.content"
-                options="editorOptions"
-                on-change="onChange"></json-editor>
+        <json-editor
+            class="turn-off-group-button"
+            schema="file.schema"
+            startval="file.content"
+            options="editorOptions"
+            on-change="onChange">
+        </json-editor>
     </div>
+
 </section>

@@ -259,6 +259,34 @@ ul.alert-dropdown {
     color: #df8a13;
 }
 
+.panel-success {
+    border-color: #5cb85c;
+}
+
+.panel-success .panel-heading {
+    border-color: #5cb85c;
+    color: #fff;
+    background-color: #5cb85c;
+}
+
+.panel-success .device-panel__body {
+    border-color: #5cb85c;
+}
+
+.panel-danger {
+    border-color: #d9534f;
+}
+
+.panel-danger .panel-heading {
+    border-color: #d9534f;
+    color: #fff;
+    background-color: #d9534f;
+}
+
+.panel-danger .device-panel__body {
+    border-color: #d9534f;
+}
+
 /* Devices List */
 
 @media(min-width:768px) {
@@ -286,7 +314,19 @@ ul.alert-dropdown {
 }
 
 
+/* Logs List */
 
+.logs-panel-list .panel-group {
+    display: block;
+}
+
+.logs-panel-list .device-panel {
+    width: 100%;
+}
+
+.logs-panel-list .device-panel__body {
+    padding: 5px 0px 5px 10px;
+}
 
 
 /* Form Validation -- disabled for now
