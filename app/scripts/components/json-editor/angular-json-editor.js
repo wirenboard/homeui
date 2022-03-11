@@ -17,6 +17,7 @@ import makeCollapsibleArrayEditor from "./collapsible-array-editor";
 import makeCollapsibleMultipleEditor from "./collapsible-multiple-editor";
 import makeObjectEditorWithButtonsOnTop from "./object-editor-with-buttons-on-top"
 import makeUnknownDeviceEditor from "./unknown-device-editor";
+import makeSelectWithHiddenItems from "./select-with-hidden-items";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
@@ -69,6 +70,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["wb-multiple"] = makeCollapsibleMultipleEditor();
         jse.defaults.editors["wb-object"] = makeObjectEditorWithButtonsOnTop();
         jse.defaults.editors["unknown-device"] = makeUnknownDeviceEditor();
+        jse.defaults.editors["select"] = makeSelectWithHiddenItems();
         return jse;
     }];
 
