@@ -10,7 +10,7 @@ class ConfigCtrl {
         LogsProxy,
         logsMaxRows,
         errors,
-        $q
+        LogsService,
     ) {
         "ngInject";
 
@@ -19,13 +19,17 @@ class ConfigCtrl {
             return;
         }
 
+        angular.extend(this, {
+            scope: $scope,
+            logsMaxRows: logsMaxRows,
+            LogsProxy: LogsProxy,
+        });
+
+
         this.$element = $element;
-        this.$q = $q;
-        this.logs = [];
-        this.boots = [];
         this.allowLoading = false;
-        this.waitBootsAndServices = true;
-        this.isError = false;
+
+        $scope.logsService = LogsService;
 
         $scope.file = {
             schemaPath: $stateParams.path,
@@ -81,6 +85,8 @@ class ConfigCtrl {
         };
 
         $scope.save = () => {
+            this.scope.logsService.savedTime = Date.now();
+
             PageState.setDirty(false);
             ConfigEditorProxy.Save({
                 path: $scope.file.schemaPath,
@@ -90,7 +96,13 @@ class ConfigCtrl {
                     if ($scope.file.schema.needReload) {
                         load();
                     }
-                    this.reloadLogs();
+
+                    $scope.logsService.logs = [];
+                    $scope.logsService.isError = false;
+
+                    setTimeout(() => {
+                        $scope.logsService.reload();
+                    }, 1000)
                 })
                 .catch((e) => {
                     PageState.setDirty(true);
@@ -104,150 +116,25 @@ class ConfigCtrl {
                 });
         };
 
-        $scope.adapter = {};
-        $scope.datasource = {};
-        $scope.datasource.get = (index, count, success) => {
-            return this.getChunk(index, count, success);
-        };
-
-        angular.extend(this, {
-            scope: $scope,
-            logsMaxRows: logsMaxRows,
-            LogsProxy: LogsProxy,
-        });
-
         whenMqttReady().then(load);
     }
 
     loadBoots() {
         this.LogsProxy.List().then((result) => {
-            this.boots.push(
+            let boots = [];
+            boots.push(
                 ...result.boots.map((obj) => {
                     return { hash: obj.hash };
                 })
             );
-            this.waitBootsAndServices = false;
-            this.selectedBoot = this.boots[0];
-            this.selectedService =
-                this.scope.file.schema.configFile.service + ".service";
-            this.reloadLogs();
+            this.scope.logsService.waitBootsAndServices = false;
+            this.scope.logsService.selectedBoot = boots[0];
+            this.scope.logsService.selectedService = {
+                name: this.scope.file.schema.configFile.service + ".service"
+            };
+
+            this.scope.logsService.reload();
         });
-    }
-
-    getLogsSlice(uiScrollIndex, count) {
-        var start = this.toLogsArrayIndex(uiScrollIndex);
-        var end = start + count;
-        if (start < 0) {
-            start = 0;
-        }
-        return this.logs.slice(start, end);
-    }
-
-    toLogsArrayIndex(uiScrollIndex) {
-        return uiScrollIndex - this.logsTopUiScrollIndex;
-    }
-
-    setForwardCursor(params, logsArrayIndex) {
-        params.cursor = {
-            id: this.logs[0].cursor,
-            direction: "forward",
-        };
-        params.limit = -logsArrayIndex;
-    }
-
-    setBackwardCursor(params, logsArrayIndex, count) {
-        params.cursor = {
-            id: this.logs[this.logs.length - 1].cursor,
-            direction: "backward",
-        };
-        params.limit = count + logsArrayIndex - this.logs.length;
-    }
-
-    reloadLogs() {
-        if (!this.scope.adapter.isLoading) {
-            this.logs = [];
-            this.stopDeferred = this.$q.defer();
-            this.allowLoading = true;
-            this.isError = false;
-            this.scope.adapter.reload();
-        }
-    }
-
-    getChunk(uiScrollIndex, count, success) {
-        if (this.waitBootsAndServices || !this.allowLoading) {
-            success([]);
-            return;
-        }
-
-        var params = {};
-        params.service = this.selectedService;
-        params.boot = this.selectedBoot.hash;
-
-        if (this.logs.length == 0) {
-            this.logsTopUiScrollIndex = uiScrollIndex;
-            params.limit = count;
-            if (uiScrollIndex < 0) {
-                params.cursor = {
-                    direction: "forward",
-                };
-            }
-        } else {
-            var logsArrayIndex = this.toLogsArrayIndex(uiScrollIndex);
-            if (
-                logsArrayIndex >= 0 &&
-                count + logsArrayIndex <= this.logs.length
-            ) {
-                success(
-                    this.logs.slice(logsArrayIndex, logsArrayIndex + count)
-                );
-                return;
-            }
-            if (logsArrayIndex < 0) {
-                this.setForwardCursor(params, logsArrayIndex);
-            } else {
-                this.setBackwardCursor(params, logsArrayIndex, count);
-            }
-            if (!params.cursor.id) {
-                success(this.getLogsSlice(uiScrollIndex, count));
-                return;
-            }
-        }
-
-        this.$q
-            .race([this.LogsProxy.Load(params), this.stopDeferred.promise])
-            .then((result) => {
-                if (this.allowLoading) {
-                    var res = result.map((entry) => {
-                        if (entry.level < 4) {
-                            this.isError = true;
-                        }
-                        return this.convertTime(entry);
-                    });
-                    if (uiScrollIndex < this.logsTopUiScrollIndex) {
-                        this.logsTopUiScrollIndex =
-                            this.logsTopUiScrollIndex - res.length;
-                        this.logs.unshift(...res);
-                    } else {
-                        this.logs.push(...res);
-                    }
-                    success(this.getLogsSlice(uiScrollIndex, count));
-                } else {
-                    success([]);
-                }
-            })
-            .catch((err) => {
-                success([]);
-                this.errors.catch("logs.errors.load")(err);
-            });
-    }
-
-    convertTime(entry) {
-        if (entry.time) {
-            var t = new Date();
-            t.setTime(entry.time);
-            entry.time = t;
-        }
-        return entry;
     }
 
     logsResize(size) {

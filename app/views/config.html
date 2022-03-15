@@ -8,31 +8,34 @@
         <span>{{ file.configPath }}</span>
     </h1>
 
-    <uib-accordion close-others="false" class="logs-panel-list" ng-if="!spinnerActive('configEditorProxy') && !$ctrl.waitBootsAndServices">
+    <uib-accordion close-others="false" class="logs-panel-list" ng-show="!spinnerActive('configEditorProxy') && !logsService.waitBootsAndServices">
         <div>
             <div uib-accordion-group class="panel-default device-panel display-cell-bin" is-open="$ctrl.getLogsVisibility().isOpen" ng-class="$ctrl.getLogsClasses()">
                 <uib-accordion-heading>
                   <div class="device-panel__header" ng-click="$ctrl.invertLogsVisibility()">
                       <span class="device-panel__header-title">
-                          <span ng-if="!$ctrl.isError">
+                          <span ng-if="!logsService.isError">
                               {{'configurations.log.normal' | translate}}
                           </span>
-                          <span ng-if="$ctrl.isError">
+                          <span ng-if="logsService.isError">
                               {{'configurations.log.error' | translate}}
                           </span>
                       </span>
                       <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getLogsShevronClasses()"></i>
                   </div>
                 </uib-accordion-heading>
-                <div class="device-panel__body" ng-if="$ctrl.getLogsVisibility().isOpen">
-                    <div id="logs-wrapper" ng-cloak ng-show="!$ctrl.waitBootsAndServices && $ctrl.logs.length" on-resize="$ctrl.logsResize(size)">
+                <div class="device-panel__body" ng-show="$ctrl.getLogsVisibility().isOpen">
+                    <div id="logs-wrapper" ng-cloak ng-show="!logsService.waitBootsAndServices && logsService.logs.length" on-resize="$ctrl.logsResize(size)">
                         <table id="logs-table" ui-scroll-viewport>
-                            <tr ui-scroll="log in datasource" adapter="adapter">
+                            <tr ui-scroll="log in logsService.datasource" adapter="logsService.adapter">
                                 <td class="logs-time-column">
                                     <span class="logs-time">{{log.time | date : "dd-MM-yyyy HH:mm:ss.sss"}}</span>
                                     <span ng-if="log.service" class="logs-service">[{{log.service}}]</span>
                                 </td>
-                                <td class="logs-message-column" ng-style="{color: {0: 'red', 1: 'red', 2:'red', 3:'red', 4:'#997300'}[log.level], 'font-weight': {7: 'bold'}[log.level]}">{{log.msg}}</td>
+                                <td
+                                    class="logs-message-column"
+                                    ng-style="{color: {0: 'red', 1: 'red', 2:'red', 3:'red', 4:'#997300'}[log.level], 'font-weight': {7: 'bold'}[log.level]}"
+                                >{{log.msg}}</td>
                             </tr>
                         </table>
                     </div>

@@ -11,7 +11,7 @@ class DevicesCtrl {
         this.DeviceData = DeviceData;
         this.historyUrlService = historyUrlService;
 
-        // will create object to keep devices open/close condition 
+        // will create object to keep devices open/close condition
         // in localeStorage, if it's not there.
         this.createDevicesVisibilityObject();
 
@@ -31,12 +31,12 @@ class DevicesCtrl {
             if(devicesIdsCount <= 0) return;
 
             // devices are loaded dynamically by sockets, therefore
-            // their number may change. If there is a new device, 
+            // their number may change. If there is a new device,
             // it is entered into the devicesVisibility object, collapsed - by default.
             if(devicesIdsCount != this.$state.devicesIdsCount) {
                 let devicesVisibility =  JSON.parse(window.localStorage.devicesVisibility);
 
-                // check localStorage for outdated (deleted) devices 
+                // check localStorage for outdated (deleted) devices
                 Object.keys(devicesVisibility.devices).forEach((deviceId) => {
                   if(!devicesIdsList.includes(deviceId)) {
                     delete devicesVisibility.devices[deviceId]
@@ -182,9 +182,9 @@ class DevicesCtrl {
         }
     }
 
-    deleteDevice(deviceId) { 
+    deleteDevice(deviceId) {
         this.DeviceData.deleteDevice(deviceId);
-    } 
+    }
 
     redirect(contr) {
         var [device,control] = contr.split('/');

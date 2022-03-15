@@ -17,7 +17,7 @@
             "save": "Error saving {{name}}"
         },
         "log": {
-            "normal": "Logs",
+            "normal": "Launch Log",
             "error": "Has errors"
         }
     }
