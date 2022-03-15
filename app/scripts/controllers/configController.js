@@ -8,7 +8,6 @@ class ConfigCtrl {
         whenMqttReady,
         PageState,
         LogsProxy,
-        logsMaxRows,
         errors,
         LogsService,
     ) {
@@ -21,7 +20,6 @@ class ConfigCtrl {
 
         angular.extend(this, {
             scope: $scope,
-            logsMaxRows: logsMaxRows,
             LogsProxy: LogsProxy,
         });
 
