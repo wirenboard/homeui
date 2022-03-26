@@ -15,6 +15,11 @@
         "errors": {
             "load": "Error loading the file",
             "save": "Error saving {{name}}"
+        },
+        "log": {
+            "normal": "Launch Log",
+            "error": "Has errors",
+            "empty": "List is empty"
         }
     }
 }

@@ -51,6 +51,7 @@ import serialMetricsProxyService from './services/serialMetricsProxy';
 import translationService from './services/translationService';
 
 import handleDataService from './services/handle-data';
+import logsService from './services/logsService';
 
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
@@ -157,6 +158,7 @@ module
     .factory('DeviceData', deviceDataService)
     .factory('DiagnosticProxy', diagnosticProxyService)
     .factory('TranslationService', translationService)
+    .factory('LogsService', logsService)
 
 
     .service('handleData', handleDataService)
