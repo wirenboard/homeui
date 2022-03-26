@@ -25,9 +25,9 @@
                   </div>
                 </uib-accordion-heading>
                 <div class="device-panel__body" ng-show="$ctrl.getLogsVisibility().isOpen">
-                    <div id="logs-wrapper" ng-cloak ng-show="!logsService.waitBootsAndServices && logsService.logs.length" on-resize="$ctrl.logsResize(size)">
-                        <table id="logs-table" ui-scroll-viewport>
-                            <tr ui-scroll="log in logsService.datasource" adapter="logsService.adapter">
+                    <div id="logs-wrapper" ng-cloak ng-show="!logsService.waitBootsAndServices">
+                        <table id="configs-table" ng-if="logsService.logs.length">
+                            <tr ng-repeat="log in logsService.logs">
                                 <td class="logs-time-column">
                                     <span class="logs-time">{{log.time | date : "dd-MM-yyyy HH:mm:ss.sss"}}</span>
                                     <span ng-if="log.service" class="logs-service">[{{log.service}}]</span>
@@ -38,6 +38,9 @@
                                 >{{log.msg}}</td>
                             </tr>
                         </table>
+                        <span ng-if="!logsService.logs.length">
+                            {{'configurations.log.empty' | translate}}
+                        </span>
                     </div>
                 </div>
             </div>

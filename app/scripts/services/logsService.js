@@ -22,6 +22,9 @@ function logsService(LogsProxy, logsMaxRows, errors, $translate, $q) {
     this.selectedBoot = {};
     this.selectedLevels = [];
 
+    this.lastCursorTop = undefined;
+    this.isUpdate = false;
+
     this.logs = [];
 
     this.adapter = {};
@@ -69,13 +72,8 @@ function logsService(LogsProxy, logsMaxRows, errors, $translate, $q) {
         params.limit = count + logsArrayIndex - this.logs.length;
     };
 
-    this.getChunk = (uiScrollIndex, count, success) => {
-        if (this.waitBootsAndServices || !this.allowLoading) {
-            success([]);
-            return;
-        }
-
-        var params = {};
+    this.getParams = () => {
+        let params = {};
         params.service = this.selectedService.name;
         params.boot = this.selectedBoot.hash;
         if (this.selectedLevels.length) {
@@ -90,6 +88,16 @@ function logsService(LogsProxy, logsMaxRows, errors, $translate, $q) {
         if (!this.caseSensitive) {
             params["case-sensitive"] = false;
         }
+        return params;
+    }
+
+    this.getChunk = (uiScrollIndex, count, success) => {
+        if (this.waitBootsAndServices || !this.allowLoading || this.isUpdate) {
+            success([]);
+            return;
+        }
+
+        let params = this.getParams();
 
         if (this.logs.length == 0) {
             this.logsTopUiScrollIndex = uiScrollIndex;
@@ -153,6 +161,11 @@ function logsService(LogsProxy, logsMaxRows, errors, $translate, $q) {
                     } else {
                         this.logs.push(...tmp);
                     }
+
+                    if (this.logs.length) {
+                        this.lastCursorTop = this.logs[0].cursor;
+                    }
+
                     success(this.getLogsSlice(uiScrollIndex, count));
                 } else {
                     success([]);
@@ -185,6 +198,61 @@ function logsService(LogsProxy, logsMaxRows, errors, $translate, $q) {
             this.stopDeferred = this.$q.defer();
             this.allowLoading = true;
             this.adapter.reload();
+        }
+    }
+
+    this.update = () => {
+        if (!this.isUpdate) {
+            this.isUpdate = true;
+            this.stopDeferred = this.$q.defer();
+
+            let params = this.getParams();
+            params.limit = 10;
+
+            if (this.savedTime) {
+                params.time = this.savedTime;
+            }
+
+            if (this.lastCursorTop) {
+                params.cursor = {
+                    id: this.lastCursorTop,
+                    direction: "forward",
+                };
+            }
+
+            this.$q
+                .race([this.LogsProxy.Load(params), this.stopDeferred.promise])
+                .then((result) => {
+                    var res = result.map((entry) => {
+                        entry.old_time = entry.time;
+                        if (entry.level < 4) {
+                            this.isError = true;
+                        }
+                        return this.convertTime(entry);
+                    });
+
+                    var tmp = [];
+                    res.forEach((entry) => {
+                        if (this.savedTime) {
+                            if (this.savedTime < entry.old_time) {
+                                tmp.push(entry);
+                            }
+                        } else {
+                            tmp.push(entry);
+                        }
+                    });
+
+                    this.logs.unshift(...tmp);
+
+                    if (this.logs.length) {
+                        this.lastCursorTop = this.logs[0].cursor;
+                    }
+
+                    this.isUpdate = false;
+                })
+                .catch((err) => {
+                    this.errors.catch("logs.errors.load")(err);
+                });
         }
     }
 

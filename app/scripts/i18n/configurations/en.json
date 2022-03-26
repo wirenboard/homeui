@@ -18,7 +18,8 @@
         },
         "log": {
             "normal": "Launch Log",
-            "error": "Has errors"
+            "error": "Has errors",
+            "empty": "List is empty"
         }
     }
 }

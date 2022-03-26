@@ -26,6 +26,7 @@ class ConfigCtrl {
 
         this.$element = $element;
         this.allowLoading = false;
+        this.updatedTimerId = null;
 
         $scope.logsService = LogsService;
 
@@ -85,6 +86,11 @@ class ConfigCtrl {
         $scope.save = () => {
             this.scope.logsService.savedTime = Date.now();
 
+            if (this.updatedTimerId) {
+                clearInterval(this.updatedTimerId);
+                this.updatedTimerId = null;
+            }
+
             PageState.setDirty(false);
             ConfigEditorProxy.Save({
                 path: $scope.file.schemaPath,
@@ -98,9 +104,9 @@ class ConfigCtrl {
                     $scope.logsService.logs = [];
                     $scope.logsService.isError = false;
 
-                    setTimeout(() => {
-                        $scope.logsService.reload();
-                    }, 1000)
+                    this.updatedTimerId = setInterval(() => {
+                        $scope.logsService.update();
+                    }, 1000);
                 })
                 .catch((e) => {
                     PageState.setDirty(true);
@@ -115,6 +121,15 @@ class ConfigCtrl {
         };
 
         whenMqttReady().then(load);
+
+        $scope.$on("$destroy", () => {
+            $scope = null;
+
+            if (this.updatedTimerId) {
+                clearInterval(this.updatedTimerId);
+                this.updatedTimerId = null;
+            }
+        });
     }
 
     loadBoots() {
@@ -131,23 +146,8 @@ class ConfigCtrl {
                 name: this.scope.file.schema.configFile.service + ".service"
             };
 
-            this.scope.logsService.reload();
+            this.scope.logsService.update();
         });
-    }
-
-    logsResize(size) {
-        if (size.w && size.h) {
-            const wpx = size.w + "px";
-            const hpx = 110 + "px";
-
-            var lt = this.$element[0].querySelector("#logs-table");
-            lt.style.width = wpx;
-            lt.style.height = hpx;
-
-            var ltb = this.$element[0].querySelector("#logs-table tbody");
-            ltb.style.width = wpx;
-            ltb.style.height = hpx;
-        }
     }
 
     createLogsVisibility() {
