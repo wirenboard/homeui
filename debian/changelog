@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.34.0) stable; urgency=medium
+
+  * "groups" editor is added to configs editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 29 Mar 2022 16:10:00 +0500
+
 wb-mqtt-homeui (2.33.0) stable; urgency=medium
 
   * Enum editor with ability to hide items is added to config editor
