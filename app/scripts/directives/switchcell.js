@@ -12,7 +12,7 @@ function switchCellDirective() {
 
         link: (scope, element, attrs, cellCtrl) => {
             scope.$watch(() => scope._value, (newValue, oldValue) => {
-                if (newValue !== oldValue) {
+                if (newValue !== oldValue && scope._value != scope.cell.value) {
                     scope.cell.value = scope.cell.extra.invert ? !scope._value : scope._value;
                 }
             });
