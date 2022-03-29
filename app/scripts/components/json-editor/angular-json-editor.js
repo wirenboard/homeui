@@ -18,6 +18,7 @@ import makeCollapsibleMultipleEditor from "./collapsible-multiple-editor";
 import makeObjectEditorWithButtonsOnTop from "./object-editor-with-buttons-on-top"
 import makeUnknownDeviceEditor from "./unknown-device-editor";
 import makeSelectWithHiddenItems from "./select-with-hidden-items";
+import makeGroupsEditor from "./group-editor";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
@@ -55,6 +56,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.resolvers.unshift(schema => schema.oneOf && schema.format === 'wb-multiple' && 'wb-multiple');
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'merge-default' && 'merge-default');
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'wb-object' && 'wb-object');
+        jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'groups' && 'groups');
         jse.defaults.resolvers.unshift(schema => schema.format === 'unknown-device' && 'unknown-device');
 
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
@@ -71,6 +73,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["wb-object"] = makeObjectEditorWithButtonsOnTop();
         jse.defaults.editors["unknown-device"] = makeUnknownDeviceEditor();
         jse.defaults.editors["select"] = makeSelectWithHiddenItems();
+        jse.defaults.editors["groups"] = makeGroupsEditor();
         return jse;
     }];
 

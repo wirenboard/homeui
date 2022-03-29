@@ -326,7 +326,9 @@ const JsonEditorRussianTranslation = {
 
     collapse_all: 'Свернуть все элементы',
 
-    unknown_device_warning: 'Шаблон для устройства отсутствует или содержит ошибки'
+    unknown_device_warning: 'Шаблон для устройства отсутствует или содержит ошибки',
+
+    channel: "Канал"
 };
 
 export default JsonEditorRussianTranslation;
