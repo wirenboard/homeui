@@ -18,9 +18,9 @@ class Editor {
         }
         if (this.group) {
             if (this.isChannel) {
-                this.group.channelIsEnabled()
+                this.group.onChannelEnabled()
             } else {
-                this.group.paramIsEnabled()
+                this.group.onParamEnabled()
             }
         }
     }
@@ -30,9 +30,9 @@ class Editor {
         this.editor.container.style.display = 'none'
         if (this.group) {
             if (this.isChannel) {
-                this.group.channelIsDisabled()
+                this.group.onChannelDisabled()
             } else {
-                this.group.paramIsDisabled()
+                this.group.onParamDisabled()
             }
         }
     }
@@ -97,13 +97,13 @@ class Group {
             return
         }
         if (this.isEnabled) {
-            this.parentGroup.subgroupIsEnabled()
+            this.parentGroup.onSubgroupEnabled()
             if (!this.isTab) {
                 this.panel.style.display = ''
                 this.header.style.display = ''
             }
         } else {
-            this.parentGroup.subgroupIsDisabled()
+            this.parentGroup.onSubgroupDisabled()
             if (!this.isTab) {
                 this.panel.style.display = 'none'
                 this.header.style.display = 'none'
@@ -126,17 +126,17 @@ class Group {
         ++this.subgroups.enabledCount
     }
 
-    paramIsDisabled() {
+    onParamDisabled() {
         --this.params.enabledCount
         this.updateState()
     }
 
-    paramIsEnabled() {
+    onParamEnabled() {
         ++this.params.enabledCount
         this.updateState()
     }
 
-    channelIsDisabled() {
+    onChannelDisabled() {
         --this.channels.enabledCount
         if (this.channels.enabledCount == 0 && this.channels.table) {
             this.channels.table.style.display = 'none'
@@ -144,7 +144,7 @@ class Group {
         this.updateState()
     }
 
-    channelIsEnabled() {
+    onChannelEnabled() {
         ++this.channels.enabledCount
         if (this.channels.enabledCount != 0 && this.channels.table) {
             this.channels.table.style.display = ''
@@ -152,12 +152,12 @@ class Group {
         this.updateState()
     }
 
-    subgroupIsDisabled() {
+    onSubgroupDisabled() {
         --this.subgroups.enabledCount
         this.updateState()
     }
 
-    subgroupIsEnabled() {
+    onSubgroupEnabled() {
         ++this.subgroups.enabledCount
         this.updateState()
     }
@@ -178,6 +178,7 @@ function makeGroupsEditor () {
     return class extends JSONEditor.AbstractEditor {
         constructor (options, defaults) {
             super(options, defaults)
+            this.MAX_GRID_COLUMNS = 12
         }
 
         getDefault () {
@@ -237,7 +238,7 @@ function makeGroupsEditor () {
                         const grid_row = this.theme.getGridRow()
                         this.tabs_holder = this.theme.getTabHolder(this.getValidId(this.path))
                         grid_row.appendChild(this.tabs_holder)
-                        this.theme.setGridColumnSize(this.tabs_holder, 12)
+                        this.theme.setGridColumnSize(this.tabs_holder, this.MAX_GRID_COLUMNS)
                         this.row_holder = this.theme.getTabContentHolder(this.tabs_holder)
                         this.editor_holder.appendChild(grid_row)
                     }
@@ -381,6 +382,7 @@ function makeGroupsEditor () {
         }
 
         setValue(value) {
+            this.value = angular.extend({}, value)
             Object.entries(value).forEach(([key, val]) => {
                 var ed = this.editors[key]
                 if (ed && ed.editor) {
@@ -516,7 +518,7 @@ function makeGroupsEditor () {
                     container.appendChild(rowHolder)
                 }
                 createRow = !createRow
-                this.theme.setGridColumnSize(editorHolder, 6)
+                this.theme.setGridColumnSize(editorHolder, this.MAX_GRID_COLUMNS/2)
                 rowHolder.appendChild(editorHolder)
                 const editorClass = this.jsoneditor.getEditorClass(schema)
                 const ret = this.jsoneditor.createEditor(editorClass, {
@@ -552,7 +554,6 @@ function makeGroupsEditor () {
             })
         }
 
-        // TODO: too many calls
         updateEditorsState() {
             var hasChanges = true
             for (var cycles = 0; hasChanges && cycles < 10; ++cycles) {
@@ -596,8 +597,12 @@ function makeGroupsEditor () {
         }
 
         destroy() {
+            if (this.editor_holder) this.editor_holder.innerHTML = ''
+            if (this.error_holder && this.error_holder.parentNode) this.error_holder.parentNode.removeChild(this.error_holder)
+            this.editors = null
+            if (this.editor_holder && this.editor_holder.parentNode) this.editor_holder.parentNode.removeChild(this.editor_holder)
+            this.editor_holder = null
             super.destroy()
-            //TODO
         }
 
         getValue () {
