@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.33.3) stable; urgency=medium
+
+  * Configs log
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 04 Apr 2022 17:14:01 +0500
+
 wb-mqtt-homeui (2.32.1) stable; urgency=medium
 
   * Units display is fixed
