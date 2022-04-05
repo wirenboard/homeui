@@ -181,18 +181,18 @@ function makeGroupsEditor () {
             this.MAX_GRID_COLUMNS = 12
         }
 
-        getDefault () {
+        getDefault() {
             return this.schema.default || {}
           }
 
-        register () {
+        register() {
             super.register()
             if (this.editors) {
                 Object.entries(this.editors).forEach(([key, ed]) => ed.editor.register())
             }
         }
 
-        unregister () {
+        unregister() {
             super.unregister()
             if (this.editors) {
                 Object.entries(this.editors).forEach(([key, ed]) => ed.editor.unregister())
@@ -252,7 +252,7 @@ function makeGroupsEditor () {
             this.refreshTabs()
         }
 
-        build () {
+        build() {
             this.error_holder = document.createElement('div')
             this.container.appendChild(this.error_holder)
             this.editor_holder = document.createElement('div')
@@ -284,7 +284,7 @@ function makeGroupsEditor () {
             this.refreshAddProperties()
         }
 
-        refreshAddProperties () {
+        refreshAddProperties() {
             if (this.addproperty_checkboxes) {
                 this.addproperty_list.innerHTML = ''
             }
@@ -320,7 +320,7 @@ function makeGroupsEditor () {
             }
         }
 
-        showAddProperty () {
+        showAddProperty() {
             if (!this.addproperty_holder) return
         
             /* Position the form directly beneath the button */
@@ -336,7 +336,7 @@ function makeGroupsEditor () {
             this.refreshAddProperties()
         }
         
-        hideAddProperty () {
+        hideAddProperty() {
             if (!this.addproperty_holder) return
             if (!this.adding_property) return
         
@@ -346,7 +346,7 @@ function makeGroupsEditor () {
             this.adding_property = false
         }
 
-        toggleAddProperty () {
+        toggleAddProperty() {
             if (this.adding_property) this.hideAddProperty()
             else this.showAddProperty()
         }
@@ -395,7 +395,7 @@ function makeGroupsEditor () {
             this.onChange()
         }
 
-        addTab (group) {
+        addTab(group) {
             var tabText = document.createElement('span')
             tabText.textContent = this.translateProperty(group.schema.title)
             var tab = new Tab(this.theme.getTab(tabText, this.getValidId(this.path + '.' + group.schema.id)),
@@ -587,6 +587,7 @@ function makeGroupsEditor () {
                     return hasChanges || editor.updateState(paramNames, paramValues)
                 }, false)
             }
+            this.refreshValue()
         }
 
         onChildEditorChange (editor) {
@@ -618,7 +619,7 @@ function makeGroupsEditor () {
             super.destroy()
         }
 
-        getValue () {
+        refreshValue() {
             Object.entries(this.editors).forEach(([key, ed]) => {
                 if (ed && ed.editor) {
                     if (ed.isEnabled && ed.editor.isActive()) {
@@ -628,10 +629,9 @@ function makeGroupsEditor () {
                     }
                 }
             })
-            return this.value
         }
 
-        showValidationErrors (errors) {
+        showValidationErrors(errors) {
             /* Get all the errors that pertain to this editor */
             const myErrors = []
             const otherErrors = []
