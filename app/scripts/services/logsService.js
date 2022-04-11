@@ -75,7 +75,10 @@ function logsService(LogsProxy, logsMaxRows, errors, $translate, $q) {
     this.getParams = () => {
         let params = {};
         params.service = this.selectedService.name;
-        params.boot = this.selectedBoot.hash;
+
+        if (this.selectedBoot) {
+            params.boot = this.selectedBoot.hash;
+        }
         if (this.selectedLevels.length) {
             params.levels = this.selectedLevels.map((l) => l.id);
         }

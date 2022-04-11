@@ -78,7 +78,15 @@ class ConfigCtrl {
                     $scope.file.schema = r.schema;
                     $scope.file.loaded = true;
 
-                    this.loadBoots();
+                    this.scope.logsService.waitBootsAndServices = false;
+                    this.scope.logsService.selectedBoot = null;
+                    this.scope.logsService.selectedService = {
+                        name:
+                            this.scope.file.schema.configFile.service +
+                            ".service",
+                    };
+
+                    this.scope.logsService.update();
                 })
                 .catch(errors.catch("configurations.errors.load"));
         };
@@ -132,24 +140,6 @@ class ConfigCtrl {
         });
     }
 
-    loadBoots() {
-        this.LogsProxy.List().then((result) => {
-            let boots = [];
-            boots.push(
-                ...result.boots.map((obj) => {
-                    return { hash: obj.hash };
-                })
-            );
-            this.scope.logsService.waitBootsAndServices = false;
-            this.scope.logsService.selectedBoot = boots[0];
-            this.scope.logsService.selectedService = {
-                name: this.scope.file.schema.configFile.service + ".service"
-            };
-
-            this.scope.logsService.update();
-        });
-    }
-
     createLogsVisibility() {
         if (!window.localStorage.configLogsVisibility) {
             window.localStorage.setItem(
@@ -176,7 +166,7 @@ class ConfigCtrl {
 
     getLogsClasses() {
         return {
-            "panel-danger": this.isError,
+            "panel-danger": this.scope.logsService.isError,
         };
     }
 
