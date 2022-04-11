@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.33.1) stable; urgency=medium
+
+  * Enum editor with ability to hide items now supports dynamic lists-building
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Fri, 8 Apr 2022 01:02:43 +0500
+
 wb-mqtt-homeui (2.33.0) stable; urgency=medium
 
   * Enum editor with ability to hide items is added to config editor
