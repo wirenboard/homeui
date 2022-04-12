@@ -208,8 +208,20 @@ class Group {
         this.header = header
         if (!this.isEnabled) {
             this.header.style.display = 'none'
-        } else {
-            this.header.style.display = ''
+        }
+    }
+
+    setPanel(panel) {
+        this.panel = panel
+        if (!this.isEnabled) {
+            this.panel.style.display = 'none'
+        }
+    }
+
+    setChannelsTable(table) {
+        this.channels.table = table
+        if (this.channels.enabledCount == 0) {
+            this.channels.table.style.display = 'none'
         }
     }
 }
@@ -505,7 +517,7 @@ function makeGroupsEditor () {
                 var row_holder = this.theme.getTableBody()
                 table.appendChild(row_holder)
                 if (group) {
-                    group.channels.table = table
+                    group.setChannelsTable(table)
                 }
 
                 schemas.forEach(([key, ed]) => {
@@ -630,7 +642,7 @@ function makeGroupsEditor () {
                 subgroup.setHeader(document.createElement('label'))
                 subgroup.header.textContent = subgroup.schema.title
                 container.appendChild(subgroup.header)
-                subgroup.panel = this.theme.getIndentedPanel()
+                subgroup.setPanel(this.theme.getIndentedPanel())
                 container.appendChild(subgroup.panel)
                 this.createGroups(subgroup.panel, subgroup)
             })
