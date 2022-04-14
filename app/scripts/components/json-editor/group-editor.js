@@ -123,10 +123,6 @@ class Group {
         this.isEnabled = (this.params.enabledCount != 0) ||
                          (this.channels.enabledCount != 0) ||
                          (this.subgroups.enabledCount != 0)
-        // tab can be hidden only if it doesn't have parameters
-        if (Object.keys(this.params.editors).length != 0 && this.parentGroup && !this.parentGroup.schema) {
-            this.isEnabled = true
-        }
         if (this.isEnabled == oldState) {
             return
         }
@@ -362,6 +358,10 @@ function makeGroupsEditor () {
             this.refreshAddProperties()
         }
 
+        checkRequired(key, editor) {
+            return (this.schema.required && this.schema.required.includes(key)) || editor.schema.requiredProp
+        }
+
         refreshAddProperties() {
             if (this.addproperty_checkboxes) {
                 this.addproperty_list.innerHTML = ''
@@ -369,7 +369,7 @@ function makeGroupsEditor () {
             this.addproperty_checkboxes = {}
 
             Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
-                if (ed.isEnabled && !ed.isHidden()) {
+                if (ed.isEnabled && !ed.isHidden() && !this.checkRequired(key, ed)) {
                     this.addPropertyCheckbox(key)
                 }
             })
@@ -581,12 +581,12 @@ function makeGroupsEditor () {
                         ret.build()
                         ret.postBuild()
                         ret.setOptInCheckbox(ret.header)
-                        if (!this.schema.required || !this.schema.required.includes(key)) {
-                            ret.deactivate()
-                            ed.hide()
-                        } else {
+                        if (this.checkRequired(key, ed)) {
                             ret.activate()
                             ed.show()
+                        } else {
+                            ret.deactivate()
+                            ed.hide()
                         }
                         if (ed.isHidden()) {
                             ed.hide()
@@ -609,6 +609,9 @@ function makeGroupsEditor () {
                         createRow = !createRow
                         this.theme.setGridColumnSize(editorHolder, this.MAX_GRID_COLUMNS/2)
                         rowHolder.appendChild(editorHolder)
+                        if (ed.schema.requiredProp) {
+                            ed.schema.required = true
+                        }
                         const editorClass = this.jsoneditor.getEditorClass(ed.schema)
                         var ret = this.jsoneditor.createEditor(editorClass, {
                             jsoneditor: this.jsoneditor,
@@ -671,6 +674,10 @@ function makeGroupsEditor () {
                             } else {
                                 delete this.value[key]
                             }
+                        } else {
+                            if (ed.schema.requiredProp && !this.value.hasOwnProperty(key)) {
+                                this.value[key] = ed.schema.default
+                            }
                         }
                     } else {
                         delete this.value[key]
@@ -692,7 +699,29 @@ function makeGroupsEditor () {
                 }
             }
             this.updateEditorsState()
+            // current active tab can be disabled after editor change, so show first enabled tab
+            this.showEnabledTab()
             super.onChildEditorChange(editor)
+        }
+
+        showEnabledTab() {
+            if (!this.activeTab) {
+                return
+            }
+            var tab = this.tabs.find(tab => tab.tab == this.activeTab)
+            if (!tab || tab.group.isEnabled) {
+                return
+            }
+            this.theme.markTabInactive(tab)
+            tab = this.tabs.find(tab => tab.tab && tab.group.isEnabled)
+            if (tab) {
+                if (!tab.hasEditors) {
+                    this.createGroups(tab.container, tab.group)
+                    tab.hasEditors = true
+                }
+                this.activeTab = tab.tab
+                this.theme.markTabActive(tab)
+            }
         }
 
         refreshTabs() {
