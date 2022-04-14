@@ -5,9 +5,7 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 function makeSelectWithHiddenItems () {
     return class extends JSONEditor.defaults.editors["select"] {
 
-        build () {
-            super.build()
-
+        hideFromChoices () {
             var options = this.switcher_options = this.theme.getSwitcherOptions(this.input)
             options.forEach((op, i) => {
                 if (this.schema.options &&
@@ -16,6 +14,16 @@ function makeSelectWithHiddenItems () {
                     op.hidden = 'hidden'
                 }
             })
+        }
+
+        build () {
+            super.build()
+            this.hideFromChoices()
+        }
+
+        onWatchedFieldChange () {
+            super.onWatchedFieldChange()
+            this.hideFromChoices()
         }
     }
 }
