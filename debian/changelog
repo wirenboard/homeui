@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.33.3) stable; urgency=medium
 
-  * Configs log
+  * Service logs viewer is added to the config editor
 
  -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 04 Apr 2022 17:14:01 +0500
 

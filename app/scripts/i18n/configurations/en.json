@@ -19,7 +19,7 @@
         "log": {
             "normal": "Launch Log",
             "error": "Has errors",
-            "empty": "List is empty"
+            "empty": "Press \"Save\" to see service launch log"
         }
     }
 }
