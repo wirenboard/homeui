@@ -179,6 +179,7 @@ function makeCollapsibleMultipleEditor () {
             editor.container.style.display = ''
             if (this.childEditorControls) {
                 this.container.removeChild(this.childEditorControls)
+                this.childEditorControls = undefined
             }
             if (editor.controls) {
                 this.childEditorControls = editor.controls

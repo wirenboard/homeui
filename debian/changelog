@@ -1,15 +1,20 @@
-wb-mqtt-homeui (2.33.2) stable; urgency=medium
+wb-mqtt-homeui (2.34.1) stable; urgency=medium
 
   * Topic write duplicate
 
- -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 04 Apr 2022 17:07:01 +0500
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 16 Apr 2022 16:53:01 +0500
+
+wb-mqtt-homeui (2.34.0) stable; urgency=medium
+
+  * "groups" editor is added to configs editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 15 Apr 2022 17:44:50 +0500
 
 wb-mqtt-homeui (2.33.1) stable; urgency=medium
 
   * Enum editor with ability to hide items now supports dynamic lists-building
 
  -- Vladimir Romanov <v.romanov@wirenboard.ru>  Fri, 8 Apr 2022 01:02:43 +0500
-
 
 wb-mqtt-homeui (2.33.0) stable; urgency=medium
 
