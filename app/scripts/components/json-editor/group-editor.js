@@ -643,7 +643,7 @@ function makeGroupsEditor () {
             this.createChannels(container, group)
             group.subgroups.groups.forEach(subgroup => {
                 subgroup.setHeader(document.createElement('label'))
-                subgroup.header.textContent = subgroup.schema.title
+                subgroup.header.textContent = this.translateProperty(subgroup.schema.title)
                 container.appendChild(subgroup.header)
                 subgroup.setPanel(this.theme.getIndentedPanel())
                 container.appendChild(subgroup.panel)
