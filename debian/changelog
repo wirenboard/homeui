@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.34.1) stable; urgency=medium
+
+  * Topic write duplicate
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 16 Apr 2022 16:53:01 +0500
+
 wb-mqtt-homeui (2.34.0) stable; urgency=medium
 
   * "groups" editor is added to configs editor
