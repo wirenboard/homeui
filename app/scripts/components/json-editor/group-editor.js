@@ -351,10 +351,13 @@ function makeGroupsEditor () {
 
             this.controls.insertBefore(this.addproperty_holder, this.controls.childNodes[1])
 
+            this.disableValueUpdate = true
             this.createTopLevelEditors(this.editor_holder)
             this.createChannels(this.editor_holder, this.getRootGroup())
             this.createTabs()
             this.updateEditorsState()
+            this.disableValueUpdate = false
+            this.showEnabledTab()
             this.refreshAddProperties()
         }
 
@@ -475,8 +478,9 @@ function makeGroupsEditor () {
                     }
                 }
             })
-            this.disableValueUpdate = false
             this.updateEditorsState()
+            this.disableValueUpdate = false
+            this.showEnabledTab()
             this.onChange(true)
         }
 
@@ -597,7 +601,6 @@ function makeGroupsEditor () {
         createEditors(container, group) {
             var createRow = true
             var rowHolder
-            this.disableValueUpdate = true
             Object.entries(group.params.editors)
                   .sort(function(a, b) { return a[1].schema.propertyOrder > b[1].schema.propertyOrder})
                   .forEach(([key, ed]) => {
@@ -632,7 +635,6 @@ function makeGroupsEditor () {
                         }
                         ed.updateEditorDisplay()
                 })
-            this.disableValueUpdate = false
         }
 
         createGroups(container, group) {
@@ -716,7 +718,9 @@ function makeGroupsEditor () {
             tab = this.tabs.find(tab => tab.tab && tab.group.isEnabled)
             if (tab) {
                 if (!tab.hasEditors) {
+                    this.disableValueUpdate = true
                     this.createGroups(tab.container, tab.group)
+                    this.disableValueUpdate = false
                     tab.hasEditors = true
                 }
                 this.activeTab = tab.tab
@@ -729,7 +733,9 @@ function makeGroupsEditor () {
                 if (!tab.tab) return
                 if (tab.tab === this.activeTab) {
                     if (!tab.hasEditors) {
+                        this.disableValueUpdate = true
                         this.createGroups(tab.container, tab.group)
+                        this.disableValueUpdate = false
                         tab.hasEditors = true
                     }
                     this.theme.markTabActive(tab)
