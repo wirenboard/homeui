@@ -644,10 +644,17 @@ function makeGroupsEditor () {
             this.createEditors(container, group)
             this.createChannels(container, group)
             group.subgroups.groups.forEach(subgroup => {
-                subgroup.setHeader(document.createElement('label'))
-                subgroup.header.textContent = this.translateProperty(subgroup.schema.title)
-                container.appendChild(subgroup.header)
-                subgroup.setPanel(this.theme.getIndentedPanel())
+                if (subgroup.schema.ui_options && 
+                    subgroup.schema.ui_options.wb && 
+                    subgroup.schema.ui_options.wb.disable_title)
+                {
+                    subgroup.setPanel(document.createElement('div'))
+                } else {
+                    subgroup.setHeader(document.createElement('label'))
+                    subgroup.header.textContent = this.translateProperty(subgroup.schema.title)
+                    container.appendChild(subgroup.header)
+                    subgroup.setPanel(this.theme.getIndentedPanel())
+                }
                 container.appendChild(subgroup.panel)
                 this.createGroups(subgroup.panel, subgroup)
             })
