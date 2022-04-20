@@ -510,7 +510,7 @@ function makeGroupsEditor () {
 
         createChannels(container, group) {
             var schemas = Object.entries(group.channels.editors)
-                                .sort(function(a, b) { return a[1].schema.default.channelIndex > b[1].schema.default.channelIndex})
+                                .sort((a, b)  => a[1].schema.default.channelIndex - b[1].schema.default.channelIndex)
             if (schemas.length) {
                 var table = this.theme.getTable()
                 container.appendChild(table)
@@ -566,12 +566,15 @@ function makeGroupsEditor () {
 
         createTopLevelEditors(container) {
             Object.entries(this.getRootGroup().params.editors)
-                  .sort(function(a, b) { return a[1].schema.propertyOrder > b[1].schema.propertyOrder})
+                  .sort((a, b) => (a[1].schema.propertyOrder || 0) - (b[1].schema.propertyOrder || 0))
                   .forEach(([key, ed]) => {
                         var editorHolder = document.createElement('div')
                         container.appendChild(editorHolder)
                         const editorClass = this.jsoneditor.getEditorClass(ed.schema)
                         ed.schema.options = angular.extend(ed.schema.options || {}, {show_opt_in: false})
+                        if (ed.schema.requiredProp) {
+                            ed.schema.required = true
+                        }
                         var ret = this.jsoneditor.createEditor(editorClass, {
                             jsoneditor: this.jsoneditor,
                             schema: ed.schema,
@@ -599,17 +602,15 @@ function makeGroupsEditor () {
         }
 
         createEditors(container, group) {
-            var createRow = true
-            var rowHolder
+            var rowHolder = undefined
             Object.entries(group.params.editors)
-                  .sort(function(a, b) { return a[1].schema.propertyOrder > b[1].schema.propertyOrder})
+                  .sort((a, b) => (a[1].schema.propertyOrder || 0) - (b[1].schema.propertyOrder || 0))
                   .forEach(([key, ed]) => {
                         var editorHolder = document.createElement('div')
-                        if (createRow) {
+                        if (!rowHolder) {
                             rowHolder = this.theme.getGridRow()
                             container.appendChild(rowHolder)
                         }
-                        createRow = !createRow
                         this.theme.setGridColumnSize(editorHolder, this.MAX_GRID_COLUMNS/2)
                         rowHolder.appendChild(editorHolder)
                         if (ed.schema.requiredProp) {
