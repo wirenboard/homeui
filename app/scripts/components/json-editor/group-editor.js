@@ -351,10 +351,13 @@ function makeGroupsEditor () {
 
             this.controls.insertBefore(this.addproperty_holder, this.controls.childNodes[1])
 
+            this.disableValueUpdate = true
             this.createTopLevelEditors(this.editor_holder)
             this.createChannels(this.editor_holder, this.getRootGroup())
             this.createTabs()
             this.updateEditorsState()
+            this.disableValueUpdate = false
+            this.showEnabledTab()
             this.refreshAddProperties()
         }
 
@@ -475,8 +478,9 @@ function makeGroupsEditor () {
                     }
                 }
             })
-            this.disableValueUpdate = false
             this.updateEditorsState()
+            this.disableValueUpdate = false
+            this.showEnabledTab()
             this.onChange(true)
         }
 
@@ -506,7 +510,7 @@ function makeGroupsEditor () {
 
         createChannels(container, group) {
             var schemas = Object.entries(group.channels.editors)
-                                .sort(function(a, b) { return a[1].schema.default.channelIndex > b[1].schema.default.channelIndex})
+                                .sort((a, b)  => a[1].schema.default.channelIndex - b[1].schema.default.channelIndex)
             if (schemas.length) {
                 var table = this.theme.getTable()
                 container.appendChild(table)
@@ -562,12 +566,15 @@ function makeGroupsEditor () {
 
         createTopLevelEditors(container) {
             Object.entries(this.getRootGroup().params.editors)
-                  .sort(function(a, b) { return a[1].schema.propertyOrder > b[1].schema.propertyOrder})
+                  .sort((a, b) => (a[1].schema.propertyOrder || 0) - (b[1].schema.propertyOrder || 0))
                   .forEach(([key, ed]) => {
                         var editorHolder = document.createElement('div')
                         container.appendChild(editorHolder)
                         const editorClass = this.jsoneditor.getEditorClass(ed.schema)
                         ed.schema.options = angular.extend(ed.schema.options || {}, {show_opt_in: false})
+                        if (ed.schema.requiredProp) {
+                            ed.schema.required = true
+                        }
                         var ret = this.jsoneditor.createEditor(editorClass, {
                             jsoneditor: this.jsoneditor,
                             schema: ed.schema,
@@ -595,18 +602,15 @@ function makeGroupsEditor () {
         }
 
         createEditors(container, group) {
-            var createRow = true
-            var rowHolder
-            this.disableValueUpdate = true
+            var rowHolder = undefined
             Object.entries(group.params.editors)
-                  .sort(function(a, b) { return a[1].schema.propertyOrder > b[1].schema.propertyOrder})
+                  .sort((a, b) => (a[1].schema.propertyOrder || 0) - (b[1].schema.propertyOrder || 0))
                   .forEach(([key, ed]) => {
                         var editorHolder = document.createElement('div')
-                        if (createRow) {
+                        if (!rowHolder) {
                             rowHolder = this.theme.getGridRow()
                             container.appendChild(rowHolder)
                         }
-                        createRow = !createRow
                         this.theme.setGridColumnSize(editorHolder, this.MAX_GRID_COLUMNS/2)
                         rowHolder.appendChild(editorHolder)
                         if (ed.schema.requiredProp) {
@@ -632,7 +636,6 @@ function makeGroupsEditor () {
                         }
                         ed.updateEditorDisplay()
                 })
-            this.disableValueUpdate = false
         }
 
         createGroups(container, group) {
@@ -642,10 +645,17 @@ function makeGroupsEditor () {
             this.createEditors(container, group)
             this.createChannels(container, group)
             group.subgroups.groups.forEach(subgroup => {
-                subgroup.setHeader(document.createElement('label'))
-                subgroup.header.textContent = subgroup.schema.title
-                container.appendChild(subgroup.header)
-                subgroup.setPanel(this.theme.getIndentedPanel())
+                if (subgroup.schema.ui_options && 
+                    subgroup.schema.ui_options.wb && 
+                    subgroup.schema.ui_options.wb.disable_title)
+                {
+                    subgroup.setPanel(document.createElement('div'))
+                } else {
+                    subgroup.setHeader(document.createElement('label'))
+                    subgroup.header.textContent = this.translateProperty(subgroup.schema.title)
+                    container.appendChild(subgroup.header)
+                    subgroup.setPanel(this.theme.getIndentedPanel())
+                }
                 container.appendChild(subgroup.panel)
                 this.createGroups(subgroup.panel, subgroup)
             })
@@ -716,7 +726,9 @@ function makeGroupsEditor () {
             tab = this.tabs.find(tab => tab.tab && tab.group.isEnabled)
             if (tab) {
                 if (!tab.hasEditors) {
+                    this.disableValueUpdate = true
                     this.createGroups(tab.container, tab.group)
+                    this.disableValueUpdate = false
                     tab.hasEditors = true
                 }
                 this.activeTab = tab.tab
@@ -729,7 +741,9 @@ function makeGroupsEditor () {
                 if (!tab.tab) return
                 if (tab.tab === this.activeTab) {
                     if (!tab.hasEditors) {
+                        this.disableValueUpdate = true
                         this.createGroups(tab.container, tab.group)
+                        this.disableValueUpdate = false
                         tab.hasEditors = true
                     }
                     this.theme.markTabActive(tab)
