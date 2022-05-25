@@ -10,6 +10,7 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 // Title and header controls of a selected type editor are hidden
 // Has additional expandEditor and collapseEditor functions
 function makeCollapsibleMultipleEditor () {
+    JSONEditor.defaults.languages.en.deprecated_template = 'deprecated template'
     return class extends JSONEditor.defaults.editors["multiple"] {
 
         build () {
@@ -170,6 +171,35 @@ function makeCollapsibleMultipleEditor () {
             this.container.style.paddingBottom = 0
             this.switcher.disabled = false
         }
+
+        onChildEditorChange (editor) {
+            super.onChildEditorChange(editor)
+            this.onWatchedFieldChange()
+        }
+
+        getDisplayText (arr) {
+            const disp = []
+            const inc = {}
+
+            arr.forEach(el => {
+                var title = 'Item'
+                if (el.title) {
+                    title = this.translateProperty(el.title)
+                    if (el.options && el.options.wb && el.options.wb.hide_from_selection) {
+                        title = title + ' (' + this.translate('deprecated_template') + ')'
+                    }
+                }
+                if (inc[title]) {
+                    title = `${title} ${inc[title]}`
+                    inc[title]++
+                } else {
+                    inc[title] = 2
+                }
+                disp.push(title)
+            })
+
+            return disp
+          }
 
         _adjustControls(editor)
         {
