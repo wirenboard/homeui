@@ -63,10 +63,13 @@ class LogsCtrl {
         this.selectedStartDateMs = undefined;
 
         this.boots = [
-            // Object for "All boots" item
             {
                 hash: undefined,
-                desc: undefined // Will be replaced by 'logs.labels.all-boots' translation
+                desc: 'logs.labels.all-boots' 
+            },
+            {
+                hash: -1,
+                desc: 'logs.labels.last-boot'
             }
         ];
 
@@ -119,7 +122,8 @@ class LogsCtrl {
     updateTranslations() {
         this.$translate(['logs.labels.latest',
                          'logs.labels.set-date',
-                         'logs.labels.all-boots',
+                         this.boots[0].desc,
+                         this.boots[1].desc,
                          'logs.labels.all-services',
                          'logs.labels.now',
                          'logs.labels.since',
@@ -130,7 +134,8 @@ class LogsCtrl {
                         ]).then(translations => {
           this.logDates[0].name = translations['logs.labels.latest'];
           this.logDates[1].name = translations['logs.labels.set-date'];
-          this.boots[0].desc = translations['logs.labels.all-boots'];
+          this.boots[0].desc = translations[this.boots[0].desc];
+          this.boots[1].desc = translations[this.boots[1].desc];
           this.services[0].desc = translations['logs.labels.all-services'];
           this.nowMsg = translations['logs.labels.now'];
           this.sinceMsg = translations['logs.labels.since'];
@@ -278,19 +283,7 @@ class LogsCtrl {
 
     loadBootsAndServices() {
         this.LogsProxy.List().then(result => {
-            this.boots.push(...result.boots.map(obj => {
-                var st = new Date();
-                st.setTime(obj.start * 1000);
-                var desc;
-                if (obj.end) {
-                    var en = new Date();
-                    en.setTime(obj.end * 1000);
-                    desc = st.toLocaleString() + ' - ' + en.toLocaleString();
-                } else {
-                    desc = st.toLocaleString() + ' - ' + this.nowMsg;
-                }
-                return { hash: obj.hash, desc: desc };
-            }));
+            this.boots[1].hash = result.boots[0].hash
             this.services.push(...result.services.map(s => { return {name: s, desc: s}}));
             this.waitBootsAndServices = false;
             this.selectedBoot = this.boots[0];
