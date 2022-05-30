@@ -44,6 +44,25 @@ function makeCollapsibleMultipleEditor () {
             }
         }
 
+        updateWarnIcon() {
+            var type = this.types[this.type]
+            if (type.options && type.options.wb && type.options.wb.hide_from_selection) {
+                if (this.warnIcon) {
+                    this.warnIcon.style.display = ''
+                } else {
+                    this.warnIcon = document.createElement('i')
+                    this.warnIcon.classList.add('warning-sign')
+                    this.warnIcon.classList.add('glyphicon')
+                    this.warnIcon.classList.add('glyphicon-exclamation-sign')
+                    this.container.insertBefore(this.warnIcon, this.container.childNodes[1])
+                }
+            } else {
+                if (this.warnIcon) {
+                    this.warnIcon.style.display = 'none'
+                }
+            }
+        }
+
         switchEditor (i) {
             var collapse = false
             if (!this.editors[i]) {
@@ -58,6 +77,7 @@ function makeCollapsibleMultipleEditor () {
             const currentValue = this.getValue()
             this.type = i
             this.register()
+            this.updateWarnIcon()
             this.editors.forEach((editor, type) => {
                 if (!editor) return
                 if (this.type === type) {
