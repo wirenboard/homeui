@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.35.2) stable; urgency=medium
+
+  * rules: update the files list after creating a new file
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 23 Apr 2022 19:52:00 +0500
+
 wb-mqtt-homeui (2.35.1) stable; urgency=medium
 
   * Array elements creation bug in config editor with tabbed interface is fixed
