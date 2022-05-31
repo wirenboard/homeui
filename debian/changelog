@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.37.0) stable; urgency=medium
+
+  * Boots selection on logs page is limited to "All boots"/"Last boot" options.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 17:06:06 +0500
+
 wb-mqtt-homeui (2.36.0) stable; urgency=medium
 
   * "Deprecated template" message is added to names of deprecated device templates
