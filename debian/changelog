@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.37.1) stable; urgency=medium
+
+  * Fix rules editor lost focus
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Tue, 31 May 2022 19:32:00 +0500
+
 wb-mqtt-homeui (2.37.0) stable; urgency=medium
 
   * Boots selection on logs page is limited to "All boots"/"Last boot" options.

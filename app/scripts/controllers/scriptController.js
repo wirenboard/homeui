@@ -109,6 +109,20 @@ class ScriptCtrl {
             pos === null);
       }).catch(errors.catch('rules.errors.load'));
     }
+
+    const wrapClickEvent = (e) => {
+        if (e.target.getAttribute('id') == 'page-wrapper') {
+            cm.focus()
+        }
+    }
+
+    $scope.$on('$destroy', () => {
+        document
+            .getElementById('page-wrapper')
+            .removeEventListener('click', wrapClickEvent);
+    });
+
+    document.getElementById('page-wrapper').addEventListener('click', wrapClickEvent)
   }
 }
 
