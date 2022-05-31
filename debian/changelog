@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.36.0) stable; urgency=medium
+
+  * "Deprecated template" message is added to names of deprecated device templates
+  * Warning icon is added near deprecated template
+  * Deprecation notice is added to expanded device editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 16:29:03 +0500
+
 wb-mqtt-homeui (2.35.3) stable; urgency=medium
 
   * Support fullscreen mode. Add to url ?fullscreen to hide navigation elements

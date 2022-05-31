@@ -1067,3 +1067,7 @@ body.kiosk #page-wrapper {
 body.kiosk .page-header {
     margin-top: 10px;
 }
+
+.warning-notice {
+  padding: 10px;
+}
