@@ -1047,3 +1047,7 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   color: #f0ad4e !important;
   padding-right: 5px;
 }
+
+.warning-notice {
+  padding: 10px;
+}

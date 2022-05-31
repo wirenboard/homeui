@@ -11,6 +11,7 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 // Has additional expandEditor and collapseEditor functions
 function makeCollapsibleMultipleEditor () {
     JSONEditor.defaults.languages.en.deprecated_template = 'deprecated template'
+    JSONEditor.defaults.languages.en.deprecated_notice = 'Device template is deprecated, use newer version'
     return class extends JSONEditor.defaults.editors["multiple"] {
 
         build () {
@@ -51,6 +52,7 @@ function makeCollapsibleMultipleEditor () {
                     this.warnIcon.style.display = ''
                 } else {
                     this.warnIcon = document.createElement('i')
+                    this.warnIcon.title = this.translate('deprecated_notice')
                     this.warnIcon.classList.add('warning-sign')
                     this.warnIcon.classList.add('glyphicon')
                     this.warnIcon.classList.add('glyphicon-exclamation-sign')
@@ -59,6 +61,25 @@ function makeCollapsibleMultipleEditor () {
             } else {
                 if (this.warnIcon) {
                     this.warnIcon.style.display = 'none'
+                }
+            }
+        }
+
+        updateDeprecationNotice() {
+            var type = this.types[this.type]
+            if (!this.collapsed && type.options && type.options.wb && type.options.wb.hide_from_selection) {
+                if (this.deprecationNotice) {
+                    this.deprecationNotice.style.display = ''
+                } else {
+                    this.deprecationNotice = document.createElement('p')
+                    this.deprecationNotice.innerHTML = this.translate('deprecated_notice') 
+                    this.deprecationNotice.classList.add('bg-warning')
+                    this.deprecationNotice.classList.add('warning-notice')
+                    this.container.insertBefore(this.deprecationNotice, this.container.childNodes[6])
+                }
+            } else {
+                if (this.deprecationNotice) {
+                    this.deprecationNotice.style.display = 'none'
                 }
             }
         }
@@ -176,6 +197,7 @@ function makeCollapsibleMultipleEditor () {
                 this.childEditorControls = undefined
             }
             this.switcher.disabled = true
+            this.updateDeprecationNotice()
         }
 
         expandEditor() {
@@ -190,6 +212,7 @@ function makeCollapsibleMultipleEditor () {
             this.setButtonText(this.collapse_control, '', 'collapse', 'button_collapse')
             this.container.style.paddingBottom = 0
             this.switcher.disabled = false
+            this.updateDeprecationNotice()
         }
 
         onChildEditorChange (editor) {

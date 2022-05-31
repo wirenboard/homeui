@@ -330,7 +330,9 @@ const JsonEditorRussianTranslation = {
 
     channel: 'Канал',
 
-    deprecated_template: 'устаревший шаблон'
+    deprecated_template: 'устаревший шаблон',
+
+    deprecated_notice: 'Шаблон устройства устарел, рекомендуется использовать новую версию'
 
 };
 
