@@ -68,6 +68,7 @@ class ScriptCtrl {
         return;
       EditorProxy.Save({ path: $scope.file.path, content: $scope.file.content })
         .then(function (reply) {
+            $scope.$emit("update-rules-list");
           if ($scope.file.isNew || pos !== null) {
             // clear pos in the url after saving to be able
             // to navigate to errors

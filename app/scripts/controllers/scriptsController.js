@@ -1,11 +1,26 @@
 class ScriptsCtrl {
-  constructor(EditorProxy, whenMqttReady, errors, rolesFactory) {
+  constructor(EditorProxy, whenMqttReady, errors, rolesFactory, $scope) {
     'ngInject';
 
     this.EditorProxy = EditorProxy;
     this.errors = errors;
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
     if(!this.haveRights) return;
+
+    const loadList = () => {
+        whenMqttReady()
+            .then(() => EditorProxy.List())
+            .then((scripts) => {
+                console.log("scripts", scripts);
+                // пишу каждому временное имя
+                this.scripts = scripts.map((script) => {
+                    script.tempName = script.virtualPath;
+                    script.processingRequest = false;
+                    return script;
+                });
+            })
+            .catch("rules.errors.list");
+    }
 
     /*
      get list
@@ -16,21 +31,16 @@ class ScriptsCtrl {
      /rpc/v1/wbrules/Editor/Save/contactless-Usf4VuT4Ba {"id":3,"params":{"path":"rules.js","content": ....
      */
 
-    whenMqttReady().then( ()=>
-        EditorProxy.List()
-    ).then(scripts=> {
-      // пишу каждому временное имя
-      this.scripts = scripts.map(script=> {
-        script.tempName = script.virtualPath;
-        script.processingRequest = false;
-        return script
-      })
-    }).catch('rules.errors.list');
+     $scope.$on('update-rules-list', (event, data) => {
+        loadList();
+     });
+
+     loadList();
   }
 
   deleteScript(index) {
     var path = this.scripts[index].virtualPath;
-    this.EditorProxy.Remove({path: path}).then(script=>{this.scripts.splice(index,1);}, 
+    this.EditorProxy.Remove({path: path}).then(script=>{this.scripts.splice(index,1);},
                                                err=>alert(err))
   }
 }

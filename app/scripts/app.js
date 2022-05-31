@@ -310,7 +310,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig, tmhDynamicLocale) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig, tmhDynamicLocale, $location) => {
         'ngInject';
 
         $rootScope.$on('$translateChangeSuccess', () => {
@@ -434,6 +434,10 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             }, configSaveDebounceMs);
         }, true);
 
+        const params = $location.search();
+        if (params.fullscreen === true) {
+            document.getElementsByTagName("body")[0].classList.add("kiosk");
+        }
 
         setTimeout(() => {
             $('double-bounce-spinner').addClass('ng-hide');
