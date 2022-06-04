@@ -58,7 +58,7 @@
                       <a href="javascript:" data-toggle="collapse" data-target="#dashboards-menu">
                           <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.dashboards' | translate}}
                       </a>
-                      <ul id="dashboards-menu" ng-class="{'collapse in': $state.includes('dashboard') || $state.includes('dashboard-svg') || $state.includes('dashboards')}">
+                      <ul id="dashboards-menu" class="collapse in">
                           <li>
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref-active="active" ui-sref="dashboards" translate>{{'navigation.menu.list'}}</a>
                           </li>
