@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.37.2) stable; urgency=medium
+
+  * do not show description in config list
+
+ -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 13:37:47 +0300
+
 wb-mqtt-homeui (2.37.0) stable; urgency=medium
 
   * Boots selection on logs page is limited to "All boots"/"Last boot" options.
