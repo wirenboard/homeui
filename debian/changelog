@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.37.3) stable; urgency=medium
+
+  * open history with open end date by default
+
+ -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 15:20:49 +0300
+
 wb-mqtt-homeui (2.37.0) stable; urgency=medium
 
   * Boots selection on logs page is limited to "All boots"/"Last boot" options.
