@@ -267,6 +267,8 @@ module
     .run(($rootScope, $state) => {
         'ngInject';
 
+        $rootScope.$state = $state;
+
         $rootScope.objectsKeys = function (collection) {
             return Object.keys(collection);
         };

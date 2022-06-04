@@ -54,16 +54,13 @@
           <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
           <div class="collapse navbar-collapse navbar-ex1-collapse">
               <ul class="nav navbar-nav side-nav">
-                  <li ui-sref-active="active">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="home"><i class="glyphicon glyphicon-home"></i> {{'navigation.menu.home' | translate}}</a>
-                  </li>
-                  <li ui-sref-active="active">
+                  <li>
                       <a href="javascript:" data-toggle="collapse" data-target="#dashboards-menu">
                           <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.dashboards' | translate}}
                       </a>
-                      <ul id="dashboards-menu" class="collapse">
+                      <ul id="dashboards-menu" ng-class="{'collapse in': $state.includes('dashboard') || $state.includes('dashboard-svg') || $state.includes('dashboards')}">
                           <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="dashboards" translate>{{'navigation.menu.list'}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref-active="active" ui-sref="dashboards" translate>{{'navigation.menu.list'}}</a>
                           </li>
                           <li ng-repeat="d in dashboards()" dashboard-menu-item>
                               <a data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>

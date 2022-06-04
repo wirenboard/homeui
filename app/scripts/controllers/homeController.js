@@ -1,11 +1,13 @@
 class HomeCtrl {
-  constructor(uiConfig,rolesFactory) {
+  constructor($state, uiConfig,rolesFactory) {
     'ngInject';
 
     this.roles = rolesFactory;
     uiConfig.whenReady()
     .then((data) => {
-      this.dashboard = uiConfig.getDashboard(data.defaultDashboardId);
+      if (data.defaultDashboardId) {
+        $state.go('dashboard', {id: data.defaultDashboardId});
+      }
     });
   }
 }
