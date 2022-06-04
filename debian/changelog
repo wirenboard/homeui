@@ -1,6 +1,7 @@
 wb-mqtt-homeui (2.37.1) stable; urgency=medium
 
-  * navigate directly to home dashboard, show current dashboard in expanded menu
+  * navigate directly to default dashboard, show current dashboard in expanded menu
+  * allow to set SVG dashboard ad default
 
  -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 03:17:02 +0300
 
