@@ -258,7 +258,7 @@ class HistoryCtrl {
         this.setDefaultTime(this.startDate,this.endDate);
         // по умолчанию дата равна сегодня минус один день
         this.selectedStartDate = this.startDate? this.startDate : new Date( + (new Date()) - 24*60*60*1000 );
-        this.selectedEndDate = this.endDate? this.endDate : new Date();
+        this.selectedEndDate = this.endDate;
         this.timeChanged = true;
     };
 
@@ -370,11 +370,15 @@ class HistoryCtrl {
         _s.setMinutes(s.getMinutes());
         this.selectedStartDateMinute = _s;
         
-        var e = end || new Date();
-        var _e = new Date();
-        _e.setHours(e.getHours());
-        _e.setMinutes(e.getMinutes());
-        this.selectedEndDateMinute = _e;
+        if (end) {
+            var e = end;
+            var _e = new Date();
+            _e.setHours(e.getHours());
+            _e.setMinutes(e.getMinutes());
+            this.selectedEndDateMinute = _e;
+        } else {
+            this.selectedEndDateMinute = null;
+        }
     }
 
     beforeLoadChunkedHistory(indexOfControl=0) {
@@ -435,16 +439,23 @@ class HistoryCtrl {
 
         // никаких проверок дат. есть значения по умолчанию
         const startDate = new Date(chunks[indexOfChunk]);
-        const endDate = new Date(chunks[indexOfChunk + 1]);
+        const endDate = chunks[indexOfChunk + 1] ? new Date(chunks[indexOfChunk + 1]) : null;
         params.timestamp = {
             // add extra second to include 00:00:00
             // но только для первого чанка / для последущих чанков наоборот
             // прибавляю 1 чтобы не было нахлеста
             // (FIXME: maybe wb-mqtt-db should support not just gt/lt, but also gte/lte?)
             gt: indexOfChunk==0? startDate.getTime() / 1000 - 1 : startDate.getTime() / 1000 + 1,
-            lt: endDate.getTime() / 1000/// + 86400;
         };
-        var intervalMs = endDate - startDate; // duration of requested interval, in ms
+        if (endDate) {
+            params.timestamp.lt = endDate.getTime() / 1000/// + 86400;
+            var intervalMs = endDate - startDate; // duration of requested interval, in ms
+        } else {
+            console.log(new Date());
+            console.log(startDate);
+            var intervalMs = (new Date()) - startDate;
+        }
+
         // we want to request  no more than "limit" data points.
         // Additional divider 1.1 is here just to be on the safe side
         params.min_interval = Math.trunc(intervalMs / params.limit * 1.1);
