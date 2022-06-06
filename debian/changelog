@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.38.0) stable; urgency=medium
+
+  * Advertising notification about testing release is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Jun 2022 15:15:44 +0500
+
 wb-mqtt-homeui (2.37.0) stable; urgency=medium
 
   * Boots selection on logs page is limited to "All boots"/"Last boot" options.
