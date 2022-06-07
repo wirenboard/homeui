@@ -303,7 +303,8 @@ module.exports = function makeWebpackConfig() {
             new HtmlWebpackPlugin({
                 filename: './index.html',
                 template: './index.ejs',
-                stableRelease: true,
+                // Set to true when building for stable release
+                stableRelease: false,
                 chunksSortMode: function (a, b) {
                     var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
                     return order.indexOf(a.names[0]) - order.indexOf(b.names[0]);
