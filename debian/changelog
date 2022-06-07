@@ -1,8 +1,34 @@
-wb-mqtt-homeui (2.36.0) stable; urgency=medium
+wb-mqtt-homeui (2.38.0) stable; urgency=medium
 
   * Reload config schema after config saving only if it has needReload parameter.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 30 May 2022 11:47:36 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Jun 2022 17:17:46 +0500
+
+wb-mqtt-homeui (2.37.0) stable; urgency=medium
+
+  * Boots selection on logs page is limited to "All boots"/"Last boot" options.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 17:06:06 +0500
+
+wb-mqtt-homeui (2.36.0) stable; urgency=medium
+
+  * "Deprecated template" message is added to names of deprecated device templates
+  * Warning icon is added near deprecated template
+  * Deprecation notice is added to expanded device editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 16:29:03 +0500
+
+wb-mqtt-homeui (2.35.3) stable; urgency=medium
+
+  * Support fullscreen mode. Add to url ?fullscreen to hide navigation elements
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Thu, 05 Apr 2022 17:42:00 +0500
+
+wb-mqtt-homeui (2.35.2) stable; urgency=medium
+
+  * rules: update the files list after creating a new file
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 23 Apr 2022 19:52:00 +0500
 
 wb-mqtt-homeui (2.35.1) stable; urgency=medium
 
