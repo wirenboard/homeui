@@ -10,7 +10,8 @@ class Editor {
         this.schema = schema
         this.isChannel = (schema.default && schema.default.hasOwnProperty("channelIndex"))
         this.group = group
-        this.anyOfIndex = 0
+        this.oneOfIndex = 0
+        this.errors = undefined
     }
 
     isTopLevelEditor() {
@@ -25,10 +26,10 @@ class Editor {
         if (!this.editor) {
             return
         }
-        if (this.schema.hasOwnProperty('anyOf')) {
+        if (this.schema.hasOwnProperty('oneOf')) {
             this.editor.switcher.style.display = 'none'
-            if (this.editor.type != this.anyOfIndex) {
-                this.editor.switchEditor(this.anyOfIndex)
+            if (this.editor.type != this.oneOfOfIndex) {
+                this.editor.switchEditor(this.oneOfIndex)
                 // 'multiple' editor doesn't respect enabled state during subeditors creation.
                 // So force enabling or disabling
                 if (this.editor.isEnabled()) {
@@ -100,14 +101,14 @@ class Editor {
     }
 
     shouldEnable(paramNames, paramValues) {
-        if (this.schema.hasOwnProperty('anyOf')) {
-            var index = this.schema.anyOf.findIndex(schema => {
+        if (this.schema.hasOwnProperty('oneOf')) {
+            var index = this.schema.oneOf.findIndex(schema => {
                 return this.checkCondition(paramNames, paramValues, schema)
             })
             if (index == -1) {
                 return false
             }
-            this.anyOfIndex = index;
+            this.oneOfIndex = index;
             return true;
         }
         if (!this.schema.condition) {
@@ -126,10 +127,23 @@ class Editor {
 
     setValue(val, initial) {
         if (this.editor) {
-            if (this.schema.hasOwnProperty('anyOf')) {
+            if (this.schema.hasOwnProperty('oneOf')) {
                 this.editor.editors[this.editor.type].setValue(val, initial)
             } else {
                 this.editor.setValue(val, initial)
+            }
+        }
+    }
+
+    setErrors(errors, path) {
+        if (this.editor) {
+            this.editor.showValidationErrors(errors)
+        } else {
+            this.errors = errors
+        }
+        if (errors.some(er => er.path.startsWith(path))) {
+            if (this.group) {
+                this.group.notifyError()
             }
         }
     }
@@ -155,6 +169,7 @@ class Group {
             editors: {},
             enabledCount: 0
         }
+        this.hasErrors = false
     }
 
     updateState() {
@@ -257,6 +272,14 @@ class Group {
         this.channels.table = table
         if (this.channels.enabledCount == 0) {
             this.channels.table.style.display = 'none'
+        }
+    }
+
+    notifyError() {
+        if (this.parentGroup && this.parentGroup.parentGroup) {
+            this.parentGroup.notifyError()
+        } else {
+            this.hasErrors = true
         }
     }
 }
@@ -656,8 +679,8 @@ function makeGroupsEditor () {
                         if (ed.schema.requiredProp) {
                             ed.schema.required = true
                         }
-                        if (ed.schema.hasOwnProperty('anyOf')) {
-                            ed.schema.anyOf.forEach(s => s.options = angular.extend(s.options || {}, {show_opt_in: true}))
+                        if (ed.schema.hasOwnProperty('oneOf')) {
+                            ed.schema.oneOf.forEach(s => s.options = angular.extend(s.options || {}, {show_opt_in: true}))
                         }
                         const editorClass = this.jsoneditor.getEditorClass(ed.schema)
                         var ret = this.jsoneditor.createEditor(editorClass, {
@@ -673,11 +696,14 @@ function makeGroupsEditor () {
                         ret.build()
                         ret.postBuild()
                         ret.setOptInCheckbox(ret.header)
+                        ed.updateEditorDisplay()
                         if (this.value.hasOwnProperty(key)) {
                             ed.setValue(this.value[key], true)
                             ret.activate()
                         }
-                        ed.updateEditorDisplay()
+                        if (ed.errors) {
+                            ed.editor.showValidationErrors(ed.errors)
+                        }
                 })
         }
 
@@ -845,12 +871,23 @@ function makeGroupsEditor () {
                 }
             }
 
-            /* Show errors for child editors */
-            Object.values(this.editors).forEach(ed => {
-                if (ed.editor) {
-                    ed.editor.showValidationErrors(otherErrors)
+            this.tabs.forEach(t => {
+                if (t.group) {
+                    t.group.hasErrors = false
                 }
             })
+
+            /* Show errors for child editors */
+            Object.entries(this.editors).forEach(([key, ed]) => ed.setErrors(otherErrors, `${this.path}.${key}`))
+
+            this.tabs.forEach(t => {
+                if (t.group && t.group.hasErrors) {
+                    t.tab.classList.add('has-error')
+                } else {
+                    t.tab.classList.remove('has-error')
+                }
+            })
+
         }
     }
 }

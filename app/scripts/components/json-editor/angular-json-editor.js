@@ -59,6 +59,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'groups' && 'groups');
         jse.defaults.resolvers.unshift(schema => schema.format === 'unknown-device' && 'unknown-device');
 
+        jse.defaults.editors["select"] = makeSelectWithHiddenItems();
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
         jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
         jse.defaults.editors["slWb"] = makeDisabledEditorWrapper(jse.defaults.editors["select"]);
@@ -72,7 +73,6 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["wb-multiple"] = makeCollapsibleMultipleEditor();
         jse.defaults.editors["wb-object"] = makeObjectEditorWithButtonsOnTop();
         jse.defaults.editors["unknown-device"] = makeUnknownDeviceEditor();
-        jse.defaults.editors["select"] = makeSelectWithHiddenItems();
         jse.defaults.editors["groups"] = makeGroupsEditor();
         return jse;
     }];
@@ -232,6 +232,52 @@ function overrideJSONEditor() {
             && (   !value[schema.required[0]]
                 || !(value[schema.required[0]] === schema.properties[schema.required[0]].enum[0]))) {
               throw new Error("Stop object validation");
+        }
+        return errors;
+    });
+
+    
+    JSONEditor.defaults.custom_validators.push((schema, value, path) => {
+        if (schema.options && schema.options.wb && schema.options.wb.groups) {
+            var paramValues = []
+            var paramNames = []
+            Object.entries(value).forEach(([k, v]) => {
+                paramNames.push(k)
+                paramValues.push(v)
+            })
+            paramNames = paramNames.join(',')
+            var checkCondition = function(condition) {
+                try {
+                    return new Function(paramNames, 'return ' + condition + ';').apply(null, paramValues)
+                } catch (e) {
+                    return false
+                }
+            }
+            Object.entries(schema.properties).forEach(([key, subSchema]) => {
+                if (subSchema.hasOwnProperty('oneOf')) {
+                    subSchema.oneOf.forEach(item => {
+                        if (item.condition && !checkCondition(item.condition)) {
+                            angular.merge(item.options, { wb: { error: 'disabled'}})
+                        } else {
+                            if (item.options && item.options.wb) {
+                                delete item.options.wb.error
+                            }
+                        }
+                    })
+                }
+            })
+        }
+        return [];
+    });
+
+    JSONEditor.defaults.custom_validators.push((schema, value, path) => {
+        const errors = [];
+        if (schema.options && schema.options.wb && schema.options.wb.error) {
+            errors.push({
+                path: path,
+                property: 'custom validator',
+                message: schema.options.wb.error
+              })
         }
         return errors;
     });

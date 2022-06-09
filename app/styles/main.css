@@ -1071,3 +1071,9 @@ body.kiosk .page-header {
 .warning-notice {
   padding: 10px;
 }
+
+.nav-pills > li.has-error > a,
+.nav-pills > li.has-error > a:hover,
+.nav-pills > li.has-error > a:focus {
+  color: red;
+}

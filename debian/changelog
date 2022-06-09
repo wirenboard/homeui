@@ -1,6 +1,12 @@
+wb-mqtt-homeui (2.39.2) stable; urgency=medium
+
+  * Highlighting of tabs with invalid parameters in device config is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 15 Jun 2022 12:34:27 +0500
+
 wb-mqtt-homeui (2.39.1) stable; urgency=medium
 
-  * do not show description in config list
+  * Do not show description in config list
 
  -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 13:37:47 +0300
 
