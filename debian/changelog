@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.38.0) stable; urgency=medium
+wb-mqtt-homeui (2.39.0) stable; urgency=medium
 
   * Advertising notification about testing release is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Jun 2022 15:15:44 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Jun 2022 21:44:46 +0500
+
+wb-mqtt-homeui (2.38.0) stable; urgency=medium
+
+  * Reload config schema after config saving only if it has needReload parameter.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Jun 2022 17:17:46 +0500
 
 wb-mqtt-homeui (2.37.0) stable; urgency=medium
 

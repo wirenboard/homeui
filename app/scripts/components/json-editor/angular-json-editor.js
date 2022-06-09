@@ -122,37 +122,23 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
 
         }],
         link: function (scope, element, attrs, controller, transclude) {
-            var valueToResolve,
-                startValPromise = $q.when({}),
-                schemaPromise = $q.when(null);
-
             scope.isValid = false;
 
             if (!angular.isString(attrs.schema)) {
                 throw new Error('json-editor: schema attribute has to be defined.');
             }
-            if (angular.isObject(scope.schema)) {
-                schemaPromise = $q.when(scope.schema);
-            }
-            if (angular.isObject(scope.startval)) {
-                // Support both $http (i.e. $q) and $resource promises, and also normal object.
-                valueToResolve = scope.startval;
-                if (angular.isDefined(valueToResolve.$promise)) {
-                    startValPromise = $q.when(valueToResolve.$promise);
 
-                } else {
-                    startValPromise = $q.when(valueToResolve);
-                }
-            }
+            scope.$watch('schema', function (newValue, oldValue) {
+                var schema = newValue;
+                var startVal = scope.startval;
 
-            // Wait for the start value and schema to resolve before building the editor.
-            $q.all([schemaPromise, startValPromise]).then(function (result) {
-
-                // Support $http promise response with the 'data' property.
-                var schema = result[0] ? result[0].data || result[0] : null,
-                    startVal = result[1];
                 if (schema === null) {
                     throw new Error('json-editor: could not resolve schema data.');
+                }
+
+                if (scope.editor && angular.equals(newValue, oldValue)) {
+                    scope.editor.setValue(startVal)
+                    return
                 }
 
                 // Commit changes in text fields immediately.
@@ -196,6 +182,9 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
                 if (scope.options)
                     angular.extend(options, scope.options);
                 JSONEditor.defaults.language = $locale.id;
+                if (scope.editor) {
+                    scope.editor.destroy();
+                }
                 scope.editor = new JSONEditor(element[0], options);
 
                 var editor = scope.editor;
