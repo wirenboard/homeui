@@ -50,7 +50,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         });
         jse.defaults.resolvers.unshift(schema => schema.type === 'integer' && schema.format === 'siWb' && 'siWb');
         jse.defaults.resolvers.unshift(schema => (schema.type === 'integer' || schema.type === 'string') && schema.format === 'edWb' && 'edWb');
-        jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'tabs' && 'lazy-tabs');
+        jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'lazy-tabs' && 'lazy-tabs');
         jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'collapsible-list' && 'collapsible-list');
         jse.defaults.resolvers.unshift(schema => schema.oneOf && schema.format === 'roMultiple' && 'roMultiple');
         jse.defaults.resolvers.unshift(schema => schema.oneOf && schema.format === 'wb-multiple' && 'wb-multiple');
