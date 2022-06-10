@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.35.1-wb1) stable; urgency=medium
+
+  * Array elements creation bug in config editor with tabbed interface is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 10 Jun 2022 17:59:01 +0500
+
 wb-mqtt-homeui (2.35.0-wb1) stable; urgency=medium
 
   * Advertising notification about testing release is added
