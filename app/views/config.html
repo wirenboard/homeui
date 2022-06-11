@@ -11,7 +11,7 @@ ng-hide="$ctrl.haveRights">{{'configurations.labels.notice' | translate}}
         <span class="spinner-loader" translate>{{'configurations.labels.loading'}}</span>
     </div>
 
-    <div class="config-editor" ng-if="file.schema && !spinnerActive('configEditorProxy')">
+    <div class="config-editor" ng-show="file.schema && !spinnerActive('configEditorProxy')">
         <button class="btn btn-primary" name="save" ng-click="save()" ng-disabled="!canSave()" translate>{{'configurations.buttons.save'}}</button>
         <json-editor class="turn-off-group-button"
                 schema="file.schema"
