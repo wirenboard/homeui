@@ -4,6 +4,62 @@ wb-mqtt-homeui (2.39.3) stable; urgency=medium
 
  -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Tue, 21 June 2022 17:42:00 +0500
 
+wb-mqtt-homeui (2.39.2) stable; urgency=medium
+
+  * Highlighting of tabs with invalid parameters in device config is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 15 Jun 2022 12:34:27 +0500
+
+wb-mqtt-homeui (2.39.1) stable; urgency=medium
+
+  * Do not show description in config list
+
+ -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 13:37:47 +0300
+
+wb-mqtt-homeui (2.39.0) stable; urgency=medium
+
+  * Advertising notification about testing release is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Jun 2022 21:44:46 +0500
+
+wb-mqtt-homeui (2.38.0) stable; urgency=medium
+
+  * Reload config schema after config saving only if it has needReload parameter.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Jun 2022 17:17:46 +0500
+
+wb-mqtt-homeui (2.37.0) stable; urgency=medium
+
+  * Boots selection on logs page is limited to "All boots"/"Last boot" options.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 17:06:06 +0500
+
+wb-mqtt-homeui (2.36.0) stable; urgency=medium
+
+  * "Deprecated template" message is added to names of deprecated device templates
+  * Warning icon is added near deprecated template
+  * Deprecation notice is added to expanded device editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 16:29:03 +0500
+
+wb-mqtt-homeui (2.35.2) stable; urgency=medium
+
+  * rules: update the files list after creating a new file
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 23 Apr 2022 19:52:00 +0500
+
+wb-mqtt-homeui (2.35.1) stable; urgency=medium
+
+  * Array elements creation bug in config editor with tabbed interface is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 25 May 2022 16:07:10 +0500
+
+wb-mqtt-homeui (2.35.0) stable; urgency=medium
+
+  * Support for device parameters specified as array is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Apr 2022 14:12:17 +0500
+
 wb-mqtt-homeui (2.34.2) stable; urgency=medium
 
   * Nested groups titles display is fixed in config editor

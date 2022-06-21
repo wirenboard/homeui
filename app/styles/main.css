@@ -1067,3 +1067,13 @@ body.kiosk #page-wrapper {
 body.kiosk .page-header {
     margin-top: 10px;
 }
+
+.warning-notice {
+  padding: 10px;
+}
+
+.nav-pills > li.has-error > a,
+.nav-pills > li.has-error > a:hover,
+.nav-pills > li.has-error > a:focus {
+  color: red;
+}

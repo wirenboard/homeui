@@ -44,7 +44,8 @@
         }
     },
     "heading": {
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "stableNotice": "If you want to be the first to get access to new features of our software, switch to "
     },
     "dashboards": {
         "title": {

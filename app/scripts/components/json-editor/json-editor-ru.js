@@ -328,7 +328,12 @@ const JsonEditorRussianTranslation = {
 
     unknown_device_warning: 'Шаблон для устройства отсутствует или содержит ошибки',
 
-    channel: "Канал"
+    channel: 'Канал',
+
+    deprecated_template: 'устаревший шаблон',
+
+    deprecated_notice: 'Шаблон устройства устарел, рекомендуется использовать новую версию'
+
 };
 
 export default JsonEditorRussianTranslation;
