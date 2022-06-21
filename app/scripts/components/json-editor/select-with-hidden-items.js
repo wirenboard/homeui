@@ -12,7 +12,7 @@ function makeSelectWithHiddenItems () {
             const haveToUseDefaultValue = !!this.jsoneditor.options.use_default_values || typeof this.schema.default !== 'undefined'
             if (!this.enum_values.includes(sanitized)) {
                 if (this.value === sanitized) return
-                this.input.value = 'AbRaCaDaBrA'
+                this.input.value = null
             } else {
                 if (initial && !this.isRequired() && !haveToUseDefaultValue) {
                     sanitized = this.enum_values[0]
