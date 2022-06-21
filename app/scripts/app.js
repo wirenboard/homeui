@@ -435,9 +435,20 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         }, true);
 
         const params = $location.search();
-        if (params.fullscreen === true) {
-            document.getElementsByTagName("body")[0].classList.add("kiosk");
-        }
+
+        $rootScope.isFullscreen = params.fullscreen === true;
+        $rootScope.toogleFullscreen = () => {
+            $rootScope.isFullscreen = !$rootScope.isFullscreen;
+            $location.search("fullscreen", $rootScope.isFullscreen ? true : null);
+        };
+
+        document.onkeydown = function (evt) {
+            evt = evt || window.event;
+            console.log('key', evt.key);
+            if (evt.key == 'Escape' && $rootScope.isFullscreen) {
+                $rootScope.toogleFullscreen();
+            }
+        };
 
         setTimeout(() => {
             $('double-bounce-spinner').addClass('ng-hide');

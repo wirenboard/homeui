@@ -1,8 +1,8 @@
-wb-mqtt-homeui (2.34.3) stable; urgency=medium
+wb-mqtt-homeui (2.39.3) stable; urgency=medium
 
-  * Support fullscreen mode
+  * Support fullscreen mode. Add to url ?fullscreen to hide navigation elements
 
- -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Thu, 05 Apr 2022 17:42:00 +0500
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Tue, 21 June 2022 17:42:00 +0500
 
 wb-mqtt-homeui (2.34.2) stable; urgency=medium
 
