@@ -12,6 +12,8 @@ function makeSelectWithHiddenItems () {
             const haveToUseDefaultValue = !!this.jsoneditor.options.use_default_values || typeof this.schema.default !== 'undefined'
             if (!this.enum_values.includes(sanitized)) {
                 if (this.value === sanitized) return
+                // value is not in options list
+                // select can't show correct item so force it to show empty editor
                 this.input.value = null
             } else {
                 if (initial && !this.isRequired() && !haveToUseDefaultValue) {
