@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.39.3) stable; urgency=medium
 
-  * Ability to saving history in csv file is restored
+  * Ability to save history in csv file is restored
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 23 Jun 2022 16:33:07 +0500
 
