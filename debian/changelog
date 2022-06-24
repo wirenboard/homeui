@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.40.0) stable; urgency=medium
+
+  * Support for descriptions in config groups is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 23 Jun 2022 16:52:10 +0500
+
 wb-mqtt-homeui (2.39.3) stable; urgency=medium
 
   * Ability to save history in csv file is restored
