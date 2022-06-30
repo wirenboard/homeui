@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.39.3) stable; urgency=medium
 
   * Add button to enter fullscreen mode
 
- -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Tue, 21 June 2022 17:42:00 +0500
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Tue, 21 Jun 2022 17:42:00 +0500
 
 wb-mqtt-homeui (2.39.2) stable; urgency=medium
 
