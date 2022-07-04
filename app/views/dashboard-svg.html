@@ -1,10 +1,16 @@
 <div ng-if="dashboard">
     <h1 class="page-header">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 {{ dashboard.name }}
-            </div>    
-        </div>    
+            </div>
+            <div class="col-md-4 text-right">
+                <button type="button" class="fullscreen btn" ng-click="toogleFullscreen()">
+                    <i ng-show="!isFullscreen" class="glyphicon glyphicon-resize-full"></i>
+                    <i ng-show="isFullscreen" class="glyphicon glyphicon-resize-small"></i>
+                </button>
+            </div>
+        </div>
     </h1>
     <svg-view dashboard="dashboard"></svg-view>
 
