@@ -88,6 +88,7 @@ import dashboardPickerDirective from './directives/dashboardpicker';
 import plotlyDirective from "./directives/plotly";
 import onResizeDirective from "./directives/resize";
 import confirmDirective from "./directives/confirm";
+import fullscreenToggleDirective from './directives/fullscreenToggle';
 
 import metaTypeFilterModule from './filters/metaTypeFilter';
 
@@ -261,7 +262,8 @@ module
     .directive('dashboardPicker', dashboardPickerDirective)
     .directive('plotly', [ '$window', plotlyDirective ] )
     .directive('onResize', [ '$parse', onResizeDirective] )
-    .directive('ngConfirm', confirmDirective);
+    .directive('ngConfirm', confirmDirective)
+    .directive("fullscreenToggle", fullscreenToggleDirective);
 
 module
     .run(($rootScope, $state) => {
@@ -433,22 +435,6 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
                     });
             }, configSaveDebounceMs);
         }, true);
-
-        const params = $location.search();
-
-        $rootScope.isFullscreen = params.fullscreen === true;
-        $rootScope.toogleFullscreen = () => {
-            $rootScope.isFullscreen = !$rootScope.isFullscreen;
-            $location.search("fullscreen", $rootScope.isFullscreen ? true : null);
-        };
-
-        document.onkeydown = function (evt) {
-            evt = evt || window.event;
-            console.log('key', evt.key);
-            if (evt.key == 'Escape' && $rootScope.isFullscreen) {
-                $rootScope.toogleFullscreen();
-            }
-        };
 
         setTimeout(() => {
             $('double-bounce-spinner').addClass('ng-hide');

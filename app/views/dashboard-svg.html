@@ -5,10 +5,7 @@
                 {{ dashboard.name }}
             </div>
             <div class="col-md-4 text-right">
-                <button type="button" class="fullscreen btn" ng-click="toogleFullscreen()">
-                    <i ng-show="!isFullscreen" class="glyphicon glyphicon-resize-full"></i>
-                    <i ng-show="isFullscreen" class="glyphicon glyphicon-resize-small"></i>
-                </button>
+                <fullscreen-toggle></fullscreen-toggle>
             </div>
         </div>
     </h1>

@@ -5,10 +5,7 @@
       </div>
       <div class="col-md-4 text-right">
         <button type="button" user-role="mto" current-role="roles.current.role" name="add-widget" class="btn btn-success"  ng-click="addWidget()"  ng-hide="dashboard.content.isSvg">{{'dashboard.buttons.add' | translate}}</button>
-        <button type="button" class="fullscreen btn" ng-click="toogleFullscreen()">
-            <i ng-show="!isFullscreen" class="glyphicon glyphicon-resize-full"></i>
-            <i ng-show="isFullscreen" class="glyphicon glyphicon-resize-small"></i>
-        </button>
+        <fullscreen-toggle></fullscreen-toggle>
       </div>
   </div>
 
