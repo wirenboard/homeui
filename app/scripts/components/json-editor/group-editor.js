@@ -303,7 +303,16 @@ function makeGroupsEditor () {
         }
 
         getDefault() {
-            return this.schema.default || {}
+            if (this.schema.default) {
+                return this.schema.default
+            }
+            var df = {}
+            Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
+                if (this.checkRequired(key, ed)) {
+                    df[key] = ed.editor.getDefault()
+                }
+            })
+            return df
           }
 
         register() {
@@ -710,6 +719,9 @@ function makeGroupsEditor () {
         createGroups(container, group) {
             if (!group) {
                 return
+            }
+            if (group.schema.description) {
+                container.appendChild(this.theme.getFormInputDescription(this.translateProperty(group.schema.description)))
             }
             this.createEditors(container, group)
             this.createChannels(container, group)
