@@ -16,7 +16,6 @@ wb-mqtt-homeui (2.39.3) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 23 Jun 2022 16:33:07 +0500
 
-
 wb-mqtt-homeui (2.39.2) stable; urgency=medium
 
   * Highlighting of tabs with invalid parameters in device config is added

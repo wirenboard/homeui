@@ -100,7 +100,7 @@
         }
     },
     "fullscreen": {
-        "open": "Enter full screen",
-        "close": "Exit from full screen"
+        "open": "Enter fullscreen mode",
+        "close": "Leave fullscreen mode"
     }
 }
