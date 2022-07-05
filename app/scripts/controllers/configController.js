@@ -12,7 +12,7 @@ class ConfigCtrl {
       loaded: false,
       valid: true,
       content: {},
-      schema: {}
+      schema: undefined
     };
 
     $scope.editorOptions = {};

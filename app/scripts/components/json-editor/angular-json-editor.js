@@ -129,6 +129,10 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
             }
 
             scope.$watch('schema', function (newValue, oldValue) {
+                if (newValue === undefined) {
+                    return
+                }
+
                 var schema = newValue;
                 var startVal = scope.startval;
 
@@ -225,8 +229,6 @@ function overrideJSONEditor() {
         if (   schema.required
             && schema.properties 
             && schema.properties[schema.required[0]] 
-            && schema.properties[schema.required[0]].options
-            && schema.properties[schema.required[0]].options.hidden
             && schema.properties[schema.required[0]].enum
             && (schema.properties[schema.required[0]].enum.length == 1)
             && (   !value[schema.required[0]]
@@ -238,7 +240,7 @@ function overrideJSONEditor() {
 
     
     JSONEditor.defaults.custom_validators.push((schema, value, path) => {
-        if (schema.options && schema.options.wb && schema.options.wb.groups) {
+        if (schema.options && schema.options.wb && schema.options.wb.groups && schema.format != "wb-multiple") {
             var paramValues = []
             var paramNames = []
             Object.entries(value).forEach(([k, v]) => {
