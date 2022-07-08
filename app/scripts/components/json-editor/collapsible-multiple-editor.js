@@ -261,31 +261,9 @@ function makeCollapsibleMultipleEditor () {
             this.setDisplayText(this.types)
 
             if (this._hasGroups(this.schema)) {
+                // Store original index of a type schema in oneOf array because it is used by Validator in error messages
                 this.types.forEach((t, i) => t.originalIndex = i)
-                this.types.sort((t1, t2) => {
-                    var gr1 = (this._hasWbOptions(t1) && t1.options.wb.group)
-                    var gr2 = (this._hasWbOptions(t2) && t2.options.wb.group)
-                    if (gr1 != gr2) {
-                        if (gr1 == undefined) {
-                            return 1
-                        }
-                        if (gr2 == undefined) {
-                            return -1
-                        }
-                        var gr1i = this.schema.options.wb.groups.indexOf(t1.options.wb.group)
-                        var gr2i = this.schema.options.wb.groups.indexOf(t2.options.wb.group)
-                        if (gr1i != gr2i) {
-                            if (gr1i == -1) {
-                                return 1
-                            }
-                            if (gr2i == -1) {
-                                return -1
-                            }
-                            return gr1i - gr2i
-                        }
-                    }
-                    return t1.display_text.localeCompare(t2.display_text)
-                })
+                this._sortTypesByGroups()
             }
 
             this.display_text = this.types.map(t => t.display_text)
@@ -486,6 +464,37 @@ function makeCollapsibleMultipleEditor () {
 
         _hasGroups(schema) {
             return this._hasWbOptions(schema) && schema.options.wb.groups
+        }
+
+        // Sort oneOf schemas according to they group property
+        // Groups are sorted in the same order as in this.schema.options.wb.groups
+        // Types in groups are sorted in lexicographical order
+        // Types without groups are placed in the end of array
+        _sortTypesByGroups() {
+            this.types.sort((t1, t2) => {
+                var gr1 = (this._hasWbOptions(t1) && t1.options.wb.group)
+                var gr2 = (this._hasWbOptions(t2) && t2.options.wb.group)
+                if (gr1 != gr2) {
+                    if (gr1 == undefined) {
+                        return 1
+                    }
+                    if (gr2 == undefined) {
+                        return -1
+                    }
+                    var gr1i = this.schema.options.wb.groups.indexOf(t1.options.wb.group)
+                    var gr2i = this.schema.options.wb.groups.indexOf(t2.options.wb.group)
+                    if (gr1i != gr2i) {
+                        if (gr1i == -1) {
+                            return 1
+                        }
+                        if (gr2i == -1) {
+                            return -1
+                        }
+                        return gr1i - gr2i
+                    }
+                }
+                return t1.display_text.localeCompare(t2.display_text)
+            })
         }
     }
 }
