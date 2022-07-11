@@ -11,5 +11,5 @@ Conflicts: wb-homa-webinterface
 Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools, nginx-extras, wb-utils (>= 2.0)
 Recommends: wb-mqtt-logs
 Suggests: wb-mqtt-confed (>= 1.4.0),
-Breaks: wb-mqtt-confed (<< 1.0.3), wb-mqtt-db (<< 1.5)
+Breaks: wb-mqtt-confed (<< 1.0.3), wb-mqtt-db (<< 1.5), wb-mqtt-serial (<< 2.64.0)
 Description: Wiren Board Web UI web interface
