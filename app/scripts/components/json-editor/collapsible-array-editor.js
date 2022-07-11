@@ -87,6 +87,8 @@ function makeCollapsibleArrayEditor () {
             const collapsedState = this.rows.map(ed => ed.collapsed).filter((ed, j) => j !== i)
             const newval = this.getValue().filter((row, j) => j !== i)
 
+            const editor = this.rows[i]
+
             this.setValue(newval)
 
             this.rows.forEach((ed, i) => {

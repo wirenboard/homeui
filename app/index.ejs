@@ -17,7 +17,7 @@
     </style>
   </head>
 
-  <body ng-app="realHomeuiApp">
+  <body ng-app="realHomeuiApp" ng-class="{ 'kiosk': isFullscreen }">
   <toast></toast>
 
   <double-bounce-spinner></double-bounce-spinner>
@@ -116,7 +116,7 @@
           </div>
           <!-- /.navbar-collapse -->
       </nav>
-      
+
       <div id="overlay"></div>
 
       <div id="page-wrapper">

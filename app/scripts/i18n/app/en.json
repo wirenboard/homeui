@@ -5,7 +5,7 @@
             "save": "Config saving failed",
             "overflow": "Config saving failed: config is too big, try to reduce SVG size"
         },
-        "prompt" : {
+        "prompt": {
             "dirty": "The page has unsaved changes. Are you sure you want to leave?"
         }
     },
@@ -15,7 +15,7 @@
             "settings": "settings"
         }
     },
-    "navigation":{
+    "navigation": {
         "menu": {
             "toggle": "Toggle navigation",
             "home": "Home",
@@ -98,5 +98,9 @@
             "close": "Close",
             "cancel": "Cancel"
         }
+    },
+    "fullscreen": {
+        "open": "Enter fullscreen mode",
+        "close": "Leave fullscreen mode"
     }
 }

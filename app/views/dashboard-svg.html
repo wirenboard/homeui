@@ -1,10 +1,13 @@
 <div ng-if="dashboard">
     <h1 class="page-header">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 {{ dashboard.name }}
-            </div>    
-        </div>    
+            </div>
+            <div class="col-md-4 text-right">
+                <fullscreen-toggle></fullscreen-toggle>
+            </div>
+        </div>
     </h1>
     <svg-view dashboard="dashboard"></svg-view>
 
