@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.40.2) stable; urgency=medium
+
+  * Displaying of oneOf parameters by groups editor is fixed
+  * Support for boolean constants in expressions in json-editor's template engine is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 11 Jul 2022 10:22:52 +0500
+
 wb-mqtt-homeui (2.40.1) stable; urgency=medium
 
   * Add button to enter fullscreen mode

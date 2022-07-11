@@ -11,6 +11,12 @@ function dumbTemplateService() {
       return function (vars) {
 
         var expandVar = function(expr) {
+          if (expr === "true") {
+            return true
+          }
+          if (expr === "false") {
+            return false
+          }
           var t = expr.match(/^"(.*)"$/);
           if (t) {
             return t[1];
