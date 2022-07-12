@@ -686,6 +686,10 @@ button.show-console span {
   max-width: 100%;
 }
 
+.widget .editable-elastic-textarea textarea {
+  resize: none;
+}
+
 .widget.compact .display-cell.cell-type-range {
   margin-top: 4px;
 }
@@ -720,6 +724,7 @@ button.show-console span {
 .widgets-table .description-col {
   min-width: 200px;
   max-width: 300px;
+  overflow-wrap: break-word;
 }
 
 .widgets-table ul {
