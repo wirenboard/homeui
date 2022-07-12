@@ -16,12 +16,14 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 // Has additional expandEditor and collapseEditor functions
 // Supports item grouping
 // Hidden items can have additional caption and notice messages
+// Has additional array of properties to keep after type switching
 //
 // Additional editor options:
 // "wb": {
 //     "hidden_msg": "text to add to hidden item name",
 //     "hidden_notice": "notice message on top of hidden item editor",
 //     "groups": [] // item groups
+//     "keep_properties": [] // array of properties to keep on editor type switching
 // }
 // Additional item options:
 // "wb": {
@@ -63,6 +65,7 @@ function makeCollapsibleMultipleEditor () {
             this.container.appendChild(this.header)
 
             this.switcher = this.theme.getSwitcher()
+            this.switcher.style.marginBottom = '0px'
 
             var opt_group = undefined
             var opt_group_id = undefined
@@ -100,7 +103,16 @@ function makeCollapsibleMultipleEditor () {
               this.onChange(true)
             })
 
+            this.error_holder = document.createElement('div')
+            this.error_holder.style.marginTop = '9px'
+            this.error_holder.style.display = 'none'
+            this.container.appendChild(this.error_holder)
+
             this.editor_holder = document.createElement('div')
+            this.editor_holder.style.marginTop = '9px'
+            if (this.collapsed) {
+                this.editor_holder.style.display = 'none'
+            }
             container.appendChild(this.editor_holder)
 
             this.switchEditor(0)
@@ -206,6 +218,16 @@ function makeCollapsibleMultipleEditor () {
                 if (this.type === type) {
                     if (this.keep_values) {
                         editor.setValue(currentValue, true)
+                    } else {
+                        if (this._hasWbOptions(this.schema) && this.schema.options.wb.keep_properties) {
+                            var valueToKeep = editor.getDefault()
+                            Object.entries(currentValue).forEach(([key, value]) => {
+                                if (this.schema.options.wb.keep_properties.includes(key)) {
+                                    valueToKeep[key] = value
+                                }
+                            })
+                            editor.setValue(valueToKeep, true)
+                        }
                     }
                     this._adjustControls(editor)
                 } else {
@@ -305,17 +327,22 @@ function makeCollapsibleMultipleEditor () {
             if (this.collapsed) {
                 return
             }
-            // hide only editor, error_holder still be shown
-            this.editors[this.type].editor_holder.style.display = 'none'
+            this.editor_holder.style.display = 'none'
             this.collapsed = true
             this.setButtonText(this.collapse_control, '', 'expand', 'button_expand')
-            this.container.style.paddingBottom = ''
             if (this.childEditorControls) {
                 this.container.removeChild(this.childEditorControls)
                 this.childEditorControls = undefined
             }
             this.switcher.disabled = true
             this.updateDeprecationNotice()
+            if (this.hasErrors) {
+                this.error_holder.style.display = ''
+                this.container.style.paddingBottom = '0px'
+            } else {
+                this.error_holder.style.display = 'none'
+                this.container.style.paddingBottom = '9px'
+            }
         }
 
         expandEditor() {
@@ -325,12 +352,12 @@ function makeCollapsibleMultipleEditor () {
                 this.refreshValue()
             }
             this._adjustControls(this.editors[this.type])
-            this.editors[this.type].editor_holder.style.display = ''
+            this.editor_holder.style.display = ''
             this.collapsed = false
             this.setButtonText(this.collapse_control, '', 'collapse', 'button_collapse')
-            this.container.style.paddingBottom = 0
             this.switcher.disabled = false
             this.updateDeprecationNotice()
+            this.error_holder.style.display = 'none'
         }
 
         onChildEditorChange (editor) {
@@ -376,6 +403,25 @@ function makeCollapsibleMultipleEditor () {
         }
 
         showValidationErrors (errors) {
+            /* Show errors for this editor */
+            if (this.error_holder) {
+                const myErrors = errors.filter(error => error.path === this.path)
+                if (myErrors.length) {
+                    this.hasErrors = true
+                    this.error_holder.innerHTML = ''
+                    myErrors.forEach(error => {
+                        this.error_holder.appendChild(this.theme.getErrorMessage(error.message))
+                    })
+                } else {
+                    this.hasErrors = false
+                }
+                if (this.collapsed && this.hasErrors) {
+                    this.error_holder.style.display = ''
+                } else {
+                    this.error_holder.style.display = 'none'
+                }
+            }
+
             /* oneOf error paths need to remove the oneOf[i] part before passing to child editors */
             this.editors.forEach((editor, i) => {
                 if (!editor) return

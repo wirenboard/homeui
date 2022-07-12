@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.42.0) stable; urgency=medium
+
+  * Slave id is preserved after device type switching
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 13 Jul 2022 16:11:30 +0500
+
 wb-mqtt-homeui (2.41.0) stable; urgency=medium
 
   * Support for groups in device type select in wb-mqtt-serial config editor is added
