@@ -448,6 +448,7 @@ class HistoryCtrl {
         // we want to request  no more than "limit" data points.
         // Additional divider 1.1 is here just to be on the safe side
         params.min_interval = Math.trunc(intervalMs / params.limit * 1.1);
+        params.max_records = this.historyMaxPoints
         this.loadHistory(params,indexOfControl,indexOfChunk,chunks)
     }
 
