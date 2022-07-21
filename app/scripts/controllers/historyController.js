@@ -221,12 +221,14 @@ class HistoryCtrl {
         var t = this.$translate(['history.labels.all_channels',
                                  'history.labels.widget_channels',
                                  'history.errors.dates',
-                                 'history.errors.points']);
+                                 'history.errors.points',
+                                 'history.format.date_with_ms']);
         t.then(translations => {
             this.allChannelsMsg = translations['history.labels.all_channels'];
             this.widgetChannelsMsg = translations['history.labels.widget_channels'];
             this.invalidDateRangeMsg = translations['history.errors.dates'];
             this.maxPointsLimitMsg = translations['history.errors.points'];
+            this.dateWithMsFormat = translations['history.format.date_with_ms'];
         });
         return t;
     }
@@ -669,7 +671,12 @@ class HistoryCtrl {
 
     processDbRecord(record, chart) {
         var ts = new Date();
-        ts.setTime(record.t * 1000);
+        // For discrete signals store timestamp with ms
+        if (chart.hasBooleanValues) {
+            ts.setTime(record.t * 1000);
+        } else {
+            ts.setTime(Math.round(record.t) * 1000);
+        }
         chart.xValues.push(ts);
         chart.yValues.push(record.v);
         if ((record.max && record.max != record.v) || (record.min && record.min != record.v)) {
@@ -764,4 +771,13 @@ class HistoryCtrl {
 //-----------------------------------------------------------------------------
 export default angular
     .module('homeuiApp.history', [])
-    .controller('HistoryCtrl', HistoryCtrl);
+    .controller('HistoryCtrl', HistoryCtrl)
+    .filter('formatDate', ['$filter', function($filter) {
+        return function (date, format) {
+            var d = new Date(date)
+            if (d.getMilliseconds()) {
+                return $filter('date')(d, format)
+            }
+            return $filter('date')(d,'medium')
+        }
+    }])

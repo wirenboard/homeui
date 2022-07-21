@@ -24,6 +24,9 @@
             "load": "Error getting history",
             "warning": "Warning", 
             "points": "maximum number of points exceeded. Please select start date."
+        },
+        "format": {
+            "date_with_ms": "MMM d, yyyy h:mm:ss:sss a"
         }
     }
 }
