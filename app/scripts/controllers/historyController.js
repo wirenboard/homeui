@@ -392,7 +392,7 @@ class HistoryCtrl {
         }
         var chunks = this.handleData.splitDate(this.startDate,this.endDate,this.CHUNK_INTERVAL+1);
         this.chunksN = chunks.length - 1;
-        this.maxChunkRecords = Math.min(this.historyMaxPoints, Math.ceil(this.$element[0].clientWidth / this.chunksN))
+        this.maxChunkRecords = Math.min(this.historyMaxPoints, Math.ceil(this.$element[0].offsetWidth / this.chunksN))
         this.loadChunkedHistory(indexOfControl,0,chunks)
     }
 
