@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.42.1) stable; urgency=medium
+
+  * Fix displaying of oneOf parameters by groups editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 07:48:19 +0500
+
 wb-mqtt-homeui (2.42.0) stable; urgency=medium
 
   * Support for copying device configs is added
