@@ -1082,3 +1082,7 @@ body.kiosk .page-header {
 .nav-pills > li.has-error > a:focus {
   color: red;
 }
+
+.glyphicon-copy::before {
+  content: "\E224";
+}

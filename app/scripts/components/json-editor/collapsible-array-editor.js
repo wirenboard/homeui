@@ -72,7 +72,7 @@ function makeCollapsibleArrayEditor () {
         }
 
         _createDeleteButton (i, holder) {
-          const button = this.getButton(this.getItemTitle(), 'delete', 'button_delete_row_title', [this.getItemTitle()])
+          const button = this.getButton('', 'delete', 'button_delete_row_title', [this.getItemTitle()])
           button.classList.add('delete', 'json-editor-btntype-delete')
           button.setAttribute('data-i', i)
           button.addEventListener('click', e => {
@@ -90,19 +90,7 @@ function makeCollapsibleArrayEditor () {
             const editor = this.rows[i]
 
             this.setValue(newval)
-
-            this.rows.forEach((ed, i) => {
-              if (collapsedState[i]) {
-                if (ed.collapseEditor) {
-                  ed.collapseEditor()
-                }
-              } else {
-                if (ed.expandEditor) {
-                  ed.expandEditor()
-                }
-              }
-            })
-
+            this._restoreCollapsedState(collapsedState);
             this.onChange(true)
             this.jsoneditor.trigger('deleteRow', editor)
           })
@@ -111,6 +99,44 @@ function makeCollapsibleArrayEditor () {
             holder.appendChild(button)
           }
           return button
+        }
+
+        _createCopyButton (i, holder) {
+          const button = this.getButton('', 'copy', 'button_copy_row_title', [this.getItemTitle()])
+          button.classList.add('copy', 'json-editor-btntype-copy')
+          button.setAttribute('data-i', i)
+          button.addEventListener('click', e => {
+            var value = this.getValue()
+            e.preventDefault()
+            e.stopPropagation()
+            const i = e.currentTarget.getAttribute('data-i') * 1
+
+            const collapsedState = this.rows.map(ed => ed.collapsed)
+            collapsedState.splice(i, 0, collapsedState[i])
+            value.splice(i, 0, value[i])
+      
+            this.setValue(value)
+            this._restoreCollapsedState(collapsedState);
+            this.refreshValue(true)
+            this.onChange(true)
+          })
+      
+          holder.appendChild(button)
+          return button
+        }
+
+        _restoreCollapsedState(collapsedState) {
+          this.rows.forEach((ed, i) => {
+            if (collapsedState[i]) {
+              if (ed.collapseEditor) {
+                ed.collapseEditor()
+              }
+            } else {
+              if (ed.expandEditor) {
+                ed.expandEditor()
+              }
+            }
+          })
         }
     }
 }
