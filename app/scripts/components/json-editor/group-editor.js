@@ -22,13 +22,20 @@ class Editor {
         return this.schema.options && this.schema.options.hidden
     }
 
+    // Parameters with same name are organized in oneOf schema.
+    // Each element in oneOf array must have condition.
+    // Generic oneOf parameters don't have conditions
+    isConditionalOneOfEditor() {
+        return this.schema.hasOwnProperty('oneOf') && this.schema.oneOf[0].hasOwnProperty('condition')
+    }
+
     updateEditorDisplay() {
         if (!this.editor) {
             return
         }
-        if (this.schema.hasOwnProperty('oneOf')) {
+        if (this.isConditionalOneOfEditor()) {
             this.editor.switcher.style.display = 'none'
-            if (this.editor.type != this.oneOfOfIndex) {
+            if (this.editor.type != this.oneOfIndex) {
                 this.editor.switchEditor(this.oneOfIndex)
                 // 'multiple' editor doesn't respect enabled state during subeditors creation.
                 // So force enabling or disabling
@@ -101,7 +108,7 @@ class Editor {
     }
 
     shouldEnable(paramNames, paramValues) {
-        if (this.schema.hasOwnProperty('oneOf')) {
+        if (this.isConditionalOneOfEditor()) {
             var index = this.schema.oneOf.findIndex(schema => {
                 return this.checkCondition(paramNames, paramValues, schema)
             })
@@ -127,7 +134,7 @@ class Editor {
 
     setValue(val, initial) {
         if (this.editor) {
-            if (this.schema.hasOwnProperty('oneOf')) {
+            if (this.isConditionalOneOfEditor()) {
                 this.editor.editors[this.editor.type].setValue(val, initial)
             } else {
                 this.editor.setValue(val, initial)

@@ -19,6 +19,7 @@ import makeObjectEditorWithButtonsOnTop from "./object-editor-with-buttons-on-to
 import makeUnknownDeviceEditor from "./unknown-device-editor";
 import makeSelectWithHiddenItems from "./select-with-hidden-items";
 import makeGroupsEditor from "./group-editor";
+import makeWbBootstrap3Theme from "./wb-bootstrap3-theme";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
@@ -26,7 +27,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
             options: {
                 show_errors: "always",
                 iconlib: 'bootstrap3',
-                theme: 'bootstrap3'
+                theme: 'wb-bootstrap3'
             }
         }
     };
@@ -74,6 +75,10 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["wb-object"] = makeObjectEditorWithButtonsOnTop();
         jse.defaults.editors["unknown-device"] = makeUnknownDeviceEditor();
         jse.defaults.editors["groups"] = makeGroupsEditor();
+
+        jse.defaults.languages.en.error_oneOf = 'One or more parameters are invalid'
+
+        jse.defaults.themes["wb-bootstrap3"] = makeWbBootstrap3Theme();
         return jse;
     }];
 
