@@ -1,8 +1,32 @@
-wb-mqtt-homeui (2.41.1) stable; urgency=medium
+wb-mqtt-homeui (2.42.2) stable; urgency=medium
 
   * Fix overlapping of wb-watch-update's status in fwupdate progress bar
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Mon, 11 Jul 2022 13:24:47 +0500
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Mon, 25 Jul 2022 14:53:18 +0500
+
+wb-mqtt-homeui (2.42.1) stable; urgency=medium
+
+  * Fix displaying of oneOf parameters by groups editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 07:48:19 +0500
+
+wb-mqtt-homeui (2.42.0) stable; urgency=medium
+
+  * Support for copying device configs is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 20 Jul 2022 10:04:28 +0500
+
+wb-mqtt-homeui (2.41.2) stable; urgency=medium
+
+  * Messages about invalid port or device parameters are made more understandable
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 19 Jul 2022 15:35:48 +0500
+
+wb-mqtt-homeui (2.41.1) stable; urgency=medium
+
+  * css: fix widget's description resizing and bounds
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 12 Jul 2022 18:11:39 +0500
 
 wb-mqtt-homeui (2.41.0) stable; urgency=medium
 
