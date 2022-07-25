@@ -7,7 +7,7 @@ class FirmwareCtrl {
     $scope.uploading = false;
     $scope.running = false;
     $scope.error = null;
-    $scope.mqttStatusHasSet = false;  // to prevent overlapping from $scope.upload
+    $scope.mqttStatusIsSet = false;  // to prevent overlapping from $scope.upload
 
     var log = $('#firmwareLog');
 
@@ -22,7 +22,7 @@ class FirmwareCtrl {
     var showDoneButton = function(msg) {
       $scope.doneLabel = msg;
       $scope.done = true;
-      $scope.mqttStatusHasSet = false;
+      $scope.mqttStatusIsSet = false;
     };
 
     var timeout = undefined;
@@ -47,10 +47,10 @@ class FirmwareCtrl {
       var p = msg.payload.indexOf(' ');
       var type = (p < 0) ? msg.payload : msg.payload.substr(0, p);
       var payload = (p < 0) ? msg.payload : msg.payload.substr(p+1, msg.payload.length);
-      $scope.mqttStatusHasSet = true;
+      $scope.mqttStatusIsSet = true;
       if (type == 'IDLE') {
         $scope.canUpload = true;
-        $scope.mqttStatusHasSet = false;
+        $scope.mqttStatusIsSet = false;
         if ($scope.running) {
           $timeout.cancel(timeout);
           if (!$scope.error) {
@@ -98,13 +98,13 @@ class FirmwareCtrl {
         .success(function (data, status, headers, config) {
           $scope.uploading = false;
           setProgressTimeout();
-          if (!$scope.mqttStatusHasSet) {
+          if (!$scope.mqttStatusIsSet) {
             showState('info', 'system.states.uploaded')
           }
         })
         .error(function (data, status, headers, config) {
           $scope.uploading = false;
-          if (!$scope.mqttStatusHasSet) {
+          if (!$scope.mqttStatusIsSet) {
             showState('error', status + ': ' + data);
           }
           showDoneButton();
