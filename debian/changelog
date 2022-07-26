@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.44.3) stable; urgency=medium
+
+  * Fix overlapping of wb-watch-update's status in fwupdate progress bar
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 26 Jul 2022 17:35:18 +0500
+
 wb-mqtt-homeui (2.44.2) stable; urgency=medium
 
   * Fix device config editors creation error
