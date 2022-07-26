@@ -167,7 +167,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="p in $ctrl.dataPointsMultiple track by p.date">
-                <td>{{ p.date | date:'medium' }}</td>
+                <td>{{ p.date | date: (p.showMs && $ctrl.dateWithMsFormat) || 'medium' }}</td>
                 <td ng-repeat="_x in p.value track by $index">{{ _x }}</td>
             </tr>
             </tbody>

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.43.0) stable; urgency=medium
+
+  * Support for wb-mqtt-db 2.6.0 is added. Discrete values on history page will be shown without averaging if possible.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 17:06:40 +0500
+
 wb-mqtt-homeui (2.42.1) stable; urgency=medium
 
   * Fix displaying of oneOf parameters by groups editor
