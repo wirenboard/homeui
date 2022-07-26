@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.44.0) stable; urgency=medium
+
+  * Slave id is preserved after device type switching
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 09:06:25 +0500
+
 wb-mqtt-homeui (2.43.0) stable; urgency=medium
 
   * Support for wb-mqtt-db 2.6.0 is added. Discrete values on history page will be shown without averaging if possible.
