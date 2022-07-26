@@ -1,8 +1,38 @@
-wb-mqtt-homeui (2.42.0) stable; urgency=medium
+wb-mqtt-homeui (2.44.0) stable; urgency=medium
 
   * Slave id is preserved after device type switching
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 13 Jul 2022 16:11:30 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 09:06:25 +0500
+
+wb-mqtt-homeui (2.43.0) stable; urgency=medium
+
+  * Support for wb-mqtt-db 2.6.0 is added. Discrete values on history page will be shown without averaging if possible.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 17:06:40 +0500
+
+wb-mqtt-homeui (2.42.1) stable; urgency=medium
+
+  * Fix displaying of oneOf parameters by groups editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 07:48:19 +0500
+
+wb-mqtt-homeui (2.42.0) stable; urgency=medium
+
+  * Support for copying device configs is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 20 Jul 2022 10:04:28 +0500
+
+wb-mqtt-homeui (2.41.2) stable; urgency=medium
+
+  * Messages about invalid port or device parameters are made more understandable
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 19 Jul 2022 15:35:48 +0500
+
+wb-mqtt-homeui (2.41.1) stable; urgency=medium
+
+  * css: fix widget's description resizing and bounds
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 12 Jul 2022 18:11:39 +0500
 
 wb-mqtt-homeui (2.41.0) stable; urgency=medium
 
