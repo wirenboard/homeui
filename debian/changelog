@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.44.1) stable; urgency=medium
+
+  * Fix interface slowdown when editing wbio-ai-dv-12 config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 10:18:25 +0500
+
 wb-mqtt-homeui (2.44.0) stable; urgency=medium
 
   * Slave id is preserved after device type switching

@@ -348,20 +348,22 @@ function makeGroupsEditor () {
             this.groups.set(undefined, new Group(undefined)) // root group
             if (this.schema.options && this.schema.options.wb && this.schema.options.wb.groups) {
                 this.schema.options.wb.groups.forEach(groupSchema => {
-                    var group = this.groups.get(groupSchema.id)
-                    if (group) {
-                        group.schema = groupSchema
-                    } else {
-                        group = new Group(groupSchema)
-                        this.groups.set(groupSchema.id, group)
+                    if (typeof groupSchema === 'object' && !Array.isArray && groupSchema !== null) {
+                        var group = this.groups.get(groupSchema.id)
+                        if (group) {
+                            group.schema = groupSchema
+                        } else {
+                            group = new Group(groupSchema)
+                            this.groups.set(groupSchema.id, group)
+                        }
+                        var parentGroup = this.groups.get(groupSchema.group)
+                        if (!parentGroup) {
+                            parentGroup = new Group()
+                            this.groups.set(groupSchema.group, parentGroup)
+                        }
+                        parentGroup.addSubgroup(group)
+                        group.parentGroup = parentGroup
                     }
-                    var parentGroup = this.groups.get(groupSchema.group)
-                    if (!parentGroup) {
-                        parentGroup = new Group()
-                        this.groups.set(groupSchema.group, parentGroup)
-                    }
-                    parentGroup.addSubgroup(group)
-                    group.parentGroup = parentGroup
                 })
             }
         }
