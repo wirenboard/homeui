@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.44.4) stable; urgency=medium
+
+  * Fix parameter values after activation in configs editor.
+    Deactivation and reactivation of a parameter will set it to default value.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 27 Jul 2022 10:04:16 +0500
+
 wb-mqtt-homeui (2.44.3) stable; urgency=medium
 
   * Fix overlapping of wb-watch-update's status in fwupdate progress bar
