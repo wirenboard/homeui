@@ -348,7 +348,7 @@ function makeGroupsEditor () {
             this.groups.set(undefined, new Group(undefined)) // root group
             if (this.schema.options && this.schema.options.wb && this.schema.options.wb.groups) {
                 this.schema.options.wb.groups.forEach(groupSchema => {
-                    if (typeof groupSchema === 'object' && !Array.isArray && groupSchema !== null) {
+                    if (typeof groupSchema === 'object' && !Array.isArray(groupSchema) && groupSchema !== null) {
                         var group = this.groups.get(groupSchema.id)
                         if (group) {
                             group.schema = groupSchema
