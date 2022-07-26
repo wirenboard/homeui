@@ -348,20 +348,22 @@ function makeGroupsEditor () {
             this.groups.set(undefined, new Group(undefined)) // root group
             if (this.schema.options && this.schema.options.wb && this.schema.options.wb.groups) {
                 this.schema.options.wb.groups.forEach(groupSchema => {
-                    var group = this.groups.get(groupSchema.id)
-                    if (group) {
-                        group.schema = groupSchema
-                    } else {
-                        group = new Group(groupSchema)
-                        this.groups.set(groupSchema.id, group)
+                    if (typeof groupSchema === 'object' && !Array.isArray(groupSchema) && groupSchema !== null) {
+                        var group = this.groups.get(groupSchema.id)
+                        if (group) {
+                            group.schema = groupSchema
+                        } else {
+                            group = new Group(groupSchema)
+                            this.groups.set(groupSchema.id, group)
+                        }
+                        var parentGroup = this.groups.get(groupSchema.group)
+                        if (!parentGroup) {
+                            parentGroup = new Group()
+                            this.groups.set(groupSchema.group, parentGroup)
+                        }
+                        parentGroup.addSubgroup(group)
+                        group.parentGroup = parentGroup
                     }
-                    var parentGroup = this.groups.get(groupSchema.group)
-                    if (!parentGroup) {
-                        parentGroup = new Group()
-                        this.groups.set(groupSchema.group, parentGroup)
-                    }
-                    parentGroup.addSubgroup(group)
-                    group.parentGroup = parentGroup
                 })
             }
         }
@@ -443,6 +445,10 @@ function makeGroupsEditor () {
             return (this.schema.required && this.schema.required.includes(key)) || editor.schema.requiredProp
         }
 
+        checkDefault(key) {
+            return (this.schema.defaultProperties && this.schema.defaultProperties.includes(key))
+        }
+
         refreshAddProperties() {
             if (this.addproperty_checkboxes) {
                 this.addproperty_list.innerHTML = ''
@@ -450,7 +456,7 @@ function makeGroupsEditor () {
             this.addproperty_checkboxes = {}
 
             Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
-                if (ed.isEnabled && !ed.isHidden() && !this.checkRequired(key, ed)) {
+                if (ed.isEnabled && !ed.isHidden() && !this.checkRequired(key, ed) && (!ed.schema.options || !ed.schema.options.show_opt_in)) {
                     this.addPropertyCheckbox(key)
                 }
             })
@@ -557,6 +563,13 @@ function makeGroupsEditor () {
                     }
                 }
             })
+
+            Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
+                if (!value.hasOwnProperty(key) && !this.checkRequired(key, ed.editor) && ed.editor.options.show_opt_in) {
+                    ed.editor.deactivate()
+                }
+            })
+
             this.updateEditorsState()
             this.disableValueUpdate = false
             this.showEnabledTab()
@@ -650,7 +663,6 @@ function makeGroupsEditor () {
                         var editorHolder = document.createElement('div')
                         container.appendChild(editorHolder)
                         const editorClass = this.jsoneditor.getEditorClass(ed.schema)
-                        ed.schema.options = angular.extend(ed.schema.options || {}, {show_opt_in: false})
                         if (ed.schema.requiredProp) {
                             ed.schema.required = true
                         }
@@ -667,7 +679,7 @@ function makeGroupsEditor () {
                         ret.build()
                         ret.postBuild()
                         ret.setOptInCheckbox(ret.header)
-                        if (this.checkRequired(key, ed)) {
+                        if (this.checkRequired(key, ed) || this.checkDefault(key)) {
                             ret.activate()
                             ed.show()
                         } else {

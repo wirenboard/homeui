@@ -1,8 +1,32 @@
-wb-mqtt-homeui (2.42.2) stable; urgency=medium
+wb-mqtt-homeui (2.44.3) stable; urgency=medium
 
   * Fix overlapping of wb-watch-update's status in fwupdate progress bar
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Mon, 25 Jul 2022 14:53:18 +0500
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 26 Jul 2022 17:35:18 +0500
+
+wb-mqtt-homeui (2.44.2) stable; urgency=medium
+
+  * Fix device config editors creation error
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 15:54:44 +0500
+
+wb-mqtt-homeui (2.44.1) stable; urgency=medium
+
+  * Fix interface slowdown when editing wbio-ai-dv-12 config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 10:18:25 +0500
+
+wb-mqtt-homeui (2.44.0) stable; urgency=medium
+
+  * Slave id is preserved after device type switching
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 09:06:25 +0500
+
+wb-mqtt-homeui (2.43.0) stable; urgency=medium
+
+  * Support for wb-mqtt-db 2.6.0 is added. Discrete values on history page will be shown without averaging if possible.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 17:06:40 +0500
 
 wb-mqtt-homeui (2.42.1) stable; urgency=medium
 
