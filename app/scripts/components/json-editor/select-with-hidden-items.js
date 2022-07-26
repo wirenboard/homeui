@@ -5,6 +5,15 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 function makeSelectWithHiddenItems () {
     return class extends JSONEditor.defaults.editors["select"] {
 
+        enable() {
+            if (!this.isEnabled() && !this.enum_values.includes(this.value)) {
+                super.enable()
+                this.setValue(this.getDefault())
+            } else {
+                super.enable()
+            }
+        }
+
         setValue(value, initial) {
             /* Sanitize value before setting it */
             let sanitized = this.typecast(value)
