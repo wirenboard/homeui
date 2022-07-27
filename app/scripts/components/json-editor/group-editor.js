@@ -10,7 +10,8 @@ class Editor {
         this.schema = schema
         this.isChannel = (schema.default && schema.default.hasOwnProperty("channelIndex"))
         this.group = group
-        this.anyOfIndex = 0
+        this.oneOfIndex = 0
+        this.errors = undefined
     }
 
     isTopLevelEditor() {
@@ -21,14 +22,21 @@ class Editor {
         return this.schema.options && this.schema.options.hidden
     }
 
+    // Parameters with same name are organized in oneOf schema.
+    // Each element in oneOf array must have condition.
+    // Generic oneOf parameters don't have conditions
+    isConditionalOneOfEditor() {
+        return this.schema.hasOwnProperty('oneOf') && this.schema.oneOf[0].hasOwnProperty('condition')
+    }
+
     updateEditorDisplay() {
         if (!this.editor) {
             return
         }
-        if (this.schema.hasOwnProperty('anyOf')) {
+        if (this.isConditionalOneOfEditor()) {
             this.editor.switcher.style.display = 'none'
-            if (this.editor.type != this.anyOfIndex) {
-                this.editor.switchEditor(this.anyOfIndex)
+            if (this.editor.type != this.oneOfIndex) {
+                this.editor.switchEditor(this.oneOfIndex)
                 // 'multiple' editor doesn't respect enabled state during subeditors creation.
                 // So force enabling or disabling
                 if (this.editor.isEnabled()) {
@@ -100,14 +108,14 @@ class Editor {
     }
 
     shouldEnable(paramNames, paramValues) {
-        if (this.schema.hasOwnProperty('anyOf')) {
-            var index = this.schema.anyOf.findIndex(schema => {
+        if (this.isConditionalOneOfEditor()) {
+            var index = this.schema.oneOf.findIndex(schema => {
                 return this.checkCondition(paramNames, paramValues, schema)
             })
             if (index == -1) {
                 return false
             }
-            this.anyOfIndex = index;
+            this.oneOfIndex = index;
             return true;
         }
         if (!this.schema.condition) {
@@ -126,10 +134,23 @@ class Editor {
 
     setValue(val, initial) {
         if (this.editor) {
-            if (this.schema.hasOwnProperty('anyOf')) {
+            if (this.isConditionalOneOfEditor()) {
                 this.editor.editors[this.editor.type].setValue(val, initial)
             } else {
                 this.editor.setValue(val, initial)
+            }
+        }
+    }
+
+    setErrors(errors, path) {
+        if (this.editor) {
+            this.editor.showValidationErrors(errors)
+        } else {
+            this.errors = errors
+        }
+        if (errors.some(er => er.path.startsWith(path))) {
+            if (this.group) {
+                this.group.notifyError()
             }
         }
     }
@@ -155,6 +176,7 @@ class Group {
             editors: {},
             enabledCount: 0
         }
+        this.hasErrors = false
     }
 
     updateState() {
@@ -259,6 +281,14 @@ class Group {
             this.channels.table.style.display = 'none'
         }
     }
+
+    notifyError() {
+        if (this.parentGroup && this.parentGroup.parentGroup) {
+            this.parentGroup.notifyError()
+        } else {
+            this.hasErrors = true
+        }
+    }
 }
 
 class Tab
@@ -280,7 +310,16 @@ function makeGroupsEditor () {
         }
 
         getDefault() {
-            return this.schema.default || {}
+            if (this.schema.default) {
+                return this.schema.default
+            }
+            var df = {}
+            Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
+                if (this.checkRequired(key, ed)) {
+                    df[key] = ed.editor.getDefault()
+                }
+            })
+            return df
           }
 
         register() {
@@ -309,20 +348,22 @@ function makeGroupsEditor () {
             this.groups.set(undefined, new Group(undefined)) // root group
             if (this.schema.options && this.schema.options.wb && this.schema.options.wb.groups) {
                 this.schema.options.wb.groups.forEach(groupSchema => {
-                    var group = this.groups.get(groupSchema.id)
-                    if (group) {
-                        group.schema = groupSchema
-                    } else {
-                        group = new Group(groupSchema)
-                        this.groups.set(groupSchema.id, group)
+                    if (typeof groupSchema === 'object' && !Array.isArray(groupSchema) && groupSchema !== null) {
+                        var group = this.groups.get(groupSchema.id)
+                        if (group) {
+                            group.schema = groupSchema
+                        } else {
+                            group = new Group(groupSchema)
+                            this.groups.set(groupSchema.id, group)
+                        }
+                        var parentGroup = this.groups.get(groupSchema.group)
+                        if (!parentGroup) {
+                            parentGroup = new Group()
+                            this.groups.set(groupSchema.group, parentGroup)
+                        }
+                        parentGroup.addSubgroup(group)
+                        group.parentGroup = parentGroup
                     }
-                    var parentGroup = this.groups.get(groupSchema.group)
-                    if (!parentGroup) {
-                        parentGroup = new Group()
-                        this.groups.set(groupSchema.group, parentGroup)
-                    }
-                    parentGroup.addSubgroup(group)
-                    group.parentGroup = parentGroup
                 })
             }
         }
@@ -404,6 +445,10 @@ function makeGroupsEditor () {
             return (this.schema.required && this.schema.required.includes(key)) || editor.schema.requiredProp
         }
 
+        checkDefault(key) {
+            return (this.schema.defaultProperties && this.schema.defaultProperties.includes(key))
+        }
+
         refreshAddProperties() {
             if (this.addproperty_checkboxes) {
                 this.addproperty_list.innerHTML = ''
@@ -411,7 +456,7 @@ function makeGroupsEditor () {
             this.addproperty_checkboxes = {}
 
             Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
-                if (ed.isEnabled && !ed.isHidden() && !this.checkRequired(key, ed)) {
+                if (ed.isEnabled && !ed.isHidden() && !this.checkRequired(key, ed) && (!ed.schema.options || !ed.schema.options.show_opt_in)) {
                     this.addPropertyCheckbox(key)
                 }
             })
@@ -518,6 +563,13 @@ function makeGroupsEditor () {
                     }
                 }
             })
+
+            Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
+                if (!value.hasOwnProperty(key) && !this.checkRequired(key, ed.editor) && ed.editor.options.show_opt_in) {
+                    ed.editor.deactivate()
+                }
+            })
+
             this.updateEditorsState()
             this.disableValueUpdate = false
             this.showEnabledTab()
@@ -611,7 +663,6 @@ function makeGroupsEditor () {
                         var editorHolder = document.createElement('div')
                         container.appendChild(editorHolder)
                         const editorClass = this.jsoneditor.getEditorClass(ed.schema)
-                        ed.schema.options = angular.extend(ed.schema.options || {}, {show_opt_in: false})
                         if (ed.schema.requiredProp) {
                             ed.schema.required = true
                         }
@@ -628,7 +679,7 @@ function makeGroupsEditor () {
                         ret.build()
                         ret.postBuild()
                         ret.setOptInCheckbox(ret.header)
-                        if (this.checkRequired(key, ed)) {
+                        if (this.checkRequired(key, ed) || this.checkDefault(key)) {
                             ret.activate()
                             ed.show()
                         } else {
@@ -656,8 +707,8 @@ function makeGroupsEditor () {
                         if (ed.schema.requiredProp) {
                             ed.schema.required = true
                         }
-                        if (ed.schema.hasOwnProperty('anyOf')) {
-                            ed.schema.anyOf.forEach(s => s.options = angular.extend(s.options || {}, {show_opt_in: true}))
+                        if (ed.schema.hasOwnProperty('oneOf')) {
+                            ed.schema.oneOf.forEach(s => s.options = angular.extend(s.options || {}, {show_opt_in: true}))
                         }
                         const editorClass = this.jsoneditor.getEditorClass(ed.schema)
                         var ret = this.jsoneditor.createEditor(editorClass, {
@@ -673,17 +724,23 @@ function makeGroupsEditor () {
                         ret.build()
                         ret.postBuild()
                         ret.setOptInCheckbox(ret.header)
+                        ed.updateEditorDisplay()
                         if (this.value.hasOwnProperty(key)) {
                             ed.setValue(this.value[key], true)
                             ret.activate()
                         }
-                        ed.updateEditorDisplay()
+                        if (ed.errors) {
+                            ed.editor.showValidationErrors(ed.errors)
+                        }
                 })
         }
 
         createGroups(container, group) {
             if (!group) {
                 return
+            }
+            if (group.schema.description) {
+                container.appendChild(this.theme.getFormInputDescription(this.translateProperty(group.schema.description)))
             }
             this.createEditors(container, group)
             this.createChannels(container, group)
@@ -845,12 +902,23 @@ function makeGroupsEditor () {
                 }
             }
 
-            /* Show errors for child editors */
-            Object.values(this.editors).forEach(ed => {
-                if (ed.editor) {
-                    ed.editor.showValidationErrors(otherErrors)
+            this.tabs.forEach(t => {
+                if (t.group) {
+                    t.group.hasErrors = false
                 }
             })
+
+            /* Show errors for child editors */
+            Object.entries(this.editors).forEach(([key, ed]) => ed.setErrors(otherErrors, `${this.path}.${key}`))
+
+            this.tabs.forEach(t => {
+                if (t.group && t.group.hasErrors) {
+                    t.tab.classList.add('has-error')
+                } else {
+                    t.tab.classList.remove('has-error')
+                }
+            })
+
         }
     }
 }

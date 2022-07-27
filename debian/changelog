@@ -1,10 +1,118 @@
-wb-mqtt-homeui (2.37.1) stable; urgency=medium
+wb-mqtt-homeui (2.45.0) stable; urgency=medium
 
   * navigate directly to default dashboard, show current dashboard in expanded menu
   * allow to set SVG dashboard ad default
   * fix dashboard selection
 
  -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 03:17:02 +0300
+
+wb-mqtt-homeui (2.44.4) stable; urgency=medium
+
+  * Fix BAC-6000 error messages display
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 27 Jul 2022 16:27:23 +0500
+
+wb-mqtt-homeui (2.44.3) stable; urgency=medium
+
+  * Fix overlapping of wb-watch-update's status in fwupdate progress bar
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 26 Jul 2022 17:35:18 +0500
+
+wb-mqtt-homeui (2.44.2) stable; urgency=medium
+
+  * Fix device config editors creation error
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 15:54:44 +0500
+
+wb-mqtt-homeui (2.44.1) stable; urgency=medium
+
+  * Fix interface slowdown when editing wbio-ai-dv-12 config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 10:18:25 +0500
+
+wb-mqtt-homeui (2.44.0) stable; urgency=medium
+
+  * Slave id is preserved after device type switching
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 09:06:25 +0500
+
+wb-mqtt-homeui (2.43.0) stable; urgency=medium
+
+  * Support for wb-mqtt-db 2.6.0 is added. Discrete values on history page will be shown without averaging if possible.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 17:06:40 +0500
+
+wb-mqtt-homeui (2.42.1) stable; urgency=medium
+
+  * Fix displaying of oneOf parameters by groups editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 07:48:19 +0500
+
+wb-mqtt-homeui (2.42.0) stable; urgency=medium
+
+  * Support for copying device configs is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 20 Jul 2022 10:04:28 +0500
+
+wb-mqtt-homeui (2.41.2) stable; urgency=medium
+
+  * Messages about invalid port or device parameters are made more understandable
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 19 Jul 2022 15:35:48 +0500
+
+wb-mqtt-homeui (2.41.1) stable; urgency=medium
+
+  * css: fix widget's description resizing and bounds
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 12 Jul 2022 18:11:39 +0500
+
+wb-mqtt-homeui (2.41.0) stable; urgency=medium
+
+  * Support for groups in device type select in wb-mqtt-serial config editor is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 05 Jul 2022 09:43:50 +0500
+
+wb-mqtt-homeui (2.40.1) stable; urgency=medium
+
+  * Add button to enter fullscreen mode
+
+ -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Tue, 04 Jul 2022 16:59:00 +0500
+
+wb-mqtt-homeui (2.40.0) stable; urgency=medium
+
+  * Support for descriptions in config groups is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 23 Jun 2022 16:52:10 +0500
+
+wb-mqtt-homeui (2.39.3) stable; urgency=medium
+
+  * Ability to save history in csv file is restored
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 23 Jun 2022 16:33:07 +0500
+
+wb-mqtt-homeui (2.39.2) stable; urgency=medium
+
+  * Highlighting of tabs with invalid parameters in device config is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 15 Jun 2022 12:34:27 +0500
+
+wb-mqtt-homeui (2.39.1) stable; urgency=medium
+
+  * Do not show description in config list
+
+ -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 13:37:47 +0300
+
+wb-mqtt-homeui (2.39.0) stable; urgency=medium
+
+  * Advertising notification about testing release is added
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Jun 2022 21:44:46 +0500
+
+wb-mqtt-homeui (2.38.0) stable; urgency=medium
+
+  * Reload config schema after config saving only if it has needReload parameter.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Jun 2022 17:17:46 +0500
 
 wb-mqtt-homeui (2.37.0) stable; urgency=medium
 

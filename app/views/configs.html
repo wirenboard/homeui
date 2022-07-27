@@ -13,25 +13,20 @@
         <table class="table">
             <thead>
             <tr>
-                <th translate>{{'configurations.labels.file'}}</th>
                 <th translate>{{'configurations.labels.title'}}</th>
-                <th translate>{{'configurations.labels.description'}}</th>
+                <th translate>{{'configurations.labels.file'}}</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="config in configs track by $index">
-                <td>{{ config.configPath }}</td>
                 <td>
                     <a ui-sref="configEdit({path: config.schemaPath})">
                         {{ config.titleTranslations[$locale.id] || config.title }}
                     </a>
                 </td>
-                <td>
-                    {{ config.descriptionTranslations[$locale.id] || config.description }}
-                </td>
+                <td>{{ config.configPath }}</td>
             </tr>
             </tbody>
         </table>
     </div>
 </section>
-

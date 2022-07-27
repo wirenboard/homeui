@@ -1,3 +1,5 @@
+import angular from "angular";
+
 class ConfigCtrl {
   constructor($scope, $stateParams, rolesFactory, ConfigEditorProxy, whenMqttReady, PageState, errors) {
     'ngInject';
@@ -9,7 +11,8 @@ class ConfigCtrl {
       configPath: "",
       loaded: false,
       valid: true,
-      content: {}
+      content: {},
+      schema: undefined
     };
 
     $scope.editorOptions = {};
@@ -48,7 +51,8 @@ class ConfigCtrl {
     $scope.save = function () {
       PageState.setDirty(false);
       ConfigEditorProxy.Save({ path: $scope.file.schemaPath, content: $scope.file.content })
-        .then(function() {
+      .then(function() {
+          $scope.file.content = angular.merge({}, $scope.file.content)
           if ($scope.file.schema.needReload)
             load();
         })

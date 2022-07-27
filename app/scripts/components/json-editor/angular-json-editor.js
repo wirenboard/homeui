@@ -19,6 +19,8 @@ import makeObjectEditorWithButtonsOnTop from "./object-editor-with-buttons-on-to
 import makeUnknownDeviceEditor from "./unknown-device-editor";
 import makeSelectWithHiddenItems from "./select-with-hidden-items";
 import makeGroupsEditor from "./group-editor";
+import makeOptionalEditorWithDropDown from "./optional-editor-with-dropdown";
+import makeWbBootstrap3Theme from "./wb-bootstrap3-theme";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
@@ -26,7 +28,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
             options: {
                 show_errors: "always",
                 iconlib: 'bootstrap3',
-                theme: 'bootstrap3'
+                theme: 'wb-bootstrap3'
             }
         }
     };
@@ -58,7 +60,9 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'wb-object' && 'wb-object');
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'groups' && 'groups');
         jse.defaults.resolvers.unshift(schema => schema.format === 'unknown-device' && 'unknown-device');
+        jse.defaults.resolvers.unshift(schema => schema.format === 'wb-optional' && 'wb-optional');
 
+        jse.defaults.editors["select"] = makeSelectWithHiddenItems();
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
         jse.defaults.editors["nmWb"] = makeDisabledEditorWrapper(jse.defaults.editors["number"]);
         jse.defaults.editors["slWb"] = makeDisabledEditorWrapper(jse.defaults.editors["select"]);
@@ -72,8 +76,12 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["wb-multiple"] = makeCollapsibleMultipleEditor();
         jse.defaults.editors["wb-object"] = makeObjectEditorWithButtonsOnTop();
         jse.defaults.editors["unknown-device"] = makeUnknownDeviceEditor();
-        jse.defaults.editors["select"] = makeSelectWithHiddenItems();
         jse.defaults.editors["groups"] = makeGroupsEditor();
+        jse.defaults.editors["wb-optional"] = makeOptionalEditorWithDropDown();
+
+        jse.defaults.languages.en.error_oneOf = 'One or more parameters are invalid'
+
+        jse.defaults.themes["wb-bootstrap3"] = makeWbBootstrap3Theme();
         return jse;
     }];
 
@@ -122,37 +130,27 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
 
         }],
         link: function (scope, element, attrs, controller, transclude) {
-            var valueToResolve,
-                startValPromise = $q.when({}),
-                schemaPromise = $q.when(null);
-
             scope.isValid = false;
 
             if (!angular.isString(attrs.schema)) {
                 throw new Error('json-editor: schema attribute has to be defined.');
             }
-            if (angular.isObject(scope.schema)) {
-                schemaPromise = $q.when(scope.schema);
-            }
-            if (angular.isObject(scope.startval)) {
-                // Support both $http (i.e. $q) and $resource promises, and also normal object.
-                valueToResolve = scope.startval;
-                if (angular.isDefined(valueToResolve.$promise)) {
-                    startValPromise = $q.when(valueToResolve.$promise);
 
-                } else {
-                    startValPromise = $q.when(valueToResolve);
+            scope.$watch('schema', function (newValue, oldValue) {
+                if (newValue === undefined) {
+                    return
                 }
-            }
 
-            // Wait for the start value and schema to resolve before building the editor.
-            $q.all([schemaPromise, startValPromise]).then(function (result) {
+                var schema = newValue;
+                var startVal = scope.startval;
 
-                // Support $http promise response with the 'data' property.
-                var schema = result[0] ? result[0].data || result[0] : null,
-                    startVal = result[1];
                 if (schema === null) {
                     throw new Error('json-editor: could not resolve schema data.');
+                }
+
+                if (scope.editor && angular.equals(newValue, oldValue)) {
+                    scope.editor.setValue(startVal)
+                    return
                 }
 
                 // Commit changes in text fields immediately.
@@ -196,6 +194,9 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
                 if (scope.options)
                     angular.extend(options, scope.options);
                 JSONEditor.defaults.language = $locale.id;
+                if (scope.editor) {
+                    scope.editor.destroy();
+                }
                 scope.editor = new JSONEditor(element[0], options);
 
                 var editor = scope.editor;
@@ -236,13 +237,57 @@ function overrideJSONEditor() {
         if (   schema.required
             && schema.properties 
             && schema.properties[schema.required[0]] 
-            && schema.properties[schema.required[0]].options
-            && schema.properties[schema.required[0]].options.hidden
             && schema.properties[schema.required[0]].enum
             && (schema.properties[schema.required[0]].enum.length == 1)
             && (   !value[schema.required[0]]
                 || !(value[schema.required[0]] === schema.properties[schema.required[0]].enum[0]))) {
               throw new Error("Stop object validation");
+        }
+        return errors;
+    });
+
+    
+    JSONEditor.defaults.custom_validators.push((schema, value, path) => {
+        if (schema.options && schema.options.wb && schema.options.wb.groups && schema.format != "wb-multiple") {
+            var paramValues = []
+            var paramNames = []
+            Object.entries(value).forEach(([k, v]) => {
+                paramNames.push(k)
+                paramValues.push(v)
+            })
+            paramNames = paramNames.join(',')
+            var checkCondition = function(condition) {
+                try {
+                    return new Function(paramNames, 'return ' + condition + ';').apply(null, paramValues)
+                } catch (e) {
+                    return false
+                }
+            }
+            Object.entries(schema.properties).forEach(([key, subSchema]) => {
+                if (subSchema.hasOwnProperty('oneOf')) {
+                    subSchema.oneOf.forEach(item => {
+                        if (item.condition && !checkCondition(item.condition)) {
+                            angular.merge(item.options, { wb: { error: 'disabled'}})
+                        } else {
+                            if (item.options && item.options.wb) {
+                                delete item.options.wb.error
+                            }
+                        }
+                    })
+                }
+            })
+        }
+        return [];
+    });
+
+    JSONEditor.defaults.custom_validators.push((schema, value, path) => {
+        const errors = [];
+        if (schema.options && schema.options.wb && schema.options.wb.error) {
+            errors.push({
+                path: path,
+                property: 'custom validator',
+                message: schema.options.wb.error
+              })
         }
         return errors;
     });

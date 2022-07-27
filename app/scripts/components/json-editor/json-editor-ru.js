@@ -25,7 +25,7 @@ const JsonEditorRussianTranslation = {
     * When a value doesn't validate
     * @variables This key takes one variable: The number of schemas the value does not validate
     */
-    error_oneOf: 'Значение должно соответствовать только одной заданной схеме. Сейчас оно соответствует {{0}} схемам.',
+    error_oneOf: 'Один или несколько параметров заданы неверно',
     /**
     * When a value does not validate a 'not' schema
     */
@@ -328,12 +328,7 @@ const JsonEditorRussianTranslation = {
 
     unknown_device_warning: 'Шаблон для устройства отсутствует или содержит ошибки',
 
-    channel: 'Канал',
-
-    deprecated_template: 'устаревший шаблон',
-
-    deprecated_notice: 'Шаблон устройства устарел, рекомендуется использовать новую версию'
-
+    channel: 'Канал'
 };
 
 export default JsonEditorRussianTranslation;
