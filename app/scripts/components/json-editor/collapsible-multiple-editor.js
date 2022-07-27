@@ -425,7 +425,10 @@ function makeCollapsibleMultipleEditor () {
             /* oneOf error paths need to remove the oneOf[i] part before passing to child editors */
             this.editors.forEach((editor, i) => {
                 if (!editor) return
-                const originalIndex = this.types[i].originalIndex || i
+                var originalIndex = this.types[i].originalIndex
+                if (originalIndex === undefined) {
+                    originalIndex = i
+                }
                 const check = `${this.path}.oneOf[${originalIndex}]`
                 const filterError = (newErrors, error) => {
                     if (error.path.startsWith(check) || error.path === check.substr(0, error.path.length)) {
