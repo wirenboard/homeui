@@ -14,7 +14,7 @@ export default class WebUICtrl {
             .then((data) => {
                 this.dashboards = data.dashboards;
                 this.widgets = data.widgets;
-                this.defaultDashboard = uiConfig.getDashboard(data.defaultDashboardId);
+                this.defaultDashboardId = data.defaultDashboardId;
             })
             .catch(errors.catch('Error loading WebUI config'));
 
@@ -26,7 +26,7 @@ export default class WebUICtrl {
     }
 
     changeDefaultDashboard() {
-        let id = this.defaultDashboard ? this.defaultDashboard.id : '';
+        let id = this.defaultDashboardId ? this.defaultDashboardId : '';
         this.uiConfig.setDefaultDashboard(id);
     };
 
