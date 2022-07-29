@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.45.1) stable; urgency=medium
+
+  * Widgets: add mqtt topic to widget's redactor
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Fri, 29 Jul 2022 03:29:12 +0500
+
 wb-mqtt-homeui (2.45.0) stable; urgency=medium
 
   * navigate directly to default dashboard, show current dashboard in expanded menu
