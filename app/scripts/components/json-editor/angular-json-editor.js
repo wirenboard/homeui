@@ -239,7 +239,7 @@ function overrideJSONEditor() {
             && schema.properties[schema.required[0]] 
             && schema.properties[schema.required[0]].enum
             && (schema.properties[schema.required[0]].enum.length == 1)
-            && (   !value[schema.required[0]]
+            && (   !value.hasOwnProperty(schema.required[0])
                 || !(value[schema.required[0]] === schema.properties[schema.required[0]].enum[0]))) {
               throw new Error("Stop object validation");
         }
