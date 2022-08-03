@@ -46,26 +46,24 @@ function makeCollapsibleArrayEditor () {
           button.addEventListener('click', (e) => {
             e.preventDefault()
             e.stopPropagation()
+            var value = this.getValue()
+            const collapsedState = this.rows.map(ed => ed.collapsed)
+            collapsedState.unshift(false);
+
             const i = this.rows.length
-            let editor
             if (this.row_cache[i]) {
-              editor = this.rows[i] = this.row_cache[i]
-              this.rows[i].setValue(this.rows[i].getDefault(), true)
+              this.rows[i] = this.row_cache[i]
               this.rows[i].container.style.display = ''
               if (this.rows[i].tab) this.rows[i].tab.style.display = ''
               this.rows[i].register()
             } else {
-              editor = this.addRow()
+              this.addRow()
             }
-            if (editor.expandEditor) {
-              editor.expandEditor()
-              editor.container.scrollIntoView()
-            }
-            this.active_tab = this.rows[i].tab
-            this.refreshTabs()
-            this.refreshValue()
-            this.onChange(true)
-            this.jsoneditor.trigger('addRow', editor)
+            value.unshift(this.rows[0].getDefault())
+            this.active_tab = this.rows[0].tab
+            this.setValue(value, true)
+            this._restoreCollapsedState(collapsedState);
+            this.jsoneditor.trigger('addRow', this.rows[0])
           })
           this.controls.appendChild(button)
           return button
