@@ -33,7 +33,8 @@
                                    ui-sref="dashboard({ id: $ctrl.defaultDashboard.id })"><i class="glyphicon glyphicon-play-circle black medium"></i></a>
                             </td>
                             <td class="text-center">
-                                <select ng-model="$ctrl.defaultDashboard" ng-options="dashboard.name for dashboard in $ctrl.dashboards | filter:{isSvg:'false'} track by dashboard.id" ng-change="$ctrl.changeDefaultDashboard()">
+                                <select ng-model="$ctrl.defaultDashboardId" ng-change="$ctrl.changeDefaultDashboard()">
+                                    <option ng-repeat="dashboard in $ctrl.dashboards" value="{{dashboard.id}}">{{dashboard.name}}</option>
                                     <option value="" translate>{{'ui.common.choose'}}</option>
                                 </select>
                             </td>

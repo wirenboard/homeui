@@ -51,7 +51,11 @@
         </tr>
       </thead>
       <tbody sv-root sv-part="ctrl.source.cells">
-        <tr class="room" ng-repeat="cell in ctrl.source.cells" sv-element>
+        <tr class="room widget-cell-id" ng-repeat-start="cell in ctrl.source.cells" sv-element>
+          <td><span class="cell-type">Id:</span></td>
+          <td colspan="3"><span class="cell-type">{{ cell.id }}</span></td>
+        </tr>
+        <tr class="room" ng-repeat-end>
           <td scope="row" class="cell-actions">
             <label ng-if="ctrl.cellTypeFromId(cell.id) == 'switch'">
               <input type="checkbox" ng-model="cell.extra.invert">

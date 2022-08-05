@@ -609,6 +609,14 @@ button.show-console span {
   visibility: hidden;
 }
 
+.widget-cell-id {
+  border-bottom: 2px solid transparent;
+}
+
+.widget-cell-id span {
+  word-wrap: break-word;
+}
+
 .widget:hover .widget-caption-button {
   visibility: visible;
 }
