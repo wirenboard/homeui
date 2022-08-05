@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.46.1) stable; urgency=medium
+
+  * Fix parameter values after activation in configs editor.
+    Deactivation and reactivation of a parameter will set it to default value.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 05 Aug 2022 10:15:21 +0500
+
 wb-mqtt-homeui (2.46.0) stable; urgency=medium
 
   * Add new devices on top of a list in wb-mqtt-serial's config editor
