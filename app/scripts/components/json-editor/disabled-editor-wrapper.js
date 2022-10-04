@@ -7,7 +7,11 @@ function makeDisabledEditorWrapper (Base) {
             this.disabledEditor = this.theme.getFormInputField(this.input_type)
             this.disabledEditor.style.display = 'none'
             this.disabledEditor.disabled = true
-            this.disabledEditor.value = this.translate('unknown')
+            if (this.schema.options && this.schema.options.inputAttributes && this.schema.options.inputAttributes.placeholder) {
+                this.disabledEditor.value = this.translateProperty(this.schema.options.inputAttributes.placeholder)
+            } else {
+                this.disabledEditor.value = this.translate('unknown')
+            }
             this.control.insertBefore(this.disabledEditor, this.description)
         }
 
