@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.46.2) stable; urgency=medium
 
-  * Use options.inputAttributes.placeholder for disabled text of optional parameters
+  * Add ability to set disabled optional parameter text
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 04 Oct 2022 14:42:25 +0500
 
