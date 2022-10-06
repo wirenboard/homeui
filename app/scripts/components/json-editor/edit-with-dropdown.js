@@ -24,6 +24,33 @@ function makeEditWithDropdownEditor () {
           this.input.removeAttribute('name')
         }
 
+        onWatchedFieldChange () {
+          if (this.enumSource) {
+            var vars = this.getWatchedFieldValues()
+      
+            for (let i = 0; i < this.enumSource.length; i++) {
+              var items = vars[this.enumSource[i].source]
+              if (items) {
+                this.theme.setSelectOptions(this.dropdown, items, items)
+              }
+            }
+            this.dropdown.value = undefined
+          }
+          super.onWatchedFieldChange()
+        }
+
+        preBuild () {
+          this.enumSource = []
+          if (Array.isArray(this.schema.enumSource)) {
+            for (let i = 0; i < this.schema.enumSource.length; i++) {
+              this.enumSource[i] = {
+                source: this.schema.enumSource[i].source
+              }
+            }
+          }
+          super.preBuild()
+        }
+
         build () {
           if (!this.options.compact) {
             this.label = this.theme.getFormInputLabel(this.getTitle())
@@ -46,9 +73,11 @@ function makeEditWithDropdownEditor () {
               this.dropdown.classList.remove('editable-dropdown-focused')
             }
           }
-
-          const titles = (this.schema.options.enum_titles || []).map(el => this.translateProperty(el))
-          this.theme.setSelectOptions(this.dropdown, this.schema.options.enum_values || [], titles)
+          
+          if (this.schema.options) {
+            const titles = (this.schema.options.enum_titles || []).map(el => this.translateProperty(el))
+            this.theme.setSelectOptions(this.dropdown, this.schema.options.enum_values || [], titles)
+          }
           this.dropdown.addEventListener('change', e => {
             e.preventDefault()
             e.stopPropagation()
@@ -109,9 +138,9 @@ function makeEditWithDropdownEditor () {
                 }
               }
             }
-          }
-          if (this.input.value === '') {
-            return undefined
+            if (this.input.value === '') {
+              return undefined
+            }
           }
           return this.input.value
         }
@@ -145,6 +174,9 @@ function makeEditWithDropdownEditor () {
         }
 
         getDefault () {
+          if (this.schema.type === 'string') {
+            return ''
+          }
           return undefined
         }
     }

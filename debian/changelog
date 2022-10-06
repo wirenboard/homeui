@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.47.0) stable; urgency=medium
+
+  * Support SSID and device selection in NetworkManager config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 06 Oct 2022 09:58:30 +0500
+
 wb-mqtt-homeui (2.46.2) stable; urgency=medium
 
   * Add ability to set disabled optional parameter text
