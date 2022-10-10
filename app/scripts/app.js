@@ -5,6 +5,8 @@ import '../styles/css/bootstrap.min.css';
 //import '../styles/css/demo.min.css'
 import '../styles/css/fixes.css';
 import '../styles/css/font-awesome.min.css';
+import '../styles/css/fontawesome.min.css';
+import '../styles/css/fontawesome5-solid.min.css';
 import '../styles/css/invoice.min.css';
 import '../styles/css/lockscreen.min.css';
 import '../styles/css/smartadmin-production-plugins.min.css';

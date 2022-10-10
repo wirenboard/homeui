@@ -179,6 +179,18 @@ function makeEditWithDropdownEditor () {
           }
           return undefined
         }
+
+        disable() {
+          super.disable()
+          this.input.disabled = true
+          this.dropdown.disabled = true
+        }
+
+        enable() {
+          this.input.disabled = false
+          this.dropdown.disabled = false
+          super.enable()
+        }
     }
 }
 
