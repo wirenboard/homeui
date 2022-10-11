@@ -34,6 +34,12 @@ class AlertCtrl {
       localStorage.setItem('hide-stable-notice', true);
     };
 
+    $scope.bullseyeNotice = !localStorage.getItem('hide-bullseye-notice') && (rolesFactory.current.role == rolesFactory.ROLE_THREE)
+    $scope.closeBullseyeNotice = function() {
+      $scope.bullseyeNotice = false;
+      localStorage.setItem('hide-bullseye-notice', true);
+    };
+
   }
 }
 

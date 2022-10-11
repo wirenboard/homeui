@@ -134,6 +134,15 @@
                         {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases">testing</a>
                       </div>
                       <% } %>
+                      <% if (htmlWebpackPlugin.options.bullseyeNotice) { %>
+                        <div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="bullseyeNotice">
+                          <button type="button" class="close" ng-click="closeBullseyeNotice()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                          <span style="font-weight: bold">{{'heading.bullseyeNotice1' | translate}}</span>
+                          <span>{{'heading.bullseyeNotice2' | translate}}</span>
+                          <span style="font-weight: bold">wb-release --update-debian-release -y</span>
+                        </div>
+                        <% } %>
                       <!-- viewport for child view -->
                       <div ng-show='stateIsLoading'>
                           <strong translate>{{'heading.loading'}}</strong>

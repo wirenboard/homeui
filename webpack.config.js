@@ -305,6 +305,7 @@ module.exports = function makeWebpackConfig() {
                 template: './index.ejs',
                 // Set to true when building for stable release
                 stableRelease: false,
+                bullseyeNotice: true,
                 chunksSortMode: function (a, b) {
                     var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
                     return order.indexOf(a.names[0]) - order.indexOf(b.names[0]);
