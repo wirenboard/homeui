@@ -46,7 +46,7 @@
     "heading": {
         "loading": "Загрузка...",
         "stableNotice": "Если вы хотите раньше всех получать доступ к новым возможностям нашего ПО, переключайтесь на ",
-        "bullseyeNotice1": "Доступен Debian Bullseye!",
+        "bullseyeNotice1": "Доступна новая версия Debian (Bullseye)!",
         "bullseyeNotice2": "Для обновления выполните в консоли "
     },
     "dashboards": {
