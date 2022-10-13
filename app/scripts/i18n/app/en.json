@@ -45,7 +45,9 @@
     },
     "heading": {
         "loading": "Loading...",
-        "stableNotice": "If you want to be the first to get access to new features of our software, switch to "
+        "stableNotice": "If you want to be the first to get access to new features of our software, switch to ",
+        "bullseyeNotice1": "A new version of Debian (Bullseye) is available!",
+        "bullseyeNotice2": "To update run in console "
     },
     "dashboards": {
         "title": {
