@@ -11,11 +11,26 @@ function dumbTemplateService() {
       return function (vars) {
 
         var expandVar = function(expr) {
+          // string
           var t = expr.match(/^"(.*)"$/);
           if (t) {
             return t[1];
           }
 
+          // array of strings
+          t = expr.match(/^\[(.*)\]$/);
+          if (t) {
+            var parts = t[1].split(",")
+            return parts.map( el => {
+              var t = el.match(/^\s*"(.*)"\s*$/);
+              if (t) {
+                return t[1];
+              }
+              return ""
+            })
+          }
+
+          // object
           var parts = expr.split("."),
               i = 0;
           // expand to matching ], or to the end of parts
@@ -59,22 +74,25 @@ function dumbTemplateService() {
 
           return src
             // {{if VARIABLE1 COMPARE_OPERATION VARIABLE2}}...{{else}}...{{endif}}
-            .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in|intersect)\s*([\w.\[\]]+?|".*?")\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, function (m, left, op, right, ifTrue, ifFalse) {
-              left = expandVar(left);
-              right = expandVar(right);
-              var result = false;
-              if (op == "==") {
-                result = ((typeof right == 'string' ? stringify(left) : left) == right);
-              }
-              else if (op == "in") {
-                result = (right.indexOf(left) >= 0);
-              }
-              else if (op == "intersect") {
-                result = left.filter(function(n) {
-                  return right.indexOf(n) != -1;
-                }).length > 0;
-              }
-              return result ? (ifTrue || "") : (ifFalse || "");
+            // VARIABLE1 - string or object
+            // VARIABLE2 - string, object or explicitly declared array of strings (i.e. ["str1", "str2", ...])
+            .replace(/\{\{\s*if\s+([\w.\[\]]+?|".*?")\s*(==|in|intersect)\s*([\w.\[\]]+?|".*?"|\[.*?\])\s*\}\}(.*?)(?:\{\{else\}\}(.*?))?\{\{\s*endif\s*\}\}/g, 
+              function (m, left, op, right, ifTrue, ifFalse) {
+                left = expandVar(left);
+                right = expandVar(right);
+                var result = false;
+                if (op == "==") {
+                  result = ((typeof right == 'string' ? stringify(left) : left) == right);
+                }
+                else if (op == "in") {
+                  result = (right.indexOf(left) >= 0);
+                }
+                else if (op == "intersect") {
+                  result = left.filter(function(n) {
+                    return right.indexOf(n) != -1;
+                  }).length > 0;
+                }
+                return result ? (ifTrue || "") : (ifFalse || "");
             })
             // {{translate VARIABLE}}
             // The variable value will be passed to translateFn and replaced by found translation
