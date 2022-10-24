@@ -1094,3 +1094,11 @@ body.kiosk .page-header {
 .glyphicon-copy::before {
   content: "\E224";
 }
+
+.je-modal {
+  padding: 9px 19px 9px 19px;
+}
+
+.je-modal label {
+  font-size: 13px;
+}

@@ -21,13 +21,15 @@ import makeSelectWithHiddenItems from "./select-with-hidden-items";
 import makeGroupsEditor from "./group-editor";
 import makeOptionalEditorWithDropDown from "./optional-editor-with-dropdown";
 import makeWbBootstrap3Theme from "./wb-bootstrap3-theme";
+import makeWbBootstrap3Iconlib from "./wb-bootstrap3-iconlib";
+import makeWbArrayEditor from "./wb-array-editor";
 
 const AngularJsonEditorModule = angular.module('angular-json-editor', []).provider('JSONEditor', function () {
     var configuration = {
         defaults: {
             options: {
                 show_errors: "always",
-                iconlib: 'bootstrap3',
+                iconlib: 'wb-bootstrap3',
                 theme: 'wb-bootstrap3'
             }
         }
@@ -61,6 +63,7 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.resolvers.unshift(schema => schema.type === 'object' && schema.format === 'groups' && 'groups');
         jse.defaults.resolvers.unshift(schema => schema.format === 'unknown-device' && 'unknown-device');
         jse.defaults.resolvers.unshift(schema => schema.format === 'wb-optional' && 'wb-optional');
+        jse.defaults.resolvers.unshift(schema => schema.type === 'array' && schema.format === 'wb-array' && 'wb-array');
 
         jse.defaults.editors["select"] = makeSelectWithHiddenItems();
         jse.defaults.editors["inWb"] = makeDisabledEditorWrapper(jse.defaults.editors["integer"]);
@@ -78,10 +81,12 @@ const AngularJsonEditorModule = angular.module('angular-json-editor', []).provid
         jse.defaults.editors["unknown-device"] = makeUnknownDeviceEditor();
         jse.defaults.editors["groups"] = makeGroupsEditor();
         jse.defaults.editors["wb-optional"] = makeOptionalEditorWithDropDown();
+        jse.defaults.editors["wb-array"] = makeWbArrayEditor();
 
         jse.defaults.languages.en.error_oneOf = 'One or more parameters are invalid'
 
         jse.defaults.themes["wb-bootstrap3"] = makeWbBootstrap3Theme();
+        jse.defaults.iconlibs["wb-bootstrap3"] = makeWbBootstrap3Iconlib();
         return jse;
     }];
 

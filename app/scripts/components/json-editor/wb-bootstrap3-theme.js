@@ -11,6 +11,30 @@ function makeWbBootstrap3Theme () {
       el.appendChild(document.createTextNode(text))
       return el
     }
+
+    getTab (text, tabId) {
+      const li = document.createElement('li')
+      li.setAttribute('role', 'presentation')
+      const a = document.createElement('a')
+      a.setAttribute('href', `#${tabId}`)
+      a.appendChild(text)
+      a.setAttribute('aria-controls', tabId)
+      a.setAttribute('role', 'tab')
+      a.setAttribute('data-toggle', 'tab')
+      text.style.marginLeft = '5px'
+      li.appendChild(a)
+      return li
+    }
+
+    setTabIcon(tab, icon) {
+      tab.childNodes[0].insertBefore(icon, tab.childNodes[0].childNodes[0])
+    }
+
+    getFormButtonHolder () {
+      const el = this.getButtonHolder()
+      el.style.display = 'flex'
+      return el
+    }
   }
 }
 

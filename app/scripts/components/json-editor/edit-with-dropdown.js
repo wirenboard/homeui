@@ -24,6 +24,75 @@ function makeEditWithDropdownEditor () {
           this.input.removeAttribute('name')
         }
 
+        onWatchedFieldChange () {
+          if (this.enumSource) {
+            var vars = this.getWatchedFieldValues()
+      
+            for (var i = 0; i < this.enumSource.length; i++) {
+              var items = vars[this.enumSource[i].source]
+
+              if (this.enumSource[i].filter) {
+                const newItems = []
+                for (var j = 0; j < items.length; j++) {
+                  if (this.enumSource[i].filter({ i: j, item: items[j], watched: vars })) newItems.push(items[j])
+                }
+                items = newItems
+              }
+
+              const itemTitles = []
+              const itemValues = []
+              for (var j = 0; j < items.length; j++) {
+                const item = items[j]
+
+                if (this.enumSource[i].value) {
+                  itemValues[j] = this._typecast(this.enumSource[i].value({
+                    i: j,
+                    item
+                  }))
+                } else {
+                  itemValues[j] = items[j]
+                }
+
+                if (this.enumSource[i].title) {
+                  itemTitles[j] = this.enumSource[i].title({
+                    i: j,
+                    item
+                  })
+                } else {
+                  itemTitles[j] = itemValues[j]
+                }
+              }
+              if (items) {
+                this.theme.setSelectOptions(this.dropdown, itemValues, itemTitles)
+              }
+            }
+            this.dropdown.value = undefined
+          }
+          super.onWatchedFieldChange()
+        }
+
+        preBuild () {
+          this.enumSource = []
+          if (Array.isArray(this.schema.enumSource)) {
+            this.enumSource = this.schema.enumSource.map(el => {
+              var res = {
+                source: el.source
+              }
+              if (el.value) {
+                res.value = this.jsoneditor.compileTemplate(el.value, this.template_engine)
+              }
+              if (el.title) {
+                res.title = this.jsoneditor.compileTemplate(el.title, this.template_engine)
+              }
+              if (el.filter && el.value) {
+                res.filter = this.jsoneditor.compileTemplate(el.filter, this.template_engine)
+              }
+              return res
+            })
+          }
+          super.preBuild()
+        }
+
         build () {
           if (!this.options.compact) {
             this.label = this.theme.getFormInputLabel(this.getTitle())
@@ -46,9 +115,11 @@ function makeEditWithDropdownEditor () {
               this.dropdown.classList.remove('editable-dropdown-focused')
             }
           }
-
-          const titles = (this.schema.options.enum_titles || []).map(el => this.translateProperty(el))
-          this.theme.setSelectOptions(this.dropdown, this.schema.options.enum_values || [], titles)
+          
+          if (this.schema.options) {
+            const titles = (this.schema.options.enum_titles || []).map(el => this.translateProperty(el))
+            this.theme.setSelectOptions(this.dropdown, this.schema.options.enum_values || [], titles)
+          }
           this.dropdown.addEventListener('change', e => {
             e.preventDefault()
             e.stopPropagation()
@@ -109,9 +180,9 @@ function makeEditWithDropdownEditor () {
                 }
               }
             }
-          }
-          if (this.input.value === '') {
-            return undefined
+            if (this.input.value === '') {
+              return undefined
+            }
           }
           return this.input.value
         }
@@ -145,7 +216,30 @@ function makeEditWithDropdownEditor () {
         }
 
         getDefault () {
+          if (this.schema.type === 'string') {
+            return ''
+          }
           return undefined
+        }
+
+        disable() {
+          super.disable()
+          this.input.disabled = true
+          this.dropdown.disabled = true
+        }
+
+        enable() {
+          this.input.disabled = false
+          this.dropdown.disabled = false
+          super.enable()
+        }
+
+       _typecast (value) {
+          if (this.schema.enum && value === undefined) return undefined
+          else if (this.schema.type === 'boolean') return value === 'undefined' || value === undefined ? undefined : !!value
+          else if (this.schema.type === 'number') return 1 * value || 0
+          else if (this.schema.type === 'integer') return Math.floor(value * 1 || 0)
+          return `${value}`
         }
     }
 }
