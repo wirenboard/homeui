@@ -12,14 +12,11 @@ function makeWbBootstrap3Theme () {
       return el
     }
 
-    getTab (text, tabId, icon) {
+    getTab (text, tabId) {
       const li = document.createElement('li')
       li.setAttribute('role', 'presentation')
       const a = document.createElement('a')
       a.setAttribute('href', `#${tabId}`)
-      // if (icon) {
-      //   a.appendChild(icon)
-      // }
       a.appendChild(text)
       a.setAttribute('aria-controls', tabId)
       a.setAttribute('role', 'tab')
