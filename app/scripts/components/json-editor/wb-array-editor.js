@@ -201,10 +201,14 @@ function makeWbArrayEditor () {
             var v = this.getValue()
             const valueToReplace = v[this.rows.length - 1]
             const prop = this.schema.options.wb.sort_by_property
-            const index = v.findIndex(item => this._compareBySortProp(item, valueToReplace, prop) == 1)
-            v.splice(index, 0, valueToReplace)
-            v.pop()
-            this.setValue(v)
+            var index = v.findIndex(item => this._compareBySortProp(item, valueToReplace, prop) == 1)
+            if (index != -1) {
+              v.splice(index, 0, valueToReplace)
+              v.pop()
+              this.setValue(v)
+            } else {
+              index = this.rows.length - 1
+            }
             this.active_tab = this.rows[index].tab
             this.refreshTabs()
           } else {
