@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.48.0) stable; urgency=medium
+
+  * Add MAI6 units translation
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 01 Nov 2022 13:47:49 +0600
+
 wb-mqtt-homeui (2.47.1) stable; urgency=medium
 
   * Fix Wi-Fi AP creation in NetworkManager config editor
