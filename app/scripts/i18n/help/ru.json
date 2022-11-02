@@ -4,6 +4,9 @@
         "list": {
             "forum": "Портал техподдержки",
             "docs": "Документация"
+        },
+        "url": {
+            "docs": "https://wirenboard.com/wiki/Documentation/ru"
         }
     }
 }
