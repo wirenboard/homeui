@@ -4,6 +4,9 @@
         "list": {
             "forum": "Technical support",
             "docs": "Documentation"
+        },
+        "url": {
+            "docs": "https://wirenboard.com/wiki/Documentation/en"
         }
     }
 }
