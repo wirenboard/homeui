@@ -552,7 +552,6 @@ function makeGroupsEditor () {
         setValue(value, initial) {
             this.value = angular.extend({}, value)
             this.disableValueUpdate = true
-            this.enableEditorsAccordingToParams(value)
             Object.entries(value).forEach(([key, val]) => {
                 if (this.editors.hasOwnProperty(key)) {
                     var ed = this.editors[key]
@@ -770,15 +769,6 @@ function makeGroupsEditor () {
                     })
             paramNames = paramNames.join(',')
             return [paramNames, paramValues]
-        }
-
-        enableEditorsAccordingToParams(params) {
-            var paramValues = []
-            var paramNames = []
-            this.getParamsForConditions(params, paramNames, paramValues)
-            Object.entries(this.editors).forEach(([key, ed]) => {
-                ed.updateState(paramNames, paramValues)
-            })
         }
 
         updateEditorsState() {
