@@ -11,7 +11,8 @@ build:
 	# FIXME: this replaces git:// with https:// somewhere in node modules
 	# which fixes build after Github banned unauthenticated access
 	# (https://github.blog/2021-09-01-improving-git-protocol-security-github/)
-	git config --global url."https://".insteadOf git://
+	git config url."https://".insteadOf git://
+	git submodule foreach --recursive git config url."https://".insteadOf git://
 
 	npm install
 	git submodule init
