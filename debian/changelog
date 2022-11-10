@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.48.2) stable; urgency=medium
 
-  * Fix Documentation link
+  * Fix broken translation (help view)
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 10 Nov 2022 06:28:31 +0400
 
