@@ -9,8 +9,8 @@ function fullscreenToogleDirective() {
 
             const params = $location.search();
 
-            $rootScope.isFullscreen = params.fullscreen === true;
             $rootScope.isHMI = params.hmi === true;
+            $rootScope.isFullscreen = params.fullscreen === true || $rootScope.isHMI;
 
             $rootScope.toogleFullscreen = () => {
                 $rootScope.isFullscreen = !$rootScope.isFullscreen;
