@@ -1081,6 +1081,14 @@ body.kiosk .page-header {
     margin-top: 10px;
 }
 
+body.hmi #page-wrapper {
+    padding: 0
+}
+
+body.hmi .page-header, body.hmi .show-console {
+    display: none
+}
+
 .warning-notice {
   padding: 10px;
 }

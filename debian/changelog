@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.49.0) stable; urgency=medium
+
+  * add HMI mode for dashboards which hide everything except dashboard
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Fri, 11 Nov 2022 19:23:50 +0600
+
 wb-mqtt-homeui (2.48.3) stable; urgency=medium
 
   * Fix MAI6 config editing
