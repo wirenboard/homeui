@@ -1085,7 +1085,7 @@ body.hmi #page-wrapper {
     padding: 0
 }
 
-body.hmi .page-header, body.hmi .show-console {
+body.hmi .page-header, body.hmi .show-console, body.hmi .svg-dashboard-footer {
     display: none
 }
 
