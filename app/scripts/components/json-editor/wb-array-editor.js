@@ -82,7 +82,6 @@ function makeWbArrayEditor () {
           row = this.theme.getGridRow()
           column = this.theme.getGridColumn()
           this.theme.setGridColumnSize(column, 12)
-          this.addrow_dialog_controls = this.theme.getFormButtonHolder('right')
           this.addrow_save = this.getButton('button_add', 'add', 'button_add')
           this.addrow_save.classList.add('pull-right')
           this.addrow_save.classList.add('json-editor-btntype-save')
@@ -92,9 +91,7 @@ function makeWbArrayEditor () {
             this._addRowByType(this.addrow_options[this.addrow_select.selectedOptions[0].index].default)
             this._hideAddRowDialog()
           })
-          this.addrow_dialog_controls.appendChild(this.addrow_save)
-          this.addrow_holder.appendChild(this.addrow_dialog_controls)
-          column.appendChild(this.addrow_dialog_controls)
+          column.appendChild(this.addrow_save)
           row.appendChild(column)
           this.addrow_holder.appendChild(row)
 
