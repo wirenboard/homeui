@@ -1097,6 +1097,7 @@ body.kiosk .page-header {
 
 .je-modal {
   padding: 9px 19px 9px 19px;
+  width: max-content
 }
 
 .je-modal label {
