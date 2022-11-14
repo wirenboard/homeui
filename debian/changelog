@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.48.4) stable; urgency=medium
+
+  * Remove "Cancel" button from "Create connection" dialog on "Network connections" page
+  * "Create connection" dialog can be canceled by clicking outside of the dialog
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 14 Nov 2022 08:48:43 +0500
+
 wb-mqtt-homeui (2.48.3) stable; urgency=medium
 
   * Fix MAI6 config editing

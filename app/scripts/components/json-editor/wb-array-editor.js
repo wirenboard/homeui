@@ -92,22 +92,27 @@ function makeWbArrayEditor () {
             this._addRowByType(this.addrow_options[this.addrow_select.selectedOptions[0].index].default)
             this._hideAddRowDialog()
           })
-          this.addrow_cancel = this.getButton('button_cancel', 'cancel', 'button_cancel')
-          this.addrow_cancel.classList.add('pull-right')
-          this.addrow_cancel.classList.add('json-editor-btntype-cancel')
-          this.addrow_cancel.addEventListener('click', (e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            this._hideAddRowDialog()
-          })
           this.addrow_dialog_controls.appendChild(this.addrow_save)
-          this.addrow_dialog_controls.appendChild(this.addrow_cancel)
           this.addrow_holder.appendChild(this.addrow_dialog_controls)
           column.appendChild(this.addrow_dialog_controls)
           row.appendChild(column)
           this.addrow_holder.appendChild(row)
 
           this.controls.insertBefore(this.addrow_holder, this.controls.childNodes[0])
+
+          /* Close modal if clicked outside modal */
+          this.onOutsideModalClickListener = this.onOutsideModalClick.bind(this)
+          document.addEventListener('click', this.onOutsideModalClickListener, true)
+          this.adding_row = false
+        }
+
+        onOutsideModalClick (e) {
+          const path = e.path || (e.composedPath && e.composedPath())
+          if (this.addrow_holder && !this.addrow_holder.contains(path[0]) && this.adding_row) {
+            e.preventDefault()
+            e.stopPropagation()
+            this._hideAddRowDialog()
+          }
         }
 
         build () {
@@ -120,6 +125,7 @@ function makeWbArrayEditor () {
         _hideAddRowDialog () {
           this.addrow_holder.style.display = 'none'
           this.enable()
+          this.adding_row = false
         }
 
         _showAddRowDialog () {
@@ -127,6 +133,7 @@ function makeWbArrayEditor () {
           this.addrow_holder.style.top = `${this.add_row_button.offsetTop + this.add_row_button.offsetHeight}px`
           this.addrow_holder.style.display = ''
           this.disable()
+          this.adding_row = true
         }
 
         _createAddRowButton () {
@@ -282,6 +289,11 @@ function makeWbArrayEditor () {
               }
             })
           }
+        }
+
+        destroy () {
+          document.removeEventListener('click', this.onOutsideModalClickListener, true)
+          super.destroy()
         }
     }
 }
