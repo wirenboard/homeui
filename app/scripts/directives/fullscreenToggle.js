@@ -19,11 +19,29 @@ function fullscreenToogleDirective() {
             }
 
             $rootScope.toogleFullscreen = () => {
+                var goFullScreen = null;
+                var exitFullScreen = null;
+                if ("requestFullscreen" in document.documentElement) {
+                    goFullScreen = "requestFullscreen";
+                    exitFullScreen = "exitFullscreen";
+                } else if ("mozRequestFullScreen" in document.documentElement) {
+                    goFullScreen = "mozRequestFullScreen";
+                    exitFullScreen = "mozCancelFullScreen";
+                } else if (
+                    "webkitRequestFullscreen" in document.documentElement
+                ) {
+                    goFullScreen = "webkitRequestFullscreen";
+                    exitFullScreen = "webkitExitFullscreen";
+                } else if ("msRequestFullscreen") {
+                    goFullScreen = "msRequestFullscreen";
+                    exitFullScreen = "msExitFullscreen";
+                }
+
                 $rootScope.isFullscreen = !$rootScope.isFullscreen;
                 if ($rootScope.isFullscreen) {
-                    document.documentElement.requestFullscreen();
+                    document.documentElement[goFullScreen]();
                 } else {
-                    document.exitFullscreen();
+                    document[exitFullScreen]();
                 }
                 $location.search(
                     "fullscreen",
