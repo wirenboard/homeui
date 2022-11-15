@@ -21,7 +21,7 @@ function fullscreenToogleDirective() {
             $rootScope.toogleFullscreen = () => {
                 $rootScope.isFullscreen = !$rootScope.isFullscreen;
                 if ($rootScope.isFullscreen) {
-                    document.getElementsByTagName("body").requestFullscreen();
+                    document.documentElement.requestFullscreen();
                 } else {
                     document.exitFullscreen();
                 }
