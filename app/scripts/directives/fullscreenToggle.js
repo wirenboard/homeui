@@ -10,10 +10,21 @@ function fullscreenToogleDirective() {
             const params = $location.search();
 
             $rootScope.isHMI = params.hmi === true;
-            $rootScope.isFullscreen = params.fullscreen === true || $rootScope.isHMI;
+            $rootScope.isFullscreen =
+                params.fullscreen === true || $rootScope.isHMI;
+
+            if (params.hmi === true && params.hmicolor !== "") {
+                document.getElementById("page-wrapper").style.backgroundColor =
+                    params.hmicolor;
+            }
 
             $rootScope.toogleFullscreen = () => {
                 $rootScope.isFullscreen = !$rootScope.isFullscreen;
+                if ($rootScope.isFullscreen) {
+                    document.getElementsByTagName("body").requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
                 $location.search(
                     "fullscreen",
                     $rootScope.isFullscreen ? true : null
