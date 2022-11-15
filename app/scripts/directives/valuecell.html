@@ -14,7 +14,8 @@
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"
          ng-model="cell.value" explicit-changes>
   <span ng-if="cell.readOnly" class="value">
-    <span style="display:none">{{ __value = ('' + cell.value).split('.') }}</span>
+    <span style="display:none">{{ digits = cell.step.toString().split('.')[1].length}}</span>
+    <span style="display:none">{{__value = cell.value.toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: digits }).split('.') }}</span>
     <span class="int">
       <span>{{ __value[0] }}</span>
     </span>
