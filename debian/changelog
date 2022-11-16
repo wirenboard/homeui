@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.48.5) stable; urgency=medium
+wb-mqtt-homeui (2.48.6) stable; urgency=medium
 
   * svg dashboards: more explain QuotaExceededError
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Wed, 16 Nov 2022 16:40:12 +0500
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Wed, 16 Nov 2022 23:01:12 +0500
+
+wb-mqtt-homeui (2.48.5) stable; urgency=medium
+
+  * debian: forbid nodejs>12.x as build-dependency
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 16 Nov 2022 20:05:17 +0600
 
 wb-mqtt-homeui (2.48.4) stable; urgency=medium
 
