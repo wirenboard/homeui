@@ -3,7 +3,7 @@
         "errors": {
             "load": "Cannot load WebUI config.",
             "save": "Config saving failed",
-            "overflow": "Config saving failed: config is too big, try to reduce SVG size"
+            "overflow": "Config saving failed. Try to clear page's localStorage and restart the browser. If problem remains, try to reduce overall size of SVG images."
         },
         "prompt": {
             "dirty": "The page has unsaved changes. Are you sure you want to leave?"

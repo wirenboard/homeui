@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.48.5) stable; urgency=medium
+
+  * svg dashboards: more explain QuotaExceededError
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Wed, 16 Nov 2022 16:40:12 +0500
+
 wb-mqtt-homeui (2.48.4) stable; urgency=medium
 
   * Remove "Cancel" button from "Create connection" dialog on "Network connections" page
