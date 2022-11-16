@@ -5,6 +5,7 @@ PATH := /usr/local/bin:$(PATH)
 all: build
 
 clean:
+	npm install rimraf
 	npm run clean
 
 build:
