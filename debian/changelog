@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.48.5) stable; urgency=medium
+
+  * debian: forbid nodejs>12.x as build-dependency
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 16 Nov 2022 20:05:17 +0600
+
 wb-mqtt-homeui (2.48.4) stable; urgency=medium
 
   * Remove "Cancel" button from "Create connection" dialog on "Network connections" page
