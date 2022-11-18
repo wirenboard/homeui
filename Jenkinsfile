@@ -1,1 +1,2 @@
 buildDebArchAll()
+buildDebArchAll defaultDebianRelease: 'stretch'
