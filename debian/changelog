@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.48.7) stable; urgency=medium
 
-  * Add value display accuracy if /meta/precision exists
+  * Complement display value with zeros if value precision exists
 
  -- Ekaterina Volkova <ekaterina.volkova@wirenboard.ru>  Tue, 23 Nov 2022 13:13:02 +0300
 
