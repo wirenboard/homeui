@@ -172,7 +172,7 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .value .decimal {
-    width: 40px;
+    width: 6ch;
     overflow: hidden;
 }
 
