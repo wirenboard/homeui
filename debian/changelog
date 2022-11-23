@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.48.6) stable; urgency=medium
+wb-mqtt-homeui (2.48.7) stable; urgency=medium
 
   * Complement display value with zeros if value precision exists
 
- -- Ekaterina Volkova <ekaterina.volkova@wirenboard.ru>  Tue, 15 Nov 2022 17:42:02 +0300
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.ru>  Tue, 23 Nov 2022 13:55:02 +0300
+ 
+wb-mqtt-homeui (2.48.6) stable; urgency=medium
+
+  * svg dashboards: more explain QuotaExceededError
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Wed, 16 Nov 2022 23:01:12 +050
 
 wb-mqtt-homeui (2.48.5) stable; urgency=medium
 
