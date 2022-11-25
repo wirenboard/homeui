@@ -1,6 +1,5 @@
 'use strict';
 
-import angular from "angular";
 import { JSONEditor } from "../../../3rdparty/jsoneditor";
 
 // The editor merges default value to a value passed to setValue function

@@ -4,12 +4,6 @@
 [submodule "app/lib/angular-spectrum-colorpicker"]
 	path = app/lib/angular-spectrum-colorpicker
 	url = https://github.com/wirenboard/angular-spectrum-colorpicker.git
-[submodule "app/lib/angular-c3-simple"]
-	path = app/lib/angular-c3-simple
-	url = https://github.com/wasilak/angular-c3-simple.git
-[submodule "app/lib/angular-order-object-by"]
-	path = app/lib/angular-order-object-by
-	url = https://github.com/fmquaglia/ngOrderObjectBy.git
 [submodule "app/lib/angular-ui-codemirror"]
 	path = app/lib/angular-ui-codemirror
 	url = https://github.com/angular-ui/ui-codemirror.git

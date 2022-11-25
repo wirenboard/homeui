@@ -1,9 +1,10 @@
 // Based on the code from angular-plotly https://github.com/alonho/angular-plotly
 
-import 'plotly.js/dist/plotly-locale-ru.js';
-import Plotly from "plotly.js/dist/plotly";
+import locale from 'plotly.js-locales/ru'
+import Plotly from 'plotly.js-basic-dist-min';
 
 function plotlyDirective($window) {
+    'ngInject';
     return {
         restrict: 'E',
         template: '<div></div>',
@@ -15,6 +16,7 @@ function plotlyDirective($window) {
             plotlyManualDataUpdate: '='
         },
         link: function(scope, element) {
+            Plotly.register(locale)
             var graph = element[0].children[0];
             var initialized = false;
 

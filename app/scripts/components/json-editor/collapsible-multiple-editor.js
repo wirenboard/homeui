@@ -1,6 +1,5 @@
 'use strict';
 
-import angular from "angular";
 import { JSONEditor } from "../../../3rdparty/jsoneditor";
 
 // Editor for oneOf items with collapse button.

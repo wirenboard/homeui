@@ -58,8 +58,8 @@ function topicMatches() {
 }
 
 //-----------------------------------------------------------------------------
-function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnectTimeout,
-                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast, uiConfig, $translate) {
+function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
+                    mqttReconnectDelay, mqttDigestInterval, errors, ngToast, $translate) {
   'ngInject';
   var globalPrefix = '',
       service = {},

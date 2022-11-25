@@ -3,7 +3,6 @@
 
 'use strict';
 
-import angular from "angular";
 import { JSONEditor } from "../../../3rdparty/jsoneditor";
 import JsonEditorRussianTranslation from "./json-editor-ru";
 import makeLazyTabsArrayEditor from "./lazy-tabs-array-editor";
