@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "description": "A workflow for Angular made with Webpack",
   "scripts": {
-    "clean": "rimraf dist coverage ./tmp",
-    "build": "rimraf dist && webpack --progress",
+    "clean": "npx rimraf dist coverage ./tmp",
+    "build": "npx rimraf dist && npx webpack --progress",
     "server": "npx webpack serve --history-api-fallback --client-progress",
-    "test": "rimraf coverage && karma start karma_ci.conf.js",
+    "test": "npx rimraf coverage && karma start karma_ci.conf.js",
     "test-watch": "karma start karma_dev.conf.js",
     "start": "npm run server",
     "start-dist": "cd ./dist && python3 ../test/dist_server.py "
