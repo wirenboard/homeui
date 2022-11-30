@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.49.0) UNRELEASED; urgency=medium
+wb-mqtt-homeui (2.49.0) stable; urgency=medium
 
   * Update AngularJS. No functional changes.
 
