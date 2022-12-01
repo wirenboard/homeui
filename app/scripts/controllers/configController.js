@@ -1,5 +1,3 @@
-import angular from "angular";
-
 class ConfigCtrl {
   constructor($scope, $stateParams, rolesFactory, ConfigEditorProxy, whenMqttReady, PageState, errors) {
     'ngInject';

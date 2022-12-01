@@ -20,7 +20,6 @@ import 'angular-xeditable/dist/js/xeditable';
 import 'ng-file-upload';
 import 'angular-sortable-view/src/angular-sortable-view';
 import 'oclazyload';
-import '../app/lib/angular-order-object-by/src/ng-order-object-by';
 import 'jquery-simulate-ext/libs/jquery.simulate';
 
 var testsContext = require.context('./unit', true, /.*\.spec\.js$/);

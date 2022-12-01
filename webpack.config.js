@@ -2,17 +2,10 @@
 
 // Modules
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
-const StatsPlugin = require('stats-webpack-plugin');
-const ChunkManifestPlugin = require('chunk-manifest-webpack-plugin');
-const WebpackChunkHash = require("webpack-chunk-hash");
-const InlineManifestWebpackPlugin = require("inline-manifest-webpack-plugin");
-const InlineChunksManifestPlugin = require('./inline-chunks-manifest');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 const path = require('path');
 
@@ -35,86 +28,25 @@ module.exports = function makeWebpackConfig() {
     var config = {};
 
     config.context = path.resolve(__dirname, 'app');
-    config.node = {
-        fs: 'empty'
-    };
 
     /**
-     * Entry
-     * Reference: http://webpack.github.io/docs/configuration.html#entry
-     * Should be an empty object if it's generating a test build
-     * Karma will set this when it's a test build
+     * Plugins
+     * Reference: http://webpack.github.io/docs/configuration.html#plugins
+     * List: http://webpack.github.io/docs/list-of-plugins.html
      */
-    config.entry = isTest ? void 0 : {
-        main: './scripts/app.js',
-        libs: [
-            'angular', 'jquery', './lib/mqttws31', 'bootstrap',
-            './3rdparty/jsoneditor',
-            './3rdparty/ui-bootstrap',
-            'spectrum-colorpicker', './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker',
-            'angular-resource',
-            'angular-sanitize',
-            'angular-touch',
-            'ui-select',
-            'angular-elastic/elastic',
-            'angular-xeditable/dist/js/xeditable',
-            'ng-file-upload',
-            'angular-sortable-view/src/angular-sortable-view',
-            'oclazyload',
-            './lib/angular-order-object-by/src/ng-order-object-by',
-            'angular-rangeslider',
-            'ng-toast',
-
-            'angular-translate',
-            'angular-translate-loader-partial',
-            'angular-spinkit',
-            'lz-string',
-            'angular-ui-scroll',
-            'angular-dynamic-locale',
-            'angularjs-dropdown-multiselect',
-
-            // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
-            './scripts/i18n/angular-locale_en.js',
-            './scripts/i18n/angular-locale_ru.js'
-        ]
-    };
-    /**
-     * Output
-     * Reference: https://webpack.js.org/concepts/output/
-     * Should be an empty object if it's generating a test build
-     * Karma will handle setting it up for you when it's a test build
-     */
-    config.output = isTest ? {} : {
-        // Absolute output directory
-        path: path.resolve(__dirname, 'dist'),
-
-        // Output path from the view of the page
-        // Uses webpack-dev-server in development
-        publicPath: isProd ? '/' : 'http://localhost:8080/',
-
-        // Filename for entry points
-        // Only adds hash in build mode
-        filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
-
-        // Filename for non-entry points
-        // Only adds hash in build mode
-        chunkFilename: isProd ? '[name].[hash].js' : '[name].bundle.js'
-    };
-
-    /**
-     * Devtool
-     * Reference: http://webpack.github.io/docs/configuration.html#devtool
-     * Type of sourcemap to use per build type
-     */
-    if (isTest) {
-        config.devtool = 'inline-source-map';
-    }
-    else if (isProd) {
-        config.devtool = 'nosources-source-map';
-    }
-    else {
-        config.devtool = 'eval-source-map';
-    }
+     config.plugins = [
+        /**
+         * Provide plugin
+         * Reference: https://webpack.js.org/plugins/provide-plugin/#root
+         *
+         */
+        new webpack.ProvidePlugin({
+            jQuery: 'jquery',
+            $: 'jquery',
+            'window.jQuery': 'jquery',
+            'window.CodeMirror': 'codemirror/lib/codemirror'
+        }),
+    ];
 
     /**
      * Loaders
@@ -123,103 +55,253 @@ module.exports = function makeWebpackConfig() {
      * This handles most of the magic responsible for converting modules
      */
 
-        // Initialize module
+    // Initialize module
     config.module = {
-        rules: [{
-            test: require.resolve('angular'),
-            use: 'exports-loader?window.angular'
-        }, {
-            // JS LOADER
-            // Reference: https://github.com/babel/babel-loader
-            // Transpile .js files using babel-loader
-            // Compiles ES6 and ES7 into ES5 code
-            test: /\.js$/,
-            include: [
-                path.resolve(__dirname, 'app', 'scripts')
-            ],
-            exclude: /(node_modules|bower_components)/,
-            use: [{
-                loader: 'babel-loader',
+        rules: [
+            {
+                test: require.resolve('angular'),
+                loader: "exports-loader",
                 options: {
-                    presets: ['es2015'],
-                    babelrc: false,
-                    cacheDirectory: true
+                  exports: "single window.angular",
+                  type: "commonjs"
                 }
-            }
-            ]
-        }, {
-            // CSS LOADER
-            // Reference: https://github.com/webpack/css-loader
-            // Allow loading css through js
-            //
-            // Reference: https://github.com/postcss/postcss-loader
-            // Postprocess your css with PostCSS plugins
-            test: /\.css$/,
-            // Reference: https://github.com/webpack/extract-text-webpack-plugin
-            // Extract css files in production builds
-            //
-            // Reference: https://github.com/webpack/style-loader
-            // Use style-loader in development.
-
-            use: isTest ? 'null-loader' : ExtractTextPlugin.extract({
-                fallback: 'style-loader',
+            },
+            {
+                // JS LOADER
+                // Reference: https://github.com/babel/babel-loader
+                // Transpile .js files using babel-loader
+                // Compiles ES6 and ES7 into supported by target browsers code
+                test: /\.js$/,
+                include: [
+                    path.resolve(__dirname, 'app', 'scripts'),
+                    path.resolve(__dirname, 'app', 'lib')
+                ],
+                exclude: /(node_modules|bower_components)/,
                 use: [
                     {
-                        loader: 'css-loader', options: {
-                        sourceMap: false,
-                        comments: {removeAll: true},
-                        minimize: true
-                    }
-                    },
-                    {
-                        loader: 'postcss-loader', options: {
-                        sourceMap: false
-                    }
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [['@babel/preset-env', { targets: "defaults" }]],
+                            plugins: [["angularjs-annotate"]],
+                            babelrc: false,
+                            cacheDirectory: true
+                        }
                     }
                 ]
-            })
-        }, {
+            },
             // ASSET LOADER
-            // Reference: https://github.com/webpack/file-loader
-            // Copy png, jpg, jpeg, gif, svgEditor, woff, woff2, ttf, eot files to output
-            // Rename the file using the asset hash
-            // Pass along the updated reference to your code
-            // You can add here any file extension you want to get copied to your output
-            test: /\.(png|jpg|jpeg|gif)$/,
-            use: 'file-loader'
-        }, {
-            // ASSET LOADER
-            // without hash
-            test: /\.(svg|woff|woff2|ttf|eot)$/,
-            use: 'file-loader?name=[name].[ext]'
-        },{
-            test: /\.html$/,
-            use: [
-                // HTML LOADER
-                // Reference: https://github.com/webpack/raw-loader
-                // Allow loading html through js
-                {loader: 'raw-loader'}
-            ]
-        }, {
-            test: /\.scss$/,
-            use: ExtractTextPlugin.extract({
-                use: [{
-                    loader: 'css-loader'
-                }, {
-                    loader: 'sass-loader'
-                }],
-                fallback: 'style-loader'
-            })
-        }]
+            // Reference: https://webpack.js.org/guides/asset-modules/
+            {
+                test: /\.(png|jpg|jpeg|gif)$/,
+                type: 'asset/resource'
+            },
+            {
+                // without hash
+                test: /\.(svg|woff|woff2|ttf|eot)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: '[name].[ext]'
+                }
+            },
+            {
+                test: /\.html$/,
+                type: 'asset/source'
+            }
+        ]
     };
 
-    if (isTest) {
+    if (!isTest) {
+        // Any not test build
+
+        /**
+         * Entry
+         * Reference: http://webpack.github.io/docs/configuration.html#entry
+         */
+         config.entry = {
+            main: {
+                import: [
+                    'angular',
+                    'oclazyload',
+                    'jquery', 
+                    './lib/mqttws31',
+                    'bootstrap',
+                    './3rdparty/jsoneditor',
+                    'angular-touch',
+                    'angular-sanitize',
+                    './3rdparty/ui-bootstrap',
+                    'spectrum-colorpicker',
+                    './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker',
+                    'ui-select',
+                    'angular-elastic/elastic',
+                    'angular-xeditable',
+                    'ng-file-upload',
+                    'angular-sortable-view/src/angular-sortable-view',
+                    'angular-rangeslider',
+                    'ng-toast',
+                    
+                    'angular-translate',
+                    'angular-translate-loader-partial',
+                    'angular-spinkit',
+                    'angular-ui-scroll',
+                    'angular-dynamic-locale',
+                    'angularjs-dropdown-multiselect',
+                    
+                    // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
+                    './scripts/i18n/angular-locale_en.js',
+                    './scripts/i18n/angular-locale_ru.js',
+                    './scripts/app.js'
+                ]
+            }
+        };
+
+        // Reference: https://webpack.js.org/plugins/split-chunks-plugin/
+        config.optimization = {
+            splitChunks: {
+                chunks: 'all',
+                minChunks: 1
+            }
+        };
+
+        config.plugins.push(
+            // Reference: https://github.com/ampedandwired/html-webpack-plugin
+            // Render index.html
+            new HtmlWebpackPlugin({
+                filename: './index.html',
+                template: './index.ejs',
+                chunksSortMode: function (a, b) {
+                    var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
+                    return order.indexOf(a) - order.indexOf(b);
+                },
+                inject: 'body',
+                minify: false,
+
+                // Options passed to template
+
+                // Set to true when building for stable release
+                stableRelease: false
+            })
+        )
+
+        // Production specific settings
+        if (isProd) {
+            console.log('Production build')
+
+            config.mode = 'production'
+
+            /**
+             * Output
+             * Reference: https://webpack.js.org/concepts/#output
+             */
+            config.output = {
+                // Absolute output directory
+                path: path.resolve(__dirname, 'dist'),
+
+                // Output path from the view of the page
+                publicPath: '/',
+
+                // Filename for entry points
+                filename: '[name].[chunkhash].js',
+
+                // Filename for non-entry points
+                chunkFilename: '[name].[chunkhash].js'
+            };
+
+            config.devtool = 'nosources-source-map';
+
+            config.optimization['minimize'] = true;
+            config.optimization['minimizer'] = [
+                '...',
+                new CssMinimizerPlugin({
+                    minimizerOptions: {
+                        preset: [
+                            "default",
+                            {
+                                discardComments: { removeAll: true },
+                            }
+                        ]
+                    }
+                })
+            ];
+
+            config.plugins.push(
+                // Copy assets from the public folder
+                // Reference: https://github.com/kevlened/copy-webpack-plugin
+                new CopyWebpackPlugin({
+                    patterns: [
+                        {from: path.join(__dirname, 'app', 'images'), to: 'images'},
+                        {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
+                        {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
+                        {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'},
+                        {from: path.join(__dirname, 'app', 'scripts/i18n'), to: 'scripts/i18n'},
+                ]}),
+                // Reference: https://github.com/webpack-contrib/mini-css-extract-plugin
+                // Extract CSS files from JS
+                new MiniCssExtractPlugin({filename: 'css/[name].[contenthash].css'})
+            )
+
+            // Load styles
+            config.module.rules.push({
+                test: /\.(sa|sc|c)ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader",
+                    "postcss-loader",
+                    "sass-loader"
+                ]
+            })
+        } else {
+            // Development settings
+
+            config.mode = 'development'
+
+            config.output = {
+                // Absolute output directory
+                path: path.resolve(__dirname, 'dist'),
+
+                // Output path from the view of the page
+                // Uses dev-server in development
+                publicPath: 'http://localhost:8080/',
+
+                // Filename for entry points
+                filename: '[name].bundle.js',
+
+                // Filename for non-entry points
+                chunkFilename: '[name].bundle.js'
+            };
+
+            config.devtool = 'eval-source-map';
+
+            // Load styles
+            config.module.rules.push({
+                test: /\.(sa|sc|c)ss$/i,
+                use: [
+                    "style-loader",
+                    "css-loader",
+                    "postcss-loader",
+                    "sass-loader"
+                ]
+            })
+        }
+    } else {
+        // Test build
+
+        config.mode = 'development'
+
+        // Karma will set this when it's a test build
+        config.entry = void 0;
+        config.output = {};
+ 
+        config.devtool = 'inline-source-map';
+ 
+        config.plugins.push(
+            // Check source with eslint
+            // Reference: https://github.com/webpack-contrib/eslint-webpack-plugin
+            new ESLintPlugin({
+                exclude: ['node_modules', 'bower_components']
+            })
+        )
+
         config.module.rules.push({
-            enforce: 'pre',
-            test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            use: [{loader: 'eslint-loader', options: {rules: {semi: 0}}}],
-        }, {
             // JS LOADER
             // Reference: https://github.com/babel/babel-loader
             // Transpile .js files using babel-loader
@@ -242,153 +324,13 @@ module.exports = function makeWebpackConfig() {
     }
 
     /**
-     * Plugins
-     * Reference: http://webpack.github.io/docs/configuration.html#plugins
-     * List: http://webpack.github.io/docs/list-of-plugins.html
-     */
-    config.plugins = [
-        new webpack.ExtendedAPIPlugin(),
-    /**
-     * Angular annotate
-     * Reference: https://github.com/jeffling/ng-annotate-webpack-plugin
-     * Add AngularJS dependency injection annotations.
-     */
-        new ngAnnotatePlugin({
-            add: true
-        }),
-
-    /**
-     * PostCSS
-     * Reference: https://github.com/postcss/autoprefixer-core
-     * Add vendor prefixes to your css
-     */
-        // NOTE: This is now handled in the `postcss.config.js`
-        //       webpack2 has some issues, making the config file necessary
-        new webpack.LoaderOptionsPlugin({
-            test: /\.scss$/i,
-            options: {
-                postcss: {
-                    plugins: [autoprefixer]
-                }
-            }
-        }),
-
-    /**
-     * Provide plugin
-     * Reference:
-     *
-     */
-        new webpack.ProvidePlugin({
-            'angular': 'angular',
-            jQuery: 'jquery',
-            $: 'jquery',
-            'window.jQuery': 'jquery',
-            'd3': 'd3',
-            'c3': 'c3/c3',
-            'window.CodeMirror': 'codemirror/lib/codemirror'
-        }),
-    ];
-
-    // Skip rendering index.html in test mode
-    if (!isTest) {
-        config.plugins.push(
-            // Reference: https://webpack.js.org/guides/code-splitting-libraries/
-            new webpack.optimize.CommonsChunkPlugin({
-                names: ['libs', 'manifest'],
-                minChunks: Infinity
-            }),
-
-            // Reference: https://github.com/ampedandwired/html-webpack-plugin
-            // Render index.html
-            new HtmlWebpackPlugin({
-                filename: './index.html',
-                template: './index.ejs',
-                // Set to true when building for stable release
-                stableRelease: false,
-                chunksSortMode: function (a, b) {
-                    var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
-                    return order.indexOf(a.names[0]) - order.indexOf(b.names[0]);
-                },
-                inject: 'body',
-                minify: false
-            }),
-
-            // Reference: https://github.com/webpack/extract-text-webpack-plugin
-            // Extract css files
-            // Disabled when in test mode or not in build mode
-            new ExtractTextPlugin({filename: 'css/[name].[contenthash].css', disable: !isProd, allChunks: true})
-        )
-    }
-
-    // Add build specific plugins
-    if (isProd) {
-        config.plugins.push(
-            // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
-            // Minify all javascript, switch loaders to minimizing mode
-            new UglifyJsPlugin({
-                uglifyOptions:
-                    {
-                        compress: {
-                            warnings: false,
-                        },
-                        sourceMap: false
-                    }
-                }
-            ),
-
-            // Copy assets from the public folder
-            // Reference: https://github.com/kevlened/copy-webpack-plugin
-            new CopyWebpackPlugin([
-                {from: path.join(__dirname, 'app', 'images'), to: 'images'},
-                {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
-                {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
-                {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'},
-                {from: path.join(__dirname, 'app', 'scripts/i18n'), to: 'scripts/i18n'},
-            ]),
-
-            // new webpack.HashedModuleIdsPlugin(),
-            // new WebpackChunkHash({algorithm: 'md5'}),
-
-            // Allows exporting a JSON file that maps chunk ids to their resulting
-            // asset files. Webpack can then read this mapping, assuming it is
-            // provided somehow on the client, instead of storing a mapping (with
-            // chunk asset hashes) in the bootstrap script, which allows to actually
-            // leverage long-term caching.
-            // Reference: https://github.com/soundcloud/chunk-manifest-webpack-plugin
-            // new ChunkManifestPlugin({
-            //     filename: 'chunk-manifest.json',
-            //     manifestVariable: 'webpackManifest'
-            // }),
-
-            // This is a webpack plugin that inline your manifest.js with a script tag to save http request.
-            // Reference: https://github.com/szrenwei/inline-manifest-webpack-plugin
-            // new InlineManifestWebpackPlugin({
-            //     name: 'webpackManifest'
-            // }),
-
-            // Inline output JSON chunck manifest from ChunkManifestPlugin into index.ejs template
-            // new InlineChunksManifestPlugin({
-            //     name: 'chunksManifest', // asset name for accessing from HTML template
-            //     filename: 'chunk-manifest.json',
-            //     manifestVariable: 'webpackManifest'
-            // }),
-
-            // Writes the stats of a build to a file.
-            // Reference: https://github.com/unindented/stats-webpack-plugin/
-            new StatsPlugin('stats.json', {
-                chunkModules: true,
-                exclude: [/node_modules/]
-            })
-        )
-    }
-
-    /**
      * Dev server configuration
-     * Reference: http://webpack.github.io/docs/configuration.html#devserver
-     * Reference: http://webpack.github.io/docs/webpack-dev-server.html
+     * Reference: https://webpack.js.org/configuration/dev-server/#devserver
      */
     config.devServer = {
-        contentBase: path.join(__dirname, 'app'),
+        static: {
+            directory: path.join(__dirname, 'app'),
+        },
         port: 8080
     };
 

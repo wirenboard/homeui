@@ -1,6 +1,5 @@
 'use strict';
 
-import angular from "angular";
 import { JSONEditor } from "../../../3rdparty/jsoneditor";
 
 class Editor {

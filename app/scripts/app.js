@@ -2,7 +2,6 @@
 
 // Import slylesheets
 import '../styles/css/bootstrap.min.css';
-//import '../styles/css/demo.min.css'
 import '../styles/css/fixes.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';
@@ -57,7 +56,6 @@ import handleDataService from './services/handle-data';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import HelpCtrl from './controllers/helpController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import FirmwareCtrl from './controllers/firmwareController';
@@ -92,8 +90,6 @@ import onResizeDirective from "./directives/resize";
 import confirmDirective from "./directives/confirm";
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 
-import metaTypeFilterModule from './filters/metaTypeFilter';
-
 // Angular routes
 import routingModule from './app.routes';
 
@@ -113,13 +109,11 @@ import AngularJsonEditorModule from './components/json-editor/angular-json-edito
  */
 const module = angular
     .module('homeuiApp', [
-        'ngResource',
         'ngSanitize',
         'ngTouch',
         'angularSpectrumColorpicker',
         'ngFileUpload',
         'ui.bootstrap',
-        'ngOrderObjectBy',
         'xeditable',
         'ui.select',
         'monospaced.elastic',
@@ -128,7 +122,6 @@ const module = angular
         'pascalprecht.translate',
         'angular-spinkit',
         routingModule,
-        metaTypeFilterModule,
         dumbTemplateModule,
         LoginFormModule,
         SvgEditorModule,
@@ -169,6 +162,7 @@ module
 
 
     .run(DeviceData => {
+        'ngInject';
         // make sure DeviceData is loaded at the startup so no MQTT messages are missed
     })
     .factory('uiConfig', uiConfigService)
@@ -179,7 +173,6 @@ module
     .value('AlertDelayMs', 5000)
     .controller('AlertCtrl', AlertCtrl)
     .controller('HomeCtrl', HomeCtrl)
-    .controller('HelpCtrl', HelpCtrl)
     .controller('FirmwareCtrl', FirmwareCtrl)
     .controller('LoginCtrl', LoginCtrl)
     .controller('WebUICtrl', WebUICtrl)
@@ -190,22 +183,11 @@ module
     .controller('DiagnosticCtrl', DiagnosticCtrl);
 
 module
-    .controller('NavigationCtrl', NavigationCtrl)
-    .directive('widgetMenuItem', function () {
-        return {
-            restrict: 'A',
-            templateUrl: 'views/widgets/menu-item.html'
-        };
-    })
-    .directive('widgetTemplateMenuItem', function () {
-        return {
-            restrict: 'A',
-            templateUrl: 'views/widgets/template-menu-item.html'
-        };
-    });
+    .controller('NavigationCtrl', NavigationCtrl);
 
 module
     .directive('scriptForm', function (PageState) {
+        'ngInject';
         return {
             restrict: 'A',
             link: function (scope, element) {
@@ -226,36 +208,36 @@ module
     .directive('transformRgb', transformRgbDirective)
     .provider('displayCellConfig', displayCellConfig)
     .directive('displayCell', displayCellDirective)
-    .config(displayCellConfigProvider => {
+    .config(['displayCellConfigProvider', function(displayCellConfigProvider) {
         displayCellConfigProvider.addDisplayType('alarm', 'alarm-cell', true);
-    })
+    }])
     .directive('alarmCell', alarmCellDirective)
-    .config(displayCellConfigProvider => {
+    .config(['displayCellConfigProvider', function(displayCellConfigProvider) {
         displayCellConfigProvider.addDisplayType('value', 'value-cell');
-    })
+    }])
     .directive('valueCell', valueCellDirective)
 
-    .config(displayCellConfigProvider => {
+    .config(['displayCellConfigProvider', function(displayCellConfigProvider) {
         displayCellConfigProvider.addDisplayType('switch', 'switch-cell');
-    })
+    }])
     .directive('switchCell', switchCellDirective)
-    .config(displayCellConfigProvider => {
+    .config(['displayCellConfigProvider', function(displayCellConfigProvider) {
         displayCellConfigProvider.addDisplayType('text', 'text-cell');
-    })
+    }])
     .directive('textCell', textCellDirective)
-    .config(displayCellConfigProvider => {
+    .config(['displayCellConfigProvider', function(displayCellConfigProvider) {
         displayCellConfigProvider.addDisplayType('range', 'range-cell');
-    })
+    }])
     .directive('rangeCell', rangeCellDirective)
-    .config(displayCellConfigProvider => {
+    .config(['displayCellConfigProvider', function(displayCellConfigProvider) {
         displayCellConfigProvider.addDisplayType('button', 'button-cell', true);
-    })
+    }])
     .directive('buttonCell', buttonCellDirective)
     .directive('cellName', cellNameDirective)
     .value('rgbLocalStorageKey', 'cell_rgb_palette')
-    .config(displayCellConfigProvider => {
+    .config(['displayCellConfigProvider', function(displayCellConfigProvider) {
         displayCellConfigProvider.addDisplayType('rgb', 'rgb-cell');
-    })
+    }])
     .directive('rgbCell', rgbCellDirective)
     .directive('cellPicker', cellPickerDirective)
     .directive('explicitChanges', explicitChangesDirective)
@@ -266,6 +248,22 @@ module
     .directive('onResize', [ '$parse', onResizeDirective] )
     .directive('ngConfirm', confirmDirective)
     .directive("fullscreenToggle", fullscreenToggleDirective);
+
+module
+    .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
+        ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui', "logs",
+        'configurations', 'rules', 'history', 'widgets', 'devices', 'units',
+        'serial-metrics'].forEach(el => $translatePartialLoaderProvider.addPart(el));
+        $translateProvider.useSanitizeValueStrategy('sceParameters');
+        $translateProvider.useLoader('$translatePartialLoader', {
+            urlTemplate: '/scripts/i18n/{part}/{lang}.json?v=' + __webpack_hash__
+        });
+        $translateProvider.preferredLanguage('en');
+        $translateProvider.fallbackLanguage('en');
+    }])
+    .config(['tmhDynamicLocaleProvider', function(tmhDynamicLocaleProvider) {
+        tmhDynamicLocaleProvider.localeLocationPattern('/scripts/i18n/angular-locale_{{locale}}.js');
+    }]);
 
 module
     .run(($rootScope, $state) => {
@@ -296,27 +294,14 @@ module
 
 //-----------------------------------------------------------------------------
 // Register module with communication
-const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule, 'pascalprecht.translate', 'tmh.dynamicLocale'])
-    .config(($qProvider) => $qProvider.errorOnUnhandledRejections(false))
-    .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
-        ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui', "logs",
-         'configurations', 'rules', 'history', 'widgets', 'devices', 'units',
-         'serial-metrics'].forEach(el => $translatePartialLoaderProvider.addPart(el));
-        $translateProvider.useSanitizeValueStrategy('sceParameters');
-        $translateProvider.useLoader('$translatePartialLoader', {
-            urlTemplate: '/scripts/i18n/{part}/{lang}.json?v=' + __webpack_hash__
-        });
-        $translateProvider.preferredLanguage('en');
-        $translateProvider.fallbackLanguage('en');
-    }])
-    .config(['tmhDynamicLocaleProvider', function(tmhDynamicLocaleProvider) {
-        tmhDynamicLocaleProvider.localeLocationPattern('/scripts/i18n/angular-locale_{{locale}}.js');
-    }])
+const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule, mqttRpcServiceModule])
+    .config(['$qProvider', function($qProvider) {
+        $qProvider.errorOnUnhandledRejections(false)}])
     .config(['$compileProvider', function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }])
     .run(($rootScope, $window, mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady,
-          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig, tmhDynamicLocale, $location) => {
+          uiConfig, $timeout, configSaveDebounceMs, ngToast, $sce, $translate, uibDatepickerPopupConfig, tmhDynamicLocale) => {
         'ngInject';
 
         $rootScope.$on('$translateChangeSuccess', () => {

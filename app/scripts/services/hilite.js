@@ -10,6 +10,8 @@ function hiliteService($sce, $injector, $log) {
 
   return (matchItem, query) => {
     // Replaces the capture string with a the same string inside of a "strong" tag
+    if (matchItem === undefined)
+      return ""
     if (query == "")
       return escapeHtml(matchItem);
 
