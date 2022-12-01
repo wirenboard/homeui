@@ -146,7 +146,7 @@ function scanDirective() {
             scope.root = ReactDOM.createRoot(element[0]);
             scope.$watch('data', function (newValue, oldValue) {
               const data = newValue || data;
-              scope.root.render(<DevicesPage {...dummyData}/>);
+              scope.root.render(<DevicesPage {...data}/>);
             });
             element.on('$destroy', function() {
               scope.root.unmount();
