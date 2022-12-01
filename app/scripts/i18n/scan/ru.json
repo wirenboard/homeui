@@ -1,0 +1,14 @@
+{
+    "scan":{
+        "title": "Устройства",
+        "labels": {
+            "unavailable": "Сервис wb-device-manager недоступен"
+        },
+        "buttons": {
+            "scan": "Сканировать"
+        },
+        "errors": {
+            "scan": "Не удалось запустить сканирование"
+        }
+    }
+}

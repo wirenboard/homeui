@@ -71,6 +71,9 @@
                   <li ui-sref-active="active" user-role="mto" current-role="roles.current.role">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="devices"><i class="glyphicon glyphicon-cog"></i> {{'navigation.menu.devices' | translate}}</a>
                   </li>
+                  <li ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
+                    <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="scan"><i class="glyphicon glyphicon-search"></i> {{'navigation.menu.scan' | translate}}</a>
+                  </li>
                   <li ui-sref-active="active">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="widgets"><i class="glyphicon glyphicon-list-alt"></i> {{'navigation.menu.widgets' | translate}}</a>
                   </li>

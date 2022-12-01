@@ -28,6 +28,11 @@ import 'ng-toast/dist/ngToast.css';
 
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
+import '../styles/css/device-manager.css';
+
+// React-related imports
+import i18n from './i18n/react/config';
+
 // homeui modules: sevices
 import errorsService from './services/errors';
 import mqttServiceModule from './services/mqttService';
@@ -50,6 +55,7 @@ import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import serialMetricsProxyService from './services/serialMetricsProxy';
 import translationService from './services/translationService';
+import deviceManagerProxyService from './services/deviceManagerProxy';
 
 import handleDataService from './services/handle-data';
 
@@ -65,6 +71,7 @@ import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
+import ScanCtrl from './controllers/scanController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -89,6 +96,7 @@ import plotlyDirective from "./directives/plotly";
 import onResizeDirective from "./directives/resize";
 import confirmDirective from "./directives/confirm";
 import fullscreenToggleDirective from './directives/fullscreenToggle';
+import scanDirective from './react-directives/scan/scan';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -153,6 +161,7 @@ module
     .factory('DeviceData', deviceDataService)
     .factory('DiagnosticProxy', diagnosticProxyService)
     .factory('TranslationService', translationService)
+    .factory('DeviceManagerProxy', deviceManagerProxyService)
 
 
     .service('handleData', handleDataService)
@@ -180,9 +189,8 @@ module
     .controller('MQTTCtrl', MQTTCtrl)
     .controller('AccessLevelCtrl', AccessLevelCtrl)
     .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
-    .controller('DiagnosticCtrl', DiagnosticCtrl);
-
-module
+    .controller('DiagnosticCtrl', DiagnosticCtrl)
+    .controller('ScanCtrl', ScanCtrl)
     .controller('NavigationCtrl', NavigationCtrl);
 
 module
@@ -247,13 +255,14 @@ module
     .directive('plotly', [ '$window', plotlyDirective ] )
     .directive('onResize', [ '$parse', onResizeDirective] )
     .directive('ngConfirm', confirmDirective)
-    .directive("fullscreenToggle", fullscreenToggleDirective);
+    .directive("fullscreenToggle", fullscreenToggleDirective)
+    .directive("devicesList", scanDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
         ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui', "logs",
         'configurations', 'rules', 'history', 'widgets', 'devices', 'units',
-        'serial-metrics'].forEach(el => $translatePartialLoaderProvider.addPart(el));
+        'serial-metrics', 'scan'].forEach(el => $translatePartialLoaderProvider.addPart(el));
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json?v=' + __webpack_hash__
@@ -382,6 +391,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         }
         $translate.use(language);
         tmhDynamicLocale.set(language);
+        i18n.changeLanguage(language);
 
         $rootScope.requestConfig(loginData);
 
