@@ -1,0 +1,21 @@
+.device-manager-page .tag {
+    margin-left: 3px;
+    padding-top: 1px;
+    padding-left: 7px;
+    padding-bottom: 1px;
+    padding-right: 7px;
+    border-radius: 5px;
+}
+
+.device-manager-page .row-with-error > td {
+    padding-bottom: 0px!important;
+}
+
+.device-manager-page .row-with-error + tr > td {
+    border-top: none!important;
+}
+
+.device-manager-page .cell-with-warning {
+    padding-left: 0px!important;
+}
+  
