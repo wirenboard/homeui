@@ -22,7 +22,7 @@ function scanDirective() {
                 if (!angular.equals(newValue, oldValue)) {
                     scope.root.render(<DevicesPage {...newValue}/>);
                 }
-            });
+            }, true);
 
             element.on('$destroy', function() {
                 scope.root.unmount();

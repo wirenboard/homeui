@@ -5,19 +5,28 @@ export default class ScanCtrl {
         $scope.enableSpinner = true;
         $scope.available = false;
         $scope.data = {};
+        $scope.requestScanning = false;
 
         whenMqttReady()
-            .then( () => DeviceManagerProxy.hasMethod('scan') )
+            .then( () => DeviceManagerProxy.hasMethod('Scan') )
             .then(result => {
                 $scope.available = result;
+                $scope.enableSpinner = false;
                 if (!result) {
-                    $scope.enableSpinner = false;
                     errors.catch('scan.labels.unavailable')();
                 } else {
-                    mqttClient.addStickySubscription('/rpc/v1/wb-device-manager/bus-scan/state', function(msg) {
-                        $scope.data = JSON.parse(msg.payload); 
+                    mqttClient.addStickySubscription('/wb-device-manager/state', function(msg) {
+                        var data = JSON.parse(msg.payload);
+                        if (data.scanning) {
+                            $scope.requestScanning = false;
+                        } else {
+                            if ($scope.requestScanning) {
+                                data.scanning = true;
+                                data.progress = 0;
+                            }
+                        }
+                        $scope.data = data;
                     });
-                    $scope.enableSpinner = false;
                 }
             })
             .catch( () => {
@@ -26,14 +35,17 @@ export default class ScanCtrl {
             });
         
         $scope.requestScan = function() {
-            // $scope.enableSpinner = true;
-            DeviceManagerProxy.scan();
-            // .then(result => {
-            //     $scope.enableSpinner = false;
-            // }).catch( (err) => {
-            //     $scope.enableSpinner = false;
-            //     $scope.errors.catch('scan.errors.scan')(err);
-            // });
+            if ($scope.data.scanning) {
+                return;
+            }
+            $scope.requestScanning = true;
+            $scope.data.scanning = true;
+            $scope.data.progress = 0;
+            DeviceManagerProxy.Scan()
+                .catch( (err) => {
+                    $scope.requestScanning = false;
+                    $scope.errors.catch('scan.errors.scan')(err);
+                });
         }
     }
 }
