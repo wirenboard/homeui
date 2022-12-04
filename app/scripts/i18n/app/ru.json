@@ -47,7 +47,8 @@
         "loading": "Загрузка...",
         "stableNotice": "Если вы хотите раньше всех получать доступ к новым возможностям нашего ПО, переключайтесь на ",
         "bullseyeNotice1": "Доступна новая версия Debian (Bullseye)!",
-        "bullseyeNotice2": "Для обновления выполните в консоли "
+        "bullseyeNotice2": "Для обновления выполните в консоли ",
+        "bullseyeNotice3": " или скачайте FIT-файл прошивки с http://fw-releases.wirenboard.com/?prefix=fit_image/ и обновите через веб-интерфейс контроллера, перейдя в Настройки → Система"
     },
     "dashboards": {
         "title": {
