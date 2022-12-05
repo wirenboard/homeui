@@ -47,8 +47,11 @@
         "loading": "Loading...",
         "stableNotice": "If you want to be the first to get access to new features of our software, switch to ",
         "bullseyeNotice1": "A new version of Debian (Bullseye) is available!",
-        "bullseyeNotice2": "To update run in console ",
-        "bullseyeNotice3": " or download <a href=\"http://fw-releases.wirenboard.com/?prefix=fit_image/testing\">FIT firmware image</a> and update via the web interface by visiting <a href=\"#!/system\">Settings → System</a>"
+        "bullseyeNotice2": "To update run in console",
+        "bullseyeNotice3": "or download",
+        "bullseyeNotice4": "FIT firmware image",
+        "bullseyeNotice5": "and update via the web interface by visiting",
+        "bullseyeNotice6": "Settings → System"
     },
     "dashboards": {
         "title": {
