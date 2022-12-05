@@ -29,3 +29,7 @@
 .device-manager-page .error {
     margin-top: 5px;
 }
+
+.device-manager-page .progress-bar {
+    font-size: 13px;
+}
