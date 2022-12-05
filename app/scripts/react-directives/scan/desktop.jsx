@@ -1,20 +1,12 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next'; 
-import { observer } from "mobx-react-lite"
-
-function WarningBox({text}) {
-    return <span className='tag bg-warning'>{text}</span>;
-}
-
-function ErrorBox({text}) {
-    return <span className='tag bg-danger'>{text}</span>;
-}
+import { useTranslation } from 'react-i18next';
+import { WarningBox, ErrorBox } from './common'
 
 function DeviceNameCell(props) {
     return ( 
         <td>
             <div className='pull-left'>
-                <b>{props.title}</b>({props.sn})
+                <b>{props.title}</b> ({props.sn})
             </div>
             <div className='pull-right'>
                 {props.bootloader_mode && <ErrorBox text="in bootloder"/>}
@@ -32,8 +24,8 @@ function PortSettingsCell(props) {
 function FirmwareCell(props) {
   const { t } = useTranslation();
     if (props.update && props.update.available_fw) {
-        const text = props.version + ' (' + t('device-manager.table.available') + ' ' + props.update.available_fw + ')'
-        return <td className='cell-with-warning'><WarningBox text={text}/></td>;
+        const text = t('device-manager.table.available') + ' ' + props.update.available_fw
+        return <td>{props.version} <WarningBox text={text}/></td>;
     }
     return <td>{props.version}</td>;
 }
@@ -89,37 +81,4 @@ function DevicesTable({devices}) {
     );
 }
 
-function ProgressBar({progress}) {
-  return (
-    <div className='progress'>
-      <div className='progress-bar progress-bar-striped active' role='progressbar'
-        aria-valuenow={progress} aria-valuemin='0' aria-valuemax='100' style={{minWidth: '2em', width: progress + '%'}}>
-          {progress}%
-      </div>
-    </div>
-  ); 
-}
-
-function Header({scanning, onStartScanning}) {
-  const { t } = useTranslation();
-  return (
-    <h1 className='page-header'>
-        {t('device-manager.title')}
-        <button disabled={scanning} className='btn btn-success pull-right' onClick={onStartScanning} >
-            {t('device-manager.buttons.scan')}
-        </button>
-    </h1>
-  );
-}
-
-const DevicesPage = observer(({scanning, devices}) => {
-  return (
-    <>
-      <Header scanning={scanning.scanning} onStartScanning={() => scanning.startScan()}/>
-      {scanning.scanning && <ProgressBar progress={scanning.progress}/>}
-      <DevicesTable devices={devices.devices}/>
-    </>
-  );
-})
-
-export default DevicesPage;
+export default DevicesTable;

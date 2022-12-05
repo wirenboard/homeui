@@ -5,6 +5,17 @@
     padding-bottom: 1px;
     padding-right: 7px;
     border-radius: 5px;
+    white-space: nowrap;
+}
+
+.device-manager-page .tag:first-of-type {
+    margin-left: 0px;
+    padding-top: 1px;
+    padding-left: 7px;
+    padding-bottom: 1px;
+    padding-right: 7px;
+    border-radius: 5px;
+    white-space: nowrap;
 }
 
 .device-manager-page .row-with-error > td {
@@ -15,7 +26,6 @@
     border-top: none!important;
 }
 
-.device-manager-page .cell-with-warning {
-    padding-left: 0px!important;
+.device-manager-page .error {
+    margin-top: 5px;
 }
-  

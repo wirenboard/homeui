@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import DevicesPage from './table';
+import DevicesPage from './deviceManager';
 import { action, observable, makeAutoObservable, makeObservable } from "mobx";
 import i18n from '../../i18n/react/config';
 
