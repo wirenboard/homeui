@@ -256,7 +256,7 @@ module
     .directive('onResize', [ '$parse', onResizeDirective] )
     .directive('ngConfirm', confirmDirective)
     .directive("fullscreenToggle", fullscreenToggleDirective)
-    .directive("devicesList", scanDirective);
+    .directive("deviceManagerPage", scanDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {

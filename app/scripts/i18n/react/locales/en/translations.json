@@ -1,8 +1,20 @@
- {
-    "available": "available",
-    "device": "Device",
-    "address": "Address",
-    "port": "Port",
-    "settings": "Settings",
-    "firmware": "Firmware"
- }
+{
+   "device-manager": {
+      "title": "Devices",
+      "table" : {
+         "device": "Device",
+         "address": "Address",
+         "port": "Port",
+         "settings": "Settings",
+         "firmware": "Firmware",
+         "available": "available"
+      },
+      "errors": {
+         "scan": "Start scan failed",
+         "error": "Error"
+      },
+      "buttons": {
+         "scan": "Start scan"
+      }
+   }
+}

@@ -1,12 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next'; 
+import { observer } from "mobx-react-lite"
 
-function WarningBox(props) {
-    return <span className='tag bg-warning'>{props.text}</span>;
+function WarningBox({text}) {
+    return <span className='tag bg-warning'>{text}</span>;
 }
 
-function ErrorBox(props) {
-    return <span className='tag bg-danger'>{props.text}</span>;
+function ErrorBox({text}) {
+    return <span className='tag bg-danger'>{text}</span>;
 }
 
 function DeviceNameCell(props) {
@@ -31,17 +32,17 @@ function PortSettingsCell(props) {
 function FirmwareCell(props) {
   const { t } = useTranslation();
     if (props.update && props.update.available_fw) {
-        const text = props.version + ' (' + t('available') + ' ' + props.update.available_fw + ')'
+        const text = props.version + ' (' + t('device-manager.table.available') + ' ' + props.update.available_fw + ')'
         return <td className='cell-with-warning'><WarningBox text={text}/></td>;
     }
     return <td>{props.version}</td>;
 }
 
-function ErrorRow(props) {
+function ErrorRow({error}) {
   return (
     <tr>
       <td colSpan='5'>
-        <div className='tag bg-danger'>{props.error}</div>
+        <div className='tag bg-danger'>{error}</div>
       </td>
     </tr>
   );
@@ -67,19 +68,18 @@ function DeviceRow(props) {
     );
 }
 
-function DevicesTable(props) {
+function DevicesTable({devices}) {
     const { t } = useTranslation();
-    const devices = props.devices || [];
     const rows = devices.map((d) => DeviceRow(d));
     return (
         <table className='table table-bordered'>
             <thead>
                 <tr>
-                    <td>{t('device')}</td>
-                    <td>{t('address')}</td>
-                    <td>{t('port')}</td>
-                    <td>{t('settings')}</td>
-                    <td>{t('firmware')}</td>
+                    <td>{t('device-manager.table.device')}</td>
+                    <td>{t('device-manager.table.address')}</td>
+                    <td>{t('device-manager.table.port')}</td>
+                    <td>{t('device-manager.table.settings')}</td>
+                    <td>{t('device-manager.table.firmware')}</td>
                 </tr>
             </thead>
             <tbody>
@@ -89,61 +89,37 @@ function DevicesTable(props) {
     );
 }
 
-function ProgressBar(props) {
+function ProgressBar({progress}) {
   return (
     <div className='progress'>
       <div className='progress-bar progress-bar-striped active' role='progressbar'
-        aria-valuenow={props.progress} aria-valuemin='0' aria-valuemax='100' style={{minWidth: '2em', width: props.progress + '%'}}>
-          {props.progress}%
+        aria-valuenow={progress} aria-valuemin='0' aria-valuemax='100' style={{minWidth: '2em', width: progress + '%'}}>
+          {progress}%
       </div>
     </div>
   ); 
 }
 
-// Expected props structure
-//
-// {
-//   "progress": 15,
-//   "scanning": false,
-//   "devices": [
-//     {
-//       "uuid": "05a822a1-f326-3dbe-9dad-56921ecfa0f1",
-//       "port": {
-//         "path": "/dev/ttyRS485-1"
-//       },
-//       "title": "Scanned device",
-//       "sn": "4264834454",
-//       "online": true,
-//       "poll": false,
-//       "bootloader_mode": false,
-//       "error": null,
-//       "cfg": {
-//         "slave_id": 3,
-//         "baud_rate": 9600,
-//         "parity": "N",
-//         "data_bits": 8,
-//         "stop_bits": 2
-//       },
-//       "fw": {
-//         "version": "3.3.1",
-//         "update": {
-//           "progress": 0,
-//           "error": null,
-//           "available_fw": null
-//         }
-//       }
-//     },
-//     ...
-//   ]
-// }
-
-function DevicesPage(props) {
+function Header({scanning, onStartScanning}) {
+  const { t } = useTranslation();
   return (
-    <>
-      {props.scanning && <ProgressBar progress={props.progress}/>}
-      <DevicesTable {...props}/>
-    </>
+    <h1 className='page-header'>
+        {t('device-manager.title')}
+        <button disabled={scanning} className='btn btn-success pull-right' onClick={onStartScanning} >
+            {t('device-manager.buttons.scan')}
+        </button>
+    </h1>
   );
 }
+
+const DevicesPage = observer(({scanning, devices}) => {
+  return (
+    <>
+      <Header scanning={scanning.scanning} onStartScanning={() => scanning.startScan()}/>
+      {scanning.scanning && <ProgressBar progress={scanning.progress}/>}
+      <DevicesTable devices={devices.devices}/>
+    </>
+  );
+})
 
 export default DevicesPage;

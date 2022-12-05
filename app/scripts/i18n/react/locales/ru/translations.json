@@ -1,8 +1,20 @@
 {
-    "available": "доступна",
-    "device": "Устройство",
-    "address": "Адрес",
-    "port": "Порт",
-    "settings": "Настройки",
-    "firmware": "Прошивка"
-} 
+    "device-manager": {
+       "title": "Устройства",
+       "table" : {
+            "available": "доступна",
+            "device": "Устройство",
+            "address": "Адрес",
+            "port": "Порт",
+            "settings": "Настройки",
+            "firmware": "Прошивка"
+       },
+       "errors": {
+          "scan": "Не удалось запустить сканирование",
+          "error": "Ошибка"
+       },
+       "buttons": {
+          "scan": "Сканировать"
+       }
+    }
+ }

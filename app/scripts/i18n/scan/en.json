@@ -1,14 +1,7 @@
 {
     "scan":{
-        "title": "Devices",
         "labels": {
             "unavailable": "wb-device-manager service is unavailable"
-        },
-        "buttons": {
-            "scan": "Start scan"
-        },
-        "errors": {
-            "scan": "Start scan failed"
         }
     }
 }
