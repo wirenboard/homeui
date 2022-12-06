@@ -19,7 +19,7 @@ function Header({scanning, onStartScanning}) {
   return (
     <h1 className='page-header'>
         {t('device-manager.title')}
-        <button disabled={scanning} className='btn btn-success pull-right' onClick={onStartScanning} >
+        <button disabled={scanning} className='btn btn-default pull-right' onClick={onStartScanning} >
             {t('device-manager.buttons.scan')}
         </button>
     </h1>
