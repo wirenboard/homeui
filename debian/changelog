@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.44.4-upgrade2) stable; urgency=medium
+
+  * Add advert for upgrade via FIT
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 02 Dec 2022 21:23:00 +0400
+
 wb-mqtt-homeui (2.44.4-upgrade1) stable; urgency=medium
 
   * Add Bullseye upgrade notice
