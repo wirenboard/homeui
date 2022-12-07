@@ -5,7 +5,7 @@ import { WarningTag, ErrorTag } from './common'
 function DeviceName(props) {
     return ( 
       <div>
-          <b>{props.title}</b> ({props.sn})
+          <b>{props.title} / {props.fw_signature}</b> ({props.sn})
       </div>
     )
 }

@@ -84,6 +84,9 @@ class DevicesStore {
 //       "poll": false,
 //       "bootloader_mode": false,
 //       "error": null,
+//       "last_seen": 1670410647,
+//       "device_signature": "WBMD3",
+//       "fw_signature": "mdm3",
 //       "cfg": {
 //         "slave_id": 3,
 //         "baud_rate": 9600,

@@ -7,7 +7,7 @@ function DeviceNameCell(props) {
     return ( 
         <td>
             <div className='pull-left'>
-                <b>{props.title}</b> ({props.sn})
+                <b>{props.title} / {props.fw_signature}</b> ({props.sn})
             </div>
             <div className='pull-right'>
                 {props.bootloader_mode && <ErrorTag text={t("device-manager.labels.in-bootloder")}/>}
