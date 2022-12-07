@@ -3,15 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { WarningTag, ErrorTag } from './common'
 
 function DeviceNameCell(props) {
+  const { t } = useTranslation();
     return ( 
         <td>
             <div className='pull-left'>
                 <b>{props.title}</b> ({props.sn})
             </div>
             <div className='pull-right'>
-                {props.bootloader_mode && <ErrorTag text="in bootloder"/>}
-                {!props.online && <ErrorTag text="offline"/>}
-                {!props.poll && <WarningTag text="not polled"/>}
+                {props.bootloader_mode && <ErrorTag text={t("device-manager.labels.in-bootloder")}/>}
+                {!props.online && <ErrorTag text={t("device-manager.labels.offline")}/>}
+                {!props.poll && <WarningTag text={t("device-manager.labels.not-polled")}/>}
             </div>
         </td>
     );
@@ -24,7 +25,7 @@ function PortSettingsCell({baud_rate, data_bits, parity, stop_bits}) {
 function FirmwareCell(props) {
   const { t } = useTranslation();
     if (props.update && props.update.available_fw) {
-        const text = t('device-manager.table.available') + ' ' + props.update.available_fw
+        const text = t('device-manager.labels.available') + ' ' + props.update.available_fw
         return <td>{props.version} <WarningTag text={text}/></td>;
     }
     return <td>{props.version}</td>;
@@ -67,11 +68,11 @@ function DevicesTable({devices}) {
         <table className='table table-bordered'>
             <thead>
                 <tr>
-                    <td>{t('device-manager.table.device')}</td>
-                    <td>{t('device-manager.table.address')}</td>
-                    <td>{t('device-manager.table.port')}</td>
-                    <td>{t('device-manager.table.settings')}</td>
-                    <td>{t('device-manager.table.firmware')}</td>
+                    <td>{t('device-manager.labels.device')}</td>
+                    <td>{t('device-manager.labels.address')}</td>
+                    <td>{t('device-manager.labels.port')}</td>
+                    <td>{t('device-manager.labels.settings')}</td>
+                    <td>{t('device-manager.labels.firmware')}</td>
                 </tr>
             </thead>
             <tbody>

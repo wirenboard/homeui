@@ -1,20 +1,23 @@
 {
    "device-manager": {
       "title": "Devices",
-      "table" : {
-         "device": "Device",
-         "address": "Address",
-         "port": "Port",
-         "settings": "Settings",
-         "firmware": "Firmware",
-         "available": "available"
-      },
       "errors": {
          "scan": "Start scan failed",
          "common": "Error"
       },
       "buttons": {
          "scan": "Start scan"
-      }
+      },
+      "labels": {
+         "device": "Device",
+         "address": "Address",
+         "port": "Port",
+         "settings": "Settings",
+         "firmware": "Firmware",
+         "available": "available",
+         "in-bootloder": "in bootloader",
+         "not-polled": "not polled",
+         "offline": "offline"
+       }
    }
 }

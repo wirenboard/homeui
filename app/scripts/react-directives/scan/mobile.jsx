@@ -11,11 +11,12 @@ function DeviceName(props) {
 }
 
 function Tags(props) {
+  const { t } = useTranslation();
   return (
     <div>
-        {props.bootloader_mode && <ErrorTag text="in bootloder"/>}
-        {!props.online && <ErrorTag text="offline"/>}
-        {!props.poll && <WarningTag text="not polled"/>}
+        {props.bootloader_mode && <ErrorTag text={t("device-manager.labels.in-bootloder")}/>}
+        {!props.online && <ErrorTag text={t("device-manager.labels.offline")}/>}
+        {!props.poll && <WarningTag text={t("device-manager.labels.not-polled")}/>}
     </div>
   )
 }
@@ -30,12 +31,14 @@ function Row({title, children}) {
 }
 
 function SlaveId({slaveId}) {
-  return <Row title='SlaveID'>{slaveId}</Row>;
+  const { t } = useTranslation();
+  return <Row title={t('device-manager.labels.address')}>{slaveId}</Row>;
 }
 
 function Port({path, baud_rate, data_bits, parity, stop_bits}) {
+    const { t } = useTranslation();
     return  (
-      <Row title='Port'>
+      <Row title={t('device-manager.labels.port')}>
         {path} {baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}
       </Row>
     )
@@ -44,14 +47,14 @@ function Port({path, baud_rate, data_bits, parity, stop_bits}) {
 function Firmware(props) {
   const { t } = useTranslation();
     if (props.update && props.update.available_fw) {
-      const text = t('device-manager.table.available') + ' ' + props.update.available_fw
+      const text = t('device-manager.labels.available') + ' ' + props.update.available_fw
       return (
-        <Row title='Firmware'>
+        <Row title={t('device-manager.labels.firmware')}>
           {props.version} <WarningTag text={text}/>
         </Row>
       )
     }
-    return <Row title='Firmware'>{props.version}</Row>
+    return <Row title={t('device-manager.labels.firmware')}>{props.version}</Row>
 }
 
 function Error({error}) {

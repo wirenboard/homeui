@@ -1,20 +1,23 @@
 {
     "device-manager": {
        "title": "Устройства",
-       "table" : {
-            "available": "доступна",
-            "device": "Устройство",
-            "address": "Адрес",
-            "port": "Порт",
-            "settings": "Настройки",
-            "firmware": "Прошивка"
-       },
        "errors": {
           "scan": "Не удалось запустить сканирование",
           "common": "Ошибка"
        },
        "buttons": {
           "scan": "Сканировать"
+       },
+       "labels": {
+         "available": "доступна",
+         "device": "Устройство",
+         "address": "Адрес",
+         "port": "Порт",
+         "settings": "Настройки",
+         "firmware": "Прошивка",
+         "in-bootloder": "в загрузчике",
+         "not-polled": "не опрашивается",
+         "offline": "не отвечает"
        }
     }
  }
