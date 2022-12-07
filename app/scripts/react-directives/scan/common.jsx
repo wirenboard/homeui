@@ -1,11 +1,11 @@
 import React from 'react';
 
-function WarningBox({text}) {
-    return <span className='tag bg-warning'>{text}</span>;
+function WarningTag({text}) {
+    return <span className='tag bg-warning text-nowrap'>{text}</span>;
 }
 
-function ErrorBox({text}) {
-    return <span className='tag bg-danger'>{text}</span>;
+function ErrorTag({text}) {
+    return <span className='tag bg-danger text-nowrap'>{text}</span>;
 }
 
-export { WarningBox, ErrorBox };
+export { WarningTag, ErrorTag };

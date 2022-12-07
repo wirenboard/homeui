@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { WarningBox, ErrorBox } from './common'
+import { WarningTag, ErrorTag } from './common'
 
 function DeviceNameCell(props) {
     return ( 
@@ -9,9 +9,9 @@ function DeviceNameCell(props) {
                 <b>{props.title}</b> ({props.sn})
             </div>
             <div className='pull-right'>
-                {props.bootloader_mode && <ErrorBox text="in bootloder"/>}
-                {!props.online && <ErrorBox text="offline"/>}
-                {!props.poll && <WarningBox text="not polled"/>}
+                {props.bootloader_mode && <ErrorTag text="in bootloder"/>}
+                {!props.online && <ErrorTag text="offline"/>}
+                {!props.poll && <WarningTag text="not polled"/>}
             </div>
         </td>
     );
@@ -25,7 +25,7 @@ function FirmwareCell(props) {
   const { t } = useTranslation();
     if (props.update && props.update.available_fw) {
         const text = t('device-manager.table.available') + ' ' + props.update.available_fw
-        return <td>{props.version} <WarningBox text={text}/></td>;
+        return <td>{props.version} <WarningTag text={text}/></td>;
     }
     return <td>{props.version}</td>;
 }
