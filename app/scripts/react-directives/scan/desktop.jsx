@@ -17,8 +17,8 @@ function DeviceNameCell(props) {
     );
 }
 
-function PortSettingsCell(props) {
-    return <td>{props.baude_rate} {props.data_bits.toString()}{props.parity}{props.stop_bits.toString()}</td>;
+function PortSettingsCell({baud_rate, data_bits, parity, stop_bits}) {
+    return <td>{baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}</td>;
 }
 
 function FirmwareCell(props) {

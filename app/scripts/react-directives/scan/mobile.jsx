@@ -33,10 +33,10 @@ function SlaveId({slaveId}) {
   return <Row title='SlaveID'>{slaveId}</Row>;
 }
 
-function Port({path, baude_rate, data_bits, parity, stop_bits}) {
+function Port({path, baud_rate, data_bits, parity, stop_bits}) {
     return  (
       <Row title='Port'>
-        {path} {baude_rate} {data_bits.toString()}{parity}{stop_bits.toString()}
+        {path} {baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}
       </Row>
     )
 }
@@ -78,7 +78,7 @@ function DevicePanel(props) {
           <DeviceName {...props} />
           <Tags {...props} />
           <SlaveId slaveId={props.cfg.slave_id}></SlaveId>
-          <Port path={props.port.path} baude_rate={props.cfg.baude_rate} data_bits={props.cfg.data_bits} parity={props.cfg.parity} stop_bits={props.cfg.stop_bits} />
+          <Port path={props.port.path} baud_rate={props.cfg.baud_rate} data_bits={props.cfg.data_bits} parity={props.cfg.parity} stop_bits={props.cfg.stop_bits} />
           <Firmware {...props.fw} />
           {error && <Error error={error}/>}
         </div>

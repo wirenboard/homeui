@@ -11,7 +11,7 @@
       },
       "errors": {
          "scan": "Start scan failed",
-         "error": "Error"
+         "common": "Error"
       },
       "buttons": {
          "scan": "Start scan"

@@ -4,19 +4,23 @@
 function errorsService($rootScope, $translate) {
   'ngInject';
 
+  function raiseError(message, reason) {
+    if (reason) {
+      message = message + ": "
+      if (reason.message) {
+        message = message + reason.message + (reason.data && (" " + reason.data))
+      } else {
+        message = message + reason
+      }
+    }
+    $rootScope.$broadcast("alert", message, true);
+  }
+
   // msg could be string or {msg:..., data:...} object for passing to $translate
   function showError (msg, reason) {
-    $translate(msg.msg ? msg.msg : msg, msg.data).then(message => {
-      if (reason) {
-        message = message + ": "
-        if (reason.message) {
-          message = message + reason.message + (reason.data && (" " + reason.data))
-        } else {
-          message = message + reason
-        }
-      }
-      $rootScope.$broadcast("alert", message, true);
-    });
+    $translate(msg.msg ? msg.msg : msg, msg.data)
+      .then(message => raiseError(message, reason))
+      .catch(message => raiseError(message, reason));
   }
 
   return {
