@@ -2,7 +2,8 @@
     "system": {
         "title": "System",
         "update": {
-            "title": "Firmware update"
+            "title": "Firmware update",
+            "help": "You can download firmware here:"
         },
         "errors": {
             "unavailable": "Firmware update service is not available",
