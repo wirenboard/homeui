@@ -67,45 +67,7 @@ class DevicesStore {
 }
 
 // Expected props structure
-//
-// {
-//   "progress": 15,
-//   "scanning": false,
-//   "error": null,
-//   "devices": [
-//     {
-//       "uuid": "05a822a1-f326-3dbe-9dad-56921ecfa0f1",
-//       "port": {
-//         "path": "/dev/ttyRS485-1"
-//       },
-//       "title": "Scanned device",
-//       "sn": "4264834454",
-//       "online": true,
-//       "poll": false,
-//       "bootloader_mode": false,
-//       "error": null,
-//       "last_seen": 1670410647,
-//       "device_signature": "WBMD3",
-//       "fw_signature": "mdm3",
-//       "cfg": {
-//         "slave_id": 3,
-//         "baud_rate": 9600,
-//         "parity": "N",
-//         "data_bits": 8,
-//         "stop_bits": 2
-//       },
-//       "fw": {
-//         "version": "3.3.1",
-//         "update": {
-//           "progress": 0,
-//           "error": null,
-//           "available_fw": null
-//         }
-//       }
-//     },
-//     ...
-//   ]
-// }
+// https://github.com/wirenboard/wb-device-manager/blob/main/README.md
 function updateStores(scope, dataToRender, errorsService) {
     try {
         const data = JSON.parse(dataToRender)
