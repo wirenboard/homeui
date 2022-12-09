@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.49.1) stable; urgency=medium
+
+  * Add firmware download link
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 07 Dec 2022 19:17:00 +0400
+
 wb-mqtt-homeui (2.49.0) stable; urgency=medium
 
   * Update AngularJS. No functional changes.
