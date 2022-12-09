@@ -9,7 +9,7 @@
         <span ng-show="!canUpload" class="label label-warning" translate> {{'system.errors.unavailable'}}</span>
         <div>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span>{{'system.update.help' | translate}} <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">http://fw-releases.wirenboard.com/?prefix=fit_image</a></span>
+            <span>{{'system.update.help' | translate}} <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">{{'system.update.link_name' | translate}}</a></span>
         </div>
         <button type="file" class="btn btn-success btn-lg"
                 ng-show="canUpload && !(running || uploading)"
