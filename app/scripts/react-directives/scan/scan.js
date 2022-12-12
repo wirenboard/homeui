@@ -39,6 +39,7 @@ class ScanningProgressStore {
         if (this.scanning) {
             return;
         }
+        this._errorsService.hideError()
         this.scanning = true
         this.progress = 0
         this._requestScanning = true;
@@ -48,7 +49,7 @@ class ScanningProgressStore {
     scanFailed(err) {
         this._requestScanning = false;
         this.scanning = false
-        this.errorsService.catch('scan.errors.scan')(err);
+        this._errorsService.catch('scan.errors.scan')(err);
     }
 }
 
