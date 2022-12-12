@@ -14,34 +14,43 @@ const Mobile = ({ children }) => {
   return isMobile ? children : null
 }
 
-function Header({scanning, onStartScanning}) {
+function ScanButton({scanning, onStartScanning}) {
   const { t } = useTranslation();
   return (
-    <h1 className='page-header'>
+    <button disabled={scanning} className='btn btn-default pull-right' onClick={onStartScanning}>
+      {t('device-manager.buttons.scan')}
+    </button>
+  )
+}
+
+function Header(params) {
+  const { t } = useTranslation();
+  return (
+    <h1>
         {t('device-manager.title')}
-        <button disabled={scanning} className='btn btn-default pull-right' onClick={onStartScanning} >
-            {t('device-manager.buttons.scan')}
-        </button>
+        <ScanButton {...params}/>
     </h1>
   );
 }
 
-function ProgressBar({progress}) {
-  return (
-    <div className='progress'>
-      <div className='progress-bar progress-bar-striped active' role='progressbar'
-        aria-valuenow={progress} aria-valuemin='0' aria-valuemax='100' style={{minWidth: '2em', width: progress + '%'}}>
-          {progress}%
+function ScanProgressBar({scanning, progress}) {
+  if (scanning) {
+    return (
+      <div className='progress scan-progress'>
+        <div className='progress-bar' role='progressbar'
+          aria-valuenow={progress} aria-valuemin='0' aria-valuemax='100' style={{width: progress + '%'}}>
+        </div>
       </div>
-    </div>
-  ); 
+    );
+  }
+  return <div className='separator'></div>
 }
 
 const DevicesPage = observer(({scanning, devices}) => {
   return (
     <>
       <Header scanning={scanning.scanning} onStartScanning={() => scanning.startScan()}/>
-      {scanning.scanning && <ProgressBar progress={scanning.progress}/>}
+      <ScanProgressBar scanning={scanning.scanning} progress={scanning.progress}/>
       <Desktop>
         <DevicesTable devices={devices.devices}/>
       </Desktop>

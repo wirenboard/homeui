@@ -28,6 +28,22 @@
     margin-top: 5px;
 }
 
-.device-manager-page .progress-bar {
-    font-size: 13px;
+.device-manager-page .scan-progress {
+    height: 1px;
+    box-shadow: none;
+    margin-bottom: 18px;
+}
+
+.device-manager-page h1 {
+    margin-top: 36px;
+    margin-bottom: 8px;
+}
+
+.device-manager-page h1 > button {
+    margin-top: -3px;
+}
+
+.device-manager-page .separator {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 18px;
 }

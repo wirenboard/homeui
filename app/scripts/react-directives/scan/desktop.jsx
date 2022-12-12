@@ -65,14 +65,14 @@ function DevicesTable({devices}) {
     const { t } = useTranslation();
     const rows = devices.map((d) => DeviceRow(d));
     return (
-        <table className='table table-bordered'>
+        <table className='table'>
             <thead>
                 <tr>
-                    <td>{t('device-manager.labels.device')}</td>
-                    <td>{t('device-manager.labels.address')}</td>
-                    <td>{t('device-manager.labels.port')}</td>
-                    <td>{t('device-manager.labels.settings')}</td>
-                    <td>{t('device-manager.labels.firmware')}</td>
+                    <th>{t('device-manager.labels.device')}</th>
+                    <th>{t('device-manager.labels.address')}</th>
+                    <th>{t('device-manager.labels.port')}</th>
+                    <th>{t('device-manager.labels.settings')}</th>
+                    <th>{t('device-manager.labels.firmware')}</th>
                 </tr>
             </thead>
             <tbody>
