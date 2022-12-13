@@ -41,8 +41,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       })
       .state('scan', {
         url: '/scan',
-        template: require('../views/scan.html'),
-        controller: 'ScanCtrl as $ctrl'
+        template: require('../views/scan.html')
     })
   //...........................................................................
     .state('devices', {

@@ -1,7 +1,0 @@
-{
-    "scan":{
-        "labels": {
-            "unavailable": "wb-device-manager service is unavailable"
-        }
-    }
-}

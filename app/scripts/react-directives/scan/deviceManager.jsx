@@ -3,7 +3,8 @@ import { observer } from "mobx-react-lite"
 import { useMediaQuery } from 'react-responsive'
 import DevicesTable from './desktop';
 import DevicesList from './mobile';
-import { useTranslation } from 'react-i18next'; 
+import { Trans, useTranslation } from 'react-i18next'; 
+import { t } from 'i18next';
 
 const Desktop = ({ children }) => {
   const isDesktop = useMediaQuery({ minWidth: 874 })
@@ -14,10 +15,47 @@ const Mobile = ({ children }) => {
   return isMobile ? children : null
 }
 
+function ErrorBar({msg}) {
+  if (!msg) {
+    return null;
+  }
+  return (
+    <div className='alert alert-danger' role='alert'>
+      <span className='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>
+      <span> {msg}</span>
+    </div>
+  )
+}
+
+function InfoMessage({msg}) {
+  if (!msg) {
+    return null;
+  }
+  return (
+    <p className='text-center'>
+      <strong className='text-center'>
+        <Trans>
+        {msg}
+        </Trans>
+      </strong>
+    </p>
+  )
+}
+
+function Spinner() {
+  return (
+    <div className='row'>
+      <div className="col-xs-12 spinner">
+        <span className='spinner-loader'></span>
+      </div>
+    </div>
+  );
+}
+
 function ScanButton({scanning, onStartScanning}) {
   const { t } = useTranslation();
   return (
-    <button disabled={scanning} className='btn btn-default pull-right' onClick={onStartScanning}>
+    <button disabled={scanning} className='btn btn-success pull-right' onClick={onStartScanning}>
       {t('device-manager.buttons.scan')}
     </button>
   )
@@ -46,17 +84,46 @@ function ScanProgressBar({scanning, progress}) {
   return <div className='separator'></div>
 }
 
-const DevicesPage = observer(({scanning, devices}) => {
+function ScanningMessage() {
+  const { t } = useTranslation();
   return (
     <>
-      <Header scanning={scanning.scanning} onStartScanning={() => scanning.startScan()}/>
+      <Spinner/>
+      <InfoMessage msg={t('device-manager.labels.scanning')}/>
+    </>
+  )
+}
+
+function NotFoundMessage({firstStart}) {
+  const { t } = useTranslation();
+  if (firstStart) {
+    return <InfoMessage msg={t('device-manager.labels.first-start')}/>
+  }
+  return <InfoMessage msg={t('device-manager.labels.not-found')}/>
+}
+
+const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}) => {
+  const { t } = useTranslation();
+  if (mqtt.waitStartup) {
+    return <Spinner/>;
+  }
+  if (!mqtt.deviceManagerIsAvailable) {
+    return <ErrorBar msg={errors.error}/>;
+  }
+  const nothingFound = (devices.devices.length == 0)
+  return (
+    <>
+      {!(scanning.firstStart && nothingFound) && <ErrorBar msg={errors.error}/>}
+      <Header scanning={scanning.scanning} onStartScanning={onStartScanning}/>
       <ScanProgressBar scanning={scanning.scanning} progress={scanning.progress}/>
       <Desktop>
-        <DevicesTable devices={devices.devices}/>
+        {!nothingFound && <DevicesTable devices={devices.devices}/>}
       </Desktop>
       <Mobile>
-        <DevicesList devices={devices.devices}/>
+        {!nothingFound && <DevicesList devices={devices.devices}/>}
       </Mobile>
+      {scanning.scanning && <ScanningMessage/>}
+      {!scanning.scanning && nothingFound && <NotFoundMessage firstStart={scanning.firstStart}/>}
     </>
   );
 })

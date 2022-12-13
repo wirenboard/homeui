@@ -71,7 +71,6 @@ import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
-import ScanCtrl from './controllers/scanController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -190,7 +189,6 @@ module
     .controller('AccessLevelCtrl', AccessLevelCtrl)
     .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
     .controller('DiagnosticCtrl', DiagnosticCtrl)
-    .controller('ScanCtrl', ScanCtrl)
     .controller('NavigationCtrl', NavigationCtrl);
 
 module
@@ -262,7 +260,7 @@ module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
         ['app', 'console', 'help', 'access', 'mqtt', 'system', 'ui', "logs",
         'configurations', 'rules', 'history', 'widgets', 'devices', 'units',
-        'serial-metrics', 'scan'].forEach(el => $translatePartialLoaderProvider.addPart(el));
+        'serial-metrics'].forEach(el => $translatePartialLoaderProvider.addPart(el));
         $translateProvider.useSanitizeValueStrategy('sceParameters');
         $translateProvider.useLoader('$translatePartialLoader', {
             urlTemplate: '/scripts/i18n/{part}/{lang}.json?v=' + __webpack_hash__

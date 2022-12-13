@@ -1,7 +1,0 @@
-{
-    "scan":{
-        "labels": {
-            "unavailable": "Сервис wb-device-manager недоступен"
-        }
-    }
-}

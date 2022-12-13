@@ -3,7 +3,8 @@
       "title": "Devices",
       "errors": {
          "scan": "Start scan failed",
-         "common": "Error"
+         "common": "Error",
+         "unavailable": "wb-device-manager service is unavailable"
       },
       "buttons": {
          "scan": "Start scan"
@@ -17,7 +18,10 @@
          "available": "available",
          "in-bootloder": "in bootloader",
          "not-polled": "not polled",
-         "offline": "offline"
+         "offline": "offline",
+         "scanning": "Scanning in process",
+         "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
+         "not-found": "Nothing found.<br>For rescan press \"Start scan\""
        }
    }
 }
