@@ -65,7 +65,7 @@ function DevicesTable({devices}) {
     const { t } = useTranslation();
     const rows = devices.map((d) => DeviceRow(d));
     return (
-        <table className='table'>
+        <table className='table table-condensed'>
             <thead>
                 <tr>
                     <th>{t('device-manager.labels.device')}</th>
