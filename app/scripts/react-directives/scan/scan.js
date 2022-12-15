@@ -1,8 +1,7 @@
 'use strict';
 
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import DevicesPage from './deviceManager';
+import CreateDevicesPage from './deviceManager';
 import { action, observable, makeAutoObservable, makeObservable } from "mobx";
 import i18n from '../../i18n/react/config';
 
@@ -105,7 +104,8 @@ class MqttStateStore {
 // Expected props structure
 // https://github.com/wirenboard/wb-device-manager/blob/main/README.md
 function updateStores(dataToRender, scanStore, devicesStore, mqttStore, globalError) {
-    try {
+    // wb-device-manager could be stopped, so it will clear state topic and send empty string
+    if (dataToRender !== '') {
         const data = JSON.parse(dataToRender)
         if (data.error) {
             globalError.setError(data.error);
@@ -113,8 +113,6 @@ function updateStores(dataToRender, scanStore, devicesStore, mqttStore, globalEr
         scanStore.setStateFromMqtt(data.scanning, data.progress)
         devicesStore.setDevices(data.devices)
         mqttStore.setStartupComplete()
-    } catch (e) {
-        // wb-device-manager could be stopped, so it will clear state topic and send null
     }
 }
 
@@ -156,7 +154,7 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                 errors: scope.globalError,
                 onStartScanning: onStartScanning
             }
-            scope.root.render(<DevicesPage {...params}/>);
+            scope.root.render(CreateDevicesPage(params));
 
             element.on('$destroy', function() {
                 scope.root.unmount();

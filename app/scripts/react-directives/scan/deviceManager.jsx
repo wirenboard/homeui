@@ -4,7 +4,6 @@ import { useMediaQuery } from 'react-responsive'
 import DevicesTable from './desktop';
 import DevicesList from './mobile';
 import { Trans, useTranslation } from 'react-i18next'; 
-import { t } from 'i18next';
 
 const Desktop = ({ children }) => {
   const isDesktop = useMediaQuery({ minWidth: 874 })
@@ -128,4 +127,8 @@ const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}
   );
 })
 
-export default DevicesPage;
+function CreateDevicesPage(props) {
+  return <DevicesPage {...props}/>
+}
+
+export default CreateDevicesPage;
