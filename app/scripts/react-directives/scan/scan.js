@@ -101,21 +101,6 @@ class MqttStateStore {
     }
 }
 
-// Expected props structure
-// https://github.com/wirenboard/wb-device-manager/blob/main/README.md
-function updateStores(dataToRender, scanStore, devicesStore, mqttStore, globalError) {
-    // wb-device-manager could be stopped, so it will clear state topic and send empty string
-    if (dataToRender !== '') {
-        const data = JSON.parse(dataToRender)
-        if (data.error) {
-            globalError.setError(data.error);
-        }
-        scanStore.setStateFromMqtt(data.scanning, data.progress)
-        devicesStore.setDevices(data.devices)
-        mqttStore.setStartupComplete()
-    }
-}
-
 function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
     'ngInject';
 
@@ -130,21 +115,43 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
             scope.scanStore = new ScanningProgressStore()
             scope.devicesStore = new DevicesStore()
             scope.globalError = new GlobalErrorStore()
+            
+            const onDeviceManagerUnavailable = () => {
+                scope.mqttStore.setDeviceManagerUnavailable()
+                scope.globalError.setError(i18n.t('device-manager.errors.unavailable'))
+            }
 
             const onScanFailed = (err) => {
                 scope.scanStore.scanFailed()
-                scope.globalError.setError(err)
+                if ("MqttTimeoutError".localeCompare(err.data) == 0) {
+                    onDeviceManagerUnavailable()
+                } else {
+                    scope.globalError.setError(err.message)
+                }
             }
 
             const onStartScanning = () => {
                 scope.scanStore.startScan()
+                scope.devicesStore.setDevices([])
                 scope.globalError.clearError()
                 DeviceManagerProxy.Scan().catch(onScanFailed);
             }
 
-            const onDeviceManagerUnavailable = () => {
-                scope.mqttStore.setDeviceManagerUnavailable()
-                scope.globalError.setError(i18n.t('device-manager.errors.unavailable'))
+            // Expected props structure
+            // https://github.com/wirenboard/wb-device-manager/blob/main/README.md
+            const updateStores = (dataToRender) => {
+                // wb-device-manager could be stopped, so it will clear state topic and send empty string
+                if (dataToRender == '') {
+                    onDeviceManagerUnavailable()
+                } else {
+                    const data = JSON.parse(dataToRender)
+                    if (data.error) {
+                        scope.globalError.setError(data.error);
+                    }
+                    scope.scanStore.setStateFromMqtt(data.scanning, data.progress)
+                    scope.devicesStore.setDevices(data.devices)
+                    scope.mqttStore.setStartupComplete()
+                }
             }
 
             const params = {
