@@ -7,12 +7,27 @@ import i18n from '../../i18n/react/config';
 
 class GlobalErrorStore {
     error = ''
-
+    
     constructor() {
         makeAutoObservable(this)
     }
-
-    setError(msg) {
+    
+    // Error can be a string or object
+    // {
+    //    "id": "com.wb.device_manager.generic_error"
+    //    "message": "Internal error. Check logs for more info"
+    // }
+    // where "id" - unique id of error, "message" - human readable message for the error
+    setError(error) {
+        var msg = '';
+        if (typeof error === "string") {
+            msg = error;
+        } else if (typeof error === "object") {
+            msg = i18n.t(error.id)
+            if (msg == error.id) {
+                msg = error.message;
+            }
+        }
         this.error = msg
     }
 

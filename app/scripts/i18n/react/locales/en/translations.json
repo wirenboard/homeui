@@ -22,6 +22,6 @@
          "scanning": "Scanning in process",
          "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
          "not-found": "Nothing found.<br>For rescan press \"Start scan\""
-       }
+      }
    }
 }
