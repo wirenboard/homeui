@@ -23,10 +23,7 @@ class GlobalErrorStore {
         if (typeof error === "string") {
             msg = error;
         } else if (typeof error === "object") {
-            msg = i18n.t(error.id)
-            if (msg == error.id) {
-                msg = error.message;
-            }
+            msg = i18n.t(error.id, error.message)
         }
         this.error = msg
     }
