@@ -92,7 +92,7 @@ function DevicePanel(props) {
         <div className='panel-body'>
           <DeviceName title={props.title} bootloader_mode={props.bootloader_mode} online={props.online} poll={props.poll} />
           <SerialNumber sn={props.sn} />
-          <SlaveId slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_duplicate}></SlaveId>
+          <SlaveId slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_collision}></SlaveId>
           <Port path={props.port.path} baud_rate={props.cfg.baud_rate} data_bits={props.cfg.data_bits} parity={props.cfg.parity} stop_bits={props.cfg.stop_bits} />
           <Firmware {...props.fw} />
           {error && <Error error={error}/>}

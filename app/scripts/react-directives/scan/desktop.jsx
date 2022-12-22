@@ -61,7 +61,7 @@ function DeviceRow(props) {
         <tr className={error && 'row-with-error'}>
             <DeviceNameCell {...props} />
             <td>{props.sn}</td>
-            <SlaveIdCell slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_duplicate} />
+            <SlaveIdCell slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_collision} />
             <PortCell path={props.port.path} baud_rate={props.cfg.baud_rate} data_bits={props.cfg.data_bits} parity={props.cfg.parity} stop_bits={props.cfg.stop_bits} />
             <FirmwareCell {...props.fw} />
         </tr>
