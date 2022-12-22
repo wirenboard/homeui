@@ -77,11 +77,11 @@ function DevicesTable({devices}) {
         <table className='table table-condensed'>
             <thead>
                 <tr>
-                    <th>{t('device-manager.labels.device')}</th>
-                    <th>{t('device-manager.labels.sn')}</th>
-                    <th>{t('device-manager.labels.address')}</th>
-                    <th>{t('device-manager.labels.port')}</th>
-                    <th>{t('device-manager.labels.firmware')}</th>
+                    <th style={{width: "40%"}}>{t('device-manager.labels.device')}</th>
+                    <th style={{width: "10%"}}>{t('device-manager.labels.sn')}</th>
+                    <th style={{width: "11%"}}>{t('device-manager.labels.address')}</th>
+                    <th style={{width: "22%"}}>{t('device-manager.labels.port')}</th>
+                    <th style={{width: "17%"}}>{t('device-manager.labels.firmware')}</th>
                 </tr>
             </thead>
             <tbody>
