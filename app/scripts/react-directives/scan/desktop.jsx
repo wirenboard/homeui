@@ -7,7 +7,7 @@ function DeviceNameCell(props) {
     return ( 
         <td>
             <div className='pull-left'>
-                <b>{props.title} / {props.fw_signature}</b> ({props.sn})
+                <b>{props.title}</b>
             </div>
             <div className='pull-right'>
                 {props.bootloader_mode && <ErrorTag text={t("device-manager.labels.in-bootloder")}/>}
@@ -18,8 +18,8 @@ function DeviceNameCell(props) {
     );
 }
 
-function PortSettingsCell({baud_rate, data_bits, parity, stop_bits}) {
-    return <td>{baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}</td>;
+function PortCell({path, baud_rate, data_bits, parity, stop_bits}) {
+    return <td>{path} {baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}</td>;
 }
 
 function FirmwareCell(props) {
@@ -29,6 +29,15 @@ function FirmwareCell(props) {
         return <td>{props.version} <WarningTag text={text}/></td>;
     }
     return <td>{props.version}</td>;
+}
+
+function SlaveIdCell({slaveId, isDuplicate}) {
+  const { t } = useTranslation();
+  return (
+    <td>
+      {slaveId} {isDuplicate && <ErrorTag text={t('device-manager.labels.duplicate')}/>}
+    </td>
+  );
 }
 
 function ErrorRow({error}) {
@@ -51,9 +60,9 @@ function DeviceRow(props) {
       <React.Fragment key={props.uuid}>
         <tr className={error && 'row-with-error'}>
             <DeviceNameCell {...props} />
-            <td>{props.cfg.slave_id}</td>
-            <td>{props.port.path}</td>
-            <PortSettingsCell {...props.cfg} />
+            <td>{props.sn}</td>
+            <SlaveIdCell slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_duplicate} />
+            <PortCell path={props.port.path} baud_rate={props.cfg.baud_rate} data_bits={props.cfg.data_bits} parity={props.cfg.parity} stop_bits={props.cfg.stop_bits} />
             <FirmwareCell {...props.fw} />
         </tr>
         {error && <ErrorRow error={error}/>}
@@ -69,9 +78,9 @@ function DevicesTable({devices}) {
             <thead>
                 <tr>
                     <th>{t('device-manager.labels.device')}</th>
+                    <th>{t('device-manager.labels.sn')}</th>
                     <th>{t('device-manager.labels.address')}</th>
                     <th>{t('device-manager.labels.port')}</th>
-                    <th>{t('device-manager.labels.settings')}</th>
                     <th>{t('device-manager.labels.firmware')}</th>
                 </tr>
             </thead>

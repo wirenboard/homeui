@@ -23,7 +23,11 @@ class GlobalErrorStore {
         if (typeof error === "string") {
             msg = error;
         } else if (typeof error === "object") {
-            msg = i18n.t(error.id, error.message)
+            if (error.hasOwnProperty('id')) {
+                msg = i18n.t(error.id, error.message)
+            } else {
+                msg = error.message
+            }
         }
         this.error = msg
     }
@@ -183,10 +187,10 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                 .then( () => DeviceManagerProxy.hasMethod('Scan') )
                 .then((available) => {
                     if (available) {
+                        scope.mqttStore.setDeviceManagerAvailable()
                         mqttClient.addStickySubscription('/wb-device-manager/state', function(msg) {
                             updateStores(msg.payload, scope.scanStore, scope.devicesStore, scope.mqttStore, scope.globalError)
                         })
-                        scope.mqttStore.setDeviceManagerAvailable()
                     } else {
                         onDeviceManagerUnavailable()
                     }

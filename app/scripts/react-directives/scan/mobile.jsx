@@ -2,21 +2,26 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { WarningTag, ErrorTag } from './common'
 
-function DeviceName(props) {
-    return ( 
-      <div>
-          <b>{props.title} / {props.fw_signature}</b> ({props.sn})
-      </div>
-    )
-}
-
-function Tags(props) {
+function Tags({bootloader_mode, online, poll}) {
   const { t } = useTranslation();
   return (
-    <div>
-        {props.bootloader_mode && <ErrorTag text={t("device-manager.labels.in-bootloder")}/>}
-        {!props.online && <ErrorTag text={t("device-manager.labels.offline")}/>}
-        {!props.poll && <WarningTag text={t("device-manager.labels.not-polled")}/>}
+    <div className='pull-right'>
+        {bootloader_mode && <ErrorTag text={t("device-manager.labels.in-bootloder")}/>}
+        {!online && <ErrorTag text={t("device-manager.labels.offline")}/>}
+        {!poll && <WarningTag text={t("device-manager.labels.not-polled")}/>}
+    </div>
+  )
+}
+
+function DeviceName({title, bootloader_mode, online, poll}) {
+  return ( 
+    <div className='row'>
+      <div className='col-xs-12'>
+        <div className='pull-left'>
+            <b>{title}</b>
+        </div>
+        <Tags bootloader_mode={bootloader_mode} online={online} poll={poll} />
+      </div>
     </div>
   )
 }
@@ -30,9 +35,16 @@ function Row({title, children}) {
   )
 }
 
-function SlaveId({slaveId}) {
+function SlaveId({slaveId, isDuplicate}) {
   const { t } = useTranslation();
-  return <Row title={t('device-manager.labels.address')}>{slaveId}</Row>;
+  return (
+    <Row title={t('device-manager.labels.address')}>
+      {slaveId} {isDuplicate && <ErrorTag text={t('device-manager.labels.duplicate')}/>}
+    </Row>);
+}
+
+function SerialNumber({sn}) {
+  return <Row title='SN'>{sn}</Row>;
 }
 
 function Port({path, baud_rate, data_bits, parity, stop_bits}) {
@@ -78,9 +90,9 @@ function DevicePanel(props) {
     return (
       <div key={props.uuid} className='panel panel-default'>
         <div className='panel-body'>
-          <DeviceName {...props} />
-          <Tags {...props} />
-          <SlaveId slaveId={props.cfg.slave_id}></SlaveId>
+          <DeviceName title={props.title} bootloader_mode={props.bootloader_mode} online={props.online} poll={props.poll} />
+          <SerialNumber sn={props.sn} />
+          <SlaveId slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_duplicate}></SlaveId>
           <Port path={props.port.path} baud_rate={props.cfg.baud_rate} data_bits={props.cfg.data_bits} parity={props.cfg.parity} stop_bits={props.cfg.stop_bits} />
           <Firmware {...props.fw} />
           {error && <Error error={error}/>}
