@@ -1,6 +1,6 @@
 {
    "device-manager": {
-      "title": "Devices",
+      "title": "Scan",
       "errors": {
          "scan": "Start scan failed",
          "common": "Error",
