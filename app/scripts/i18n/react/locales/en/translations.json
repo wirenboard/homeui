@@ -22,7 +22,9 @@
          "duplicate": "duplicate",
          "scanning": "Scanning in process",
          "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
-         "not-found": "Nothing found.<br>For rescan press \"Start scan\""
+         "not-found": "Nothing found.<br>For rescan press \"Start scan\"",
+         "firmwares-notice": "Scanning functionality is available in firmwares starting from: WB-MR 1.19.2, WB-MS 4.25.1, WB-MD 2.6.5, WB-MAP 2.4.1, WB-MRGB 3.3.4, WB-MCM 1.4.3, WB-MAO 2.2.2, WB-MAI6 2.0.4. ",
+         "firmwares-notice-link": "Firmware update guide"
       }
    }
 }
