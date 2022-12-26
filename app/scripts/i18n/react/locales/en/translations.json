@@ -23,7 +23,7 @@
          "scanning": "Scanning in process",
          "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
          "not-found": "Nothing found.<br>For rescan press \"Start scan\"",
-         "firmwares-notice": "Scanning functionality is available in latest firmwares for Wiren Board devices except WB-REF-CAREL and WB-MIO. ",
+         "firmwares-notice": "Scanning functionality is available in latest firmwares for Wiren Board devices.",
          "firmwares-notice-link": "Firmware update guide"
       }
    }
