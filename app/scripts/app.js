@@ -28,6 +28,11 @@ import 'ng-toast/dist/ngToast.css';
 
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
+import '../styles/css/device-manager.css';
+
+// React-related imports
+import i18n from './i18n/react/config';
+
 // homeui modules: sevices
 import errorsService from './services/errors';
 import mqttServiceModule from './services/mqttService';
@@ -50,6 +55,7 @@ import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import serialMetricsProxyService from './services/serialMetricsProxy';
 import translationService from './services/translationService';
+import deviceManagerProxyService from './services/deviceManagerProxy';
 
 import handleDataService from './services/handle-data';
 
@@ -89,6 +95,7 @@ import plotlyDirective from "./directives/plotly";
 import onResizeDirective from "./directives/resize";
 import confirmDirective from "./directives/confirm";
 import fullscreenToggleDirective from './directives/fullscreenToggle';
+import scanDirective from './react-directives/scan/scan';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -153,6 +160,7 @@ module
     .factory('DeviceData', deviceDataService)
     .factory('DiagnosticProxy', diagnosticProxyService)
     .factory('TranslationService', translationService)
+    .factory('DeviceManagerProxy', deviceManagerProxyService)
 
 
     .service('handleData', handleDataService)
@@ -180,9 +188,7 @@ module
     .controller('MQTTCtrl', MQTTCtrl)
     .controller('AccessLevelCtrl', AccessLevelCtrl)
     .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
-    .controller('DiagnosticCtrl', DiagnosticCtrl);
-
-module
+    .controller('DiagnosticCtrl', DiagnosticCtrl)
     .controller('NavigationCtrl', NavigationCtrl);
 
 module
@@ -247,7 +253,8 @@ module
     .directive('plotly', [ '$window', plotlyDirective ] )
     .directive('onResize', [ '$parse', onResizeDirective] )
     .directive('ngConfirm', confirmDirective)
-    .directive("fullscreenToggle", fullscreenToggleDirective);
+    .directive("fullscreenToggle", fullscreenToggleDirective)
+    .directive("deviceManagerPage", scanDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
@@ -382,6 +389,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         }
         $translate.use(language);
         tmhDynamicLocale.set(language);
+        i18n.changeLanguage(language);
 
         $rootScope.requestConfig(loginData);
 

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.50.0) stable; urgency=medium
+
+  * Add device scanning support
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 26 Dec 2022 17:33:41 +0500
+
 wb-mqtt-homeui (2.49.1) stable; urgency=medium
 
   * Add firmware download link

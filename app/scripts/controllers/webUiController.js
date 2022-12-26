@@ -1,6 +1,4 @@
-/**
- * Created by ozknemoy on 21.06.2017.
- */
+import i18n from '../i18n/react/config';
 
 export default class WebUICtrl {
     constructor(uiConfig, errors, rolesFactory, $window, $translate, tmhDynamicLocale) {
@@ -22,6 +20,7 @@ export default class WebUICtrl {
             $translate.use(this.language);
             tmhDynamicLocale.set(this.language);
             $window.localStorage.setItem('language', this.language);
+            i18n.changeLanguage(this.language);
         }
     }
 

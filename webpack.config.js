@@ -69,9 +69,9 @@ module.exports = function makeWebpackConfig() {
             {
                 // JS LOADER
                 // Reference: https://github.com/babel/babel-loader
-                // Transpile .js files using babel-loader
+                // Transpile .js and .jsx files using babel-loader
                 // Compiles ES6 and ES7 into supported by target browsers code
-                test: /\.js$/,
+                test: /\.(js|jsx)$/,
                 include: [
                     path.resolve(__dirname, 'app', 'scripts'),
                     path.resolve(__dirname, 'app', 'lib')
@@ -81,7 +81,9 @@ module.exports = function makeWebpackConfig() {
                     {
                         loader: 'babel-loader',
                         options: {
-                            presets: [['@babel/preset-env', { targets: "defaults" }]],
+                            presets: [
+                                ['@babel/preset-env', { targets: "defaults" }], 
+                                "@babel/preset-react"],
                             plugins: [["angularjs-annotate"]],
                             babelrc: false,
                             cacheDirectory: true
@@ -108,6 +110,10 @@ module.exports = function makeWebpackConfig() {
                 type: 'asset/source'
             }
         ]
+    };
+
+    config.resolve = {
+        extensions: ['*', '.js', '.jsx'],
     };
 
     if (!isTest) {

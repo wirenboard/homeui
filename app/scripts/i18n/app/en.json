@@ -33,7 +33,8 @@
             "channels": "MQTT Channels",
             "access": "Change access level",
             "logs": "Logs",
-            "serial-metrics": "wb-mqtt-serial metrics"
+            "serial-metrics": "wb-mqtt-serial metrics",
+            "scan": "Scan"
         },
         "access": {
             "title": "Access level:"

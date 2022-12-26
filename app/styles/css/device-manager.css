@@ -1,0 +1,60 @@
+.device-manager-page .tag {
+    margin-left: 3px;
+    padding-top: 1px;
+    padding-left: 7px;
+    padding-bottom: 1px;
+    padding-right: 7px;
+    border-radius: 5px;
+}
+
+.device-manager-page .tag:first-of-type {
+    margin-left: 0px;
+    padding-top: 1px;
+    padding-left: 7px;
+    padding-bottom: 1px;
+    padding-right: 7px;
+    border-radius: 5px;
+}
+
+.device-manager-page .row-with-error > td {
+    padding-bottom: 0px!important;
+}
+
+.device-manager-page .row-with-error + tr > td {
+    border-top: none!important;
+}
+
+.device-manager-page .error {
+    margin-top: 5px;
+}
+
+.device-manager-page .scan-progress {
+    height: 1px;
+    box-shadow: none;
+    margin-bottom: 18px;
+}
+
+.device-manager-page h1 {
+    margin-top: 36px;
+    margin-bottom: 8px;
+}
+
+.device-manager-page h1 > button {
+    margin-top: -3px;
+}
+
+.device-manager-page .separator {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 18px;
+}
+
+.device-manager-page .slave-id {
+    display: inline-block;
+    width: 3ch;
+}
+
+.device-manager-page .baudrate {
+    display: inline-block;
+    width: 6ch;
+    text-align: right;
+}
