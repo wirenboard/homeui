@@ -19,7 +19,7 @@ function DeviceNameCell(props) {
 }
 
 function PortCell({path, baud_rate, data_bits, parity, stop_bits}) {
-    return <td>{path} {baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}</td>;
+    return <td>{path} <span className='baudrate'>{baud_rate}</span> {data_bits.toString()}{parity}{stop_bits.toString()}</td>;
 }
 
 function FirmwareCell(props) {
@@ -35,7 +35,7 @@ function SlaveIdCell({slaveId, isDuplicate}) {
   const { t } = useTranslation();
   return (
     <td>
-      {slaveId} {isDuplicate && <ErrorTag text={t('device-manager.labels.duplicate')}/>}
+      <span className='slave-id'>{slaveId}</span> {isDuplicate && <ErrorTag text={t('device-manager.labels.duplicate')}/>}
     </td>
   );
 }

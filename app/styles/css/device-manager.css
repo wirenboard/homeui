@@ -47,3 +47,14 @@
     border-bottom: 1px solid #eee;
     margin-bottom: 18px;
 }
+
+.device-manager-page .slave-id {
+    display: inline-block;
+    width: 3ch;
+}
+
+.device-manager-page .baudrate {
+    display: inline-block;
+    width: 6ch;
+    text-align: right;
+}
