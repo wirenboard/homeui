@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.50.1) stable; urgency=medium
 
   * Update JavaScript code style rules. No functional changes.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com> Wed, 28 Dec 2022 12:45:36 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Dec 2022 12:45:36 +0500
 
 wb-mqtt-homeui (2.49.1) stable; urgency=medium
 
