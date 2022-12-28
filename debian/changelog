@@ -1,1208 +1,1216 @@
+wb-mqtt-homeui (2.50.1) stable; urgency=medium
+
+- Update JavaScript code style rules. No functional changes.
+
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com> Wed, 28 Dec 2022 12:45:36 +0500
+
 wb-mqtt-homeui (2.50.0) stable; urgency=medium
 
-  * Add device scanning support
+- Add device scanning support
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 26 Dec 2022 17:33:41 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com> Mon, 26 Dec 2022 17:33:41 +0500
 
 wb-mqtt-homeui (2.49.1) stable; urgency=medium
 
-  * Add firmware download link
+- Add firmware download link
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 07 Dec 2022 19:17:00 +0400
+-- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Wed, 07 Dec 2022 19:17:00 +0400
 
 wb-mqtt-homeui (2.49.0) stable; urgency=medium
 
-  * Update AngularJS. No functional changes.
+- Update AngularJS. No functional changes.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 25 Nov 2022 12:47:07 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com> Fri, 25 Nov 2022 12:47:07 +0500
 
 wb-mqtt-homeui (2.48.7) stable; urgency=medium
 
-  * Complement display value with zeros if value precision exists
+- Complement display value with zeros if value precision exists
 
- -- Ekaterina Volkova <ekaterina.volkova@wirenboard.ru>  Tue, 23 Nov 2022 13:13:02 +0300
+-- Ekaterina Volkova <ekaterina.volkova@wirenboard.ru> Tue, 23 Nov 2022 13:13:02 +0300
 
 wb-mqtt-homeui (2.48.6) stable; urgency=medium
 
-  * svg dashboards: more explain QuotaExceededError
+- svg dashboards: more explain QuotaExceededError
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Wed, 16 Nov 2022 23:01:12 +0500
+-- Vladimir Romanov <v.romanov@wirenboard.ru> Wed, 16 Nov 2022 23:01:12 +0500
 
 wb-mqtt-homeui (2.48.5) stable; urgency=medium
 
-  * debian: forbid nodejs>12.x as build-dependency
+- debian: forbid nodejs>12.x as build-dependency
 
- -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 16 Nov 2022 20:05:17 +0600
+-- Nikita Maslov <nikita.maslov@wirenboard.ru> Wed, 16 Nov 2022 20:05:17 +0600
 
 wb-mqtt-homeui (2.48.4) stable; urgency=medium
 
-  * Remove "Cancel" button from "Create connection" dialog on "Network connections" page
-  * "Create connection" dialog can be canceled by clicking outside of the dialog
+- Remove "Cancel" button from "Create connection" dialog on "Network connections" page
+- "Create connection" dialog can be canceled by clicking outside of the dialog
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 14 Nov 2022 08:48:43 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 14 Nov 2022 08:48:43 +0500
 
 wb-mqtt-homeui (2.48.3) stable; urgency=medium
 
-  * Fix MAI6 config editing
+- Fix MAI6 config editing
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 11 Nov 2022 11:08:49 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 11 Nov 2022 11:08:49 +0500
 
 wb-mqtt-homeui (2.48.2) stable; urgency=medium
 
-  * Fix broken translation (help view)
+- Fix broken translation (help view)
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 10 Nov 2022 06:28:31 +0400
+-- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Thu, 10 Nov 2022 06:28:31 +0400
 
 wb-mqtt-homeui (2.48.1) stable; urgency=medium
 
-  * Fix Documentation link
+- Fix Documentation link
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 02 Nov 2022 18:41:49 +0400
+-- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Wed, 02 Nov 2022 18:41:49 +0400
 
 wb-mqtt-homeui (2.48.0) stable; urgency=medium
 
-  * Add MAI6 units translation
+- Add MAI6 units translation
 
- -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 01 Nov 2022 13:47:49 +0600
+-- Nikita Maslov <nikita.maslov@wirenboard.ru> Tue, 01 Nov 2022 13:47:49 +0600
 
 wb-mqtt-homeui (2.47.1) stable; urgency=medium
 
-  * Fix Wi-Fi AP creation in NetworkManager config editor
+- Fix Wi-Fi AP creation in NetworkManager config editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 26 Oct 2022 15:20:24 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 26 Oct 2022 15:20:24 +0500
 
 wb-mqtt-homeui (2.47.0) stable; urgency=medium
 
-  * Support NetworkManager config editor
+- Support NetworkManager config editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 06 Oct 2022 09:58:30 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 06 Oct 2022 09:58:30 +0500
 
 wb-mqtt-homeui (2.46.2) stable; urgency=medium
 
-  * Add ability to set disabled optional parameter text
+- Add ability to set disabled optional parameter text
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 04 Oct 2022 14:42:25 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 04 Oct 2022 14:42:25 +0500
 
 wb-mqtt-homeui (2.46.1) stable; urgency=medium
 
-  * Fix parameter values after activation in configs editor.
-    Deactivation and reactivation of a parameter will set it to default value.
+- Fix parameter values after activation in configs editor. Deactivation and reactivation of a
+  parameter will set it to default value.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 05 Aug 2022 10:15:21 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 05 Aug 2022 10:15:21 +0500
 
 wb-mqtt-homeui (2.46.0) stable; urgency=medium
 
-  * Add new devices on top of a list in wb-mqtt-serial's config editor
+- Add new devices on top of a list in wb-mqtt-serial's config editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Aug 2022 09:07:23 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 01 Aug 2022 09:07:23 +0500
 
 wb-mqtt-homeui (2.45.1) stable; urgency=medium
 
-  * Widgets: add mqtt topic to widget's redactor
+- Widgets: add mqtt topic to widget's redactor
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Fri, 29 Jul 2022 03:29:12 +0500
+-- Vladimir Romanov <v.romanov@wirenboard.ru> Fri, 29 Jul 2022 03:29:12 +0500
 
 wb-mqtt-homeui (2.45.0) stable; urgency=medium
 
-  * navigate directly to default dashboard, show current dashboard in expanded menu
-  * allow to set SVG dashboard ad default
-  * fix dashboard selection
+- navigate directly to default dashboard, show current dashboard in expanded menu
+- allow to set SVG dashboard ad default
+- fix dashboard selection
 
- -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 03:17:02 +0300
+-- Evgeny Boger <boger@wirenboard.com> Sat, 04 Jun 2022 03:17:02 +0300
 
 wb-mqtt-homeui (2.44.4) stable; urgency=medium
 
-  * Fix BAC-6000 error messages display
+- Fix BAC-6000 error messages display
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 27 Jul 2022 16:27:23 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 27 Jul 2022 16:27:23 +0500
 
 wb-mqtt-homeui (2.44.3) stable; urgency=medium
 
-  * Fix overlapping of wb-watch-update's status in fwupdate progress bar
+- Fix overlapping of wb-watch-update's status in fwupdate progress bar
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 26 Jul 2022 17:35:18 +0500
+-- Vladimir Romanov <v.romanov@wirenboard.ru> Tue, 26 Jul 2022 17:35:18 +0500
 
 wb-mqtt-homeui (2.44.2) stable; urgency=medium
 
-  * Fix device config editors creation error
+- Fix device config editors creation error
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 15:54:44 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 26 Jul 2022 15:54:44 +0500
 
 wb-mqtt-homeui (2.44.1) stable; urgency=medium
 
-  * Fix interface slowdown when editing wbio-ai-dv-12 config
+- Fix interface slowdown when editing wbio-ai-dv-12 config
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 10:18:25 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 26 Jul 2022 10:18:25 +0500
 
 wb-mqtt-homeui (2.44.0) stable; urgency=medium
 
-  * Slave id is preserved after device type switching
+- Slave id is preserved after device type switching
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Jul 2022 09:06:25 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 26 Jul 2022 09:06:25 +0500
 
 wb-mqtt-homeui (2.43.0) stable; urgency=medium
 
-  * Support for wb-mqtt-db 2.6.0 is added. Discrete values on history page will be shown without averaging if possible.
+- Support for wb-mqtt-db 2.6.0 is added. Discrete values on history page will be shown without
+  averaging if possible.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 17:06:40 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 25 Jul 2022 17:06:40 +0500
 
 wb-mqtt-homeui (2.42.1) stable; urgency=medium
 
-  * Fix displaying of oneOf parameters by groups editor
+- Fix displaying of oneOf parameters by groups editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Jul 2022 07:48:19 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 25 Jul 2022 07:48:19 +0500
 
 wb-mqtt-homeui (2.42.0) stable; urgency=medium
 
-  * Support for copying device configs is added
+- Support for copying device configs is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 20 Jul 2022 10:04:28 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 20 Jul 2022 10:04:28 +0500
 
 wb-mqtt-homeui (2.41.2) stable; urgency=medium
 
-  * Messages about invalid port or device parameters are made more understandable
+- Messages about invalid port or device parameters are made more understandable
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 19 Jul 2022 15:35:48 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 19 Jul 2022 15:35:48 +0500
 
 wb-mqtt-homeui (2.41.1) stable; urgency=medium
 
-  * css: fix widget's description resizing and bounds
+- css: fix widget's description resizing and bounds
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 12 Jul 2022 18:11:39 +0500
+-- Vladimir Romanov <v.romanov@wirenboard.ru> Tue, 12 Jul 2022 18:11:39 +0500
 
 wb-mqtt-homeui (2.41.0) stable; urgency=medium
 
-  * Support for groups in device type select in wb-mqtt-serial config editor is added
+- Support for groups in device type select in wb-mqtt-serial config editor is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 05 Jul 2022 09:43:50 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 05 Jul 2022 09:43:50 +0500
 
 wb-mqtt-homeui (2.40.1) stable; urgency=medium
 
-  * Add button to enter fullscreen mode
+- Add button to enter fullscreen mode
 
- -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Tue, 04 Jul 2022 16:59:00 +0500
+-- Sergey Safronov <sergey.safronov@wirenboard.ru> Tue, 04 Jul 2022 16:59:00 +0500
 
 wb-mqtt-homeui (2.40.0) stable; urgency=medium
 
-  * Support for descriptions in config groups is added
+- Support for descriptions in config groups is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 23 Jun 2022 16:52:10 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 23 Jun 2022 16:52:10 +0500
 
 wb-mqtt-homeui (2.39.3) stable; urgency=medium
 
-  * Ability to save history in csv file is restored
+- Ability to save history in csv file is restored
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 23 Jun 2022 16:33:07 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 23 Jun 2022 16:33:07 +0500
 
 wb-mqtt-homeui (2.39.2) stable; urgency=medium
 
-  * Highlighting of tabs with invalid parameters in device config is added
+- Highlighting of tabs with invalid parameters in device config is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 15 Jun 2022 12:34:27 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 15 Jun 2022 12:34:27 +0500
 
 wb-mqtt-homeui (2.39.1) stable; urgency=medium
 
-  * Do not show description in config list
+- Do not show description in config list
 
- -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 13:37:47 +0300
+-- Evgeny Boger <boger@wirenboard.com> Sat, 04 Jun 2022 13:37:47 +0300
 
 wb-mqtt-homeui (2.39.0) stable; urgency=medium
 
-  * Advertising notification about testing release is added
+- Advertising notification about testing release is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Jun 2022 21:44:46 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 09 Jun 2022 21:44:46 +0500
 
 wb-mqtt-homeui (2.38.0) stable; urgency=medium
 
-  * Reload config schema after config saving only if it has needReload parameter.
+- Reload config schema after config saving only if it has needReload parameter.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Jun 2022 17:17:46 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 07 Jun 2022 17:17:46 +0500
 
 wb-mqtt-homeui (2.37.0) stable; urgency=medium
 
-  * Boots selection on logs page is limited to "All boots"/"Last boot" options.
+- Boots selection on logs page is limited to "All boots"/"Last boot" options.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 17:06:06 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 31 May 2022 17:06:06 +0500
 
 wb-mqtt-homeui (2.36.0) stable; urgency=medium
 
-  * "Deprecated template" message is added to names of deprecated device templates
-  * Warning icon is added near deprecated template
-  * Deprecation notice is added to expanded device editor
+- "Deprecated template" message is added to names of deprecated device templates
+- Warning icon is added near deprecated template
+- Deprecation notice is added to expanded device editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 31 May 2022 16:29:03 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 31 May 2022 16:29:03 +0500
 
 wb-mqtt-homeui (2.35.3) stable; urgency=medium
 
-  * Support fullscreen mode. Add to url ?fullscreen to hide navigation elements
+- Support fullscreen mode. Add to url ?fullscreen to hide navigation elements
 
- -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Thu, 05 Apr 2022 17:42:00 +0500
+-- Sergey Safronov <sergey.safronov@wirenboard.ru> Thu, 05 Apr 2022 17:42:00 +0500
 
 wb-mqtt-homeui (2.35.2) stable; urgency=medium
 
-  * rules: update the files list after creating a new file
+- rules: update the files list after creating a new file
 
- -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 23 Apr 2022 19:52:00 +0500
+-- Sergey Safronov <sergey.safronov@wirenboard.ru> Mon, 23 Apr 2022 19:52:00 +0500
 
 wb-mqtt-homeui (2.35.1) stable; urgency=medium
 
-  * Array elements creation bug in config editor with tabbed interface is fixed
+- Array elements creation bug in config editor with tabbed interface is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 25 May 2022 16:07:10 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 25 May 2022 16:07:10 +0500
 
 wb-mqtt-homeui (2.35.0) stable; urgency=medium
 
-  * Support for device parameters specified as array is added
+- Support for device parameters specified as array is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 26 Apr 2022 14:12:17 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 26 Apr 2022 14:12:17 +0500
 
 wb-mqtt-homeui (2.34.2) stable; urgency=medium
 
-  * Nested groups titles display is fixed in config editor
-  * ui_options.wb.disable_title support for groups is added
-  * Parameters ordering is fixed in config editor
+- Nested groups titles display is fixed in config editor
+- ui_options.wb.disable_title support for groups is added
+- Parameters ordering is fixed in config editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 25 Apr 2022 14:07:49 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 25 Apr 2022 14:07:49 +0500
 
 wb-mqtt-homeui (2.34.1) stable; urgency=medium
 
-  * Topic write duplicate
+- Topic write duplicate
 
- -- Sergey Safronov <sergey.safronov@wirenboard.ru>  Mon, 16 Apr 2022 16:53:01 +0500
+-- Sergey Safronov <sergey.safronov@wirenboard.ru> Mon, 16 Apr 2022 16:53:01 +0500
 
 wb-mqtt-homeui (2.34.0) stable; urgency=medium
 
-  * "groups" editor is added to configs editor
+- "groups" editor is added to configs editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 15 Apr 2022 17:44:50 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 15 Apr 2022 17:44:50 +0500
 
 wb-mqtt-homeui (2.33.1) stable; urgency=medium
 
-  * Enum editor with ability to hide items now supports dynamic lists-building
+- Enum editor with ability to hide items now supports dynamic lists-building
 
- -- Vladimir Romanov <v.romanov@wirenboard.ru>  Fri, 8 Apr 2022 01:02:43 +0500
+-- Vladimir Romanov <v.romanov@wirenboard.ru> Fri, 8 Apr 2022 01:02:43 +0500
 
 wb-mqtt-homeui (2.33.0) stable; urgency=medium
 
-  * Enum editor with ability to hide items is added to config editor
+- Enum editor with ability to hide items is added to config editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 11 Mar 2022 09:45:39 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 11 Mar 2022 09:45:39 +0500
 
 wb-mqtt-homeui (2.32.1) stable; urgency=medium
 
-  * Units display is fixed
+- Units display is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 24 Feb 2022 09:03:50 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 24 Feb 2022 09:03:50 +0500
 
 wb-mqtt-homeui (2.32.0) stable; urgency=medium
 
-  * Support for units in /meta JSON
+- Support for units in /meta JSON
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 21 Feb 2022 16:04:20 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 21 Feb 2022 16:04:20 +0500
 
 wb-mqtt-homeui (2.31.0) stable; urgency=medium
 
-  * 'p' from /meta/error indicating missed read period is shown as alert sign near control name
+- 'p' from /meta/error indicating missed read period is shown as alert sign near control name
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sun, 06 Feb 2022 12:49:26 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Sun, 06 Feb 2022 12:49:26 +0500
 
 wb-mqtt-homeui (2.30.0) stable; urgency=medium
 
-  * "unknown-device" editor for editing configs of devices with invalid templates
-  * wb.hide_from_selection option is added for "wb-multiple" editor. It hides element from selection list
+- "unknown-device" editor for editing configs of devices with invalid templates
+- wb.hide_from_selection option is added for "wb-multiple" editor. It hides element from selection
+  list
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 27 Jan 2022 16:11:42 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 27 Jan 2022 16:11:42 +0500
 
 wb-mqtt-homeui (2.29.0) stable; urgency=medium
 
-  * Rename Wi-Fi channels in default dashboards
+- Rename Wi-Fi channels in default dashboards
 
- -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Tue, 25 Jan 2021 13:48:00 +0400
+-- Alexander Degtyarev <a.degtyarev@wirenboard.com> Tue, 25 Jan 2021 13:48:00 +0400
 
 wb-mqtt-homeui (2.28.0) stable; urgency=medium
 
-  * "Collapse all items" button is added to array editor on "Configs" page
+- "Collapse all items" button is added to array editor on "Configs" page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 17 Jan 2022 09:52:34 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 17 Jan 2022 09:52:34 +0500
 
 wb-mqtt-homeui (2.27.0) stable; urgency=medium
 
-  * Text input with dropdown list of options for setting integer values is added to config editor
+- Text input with dropdown list of options for setting integer values is added to config editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 29 Dec 2021 16:43:56 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 29 Dec 2021 16:43:56 +0500
 
 wb-mqtt-homeui (2.26.0) stable; urgency=medium
 
-  * Added default dashboards for Wiren Board 7
+- Added default dashboards for Wiren Board 7
 
- -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Wed, 29 Dec 2021 15:34:00 +0400
+-- Alexander Degtyarev <a.degtyarev@wirenboard.com> Wed, 29 Dec 2021 15:34:00 +0400
 
 wb-mqtt-homeui (2.25.2) stable; urgency=medium
 
-  * Change the color of the error line in the rules script editor
+- Change the color of the error line in the rules script editor
 
- -- Roman Kochkin <roman.kochkin@wirenboard.ru>  Mon, 27 Dec 2021 20:13:00 +0300
+-- Roman Kochkin <roman.kochkin@wirenboard.ru> Mon, 27 Dec 2021 20:13:00 +0300
 
 wb-mqtt-homeui (2.25.1) stable; urgency=medium
 
-  * Added rounding min_interval in a RPC request to wb-mqtt-db
+- Added rounding min_interval in a RPC request to wb-mqtt-db
 
- -- Roman Kochkin <roman.kochkin@wirenboard.ru>  Fri, 24 Dec 2021 09:40:00 +0300
+-- Roman Kochkin <roman.kochkin@wirenboard.ru> Fri, 24 Dec 2021 09:40:00 +0300
 
 wb-mqtt-homeui (2.25.0) stable; urgency=medium
 
-  * wb-webui.conf is hidden from direct editing
+- wb-webui.conf is hidden from direct editing
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 14 Dec 2021 11:30:38 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 14 Dec 2021 11:30:38 +0500
 
 wb-mqtt-homeui (2.24.2) stable; urgency=medium
 
-  * A disconnection from MQTT broker after receiving null in control's meta topic is fixed.
+- A disconnection from MQTT broker after receiving null in control's meta topic is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Dec 2021 13:37:05 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 08 Dec 2021 13:37:05 +0500
 
 wb-mqtt-homeui (2.24.1) stable; urgency=medium
 
-  * Fixed typo in Ru translation about default panel at homepage
+- Fixed typo in Ru translation about default panel at homepage
 
- -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 07 Dec 2021 15:06:51 +0300
+-- Nikita Maslov <nikita.maslov@wirenboard.ru> Tue, 07 Dec 2021 15:06:51 +0300
 
 wb-mqtt-homeui (2.24.0) stable; urgency=medium
 
-  * Syslog levels range and message pattern filters are added to "Logs" page
+- Syslog levels range and message pattern filters are added to "Logs" page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 03 Dec 2021 13:17:37 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 03 Dec 2021 13:17:37 +0500
 
 wb-mqtt-homeui (2.23.3) stable; urgency=medium
 
-  * A hash is added to main.css file name, so it will be reloaded from server if content changes
+- A hash is added to main.css file name, so it will be reloaded from server if content changes
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 22 Nov 2021 10:37:52 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 22 Nov 2021 10:37:52 +0500
 
 wb-mqtt-homeui (2.23.2) stable; urgency=medium
 
-  * Updated default dashboard for Wiren Board 6
+- Updated default dashboard for Wiren Board 6
 
- -- Alexander Degtyarev <a.degtyarev@wirenboard.com>  Fri, 19 Nov 2021 18:07:00 +0400
+-- Alexander Degtyarev <a.degtyarev@wirenboard.com> Fri, 19 Nov 2021 18:07:00 +0400
 
 wb-mqtt-homeui (2.23.1) stable; urgency=medium
 
-  * Deletion of array items in config editors is fixed
+- Deletion of array items in config editors is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 18 Nov 2021 15:04:31 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 18 Nov 2021 15:04:31 +0500
 
 wb-mqtt-homeui (2.23.0) stable; urgency=medium
 
-  * Support for editing configs of wb-mqtt-adc 2.4.0 and wb-mqtt-gpio 2.8.0
+- Support for editing configs of wb-mqtt-adc 2.4.0 and wb-mqtt-gpio 2.8.0
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 12 Nov 2021 15:54:10 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 12 Nov 2021 15:54:10 +0500
 
 wb-mqtt-homeui (2.22.3) stable; urgency=medium
 
-  * Russian translation is updated
+- Russian translation is updated
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 10 Nov 2021 17:25:16 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 10 Nov 2021 17:25:16 +0500
 
 wb-mqtt-homeui (2.22.2) stable; urgency=medium
 
-  * Array controls translation bug in configs editor is fixed (json-editor is updated to 2.5.3-wb7)
+- Array controls translation bug in configs editor is fixed (json-editor is updated to 2.5.3-wb7)
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 03 Nov 2021 15:02:37 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 03 Nov 2021 15:02:37 +0500
 
 wb-mqtt-homeui (2.22.1) stable; urgency=medium
 
-  * Homeui schema title translation to Russian
+- Homeui schema title translation to Russian
 
- -- Dmitry Vorobjev <d.vorobjev@wirenboard.ru>  Tue, 02 Nov 2021 14:54:50 +0300
+-- Dmitry Vorobjev <d.vorobjev@wirenboard.ru> Tue, 02 Nov 2021 14:54:50 +0300
 
 wb-mqtt-homeui (2.22.0) stable; urgency=medium
 
-  * Ability to save logs into a file is added
+- Ability to save logs into a file is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 02 Nov 2021 11:06:57 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 02 Nov 2021 11:06:57 +0500
 
 wb-mqtt-homeui (2.21.0) stable; urgency=medium
 
-  * wb-mqtt-serial metrics page is made accessible by direct link only
+- wb-mqtt-serial metrics page is made accessible by direct link only
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Nov 2021 15:27:56 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 01 Nov 2021 15:27:56 +0500
 
 wb-mqtt-homeui (2.20.0) stable; urgency=medium
 
-  * Faster loading of the tabbed configs editing GUI
+- Faster loading of the tabbed configs editing GUI
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 14 Oct 2021 15:34:40 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 14 Oct 2021 15:34:40 +0500
 
 wb-mqtt-homeui (2.19.1) stable; urgency=medium
 
-  * Correct message about invalid configuration file is added
+- Correct message about invalid configuration file is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 14 Oct 2021 14:00:33 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 14 Oct 2021 14:00:33 +0500
 
 wb-mqtt-homeui (2.19.0) stable; urgency=medium
 
-  * Diagnostic collector button added at System section
+- Diagnostic collector button added at System section
 
- -- Semen Sokolov <s.sokolov@wirenboard.ru>  Tue, 28 Sep 2021 15:09:58 +0300
+-- Semen Sokolov <s.sokolov@wirenboard.ru> Tue, 28 Sep 2021 15:09:58 +0300
 
 wb-mqtt-homeui (2.18.2) stable; urgency=medium
 
-  * Do not show in SVG dashboard editor controls without complete meta information
+- Do not show in SVG dashboard editor controls without complete meta information
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sun, 10 Oct 2021 12:25:07 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Sun, 10 Oct 2021 12:25:07 +0500
 
 wb-mqtt-homeui (2.18.1) stable; urgency=medium
 
-  * Autosize channel name fields in wb-mqtt-serial config editor
+- Autosize channel name fields in wb-mqtt-serial config editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 06 Oct 2021 18:10:27 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 06 Oct 2021 18:10:27 +0500
 
 wb-mqtt-homeui (2.18.0) stable; urgency=medium
 
-  * Support for translations in JSON Schema templated parameters is added
+- Support for translations in JSON Schema templated parameters is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 06 Oct 2021 09:27:04 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 06 Oct 2021 09:27:04 +0500
 
 wb-mqtt-homeui (2.17.1) stable; urgency=medium
 
-  * Fix 'Hide' button label after firmware update is complete
+- Fix 'Hide' button label after firmware update is complete
 
- -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 30 Sep 2021 21:49:00 +0300
+-- Nikita Maslov <nikita.maslov@wirenboard.ru> Thu, 30 Sep 2021 21:49:00 +0300
 
 wb-mqtt-homeui (2.17.0) stable; urgency=medium
 
-  * wb-mqtt-serial metrics page is added
+- wb-mqtt-serial metrics page is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 30 Sep 2021 17:18:55 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 30 Sep 2021 17:18:55 +0500
 
 wb-mqtt-homeui (2.16.3) stable; urgency=medium
 
-  * Translation switch in config editors without page reloading
+- Translation switch in config editors without page reloading
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 29 Sep 2021 08:23:52 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 29 Sep 2021 08:23:52 +0500
 
 wb-mqtt-homeui (2.16.2) stable; urgency=medium
 
-  * RPC methods availability check is added
+- RPC methods availability check is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 28 Sep 2021 17:17:15 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 28 Sep 2021 17:17:15 +0500
 
 wb-mqtt-homeui (2.16.1) stable; urgency=medium
 
-  * Displaying of tooltip after widget's cell data copying to clipboard is fixed
+- Displaying of tooltip after widget's cell data copying to clipboard is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 22:17:05 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 27 Sep 2021 22:17:05 +0500
 
 wb-mqtt-homeui (2.16.0) stable; urgency=medium
 
-  * New editor for poll_interval properties in wb-mqtt-serial.conf
+- New editor for poll_interval properties in wb-mqtt-serial.conf
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 27 Sep 2021 10:23:31 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 27 Sep 2021 10:23:31 +0500
 
 wb-mqtt-homeui (2.15.3) stable; urgency=medium
 
-  * Show english name for control if localized is not available
+- Show english name for control if localized is not available
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 21 Sep 2021 18:13:53 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 21 Sep 2021 18:13:53 +0500
 
 wb-mqtt-homeui (2.15.2) stable; urgency=medium
 
-  * Devices page width is adjusted. Horizontal scroll on mobile phones is removed
+- Devices page width is adjusted. Horizontal scroll on mobile phones is removed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 20 Sep 2021 15:40:45 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 20 Sep 2021 15:40:45 +0500
 
 wb-mqtt-homeui (2.15.1) stable; urgency=medium
 
-  * Control names displaying is fixed
+- Control names displaying is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 17 Sep 2021 19:10:51 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 17 Sep 2021 19:10:51 +0500
 
 wb-mqtt-homeui (2.15.0) stable; urgency=medium
 
-  * Support for /meta topics for devices and controls
+- Support for /meta topics for devices and controls
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 17 Sep 2021 17:37:08 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 17 Sep 2021 17:37:08 +0500
 
 wb-mqtt-homeui (2.14.0) stable; urgency=medium
 
-  * Config titles and descriptions translation support is added
+- Config titles and descriptions translation support is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 13 Sep 2021 20:36:58 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 13 Sep 2021 20:36:58 +0500
 
 wb-mqtt-homeui (2.13.4) stable; urgency=medium
 
-  * Start date selection dialog on Logs page is fixed
+- Start date selection dialog on Logs page is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 14:12:18 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 09 Sep 2021 14:12:18 +0500
 
 wb-mqtt-homeui (2.13.3) stable; urgency=medium
 
-  * Browser cache invalidation for files with translated strings is implemented.
+- Browser cache invalidation for files with translated strings is implemented.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 09:32:14 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 09 Sep 2021 09:32:14 +0500
 
 wb-mqtt-homeui (2.13.2) stable; urgency=medium
 
-  * Russian translation for json-editor built-in messages is added
+- Russian translation for json-editor built-in messages is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 09 Sep 2021 09:00:16 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 09 Sep 2021 09:00:16 +0500
 
 wb-mqtt-homeui (2.13.1) stable; urgency=medium
 
-  * Control type filter in widget's properties dialog is restored
+- Control type filter in widget's properties dialog is restored
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 20:03:46 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 08 Sep 2021 20:03:46 +0500
 
 wb-mqtt-homeui (2.13.0) stable; urgency=medium
 
-  * Configs translation support is added
+- Configs translation support is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 09:36:35 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 08 Sep 2021 09:36:35 +0500
 
 wb-mqtt-homeui (2.12.5) stable; urgency=medium
 
-  * Loading of history data for widgets with channels unavailable in MQTT brocker is fixed
+- Loading of history data for widgets with channels unavailable in MQTT brocker is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 08 Sep 2021 09:23:58 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 08 Sep 2021 09:23:58 +0500
 
 wb-mqtt-homeui (2.12.4) stable; urgency=medium
 
-  * Dates calculation for history table is fixed
+- Dates calculation for history table is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 20:01:30 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 07 Sep 2021 20:01:30 +0500
 
 wb-mqtt-homeui (2.12.3) stable; urgency=medium
 
-  * Widget deletion prompt message translation is fixed
+- Widget deletion prompt message translation is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:38:44 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 07 Sep 2021 19:38:44 +0500
 
 wb-mqtt-homeui (2.12.2) stable; urgency=medium
 
-  * Widget's editor's button text is replaced by icons
-  * Dashboard buttons are replaced by icons
+- Widget's editor's button text is replaced by icons
+- Dashboard buttons are replaced by icons
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 19:25:47 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 07 Sep 2021 19:25:47 +0500
 
 wb-mqtt-homeui (2.12.1) stable; urgency=medium
 
-  * SVG dashboard edit button translation is fixed
+- SVG dashboard edit button translation is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 17:38:56 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 07 Sep 2021 17:38:56 +0500
 
 wb-mqtt-homeui (2.12.0) stable; urgency=medium
 
-  * Translation support for config editor elements (json-editor updated to 2.5.3-wb3)
+- Translation support for config editor elements (json-editor updated to 2.5.3-wb3)
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 07 Sep 2021 11:20:17 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 07 Sep 2021 11:20:17 +0500
 
 wb-mqtt-homeui (2.11.1) stable; urgency=medium
 
-  * Set angular locale on startup
+- Set angular locale on startup
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Sep 2021 11:09:46 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 06 Sep 2021 11:09:46 +0500
 
 wb-mqtt-homeui (2.11.0) stable; urgency=medium
 
-  * Russian localization is added
+- Russian localization is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 06 Sep 2021 10:09:20 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 06 Sep 2021 10:09:20 +0500
 
 wb-mqtt-homeui (2.10.2) stable; urgency=medium
 
-  * Display of date labels when hovering points on history charts is restored.
+- Display of date labels when hovering points on history charts is restored.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 27 Aug 2021 18:17:10 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 27 Aug 2021 18:17:10 +0500
 
 wb-mqtt-homeui (2.10.1) stable; urgency=medium
 
-  * sass-loader dependency is fixed
+- sass-loader dependency is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 26 Aug 2021 10:57:52 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 26 Aug 2021 10:57:52 +0500
 
 wb-mqtt-homeui (2.10.0) stable; urgency=medium
 
-  * An interface for querying device's logs is added.
+- An interface for querying device's logs is added.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 11 Aug 2021 10:53:36 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 11 Aug 2021 10:53:36 +0500
 
 wb-mqtt-homeui (2.9.0) stable; urgency=medium
 
-  * Multiple axes are added to charts on History page
+- Multiple axes are added to charts on History page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 04 Aug 2021 17:49:32 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 04 Aug 2021 17:49:32 +0500
 
 wb-mqtt-homeui (2.8.0) stable; urgency=medium
 
-  * Widget names are preserved in charts legend on History page
+- Widget names are preserved in charts legend on History page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 03 Aug 2021 18:56:20 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 03 Aug 2021 18:56:20 +0500
 
 wb-mqtt-homeui (2.7.0) stable; urgency=medium
 
-  * Minimum and maximum values in charts on History page are shown as bands not as lines
+- Minimum and maximum values in charts on History page are shown as bands not as lines
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 03 Aug 2021 09:40:20 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 03 Aug 2021 09:40:20 +0500
 
 wb-mqtt-homeui (2.6.0) stable; urgency=medium
 
-  * Displaying of string values in chart on History page is implemented
+- Displaying of string values in chart on History page is implemented
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 03 Aug 2021 09:34:57 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 03 Aug 2021 09:34:57 +0500
 
 wb-mqtt-homeui (2.5.7) stable; urgency=medium
 
-  * History chart not showing in Safari is fixed
+- History chart not showing in Safari is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 27 Jul 2021 13:02:29 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 27 Jul 2021 13:02:29 +0500
 
 wb-mqtt-homeui (2.5.6) stable; urgency=medium
 
-  * Values on History page are displayed without trailing zeros in fractional part
+- Values on History page are displayed without trailing zeros in fractional part
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 23 Jul 2021 13:59:16 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 23 Jul 2021 13:59:16 +0500
 
 wb-mqtt-homeui (2.5.5) stable; urgency=medium
 
-  * Dashboard creation cancel is fixed.
+- Dashboard creation cancel is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 08 Jun 2021 19:59:39 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 08 Jun 2021 19:59:39 +0500
 
 wb-mqtt-homeui (2.5.4) stable; urgency=medium
 
-  * Read bindig to SVG text node without nested tspan node is implemented.
+- Read bindig to SVG text node without nested tspan node is implemented.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 31 May 2021 14:00:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 31 May 2021 14:00:00 +0500
 
 wb-mqtt-homeui (2.5.3) stable; urgency=medium
 
-  * Widget id in json editing mode is preserved
+- Widget id in json editing mode is preserved
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 31 May 2021 10:45:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 31 May 2021 10:45:00 +0500
 
 wb-mqtt-homeui (2.5.2) stable; urgency=medium
 
-  * Home icon is updated
-  * Unused Download button on dashboard page in removed
+- Home icon is updated
+- Unused Download button on dashboard page in removed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 04 Jun 2021 13:30:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 04 Jun 2021 13:30:00 +0500
 
 wb-mqtt-homeui (2.5.1) stable; urgency=medium
 
-  * Error message on webui.conf saving failure is added
+- Error message on webui.conf saving failure is added
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 28 May 2021 14:09:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 28 May 2021 14:09:00 +0500
 
 wb-mqtt-homeui (2.5.0) stable; urgency=medium
 
-  * Support for /meta/precision is added.
+- Support for /meta/precision is added.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 01 Jun 2021 10:34:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 01 Jun 2021 10:34:00 +0500
 
 wb-mqtt-homeui (2.4.5) stable; urgency=medium
 
-  * Always show chart toolbar
-  * Chart toolbar icons are made bigger
-  * New chart hover tooltip layout
+- Always show chart toolbar
+- Chart toolbar icons are made bigger
+- New chart hover tooltip layout
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 31 May 2021 19:56:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 31 May 2021 19:56:00 +0500
 
 wb-mqtt-homeui (2.4.4) stable; urgency=medium
 
-  * SVG resizing in dashboard editor is fixed.
+- SVG resizing in dashboard editor is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 31 May 2021 11:58:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 31 May 2021 11:58:00 +0500
 
 wb-mqtt-homeui (2.4.3) stable; urgency=medium
 
-  * Do not show empty options in selects for optional parameters in config editor (json-editor updated to 2.5.3-wb2).
+- Do not show empty options in selects for optional parameters in config editor (json-editor updated
+  to 2.5.3-wb2).
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 31 May 2021 16:25:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 31 May 2021 16:25:00 +0500
 
 wb-mqtt-homeui (2.4.2) stable; urgency=medium
 
-  * Wrong config editors position calculation is fixed (json-editor updated to 2.5.3-wb).
+- Wrong config editors position calculation is fixed (json-editor updated to 2.5.3-wb).
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 31 May 2021 11:17:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 31 May 2021 11:17:00 +0500
 
 wb-mqtt-homeui (2.4.1) stable; urgency=medium
 
-  * Links are updated on "Help" page
-  * "Updated at" column is removed from "Configs" page
-  * Widget reorder button is removed as it does nothing
-  * Widget deletion is prohibited for User and Operator access levels
-  * Scroll bar for long text in widgets is added
-  * A bug with disabling Save button on Script page is fixed
-  * Date editors on History page are made smaller
-  * Delete button on History page is moved close to topic selects
-  * Access level label shows more information
-  * Information about access levels is added
-  * SVG dasboards are excluded from selection for Home page
+- Links are updated on "Help" page
+- "Updated at" column is removed from "Configs" page
+- Widget reorder button is removed as it does nothing
+- Widget deletion is prohibited for User and Operator access levels
+- Scroll bar for long text in widgets is added
+- A bug with disabling Save button on Script page is fixed
+- Date editors on History page are made smaller
+- Delete button on History page is moved close to topic selects
+- Access level label shows more information
+- Information about access levels is added
+- SVG dasboards are excluded from selection for Home page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 26 May 2021 09:22:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 26 May 2021 09:22:00 +0500
 
 wb-mqtt-homeui (2.4.0) stable; urgency=medium
 
-  * Optional parameters in config editor are marked as "unknown" until explicitly set
+- Optional parameters in config editor are marked as "unknown" until explicitly set
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 19 May 2021 17:35:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 19 May 2021 17:35:00 +0500
 
 wb-mqtt-homeui (2.3.5) stable; urgency=medium
 
-  * Dashboards deletion is fixed
+- Dashboards deletion is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 02 Apr 2021 18:19:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 02 Apr 2021 18:19:00 +0500
 
 wb-mqtt-homeui (2.3.4) stable; urgency=medium
 
-  * Configs editor faster handles user's input
-  * A bug that prevents some validation errors from being displayed is fixed
+- Configs editor faster handles user's input
+- A bug that prevents some validation errors from being displayed is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 29 Mar 2021 11:31:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 29 Mar 2021 11:31:00 +0500
 
 wb-mqtt-homeui (2.3.3) stable; urgency=medium
 
-  * Selection of similar topics in history is fixed
+- Selection of similar topics in history is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Sat, 27 Mar 2021 11:07:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Sat, 27 Mar 2021 11:07:00 +0500
 
 wb-mqtt-homeui (2.3.2) stable; urgency=medium
 
-  * Another error in config conversion from v1.x is fixed.
+- Another error in config conversion from v1.x is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 24 Mar 2021 18:22:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 24 Mar 2021 18:22:00 +0500
 
 wb-mqtt-homeui (2.3.1) stable; urgency=medium
 
-  * IP validation error in configs editor is fixed
+- IP validation error in configs editor is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 15 Mar 2021 14:12:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 15 Mar 2021 14:12:00 +0500
 
 wb-mqtt-homeui (2.3.0) stable; urgency=medium
 
-  * Allow to edit SVG params (bindings) as JSON
+- Allow to edit SVG params (bindings) as JSON
 
- -- Evgeny Boger <boger@contactless.ru>  Sun, 07 Mar 2021 20:25:10 +0300
+-- Evgeny Boger <boger@contactless.ru> Sun, 07 Mar 2021 20:25:10 +0300
 
 wb-mqtt-homeui (2.2.0) stable; urgency=medium
 
-  * Special line shapes for discrete values on history page
+- Special line shapes for discrete values on history page
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 21 Jan 2021 18:25:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 21 Jan 2021 18:25:00 +0500
 
 wb-mqtt-homeui (2.1.0) stable; urgency=medium
 
-  * Support for wb-mqtt-serial 2.9.0 (Json-editor updated from 0.7.22 to 2.5.2-wb).
+- Support for wb-mqtt-serial 2.9.0 (Json-editor updated from 0.7.22 to 2.5.2-wb).
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 11 Feb 2021 17:43:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 11 Feb 2021 17:43:00 +0500
 
 wb-mqtt-homeui (2.0.4) stable; urgency=medium
 
-  * Another error in config conversion from v1.x is fixed.
+- Another error in config conversion from v1.x is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Thu, 28 Jan 2021 09:35:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Thu, 28 Jan 2021 09:35:00 +0500
 
 wb-mqtt-homeui (2.0.2) stable; urgency=medium
 
-  * Replace logo with svg
+- Replace logo with svg
 
- -- Pavel Poglazov <poglazov@contactless.ru>  Tue, 12 Jan 2021 17:42:39 +0300
+-- Pavel Poglazov <poglazov@contactless.ru> Tue, 12 Jan 2021 17:42:39 +0300
 
 wb-mqtt-homeui (2.0.1) stable; urgency=medium
 
-  * Error in config conversion from v1.x is fixed.
+- Error in config conversion from v1.x is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 11 Jan 2021 12:20:10 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Mon, 11 Jan 2021 12:20:10 +0500
 
 wb-mqtt-homeui (2.0.0) stable; urgency=medium
 
-  * mark as stable
+- mark as stable
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 07 Jan 2021 11:39:10 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 07 Jan 2021 11:39:10 +0300
 
 wb-mqtt-homeui (2.0.0~rc6) stable; urgency=medium
 
-  * css is modified to support new wb-mqtt-serial UI
+- css is modified to support new wb-mqtt-serial UI
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 25 Dec 2020 16:55:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 25 Dec 2020 16:55:00 +0500
 
 wb-mqtt-homeui (2.0.0~rc5) stable; urgency=medium
 
-  * Error in config conversion from v1.x is fixed.
+- Error in config conversion from v1.x is fixed.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Tue, 29 Dec 2020 21:09:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Tue, 29 Dec 2020 21:09:00 +0500
 
 wb-mqtt-homeui (2.0.0~rc4) stable; urgency=medium
 
-  * Plotly.js is bundled with the package.
+- Plotly.js is bundled with the package.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 25 Dec 2020 09:20:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 25 Dec 2020 09:20:00 +0500
 
 wb-mqtt-homeui (2.0.0~rc3) stable; urgency=medium
 
-  * history ui bug fixes #126
-  * uniform fonts in "Devices" tab
-  * translation is added to "Dashboards" tab labels
+- history ui bug fixes #126
+- uniform fonts in "Devices" tab
+- translation is added to "Dashboards" tab labels
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 04 Dec 2020 15:38:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Fri, 04 Dec 2020 15:38:00 +0500
 
 wb-mqtt-homeui (2.0.0~rc2) stable; urgency=medium
 
-  * fix i18n
+- fix i18n
 
- -- Evgeny Boger <boger@contactless.ru>  Mon, 20 Apr 2020 01:44:01 +0300
+-- Evgeny Boger <boger@contactless.ru> Mon, 20 Apr 2020 01:44:01 +0300
 
 wb-mqtt-homeui (2.0.0~rc1) stable; urgency=medium
 
-  * fix switch sticking bug #154 #137
-  * all of the below
+- fix switch sticking bug #154 #137
+- all of the below
 
- -- Evgeny Boger <boger@contactless.ru>  Sun, 19 Apr 2020 23:32:40 +0300
+-- Evgeny Boger <boger@contactless.ru> Sun, 19 Apr 2020 23:32:40 +0300
 
 wb-mqtt-homeui (2.0~beta13) stable; urgency=medium
 
-  * deprecate meta/writable in favor of meta/readable=false
+- deprecate meta/writable in favor of meta/readable=false
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 16 Apr 2020 22:28:47 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 16 Apr 2020 22:28:47 +0300
 
 wb-mqtt-homeui (2.0~beta12) stable; urgency=medium
 
-  * disable widget compact mode by default
+- disable widget compact mode by default
 
- -- Pavel Poglazov <poglazov@contactless.ru>  Wed, 19 Jun 2019 20:37:30 +0300
+-- Pavel Poglazov <poglazov@contactless.ru> Wed, 19 Jun 2019 20:37:30 +0300
 
 wb-mqtt-homeui (2.0~beta11) stable; urgency=medium
 
-  * add delete device button
+- add delete device button
 
- -- Evgeny Boger <boger@contactless.ru>  Fri, 12 Apr 2019 23:26:01 +0300
+-- Evgeny Boger <boger@contactless.ru> Fri, 12 Apr 2019 23:26:01 +0300
 
 wb-mqtt-homeui (2.0~beta10) stable; urgency=medium
 
-  * disable webui editing
+- disable webui editing
 
- -- Evgeny Boger <boger@contactless.ru>  Fri, 12 Apr 2019 22:51:46 +0300
+-- Evgeny Boger <boger@contactless.ru> Fri, 12 Apr 2019 22:51:46 +0300
 
 wb-mqtt-homeui (2.0~beta9) stable; urgency=medium
 
-  * ui: add new mobile menu
-  * core: new template loader: fix cache problems when migrating from WebUI 1.0
-  * history: allow to download history as a CSV file
-  * history: fix cutting of long tick labels in Y-axis
-  * dashboards: fix display of SVG dashboards
+- ui: add new mobile menu
+- core: new template loader: fix cache problems when migrating from WebUI 1.0
+- history: allow to download history as a CSV file
+- history: fix cutting of long tick labels in Y-axis
+- dashboards: fix display of SVG dashboards
 
- -- Evgeny Boger <boger@contactless.ru>  Mon, 08 Apr 2019 20:23:53 +0300
+-- Evgeny Boger <boger@contactless.ru> Mon, 08 Apr 2019 20:23:53 +0300
 
 wb-mqtt-homeui (2.0~beta8) stable; urgency=medium
 
-  * merge master: wb6 and wb-utils 2.0 compatibility,
-  *  forceDefault option (needed for tcp ports on wb-mqtt-serial)
+- merge master: wb6 and wb-utils 2.0 compatibility,
+- forceDefault option (needed for tcp ports on wb-mqtt-serial)
 
- -- Evgeny Boger <boger@contactless.ru>  Sat, 26 Jan 2019 20:36:13 +0300
+-- Evgeny Boger <boger@contactless.ru> Sat, 26 Jan 2019 20:36:13 +0300
 
 wb-mqtt-homeui (2.0~beta7) stable; urgency=medium
 
-  * fix access role alert behaviour
-  * temporary delete the yet to be supported controls on Scripts page
-  * rework devices screen: auto-collapse device tiles if they won't fit to the screen
-  * fix default dashboard setting
-  * fix config page for wb-hwconf-manager (wb-hardware)
-  * properly set default settings on first start
-  * copy channel name or value on click, then show a tooltip
+- fix access role alert behaviour
+- temporary delete the yet to be supported controls on Scripts page
+- rework devices screen: auto-collapse device tiles if they won't fit to the screen
+- fix default dashboard setting
+- fix config page for wb-hwconf-manager (wb-hardware)
+- properly set default settings on first start
+- copy channel name or value on click, then show a tooltip
 
- -- Evgeny Boger <boger@contactless.ru>  Sat, 10 Nov 2018 13:58:46 +0300
+-- Evgeny Boger <boger@contactless.ru> Sat, 10 Nov 2018 13:58:46 +0300
 
 wb-mqtt-homeui (2.0~beta6) stable; urgency=medium
 
-  * compatibility with newer wb-utils in postinst
-  * fix pushbutton renaming in widgets
-  * show text controls as labels
-  * change favicon and logos
-  * changed css rules for displaying rows with values
-  * add menu collapsing to all end menu items
-  * changed the styles of items in the mobile menu to fit full wight
-  * change min-height of main page-wrapper
-  * change behavior of 'copy to clipboard' popup
-  * fix styles for readonly switch
-  * add history btn to dashboards/widgets
-  * fix menu width for mobile
+- compatibility with newer wb-utils in postinst
+- fix pushbutton renaming in widgets
+- show text controls as labels
+- change favicon and logos
+- changed css rules for displaying rows with values
+- add menu collapsing to all end menu items
+- changed the styles of items in the mobile menu to fit full wight
+- change min-height of main page-wrapper
+- change behavior of 'copy to clipboard' popup
+- fix styles for readonly switch
+- add history btn to dashboards/widgets
+- fix menu width for mobile
 
- -- Evgeny Boger <boger@contactless.ru>  Wed, 17 Oct 2018 18:32:47 +0300
+-- Evgeny Boger <boger@contactless.ru> Wed, 17 Oct 2018 18:32:47 +0300
 
 wb-mqtt-homeui (2.0~beta5) stable; urgency=medium
 
-  * Allow to invert switch state in widgets
-  * Mark widgets present on multiple dashboards
-  * Increase default RPC timeout
-  * Fixes SVG dashboards
+- Allow to invert switch state in widgets
+- Mark widgets present on multiple dashboards
+- Increase default RPC timeout
+- Fixes SVG dashboards
 
- -- Evgeny Boger <boger@contactless.ru>  Sat, 24 Feb 2018 14:30:12 +0300
+-- Evgeny Boger <boger@contactless.ru> Sat, 24 Feb 2018 14:30:12 +0300
 
 wb-mqtt-homeui (2.0~beta4) stable; urgency=medium
 
-  * Allow to edit widget as JSON
-  * Autologin
-  * Adding the ability to add widget to several dashboards
-  * Add widget delete and remove from dashboard confirmation
-  * Add topic instead meta-type to widget in edit mode
+- Allow to edit widget as JSON
+- Autologin
+- Adding the ability to add widget to several dashboards
+- Add widget delete and remove from dashboard confirmation
+- Add topic instead meta-type to widget in edit mode
 
- -- Evgeny Boger <boger@contactless.ru>  Tue, 13 Feb 2018 12:27:13 +0300
+-- Evgeny Boger <boger@contactless.ru> Tue, 13 Feb 2018 12:27:13 +0300
 
 wb-mqtt-homeui (2.0~beta3) stable; urgency=medium
 
-  * do not require wb-mqtt-db
+- do not require wb-mqtt-db
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 26 Oct 2017 02:28:54 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 26 Oct 2017 02:28:54 +0300
 
 wb-mqtt-homeui (2.0~beta2) testing; urgency=medium
 
-  * carbonfay development version, round 1
+- carbonfay development version, round 1
 
- -- Evgeny Boger <boger@contactless.ru>  Fri, 20 Oct 2017 23:09:21 +0300
+-- Evgeny Boger <boger@contactless.ru> Fri, 20 Oct 2017 23:09:21 +0300
 
 wb-mqtt-homeui (2.0~beta1) stable; urgency=medium
 
-  * webpack build
+- webpack build
 
- -- Evgeny Boger <boger@contactless.ru>  Sat, 08 Apr 2017 14:20:39 +0300
+-- Evgeny Boger <boger@contactless.ru> Sat, 08 Apr 2017 14:20:39 +0300
 
 wb-mqtt-homeui (2.0~alpha) stable; urgency=medium
 
-  * json config
-  * new dashboards & widgets
-  * removed rooms
+- json config
+- new dashboards & widgets
+- removed rooms
 
- -- Ivan Shvedunov <ivan4th@gmail.com>  Thu, 06 Jun 2016 01:02:09 +0300
+-- Ivan Shvedunov <ivan4th@gmail.com> Thu, 06 Jun 2016 01:02:09 +0300
 
 wb-mqtt-homeui (1.8.0) stable; urgency=medium
 
-  * css is modified to support new wb-mqtt-serial UI
+- css is modified to support new wb-mqtt-serial UI
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Wed, 16 Dec 2020 20:34:00 +0500
+-- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru> Wed, 16 Dec 2020 20:34:00 +0500
 
 wb-mqtt-homeui (1.7.1) stable; urgency=medium
 
-  * compatibility with wb-utils 2.0 and WB6
+- compatibility with wb-utils 2.0 and WB6
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 27 Dec 2018 19:21:43 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 27 Dec 2018 19:21:43 +0300
 
 wb-mqtt-homeui (1.7) stable; urgency=medium
 
-  * config editor: new property option "forceDefault" to always add property which has default value without having to make it required
+- config editor: new property option "forceDefault" to always add property which has default value
+  without having to make it required
 
- -- Islam Boziev <i.boziev@wirenboard.ru>  Fri, 13 Oct 2017 17:09:24 +0300
+-- Islam Boziev <i.boziev@wirenboard.ru> Fri, 13 Oct 2017 17:09:24 +0300
 
 wb-mqtt-homeui (1.6.5) stable; urgency=medium
 
-  * do not require wb-mqtt-db
+- do not require wb-mqtt-db
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 26 Oct 2017 02:28:54 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 26 Oct 2017 02:28:54 +0300
 
 wb-mqtt-homeui (1.6.4) stable; urgency=medium
 
-  * fixes default UI config on WB5.5 and WB5.8
+- fixes default UI config on WB5.5 and WB5.8
 
- -- Evgeny Boger <boger@contactless.ru>  Fri, 18 Nov 2016 22:45:30 +0300
+-- Evgeny Boger <boger@contactless.ru> Fri, 18 Nov 2016 22:45:30 +0300
 
 wb-mqtt-homeui (1.6.2) stable; urgency=medium
 
-  * do not show empty channels in History tab
-  * change channel name format in History tab
+- do not show empty channels in History tab
+- change channel name format in History tab
 
- -- Nikita Maslov <n.maslov@contactless.ru>  Thu, 30 Jun 2016 12:37:27 +0300
+-- Nikita Maslov <n.maslov@contactless.ru> Thu, 30 Jun 2016 12:37:27 +0300
 
 wb-mqtt-homeui (1.6.1) stable; urgency=medium
 
-  * config editor update for hwconf slot capabilities
+- config editor update for hwconf slot capabilities
 
- -- Alexey Ignatov <lexszero@gmail.com>  Wed, 01 Jun 2016 15:56:57 +0000
+-- Alexey Ignatov <lexszero@gmail.com> Wed, 01 Jun 2016 15:56:57 +0000
 
 wb-mqtt-homeui (1.6) stable; urgency=medium
 
-  * config editor improvements to support module parameters in hwconf
+- config editor improvements to support module parameters in hwconf
 
- -- Evgeny Boger <boger@contactless.ru>  Mon, 28 Mar 2016 13:27:52 +0300
+-- Evgeny Boger <boger@contactless.ru> Mon, 28 Mar 2016 13:27:52 +0300
 
 wb-mqtt-homeui (1.5.1) stable; urgency=low
 
-  * Config editor: multiple schemas per config
+- Config editor: multiple schemas per config
 
- -- Ivan Shvedunov <ivan4th@gmail.com>  Wed, 02 Mar 2016 22:10:41 +0300
+-- Ivan Shvedunov <ivan4th@gmail.com> Wed, 02 Mar 2016 22:10:41 +0300
 
 wb-mqtt-homeui (1.5) stable; urgency=medium
 
-  * password authentification
-  * standard WS mqtt
-  * support for mqtt WS over main http url
-  * cleanup for statistics in Settings tab
+- password authentification
+- standard WS mqtt
+- support for mqtt WS over main http url
+- cleanup for statistics in Settings tab
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 11 Feb 2016 16:55:55 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 11 Feb 2016 16:55:55 +0300
 
 wb-mqtt-homeui (1.4) UNRELEASED; urgency=medium
 
-  * Hide virtual devices and rules tabs. Disable drop-down list in Scripts tab
+- Hide virtual devices and rules tabs. Disable drop-down list in Scripts tab
 
- -- Evgeny Boger <boger@contactless.ru>  Tue, 09 Feb 2016 15:31:06 +0300
+-- Evgeny Boger <boger@contactless.ru> Tue, 09 Feb 2016 15:31:06 +0300
 
 wb-mqtt-homeui (1.3.7) stable; urgency=medium
 
-  * add A1 to wb5 def config
+- add A1 to wb5 def config
 
- -- Evgeny Boger <boger@contactless.ru>  Tue, 09 Feb 2016 14:43:50 +0300
+-- Evgeny Boger <boger@contactless.ru> Tue, 09 Feb 2016 14:43:50 +0300
 
 wb-mqtt-homeui (1.3.6) stable; urgency=medium
 
-  * adds board-specific default webinterface config
+- adds board-specific default webinterface config
 
- -- Evgeny Boger <boger@contactless.ru>  Tue, 09 Feb 2016 14:16:05 +0300
-
+-- Evgeny Boger <boger@contactless.ru> Tue, 09 Feb 2016 14:16:05 +0300
 
 wb-mqtt-homeui (1.3.5) stable; urgency=medium
 
-  * Conditions in dumbtemplate for wb-hwconf-manager
+- Conditions in dumbtemplate for wb-hwconf-manager
 
- -- Alexey Ignatov <lexszero@gmail.com>  Thu, 04 Feb 2016 17:14:51 +0000
+-- Alexey Ignatov <lexszero@gmail.com> Thu, 04 Feb 2016 17:14:51 +0000
 
 wb-mqtt-homeui (1.3.4) stable; urgency=medium
 
-  * Added 'alarm' control type
-  * Support 'strictProps' & 'limited' in config schema
+- Added 'alarm' control type
+- Support 'strictProps' & 'limited' in config schema
 
- -- Ivan Shvedunov <ivan4th@gmail.com>  Mon, 28 Dec 2015 07:18:54 +0300
+-- Ivan Shvedunov <ivan4th@gmail.com> Mon, 28 Dec 2015 07:18:54 +0300
 
 wb-mqtt-homeui (1.3.3) stable; urgency=medium
 
-  * workaround for Chrome bug
+- workaround for Chrome bug
 
- -- Evgeny Boger <boger@contactless.ru>  Sat, 07 Nov 2015 04:51:16 +0300
+-- Evgeny Boger <boger@contactless.ru> Sat, 07 Nov 2015 04:51:16 +0300
 
 wb-mqtt-homeui (1.3.2) stable; urgency=medium
 
-  * fwupdate: fix error handling
+- fwupdate: fix error handling
 
- -- Alexey Ignatov <lexs@nyapad>  Sun, 01 Nov 2015 01:44:12 +0000
+-- Alexey Ignatov <lexs@nyapad> Sun, 01 Nov 2015 01:44:12 +0000
 
 wb-mqtt-homeui (1.3.1) stable; urgency=medium
 
-  * fwupdate: change messages, fix controller
+- fwupdate: change messages, fix controller
 
- -- Alexey Ignatov <lexszero@gmail.com>  Mon, 28 Sep 2015 00:22:31 +0000
+-- Alexey Ignatov <lexszero@gmail.com> Mon, 28 Sep 2015 00:22:31 +0000
 
 wb-mqtt-homeui (1.3) stable; urgency=medium
 
-  * firmware update
+- firmware update
 
- -- Alexey Ignatov <lexszero@gmail.com>  Sat, 26 Sep 2015 20:13:38 +0000
+-- Alexey Ignatov <lexszero@gmail.com> Sat, 26 Sep 2015 20:13:38 +0000
 
 wb-mqtt-homeui (1.2.1) stable; urgency=medium
 
-  * Use new wb-mqtt-db API. Better handling of large intervals
+- Use new wb-mqtt-db API. Better handling of large intervals
 
- -- Evgeny Boger <boger@contactless.ru>  Tue, 06 Oct 2015 17:59:32 +0300
+-- Evgeny Boger <boger@contactless.ru> Tue, 06 Oct 2015 17:59:32 +0300
 
 wb-mqtt-homeui (1.2) stable; urgency=medium
 
-  * history viewer
+- history viewer
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 10 Sep 2015 18:52:14 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 10 Sep 2015 18:52:14 +0300
 
 wb-mqtt-homeui (1.1.1) stable; urgency=medium
 
-  * create /var/www/uploads directory
+- create /var/www/uploads directory
 
- -- Alexey Ignatov <lexszero@gmail.com>  Wed, 23 Sep 2015 18:42:06 +0000
+-- Alexey Ignatov <lexszero@gmail.com> Wed, 23 Sep 2015 18:42:06 +0000
 
 wb-mqtt-homeui (1.1) stable; urgency=medium
 
-  * support for rule editing
+- support for rule editing
 
- -- Evgeny Boger <boger@contactless.ru>  Wed, 29 Jul 2015 21:42:19 +0300
+-- Evgeny Boger <boger@contactless.ru> Wed, 29 Jul 2015 21:42:19 +0300
 
 wb-mqtt-homeui (1.0.13) stable; urgency=medium
 
-  * support meta/error in devices
+- support meta/error in devices
 
- -- Evgeny Boger <boger@contactless.ru>  Mon, 25 May 2015 15:18:41 +0300
+-- Evgeny Boger <boger@contactless.ru> Mon, 25 May 2015 15:18:41 +0300
 
 wb-mqtt-homeui (1.0.12) stable; urgency=medium
 
-  * add warning label class to disconnected label
-  * fix percentage in dimmable light widget
+- add warning label class to disconnected label
+- fix percentage in dimmable light widget
 
- -- Evgeny Boger <boger@contactless.ru>  Mon, 25 May 2015 01:55:39 +0300
+-- Evgeny Boger <boger@contactless.ru> Mon, 25 May 2015 01:55:39 +0300
 
 wb-mqtt-homeui (1.0.11) stable; urgency=medium
 
-  * fix concetration in devices
+- fix concetration in devices
 
- -- Evgeny Boger <boger@contactless.ru>  Sat, 23 May 2015 23:45:27 +0300
+-- Evgeny Boger <boger@contactless.ru> Sat, 23 May 2015 23:45:27 +0300
 
 wb-mqtt-homeui (1.0.10) stable; urgency=medium
 
-  * add concentration meta type
+- add concentration meta type
 
- -- Evgeny Boger <boger@contactless.ru>  Sat, 23 May 2015 23:32:11 +0300
+-- Evgeny Boger <boger@contactless.ru> Sat, 23 May 2015 23:32:11 +0300
 
 wb-mqtt-homeui (1.0.9) stable; urgency=medium
 
-  * add temp+humidity widget
+- add temp+humidity widget
 
- -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 22:31:54 +0300
+-- Evgeny Boger <boger@contactless.ru> Fri, 22 May 2015 22:31:54 +0300
 
 wb-mqtt-homeui (1.0.8) stable; urgency=medium
 
-  * do not set retain flag on /on messages
+- do not set retain flag on /on messages
 
- -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 20:58:24 +0300
+-- Evgeny Boger <boger@contactless.ru> Fri, 22 May 2015 20:58:24 +0300
 
 wb-mqtt-homeui (1.0.7) stable; urgency=medium
 
-  * fix some widgets
+- fix some widgets
 
- -- Evgeny Boger <boger@contactless.ru>  Fri, 22 May 2015 18:13:03 +0300
+-- Evgeny Boger <boger@contactless.ru> Fri, 22 May 2015 18:13:03 +0300
 
 wb-mqtt-homeui (1.0.6) stable; urgency=medium
 
-  * add debouncing to rgb controls and widgets
+- add debouncing to rgb controls and widgets
 
- -- Evgeny Boger <boger@contactless.ru>  Wed, 13 May 2015 21:18:32 +0300
+-- Evgeny Boger <boger@contactless.ru> Wed, 13 May 2015 21:18:32 +0300
 
 wb-mqtt-homeui (1.0.5) stable; urgency=medium
 
-  * add debouncing to range inputs
+- add debouncing to range inputs
 
- -- Evgeny Boger <boger@contactless.ru>  Tue, 12 May 2015 00:45:57 +0300
+-- Evgeny Boger <boger@contactless.ru> Tue, 12 May 2015 00:45:57 +0300
 
 wb-mqtt-homeui (1.0.4) stable; urgency=medium
 
-  * UserID should be used as username, not clientid
-  * add debouncing to range inputs
+- UserID should be used as username, not clientid
+- add debouncing to range inputs
 
- -- Evgeny Boger <boger@contactless.ru>  Thu, 07 May 2015 16:32:06 +0300
+-- Evgeny Boger <boger@contactless.ru> Thu, 07 May 2015 16:32:06 +0300
 
 wb-mqtt-homeui (1.0.3) stable; urgency=medium
 
-  * fix error on nonexistent device referenced by widget
+- fix error on nonexistent device referenced by widget
 
-
- -- Evgeny Boger <boger@contactless.ru>  Tue, 05 May 2015 02:45:29 +0300
+-- Evgeny Boger <boger@contactless.ru> Tue, 05 May 2015 02:45:29 +0300
 
 wb-mqtt-homeui (1.0.2) stable; urgency=medium
 
-  * add text value to range control
-  * css improvements
-  * do not retain pushbutton messages
+- add text value to range control
+- css improvements
+- do not retain pushbutton messages
 
- -- Evgeny Boger <boger@contactless.ru>  Sun, 03 May 2015 20:42:59 +0300
+-- Evgeny Boger <boger@contactless.ru> Sun, 03 May 2015 20:42:59 +0300
 
 wb-mqtt-homeui (1.0.1) stable; urgency=medium
 
-  * minor widget fixes
+- minor widget fixes
 
- -- Evgeny Boger <boger@contactless.ru>  Tue, 28 Apr 2015 20:53:18 +0300
+-- Evgeny Boger <boger@contactless.ru> Tue, 28 Apr 2015 20:53:18 +0300
 
 wb-mqtt-homeui (1.0) stable; urgency=medium
 
-  * Initial release.
+- Initial release.
 
- -- Evgeny Boger <boger@contactless.ru>  Mon, 27 Apr 2015 17:16:00 +0300
+-- Evgeny Boger <boger@contactless.ru> Mon, 27 Apr 2015 17:16:00 +0300
