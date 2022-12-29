@@ -30,7 +30,7 @@
    "com": {
       "wb": {
          "device_manager": {
-            "failed_to_scan_error": "Scan failed for ports: {{ ports }}. Check logs for more information"
+            "failed_to_scan_error": "Scan failed for ports: {{ failed_ports }}. Check logs for more information"
          }
       }
    }
