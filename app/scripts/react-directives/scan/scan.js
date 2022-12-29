@@ -35,7 +35,7 @@ class GlobalErrorStore {
                     msg = i18n.t(error.id, {
                         defaultValue: error.message,
                         replace: {
-                            ports: error.metadata.failed_ports.join(", "),
+                            failed_ports: error.metadata.failed_ports.join(", "),
                         },
                         interpolation: { escapeValue: false },
                     });
