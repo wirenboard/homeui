@@ -26,5 +26,12 @@
          "firmwares-notice": "Scanning functionality is available in latest firmwares for Wiren Board devices.",
          "firmwares-notice-link": "Firmware update guide"
       }
+   },
+   "com": {
+      "wb": {
+         "device_manager": {
+            "failed_to_scan_error": "Scan failed for ports: {{ failed_ports }}. Check logs for more information"
+         }
+      }
    }
 }

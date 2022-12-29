@@ -16,20 +16,37 @@ class GlobalErrorStore {
     // {
     //    "id": "com.wb.device_manager.generic_error"
     //    "message": "Internal error. Check logs for more info"
+    //    "metadata": {...}
     // }
-    // where "id" - unique id of error, "message" - human readable message for the error
+    // where "id" - unique id of error,
+    //       "message" - human readable message for the error,
+    //       "metadata" - object with specific error parameters
     setError(error) {
         var msg = '';
         if (typeof error === "string") {
             msg = error;
         } else if (typeof error === "object") {
             if (error.hasOwnProperty('id')) {
-                msg = i18n.t(error.id, error.message)
+                if (
+                    error.id === "com.wb.device_manager.failed_to_scan_error" &&
+                    error.metadata &&
+                    error.metadata.failed_ports
+                ) {
+                    msg = i18n.t(error.id, {
+                        defaultValue: error.message,
+                        replace: {
+                            failed_ports: error.metadata.failed_ports.join(", "),
+                        },
+                        interpolation: { escapeValue: false },
+                    });
+                } else {
+                    msg = i18n.t(error.id, error.message);
+                }
             } else {
-                msg = error.message
+                msg = error.message;
             }
         }
-        this.error = msg
+        this.error = msg;
     }
 
     clearError() {
