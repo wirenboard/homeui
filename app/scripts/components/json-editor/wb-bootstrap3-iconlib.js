@@ -28,7 +28,8 @@ const fontawesomeMapping = {
   ethernet: 'fas fa-network-wired',
   modem: 'fas fa-signal',
   loopback: 'fas fa-sync-alt',
-  'old-settings': 'fas fa-bars'
+  'old-settings': 'fas fa-bars',
+  warning: 'fas fa-exclamation-triangle'
 }
 
 function makeWbBootstrap3Iconlib () {

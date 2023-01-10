@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.51.0) stable; urgency=medium
+
+  * json-editor: array tabs highlighting support (used in network connections
+    editor to show legacy items that should be removed)
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 10 Jan 2023 16:05:31 +0600
+
 wb-mqtt-homeui (2.50.1) stable; urgency=medium
 
   * Add handling of port scan errors
