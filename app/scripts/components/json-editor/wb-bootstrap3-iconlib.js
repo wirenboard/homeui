@@ -20,7 +20,8 @@ const glyphiconMapping = {
   clear: 'remove-circle',
   time: 'time',
   calendar: 'calendar',
-  edit_properties: 'list'
+  edit_properties: 'list',
+  warning: 'exclamation-sign'
 }
 
 const fontawesomeMapping = {
@@ -28,8 +29,7 @@ const fontawesomeMapping = {
   ethernet: 'fas fa-network-wired',
   modem: 'fas fa-signal',
   loopback: 'fas fa-sync-alt',
-  'old-settings': 'fas fa-bars',
-  warning: 'fas fa-exclamation-triangle'
+  'old-settings': 'fas fa-bars'
 }
 
 function makeWbBootstrap3Iconlib () {
