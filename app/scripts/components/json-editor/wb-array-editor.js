@@ -15,7 +15,8 @@ import { JSONEditor } from "../../../3rdparty/jsoneditor";
 //
 // Additional item options:
 // "wb": {
-//     "icon": "ICON_NAME" // item's icon name
+//     "icon": "ICON_NAME", // item's icon name
+//     "color": "default" // Bootstrap contextual color ("default", "warning", "danger" etc.)
 // }
 
 function makeWbArrayEditor () {
@@ -244,6 +245,16 @@ function makeWbArrayEditor () {
               this.rows[i].icon.style.display = 'none'
             }
             this.theme.setTabIcon(this.rows[i].tab, this.rows[i].icon)
+
+            if (this._hasWbOptions(item_schema) && item_schema.options.wb.color &&
+                  this.theme.setTabContextualColor) {
+              const ctxcolor = item_schema.options.wb.color;
+              this.theme.setTabContextualColor(this.rows[i].tab, ctxcolor);
+            } else {
+              if (this.theme.removeTabContextualColors) {
+                this.theme.removeTabContextualColors(this.rows[i].tab)
+              }
+            }
           }
           return row
         }
@@ -267,6 +278,16 @@ function makeWbArrayEditor () {
                   }
                 } else {
                   row.icon.style.display = 'none'
+                }
+
+                if (this._hasWbOptions(item_schema) && item_schema.options.wb.color &&
+                    this.theme.setTabContextualColor) {
+                  const ctxcolor = item_schema.options.wb.color;
+                  this.theme.setTabContextualColor(row.tab, ctxcolor);
+                } else {
+                  if (this.theme.removeTabContextualColors) {
+                    this.theme.removeTabContextualColors(row.tab)
+                  }
                 }
               }
             } else if (row.tab === this.active_tab) {

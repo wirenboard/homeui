@@ -30,6 +30,28 @@ function makeWbBootstrap3Theme () {
       tab.childNodes[0].insertBefore(icon, tab.childNodes[0].childNodes[0])
     }
 
+    setTabContextualColor(tab, color) {
+      tab.classList.add("bg-" + color);
+      tab.childNodes[0].classList.add("text-" + color);
+    }
+
+    removeTabContextualColors(tab) {
+      this.removeContextualColorsInElement(tab)
+      this.removeContextualColorsInElement(tab.childNodes[0])
+    }
+
+    removeContextualColorsInElement(elem) {
+      let toRemove = [];
+      for (let i = 0; i < elem.classList.length; i++) {
+        if (elem.classList[i].startsWith("bg-") || elem.classList[i].startsWith("text-")) {
+          toRemove.push(elem.classList[i])
+        }
+      }
+      toRemove.forEach(removeClass => {
+        elem.classList.remove(removeClass);
+      })
+    }
+
     getFormButtonHolder () {
       const el = this.getButtonHolder()
       el.style.display = 'flex'

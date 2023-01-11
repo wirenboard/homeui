@@ -197,6 +197,41 @@ function makeCollapsibleMultipleEditor () {
             }
         }
 
+        updateCustomWarning(editor) {
+            if (editor.wb_info_block) {
+                return;
+            }
+
+            if (this._hasWbOptions(editor) && editor.options.wb.info_block) {
+                const info_block = editor.options.wb.info_block;
+                const color = info_block.color;
+                const content = info_block.content;
+
+                editor.wb_info_block = document.createElement("div");
+                editor.wb_info_block.classList.add("alert-" + color);
+                editor.wb_info_block.classList.add("alert");
+
+                const icon = document.createElement("i")
+                const iconclass = this.iconlib.getIconClass(color)
+                if (!iconclass) {
+                    icon.style.display = 'none'
+                } else {
+                    icon.removeAttribute('class')
+                    icon.classList.add(...iconclass.split(' '))
+                    icon.style.display = ''
+                }
+
+                editor.wb_info_block.appendChild(icon)
+
+                const text_container = document.createElement("span");
+                text_container.style.marginLeft = "5px";
+                text_container.innerHTML = this.translateProperty(content);
+                editor.wb_info_block.appendChild(text_container)
+
+                editor.description.appendChild(editor.wb_info_block);
+            }
+        }
+
         switchEditor (i) {
             var collapse = false
             if (!this.editors[i]) {
@@ -227,6 +262,7 @@ function makeCollapsibleMultipleEditor () {
                             })
                             editor.setValue(valueToKeep, true)
                         }
+                        this.updateCustomWarning(editor);
                     }
                     this._adjustControls(editor)
                 } else {

@@ -20,7 +20,8 @@ const glyphiconMapping = {
   clear: 'remove-circle',
   time: 'time',
   calendar: 'calendar',
-  edit_properties: 'list'
+  edit_properties: 'list',
+  warning: 'exclamation-sign'
 }
 
 const fontawesomeMapping = {
