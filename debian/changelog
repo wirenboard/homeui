@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.51.1) stable; urgency=medium
 
-  * Support preffered languages settings
+  * Choose default language based on browser's preffered languages
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 23 Jan 2023 09:17:00 +0400
 

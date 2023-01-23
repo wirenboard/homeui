@@ -28,10 +28,6 @@ See into [conventions](https://github.com/wirenboard/conventions/blob/main/READM
 
 Run `npm run build` for building and `npm start` for preview.
 
-## Testing
-
-Running `npm run test` will run the unit tests with karma.
-
 ## Default SVG-Dashboards
 
 In default svg-dashboards, the text is converted to curves. If you need to add something - add new text and select the Ubuntu font.
