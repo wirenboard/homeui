@@ -382,9 +382,10 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
             prefix: $window.localStorage['prefix']
         };
 
-        var language =  $window.localStorage['language'];
-        if (!language) {
-            language = window.navigator.language.startsWith('ru') ? 'ru' : 'en';
+        var language = $window.localStorage['language'];
+        if (!language || i18n.languages.indexOf(language) === -1) {
+            var preferredLanguages = window.navigator.languages;
+            language = preferredLanguages.filter(lang => i18n.languages.indexOf(lang.split('-')[0]) !== -1)[0] || 'en';
             $window.localStorage.setItem('language', language);
         }
         $translate.use(language);

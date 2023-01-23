@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.51.1) stable; urgency=medium
+
+  * Support preffered languages settings
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 23 Jan 2023 09:17:00 +0400
+
 wb-mqtt-homeui (2.51.0) stable; urgency=medium
 
   * json-editor: array tabs highlighting support (used in network connections
