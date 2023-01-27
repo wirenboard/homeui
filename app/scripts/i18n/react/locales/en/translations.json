@@ -33,5 +33,34 @@
             "failed_to_scan_error": "Scan failed for ports: {{ failed_ports }}. Check logs for more information"
          }
       }
+   },
+   "network-connections": {
+      "title": "Network connections",
+      "labels": {
+         "changes": "There are unsaved changes",
+         "has-errors": "There are invalid parameters",
+         "activated": "Connected",
+         "activating": "Connecting",
+         "deactivating": "Disconnecting",
+         "not-connected": "Not connected",
+         "deprecated": "Deprecated",
+         "new": "New connection",
+         "select-type": "Select connection type",
+         "wifi": "Wi-Fi",
+         "wifi-ap": "Wi-Fi access point",
+         "ethernet": "Ethernet",
+         "modem": "GSM-modem",
+         "canbus": "CANBUS",
+         "confirm-delete-connection": "Do you realy want to delete the connection?",
+         "deprecation-notice": "Management via NetworkManager is available - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, <strong>remove this connection</strong> and use a pre-defined one (or create a new connection from scratch)"
+      },
+      "buttons": {
+         "save": "Save",
+         "dont-save": "Don't save",
+         "cancel": "Cancel",
+         "add-connection": "Add connection",
+         "delete": "Delete",
+         "add": "Add"
+      }
    }
 }
