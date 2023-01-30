@@ -8,8 +8,8 @@ export default class WebUICtrl {
         this.uiConfig = uiConfig;
         this.language = $window.localStorage['language'];
         if (!this.language || i18n.languages.indexOf(this.language) === -1) {
-            let preferredLanguages = window.navigator.languages;
-            this.language = preferredLanguages.filter(lang => i18n.languages.indexOf(lang.split('-')[0]) !== -1)[0] || 'en';
+            let preferredLanguages = window.navigator.languages.map(lang => lang.split('-')[0]);
+            this.language = preferredLanguages.filter(lang => i18n.languages.indexOf(lang) !== -1)[0] || 'en';
         }
 
         uiConfig.whenReady()
