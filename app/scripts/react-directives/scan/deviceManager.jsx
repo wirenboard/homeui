@@ -83,12 +83,13 @@ function ScanProgressBar({scanning, progress}) {
   return <div className='separator'></div>
 }
 
-function ScanningMessage() {
+function ScanningMessage({port}) {
   const { t } = useTranslation();
   return (
     <>
       <Spinner/>
-      <InfoMessage msg={t('device-manager.labels.scanning')}/>
+      <InfoMessage msg={t('device-manager.labels.scanning') + " " + port + " ..."}/>
+      <InfoMessage msg={t('device-manager.labels.scanning-stop')}/>
     </>
   )
 }
@@ -133,7 +134,7 @@ const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}
       <Mobile>
         {!nothingFound && <DevicesList devices={devices.devices}/>}
       </Mobile>
-      {scanning.scanning && <ScanningMessage/>}
+      {scanning.scanning && <ScanningMessage port={scanning.scanning_port}/>}
       {!scanning.scanning && nothingFound && <NotFoundMessage firstStart={scanning.firstStart}/>}
     </>
   );
