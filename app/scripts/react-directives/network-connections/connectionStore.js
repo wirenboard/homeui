@@ -101,7 +101,7 @@ export class Connection {
     this.updateName();
     this.isChanged = false;
     this.hasErrors = false;
-    if (this.data.type != 'can') {
+    if (this.data.type != 'can' && this.state !== 'deprecated') {
       this.state = 'not-connected';
     }
   }
