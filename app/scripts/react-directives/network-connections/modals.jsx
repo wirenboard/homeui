@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../common';
+import FocusLock from 'react-focus-lock';
 
 function GetLabelId(modalId) {
   return modalId + 'Label';
@@ -78,7 +79,9 @@ const Modal = ({ id, active, onCancel, children }) => {
       style={{ display: active ? 'block' : 'none' }}
     >
       <div ref={ref} className="modal-dialog" role="document">
-        <div className="modal-content">{children}</div>
+        <FocusLock disabled={!active}>
+          <div className="modal-content">{children}</div>
+        </FocusLock>
       </div>
     </div>
   );
