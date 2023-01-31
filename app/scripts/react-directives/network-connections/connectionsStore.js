@@ -11,6 +11,22 @@ import {
 import ConfirmModalState from './confirmModalState';
 import SelectNewConnectionModalState from './selectNewConnectionModalState';
 
+function stableSort (arr, compare) {
+  return arr.map((item, index) => ({item, index}))
+            .sort((a, b) => compare(a.item, b.item) || a.index - b.index)
+            .map(({item}) => item)
+}
+
+function typeCompare(cn1 , cn2) {
+  if (cn1.data.type > cn2.data.type) {
+    return 1;
+  }
+  if (cn1.data.type < cn2.data.type) {
+    return -1;
+  }
+  return 0;
+}
+
 class Connections {
   connections = [];
   confirmModalState = new ConfirmModalState();
@@ -44,6 +60,7 @@ class Connections {
     this._additionalData = data.data;
     this.connections = [];
     data.ui.connections.forEach(cn => this.addConnection({ type: cn.type, connectionData: cn }));
+    this.connections = stableSort(this.connections, typeCompare);
     if (this.connections.length) {
       this.activateConnection(this.connections[0]);
     }
@@ -163,7 +180,11 @@ class Connections {
         this.activateConnection(this.connections[0]);
       }
       const connectionType = await this.selectNewConnectionModalState.show();
-      this.setSelected(this.addConnection({ type: connectionType, state: 'new' }));
+      const cn = this.addConnection({ type: connectionType, state: 'new' });
+      runInAction(() => {
+        this.connections = stableSort(this.connections, typeCompare);
+      })
+      this.setSelected(cn);
     } catch (err) {
       if (err !== 'cancel') {
         throw err;
