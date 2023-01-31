@@ -1,9 +1,10 @@
-FROM node:alpine as build-stage
-
+FROM node:alpine as npm-cache
 WORKDIR /app
 COPY package.json ./
 RUN apk add --update --no-cache build-base python3
 RUN npm install
+
+FROM npm-cache as build-stage
 COPY . .
 RUN npm run build
 
