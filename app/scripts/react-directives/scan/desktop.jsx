@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { WarningTag, ErrorTag, FirmwareVersionWithLabels } from './common'
+import { WarningTag, ErrorTag, FirmwareVersionWithLabels } from './common';
 
 function DeviceNameCell(props) {
   const { t } = useTranslation();
