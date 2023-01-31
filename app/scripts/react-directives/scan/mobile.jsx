@@ -58,15 +58,16 @@ function Port({path, baud_rate, data_bits, parity, stop_bits}) {
 
 function Firmware(props) {
   const { t } = useTranslation();
-    if (props.update && props.update.available_fw) {
-      const text = t('device-manager.labels.available') + ' ' + props.update.available_fw
-      return (
-        <Row title={t('device-manager.labels.firmware')}>
-          {props.version} <WarningTag text={text}/>
-        </Row>
-      )
-    }
-    return <Row title={t('device-manager.labels.firmware')}>{props.version}</Row>
+  let version = props.version;
+  if (props.update && props.update.available_fw) {
+    const text = t('device-manager.labels.available') + ' ' + props.update.available_fw;
+    version = [version, <WarningTag text={text}/>];
+  }
+  return (
+    <Row title={t('device-manager.labels.firmware')}>
+      {version}{props.ext_support && <span class="glyphicon glyphicon-flash"></span>}
+    </Row>
+  )
 }
 
 function Error({error}) {
