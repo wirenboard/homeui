@@ -1,6 +1,6 @@
 'use strict';
 
-import { action, observable, makeObservable, runInAction } from 'mobx';
+import { action, observable, makeObservable, runInAction, computed } from 'mobx';
 import i18n from '../../i18n/react/config';
 import {
   Connection,
@@ -11,13 +11,14 @@ import {
 import ConfirmModalState from './confirmModalState';
 import SelectNewConnectionModalState from './selectNewConnectionModalState';
 
-function stableSort (arr, compare) {
-  return arr.map((item, index) => ({item, index}))
-            .sort((a, b) => compare(a.item, b.item) || a.index - b.index)
-            .map(({item}) => item)
+function stableSort(arr, compare) {
+  return arr
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => compare(a.item, b.item) || a.index - b.index)
+    .map(({ item }) => item);
 }
 
-function typeCompare(cn1 , cn2) {
+function typeCompare(cn1, cn2) {
   if (cn1.data.type > cn2.data.type) {
     return 1;
   }
@@ -46,6 +47,7 @@ class Connections {
       connections: observable,
       loading: observable,
       isChanged: observable,
+      deprecatedConnections: computed,
       setSchemaAndData: action,
       setSelected: action,
       saveConnections: action,
@@ -53,6 +55,10 @@ class Connections {
       activateConnection: action,
       deleteConnection: action,
     });
+  }
+
+  get deprecatedConnections() {
+    return this.connections.filter(cn => cn.state === 'deprecated').map(cn => cn.name);
   }
 
   setSchemaAndData(schema, data) {
@@ -183,7 +189,7 @@ class Connections {
       const cn = this.addConnection({ type: connectionType, state: 'new' });
       runInAction(() => {
         this.connections = stableSort(this.connections, typeCompare);
-      })
+      });
       this.setSelected(cn);
     } catch (err) {
       if (err !== 'cancel') {

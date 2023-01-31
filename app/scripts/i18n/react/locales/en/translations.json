@@ -52,7 +52,8 @@
          "modem": "GSM-modem",
          "canbus": "CANBUS",
          "confirm-delete-connection": "Do you realy want to delete the connection?",
-         "deprecation-notice": "Management via NetworkManager is available - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, <strong>remove this connection</strong> and use a pre-defined one (or create a new connection from scratch)"
+         "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
+         "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>"
       },
       "buttons": {
          "save": "Save",

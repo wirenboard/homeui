@@ -39,11 +39,6 @@ function makeTabPanes(tabs) {
   return tabs.connections.map(tab => {
     return (
       <TabPane key={tab.id} active={tab.active}>
-        {tab.state === 'deprecated' && (
-          <WarningBar>
-            <Trans>{'network-connections.labels.deprecation-notice'}</Trans>
-          </WarningBar>
-        )}
         <JsonEditor
           schema={tab.schema}
           data={tab.data}
@@ -103,11 +98,28 @@ const ConnectionTabs = observer(({ tabs }) => {
   );
 });
 
+const DeprecationWarning = ({ deprecatedConnections }) => {
+  if (!deprecatedConnections.length) {
+    return;
+  }
+  return (
+    <WarningBar>
+      <Trans
+        count={deprecatedConnections.length}
+        values={{ connections: deprecatedConnections.join(', ') }}
+      >
+        {'network-connections.labels.main-deprecation-notice'}
+      </Trans>
+    </WarningBar>
+  );
+};
+
 const NetworkConnectionsPage = observer(({ connections }) => {
   const { t } = useTranslation();
   return (
     <div className="network-connections-page">
       <ErrorBar msg={connections.error}></ErrorBar>
+      <DeprecationWarning deprecatedConnections={connections.deprecatedConnections} />
       <h1 className="page-header">
         <span>{t('network-connections.title')}</span>
       </h1>
