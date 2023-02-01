@@ -7,7 +7,8 @@
          "unavailable": "wb-device-manager service is unavailable"
       },
       "buttons": {
-         "scan": "Start scan"
+         "scan": "Start scan",
+         "stop": "Stop"
       },
       "labels": {
          "device": "Device",
@@ -20,11 +21,10 @@
          "not-polled": "not polled",
          "offline": "offline",
          "duplicate": "duplicate",
-         "scanning": "Scanning in process {{-port}}...",
+         "scanning": "Scanning in progress {{-port}}...",
          "scanning-stop": "Press \"Stop\", if all devices are found, or wait for completion",
          "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
          "not-found": "Nothing found.<br>For rescan press \"Start scan\"",
-         "firmwares-notice": "Scanning functionality is available in latest firmwares for Wiren Board devices.",
          "firmwares-notice-link": "Firmware update guide"
       }
    },
