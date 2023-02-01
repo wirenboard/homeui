@@ -58,7 +58,7 @@ class ScanningProgressStore {
     firstStart = true
     scanning = false
     progress = 0
-    scanning_port = ""
+    scanningPort = ""
 
     _requestScanning = false
 
@@ -66,7 +66,7 @@ class ScanningProgressStore {
         makeObservable(this,{
             scanning: observable,
             progress: observable,
-            scanning_port: observable,
+            scanningPort: observable,
             setStateFromMqtt: action,
             startScan: action,
             scanFailed: action.bound
@@ -79,7 +79,7 @@ class ScanningProgressStore {
         }
         this.scanning = this._requestScanning ? true : isScanning
         this.progress = scanProgress
-        this.scanning_port = scanningPort
+        this.scanningPort = scanningPort
         if (this.scanning) {
             this.firstStart = false
         }

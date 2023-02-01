@@ -60,7 +60,7 @@ function Firmware(props) {
   const { t } = useTranslation();
   return (
     <Row title={t('device-manager.labels.firmware')}>
-      <FirmwareVersionWithLabels version={props.version} available_fw={props.update?.available_fw} ext_support={props.ext_support}/>
+      <FirmwareVersionWithLabels version={props.version} availableFw={props.update?.available_fw} extSupport={props.ext_support}/>
     </Row>
   )
 }

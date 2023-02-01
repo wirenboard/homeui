@@ -23,7 +23,7 @@ function PortCell({path, baud_rate, data_bits, parity, stop_bits}) {
 }
 
 function FirmwareCell(props) {
-  return <td><FirmwareVersionWithLabels version={props.version} available_fw={props.update?.available_fw} ext_support={props.ext_support}/></td>;
+  return <td><FirmwareVersionWithLabels version={props.version} availableFw={props.update?.available_fw} extSupport={props.ext_support}/></td>;
 }
 
 function SlaveIdCell({slaveId, isDuplicate}) {

@@ -9,14 +9,15 @@ function ErrorTag({text}) {
     return <span className='tag bg-danger text-nowrap'>{text}</span>;
 }
 
-function FirmwareVersionWithLabels({version, available_fw, ext_support}) {
+function FirmwareVersionWithLabels({version, availableFw, extSupport}) {
     const { t } = useTranslation();
-    let str = version;
-    if (available_fw) {
-      const text = t('device-manager.labels.available') + ' ' + available_fw;
-      str = [str, <WarningTag text={text}/>];
-    }
-    return [str, ext_support && <span class="glyphicon glyphicon-flash"></span>];
-  }
+    return (
+        <>
+        {version}
+        {availableFw && <WarningTag text={t('device-manager.labels.available', {version: availableFw})}/>}
+        {extSupport && <span class="glyphicon glyphicon-flash"></span>}
+        </>
+    );
+}
 
 export { WarningTag, ErrorTag, FirmwareVersionWithLabels };
