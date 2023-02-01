@@ -83,12 +83,13 @@ function ScanProgressBar({scanning, progress}) {
   return <div className='separator'></div>
 }
 
-function ScanningMessage() {
+function ScanningMessage({port}) {
   const { t } = useTranslation();
   return (
     <>
       <Spinner/>
-      <InfoMessage msg={t('device-manager.labels.scanning')}/>
+      <InfoMessage msg={t('device-manager.labels.scanning', {port})}/>
+      {/*<InfoMessage msg={t('device-manager.labels.scanning-stop')}/>*/}
     </>
   )
 }
@@ -106,8 +107,7 @@ function NewFirmwaresNotice() {
   return (
     <div className='alert alert-warning' role='warning'>
       <i className='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></i>
-      <span> {t('device-manager.labels.firmwares-notice')}</span>
-      <a href='https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update' className='alert-link'>{t('device-manager.labels.firmwares-notice-link')}</a>
+      <a href='https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update' className='alert-link'> {t('device-manager.labels.firmwares-notice-link')}</a>
     </div>
   )
 }
@@ -133,7 +133,7 @@ const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}
       <Mobile>
         {!nothingFound && <DevicesList devices={devices.devices}/>}
       </Mobile>
-      {scanning.scanning && <ScanningMessage/>}
+      {scanning.scanning && <ScanningMessage port={scanning.scanningPort}/>}
       {!scanning.scanning && nothingFound && <NotFoundMessage firstStart={scanning.firstStart}/>}
     </>
   );

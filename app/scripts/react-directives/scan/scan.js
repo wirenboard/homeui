@@ -58,6 +58,7 @@ class ScanningProgressStore {
     firstStart = true
     scanning = false
     progress = 0
+    scanningPort = ""
 
     _requestScanning = false
 
@@ -65,18 +66,20 @@ class ScanningProgressStore {
         makeObservable(this,{
             scanning: observable,
             progress: observable,
+            scanningPort: observable,
             setStateFromMqtt: action,
             startScan: action,
             scanFailed: action.bound
         })
     }
 
-    setStateFromMqtt(isScanning, scanProgress) {
+    setStateFromMqtt(isScanning, scanProgress, scanningPort) {
         if (this.scanning) {
             this._requestScanning = false
         }
         this.scanning = this._requestScanning ? true : isScanning
         this.progress = scanProgress
+        this.scanningPort = scanningPort
         if (this.scanning) {
             this.firstStart = false
         }
@@ -181,7 +184,7 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                     if (data.error) {
                         scope.globalError.setError(data.error);
                     }
-                    scope.scanStore.setStateFromMqtt(data.scanning, data.progress)
+                    scope.scanStore.setStateFromMqtt(data.scanning, data.progress, data.scanning_port)
                     scope.devicesStore.setDevices(data.devices)
                     scope.mqttStore.setStartupComplete()
                 }

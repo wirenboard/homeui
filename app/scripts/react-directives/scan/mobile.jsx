@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { WarningTag, ErrorTag } from './common'
+import { WarningTag, ErrorTag, FirmwareVersionWithLabels } from './common';
 
 function Tags({bootloader_mode, online, poll}) {
   const { t } = useTranslation();
@@ -58,15 +58,11 @@ function Port({path, baud_rate, data_bits, parity, stop_bits}) {
 
 function Firmware(props) {
   const { t } = useTranslation();
-    if (props.update && props.update.available_fw) {
-      const text = t('device-manager.labels.available') + ' ' + props.update.available_fw
-      return (
-        <Row title={t('device-manager.labels.firmware')}>
-          {props.version} <WarningTag text={text}/>
-        </Row>
-      )
-    }
-    return <Row title={t('device-manager.labels.firmware')}>{props.version}</Row>
+  return (
+    <Row title={t('device-manager.labels.firmware')}>
+      <FirmwareVersionWithLabels version={props.version} availableFw={props.update?.available_fw} extSupport={props.ext_support}/>
+    </Row>
+  )
 }
 
 function Error({error}) {

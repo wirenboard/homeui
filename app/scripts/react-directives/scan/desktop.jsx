@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { WarningTag, ErrorTag } from './common'
+import { WarningTag, ErrorTag, FirmwareVersionWithLabels } from './common';
 
 function DeviceNameCell(props) {
   const { t } = useTranslation();
@@ -23,12 +23,7 @@ function PortCell({path, baud_rate, data_bits, parity, stop_bits}) {
 }
 
 function FirmwareCell(props) {
-  const { t } = useTranslation();
-    if (props.update && props.update.available_fw) {
-        const text = t('device-manager.labels.available') + ' ' + props.update.available_fw
-        return <td>{props.version} <WarningTag text={text}/></td>;
-    }
-    return <td>{props.version}</td>;
+  return <td><FirmwareVersionWithLabels version={props.version} availableFw={props.update?.available_fw} extSupport={props.ext_support}/></td>;
 }
 
 function SlaveIdCell({slaveId, isDuplicate}) {
