@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.52.1) stable; urgency=medium
+
+  * Add hint about scanning via extended modbus
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 01 Jan 2023 15:42:00 +0400
+
 wb-mqtt-homeui (2.52.0) stable; urgency=medium
 
   * Support brute force scanning for devices with old firmware
