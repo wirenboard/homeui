@@ -66,5 +66,8 @@
          "connect": "Connect",
          "disconnect": "Disconnect"
       }
+   },
+   "connection-manager": {
+     "title": "Automatic connection switching"
    }
 }

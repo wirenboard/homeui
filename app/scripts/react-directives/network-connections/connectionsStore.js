@@ -41,6 +41,7 @@ class Connections {
   _schema = {};
   _additionalData = {};
   _toggleConnectionState = undefined;
+  isActiveEditor = false;
 
   constructor(onSave, toggleConnectionState) {
     this.onSave = onSave;
@@ -56,6 +57,9 @@ class Connections {
       addConnection: action,
       activateConnection: action,
       deleteConnection: action,
+      isActiveEditor: observable,
+      activateEditor: action,
+      deactivateEditor: action,
     });
   }
 
@@ -268,6 +272,19 @@ class Connections {
         throw err;
       }
     }
+  }
+
+  async deactivateEditor() {
+    await this.beforeConnectionSwitch();
+    runInAction(() => {
+      this.isActiveEditor = false;
+    });
+  }
+
+  async activateEditor() {
+    runInAction(() => {
+      this.isActiveEditor = true;
+    });
   }
 }
 

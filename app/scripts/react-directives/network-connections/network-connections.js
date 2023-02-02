@@ -2,7 +2,7 @@
 
 import ReactDOM from 'react-dom/client';
 import CreateNetworkConnections from './networkConnections';
-import Connections from './connectionsStore';
+import NetworksEditor from './editorStore';
 import { autorun } from 'mobx';
 
 function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProxy, PageState) {
@@ -24,23 +24,23 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       if (scope.root) {
         scope.root.unmount();
       }
-      scope.connections = new Connections(scope.onSave, scope.toggleConnectionState);
+      scope.editor = new NetworksEditor(scope.onSave, scope.toggleConnectionState);
       autorun(() => {
-        PageState.setDirty(scope.connections.connections.find(connection => connection.isChanged));
+        PageState.setDirty(scope.editor.connections.connections.find(connection => connection.isChanged));
       });
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(CreateNetworkConnections({ connections: scope.connections }));
+      scope.root.render(CreateNetworkConnections({ editor: scope.editor }));
 
       const re = new RegExp('/devices/system__networks__([^/]+)/');
       whenMqttReady().then(() => {
         ConfigEditorProxy.Load({ path: scope.path }).then(r => {
           scope.configPath = r.configPath;
-          scope.connections.setSchemaAndData(r.schema, r.content);
+          scope.editor.connections.setSchemaAndData(r.schema, r.content);
           mqttClient
             .addStickySubscription('/devices/+/controls/State', msg => {
               const match = msg.topic.match(re);
               if (match) {
-                var connection = scope.connections.connections.find(
+                var connection = scope.editor.connections.connections.find(
                   con => con.data.connection_uuid == match[1]
                 );
                 if (connection) {
@@ -49,7 +49,7 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
               }
             })
             .catch(err => {
-              scope.connections.error = err.mesage;
+              scope.editor.connections.error = err.mesage;
             });
         });
       });

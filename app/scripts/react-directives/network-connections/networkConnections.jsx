@@ -1,12 +1,14 @@
 import React from 'react';
-import { Tabs, TabList, TabContent, TabPane, TabItem } from './tabs';
+import { Tabs, TabList, TabContent, TabPane, TabItem, EditorTabItem, EditorTabPane, EditorTabList, EditorTabContent } from './tabs';
 import { Spinner, ErrorBar, WarningBar } from '../common';
-import { observer } from 'mobx-react-lite';
+import { observer }  from 'mobx-react-lite';
+import { trace } from 'mobx'
 import { useTranslation, Trans } from 'react-i18next';
 import { BootstrapRow } from '../common';
 import { ConfirmModal, SelectModal } from './modals';
 import JsonEditor from './jsonEditor';
 import { Button } from '../common';
+import { NetworksEditor } from "./editorStore"
 
 function makeTabItems(tabs) {
   return tabs.connections.map(tab => {
@@ -136,6 +138,8 @@ const ConnectionTabs = observer(({ tabs }) => {
   const { t } = useTranslation();
   return (
     <>
+      <ErrorBar msg={tabs.error}></ErrorBar>
+      <DeprecationWarning deprecatedConnections={tabs.deprecatedConnections} />
       <ConfirmModal {...tabs.confirmModalState} />
       <SelectModal {...tabs.selectNewConnectionModalState} />
       <Tabs>
@@ -170,22 +174,64 @@ const DeprecationWarning = ({ deprecatedConnections }) => {
   );
 };
 
-const NetworkConnectionsPage = observer(({ connections }) => {
+function makeEditorTabItems(editor) {
   const { t } = useTranslation();
+  const conOnClick = (e) => {
+    e.preventDefault();
+    editor.selectEditor(editor.connections);
+  }
+  const swOnClick = (e) => {
+    e.preventDefault();
+    editor.selectEditor(editor.switcher);
+  }
   return (
-    <div className="network-connections-page">
-      <ErrorBar msg={connections.error}></ErrorBar>
-      <DeprecationWarning deprecatedConnections={connections.deprecatedConnections} />
-      <h1 className="page-header">
-        <span>{t('network-connections.title')}</span>
-      </h1>
-      {connections.loading ? <Spinner /> : <ConnectionTabs tabs={connections} />}
-    </div>
+    <>
+      <EditorTabItem id="editorConnections" active={editor.connections.isActiveEditor} onClick={conOnClick}>
+        {t('network-connections.title')}
+      </EditorTabItem>
+      <EditorTabItem id="editorManager" active={editor.switcher.isActiveEditor} onClick={swOnClick}>
+        {t('connection-manager.title')}
+      </EditorTabItem>
+    </>
+  );
+}
+
+function makeEditorTabPanes(editor) {
+  return (
+    <>
+      <EditorTabPane id="editorConnections" active={editor.connections.isActiveEditor}>
+        {editor.connections.loading ? <Spinner /> : <ConnectionTabs tabs={editor.connections} />}
+      </EditorTabPane>
+      <EditorTabPane id="editorManager" active={editor.switcher.isActiveEditor}>
+        <p>Hello World</p>
+      </EditorTabPane>
+    </>
+  )
+}
+
+const ConfigEditorTabs = observer(({ editor }) => {
+  return (
+    <Tabs>
+      <EditorTabList>{makeEditorTabItems(editor)}</EditorTabList>
+      <EditorTabContent>{makeEditorTabPanes(editor)}</EditorTabContent>
+    </Tabs>
   );
 });
 
-function CreateNetworkConnections({ connections }) {
-  return <NetworkConnectionsPage connections={connections}></NetworkConnectionsPage>;
+const NetworkConnectionsPage = ({ editor }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="network-connections-page">
+      <h1 className="page-header">
+        <span>{t('network-connections.title')}</span>
+      </h1>
+      <ConfigEditorTabs editor={editor} />
+    </div>
+  );
+};
+
+function CreateNetworkConnections({ editor }) {
+  return <NetworkConnectionsPage editor={editor}></NetworkConnectionsPage>;
 }
 
 export default CreateNetworkConnections;
