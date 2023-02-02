@@ -23,3 +23,7 @@ coverage
 *.tsv
 .vscode
 .prettierrc
+.lvimrc
+
+.*.swp
+~*
