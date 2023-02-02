@@ -229,7 +229,7 @@ class Connections {
       runInAction(() => {
         this.connections = stableSort(this.connections, typeCompare);
       });
-      this.setSelected(cn);
+      this.activateConnection(cn);
     } catch (err) {
       if (err !== 'cancel') {
         throw err;
