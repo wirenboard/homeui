@@ -51,8 +51,8 @@
          "select-type": "Выберите тип соединения",
          "wifi": "Клиент Wi-Fi",
          "wifi-ap": "Точка доступа Wi-Fi",
-         "ethernet": "Ethernet",
-         "modem": "GSM-модем",
+         "ethernet": "Ethernet-соединение",
+         "modem": "GSM-соединение",
          "canbus": "CAN bus",
          "confirm-delete-connection": "Вы действительно хотите удалить это соединение?",
          "main-deprecation-notice": "Соединения {{connections}} настроены в /etc/network/interfaces. Для них доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается в Wiren Board. Для перехода на NetworkManager используйте существующие из списка (или создайте новые, если нужно) и <strong>удалите устаревшие</strong>.",
@@ -64,7 +64,9 @@
          "cancel": "Отмена",
          "add-connection": "Добавить соединение",
          "delete": "Удалить",
-         "add": "Добавить"
+         "add": "Добавить",
+         "connect": "Подключить",
+         "disconnect": "Отключить"
       }
    }
 }

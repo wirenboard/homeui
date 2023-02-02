@@ -19,14 +19,18 @@ export class Connection {
   data = {};
   editedData = {};
   isChanged = false;
-  hasErrors = false;
   active = false;
+  editedConnectionId = '';
+  _onSwitchState = undefined;
+  _hasValidationErrors = false;
 
-  constructor(schema, data, index, state) {
+  constructor(schema, data, index, state, onSwitchState) {
     this.id = index;
     this.schema = schema;
     this.editedData = data;
     this.data = data;
+    this.editedConnectionId = data.connection_id;
+    this._onSwitchState = onSwitchState;
     const typeToIcon = {
       '01_nm_ethernet': 'fas fa-network-wired',
       '02_nm_modem': 'fas fa-signal',
@@ -55,9 +59,14 @@ export class Connection {
       isChanged: observable,
       data: observable,
       active: observable,
-      hasErrors: observable,
+      editedConnectionId: observable,
+      _hasValidationErrors: observable,
       description: computed,
       isNew: computed,
+      managedByNM: computed,
+      isDeprecated: computed,
+      allowSwitchState: computed,
+      hasErrors: computed,
       setState: action,
       setEditedData: action.bound,
       activate: action,
@@ -65,6 +74,8 @@ export class Connection {
       commit: action,
       rollback: action,
       updateName: action,
+      switchState: action,
+      setConnectionId: action,
     });
   }
 
@@ -76,9 +87,36 @@ export class Connection {
     return this.state === 'new';
   }
 
+  get managedByNM() {
+    return this.data.type !== 'can' && !this.isDeprecated;
+  }
+
+  get isDeprecated() {
+    return this.state === 'deprecated';
+  }
+
+  get allowSwitchState() {
+    return !this.isNew && ['activated', 'not-connected'].includes(this.state);
+  }
+
+  get hasErrors() {
+    return this._hasValidationErrors || !this.editedConnectionId;
+  }
+
+  switchState() {
+    if (this.state === 'activated') {
+      this.state = 'deactivating';
+    } else {
+      if (this.state === 'not-connected') {
+        this.state = 'activating';
+      }
+    }
+    this?._onSwitchState(this.data.connection_uuid);
+  }
+
   updateName() {
     if (this.isNew) {
-      this.name = this.editedData.connection_id || this.editedData.name || '';
+      this.name = this.editedConnectionId || this.editedData.name || '';
     } else {
       this.name = this.data.connection_id || this.data.name || '';
     }
@@ -90,18 +128,40 @@ export class Connection {
   }
 
   setEditedData(data, errors) {
+    if (['03_nm_wifi', '04_nm_wifi_ap'].includes(this.editedData.type)) {
+      const ssid = data['802-11-wireless_ssid'];
+      if (
+        this.isNew &&
+        ssid &&
+        (!this.editedData['802-11-wireless_ssid'] ||
+          this.editedData['802-11-wireless_ssid'] === this.editedData.connection_id)
+      ) {
+        this.editedConnectionId = ssid;
+      }
+    }
+    data.connection_id = this.editedConnectionId;
     this.editedData = cloneDeep(data);
     this.updateName();
     this.isChanged = !isEqual(this.editedData, this.data);
-    this.hasErrors = Boolean(errors.length);
+    this._hasValidationErrors = Boolean(errors.length);
+  }
+
+  setConnectionId(id) {
+    if (this.editedConnectionId === id) {
+      return;
+    }
+    this.editedData.connection_id = id;
+    this.editedConnectionId = id;
+    this.updateName();
+    this.isChanged = !isEqual(this.editedData, this.data);
   }
 
   commit() {
     this.data = cloneDeep(this.editedData);
     this.updateName();
     this.isChanged = false;
-    this.hasErrors = false;
-    if (this.data.type != 'can' && this.state !== 'deprecated') {
+    this._hasValidationErrors = false;
+    if (this.managedByNM) {
       this.state = 'not-connected';
     }
   }
@@ -109,9 +169,11 @@ export class Connection {
   rollback() {
     // Trigger update and components re-render
     this.data = cloneDeep(this.data);
+    this.editedData = cloneDeep(this.data);
+    this.editedConnectionId = this.data.connection_id;
     this.updateName();
     this.isChanged = false;
-    this.hasErrors = false;
+    this._hasValidationErrors = false;
   }
 
   activate() {
@@ -127,13 +189,6 @@ export function getConnectionJson(connection) {
   var res = cloneDeep(connection);
   delete res.data;
   return res;
-}
-
-export function getNewConnection(type) {
-  if (type === 'can') {
-    return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 12500 } };
-  }
-  return { type: type, connection_uuid: '', connection_id: '' };
 }
 
 export function makeConnectionSchema(type, fullSchema) {
@@ -162,6 +217,7 @@ export function makeConnectionSchema(type, fullSchema) {
   schema.options = schema.options || {};
   schema.options.wb = schema.options.wb || {};
   schema.options.wb.disable_title = true;
+  delete schema.definitions.nm_connection.properties.connection_id.minLength;
 
   return schema;
 }

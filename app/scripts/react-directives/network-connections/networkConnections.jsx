@@ -34,43 +34,99 @@ function makeTabItems(tabs) {
   });
 }
 
-function makeTabPanes(tabs) {
+const TabPaneHeader = observer(({ tab }) => {
   const { t } = useTranslation();
+  if (!tab.managedByNM) {
+    return;
+  }
+  const labels = {
+    '01_nm_ethernet': 'network-connections.labels.ethernet',
+    '02_nm_modem': 'network-connections.labels.modem',
+    '03_nm_wifi': 'network-connections.labels.wifi',
+    '04_nm_wifi_ap': 'network-connections.labels.wifi-ap',
+  };
+  const label = labels[tab.data.type] || 'network-connections.labels.connection';
+  return (
+    <BootstrapRow>
+      <div className="col-xs-12 col-md-3 col-lg-2">
+        <label className={'tab-pane-header-label'} htmlFor={'inputName' + tab.id}>
+          {t(label)}
+        </label>
+      </div>
+      <div
+        className={
+          'col-xs-8 col-sm-9 col-md-6 col-lg-8' + (tab.editedConnectionId ? '' : ' has-error')
+        }
+      >
+        <input
+          type="text"
+          className="form-control"
+          id={'inputName' + tab.id}
+          value={tab.editedConnectionId}
+          onChange={e => tab.setConnectionId(e.target.value)}
+        />
+      </div>
+      <div className="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+        <div className="pull-right">
+          <Button
+            disabled={!tab.allowSwitchState}
+            label={t(
+              tab.state === 'activated'
+                ? 'network-connections.buttons.disconnect'
+                : 'network-connections.buttons.connect'
+            )}
+            onClick={() => tab.switchState()}
+          />
+        </div>
+      </div>
+    </BootstrapRow>
+  );
+});
+
+const TabPaneButtons = observer(({ tabs, tab }) => {
+  const { t } = useTranslation();
+  return (
+    <BootstrapRow>
+      <div className="col-md-12">
+        <Button
+          key="delete"
+          label={t('network-connections.buttons.delete')}
+          type="danger"
+          onClick={() => tabs.deleteConnection(tab)}
+        />
+        <div className="pull-right buttons-holder">
+          <Button
+            key="save"
+            label={t('network-connections.buttons.save')}
+            type="success"
+            onClick={() => tabs.saveConnections(tabs.connections)}
+            disabled={!tab.isChanged || tab.hasErrors}
+          />
+          <Button
+            key="cancel"
+            label={t('network-connections.buttons.cancel')}
+            type="default"
+            onClick={() => tab.rollback()}
+            disabled={!tab.isChanged || tab.isNew}
+          />
+        </div>
+      </div>
+    </BootstrapRow>
+  );
+});
+
+function makeTabPanes(tabs) {
   return tabs.connections.map(tab => {
     return (
       <TabPane key={tab.id} active={tab.active}>
+        <TabPaneHeader tab={tab} />
         <JsonEditor
           schema={tab.schema}
           data={tab.data}
           root={'cn' + tab.id}
           onChange={tab.setEditedData}
         />
-        <BootstrapRow>
-          <div className="col-md-12">
-            <Button
-              key="delete"
-              label={t('network-connections.buttons.delete')}
-              type="danger"
-              onClick={() => tabs.deleteConnection(tab)}
-            />
-            <div className="pull-right buttons-holder">
-              <Button
-                key="save"
-                label={t('network-connections.buttons.save')}
-                type="success"
-                onClick={() => tabs.saveConnections(tabs.connections)}
-                disabled={!tab.isChanged || tab.hasErrors}
-              />
-              <Button
-                key="cancel"
-                label={t('network-connections.buttons.cancel')}
-                type="default"
-                onClick={() => tab.rollback()}
-                disabled={!tab.isChanged || tab.isNew}
-              />
-            </div>
-          </div>
-        </BootstrapRow>
+        <TabPaneButtons tabs={tabs} tab={tab} />
       </TabPane>
     );
   });

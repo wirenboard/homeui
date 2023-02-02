@@ -62,3 +62,7 @@
         width: 95%;
     }
 }
+
+.network-connections-page .tab-pane-header-label {
+    margin-top: 7px;
+}

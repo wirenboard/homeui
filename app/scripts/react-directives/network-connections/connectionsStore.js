@@ -37,12 +37,14 @@ class Connections {
   isChanged = false;
   error = '';
   _activeConnection = undefined;
-  _newConnectionIndex = 0;
+  _newConnectionIndex = 1;
   _schema = {};
   _additionalData = {};
+  _onSwitchConnectionState = undefined;
 
-  constructor(onSave) {
+  constructor(onSave, onSwitchConnectionState) {
     this.onSave = onSave;
+    this._onSwitchConnectionState = onSwitchConnectionState;
     makeObservable(this, {
       connections: observable,
       loading: observable,
@@ -58,7 +60,7 @@ class Connections {
   }
 
   get deprecatedConnections() {
-    return this.connections.filter(cn => cn.state === 'deprecated').map(cn => cn.name);
+    return this.connections.filter(cn => cn.isDeprecated).map(cn => cn.name);
   }
 
   setSchemaAndData(schema, data) {
@@ -164,15 +166,52 @@ class Connections {
     }
   }
 
+  _findIndex(pattern) {
+    let index = 1;
+    const re = new RegExp(pattern);
+    this.connections.forEach(cn => {
+      if (cn.data.connection_id) {
+        const match = cn.data.connection_id.match(re);
+        if (match) {
+          const next = parseInt(match[1]) + 1;
+          index = next > index ? next : index;
+        }
+      }
+    });
+    return index;
+  }
+
+  _getNewConnection(type) {
+    if (type === 'can') {
+      return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 12500 } };
+    }
+    if (type === '01_nm_ethernet') {
+      return {
+        type: type,
+        connection_uuid: '',
+        connection_id: 'Wired connection ' + this._findIndex('Wired connection (\\d+)'),
+      };
+    }
+    if (type === '02_nm_modem') {
+      return {
+        type: type,
+        connection_uuid: '',
+        connection_id: 'gsm ' + this._findIndex('gsm (\\d+)'),
+      };
+    }
+    return { type: type, connection_uuid: '', connection_id: connection_id };
+  }
+
   addConnection({ type, connectionData, state }) {
-    connectionData = connectionData ? connectionData : getNewConnection(type);
+    connectionData = connectionData ? connectionData : this._getNewConnection(type);
     connectionData.data = this._additionalData;
 
     var connection = new Connection(
       makeConnectionSchema(type, this._schema),
       connectionData,
       this._newConnectionIndex,
-      state
+      state,
+      this._onSwitchConnectionState
     );
     this.connections.push(connection);
     this._newConnectionIndex++;

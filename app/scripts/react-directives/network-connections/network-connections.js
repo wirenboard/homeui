@@ -5,7 +5,6 @@ import CreateNetworkConnections from './networkConnections';
 import Connections from './connectionsStore';
 import { autorun } from 'mobx';
 
-
 function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProxy, PageState) {
   'ngInject';
 
@@ -18,11 +17,14 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       scope.onSave = data => {
         return ConfigEditorProxy.Save({ path: scope.path, content: data });
       };
+      scope.onSwitchConnectionState = uuid => {
+        mqttClient.send(`/devices/system__networks__${uuid}/controls/UpDown/on`, '1', false);
+      };
 
       if (scope.root) {
         scope.root.unmount();
       }
-      scope.connections = new Connections(scope.onSave);
+      scope.connections = new Connections(scope.onSave, scope.onSwitchConnectionState);
       autorun(() => {
         PageState.setDirty(scope.connections.connections.find(connection => connection.isChanged));
       });

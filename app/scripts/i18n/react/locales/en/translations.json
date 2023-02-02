@@ -46,10 +46,10 @@
          "deprecated": "Deprecated",
          "new": "New connection",
          "select-type": "Select connection type",
-         "wifi": "Wi-Fi",
+         "wifi": "Wi-Fi client",
          "wifi-ap": "Wi-Fi access point",
-         "ethernet": "Ethernet",
-         "modem": "GSM-modem",
+         "ethernet": "Wired connection (Ethernet)",
+         "modem": "GSM-modem connection",
          "canbus": "CAN bus",
          "confirm-delete-connection": "Do you realy want to delete the connection?",
          "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
@@ -61,7 +61,9 @@
          "cancel": "Cancel",
          "add-connection": "Add connection",
          "delete": "Delete",
-         "add": "Add"
+         "add": "Add",
+         "connect": "Connect",
+         "disconnect": "Disconnect"
       }
    }
 }
