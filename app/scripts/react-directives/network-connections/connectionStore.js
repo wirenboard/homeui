@@ -100,7 +100,7 @@ export class Connection {
   }
 
   get hasErrors() {
-    return this._hasValidationErrors || !this.editedConnectionId;
+    return this._hasValidationErrors || (this.managedByNM && !this.editedConnectionId);
   }
 
   switchState() {
@@ -128,18 +128,20 @@ export class Connection {
   }
 
   setEditedData(data, errors) {
-    if (['03_nm_wifi', '04_nm_wifi_ap'].includes(this.editedData.type)) {
-      const ssid = data['802-11-wireless_ssid'];
-      if (
-        this.isNew &&
-        ssid &&
-        (!this.editedData['802-11-wireless_ssid'] ||
-          this.editedData['802-11-wireless_ssid'] === this.editedData.connection_id)
-      ) {
-        this.editedConnectionId = ssid;
+    if (this.managedByNM) {
+      if (['03_nm_wifi', '04_nm_wifi_ap'].includes(this.editedData.type)) {
+        const ssid = data['802-11-wireless_ssid'];
+        if (
+          this.isNew &&
+          ssid &&
+          (!this.editedData['802-11-wireless_ssid'] ||
+            this.editedData['802-11-wireless_ssid'] === this.editedData.connection_id)
+        ) {
+          this.editedConnectionId = ssid;
+        }
       }
+      data.connection_id = this.editedConnectionId;
     }
-    data.connection_id = this.editedConnectionId;
     this.editedData = cloneDeep(data);
     this.updateName();
     this.isChanged = !isEqual(this.editedData, this.data);
@@ -163,6 +165,8 @@ export class Connection {
     this._hasValidationErrors = false;
     if (this.managedByNM) {
       this.state = 'not-connected';
+    } else if (this.data.type === 'can') {
+      this.state = 'unknown';
     }
   }
 

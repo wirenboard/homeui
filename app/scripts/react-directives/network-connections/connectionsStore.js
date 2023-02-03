@@ -183,7 +183,7 @@ class Connections {
 
   _getNewConnection(type) {
     if (type === 'can') {
-      return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 12500 } };
+      return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 125000 } };
     }
     if (type === '01_nm_ethernet') {
       return {
