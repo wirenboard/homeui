@@ -1103,3 +1103,8 @@ body.kiosk .page-header {
 .je-modal label {
   font-size: 13px;
 }
+
+.modal-open .modal-backdrop {
+  width: 100%;
+  height: 100%;
+}

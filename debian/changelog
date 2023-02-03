@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.53.0) stable; urgency=medium
+
+  * Show connection status in network connections editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 03 Feb 2023 13:44:38 +0500
+
 wb-mqtt-homeui (2.52.0) stable; urgency=medium
 
   * Support brute force scanning for devices with old firmware

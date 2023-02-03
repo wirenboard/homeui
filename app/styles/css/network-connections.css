@@ -1,0 +1,68 @@
+.network-connections-page li > a {
+    padding: 0px;
+}
+
+.network-connections-page .connection-item {
+    padding: 10px 9px 10px;
+    display: flex;
+    align-items: center;
+    border-radius: 2px;
+}
+
+.network-connections-page .connection-item > i {
+    font-size: 14pt;
+}
+
+.network-connections-page .connection-item-text {
+    margin-left: 5px;
+}
+
+.network-connections-page li:not(.active) .connection-item.deprecated {
+    background-color: #fcf8e3;
+}
+
+.network-connections-page .deprecated {
+    color: #c09853;
+}
+
+.network-connections-page .not-connected i,
+.network-connections-page .unknown i {
+    color: #b1b1b1;
+}
+
+.network-connections-page .activating i,
+.network-connections-page .deactivating i {
+    color: #dfb56c;
+}
+
+.network-connections-page .activated i {
+    color: #739e73;
+}
+
+.network-connections-page .add-connection-button {
+    width: 100%;
+    margin-top: 5px;
+    white-space: normal;
+}
+
+.network-connections-page .buttons-holder > *:not(:first-child) {
+    margin-left: 10px;
+}
+
+.network-connections-page .modal.in > .modal-dialog {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin: 0;
+}
+
+@media (max-width: 767px) {
+    .network-connections-page .modal.in > .modal-dialog {
+        width: 95%;
+    }
+}
+
+.network-connections-page .tab-pane-header-label {
+    margin-top: 7px;
+}
