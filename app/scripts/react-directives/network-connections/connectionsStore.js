@@ -182,6 +182,7 @@ class Connections {
   }
 
   _getNewConnection(type) {
+    let connection_id = '';
     if (type === 'can') {
       return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 125000 } };
     }
