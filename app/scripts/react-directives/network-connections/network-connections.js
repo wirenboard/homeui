@@ -2,7 +2,7 @@
 
 import ReactDOM from 'react-dom/client';
 import CreateNetworkConnections from './networkConnections';
-import NetworksEditor from './editorStore';
+import { NetworksEditor } from './editorStore';
 import { autorun } from 'mobx';
 
 function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProxy, PageState) {

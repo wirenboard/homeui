@@ -9,6 +9,7 @@ import { ConfirmModal, SelectModal } from './modals';
 import JsonEditor from './jsonEditor';
 import { Button } from '../common';
 import { NetworksEditor } from "./editorStore"
+import { SwitcherForm } from "./switcherEditor"
 
 function makeTabItems(tabs) {
   return tabs.connections.map(tab => {
@@ -203,7 +204,7 @@ function makeEditorTabPanes(editor) {
         {editor.connections.loading ? <Spinner /> : <ConnectionTabs tabs={editor.connections} />}
       </EditorTabPane>
       <EditorTabPane id="editorManager" active={editor.switcher.isActiveEditor}>
-        <p>Hello World</p>
+        <SwitcherForm switcher={editor.switcher} />
       </EditorTabPane>
     </>
   )
