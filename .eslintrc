@@ -1,6 +1,12 @@
 {
-  "parser": "babel-eslint",
-  "rules": {
-    "strict": 0
+  "parser": "@babel/eslint-parser",
+  "extends": ["airbnb"],
+  "parserOptions": {
+    "requireConfigFile": false,
+    "babelOptions": {
+      "babelrc": false,
+      "configFile": false,
+      "presets": ["@babel/preset-env", "@babel/preset-react"]
+    }
   }
 }
