@@ -17,14 +17,14 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       scope.onSave = data => {
         return ConfigEditorProxy.Save({ path: scope.path, content: data });
       };
-      scope.onSwitchConnectionState = uuid => {
+      scope.toggleConnectionState = uuid => {
         mqttClient.send(`/devices/system__networks__${uuid}/controls/UpDown/on`, '1', false);
       };
 
       if (scope.root) {
         scope.root.unmount();
       }
-      scope.connections = new Connections(scope.onSave, scope.onSwitchConnectionState);
+      scope.connections = new Connections(scope.onSave, scope.toggleConnectionState);
       autorun(() => {
         PageState.setDirty(scope.connections.connections.find(connection => connection.isChanged));
       });

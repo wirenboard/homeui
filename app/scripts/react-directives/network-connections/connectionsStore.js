@@ -40,11 +40,11 @@ class Connections {
   _newConnectionIndex = 1;
   _schema = {};
   _additionalData = {};
-  _onSwitchConnectionState = undefined;
+  _toggleConnectionState = undefined;
 
-  constructor(onSave, onSwitchConnectionState) {
+  constructor(onSave, toggleConnectionState) {
     this.onSave = onSave;
-    this._onSwitchConnectionState = onSwitchConnectionState;
+    this._toggleConnectionState = toggleConnectionState;
     makeObservable(this, {
       connections: observable,
       loading: observable,
@@ -211,7 +211,7 @@ class Connections {
       connectionData,
       this._newConnectionIndex,
       state,
-      this._onSwitchConnectionState
+      this._toggleConnectionState
     );
     this.connections.push(connection);
     this._newConnectionIndex++;
