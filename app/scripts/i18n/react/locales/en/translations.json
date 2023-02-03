@@ -8,7 +8,7 @@
       },
       "buttons": {
          "scan": "Start scan",
-         "stop": "Stop"
+         "stop": "Stop scan"
       },
       "labels": {
          "device": "Device",

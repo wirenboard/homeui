@@ -8,7 +8,7 @@
       },
       "buttons": {
          "scan": "Сканировать",
-         "stop": "Стоп"
+         "stop": "Остановить"
       },
       "labels": {
          "available": "доступна {{version}}",

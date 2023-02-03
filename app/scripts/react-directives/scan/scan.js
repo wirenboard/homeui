@@ -57,46 +57,51 @@ class GlobalErrorStore {
 class ScanningProgressStore {
     firstStart = true
     scanning = false
+    requestedScanning = undefined
     progress = 0
     scanningPort = ""
-
-    _requestScanning = false
 
     constructor() {
         makeObservable(this,{
             scanning: observable,
+            requestedScanning: observable,
             progress: observable,
             scanningPort: observable,
             setStateFromMqtt: action,
             startScan: action,
+            stopScan: action,
             scanFailed: action.bound
         })
     }
 
     setStateFromMqtt(isScanning, scanProgress, scanningPort) {
-        if (this.scanning) {
-            this._requestScanning = false
-        }
-        this.scanning = this._requestScanning ? true : isScanning
+        this.scanning = isScanning
         this.progress = scanProgress
         this.scanningPort = scanningPort
+
+        if (isScanning == this.requestedScanning) {
+            this.requestedScanning = undefined;
+        }
         if (this.scanning) {
             this.firstStart = false
         }
     }
 
     startScan() {
+        this.requestedScanning = true;
         this.firstStart = false
         if (this.scanning) {
             return;
         }
-        this.scanning = true
         this.progress = 0
-        this._requestScanning = true;
+    }
+
+    stopScan() {
+        this.requestedScanning = false;
     }
 
     scanFailed() {
-        this._requestScanning = false;
+        this.requestedScanning = undefined;
         this.scanning = false
     }
 }
@@ -173,6 +178,11 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                 DeviceManagerProxy.Scan().catch(onScanFailed);
             }
 
+            const onStopScanning = () => {
+                scope.scanStore.stopScan()
+                DeviceManagerProxy.Stop().catch(onScanFailed);
+            }
+
             // Expected props structure
             // https://github.com/wirenboard/wb-device-manager/blob/main/README.md
             const updateStores = (dataToRender) => {
@@ -195,7 +205,8 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                 scanning: scope.scanStore,
                 devices: scope.devicesStore,
                 errors: scope.globalError,
-                onStartScanning: onStartScanning
+                onStartScanning: onStartScanning,
+                onStopScanning: onStopScanning,
             }
             scope.root.render(CreateDevicesPage(params));
 

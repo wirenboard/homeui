@@ -51,11 +51,14 @@ function Spinner() {
   );
 }
 
-function ScanButton({scanning, onStartScanning}) {
+function ScanButton({scanning, requestedScanning, onStartScanning, onStopScanning}) {
   const { t } = useTranslation();
+  const classNames = "btn pull-right " + (scanning ? "btn-danger" : "btn-success");
+  const onClick = (scanning ? onStopScanning : onStartScanning);
+  const transition = (requestedScanning !== undefined && scanning != requestedScanning);
   return (
-    <button disabled={scanning} className='btn btn-success pull-right' onClick={onStartScanning}>
-      {t('device-manager.buttons.scan')}
+    <button disabled={transition} className={classNames} onClick={onClick}>
+      {scanning ? t('device-manager.buttons.stop') : t('device-manager.buttons.scan')}
     </button>
   )
 }
@@ -112,7 +115,7 @@ function NewFirmwaresNotice() {
   )
 }
 
-const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}) => {
+const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning, onStopScanning}) => {
   const { t } = useTranslation();
   if (mqtt.waitStartup) {
     return <Spinner/>;
@@ -125,7 +128,7 @@ const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}
     <>
       <NewFirmwaresNotice/>
       {!(scanning.firstStart && nothingFound) && <ErrorBar msg={errors.error}/>}
-      <Header scanning={scanning.scanning} onStartScanning={onStartScanning}/>
+      <Header scanning={scanning.scanning} requestedScanning={scanning.requestedScanning} onStartScanning={onStartScanning} onStopScanning={onStopScanning}/>
       <ScanProgressBar scanning={scanning.scanning} progress={scanning.progress}/>
       <Desktop>
         {!nothingFound && <DevicesTable devices={devices.devices}/>}
