@@ -15,7 +15,7 @@ function FirmwareVersionWithLabels({version, availableFw, extSupport}) {
         <>
         {version}
         {availableFw && <WarningTag text={t('device-manager.labels.available', {version: availableFw})}/>}
-        {extSupport && <span class="glyphicon glyphicon-flash"></span>}
+        {extSupport && <span class="glyphicon glyphicon-flash" title={t('device-manager.labels.extended-modbus')}></span>}
         </>
     );
 }
