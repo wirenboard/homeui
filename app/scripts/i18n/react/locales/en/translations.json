@@ -22,7 +22,7 @@
          "offline": "offline",
          "duplicate": "duplicate",
          "scanning": "Scanning in progress {{-port}}...",
-         "scanning-stop": "Press \"Stop\", if all devices are found, or wait for completion",
+         "scanning-stop": "Press \"Stop scan\", if all devices are found, or wait for completion",
          "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
          "not-found": "Nothing found.<br>For rescan press \"Start scan\"",
          "firmwares-notice-link": "Firmware update guide",
