@@ -54,17 +54,23 @@ class GlobalErrorStore {
     }
 }
 
+export const ScanState = {
+  Started: "Started",
+  Stopped: "Stopped",
+  NotSpecified: "NotSpecified",
+};
+
 class ScanningProgressStore {
     firstStart = true
-    scanning = false
-    requestedScanning = undefined
+    actualState = ScanState.NotSpecified;
+    requiredState = ScanState.NotSpecified
     progress = 0
     scanningPort = ""
 
     constructor() {
         makeObservable(this,{
-            scanning: observable,
-            requestedScanning: observable,
+            actualState: observable,
+            requiredState: observable,
             progress: observable,
             scanningPort: observable,
             setStateFromMqtt: action,
@@ -75,12 +81,12 @@ class ScanningProgressStore {
     }
 
     setStateFromMqtt(isScanning, scanProgress, scanningPort) {
-        this.scanning = isScanning
+        this.actualState = isScanning ? ScanState.Started : ScanState.Stopped
         this.progress = scanProgress
         this.scanningPort = scanningPort
 
-        if (isScanning == this.requestedScanning) {
-            this.requestedScanning = undefined;
+        if (this.actualState == this.requiredState) {
+            this.requiredState = ScanState.NotSpecified;
         }
         if (this.scanning) {
             this.firstStart = false
@@ -88,21 +94,21 @@ class ScanningProgressStore {
     }
 
     startScan() {
-        this.requestedScanning = true;
+        this.requiredState = ScanState.Started;
         this.firstStart = false
-        if (this.scanning) {
+        if (this.actualState == ScanState.Started) {
             return;
         }
         this.progress = 0
     }
 
     stopScan() {
-        this.requestedScanning = false;
+        this.requiredState = ScanState.Stopped;
     }
 
     scanFailed() {
-        this.requestedScanning = undefined;
-        this.scanning = false
+        this.requiredState = ScanState.NotSpecified;
+        this.actualState = ScanState.Stopped;
     }
 }
 

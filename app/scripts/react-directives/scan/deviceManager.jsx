@@ -4,6 +4,7 @@ import { useMediaQuery } from 'react-responsive'
 import DevicesTable from './desktop';
 import DevicesList from './mobile';
 import { Trans, useTranslation } from 'react-i18next'; 
+import { ScanState } from "./scan"
 
 const Desktop = ({ children }) => {
   const isDesktop = useMediaQuery({ minWidth: 874 })
@@ -51,14 +52,16 @@ function Spinner() {
   );
 }
 
-function ScanButton({scanning, requestedScanning, onStartScanning, onStopScanning}) {
+function ScanButton({actualState, requiredState, onStartScanning, onStopScanning}) {
   const { t } = useTranslation();
-  const classNames = "btn pull-right " + (scanning ? "btn-danger" : "btn-success");
-  const onClick = (scanning ? onStopScanning : onStartScanning);
-  const transition = (requestedScanning !== undefined && scanning != requestedScanning);
+  const scanInProgress = (actualState == ScanState.Started)
+  const classNames = "btn pull-right " + (scanInProgress ? "btn-danger" : "btn-success");
+  const onClick = (scanInProgress ? onStopScanning : onStartScanning);
+
+  const transition = (requiredState !== ScanState.NotSpecified && actualState != requiredState);
   return (
     <button disabled={transition} className={classNames} onClick={onClick}>
-      {scanning ? t('device-manager.buttons.stop') : t('device-manager.buttons.scan')}
+      {scanInProgress ? t('device-manager.buttons.stop') : t('device-manager.buttons.scan')}
     </button>
   )
 }
@@ -124,20 +127,21 @@ const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning,
     return <ErrorBar msg={errors.error}/>;
   }
   const nothingFound = (devices.devices.length == 0)
+  const scanInProgress = (scanning.actualState == ScanState.Started);
   return (
     <>
       <NewFirmwaresNotice/>
       {!(scanning.firstStart && nothingFound) && <ErrorBar msg={errors.error}/>}
-      <Header scanning={scanning.scanning} requestedScanning={scanning.requestedScanning} onStartScanning={onStartScanning} onStopScanning={onStopScanning}/>
-      <ScanProgressBar scanning={scanning.scanning} progress={scanning.progress}/>
+      <Header actualState={scanning.actualState} requiredState={scanning.requiredState} onStartScanning={onStartScanning} onStopScanning={onStopScanning}/>
+      <ScanProgressBar scanning={scanInProgress} progress={scanning.progress}/>
       <Desktop>
         {!nothingFound && <DevicesTable devices={devices.devices}/>}
       </Desktop>
       <Mobile>
         {!nothingFound && <DevicesList devices={devices.devices}/>}
       </Mobile>
-      {scanning.scanning && <ScanningMessage port={scanning.scanningPort}/>}
-      {!scanning.scanning && nothingFound && <NotFoundMessage firstStart={scanning.firstStart}/>}
+      {scanInProgress && <ScanningMessage port={scanning.scanningPort}/>}
+      {!scanInProgress && nothingFound && <NotFoundMessage firstStart={scanning.firstStart}/>}
     </>
   );
 })
