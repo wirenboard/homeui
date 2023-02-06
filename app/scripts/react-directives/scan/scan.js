@@ -88,7 +88,7 @@ class ScanningProgressStore {
         if (this.actualState == this.requiredState) {
             this.requiredState = ScanState.NotSpecified;
         }
-        if (this.scanning) {
+        if (isScanning) {
             this.firstStart = false
         }
     }
