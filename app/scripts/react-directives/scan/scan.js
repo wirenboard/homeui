@@ -54,50 +54,61 @@ class GlobalErrorStore {
     }
 }
 
+export const ScanState = {
+  Started: "Started",
+  Stopped: "Stopped",
+  NotSpecified: "NotSpecified",
+};
+
 class ScanningProgressStore {
     firstStart = true
-    scanning = false
+    actualState = ScanState.NotSpecified;
+    requiredState = ScanState.NotSpecified
     progress = 0
     scanningPort = ""
 
-    _requestScanning = false
-
     constructor() {
         makeObservable(this,{
-            scanning: observable,
+            actualState: observable,
+            requiredState: observable,
             progress: observable,
             scanningPort: observable,
             setStateFromMqtt: action,
             startScan: action,
+            stopScan: action,
             scanFailed: action.bound
         })
     }
 
     setStateFromMqtt(isScanning, scanProgress, scanningPort) {
-        if (this.scanning) {
-            this._requestScanning = false
-        }
-        this.scanning = this._requestScanning ? true : isScanning
+        this.actualState = isScanning ? ScanState.Started : ScanState.Stopped
         this.progress = scanProgress
         this.scanningPort = scanningPort
-        if (this.scanning) {
+
+        if (this.actualState == this.requiredState) {
+            this.requiredState = ScanState.NotSpecified;
+        }
+        if (isScanning) {
             this.firstStart = false
         }
     }
 
     startScan() {
+        this.requiredState = ScanState.Started;
         this.firstStart = false
-        if (this.scanning) {
+        if (this.actualState == ScanState.Started) {
             return;
         }
-        this.scanning = true
         this.progress = 0
-        this._requestScanning = true;
+    }
+
+    stopScan() {
+        this.requiredState = ScanState.Stopped;
     }
 
     scanFailed() {
-        this._requestScanning = false;
-        this.scanning = false
+        this.requiredState = ScanState.NotSpecified;
+        this.actualState = ScanState.Stopped;
     }
 }
 
@@ -170,7 +181,12 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                 scope.scanStore.startScan()
                 scope.devicesStore.setDevices([])
                 scope.globalError.clearError()
-                DeviceManagerProxy.Scan().catch(onScanFailed);
+                DeviceManagerProxy.Start().catch(onScanFailed);
+            }
+
+            const onStopScanning = () => {
+                scope.scanStore.stopScan()
+                DeviceManagerProxy.Stop().catch(onScanFailed);
             }
 
             // Expected props structure
@@ -195,7 +211,8 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                 scanning: scope.scanStore,
                 devices: scope.devicesStore,
                 errors: scope.globalError,
-                onStartScanning: onStartScanning
+                onStartScanning: onStartScanning,
+                onStopScanning: onStopScanning,
             }
             scope.root.render(CreateDevicesPage(params));
 
@@ -204,7 +221,7 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
             });
 
             whenMqttReady()
-                .then( () => DeviceManagerProxy.hasMethod('Scan') )
+                .then( () => DeviceManagerProxy.hasMethod('Start') )
                 .then((available) => {
                     if (available) {
                         scope.mqttStore.setDeviceManagerAvailable()

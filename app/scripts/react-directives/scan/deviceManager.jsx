@@ -4,6 +4,7 @@ import { useMediaQuery } from 'react-responsive'
 import DevicesTable from './desktop';
 import DevicesList from './mobile';
 import { Trans, useTranslation } from 'react-i18next'; 
+import { ScanState } from "./scan"
 
 const Desktop = ({ children }) => {
   const isDesktop = useMediaQuery({ minWidth: 874 })
@@ -51,11 +52,16 @@ function Spinner() {
   );
 }
 
-function ScanButton({scanning, onStartScanning}) {
+function ScanButton({actualState, requiredState, onStartScanning, onStopScanning}) {
   const { t } = useTranslation();
+  const scanInProgress = (actualState == ScanState.Started)
+  const classNames = "btn pull-right " + (scanInProgress ? "btn-danger" : "btn-success");
+  const onClick = (scanInProgress ? onStopScanning : onStartScanning);
+
+  const transition = (requiredState !== ScanState.NotSpecified && actualState != requiredState);
   return (
-    <button disabled={scanning} className='btn btn-success pull-right' onClick={onStartScanning}>
-      {t('device-manager.buttons.scan')}
+    <button disabled={transition} className={classNames} onClick={onClick}>
+      {scanInProgress ? t('device-manager.buttons.stop') : t('device-manager.buttons.scan')}
     </button>
   )
 }
@@ -89,7 +95,7 @@ function ScanningMessage({port}) {
     <>
       <Spinner/>
       <InfoMessage msg={t('device-manager.labels.scanning', {port})}/>
-      {/*<InfoMessage msg={t('device-manager.labels.scanning-stop')}/>*/}
+      <InfoMessage msg={t('device-manager.labels.scanning-stop')}/>
     </>
   )
 }
@@ -102,17 +108,7 @@ function NotFoundMessage({firstStart}) {
   return <InfoMessage msg={t('device-manager.labels.not-found')}/>
 }
 
-function NewFirmwaresNotice() {
-  const { t } = useTranslation();
-  return (
-    <div className='alert alert-warning' role='warning'>
-      <i className='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></i>
-      <a href='https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update' className='alert-link'> {t('device-manager.labels.firmwares-notice-link')}</a>
-    </div>
-  )
-}
-
-const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}) => {
+const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning, onStopScanning}) => {
   const { t } = useTranslation();
   if (mqtt.waitStartup) {
     return <Spinner/>;
@@ -121,20 +117,20 @@ const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning}
     return <ErrorBar msg={errors.error}/>;
   }
   const nothingFound = (devices.devices.length == 0)
+  const scanInProgress = (scanning.actualState == ScanState.Started);
   return (
     <>
-      <NewFirmwaresNotice/>
       {!(scanning.firstStart && nothingFound) && <ErrorBar msg={errors.error}/>}
-      <Header scanning={scanning.scanning} onStartScanning={onStartScanning}/>
-      <ScanProgressBar scanning={scanning.scanning} progress={scanning.progress}/>
+      <Header actualState={scanning.actualState} requiredState={scanning.requiredState} onStartScanning={onStartScanning} onStopScanning={onStopScanning}/>
+      <ScanProgressBar scanning={scanInProgress} progress={scanning.progress}/>
       <Desktop>
         {!nothingFound && <DevicesTable devices={devices.devices}/>}
       </Desktop>
       <Mobile>
         {!nothingFound && <DevicesList devices={devices.devices}/>}
       </Mobile>
-      {scanning.scanning && <ScanningMessage port={scanning.scanningPort}/>}
-      {!scanning.scanning && nothingFound && <NotFoundMessage firstStart={scanning.firstStart}/>}
+      {scanInProgress && <ScanningMessage port={scanning.scanningPort}/>}
+      {!scanInProgress && nothingFound && <NotFoundMessage firstStart={scanning.firstStart}/>}
     </>
   );
 })
