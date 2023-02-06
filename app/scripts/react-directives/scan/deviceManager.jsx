@@ -95,7 +95,7 @@ function ScanningMessage({port}) {
     <>
       <Spinner/>
       <InfoMessage msg={t('device-manager.labels.scanning', {port})}/>
-      {<InfoMessage msg={t('device-manager.labels.scanning-stop')}/>}
+      <InfoMessage msg={t('device-manager.labels.scanning-stop')}/>
     </>
   )
 }
