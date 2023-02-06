@@ -108,16 +108,6 @@ function NotFoundMessage({firstStart}) {
   return <InfoMessage msg={t('device-manager.labels.not-found')}/>
 }
 
-function NewFirmwaresNotice() {
-  const { t } = useTranslation();
-  return (
-    <div className='alert alert-warning' role='warning'>
-      <i className='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></i>
-      <a href='https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update' className='alert-link'> {t('device-manager.labels.firmwares-notice-link')}</a>
-    </div>
-  )
-}
-
 const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning, onStopScanning}) => {
   const { t } = useTranslation();
   if (mqtt.waitStartup) {
@@ -130,7 +120,6 @@ const DevicesPage = observer(({mqtt, scanning, devices, errors, onStartScanning,
   const scanInProgress = (scanning.actualState == ScanState.Started);
   return (
     <>
-      <NewFirmwaresNotice/>
       {!(scanning.firstStart && nothingFound) && <ErrorBar msg={errors.error}/>}
       <Header actualState={scanning.actualState} requiredState={scanning.requiredState} onStartScanning={onStartScanning} onStopScanning={onStopScanning}/>
       <ScanProgressBar scanning={scanInProgress} progress={scanning.progress}/>
