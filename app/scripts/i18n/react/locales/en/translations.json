@@ -4,7 +4,7 @@
       "errors": {
          "scan": "Start scan failed",
          "common": "Error",
-         "unavailable": "wb-device-manager service is unavailable"
+         "unavailable": "wb-device-manager service is unavailable or outdated"
       },
       "buttons": {
          "scan": "Start scan",

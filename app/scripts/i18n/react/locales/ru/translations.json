@@ -4,7 +4,7 @@
       "errors": {
          "scan": "Не удалось запустить сканирование",
          "common": "Ошибка",
-         "unavailable": "Сервис wb-device-manager недоступен"
+         "unavailable": "Сервис wb-device-manager недоступен или устарел"
       },
       "buttons": {
          "scan": "Сканировать",

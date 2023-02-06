@@ -181,7 +181,7 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                 scope.scanStore.startScan()
                 scope.devicesStore.setDevices([])
                 scope.globalError.clearError()
-                DeviceManagerProxy.Scan().catch(onScanFailed);
+                DeviceManagerProxy.Start().catch(onScanFailed);
             }
 
             const onStopScanning = () => {
@@ -221,7 +221,7 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
             });
 
             whenMqttReady()
-                .then( () => DeviceManagerProxy.hasMethod('Scan') )
+                .then( () => DeviceManagerProxy.hasMethod('Start') )
                 .then((available) => {
                     if (available) {
                         scope.mqttStore.setDeviceManagerAvailable()
