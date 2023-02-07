@@ -36,7 +36,7 @@ export class Connection {
       '02_nm_modem': 'fas fa-signal',
       '03_nm_wifi': 'fas fa-wifi',
       '04_nm_wifi_ap': 'fas fa-wifi',
-      can: 'fas fa-bars',
+      can: 'can-bus',
     };
     if (typeToIcon.hasOwnProperty(data.type)) {
       this.icon = typeToIcon[data.type];

@@ -66,3 +66,8 @@
 .network-connections-page .tab-pane-header-label {
     margin-top: 7px;
 }
+
+.network-connections-page .can-bus {
+    content: url("../../images/canbus.png");
+    width: 23px;
+}
