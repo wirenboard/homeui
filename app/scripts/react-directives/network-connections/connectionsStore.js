@@ -55,6 +55,7 @@ class ConnectionsStore {
 
     makeObservable(this, {
       connections: observable,
+      newConnection: observable,
       deprecatedConnections: computed,
       sortedConnections: computed,
       setSelected: action,

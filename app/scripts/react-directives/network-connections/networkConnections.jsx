@@ -151,11 +151,9 @@ function makeTabPanes(consStore) {
   });
 }
 
-const ConnectionTabs = observer(() => {
+const ConnectionTabs = observer(({ consStore }) => {
   const { t } = useTranslation();
   const config = useConfig();
-
-  const consStore = new ConnectionsStore(config);
 
   const addConnectionButton = (
     <Button
@@ -198,41 +196,6 @@ function DeprecationWarning({ deprecatedConnections }) {
   );
 }
 
-function makeEditorTabItems(editor) {
-  const { t } = useTranslation();
-  const conOnClick = (e) => {
-    e.preventDefault();
-    editor.selectEditor(editor.connections);
-  };
-  const swOnClick = (e) => {
-    e.preventDefault();
-    editor.selectEditor(editor.switcher);
-  };
-  return (
-    <>
-      <EditorTabItem id="editorConnections" active={editor.connections.isActiveEditor} onClick={conOnClick}>
-        {t('network-connections.title')}
-      </EditorTabItem>
-      <EditorTabItem id="editorManager" active={editor.switcher.isActiveEditor} onClick={swOnClick}>
-        {t('connection-manager.title')}
-      </EditorTabItem>
-    </>
-  );
-}
-
-function makeEditorTabPanes() {
-  return (
-    <>
-      <EditorTabPane id="editorConnections" active={editor.connections.isActiveEditor}>
-        <ConnectionTabs tabs={editor.connections} />
-      </EditorTabPane>
-      <EditorTabPane id="editorManager" active={editor.switcher.isActiveEditor}>
-        <SwitcherForm switcher={editor.switcher} />
-      </EditorTabPane>
-    </>
-  );
-}
-
 // what do we want from connections
 //  - sorted list
 //  - add/delete
@@ -243,8 +206,8 @@ function makeEditorTabPanes() {
 //  - save on request
 //  - scream when switch from tab without saving
 
-function ConfigEditorTabs() {
-  return <ConnectionTabs />;
+function ConfigEditorTabs({ consStore }) {
+  return <ConnectionTabs consStore={consStore} />;
 
   /*
   const { t } = useTranslation();
@@ -287,14 +250,15 @@ function ConfigEditorTabs() {
 
 const NetworkConnectionsPage = observer(() => {
   const { t } = useTranslation();
-  const configContext = useConfig();
+  const config = useConfig();
+  const consStore = new ConnectionsStore(config);
 
   return (
     <div className="network-connections-page">
       <h1 className="page-header">
         <span>{t('network-connections.title')}</span>
       </h1>
-      {configContext.isLoading ? <Spinner /> : <ConfigEditorTabs />}
+      {config.isLoading ? <Spinner /> : <ConfigEditorTabs consStore={consStore} />}
     </div>
   );
 });
