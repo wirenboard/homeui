@@ -2,7 +2,6 @@ import React from 'react';
 import { Tabs, TabList, TabContent, TabPane, TabItem, EditorTabItem, EditorTabPane, EditorTabList, EditorTabContent, TabsBuilder } from './tabs';
 import { Spinner, ErrorBar, WarningBar } from '../common';
 import { observer }  from 'mobx-react-lite';
-import { trace } from 'mobx'
 import { useTranslation, Trans } from 'react-i18next';
 import { BootstrapRow } from '../common';
 import { ConfirmModal, SelectModal } from './modals';
@@ -11,7 +10,7 @@ import { Button } from '../common';
 import { NetworksEditor } from "./editorStore"
 import { SwitcherForm } from "./switcherEditor"
 import { ConfigProvider, useConfig } from './context/ConfigContext';
-import { ConnectionsStateProvider } from './context/ConnectionsStateContext';
+import { ConnectionsStateProvider, useConnectionsState } from './context/ConnectionsStateContext';
 
 function makeTabItems(tabs) {
   return tabs.connections.map(tab => {
@@ -42,7 +41,7 @@ function makeTabItems(tabs) {
 const TabPaneHeader = observer(({ tab }) => {
   const { t } = useTranslation();
   if (!tab.managedByNM) {
-    return;
+    return '';
   }
   const labels = {
     '01_nm_ethernet': 'network-connections.labels.ethernet',
@@ -121,42 +120,43 @@ const TabPaneButtons = observer(({ tabs, tab }) => {
 });
 
 function makeTabPanes(tabs) {
-  return tabs.connections.map(tab => {
-    return (
-      <TabPane key={tab.id} active={tab.active}>
-        <TabPaneHeader tab={tab} />
-        <JsonEditor
-          schema={tab.schema}
-          data={tab.data}
-          root={'cn' + tab.id}
-          onChange={tab.setEditedData}
-        />
-        <TabPaneButtons tabs={tabs} tab={tab} />
-      </TabPane>
-    );
-  });
+  return tabs.connections.map((tab) => (
+    <TabPane key={tab.id} active={tab.active}>
+      <TabPaneHeader tab={tab} />
+      <JsonEditor
+        schema={tab.schema}
+        data={tab.data}
+        root={'cn' + tab.id}
+        onChange={tab.setEditedData}
+      />
+      <TabPaneButtons tabs={tabs} tab={tab} />
+    </TabPane>
+  ));
 }
 
 const ConnectionTabs = observer(({ tabs }) => {
   const { t } = useTranslation();
+  const addConnectionButton = (
+    <Button
+      label={t('network-connections.buttons.add-connection')}
+      additionalStyles="add-connection-button"
+      icon="glyphicon glyphicon-plus"
+      onClick={() => tabs.createConnection()}
+    />
+  );
   return (
     <>
-      <ErrorBar msg={tabs.error}></ErrorBar>
+      <ErrorBar msg={tabs.error} />
       <DeprecationWarning deprecatedConnections={tabs.deprecatedConnections} />
       <ConfirmModal {...tabs.confirmModalState} />
       <SelectModal {...tabs.selectNewConnectionModalState} />
-      <Tabs>
-        <TabList>
-          {makeTabItems(tabs)}
-          <Button
-            label={t('network-connections.buttons.add-connection')}
-            additionalStyles="add-connection-button"
-            icon="glyphicon glyphicon-plus"
-            onClick={() => tabs.createConnection()}
-          />
-        </TabList>
-        <TabContent>{makeTabPanes(tabs)}</TabContent>
-      </Tabs>
+      <TabsBuilder
+        tabs={makeTabItems()}
+        contents={makeTabPanes()}
+        bottomOfTheList={addConnectionButton}
+        tabListClasses="col-md-2 nav nav-pills nav-stacked"
+        tabContentClasses="col-md-10 well well-small"
+      />
     </>
   );
 });
@@ -212,9 +212,26 @@ function makeEditorTabPanes() {
   );
 }
 
+// what do we want from connections
+//  - sorted list
+//  - add/delete
+//  - store new connections
+//
+// what do we want from a single connection
+//  - store its edited state
+//  - save on request
+//  - scream when switch from tab without saving
+
+
+const NetworksEditorView = observer(() => {
+  const { t } = useTranslation();
+  const config = useConfig();
+  const connectionsState = useConnectionsState();
+});
+
 function ConfigEditorTabs() {
   const { t } = useTranslation();
-  const tabs = [{ id: "Hello", children: (<i>Hello</i>) }, { id: "World", children: (<b>World</b>) }, { id: "123", children: "123" }];
+  const tabs = [{ id: "Hello", children: (<i>Hello</i>), onTabChange: (from, to) => console.log("switch", from.id, to.id) }, { id: "World", children: (<b>World</b>) }, { id: "123", children: "123" }];
   const contents = [{ id: "Hello", children: (<i>Hello</i>) }, { id: "World", children: (<b>World</b>) }, { id: "123", children: "123" }];
 
   const bottom = (
@@ -224,10 +241,23 @@ function ConfigEditorTabs() {
       icon="glyphicon glyphicon-plus"
       onClick={() => console.log("Hello!")}
     />
+  );
+
+  const subTabs = (
+    <TabsBuilder
+      tabs={tabs}
+      contents={contents}
+      bottomOfTheList={bottom}
+      tabListClasses="col-md-2 nav nav-pills nav-stacked"
+      tabContentClasses="col-md-10 well well-small"
+    />
   )
 
+  const superTabs = [{ id: "FooBar", children: (<i>FooBar</i>) }, { id: "BarBaz", children: ("BarBaz") }];
+  const superContents = [{ id: "FooBar", children: subTabs }, { id: "BarBaz", children: "trololo" }];
+
   return (
-    <TabsBuilder tabs={tabs} contents={contents} bottomOfTheList={bottom} tabListClasses="nav nav-tabs" />
+    <TabsBuilder tabs={superTabs} contents={superContents} tabListClasses="nav nav-tabs" />
   );
   /*return (
     <Tabs>

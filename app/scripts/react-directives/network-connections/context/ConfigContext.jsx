@@ -19,9 +19,17 @@ export const ConfigContextData = (onSave) => observable({
     this.isLoading = false;
   },
 
-  saveConnections(connections) {
-    onSave({ ui: { connections, con_switcher: this.con_switcher } });
-    this.isDirty = false;
+  async saveConnections(connections) {
+    try {
+      this.isLoading = true;
+      await onSave({ ui: { connections, con_switcher: this.con_switcher } });
+      this.isDirty = false;
+      this.isLoading = false;
+    } catch (err) {
+      this.error = err;
+      this.isLoading = false;
+      throw err;
+    }
   },
 });
 

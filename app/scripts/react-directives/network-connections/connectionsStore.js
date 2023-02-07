@@ -5,7 +5,6 @@ import i18n from '../../i18n/react/config';
 import {
   Connection,
   makeConnectionSchema,
-  getNewConnection,
   getConnectionJson,
 } from './connectionStore';
 import ConfirmModalState from './confirmModalState';
@@ -28,24 +27,16 @@ function typeCompare(cn1, cn2) {
   return 0;
 }
 
-class Connections {
+class ConnectionsStore {
   connections = [];
+
+  newConnection = undefined;
 
   confirmModalState = new ConfirmModalState();
 
   selectNewConnectionModalState = new SelectNewConnectionModalState();
 
-  onSave = undefined;
-
-  loading = true;
-
-  isChanged = false;
-
   error = '';
-
-  _activeConnection = undefined;
-
-  _newConnectionIndex = 1;
 
   _schema = {};
 
@@ -53,21 +44,16 @@ class Connections {
 
   _toggleConnectionState = undefined;
 
-  isActiveEditor = false;
+  constructor(connections) {
+    this.connections = connections;
 
-  constructor(onSave, toggleConnectionState) {
-    this.onSave = onSave;
-    this._toggleConnectionState = toggleConnectionState;
     makeObservable(this, {
       connections: observable,
-      loading: observable,
-      isChanged: observable,
       deprecatedConnections: computed,
-      setSchemaAndData: action,
+      sortedConnections: computed,
       setSelected: action,
       saveConnections: action,
       addConnection: action,
-      activateConnection: action,
       deleteConnection: action,
     });
   }
@@ -76,28 +62,17 @@ class Connections {
     return this.connections.filter((cn) => cn.isDeprecated).map((cn) => cn.name);
   }
 
-  setSchemaAndData(schema, data) {
-    this._schema = schema;
-    this._additionalData = data.data;
-    this.connections = [];
-    data.ui.connections.forEach((cn) => this.addConnection({ type: cn.type, connectionData: cn }));
-    this.connections = stableSort(this.connections, typeCompare);
-    if (this.connections.length) {
-      this.activateConnection(this.connections[0]);
+  get sortedConnections() {
+    const connections = this.connections.slice();
+    if (this.newConnection) {
+      connections.push(this.newConnection);
     }
-    this.error = '';
-    this.loading = false;
+    return stableSort(this.connections, typeCompare);
   }
 
-  activateConnection(connectionToActivate) {
-    this._activeConnection?.deactivate();
-    this._activeConnection = connectionToActivate;
-    connectionToActivate.activate();
-  }
-
-  beforeConnectionSwitch() {
+  beforeConnectionSwitch(activeConnection) {
     return new Promise(async (resolve, reject) => {
-      if (!this._activeConnection?.isChanged) {
+      if (!activeConnection.isChanged) {
         resolve();
         return;
       }
@@ -111,7 +86,7 @@ class Connections {
         },
       ];
 
-      if (this._activeConnection.hasErrors) {
+      if (activeConnection.hasErrors) {
         title = i18n.t('network-connections.labels.has-errors');
       } else {
         title = i18n.t('network-connections.labels.changes');
@@ -127,11 +102,10 @@ class Connections {
           await this.saveConnections(this.connections);
         } else {
           runInAction(() => {
-            if (this._activeConnection.isNew) {
-              this.connections.remove(this._activeConnection);
-              this._activeConnection = undefined;
+            if (activeConnection === this.newConnection) {
+              this.newConnection = null;
             } else {
-              this._activeConnection.rollback();
+              activeConnection.rollback();
             }
           });
         }
@@ -142,11 +116,10 @@ class Connections {
     });
   }
 
-  async setSelected(connectionToActivate) {
+  async setSelected(connectionToActivate, activeConnection) {
     if (!connectionToActivate.active) {
       try {
-        await this.beforeConnectionSwitch();
-        this.activateConnection(connectionToActivate);
+        await this.beforeConnectionSwitch(activeConnection);
       } catch (err) {
         if (err !== 'cancel') {
           throw err;
@@ -155,28 +128,17 @@ class Connections {
     }
   }
 
-  async saveConnections(connections) {
-    this.loading = true;
-    const jsonToSave = {
-      ui: {
-        connections: connections.map((cn) => getConnectionJson(cn.editedData)),
-        con_switch: {},
-      },
-    };
-    try {
-      await this.onSave(jsonToSave);
-      runInAction(() => {
-        connections.forEach((cn) => cn.commit());
-        this.isChanged = false;
-        this.loading = false;
-      });
-    } catch (err) {
-      runInAction(() => {
-        this.error = err.message;
-        this.loading = false;
-      });
-      throw err;
+  async saveConnections(saveFunction) {
+    const connections = this.connections.slice();
+    if (this.newConnection) {
+      connections.push(this.newConnection);
     }
+    const jsonToSave = connections.map((cn) => getConnectionJson(cn.editedData));
+
+    await saveFunction(jsonToSave);
+    runInAction(() => {
+      connections.forEach((cn) => cn.commit());
+    });
   }
 
   _findIndex(pattern) {
@@ -225,27 +187,17 @@ class Connections {
     const connection = new Connection(
       makeConnectionSchema(type, this._schema),
       connectionData,
-      this._newConnectionIndex,
       state,
-      this._toggleConnectionState,
     );
-    this.connections.push(connection);
-    this._newConnectionIndex++;
-    return connection;
+
+    this.newConnection = connection;
   }
 
-  async createConnection() {
+  async createConnection(activeConnection) {
     try {
-      await this.beforeConnectionSwitch();
-      if (this._activeConnection === undefined && this.connections.length) {
-        this.activateConnection(this.connections[0]);
-      }
+      await this.beforeConnectionSwitch(activeConnection);
       const connectionType = await this.selectNewConnectionModalState.show();
-      const cn = this.addConnection({ type: connectionType, state: 'new' });
-      runInAction(() => {
-        this.connections = stableSort(this.connections, typeCompare);
-      });
-      this.activateConnection(cn);
+      this.addConnection({ type: connectionType, state: 'new' });
     } catch (err) {
       if (err !== 'cancel') {
         throw err;
@@ -266,18 +218,12 @@ class Connections {
         i18n.t('network-connections.labels.confirm-delete-connection'),
         buttons,
       );
-      if (!connection.isNew) {
+      if (connection !== this.newConnection) {
         await this.saveConnections(this.connections.filter((cn) => cn !== connection));
       }
       runInAction(() => {
-        this.connections.remove(connection);
-        if (connection === this._activeConnection) {
-          this._activeConnection = undefined;
-        }
+        this.newConnection = null;
       });
-      if (this.connections.length) {
-        this.activateConnection(this.connections[0]);
-      }
     } catch (err) {
       if (err !== 'cancel') {
         throw err;
@@ -286,4 +232,4 @@ class Connections {
   }
 }
 
-export default Connections;
+export default ConnectionsStore;

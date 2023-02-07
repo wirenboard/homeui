@@ -35,9 +35,9 @@ export function TabsBuilder({tabs, contents, bottomOfTheList, tabContentClasses,
 
   const tabsList = tabs.map(({ children, ...props }, index) => {
     const onClick = (e) => {
-      console.log("Hey ", index);
       e.preventDefault();
       props.onClick?.(e);
+      tabs[currentIndex].onTabChange?.(tabs[currentIndex], tabs[index]);
       setCurrentIndex(index);
     };
 

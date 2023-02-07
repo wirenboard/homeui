@@ -4,18 +4,7 @@ import {
 import { isEqual, cloneDeep } from 'lodash';
 
 export class Connection {
-  id = 0;
-
   name = '';
-
-  // "activated"
-  // "activating"
-  // "deactivating"
-  // "not-connected"
-  // "deprecated"
-  // "new"
-  // "unknown"
-  state = 'unknown';
 
   icon = '';
 
@@ -25,21 +14,19 @@ export class Connection {
 
   editedData = {};
 
+  isDeprecated = false;
+
   isChanged = false;
 
   editedConnectionId = '';
 
-  _onSwitchState = undefined;
-
   _hasValidationErrors = false;
 
-  constructor(schema, data, index, state, onSwitchState) {
-    this.id = index;
+  constructor(schema, data, state) {
     this.schema = schema;
     this.editedData = data;
     this.data = data;
     this.editedConnectionId = data.connection_id;
-    this._onSwitchState = onSwitchState;
     const typeToIcon = {
       '01_nm_ethernet': 'fas fa-network-wired',
       '02_nm_modem': 'fas fa-signal',
@@ -56,27 +43,23 @@ export class Connection {
       }
     } else {
       this.icon = 'glyphicon glyphicon-exclamation-sign';
-      this.state = 'deprecated';
+      this.isDeprecated = true;
     }
     this.updateName();
     makeObservable(this, {
       name: observable,
-      description: observable,
       state: observable,
       isChanged: observable,
+      isDeprecated: observable,
       data: observable,
       editedConnectionId: observable,
       _hasValidationErrors: observable,
       description: computed,
       isNew: computed,
       managedByNM: computed,
-      isDeprecated: computed,
       allowSwitchState: computed,
       hasErrors: computed,
-      setState: action,
       setEditedData: action.bound,
-      activate: action,
-      deactivate: action,
       commit: action,
       rollback: action,
       updateName: action,
@@ -89,16 +72,8 @@ export class Connection {
     return this.state === 'unknown' ? '' : `network-connections.labels.${this.state}`;
   }
 
-  get isNew() {
-    return this.state === 'new';
-  }
-
   get managedByNM() {
     return this.data.type !== 'can' && !this.isDeprecated;
-  }
-
-  get isDeprecated() {
-    return this.state === 'deprecated';
   }
 
   get allowSwitchState() {
@@ -109,15 +84,6 @@ export class Connection {
     return this._hasValidationErrors || (this.managedByNM && !this.editedConnectionId);
   }
 
-  switchState() {
-    if (this.state === 'activated') {
-      this.state = 'deactivating';
-    } else if (this.state === 'not-connected') {
-      this.state = 'activating';
-    }
-    this?._onSwitchState(this.data.connection_uuid);
-  }
-
   updateName() {
     if (this.isNew) {
       this.name = this.editedConnectionId || this.editedData.name || '';
@@ -126,17 +92,12 @@ export class Connection {
     }
   }
 
-  setState(newState) {
-    const states = ['activated', 'activating', 'deactivating'];
-    this.state = states.find((state) => state == newState) || 'not-connected';
-  }
-
-  setEditedData(data, errors) {
+  setEditedData(data, errors, isNew) {
     if (this.managedByNM) {
       if (['03_nm_wifi', '04_nm_wifi_ap'].includes(this.editedData.type)) {
         const ssid = data['802-11-wireless_ssid'];
         if (
-          this.isNew
+          isNew
           && ssid
           && (!this.editedData['802-11-wireless_ssid']
             || this.editedData['802-11-wireless_ssid'] === this.editedData.connection_id)

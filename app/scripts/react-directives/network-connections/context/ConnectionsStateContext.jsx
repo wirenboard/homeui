@@ -4,6 +4,11 @@ import { observable } from 'mobx';
 const ConnectionsStateContext = createContext();
 
 export const ConnectionsStateContextData = (toggle) => observable({
+  // "activated"
+  // "activating"
+  // "deactivating"
+  // "not-connected"
+  // "unknown"
   states: {},
 
   getState(uuid) {
@@ -18,7 +23,8 @@ export const ConnectionsStateContextData = (toggle) => observable({
   },
 
   setStateFromSubscriber(uuid, nmState) {
-    this.states[uuid] = nmState;
+    const states = ['activated', 'activating', 'deactivating'];
+    this.states[uuid] = states.find((state) => state === nmState) || 'not-connected';
   },
 });
 
