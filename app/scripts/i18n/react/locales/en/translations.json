@@ -45,6 +45,7 @@
          "deactivating": "Disconnecting",
          "not-connected": "Not connected",
          "deprecated": "Deprecated",
+         "limited-connectivity": "Limited connectivity",
          "new": "New connection",
          "select-type": "Select connection type",
          "wifi": "Wi-Fi client",
