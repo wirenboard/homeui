@@ -38,7 +38,7 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       whenMqttReady().then(() => {
         ConfigEditorProxy.Load({ path: scope.path }).then((r) => {
           scope.configPath = r.configPath;
-          scope.context.setConfigData(r.content, r.schema);
+          scope.configContext.setConfigData(r.content, r.schema);
           mqttClient
             .addStickySubscription('/devices/+/controls/State', (msg) => {
               const match = msg.topic.match(re);

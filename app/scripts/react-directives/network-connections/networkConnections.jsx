@@ -237,7 +237,7 @@ function ConfigEditorTabs() {
   );*/
 }
 
-function NetworkConnectionsPage() {
+const NetworkConnectionsPage = observer(() => {
   const { t } = useTranslation();
   const configContext = useConfig();
 
@@ -246,11 +246,10 @@ function NetworkConnectionsPage() {
       <h1 className="page-header">
         <span>{t('network-connections.title')}</span>
       </h1>
-      <ConfigEditorTabs />
       {configContext.isLoading ? <Spinner /> : <ConfigEditorTabs />}
     </div>
   );
-}
+})
 
 function CreateNetworkConnections({ configContextData, connectionsStateContextData }) {
   return (
