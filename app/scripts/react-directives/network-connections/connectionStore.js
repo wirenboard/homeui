@@ -1,11 +1,13 @@
-'use strict';
-
-import { action, observable, makeObservable, computed } from 'mobx';
+import {
+  action, observable, makeObservable, computed,
+} from 'mobx';
 import { isEqual, cloneDeep } from 'lodash';
 
 export class Connection {
   id = 0;
+
   name = '';
+
   // "activated"
   // "activating"
   // "deactivating"
@@ -14,14 +16,21 @@ export class Connection {
   // "new"
   // "unknown"
   state = 'unknown';
+
   icon = '';
+
   schema = {};
+
   data = {};
+
   editedData = {};
+
   isChanged = false;
-  active = false;
+
   editedConnectionId = '';
+
   _onSwitchState = undefined;
+
   _hasValidationErrors = false;
 
   constructor(schema, data, index, state, onSwitchState) {
@@ -42,10 +51,8 @@ export class Connection {
       this.icon = typeToIcon[data.type];
       if (state) {
         this.state = state;
-      } else {
-        if (data.type != 'can') {
-          this.state = 'not-connected';
-        }
+      } else if (data.type != 'can') {
+        this.state = 'not-connected';
       }
     } else {
       this.icon = 'glyphicon glyphicon-exclamation-sign';
@@ -58,7 +65,6 @@ export class Connection {
       state: observable,
       isChanged: observable,
       data: observable,
-      active: observable,
       editedConnectionId: observable,
       _hasValidationErrors: observable,
       description: computed,
@@ -80,7 +86,7 @@ export class Connection {
   }
 
   get description() {
-    return this.state === 'unknown' ? '' : 'network-connections.labels.' + this.state;
+    return this.state === 'unknown' ? '' : `network-connections.labels.${this.state}`;
   }
 
   get isNew() {
@@ -106,10 +112,8 @@ export class Connection {
   switchState() {
     if (this.state === 'activated') {
       this.state = 'deactivating';
-    } else {
-      if (this.state === 'not-connected') {
-        this.state = 'activating';
-      }
+    } else if (this.state === 'not-connected') {
+      this.state = 'activating';
     }
     this?._onSwitchState(this.data.connection_uuid);
   }
@@ -124,7 +128,7 @@ export class Connection {
 
   setState(newState) {
     const states = ['activated', 'activating', 'deactivating'];
-    this.state = states.find(state => state == newState) || 'not-connected';
+    this.state = states.find((state) => state == newState) || 'not-connected';
   }
 
   setEditedData(data, errors) {
@@ -132,10 +136,10 @@ export class Connection {
       if (['03_nm_wifi', '04_nm_wifi_ap'].includes(this.editedData.type)) {
         const ssid = data['802-11-wireless_ssid'];
         if (
-          this.isNew &&
-          ssid &&
-          (!this.editedData['802-11-wireless_ssid'] ||
-            this.editedData['802-11-wireless_ssid'] === this.editedData.connection_id)
+          this.isNew
+          && ssid
+          && (!this.editedData['802-11-wireless_ssid']
+            || this.editedData['802-11-wireless_ssid'] === this.editedData.connection_id)
         ) {
           this.editedConnectionId = ssid;
         }
@@ -179,18 +183,10 @@ export class Connection {
     this.isChanged = false;
     this._hasValidationErrors = false;
   }
-
-  activate() {
-    this.active = true;
-  }
-
-  deactivate() {
-    this.active = false;
-  }
 }
 
 export function getConnectionJson(connection) {
-  var res = cloneDeep(connection);
+  const res = cloneDeep(connection);
   delete res.data;
   return res;
 }
@@ -208,11 +204,11 @@ export function makeConnectionSchema(type, fullSchema) {
     ['ppp', 'old_ppp'],
     ['manual', 'old_manual'],
   ]);
-  var schema = cloneDeep(fullSchema.definitions[types.get(type)]);
+  const schema = cloneDeep(fullSchema.definitions[types.get(type)]);
   schema.definitions = fullSchema.definitions;
   schema.translations = fullSchema.translations;
   if (schema.hasOwnProperty('allOf')) {
-    var dataSchema = { properties: { data: fullSchema.properties.data } };
+    const dataSchema = { properties: { data: fullSchema.properties.data } };
     schema.allOf.push(dataSchema);
   } else {
     schema.properties = schema.properties || {};
