@@ -1,28 +1,30 @@
 import React from 'react';
-import { Tabs, TabList, TabContent, TabPane, TabItem, EditorTabItem, EditorTabPane, EditorTabList, EditorTabContent, TabsBuilder } from './tabs';
-import { Spinner, ErrorBar, WarningBar } from '../common';
-import { observer }  from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
-import { BootstrapRow } from '../common';
+import {
+  TabContent, TabPane, TabItem, TabsBuilder,
+} from './tabs';
+import {
+  Spinner, ErrorBar, WarningBar, BootstrapRow, Button,
+} from '../common';
 import { ConfirmModal, SelectModal } from './modals';
 import JsonEditor from './jsonEditor';
-import { Button } from '../common';
-import { NetworksEditor } from "./editorStore"
-import { SwitcherForm } from "./switcherEditor"
+import { NetworksEditor } from './editorStore';
+import { SwitcherForm } from './switcherEditor';
 import { ConfigProvider, useConfig } from './context/ConfigContext';
 import { ConnectionsStateProvider, useConnectionsState } from './context/ConnectionsStateContext';
 
 function makeTabItems(tabs) {
-  return tabs.connections.map(tab => {
-    const onClick = e => {
+  return tabs.connections.map((tab) => {
+    const onClick = (e) => {
       e.preventDefault();
       tabs.setSelected(tab);
     };
 
     return (
       <TabItem key={tab.id} active={tab.active} onClick={onClick}>
-        <div className={'connection-item ' + tab.state}>
-          <i className={tab.icon}></i>
+        <div className={`connection-item ${tab.state}`}>
+          <i className={tab.icon} />
           <div className="connection-item-text">
             <b>{tab.name}</b>
             {tab.description && (
@@ -53,21 +55,21 @@ const TabPaneHeader = observer(({ tab }) => {
   return (
     <BootstrapRow>
       <div className="col-xs-12 col-md-3 col-lg-2">
-        <label className={'tab-pane-header-label'} htmlFor={'inputName' + tab.id}>
+        <label className="tab-pane-header-label" htmlFor={`inputName${tab.id}`}>
           {t(label)}
         </label>
       </div>
       <div
         className={
-          'col-xs-8 col-sm-9 col-md-6 col-lg-8' + (tab.editedConnectionId ? '' : ' has-error')
+          `col-xs-8 col-sm-9 col-md-6 col-lg-8${tab.editedConnectionId ? '' : ' has-error'}`
         }
       >
         <input
           type="text"
           className="form-control"
-          id={'inputName' + tab.id}
+          id={`inputName${tab.id}`}
           value={tab.editedConnectionId}
-          onChange={e => tab.setConnectionId(e.target.value)}
+          onChange={(e) => tab.setConnectionId(e.target.value)}
         />
       </div>
       <div className="col-xs-4 col-sm-3 col-md-3 col-lg-2">
@@ -77,7 +79,7 @@ const TabPaneHeader = observer(({ tab }) => {
             label={t(
               tab.state === 'activated'
                 ? 'network-connections.buttons.disconnect'
-                : 'network-connections.buttons.connect'
+                : 'network-connections.buttons.connect',
             )}
             onClick={() => tab.switchState()}
           />
@@ -126,7 +128,7 @@ function makeTabPanes(tabs) {
       <JsonEditor
         schema={tab.schema}
         data={tab.data}
-        root={'cn' + tab.id}
+        root={`cn${tab.id}`}
         onChange={tab.setEditedData}
       />
       <TabPaneButtons tabs={tabs} tab={tab} />
@@ -161,7 +163,7 @@ const ConnectionTabs = observer(({ tabs }) => {
   );
 });
 
-const DeprecationWarning = ({ deprecatedConnections }) => {
+function DeprecationWarning({ deprecatedConnections }) {
   if (!deprecatedConnections.length) {
     return;
   }
@@ -171,22 +173,22 @@ const DeprecationWarning = ({ deprecatedConnections }) => {
         count={deprecatedConnections.length}
         values={{ connections: deprecatedConnections.join(', ') }}
       >
-        {'network-connections.labels.main-deprecation-notice'}
+        network-connections.labels.main-deprecation-notice
       </Trans>
     </WarningBar>
   );
-};
+}
 
 function makeEditorTabItems(editor) {
   const { t } = useTranslation();
   const conOnClick = (e) => {
     e.preventDefault();
     editor.selectEditor(editor.connections);
-  }
+  };
   const swOnClick = (e) => {
     e.preventDefault();
     editor.selectEditor(editor.switcher);
-  }
+  };
   return (
     <>
       <EditorTabItem id="editorConnections" active={editor.connections.isActiveEditor} onClick={conOnClick}>
@@ -222,7 +224,6 @@ function makeEditorTabPanes() {
 //  - save on request
 //  - scream when switch from tab without saving
 
-
 const NetworksEditorView = observer(() => {
   const { t } = useTranslation();
   const config = useConfig();
@@ -231,15 +232,15 @@ const NetworksEditorView = observer(() => {
 
 function ConfigEditorTabs() {
   const { t } = useTranslation();
-  const tabs = [{ id: "Hello", children: (<i>Hello</i>), onTabChange: (from, to) => console.log("switch", from.id, to.id) }, { id: "World", children: (<b>World</b>) }, { id: "123", children: "123" }];
-  const contents = [{ id: "Hello", children: (<i>Hello</i>) }, { id: "World", children: (<b>World</b>) }, { id: "123", children: "123" }];
+  const tabs = [{ id: 'Hello', children: (<i>Hello</i>), onTabChange: (from, to) => console.log('switch', from.id, to.id) }, { id: 'World', children: (<b>World</b>) }, { id: '123', children: '123' }];
+  const contents = [{ id: 'Hello', children: (<i>Hello</i>) }, { id: 'World', children: (<b>World</b>) }, { id: '123', children: '123' }];
 
   const bottom = (
     <Button
       label={t('network-connections.buttons.add-connection')}
       additionalStyles="add-connection-button"
       icon="glyphicon glyphicon-plus"
-      onClick={() => console.log("Hello!")}
+      onClick={() => console.log('Hello!')}
     />
   );
 
@@ -251,20 +252,20 @@ function ConfigEditorTabs() {
       tabListClasses="col-md-2 nav nav-pills nav-stacked"
       tabContentClasses="col-md-10 well well-small"
     />
-  )
+  );
 
-  const superTabs = [{ id: "FooBar", children: (<i>FooBar</i>) }, { id: "BarBaz", children: ("BarBaz") }];
-  const superContents = [{ id: "FooBar", children: subTabs }, { id: "BarBaz", children: "trololo" }];
+  const superTabs = [{ id: 'FooBar', children: (<i>FooBar</i>) }, { id: 'BarBaz', children: ('BarBaz') }];
+  const superContents = [{ id: 'FooBar', children: subTabs }, { id: 'BarBaz', children: 'trololo' }];
 
   return (
     <TabsBuilder tabs={superTabs} contents={superContents} tabListClasses="nav nav-tabs" />
   );
-  /*return (
+  /* return (
     <Tabs>
       <EditorTabList>{makeEditorTabItems()}</EditorTabList>
       <EditorTabContent>{makeEditorTabPanes()}</EditorTabContent>
     </Tabs>
-  );*/
+  ); */
 }
 
 const NetworkConnectionsPage = observer(() => {
@@ -279,7 +280,7 @@ const NetworkConnectionsPage = observer(() => {
       {configContext.isLoading ? <Spinner /> : <ConfigEditorTabs />}
     </div>
   );
-})
+});
 
 function CreateNetworkConnections({ configContextData, connectionsStateContextData }) {
   return (
