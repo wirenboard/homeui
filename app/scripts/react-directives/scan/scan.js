@@ -203,7 +203,7 @@ function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient) {
                     if (data.error) {
                         scope.globalError.setError(data.error);
                     }
-                    scope.scanStore.setStateFromMqtt(data.scanning, data.progress, data.ports_to_scan, data.is_ext_scan)
+                    scope.scanStore.setStateFromMqtt(data.scanning, data.progress, data.scanning_ports, data.is_ext_scan)
                     scope.devicesStore.setDevices(data.devices)
                     scope.mqttStore.setStartupComplete()
                 }
