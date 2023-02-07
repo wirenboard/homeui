@@ -22,9 +22,9 @@ export const ConnectionsStateContextData = (toggle) => observable({
   },
 });
 
-export function ConnectionsStateContextProvider(data) {
+export function ConnectionsStateContextProvider({ data, children }) {
   return (
-    <ConnectionsStateContext.Provider value={data} />
+    <ConnectionsStateContext.Provider value={data}>{children}</ConnectionsStateContext.Provider>
   );
 }
 

@@ -10,6 +10,8 @@ import JsonEditor from './jsonEditor';
 import { Button } from '../common';
 import { NetworksEditor } from "./editorStore"
 import { SwitcherForm } from "./switcherEditor"
+import { ConfigProvider, useConfig } from './context/ConfigContext';
+import { ConnectionsStateProvider } from './context/ConnectionsStateContext';
 
 function makeTabItems(tabs) {
   return tabs.connections.map(tab => {
@@ -197,42 +199,50 @@ function makeEditorTabItems(editor) {
   );
 }
 
-function makeEditorTabPanes(editor) {
+function makeEditorTabPanes() {
   return (
     <>
       <EditorTabPane id="editorConnections" active={editor.connections.isActiveEditor}>
-        {editor.connections.loading ? <Spinner /> : <ConnectionTabs tabs={editor.connections} />}
+        <ConnectionTabs tabs={editor.connections} />
       </EditorTabPane>
       <EditorTabPane id="editorManager" active={editor.switcher.isActiveEditor}>
         <SwitcherForm switcher={editor.switcher} />
       </EditorTabPane>
     </>
-  )
+  );
 }
 
-const ConfigEditorTabs = observer(({ editor }) => {
+function ConfigEditorTabs() {
   return (
     <Tabs>
-      <EditorTabList>{makeEditorTabItems(editor)}</EditorTabList>
-      <EditorTabContent>{makeEditorTabPanes(editor)}</EditorTabContent>
+      <EditorTabList>{makeEditorTabItems()}</EditorTabList>
+      <EditorTabContent>{makeEditorTabPanes()}</EditorTabContent>
     </Tabs>
   );
-});
+}
 
-const NetworkConnectionsPage = ({ editor }) => {
+function NetworkConnectionsPage() {
   const { t } = useTranslation();
+  const configContext = useConfig();
+
   return (
     <div className="network-connections-page">
       <h1 className="page-header">
         <span>{t('network-connections.title')}</span>
       </h1>
-      <ConfigEditorTabs editor={editor} />
+      {configContext.isLoading ? <Spinner /> : <ConfigEditorTabs />}
     </div>
   );
-};
+}
 
-function CreateNetworkConnections({ editor }) {
-  return <NetworkConnectionsPage editor={editor}></NetworkConnectionsPage>;
+function CreateNetworkConnections({ configContextData, connectionsStateContextData }) {
+  return (
+    <ConfigProvider data={configContextData}>
+      <ConnectionsStateProvider data={connectionsStateContextData}>
+        <NetworkConnectionsPage />
+      </ConnectionsStateProvider>
+    </ConfigProvider>
+  );
 }
 
 export default CreateNetworkConnections;

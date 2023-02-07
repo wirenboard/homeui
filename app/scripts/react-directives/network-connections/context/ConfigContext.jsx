@@ -22,15 +22,11 @@ export const ConfigContextData = (onSave) => observable({
   saveConnections(connections) {
     onSave({ ui: { connections, con_switcher: this.con_switcher } });
   },
-
-  setDirty(dirty) {
-    this.isDirty = dirty;
-  },
 });
 
-export function ConfigProvider(data) {
+export function ConfigProvider({ data, children }) {
   return (
-    <ConfigContext.Provider value={data} />
+    <ConfigContext.Provider value={data}>{children}</ConfigContext.Provider>
   );
 }
 
