@@ -227,7 +227,7 @@ function ConfigEditorTabs() {
   )
 
   return (
-    <TabsBuilder tabs={tabs} contents={contents} bottomOfTheList={bottom}/>
+    <TabsBuilder tabs={tabs} contents={contents} bottomOfTheList={bottom} tabListClasses="nav nav-tabs" />
   );
   /*return (
     <Tabs>

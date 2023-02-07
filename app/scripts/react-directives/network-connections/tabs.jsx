@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-export function TabList({ children }) {
-  return <ul className="col-md-2 nav nav-pills nav-stacked">{children}</ul>;
+export function TabList({ className, children }) {
+  return <ul className={className} oops="col-md-2 nav nav-pills nav-stacked">{children}</ul>;
 }
 
 export function TabItem({ id, active, onClick, children }) {
@@ -22,15 +22,15 @@ export function TabPane({ id, active, children }) {
   );
 }
 
-export function TabContent({ children }) {
-  return <div className="col-md-10 tab-content well well-small">{children}</div>;
+export function TabContent({ className, children }) {
+  return <div className={ "tab-content " + className }>{children}</div>;
 }
 
 export function Tabs({ children }) {
   return <div>{children}</div>;
 }
 
-export function TabsBuilder({tabs, contents, bottomOfTheList}) {
+export function TabsBuilder({tabs, contents, bottomOfTheList, tabContentClasses, tabListClasses}) {
   const [ currentIndex, setCurrentIndex ] = useState(0);
 
   const tabsList = tabs.map(({ children, ...props }, index) => {
@@ -53,8 +53,8 @@ export function TabsBuilder({tabs, contents, bottomOfTheList}) {
 
   return (
     <Tabs>
-      <TabList>{tabsList}{bottomOfTheList}</TabList>
-      <TabContent>{tabsContents}</TabContent>
+      <TabList className={tabListClasses}>{tabsList}{bottomOfTheList}</TabList>
+      <TabContent className={tabContentClasses}>{tabsContents}</TabContent>
     </Tabs>
   );
 }
