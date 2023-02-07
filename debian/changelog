@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.53.2) stable; urgency=medium
+
+  * Scanner: add more details about scanning process to status message
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 07 Feb 2023 17:15:00 +0400
+
 wb-mqtt-homeui (2.53.1) stable; urgency=medium
 
   * Scanner: add devices count to status message
