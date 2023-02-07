@@ -21,7 +21,7 @@ export const ConfigContextData = (onSave) => observable({
 
   saveConnections(connections) {
     onSave({ ui: { connections, con_switcher: this.con_switcher } });
-    self.isDirty = false;
+    this.isDirty = false;
   },
 });
 
