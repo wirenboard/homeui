@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs, TabList, TabContent, TabPane, TabItem, EditorTabItem, EditorTabPane, EditorTabList, EditorTabContent } from './tabs';
+import { Tabs, TabList, TabContent, TabPane, TabItem, EditorTabItem, EditorTabPane, EditorTabList, EditorTabContent, TabsBuilder } from './tabs';
 import { Spinner, ErrorBar, WarningBar } from '../common';
 import { observer }  from 'mobx-react-lite';
 import { trace } from 'mobx'
@@ -213,12 +213,28 @@ function makeEditorTabPanes() {
 }
 
 function ConfigEditorTabs() {
+  const { t } = useTranslation();
+  const tabs = [{ id: "Hello", children: (<i>Hello</i>) }, { id: "World", children: (<b>World</b>) }, { id: "123", children: "123" }];
+  const contents = [{ id: "Hello", children: (<i>Hello</i>) }, { id: "World", children: (<b>World</b>) }, { id: "123", children: "123" }];
+
+  const bottom = (
+    <Button
+      label={t('network-connections.buttons.add-connection')}
+      additionalStyles="add-connection-button"
+      icon="glyphicon glyphicon-plus"
+      onClick={() => console.log("Hello!")}
+    />
+  )
+
   return (
+    <TabsBuilder tabs={tabs} contents={contents} bottomOfTheList={bottom}/>
+  );
+  /*return (
     <Tabs>
       <EditorTabList>{makeEditorTabItems()}</EditorTabList>
       <EditorTabContent>{makeEditorTabPanes()}</EditorTabContent>
     </Tabs>
-  );
+  );*/
 }
 
 function NetworkConnectionsPage() {
@@ -230,6 +246,7 @@ function NetworkConnectionsPage() {
       <h1 className="page-header">
         <span>{t('network-connections.title')}</span>
       </h1>
+      <ConfigEditorTabs />
       {configContext.isLoading ? <Spinner /> : <ConfigEditorTabs />}
     </div>
   );
