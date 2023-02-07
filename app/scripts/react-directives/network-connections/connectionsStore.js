@@ -1,6 +1,6 @@
-'use strict';
-
-import { action, observable, makeObservable, runInAction, computed } from 'mobx';
+import {
+  action, observable, makeObservable, runInAction, computed,
+} from 'mobx';
 import i18n from '../../i18n/react/config';
 import {
   Connection,
@@ -30,17 +30,29 @@ function typeCompare(cn1, cn2) {
 
 class Connections {
   connections = [];
+
   confirmModalState = new ConfirmModalState();
+
   selectNewConnectionModalState = new SelectNewConnectionModalState();
+
   onSave = undefined;
+
   loading = true;
+
   isChanged = false;
+
   error = '';
+
   _activeConnection = undefined;
+
   _newConnectionIndex = 1;
+
   _schema = {};
+
   _additionalData = {};
+
   _toggleConnectionState = undefined;
+
   isActiveEditor = false;
 
   constructor(onSave, toggleConnectionState) {
@@ -57,21 +69,18 @@ class Connections {
       addConnection: action,
       activateConnection: action,
       deleteConnection: action,
-      isActiveEditor: observable,
-      activateEditor: action,
-      deactivateEditor: action,
     });
   }
 
   get deprecatedConnections() {
-    return this.connections.filter(cn => cn.isDeprecated).map(cn => cn.name);
+    return this.connections.filter((cn) => cn.isDeprecated).map((cn) => cn.name);
   }
 
   setSchemaAndData(schema, data) {
     this._schema = schema;
     this._additionalData = data.data;
     this.connections = [];
-    data.ui.connections.forEach(cn => this.addConnection({ type: cn.type, connectionData: cn }));
+    data.ui.connections.forEach((cn) => this.addConnection({ type: cn.type, connectionData: cn }));
     this.connections = stableSort(this.connections, typeCompare);
     if (this.connections.length) {
       this.activateConnection(this.connections[0]);
@@ -93,8 +102,8 @@ class Connections {
         return;
       }
 
-      var title;
-      var buttons = [
+      let title;
+      const buttons = [
         {
           label: i18n.t('network-connections.buttons.dont-save'),
           type: 'danger',
@@ -150,14 +159,14 @@ class Connections {
     this.loading = true;
     const jsonToSave = {
       ui: {
-        connections: connections.map(cn => getConnectionJson(cn.editedData)),
+        connections: connections.map((cn) => getConnectionJson(cn.editedData)),
         con_switch: {},
       },
     };
     try {
       await this.onSave(jsonToSave);
       runInAction(() => {
-        connections.forEach(cn => cn.commit());
+        connections.forEach((cn) => cn.commit());
         this.isChanged = false;
         this.loading = false;
       });
@@ -173,7 +182,7 @@ class Connections {
   _findIndex(pattern) {
     let index = 1;
     const re = new RegExp(pattern);
-    this.connections.forEach(cn => {
+    this.connections.forEach((cn) => {
       if (cn.data.connection_id) {
         const match = cn.data.connection_id.match(re);
         if (match) {
@@ -186,37 +195,39 @@ class Connections {
   }
 
   _getNewConnection(type) {
-    let connection_id = '';
+    const connection_id = '';
     if (type === 'can') {
-      return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 125000 } };
+      return {
+        type, 'allow-hotplug': true, auto: false, options: { bitrate: 125000 },
+      };
     }
     if (type === '01_nm_ethernet') {
       return {
-        type: type,
+        type,
         connection_uuid: '',
-        connection_id: 'Wired connection ' + this._findIndex('Wired connection (\\d+)'),
+        connection_id: `Wired connection ${this._findIndex('Wired connection (\\d+)')}`,
       };
     }
     if (type === '02_nm_modem') {
       return {
-        type: type,
+        type,
         connection_uuid: '',
-        connection_id: 'gsm ' + this._findIndex('gsm (\\d+)'),
+        connection_id: `gsm ${this._findIndex('gsm (\\d+)')}`,
       };
     }
-    return { type: type, connection_uuid: '', connection_id: connection_id };
+    return { type, connection_uuid: '', connection_id };
   }
 
   addConnection({ type, connectionData, state }) {
-    connectionData = connectionData ? connectionData : this._getNewConnection(type);
+    connectionData = connectionData || this._getNewConnection(type);
     connectionData.data = this._additionalData;
 
-    var connection = new Connection(
+    const connection = new Connection(
       makeConnectionSchema(type, this._schema),
       connectionData,
       this._newConnectionIndex,
       state,
-      this._toggleConnectionState
+      this._toggleConnectionState,
     );
     this.connections.push(connection);
     this._newConnectionIndex++;
@@ -253,10 +264,10 @@ class Connections {
     try {
       await this.confirmModalState.show(
         i18n.t('network-connections.labels.confirm-delete-connection'),
-        buttons
+        buttons,
       );
       if (!connection.isNew) {
-        await this.saveConnections(this.connections.filter(cn => cn !== connection));
+        await this.saveConnections(this.connections.filter((cn) => cn !== connection));
       }
       runInAction(() => {
         this.connections.remove(connection);
@@ -272,19 +283,6 @@ class Connections {
         throw err;
       }
     }
-  }
-
-  async deactivateEditor() {
-    await this.beforeConnectionSwitch();
-    runInAction(() => {
-      this.isActiveEditor = false;
-    });
-  }
-
-  async activateEditor() {
-    runInAction(() => {
-      this.isActiveEditor = true;
-    });
   }
 }
 
