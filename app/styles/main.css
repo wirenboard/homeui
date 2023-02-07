@@ -45,8 +45,14 @@ body {
     }
 
     #page-wrapper {
-        padding: 10px 23px 10px 23px;
+        padding: 10px 13px 10px 13px;
     }
+}
+
+@media(min-width:1200px) {
+  #page-wrapper {
+      padding: 10px 23px 10px 23px;
+  }
 }
 
 /* Top Navigation */

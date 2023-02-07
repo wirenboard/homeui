@@ -66,6 +66,7 @@ export class Connection {
       managedByNM: computed,
       isDeprecated: computed,
       allowSwitchState: computed,
+      withAutoconnect: computed,
       hasErrors: computed,
       setState: action,
       setEditedData: action.bound,
@@ -81,6 +82,10 @@ export class Connection {
 
   get description() {
     return this.state === 'unknown' ? '' : 'network-connections.labels.' + this.state;
+  }
+
+  get withAutoconnect() {
+    return this.isDeprecated ? this.data.auto : this.data.connection_autoconnect;
   }
 
   get isNew() {

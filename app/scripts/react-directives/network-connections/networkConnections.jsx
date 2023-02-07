@@ -9,11 +9,22 @@ import JsonEditor from './jsonEditor';
 import { Button } from '../common';
 
 function makeTabItems(tabs) {
+  const { t } = useTranslation();
+
   return tabs.connections.map(tab => {
     const onClick = e => {
       e.preventDefault();
       tabs.setSelected(tab);
     };
+
+    let noticeParts = [];
+    if (tab.description) {
+      noticeParts.push(t(tab.description));
+    }
+    if (tab.withAutoconnect) {
+      noticeParts.push(t('network-connections.labels.autoconnect'));
+    }
+    const notice = noticeParts.join(', ');
 
     return (
       <TabItem key={tab.id} active={tab.active} onClick={onClick}>
@@ -21,10 +32,10 @@ function makeTabItems(tabs) {
           <i className={tab.icon}></i>
           <div className="connection-item-text">
             <b>{tab.name}</b>
-            {tab.description && (
+            {notice && (
               <span>
                 <br />
-                <Trans>{tab.description}</Trans>
+                {notice}
               </span>
             )}
           </div>
