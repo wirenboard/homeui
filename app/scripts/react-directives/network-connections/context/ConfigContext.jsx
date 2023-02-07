@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { observable, action } from 'mobx';
+import { observable } from 'mobx';
 
 const ConfigContext = createContext();
 
@@ -21,9 +21,8 @@ export const ConfigContextData = (onSave) => observable({
 
   saveConnections(connections) {
     onSave({ ui: { connections, con_switcher: this.con_switcher } });
+    self.isDirty = false;
   },
-}, {
-  setConfigData: action,
 });
 
 export function ConfigProvider({ data, children }) {
