@@ -17,25 +17,22 @@ function makeTabItems(tabs) {
       tabs.setSelected(tab);
     };
 
-    let noticeParts = [];
-    if (tab.description) {
-      noticeParts.push(t(tab.description));
-    }
-    if (tab.withAutoconnect) {
-      noticeParts.push(t('network-connections.labels.autoconnect'));
-    }
-    const notice = noticeParts.join(', ');
-
     return (
       <TabItem key={tab.id} active={tab.active} onClick={onClick}>
         <div className={'connection-item ' + tab.state}>
           <i className={tab.icon}></i>
           <div className="connection-item-text">
             <b>{tab.name}</b>
-            {notice && (
+            {tab.description && (
               <span>
                 <br />
-                {notice}
+                {t(tab.description)}
+              </span>
+            )}
+            {!tab.withAutoconnect && (
+              <span>
+                <br />
+                {t('network-connections.labels.manual-connect')}
               </span>
             )}
           </div>
