@@ -13,36 +13,46 @@ import { NetworksEditor } from './editorStore';
 import { SwitcherForm } from './switcherEditor';
 import { ConfigProvider, useConfig } from './context/ConfigContext';
 import { ConnectionsStateProvider, useConnectionsState } from './context/ConnectionsStateContext';
+import ConnectionsStore from './connectionsStore';
 
-function makeTabItems(tabs) {
-  return tabs.connections.map((tab) => {
-    const onClick = (e) => {
-      e.preventDefault();
-      tabs.setSelected(tab);
+function makeTabItems(consStore) {
+  const states = useConnectionsState();
+
+  return consStore.connections.map((conStore) => {
+    const onTabChange = async (from, to) => {
+      await consStore.beforeConnectionSwitch(from);
+      consStore.currentConnection = to;
     };
 
-    return (
-      <TabItem key={tab.id} active={tab.active} onClick={onClick}>
-        <div className={`connection-item ${tab.state}`}>
-          <i className={tab.icon} />
-          <div className="connection-item-text">
-            <b>{tab.name}</b>
-            {tab.description && (
-              <span>
-                <br />
-                <Trans>{tab.description}</Trans>
-              </span>
-            )}
-          </div>
+    const state = states.getState(conStore.connectionId);
+
+    const children = (
+      <div className={`connection-item ${state}`}>
+        <i className={conStore.icon} />
+        <div className="connection-item-text">
+          <b>{conStore.name}</b>
+          {conStore.description && (
+          <span>
+            <br />
+            <Trans>{conStore.description}</Trans>
+          </span>
+          )}
         </div>
-      </TabItem>
+      </div>
     );
+
+    return { id: conStore.connectionId, children, onTabChange };
   });
 }
 
-const TabPaneHeader = observer(({ tab }) => {
+const TabPaneHeader = observer(({ conStore }) => {
   const { t } = useTranslation();
-  if (!tab.managedByNM) {
+  const states = useConnectionsState();
+
+  const state = states.getState(conStore.connectionId);
+  const allowSwitchState = ['activated', 'not-connected'].includes(state);
+
+  if (!conStore.managedByNM) {
     return '';
   }
   const labels = {
@@ -51,37 +61,37 @@ const TabPaneHeader = observer(({ tab }) => {
     '03_nm_wifi': 'network-connections.labels.wifi',
     '04_nm_wifi_ap': 'network-connections.labels.wifi-ap',
   };
-  const label = labels[tab.data.type] || 'network-connections.labels.connection';
+  const label = labels[conStore.data.type] || 'network-connections.labels.connection';
   return (
     <BootstrapRow>
       <div className="col-xs-12 col-md-3 col-lg-2">
-        <label className="tab-pane-header-label" htmlFor={`inputName${tab.id}`}>
+        <label className="tab-pane-header-label" htmlFor={`inputName${conStore.connectionId}`}>
           {t(label)}
         </label>
       </div>
       <div
         className={
-          `col-xs-8 col-sm-9 col-md-6 col-lg-8${tab.editedConnectionId ? '' : ' has-error'}`
+          `col-xs-8 col-sm-9 col-md-6 col-lg-8 ${conStore.editedConnectionId ? '' : 'has-error'}`
         }
       >
         <input
           type="text"
           className="form-control"
-          id={`inputName${tab.id}`}
-          value={tab.editedConnectionId}
-          onChange={(e) => tab.setConnectionId(e.target.value)}
+          id={`inputName${conStore.connectionId}`}
+          value={conStore.editedConnectionId}
+          onChange={(e) => conStore.setConnectionId(e.target.value)}
         />
       </div>
       <div className="col-xs-4 col-sm-3 col-md-3 col-lg-2">
         <div className="pull-right">
           <Button
-            disabled={!tab.allowSwitchState}
+            disabled={!allowSwitchState}
             label={t(
-              tab.state === 'activated'
+              state === 'activated'
                 ? 'network-connections.buttons.disconnect'
                 : 'network-connections.buttons.connect',
             )}
-            onClick={() => tab.switchState()}
+            onClick={() => states.toggleState(conStore.connectionId)}
           />
         </div>
       </div>
@@ -89,8 +99,9 @@ const TabPaneHeader = observer(({ tab }) => {
   );
 });
 
-const TabPaneButtons = observer(({ tabs, tab }) => {
+const TabPaneButtons = observer(({ consStore, thisConStore }) => {
   const { t } = useTranslation();
+
   return (
     <BootstrapRow>
       <div className="col-md-12">
@@ -98,22 +109,22 @@ const TabPaneButtons = observer(({ tabs, tab }) => {
           key="delete"
           label={t('network-connections.buttons.delete')}
           type="danger"
-          onClick={() => tabs.deleteConnection(tab)}
+          onClick={() => consStore.deleteConnection(thisConStore)}
         />
         <div className="pull-right buttons-holder">
           <Button
             key="save"
             label={t('network-connections.buttons.save')}
             type="success"
-            onClick={() => tabs.saveConnections(tabs.connections)}
-            disabled={!tab.isChanged || tab.hasErrors}
+            onClick={() => consStore.saveConnections()}
+            disabled={!thisConStore.isChanged || thisConStore.hasErrors}
           />
           <Button
             key="cancel"
             label={t('network-connections.buttons.cancel')}
             type="default"
-            onClick={() => tab.rollback()}
-            disabled={!tab.isChanged || tab.isNew}
+            onClick={() => thisConStore.rollback()}
+            disabled={!thisConStore.isChanged || thisConStore === consStore.newConnection}
           />
         </div>
       </div>
@@ -121,40 +132,48 @@ const TabPaneButtons = observer(({ tabs, tab }) => {
   );
 });
 
-function makeTabPanes(tabs) {
-  return tabs.connections.map((tab) => (
-    <TabPane key={tab.id} active={tab.active}>
-      <TabPaneHeader tab={tab} />
-      <JsonEditor
-        schema={tab.schema}
-        data={tab.data}
-        root={`cn${tab.id}`}
-        onChange={tab.setEditedData}
-      />
-      <TabPaneButtons tabs={tabs} tab={tab} />
-    </TabPane>
-  ));
+function makeTabPanes(consStore) {
+  return consStore.connections.map((conStore) => {
+    const children = (
+      <>
+        <TabPaneHeader conStore={conStore} />
+        <JsonEditor
+          schema={conStore.schema}
+          data={conStore.data}
+          root={`cn${conStore.connectionId}`}
+          onChange={conStore.setEditedData}
+        />
+        <TabPaneButtons consStore={consStore} thisConStore={conStore} />
+      </>
+    );
+
+    return { id: conStore.connectionId, children };
+  });
 }
 
-const ConnectionTabs = observer(({ tabs }) => {
+const ConnectionTabs = observer(() => {
   const { t } = useTranslation();
+  const config = useConfig();
+
+  const consStore = new ConnectionsStore(config);
+
   const addConnectionButton = (
     <Button
       label={t('network-connections.buttons.add-connection')}
       additionalStyles="add-connection-button"
       icon="glyphicon glyphicon-plus"
-      onClick={() => tabs.createConnection()}
+      onClick={() => consStore.createConnection()}
     />
   );
   return (
     <>
-      <ErrorBar msg={tabs.error} />
-      <DeprecationWarning deprecatedConnections={tabs.deprecatedConnections} />
-      <ConfirmModal {...tabs.confirmModalState} />
-      <SelectModal {...tabs.selectNewConnectionModalState} />
+      <ErrorBar msg={config.error} />
+      <DeprecationWarning deprecatedConnections={consStore.deprecatedConnections} />
+      <ConfirmModal {...consStore.confirmModalState} />
+      <SelectModal {...consStore.selectNewConnectionModalState} />
       <TabsBuilder
-        tabs={makeTabItems()}
-        contents={makeTabPanes()}
+        tabs={makeTabItems(consStore)}
+        contents={makeTabPanes(consStore)}
         bottomOfTheList={addConnectionButton}
         tabListClasses="col-md-2 nav nav-pills nav-stacked"
         tabContentClasses="col-md-10 well well-small"
@@ -165,7 +184,7 @@ const ConnectionTabs = observer(({ tabs }) => {
 
 function DeprecationWarning({ deprecatedConnections }) {
   if (!deprecatedConnections.length) {
-    return;
+    return '';
   }
   return (
     <WarningBar>
@@ -224,13 +243,10 @@ function makeEditorTabPanes() {
 //  - save on request
 //  - scream when switch from tab without saving
 
-const NetworksEditorView = observer(() => {
-  const { t } = useTranslation();
-  const config = useConfig();
-  const connectionsState = useConnectionsState();
-});
-
 function ConfigEditorTabs() {
+  return <ConnectionTabs />;
+
+  /*
   const { t } = useTranslation();
   const tabs = [{ id: 'Hello', children: (<i>Hello</i>), onTabChange: (from, to) => console.log('switch', from.id, to.id) }, { id: 'World', children: (<b>World</b>) }, { id: '123', children: '123' }];
   const contents = [{ id: 'Hello', children: (<i>Hello</i>) }, { id: 'World', children: (<b>World</b>) }, { id: '123', children: '123' }];
@@ -260,7 +276,8 @@ function ConfigEditorTabs() {
   return (
     <TabsBuilder tabs={superTabs} contents={superContents} tabListClasses="nav nav-tabs" />
   );
-  /* return (
+
+  return (
     <Tabs>
       <EditorTabList>{makeEditorTabItems()}</EditorTabList>
       <EditorTabContent>{makeEditorTabPanes()}</EditorTabContent>

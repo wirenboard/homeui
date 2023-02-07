@@ -32,6 +32,8 @@ class ConnectionsStore {
 
   newConnection = undefined;
 
+  currentConnection = null;
+
   confirmModalState = new ConfirmModalState();
 
   selectNewConnectionModalState = new SelectNewConnectionModalState();
@@ -44,8 +46,12 @@ class ConnectionsStore {
 
   _toggleConnectionState = undefined;
 
-  constructor(connections) {
-    this.connections = connections;
+  constructor(config) {
+    this._schema = config.fullSchema;
+    this._additionalData = config.additionalData;
+    this.connections = config.connections.map((con) => this.addConnection({ type: con.type, connectionData: con }));
+
+    console.log(this);
 
     makeObservable(this, {
       connections: observable,
@@ -141,14 +147,14 @@ class ConnectionsStore {
     });
   }
 
-  _findIndex(pattern) {
+  findIndexForNextDefaultName(pattern) {
     let index = 1;
     const re = new RegExp(pattern);
     this.connections.forEach((cn) => {
       if (cn.data.connection_id) {
         const match = cn.data.connection_id.match(re);
         if (match) {
-          const next = parseInt(match[1]) + 1;
+          const next = parseInt(match[1], 10) + 1;
           index = next > index ? next : index;
         }
       }
@@ -156,7 +162,7 @@ class ConnectionsStore {
     return index;
   }
 
-  _getNewConnection(type) {
+  createNewConnectionData(type) {
     const connection_id = '';
     if (type === 'can') {
       return {
@@ -167,35 +173,35 @@ class ConnectionsStore {
       return {
         type,
         connection_uuid: '',
-        connection_id: `Wired connection ${this._findIndex('Wired connection (\\d+)')}`,
+        connection_id: `Wired connection ${this.findIndexForNextDefaultName('Wired connection (\\d+)')}`,
       };
     }
     if (type === '02_nm_modem') {
       return {
         type,
         connection_uuid: '',
-        connection_id: `gsm ${this._findIndex('gsm (\\d+)')}`,
+        connection_id: `gsm ${this.findIndexForNextDefaultName('gsm (\\d+)')}`,
       };
     }
     return { type, connection_uuid: '', connection_id };
   }
 
-  addConnection({ type, connectionData, state }) {
-    connectionData = connectionData || this._getNewConnection(type);
-    connectionData.data = this._additionalData;
+  addConnection({ type, connectionData }) {
+    const data = connectionData || this.createNewConnectionData(type);
+    data.data = this._additionalData;
 
     const connection = new Connection(
       makeConnectionSchema(type, this._schema),
-      connectionData,
-      state,
+      data,
     );
 
     this.newConnection = connection;
+    return connection;
   }
 
-  async createConnection(activeConnection) {
+  async createConnection() {
     try {
-      await this.beforeConnectionSwitch(activeConnection);
+      await this.beforeConnectionSwitch(this.currentConnection);
       const connectionType = await this.selectNewConnectionModalState.show();
       this.addConnection({ type: connectionType, state: 'new' });
     } catch (err) {

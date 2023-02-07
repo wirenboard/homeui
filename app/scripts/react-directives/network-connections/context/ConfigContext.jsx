@@ -8,12 +8,14 @@ export const ConfigContextData = (onSave) => observable({
   isDirty: false,
   connections: [],
   con_switcher: {},
+  additionalData: {},
   error: '',
   fullSchema: {},
 
   setConfigData(config, schema) {
     this.connections = config.ui.connections;
-    this.con_switcher = config.ui.con_switcher;
+    this.conSwitcher = config.ui.con_switcher;
+    this.additionalData = config.data;
     this.fullSchema = schema;
 
     this.isLoading = false;
@@ -22,7 +24,7 @@ export const ConfigContextData = (onSave) => observable({
   async saveConnections(connections) {
     try {
       this.isLoading = true;
-      await onSave({ ui: { connections, con_switcher: this.con_switcher } });
+      await onSave({ ui: { connections, con_switcher: this.conSwitcher } });
       this.isDirty = false;
       this.isLoading = false;
     } catch (err) {

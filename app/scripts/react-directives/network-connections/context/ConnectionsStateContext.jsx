@@ -13,7 +13,7 @@ export const ConnectionsStateContextData = (toggle) => observable({
 
   getState(uuid) {
     // FIXME: defaults
-    return this.states[uuid];
+    return this.states[uuid] || 'unknown';
   },
 
   toggleState(uuid) {

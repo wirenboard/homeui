@@ -20,9 +20,9 @@ export class Connection {
 
   editedConnectionId = '';
 
-  _hasValidationErrors = false;
+  hasValidationErrors = false;
 
-  constructor(schema, data, state) {
+  constructor(schema, data) {
     this.schema = schema;
     this.editedData = data;
     this.data = data;
@@ -36,11 +36,6 @@ export class Connection {
     };
     if (typeToIcon.hasOwnProperty(data.type)) {
       this.icon = typeToIcon[data.type];
-      if (state) {
-        this.state = state;
-      } else if (data.type != 'can') {
-        this.state = 'not-connected';
-      }
     } else {
       this.icon = 'glyphicon glyphicon-exclamation-sign';
       this.isDeprecated = true;
@@ -48,12 +43,11 @@ export class Connection {
     this.updateName();
     makeObservable(this, {
       name: observable,
-      state: observable,
       isChanged: observable,
       isDeprecated: observable,
       data: observable,
       editedConnectionId: observable,
-      _hasValidationErrors: observable,
+      hasValidationErrors: observable,
       description: computed,
       isNew: computed,
       managedByNM: computed,
@@ -63,9 +57,16 @@ export class Connection {
       commit: action,
       rollback: action,
       updateName: action,
-      switchState: action,
       setConnectionId: action,
     });
+  }
+
+  get connectionId() {
+    return this.editedConnectionId;
+  }
+
+  get isNew() {
+    return false;
   }
 
   get description() {
@@ -81,7 +82,7 @@ export class Connection {
   }
 
   get hasErrors() {
-    return this._hasValidationErrors || (this.managedByNM && !this.editedConnectionId);
+    return this.hasValidationErrors || (this.managedByNM && !this.editedConnectionId);
   }
 
   updateName() {
@@ -110,7 +111,7 @@ export class Connection {
     this.editedData = cloneDeep(data);
     this.updateName();
     this.isChanged = !isEqual(this.editedData, this.data);
-    this._hasValidationErrors = Boolean(errors.length);
+    this.hasValidationErrors = Boolean(errors.length);
   }
 
   setConnectionId(id) {
@@ -127,7 +128,7 @@ export class Connection {
     this.data = cloneDeep(this.editedData);
     this.updateName();
     this.isChanged = false;
-    this._hasValidationErrors = false;
+    this.hasValidationErrors = false;
     if (this.managedByNM) {
       this.state = 'not-connected';
     } else if (this.data.type === 'can') {
@@ -142,7 +143,7 @@ export class Connection {
     this.editedConnectionId = this.data.connection_id;
     this.updateName();
     this.isChanged = false;
-    this._hasValidationErrors = false;
+    this.hasValidationErrors = false;
   }
 }
 
