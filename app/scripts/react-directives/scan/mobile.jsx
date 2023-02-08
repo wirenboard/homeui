@@ -13,7 +13,7 @@ function Tags({bootloader_mode, online, poll}) {
   );
 }
 
-function DeviceName({title, bootloader_mode, online, poll}) {
+function DeviceName(props) {
   const { t } = useTranslation();
   const errorId = "com.wb.device_manager.device.read_device_signature_error";
   const error = props.errors.find(e => e.id === errorId);
@@ -30,9 +30,9 @@ function DeviceName({title, bootloader_mode, online, poll}) {
     <div className='row'>
       <div className='col-xs-12'>
         <div className='pull-left'>
-            <b>{title}</b>
+            <b>{props.title}</b>
         </div>
-        <Tags bootloader_mode={bootloader_mode} online={online} poll={poll} />
+        <Tags bootloader_mode={props.bootloader_mode} online={props.online} poll={props.poll} />
       </div>
     </div>
   );
@@ -82,7 +82,7 @@ function Firmware(props) {
   }
   return (
     <Row title={t('device-manager.labels.firmware')}>
-      <FirmwareVersionWithLabels version={props.version} availableFw={props.update?.available_fw} extSupport={props.ext_support}/>
+      <FirmwareVersionWithLabels version={props.fw?.version} availableFw={props.fw?.update?.available_fw} extSupport={props.fw?.ext_support}/>
     </Row>
   );
 }
@@ -106,11 +106,11 @@ function DevicePanel(props) {
     return (
       <div key={props.uuid} className='panel panel-default'>
         <div className='panel-body'>
-          <DeviceName title={props.title} bootloader_mode={props.bootloader_mode} online={props.online} poll={props.poll} />
+          <DeviceName {...props} />
           <SerialNumber sn={props.sn} />
           <SlaveId slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_collision}></SlaveId>
           <Port path={props.port.path} baud_rate={props.cfg.baud_rate} data_bits={props.cfg.data_bits} parity={props.cfg.parity} stop_bits={props.cfg.stop_bits} />
-          <Firmware {...props.fw} />
+          <Firmware {...props} />
           {error && <Error error={error}/>}
         </div>
       </div>
