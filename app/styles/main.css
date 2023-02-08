@@ -1089,6 +1089,69 @@ body.hmi .svg-dashboard-footer {
   display: none
 }
 
+@media (min-width: 768px) {
+  body.fullscreen {
+    margin-top: 0px;
+  }
+
+  body.fullscreen .navbar {
+    height: 0px;
+    width: 225px;
+  }
+
+  body.fullscreen .navbar-header {
+    width: 225px;
+    height: 29px;
+  }
+
+  body.fullscreen .navbar-brand {
+    height: 25px;
+    padding: 2px 10px;
+  }
+
+  body.fullscreen .navbar-brand img {
+    height: 25px;
+  }
+
+  body.fullscreen .navbar-text {
+    margin-top: 5px;
+  }
+
+  body.fullscreen .connection-status {
+    padding: 0px;
+    margin: 5px 10px;
+  }
+
+  body.fullscreen .side-nav {
+    top: 30px;
+  }
+
+  body.fullscreen .access-level-label,
+  body.fullscreen .show-console,
+  body.fullscreen .svg-dashboard-footer {
+    display: none;
+  }
+
+  body.fullscreen .page-header {
+    margin: 0px 0px 10px;
+  }
+
+  body.fullscreen #page-wrapper {
+    padding: 8px 23px 10px 23px;
+    height: 100vh;
+  }
+}
+
+body.fullscreen .page-header {
+  margin: 0px 0px 10px;
+}
+
+body.fullscreen .access-level-label,
+body.fullscreen .show-console,
+body.fullscreen .svg-dashboard-footer {
+  display: none;
+}
+
 .warning-notice {
   padding: 10px;
 }

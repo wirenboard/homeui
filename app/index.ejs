@@ -17,7 +17,7 @@
     </style>
   </head>
 
-  <body ng-app="realHomeuiApp" ng-class="{ 'hmi': isHMI }">
+  <body ng-app="realHomeuiApp" ng-class="{ 'fullscreen': checkFullscreen(), 'hmi': isHMI }">
   <toast></toast>
 
   <double-bounce-spinner></double-bounce-spinner>
@@ -38,7 +38,7 @@
                 <img src="images/logo.svg" alt="Wiren Board Web UI">
               </a>
               <p class="navbar-text navbar-right connection-status">
-                <span class="label label-custom" ng-class="roles.current.roles.isAdmin ? 'label label-custom label-danger' : 'label label-custom label-warning'"
+                <span class="label label-custom access-level-label" ng-class="roles.current.roles.isAdmin ? 'label label-custom label-danger' : 'label label-custom label-warning'"
                       ng-show="roles.current.roles.shortName"
                       title="{{'navigation.access.title' | translate}} {{roles.current.roles.name | translate}}">
                       <span class="mobile-screen-access-level">{{roles.current.roles.shortName | translate}}</span>
@@ -59,7 +59,7 @@
                           <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.dashboards' | translate}}
                       </a>
                       <ul id="dashboards-menu" class="collapse in">
-                          <li>
+                          <li ng-if="!checkFullscreen()">
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref-active="active" ui-sref="dashboards" translate>{{'navigation.menu.list'}}</a>
                           </li>
                           <li ng-repeat="d in dashboards()" dashboard-menu-item>
@@ -68,20 +68,20 @@
                           </li>
                       </ul>
                   </li>
-                  <li ui-sref-active="active" user-role="mto" current-role="roles.current.role">
+                  <li ui-sref-active="active" user-role="mto" current-role="roles.current.role" ng-if="!checkFullscreen()">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="devices"><i class="glyphicon glyphicon-cog"></i> {{'navigation.menu.devices' | translate}}</a>
                   </li>
-                  <li ui-sref-active="active">
+                  <li ui-sref-active="active" ng-if="!checkFullscreen()">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="widgets"><i class="glyphicon glyphicon-list-alt"></i> {{'navigation.menu.widgets' | translate}}</a>
                   </li>
                   <li ui-sref-active="active">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
                   </li>
-                  <li ng-if="isConnected()" ui-sref-active="active"
+                  <li ng-if="!checkFullscreen() && isConnected()" ui-sref-active="active"
                       user-role="mtt" current-role="roles.current.role">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="rules"><i class="glyphicon glyphicon-file"></i> {{'navigation.menu.rules' | translate}}</a>
                   </li>
-                  <li ui-sref-active="active">
+                  <li ui-sref-active="active" ng-if="!checkFullscreen()">
                       <a href="javascript:" data-toggle="collapse" data-target="#settings-menu">
                           <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.settings' | translate}}
                       </a>
@@ -109,7 +109,7 @@
                           </li>
                       </ul>
                   </li>
-                  <li ui-sref-active="active">
+                  <li ui-sref-active="active" ng-if="!checkFullscreen()">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
                   </li>
               </ul>
