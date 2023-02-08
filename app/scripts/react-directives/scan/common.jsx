@@ -5,8 +5,8 @@ function WarningTag({text}) {
     return <span className='tag bg-warning text-nowrap'>{text}</span>;
 }
 
-function ErrorTag({text}) {
-    return <span className='tag bg-danger text-nowrap'>{text}</span>;
+function ErrorTag({text, title=''}) {
+    return <span className='tag bg-danger text-nowrap' title={title}>{text}</span>;
 }
 
 function FirmwareVersionWithLabels({version, availableFw, extSupport}) {
@@ -14,8 +14,8 @@ function FirmwareVersionWithLabels({version, availableFw, extSupport}) {
     return (
         <>
         {version}
-        {availableFw && <WarningTag text={t('device-manager.labels.available', {version: availableFw})}/>}
-        {extSupport && <span className="glyphicon glyphicon-flash" title={t('device-manager.labels.extended-modbus')}></span>}
+        {version && availableFw && <WarningTag text={t('device-manager.labels.available', {version: availableFw})}/>}
+        {version && extSupport && <span className="glyphicon glyphicon-flash" title={t('device-manager.labels.extended-modbus')}></span>}
         </>
     );
 }
