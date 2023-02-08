@@ -16,7 +16,7 @@ function Tags({bootloader_mode, online, poll}) {
 function DeviceName(props) {
   const { t } = useTranslation();
   const errorId = "com.wb.device_manager.device.read_device_signature_error";
-  const error = props.errors.find(e => e.id === errorId);
+  const error = props.errors?.find(e => e.id === errorId);
   if (error) {
     return (
       <div className='row'>
