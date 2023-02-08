@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.53.3) stable; urgency=medium
+
+  * Scanner: show modbus errors
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 08 Feb 2023 12:25:00 +0400
+
 wb-mqtt-homeui (2.53.2) stable; urgency=medium
 
   * Scanner: add more details about scanning process to status message

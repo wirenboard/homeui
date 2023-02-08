@@ -10,10 +10,22 @@ function Tags({bootloader_mode, online, poll}) {
         {!online && <ErrorTag text={t("device-manager.labels.offline")}/>}
         {!poll && <WarningTag text={t("device-manager.labels.not-polled")}/>}
     </div>
-  )
+  );
 }
 
 function DeviceName({title, bootloader_mode, online, poll}) {
+  const { t } = useTranslation();
+  const errorId = "com.wb.device_manager.device.read_device_signature_error";
+  const error = GetErrorMessageById(props.errors, errorId);
+  if (error) {
+    return (
+      <div className='row'>
+        <div className='col-xs-12'>
+          <ErrorTag text={t("com.wb.device_manager.unknown")}/>
+        </div>
+      </div>
+    );
+  }
   return ( 
     <div className='row'>
       <div className='col-xs-12'>
@@ -23,7 +35,7 @@ function DeviceName({title, bootloader_mode, online, poll}) {
         <Tags bootloader_mode={bootloader_mode} online={online} poll={poll} />
       </div>
     </div>
-  )
+  );
 }
 
 function Row({title, children}) {
@@ -32,7 +44,7 @@ function Row({title, children}) {
       <div className='col-xs-3'>{title}</div>
       <div className='col-xs-9'>{children}</div>
     </div>
-  )
+  );
 }
 
 function SlaveId({slaveId, isDuplicate}) {
@@ -40,7 +52,8 @@ function SlaveId({slaveId, isDuplicate}) {
   return (
     <Row title={t('device-manager.labels.address')}>
       {slaveId} {isDuplicate && <ErrorTag text={t('device-manager.labels.duplicate')}/>}
-    </Row>);
+    </Row>
+  );
 }
 
 function SerialNumber({sn}) {
@@ -48,21 +61,30 @@ function SerialNumber({sn}) {
 }
 
 function Port({path, baud_rate, data_bits, parity, stop_bits}) {
-    const { t } = useTranslation();
-    return  (
-      <Row title={t('device-manager.labels.port')}>
-        {path} {baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}
-      </Row>
-    )
+  const { t } = useTranslation();
+  return  (
+    <Row title={t('device-manager.labels.port')}>
+      {path} {baud_rate} {data_bits.toString()}{parity}{stop_bits.toString()}
+    </Row>
+  );
 }
 
 function Firmware(props) {
   const { t } = useTranslation();
+  const errorId = "com.wb.device_manager.device.read_fw_version_error";
+  const error = GetErrorMessageById(props.errors, errorId);
+  if (error) {
+    return (
+      <Row title={t('device-manager.labels.firmware')}>
+        <ErrorTag text={t("com.wb.device_manager.unknown")}/>
+      </Row>
+    );
+  }
   return (
     <Row title={t('device-manager.labels.firmware')}>
       <FirmwareVersionWithLabels version={props.version} availableFw={props.update?.available_fw} extSupport={props.ext_support}/>
     </Row>
-  )
+  );
 }
 
 function Error({error}) {
@@ -78,11 +100,9 @@ function Error({error}) {
 }
 
 function DevicePanel(props) {
-    var error
-    if (props.fw && props.fw.update) 
-      error = props.fw.update.error
-    if (props.error)
-      error = props.error 
+    var error;
+    if (props.fw && props.fw.update)
+      error = props.fw.update.error;
     return (
       <div key={props.uuid} className='panel panel-default'>
         <div className='panel-body'>
