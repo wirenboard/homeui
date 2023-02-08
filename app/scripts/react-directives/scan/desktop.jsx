@@ -7,7 +7,7 @@ function DeviceNameCell(props) {
   const errorId = "com.wb.device_manager.device.read_device_signature_error";
   const error = props.errors.find(e => e.id === errorId);
   if (error) {
-    return <td><ErrorTag text={t("com.wb.device_manager.error")} title={t(errorId || error.message)}/></td>;
+    return <td><ErrorTag text={t("com.wb.device_manager.error")} title={t(errorId) || error.message}/></td>;
   }
   return (
     <td>
