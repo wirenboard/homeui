@@ -1061,24 +1061,32 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   padding-right: 5px;
 }
 
-body.kiosk {
+body.hmi {
     margin-top: 0;
 }
 
-body.kiosk #wrapper {
+body.hmi #wrapper {
     padding-left: 0;
 }
 
-body.kiosk #wrapper .navbar {
-    display: none;
-}
-
-body.kiosk #page-wrapper {
+body.hmi #page-wrapper {
     height: 100vh;
+    padding: 0;
 }
 
-body.kiosk .page-header {
+body.hmi #widgets-list {
+  padding: 5px 7px;
+}
+
+body.hmi .page-header {
     margin-top: 10px;
+}
+
+body.hmi #wrapper .navbar,
+body.hmi .page-header, 
+body.hmi .show-console, 
+body.hmi .svg-dashboard-footer {
+  display: none
 }
 
 .warning-notice {

@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.54.0) stable; urgency=medium
+
+  * Add HMI mode for dashboards
+    It can be activated by "hmi" query parameter in URL.
+  * Add "hmicolor" query parameter to define dashboard background color in HMI mode
+  * Fullscreen toggle button doesn't hide navigation panels
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 08 Feb 2023 11:19:28 +0500
+
 wb-mqtt-homeui (2.53.2) stable; urgency=medium
 
   * Scanner: add more details about scanning process to status message
