@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { WarningTag, ErrorTag, FirmwareVersionWithLabels, GetErrorMessageById } from './common';
+import { WarningTag, ErrorTag, FirmwareVersionWithLabels } from './common';
 
 function DeviceNameCell(props) {
   const { t } = useTranslation();
   const errorId = "com.wb.device_manager.device.read_device_signature_error";
-  const error = GetErrorMessageById(props.errors, errorId);
+  const error = props.errors.find(e => e.id === errorId);
   if (error) {
-    return <td><ErrorTag text={t("com.wb.device_manager.unknown")} title={error}/></td>;
+    return <td><ErrorTag text={t("com.wb.device_manager.error")} title={t(errorId || error.message)}/></td>;
   }
   return (
     <td>
@@ -38,9 +38,9 @@ function PortCell({path, baud_rate, data_bits, parity, stop_bits}) {
 function FirmwareCell(props) {
   const { t } = useTranslation();
   const errorId = "com.wb.device_manager.device.read_fw_version_error";
-  const error = GetErrorMessageById(props.errors, errorId);
+  const error = props.errors.find(e => e.id === errorId);
   if (error) {
-    return <td><ErrorTag text={t("com.wb.device_manager.unknown")} title={error}/></td>;
+    return <td><ErrorTag text={t("com.wb.device_manager.error")} title={t(errorId) || error.message}/></td>;
   }
   return (
     <td>

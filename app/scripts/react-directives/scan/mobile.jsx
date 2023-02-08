@@ -16,12 +16,12 @@ function Tags({bootloader_mode, online, poll}) {
 function DeviceName({title, bootloader_mode, online, poll}) {
   const { t } = useTranslation();
   const errorId = "com.wb.device_manager.device.read_device_signature_error";
-  const error = GetErrorMessageById(props.errors, errorId);
+  const error = props.errors.find(e => e.id === errorId);
   if (error) {
     return (
       <div className='row'>
         <div className='col-xs-12'>
-          <ErrorTag text={t("com.wb.device_manager.unknown")}/>
+          <ErrorTag text={t("com.wb.device_manager.error")}/>
         </div>
       </div>
     );
@@ -72,11 +72,11 @@ function Port({path, baud_rate, data_bits, parity, stop_bits}) {
 function Firmware(props) {
   const { t } = useTranslation();
   const errorId = "com.wb.device_manager.device.read_fw_version_error";
-  const error = GetErrorMessageById(props.errors, errorId);
+  const error = props.errors.find(e => e.id === errorId);
   if (error) {
     return (
       <Row title={t('device-manager.labels.firmware')}>
-        <ErrorTag text={t("com.wb.device_manager.unknown")}/>
+        <ErrorTag text={t("com.wb.device_manager.error")}/>
       </Row>
     );
   }

@@ -20,10 +20,4 @@ function FirmwareVersionWithLabels({version, availableFw, extSupport}) {
     );
 }
 
-function GetErrorMessageById(errors, id) {
-    const { t } = useTranslation();
-    const error = errors ? errors.find(e => e.id === id) : null;
-    return error ? t(id) || error.message : null;
-}
-
-export { WarningTag, ErrorTag, FirmwareVersionWithLabels, GetErrorMessageById };
+export { WarningTag, ErrorTag, FirmwareVersionWithLabels };
