@@ -48,7 +48,7 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
               findConnection(msg.topic)?.setState(msg.payload);
             });
             mqttClient.addStickySubscription('/devices/+/controls/Connectivity', msg => {
-              findConnection(msg.topic)?.setConnectivity(msg.payload);
+              findConnection(msg.topic)?.setConnectivity(!!msg.payload);
             });
           })
           .catch(err => {

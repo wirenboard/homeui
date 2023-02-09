@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const TabList = ({ children }) => {
-  return <ul className="col-md-2 nav nav-pills nav-stacked">{children}</ul>;
+  return <ul className="col-sm-4 col-lg-2 nav nav-pills nav-stacked">{children}</ul>;
 };
 
 export const TabItem = ({ id, active, onClick, children }) => {
@@ -23,7 +23,7 @@ export const TabPane = ({ id, active, children }) => {
 };
 
 export const TabContent = ({ children }) => {
-  return <div className="col-md-10 tab-content well well-small">{children}</div>;
+  return <div className="col-sm-8 col-lg-10 tab-content well well-small">{children}</div>;
 };
 
 export const Tabs = ({ children }) => {

@@ -48,7 +48,7 @@
          "deactivating": "Отключается",
          "not-connected": "Не подключено",
          "deprecated": "Устаревшее",
-         "limited-connectivity": "Ограниченное подключение",
+         "limited-connectivity": "Без доступа в Интернет",
          "new": "Новое соединение",
          "select-type": "Выберите тип соединения",
          "wifi": "Клиент Wi-Fi",
