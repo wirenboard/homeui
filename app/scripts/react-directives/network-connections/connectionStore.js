@@ -21,6 +21,7 @@ export class Connection {
   isChanged = false;
   active = false;
   editedConnectionId = '';
+  connectivity = false;
   _onSwitchState = undefined;
   _hasValidationErrors = false;
 
@@ -60,6 +61,7 @@ export class Connection {
       data: observable,
       active: observable,
       editedConnectionId: observable,
+      connectivity: observable,
       _hasValidationErrors: observable,
       description: computed,
       isNew: computed,
@@ -69,6 +71,7 @@ export class Connection {
       withAutoconnect: computed,
       hasErrors: computed,
       setState: action,
+      setConnectivity:action,
       setEditedData: action.bound,
       activate: action,
       deactivate: action,
@@ -81,7 +84,13 @@ export class Connection {
   }
 
   get description() {
-    return this.state === 'unknown' ? '' : 'network-connections.labels.' + this.state;
+    if (this.state === 'unknown') {
+      return '';
+    }
+    if (this.state === 'activated' && !this.connectivity) {
+      return 'network-connections.labels.limited-connectivity';
+    }
+    return 'network-connections.labels.' + this.state;
   }
 
   get withAutoconnect() {
@@ -130,6 +139,10 @@ export class Connection {
   setState(newState) {
     const states = ['activated', 'activating', 'deactivating'];
     this.state = states.find(state => state == newState) || 'not-connected';
+  }
+
+  setConnectivity(connectivity) {
+    this.connectivity = connectivity;
   }
 
   setEditedData(data, errors) {
