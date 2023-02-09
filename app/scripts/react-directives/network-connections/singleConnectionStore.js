@@ -3,8 +3,7 @@
 import { action, observable, makeObservable, computed } from 'mobx';
 import { isEqual, cloneDeep } from 'lodash';
 
-export class Connection {
-  id = 0;
+export class SingleConnection {
   name = '';
   // "activated"
   // "activating"
@@ -18,20 +17,16 @@ export class Connection {
   schema = {};
   data = {};
   editedData = {};
-  isChanged = false;
-  active = false;
+  isDirty = false;
   editedConnectionId = '';
   connectivity = false;
-  _onSwitchState = undefined;
-  _hasValidationErrors = false;
+  hasValidationErrors = false;
 
-  constructor(schema, data, index, state, onSwitchState) {
-    this.id = index;
+  constructor(schema, data, state) {
     this.schema = schema;
     this.editedData = data;
     this.data = data;
     this.editedConnectionId = data.connection_id;
-    this._onSwitchState = onSwitchState;
     const typeToIcon = {
       '01_nm_ethernet': 'fas fa-network-wired',
       '02_nm_modem': 'fas fa-signal',
@@ -57,12 +52,11 @@ export class Connection {
       name: observable,
       description: observable,
       state: observable,
-      isChanged: observable,
+      isDirty: observable,
       data: observable,
-      active: observable,
       editedConnectionId: observable,
       connectivity: observable,
-      _hasValidationErrors: observable,
+      hasValidationErrors: observable,
       description: computed,
       isNew: computed,
       managedByNM: computed,
@@ -71,14 +65,11 @@ export class Connection {
       withAutoconnect: computed,
       hasErrors: computed,
       setState: action,
-      setConnectivity:action,
+      setConnectivity: action,
       setEditedData: action.bound,
-      activate: action,
-      deactivate: action,
-      commit: action,
-      rollback: action,
+      submit: action,
+      reset: action,
       updateName: action,
-      switchState: action,
       setConnectionId: action,
     });
   }
@@ -114,18 +105,7 @@ export class Connection {
   }
 
   get hasErrors() {
-    return this._hasValidationErrors || (this.managedByNM && !this.editedConnectionId);
-  }
-
-  switchState() {
-    if (this.state === 'activated') {
-      this.state = 'deactivating';
-    } else {
-      if (this.state === 'not-connected') {
-        this.state = 'activating';
-      }
-    }
-    this?._onSwitchState(this.data.connection_uuid);
+    return this.hasValidationErrors || (this.managedByNM && !this.editedConnectionId);
   }
 
   updateName() {
@@ -162,8 +142,8 @@ export class Connection {
     }
     this.editedData = cloneDeep(data);
     this.updateName();
-    this.isChanged = !isEqual(this.editedData, this.data);
-    this._hasValidationErrors = Boolean(errors.length);
+    this.isDirty = !isEqual(this.editedData, this.data);
+    this.hasValidationErrors = Boolean(errors.length);
   }
 
   setConnectionId(id) {
@@ -173,14 +153,14 @@ export class Connection {
     this.editedData.connection_id = id;
     this.editedConnectionId = id;
     this.updateName();
-    this.isChanged = !isEqual(this.editedData, this.data);
+    this.isDirty = !isEqual(this.editedData, this.data);
   }
 
-  commit() {
+  submit() {
     this.data = cloneDeep(this.editedData);
     this.updateName();
-    this.isChanged = false;
-    this._hasValidationErrors = false;
+    this.isDirty = false;
+    this.hasValidationErrors = false;
     if (this.managedByNM) {
       this.state = 'not-connected';
     } else if (this.data.type === 'can') {
@@ -188,22 +168,14 @@ export class Connection {
     }
   }
 
-  rollback() {
+  reset() {
     // Trigger update and components re-render
     this.data = cloneDeep(this.data);
     this.editedData = cloneDeep(this.data);
     this.editedConnectionId = this.data.connection_id;
     this.updateName();
-    this.isChanged = false;
-    this._hasValidationErrors = false;
-  }
-
-  activate() {
-    this.active = true;
-  }
-
-  deactivate() {
-    this.active = false;
+    this.isDirty = false;
+    this.hasValidationErrors = false;
   }
 }
 

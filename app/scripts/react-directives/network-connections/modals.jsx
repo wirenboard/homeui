@@ -94,11 +94,17 @@ export const ConfirmModal = ({ id, active, text, buttons, onCancel }) => {
         <ModalTitle id={id} text={text}></ModalTitle>
       </ModalBody>
       <ModalFooter>
-        {buttons.map((bt, index) => {
-          return (
-            <Button key={index} label={bt.label} type={bt.type || 'default'} onClick={bt.onClick} />
-          );
-        })}
+        {buttons?.length &&
+          buttons.map((bt, index) => {
+            return (
+              <Button
+                key={index}
+                label={bt.label}
+                type={bt.type || 'default'}
+                onClick={bt.onClick}
+              />
+            );
+          })}
         <ModalCancelButton onClick={onCancel} />
       </ModalFooter>
     </Modal>
@@ -107,7 +113,9 @@ export const ConfirmModal = ({ id, active, text, buttons, onCancel }) => {
 
 export const SelectModal = ({ id, active, title, options, onSelect, onCancel }) => {
   const { t } = useTranslation();
-  const [selectedValue, setSelectedValue] = useState(options.length ? options[0].value : undefined);
+  const [selectedValue, setSelectedValue] = useState(
+    options?.length ? options[0].value : undefined
+  );
   const onChange = event => setSelectedValue(event.target.value);
   return (
     <Modal id={id} active={active} onCancel={onCancel}>
@@ -116,11 +124,12 @@ export const SelectModal = ({ id, active, title, options, onSelect, onCancel }) 
       </ModalHeader>
       <ModalBody>
         <select className="form-control" value={selectedValue} onChange={onChange}>
-          {options.map(({ title, value }, index) => (
-            <option key={index} value={value}>
-              {title}
-            </option>
-          ))}
+          {options?.length &&
+            options.map(({ title, value }, index) => (
+              <option key={index} value={value}>
+                {title}
+              </option>
+            ))}
         </select>
       </ModalBody>
       <ModalFooter>
