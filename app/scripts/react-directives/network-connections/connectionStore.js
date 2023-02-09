@@ -37,7 +37,7 @@ export class Connection {
       '02_nm_modem': 'fas fa-signal',
       '03_nm_wifi': 'fas fa-wifi',
       '04_nm_wifi_ap': 'fas fa-wifi',
-      can: 'fas fa-bars',
+      can: 'can-bus',
     };
     if (typeToIcon.hasOwnProperty(data.type)) {
       this.icon = typeToIcon[data.type];
@@ -68,6 +68,7 @@ export class Connection {
       managedByNM: computed,
       isDeprecated: computed,
       allowSwitchState: computed,
+      withAutoconnect: computed,
       hasErrors: computed,
       setState: action,
       setConnectivity:action,
@@ -90,6 +91,10 @@ export class Connection {
       return 'network-connections.labels.limited-connectivity';
     }
     return 'network-connections.labels.' + this.state;
+  }
+
+  get withAutoconnect() {
+    return this.isDeprecated ? this.data.auto : this.data.connection_autoconnect;
   }
 
   get isNew() {

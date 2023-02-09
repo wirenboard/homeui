@@ -9,6 +9,8 @@ import JsonEditor from './jsonEditor';
 import { Button } from '../common';
 
 function makeTabItems(tabs) {
+  const { t } = useTranslation();
+
   return tabs.connections.map(tab => {
     const onClick = e => {
       e.preventDefault();
@@ -24,7 +26,13 @@ function makeTabItems(tabs) {
             {tab.description && (
               <span>
                 <br />
-                <Trans>{tab.description}</Trans>
+                {t(tab.description)}
+              </span>
+            )}
+            {!tab.withAutoconnect && (
+              <span>
+                <br />
+                {t('network-connections.labels.manual-connect')}
               </span>
             )}
           </div>
