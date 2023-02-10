@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.53.4) stable; urgency=medium
+
+  * Code refactoring, no functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Feb 2023 08:58:50 +0500
+
 wb-mqtt-homeui (2.53.3) stable; urgency=medium
 
   * Scanner: show modbus errors
