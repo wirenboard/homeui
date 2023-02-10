@@ -335,13 +335,3 @@ div[uib-datepicker-popup-wrap] {
   height: 100%;
   z-index: 10;
 }
-
-.navbar-header .fullscreen {
-    background: transparent;
-    border: 0;
-    margin-left: 10px;
-}
-
-.navbar-header .fullscreen .glyphicon {
-    color: #ffffff;
-}

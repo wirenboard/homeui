@@ -1,4 +1,4 @@
-<button type="button" class="fullscreen btn" ng-click="toogleFullscreen()">
-    <i ng-show="!isFullscreen" class="glyphicon glyphicon-resize-full" title="{{'fullscreen.open' | translate}}"></i>
-    <i ng-show="isFullscreen" class="glyphicon glyphicon-resize-small" title="{{'fullscreen.close' | translate}}"></i>
+<button type="button" class="btn btn-default" ng-click="toggleFullscreen()">
+    <i ng-show="!checkFullscreen()" class="glyphicon glyphicon-resize-full" title="{{'fullscreen.open' | translate}}"></i>
+    <i ng-show="checkFullscreen()" class="glyphicon glyphicon-resize-small" title="{{'fullscreen.close' | translate}}"></i>
 </button>

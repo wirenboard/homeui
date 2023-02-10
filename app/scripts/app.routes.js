@@ -149,7 +149,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     })
   //...........................................................................
     .state('dashboard', {
-      url: '/dashboards/{id}',
+      url: '/dashboards/{id}?{hmi}&{hmicolor}',
       controller: 'DashboardCtrl as $ctrl',
       template: require('../views/dashboard.html'),
       resolve: {
@@ -175,7 +175,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     })
   //...........................................................................
   .state('dashboard-svg', {
-    url: '/dashboards/svg/view/{id}',
+    url: '/dashboards/svg/view/{id}?{hmi}&{hmicolor}',
     controller: 'DashboardSvgCtrl as $ctrl',
     template: require('../views/dashboard-svg.html'),
     resolve: {

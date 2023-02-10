@@ -1,29 +1,66 @@
 import template from "./fullscreenToggle.html";
 
-function fullscreenToogleDirective() {
+function fullscreenToggleDirective() {
     "ngInject";
 
     class FullscreenController {
-        constructor($rootScope, $location) {
+        constructor($scope, $rootScope, $location) {
             "ngInject";
 
             const params = $location.search();
 
-            $rootScope.isFullscreen = params.fullscreen === true;
-            $rootScope.toogleFullscreen = () => {
-                $rootScope.isFullscreen = !$rootScope.isFullscreen;
-                $location.search(
-                    "fullscreen",
-                    $rootScope.isFullscreen ? true : null
-                );
+            $rootScope.checkFullscreen = () => {
+                const fullScreenElement = document.fullscreenElement
+                    || document.webkitFullscreenElement
+                    || document.mozFullScreenElement
+                    || document.msFullscreenElement
+                    || null;
+                
+                return (fullScreenElement !== null);
             };
 
-            document.onkeydown = function (evt) {
-                evt = evt || window.event;
-                if (evt.key == "Escape" && $rootScope.isFullscreen) {
-                    $rootScope.toogleFullscreen();
+            $rootScope.isHMI = params.hmi === true;
+
+            const bgColor = ($rootScope.isHMI && params.hmicolor !== "") ? params.hmicolor : '';
+            document.getElementById("page-wrapper").style.backgroundColor = bgColor;
+
+            $rootScope.toggleFullscreen = () => {
+                var goFullScreen = null;
+                var exitFullScreen = null;
+                if ("requestFullscreen" in document.documentElement) {
+                    goFullScreen = "requestFullscreen";
+                    exitFullScreen = "exitFullscreen";
+                } else if ("mozRequestFullScreen" in document.documentElement) {
+                    goFullScreen = "mozRequestFullScreen";
+                    exitFullScreen = "mozCancelFullScreen";
+                } else if (
+                    "webkitRequestFullscreen" in document.documentElement
+                ) {
+                    goFullScreen = "webkitRequestFullscreen";
+                    exitFullScreen = "webkitExitFullscreen";
+                } else if ("msRequestFullscreen") {
+                    goFullScreen = "msRequestFullscreen";
+                    exitFullScreen = "msExitFullscreen";
+                }
+
+                if ($rootScope.checkFullscreen()) {
+                    document[exitFullScreen]();
+                } else {
+                    document.documentElement[goFullScreen]();
                 }
             };
+
+            ['webkitfullscreenchange',
+             'mozfullscreenchange',
+             'fullscreenchange',
+             'MSFullscreenChange',
+             'webkitbeginfullscreen',
+             'webkitendfullscreen'].forEach( ev => {
+                addEventListener(ev, () => {
+                    // Request redraw to faster update icon
+                    $scope.$apply();
+                })
+            });
         }
     }
 
@@ -36,4 +73,4 @@ function fullscreenToogleDirective() {
     };
 }
 
-export default fullscreenToogleDirective;
+export default fullscreenToggleDirective;
