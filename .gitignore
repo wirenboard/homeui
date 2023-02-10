@@ -15,6 +15,7 @@ debian/wb-mqtt-homeui.substvars
 debian/wb-mqtt-homeui/
 
 debian/wb-mqtt-homeui*
+*.deb
 
 grunt.log
 .fuse*

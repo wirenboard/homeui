@@ -5,7 +5,13 @@ wb-mqtt-homeui (2.54.0) stable; urgency=medium
   * Add "hmicolor" query parameter to define dashboard background color in HMI mode
   * Fullscreen toggle button doesn't hide navigation panels
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 08 Feb 2023 11:19:28 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Feb 2023 17:09:15 +0500
+
+wb-mqtt-homeui (2.53.3) stable; urgency=medium
+
+  * Scanner: show modbus errors
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 08 Feb 2023 12:25:00 +0400
 
 wb-mqtt-homeui (2.53.2) stable; urgency=medium
 
