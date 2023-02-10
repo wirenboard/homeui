@@ -278,7 +278,7 @@ ul.alert-dropdown {
   width: 380px;
 }
 
-@media(max-width: 390px) {
+@media(max-width: 406px) {
   .multicol-list ul li {
     display: inline-block;
     width: 100% !important;
