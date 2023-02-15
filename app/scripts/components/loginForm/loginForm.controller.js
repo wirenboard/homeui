@@ -39,7 +39,7 @@ class LoginFormCtrl {
     if (port) {
       this.port = port;
     } else {
-      this.port = '18883';
+      this.port = '80';
     }
     if (useCredentials) {
       this.useCredentials = useCredentials;
