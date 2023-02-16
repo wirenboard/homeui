@@ -7,15 +7,17 @@
     </div>
     <div class="panel-body">
         <span ng-show="!canUpload" class="label label-warning" translate> {{'system.errors.unavailable'}}</span>
-        <div>
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span>{{'system.update.help' | translate}} <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">{{'system.update.link_name' | translate}}</a></span>
+        <div class="alert alert-danger" ng-show="canUpload">
+            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+            <span>{{'system.update.warning' | translate}}</span>
         </div>
-        <button type="file" class="btn btn-success btn-lg"
-                ng-show="canUpload && !(running || uploading)"
-                ngf-select="upload($file)"
-                ngf-max-size="300MB"
-                ngf-pattern="'.fit,.*'" translate>{{'system.buttons.select'}}</button>
+        <div ng-show="canUpload && !(running || uploading)">
+            <button type="file" class="btn btn-success btn-lg"
+                    ngf-select="upload($file)"
+                    ngf-max-size="300MB"
+                    ngf-pattern="'.fit,.*'" translate>{{'system.buttons.select'}}</button>
+            <span><a href="http://fw-releases.wirenboard.com/?prefix=fit_image">{{'system.update.help' | translate}}</a></span>
+        </div>
         <div class="progress" ng-show="running || uploading">
             <div class="progress-bar progress-bar-{{stateType}}"
                  ng-style="{'width':progress + '%'};">
