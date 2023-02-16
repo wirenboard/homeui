@@ -11,7 +11,7 @@
         },
         "error": "Error",
         "errors": {
-            "connect": "Failure to connect to {{host}} as {{id}}. {{error}}"
+            "connect": "Failure to connect to {{host}}"
         }
     }
 }
