@@ -209,10 +209,10 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
     // почистить именно ее а не другую ошибку
     showConnectError = true;
     const params = {
-      host: client.host + ":" + client.port,
-      id: client.clientId,
-      error: "\"" + context.errorMessage + "\" (" + context.errorCode + ")"
+      host: client.host + ":" + client.port
     };
+    console.log("Connection failed (" + client.clientId + "): " + context.errorMessage + " (" + context.errorCode + ")");
+    ngToast.dismiss();
     $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
     reconnectAfterTimeout();
   };
