@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.54.2) stable; urgency=medium
+
+  * Add warning message about firmware update
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 16 Feb 2023 12:45:00 +0400
+
 wb-mqtt-homeui (2.54.1) stable; urgency=medium
 
   * Fix duplicated error messages on disconnect
