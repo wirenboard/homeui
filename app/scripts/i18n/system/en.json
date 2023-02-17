@@ -4,7 +4,7 @@
         "update": {
             "title": "Firmware update",
             "help": "Download firmware",
-            "warning": "The upgrade process preserves user files and settings from /mnt/data only, any third-party software will be removed. We recommend making a backup!"
+            "warning": "The upgrade process preserves user files and settings from /mnt/data only, any third-party software will be removed. We recommend to make a backup!"
         },
         "errors": {
             "unavailable": "Firmware update service is not available",
