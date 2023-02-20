@@ -9,16 +9,18 @@ function fullscreenToggleDirective() {
 
             const params = $location.search();
 
+            $rootScope.forceFullscreen = params.fullscreen;
+
             $rootScope.checkFullscreen = () => {
                 const fullScreenElement = document.fullscreenElement
-                    || document.webkitFullscreenElement
-                    || document.mozFullScreenElement
-                    || document.msFullscreenElement
-                    || null;
+                || document.webkitFullscreenElement
+                || document.mozFullScreenElement
+                || document.msFullscreenElement
+                || null;
                 
-                return (fullScreenElement !== null);
+                return (fullScreenElement !== null) || $rootScope.forceFullscreen;
             };
-
+            
             $rootScope.isHMI = params.hmi === true;
 
             const bgColor = ($rootScope.isHMI && params.hmicolor !== "") ? params.hmicolor : '';
