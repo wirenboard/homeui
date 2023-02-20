@@ -194,14 +194,18 @@ export function switcherStoreToJson(store) {
 
 export function switcherStoreFromJson(store, json, connectionsStore) {
   store.stickySimPeriod.setValue(json.sticky_sim_period_s);
+  store.stickySimPeriod.submit();
   store.connectivityUrl.setValue(json.connectivity_check_url);
+  store.connectivityUrl.submit();
   store.connectivityPayload.setValue(json.connectivity_check_payload);
+  store.connectivityPayload.submit();
   store.debug.setValue(json.debug);
+  store.debug.submit();
 
   const managableConnections = getConnectionsManagableBySwitcher(connectionsStore);
   store.connectionPriorities.tiers.forEach(tier => {
     tier.connections = [];
-    (json?.tiers[tier.id] ?? []).forEach(name => {
+    (json?.tiers?.[tier.id] ?? []).forEach(name => {
       const cn = managableConnections.find(item => item.name === name);
       if (cn) {
         tier.connections.push(cn);
