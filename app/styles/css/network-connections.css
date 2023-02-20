@@ -128,10 +128,14 @@
     border-bottom: 0px;
 }
 
+.network-connections-page .nav-stacked li,
+.network-connections-page .nav-tabs li {
+    cursor: pointer;
+}
+
 .network-connections-page .nav-stacked li:not(.active):hover,
 .network-connections-page .nav-tabs li:not(.active):hover {
     background-color: #eee;
-
 }
 
 .network-connections-page .nav-stacked li {
