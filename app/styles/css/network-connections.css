@@ -120,6 +120,7 @@
 
 .network-connections-page .tab-content {
     border-top: 1px solid #ddd;
+    padding-bottom: 10px;
 }
 
 .network-connections-page .nav-tabs {
@@ -138,4 +139,16 @@
 .network-connections-page .nav-stacked li.active {
     color: #fff;
     background-color: #3276b1;
+}
+
+.network-connections-page .nav-pills {
+    padding-bottom: 10px;
+}
+
+.network-connections-page .tab-content.well.well-small {
+    margin-bottom: 0px;
+}
+
+.network-connections-page .priority-item > button:not(:first-child) {
+    margin-left: 10px;
 }
