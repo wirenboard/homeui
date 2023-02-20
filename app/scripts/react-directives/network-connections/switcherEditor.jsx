@@ -76,7 +76,6 @@ const ConnectionPrioritiesEditor = ({ store }) => {
   };
   return (
     <>
-      <h2>Connection priorities</h2>
       <DndContext modifiers={[restrictToFirstScrollableAncestor]} onDragEnd={onDragEnd}>
         <div className="row">
           {store.tiers.map((tier, index) => {
