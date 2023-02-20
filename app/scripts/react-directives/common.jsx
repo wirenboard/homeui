@@ -70,10 +70,10 @@ export const Button = ({ label, type, onClick, disabled, additionalStyles, icon 
   );
 };
 
-export const Checkbox = ({ label, id, state }) => {
+export const Checkbox = ({ label, id, state, onChange }) => {
   return (
     <label htmlFor={id}>
-      <input type="checkbox" id={id} checked={state} /> {label}
+      <input type="checkbox" id={id} checked={state} onChange={onChange} /> {label}
     </label>
   );
 };
@@ -113,7 +113,12 @@ export const FormCheckbox = observer(({ store }) => {
   return (
     <BootstrapRow>
       <div className="col-md-12">
-        <Checkbox id={store.id} label={store.name} value={store.value} />
+        <Checkbox
+          id={store.id}
+          label={store.name}
+          value={store.value}
+          onChange={e => store.setValue(e.target.checked)}
+        />
       </div>
     </BootstrapRow>
   );
