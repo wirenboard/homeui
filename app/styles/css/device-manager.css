@@ -48,12 +48,12 @@
     margin-bottom: 18px;
 }
 
-.device-manager-page .slave-id {
+.device-manager-page .table .slave-id {
     display: inline-block;
     width: 3ch;
 }
 
-.device-manager-page .baudrate {
+.device-manager-page .table .baudrate {
     display: inline-block;
     width: 6ch;
     text-align: right;
