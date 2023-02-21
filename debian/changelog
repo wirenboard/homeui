@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.55.2) stable; urgency=medium
+
+  * Fix font assets file names
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 21 Feb 2023 14:44:00 +0400
+
 wb-mqtt-homeui (2.55.1) stable; urgency=medium
 
   * Code refactoring, no functional changes
