@@ -1,5 +1,4 @@
 .network-connections-page .connection-item {
-    padding: 10px 9px 10px;
     display: flex;
     align-items: center;
     border-radius: 2px;
@@ -83,7 +82,7 @@
     margin: 0px 0px 0px 0px;
 }
 
-.network-connections-page .priority-item-name {
+.network-connections-page .priority-item-content {
     flex-grow: 1;
     display: flex;
     align-items: center;
@@ -140,6 +139,7 @@
 
 .network-connections-page .nav-stacked li {
     border-radius: 2px;
+    padding: 10px 9px 10px;
 }
 .network-connections-page .nav-stacked li.active {
     color: #fff;

@@ -5,31 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { BootstrapRow } from '../common';
 import JsonEditor from './jsonEditor';
 import { Button } from '../common';
+import ConnectionItem from './connectionItem';
 
 function makeTabItems(connections) {
-  const { t } = useTranslation();
-
   return connections.map((connection, index) => {
     return (
       <TabItem key={index}>
-        <div className={'connection-item ' + connection.state}>
-          <i className={connection.icon}></i>
-          <div className="connection-item-text">
-            <b>{connection.name}</b>
-            {connection.description && (
-              <span>
-                <br />
-                {t(connection.description)}
-              </span>
-            )}
-            {!connection.withAutoconnect && (
-              <span>
-                <br />
-                {t('network-connections.labels.manual-connect')}
-              </span>
-            )}
-          </div>
-        </div>
+        <ConnectionItem connection={connection} />
       </TabItem>
     );
   });

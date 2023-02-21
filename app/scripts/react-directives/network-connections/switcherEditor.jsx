@@ -5,78 +5,44 @@ import { DndContext, useDroppable, useDraggable } from '@dnd-kit/core';
 import { restrictToFirstScrollableAncestor } from '@dnd-kit/modifiers';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-
-const MobileSwitcherElement = ({ connection, moveLeft, moveRight }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: connection.name,
-    data: connection,
-  });
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-  return (
-    <div
-      className={
-        isDragging ? 'priority-item well well-sm is-dragging' : 'priority-item well well-sm'
-      }
-      style={style}
-      ref={setNodeRef}
-    >
-      <div className="priority-item-name" {...listeners} {...attributes}>
-        {connection.name}
-      </div>
-      {moveLeft && (
-        <Button onClick={() => moveLeft(connection)} icon="glyphicon glyphicon-arrow-up" />
-      )}
-      {moveRight && (
-        <Button onClick={() => moveRight(connection)} icon="glyphicon glyphicon-arrow-down" />
-      )}
-    </div>
-  );
-};
-
-const DesktopSwitcherElement = ({ connection, moveLeft, moveRight }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: connection.name,
-    data: connection,
-  });
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-  return (
-    <div
-      className={
-        isDragging ? 'priority-item well well-sm is-dragging' : 'priority-item well well-sm'
-      }
-      style={style}
-      ref={setNodeRef}
-    >
-      {moveLeft && (
-        <Button onClick={() => moveLeft(connection)} icon="glyphicon glyphicon-arrow-left" />
-      )}
-      <div className="priority-item-name" {...listeners} {...attributes}>
-        {connection.name}
-      </div>
-      {moveRight && (
-        <Button onClick={() => moveRight(connection)} icon="glyphicon glyphicon-arrow-right" />
-      )}
-    </div>
-  );
-};
+import ConnectionItem from './connectionItem';
 
 const SwitcherElement = ({ connection, moveLeft, moveRight }) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: connection.name,
+    data: connection,
+  });
   const isMobile = useMediaQuery({ maxWidth: 991 });
-  if (isMobile) {
-    return (
-      <MobileSwitcherElement connection={connection} moveLeft={moveLeft} moveRight={moveRight} />
-    );
-  }
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
+  const rightIconClass = isMobile
+    ? 'glyphicon glyphicon-arrow-down'
+    : 'glyphicon glyphicon-arrow-right';
+  const onMoveLeft = () => moveLeft(connection);
+  const onMoveRight = () => moveRight(connection);
+
   return (
-    <DesktopSwitcherElement connection={connection} moveLeft={moveLeft} moveRight={moveRight} />
+    <div
+      className={
+        isDragging ? 'priority-item well well-sm is-dragging' : 'priority-item well well-sm'
+      }
+      style={style}
+      ref={setNodeRef}
+    >
+      {!isMobile && moveLeft && (
+        <Button onClick={onMoveLeft} icon={'glyphicon glyphicon-arrow-left'} />
+      )}
+      <div className="priority-item-content" {...listeners} {...attributes}>
+        <ConnectionItem connection={connection} />
+      </div>
+      {isMobile && moveLeft && (
+        <Button onClick={onMoveLeft} icon={'glyphicon glyphicon-arrow-up'} />
+      )}
+      {moveRight && <Button onClick={onMoveRight} icon={rightIconClass} />}
+    </div>
   );
 };
 
