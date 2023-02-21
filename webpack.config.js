@@ -102,7 +102,7 @@ module.exports = function makeWebpackConfig() {
                 test: /\.(svg|woff|woff2|ttf|eot)$/,
                 type: 'asset/resource',
                 generator: {
-                    filename: '[name].[ext]'
+                    filename: '[name][ext]'
                 }
             },
             {
