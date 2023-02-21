@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.55.1) stable; urgency=medium
+
+  * Code refactoring, no functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 21 Feb 2023 09:52:18 +0500
+
 wb-mqtt-homeui (2.55.0) stable; urgency=medium
 
   * Add "fullscreen" query parameter to hide page header, dashboard editing buttons and all menu items except "History" and dasboards list. 
