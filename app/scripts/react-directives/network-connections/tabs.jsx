@@ -19,7 +19,7 @@ TabsList.tabsRole = 'TabList';
 
 export const TabItem = observer(({ children, ...otherProps }) => {
   return (
-    <Tab className={''} selectedClassName={'active'} {...otherProps}>
+    <Tab tabIndex={'0'} className={''} selectedClassName={'active'} {...otherProps}>
       {children}
     </Tab>
   );

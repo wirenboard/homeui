@@ -7,7 +7,7 @@ const ConnectionItem = observer(({ connection }) => {
   return (
     <div className={'connection-item ' + connection.state}>
       <i className={connection.icon}></i>
-      <div className="connection-item-text">
+      <div>
         <b>{connection.name}</b>
         {connection.description && (
           <span>

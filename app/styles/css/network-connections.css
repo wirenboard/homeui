@@ -6,10 +6,7 @@
 
 .network-connections-page .connection-item > i {
     font-size: 14pt;
-}
-
-.network-connections-page .connection-item-text {
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .network-connections-page li:not(.active) .connection-item.deprecated:not(:hover) {
@@ -69,27 +66,28 @@
 
 .network-connections-page .tab-title {
     padding: 10px 9px 10px;
-    font-size: 13px;
 }
 
 .network-connections-page .priority-item {
     display: flex;
     justify-content: center;
-    margin: 10px 0px 0px 0px;
 }
 
-.network-connections-page .priority-item:first-child {
-    margin: 0px 0px 0px 0px;
+.network-connections-page .priority-item > *:not(:first-child) {
+    margin: 0px 0px 0px 10px;
 }
 
 .network-connections-page .priority-item-content {
     flex-grow: 1;
     display: flex;
     align-items: center;
-    margin-left: 10px;
-    margin-right: 10px;
+    padding-left: 10px;
     cursor: grab;
     touch-action: none;
+}
+
+.network-connections-page .priority-item:not(.is-dragging) .priority-item-content:focus {
+    outline: 1px dotted gray !important;
 }
 
 .network-connections-page .priority-group {
@@ -137,6 +135,11 @@
     background-color: #eee;
 }
 
+.network-connections-page .nav-tabs li:not(.active):focus,
+.network-connections-page .nav-stacked li:not(.active):focus {
+    background-color: #eee;
+}
+
 .network-connections-page .nav-stacked li {
     border-radius: 2px;
     padding: 10px 9px 10px;
@@ -152,8 +155,4 @@
 
 .network-connections-page .tab-content.well.well-small {
     margin-bottom: 0px;
-}
-
-.network-connections-page .priority-item > button:not(:first-child) {
-    margin-left: 10px;
 }
