@@ -71,6 +71,7 @@
 .network-connections-page .priority-item {
     display: flex;
     justify-content: center;
+    margin: 0px;
 }
 
 .network-connections-page .priority-item > *:not(:first-child) {
@@ -92,7 +93,11 @@
 
 .network-connections-page .priority-group {
     padding: 10px 10px 10px 10px;
-    min-height: 73px;
+    min-height: 77px;
+}
+
+.network-connections-page .priority-group > *:not(:first-child) {
+    margin: 10px 0px 0px 0px;
 }
 
 .network-connections-page .is-over {
