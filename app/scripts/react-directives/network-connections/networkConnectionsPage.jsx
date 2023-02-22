@@ -74,8 +74,8 @@ const NetworkConnectionsPage = observer(({ pageStore }) => {
   const { t } = useTranslation();
   return (
     <div className="network-connections-page">
-      <h1 className="page-header">{t('network-connections.labels.connections')}</h1>
       <ErrorBar msg={pageStore.error}></ErrorBar>
+      <h1 className="page-header">{t('network-connections.labels.connections')}</h1>
       <DeprecationWarning deprecatedConnections={pageStore.connections.deprecatedConnections} />
       <ConfirmModal {...pageStore.confirmModalState} />
       <SelectModal {...pageStore.selectNewConnectionModalState} />

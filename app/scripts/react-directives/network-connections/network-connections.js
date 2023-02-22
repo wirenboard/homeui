@@ -50,7 +50,7 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
             });
           })
           .catch(err => {
-            scope.store.error = err.mesage;
+            scope.store.setError(err.mesage);
           });
       });
 

@@ -135,7 +135,7 @@ class NetworkConnectionsPageStore {
   }
 
   async save(connections) {
-    this.loading = true;
+    this.setLoading(true);
     const jsonToSave = {
       ui: {
         connections: connectionsToJson(connections),
@@ -144,16 +144,12 @@ class NetworkConnectionsPageStore {
     };
     try {
       await this.onSave(jsonToSave);
-      runInAction(() => {
-        this.connections.submit();
-        this.switcher.submit();
-        this.loading = false;
-      });
+      this.connections.submit();
+      this.switcher.submit();
+      this.setLoading(false);
     } catch (err) {
-      runInAction(() => {
-        this.error = err.message;
-        this.loading = false;
-      });
+      this.setError(err.message);
+      this.setLoading(false);
       throw err;
     }
   }
@@ -162,8 +158,8 @@ class NetworkConnectionsPageStore {
     this.connections.setSchemaAndData(schema, data.data);
     connectionsStoreFromJson(this.connections, data);
     switcherStoreFromJson(this.switcher, data.ui.con_switch, this.connections);
-    this.error = '';
-    this.loading = false;
+    this.setError('');
+    this.setLoading(false);
   }
 
   toggleConnectionState(connection) {
@@ -189,6 +185,13 @@ class NetworkConnectionsPageStore {
     this.connections.findConnection(connectionUuid)?.setConnectivity(state);
   }
 
+  setError(msg) {
+    this.error = msg;
+  }
+
+  setLoading(isLoading) {
+    this.loading = isLoading;
+  }
 }
 
 export default NetworkConnectionsPageStore;
