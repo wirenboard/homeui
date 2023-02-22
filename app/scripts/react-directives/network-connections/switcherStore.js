@@ -22,7 +22,15 @@ export function getTierByType(connectionType) {
 }
 
 function makeTier(name, id) {
-  return { name, connections: [], id: id };
+  return { name, connections: [], id };
+}
+
+function makeTiers() {
+  return [
+    makeTier(i18n.t('network-connections.labels.high'), HIGH_TIER),
+    makeTier(i18n.t('network-connections.labels.medium'), MEDIUM_TIER),
+    makeTier(i18n.t('network-connections.labels.low'), LOW_TIER),
+  ];
 }
 
 function managableBySwitcher(connection) {
@@ -79,16 +87,8 @@ function updateTiers(connections, connectionPrioritiesStore) {
 
 class ConnectionPrioritiesStore {
   constructor(connectionsStore) {
-    this.tiers = [];
-    this.tiers.push(makeTier(i18n.t('network-connections.labels.high'), HIGH_TIER));
-    this.tiers.push(makeTier(i18n.t('network-connections.labels.medium'), MEDIUM_TIER));
-    this.tiers.push(makeTier(i18n.t('network-connections.labels.low'), LOW_TIER));
-
-    this.storedTiers = [];
-    this.storedTiers.push(makeTier(i18n.t('network-connections.labels.high'), HIGH_TIER));
-    this.storedTiers.push(makeTier(i18n.t('network-connections.labels.medium'), MEDIUM_TIER));
-    this.storedTiers.push(makeTier(i18n.t('network-connections.labels.low'), LOW_TIER));
-
+    this.tiers = makeTiers();
+    this.storedTiers = makeTiers();
     this.isDirty = false;
 
     reaction(
