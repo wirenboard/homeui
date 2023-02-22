@@ -1,24 +1,9 @@
 'use strict';
 
-import { action, observable, makeObservable, runInAction, computed } from 'mobx';
-import i18n from '../../i18n/react/config';
-import {
-  Connection,
-  makeConnectionSchema,
-  getNewConnection,
-  getConnectionJson,
-} from './connectionStore';
-import ConfirmModalState from './confirmModalState';
-import SelectNewConnectionModalState from './selectNewConnectionModalState';
+import { action, computed, makeObservable, observable } from 'mobx';
+import { SingleConnection, makeConnectionSchema, getConnectionJson } from './singleConnectionStore';
 
-function stableSort(arr, compare) {
-  return arr
-    .map((item, index) => ({ item, index }))
-    .sort((a, b) => compare(a.item, b.item) || a.index - b.index)
-    .map(({ item }) => item);
-}
-
-function typeCompare(cn1, cn2) {
+function connectionTypeCompare(cn1, cn2) {
   if (cn1.data.type > cn2.data.type) {
     return 1;
   }
@@ -28,34 +13,69 @@ function typeCompare(cn1, cn2) {
   return 0;
 }
 
-class Connections {
-  connections = [];
-  confirmModalState = new ConfirmModalState();
-  selectNewConnectionModalState = new SelectNewConnectionModalState();
-  onSave = undefined;
-  loading = true;
-  isChanged = false;
-  error = '';
-  _activeConnection = undefined;
-  _newConnectionIndex = 1;
-  _schema = {};
-  _additionalData = {};
-  _toggleConnectionState = undefined;
+function stableSort(arr, compare) {
+  return arr
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => compare(a.item, b.item) || a.index - b.index)
+    .map(({ item }) => item);
+}
 
-  constructor(onSave, toggleConnectionState) {
-    this.onSave = onSave;
-    this._toggleConnectionState = toggleConnectionState;
+function findIndexForNewConnectionName(pattern, connections) {
+  let index = 1;
+  const re = new RegExp(pattern);
+  connections.forEach(cn => {
+    if (cn.data.connection_id) {
+      const match = cn.data.connection_id.match(re);
+      if (match) {
+        const next = parseInt(match[1]) + 1;
+        index = next > index ? next : index;
+      }
+    }
+  });
+  return index;
+}
+
+function getNewConnectionData(type, connections) {
+  let connection_id = '';
+  if (type === 'can') {
+    return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 125000 } };
+  }
+  if (type === '01_nm_ethernet') {
+    return {
+      type: type,
+      connection_uuid: '',
+      connection_id:
+        'Wired connection ' + findIndexForNewConnectionName('Wired connection (\\d+)', connections),
+    };
+  }
+  if (type === '02_nm_modem') {
+    return {
+      type: type,
+      connection_uuid: '',
+      connection_id: 'gsm ' + findIndexForNewConnectionName('gsm (\\d+)', connections),
+    };
+  }
+  return { type: type, connection_uuid: '', connection_id: connection_id };
+}
+
+class Connections {
+  constructor() {
+    this.connections = [];
+    this.schema = {};
+    this.additionalData = {};
+    this.selectedConnectionIndex = 0;
+
     makeObservable(this, {
       connections: observable,
-      loading: observable,
-      isChanged: observable,
+      selectedConnectionIndex: observable,
       deprecatedConnections: computed,
+      isDirty: computed,
       setSchemaAndData: action,
-      setSelected: action,
-      saveConnections: action,
       addConnection: action,
-      activateConnection: action,
-      deleteConnection: action,
+      removeConnection: action,
+      setSelectedConnectionIndex: action,
+      submit: action,
+      reset: action,
     });
   }
 
@@ -63,211 +83,73 @@ class Connections {
     return this.connections.filter(cn => cn.isDeprecated).map(cn => cn.name);
   }
 
+  findConnection(uuid) {
+    if (uuid === undefined) {
+      return undefined;
+    }
+    return this.connections.find(item => item.data.connection_uuid == uuid);
+  }
+
   setSchemaAndData(schema, data) {
-    this._schema = schema;
-    this._additionalData = data.data;
-    this.connections = [];
-    data.ui.connections.forEach(cn => this.addConnection({ type: cn.type, connectionData: cn }));
-    this.connections = stableSort(this.connections, typeCompare);
-    if (this.connections.length) {
-      this.activateConnection(this.connections[0]);
-    }
-    this.error = '';
-    this.loading = false;
-  }
-
-  activateConnection(connectionToActivate) {
-    this._activeConnection?.deactivate();
-    this._activeConnection = connectionToActivate;
-    connectionToActivate.activate();
-  }
-
-  beforeConnectionSwitch() {
-    return new Promise(async (resolve, reject) => {
-      if (!this._activeConnection?.isChanged) {
-        resolve();
-        return;
-      }
-
-      var title;
-      var buttons = [
-        {
-          label: i18n.t('network-connections.buttons.dont-save'),
-          type: 'danger',
-          result: 'dont-save',
-        },
-      ];
-
-      if (this._activeConnection.hasErrors) {
-        title = i18n.t('network-connections.labels.has-errors');
-      } else {
-        title = i18n.t('network-connections.labels.changes');
-        buttons.unshift({
-          label: i18n.t('network-connections.buttons.save'),
-          type: 'success',
-          result: 'save',
-        });
-      }
-
-      try {
-        if ((await this.confirmModalState.show(title, buttons)) === 'save') {
-          await this.saveConnections(this.connections);
-        } else {
-          runInAction(() => {
-            if (this._activeConnection.isNew) {
-              this.connections.remove(this._activeConnection);
-              this._activeConnection = undefined;
-            } else {
-              this._activeConnection.rollback();
-            }
-          });
-        }
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
-
-  async setSelected(connectionToActivate) {
-    if (!connectionToActivate.active) {
-      try {
-        await this.beforeConnectionSwitch();
-        this.activateConnection(connectionToActivate);
-      } catch (err) {
-        if (err !== 'cancel') {
-          throw err;
-        }
-      }
-    }
-  }
-
-  async saveConnections(connections) {
-    this.loading = true;
-    const jsonToSave = {
-      ui: {
-        connections: connections.map(cn => getConnectionJson(cn.editedData)),
-        con_switch: {},
-      },
-    };
-    try {
-      await this.onSave(jsonToSave);
-      runInAction(() => {
-        connections.forEach(cn => cn.commit());
-        this.isChanged = false;
-        this.loading = false;
-      });
-    } catch (err) {
-      runInAction(() => {
-        this.error = err.message;
-        this.loading = false;
-      });
-      throw err;
-    }
-  }
-
-  _findIndex(pattern) {
-    let index = 1;
-    const re = new RegExp(pattern);
-    this.connections.forEach(cn => {
-      if (cn.data.connection_id) {
-        const match = cn.data.connection_id.match(re);
-        if (match) {
-          const next = parseInt(match[1]) + 1;
-          index = next > index ? next : index;
-        }
-      }
-    });
-    return index;
-  }
-
-  _getNewConnection(type) {
-    let connection_id = '';
-    if (type === 'can') {
-      return { type: type, 'allow-hotplug': true, auto: false, options: { bitrate: 125000 } };
-    }
-    if (type === '01_nm_ethernet') {
-      return {
-        type: type,
-        connection_uuid: '',
-        connection_id: 'Wired connection ' + this._findIndex('Wired connection (\\d+)'),
-      };
-    }
-    if (type === '02_nm_modem') {
-      return {
-        type: type,
-        connection_uuid: '',
-        connection_id: 'gsm ' + this._findIndex('gsm (\\d+)'),
-      };
-    }
-    return { type: type, connection_uuid: '', connection_id: connection_id };
+    this.schema = schema;
+    this.additionalData = data;
   }
 
   addConnection({ type, connectionData, state }) {
-    connectionData = connectionData ? connectionData : this._getNewConnection(type);
-    connectionData.data = this._additionalData;
+    connectionData = connectionData ?? getNewConnectionData(type, this.connections);
+    connectionData.data = this.additionalData;
 
-    var connection = new Connection(
-      makeConnectionSchema(type, this._schema),
+    const connection = new SingleConnection(
+      makeConnectionSchema(type, this.schema),
       connectionData,
-      this._newConnectionIndex,
-      state,
-      this._toggleConnectionState
+      state
     );
     this.connections.push(connection);
-    this._newConnectionIndex++;
-    return connection;
+    this.connections = stableSort(this.connections, connectionTypeCompare);
+    return this.connections.findIndex(cn => cn === connection);
   }
 
-  async createConnection() {
-    try {
-      await this.beforeConnectionSwitch();
-      if (this._activeConnection === undefined && this.connections.length) {
-        this.activateConnection(this.connections[0]);
-      }
-      const connectionType = await this.selectNewConnectionModalState.show();
-      const cn = this.addConnection({ type: connectionType, state: 'new' });
-      runInAction(() => {
-        this.connections = stableSort(this.connections, typeCompare);
-      });
-      this.activateConnection(cn);
-    } catch (err) {
-      if (err !== 'cancel') {
-        throw err;
-      }
+  removeConnection(connection) {
+    const index = this.connections.findIndex(el => el === connection);
+    if (index === -1) {
+      return false;
+    }
+    this.connections.splice(index, 1);
+    if (index === this.selectedConnectionIndex) {
+      this.selectedConnectionIndex = 0;
+    }
+    return true;
+  }
+
+  setSelectedConnectionIndex(index) {
+    if (index >= 0 && index < this.connections.length) {
+      this.selectedConnectionIndex = index;
     }
   }
 
-  async deleteConnection(connection) {
-    const buttons = [
-      {
-        label: i18n.t('network-connections.buttons.delete'),
-        type: 'danger',
-      },
-    ];
+  submit() {
+    this.connections.forEach(cn => cn.submit());
+  }
 
-    try {
-      await this.confirmModalState.show(
-        i18n.t('network-connections.labels.confirm-delete-connection'),
-        buttons
-      );
-      if (!connection.isNew) {
-        await this.saveConnections(this.connections.filter(cn => cn !== connection));
-      }
-      runInAction(() => {
-        this.connections.remove(connection);
-        if (connection === this._activeConnection) {
-          this._activeConnection = undefined;
-        }
-      });
-      if (this.connections.length) {
-        this.activateConnection(this.connections[0]);
-      }
-    } catch (err) {
-      if (err !== 'cancel') {
-        throw err;
-      }
-    }
+  reset() {
+    this.connections.forEach(cn => cn.reset());
+    const newConnections = this.connections.filter(cn => cn.isNew);
+    newConnections.forEach(cn => this.removeConnection(cn));
+  }
+
+  get isDirty() {
+    return this.connections.some(cn => cn.isDirty);
+  }
+}
+
+export function connectionsToJson(connections) {
+  return connections.map(cn => getConnectionJson(cn.editedData));
+}
+
+export function connectionsStoreFromJson(store, json) {
+  json.ui.connections.forEach(cn => store.addConnection({ type: cn.type, connectionData: cn }));
+  if (store.connections.length) {
+    store.setSelectedConnectionIndex(0);
   }
 }
 

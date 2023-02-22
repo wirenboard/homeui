@@ -1,9 +1,4 @@
-.network-connections-page li > a {
-    padding: 0px;
-}
-
 .network-connections-page .connection-item {
-    padding: 10px 9px 10px;
     display: flex;
     align-items: center;
     border-radius: 2px;
@@ -11,13 +6,10 @@
 
 .network-connections-page .connection-item > i {
     font-size: 14pt;
+    margin-right: 5px;
 }
 
-.network-connections-page .connection-item-text {
-    margin-left: 5px;
-}
-
-.network-connections-page li:not(.active) .connection-item.deprecated {
+.network-connections-page li:not(.active) .connection-item.deprecated:not(:hover) {
     background-color: #fcf8e3;
 }
 
@@ -70,4 +62,102 @@
 .network-connections-page .can-bus {
     content: url("../../images/canbus.png");
     width: 23px;
+}
+
+.network-connections-page .tab-title {
+    padding: 10px 9px 10px;
+}
+
+.network-connections-page .priority-item {
+    display: flex;
+    justify-content: center;
+    margin: 0px;
+}
+
+.network-connections-page .priority-item > *:not(:first-child) {
+    margin: 0px 0px 0px 10px;
+}
+
+.network-connections-page .priority-item-content {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    cursor: grab;
+    touch-action: none;
+}
+
+.network-connections-page .priority-item:not(.is-dragging) .priority-item-content:focus {
+    outline: 1px dotted gray !important;
+}
+
+.network-connections-page .priority-group {
+    padding: 10px 10px 10px 10px;
+    min-height: 77px;
+}
+
+.network-connections-page .priority-group > *:not(:first-child) {
+    margin: 10px 0px 0px 0px;
+}
+
+.network-connections-page .is-over {
+    background-color: #eee;
+}
+
+.network-connections-page .is-dragging {
+    z-index: 1;
+}
+
+.network-connections-page .is-dragging * {
+    cursor: grabbing;
+}
+
+.network-connections-page .nav-tabs li.active {
+    box-shadow: 0 -2px 0 #3276b1;
+    border-top-width: 0 !important;
+    font-weight: 700;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #fff;
+}
+
+.network-connections-page .tab-content {
+    border-top: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.network-connections-page .nav-tabs {
+    border-bottom: 0px;
+}
+
+.network-connections-page .nav-stacked li,
+.network-connections-page .nav-tabs li {
+    cursor: pointer;
+}
+
+.network-connections-page .nav-stacked li:not(.active):hover,
+.network-connections-page .nav-tabs li:not(.active):hover {
+    background-color: #eee;
+}
+
+.network-connections-page .nav-tabs li:not(.active):focus,
+.network-connections-page .nav-stacked li:not(.active):focus {
+    background-color: #eee;
+}
+
+.network-connections-page .nav-stacked li {
+    border-radius: 2px;
+    padding: 10px 9px 10px;
+}
+.network-connections-page .nav-stacked li.active {
+    color: #fff;
+    background-color: #3276b1;
+}
+
+.network-connections-page .nav-pills {
+    padding-bottom: 10px;
+}
+
+.network-connections-page .tab-content.well.well-small {
+    margin-bottom: 0px;
 }
