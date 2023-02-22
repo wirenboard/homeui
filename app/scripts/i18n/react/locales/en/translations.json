@@ -42,5 +42,61 @@
             }
          }
       }
+   },
+   "network-connections": {
+      "labels": {
+         "changes": "There are unsaved changes",
+         "has-errors": "There are invalid parameters",
+         "activated": "Connected",
+         "activating": "Connecting",
+         "deactivating": "Disconnecting",
+         "not-connected": "Not connected",
+         "deprecated": "Deprecated",
+         "limited-connectivity": "No Internet access",
+         "new": "New connection",
+         "select-type": "Select connection type",
+         "wifi": "Wi-Fi client",
+         "wifi-ap": "Wi-Fi access point",
+         "ethernet": "Wired connection (Ethernet)",
+         "modem": "GSM-modem connection",
+         "canbus": "CAN bus",
+         "confirm-delete-connection": "Do you realy want to delete the connection?",
+         "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
+         "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>",
+         "manual-connect": "Manual connect",
+         "switcher": "Connection priorities",
+         "connections": "Network connections",
+         "high": "High priority",
+         "medium": "Medium priority",
+         "low": "Low priority",
+         "sticky-sim-period": "Deny SIM switching period in seconds",
+         "sticky-sim-period-desc": "The GSM modem can work with only one SIM card. To test connectivity, the current SIM card is disconnected and the tested one is connected. If a modem connection is successfully established with one of the SIM cards, do not switch the SIM card for testing for the specified period",
+         "sticky-sim-period-placeholder": "90",
+         "debug": "Enable debug logging",
+         "connectivity-url": "Connectivity check URL",
+         "connectivity-url-desc": "To test connectivity, the service sends an HTTP GET request to specified URL",
+         "connectivity-url-placeholder": "http://network-test.debian.org/nm",
+         "connectivity-payload": "Connectivity check payload",
+         "connectivity-payload-desc": "Connectivity check response content must contain specified string",
+         "connectivity-payload-placeholder": "NetworkManager is online"
+      },
+      "buttons": {
+         "save": "Save",
+         "dont-save": "Don't save",
+         "cancel": "Cancel",
+         "add-connection": "Add connection",
+         "delete": "Delete",
+         "add": "Add",
+         "connect": "Connect",
+         "disconnect": "Disconnect"
+      }
+   },
+   "editors": {
+      "errors": {
+         "integer": "Value must be an integer",
+         "integer_min": "Value must be an integer equal or bigger than {{min}}",
+         "integer_max": "Value must be an integer equal or less than {{max}}",
+         "integer_minmax": "Value must be an integer in the range from {{min}} to {{max}}"
+      }
    }
 }

@@ -1,5 +1,5 @@
 class ConfigCtrl {
-  constructor($scope, $stateParams, rolesFactory, ConfigEditorProxy, whenMqttReady, PageState, errors) {
+  constructor($scope, $stateParams, rolesFactory, ConfigEditorProxy, whenMqttReady, PageState, errors, $state) {
     'ngInject';
 
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
@@ -13,7 +13,6 @@ class ConfigCtrl {
       schema: undefined
     };
 
-    $scope.editorOptions = {};
     if (!/^\//.test($scope.file.schemaPath))
       $scope.file.schemaPath = "/" + $scope.file.schemaPath;
 
@@ -32,12 +31,10 @@ class ConfigCtrl {
     var load = function() {
       ConfigEditorProxy.Load({ path: $scope.file.schemaPath })
       .then(function (r) {
-        $scope.editorOptions = r.schema.strictProps ? { no_additional_properties: true } : {};
-        if (r.schema.limited)
-          angular.extend($scope.editorOptions, {
-            disable_properties: true,
-            disable_edit_json: true
-          });
+        if (r.editor) {
+          $state.go(r.editor, { path: $stateParams.path });
+          return;
+        }
         $scope.file.configPath = r.configPath;
         $scope.file.content = r.content;
         $scope.file.schema = r.schema;

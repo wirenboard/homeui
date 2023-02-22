@@ -468,6 +468,32 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       }
     })
   //...........................................................................
+    .state('network-connections', {
+      url: '/network-connections/{path:.*}',
+      template: require('../views/network-connections.html'),
+      controller: 'NetworkConnectionsCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          let deferred = $q.defer();
+          require.ensure(
+            [], 
+            (require) => {
+              let module = require('./controllers/networkConnectionsController.js');
+              $ocLazyLoad.load({
+                name: module.default.name
+              })
+              .then(() => {
+                deferred.resolve(module);
+              });
+            },
+            'network-connections'
+          );
+          return deferred.promise;
+        }
+      }
+    })
+  //...........................................................................
     .state('logs', {
       url: '/logs',
       controller: 'LogsCtrl as $ctrl',

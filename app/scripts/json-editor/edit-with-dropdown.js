@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from "../../../3rdparty/jsoneditor";
+import { JSONEditor } from "../../3rdparty/jsoneditor";
 
 // Editor for integer or string values.
 // It allows free value editing and has additional dropdown list with possible values.

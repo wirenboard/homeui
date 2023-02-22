@@ -1,3 +1,15 @@
+wb-mqtt-homeui (2.56.0) stable; urgency=medium
+
+  * Show connection status in network connections editor
+  * Add support for connection priorities management
+  * Add support for up or down a connection from network connections editor
+  * Add generation of names for new connections
+  * Add CAN bus icon in connections list
+
+    Co-authored-by: Nikita Maslov <nikita.maslov@wirenboard.ru>
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 22 Feb 2023 12:44:13 +0500
+
 wb-mqtt-homeui (2.55.2) stable; urgency=medium
 
   * Fix font assets file names
