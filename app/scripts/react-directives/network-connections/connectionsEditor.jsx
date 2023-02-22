@@ -117,22 +117,20 @@ const ConnectionsEditor = observer(
   ({ connections, onSelect, onSave, onDelete, onAdd, onToggleState }) => {
     const { t } = useTranslation();
     return (
-      <>
-        <VerticalTabs selectedIndex={connections.selectedConnectionIndex} onSelect={onSelect}>
-          <TabsList>
-            {makeTabItems(connections.connections)}
-            <Button
-              label={t('network-connections.buttons.add-connection')}
-              additionalStyles="add-connection-button"
-              icon="glyphicon glyphicon-plus"
-              onClick={onAdd}
-            />
-          </TabsList>
-          <TabContent>
-            {makeTabPanes(connections.connections, onSave, onDelete, onToggleState)}
-          </TabContent>
-        </VerticalTabs>
-      </>
+      <VerticalTabs selectedIndex={connections.selectedConnectionIndex} onSelect={onSelect}>
+        <TabsList>
+          {makeTabItems(connections.connections)}
+          <Button
+            label={t('network-connections.buttons.add-connection')}
+            additionalStyles="add-connection-button"
+            icon="glyphicon glyphicon-plus"
+            onClick={onAdd}
+          />
+        </TabsList>
+        <TabContent>
+          {makeTabPanes(connections.connections, onSave, onDelete, onToggleState)}
+        </TabContent>
+      </VerticalTabs>
     );
   }
 );

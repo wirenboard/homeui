@@ -85,30 +85,28 @@ const ConnectionPrioritiesEditor = ({ store }) => {
     }
   };
   return (
-    <>
-      <DndContext modifiers={[restrictToFirstScrollableAncestor]} onDragEnd={onDragEnd}>
-        <div className="row">
-          {store.tiers.map((tier, index) => {
-            return (
-              <SwitcherColumn
-                key={tier.id}
-                tier={tier}
-                moveLeft={
-                  index !== 0
-                    ? cn => store.moveConnectionToTier(cn, store.tiers[index - 1])
-                    : undefined
-                }
-                moveRight={
-                  index !== store.tiers.length - 1
-                    ? cn => store.moveConnectionToTier(cn, store.tiers[index + 1])
-                    : undefined
-                }
-              />
-            );
-          })}
-        </div>
-      </DndContext>
-    </>
+    <DndContext modifiers={[restrictToFirstScrollableAncestor]} onDragEnd={onDragEnd}>
+      <div className="row">
+        {store.tiers.map((tier, index) => {
+          return (
+            <SwitcherColumn
+              key={tier.id}
+              tier={tier}
+              moveLeft={
+                index !== 0
+                  ? cn => store.moveConnectionToTier(cn, store.tiers[index - 1])
+                  : undefined
+              }
+              moveRight={
+                index !== store.tiers.length - 1
+                  ? cn => store.moveConnectionToTier(cn, store.tiers[index + 1])
+                  : undefined
+              }
+            />
+          );
+        })}
+      </div>
+    </DndContext>
   );
 };
 
