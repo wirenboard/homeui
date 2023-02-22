@@ -43,7 +43,10 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
               scope.store.setConnectionState(getUuidFromTopic(msg.topic), msg.payload);
             });
             mqttClient.addStickySubscription('/devices/+/controls/Connectivity', msg => {
-              scope.store.setConnectionConnectivity(getUuidFromTopic(msg.topic), !!msg.payload);
+              scope.store.setConnectionConnectivity(
+                getUuidFromTopic(msg.topic),
+                msg.payload !== '0'
+              );
             });
           })
           .catch(err => {
