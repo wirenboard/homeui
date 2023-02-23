@@ -327,7 +327,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         function configRequestMaker(mqttClient, ConfigEditorProxy, webuiConfigPath, errors, whenMqttReady, uiConfig) {
             return function (loginData) {
                 if (loginData.host && loginData.port) {
-                    var clientID = 'contactless-' + randomString(10);
+                    var clientID = 'wb-mqtt-homeui-' + randomString(10);
                     if (mqttClient.isConnected()) {
                         mqttClient.disconnect();
                     }
