@@ -162,7 +162,9 @@ export class SingleConnection {
     this.isDirty = false;
     this.hasValidationErrors = false;
     if (this.managedByNM) {
-      this.state = 'not-connected';
+      if (this.isNew) {
+        this.state = 'not-connected';
+      }
     } else if (this.data.type === 'can') {
       this.state = 'unknown';
     }
