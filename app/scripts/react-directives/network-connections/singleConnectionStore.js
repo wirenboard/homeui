@@ -85,7 +85,9 @@ export class SingleConnection {
   }
 
   get withAutoconnect() {
-    return this.isDeprecated ? this.data.auto : this.data.connection_autoconnect;
+    return this.isDeprecated || this.data.type !== 'can'
+      ? this.data.auto
+      : this.data.connection_autoconnect;
   }
 
   get isNew() {
