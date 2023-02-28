@@ -20,7 +20,7 @@
             <tbody>
             <tr ng-repeat="config in configs track by $index">
                 <td>
-                    <a ui-sref="configEdit({path: config.schemaPath})">
+                    <a ui-sref="{{config.editor?config.editor:'configEdit'}}({path: config.schemaPath})">
                         {{ config.titleTranslations[$locale.id] || config.title }}
                     </a>
                 </td>

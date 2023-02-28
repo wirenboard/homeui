@@ -23,3 +23,4 @@ coverage
 *.sh
 *.tsv
 .vscode
+.prettierrc

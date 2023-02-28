@@ -12,6 +12,7 @@ import '../styles/css/smartadmin-production-plugins.min.css';
 import '../styles/css/smartadmin-production.min.css';
 import '../styles/css/smartadmin-rtl.min.css';
 import '../styles/css/smartadmin-skins.min.css';
+import '../styles/css/icons.css';
 
 import '../styles/css/new.css';
 import '../styles/main.css';
@@ -29,6 +30,7 @@ import 'ng-toast/dist/ngToast.css';
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
+import '../styles/css/network-connections.css';
 
 // React-related imports
 import i18n from './i18n/react/config';
@@ -96,6 +98,7 @@ import onResizeDirective from "./directives/resize";
 import confirmDirective from "./directives/confirm";
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import scanDirective from './react-directives/scan/scan';
+import networkConnectionsDirective from './react-directives/network-connections/network-connections';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -254,7 +257,8 @@ module
     .directive('onResize', [ '$parse', onResizeDirective] )
     .directive('ngConfirm', confirmDirective)
     .directive("fullscreenToggle", fullscreenToggleDirective)
-    .directive("deviceManagerPage", scanDirective);
+    .directive("deviceManagerPage", scanDirective)
+    .directive("networkConnectionsPage", networkConnectionsDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
