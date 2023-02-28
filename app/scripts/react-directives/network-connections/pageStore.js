@@ -139,7 +139,7 @@ class NetworkConnectionsPageStore {
     const jsonToSave = {
       ui: {
         connections: connectionsToJson(connections),
-        con_switch: switcherStoreToJson(this.switcher),
+        con_switch: switcherStoreToJson(this.switcher, connections),
       },
     };
     try {

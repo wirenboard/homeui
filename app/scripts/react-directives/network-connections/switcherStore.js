@@ -171,7 +171,7 @@ class SwitcherStore {
   }
 }
 
-export function switcherStoreToJson(store) {
+export function switcherStoreToJson(store, connectionsToStore) {
   let res = {};
   if (store.stickySimPeriod.value !== '') {
     res.sticky_sim_period_s = store.stickySimPeriod.value;
@@ -187,7 +187,9 @@ export function switcherStoreToJson(store) {
   }
   res.tiers = {};
   store.connectionPriorities.tiers.forEach(tier => {
-    res.tiers[tier.id] = tier.connections.map(cn => cn.name);
+    res.tiers[tier.id] = tier.connections
+      .filter(cn => connectionsToStore.includes(cn))
+      .map(cn => cn.name);
   });
   return res;
 }

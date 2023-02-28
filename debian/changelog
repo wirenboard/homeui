@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.56.1) stable; urgency=medium
+
+  * Fix connection priorities config saving
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Feb 2023 17:54:24 +0500
+
 wb-mqtt-homeui (2.56.0) stable; urgency=medium
 
   * Show connection status in network connections editor
