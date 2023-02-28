@@ -167,3 +167,7 @@
 .network-connections-page .tab-content.well.well-small {
     margin-bottom: 0px;
 }
+
+.network-connections-page .switcher-desc {
+    margin-bottom: 10px;
+}

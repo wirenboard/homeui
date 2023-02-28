@@ -52,7 +52,7 @@
          "deactivating": "Disconnecting",
          "not-connected": "Not connected",
          "deprecated": "Deprecated",
-         "limited-connectivity": "No Internet access",
+         "limited-connectivity": "No internet access",
          "new": "New connection",
          "select-type": "Select connection type",
          "wifi": "Wi-Fi client",
@@ -78,7 +78,8 @@
          "connectivity-url-placeholder": "http://network-test.debian.org/nm",
          "connectivity-payload": "Connectivity check payload",
          "connectivity-payload-desc": "Connectivity check response content must contain specified string",
-         "connectivity-payload-placeholder": "NetworkManager is online"
+         "connectivity-payload-placeholder": "NetworkManager is online",
+         "switcher-desc": "The service will automatically select the highest priority internet connection and route internet traffic through it. All connections except the modem will remain active and can be used for other tasks. The manager checks internet access every 5 seconds."
       },
       "buttons": {
          "save": "Save",

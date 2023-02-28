@@ -137,8 +137,14 @@ const PageButtons = observer(({ switcher, onSave }) => {
 });
 
 const SwitcherForm = observer(({ switcher, onSave }) => {
+  const { t } = useTranslation();
   return (
     <>
+      <BootstrapRow>
+        <div className="col-xs-12 switcher-desc">
+          {t('network-connections.labels.switcher-desc')}
+        </div>
+      </BootstrapRow>
       <ConnectionPrioritiesEditor store={switcher.connectionPriorities} />
       <FormCheckbox store={switcher.debug} />
       <FormStringEdit store={switcher.connectivityUrl} />
