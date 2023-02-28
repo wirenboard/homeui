@@ -12,6 +12,7 @@ import '../styles/css/smartadmin-production-plugins.min.css';
 import '../styles/css/smartadmin-production.min.css';
 import '../styles/css/smartadmin-rtl.min.css';
 import '../styles/css/smartadmin-skins.min.css';
+import '../styles/css/icons.css';
 
 import '../styles/css/new.css';
 import '../styles/main.css';

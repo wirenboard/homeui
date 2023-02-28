@@ -31,7 +31,7 @@ export class SingleConnection {
       '01_nm_ethernet': 'fas fa-network-wired',
       '02_nm_modem': 'fas fa-signal',
       '03_nm_wifi': 'fas fa-wifi',
-      '04_nm_wifi_ap': 'fas fa-wifi',
+      '04_nm_wifi_ap': 'wbi wifi-ap',
       can: 'can-bus',
     };
     if (typeToIcon.hasOwnProperty(data.type)) {
@@ -78,14 +78,14 @@ export class SingleConnection {
     if (this.state === 'unknown') {
       return '';
     }
-    if (this.state === 'activated' && !this.connectivity) {
+    if (this.state === 'activated' && !this.connectivity && this.data.type !== '04_nm_wifi_ap') {
       return 'network-connections.labels.limited-connectivity';
     }
     return 'network-connections.labels.' + this.state;
   }
 
   get withAutoconnect() {
-    return this.isDeprecated || this.data.type !== 'can'
+    return this.isDeprecated || this.data.type === 'can'
       ? this.data.auto
       : this.data.connection_autoconnect;
   }

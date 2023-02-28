@@ -28,7 +28,7 @@
 }
 
 .network-connections-page .activated i {
-    color: #739e73;
+    color: #00d000;
 }
 
 .network-connections-page .add-connection-button {
@@ -62,6 +62,12 @@
 .network-connections-page .can-bus {
     content: url("../../images/canbus.png");
     width: 23px;
+}
+
+.network-connections-page .wifi-ap:before {
+    font-family: "wb icons" !important;
+    content: "\f101";
+    font-size: 17pt;
 }
 
 .network-connections-page .tab-title {

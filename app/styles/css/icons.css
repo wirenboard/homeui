@@ -1,0 +1,17 @@
+@font-face {
+    font-family: "wb icons";
+    src: url("../fonts/icons.eot") format("embedded-opentype");
+    src: url("../fonts/icons.woff2") format("woff2");
+    src: url("../fonts/icons.woff") format("woff");
+}
+
+.wbi {
+    font-family: icons !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
