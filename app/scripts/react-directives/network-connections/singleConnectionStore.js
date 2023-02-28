@@ -54,6 +54,7 @@ export class SingleConnection {
       state: observable,
       isDirty: observable,
       data: observable,
+      editedData: observable,
       editedConnectionId: observable,
       connectivity: observable,
       hasValidationErrors: observable,

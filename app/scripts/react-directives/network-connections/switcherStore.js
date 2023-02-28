@@ -36,7 +36,7 @@ function makeTiers() {
 function managableBySwitcher(connection) {
   return (
     Object.keys(DefaultConnectionPriorities).includes(connection.data.type) &&
-    connection.data.connection_autoconnect
+    connection.editedData.connection_autoconnect
   );
 }
 
