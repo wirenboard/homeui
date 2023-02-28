@@ -8,7 +8,19 @@ wb-mqtt-homeui (2.56.0) stable; urgency=medium
 
     Co-authored-by: Nikita Maslov <nikita.maslov@wirenboard.ru>
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 22 Feb 2023 12:44:13 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Feb 2023 17:00:57 +0500
+
+wb-mqtt-homeui (2.55.4) stable; urgency=medium
+
+  * Merge Device and Control columns in MQTT channels table
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 27 Feb 2023 16:34:00 +0400
+
+wb-mqtt-homeui (2.55.3) stable; urgency=medium
+
+  * Form identifiable client ID for MQTT connection
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 23 Feb 2023 10:21:00 +0400
 
 wb-mqtt-homeui (2.55.2) stable; urgency=medium
 

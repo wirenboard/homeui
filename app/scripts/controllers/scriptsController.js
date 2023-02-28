@@ -24,11 +24,11 @@ class ScriptsCtrl {
 
     /*
      get list
-     /rpc/v1/wbrules/Editor/List/contactless-uLo93IW6a0 {"id":1,"params":{}}
+     /rpc/v1/wbrules/Editor/List/wb-mqtt-homeui-uLo93IW6a0 {"id":1,"params":{}}
      get one
-     /rpc/v1/wbrules/Editor/Load/contactless-Usf4VuT4Ba {"id":2,"params":{"path":"rules.js"}}
+     /rpc/v1/wbrules/Editor/Load/wb-mqtt-homeui-Usf4VuT4Ba {"id":2,"params":{"path":"rules.js"}}
      save
-     /rpc/v1/wbrules/Editor/Save/contactless-Usf4VuT4Ba {"id":3,"params":{"path":"rules.js","content": ....
+     /rpc/v1/wbrules/Editor/Save/wb-mqtt-homeui-Usf4VuT4Ba {"id":3,"params":{"path":"rules.js","content": ....
      */
 
      $scope.$on('update-rules-list', (event, data) => {
