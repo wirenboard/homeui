@@ -5,7 +5,7 @@
             "device": "Device",
             "control": "Control",
             "type": "Type",
-            "topic": "Topic",
+            "topic": "MQTT Topic",
             "value": "Value",
             "status": "Status"
         },

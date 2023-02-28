@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.55.4) stable; urgency=medium
+
+  * Merge Device and Control columns in MQTT channels table
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 27 Feb 2023 16:34:00 +0400
+
 wb-mqtt-homeui (2.55.3) stable; urgency=medium
 
   * Form identifiable client ID for MQTT connection
