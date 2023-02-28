@@ -153,11 +153,13 @@
 
 .network-connections-page .nav-stacked li {
     border-radius: 2px;
-    padding: 10px 9px 10px;
 }
 .network-connections-page .nav-stacked li.active {
     color: #fff;
     background-color: #3276b1;
+}
+.network-connections-page .nav-stacked li > *:first-child {
+    padding: 10px 9px 10px;
 }
 
 .network-connections-page .nav-pills {
