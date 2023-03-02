@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.56.2) stable; urgency=medium
+
+  * Config: "network/WiFi IP" -> "network/WiFi 1 IP"
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Fri, 03 Mar 2023 00:09:12 +0500
+
 wb-mqtt-homeui (2.56.1) stable; urgency=medium
 
   * Fix connection priorities config saving
@@ -42,7 +48,7 @@ wb-mqtt-homeui (2.55.1) stable; urgency=medium
 
 wb-mqtt-homeui (2.55.0) stable; urgency=medium
 
-  * Add "fullscreen" query parameter to hide page header, dashboard editing buttons and all menu items except "History" and dasboards list. 
+  * Add "fullscreen" query parameter to hide page header, dashboard editing buttons and all menu items except "History" and dasboards list.
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 20 Feb 2023 13:40:41 +0500
 
