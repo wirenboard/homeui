@@ -199,6 +199,7 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
     client.subscribe(globalPrefix + retainHackTopic);
     var msg = new Paho.MQTT.Message('1');
     msg.destinationName = globalPrefix + retainHackTopic;
+    msg.qos = 2;
     client.send(msg);
   };
 
