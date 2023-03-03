@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.56.2) stable; urgency=medium
+
+  * Fix page freezing on spinner during initial loading
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 02 Mar 2023 12:55:08 +0400
+
 wb-mqtt-homeui (2.56.1) stable; urgency=medium
 
   * Fix connection priorities config saving
