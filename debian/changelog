@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.56.3) stable; urgency=medium
+
+  * Update automatic network connection switcher options page
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 07 Mar 2023 18:47:00 +0600
+
 wb-mqtt-homeui (2.56.2) stable; urgency=medium
 
   * Fix page freezing on spinner during initial loading
@@ -48,7 +54,7 @@ wb-mqtt-homeui (2.55.1) stable; urgency=medium
 
 wb-mqtt-homeui (2.55.0) stable; urgency=medium
 
-  * Add "fullscreen" query parameter to hide page header, dashboard editing buttons and all menu items except "History" and dasboards list. 
+  * Add "fullscreen" query parameter to hide page header, dashboard editing buttons and all menu items except "History" and dasboards list.
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 20 Feb 2023 13:40:41 +0500
 
