@@ -44,7 +44,8 @@ module.exports = function makeWebpackConfig() {
             jQuery: 'jquery',
             $: 'jquery',
             'window.jQuery': 'jquery',
-            'window.CodeMirror': 'codemirror/lib/codemirror'
+            'window.CodeMirror': 'codemirror/lib/codemirror',
+            'window.DOMPurify': 'dompurify',
         }),
     ];
 
@@ -151,6 +152,7 @@ module.exports = function makeWebpackConfig() {
                     'angular-ui-scroll',
                     'angular-dynamic-locale',
                     'angularjs-dropdown-multiselect',
+                    'dompurify',
                     
                     // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
                     './scripts/i18n/angular-locale_en.js',

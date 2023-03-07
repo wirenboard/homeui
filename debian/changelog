@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.57.0) stable; urgency=medium
+
+  * Add support for HTML format in titles/headers and descriptions in config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 07 Mar 2023 11:54:02 +0500
+
 wb-mqtt-homeui (2.56.2) stable; urgency=medium
 
   * Fix page freezing on spinner during initial loading
