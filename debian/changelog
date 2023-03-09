@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.56.3) stable; urgency=medium
+wb-mqtt-homeui (2.57.1) stable; urgency=medium
 
   * Update automatic network connection switcher options page
 
- -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 07 Mar 2023 18:47:00 +0600
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 09 Mar 2023 13:07:00 +0600
+
+wb-mqtt-homeui (2.57.0) stable; urgency=medium
+
+  * Add support for HTML format in titles/headers and descriptions in config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 07 Mar 2023 11:54:02 +0500
 
 wb-mqtt-homeui (2.56.2) stable; urgency=medium
 

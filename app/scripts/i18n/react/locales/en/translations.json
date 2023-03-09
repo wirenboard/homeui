@@ -70,7 +70,7 @@
          "medium": "Medium priority",
          "low": "Low priority",
          "sticky-connection-period": "Deny SIM/Wi-Fi switching period in seconds",
-         "sticky-connection-period-desc": "The GSM modem can work with only one SIM card. To test connectivity, the current SIM card is disconnected and the tested one is connected. If a modem connection is successfully established with one of the SIM cards, do not switch the SIM card for testing for the specified period. This timeout also applies to Wi-Fi connections which also share a single physical wireless controller",
+         "sticky-connection-period-desc": "The GSM modem can work with only one SIM card. To test connectivity, the current SIM card is disconnected and the tested one is connected. If a modem connection is successfully established with one of the SIM cards, do not switch the SIM card for testing for the specified period. This timeout also applies to Wi-Fi connections which also share a single physical wireless device",
          "sticky-connection-period-placeholder": "900",
          "debug": "Enable debug logging",
          "connectivity-url": "Connectivity check URL",
