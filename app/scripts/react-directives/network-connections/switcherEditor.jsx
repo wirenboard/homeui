@@ -149,7 +149,7 @@ const SwitcherForm = observer(({ switcher, onSave }) => {
       <FormCheckbox store={switcher.debug} />
       <FormStringEdit store={switcher.connectivityUrl} />
       <FormStringEdit store={switcher.connectivityPayload} />
-      <FormStringEdit store={switcher.stickySimPeriod} />
+      <FormStringEdit store={switcher.stickyConnectionPeriod} />
       <PageButtons switcher={switcher} onSave={onSave} />
     </>
   );

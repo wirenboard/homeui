@@ -119,11 +119,11 @@ class ConnectionPrioritiesStore {
 
 class SwitcherStore {
   constructor(connectionsStore) {
-    this.stickySimPeriod = createViewModel(
+    this.stickyConnectionPeriod = createViewModel(
       new IntegerStore({
-        name: i18n.t('network-connections.labels.sticky-sim-period'),
-        description: i18n.t('network-connections.labels.sticky-sim-period-desc'),
-        placeholder: i18n.t('network-connections.labels.sticky-sim-period-placeholder'),
+        name: i18n.t('network-connections.labels.sticky-connection-period'),
+        description: i18n.t('network-connections.labels.sticky-connection-period-desc'),
+        placeholder: i18n.t('network-connections.labels.sticky-connection-period-placeholder'),
         min: 0,
       })
     );
@@ -173,8 +173,8 @@ class SwitcherStore {
 
 export function switcherStoreToJson(store, connectionsToStore) {
   let res = {};
-  if (store.stickySimPeriod.value !== '') {
-    res.sticky_sim_period_s = store.stickySimPeriod.value;
+  if (store.stickyConnectionPeriod.value !== '') {
+    res.sticky_connection_period_s = store.stickyConnectionPeriod.value;
   }
   if (store.connectivityUrl.value !== '') {
     res.connectivity_check_url = store.connectivityUrl.value;
@@ -195,8 +195,8 @@ export function switcherStoreToJson(store, connectionsToStore) {
 }
 
 export function switcherStoreFromJson(store, json, connectionsStore) {
-  store.stickySimPeriod.setValue(json.sticky_sim_period_s);
-  store.stickySimPeriod.submit();
+  store.stickyConnectionPeriod.setValue(json.sticky_connection_period_s);
+  store.stickyConnectionPeriod.submit();
   store.connectivityUrl.setValue(json.connectivity_check_url);
   store.connectivityUrl.submit();
   store.connectivityPayload.setValue(json.connectivity_check_payload);

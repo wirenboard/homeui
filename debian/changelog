@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.58.0) stable; urgency=medium
+
+  * Update automatic network connection switcher options page
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 09 Mar 2023 13:07:00 +0600
+
 wb-mqtt-homeui (2.57.0) stable; urgency=medium
 
   * Add support for HTML format in titles/headers and descriptions in config editor
@@ -54,7 +60,7 @@ wb-mqtt-homeui (2.55.1) stable; urgency=medium
 
 wb-mqtt-homeui (2.55.0) stable; urgency=medium
 
-  * Add "fullscreen" query parameter to hide page header, dashboard editing buttons and all menu items except "History" and dasboards list. 
+  * Add "fullscreen" query parameter to hide page header, dashboard editing buttons and all menu items except "History" and dasboards list.
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 20 Feb 2023 13:40:41 +0500
 
