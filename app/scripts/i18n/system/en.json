@@ -38,5 +38,9 @@
             "checking": "Check access to service...",
             "collecting": "Collecting data"
         }
+    },
+    "backup": {
+        "title": "Backup",
+        "download_rootfs_button": "Download rootfs archive"
     }
 }
