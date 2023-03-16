@@ -489,6 +489,7 @@ function deviceDataService(mqttClient) {
           this.setMax(m.min);
           this.setStep(m.precision);
           this.setUnits(m.units);
+          this.setOrder(m.order);
         } catch (e) {}
       } else {
         this._nameTranslations = {};
@@ -498,6 +499,7 @@ function deviceDataService(mqttClient) {
         this.setMax("");
         this.setStep("");
         this.setUnits("");
+        this.setOrder(0);
       }
     }
 
