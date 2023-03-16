@@ -7,7 +7,7 @@ class BackupCtrl {
     $scope.text = "Download rootfs archive";
 
     var downloadRootfs = function () {
-      window.location.href = 'wfupdate/download/rootfs';
+      window.location.href = 'fwupdate/download/rootfs';
     };
 
     $scope.btnMethod = downloadRootfs;
