@@ -29,6 +29,21 @@
     </div>
 </div>
 
+<div class="panel panel-default" ng-controller="BackupCtrl">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <i class="glyphicon glyphicon-download"></i> {{'backup.title' | translate}}
+        </h3>
+    </div>
+    <div class="panel-body">
+
+        <button type="button" class="btn btn-success btn-lg pull-left" ng-click="btnMethod()" ng-disabled="!btnEnabled"
+            ng-show="btnVisible" translate>
+            {{ text }}
+        </button>
+
+    </div>
+</div>
 
 <div class="panel panel-default" ng-controller="DiagnosticCtrl">
     <div class="panel-heading">
