@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.59.0) stable; urgency=medium
+
+  * Add option to hide system devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Mar 2023 18:27:51 +0500
+
 wb-mqtt-homeui (2.58.1) stable; urgency=medium
 
   * Respect order parameter from control's /meta topic
