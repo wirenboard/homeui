@@ -5,6 +5,7 @@ class Device {
     this.cellIds = [];
     this._nameTranslations = {};
     this.explicit = false;
+    this.isSystemDevice = false;
   }
 
   getName(lang) {
@@ -489,6 +490,7 @@ function deviceDataService(mqttClient) {
           this.setMax(m.min);
           this.setStep(m.precision);
           this.setUnits(m.units);
+          this.setOrder(m.order);
         } catch (e) {}
       } else {
         this._nameTranslations = {};
@@ -498,6 +500,7 @@ function deviceDataService(mqttClient) {
         this.setMax("");
         this.setStep("");
         this.setUnits("");
+        this.setOrder(0);
       }
     }
 
@@ -571,6 +574,7 @@ function deviceDataService(mqttClient) {
             var dev = ensureDevice(deviceId);
             dev.name = payload;
             dev.explicit = true;
+            dev.isSystemDevice = deviceId.startsWith("system__");
           }
         }
       },{
