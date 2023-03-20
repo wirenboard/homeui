@@ -5,6 +5,7 @@ class Device {
     this.cellIds = [];
     this._nameTranslations = {};
     this.explicit = false;
+    this.isSystemDevice = false;
   }
 
   getName(lang) {
@@ -573,6 +574,7 @@ function deviceDataService(mqttClient) {
             var dev = ensureDevice(deviceId);
             dev.name = payload;
             dev.explicit = true;
+            dev.isSystemDevice = deviceId.startsWith("system__");
           }
         }
       },{

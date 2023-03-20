@@ -7,7 +7,8 @@
             "value": "Value",
             "default": "Default Dashboard",
             "choose": "- Please Choose / None -",
-            "language": "UI locale"
+            "language": "UI locale",
+            "show-system-devices": "Show system devices on \"Devices\" page"
         }
     }
 }
