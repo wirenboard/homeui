@@ -13,7 +13,7 @@
         "field": {
             "id": "ID",
             "name": "Name",
-            "fullwidth": "Full width"
+            "fullwidth": "Stretch to full screen"
         },
         "error": {
             "id": {
