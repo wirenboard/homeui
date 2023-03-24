@@ -39,7 +39,7 @@
 
         <button type="button" class="btn btn-success btn-lg pull-left" ng-click="btnMethod()" ng-disabled="!btnEnabled"
             ng-show="btnVisible" translate>
-            {{'backup.download_rootfs_button' | translate}}
+            <i class="glyphicon glyphicon-save white"></i> {{'backup.download_rootfs_button' | translate}}
         </button>
 
     </div>
@@ -59,7 +59,7 @@
 
         <button type="button" class="btn btn-success btn-lg pull-left" ng-click="btnMethod()" ng-disabled="!btnEnabled"
             ng-show="btnVisible" translate>
-            <i class="glyphicon glyphicon-save white"></i> {{ text }}
+            {{ text }}
         </button>
         <div class="col-xs-1" ng-show="collecting">
             <span class="spinner-loader"></span>
