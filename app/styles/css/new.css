@@ -234,8 +234,8 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .device-panel__header-wrapper {
-  position: relative; 
-  background-color: #3276b1; 
+  position: relative;
+  background-color: #3276b1;
   color: white;
 }
 
@@ -306,16 +306,16 @@ div[uib-datepicker-popup-wrap] {
   .navbar-inverse > * {
     background-color: black;
   }
- 
+
   .navbar-collapse {
     min-height: 100vh;
     width: 250px;
     max-width: 250px;
     margin-left: -250px;
-    transition: margin 0.35s;    
+    transition: margin 0.35s;
     overflow-x: hidden;
   }
-  
+
   .navbar-collapse.in {
     margin-left: 0px;
   }
@@ -334,4 +334,8 @@ div[uib-datepicker-popup-wrap] {
   width: 100%;
   height: 100%;
   z-index: 10;
+}
+
+.notes {
+    margin-bottom: 2rem;
 }
