@@ -35,8 +35,6 @@ class SvgViewController {
     }
 
     parse() {
-        this.applyFullwidth();
-
         var regions = this.$element[0].querySelectorAll('*');
         angular.forEach(regions, (path, key) => {
             var element = angular.element(path);
@@ -121,26 +119,6 @@ class SvgViewController {
         element.attr('units', channelData + '.metaUnits');
         element.attr('error', channelData + '.metaError');
         element.attr('device', channel);
-    }
-
-    applyFullwidth() {
-        if (!this.dashboard.svgFullWidth) {
-            return;
-        }
-
-        var svgElem = angular.element(this.elementSvg);
-
-        var rW = this.$element.width();
-        var rH = this.$element.height();
-        var w = svgElem.width();
-        var h = svgElem.height();
-        var r = rW / w;
-
-        this.$element.attr('height', h * r);
-
-        svgElem.attr('width', w * r);
-        svgElem.attr('height', h * r);
-        svgElem.attr('style', '')
     }
 
     getSvgElement() {

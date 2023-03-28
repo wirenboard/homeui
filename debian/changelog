@@ -1,8 +1,15 @@
-wb-mqtt-homeui (2.60.0) stable; urgency=medium
+
+wb-mqtt-homeui (2.61.0) stable; urgency=medium
 
   * Add download rootfs button to system options page
 
- -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 15 Mar 2023 21:56:00 +0600
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 28 Mar 2023 12:25:00 +0600
+
+wb-mqtt-homeui (2.60.0) stable; urgency=medium
+
+  * Scale SVG dashboard to fill all available space instead of scaling by width
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Mar 2023 09:21:44 +0500
 
 wb-mqtt-homeui (2.59.0) stable; urgency=medium
 
