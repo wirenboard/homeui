@@ -20,6 +20,9 @@ export class SingleConnection {
   isDirty = false;
   editedConnectionId = '';
   connectivity = false;
+  operator = '';
+  signalQuality = 0;
+  accessTechnologies = '';
   hasValidationErrors = false;
 
   constructor(schema, data, state) {
@@ -57,6 +60,9 @@ export class SingleConnection {
       editedData: observable,
       editedConnectionId: observable,
       connectivity: observable,
+      operator: observable,
+      signalQuality: observable,
+      accessTechnologies: observable,
       hasValidationErrors: observable,
       description: computed,
       isNew: computed,
@@ -126,6 +132,18 @@ export class SingleConnection {
 
   setConnectivity(connectivity) {
     this.connectivity = connectivity;
+  }
+
+  setOperator(operator) {
+    this.operator = operator;
+  }
+
+  setSignalQuality(signalQuality) {
+    this.signalQuality = signalQuality;
+  }
+
+  setAccessTechnologies(accessTechnologies) {
+    this.accessTechnologies = accessTechnologies;
   }
 
   setEditedData(data, errors) {

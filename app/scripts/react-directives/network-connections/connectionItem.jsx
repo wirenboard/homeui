@@ -15,6 +15,12 @@ const ConnectionItem = observer(({ connection }) => {
             {t(connection.description)}
           </span>
         )}
+        {(connection.operator || connection.signalQuality || connection.accessTechnologies) && (
+          <span>
+            <br />
+            {connection.operator} - {connection.signalQuality}% ({connection.accessTechnologies})
+          </span>
+        )}
         {!connection.withAutoconnect && (
           <span>
             <br />
