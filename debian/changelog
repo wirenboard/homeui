@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.62.0) stable; urgency=medium
+
+  * Sort configs alphabetically
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Apr 2023 11:28:34 +0500
+
 wb-mqtt-homeui (2.61.0) stable; urgency=medium
 
   * Add download rootfs button to system options page
