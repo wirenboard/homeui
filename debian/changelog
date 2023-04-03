@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.44.4-wb100-upgrade2) stable; urgency=medium
+
+  * Fix MAI6 config editing
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 11 Nov 2022 11:08:49 +0500
+
 wb-mqtt-homeui (2.44.4-upgrade2) stable; urgency=medium
 
   * Add advert for upgrade via FIT

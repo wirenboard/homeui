@@ -5,16 +5,18 @@ PATH := /usr/local/bin:$(PATH)
 all: build
 
 clean:
-	npm run clean
+	npm run clean || true
 
 build:
 	# FIXME: this replaces git:// with https:// somewhere in node modules
 	# which fixes build after Github banned unauthenticated access
 	# (https://github.blog/2021-09-01-improving-git-protocol-security-github/)
+	[ -n "$$SCHROOT_SESSION_ID" ] && git config --global url."https://".insteadOf git://
 	git config url."https://".insteadOf git://
 	git submodule foreach --recursive git config url."https://".insteadOf git://
 
 	npm install
+	npm run clean  # clean target may fail in sbuild because required node version is not installed yet
 	git submodule init
 	git submodule update
 	npm run build
