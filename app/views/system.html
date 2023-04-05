@@ -29,6 +29,25 @@
     </div>
 </div>
 
+<div class="panel panel-default" ng-controller="BackupCtrl">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <i class="glyphicon glyphicon-download"></i> {{'backup.title' | translate}}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <ul class="notes">
+            <li>{{'backup.rootfs_warning1' | translate}}</li>
+            <li>{{'backup.rootfs_warning2' | translate}}</li>
+            <li>{{'backup.rootfs_warning3' | translate}}</li>
+        </ul>
+        <a type="button" class="btn btn-success btn-lg pull-left" ng-click="btnMethod()" ng-disabled="!btnEnabled"
+            ng-show="btnVisible">
+            <i class="glyphicon glyphicon-save"></i> <span>{{'backup.download_rootfs_button' | translate}}</span>
+        </a>
+
+    </div>
+</div>
 
 <div class="panel panel-default" ng-controller="DiagnosticCtrl">
     <div class="panel-heading">
