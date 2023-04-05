@@ -8,7 +8,7 @@ const ConnectionItem = observer(({ connection }) => {
     <div className={'connection-item ' + connection.state}>
       <i className={connection.icon}></i>
       <div>
-        <b>{connection.name}</b> ({connection.operator} - {connection.signalQuality}% ({connection.accessTechnologies})
+        <b>{connection.name}</b>
         {connection.description && (
           <span>
             <br />
