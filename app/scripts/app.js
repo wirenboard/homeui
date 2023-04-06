@@ -66,7 +66,6 @@ import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
-import FirmwareCtrl from './controllers/firmwareController';
 import WebUICtrl from './controllers/webUiController';
 import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
@@ -100,6 +99,7 @@ import confirmDirective from "./directives/confirm";
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import scanDirective from './react-directives/scan/scan';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
+import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -123,7 +123,6 @@ const module = angular
         'ngSanitize',
         'ngTouch',
         'angularSpectrumColorpicker',
-        'ngFileUpload',
         'ui.bootstrap',
         'xeditable',
         'ui.select',
@@ -185,7 +184,6 @@ module
     .value('AlertDelayMs', 5000)
     .controller('AlertCtrl', AlertCtrl)
     .controller('HomeCtrl', HomeCtrl)
-    .controller('FirmwareCtrl', FirmwareCtrl)
     .controller('LoginCtrl', LoginCtrl)
     .controller('WebUICtrl', WebUICtrl)
     .controller('SystemCtrl', SystemCtrl)
@@ -260,7 +258,8 @@ module
     .directive('ngConfirm', confirmDirective)
     .directive("fullscreenToggle", fullscreenToggleDirective)
     .directive("deviceManagerPage", scanDirective)
-    .directive("networkConnectionsPage", networkConnectionsDirective);
+    .directive("networkConnectionsPage", networkConnectionsDirective)
+    .directive("firmwareUpdateWidget", firmwareUpdateDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {

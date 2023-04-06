@@ -1,27 +1,6 @@
 {
     "system": {
-        "title": "System",
-        "update": {
-            "title": "Firmware update",
-            "help": "Download firmware",
-            "warning": "The upgrade process preserves user files and settings from /mnt/data only, any third-party software will be removed. We recommend to make a backup!"
-        },
-        "errors": {
-            "unavailable": "Firmware update service is not available",
-            "stalled": "Firmware update stalled, something gone wrong",
-            "reboot": "It tooks too long to reboot"
-        },
-        "buttons": {
-            "select": "Select file",
-            "dismiss": "Dismiss",
-            "hide": "Hide"
-        },
-        "states": {
-            "complete": "Firmware update complete",
-            "reboot": "Rebooting, please wait",
-            "uploading": "Uploading firmware file",
-            "uploaded": "Upload complete"
-        }
+        "title": "System"
     },
     "collector": {
         "title" : "Diagnostic collector",
