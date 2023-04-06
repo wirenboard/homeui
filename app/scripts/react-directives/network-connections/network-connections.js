@@ -48,6 +48,15 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
                 msg.payload !== '0'
               );
             });
+            mqttClient.addStickySubscription('/devices/+/controls/Operator', msg => {
+              scope.store.setConnectionOperator(getUuidFromTopic(msg.topic), msg.payload);
+            });
+            mqttClient.addStickySubscription('/devices/+/controls/SignalQuality', msg => {
+              scope.store.setConnectionSignalQuality(getUuidFromTopic(msg.topic), msg.payload);
+            });
+            mqttClient.addStickySubscription('/devices/+/controls/AccessTechnologies', msg => {
+              scope.store.setConnectionAccessTechnologies(getUuidFromTopic(msg.topic), msg.payload);
+            });
           })
           .catch(err => {
             scope.store.setError(err.mesage);

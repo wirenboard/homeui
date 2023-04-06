@@ -185,6 +185,18 @@ class NetworkConnectionsPageStore {
     this.connections.findConnection(connectionUuid)?.setConnectivity(state);
   }
 
+  setConnectionOperator(connectionUuid, state) {
+    this.connections.findConnection(connectionUuid)?.setOperator(state);
+  }
+
+  setConnectionSignalQuality(connectionUuid, state) {
+    this.connections.findConnection(connectionUuid)?.setSignalQuality(state);
+  }
+
+  setConnectionAccessTechnologies(connectionUuid, state) {
+    this.connections.findConnection(connectionUuid)?.setAccessTechnologies(state);
+  }
+
   setError(msg) {
     this.error = msg;
   }
@@ -192,6 +204,7 @@ class NetworkConnectionsPageStore {
   setLoading(isLoading) {
     this.loading = isLoading;
   }
+
 }
 
 export default NetworkConnectionsPageStore;

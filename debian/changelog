@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.62.0) stable; urgency=medium
+
+  * Add modem status details to connection list
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 6 Apr 2023 11:02:44 +0600
+
 wb-mqtt-homeui (2.61.0) stable; urgency=medium
 
   * Add download rootfs button to system options page
