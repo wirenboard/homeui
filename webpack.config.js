@@ -141,7 +141,6 @@ module.exports = function makeWebpackConfig() {
                     'ui-select',
                     'angular-elastic/elastic',
                     'angular-xeditable',
-                    'ng-file-upload',
                     'angular-sortable-view/src/angular-sortable-view',
                     'angular-rangeslider',
                     'ng-toast',

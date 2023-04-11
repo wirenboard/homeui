@@ -99,5 +99,34 @@
          "integer_max": "Value must be an integer equal or less than {{max}}",
          "integer_minmax": "Value must be an integer in the range from {{min}} to {{max}}"
       }
-   }
+   },
+   "system": {
+        "update": {
+            "title": "Firmware update",
+            "help": "Download firmware",
+            "backup_modal_title": "rootfs backup archive",
+            "backup_first_page": "<0>During update only files stored in /mnt/data are saved. <0>Third-party software like nodered or SH will be removed!</0></0><1>Press <0>Download backup</0> to download a rootfs backup archive, where some useful files like third-party service configs may be stored.</1><2>This backup archive currently can't be used to restore Wiren Board state.</2>",
+            "backup_second_page": "<0>Great! Now <0>wait until file is downloaded</0> and press <1>Select firmware file</1> button to begin update process.</0>"
+        },
+        "errors": {
+            "unavailable": "Firmware update service is not available",
+            "stalled": "Firmware update stalled, something gone wrong",
+            "reboot": "It tooks too long to reboot",
+            "unknown": "Firmware update error"
+        },
+        "buttons": {
+            "select": "Select firmware file",
+            "dismiss": "Dismiss",
+            "hide": "Hide",
+            "download_backup": "Download backup",
+            "select_anyway": "I don't need a backup"
+        },
+        "states": {
+            "complete": "Firmware update complete",
+            "reboot": "Rebooting, please wait",
+            "uploading": "Uploading firmware file",
+            "uploaded": "Upload complete",
+            "upload_error": "Upload error"
+        }
+    }
 }
