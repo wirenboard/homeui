@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 export const WarningTag = ({ text }) => {
   return <span className="tag bg-warning text-nowrap">{text}</span>;

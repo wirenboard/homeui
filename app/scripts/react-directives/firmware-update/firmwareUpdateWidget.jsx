@@ -52,47 +52,62 @@ const UploadButton = ({label, style, onClick}) => {
   </button>
 };
 
-const UploadEntrypoint  = observer(({store}) => {
-  const { t } = useTranslation();
-
-  const closeModal = () => {
-    store.modalState.hide();
-  }
-
-  const buttonsFinal = <>
-    <UploadButton label="system.buttons.select" style="success" onClick={closeModal} />
-  </>;
-
+const BackupDownloadModalPage = () => {
   // Trans formatting technique is taken from here:
   // https://github.com/i18next/react-i18next/issues/928#issuecomment-896653165
-  const secondPageText = (
-    <Trans i18nKey="system.update.backup_second_page">
-      <p><b /><b /></p>
-    </Trans>
-  )
-
-  const onDownloadBackupClick = () => {
-    store.downloadRootfs();
-    store.modalState.show({buttons: buttonsFinal, title: t("system.update.backup_modal_title"), text: secondPageText});
-  };
-
-  const buttonsInitial = <>
-    <button type="button" className="btn btn-success" onClick={onDownloadBackupClick}>
-      {t("system.buttons.download_backup")}
-    </button>
-    <UploadButton label="system.buttons.select_anyway" style="default" onClick={closeModal}/>
-  </>;
-
-  const firstPageText = (
+  return (
     <Trans i18nKey="system.update.backup_first_page">
       <p><b /></p>
       <p><b /></p>
       <p></p>
     </Trans>
   )
+};
+
+const BackupDownloadButtons = ({onDownloadClick, hide}) => {
+  const { t } = useTranslation();
+
+  return <>
+    <button type="button" className="btn btn-success" onClick={onDownloadClick}>
+      {t("system.buttons.download_backup")}
+    </button>
+    <UploadButton label="system.buttons.select_anyway" style="default" onClick={hide}/>
+  </>;
+}
+
+const AfterDownloadModalPage = () => (
+  <Trans i18nKey="system.update.backup_second_page">
+    <p><b /><b /></p>
+  </Trans>
+)
+
+const AfterDownloadModalButtons = ({hide}) => (
+  <UploadButton label="system.buttons.select" style="success" onClick={hide} />
+);
+
+const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Modal id={id} active={active} onCancel={onCancel}>
+      <ModalHeader>
+        <ModalTitle id={id} text={ t('system.update.backup_modal_title') }></ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        { isFirstPage ? <BackupDownloadModalPage /> : <AfterDownloadModalPage /> }
+      </ModalBody>
+      <ModalFooter>
+        { isFirstPage ? <BackupDownloadButtons onDownloadClick={onDownloadClick} hide={onCancel} /> : <AfterDownloadModalButtons hide={onCancel} /> }
+      </ModalFooter>
+    </Modal>
+  );
+};
+
+const UploadEntrypoint  = observer(({store}) => {
+  const { t } = useTranslation();
 
   const onPageButtonClick = () => {
-    store.modalState.show({buttons: buttonsInitial, title: t("system.update.backup_modal_title"), text: firstPageText});
+    store.modalState.show();
   };
 
   return <div>
@@ -106,22 +121,6 @@ const UploadEntrypoint  = observer(({store}) => {
     </span>
   </div>
 });
-
-const DownloadBackupModal = ({ id, active, text, title, buttons, onCancel }) => {
-  return (
-    <Modal id={id} active={active} onCancel={onCancel}>
-      <ModalHeader>
-        <ModalTitle id={id} text={title}></ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        {text}
-      </ModalBody>
-      <ModalFooter>
-        {buttons}
-      </ModalFooter>
-    </Modal>
-  );
-};
 
 const ServiceUnavailable = () => {
   const { t } = useTranslation();
