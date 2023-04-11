@@ -1,8 +1,25 @@
 import { makeAutoObservable } from 'mobx';
 import DownloadBackupModalState from './modal';
 
+const download = async (url) => {
+    const link = document.createElement('a')
+
+    link.setAttribute('href', url)
+    link.setAttribute('download', true)
+    link.style.display = 'none'
+
+    document.body.appendChild(link)
+
+    link.click()
+
+    document.body.removeChild(link)
+}
+
 class FirmwareUpdateStore {
   constructor() {
+    this.destination = "/fwupdate/upload";
+    this.accept = ".fit";
+
     this.receivedFirstStatus = false;
     this.uploading = false;
     this.running = false;
@@ -45,6 +62,10 @@ class FirmwareUpdateStore {
     this.isDone = true;
     this.doneLabel = msg;
     this._mqttStatusIsSet = false;
+  }
+
+  downloadRootfs() {
+    download("/fwupdate/download/rootfs");
   }
 
   onDoneClick() {

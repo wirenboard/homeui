@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../common';
+import { Button } from '../common';
+import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../modals';
 
 export const ModalCancelButton = ({ onClick }) => {
   const { t } = useTranslation();

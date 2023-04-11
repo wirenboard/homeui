@@ -9,9 +9,6 @@ function firmwareUpdateDirective(mqttClient, whenMqttReady) {
 
   return {
     restrict: 'E',
-    scope: {
-      path: '=',
-    },
     link: function (scope, element) {
       if (scope.root) {
         scope.root.unmount();

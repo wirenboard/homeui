@@ -1,22 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import Uploady, { useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
-import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../common';
+import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../modals';
 
-const download = async (url) => {
-    const link = document.createElement('a')
-
-    link.setAttribute('href', url)
-    link.setAttribute('download', true)
-    link.style.display = 'none'
-
-    document.body.appendChild(link)
-
-    link.click()
-
-    document.body.removeChild(link)
-}
 
 const DoneButton = ({store}) => {
   const { t } = useTranslation();
@@ -76,9 +63,17 @@ const UploadEntrypoint  = observer(({store}) => {
     <UploadButton label="system.buttons.select" style="success" onClick={closeModal} />
   </>;
 
+  // Trans formatting technique is taken from here:
+  // https://github.com/i18next/react-i18next/issues/928#issuecomment-896653165
+  const secondPageText = (
+    <Trans i18nKey="system.update.backup_second_page">
+      <p><b /><b /></p>
+    </Trans>
+  )
+
   const onDownloadBackupClick = () => {
-    download("/fwupdate/download/rootfs");
-    store.modalState.show({buttons: buttonsFinal, title: t("system.update.backup_modal_title"), text: t("system.update.backup_second_page")});
+    store.downloadRootfs();
+    store.modalState.show({buttons: buttonsFinal, title: t("system.update.backup_modal_title"), text: secondPageText});
   };
 
   const buttonsInitial = <>
@@ -88,9 +83,16 @@ const UploadEntrypoint  = observer(({store}) => {
     <UploadButton label="system.buttons.select_anyway" style="default" onClick={closeModal}/>
   </>;
 
+  const firstPageText = (
+    <Trans i18nKey="system.update.backup_first_page">
+      <p><b /></p>
+      <p><b /></p>
+      <p></p>
+    </Trans>
+  )
 
   const onPageButtonClick = () => {
-    store.modalState.show({buttons: buttonsInitial, title: t("system.update.backup_modal_title"), text: t("system.update.backup_first_page")});
+    store.modalState.show({buttons: buttonsInitial, title: t("system.update.backup_modal_title"), text: firstPageText});
   };
 
   return <div>
@@ -182,10 +184,10 @@ const FirmwareUpdateWidget = observer(({store}) => {
 const CreateFirmwareUpdateWidget = ({store}) => (
   <Uploady
     autoUpload
-    accept=".fit"
+    accept={store.accept}
     multiple={false}
     method="POST"
-    destination={{url: "/fwupdate/upload"}}>
+    destination={{url: store.destination}}>
     <FirmwareUpdateWidget store={store} />
   </Uploady>
 )

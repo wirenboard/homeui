@@ -1,5 +1,4 @@
 import { makeAutoObservable } from 'mobx';
-import React from 'react';
 
 class DownloadBackupModalState {
   id = 'downloadBackupModal';
@@ -17,7 +16,7 @@ class DownloadBackupModalState {
   show({title, text, buttons}) {
     return new Promise((resolve, reject) => {
       this.title = title;
-      this.text = <div dangerouslySetInnerHTML={{ __html: text }} />;
+      this.text = text;
       this.buttons = buttons;
       this.onCancel = () => {
         this.active = false;
