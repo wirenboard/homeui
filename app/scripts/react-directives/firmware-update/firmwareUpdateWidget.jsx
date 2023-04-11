@@ -5,18 +5,18 @@ import Uploady, { useUploady, useItemStartListener, useItemFinishListener, useIt
 import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../modals';
 
 
-const DoneButton = ({store}) => {
+const DoneButton = ({onDoneClick, doneLabel}) => {
   const { t } = useTranslation();
 
   return <button
         className="btn btn-lg btn-default"
-        onClick={store.onDoneClick}
+        onClick={onDoneClick}
     >
-      {t(store.doneLabel)}
+      {t(doneLabel)}
     </button>
 };
 
-const FirmwareUpdateLog = ({store}) => {
+const FirmwareUpdateLog = ({logRows}) => {
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const FirmwareUpdateLog = ({store}) => {
         id="firmwareLog"
         className="well well-sm pre-scrollable"
     >
-      {store.logRows.join("\n")}
+      {logRows.join("\n")}
 
       <div ref={bottomRef} />
     </pre>
@@ -103,15 +103,11 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint  = observer(({store}) => {
+const UploadEntrypoint  = observer(({showModal}) => {
   const { t } = useTranslation();
 
-  const onPageButtonClick = () => {
-    store.modalState.show();
-  };
-
   return <div>
-    <button type="button" className="btn btn-lg btn-success" onClick={onPageButtonClick}>
+    <button type="button" className="btn btn-lg btn-success" onClick={showModal}>
       {t('system.buttons.select')}
     </button>
     <span style={{margin: "auto 10px"}}>
@@ -141,14 +137,14 @@ const UploadProgress = observer(({store}) => {
             <span>{t(store.stateMsg)}</span>
         </div>
     </div>
-    { store.logRows.length > 0 ? <FirmwareUpdateLog store={store} /> : null }
-    { store.isDone ? <DoneButton store={store} /> : null }
+    { store.logRows.length > 0 ? <FirmwareUpdateLog logRows={store.logRows} /> : null }
+    { store.isDone ? <DoneButton onDoneClick={store.onDoneClick} doneLabel={store.doneLabel} /> : null }
   </>
 });
 
 const UploadWidget = observer(({store}) => {
   return <>
-    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint store={store} />}
+    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint showModal={() => { store.modalState.show() }} />}
   </>;
 });
 
