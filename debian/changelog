@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.63.0) stable; urgency=medium
+
+  * Add rootfs backup download wizard before firmare update
+  * Add single-rootfs update mode support
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 11 Apr 2023 17:54:26 +0600
+
 wb-mqtt-homeui (2.62.0) stable; urgency=medium
 
   * Add modem status details to connection list
