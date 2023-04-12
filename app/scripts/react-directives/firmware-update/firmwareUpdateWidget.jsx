@@ -53,14 +53,8 @@ const UploadButton = ({label, style, onClick}) => {
 };
 
 const BackupDownloadModalPage = () => {
-  // Trans formatting technique is taken from here:
-  // https://github.com/i18next/react-i18next/issues/928#issuecomment-896653165
   return (
-    <Trans i18nKey="system.update.backup_first_page">
-      <p><b /></p>
-      <p><b /></p>
-      <p></p>
-    </Trans>
+    <Trans i18nKey="system.update.backup_first_page" />
   )
 };
 
@@ -76,9 +70,7 @@ const BackupDownloadButtons = ({onDownloadClick, hide}) => {
 }
 
 const AfterDownloadModalPage = () => (
-  <Trans i18nKey="system.update.backup_second_page">
-    <p><b /><b /></p>
-  </Trans>
+  <Trans i18nKey="system.update.backup_second_page" />
 )
 
 const AfterDownloadModalButtons = ({hide}) => (

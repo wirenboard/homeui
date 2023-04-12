@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.63.1) stable; urgency=medium
+
+  * No functional changes
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 12 Apr 2023 12:07:17 +0600
+
 wb-mqtt-homeui (2.63.0) stable; urgency=medium
 
   * Add rootfs backup download wizard before firmare update
