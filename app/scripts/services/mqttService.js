@@ -1,5 +1,5 @@
-// Mosquitto broker setting: 
-// The maximum number of QoS 1 or 2 messages to hold in the queue (per client) 
+// Mosquitto broker setting:
+// The maximum number of QoS 1 or 2 messages to hold in the queue (per client)
 // above those messages that are currently in flight. Defaults to 100.
 const MAX_QUEUED_MESSAGES = 100;
 
@@ -160,7 +160,7 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
     // in-flight messages - messages with QoS 1 or 2,
     // for which no confirmation message was received from the broker
     client.inFlightMessages = [];
-    // list of service.send function calls which will be called 
+    // list of service.send function calls which will be called
     // when the number of inFlightMessages decreases
     client.unsentMessagesQueue = [];
     // availableSessionCapacity: the number of messages with QoS 1 or 2
@@ -275,7 +275,7 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
       if (messageIndex > -1) {
         client.inFlightMessages.splice(messageIndex, 1);
       }
-      // if there are messages waiting to be sent and the capacity 
+      // if there are messages waiting to be sent and the capacity
       // of the session available for sending, send as many messages as we can
       if (
         client.unsentMessagesQueue.length &&
@@ -380,4 +380,3 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
 
 //-----------------------------------------------------------------------------
 export default mqttServiceModule;
-
