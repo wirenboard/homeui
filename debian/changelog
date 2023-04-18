@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.59.0-wb100) stable; urgency=medium
+
+  * Fix typos
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.ru>  Fri, 14 Apr 2023 19:15:41 +0300
+
 wb-mqtt-homeui (2.59.0) stable; urgency=medium
 
   * Add option to hide system devices
