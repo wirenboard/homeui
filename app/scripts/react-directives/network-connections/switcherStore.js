@@ -133,6 +133,7 @@ class SwitcherStore {
         name: i18n.t('network-connections.labels.connectivity-url'),
         description: i18n.t('network-connections.labels.connectivity-url-desc'),
         placeholder: i18n.t('network-connections.labels.connectivity-url-placeholder'),
+        validator: this.connectivityUrlValidator,
       })
     );
 
@@ -152,6 +153,10 @@ class SwitcherStore {
     );
 
     this.connectionPriorities = new ConnectionPrioritiesStore(connectionsStore);
+  }
+
+  connectivityUrlValidator = function (value) {
+    return !((value.startsWith("http://") || value.startsWith("https://")) && (value.length>=8) || value == '')
   }
 
   submit() {
@@ -176,8 +181,12 @@ export function switcherStoreToJson(store, connectionsToStore) {
   if (store.stickyConnectionPeriod.value !== '') {
     res.sticky_connection_period_s = store.stickyConnectionPeriod.value;
   }
-  if (store.connectivityUrl.value !== '') {
-    res.connectivity_check_url = store.connectivityUrl.value;
+  if (!store.connectivityUrl.hasErrors) {
+    let value = store.connectivityUrl.value;
+    if (store.connectivityUrl.value == ''){
+      value = store.connectivityUrl.placeholder 
+    }
+    res.connectivity_check_url = value;
   }
   if (store.connectivityPayload.value !== '') {
     res.connectivity_check_payload = store.connectivityPayload.value;
@@ -197,8 +206,14 @@ export function switcherStoreToJson(store, connectionsToStore) {
 export function switcherStoreFromJson(store, json, connectionsStore) {
   store.stickyConnectionPeriod.setValue(json.sticky_connection_period_s);
   store.stickyConnectionPeriod.submit();
-  store.connectivityUrl.setValue(json.connectivity_check_url);
+
+  let value = json.connectivity_check_url;
+  if (json.connectivity_check_url == store.connectivityUrl.placeholder){
+    value = ''
+  }
+  store.connectivityUrl.setValue(value);
   store.connectivityUrl.submit();
+
   store.connectivityPayload.setValue(json.connectivity_check_payload);
   store.connectivityPayload.submit();
   store.debug.setValue(json.debug);

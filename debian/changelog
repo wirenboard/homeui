@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.63.3) stable; urgency=medium
+
+  * Validte check connectivity url
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.ru>  Wed, 19 Apr 2023 15:04:58 +0300
+
 wb-mqtt-homeui (2.63.2) stable; urgency=medium
 
   * Fix typos
