@@ -33,7 +33,6 @@ function rangeCellDirective() {
         });
       }*/
 
-
       /*relayAttr("min", DEFAULT_MIN);
       relayAttr("max", DEFAULT_MAX);
       relayAttr("step", DEFAULT_STEP);*/
@@ -50,9 +49,15 @@ function rangeCellDirective() {
         }
       };*/
 
-      $scope["min"] = !cellCtrl.cell["min"]? DEFAULT_MIN : +cellCtrl.cell["min"];
-      $scope["max"] = !cellCtrl.cell["max"]? DEFAULT_MAX : +cellCtrl.cell["max"];
-      $scope["step"] = !cellCtrl.cell["step"]? DEFAULT_STEP : +cellCtrl.cell["step"];
+      function watchAttr (name, defaultValue) {
+        $scope.$watch(() => cellCtrl.cell[name], newValue => {
+          $scope[name] = !newValue? defaultValue : +newValue;
+        });
+      }
+
+      watchAttr("max", DEFAULT_MAX);
+      watchAttr("min", DEFAULT_MIN);
+      watchAttr("step", DEFAULT_STEP);
 
       $scope.$watch(() => $scope.cell.value, value => {
         $scope._value = isNaN(value)? 0 : value;
