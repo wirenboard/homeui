@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.59.0-wb103) stable; urgency=medium
+
+  * Fix huge value of "range" controls after clearing device's meta topics
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Mon, 12 Jun 2023 22:35:12 +0500
+
 wb-mqtt-homeui (2.59.0-wb102) stable; urgency=medium
 
   * Add connectivity checking URL validation
