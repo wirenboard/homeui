@@ -276,8 +276,6 @@ wb-mqtt-homeui (2.45.0) stable; urgency=medium
 
  -- Evgeny Boger <boger@wirenboard.com>  Sat, 04 Jun 2022 03:17:02 +0300
 
-=======
->>>>>>> 051c9d7 (change 18883 port to 80)
 wb-mqtt-homeui (2.44.4) stable; urgency=medium
 
   * Fix BAC-6000 error messages display
