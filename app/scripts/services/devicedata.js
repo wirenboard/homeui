@@ -382,7 +382,7 @@ function deviceDataService(mqttClient) {
     setType (type) {
       if(type) {
         const isUnknownType = !cellTypeMap.hasOwnProperty(type)
-        
+
         if(isUnknownType) {
           const cellValue = String(this.value).trim().replace(',', '.');
           const parsedValue = parseFloat(cellValue) || parseInt(cellValue);
@@ -487,7 +487,7 @@ function deviceDataService(mqttClient) {
           this.setExplicitReadOnly(m.readonly);
           this.setType(m.type);
           this.setMin(m.min);
-          this.setMax(m.min);
+          this.setMax(m.max);
           this.setStep(m.precision);
           this.setUnits(m.units);
           this.setOrder(m.order);
@@ -594,7 +594,7 @@ function deviceDataService(mqttClient) {
         handler(payload) { cellFromTopic(topic).setUnits(payload) }
       },{
         handledTopic: cellTopicBase + '/meta/readonly',
-        handler(payload) { 
+        handler(payload) {
           if (payload === '') {
             cellFromTopic(topic).setExplicitReadOnly(null);
           } else if (payload == '1') {
@@ -630,7 +630,7 @@ function deviceDataService(mqttClient) {
 
     subscriptionHandlers.forEach(subscriptionHandler => {
       const { handledTopic, handler } = subscriptionHandler;
-        
+
       if(isTopicsAreEqual(topic, handledTopic)) {
         handler(payload);
       }
@@ -705,15 +705,15 @@ function deviceDataService(mqttClient) {
       const allDeviceTopicBases = allDevicesTopics[deviceId];
 
       // select topics that relate directly to the device sorted by length.
-      // So, first, long device topics (meta) will be deleted, 
+      // So, first, long device topics (meta) will be deleted,
       // and last - the topic of the device itself
       const deviceTopics = allDeviceTopicBases
         .filter(topic => !topic.includes('controls'))
         .sort((a, b) => b.length - a.length)
       const cellsTopics = allDeviceTopicBases
         .filter(topic => !deviceTopics.includes(topic))
-      // move the topics of the device to the end, so that the topics 
-      // of the cells are removed first, and then the device itself  
+      // move the topics of the device to the end, so that the topics
+      // of the cells are removed first, and then the device itself
       const allTopics = cellsTopics.concat(deviceTopics)
 
       allTopics.forEach(topic => {
