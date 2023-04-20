@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.59.0-70549e24-001) stable; urgency=medium
+
+  * Updated config files
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 29 Mar 2023 14:47:45 +0600
+
 wb-mqtt-homeui (2.59.0) stable; urgency=medium
 
   * Add option to hide system devices

@@ -370,7 +370,7 @@ const realApp = angular.module('realHomeuiApp', [module.name, mqttServiceModule,
         //.........................................................................
         const demoLoginData = {
             host: $window.location.hostname,
-            port: 18883
+            port: 80
         };
 
         if(!$window.localStorage.host || !$window.localStorage.port) {

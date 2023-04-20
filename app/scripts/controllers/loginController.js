@@ -7,7 +7,7 @@ class LoginCtrl {
         $location.path('/');
       } else {
         $window.localStorage.setItem('host', 'mqtt.carbonfay.ru');
-        $window.localStorage.setItem('port', '18883');
+        $window.localStorage.setItem('port', '80');
         $window.localStorage.setItem('user', 'wb_008641ccdc3d');
         $window.localStorage.setItem('password', '111111111');
         $window.localStorage.setItem('prefix', 'true');
