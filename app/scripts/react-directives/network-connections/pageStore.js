@@ -156,6 +156,7 @@ class NetworkConnectionsPageStore {
 
   setSchemaAndData(schema, data) {
     this.connections.setSchemaAndData(schema, data.data);
+    this.switcher.setSchema(schema)
     connectionsStoreFromJson(this.connections, data);
     switcherStoreFromJson(this.switcher, data.ui.con_switch, this.connections);
     this.setError('');
