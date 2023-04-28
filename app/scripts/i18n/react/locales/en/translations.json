@@ -76,6 +76,8 @@
          "connectivity-url": "Connectivity check URL",
          "connectivity-url-desc": "To test connectivity, the service sends an HTTP GET request to specified URL",
          "connectivity-url-placeholder": "http://network-test.debian.org/nm",
+         "connectivity-url-error-length": "The minimum number of characters in the URL is ",
+         "connectivity-url-error-format": "The URL must start with 'http://' or 'https://'",
          "connectivity-payload": "Connectivity check payload",
          "connectivity-payload-desc": "Connectivity check response content must contain specified string",
          "connectivity-payload-placeholder": "NetworkManager is online",

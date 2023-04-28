@@ -133,8 +133,17 @@ class SwitcherStore {
         name: i18n.t('network-connections.labels.connectivity-url'),
         description: i18n.t('network-connections.labels.connectivity-url-desc'),
         placeholder: i18n.t('network-connections.labels.connectivity-url-placeholder'),
-        validator: (value) => !((value.startsWith("http://") || value.startsWith("https://")) && 
-        (value.length >= this.urlProperties.minLength) || value == ''),
+        validator: (value) => {
+          if (value == ""){
+            return false
+          }
+          if (value.length < this.urlProperties.minLength) {
+            return i18n.t('network-connections.labels.connectivity-url-error-length') + this.urlProperties.minLength
+          }
+          if (!(value.startsWith("http://") || value.startsWith("https://"))) {
+            return i18n.t('network-connections.labels.connectivity-url-error-format') 
+          }
+        }
       })
     );
 
