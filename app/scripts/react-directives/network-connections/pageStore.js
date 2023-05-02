@@ -156,7 +156,9 @@ class NetworkConnectionsPageStore {
 
   setSchemaAndData(schema, data) {
     this.connections.setSchemaAndData(schema, data.data);
-    this.switcher.setUrlProperties(schema.properties.ui.properties.con_switch.properties.connectivity_check_url)
+    this.switcher.setUrlProperties(
+      schema.properties.ui.properties.con_switch.properties.connectivity_check_url
+    );
     connectionsStoreFromJson(this.connections, data);
     switcherStoreFromJson(this.switcher, data.ui.con_switch, this.connections);
     this.setError('');
@@ -205,7 +207,6 @@ class NetworkConnectionsPageStore {
   setLoading(isLoading) {
     this.loading = isLoading;
   }
-
 }
 
 export default NetworkConnectionsPageStore;
