@@ -133,17 +133,19 @@ class SwitcherStore {
         name: i18n.t('network-connections.labels.connectivity-url'),
         description: i18n.t('network-connections.labels.connectivity-url-desc'),
         placeholder: i18n.t('network-connections.labels.connectivity-url-placeholder'),
-        validator: (value) => {
-          if (value == ""){
-            return false
+        validator: value => {
+          if (value !== '') {
+            if (value.length < this.urlProperties.minLength) {
+              return i18n.t('network-connections.labels.connectivity-url-error-length', {
+                length: this.urlProperties.minLength,
+              });
+            }
+            if (!(value.startsWith('http://') || value.startsWith('https://'))) {
+              return i18n.t('network-connections.labels.connectivity-url-error-format');
+            }
           }
-          if (value.length < this.urlProperties.minLength) {
-            return i18n.t('network-connections.labels.connectivity-url-error-length') + this.urlProperties.minLength
-          }
-          if (!(value.startsWith("http://") || value.startsWith("https://"))) {
-            return i18n.t('network-connections.labels.connectivity-url-error-format') 
-          }
-        }
+          return false;
+        },
       })
     );
 
@@ -165,8 +167,8 @@ class SwitcherStore {
     this.connectionPriorities = new ConnectionPrioritiesStore(connectionsStore);
   }
 
-  setSchema(schema) {
-    this.urlProperties = schema.properties.ui.properties.con_switch.properties.connectivity_check_url;
+  setUrlProperties(urlProperties) {
+    this.urlProperties = urlProperties;
     this.connectivityUrl.setPlaceholder(this.urlProperties.default);
   }
 
@@ -194,7 +196,7 @@ export function switcherStoreToJson(store, connectionsToStore) {
   }
   if (!store.connectivityUrl.hasErrors) {
     let value = store.connectivityUrl.value;
-    if (store.connectivityUrl.value == ''){
+    if (store.connectivityUrl.value == '') {
       value = store.urlProperties.default;
     }
     res.connectivity_check_url = value;
@@ -219,8 +221,8 @@ export function switcherStoreFromJson(store, json, connectionsStore) {
   store.stickyConnectionPeriod.submit();
 
   let value = json.connectivity_check_url;
-  if (json.connectivity_check_url == store.urlProperties.default){
-    value = ''
+  if (json.connectivity_check_url == store.urlProperties.default) {
+    value = '';
   }
   store.connectivityUrl.setValue(value);
   store.connectivityUrl.submit();

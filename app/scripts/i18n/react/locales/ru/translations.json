@@ -74,7 +74,7 @@
          "debug": "Включить отладочные сообщения",
          "connectivity-url": "URL для проверки доступности интернета",
          "connectivity-url-desc": "Для определения доступности интернета сервис отправляет HTTP GET запрос на указанный URL",
-         "connectivity-url-error-length": "Минимальная длина URL: ",
+         "connectivity-url-error-length": "Минимальная длина URL {{length}} символов",
          "connectivity-url-error-format": "URL должен начинаться с 'http://' или 'https://'",
          "connectivity-payload": "Ответ на запрос проверки доступности интернета",
          "connectivity-payload-desc": "Ответ на запрос проверки доступности интернета должен содержать указанную строку",
