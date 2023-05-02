@@ -18,6 +18,10 @@ export class StringStore {
     this.error = this.validator?.(this.value) ?? '';
   }
 
+  setPlaceholder(placeholder) {
+    this.placeholder = placeholder;
+  }
+
   get hasErrors() {
     return !!this.error;
   }
