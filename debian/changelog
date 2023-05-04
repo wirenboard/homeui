@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.59.0-wb101) stable; urgency=medium
+
+  * Fix network connections creation 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 May 2023 12:19:58 +0500
+
 wb-mqtt-homeui (2.59.0-wb100) stable; urgency=medium
 
   * Fix typos
