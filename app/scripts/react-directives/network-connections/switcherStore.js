@@ -133,6 +133,19 @@ class SwitcherStore {
         name: i18n.t('network-connections.labels.connectivity-url'),
         description: i18n.t('network-connections.labels.connectivity-url-desc'),
         placeholder: i18n.t('network-connections.labels.connectivity-url-placeholder'),
+        validator: value => {
+          if (value !== '') {
+            if (value.length < this.urlProperties.minLength) {
+              return i18n.t('network-connections.labels.connectivity-url-error-length', {
+                length: this.urlProperties.minLength,
+              });
+            }
+            if (!(value.startsWith('http://') || value.startsWith('https://'))) {
+              return i18n.t('network-connections.labels.connectivity-url-error-format');
+            }
+          }
+          return false;
+        },
       })
     );
 
@@ -152,6 +165,11 @@ class SwitcherStore {
     );
 
     this.connectionPriorities = new ConnectionPrioritiesStore(connectionsStore);
+  }
+
+  setUrlProperties(urlProperties) {
+    this.urlProperties = urlProperties;
+    this.connectivityUrl.setPlaceholder(this.urlProperties.default);
   }
 
   submit() {
@@ -176,8 +194,12 @@ export function switcherStoreToJson(store, connectionsToStore) {
   if (store.stickyConnectionPeriod.value !== '') {
     res.sticky_connection_period_s = store.stickyConnectionPeriod.value;
   }
-  if (store.connectivityUrl.value !== '') {
-    res.connectivity_check_url = store.connectivityUrl.value;
+  if (!store.connectivityUrl.hasErrors) {
+    let value = store.connectivityUrl.value;
+    if (store.connectivityUrl.value == '') {
+      value = store.urlProperties.default;
+    }
+    res.connectivity_check_url = value;
   }
   if (store.connectivityPayload.value !== '') {
     res.connectivity_check_payload = store.connectivityPayload.value;
@@ -197,8 +219,14 @@ export function switcherStoreToJson(store, connectionsToStore) {
 export function switcherStoreFromJson(store, json, connectionsStore) {
   store.stickyConnectionPeriod.setValue(json.sticky_connection_period_s);
   store.stickyConnectionPeriod.submit();
-  store.connectivityUrl.setValue(json.connectivity_check_url);
+
+  let value = json.connectivity_check_url;
+  if (json.connectivity_check_url == store.urlProperties.default) {
+    value = '';
+  }
+  store.connectivityUrl.setValue(value);
   store.connectivityUrl.submit();
+
   store.connectivityPayload.setValue(json.connectivity_check_payload);
   store.connectivityPayload.submit();
   store.debug.setValue(json.debug);
