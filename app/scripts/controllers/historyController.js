@@ -112,21 +112,27 @@ class HistoryCtrl {
 
         // Array of ChartTraits
         this.charts = [];
-        this.progresMax = 100;
         this.layoutConfig = {
             margin: {
                 b: 40,
-                t: 20
+                t: 20,
+                l: 0,
+                r: 0
             },
             legend: {//https://plot.ly/javascript/legend/
                 x: 0,
                 y: 100
+            },
+            hovermode: "x unified",
+            modebar: {
+                remove: [ "lasso", "select", "resetscale"]
             }
         };
 
         this.options = {
             displayModeBar: true,
-            locale: $locale.id
+            locale: $locale.id,
+            displaylogo: false
         }
 
         this.colors = new ChartColors();
@@ -446,7 +452,7 @@ class HistoryCtrl {
         const endDate = new Date(chunks[indexOfChunk + 1]);
         params.timestamp = {
             // add extra second to include 00:00:00
-            // но только для первого чанка / для последущих чанков наоборот
+            // но только для первого чанка / для последующих чанков наоборот
             // прибавляю 1 чтобы не было нахлеста
             // (FIXME: maybe wb-mqtt-db should support not just gt/lt, but also gte/lte?)
             gt: indexOfChunk==0? startDate.getTime() / 1000 - 1 : startDate.getTime() / 1000 + 1,
@@ -609,8 +615,8 @@ class HistoryCtrl {
     fixAxes(minValue, maxValue) {
         // Bool axis in combination with common axis has additional range attribute
         // It is used to scale bool axis to the full height of plot
-        // Unfortunately plolty.js drows two 0X axes: one for bool, other for common axis.
-        // It also drows different tick lines for each axis
+        // Unfortunately plolty.js draws two 0X axes: one for bool, other for common axis.
+        // It also draws different tick lines for each axis
         // So we calculate 0X axis and tick lines positions ourself
         if (this.isBoolAxis(this.layoutConfig.yaxis) && this.isCommonAxis(this.layoutConfig.yaxis2)) {
             this.layoutConfig.yaxis = this.makeBoolAxis(0, 1, true);
@@ -723,7 +729,7 @@ class HistoryCtrl {
         // если еще есть части интервала
         if (indexOfChunk + 2 < chunks.length) {
             this.loadChunkedHistory(indexOfControl, indexOfChunk + 1, chunks);
-        // запрашиваю следущий контол если есть
+        // запрашиваю следующий контол если есть
         } else {
             chart.progress.isLoaded = true;
             this.beforeLoadChunkedHistory(indexOfControl + 1);
