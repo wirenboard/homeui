@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.63.7) stable; urgency=medium
+
+  * Fix duplicated values during wb-mqtt-serial restart
+
+ -- Sergey Rostov <snrostov@ya.ru>  Sun, 14 May 2023 20:59:19 +0500
+
 wb-mqtt-homeui (2.63.6) stable; urgency=medium
 
   * Fix plot hover label on History page

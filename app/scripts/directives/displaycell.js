@@ -62,14 +62,19 @@ function displayCellDirective(displayCellConfig, $compile) {
     controllerAs: 'displayCellCtrl',
     template,
     link: (scope, element, attrs) => {
-
+      var previousElement;
       scope.$watch(() => scope.cell.displayType, displayType => {
         var directive = (displayCellConfig.displayTypes.hasOwnProperty(displayType) ?
                          displayCellConfig.displayTypes[displayType] :
                          displayCellConfig.displayTypes['text']).directive;
-
         $compile('<' + directive + '></' + directive + '>')(scope, (clonedElement) => {
-          angular.element(element[0].firstElementChild.nextElementSibling).after(clonedElement);
+          var currentElement = angular.element(element[0].firstElementChild.nextElementSibling);
+          if (previousElement) {
+            previousElement.replaceWith(currentElement);
+          } else {
+            currentElement.after(clonedElement);
+          }
+          previousElement = currentElement;          
         });
       });
     }
