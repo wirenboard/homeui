@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.63.7) stable; urgency=medium
+
+  * Show/hide channels of system devices
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 12 Mar 2023 16:25:00 +0400
+
 wb-mqtt-homeui (2.63.6) stable; urgency=medium
 
   * Fix plot hover label on History page
