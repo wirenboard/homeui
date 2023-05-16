@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.63.7) stable; urgency=medium
+
+  * Fix loading wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 16 May 2023 18:22:57 +0500
+
 wb-mqtt-homeui (2.63.6) stable; urgency=medium
 
   * Fix plot hover label on History page
