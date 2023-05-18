@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.63.9) stable; urgency=medium
+
+  * Fix duplicating values in widgets when corresponding service is restarted
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 18 May 2023 16:24:50 +0600
+
 wb-mqtt-homeui (2.63.8) stable; urgency=medium
 
   * Fix loading wb-mqtt-serial config
