@@ -11,8 +11,8 @@
     "form": {
         "title": "Data",
         "field": {
-            "id": "ID",
-            "name": "Name",
+            "id": "Dashboard ID",
+            "name": "Dashboard name",
             "fullwidth": "Stretch to full screen"
         },
         "error": {
@@ -104,12 +104,15 @@
             },
             "confirm": {
                 "remove": "Do you really want to delete bind?"
+            },
+            "button": {
+                "remove": "Remove"
             }
         },
         "params-json": {
-            "title" : "SVG Bindings",
+            "title" : "Bindings",
             "button": {
-                "show" : "Edit bindings as JSON"
+                "show" : "As JSON"
             }
         }
     },
@@ -118,7 +121,7 @@
         "save": "Save",
         "cancel": "Cancel",
         "remove": "Remove",
-        "view": "View dashboard",
+        "view": "View",
         "back": "Dashboards list"
     },
 
