@@ -164,6 +164,13 @@ class SvgEditorController {
         }
     }
 
+    canSaveEditable() {
+        return this?.editableParam?.read?.enable || 
+               this?.editableParam?.write?.enable ||
+               this?.editableParam?.style?.enable ||
+               this?.editableParam?.visible?.enable;
+    }
+
     saveSVG() {
         var svg = document.getElementsByTagName('svg')[0].outerHTML;
         this.dashboard.content.svg.current = svg;   

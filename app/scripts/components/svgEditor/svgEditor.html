@@ -203,7 +203,7 @@
                         </div>
                             
                         <div>
-                            <button type="button" class="btn btn-primary" ng-click="$ctrl.saveEditable()" ng-disabled="svgEditForm.$invalid">{{ 'button.save' | translate }}</button>
+                            <button type="button" class="btn btn-primary" ng-click="$ctrl.saveEditable()" ng-disabled="svgEditForm.$invalid || !$ctrl.canSaveEditable()">{{ 'button.save' | translate }}</button>
                             <button type="button" class="btn btn-danger pull-right" ng-click="$ctrl.removeEditable('edit.editable.confirm.remove' | translate)">{{ 'edit.editable.button.remove' | translate }}</button>
                         </div>
         
