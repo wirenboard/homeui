@@ -171,6 +171,19 @@ class SvgEditorController {
                this?.editableParam?.visible?.enable;
     }
 
+    clearEditable() {
+        angular.element(this.editable).removeClass('selected');
+        this.editable = null;
+        this.editableParam = null;
+        this.editableType = null;
+    }
+
+    cancelEditingEditable() {
+        if (this.editable) {
+            this.clearEditable();
+        }
+    }
+
     saveSVG() {
         var svg = document.getElementsByTagName('svg')[0].outerHTML;
         this.dashboard.content.svg.current = svg;   
