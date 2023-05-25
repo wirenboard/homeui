@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.64.0) stable; urgency=medium
+
+  * Add expand ROOTFS partition button to system options page
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Thu, 25 May 2023 14:54:50 +0600
+
 wb-mqtt-homeui (2.63.9) stable; urgency=medium
 
   * Fix duplicating values in widgets when corresponding service is restarted
@@ -24,7 +30,7 @@ wb-mqtt-homeui (2.63.6) stable; urgency=medium
 
 wb-mqtt-homeui (2.63.5) stable; urgency=medium
 
-  * Fix network connections creation 
+  * Fix network connections creation
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 May 2023 11:53:06 +0500
 
