@@ -111,7 +111,7 @@ const UploadEntrypoint  = observer(({store, showModal}) => {
     </button>
     <span style={{margin: "auto 10px"}}>
         <input type="checkbox" id="expandrootfs" name="expandrootfs" checked={store.expandRootfs} value="1" />
-        <label for="expandrootfs">{t('system.update.expandrootfs')}: {store.expandRootfs}</label>
+        <label for="expandrootfs">{t('system.update.expandrootfs')}: {store.expandRootfs}: {store.destination}</label>
     </span>
 
   </div>
