@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
-import Uploady, { useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
+import Uploady, { UPLOADER_EVENTS, useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
 import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../modals';
 
 
@@ -180,16 +180,15 @@ const FirmwareUpdateWidget = observer(({store}) => {
   </>
 });
 
-const CreateFirmwareUpdateWidget = observer(({store}) => (
-  <Uploady
+const CreateFirmwareUpdateWidget = ({store}) => {
+  return <Uploady
     autoUpload
     accept={store.accept}
     multiple={false}
     method="POST"
-    params={{expand_rootfs: store.expandRootfs}}
     destination={{url: store.destination}}>
     <FirmwareUpdateWidget store={store} />
   </Uploady>
-));
+}
 
 export default CreateFirmwareUpdateWidget;
