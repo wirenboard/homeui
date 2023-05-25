@@ -213,15 +213,15 @@
             </div>
         </div>
 
-        <div class="col-md-12" ng-if="$ctrl.editJsonMode">
-            <div class="svg-edit-params-json">
-                <legend>{{ 'edit.params-json.title' | translate }}</legend>
-        
-                <textarea ui-codemirror
-                    ui-codemirror-opts="{ autofocus: true, mode: 'javascript', json:true, lineNumbers: true, viewportMargin: 100000}"     
-                    ng-model="$ctrl.jsonSource">
-                    {{ $ctrl.jsonSource }}
-                </textarea>
+        <div class="col-md-12 svg-edit-params-json" ng-if="$ctrl.editJsonMode">
+            <legend>{{ 'edit.params-json.title' | translate }}</legend>
+    
+            <textarea ui-codemirror
+                ui-codemirror-opts="{ autofocus: true, mode: 'javascript', json:true, lineNumbers: true, viewportMargin: 100000}"     
+                ng-model="$ctrl.jsonSource">
+                {{ $ctrl.jsonSource }}
+            </textarea>
+            <div>
                 <div class="btn-form pull-right">
                     <button ng-click="$ctrl.updateSourceFromJson()" class="btn btn-primary" ng-disabled="!$ctrl.jsonSource.length">
                         {{ 'button.save' | translate}}
@@ -230,7 +230,7 @@
                         {{ 'button.cancel' | translate}}
                     </button>
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 </div>

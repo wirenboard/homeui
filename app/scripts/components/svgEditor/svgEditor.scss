@@ -103,8 +103,18 @@ div.svg-edit-left-panel {
 }
 
 div.svg-edit-params-json {
+    display:flex;
+    flex-direction: column;
+    height: 100%;
+
+    @media(max-width:767px) {
+        padding-bottom: 10px;
+    }
+
     .CodeMirror {
-        margin-top: 18px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        flex-grow: 1;
     }
 }
 
