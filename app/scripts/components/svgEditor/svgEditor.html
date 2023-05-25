@@ -31,7 +31,7 @@
         
                         <div class="param" ng-if="$ctrl.editableType == 'text'">
                             <div class="param-header">
-                                <input type="checkbox" id="param-read" name="param-read" ng-model="$ctrl.editableParam.read.enable" />
+                                <input type="checkbox" id="param-read" name="param-read" ng-model="$ctrl.editableParam.read.enable" ng-change="$ctrl.fixChannel($ctrl.editableParam.read)"/>
                                 <label for="param-read">{{'edit.editable.group.read.title' | translate}}</label>
                             </div>
                             <div class="param-control" ng-show="$ctrl.editableParam.read.enable">
@@ -66,7 +66,7 @@
         
                         <div class="param">
                             <div class="param-header">
-                                <input type="checkbox" id="param-write" name="param-write" ng-model="$ctrl.editableParam.write.enable" />
+                                <input type="checkbox" id="param-write" name="param-write" ng-model="$ctrl.editableParam.write.enable" ng-change="$ctrl.fixChannel($ctrl.editableParam.write)"/>
                                 <label for="param-write">{{'edit.editable.group.write.title' | translate}}</label>
                             </div>
                             <div class="param-control" ng-show="$ctrl.editableParam.write.enable">
@@ -116,7 +116,7 @@
         
                         <div class="param">
                             <div class="param-header">
-                                <input type="checkbox" id="param-visible" name="param-visible" ng-model="$ctrl.editableParam.visible.enable" />
+                                <input type="checkbox" id="param-visible" name="param-visible" ng-model="$ctrl.editableParam.visible.enable" ng-change="$ctrl.fixChannel($ctrl.editableParam.visible)"/>
                                 <label for="param-visible">{{'edit.editable.group.visible.title' | translate}}</label>
                             </div>
                             <div class="param-control" ng-show="$ctrl.editableParam.visible.enable">
@@ -170,7 +170,7 @@
         
                         <div class="param">
                             <div class="param-header">
-                                <input type="checkbox" id="param-style" name="param-style" ng-model="$ctrl.editableParam.style.enable" />
+                                <input type="checkbox" id="param-style" name="param-style" ng-model="$ctrl.editableParam.style.enable" ng-change="$ctrl.fixChannel($ctrl.editableParam.style)"/>
                                 <label for="param-style">{{'edit.editable.group.style.title' | translate}}</label>
                             </div>
                             <div class="param-control" ng-show="$ctrl.editableParam.style.enable">

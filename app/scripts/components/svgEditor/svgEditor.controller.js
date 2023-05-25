@@ -207,6 +207,20 @@ class SvgEditorController {
         }
     }
 
+    fixChannel(param) {
+        if (this.editable && this.editableParam) {
+            if (param.enable) {
+                let channel = this?.editableParam?.read?.channel ?? 
+                              this?.editableParam?.write?.channel ??
+                              this?.editableParam?.style?.channel ??
+                              this?.editableParam?.visible?.channel;
+                param.channel ??= channel;
+            } else {
+                param.channel = null;
+            }
+        }
+    }
+
 }
 
 export default SvgEditorController;
