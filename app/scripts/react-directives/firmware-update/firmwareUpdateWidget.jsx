@@ -98,6 +98,11 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
 const UploadEntrypoint  = observer(({store, showModal}) => {
   const { t } = useTranslation();
 
+  const checkboxHandler = e => {
+    const value = e.target.checked
+    store.setExpandRootfs(value)
+  }
+
   return <div>
     <div>
       <span style={{margin: "auto 10px"}}>
@@ -110,7 +115,7 @@ const UploadEntrypoint  = observer(({store, showModal}) => {
       {t('system.buttons.select')}
     </button>
     <span style={{margin: "auto 10px"}}>
-        <input type="checkbox" id="expandrootfs" name="expandrootfs" onChange={store.setExpandRootfs} value="1" />
+        <input type="checkbox" id="expandrootfs" name="expandrootfs" onChange={checkboxHandler} value="1" />
         <label for="expandrootfs">{t('system.update.expandrootfs')}: {store.expandRootfs}: {store.destination}</label>
     </span>
 
