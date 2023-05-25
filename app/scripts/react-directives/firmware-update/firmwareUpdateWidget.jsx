@@ -95,7 +95,7 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint  = observer(({showModal}) => {
+const UploadEntrypoint  = observer(({store, showModal}) => {
   const { t } = useTranslation();
 
   return <div>
@@ -110,8 +110,8 @@ const UploadEntrypoint  = observer(({showModal}) => {
       {t('system.buttons.select')}
     </button>
     <span style={{margin: "auto 10px"}}>
-        <input type="checkbox" id="expandrootfs" name="expandrootfs" value="1" />
-        <label for="expandrootfs">{t('system.update.expandrootfs')}</label>
+        <input type="checkbox" id="expandrootfs" name="expandrootfs" checked={store.expandRootfs} value="1" />
+        <label for="expandrootfs">{t('system.update.expandrootfs')}: {store.expandRootfs}</label>
     </span>
 
   </div>
@@ -143,7 +143,7 @@ const UploadProgress = observer(({store}) => {
 
 const UploadWidget = observer(({store}) => {
   return <>
-    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint showModal={() => { store.modalState.show() }} />}
+    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint store={store} showModal={() => { store.modalState.show() }} />}
   </>;
 });
 
@@ -181,6 +181,7 @@ const CreateFirmwareUpdateWidget = ({store}) => (
     accept={store.accept}
     multiple={false}
     method="POST"
+    params={{expand_rootfs: store.expandRootfs}}
     destination={{url: store.destination}}>
     <FirmwareUpdateWidget store={store} />
   </Uploady>
