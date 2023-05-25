@@ -180,7 +180,7 @@ const FirmwareUpdateWidget = observer(({store}) => {
   </>
 });
 
-const CreateFirmwareUpdateWidget = ({store}) => (
+const CreateFirmwareUpdateWidget = observer(({store}) => (
   <Uploady
     autoUpload
     accept={store.accept}
@@ -190,6 +190,6 @@ const CreateFirmwareUpdateWidget = ({store}) => (
     destination={{url: store.destination}}>
     <FirmwareUpdateWidget store={store} />
   </Uploady>
-)
+));
 
 export default CreateFirmwareUpdateWidget;
