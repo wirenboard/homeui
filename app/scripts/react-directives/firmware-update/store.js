@@ -25,6 +25,11 @@ class FirmwareUpdateStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
+  setExpandRootfs(value) {
+    this.expandRootfs = value;
+    console.log('expandRootfs', this.expandRootfs);
+  }
+
   addLogRow(row) {
     this.logRows.push(row);
   }
