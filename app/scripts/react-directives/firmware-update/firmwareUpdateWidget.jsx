@@ -181,11 +181,26 @@ const FirmwareUpdateWidget = observer(({store}) => {
 });
 
 const CreateFirmwareUpdateWidget = ({store}) => {
+    const listeners = useMemo(() => ({
+        //add a param (request field) that will be sent to the serve alongside the uploaded file
+        [UPLOADER_EVENTS.REQUEST_PRE_SEND]: () => {
+            //returned object can be wrapped with a promise
+            return Promise.resolve({
+                    options: {
+                        params: {
+                            expand_rootfs: store.expand_rootfs
+                        }
+                     }
+                 });
+        }
+    }, []));
+
   return <Uploady
     autoUpload
     accept={store.accept}
     multiple={false}
     method="POST"
+    listeners={listeners}
     destination={{url: store.destination}}>
     <FirmwareUpdateWidget store={store} />
   </Uploady>
