@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
-import Uploady, { UPLOADER_EVENTS, useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
+import Uploady, { useRequestPreSend, useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
 import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../modals';
 
 
@@ -165,6 +165,13 @@ const FirmwareUpdateWidget = observer(({store}) => {
   useItemFinishListener(store.onUploadFinish);
   useItemErrorListener(store.onUploadError);
 
+  useRequestPreSend(({ items, options }) => {
+    params = {'expand_rootfs': store.expandRootfs};
+    return {
+      options: { params } //will be merged with the rest of the options
+    };
+  });
+
   return <>
     <DownloadBackupModal {...store.modalState} />
     <div className="panel panel-default">
@@ -181,26 +188,12 @@ const FirmwareUpdateWidget = observer(({store}) => {
 });
 
 const CreateFirmwareUpdateWidget = ({store}) => {
-    const listeners = useMemo(() => ({
-        //add a param (request field) that will be sent to the serve alongside the uploaded file
-        [UPLOADER_EVENTS.REQUEST_PRE_SEND]: () => {
-            //returned object can be wrapped with a promise
-            return Promise.resolve({
-                    options: {
-                        params: {
-                            expand_rootfs: store.expand_rootfs
-                        }
-                     }
-                 });
-        }
-    }, []));
 
   return <Uploady
     autoUpload
     accept={store.accept}
     multiple={false}
     method="POST"
-    listeners={listeners}
     destination={{url: store.destination}}>
     <FirmwareUpdateWidget store={store} />
   </Uploady>
