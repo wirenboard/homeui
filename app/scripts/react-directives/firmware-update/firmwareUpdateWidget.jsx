@@ -105,7 +105,7 @@ const UploadEntrypoint  = observer(({store, showModal}) => {
 
   return <div>
     <div>
-      <span style={{margin: "auto 10px"}}>
+      <span style={{marginBottom: "10px"}}>
         <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">
           {t('system.update.help')}
         </a>
@@ -116,7 +116,7 @@ const UploadEntrypoint  = observer(({store, showModal}) => {
     </button>
     <span style={{margin: "auto 10px"}}>
         <input type="checkbox" id="expandrootfs" name="expandrootfs" onChange={checkboxHandler} value="1" />
-        <label for="expandrootfs">{t('system.update.expandrootfs')}: {store.expandRootfs}: {store.destination}</label>
+        <label for="expandrootfs"> {t('system.update.expandrootfs')}</label>
     </span>
 
   </div>
