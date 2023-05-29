@@ -105,18 +105,20 @@ const UploadEntrypoint  = observer(({store, showModal}) => {
 
   return <div>
     <div>
-      <span style={{marginBottom: "10px"}}>
-        <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">
-          {t('system.update.help')}
-        </a>
-      </span>
+        <ul className="notes">
+            <li className="ng-binding">
+                <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">
+                  {t('system.update.help')}
+                </a>
+            </li>
+        </ul>
     </div>
     <button type="button" className="btn btn-lg btn-success" onClick={showModal}>
       {t('system.buttons.select')}
     </button>
     <span style={{margin: "auto 10px"}}>
         <input type="checkbox" id="expandrootfs" name="expandrootfs" onChange={checkboxHandler} value="1" />
-        <label for="expandrootfs"> {t('system.update.expandrootfs')}</label>
+        &nbsp;<label for="expandrootfs">{t('system.update.expandrootfs')}</label>
     </span>
 
   </div>
