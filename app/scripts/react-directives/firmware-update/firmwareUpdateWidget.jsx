@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
 import Uploady, { useRequestPreSend, useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
 import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../modals';
-import {Checkbox} from '../common';
 
 
 const DoneButton = ({onDoneClick, doneLabel}) => {
@@ -113,7 +112,9 @@ const UploadEntrypoint  = observer(({checkboxHandler, showModal}) => {
       {t('system.buttons.select')}
     </button>
     <div style={{margin: "10px"}}>
-        <Checkbox label={t('system.update.expandrootfs')} onChange={checkboxHandler}/>
+        <label for="id_expand_rootfs">
+            <input type="checkbox" id="id_expand_rootfs" onChange={checkboxHandler}/> {t('system.update.expandrootfs')}
+        </label>
     </div>
 
   </div>
