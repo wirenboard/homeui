@@ -236,13 +236,11 @@ class HistoryCtrl {
         var t = this.$translate(['history.labels.all_channels',
                                  'history.labels.widget_channels',
                                  'history.errors.dates',
-                                 'history.errors.points',
                                  'history.format.date_with_ms']);
         t.then(translations => {
             this.allChannelsMsg = translations['history.labels.all_channels'];
             this.widgetChannelsMsg = translations['history.labels.widget_channels'];
             this.invalidDateRangeMsg = translations['history.errors.dates'];
-            this.maxPointsLimitMsg = translations['history.errors.points'];
             this.dateWithMsFormat = translations['history.format.date_with_ms'];
         });
         return t;
@@ -724,8 +722,6 @@ class HistoryCtrl {
     processChunk(chunk, indexOfControl, indexOfChunk, chunks) {
         var chart = this.charts[indexOfControl];
         chart.progress.value = indexOfChunk + 1;
-
-        if (chunk.has_more) this.errors.showError('history.errors.warning', this.maxPointsLimitMsg);
 
         if (!chart.xValues.length && this.hasStringValues(chunk)) {
             chart.hasStringValues = true;
