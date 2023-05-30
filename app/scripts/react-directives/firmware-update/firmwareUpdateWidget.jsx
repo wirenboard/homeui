@@ -95,13 +95,8 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint  = observer(({store, showModal}) => {
+const UploadEntrypoint  = observer(({checkboxHandler, showModal}) => {
   const { t } = useTranslation();
-
-  const checkboxHandler = e => {
-    const value = e.target.checked
-    store.setExpandRootfs(value)
-  }
 
   return <div>
     <div>
@@ -150,7 +145,7 @@ const UploadProgress = observer(({store}) => {
 
 const UploadWidget = observer(({store}) => {
   return <>
-    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint store={store} showModal={() => { store.modalState.show() }} />}
+    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint checkboxHandler={(e) => { store.setExpandRootfs(e.target.checked) }} showModal={() => { store.modalState.show() }} />}
   </>;
 });
 

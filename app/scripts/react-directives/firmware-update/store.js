@@ -27,7 +27,6 @@ class FirmwareUpdateStore {
 
   setExpandRootfs(value) {
     this.expandRootfs = value;
-    console.log('expandRootfs', this.expandRootfs);
   }
 
   addLogRow(row) {
