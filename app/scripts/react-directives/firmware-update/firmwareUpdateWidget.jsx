@@ -101,7 +101,7 @@ const UploadEntrypoint  = observer(({checkboxHandler, showModal}) => {
   return <div>
     <div>
         <ul className="notes">
-            <li className="ng-binding">
+            <li>
                 <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">
                   {t('system.update.help')}
                 </a>
@@ -111,10 +111,10 @@ const UploadEntrypoint  = observer(({checkboxHandler, showModal}) => {
     <button type="button" className="btn btn-lg btn-success" onClick={showModal}>
       {t('system.buttons.select')}
     </button>
-    <span style={{margin: "auto 10px"}}>
+    <div style={{margin: "10px"}}>
         <input type="checkbox" id="expandrootfs" name="expandrootfs" onChange={checkboxHandler} value="1" />
         &nbsp;<label for="expandrootfs">{t('system.update.expandrootfs')}</label>
-    </span>
+    </div>
 
   </div>
 });
