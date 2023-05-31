@@ -639,6 +639,7 @@ function deviceDataService(mqttClient, $window) {
 
   function filterCellIds (func) {
     var result = [];
+    var devices = filterSystemDevices();
     Object.keys(devices).sort().forEach(devId => {
       var devCellIds = devices[devId].cellIds;
       if (func)
@@ -646,6 +647,17 @@ function deviceDataService(mqttClient, $window) {
       result = result.concat(devCellIds);
     });
     return result;
+  }
+
+  function filterSystemDevices() {
+    const showSystemDevices = $window.localStorage['show-system-devices'] == 'yes';
+    if (showSystemDevices) {
+        return devices;
+    }
+    let res = Object.entries(devices)
+                 .filter(([deviceId, device]) => !devices[deviceId].isSystemDevice)
+                 .reduce((obj, [key, device]) => { obj[key] = device; return obj;}, {});
+    return res;
   }
 
   var fakeCell = new Cell("nosuchdev/nosuchcell");
@@ -701,14 +713,7 @@ function deviceDataService(mqttClient, $window) {
     cells: cells,
 
     get devices() {
-      const showSystemDevices = $window.localStorage['show-system-devices'] == 'yes';
-      if (showSystemDevices) {
-          return devices;
-      }
-      let res = Object.entries(devices)
-                   .filter(([deviceId, device]) => !devices[deviceId].isSystemDevice)
-                   .reduce((obj, [key, device]) => { obj[key] = device; return obj;}, {});
-      return res;
+      return filterSystemDevices();
     },
 
     deleteDevice(deviceId) {
