@@ -4,22 +4,14 @@
 
 export default class MQTTChannelsCtrl {
 
-    constructor(DeviceData, uiConfig, $window) {
+    constructor(DeviceData,uiConfig) {
         'ngInject';
 
         this.DeviceData = DeviceData;
 
-        const getDeviceIds = () => {
-            const showSystemDevices = $window.localStorage['show-system-devices'] == 'yes';
-            if (showSystemDevices) {
-                return Object.keys(DeviceData.devices);
-            }
-            return Object.keys(DeviceData.devices).filter(deviceId => !DeviceData.devices[deviceId].isSystemDevice);
-        };
-
         uiConfig.whenReady().then(data => {
-            this.keys = getDeviceIds().sort();
-        });
+            this.keys = Object.keys(DeviceData.devices).sort();
+        })
     }
 
     getRows() {
@@ -29,9 +21,10 @@ export default class MQTTChannelsCtrl {
             if(this.DeviceData.devices[key].cellIds.length) {
                 this.DeviceData.devices[key].cellIds.forEach(id=> {
                     this.rows.push(this.DeviceData.cell(id))
-                });
+                })
             }
         });
-        return this.rows;
+        return this.rows
     }
+
 }

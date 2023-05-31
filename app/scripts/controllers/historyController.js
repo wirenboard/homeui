@@ -69,7 +69,7 @@ class ChartColors {
 
 class HistoryCtrl {
     //...........................................................................
-    constructor($scope, DeviceData, $injector, handleData, historyUrlService, $locale, $translate, $element, $window) {
+    constructor($scope, DeviceData, $injector, handleData, historyUrlService, $locale, $translate, $element) {
         'ngInject';
 
         // 1. интервал загрузки частей графика
@@ -89,7 +89,6 @@ class HistoryCtrl {
         this.$translate = $translate;
         this.$locale = $locale;
         this.$element = $element;
-        this.$window = $window;
 
         angular.extend(this, {
             scope: $scope,
@@ -197,13 +196,6 @@ class HistoryCtrl {
     }
 
     updateControls(widgets, DeviceData) {
-        const getDeviceIds = () => {
-            const showSystemDevices = this.$window.localStorage['show-system-devices'] == 'yes';
-            if (showSystemDevices) {
-                return Object.keys(DeviceData.devices);
-            }
-            return Object.keys(DeviceData.devices).filter(deviceId => !DeviceData.devices[deviceId].isSystemDevice);
-        };
         this.controls = this.orderByFilter(
             Array.prototype.concat.apply(
                 [], 
@@ -222,7 +214,7 @@ class HistoryCtrl {
             "name"));
         this.controls.push(...Array.prototype.concat.apply(
             [],
-            getDeviceIds().sort().map(deviceId => {
+            Object.keys(DeviceData.devices).sort().map(deviceId => {
                 const device = DeviceData.devices[deviceId];
                 return device.cellIds.map(cellId => {
                     const cell = DeviceData.cell(cellId);
