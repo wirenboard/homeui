@@ -3,7 +3,6 @@
 import svgEditorComponent from './svgEditor.component';
 import svgUploadComponent from './upload/svgUpload.component';
 import svgFormComponent from './form/svgForm.component';
-import svgEditComponent from './edit/svgEdit.component';
 
 import inputFileDirective from './directives/inputFile.directive';
 import validateIdDirective from './directives/validateId.directive';
@@ -18,7 +17,6 @@ export default angular
     .component('svgEditor', svgEditorComponent)
     .component('svgUpload', svgUploadComponent)
     .component('svgForm', svgFormComponent)
-    .component('svgEdit', svgEditComponent)
     .directive('inputFile', inputFileDirective)
     .directive('validateId', validateIdDirective)
     .name;
