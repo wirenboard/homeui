@@ -100,7 +100,7 @@ class Editor {
 
     checkCondition(paramNames, paramValues, schema) {
         try {
-            return new Function(paramNames, 'return ' + schema.condition + ';').apply(null, paramValues)
+            return new Function(paramNames, 'let isDefined = p => p!==undefined; return ' + schema.condition + ';').apply(null, paramValues)
         } catch (e) {
             return false
         }
@@ -763,8 +763,14 @@ function makeGroupsEditor () {
         }
 
         getParamsForConditions(params, paramNames, paramValues) {
+            let props = {};
+            Object.keys(this.editors).forEach(key => props[key] = undefined);
             Object.entries(params)
                     .filter(([key, value]) => this.editors.hasOwnProperty(key) && !this.editors[key].isChannel)
+                    .forEach(([key, value]) => {
+                        props[key] = value;
+                    })
+            Object.entries(props)
                     .forEach(([key, value]) => {
                         paramNames.push(key)
                         paramValues.push(value)

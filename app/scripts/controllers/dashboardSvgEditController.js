@@ -1,10 +1,11 @@
 'use strict';
 
 class DashboardSvgEditController {
-    constructor($scope, uiConfig, $stateParams, rolesFactory) {
+    constructor($scope, uiConfig, $stateParams, rolesFactory, mqttClient, $location) {
         'ngInject';
         
         $scope.roles = rolesFactory;
+        this.$location = $location;
 
         var vm = this;
     
@@ -15,9 +16,48 @@ class DashboardSvgEditController {
             return uiConfig.addDashboardWithSvg();
         }
     
-        uiConfig.whenReady().then(() => {
-            vm.dashboard = getDashboard();
-        });
+        mqttClient.whenReady()
+            .then(() => uiConfig.whenReady())
+            .then(() => {
+                vm.dashboard = getDashboard();
+            });
+    }
+
+    cancelSavingDashboard() {
+        if (this.dashboard.isNew) {
+            this.dashboard.remove();
+        }
+        this.backToDashboardsList();
+    }
+
+    removeDashboard(msg) {
+        if (window.confirm(msg)) {
+            this.dashboard.remove();
+            this.backToDashboardsList();
+        }
+    }
+
+    backToDashboardsList() {
+        this.$location.path('dashboards');
+    }
+
+    canSaveDashboard() {
+        return this?.dashboard?.content?.svg?.current?.length;
+    }
+
+    isValidDashboard() {
+        return this?.dashboard?.id && this?.dashboard?.name && this?.dashboard?.content?.svg?.current && this?.dashboard?.content?.svg?.current?.length;
+    }
+
+    saveDashboard() {
+        this.dashboard.content.svg_url = 'local';
+        this.dashboard.content.isSvg = true;
+
+        if (this.dashboard.isNew) {
+            delete this.dashboard.content.isNew;
+        }
+
+        this.backToDashboardsList();
     }
 }
 
