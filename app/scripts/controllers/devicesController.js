@@ -17,23 +17,15 @@ class DevicesCtrl {
 
         const deviceIdFromUrl = this.parseDeviceIdFromUrl($injector);
 
-        const getDeviceIds = () => {
-            const showSystemDevices = $window.localStorage['show-system-devices'] == 'yes';
-            if (showSystemDevices) {
-                return Object.keys(DeviceData.devices);
-            }
-            return Object.keys(DeviceData.devices).filter(deviceId => !DeviceData.devices[deviceId].isSystemDevice);
-        };
-
         // this listener needed to redraw columns and devices on window resize.
         $(window).resize(() => { this.$state.devicesIdsCount = 0 });
 
         $scope.$locale = $locale;
         $scope.dev = devId => DeviceData.devices[devId];
         $scope.cell = id => DeviceData.cell(id);
-        $scope.devicesCount = () => getDeviceIds().length,
+        $scope.devicesCount = () => Object.keys(DeviceData.devices).length,
         $scope.deviceIdsInColumns = () => {
-            const devicesIdsList = getDeviceIds().sort();
+            const devicesIdsList = Object.keys(DeviceData.devices).sort();
             const devicesIdsCount = devicesIdsList.length;
 
             if(devicesIdsCount <= 0) return;
