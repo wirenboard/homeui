@@ -8,7 +8,7 @@
             "default": "Default Dashboard",
             "choose": "- Please Choose / None -",
             "language": "UI locale",
-            "show-system-devices": "Show system devices on \"Devices\" page"
+            "show-system-devices": "Show system devices"
         }
     }
 }
