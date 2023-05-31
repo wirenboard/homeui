@@ -31,6 +31,7 @@ import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
 import '../styles/css/network-connections.css';
+import '../styles/css/svg-view-page.css';
 
 // React-related imports
 import i18n from './i18n/react/config';
@@ -100,6 +101,7 @@ import fullscreenToggleDirective from './directives/fullscreenToggle';
 import scanDirective from './react-directives/scan/scan';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
+import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -259,7 +261,8 @@ module
     .directive("fullscreenToggle", fullscreenToggleDirective)
     .directive("deviceManagerPage", scanDirective)
     .directive("networkConnectionsPage", networkConnectionsDirective)
-    .directive("firmwareUpdateWidget", firmwareUpdateDirective);
+    .directive("firmwareUpdateWidget", firmwareUpdateDirective)
+    .directive("viewSvgDashboardPage", viewSvgDashboardDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {

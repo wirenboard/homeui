@@ -131,5 +131,12 @@
             "uploaded": "Upload complete",
             "upload_error": "Upload error"
         }
-    }
+   },
+   "view-svg-dashboard": {
+      "buttons": {
+         "fullscreen": "Enter fullscreen mode",
+         "exit-fullscreen": "Exit fullscreen mode",
+         "edit": "Edit"
+      }
+   }
 }
