@@ -698,7 +698,6 @@ function deviceDataService(mqttClient, $window) {
   }
 
   return {
-    devices: devices,
     cells: cells,
 
     get devices() {
