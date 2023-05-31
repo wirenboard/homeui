@@ -31,7 +31,7 @@ class Device {
   }
 }
 
-function deviceDataService(mqttClient) {
+function deviceDataService(mqttClient, $window) {
   'ngInject';
 
   var devices = {}, cells = {};
@@ -176,6 +176,7 @@ function deviceDataService(mqttClient) {
   function ensureDevice (id) {
     if (!devices.hasOwnProperty(id))
       devices[id] = new Device(id);
+    devices[id].isSystemDevice = id.startsWith("system__");
     return devices[id];
   }
 
@@ -574,7 +575,6 @@ function deviceDataService(mqttClient) {
             var dev = ensureDevice(deviceId);
             dev.name = payload;
             dev.explicit = true;
-            dev.isSystemDevice = deviceId.startsWith("system__");
           }
         }
       },{
@@ -700,6 +700,17 @@ function deviceDataService(mqttClient) {
   return {
     devices: devices,
     cells: cells,
+
+    get devices() {
+      const showSystemDevices = $window.localStorage['show-system-devices'] == 'yes';
+      if (showSystemDevices) {
+          return devices;
+      }
+      let res = Object.entries(devices)
+                   .filter(([deviceId, device]) => !devices[deviceId].isSystemDevice)
+                   .reduce((obj, [key, device]) => { obj[key] = device; return obj;}, {});
+      return res;
+    },
 
     deleteDevice(deviceId) {
       const allDeviceTopicBases = allDevicesTopics[deviceId];
