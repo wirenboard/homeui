@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.65.1) stable; urgency=medium
+wb-mqtt-homeui (2.66.1) stable; urgency=medium
 
   * Show/hide channels of system devices
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 31 May 2023 16:25:00 +0400
+
+wb-mqtt-homeui (2.66.0) stable; urgency=medium
+
+  * Add expand ROOTFS partition button to system options page
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Thu, 31 May 2023 14:08:50 +0600
 
 wb-mqtt-homeui (2.65.0) stable; urgency=medium
 
@@ -42,7 +48,7 @@ wb-mqtt-homeui (2.63.6) stable; urgency=medium
 
 wb-mqtt-homeui (2.63.5) stable; urgency=medium
 
-  * Fix network connections creation 
+  * Fix network connections creation
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 May 2023 11:53:06 +0500
 

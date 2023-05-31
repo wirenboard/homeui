@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
-import Uploady, { useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
+import Uploady, { useRequestPreSend, useUploady, useItemStartListener, useItemFinishListener, useItemProgressListener, useItemErrorListener } from "@rpldy/uploady";
 import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../modals';
 
 
@@ -95,18 +95,28 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint  = observer(({showModal}) => {
+const UploadEntrypoint  = observer(({checkboxHandler, showModal}) => {
   const { t } = useTranslation();
 
   return <div>
+    <div>
+        <ul className="notes">
+            <li>
+                <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">
+                  {t('system.update.help')}
+                </a>
+            </li>
+        </ul>
+    </div>
     <button type="button" className="btn btn-lg btn-success" onClick={showModal}>
       {t('system.buttons.select')}
     </button>
-    <span style={{margin: "auto 10px"}}>
-      <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">
-        {t('system.update.help')}
-      </a>
-    </span>
+    <div style={{margin: "10px"}}>
+        <label for="id_expand_rootfs">
+            <input type="checkbox" id="id_expand_rootfs" onChange={checkboxHandler}/> {t('system.update.expandrootfs')}
+        </label>
+    </div>
+
   </div>
 });
 
@@ -136,7 +146,7 @@ const UploadProgress = observer(({store}) => {
 
 const UploadWidget = observer(({store}) => {
   return <>
-    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint showModal={() => { store.modalState.show() }} />}
+    { store.inProgress ? <UploadProgress store={store} /> : <UploadEntrypoint checkboxHandler={(e) => { store.setExpandRootfs(e.target.checked) }} showModal={() => { store.modalState.show() }} />}
   </>;
 });
 
@@ -152,6 +162,13 @@ const FirmwareUpdateWidget = observer(({store}) => {
   useItemProgressListener(store.onUploadProgress);
   useItemFinishListener(store.onUploadFinish);
   useItemErrorListener(store.onUploadError);
+
+  useRequestPreSend(({ items, options }) => {
+    let params = {'expand_rootfs': store.expandRootfs};
+    return {
+      options: { params } //will be merged with the rest of the options
+    };
+  });
 
   return <>
     <DownloadBackupModal {...store.modalState} />
