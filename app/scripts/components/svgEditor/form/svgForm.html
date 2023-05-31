@@ -1,7 +1,5 @@
 <form name="svgForm" novalidate ng-if="$ctrl.isContent()">
     <fieldset class="mt-3">
-        <legend>{{'form.title' | translate}}</legend>
-
         <div class="form-group required" ng-class="{'has-error': svgForm.id.$invalid, 'has-success': !svgForm.id.$invalid}">
             <label for="id" class="control-label">{{'form.field.id' | translate}}</label>
             <input type="text" class="form-control" id="id" name="id" ng-model="$ctrl.dashboard.id" validate-id ng-required="true" />

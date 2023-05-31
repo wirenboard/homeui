@@ -4,15 +4,12 @@
             <div class="col-md-12">
                 <span style="vertical-align: middle;">{{ dashboard.name }}</span>
                 <div class="pull-right">
+                    <button type="button" user-role="mto" current-role="roles.current.role" class="btn btn-success"  ui-sref="dashboard-svg-edit({ id: dashboard.id })"  ng-hide="checkFullscreen()">{{'dashboards.button.edit' | translate}}</button>
                     <fullscreen-toggle></fullscreen-toggle>
                 </div>
             </div>
         </div>
     </h1>
     <svg-view ng-class="{'svg-view-fullscreen': dashboard.svgFullWidth }" dashboard="dashboard"></svg-view>
-
-    <div class="mt-1 svg-dashboard-footer">
-        <a class="btn btn-primary" user-role="mto" current-role="roles.current.role" ui-sref="dashboard-svg-edit({ id: dashboard.id })">{{'dashboards.button.edit' | translate}}</a>
-    </div>
 </div>
 <pulse-spinner ng-show="!dashboard"></pulse-spinner>
