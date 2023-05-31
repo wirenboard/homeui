@@ -5,6 +5,7 @@ class FirmwareUpdateStore {
   constructor() {
     this.destination = "/fwupdate/upload";
     this.accept = ".fit";
+    this.expandRootfs = false;
 
     this.receivedFirstStatus = false;
     this.uploading = false;
@@ -22,6 +23,10 @@ class FirmwareUpdateStore {
     this.modalState = new DownloadBackupModalState();
 
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  setExpandRootfs(value) {
+    this.expandRootfs = value;
   }
 
   addLogRow(row) {
