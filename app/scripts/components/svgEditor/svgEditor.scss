@@ -1,4 +1,7 @@
 svg-editor {
+    flex-grow: 1;
+    height: 1px;
+
     .form-group {
         &.required {
             .control-label {
@@ -9,7 +12,12 @@ svg-editor {
                 }
             }
         }
-      }
+    }
+
+    legend {
+        margin-bottom: 0px;
+        padding-top: 0px;
+    }
 }
 
 svg-upload {
@@ -21,103 +29,92 @@ svg-upload {
     }
 }
 
-svg-edit {
+div.svg-edit-visual {
+    display: block;
+    overflow: hidden;
+    height: 100%;
+    
 
-    div.svg-edit-visual {
-        display: block;
-        overflow: hidden;
-        
+    fieldset {
+        height: 100%;
 
-        fieldset {
-            display: block;
-            float: left;
+        &.result {
+            width: 100%;
+            height: 100%;
 
-            &.result {
-                width: 50%;
-
-                svg {
-                    .selected {
-                        animation: blinker 1s linear infinite;
-                    }
-
-                    @keyframes blinker {
-                        50% {
-                          opacity: 0;
-                        }
-                    }
-
-                    path,
-                    text,
-                    tspan,
-                    circle {
-                        cursor: pointer;
-                    }
-
-                    desc {
-                        display: none;
-                    }
-                }
-            }
-
-            &.edit {
-                width: calc(50% - 50px);
-                margin-left: 50px; 
-
-                legend {
-                    span {
-                        font-weight: bold;
-                        text-transform: uppercase;
-                    }
-                }
-
-
-                svg {
-                    max-width: 100%;
-                    height: auto;
-                }
-
-                .param {
-
-                    &-header {
-                        input[type="checkbox"] {
-                            display: inline-block;
-                            margin: 0;
-                            width: auto;
-                            height: auto;
-                            vertical-align: middle;
-                        }
-                        label {
-                            display: inline-block;
-                            margin: 0 0 0 5px;
-                            font-size: 16px;
-                            font-weight: 300;
-                            vertical-align: middle;
-                        }
-                    }
-
-                    &-control {
-                        margin-top: 10px;
-                    }
-
-                    &::after {
-                        display: block;
-                        content: "";
-                        margin-bottom: 18px;
-                        border-bottom: 1px solid #eee;
-                    }
-
-                    .help-block {
-                        &.tip {
-                            color:#737373;
-                        }
-                    }
-                }
-            }
-
-            &.fullwidth {
+            svg {
                 width: 100%;
+                height: 100%;
+
+                .selected {
+                    animation: blinker 1s linear infinite;
+                }
+
+                @keyframes blinker {
+                    50% {
+                        opacity: 0;
+                    }
+                }
+
+                path,
+                text,
+                tspan,
+                circle {
+                    cursor: pointer;
+                }
+
+                desc {
+                    display: none;
+                }
             }
         }
+
+    }
+}
+
+div.svg-edit-result {
+    height: 100%;
+}
+
+div.svg-edit-right-panel {
+    margin-bottom: 10px;
+
+    @media (min-width: 992px) {
+        padding-left: 0px;
+    }
+
+    legend {
+        display:flex;
+        align-items: center;
+
+        span {
+            flex-grow:1;
+        }
+    }
+}
+
+div.svg-edit-left-panel {
+    display:flex;
+    flex-direction: column;
+
+    @media (min-width: 992px) {
+        height: 100%;
+    }
+}
+
+div.svg-edit-params-json {
+    display:flex;
+    flex-direction: column;
+    height: 100%;
+
+    @media(max-width:767px) {
+        padding-bottom: 10px;
+    }
+
+    .CodeMirror {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        flex-grow: 1;
     }
 }
 

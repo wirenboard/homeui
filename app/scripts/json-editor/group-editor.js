@@ -551,24 +551,27 @@ function makeGroupsEditor () {
         setValue(value, initial) {
             this.value = angular.extend({}, value)
             this.disableValueUpdate = true
-            Object.entries(value).forEach(([key, val]) => {
-                if (this.editors.hasOwnProperty(key)) {
-                    var ed = this.editors[key]
-                    if (ed.editor) {
-                        ed.setValue(val, initial)
-                        ed.editor.activate()
-                        ed.enable()
+            var hasChanges = true;
+            for (var cycles = 0; hasChanges && cycles < 10; ++cycles) {
+                Object.entries(value).forEach(([key, val]) => {
+                    if (this.editors.hasOwnProperty(key)) {
+                        var ed = this.editors[key]
+                        if (ed.editor) {
+                            ed.setValue(val, initial)
+                            ed.editor.activate()
+                            ed.enable()
+                        }
                     }
-                }
-            })
+                })
 
-            Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
-                if (!value.hasOwnProperty(key) && !this.checkRequired(key, ed.editor) && ed.editor.options.show_opt_in) {
-                    ed.editor.deactivate()
-                }
-            })
+                Object.entries(this.getRootGroup().params.editors).forEach(([key, ed]) => {
+                    if (!value.hasOwnProperty(key) && !this.checkRequired(key, ed.editor) && ed.editor.options.show_opt_in) {
+                        ed.editor.deactivate()
+                    }
+                })
 
-            this.updateEditorsState()
+                hasChanges = this.updateEditorsState();
+            }
             this.disableValueUpdate = false
             this.showEnabledTab()
             this.onChange(true)
@@ -778,7 +781,8 @@ function makeGroupsEditor () {
 
         updateEditorsState() {
             var hasChanges = true
-            for (var cycles = 0; hasChanges && cycles < 10; ++cycles) {
+            var cycles = 0
+            for (; hasChanges && cycles < 10; ++cycles) {
                 var paramValues = []
                 var paramNames = []
                 this.getParamsForConditions(this.value, paramNames, paramValues)
@@ -802,6 +806,7 @@ function makeGroupsEditor () {
                     }
                 })
             }
+            return cycles > 1;
         }
 
         onChildEditorChange (editor) {
