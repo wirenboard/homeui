@@ -1,18 +1,18 @@
 import { makeAutoObservable } from 'mobx';
 
-const download = async (url) => {
-    const link = document.createElement('a')
+const download = async url => {
+  const link = document.createElement('a');
 
-    link.setAttribute('href', url)
-    link.setAttribute('download', true)
-    link.style.display = 'none'
+  link.setAttribute('href', url);
+  link.setAttribute('download', true);
+  link.style.display = 'none';
 
-    document.body.appendChild(link)
+  document.body.appendChild(link);
 
-    link.click()
+  link.click();
 
-    document.body.removeChild(link)
-}
+  document.body.removeChild(link);
+};
 
 class DownloadBackupModalState {
   id = 'downloadBackupModal';
@@ -32,7 +32,7 @@ class DownloadBackupModalState {
         this.active = false;
       };
       this.onDownloadClick = () => {
-        download("/fwupdate/download/rootfs");
+        download('/fwupdate/download/rootfs');
         this.isFirstPage = false;
       };
 

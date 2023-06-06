@@ -10,13 +10,16 @@ import validateIdDirective from './directives/validateId.directive';
 import './svgEditor.scss';
 
 export default angular
-    .module('HomeuiApp.svgEditor', [])
-    .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {
-        $translatePartialLoaderProvider.addPart('svg');
-    }])
-    .component('svgEditor', svgEditorComponent)
-    .component('svgUpload', svgUploadComponent)
-    .component('svgForm', svgFormComponent)
-    .directive('inputFile', inputFileDirective)
-    .directive('validateId', validateIdDirective)
-    .name;
+  .module('HomeuiApp.svgEditor', [])
+  .config([
+    '$translateProvider',
+    '$translatePartialLoaderProvider',
+    function ($translateProvider, $translatePartialLoaderProvider) {
+      $translatePartialLoaderProvider.addPart('svg');
+    },
+  ])
+  .component('svgEditor', svgEditorComponent)
+  .component('svgUpload', svgUploadComponent)
+  .component('svgForm', svgFormComponent)
+  .directive('inputFile', inputFileDirective)
+  .directive('validateId', validateIdDirective).name;

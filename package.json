@@ -9,7 +9,8 @@
     "test": "rimraf -G coverage && karma start karma_ci.conf.js",
     "test-watch": "karma start karma_dev.conf.js",
     "start": "npm run server",
-    "start-dist": "cd ./dist && python3 ../test/dist_server.py "
+    "start-dist": "cd ./dist && python3 ../test/dist_server.py ",
+    "lint": "npx eslint \"**/*.{js,jsx}\""
   },
   "repository": {
     "type": "git",
@@ -63,8 +64,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",
+    "@babel/eslint-parser": "^7.21.8",
     "@babel/preset-env": "^7.20.2",
-    "@babel/preset-react": "^7.18.6",
+    "@babel/preset-react": "^7.22.3",
     "angular-mocks": "^1.8.3",
     "autoprefixer": "^10.4.13",
     "babel-eslint": "^10.1.0",
@@ -73,7 +75,13 @@
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "^6.7.2",
     "css-minimizer-webpack-plugin": "^4.2.2",
-    "eslint": "^8.27.0",
+    "eslint": "^8.42.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "exports-loader": "^4.0.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",

@@ -3,8 +3,8 @@ import DownloadBackupModalState from './modal';
 
 class FirmwareUpdateStore {
   constructor() {
-    this.destination = "/fwupdate/upload";
-    this.accept = ".fit";
+    this.destination = '/fwupdate/upload';
+    this.accept = '.fit';
     this.expandRootfs = false;
 
     this.receivedFirstStatus = false;
@@ -12,9 +12,9 @@ class FirmwareUpdateStore {
     this.running = false;
     this.progressPercents = 0;
     this.logRows = [];
-    this.stateType = "";
-    this.stateMsg = "";
-    this.doneLabel = "";
+    this.stateType = '';
+    this.stateMsg = '';
+    this.doneLabel = '';
     this.isDone = false;
     this.error = null;
     this._mqttStatusIsSet = false;
@@ -47,7 +47,7 @@ class FirmwareUpdateStore {
 
   showDoneButton(msg) {
     if (!msg) {
-      msg = "system.buttons.dismiss";
+      msg = 'system.buttons.dismiss';
     }
 
     this.isDone = true;
@@ -71,7 +71,7 @@ class FirmwareUpdateStore {
     }
     this._timer = setTimeout(() => {
       this._timer = null;
-      this.showState("danger", msg);
+      this.showState('danger', msg);
       this.showDoneButton();
     }, seconds * 1000);
   }
@@ -115,16 +115,16 @@ class FirmwareUpdateStore {
     this.running = true;
     this.setProgressTimeout();
     if (!this._mqttStatusIsSet) {
-      this.showState('info', 'system.states.uploaded')
+      this.showState('info', 'system.states.uploaded');
     }
   }
 
   onUploadError(event) {
     var message = event.uploadResponse.data;
-    this.addLogRow("Upload error: " + message);
-    console.error("Upload error: ", message);
+    this.addLogRow('Upload error: ' + message);
+    console.error('Upload error: ', message);
     if (!this._mqttStatusIsSet) {
-      this.showState('danger', "system.states.upload_error");
+      this.showState('danger', 'system.states.upload_error');
     }
     this.showDoneButton();
   }
@@ -154,7 +154,7 @@ class FirmwareUpdateStore {
    * so update tool will be stuck in this state.
    */
   updateStatus(msg_payload) {
-    var rows = msg_payload.trim().split("\n")
+    var rows = msg_payload.trim().split('\n');
     for (var i = 0; i < rows.length; i++) {
       this.updateSingleStatus(rows[i]);
     }
@@ -164,8 +164,8 @@ class FirmwareUpdateStore {
 
   updateSingleStatus(msg_payload) {
     var p = msg_payload.indexOf(' ');
-    var type = (p < 0) ? msg_payload : msg_payload.substr(0, p);
-    var payload = (p < 0) ? msg_payload : msg_payload.substr(p+1, msg_payload.length);
+    var type = p < 0 ? msg_payload : msg_payload.substr(0, p);
+    var payload = p < 0 ? msg_payload : msg_payload.substr(p + 1, msg_payload.length);
     this._mqttStatusIsSet = true;
 
     if (type == 'IDLE') {
@@ -186,7 +186,7 @@ class FirmwareUpdateStore {
         this.setProgressTimeout();
       } else if (type == 'ERROR') {
         if (!payload) {
-          payload = "system.errors.unknown";
+          payload = 'system.errors.unknown';
         }
         this.error = payload;
         this.showState('danger', payload);
@@ -204,7 +204,7 @@ class FirmwareUpdateStore {
   }
 
   updateLog(msg_payload) {
-    var rows = msg_payload.trim().split("\n")
+    var rows = msg_payload.trim().split('\n');
     for (var i = 0; i < rows.length; i++) {
       this.logRows.push(rows[i]);
     }
@@ -212,6 +212,6 @@ class FirmwareUpdateStore {
       this.setProgressTimeout();
     }
   }
-};
+}
 
 export default FirmwareUpdateStore;

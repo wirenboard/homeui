@@ -1,8 +1,8 @@
 'use strict';
 
-import { JSONEditor } from "../../3rdparty/jsoneditor";
+import { JSONEditor } from '../../3rdparty/jsoneditor';
 
-const glyphiconIconPrefix = 'glyphicon glyphicon-'
+const glyphiconIconPrefix = 'glyphicon glyphicon-';
 const glyphiconMapping = {
   collapse: 'chevron-down',
   expand: 'chevron-right',
@@ -21,29 +21,29 @@ const glyphiconMapping = {
   time: 'time',
   calendar: 'calendar',
   edit_properties: 'list',
-  warning: 'exclamation-sign'
-}
+  warning: 'exclamation-sign',
+};
 
 const fontawesomeMapping = {
   wifi: 'fas fa-wifi',
   ethernet: 'fas fa-network-wired',
   modem: 'fas fa-signal',
   loopback: 'fas fa-sync-alt',
-  'old-settings': 'fas fa-bars'
-}
+  'old-settings': 'fas fa-bars',
+};
 
-function makeWbBootstrap3Iconlib () {
+function makeWbBootstrap3Iconlib() {
   return class extends JSONEditor.AbstractIconLib {
-    getIconClass (key) {
+    getIconClass(key) {
       if (!key) {
-        return null
+        return null;
       }
       if (fontawesomeMapping[key]) {
-        return fontawesomeMapping[key]
+        return fontawesomeMapping[key];
       }
-      return glyphiconMapping[key] ? glyphiconIconPrefix + glyphiconMapping[key] : null
+      return glyphiconMapping[key] ? glyphiconIconPrefix + glyphiconMapping[key] : null;
     }
-  }
+  };
 }
 
-export default makeWbBootstrap3Iconlib
+export default makeWbBootstrap3Iconlib;

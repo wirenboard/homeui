@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.66.2) stable; urgency=medium
+
+  * Format source code. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 06 Jun 2023 16:48:28 +0500
+
 wb-mqtt-homeui (2.66.1) stable; urgency=medium
 
   * Show/hide channels of system devices

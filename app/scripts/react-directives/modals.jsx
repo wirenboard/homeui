@@ -21,9 +21,9 @@ export const ModalTitle = ({ id, text }) => {
   );
 };
 
-const GetLabelId = (modalId) => {
+const GetLabelId = modalId => {
   return modalId + 'Label';
-}
+};
 
 export const Modal = ({ id, active, onCancel, children }) => {
   // The idea is taken from https://usehooks.com/useOnClickOutside

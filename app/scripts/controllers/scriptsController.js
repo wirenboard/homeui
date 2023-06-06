@@ -5,22 +5,22 @@ class ScriptsCtrl {
     this.EditorProxy = EditorProxy;
     this.errors = errors;
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-    if(!this.haveRights) return;
+    if (!this.haveRights) return;
 
     const loadList = () => {
-        whenMqttReady()
-            .then(() => EditorProxy.List())
-            .then((scripts) => {
-                console.log("scripts", scripts);
-                // пишу каждому временное имя
-                this.scripts = scripts.map((script) => {
-                    script.tempName = script.virtualPath;
-                    script.processingRequest = false;
-                    return script;
-                });
-            })
-            .catch("rules.errors.list");
-    }
+      whenMqttReady()
+        .then(() => EditorProxy.List())
+        .then(scripts => {
+          console.log('scripts', scripts);
+          // пишу каждому временное имя
+          this.scripts = scripts.map(script => {
+            script.tempName = script.virtualPath;
+            script.processingRequest = false;
+            return script;
+          });
+        })
+        .catch('rules.errors.list');
+    };
 
     /*
      get list
@@ -31,21 +31,23 @@ class ScriptsCtrl {
      /rpc/v1/wbrules/Editor/Save/wb-mqtt-homeui-Usf4VuT4Ba {"id":3,"params":{"path":"rules.js","content": ....
      */
 
-     $scope.$on('update-rules-list', (event, data) => {
-        loadList();
-     });
+    $scope.$on('update-rules-list', (event, data) => {
+      loadList();
+    });
 
-     loadList();
+    loadList();
   }
 
   deleteScript(index) {
     var path = this.scripts[index].virtualPath;
-    this.EditorProxy.Remove({path: path}).then(script=>{this.scripts.splice(index,1);},
-                                               err=>alert(err))
+    this.EditorProxy.Remove({ path: path }).then(
+      script => {
+        this.scripts.splice(index, 1);
+      },
+      err => alert(err)
+    );
   }
 }
 
 //-----------------------------------------------------------------------------
-export default angular
-    .module('homeuiApp.scripts', [])
-    .controller('ScriptsCtrl', ScriptsCtrl);
+export default angular.module('homeuiApp.scripts', []).controller('ScriptsCtrl', ScriptsCtrl);

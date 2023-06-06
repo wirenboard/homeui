@@ -16,18 +16,18 @@ function firmwareUpdateDirective(mqttClient, whenMqttReady) {
 
       scope.store = new FirmwareUpdateStore();
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(CreateFirmwareUpdateWidget({store: scope.store}));
+      scope.root.render(CreateFirmwareUpdateWidget({ store: scope.store }));
 
       whenMqttReady().then(() => {
-        mqttClient.addStickySubscription('/firmware/status', function(msg) {
+        mqttClient.addStickySubscription('/firmware/status', function (msg) {
           scope.store.updateStatus(msg.payload);
         });
 
-        mqttClient.addStickySubscription('/firmware/log', function(msg) {
+        mqttClient.addStickySubscription('/firmware/log', function (msg) {
           scope.store.updateLog(msg.payload);
         });
 
-        mqttClient.addStickySubscription('/firmware/progress', function(msg) {
+        mqttClient.addStickySubscription('/firmware/progress', function (msg) {
           scope.store.updateProgress(msg.payload);
         });
       });

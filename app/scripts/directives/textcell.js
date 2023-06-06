@@ -1,4 +1,4 @@
-import template from './textcell.html'
+import template from './textcell.html';
 
 function textCellDirective() {
   return {
@@ -6,7 +6,7 @@ function textCellDirective() {
     scope: false,
     require: '^cell',
     replace: true,
-    template: template
+    template: template,
   };
 }
 
