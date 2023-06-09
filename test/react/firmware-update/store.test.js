@@ -32,9 +32,11 @@ it("sets expandRootfs", () => {
     let store = new FirmwareUpdateStore();
 
     store.setExpandRootfs(true);
+
     expect(store.expandRootfs).toBe(true);
 
     store.setExpandRootfs(false);
+
     expect(store.expandRootfs).toBe(false);
 
 });
@@ -44,9 +46,11 @@ it("adds log row", () => {
     let store = new FirmwareUpdateStore();
 
     store.addLogRow("row1");
+
     expect(store.logRows).toEqual(["row1"]);
 
     store.addLogRow("row2");
+
     expect(store.logRows).toEqual(["row1", "row2"]);
 
 });
@@ -57,9 +61,11 @@ it("clears log", () => {
 
     store.addLogRow("row1");
     store.addLogRow("row2");
+
     expect(store.logRows).toEqual(["row1", "row2"]);
 
     store.clearLog();
+
     expect(store.logRows).toEqual([]);
 
 });
@@ -69,10 +75,12 @@ it("shows state", () => {
     let store = new FirmwareUpdateStore();
 
     store.showState("type1", "msg1");
+
     expect(store.stateType).toBe("type1");
     expect(store.stateMsg).toBe("msg1");
 
     store.showState("type2", "msg2");
+
     expect(store.stateType).toBe("type2");
     expect(store.stateMsg).toBe("msg2");
 
@@ -83,11 +91,13 @@ it("shows done button", () => {
     let store = new FirmwareUpdateStore();
 
     store.showDoneButton("msg1");
+
     expect(store.isDone).toBe(true);
     expect(store.doneLabel).toBe("msg1");
     expect(store._mqttStatusIsSet).toBe(false);
 
     store.showDoneButton();
+
     expect(store.isDone).toBe(true);
     expect(store.doneLabel).toBe("system.buttons.dismiss");
     expect(store._mqttStatusIsSet).toBe(false);
@@ -104,6 +114,7 @@ it("handles done click", () => {
     store.logRows = ["row1", "row2"];
 
     store.onDoneClick();
+
     expect(store.isDone).toBe(false);
     expect(store.running).toBe(false);
     expect(store.uploading).toBe(false);
@@ -241,7 +252,6 @@ it('in progress', () => {
 
     expect(store.inProgress).toBe(false);
 
-
     store.uploading = true;
     store.running = false;
 
@@ -330,7 +340,6 @@ it('on upload error without mqtt status', () => {
     spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
     spyError = jest.spyOn(console, 'error');
     const store = new FirmwareUpdateStore();
-
     const testEvent = {
         uploadResponse: {
             data: 'testData'
@@ -354,7 +363,6 @@ it('on upload error with mqtt status', () => {
     spyError = jest.spyOn(console, 'error');
     const store = new FirmwareUpdateStore();
     store._mqttStatusIsSet = true;
-
     const testEvent = {
         uploadResponse: {
             data: 'testData'
@@ -385,7 +393,347 @@ it('updates status', () => {
 
 });
 
+it('parses message payload', () => {
+
+    const store = new FirmwareUpdateStore();
+
+    expect(store._parseMessagePayload('testMessage')).toStrictEqual(['testMessage', 'testMessage']);
+
+    expect(store._parseMessagePayload('test_type test_payload')).toStrictEqual(['test_type', 'test_payload']);
+
+});
+
+it('updates idle status empty', () => {
+
+    spyClearTimeouts = jest.spyOn(FirmwareUpdateStore.prototype, 'clearTimeouts');
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
+    const store = new FirmwareUpdateStore();
+    store._mqttStatusIsSet = true;
+    store.running = false;
+    store.receivedFirstStatus = false;
+
+    store._updateIdleStatus();
+
+    expect(store._mqttStatusIsSet).toBe(false);
+    expect(spyClearTimeouts).not.toBeCalled();
+    expect(spyShowState).not.toBeCalled();
+    expect(spyShowDoneButton).not.toBeCalled();
+
+});
+
+it('updates idle status with status', () => {
+
+    spyClearTimeouts = jest.spyOn(FirmwareUpdateStore.prototype, 'clearTimeouts');
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
+    const store = new FirmwareUpdateStore();
+    store._mqttStatusIsSet = true;
+    store.running = false;
+    store.receivedFirstStatus = true;
+
+    store._updateIdleStatus();
+
+    expect(store._mqttStatusIsSet).toBe(false);
+    expect(spyClearTimeouts).not.toBeCalled();
+    expect(spyShowState).not.toBeCalled();
+    expect(spyShowDoneButton).not.toBeCalled();
+
+});
+
+it('updates idle status with running', () => {
+
+    spyClearTimeouts = jest.spyOn(FirmwareUpdateStore.prototype, 'clearTimeouts');
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
+    const store = new FirmwareUpdateStore();
+    store._mqttStatusIsSet = true;
+    store.running = true;
+    store.receivedFirstStatus = false;
+
+    store._updateIdleStatus();
+
+    expect(store._mqttStatusIsSet).toBe(false);
+    expect(spyClearTimeouts).not.toBeCalled();
+    expect(spyShowState).not.toBeCalled();
+    expect(spyShowDoneButton).not.toBeCalled();
+
+});
+
+it('updates idle status full with error', () => {
+
+    spyClearTimeouts = jest.spyOn(FirmwareUpdateStore.prototype, 'clearTimeouts');
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
+    const store = new FirmwareUpdateStore();
+    store._mqttStatusIsSet = true;
+    store.running = true;
+    store.receivedFirstStatus = true;
+    store.error = true;
+
+    store._updateIdleStatus();
+
+    expect(store._mqttStatusIsSet).toBe(false);
+    expect(spyClearTimeouts).toBeCalled();
+    expect(spyShowState).not.toBeCalled();
+    expect(spyShowDoneButton).toBeCalledWith('system.buttons.hide');
+
+});
+
+it('updates idle status full without error', () => {
+
+    spyClearTimeouts = jest.spyOn(FirmwareUpdateStore.prototype, 'clearTimeouts');
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
+    const store = new FirmwareUpdateStore();
+    store._mqttStatusIsSet = true;
+    store.running = true;
+    store.receivedFirstStatus = true;
+    store.error = false;
+
+    store._updateIdleStatus();
+
+    expect(store._mqttStatusIsSet).toBe(false);
+    expect(spyClearTimeouts).toBeCalled();
+    expect(spyShowState).toBeCalledWith('success', 'system.states.complete');
+    expect(spyShowDoneButton).toBeCalledWith('system.buttons.hide');
+
+});
+
+it('updates info status', () => {
+
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+
+    store._updateInfoStatus('dummy_payload');
+
+    expect(spyShowState).toBeCalledWith('info', 'dummy_payload');
+    expect(spySetProgressTimeout).toBeCalled();
+
+});
+
+it('updates error status without payload', () => {
+
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+
+    store._updateErrorStatus();
+
+    expect(spyShowState).toBeCalledWith('danger', "system.errors.unknown");
+    expect(spySetProgressTimeout).toBeCalled();
+
+});
+
+it('updates error status with payload', () => {
+
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+
+    store._updateErrorStatus("dummy_payload");
+
+    expect(spyShowState).toBeCalledWith('danger', "dummy_payload");
+    expect(spySetProgressTimeout).toBeCalled();
+
+});
+
+it('updates reboot status', () => {
+
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spySetRebootTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setRebootTimeout');
+    const store = new FirmwareUpdateStore();
+
+    store._updateRebootStatus();
+
+    expect(spyShowState).toBeCalledWith('warning', "system.states.reboot");
+    expect(spySetRebootTimeout).toBeCalled();
+
+});
+
+it('updates single status idle', () => {
+
+    spyUpdateIdleStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateIdleStatus');
+    spyUpdateInfoStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateInfoStatus');
+    spyUpdateErrorStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateErrorStatus');
+    spyUpdateRebootStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateRebootStatus');
+    spyParseMessagePayload = jest.spyOn(FirmwareUpdateStore.prototype, '_parseMessagePayload').mockReturnValue(['IDLE', 'dummy_payload']);
+    const store = new FirmwareUpdateStore();
+
+    store.updateSingleStatus('dummy_message');
+
+    expect(spyParseMessagePayload).toBeCalledWith('dummy_message');
+    expect(spyUpdateIdleStatus).toBeCalled();
+    expect(spyUpdateInfoStatus).not.toBeCalled();
+    expect(spyUpdateErrorStatus).not.toBeCalled();
+    expect(spyUpdateRebootStatus).not.toBeCalled();
+
+});
+
+it('updates single status info without status', () => {
+
+    spyUpdateIdleStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateIdleStatus');
+    spyUpdateInfoStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateInfoStatus');
+    spyUpdateErrorStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateErrorStatus');
+    spyUpdateRebootStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateRebootStatus');
+    spyParseMessagePayload = jest.spyOn(FirmwareUpdateStore.prototype, '_parseMessagePayload').mockReturnValue(['INFO', 'dummy_payload']);
+    const store = new FirmwareUpdateStore();
+    store.receivedFirstStatus = false;
+
+    store.updateSingleStatus('dummy_message');
+
+    expect(spyParseMessagePayload).toBeCalledWith('dummy_message');
+    expect(spyUpdateIdleStatus).not.toBeCalled();
+    expect(spyUpdateInfoStatus).not.toBeCalled();
+    expect(spyUpdateErrorStatus).not.toBeCalled();
+    expect(spyUpdateRebootStatus).not.toBeCalled();
+
+});
+
+it('updates single status error without status', () => {
+
+    spyUpdateIdleStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateIdleStatus');
+    spyUpdateInfoStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateInfoStatus');
+    spyUpdateErrorStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateErrorStatus');
+    spyUpdateRebootStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateRebootStatus');
+    spyParseMessagePayload = jest.spyOn(FirmwareUpdateStore.prototype, '_parseMessagePayload').mockReturnValue(['ERROR', 'dummy_payload']);
+    const store = new FirmwareUpdateStore();
+    store.receivedFirstStatus = false;
+
+    store.updateSingleStatus('dummy_message');
+
+    expect(spyParseMessagePayload).toBeCalledWith('dummy_message');
+    expect(spyUpdateIdleStatus).not.toBeCalled();
+    expect(spyUpdateInfoStatus).not.toBeCalled();
+    expect(spyUpdateErrorStatus).not.toBeCalled();
+    expect(spyUpdateRebootStatus).not.toBeCalled();
+
+});
+
+it('updates single status reboot without status', () => {
+
+    spyUpdateIdleStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateIdleStatus');
+    spyUpdateInfoStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateInfoStatus');
+    spyUpdateErrorStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateErrorStatus');
+    spyUpdateRebootStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateRebootStatus');
+    spyParseMessagePayload = jest.spyOn(FirmwareUpdateStore.prototype, '_parseMessagePayload').mockReturnValue(['REBOOT', 'dummy_payload']);
+    const store = new FirmwareUpdateStore();
+    store.receivedFirstStatus = false;
+
+    store.updateSingleStatus('dummy_message');
+
+    expect(spyParseMessagePayload).toBeCalledWith('dummy_message');
+    expect(spyUpdateIdleStatus).not.toBeCalled();
+    expect(spyUpdateInfoStatus).not.toBeCalled();
+    expect(spyUpdateErrorStatus).not.toBeCalled();
+    expect(spyUpdateRebootStatus).not.toBeCalled();
+
+});
+
+it('updates single status info', () => {
+
+    spyUpdateIdleStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateIdleStatus');
+    spyUpdateInfoStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateInfoStatus');
+    spyUpdateErrorStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateErrorStatus');
+    spyUpdateRebootStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateRebootStatus');
+    spyParseMessagePayload = jest.spyOn(FirmwareUpdateStore.prototype, '_parseMessagePayload').mockReturnValue(['INFO', 'dummy_payload']);
+    const store = new FirmwareUpdateStore();
+    store.receivedFirstStatus = true;
+
+    store.updateSingleStatus('dummy_message');
+
+    expect(spyParseMessagePayload).toBeCalledWith('dummy_message');
+    expect(spyUpdateIdleStatus).not.toBeCalled();
+    expect(spyUpdateInfoStatus).toBeCalledWith('dummy_payload');
+    expect(spyUpdateErrorStatus).not.toBeCalled();
+    expect(spyUpdateRebootStatus).not.toBeCalled();
+
+});
+
+it('updates single status info', () => {
+
+    spyUpdateIdleStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateIdleStatus');
+    spyUpdateInfoStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateInfoStatus');
+    spyUpdateErrorStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateErrorStatus');
+    spyUpdateRebootStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateRebootStatus');
+    spyParseMessagePayload = jest.spyOn(FirmwareUpdateStore.prototype, '_parseMessagePayload').mockReturnValue(['ERROR', 'dummy_payload']);
+    const store = new FirmwareUpdateStore();
+    store.receivedFirstStatus = true;
+
+    store.updateSingleStatus('dummy_message');
+
+    expect(spyParseMessagePayload).toBeCalledWith('dummy_message');
+    expect(spyUpdateIdleStatus).not.toBeCalled();
+    expect(spyUpdateInfoStatus).not.toBeCalled();
+    expect(spyUpdateErrorStatus).toBeCalledWith('dummy_payload');
+    expect(spyUpdateRebootStatus).not.toBeCalled();
+
+});
+
+it('updates single status reboot', () => {
+
+    spyUpdateIdleStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateIdleStatus');
+    spyUpdateInfoStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateInfoStatus');
+    spyUpdateErrorStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateErrorStatus');
+    spyUpdateRebootStatus = jest.spyOn(FirmwareUpdateStore.prototype, '_updateRebootStatus');
+    spyParseMessagePayload = jest.spyOn(FirmwareUpdateStore.prototype, '_parseMessagePayload').mockReturnValue(['REBOOT', 'dummy_payload']);
+    const store = new FirmwareUpdateStore();
+    store.receivedFirstStatus = true;
+
+    store.updateSingleStatus('dummy_message');
+
+    expect(spyParseMessagePayload).toBeCalledWith('dummy_message');
+    expect(spyUpdateIdleStatus).not.toBeCalled();
+    expect(spyUpdateInfoStatus).not.toBeCalled();
+    expect(spyUpdateErrorStatus).not.toBeCalled();
+    expect(spyUpdateRebootStatus).toBeCalled();
+
+});
+
+it('updates progress', () => {
+
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+
+    store.updateProgress('10');
+
+    expect(store.progressPercents).toBe(10);
+    expect(spySetProgressTimeout).toBeCalled();
+
+});
+
+it('updates log no status', () => {
+
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+    store.logRows = [];
+    store._mqttStatusIsSet = false;
+
+    store.updateLog('msg1\nmsg2\nmsg3  ');
+
+    expect(store.logRows).toEqual(['msg1', 'msg2', 'msg3']);
+    expect(spySetProgressTimeout).not.toBeCalled();
+
+});
+
+it('updates log with status', () => {
+
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+    store.logRows = [];
+    store._mqttStatusIsSet = true;
+
+    store.updateLog('msg1\nmsg2\nmsg3  ');
+
+    expect(store.logRows).toEqual(['msg1', 'msg2', 'msg3']);
+    expect(spySetProgressTimeout).toBeCalled();
+
+});
+
 afterEach(() => {
+
     jest.useRealTimers();
     jest.restoreAllMocks();
+
 });
