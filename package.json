@@ -6,7 +6,7 @@
     "clean": "rimraf -G dist coverage ./tmp",
     "build": "rimraf -G dist && webpack --progress",
     "server": "npx webpack serve --history-api-fallback --client-progress",
-    "test": "jest test",
+    "test": "jest test/react",
     "start": "npm run server",
     "start-dist": "cd ./dist && python3 ../test/dist_server.py "
   },

@@ -2,6 +2,7 @@ import React from 'react';
 
 import FirmwareUpdateStore from '../../../app/scripts/react-directives/firmware-update/store';
 
+
 it("initializes store", () => {
 
     let store = new FirmwareUpdateStore();
@@ -191,15 +192,15 @@ it("sets reboot timeout", () => {
 
 it("clears timeout", () => {
 
-        jest.useFakeTimers();
-        jest.spyOn(global, 'clearTimeout');
-        const store = new FirmwareUpdateStore();
-        store._timer = 31337;
+    jest.useFakeTimers();
+    jest.spyOn(global, 'clearTimeout');
+    const store = new FirmwareUpdateStore();
+    store._timer = 31337;
 
-        store.clearTimeouts();
+    store.clearTimeouts();
 
-        expect(store._timer).toBe(null);
-        expect(clearTimeout).toHaveBeenCalledWith(31337);
+    expect(store._timer).toBe(null);
+    expect(clearTimeout).toHaveBeenCalledWith(31337);
 
 });
 
@@ -234,27 +235,27 @@ it('can upload', () => {
 
 it('in progress', () => {
 
-        const store = new FirmwareUpdateStore();
-        store.uploading = false;
-        store.running = false;
+    const store = new FirmwareUpdateStore();
+    store.uploading = false;
+    store.running = false;
 
-        expect(store.inProgress).toBe(false);
+    expect(store.inProgress).toBe(false);
 
 
-        store.uploading = true;
-        store.running = false;
+    store.uploading = true;
+    store.running = false;
 
-        expect(store.inProgress).toBe(true);
+    expect(store.inProgress).toBe(true);
 
-        store.uploading = false;
-        store.running = true;
+    store.uploading = false;
+    store.running = true;
 
-        expect(store.inProgress).toBe(true);
+    expect(store.inProgress).toBe(true);
 
-        store.uploading = true;
-        store.running = true;
+    store.uploading = true;
+    store.running = true;
 
-        expect(store.inProgress).toBe(true);
+    expect(store.inProgress).toBe(true);
 
 });
 
@@ -272,6 +273,115 @@ it('on upload start', () => {
     expect(store.progressPercents).toBe(0);
     expect(spyCLearLog).toHaveBeenCalled();
     expect(spyShowState).toHaveBeenCalledWith("info", "system.states.uploading");
+
+});
+
+it('on upload progress', () => {
+
+    const store = new FirmwareUpdateStore();
+    store.progressPercents = 0;
+    const testEvent = { completed: 95 }
+
+    store.onUploadProgress(testEvent);
+
+    expect(store.progressPercents).toBe(95);
+
+});
+
+it('on upload finish without mqtt status', () => {
+
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+    store.uploading = true;
+    store.running = false;
+
+    store.onUploadFinish();
+
+    expect(store.uploading).toBe(false);
+    expect(store.running).toBe(true);
+    expect(spyShowState).toHaveBeenCalledWith("info", "system.states.uploaded");
+    expect(spySetProgressTimeout).toHaveBeenCalled();
+
+});
+
+it('on upload finish with mqtt status', () => {
+
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
+    const store = new FirmwareUpdateStore();
+    store.uploading = true;
+    store.running = false;
+    store._mqttStatusIsSet = true;
+
+    store.onUploadFinish();
+
+    expect(store.uploading).toBe(false);
+    expect(store.running).toBe(true);
+    expect(spyShowState).not.toHaveBeenCalled();
+    expect(spySetProgressTimeout).toHaveBeenCalled();
+
+});
+
+it('on upload error without mqtt status', () => {
+
+    spyAddLogRow = jest.spyOn(FirmwareUpdateStore.prototype, 'addLogRow');
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
+    spyError = jest.spyOn(console, 'error');
+    const store = new FirmwareUpdateStore();
+
+    const testEvent = {
+        uploadResponse: {
+            data: 'testData'
+        }
+    }
+
+    store.onUploadError(testEvent);
+
+    expect(spyAddLogRow).toHaveBeenCalledWith("Upload error: testData");
+    expect(spyError).toHaveBeenCalledWith("Upload error: ", "testData");
+    expect(spyShowState).toHaveBeenCalledWith("danger", "system.states.upload_error");
+    expect(spyShowDoneButton).toHaveBeenCalled();
+
+});
+
+it('on upload error with mqtt status', () => {
+
+    spyAddLogRow = jest.spyOn(FirmwareUpdateStore.prototype, 'addLogRow');
+    spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
+    spyShowDoneButton = jest.spyOn(FirmwareUpdateStore.prototype, 'showDoneButton');
+    spyError = jest.spyOn(console, 'error');
+    const store = new FirmwareUpdateStore();
+    store._mqttStatusIsSet = true;
+
+    const testEvent = {
+        uploadResponse: {
+            data: 'testData'
+        }
+    }
+
+    store.onUploadError(testEvent);
+
+    expect(spyAddLogRow).toHaveBeenCalledWith("Upload error: testData");
+    expect(spyError).toHaveBeenCalledWith("Upload error: ", "testData");
+    expect(spyShowState).not.toHaveBeenCalled();
+    expect(spyShowDoneButton).toHaveBeenCalled();
+
+});
+
+it('updates status', () => {
+
+    spyUpdateSingleStatus = jest.spyOn(FirmwareUpdateStore.prototype, 'updateSingleStatus');
+    const store = new FirmwareUpdateStore();
+    store.receivedFirstStatus = false;
+
+    store.updateStatus("row1\nrow2\nrow3  ");
+
+    expect(store.receivedFirstStatus).toBe(true);
+    expect(spyUpdateSingleStatus).toHaveBeenCalledWith("row1");
+    expect(spyUpdateSingleStatus).toHaveBeenCalledWith("row2");
+    expect(spyUpdateSingleStatus).toHaveBeenCalledWith("row3");
 
 });
 
