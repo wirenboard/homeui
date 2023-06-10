@@ -133,6 +133,10 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
       connectOptions.userName = user;
       connectOptions.password = password;
     }
+      
+    if(parseInt(port) === 443) {
+      connectOptions.useSSL = true
+    }
 
     id = clientid;
 
