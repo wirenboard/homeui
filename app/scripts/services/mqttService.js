@@ -173,7 +173,11 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
       get: () => MAX_QUEUED_MESSAGES - client.inFlightMessages.length,
     });
 
-    client.connect(angular.copy(connectOptions));
+    try {
+      client.connect(angular.copy(connectOptions));
+    } catch (e) {
+      console.error(e);   
+    }
   };
 
   //...........................................................................
