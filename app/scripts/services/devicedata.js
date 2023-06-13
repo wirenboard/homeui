@@ -343,9 +343,8 @@ function deviceDataService(mqttClient, $window) {
     receiveValue(newValue) {
       if (!newValue)
         /// ozk замена null на  '-' тут и в 342 строке
-        this._value = this._isString()
-          ? ''
-          : '-' /*null*/; // value removed, non-pushbutton/text cell becomes incomplete
+        this._value = this._isString() ? '' : '-' /*null*/;
+      // value removed, non-pushbutton/text cell becomes incomplete
       else this._setCellValue(newValue);
       this._updateCompleteness();
     }
