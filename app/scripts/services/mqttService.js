@@ -134,7 +134,7 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
       connectOptions.password = password;
     }
       
-    if(parseInt(port) === 443) {
+    if(parseInt(port) === 443 || location.protocol === 'https:') {
       connectOptions.useSSL = true
     }
 
