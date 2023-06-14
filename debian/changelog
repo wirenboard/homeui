@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.67.0) stable; urgency=medium
 
-  * Add bindig to svg element ids in dashboards. 
+  * Add binding to svg element ids in dashboards. 
     It is possible to set native SVG element id instead 
     of data-svg-param-id in JSON editor.
 
