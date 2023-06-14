@@ -29,7 +29,7 @@ class ConfirmModalState {
       });
       this.onCancel = () => {
         this.active = false;
-        reject('cancel');
+        resolve('cancel');
       };
       this.active = true;
     });

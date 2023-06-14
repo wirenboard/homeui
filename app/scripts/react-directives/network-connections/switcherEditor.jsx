@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { Button, FormCheckbox, FormStringEdit, BootstrapRow } from '../common';
+import { Button, BootstrapRow } from '../common';
+import { FormCheckbox, FormStringEdit } from '../forms/forms';
 import { DndContext, useDroppable, useDraggable } from '@dnd-kit/core';
 import { restrictToFirstScrollableAncestor } from '@dnd-kit/modifiers';
 import { useTranslation } from 'react-i18next';

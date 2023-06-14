@@ -1,5 +1,6 @@
 import FocusLock from 'react-focus-lock';
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const ModalHeader = ({ children }) => {
   return <div className="modal-header">{children}</div>;
@@ -21,9 +22,9 @@ export const ModalTitle = ({ id, text }) => {
   );
 };
 
-const GetLabelId = (modalId) => {
+const GetLabelId = modalId => {
   return modalId + 'Label';
-}
+};
 
 export const Modal = ({ id, active, onCancel, children }) => {
   // The idea is taken from https://usehooks.com/useOnClickOutside
@@ -73,5 +74,14 @@ export const Modal = ({ id, active, onCancel, children }) => {
         </FocusLock>
       </div>
     </div>
+  );
+};
+
+export const ModalCancelButton = ({ onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <button type="button" className="btn btn-default" data-dismiss="modal" onClick={onClick}>
+      {t('network-connections.buttons.cancel')}
+    </button>
   );
 };
