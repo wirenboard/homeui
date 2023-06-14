@@ -176,7 +176,8 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
     try {
       client.connect(angular.copy(connectOptions));
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      $translate('mqtt.errors.create').then(m => ngToast.danger(m));
     }
   };
 
