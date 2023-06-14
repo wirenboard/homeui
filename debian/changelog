@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.67.2) stable; urgency=medium
+
+  * Switch MQTT client to SSL when connected via HTTPS (thanks @Marko298)
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 14 Jun 2023 18:57:15 +0600
+
 wb-mqtt-homeui (2.67.1) stable; urgency=medium
 
   * Code refactoring. No functional changes
