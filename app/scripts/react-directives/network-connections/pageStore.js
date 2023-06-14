@@ -2,7 +2,7 @@
 
 import Connections, { connectionsStoreFromJson, connectionsToJson } from './connectionsStore';
 import SwitcherStore, { switcherStoreToJson, switcherStoreFromJson } from './switcherStore';
-import ConfirmModalState from './confirmModalState';
+import ConfirmModalState from '../components/modals/confirmModalState';
 import SelectNewConnectionModalState from './selectNewConnectionModalState';
 import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';

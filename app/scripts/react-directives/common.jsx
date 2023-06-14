@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 export const WarningTag = ({ text }) => {
@@ -9,8 +8,9 @@ export const ErrorTag = ({ text }) => {
   return <span className="tag bg-danger text-nowrap">{text}</span>;
 };
 
-export const BootstrapRow = props => {
-  return <div className="row">{props.children}</div>;
+export const BootstrapRow = ({ children, additionalStyles }) => {
+  const classes = 'row' + (additionalStyles ? ' ' + additionalStyles : '');
+  return <div className={classes}>{children}</div>;
 };
 
 export const BootstrapRowWithLabel = ({ label, children }) => {
@@ -55,11 +55,11 @@ export const WarningBar = ({ children }) => {
   );
 };
 
-export const Button = ({ label, type, onClick, disabled, additionalStyles, icon }) => {
+export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title }) => {
   const classes =
     'btn btn-' + (type ? type : 'default') + (additionalStyles ? ' ' + additionalStyles : '');
   return (
-    <button type="button" className={classes} onClick={onClick} disabled={disabled}>
+    <button type="button" className={classes} onClick={onClick} disabled={disabled} title={title}>
       {icon && (
         <>
           <i className={icon}></i>
@@ -72,54 +72,22 @@ export const Button = ({ label, type, onClick, disabled, additionalStyles, icon 
 
 export const Checkbox = ({ label, id, value, onChange }) => {
   return (
-    <label htmlFor={id}>
-      <input type="checkbox" id={id} checked={value} onChange={onChange} /> {label}
-    </label>
+    <div className="checkbox">
+      <label htmlFor={id}>
+        <input type="checkbox" id={id} checked={value} onChange={onChange} /> {label}
+      </label>
+    </div>
   );
 };
 
-export const LineEdit = ({ placeholder, value }) => {
-  return <input className="form-control" type="text" placeholder={placeholder} value={value} />;
+export const LineEdit = ({ placeholder, value, onChange }) => {
+  return (
+    <input
+      className="form-control"
+      type="text"
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+    />
+  );
 };
-
-export const FormEdit = observer(({ name, error, description, children }) => {
-  return (
-    <BootstrapRow>
-      <div className={error ? 'form-group col-md-12 has-error' : 'form-group col-md-12'}>
-        <label className="control-label">{name}</label>
-        {children}
-        {description && <p className="help-block">{description}</p>}
-        {error && <p className="help-block errormsg">{error}</p>}
-      </div>
-    </BootstrapRow>
-  );
-});
-
-export const FormStringEdit = observer(({ store }) => {
-  return (
-    <FormEdit name={store.name} error={store.error} description={store.description}>
-      <input
-        className="form-control"
-        type="text"
-        value={store.value}
-        placeholder={store.placeholder}
-        onChange={e => store.setValue(e.target.value)}
-      />
-    </FormEdit>
-  );
-});
-
-export const FormCheckbox = observer(({ store }) => {
-  return (
-    <BootstrapRow>
-      <div className="col-md-12">
-        <Checkbox
-          id={store.id}
-          label={store.name}
-          value={store.value}
-          onChange={e => store.setValue(e.target.checked)}
-        />
-      </div>
-    </BootstrapRow>
-  );
-});

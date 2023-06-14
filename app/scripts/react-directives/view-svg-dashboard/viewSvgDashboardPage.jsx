@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
-import { Spinner } from '../common';
+import { Spinner, Button } from '../common';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../common';
 import SvgView from './svgView';
 import { FullscreenContext } from '../components/fullscreen/fullscreenContext';
 
