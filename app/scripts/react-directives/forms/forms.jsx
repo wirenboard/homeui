@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, LineEdit } from '../common';
+import Select from 'react-select';
 
 export const FormEdit = observer(({ name, error, hasErrors, description, children }) => {
   return (
@@ -44,6 +45,58 @@ export const FormCheckbox = observer(({ store }) => {
   );
 });
 
+export const FormSelect = observer(({ store }) => {
+  const withGroups = store.options.some(el => 'options' in el);
+  const customStyles = {
+    indicatorSeparator: () => ({
+      display: 'none',
+    }),
+    dropdownIndicator: provided => ({
+      ...provided,
+      color: 'black',
+      paddingLeft: '0px',
+      paddingRight: '0px',
+    }),
+    control: provided => ({
+      ...provided,
+      borderRadius: '0px',
+      borderColor: store.hasErrors ? '#b94a48' : '#ccc',
+    }),
+    groupHeading: provided => {
+      return {
+        ...provided,
+        textTransform: 'unset',
+        fontSize: 'unset',
+        color: 'black',
+        fontWeight: 'bold',
+      };
+    },
+    option: provided => {
+      if (withGroups) {
+        provided.paddingLeft = '20px';
+      }
+      return provided;
+    },
+  };
+  return (
+    <FormEdit
+      name={store.name}
+      error={store.error}
+      hasErrors={store.hasErrors}
+      description={store.description}
+    >
+      <Select
+        options={store.options}
+        isSearchable={false}
+        value={store.selectedOption}
+        styles={customStyles}
+        placeholder={store.placeholder}
+        onChange={value => store.setSelectedOption(value)}
+      />
+    </FormEdit>
+  );
+});
+
 export const MakeFormFields = params => {
   return params.map(([key, param]) => {
     if (param.type === 'string') {
@@ -54,6 +107,9 @@ export const MakeFormFields = params => {
     }
     if (param.type === 'boolean') {
       return <FormCheckbox key={param.id} store={param} />;
+    }
+    if (param.type === 'options') {
+      return <FormSelect key={key} store={param} />;
     }
   });
 };

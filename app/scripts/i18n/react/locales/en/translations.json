@@ -138,5 +138,42 @@
          "exit-fullscreen": "Exit fullscreen mode",
          "edit": "Edit"
       }
+   },
+   "edit-svg-dashboard": {
+      "labels": {
+         "create": "Create SVG dashboard",
+         "edit": "Edit SVG dashboard",
+         "common-parameters-title": "Common parameters",
+         "common-parameters-id": "Id",
+         "common-parameters-name": "Name",
+         "common-parameters-fullscreen": "Fit fullscreen",
+         "bindings-title": "Bindings",
+         "write-enable": "Write",
+         "read-enable": "Read",
+         "style-enable": "Style",
+         "visible-enable": "Visible",
+         "channel": "Channel",
+         "value": "Value",
+         "tag-name": "Tag type: {{tag}}",
+         "confirm-remove": "Do you really want to remove this dashboard?",
+         "condition": "Condition",
+         "select-channel-placeholder": "Select channel",
+         "on": "Value on",
+         "off": "Value off"
+      },
+      "buttons": {
+         "save": "Save",
+         "cancel": "Cancel",
+         "edit-json": "Edit as JSON",
+         "load-svg": "Load SVG",
+         "to-dashboards-list": "Dashboards list",
+         "preview": "Preview",
+         "remove": "Remove"
+      }
+   },
+   "validator": {
+      "errors": {
+         "empty": "Enter value" 
+      }
    }
 }

@@ -1,0 +1,96 @@
+.svg-edit-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+  
+.svg-edit-page h1 {
+    margin-bottom: 7px;
+}
+
+.svg-edit-page .json-editor {
+    flex-grow: 1;
+    height: 1px;
+    width: 100%;
+}
+
+.svg-edit-page .svg-view svg {
+    height: 100%;
+    width: 100%;
+}
+
+.svg-edit-page .svg-view {
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+}
+
+.svg-edit-page .svg-edit-left-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.svg-edit-page .svg-edit-left-panel button{
+    margin-top: 10px;
+}
+
+.svg-edit-page .visual-editor {
+    height: 100%;
+}
+
+.svg-edit-page svg .selected {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.svg-edit-page svg path,
+.svg-edit-page svg text,
+.svg-edit-page svg tspan,
+.svg-edit-page svg circle {
+    cursor: pointer;
+}
+
+.svg-edit-page svg desc {
+    display: none;
+}
+
+.svg-edit-page .flex-rows {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.svg-edit-page .flex-max-grow {
+    flex-grow: 1;
+}
+
+.svg-edit-page .button-group button:not(:first-child) {
+    margin-left: 5px;
+}
+
+@media (min-width: 992px) {
+    .svg-edit-page .svg-edit-right-panel {
+        padding-left: 0px;
+    }
+}
+
+.svg-edit-page legend {
+    padding-top: 0px;
+    margin-bottom: 10px;
+}
+
+.svg-edit-page .json-editor-buttons {
+    margin-top: 10px;
+}
+
+@media (max-width: 767px) {
+    .svg-edit-page .json-editor-buttons {
+        margin-bottom: 10px;
+    }
+}

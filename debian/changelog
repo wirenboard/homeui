@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.68.0) stable; urgency=medium
+
+  * Add bindig to svg element ids in dashboards visual editor. 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 14 Jun 2023 16:19:29 +0500
+
 wb-mqtt-homeui (2.67.1) stable; urgency=medium
 
   * Code refactoring. No functional changes
