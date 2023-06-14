@@ -1072,15 +1072,11 @@ body.hmi #wrapper {
 
 body.hmi #page-wrapper {
     height: 100vh;
-    padding: 0;
+    padding: 0px 0px 5px 0px;
 }
 
 body.hmi #widgets-list {
   padding: 5px 7px;
-}
-
-body.hmi .page-header {
-    margin-top: 10px;
 }
 
 body.hmi #wrapper .navbar,
@@ -1169,26 +1165,10 @@ body.hmi .show-console {
   height: 100%;
 }
 
-.svg-edit-page,
-.svg-view-page {
+.svg-edit-page {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.svg-view-page .svg-view-fullscreen {
-  flex-grow: 1;
-  height: 1px;
-}
-
-.svg-view-fullscreen .svg-view-container {
-  height: 100%;
-  text-align: center;
-}
-
-.svg-view-fullscreen .svg-view-container > svg {
-  height: 100%;
-  width: 100%;
 }
 
 .svg-edit-page h1 {

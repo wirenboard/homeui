@@ -35,6 +35,7 @@ function deviceDataService(mqttClient, $window) {
   'ngInject';
 
   var devices = {}, cells = {};
+  let onValueHandler;
 
   var cellTypeMap = {
     "text": {
@@ -635,6 +636,11 @@ function deviceDataService(mqttClient, $window) {
         handler(payload);
       }
     })
+
+    if (onValueHandler) {
+      let cell = cellFromTopic(topic);
+      onValueHandler(cell.deviceId + '/' + cell.controlId, cell.value);
+    }
   });
 
   function filterCellIds (func) {
@@ -771,7 +777,11 @@ function deviceDataService(mqttClient, $window) {
         types[cells[cellId].type] = true;
       });
       return Object.keys(types).sort();
-    }
+    },
+
+    onValue(handler) {
+      onValueHandler = handler;
+    },
   };
 }
 
