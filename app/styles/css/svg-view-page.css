@@ -1,0 +1,32 @@
+.svg-view-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.svg-view-page svg {
+    height: unset;
+    width: unset;
+}
+
+.svg-view-page .fit-to-page {
+    flex-grow: 1;
+    height: 1px;
+}
+
+.svg-view-page .fit-to-page svg {
+    height: 100%;
+    width: 100%;
+}
+
+.svg-view-page .button-group button:not(:first-child) {
+    margin-left: 5px;
+}
+
+.svg-view-page .switch {
+    cursor: pointer;
+
+    &:hover {
+        opacity: 0.6;
+    }
+}

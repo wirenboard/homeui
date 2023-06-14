@@ -1,8 +1,22 @@
-wb-mqtt-homeui (2.66.2) stable; urgency=medium
+wb-mqtt-homeui (2.67.2) stable; urgency=medium
 
   * Switch MQTT client to SSL when connected via HTTPS (thanks @Marko298)
 
- -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Tue, 13 Jun 2023 19:21:42 +0600
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Wed, 14 Jun 2023 18:57:15 +0600
+
+wb-mqtt-homeui (2.67.1) stable; urgency=medium
+
+  * Code refactoring. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 14 Jun 2023 16:06:26 +0500
+
+wb-mqtt-homeui (2.67.0) stable; urgency=medium
+
+  * Add binding to svg element ids in dashboards. 
+    It is possible to set native SVG element id instead 
+    of data-svg-param-id in JSON editor.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 08 Jun 2023 12:14:13 +0500
 
 wb-mqtt-homeui (2.66.1) stable; urgency=medium
 

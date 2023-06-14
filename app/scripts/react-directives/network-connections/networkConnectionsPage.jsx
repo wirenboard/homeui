@@ -4,7 +4,8 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
 import ConnectionsEditor from './connectionsEditor';
 import SwitcherEditor from './switcherEditor';
-import { ConfirmModal, SelectModal } from './modals';
+import { SelectModal } from './modals';
+import ConfirmModal from '../components/modals/confirmModal';
 import { HorizontalTabs, TabContent, TabItem, TabPane, TabsList } from './tabs';
 
 const TabTitle = ({ title }) => {

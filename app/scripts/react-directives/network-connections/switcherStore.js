@@ -2,9 +2,9 @@
 
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
-import { IntegerStore } from './numberStore';
-import { StringStore } from './stringStore';
-import { BooleanStore } from './booleanStore';
+import { IntegerStore } from '../forms/numberStore';
+import { StringStore } from '../forms/stringStore';
+import { BooleanStore } from '../forms/booleanStore';
 import { createViewModel } from 'mobx-utils';
 
 export const HIGH_TIER = 'high';
