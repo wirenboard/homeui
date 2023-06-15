@@ -1,6 +1,6 @@
 'use strict';
 
-import { makeAutoObservable, makeObservable, observable, action } from 'mobx';
+import { makeAutoObservable, makeObservable, observable, action, reaction, autorun } from 'mobx';
 import { FormStore } from '../../react-directives/forms/formStore';
 import { BooleanStore } from '../../react-directives/forms/booleanStore';
 import { StringStore } from '../../react-directives/forms/stringStore';
@@ -100,14 +100,46 @@ const makeVisibleBindingStore = devices => {
   return res;
 };
 
+const addEnableReaction = (binding, bindingsStore) => {
+  return reaction(() =>  binding.params.enable.value, (value) => {
+    if (value && !binding.params.channel.value) {
+      Object.entries(bindingsStore.params).some(([key, store]) => {
+        if (store?.params?.enable?.value) {
+          const channel = store?.params?.channel?.value;
+          if (channel) {
+            binding.params.channel.setValue(channel);
+            return true;
+          }
+        }
+        return false;
+      })
+    }
+  })
+}
+
 class SvgElementBindingsStore {
   constructor() {
-    this.clearSelection();
+    this.tagName = '';
+    this.id = null;
+    this.element = null;
+
     makeAutoObservable(this);
+    this.paramsStoreDisposers = [];
   }
 
   get isSelected() {
     return !!this.element;
+  }
+
+  makeNewParamsStore() {
+    this.paramsStoreDisposers.forEach(disposer => disposer());
+    this.paramsStoreDisposers = [];
+    this.params = new FormStore();
+  }
+
+  addParam(key, store) {
+    this.params.add(key, store);
+    this.paramsStoreDisposers.push(addEnableReaction(store, this.params));
   }
 
   setSelectedElement(element, id, params, devices) {
@@ -117,13 +149,13 @@ class SvgElementBindingsStore {
       this.element = element;
       this.id = id;
       if (this.tagName !== element.tagName) {
-        this.params = new FormStore();
+        this.makeNewParamsStore();
         if (element.tagName === 'text') {
-          this.params.add('read', makeReadBindingStore(devices));
+          this.addParam('read', makeReadBindingStore(devices));
         }
-        this.params.add('write', makeWriteBindingStore(devices));
-        this.params.add('style', makeStyleBindingStore(devices));
-        this.params.add('visible', makeVisibleBindingStore(devices));
+        this.addParam('write', makeWriteBindingStore(devices));
+        this.addParam('style', makeStyleBindingStore(devices));
+        this.addParam('visible', makeVisibleBindingStore(devices));
         this.tagName = element.tagName;
       }
       this.params.setValue(cloneDeep(params));
@@ -134,7 +166,7 @@ class SvgElementBindingsStore {
     this.tagName = '';
     this.id = null;
     if (this?.params?.hasProperties) {
-      this.params = new FormStore();
+      this.makeNewParamsStore();
     }
     if (this.element) {
       this.element.classList.remove('selected');
