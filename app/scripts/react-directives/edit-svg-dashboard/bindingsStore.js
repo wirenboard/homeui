@@ -21,12 +21,13 @@ const addChannelsStore = (formStore, devices) => {
   );
 };
 
-const addStringValueStore = (formStore) => {
+const addStringValueStore = (formStore, description) => {
   formStore.add(
     'value',
     new StringStore({
       name: i18n.t('edit-svg-dashboard.labels.value'),
       validator: makeNotEmptyValidator(),
+      description: description,
     })
   );
 };
@@ -68,7 +69,7 @@ const makeReadBindingStore = devices => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.read-enable');
   addChannelsStore(res, devices);
-  addStringValueStore(res);
+  addStringValueStore(res, i18n.t('edit-svg-dashboard.labels.read-value-desc'));
   return res;
 };
 
@@ -76,7 +77,7 @@ const makeStyleBindingStore = devices => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.style-enable');
   addChannelsStore(res, devices);
-  addStringValueStore(res);
+  addStringValueStore(res, i18n.t('edit-svg-dashboard.labels.style-value-desc'));
   return res;
 };
 

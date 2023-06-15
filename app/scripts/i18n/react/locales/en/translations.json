@@ -159,7 +159,9 @@
          "condition": "Condition",
          "select-channel-placeholder": "Select channel",
          "on": "Value on",
-         "off": "Value off"
+         "off": "Value off",
+         "read-value-desc": "Example: ((val + 0) > 0) ? 'On' : 'Off'",
+         "style-value-desc": "Example: (val) ? ';fill: green' : ';fill: red'"
       },
       "buttons": {
          "save": "Save",

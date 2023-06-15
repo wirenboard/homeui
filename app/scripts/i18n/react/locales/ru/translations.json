@@ -156,7 +156,9 @@
          "condition": "Условие",
          "select-channel-placeholder": "Выберите канал",
          "off": "Значение выключенного состояния",
-         "on": "Значение включенного состояния"
+         "on": "Значение включенного состояния",
+         "read-value-desc": "Например: ((val + 0) > 0) ? 'On' : 'Off'",
+         "style-value-desc": "Например: (val) ? ';fill: green' : ';fill: red'"
       },
       "buttons": {
          "save": "Сохранить",
