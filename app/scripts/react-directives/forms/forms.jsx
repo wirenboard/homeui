@@ -47,6 +47,7 @@ export const FormCheckbox = observer(({ store }) => {
 
 export const FormSelect = observer(({ store }) => {
   const withGroups = store.options.some(el => 'options' in el);
+  const borderColor = store.hasErrors ? '#b94a48' : '#ccc';
   const customStyles = {
     indicatorSeparator: () => ({
       display: 'none',
@@ -56,11 +57,22 @@ export const FormSelect = observer(({ store }) => {
       color: 'black',
       paddingLeft: '0px',
       paddingRight: '0px',
+      width: '15px',
+    }),
+    indicatorsContainer: provided => ({
+      ...provided,
+      height: '32px',
     }),
     control: provided => ({
       ...provided,
       borderRadius: '0px',
-      borderColor: store.hasErrors ? '#b94a48' : '#ccc',
+      borderColor: borderColor,
+      boxShadow: 'unset',
+      height: '32px',
+      minHeight: '32px',
+      ':hover': {
+        borderColor: borderColor,
+      },
     }),
     groupHeading: provided => {
       return {
