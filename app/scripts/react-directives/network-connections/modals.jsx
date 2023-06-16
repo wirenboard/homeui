@@ -7,6 +7,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalTitle,
+  ModalCancelButton
 } from '../components/modals/modals';
 
 export const SelectModal = ({ id, active, title, options, onSelect, onCancel }) => {
