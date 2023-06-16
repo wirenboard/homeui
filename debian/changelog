@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.67.3) stable; urgency=medium
+
+  * fixed bug that broke Network Settings
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Fri, 16 Jun 2023 13:52:15 +0600
+
 wb-mqtt-homeui (2.67.2) stable; urgency=medium
 
   * Switch MQTT client to SSL when connected via HTTPS (thanks @Marko298)
