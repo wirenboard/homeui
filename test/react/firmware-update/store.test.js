@@ -215,7 +215,7 @@ it("clears timeout", () => {
 
 });
 
-it('can upload', () => {
+it('sets canUpload', () => {
 
     const store = new FirmwareUpdateStore();
     store.uploading = false;
@@ -244,7 +244,7 @@ it('can upload', () => {
 
 });
 
-it('in progress', () => {
+it('sets inProgress', () => {
 
     const store = new FirmwareUpdateStore();
     store.uploading = false;
@@ -269,7 +269,7 @@ it('in progress', () => {
 
 });
 
-it('on upload start', () => {
+it('handles upload start', () => {
 
     spyCLearLog = jest.spyOn(FirmwareUpdateStore.prototype, 'clearLog');
     spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
@@ -286,7 +286,7 @@ it('on upload start', () => {
 
 });
 
-it('on upload progress', () => {
+it('handles upload progress', () => {
 
     const store = new FirmwareUpdateStore();
     store.progressPercents = 0;
@@ -298,7 +298,7 @@ it('on upload progress', () => {
 
 });
 
-it('on upload finish without mqtt status', () => {
+it('handles upload finish without mqtt status', () => {
 
     spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
     spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
@@ -315,7 +315,7 @@ it('on upload finish without mqtt status', () => {
 
 });
 
-it('on upload finish with mqtt status', () => {
+it('handles upload finish with mqtt status', () => {
 
     spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
     spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
@@ -333,7 +333,7 @@ it('on upload finish with mqtt status', () => {
 
 });
 
-it('on upload error without mqtt status', () => {
+it('handles upload error without mqtt status', () => {
 
     spyAddLogRow = jest.spyOn(FirmwareUpdateStore.prototype, 'addLogRow');
     spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
@@ -355,7 +355,7 @@ it('on upload error without mqtt status', () => {
 
 });
 
-it('on upload error with mqtt status', () => {
+it('handles upload error with mqtt status', () => {
 
     spyAddLogRow = jest.spyOn(FirmwareUpdateStore.prototype, 'addLogRow');
     spyShowState = jest.spyOn(FirmwareUpdateStore.prototype, 'showState');
@@ -703,7 +703,7 @@ it('updates progress', () => {
 
 });
 
-it('updates log no status', () => {
+it('updates log without status', () => {
 
     spySetProgressTimeout = jest.spyOn(FirmwareUpdateStore.prototype, 'setProgressTimeout');
     const store = new FirmwareUpdateStore();

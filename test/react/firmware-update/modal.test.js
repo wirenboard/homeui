@@ -8,7 +8,7 @@ import * as mobx from 'mobx';
 
 import DownloadBackupModalState from '../../../app/scripts/react-directives/firmware-update/modal';
 
-it('constructor without id', () => {
+it('initializes without id', () => {
 
     const spyMakeAutoObservable = jest.spyOn(mobx, 'makeAutoObservable');
     const modalState = new DownloadBackupModalState();
@@ -22,7 +22,7 @@ it('constructor without id', () => {
 
 });
 
-it('constructor with id', () => {
+it('initializes with id', () => {
 
         const spyMakeAutoObservable = jest.spyOn(mobx, 'makeAutoObservable');
         const modalState = new DownloadBackupModalState('test');
@@ -36,7 +36,7 @@ it('constructor with id', () => {
 
 });
 
-it('download', async () => {
+it('downloads url', async () => {
 
     const dummyLink = document.createElement('a');
     jest.spyOn(document, 'createElement').mockReturnValue(dummyLink);
@@ -58,7 +58,7 @@ it('download', async () => {
 
 });
 
-it('show', async () => {
+it('shows modal', async () => {
 
     const modalState = new DownloadBackupModalState();
     const spyDownload = jest.spyOn(modalState, 'download');
