@@ -1,18 +1,1 @@
-<div class="svg-edit-page">
-    <h1 class="page-header">
-        <div class="row">
-            <div class="col-md-12">
-                <span ng-show="$ctrl.dashboard.isNew">{{"dashboard.svg.edit.title.create" | translate}}</span>
-                <span ng-show="!$ctrl.dashboard.isNew">{{"dashboard.svg.edit.title.update" | translate}}</span>
-                <div class="pull-right">
-                    <button type="button" class="btn btn-default" ng-if="!$ctrl.dashboard.isNew" ng-click="$ctrl.backToDashboardsList()" >{{ 'button.back' | translate }}</button>
-                    <button type="button" class="btn btn-primary" ng-if="!$ctrl.dashboard.isNew" ui-sref="dashboard-svg({ id: $ctrl.dashboard.id })">{{ 'button.view' | translate }}</button>
-                    <button type="button" class="btn btn-primary" ng-if="$ctrl.canSaveDashboard() && $ctrl.dashboard.isNew" ng-click="$ctrl.saveDashboard()" ng-disabled="!$ctrl.isValidDashboard()">{{ 'button.save' | translate }}</button>
-                    <button type="button" class="btn btn-default" ng-if="$ctrl.dashboard.isNew" ng-click="$ctrl.cancelSavingDashboard()" >{{ 'button.cancel' | translate }}</button>
-                    <button type="button" class="btn btn-danger" ng-if="!$ctrl.dashboard.isNew" ng-click="$ctrl.removeDashboard('confirm.remove' | translate)">{{ 'button.remove' | translate }}</button>               
-                </div>
-            </div>
-        </div>
-    </h1>
-    <svg-editor dashboard="$ctrl.dashboard"></svg-editor>
-</div>
+<edit-svg-dashboard-page id="id"></edit-svg-dashboard-page>

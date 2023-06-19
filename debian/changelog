@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.68.0) stable; urgency=medium
+
+  * Add binding to svg element ids in dashboards visual editor. 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 19 Jun 2023 13:44:24 +0500
+
 wb-mqtt-homeui (2.67.3) stable; urgency=medium
 
   * fixed bug that broke Network Settings

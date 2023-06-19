@@ -258,7 +258,7 @@ function uiConfigService($rootScope, $q, $timeout) {
                 name: '',
                 isSvg: true,
                 svg_url: '',
-                svg_fullwidth: '',
+                svg_fullwidth: true,
                 widgets: [],
                 svg: {
                     original: {},
