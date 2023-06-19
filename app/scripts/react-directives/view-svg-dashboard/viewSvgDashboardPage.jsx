@@ -30,6 +30,7 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
                 showIndicators={false}
                 infiniteLoop={false}
                 key={store.key}
+                swipeScrollTolerance={100}
               >
                 {store.dashboards.map((d, index) => (
                   <ViewSvgDashboard key={d.dashboard.id} store={d} />

@@ -27,7 +27,6 @@ function viewSvgDashboardDirective(
       $rootScope.checkFullscreen = () => {
         return checkFullscreen() || $rootScope.forceFullscreen;
       };
-      console.log(params);
       $rootScope.isHMI = params.hmi;
       $rootScope.hmiColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';
       document.getElementById('page-wrapper').style.backgroundColor = $rootScope.hmiColor;
@@ -82,6 +81,7 @@ function viewSvgDashboardDirective(
       element[0].appendChild($rootScope.svgViewReactElement);
 
       element.on('$destroy', function () {
+        $rootScope.svgViewReactStore.setLoading(true);
         element[0].removeChild($rootScope.svgViewReactElement);
       });
     },

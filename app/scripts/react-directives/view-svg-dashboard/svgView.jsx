@@ -109,7 +109,7 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
     return () => {
       disposers.forEach(disposer => disposer());
     };
-  }, []);
+  }, [svg]);
 
   return <div className={className} ref={svgWrapperRef}></div>;
 });
