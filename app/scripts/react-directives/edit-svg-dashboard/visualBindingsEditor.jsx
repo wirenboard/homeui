@@ -52,6 +52,18 @@ export const VisibleBindingForm = observer(({ store }) => {
   );
 });
 
+export const LongPressBindingForm = observer(({ store }) => {
+  if (!store || !store.hasProperties) {
+    return null;
+  }
+  return (
+    <div>
+      <FormCheckbox key={store.params.enable.id} store={store.params.enable} />
+      {store.params.enable.value && <FormSelect store={store.params.dashboard} />}
+    </div>
+  );
+});
+
 export const ParamBindingForm = observer(({ store }) => {
   if (!store || !store.hasProperties) {
     return null;
@@ -81,6 +93,7 @@ const VisualBindingsEditor = observer(({ store }) => {
       <WriteBindingForm store={store.params.params.write} />
       <VisibleBindingForm store={store.params.params.visible} />
       <ParamBindingForm store={store.params.params.style} />
+      <LongPressBindingForm store={store.params.params['long-press']} />
     </>
   );
 });

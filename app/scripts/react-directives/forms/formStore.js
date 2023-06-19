@@ -21,7 +21,7 @@ export class FormStore {
 
   setValue(value) {
     Object.entries(this.params).forEach(([k, v]) => {
-      v.setValue(value.hasOwnProperty(k) ? value[k] : undefined);
+      v.setValue((value && value.hasOwnProperty(k)) ? value[k] : undefined);
     });
   }
 

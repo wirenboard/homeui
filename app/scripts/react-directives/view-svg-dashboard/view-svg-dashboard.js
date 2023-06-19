@@ -27,38 +27,62 @@ function viewSvgDashboardDirective(
       $rootScope.checkFullscreen = () => {
         return checkFullscreen() || $rootScope.forceFullscreen;
       };
-      $rootScope.isHMI = params.hmi === true;
-      const bgColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';
-      document.getElementById('page-wrapper').style.backgroundColor = bgColor;
+      console.log(params);
+      $rootScope.isHMI = params.hmi;
+      $rootScope.hmiColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';
+      document.getElementById('page-wrapper').style.backgroundColor = $rootScope.hmiColor;
 
-      if (scope.root) {
-        scope.root.unmount();
+      if (!$rootScope.svgViewReactRoot) {
+        $rootScope.svgViewReactStore = new ViewSvgDashboardPageStore();
+        $rootScope.svgViewReactStore.setForceFullscreen($rootScope.forceFullscreen);
+        // Faster set styles in AngularJs code
+        reaction(
+          () => $rootScope.svgViewReactStore.fullscreen.isFullscreen,
+          () => {
+            $rootScope.$apply();
+          }
+        );
+
+        $rootScope.svgViewReactStore.setEditDashboardFn(dashboardId =>
+          $state.go('dashboard-svg-edit', { id: dashboardId })
+        );
+        $rootScope.svgViewReactStore.setMoveToDashboardFn(dashboardId => {
+          const dashboard = uiConfig.getDashboard(dashboardId);
+          if (dashboard) {
+            if (dashboard.content.isSvg) {
+              $state.go('dashboard-svg', {
+                id: dashboardId,
+                hmi: $rootScope.isHMI,
+                fullscreen: $rootScope.forceFullscreen,
+                hmicolor: $rootScope.hmiColor,
+              });
+            } else {
+              $state.go('dashboard', { id: dashboardId });
+            }
+          }
+        });
+
+        $rootScope.svgViewReactElement = document.createElement('div');
+        $rootScope.svgViewReactElement.style.height = '100%';
+        $rootScope.svgViewReactRoot = ReactDOM.createRoot($rootScope.svgViewReactElement);
+        $rootScope.svgViewReactRoot.render(
+          CreateViewSvgDashboardPage({ pageStore: $rootScope.svgViewReactStore })
+        );
       }
-
-      scope.store = new ViewSvgDashboardPageStore();
-      scope.store.setForceFullscreen($rootScope.forceFullscreen);
-      // Faster set styles in AngularJs code
-      reaction(
-        () => scope.store.fullscreen.isFullscreen,
-        () => {
-          $rootScope.$apply();
-        }
-      );
-
-      scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(CreateViewSvgDashboardPage({ pageStore: scope.store }));
 
       mqttClient
         .whenReady()
         .then(() => uiConfig.whenReady())
         .then(() => {
-          scope.store.setDashboard(uiConfig.getDashboard(scope.id));
-          scope.store.setDeviceData(DeviceData);
-          scope.store.setEditFn(() => $state.go('dashboard-svg-edit', { id: scope.id }));
+          $rootScope.svgViewReactStore.setDeviceData(DeviceData);
+          $rootScope.svgViewReactStore.setDashboards(uiConfig.filtered().dashboards);
+          $rootScope.svgViewReactStore.setDashboard(scope.id);
         });
 
+      element[0].appendChild($rootScope.svgViewReactElement);
+
       element.on('$destroy', function () {
-        scope.root.unmount();
+        element[0].removeChild($rootScope.svgViewReactElement);
       });
     },
   };

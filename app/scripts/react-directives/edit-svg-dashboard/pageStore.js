@@ -4,6 +4,7 @@ import { makeObservable, observable, action, computed } from 'mobx';
 import { FormStore } from '../../react-directives/forms/formStore';
 import { BooleanStore } from '../../react-directives/forms/booleanStore';
 import { StringStore } from '../../react-directives/forms/stringStore';
+import { OptionsStore } from '../../react-directives/forms/optionsStore';
 import i18n from '../../i18n/react/config';
 import { makeNotEmptyValidator } from '../forms/stringValidators';
 import ConfirmModalState from '../components/modals/confirmModalState';
@@ -35,6 +36,34 @@ const makeCommonParametersStore = () => {
   return res;
 };
 
+const makeSwipeParametersStore = () => {
+  let res = new FormStore();
+  res.add(
+    'enable',
+    new BooleanStore({
+      name: i18n.t('edit-svg-dashboard.labels.swipe-enable'),
+      id: 'edit-svg-dashboard.labels.swipe-enable',
+    })
+  );
+  res.add(
+    'left',
+    new OptionsStore({
+      name: i18n.t('edit-svg-dashboard.labels.left'),
+      placeholder: i18n.t('edit-svg-dashboard.labels.select-dashboard-placeholder'),
+      strict: false,
+    })
+  );
+  res.add(
+    'right',
+    new OptionsStore({
+      name: i18n.t('edit-svg-dashboard.labels.right'),
+      placeholder: i18n.t('edit-svg-dashboard.labels.select-dashboard-placeholder'),
+      strict: false,
+    })
+  );
+  return res;
+};
+
 class EditSvgDashboardPageStore {
   constructor(showDashboardsList, preview) {
     this.loading = true;
@@ -47,6 +76,7 @@ class EditSvgDashboardPageStore {
     this.confirmModalState = new ConfirmModalState();
     this.bindingsStore = new BindingsStore();
     this.commonParameters = makeCommonParametersStore();
+    this.swipeParameters = makeSwipeParametersStore();
 
     makeObservable(this, {
       loading: observable,
@@ -75,11 +105,25 @@ class EditSvgDashboardPageStore {
     this.loading = isLoading;
   }
 
-  setDashboard(dashboard, deviceData, localeId) {
+  setDashboard(dashboard, deviceData, localeId, dashboards) {
     this.commonParameters.setValue(dashboard.content);
     this.dashboard = dashboard;
     this.bindingsStore.setDevices(deviceData, localeId);
+    const dashboardsForSelect = dashboards
+      .filter(d => d.isSvg && d.id !== dashboard.id)
+      .map(d =>
+        ({
+          label: d.name,
+          value: d.id,
+        })
+      );
+    this.bindingsStore.setDashboards(dashboardsForSelect);
     this.bindingsStore.setParams(this.dashboard.content.svg.params);
+
+    this.swipeParameters.params.left.setOptions(dashboardsForSelect);
+    this.swipeParameters.params.right.setOptions(dashboardsForSelect);
+    this.swipeParameters.setValue(this.dashboard.content.swipe);
+
     this.svgStore.setSvg(this.dashboard?.content?.svg?.current);
     this.setLoading(false);
   }
@@ -119,6 +163,7 @@ class EditSvgDashboardPageStore {
   onSaveDashboard() {
     this.bindingsStore.saveBinding();
     Object.assign(this.dashboard.content, this.commonParameters.value);
+    this.dashboard.content.swipe = this.swipeParameters.value;
     this.dashboard.content.svg.current = this.svgStore.svg;
     this.dashboard.content.svg.params = this.bindingsStore.params;
     if (this.dashboard.content.isNew) {

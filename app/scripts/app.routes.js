@@ -177,27 +177,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
   .state('dashboard-svg', {
     url: '/dashboards/svg/view/{id}?{hmi}&{hmicolor}&{fullscreen}',
     controller: 'DashboardSvgCtrl as $ctrl',
-    template: require('../views/dashboard-svg.html'),
-    resolve: {
-      ctrl: ($q, $ocLazyLoad) => {
-        'ngInject';
-        let deferred = $q.defer();
-        require.ensure(
-          [], 
-          (require) => {
-            let module = require('./controllers/dashboardSvgController.js');
-            $ocLazyLoad.load({
-              name: module.default.name
-            })
-            .then(() => {
-              deferred.resolve(module);
-            });
-          },
-          'dashboard-svg'
-        );
-        return deferred.promise;
-      }
-    }
+    template: require('../views/dashboard-svg.html')
   })    
   //...........................................................................
     .state('dashboard-svg-add', {

@@ -161,7 +161,13 @@
          "on": "Value on",
          "off": "Value off",
          "read-value-desc": "Example: ((val + 0) > 0) ? 'On' : 'Off'",
-         "style-value-desc": "Example: (val) ? ';fill: green' : ';fill: red'"
+         "style-value-desc": "Example: (val) ? ';fill: green' : ';fill: red'",
+         "long-press-enable": "Long click/touch",
+         "move-to-dashboard": "Move to dashboard",
+         "select-dashboard-placeholder": "Select dashboard to move",
+         "swipe-enable": "Swipe",
+         "left": "Left",
+         "right": "Right"
       },
       "buttons": {
          "save": "Save",

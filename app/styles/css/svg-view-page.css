@@ -4,6 +4,12 @@
     height: 100%;
 }
 
+.svg-view-page .view-svg-dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 .svg-view-page svg {
     height: unset;
     width: unset;
@@ -30,3 +36,18 @@
         opacity: 0.6;
     }
 }
+
+.svg-view-page .page-header {
+    text-align: left;
+}
+
+.svg-view-page .carousel-root {
+    flex-grow: 1;
+}
+
+.svg-view-page .carousel,
+.svg-view-page .slider-wrapper,
+.svg-view-page .slider {
+    height: 100%;
+}
+

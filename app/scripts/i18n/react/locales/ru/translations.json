@@ -158,7 +158,13 @@
          "off": "Значение выключенного состояния",
          "on": "Значение включенного состояния",
          "read-value-desc": "Например: ((val + 0) > 0) ? 'On' : 'Off'",
-         "style-value-desc": "Например: (val) ? ';fill: green' : ';fill: red'"
+         "style-value-desc": "Например: (val) ? ';fill: green' : ';fill: red'",
+         "long-press-enable": "Долгое нажатие/касание",
+         "move-to-dashboard": "Перейти на панель",
+         "select-dashboard-placeholder": "Выберите панель для перехода",
+         "swipe-enable": "Смахивания",
+         "left": "Влево",
+         "right": "Вправо"
       },
       "buttons": {
          "save": "Сохранить",

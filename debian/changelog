@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.69.0) stable; urgency=medium
+
+  * Support swipe and long touch/click on SVG dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 19 Jun 2023 15:40:26 +0500
+
 wb-mqtt-homeui (2.68.0) stable; urgency=medium
 
   * Add binding to svg element ids in dashboards visual editor. 

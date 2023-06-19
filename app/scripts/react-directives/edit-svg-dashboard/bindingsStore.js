@@ -118,6 +118,20 @@ const addEnableReaction = (binding, bindingsStore) => {
   })
 }
 
+const makeLongPressBindingStore = dashboards => {
+  let res = new FormStore();
+  addEnableStore(res, 'edit-svg-dashboard.labels.long-press-enable');
+  res.add(
+    'dashboard',
+    new OptionsStore({
+      name: i18n.t('edit-svg-dashboard.labels.move-to-dashboard'),
+      placeholder: i18n.t('edit-svg-dashboard.labels.select-dashboard-placeholder'),
+      options: dashboards,
+    })
+  );
+  return res;
+};
+
 class SvgElementBindingsStore {
   constructor() {
     this.tagName = '';
@@ -143,7 +157,7 @@ class SvgElementBindingsStore {
     this.paramsStoreDisposers.push(addEnableReaction(store, this.params));
   }
 
-  setSelectedElement(element, id, params, devices) {
+  setSelectedElement(element, id, params, devices, dashboards) {
     this.clearSelection();
     if (element) {
       element.classList.add('selected');
@@ -157,6 +171,7 @@ class SvgElementBindingsStore {
         this.addParam('write', makeWriteBindingStore(devices));
         this.addParam('style', makeStyleBindingStore(devices));
         this.addParam('visible', makeVisibleBindingStore(devices));
+        this.params.add('long-press', makeLongPressBindingStore(dashboards));
         this.tagName = element.tagName;
       }
       this.params.setValue(cloneDeep(params));
@@ -176,6 +191,16 @@ class SvgElementBindingsStore {
   }
 }
 
+const hasBindings = param => {
+  return (
+    param?.write?.enable ||
+    param.read?.enable ||
+    param?.style?.enable ||
+    param?.visible?.enable ||
+    param['long-press']?.enable
+  );
+};
+
 class BindingsStore {
   constructor() {
     this.params = {};
@@ -183,6 +208,7 @@ class BindingsStore {
     this.jsonEditMode = false;
     this.jsonSource = '';
     this.devices = [];
+    this.dashboards = [];
 
     makeObservable(this, {
       editable: observable,
@@ -190,7 +216,7 @@ class BindingsStore {
       setJsonSource: action,
       startJsonEditing: action,
       cancelEditingJson: action,
-      saveJson: action
+      saveJson: action,
     });
   }
 
@@ -217,31 +243,28 @@ class BindingsStore {
       this.params = JSON.parse(this.jsonSource);
       this.jsonEditMode = false;
     } catch (e) {
-      console.log(e);
       alert(e);
     }
   }
 
   setDevices(deviceData, localeId) {
-    this.devices = Object.entries(deviceData.devices).map(([deviceId, d]) => {
-      let res = {
-        label: d.getName(localeId),
-        options: d.cellIds.map(c => {
-          let cell = deviceData.cells[c];
-          if (cell) {
-            return {
-              value: cell.id,
-              label: `${cell.getName(localeId)} [${cell.id}]`,
-            };
-          }
-          return {
-            value: 'dummy',
-            label: 'dummy',
-          };
-        }),
-      };
-      return res;
-    });
+    this.devices = Object.entries(deviceData.devices).map(([deviceId, d]) => ({
+      label: d.getName(localeId),
+      options: d.cellIds.reduce((cells, c) => {
+        let cell = deviceData.cells[c];
+        if (cell) {
+          cells.push({
+            value: cell.id,
+            label: `${cell.getName(localeId)} [${cell.id}]`,
+          });
+        }
+        return cells;
+      }, []),
+    }));
+  }
+
+  setDashboards(dashboards) {
+    this.dashboards = dashboards;
   }
 
   onSelectSvgElement(element) {
@@ -249,11 +272,17 @@ class BindingsStore {
     const id = element.getAttribute('data-svg-param-id') || element.getAttribute('id');
     let data = this.params.find(param => param.id === id);
     if (!data) {
-        data = {
-            id: id
-        };
+      data = {
+        id: id,
+      };
     }
-    this.editable.setSelectedElement(element, id, new DashboardSvgParam(data), this.devices);
+    this.editable.setSelectedElement(
+      element,
+      id,
+      new DashboardSvgParam(data),
+      this.devices,
+      this.dashboards
+    );
   }
 
   saveBinding() {
@@ -261,13 +290,13 @@ class BindingsStore {
       let oldData = this.params.find(param => param.id === this.editable.id);
       let res = this.editable.params.value;
       if (oldData) {
-        if (res?.write?.enable || res?.read?.enable || res?.style?.enable || res?.visible?.enable) {
+        if (hasBindings(res)) {
           Object.assign(oldData, this.editable.params.value);
         } else {
-          this.params = this.params.filter(param => param.id !== this.editable.id)
+          this.params = this.params.filter(param => param.id !== this.editable.id);
         }
       } else {
-        if (res?.write?.enable || res?.read?.enable || res?.style?.enable || res?.visible?.enable) {
+        if (hasBindings(res)) {
           res.id = this.editable.id;
           this.params.push(res);
         }

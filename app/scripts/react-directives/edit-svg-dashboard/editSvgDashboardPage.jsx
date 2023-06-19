@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../common';
 import SvgView from './svgView';
-import { MakeFormFields } from '../forms/forms';
+import { MakeFormFields, FormCheckbox, FormSelect } from '../forms/forms';
 import JsonBindingsEditor from './jsonBindingsEditor';
 import VisualBindingsEditor from './visualBindingsEditor';
 import { useFilePicker } from 'use-file-picker';
@@ -84,7 +84,7 @@ const LeftPanel = observer(({ svgStore, onSelectElement }) => {
   );
 });
 
-const CommonParametersForm = observer(({ commonParametersStore, svgStore }) => {
+const CommonParametersForm = observer(({ commonParametersStore, svgStore, children }) => {
   const { t } = useTranslation();
   return (
     <>
@@ -102,7 +102,25 @@ const CommonParametersForm = observer(({ commonParametersStore, svgStore }) => {
         )}
       </legend>
       {MakeFormFields(Object.entries(commonParametersStore.params))}
+      {children}
     </>
+  );
+});
+
+export const SwipeParametersForm = observer(({ store }) => {
+  if (!store || !store.hasProperties) {
+    return null;
+  }
+  return (
+    <div>
+      <FormCheckbox key={store.params.enable.id} store={store.params.enable} />
+      {store.params.enable.value && (
+        <>
+          <FormSelect store={store.params.left} />
+          <FormSelect store={store.params.right} />
+        </>
+      )}
+    </div>
   );
 });
 
@@ -114,7 +132,9 @@ const RightPanel = observer(({ pageStore, toJsonEditMode }) => {
         <CommonParametersForm
           commonParametersStore={pageStore.commonParameters}
           svgStore={pageStore.svgStore}
-        />
+        >
+          <SwipeParametersForm store={pageStore.swipeParameters} />
+        </CommonParametersForm>
         {pageStore.svgStore.hasSvg && (
           <>
             <legend className="flex-rows">

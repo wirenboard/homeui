@@ -16,11 +16,13 @@ export class OptionsStore {
     this.setValue(value);
 
     makeObservable(this, {
+      options: observable,
       value: observable,
       hasErrors: observable,
       selectedOption: observable,
       setValue: action,
-      setSelectedOption: action
+      setSelectedOption: action,
+      setOptions: action
     });
   }
 
@@ -42,8 +44,13 @@ export class OptionsStore {
     }
   }
 
+  setOptions(options) {
+    this.options = options;
+    this.setValue(this.value);
+  }
+
   setSelectedOption(option){
-    this.value = option.value;
+    this.setValue(option ? option.value : null);
     this.selectedOption = option;
     this.hasErrors = false;
   }
