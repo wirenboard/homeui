@@ -129,12 +129,6 @@ const RightPanel = observer(({ pageStore, toJsonEditMode }) => {
   return (
     <div className="col-md-4 svg-edit-right-panel">
       <div>
-        <CommonParametersForm
-          commonParametersStore={pageStore.commonParameters}
-          svgStore={pageStore.svgStore}
-        >
-          <SwipeParametersForm store={pageStore.swipeParameters} />
-        </CommonParametersForm>
         {pageStore.svgStore.hasSvg && (
           <>
             <legend className="flex-rows">
@@ -144,6 +138,12 @@ const RightPanel = observer(({ pageStore, toJsonEditMode }) => {
             <VisualBindingsEditor store={pageStore.bindingsStore.editable} />
           </>
         )}
+        <CommonParametersForm
+          commonParametersStore={pageStore.commonParameters}
+          svgStore={pageStore.svgStore}
+        >
+          <SwipeParametersForm store={pageStore.swipeParameters} />
+        </CommonParametersForm>
       </div>
     </div>
   );
