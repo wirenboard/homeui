@@ -31,6 +31,7 @@ import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
 import '../styles/css/network-connections.css';
+import '../styles/css/svg-edit-page.css';
 import '../styles/css/svg-view-page.css';
 
 // React-related imports
@@ -101,6 +102,7 @@ import fullscreenToggleDirective from './directives/fullscreenToggle';
 import scanDirective from './react-directives/scan/scan';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
+import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
 
 // Angular routes
@@ -108,7 +110,6 @@ import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm/index';
-import SvgEditorModule from './components/svgEditor/index';
 import AngularJsonEditorModule from './components/json-editor/angular-json-editor';
 
 //-----------------------------------------------------------------------------
@@ -136,7 +137,6 @@ const module = angular
         routingModule,
         dumbTemplateModule,
         LoginFormModule,
-        SvgEditorModule,
 
         'ui-rangeSlider',
         'ngToast',
@@ -262,6 +262,7 @@ module
     .directive("deviceManagerPage", scanDirective)
     .directive("networkConnectionsPage", networkConnectionsDirective)
     .directive("firmwareUpdateWidget", firmwareUpdateDirective)
+    .directive("editSvgDashboardPage", editSvgDashboardDirective)
     .directive("viewSvgDashboardPage", viewSvgDashboardDirective);
 
 module
