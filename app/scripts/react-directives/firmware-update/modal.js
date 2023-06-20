@@ -27,7 +27,6 @@ class DownloadBackupModalState {
   }
 
   show() {
-
       this.onCancel = () => {
         this.active = false;
       };
@@ -38,8 +37,8 @@ class DownloadBackupModalState {
 
       this.isFirstPage = true;
       this.active = true;
+ }
 
-  }
 }
 
 export default DownloadBackupModalState;

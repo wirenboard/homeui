@@ -15,9 +15,6 @@ process.traceDeprecation = true;
  * Env
  * Get npm lifecycle event to identify the environment
  */
-const ENV = process.env.npm_lifecycle_event;
-const isTest = ENV === 'test' || ENV === 'test-watch';
-const isProd = ENV === 'build';
 
 module.exports = function makeWebpackConfig() {
     /**
@@ -78,19 +75,7 @@ module.exports = function makeWebpackConfig() {
                     path.resolve(__dirname, 'app', 'lib')
                 ],
                 exclude: /(node_modules|bower_components)/,
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: [
-                                ['@babel/preset-env', { targets: "defaults" }], 
-                                "@babel/preset-react"],
-                            plugins: [["angularjs-annotate"]],
-                            babelrc: false,
-                            cacheDirectory: true
-                        }
-                    }
-                ]
+                use: ['babel-loader']
             },
             // ASSET LOADER
             // Reference: https://webpack.js.org/guides/asset-modules/
@@ -117,9 +102,6 @@ module.exports = function makeWebpackConfig() {
         extensions: ['*', '.js', '.jsx'],
     };
 
-    if (!isTest) {
-        // Any not test build
-
         /**
          * Entry
          * Reference: http://webpack.github.io/docs/configuration.html#entry
@@ -129,7 +111,7 @@ module.exports = function makeWebpackConfig() {
                 import: [
                     'angular',
                     'oclazyload',
-                    'jquery', 
+                    'jquery',
                     './lib/mqttws31',
                     'bootstrap',
                     './3rdparty/jsoneditor',
@@ -144,7 +126,6 @@ module.exports = function makeWebpackConfig() {
                     'angular-sortable-view/src/angular-sortable-view',
                     'angular-rangeslider',
                     'ng-toast',
-                    
                     'angular-translate',
                     'angular-translate-loader-partial',
                     'angular-spinkit',
@@ -152,7 +133,7 @@ module.exports = function makeWebpackConfig() {
                     'angular-dynamic-locale',
                     'angularjs-dropdown-multiselect',
                     'dompurify',
-                    
+
                     // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
                     './scripts/i18n/angular-locale_en.js',
                     './scripts/i18n/angular-locale_ru.js',
@@ -187,10 +168,9 @@ module.exports = function makeWebpackConfig() {
                 // Set to true when building for stable release
                 stableRelease: false
             })
-        )
+        );
 
         // Production specific settings
-        if (isProd) {
             console.log('Production build')
 
             config.mode = 'production'
@@ -244,7 +224,7 @@ module.exports = function makeWebpackConfig() {
                 // Reference: https://github.com/webpack-contrib/mini-css-extract-plugin
                 // Extract CSS files from JS
                 new MiniCssExtractPlugin({filename: 'css/[name].[contenthash].css'})
-            )
+            );
 
             // Load styles
             config.module.rules.push({
@@ -255,80 +235,9 @@ module.exports = function makeWebpackConfig() {
                     "postcss-loader",
                     "sass-loader"
                 ]
-            })
-        } else {
-            // Development settings
+            });
 
-            config.mode = 'development'
 
-            config.output = {
-                // Absolute output directory
-                path: path.resolve(__dirname, 'dist'),
-
-                // Output path from the view of the page
-                // Uses dev-server in development
-                publicPath: 'http://localhost:8080/',
-
-                // Filename for entry points
-                filename: '[name].bundle.js',
-
-                // Filename for non-entry points
-                chunkFilename: '[name].bundle.js'
-            };
-
-            config.devtool = 'eval-source-map';
-
-            // Load styles
-            config.module.rules.push({
-                test: /\.(sa|sc|c)ss$/i,
-                use: [
-                    "style-loader",
-                    "css-loader",
-                    "postcss-loader",
-                    "sass-loader"
-                ]
-            })
-        }
-    } else {
-        // Test build
-
-        config.mode = 'development'
-
-        // Karma will set this when it's a test build
-        config.entry = void 0;
-        config.output = {};
- 
-        config.devtool = 'inline-source-map';
- 
-        config.plugins.push(
-            // Check source with eslint
-            // Reference: https://github.com/webpack-contrib/eslint-webpack-plugin
-            new ESLintPlugin({
-                exclude: ['node_modules', 'bower_components']
-            })
-        )
-
-        config.module.rules.push({
-            // JS LOADER
-            // Reference: https://github.com/babel/babel-loader
-            // Transpile .js files using babel-loader
-            // Compiles ES6 and ES7 into ES5 code
-            test: /\.js$/,
-            include: [
-                path.resolve(__dirname, 'test')
-            ],
-            exclude: /(node_modules|bower_components)/,
-            use: [{
-                loader: 'babel-loader',
-                options: {
-                    presets: ['es2015'],
-                    babelrc: false,
-                    cacheDirectory: true
-                }
-            }
-            ]
-        });
-    }
 
     /**
      * Dev server configuration
