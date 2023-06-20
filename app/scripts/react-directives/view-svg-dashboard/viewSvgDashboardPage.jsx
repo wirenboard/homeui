@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Spinner } from '../common';
 import { observer } from 'mobx-react-lite';
 import ViewSvgDashboard from './viewSvgDashboard';
@@ -8,9 +8,24 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 export const ViewSvgDashboardPage = observer(({ store }) => {
+  const ref = useRef(null);
+  const [width, setWidth] = useState(25);
+
+  useEffect(() => {
+    const callback = () => {
+      if (ref?.current) {
+        setWidth(ref.current.getBoundingClientRect().width);
+      }
+    };
+    window.addEventListener('resize', callback);
+    return () => {
+      window.removeEventListener('resize', callback);
+    };
+  }, [ref]);
+
   return (
     <FullscreenContext.Provider value={store.fullscreen}>
-      <div className="svg-view-page">
+      <div className="svg-view-page" ref={ref}>
         {store.loading ? (
           <Spinner />
         ) : (
@@ -30,7 +45,7 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
                 showIndicators={false}
                 infiniteLoop={false}
                 key={store.key}
-                swipeScrollTolerance={25}
+                swipeScrollTolerance={width / 3}
               >
                 {store.dashboards.map((d, index) => (
                   <ViewSvgDashboard key={d.dashboard.id} store={d} />
