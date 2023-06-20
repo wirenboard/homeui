@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Spinner } from '../common';
 import { observer } from 'mobx-react-lite';
 import ViewSvgDashboard from './viewSvgDashboard';
@@ -11,17 +11,18 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
   const ref = useRef(null);
   const [width, setWidth] = useState(25);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const callback = () => {
       if (ref?.current) {
         setWidth(ref.current.getBoundingClientRect().width);
       }
     };
+    callback();
     window.addEventListener('resize', callback);
     return () => {
       window.removeEventListener('resize', callback);
     };
-  }, [ref]);
+  });
 
   return (
     <FullscreenContext.Provider value={store.fullscreen}>
