@@ -146,6 +146,7 @@ class ViewSvgDashboardPageStore {
   slideChanged(index) {
     if (this.dashboardIndex != index) {
       this.moveToDashboard(this.dashboards[index].dashboard.id);
+      this.setDashboard(this.dashboards[index].dashboard.id);
     }
   }
 }
