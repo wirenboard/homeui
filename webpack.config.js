@@ -15,6 +15,9 @@ process.traceDeprecation = true;
  * Env
  * Get npm lifecycle event to identify the environment
  */
+const ENV = process.env.npm_lifecycle_event;
+const isTest = ENV === 'test' || ENV === 'test-watch';
+const isProd = ENV === 'build';
 
 module.exports = function makeWebpackConfig() {
     /**
@@ -75,7 +78,11 @@ module.exports = function makeWebpackConfig() {
                     path.resolve(__dirname, 'app', 'lib')
                 ],
                 exclude: /(node_modules|bower_components)/,
-                use: ['babel-loader']
+                use: [
+                    {
+                        loader: ['babel-loader']
+                    }
+                ]
             },
             // ASSET LOADER
             // Reference: https://webpack.js.org/guides/asset-modules/
@@ -102,6 +109,9 @@ module.exports = function makeWebpackConfig() {
         extensions: ['*', '.js', '.jsx'],
     };
 
+    // if (!isTest) {
+        // Any not test build
+
         /**
          * Entry
          * Reference: http://webpack.github.io/docs/configuration.html#entry
@@ -126,6 +136,7 @@ module.exports = function makeWebpackConfig() {
                     'angular-sortable-view/src/angular-sortable-view',
                     'angular-rangeslider',
                     'ng-toast',
+
                     'angular-translate',
                     'angular-translate-loader-partial',
                     'angular-spinkit',
@@ -168,9 +179,10 @@ module.exports = function makeWebpackConfig() {
                 // Set to true when building for stable release
                 stableRelease: false
             })
-        );
+        )
 
         // Production specific settings
+        if (isProd) {
             console.log('Production build')
 
             config.mode = 'production'
@@ -224,7 +236,7 @@ module.exports = function makeWebpackConfig() {
                 // Reference: https://github.com/webpack-contrib/mini-css-extract-plugin
                 // Extract CSS files from JS
                 new MiniCssExtractPlugin({filename: 'css/[name].[contenthash].css'})
-            );
+            )
 
             // Load styles
             config.module.rules.push({
@@ -235,8 +247,41 @@ module.exports = function makeWebpackConfig() {
                     "postcss-loader",
                     "sass-loader"
                 ]
-            });
+            })
+        } else {
+            // Development settings
 
+            config.mode = 'development'
+
+            config.output = {
+                // Absolute output directory
+                path: path.resolve(__dirname, 'dist'),
+
+                // Output path from the view of the page
+                // Uses dev-server in development
+                publicPath: 'http://localhost:8080/',
+
+                // Filename for entry points
+                filename: '[name].bundle.js',
+
+                // Filename for non-entry points
+                chunkFilename: '[name].bundle.js'
+            };
+
+            config.devtool = 'eval-source-map';
+
+            // Load styles
+            config.module.rules.push({
+                test: /\.(sa|sc|c)ss$/i,
+                use: [
+                    "style-loader",
+                    "css-loader",
+                    "postcss-loader",
+                    "sass-loader"
+                ]
+            })
+        }
+    // }
 
 
     /**
