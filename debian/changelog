@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.70.0) stable; urgency=medium
+
+  * No functional changes
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 21 Jun 2023 15:40:26 +0600
+
 wb-mqtt-homeui (2.69.0) stable; urgency=medium
 
   * Support swipe and long touch/click on SVG dashboards

@@ -162,38 +162,58 @@ class FirmwareUpdateStore {
     this.receivedFirstStatus = true;
   }
 
+  _parseMessagePayload(msgPayload) {
+    var p = msgPayload.indexOf(' ');
+    var type = (p < 0) ? msgPayload : msgPayload.substr(0, p);
+    var payload = (p < 0) ? msgPayload : msgPayload.substr(p+1, msgPayload.length);
+    return [type, payload];
+  }
+
+  _updateIdleStatus() {
+    this._mqttStatusIsSet = false;
+    if (this.receivedFirstStatus && this.running) {
+      this.clearTimeouts();
+      if (!this.error) {
+        this.showState('success', 'system.states.complete');
+      }
+      this.showDoneButton('system.buttons.hide');
+    }
+  }
+
+  _updateInfoStatus(payload) {
+    this.showState('info', payload);
+    this.setProgressTimeout();
+  }
+
+  _updateErrorStatus(payload) {
+    if (!payload) {
+        payload = "system.errors.unknown";
+    }
+    this.error = payload;
+    this.showState('danger', payload);
+    this.setProgressTimeout();
+  }
+
+  _updateRebootStatus() {
+    this.showState('warning', 'system.states.reboot');
+    this.setRebootTimeout();
+  }
+
   updateSingleStatus(msg_payload) {
-    var p = msg_payload.indexOf(' ');
-    var type = (p < 0) ? msg_payload : msg_payload.substr(0, p);
-    var payload = (p < 0) ? msg_payload : msg_payload.substr(p+1, msg_payload.length);
+    var [type, payload] = this._parseMessagePayload(msg_payload);
     this._mqttStatusIsSet = true;
 
     if (type == 'IDLE') {
-      this._mqttStatusIsSet = false;
-
-      if (this.receivedFirstStatus && this.running) {
-        this.clearTimeouts();
-        if (!this.error) {
-          this.showState('success', 'system.states.complete');
-        }
-        this.showDoneButton('system.buttons.hide');
-      }
+      this._updateIdleStatus();
     }
 
     if (this.receivedFirstStatus) {
       if (type == 'INFO') {
-        this.showState('info', payload);
-        this.setProgressTimeout();
+          this._updateInfoStatus(payload);
       } else if (type == 'ERROR') {
-        if (!payload) {
-          payload = "system.errors.unknown";
-        }
-        this.error = payload;
-        this.showState('danger', payload);
-        this.setProgressTimeout();
+          this._updateErrorStatus(payload);
       } else if (type == 'REBOOT') {
-        this.showState('warning', 'system.states.reboot');
-        this.setRebootTimeout();
+          this._updateRebootStatus();
       }
     }
   }
