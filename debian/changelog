@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.70.0) stable; urgency=medium
 
-  * Add some React tests
+  * No functional changes
 
  -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 21 Jun 2023 15:40:26 +0600
 
