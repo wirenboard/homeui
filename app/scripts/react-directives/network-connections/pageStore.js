@@ -143,10 +143,14 @@ class NetworkConnectionsPageStore {
       },
     };
     try {
-      await this.onSave(jsonToSave);
+      const needToReload = jsonToSave.ui.connections.some(cn => !cn.connection_uuid);
+      const res = await this.onSave(jsonToSave, needToReload);
       this.connections.submit();
       this.switcher.submit();
       this.setLoading(false);
+      if (needToReload) {
+        this.connections.updateUuids(res);
+      }
     } catch (err) {
       this.setError(err.message);
       this.setLoading(false);
@@ -181,23 +185,23 @@ class NetworkConnectionsPageStore {
   }
 
   setConnectionState(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setState(state);
+    this.connections.setConnectionState(connectionUuid, state);
   }
 
   setConnectionConnectivity(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setConnectivity(state);
+    this.connections.setConnectionConnectivity(connectionUuid, state);
   }
 
   setConnectionOperator(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setOperator(state);
+    this.connections.setConnectionOperator(connectionUuid, state);
   }
 
   setConnectionSignalQuality(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setSignalQuality(state);
+    this.connections.setConnectionSignalQuality(connectionUuid, state);
   }
 
   setConnectionAccessTechnologies(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setAccessTechnologies(state);
+    this.connections.setConnectionAccessTechnologies(connectionUuid, state);
   }
 
   setError(msg) {

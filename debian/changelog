@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.69.1) stable; urgency=medium
+
+  * Fix state display for newly created connections
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 21 Jun 2023 11:33:20 +0500
+
 wb-mqtt-homeui (2.69.0) stable; urgency=medium
 
   * Support swipe and long touch/click on SVG dashboards
