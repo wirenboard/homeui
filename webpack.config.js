@@ -109,180 +109,175 @@ module.exports = function makeWebpackConfig() {
         extensions: ['*', '.js', '.jsx'],
     };
 
-    // if (!isTest) {
-        // Any not test build
+    /**
+     * Entry
+     * Reference: http://webpack.github.io/docs/configuration.html#entry
+     */
+     config.entry = {
+        main: {
+            import: [
+                'angular',
+                'oclazyload',
+                'jquery',
+                './lib/mqttws31',
+                'bootstrap',
+                './3rdparty/jsoneditor',
+                'angular-touch',
+                'angular-sanitize',
+                './3rdparty/ui-bootstrap',
+                'spectrum-colorpicker',
+                './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker',
+                'ui-select',
+                'angular-elastic/elastic',
+                'angular-xeditable',
+                'angular-sortable-view/src/angular-sortable-view',
+                'angular-rangeslider',
+                'ng-toast',
+
+                'angular-translate',
+                'angular-translate-loader-partial',
+                'angular-spinkit',
+                'angular-ui-scroll',
+                'angular-dynamic-locale',
+                'angularjs-dropdown-multiselect',
+                'dompurify',
+
+                // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
+                './scripts/i18n/angular-locale_en.js',
+                './scripts/i18n/angular-locale_ru.js',
+                './scripts/app.js'
+            ]
+        }
+    };
+
+    // Reference: https://webpack.js.org/plugins/split-chunks-plugin/
+    config.optimization = {
+        splitChunks: {
+            chunks: 'all',
+            minChunks: 1
+        }
+    };
+
+    config.plugins.push(
+        // Reference: https://github.com/ampedandwired/html-webpack-plugin
+        // Render index.html
+        new HtmlWebpackPlugin({
+            filename: './index.html',
+            template: './index.ejs',
+            chunksSortMode: function (a, b) {
+                var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
+                return order.indexOf(a) - order.indexOf(b);
+            },
+            inject: 'body',
+            minify: false,
+
+            // Options passed to template
+
+            // Set to true when building for stable release
+            stableRelease: false
+        })
+    )
+
+    // Production specific settings
+    if (isProd) {
+        console.log('Production build')
+
+        config.mode = 'production'
 
         /**
-         * Entry
-         * Reference: http://webpack.github.io/docs/configuration.html#entry
+         * Output
+         * Reference: https://webpack.js.org/concepts/#output
          */
-         config.entry = {
-            main: {
-                import: [
-                    'angular',
-                    'oclazyload',
-                    'jquery',
-                    './lib/mqttws31',
-                    'bootstrap',
-                    './3rdparty/jsoneditor',
-                    'angular-touch',
-                    'angular-sanitize',
-                    './3rdparty/ui-bootstrap',
-                    'spectrum-colorpicker',
-                    './lib/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker',
-                    'ui-select',
-                    'angular-elastic/elastic',
-                    'angular-xeditable',
-                    'angular-sortable-view/src/angular-sortable-view',
-                    'angular-rangeslider',
-                    'ng-toast',
+        config.output = {
+            // Absolute output directory
+            path: path.resolve(__dirname, 'dist'),
 
-                    'angular-translate',
-                    'angular-translate-loader-partial',
-                    'angular-spinkit',
-                    'angular-ui-scroll',
-                    'angular-dynamic-locale',
-                    'angularjs-dropdown-multiselect',
-                    'dompurify',
+            // Output path from the view of the page
+            publicPath: '/',
 
-                    // Taken from  https://github.com/angular/angular.js/tree/master/src/ngLocale
-                    './scripts/i18n/angular-locale_en.js',
-                    './scripts/i18n/angular-locale_ru.js',
-                    './scripts/app.js'
-                ]
-            }
+            // Filename for entry points
+            filename: '[name].[chunkhash].js',
+
+            // Filename for non-entry points
+            chunkFilename: '[name].[chunkhash].js'
         };
 
-        // Reference: https://webpack.js.org/plugins/split-chunks-plugin/
-        config.optimization = {
-            splitChunks: {
-                chunks: 'all',
-                minChunks: 1
-            }
-        };
+        config.devtool = 'nosources-source-map';
+
+        config.optimization['minimize'] = true;
+        config.optimization['minimizer'] = [
+            '...',
+            new CssMinimizerPlugin({
+                minimizerOptions: {
+                    preset: [
+                        "default",
+                        {
+                            discardComments: { removeAll: true },
+                        }
+                    ]
+                }
+            })
+        ];
 
         config.plugins.push(
-            // Reference: https://github.com/ampedandwired/html-webpack-plugin
-            // Render index.html
-            new HtmlWebpackPlugin({
-                filename: './index.html',
-                template: './index.ejs',
-                chunksSortMode: function (a, b) {
-                    var order = ["polyfills", "commons", "libs", "js", "vendor", "main"];
-                    return order.indexOf(a) - order.indexOf(b);
-                },
-                inject: 'body',
-                minify: false,
-
-                // Options passed to template
-
-                // Set to true when building for stable release
-                stableRelease: false
-            })
+            // Copy assets from the public folder
+            // Reference: https://github.com/kevlened/copy-webpack-plugin
+            new CopyWebpackPlugin({
+                patterns: [
+                    {from: path.join(__dirname, 'app', 'images'), to: 'images'},
+                    {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
+                    {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
+                    {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'},
+                    {from: path.join(__dirname, 'app', 'scripts/i18n'), to: 'scripts/i18n'},
+            ]}),
+            // Reference: https://github.com/webpack-contrib/mini-css-extract-plugin
+            // Extract CSS files from JS
+            new MiniCssExtractPlugin({filename: 'css/[name].[contenthash].css'})
         )
 
-        // Production specific settings
-        if (isProd) {
-            console.log('Production build')
+        // Load styles
+        config.module.rules.push({
+            test: /\.(sa|sc|c)ss$/i,
+            use: [
+                MiniCssExtractPlugin.loader,
+                "css-loader",
+                "postcss-loader",
+                "sass-loader"
+            ]
+        })
+    } else {
+        // Development settings
 
-            config.mode = 'production'
+        config.mode = 'development'
 
-            /**
-             * Output
-             * Reference: https://webpack.js.org/concepts/#output
-             */
-            config.output = {
-                // Absolute output directory
-                path: path.resolve(__dirname, 'dist'),
+        config.output = {
+            // Absolute output directory
+            path: path.resolve(__dirname, 'dist'),
 
-                // Output path from the view of the page
-                publicPath: '/',
+            // Output path from the view of the page
+            // Uses dev-server in development
+            publicPath: 'http://localhost:8080/',
 
-                // Filename for entry points
-                filename: '[name].[chunkhash].js',
+            // Filename for entry points
+            filename: '[name].bundle.js',
 
-                // Filename for non-entry points
-                chunkFilename: '[name].[chunkhash].js'
-            };
+            // Filename for non-entry points
+            chunkFilename: '[name].bundle.js'
+        };
 
-            config.devtool = 'nosources-source-map';
+        config.devtool = 'eval-source-map';
 
-            config.optimization['minimize'] = true;
-            config.optimization['minimizer'] = [
-                '...',
-                new CssMinimizerPlugin({
-                    minimizerOptions: {
-                        preset: [
-                            "default",
-                            {
-                                discardComments: { removeAll: true },
-                            }
-                        ]
-                    }
-                })
-            ];
-
-            config.plugins.push(
-                // Copy assets from the public folder
-                // Reference: https://github.com/kevlened/copy-webpack-plugin
-                new CopyWebpackPlugin({
-                    patterns: [
-                        {from: path.join(__dirname, 'app', 'images'), to: 'images'},
-                        {from: path.join(__dirname, 'app', '404.html'), to: '404.html'},
-                        {from: path.join(__dirname, 'app', 'favicon.ico'), to: 'favicon.ico'},
-                        {from: path.join(__dirname, 'app', 'robots.txt'), to: 'robots.txt'},
-                        {from: path.join(__dirname, 'app', 'scripts/i18n'), to: 'scripts/i18n'},
-                ]}),
-                // Reference: https://github.com/webpack-contrib/mini-css-extract-plugin
-                // Extract CSS files from JS
-                new MiniCssExtractPlugin({filename: 'css/[name].[contenthash].css'})
-            )
-
-            // Load styles
-            config.module.rules.push({
-                test: /\.(sa|sc|c)ss$/i,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    "css-loader",
-                    "postcss-loader",
-                    "sass-loader"
-                ]
-            })
-        } else {
-            // Development settings
-
-            config.mode = 'development'
-
-            config.output = {
-                // Absolute output directory
-                path: path.resolve(__dirname, 'dist'),
-
-                // Output path from the view of the page
-                // Uses dev-server in development
-                publicPath: 'http://localhost:8080/',
-
-                // Filename for entry points
-                filename: '[name].bundle.js',
-
-                // Filename for non-entry points
-                chunkFilename: '[name].bundle.js'
-            };
-
-            config.devtool = 'eval-source-map';
-
-            // Load styles
-            config.module.rules.push({
-                test: /\.(sa|sc|c)ss$/i,
-                use: [
-                    "style-loader",
-                    "css-loader",
-                    "postcss-loader",
-                    "sass-loader"
-                ]
-            })
-        }
-    // }
-
+        // Load styles
+        config.module.rules.push({
+            test: /\.(sa|sc|c)ss$/i,
+            use: [
+                "style-loader",
+                "css-loader",
+                "postcss-loader",
+                "sass-loader"
+            ]
+        })
+    }
 
     /**
      * Dev server configuration
