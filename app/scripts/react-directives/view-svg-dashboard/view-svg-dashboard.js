@@ -27,13 +27,9 @@ function viewSvgDashboardDirective(
       $rootScope.checkFullscreen = () => {
         return checkFullscreen() || $rootScope.forceFullscreen;
       };
-      $rootScope.isHMI = params.hmi === true;
-      const bgColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';
-      document.getElementById('page-wrapper').style.backgroundColor = bgColor;
-
-      if (scope.root) {
-        scope.root.unmount();
-      }
+      $rootScope.isHMI = params.hmi;
+      $rootScope.hmiColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';
+      document.getElementById('page-wrapper').style.backgroundColor = $rootScope.hmiColor;
 
       scope.store = new ViewSvgDashboardPageStore();
       scope.store.setForceFullscreen($rootScope.forceFullscreen);
@@ -45,6 +41,33 @@ function viewSvgDashboardDirective(
         }
       );
 
+      scope.store.setEditDashboardFn(dashboardId =>
+        $state.go('dashboard-svg-edit', { id: dashboardId })
+      );
+      scope.store.setMoveToDashboardFn(dashboardId => {
+        const dashboard = uiConfig.getDashboard(dashboardId);
+        if (dashboard) {
+          if (dashboard.content.isSvg) {
+            $state.go(
+              'dashboard-svg',
+              {
+                id: dashboardId,
+                hmi: $rootScope.isHMI,
+                fullscreen: $rootScope.forceFullscreen,
+                hmicolor: $rootScope.hmiColor,
+              },
+              {
+                custom: {
+                  noreload: true,
+                },
+              }
+            );
+          } else {
+            $state.go('dashboard', { id: dashboardId });
+          }
+        }
+      });
+
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(CreateViewSvgDashboardPage({ pageStore: scope.store }));
 
@@ -52,9 +75,9 @@ function viewSvgDashboardDirective(
         .whenReady()
         .then(() => uiConfig.whenReady())
         .then(() => {
-          scope.store.setDashboard(uiConfig.getDashboard(scope.id));
           scope.store.setDeviceData(DeviceData);
-          scope.store.setEditFn(() => $state.go('dashboard-svg-edit', { id: scope.id }));
+          scope.store.setDashboards(uiConfig.filtered().dashboards);
+          scope.store.setDashboard(scope.id);
         });
 
       element.on('$destroy', function () {

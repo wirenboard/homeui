@@ -75,6 +75,7 @@ import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
+import DashboardSvgCtrl from './controllers/dashboardSvgController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -194,7 +195,8 @@ module
     .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
     .controller('DiagnosticCtrl', DiagnosticCtrl)
     .controller('BackupCtrl', BackupCtrl)
-    .controller('NavigationCtrl', NavigationCtrl);
+    .controller('NavigationCtrl', NavigationCtrl)
+    .controller('DashboardSvgCtrl', DashboardSvgCtrl);
 
 module
     .directive('scriptForm', function (PageState) {

@@ -1,64 +1,58 @@
-import React, { useContext } from 'react';
-import { Spinner, Button } from '../common';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import { Spinner } from '../common';
 import { observer } from 'mobx-react-lite';
-import { useTranslation } from 'react-i18next';
-import SvgView from './svgView';
+import ViewSvgDashboard from './viewSvgDashboard';
 import { FullscreenContext } from '../components/fullscreen/fullscreenContext';
+import { Carousel } from 'react-responsive-carousel';
 
-const ViewSvgDashboardHeader = observer(({ title, forceFullscreen, onEdit }) => {
-  const { t } = useTranslation();
-  const fullscreen = useContext(FullscreenContext);
-  return (
-    <h1 className="page-header">
-      <span>{title}</span>
-      <div className="pull-right button-group">
-        {!(fullscreen.isFullscreen || forceFullscreen) && (
-          <Button
-            type="success"
-            label={t('view-svg-dashboard.buttons.edit')}
-            onClick={onEdit}
-          ></Button>
-        )}
-        {!forceFullscreen && (
-          <Button
-            icon={
-              fullscreen.isFullscreen
-                ? 'glyphicon glyphicon-resize-small'
-                : 'glyphicon glyphicon-resize-full'
-            }
-            title={t(
-              fullscreen.isFullscreen
-                ? 'view-svg-dashboard.buttons.exit-fullscreen'
-                : 'view-svg-dashboard.buttons.fullscreen'
-            )}
-            onClick={() => fullscreen.toggleFullscreen()}
-          ></Button>
-        )}
-      </div>
-    </h1>
-  );
-});
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
-const ViewSvgDashboardPage = observer(({ pageStore }) => {
+export const ViewSvgDashboardPage = observer(({ store }) => {
+  const ref = useRef(null);
+  const [width, setWidth] = useState(25);
+
+  useLayoutEffect(() => {
+    const callback = () => {
+      if (ref?.current) {
+        setWidth(ref.current.getBoundingClientRect().width);
+      }
+    };
+    callback();
+    window.addEventListener('resize', callback);
+    return () => {
+      window.removeEventListener('resize', callback);
+    };
+  });
+
   return (
-    <FullscreenContext.Provider value={pageStore.fullscreen}>
-      <div className="svg-view-page">
-        {pageStore.loading ? (
+    <FullscreenContext.Provider value={store.fullscreen}>
+      <div className="svg-view-page" ref={ref}>
+        {store.loading ? (
           <Spinner />
         ) : (
           <>
-            <ViewSvgDashboardHeader
-              title={pageStore.dashboard.content.name}
-              forceFullscreen={pageStore.forceFullscreen}
-              onEdit={() => pageStore.editFn()}
-            />
-            <SvgView
-              svg={pageStore.dashboard.content.svg.current}
-              className={pageStore.dashboard.content.svg_fullwidth ? 'fit-to-page' : ''}
-              params={pageStore.dashboard.content.svg.params}
-              values={pageStore.channelValues}
-              switchValue={(channel, value) => pageStore.switchValue(channel, value)}
-            />
+            {store.dashboards.length == 1 ? (
+              <ViewSvgDashboard key={store.dashboards[0].id} store={store.dashboards[0]} />
+            ) : (
+              <Carousel
+                withoutControls={true}
+                onChange={index => store.slideChanged(index)}
+                selectedItem={store.dashboardIndex}
+                showThumbs={false}
+                emulateTouch={true}
+                centerMode={false}
+                showArrows={false}
+                showStatus={false}
+                showIndicators={false}
+                infiniteLoop={false}
+                key={store.key}
+                swipeScrollTolerance={width / 3}
+              >
+                {store.dashboards.map((d, index) => (
+                  <ViewSvgDashboard key={d.dashboard.id} store={d} />
+                ))}
+              </Carousel>
+            )}
           </>
         )}
       </div>
@@ -67,7 +61,7 @@ const ViewSvgDashboardPage = observer(({ pageStore }) => {
 });
 
 function CreateViewSvgDashboardPage({ pageStore }) {
-  return <ViewSvgDashboardPage pageStore={pageStore}></ViewSvgDashboardPage>;
+  return <ViewSvgDashboardPage store={pageStore}></ViewSvgDashboardPage>;
 }
 
 export default CreateViewSvgDashboardPage;

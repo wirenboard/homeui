@@ -59,6 +59,13 @@ export const FormSelect = observer(({ store }) => {
       paddingRight: '0px',
       width: '15px',
     }),
+    clearIndicator: provided => ({
+      ...provided,
+      color: 'black',
+      paddingLeft: '0px',
+      paddingRight: '0px',
+      width: '15px',
+    }),
     indicatorsContainer: provided => ({
       ...provided,
       height: '32px',
@@ -100,6 +107,7 @@ export const FormSelect = observer(({ store }) => {
       <Select
         options={store.options}
         isSearchable={false}
+        isClearable={true}
         value={store.selectedOption}
         styles={customStyles}
         placeholder={store.placeholder}

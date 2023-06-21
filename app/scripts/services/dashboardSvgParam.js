@@ -33,6 +33,11 @@ class DashboardSvgParam {
             value: null
         };
 
+        this["long-press"] = data["long-press"] || {
+            enable: false,
+            dashboard: null
+        };
+
     }
 }
 

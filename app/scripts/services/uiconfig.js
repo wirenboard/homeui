@@ -260,6 +260,11 @@ function uiConfigService($rootScope, $q, $timeout) {
                 svg_url: '',
                 svg_fullwidth: true,
                 widgets: [],
+                swipe: {
+                    enable: false,
+                    left: null,
+                    right: null
+                },
                 svg: {
                     original: {},
                     current: {},

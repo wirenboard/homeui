@@ -31,7 +31,8 @@ function editSvgDashboardDirective(mqttClient, uiConfig, $state, DeviceData, $lo
           scope.store.setDashboard(
             scope.id ? uiConfig.getDashboard(scope.id) : uiConfig.addDashboardWithSvg(),
             DeviceData,
-            $locale.id
+            $locale.id,
+            uiConfig.filtered().dashboards
           );
         })
         .catch(err => {
