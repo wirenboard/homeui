@@ -5,6 +5,7 @@ import i18n from '../../i18n/react/config';
 
 export class IntegerStore {
   constructor({ name, description, placeholder, min, max, value }) {
+    this.type = 'integer';
     this.name = name;
     this.description = description;
     this.placeholder = placeholder;

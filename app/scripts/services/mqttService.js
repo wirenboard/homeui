@@ -134,6 +134,10 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
       connectOptions.password = password;
     }
 
+    if(parseInt(port) === 443 || location.protocol === 'https:') {
+      connectOptions.useSSL = true
+    }
+
     id = clientid;
 
     retainIsDone = false;
@@ -169,7 +173,12 @@ function mqttClient($window, $timeout, $q, topicMatches, mqttConnectTimeout,
       get: () => MAX_QUEUED_MESSAGES - client.inFlightMessages.length,
     });
 
-    client.connect(angular.copy(connectOptions));
+    try {
+      client.connect(angular.copy(connectOptions));
+    } catch (e) {
+      console.log(e);
+      $translate('mqtt.errors.create').then(m => ngToast.danger(m));
+    }
   };
 
   //...........................................................................

@@ -31,6 +31,8 @@ import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
 import '../styles/css/network-connections.css';
+import '../styles/css/svg-edit-page.css';
+import '../styles/css/svg-view-page.css';
 
 // React-related imports
 import i18n from './i18n/react/config';
@@ -73,6 +75,7 @@ import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
+import DashboardSvgCtrl from './controllers/dashboardSvgController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -100,13 +103,14 @@ import fullscreenToggleDirective from './directives/fullscreenToggle';
 import scanDirective from './react-directives/scan/scan';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
+import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
+import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
 
 // Angular routes
 import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm/index';
-import SvgEditorModule from './components/svgEditor/index';
 import AngularJsonEditorModule from './components/json-editor/angular-json-editor';
 
 //-----------------------------------------------------------------------------
@@ -134,7 +138,6 @@ const module = angular
         routingModule,
         dumbTemplateModule,
         LoginFormModule,
-        SvgEditorModule,
 
         'ui-rangeSlider',
         'ngToast',
@@ -192,7 +195,8 @@ module
     .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
     .controller('DiagnosticCtrl', DiagnosticCtrl)
     .controller('BackupCtrl', BackupCtrl)
-    .controller('NavigationCtrl', NavigationCtrl);
+    .controller('NavigationCtrl', NavigationCtrl)
+    .controller('DashboardSvgCtrl', DashboardSvgCtrl);
 
 module
     .directive('scriptForm', function (PageState) {
@@ -259,7 +263,9 @@ module
     .directive("fullscreenToggle", fullscreenToggleDirective)
     .directive("deviceManagerPage", scanDirective)
     .directive("networkConnectionsPage", networkConnectionsDirective)
-    .directive("firmwareUpdateWidget", firmwareUpdateDirective);
+    .directive("firmwareUpdateWidget", firmwareUpdateDirective)
+    .directive("editSvgDashboardPage", editSvgDashboardDirective)
+    .directive("viewSvgDashboardPage", viewSvgDashboardDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {

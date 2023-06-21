@@ -21,9 +21,11 @@
   },
   "homepage": "https://github.com/Foxandxss/angular-webpack-workflow",
   "dependencies": {
+    "@codemirror/lang-javascript": "^6.1.8",
     "@dnd-kit/core": "^6.0.7",
     "@dnd-kit/modifiers": "^6.0.1",
     "@rpldy/uploady": "^1.4.1",
+    "@uiw/react-codemirror": "^4.20.2",
     "angular": "^1.8.3",
     "angular-dynamic-locale": "^0.1.38",
     "angular-elastic": "^2.5.1",
@@ -35,7 +37,7 @@
     "angular-touch": "^1.8.3",
     "angular-translate": "^2.19.0",
     "angular-translate-loader-partial": "^2.19.0",
-    "angular-ui-router": "^0.4.2",
+    "angular-ui-router": "^1.0.30",
     "angular-ui-scroll": "^1.8.2",
     "angular-xeditable": "^0.10.2",
     "angularjs-dropdown-multiselect": "^2.0.0-beta.10",
@@ -57,9 +59,12 @@
     "react-focus-lock": "^2.9.3",
     "react-i18next": "^12.0.0",
     "react-responsive": "^9.0.2",
+    "react-responsive-carousel": "^3.2.23",
+    "react-select": "^5.7.3",
     "react-tabs": "^6.0.0",
     "spectrum-colorpicker": "^1.8.1",
-    "ui-select": "^0.19.6"
+    "ui-select": "^0.19.6",
+    "use-file-picker": "^1.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",

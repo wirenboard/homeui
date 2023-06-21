@@ -99,7 +99,7 @@
          "integer_minmax": "Введите целое число в интервале от {{min}} до {{max}}"
       }
    },
-    "system": {
+   "system": {
         "update": {
             "title": "Обновление прошивки",
             "help": "Скачать прошивку",
@@ -128,5 +128,57 @@
             "uploaded": "Загрузка завершена",
             "upload_error": "Ошибка загрузки"
         }
+   },
+   "view-svg-dashboard": {
+      "buttons": {
+         "fullscreen": "Перейти в полноэкранный режим",
+         "exit-fullscreen": "Выйти из полноэкранного режима",
+         "edit": "Редактировать"
+      }
+   },
+   "edit-svg-dashboard": {
+      "labels": {
+         "create": "Создать SVG панель",
+         "edit": "Редактировать SVG панель",
+         "common-parameters-title": "Параметры панели",
+         "common-parameters-id": "Идентификатор",
+         "common-parameters-name": "Название",
+         "common-parameters-fullscreen": "Растягивать во весь экран",
+         "bindings-title": "Привязки",
+         "write-enable": "Запись",
+         "read-enable": "Чтение",
+         "style-enable": "Стиль оформления",
+         "visible-enable": "Видимость",
+         "channel": "Канал",
+         "value": "Значение",
+         "tag-name": "Тип элемента: {{tag}}",
+         "confirm-remove": "Действительно удалить панель?",
+         "condition": "Условие",
+         "select-channel-placeholder": "Выберите канал",
+         "off": "Значение выключенного состояния",
+         "on": "Значение включенного состояния",
+         "read-value-desc": "Например: ((val + 0) > 0) ? 'On' : 'Off'",
+         "style-value-desc": "Например: (val) ? ';fill: green' : ';fill: red'",
+         "long-press-enable": "Долгое нажатие/касание",
+         "move-to-dashboard": "Перейти на панель",
+         "select-dashboard-placeholder": "Выберите панель для перехода",
+         "swipe-enable": "Смахивания",
+         "left": "Влево",
+         "right": "Вправо"
+      },
+      "buttons": {
+         "save": "Сохранить",
+         "cancel": "Отменить",
+         "edit-json": "В виде JSON",
+         "load-svg": "Загрузить SVG",
+         "to-dashboards-list": "Список панелей",
+         "preview": "Демонстрация",
+         "remove": "Удалить"
+      }
+   },
+   "validator": {
+      "errors": {
+         "empty": "Необходимо задать значение" 
+      }
    }
 }

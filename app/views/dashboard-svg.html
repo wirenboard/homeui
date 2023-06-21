@@ -1,15 +1,1 @@
-<div class ="svg-view-page" ng-if="dashboard">
-    <h1 class="page-header">
-        <div class="row">
-            <div class="col-md-12">
-                <span style="vertical-align: middle;">{{ dashboard.name }}</span>
-                <div class="pull-right">
-                    <button type="button" user-role="mto" current-role="roles.current.role" class="btn btn-success"  ui-sref="dashboard-svg-edit({ id: dashboard.id })"  ng-hide="checkFullscreen()">{{'dashboards.button.edit' | translate}}</button>
-                    <fullscreen-toggle></fullscreen-toggle>
-                </div>
-            </div>
-        </div>
-    </h1>
-    <svg-view ng-class="{'svg-view-fullscreen': dashboard.svgFullWidth }" dashboard="dashboard"></svg-view>
-</div>
-<pulse-spinner ng-show="!dashboard"></pulse-spinner>
+<view-svg-dashboard-page id="id"></view-svg-dashboard-page>

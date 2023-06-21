@@ -11,7 +11,8 @@
         },
         "error": "Error",
         "errors": {
-            "connect": "Failure to connect to {{host}}"
+            "connect": "Failure to connect to {{host}}",
+            "create": "Can't create MQTT connection, check logs"
         }
     }
 }

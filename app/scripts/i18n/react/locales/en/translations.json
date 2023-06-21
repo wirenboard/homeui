@@ -131,5 +131,57 @@
             "uploaded": "Upload complete",
             "upload_error": "Upload error"
         }
-    }
+   },
+   "view-svg-dashboard": {
+      "buttons": {
+         "fullscreen": "Enter fullscreen mode",
+         "exit-fullscreen": "Exit fullscreen mode",
+         "edit": "Edit"
+      }
+   },
+   "edit-svg-dashboard": {
+      "labels": {
+         "create": "Create SVG dashboard",
+         "edit": "Edit SVG dashboard",
+         "common-parameters-title": "Common parameters",
+         "common-parameters-id": "Id",
+         "common-parameters-name": "Name",
+         "common-parameters-fullscreen": "Fit fullscreen",
+         "bindings-title": "Bindings",
+         "write-enable": "Write",
+         "read-enable": "Read",
+         "style-enable": "Style",
+         "visible-enable": "Visible",
+         "channel": "Channel",
+         "value": "Value",
+         "tag-name": "Tag type: {{tag}}",
+         "confirm-remove": "Do you really want to remove this dashboard?",
+         "condition": "Condition",
+         "select-channel-placeholder": "Select channel",
+         "on": "Value on",
+         "off": "Value off",
+         "read-value-desc": "Example: ((val + 0) > 0) ? 'On' : 'Off'",
+         "style-value-desc": "Example: (val) ? ';fill: green' : ';fill: red'",
+         "long-press-enable": "Long click/touch",
+         "move-to-dashboard": "Move to dashboard",
+         "select-dashboard-placeholder": "Select dashboard to move",
+         "swipe-enable": "Swipe",
+         "left": "Left",
+         "right": "Right"
+      },
+      "buttons": {
+         "save": "Save",
+         "cancel": "Cancel",
+         "edit-json": "Edit as JSON",
+         "load-svg": "Load SVG",
+         "to-dashboards-list": "Dashboards list",
+         "preview": "Preview",
+         "remove": "Remove"
+      }
+   },
+   "validator": {
+      "errors": {
+         "empty": "Enter value" 
+      }
+   }
 }
