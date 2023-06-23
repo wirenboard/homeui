@@ -8,13 +8,14 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
 
 class NetworkConnectionsPageStore {
-  constructor(saveConnectionsFn, onToggleConnectionState) {
+  constructor(saveConnectionsFn, loadConnectionsFn, onToggleConnectionState) {
     this.confirmModalState = new ConfirmModalState();
     this.selectNewConnectionModalState = new SelectNewConnectionModalState();
     this.connections = new Connections();
     this.switcher = new SwitcherStore(this.connections);
     this.onToggleConnectionState = onToggleConnectionState;
     this.saveConnections = saveConnectionsFn;
+    this.loadConnections = loadConnectionsFn;
     this.selectedTabIndex = 0;
     this.loading = true;
     this.error = '';
@@ -144,13 +145,14 @@ class NetworkConnectionsPageStore {
     };
     try {
       const needToReload = jsonToSave.ui.connections.some(cn => !cn.connection_uuid);
-      const res = await this.saveConnections(jsonToSave, needToReload);
+      await this.saveConnections(jsonToSave);
       this.connections.submit();
       this.switcher.submit();
-      this.setLoading(false);
       if (needToReload) {
-        this.connections.updateUuids(res);
+        const savedConnections = await this.loadConnections();
+        this.connections.updateUuids(savedConnections);
       }
+      this.setLoading(false);
     } catch (err) {
       this.setError(err.message);
       this.setLoading(false);

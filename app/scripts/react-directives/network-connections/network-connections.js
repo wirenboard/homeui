@@ -14,13 +14,13 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       path: '=',
     },
     link: function (scope, element) {
-      const saveConnections = async (data, needReload) => {
+      const saveConnections = async data => {
         await ConfigEditorProxy.Save({ path: scope.path, content: data });
-        if (needReload) {
-          const res = await ConfigEditorProxy.Load({ path: scope.path });
-          return res.content.ui.connections;
-        }
-        return null;
+      };
+
+      const loadConnections = async () => {
+        const res = await ConfigEditorProxy.Load({ path: scope.path });
+        return res.content.ui.connections;
       };
 
       scope.toggleConnectionState = uuid => {
@@ -30,7 +30,11 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       if (scope.root) {
         scope.root.unmount();
       }
-      scope.store = new NetworkConnectionsPageStore(saveConnections, scope.toggleConnectionState);
+      scope.store = new NetworkConnectionsPageStore(
+        saveConnections,
+        loadConnections,
+        scope.toggleConnectionState
+      );
       autorun(() => {
         PageState.setDirty(scope.store.isDirty);
       });
