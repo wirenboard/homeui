@@ -6,8 +6,7 @@
     "clean": "rimraf -G dist coverage ./tmp",
     "build": "rimraf -G dist && webpack --progress",
     "server": "npx webpack serve --history-api-fallback --client-progress",
-    "test": "rimraf -G coverage && karma start karma_ci.conf.js",
-    "test-watch": "karma start karma_dev.conf.js",
+    "test": "jest test/react",
     "start": "npm run server",
     "start-dist": "cd ./dist && python3 ../test/dist_server.py "
   },
@@ -46,6 +45,7 @@
     "codemirror": "^5.25.0",
     "dompurify": "^3.0.1",
     "i18next": "^22.0.6",
+    "jest-environment-jsdom": "^29.5.0",
     "jquery": "^3.6.1",
     "lodash": "^4.17.21",
     "lz-string": "^1.4.4",
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",
-    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-env": "^7.22.4",
     "@babel/preset-react": "^7.18.6",
     "angular-mocks": "^1.8.3",
     "autoprefixer": "^10.4.13",
@@ -82,6 +82,7 @@
     "exports-loader": "^4.0.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^29.5.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mobx": "^6.7.0",
     "mobx-react-lite": "^3.4.0",
@@ -93,7 +94,7 @@
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.6",
     "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.0",
+    "webpack-cli": "^5.1.1",
     "webpack-dev-server": "^4.11.1"
   },
   "browserslist": [

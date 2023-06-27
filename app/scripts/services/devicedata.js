@@ -153,6 +153,18 @@ function deviceDataService(mqttClient, $window) {
       readOnly: true,
       displayType: "value"
     },
+    "lux": {
+      valueType: "number",
+      units: "lx",
+      readOnly: true,
+      displayType: "value"
+    },
+    "sound_level": {
+      valueType: "number",
+      units: "dB",
+      readOnly: true,
+      displayType: "value"
+    },
     "range": {
       valueType: "number",
       readOnly: false,
