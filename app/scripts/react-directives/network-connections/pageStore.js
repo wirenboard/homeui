@@ -8,13 +8,14 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
 
 class NetworkConnectionsPageStore {
-  constructor(onSave, onToggleConnectionState) {
+  constructor(saveConnectionsFn, loadConnectionsFn, onToggleConnectionState) {
     this.confirmModalState = new ConfirmModalState();
     this.selectNewConnectionModalState = new SelectNewConnectionModalState();
     this.connections = new Connections();
     this.switcher = new SwitcherStore(this.connections);
     this.onToggleConnectionState = onToggleConnectionState;
-    this.onSave = onSave;
+    this.saveConnections = saveConnectionsFn;
+    this.loadConnections = loadConnectionsFn;
     this.selectedTabIndex = 0;
     this.loading = true;
     this.error = '';
@@ -143,9 +144,14 @@ class NetworkConnectionsPageStore {
       },
     };
     try {
-      await this.onSave(jsonToSave);
+      const needToReload = jsonToSave.ui.connections.some(cn => !cn.connection_uuid);
+      await this.saveConnections(jsonToSave);
       this.connections.submit();
       this.switcher.submit();
+      if (needToReload) {
+        const savedConnections = await this.loadConnections();
+        this.connections.updateUuids(savedConnections);
+      }
       this.setLoading(false);
     } catch (err) {
       this.setError(err.message);
@@ -181,23 +187,23 @@ class NetworkConnectionsPageStore {
   }
 
   setConnectionState(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setState(state);
+    this.connections.setConnectionState(connectionUuid, state);
   }
 
   setConnectionConnectivity(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setConnectivity(state);
+    this.connections.setConnectionConnectivity(connectionUuid, state);
   }
 
   setConnectionOperator(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setOperator(state);
+    this.connections.setConnectionOperator(connectionUuid, state);
   }
 
   setConnectionSignalQuality(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setSignalQuality(state);
+    this.connections.setConnectionSignalQuality(connectionUuid, state);
   }
 
   setConnectionAccessTechnologies(connectionUuid, state) {
-    this.connections.findConnection(connectionUuid)?.setAccessTechnologies(state);
+    this.connections.setConnectionAccessTechnologies(connectionUuid, state);
   }
 
   setError(msg) {

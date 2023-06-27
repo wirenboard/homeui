@@ -58,12 +58,19 @@ function getNewConnectionData(type, connections) {
   return { type: type, connection_uuid: '', connection_id: connection_id };
 }
 
+function createOrAssign(obj, key, subkey, value) {
+  let prop = obj[key] || {};
+  prop[subkey] = value;
+  obj[key] = prop;
+}
+
 class Connections {
   constructor() {
     this.connections = [];
     this.schema = {};
     this.additionalData = {};
     this.selectedConnectionIndex = 0;
+    this.lastConnectionState = {};
 
     makeObservable(this, {
       connections: observable,
@@ -127,6 +134,25 @@ class Connections {
     }
   }
 
+  updateUuids(connectionsFromJson) {
+    connectionsFromJson.forEach(cn => {
+      let res = this.findConnection(cn.connection_uuid);
+      if (!res) {
+        res = this.connections.find(
+          item => cn.type == item.data.type && cn.connection_id == item.data.connection_id
+        );
+        if (res) {
+          res.setUuid(cn.connection_uuid);
+          res.setState(this.lastConnectionState[cn.connection_uuid]?.state);
+          res.setConnectivity(this.lastConnectionState[cn.connection_uuid]?.connectivity);
+          res.setOperator(this.lastConnectionState[cn.connection_uuid]?.operator);
+          res.setSignalQuality(this.lastConnectionState[cn.connection_uuid]?.signal);
+          res.setAccessTechnologies(this.lastConnectionState[cn.connection_uuid]?.ats);
+        }
+      }
+    });
+  }
+
   submit() {
     this.connections.forEach(cn => cn.submit());
   }
@@ -139,6 +165,31 @@ class Connections {
 
   get isDirty() {
     return this.connections.some(cn => cn.isDirty);
+  }
+
+  setConnectionState(connectionUuid, state) {
+    createOrAssign(this.lastConnectionState, connectionUuid, 'state', state);
+    this.findConnection(connectionUuid)?.setState(state);
+  }
+
+  setConnectionConnectivity(connectionUuid, state) {
+    createOrAssign(this.lastConnectionState, connectionUuid, 'connectivity', state);
+    this.findConnection(connectionUuid)?.setConnectivity(state);
+  }
+
+  setConnectionOperator(connectionUuid, state) {
+    createOrAssign(this.lastConnectionState, connectionUuid, 'operator', state);
+    this.findConnection(connectionUuid)?.setOperator(state);
+  }
+
+  setConnectionSignalQuality(connectionUuid, state) {
+    createOrAssign(this.lastConnectionState, connectionUuid, 'signal', state);
+    this.findConnection(connectionUuid)?.setSignalQuality(state);
+  }
+
+  setConnectionAccessTechnologies(connectionUuid, state) {
+    createOrAssign(this.lastConnectionState, connectionUuid, 'ats', state);
+    this.findConnection(connectionUuid)?.setAccessTechnologies(state);
   }
 }
 

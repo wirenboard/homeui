@@ -14,9 +14,15 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       path: '=',
     },
     link: function (scope, element) {
-      scope.onSave = data => {
-        return ConfigEditorProxy.Save({ path: scope.path, content: data });
+      const saveConnections = async data => {
+        await ConfigEditorProxy.Save({ path: scope.path, content: data });
       };
+
+      const loadConnections = async () => {
+        const res = await ConfigEditorProxy.Load({ path: scope.path });
+        return res.content.ui.connections;
+      };
+
       scope.toggleConnectionState = uuid => {
         mqttClient.send(`/devices/system__networks__${uuid}/controls/UpDown/on`, '1', false);
       };
@@ -24,7 +30,11 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       if (scope.root) {
         scope.root.unmount();
       }
-      scope.store = new NetworkConnectionsPageStore(scope.onSave, scope.toggleConnectionState);
+      scope.store = new NetworkConnectionsPageStore(
+        saveConnections,
+        loadConnections,
+        scope.toggleConnectionState
+      );
       autorun(() => {
         PageState.setDirty(scope.store.isDirty);
       });
