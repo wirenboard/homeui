@@ -33,6 +33,7 @@ import '../styles/css/device-manager.css';
 import '../styles/css/network-connections.css';
 import '../styles/css/svg-edit-page.css';
 import '../styles/css/svg-view-page.css';
+import '../styles/css/script-editor-page.css';
 
 // React-related imports
 import i18n from './i18n/react/config';
@@ -76,6 +77,8 @@ import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
 import DashboardSvgCtrl from './controllers/dashboardSvgController';
+import DashboardSvgEditCtrl from './controllers/dashboardSvgEditController';
+import ScriptCtrl from './controllers/scriptController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -105,6 +108,7 @@ import networkConnectionsDirective from './react-directives/network-connections/
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
 import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
+import scriptEditorDirective from './react-directives/script-editor/script-editor';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -196,7 +200,9 @@ module
     .controller('DiagnosticCtrl', DiagnosticCtrl)
     .controller('BackupCtrl', BackupCtrl)
     .controller('NavigationCtrl', NavigationCtrl)
-    .controller('DashboardSvgCtrl', DashboardSvgCtrl);
+    .controller('DashboardSvgCtrl', DashboardSvgCtrl)
+    .controller('DashboardSvgEditCtrl', DashboardSvgEditCtrl)
+    .controller('ScriptCtrl', ScriptCtrl);
 
 module
     .directive('scriptForm', function (PageState) {
@@ -265,7 +271,8 @@ module
     .directive("networkConnectionsPage", networkConnectionsDirective)
     .directive("firmwareUpdateWidget", firmwareUpdateDirective)
     .directive("editSvgDashboardPage", editSvgDashboardDirective)
-    .directive("viewSvgDashboardPage", viewSvgDashboardDirective);
+    .directive("viewSvgDashboardPage", viewSvgDashboardDirective)
+    .directive("scriptEditorPage", scriptEditorDirective);
 
 module
     .config(['$translateProvider', '$translatePartialLoaderProvider', function($translateProvider, $translatePartialLoaderProvider) {

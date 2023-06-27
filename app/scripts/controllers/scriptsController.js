@@ -31,10 +31,6 @@ class ScriptsCtrl {
      /rpc/v1/wbrules/Editor/Save/wb-mqtt-homeui-Usf4VuT4Ba {"id":3,"params":{"path":"rules.js","content": ....
      */
 
-     $scope.$on('update-rules-list', (event, data) => {
-        loadList();
-     });
-
      loadList();
   }
 

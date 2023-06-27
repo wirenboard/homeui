@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.71.0) stable; urgency=medium
+
+  * Fix rules editor display
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Jun 2023 15:15:55 +0500
+
 wb-mqtt-homeui (2.70.1) stable; urgency=medium
 
   * Add lux and sound_level to device data types

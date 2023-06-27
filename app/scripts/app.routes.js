@@ -214,37 +214,7 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
     .state('dashboard-svg-edit', {
       url: '/dashboards/svg/edit/{id}',
       controller: 'DashboardSvgEditCtrl as $ctrl',
-      template: require('../views/dashboard-svg-edit.html'),
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          let deferred = $q.defer();
-          let deferred_2 = $q.defer();
-          require.ensure(
-            [], 
-            (require) => {
-              let module = require('./controllers/dashboardSvgEditController.js');
-              $ocLazyLoad.load({
-                name: module.default.name
-              })
-              .then(() => {
-                deferred.resolve(module);
-              });
-
-              let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
-              $ocLazyLoad.load({
-                name: 'ui.codemirror'
-              })
-              .then(() => {
-                deferred_2.resolve(module_2);
-              });
-
-            },
-            'dashboard-svg-edit'
-          );
-          return deferred.promise;
-        }
-      }
+      template: require('../views/dashboard-svg-edit.html')
     })  
   //...........................................................................
     .state('login', {
@@ -279,74 +249,16 @@ function routing($stateProvider,  $locationProvider, $urlRouterProvider) {
       }
     })
   //...........................................................................
-    .state('rules.edit', {
-      url: '/edit/{path:.*}',
+    .state('rules-edit', {
+      url: '/rules/edit/{path:.*}',
       template: require('../views/script.html'),
-      controller: 'ScriptCtrl as $ctrl',
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          let deferred_1 = $q.defer();
-          let deferred_2 = $q.defer();
-          require.ensure(
-            [], 
-            (require) => {
-              let module_1 = require('./controllers/scriptController.js');
-              $ocLazyLoad.load({
-                name: module_1.default.name
-              })
-              .then(() => {
-                deferred_1.resolve(module_1);
-              });
-
-              let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
-              $ocLazyLoad.load({
-                name: 'ui.codemirror'
-              })
-              .then(() => {
-                deferred_2.resolve(module_2);
-              });
-            },
-            'rules-edit'
-          );
-          return $q.all([deferred_1.promise, deferred_2.promise]);
-        }
-      }
+      controller: 'ScriptCtrl as $ctrl'
     })
   //...........................................................................
-    .state('rules.new', {
-      url: '/new',
+    .state('rules-new', {
+      url: '/rules/new',
       template: require('../views/script.html'),
-      controller: 'ScriptCtrl as $ctrl',
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          let deferred_1 = $q.defer();
-          let deferred_2 = $q.defer();
-          require.ensure(
-            [], 
-            (require) => {
-              let module_1 = require('./controllers/scriptController.js');
-              $ocLazyLoad.load({
-                name: module_1.default.name
-              })
-              .then(() => {
-                deferred_1.resolve(module_1);
-              });
-
-              let module_2 = require('../lib/angular-ui-codemirror/src/ui-codemirror.js');
-              $ocLazyLoad.load({
-                name: 'ui.codemirror'
-              })
-              .then(() => {
-                deferred_2.resolve(module_2);
-              });
-            },
-            'rules-new'
-          );
-          return $q.all([deferred_1.promise, deferred_2.promise]);
-        }
-      }
+      controller: 'ScriptCtrl as $ctrl'
     })
   //...........................................................................
     .state('history', {
