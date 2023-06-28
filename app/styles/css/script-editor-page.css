@@ -1,0 +1,21 @@
+.script-editor-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+  
+.script-editor-page .script-editor {
+    flex-grow: 1;
+    height: 1px;
+    width: 100%;
+}
+
+.script-editor-page .alert {
+    margin-bottom: 0px;
+}
+
+@media (max-width: 767px) {
+    .script-editor-page .script-editor {
+      margin-bottom: 10px;
+    }
+}

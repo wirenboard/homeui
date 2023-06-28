@@ -7,7 +7,7 @@
         <a ui-sref="accessLevel">{{'rules.labels.access' | translate}}</a>.
 </div>
 <section ng-if="$ctrl.haveRights">
-    <a ui-sref="rules.new" ui-sref-active="active" class="btn btn-success" translate>
+    <a ui-sref="rules-new" ui-sref-active="active" class="btn btn-success" translate>
         {{'rules.buttons.new'}}
     </a>
     <div class="spinner-floating">
@@ -23,7 +23,7 @@
 
             <div class="row" ng-repeat="script in $ctrl.scripts">
                 <div class="col-xs-4">
-                    <a ui-sref="rules.edit({ path: script.virtualPath })"
+                    <a ui-sref="rules-edit({ path: script.virtualPath })"
                        ng-hide="$ctrl.renamedScripts[$index]">
                         {{ script.virtualPath }}
                     </a>

@@ -382,20 +382,6 @@ footer{
   font-size: 12px;
 }
 
-.script-editor {
-  margin-right: 30px;
-  border-right: 1px solid #eee;
-}
-
-.script-editor .CodeMirror {
-  height: auto;
-  margin-top: 10px;
-}
-
-.script-editor .CodeMirror .script-error-line {
-  background-color: #ffd5d5;
-}
-
 button.show-console {
   position: fixed;
   right: 10px;

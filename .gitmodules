@@ -4,6 +4,3 @@
 [submodule "app/lib/angular-spectrum-colorpicker"]
 	path = app/lib/angular-spectrum-colorpicker
 	url = https://github.com/wirenboard/angular-spectrum-colorpicker.git
-[submodule "app/lib/angular-ui-codemirror"]
-	path = app/lib/angular-ui-codemirror
-	url = https://github.com/angular-ui/ui-codemirror.git

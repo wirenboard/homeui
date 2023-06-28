@@ -183,5 +183,9 @@
       "errors": {
          "empty": "Enter value" 
       }
+   },
+   "errors": {
+      "access-failed": "You cannot view this page. You can change ",
+      "access-failed-link-text": "access level"
    }
 }

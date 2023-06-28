@@ -9,6 +9,4 @@ class DashboardSvgEditController {
     }
 }
 
-export default angular
-    .module('homeuiApp.dashboard-svg-edit', [])
-    .controller('DashboardSvgEditCtrl', DashboardSvgEditController);
+export default DashboardSvgEditController;

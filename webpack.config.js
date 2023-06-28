@@ -44,7 +44,6 @@ module.exports = function makeWebpackConfig() {
             jQuery: 'jquery',
             $: 'jquery',
             'window.jQuery': 'jquery',
-            'window.CodeMirror': 'codemirror/lib/codemirror',
             'window.DOMPurify': 'dompurify',
         }),
     ];
