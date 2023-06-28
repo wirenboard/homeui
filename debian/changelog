@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.71.0) stable; urgency=medium
 
   * Fix rules editor display
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Jun 2023 15:15:55 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 28 Jun 2023 15:12:27 +0500
+
+wb-mqtt-homeui (2.70.2) stable; urgency=medium
+
+  * Fix state display for newly created connections
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 27 Jun 2023 17:58:06 +0500
 
 wb-mqtt-homeui (2.70.1) stable; urgency=medium
 

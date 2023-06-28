@@ -180,6 +180,10 @@ export class SingleConnection {
     this.isDirty = !isEqual(this.editedData, this.data);
   }
 
+  setUuid(uuid) {
+    this.data.connection_uuid = uuid;
+  }
+
   submit() {
     this.data = cloneDeep(this.editedData);
     this.updateName();
