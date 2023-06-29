@@ -115,10 +115,6 @@ class ViewSvgDashboardPageStore {
     this?.editFn();
   }
 
-  moveToDashboard(dashboardId) {
-    this?.moveToDashboardFn(dashboardId);
-  }
-
   setEditDashboardFn(editFn) {
     this.editFn = editFn;
   }
@@ -136,18 +132,14 @@ class ViewSvgDashboardPageStore {
   }
 
   moveToDashboard(dashboardId) {
-    if (this.originalDashboardId == dashboardId) {
-      this.setDashboard(dashboardId);
-    } else {
+    if (this.originalDashboardId != dashboardId) {
       this.moveToDashboardFn(dashboardId);
     }
+    this.setDashboard(dashboardId);
   }
 
   slideChanged(index) {
-    if (this.dashboardIndex != index) {
-      this.moveToDashboard(this.dashboards[index].dashboard.id);
-      this.setDashboard(this.dashboards[index].dashboard.id);
-    }
+    this.moveToDashboard(this.dashboards[index].dashboard.id);
   }
 }
 
