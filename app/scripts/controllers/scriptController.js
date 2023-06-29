@@ -6,7 +6,7 @@ class ScriptCtrl {
       return PageState.isDirty() || $scope.file.isNew;
     };
     $scope.file = {
-      path: $stateParams.path
+      path: $stateParams.path,
     };
   }
 }

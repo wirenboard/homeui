@@ -8,7 +8,7 @@ function dashboardPickerDirective(uiConfig, $timeout) {
     scope: {
       items: '=',
       buttonText: '@',
-      onSelect: '='
+      onSelect: '=',
     },
     replace: true,
     template,
@@ -17,17 +17,17 @@ function dashboardPickerDirective(uiConfig, $timeout) {
         actionsWithUiSelectCtrl();
       }, 100);
 
-      function actionsWithUiSelectCtrl () {
-        const uiSelect = element.find(".ui-select-container").controller('uiSelect');
+      function actionsWithUiSelectCtrl() {
+        const uiSelect = element.find('.ui-select-container').controller('uiSelect');
         scope.showSelect = () => {
           scope.active = true;
           $timeout(() => {
             uiSelect.activate();
-          }, 100)
+          }, 100);
         };
       }
 
-      scope.onToogleSelect = (isOpen) => {
+      scope.onToogleSelect = isOpen => {
         if (!isOpen) {
           scope.active = false;
           if (!angular.equals({}, scope.choice.selected)) {
@@ -40,7 +40,7 @@ function dashboardPickerDirective(uiConfig, $timeout) {
       scope.choice = {};
       scope.choice.selected = {};
       scope.active = false;
-    }
+    },
   };
 }
 

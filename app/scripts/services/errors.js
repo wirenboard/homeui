@@ -6,18 +6,18 @@ function errorsService($rootScope, $translate) {
 
   function raiseError(message, reason) {
     if (reason) {
-      message = message + ": "
+      message = message + ': ';
       if (reason.message) {
-        message = message + reason.message + (reason.data && (" " + reason.data))
+        message = message + reason.message + (reason.data && ' ' + reason.data);
       } else {
-        message = message + reason
+        message = message + reason;
       }
     }
-    $rootScope.$broadcast("alert", message, true);
+    $rootScope.$broadcast('alert', message, true);
   }
 
   // msg could be string or {msg:..., data:...} object for passing to $translate
-  function showError (msg, reason) {
+  function showError(msg, reason) {
     $translate(msg.msg ? msg.msg : msg, msg.data)
       .then(message => raiseError(message, reason))
       .catch(message => raiseError(message, reason));
@@ -26,11 +26,11 @@ function errorsService($rootScope, $translate) {
   return {
     showError: showError,
     hideError: () => {
-      $rootScope.$broadcast("alert", "");
+      $rootScope.$broadcast('alert', '');
     },
     catch: message => reason => {
       showError(message, reason);
-    }
+    },
   };
 }
 

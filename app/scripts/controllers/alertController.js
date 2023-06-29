@@ -5,11 +5,11 @@ class AlertCtrl {
     var oldTimeout = null;
 
     $scope.visible = false;
-    $scope.messageHtml = "";
-    $scope.$on("$locationChangeSuccess", function () {
+    $scope.messageHtml = '';
+    $scope.$on('$locationChangeSuccess', function () {
       $scope.visible = false;
     });
-    $scope.$on("alert", function (ev, message, sticky) {
+    $scope.$on('alert', function (ev, message, sticky) {
       if (oldTimeout !== null) {
         $timeout.cancel(oldTimeout);
         oldTimeout = null;
@@ -19,7 +19,7 @@ class AlertCtrl {
         return;
       }
       $scope.visible = true;
-      $scope.messageHtml = $("<div/>").text(message).html().replace(/\n/g, "<br>");
+      $scope.messageHtml = $('<div/>').text(message).html().replace(/\n/g, '<br>');
       if (!sticky) {
         oldTimeout = $timeout(function () {
           oldTimeout = null;
@@ -28,12 +28,13 @@ class AlertCtrl {
       }
     });
 
-    $scope.stableNotice = !localStorage.getItem('hide-stable-notice') && (rolesFactory.current.role == rolesFactory.ROLE_THREE)
-    $scope.closeStableNotice = function() {
+    $scope.stableNotice =
+      !localStorage.getItem('hide-stable-notice') &&
+      rolesFactory.current.role == rolesFactory.ROLE_THREE;
+    $scope.closeStableNotice = function () {
       $scope.stableNotice = false;
       localStorage.setItem('hide-stable-notice', true);
     };
-
   }
 }
 

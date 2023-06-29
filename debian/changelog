@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.72.0) stable; urgency=medium
+
+  * Format source code. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 29 Jun 2023 16:35:29 +0500
+
 wb-mqtt-homeui (2.71.0) stable; urgency=medium
 
   * Fix rules editor display
