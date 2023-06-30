@@ -272,20 +272,24 @@ class BindingsStore {
 
   onSelectSvgElement(element) {
     this.saveBinding();
-    const id = element.getAttribute('data-svg-param-id') || element.getAttribute('id');
-    let data = this.params.find(param => param.id === id);
-    if (!data) {
-      data = {
-        id: id,
-      };
+    if (element) {
+      const id = element.getAttribute('data-svg-param-id') || element.getAttribute('id');
+      let data = this.params.find(param => param.id === id);
+      if (!data) {
+        data = {
+          id: id,
+        };
+      }
+      this.editable.setSelectedElement(
+        element,
+        id,
+        new DashboardSvgParam(data),
+        this.devices,
+        this.dashboards
+      );
+    } else {
+      this.editable.clearSelection();
     }
-    this.editable.setSelectedElement(
-      element,
-      id,
-      new DashboardSvgParam(data),
-      this.devices,
-      this.dashboards
-    );
   }
 
   saveBinding() {
