@@ -31,6 +31,12 @@
     align-items: center;
 }
 
+@media (min-width: 992px) {
+    .svg-edit-page .svg-edit-left-panel {
+        height: calc(100vh - 150px);
+    }
+}
+
 .svg-edit-page .svg-edit-left-panel button{
     margin-top: 10px;
 }
