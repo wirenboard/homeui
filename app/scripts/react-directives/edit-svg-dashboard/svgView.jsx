@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useRef, useEffect } from 'react';
 
 const findElement = target => {
-  const allowedNodes = ['path', 'circle', 'text'];
+  const allowedNodes = ['path', 'circle', 'text', 'rect'];
   if (allowedNodes.includes(target.nodeName)) {
     return target;
   }
