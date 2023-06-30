@@ -1,6 +1,6 @@
 'use strict';
 
-import { makeObservable, observable, action} from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 
 class ViewSvgDashboardStore {
   constructor(channelValues, editFn, moveToDashboardFn, switchValueFn) {

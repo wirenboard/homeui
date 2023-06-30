@@ -12,7 +12,7 @@ class DownloadBackupModalState {
     makeAutoObservable(this);
   }
 
-  download (url) {
+  download(url) {
     const link = document.createElement('a');
 
     link.setAttribute('href', url);
@@ -27,18 +27,17 @@ class DownloadBackupModalState {
   }
 
   show() {
-      this.onCancel = () => {
-        this.active = false;
-      };
-      this.onDownloadClick = () => {
-        this.download("/fwupdate/download/rootfs");
-        this.isFirstPage = false;
-      };
+    this.onCancel = () => {
+      this.active = false;
+    };
+    this.onDownloadClick = () => {
+      this.download('/fwupdate/download/rootfs');
+      this.isFirstPage = false;
+    };
 
-      this.isFirstPage = true;
-      this.active = true;
- }
-
+    this.isFirstPage = true;
+    this.active = true;
+  }
 }
 
 export default DownloadBackupModalState;

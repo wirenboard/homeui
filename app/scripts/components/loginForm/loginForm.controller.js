@@ -1,6 +1,6 @@
 class LoginFormCtrl {
   //...........................................................................
-  constructor ($window, $rootScope, $state, $location,rolesFactory) {
+  constructor($window, $rootScope, $state, $location, rolesFactory) {
     'ngInject';
 
     this.rootScope = $rootScope;
@@ -85,7 +85,7 @@ class LoginFormCtrl {
       port: this.port,
       user: this.user,
       password: this.password,
-      prefix: this.prefix
+      prefix: this.prefix,
     };
 
     this.rolesFactory.setRole(1);

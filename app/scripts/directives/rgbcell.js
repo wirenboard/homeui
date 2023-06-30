@@ -2,25 +2,23 @@ import template from './rgbcell.html';
 
 function rgbCellDirective(rgbLocalStorageKey) {
   'ngInject';
-  
+
   class RgbController {
-    constructor ($scope, $element, $attrs) {
+    constructor($scope, $element, $attrs) {
       'ngInject';
       this.cell = $scope.cell;
       this.colorPickerOptions = {
         showPalette: true,
-        showButtons: false
+        showButtons: false,
       };
-      if (rgbLocalStorageKey)
-        this.colorPickerOptions.localStorageKey = rgbLocalStorageKey;
+      if (rgbLocalStorageKey) this.colorPickerOptions.localStorageKey = rgbLocalStorageKey;
     }
 
-    indicatorStyle () {
+    indicatorStyle() {
       var c = this.cell.value;
-      if (!angular.isObject(c))
-        return {};
+      if (!angular.isObject(c)) return {};
       return {
-        'background-color': 'rgb(' + [c.r, c.g, c.b].join(',') + ')'
+        'background-color': 'rgb(' + [c.r, c.g, c.b].join(',') + ')',
       };
     }
   }
@@ -37,7 +35,7 @@ function rgbCellDirective(rgbLocalStorageKey) {
       // 'show' event causes widgets' onshow attribute value used by
       // xeditable to be executed as plain js
       element.on('show.spectrum', event => event.stopPropagation());
-    }
+    },
   };
 }
 

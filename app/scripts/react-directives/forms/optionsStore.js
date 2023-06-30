@@ -22,14 +22,14 @@ export class OptionsStore {
       selectedOption: observable,
       setValue: action,
       setSelectedOption: action,
-      setOptions: action
+      setOptions: action,
     });
   }
 
   setValue(value) {
     this.value = value;
     this.options.some(item => {
-      if('options' in item) {
+      if ('options' in item) {
         this.selectedOption = item.options.find(option => option.value == value);
         return !!this.selectedOption;
       }
@@ -49,7 +49,7 @@ export class OptionsStore {
     this.setValue(this.value);
   }
 
-  setSelectedOption(option){
+  setSelectedOption(option) {
     this.setValue(option ? option.value : null);
     this.selectedOption = option;
     this.hasErrors = false;

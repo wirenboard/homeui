@@ -12,7 +12,7 @@ class LoginCtrl {
         $window.localStorage.setItem('password', '111111111');
         $window.localStorage.setItem('prefix', 'true');
         $window.location.reload();
-      };
+      }
     } else {
       if ($window.localStorage['user'] === undefined) {
         $location.path('/settings');
@@ -23,8 +23,8 @@ class LoginCtrl {
         $window.localStorage.removeItem('password');
         $window.localStorage.removeItem('prefix');
         $window.location.reload();
-      };
-    };
+      }
+    }
   }
 }
 

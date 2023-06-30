@@ -111,12 +111,10 @@ class EditSvgDashboardPageStore {
     this.bindingsStore.setDevices(deviceData, localeId);
     const dashboardsForSelect = dashboards
       .filter(d => d.isSvg && d.id !== dashboard.id)
-      .map(d =>
-        ({
-          label: d.name,
-          value: d.id,
-        })
-      );
+      .map(d => ({
+        label: d.name,
+        value: d.id,
+      }));
     this.bindingsStore.setDashboards(dashboardsForSelect);
     this.bindingsStore.setParams(this.dashboard.content.svg.params);
 

@@ -5,13 +5,14 @@ function cellNameDirective($locale) {
     restrict: 'EA',
     scope: {
       override: '&',
-      displayId: '&'
+      displayId: '&',
     },
     require: '^cell',
     replace: true,
     // XXX: trying to use templateUrl causes 'controller cell not
     // found' error
-    template: '<h4 class="cell-title">' +
+    template:
+      '<h4 class="cell-title">' +
       '<span class="name">{{ name() }}</span>' +
       '<span ng-if="displayId()" class="id" title="device/control id">{{ cellId() }}</span>' +
       '</h4>',
@@ -19,7 +20,7 @@ function cellNameDirective($locale) {
     link: (scope, element, attrs, cellCtrl) => {
       scope.cellId = () => cellCtrl.cell.id;
       scope.name = () => scope.override() || cellCtrl.cell.getName($locale.id);
-    }
+    },
   };
 }
 

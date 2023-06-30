@@ -3,28 +3,27 @@ function spinnerService($rootScope) {
 
   var spinner = Object.create(null);
 
-  function isActive (prefix) {
+  function isActive(prefix) {
     for (var k in spinner) {
-      if (prefix === undefined || k.replace(/\s+.*$/, "") == prefix)
-        return true;
+      if (prefix === undefined || k.replace(/\s+.*$/, '') == prefix) return true;
     }
     return false;
   }
 
   $rootScope.spinnerActive = isActive;
 
-  function fullId (id, suffix) {
-    return suffix === undefined ? id : id + " " + suffix;
+  function fullId(id, suffix) {
+    return suffix === undefined ? id : id + ' ' + suffix;
   }
 
   return {
-    start (id, suffix) {
+    start(id, suffix) {
       spinner[fullId(id, suffix)] = true;
     },
-    stop (id, suffix) {
+    stop(id, suffix) {
       delete spinner[fullId(id, suffix)];
     },
-    isActive: isActive
+    isActive: isActive,
   };
 }
 

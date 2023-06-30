@@ -102,21 +102,24 @@ const makeVisibleBindingStore = devices => {
 };
 
 const addEnableReaction = (binding, bindingsStore) => {
-  return reaction(() =>  binding.params.enable.value, (value) => {
-    if (value && !binding.params.channel.value) {
-      Object.entries(bindingsStore.params).some(([key, store]) => {
-        if (store?.params?.enable?.value) {
-          const channel = store?.params?.channel?.value;
-          if (channel) {
-            binding.params.channel.setValue(channel);
-            return true;
+  return reaction(
+    () => binding.params.enable.value,
+    value => {
+      if (value && !binding.params.channel.value) {
+        Object.entries(bindingsStore.params).some(([key, store]) => {
+          if (store?.params?.enable?.value) {
+            const channel = store?.params?.channel?.value;
+            if (channel) {
+              binding.params.channel.setValue(channel);
+              return true;
+            }
           }
-        }
-        return false;
-      })
+          return false;
+        });
+      }
     }
-  })
-}
+  );
+};
 
 const makeLongPressBindingStore = dashboards => {
   let res = new FormStore();
