@@ -6,7 +6,7 @@ function alarmCellDirective() {
     scope: false,
     require: '^cell',
     replace: true,
-    template
+    template,
   };
 }
 

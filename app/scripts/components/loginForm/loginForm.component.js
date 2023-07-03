@@ -5,10 +5,10 @@ const loginFormComponent = {
   restrict: 'E',
   bindings: {
     host: '<',
-    port: '<'
+    port: '<',
   },
   template,
-  controller
+  controller,
 };
 
 export default loginFormComponent;

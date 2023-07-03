@@ -4,7 +4,7 @@ function displayCellDirective(displayCellConfig, $compile) {
   'ngInject';
 
   class DisplayCellController {
-    constructor ($scope, $state, $element, $attrs, handleData, historyUrlService) {
+    constructor($scope, $state, $element, $attrs, handleData, historyUrlService) {
       'ngInject';
       this.$scope = $scope;
       this.cell = $scope.cell;
@@ -30,30 +30,36 @@ function displayCellDirective(displayCellConfig, $compile) {
           textValue = textValue.substr(0, MAX_TOOLTIP_VALUE_LENGTH) + '...';
         }
         this.$scope.copyText = textValue;
-        this.handleData.copyToClipboard(value)
+        this.handleData.copyToClipboard(value);
       }
     }
 
-    shouldDisplayCellName () {
-      return !this.compact() &&
-        !(displayCellConfig.displayTypes.hasOwnProperty(this.cell.displayType) &&
-          displayCellConfig.displayTypes[this.cell.displayType].noSeparateName);
+    shouldDisplayCellName() {
+      return (
+        !this.compact() &&
+        !(
+          displayCellConfig.displayTypes.hasOwnProperty(this.cell.displayType) &&
+          displayCellConfig.displayTypes[this.cell.displayType].noSeparateName
+        )
+      );
     }
 
     redirect(contr) {
-      var [device,control] = contr.split('/');
-      this.$state.go('history.sample', { data: this.historyUrlService.encodeControl(device, control) })
+      var [device, control] = contr.split('/');
+      this.$state.go('history.sample', {
+        data: this.historyUrlService.encodeControl(device, control),
+      });
     }
   }
 
   return {
     restrict: 'EA',
     require: '^cell',
-    scope: false,// нельзя изолировать
+    scope: false, // нельзя изолировать
     replace: true,
     bindToController: {
       compact: '&',
-      overrideName: '&'
+      overrideName: '&',
     },
     controller: DisplayCellController,
     // XXX: note that the property usually appears on the scope
@@ -62,17 +68,23 @@ function displayCellDirective(displayCellConfig, $compile) {
     controllerAs: 'displayCellCtrl',
     template,
     link: (scope, element, attrs) => {
+      scope.$watch(
+        () => scope.cell.displayType,
+        displayType => {
+          var directive = (
+            displayCellConfig.displayTypes.hasOwnProperty(displayType)
+              ? displayCellConfig.displayTypes[displayType]
+              : displayCellConfig.displayTypes['text']
+          ).directive;
 
-      scope.$watch(() => scope.cell.displayType, displayType => {
-        var directive = (displayCellConfig.displayTypes.hasOwnProperty(displayType) ?
-                         displayCellConfig.displayTypes[displayType] :
-                         displayCellConfig.displayTypes['text']).directive;
-
-        $compile('<' + directive + '></' + directive + '>')(scope, (clonedElement) => {
-          angular.element(element[0].querySelector(".display-cell-content").children[0]).replaceWith(clonedElement);
-        });
-      });
-    }
+          $compile('<' + directive + '></' + directive + '>')(scope, clonedElement => {
+            angular
+              .element(element[0].querySelector('.display-cell-content').children[0])
+              .replaceWith(clonedElement);
+          });
+        }
+      );
+    },
   };
 }
 
@@ -81,17 +93,17 @@ function displayCellConfig() {
   'ngInject';
   angular.extend(this, {
     displayTypes: {},
-    addDisplayType (displayType, directive, noSeparateName) {
+    addDisplayType(displayType, directive, noSeparateName) {
       this.displayTypes[displayType] = {
         directive: directive,
-        noSeparateName: noSeparateName || false
+        noSeparateName: noSeparateName || false,
       };
     },
-    $get () {
+    $get() {
       return this;
-    }
+    },
   });
 }
 
 //-----------------------------------------------------------------------------
-export {displayCellDirective, displayCellConfig};
+export { displayCellDirective, displayCellConfig };

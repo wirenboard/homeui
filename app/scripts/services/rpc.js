@@ -3,48 +3,56 @@ import mqttServiceModule from './mqttService';
 //-----------------------------------------------------------------------------
 const mqttRpcServiceModule = angular
   .module('homeuiApp.MqttRpc', [mqttServiceModule])
-  .value("mqttRpcTimeout", 60000)
-  .value("mqttRpcMethodAvailableTimeout", 3000)
-  .factory("MqttRpc", mqttRpc)
-  .name;
+  .value('mqttRpcTimeout', 60000)
+  .value('mqttRpcMethodAvailableTimeout', 3000)
+  .factory('MqttRpc', mqttRpc).name;
 
 //-----------------------------------------------------------------------------
-function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, mqttRpcMethodAvailableTimeout, Spinner) {
+function mqttRpc(
+  $q,
+  $rootScope,
+  mqttClient,
+  mqttRpcTimeout,
+  mqttRpcMethodAvailableTimeout,
+  Spinner
+) {
   'ngInject';
 
   var disconnectedError = {
-    data: "MqttConnectionError",
-    message: "MQTT client is not connected"
+    data: 'MqttConnectionError',
+    message: 'MQTT client is not connected',
   };
 
   var timeoutError = {
-    data: "MqttTimeoutError",
-    message: "MQTT RPC request timed out"
+    data: 'MqttTimeoutError',
+    message: 'MQTT RPC request timed out',
   };
 
   var nextId = 1,
-      inflight = {},
-      watchStopper = null,
-      subs = Object.create(null),
-      methods = {};
+    inflight = {},
+    watchStopper = null,
+    subs = Object.create(null),
+    methods = {};
 
-//.............................................................................
-  function invokeResponseHandler (id, topic, reply) {
+  //.............................................................................
+  function invokeResponseHandler(id, topic, reply) {
     try {
       inflight[id](topic, reply);
     } finally {
       delete inflight[id];
       maybeStopWatching();
     }
-  };
+  }
 
-//.............................................................................
-  function handleDisconnection () {
-    Object.keys(inflight).sort().forEach(callId => {
-      invokeResponseHandler(callId, null, {
-        error: disconnectedError
+  //.............................................................................
+  function handleDisconnection() {
+    Object.keys(inflight)
+      .sort()
+      .forEach(callId => {
+        invokeResponseHandler(callId, null, {
+          error: disconnectedError,
+        });
       });
-    });
     Object.keys(methods).forEach(method => {
       if (methods[method].timeout) {
         mqttClient.cancel(methods[method].timeout);
@@ -53,73 +61,70 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, mqttRpcMethodAvaila
     });
     methods = {};
     if (Object.keys(inflight).length)
-      throw new Error("Proxy._handleDisconnection(): pending requests remained");
+      throw new Error('Proxy._handleDisconnection(): pending requests remained');
     maybeStopWatching();
-  };
+  }
 
-//.............................................................................
-  function maybeStartWatching () {
-    if (watchStopper !== null)
-      return;
+  //.............................................................................
+  function maybeStartWatching() {
+    if (watchStopper !== null) return;
     watchStopper = $rootScope.$watch(
       () => mqttClient.isConnected(),
       connected => {
-        if (!connected)
-          handleDisconnection();
-      });
-  };
+        if (!connected) handleDisconnection();
+      }
+    );
+  }
 
-//.............................................................................
-  function maybeStopWatching () {
-    if (Object.keys(inflight).length || !watchStopper)
-      return;
+  //.............................................................................
+  function maybeStopWatching() {
+    if (Object.keys(inflight).length || !watchStopper) return;
     watchStopper();
     watchStopper = null;
-  };
+  }
 
-//.............................................................................
-  function handleMessage (msg) {
+  //.............................................................................
+  function handleMessage(msg) {
     try {
       var parsed = JSON.parse(msg.payload);
     } catch (e) {
-      console.error("cannot parse MQTT RPC response: %o", msg);
+      console.error('cannot parse MQTT RPC response: %o', msg);
       return;
     }
-    if (!parsed.hasOwnProperty("id")) {
-      console.error("MQTT response without id: %o", msg);
+    if (!parsed.hasOwnProperty('id')) {
+      console.error('MQTT response without id: %o', msg);
       return;
     }
     if (!inflight.hasOwnProperty(parsed.id)) {
-      console.error("MQTT response with unexpected id: %o", msg);
+      console.error('MQTT response with unexpected id: %o', msg);
       return;
     }
     invokeResponseHandler(parsed.id, msg.topic, parsed);
   }
 
-//.............................................................................
-  function ensureSubscription (topic) {
-    if (subs[topic])
-      return;
+  //.............................................................................
+  function ensureSubscription(topic) {
+    if (subs[topic]) return;
     subs[topic] = true;
     mqttClient.addStickySubscription(topic, handleMessage);
   }
 
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   class Proxy {
-//.............................................................................
-    constructor (target, spinnerIdPrefix) {
-      this._prefix = "/rpc/v1/" + target + "/";
+    //.............................................................................
+    constructor(target, spinnerIdPrefix) {
+      this._prefix = '/rpc/v1/' + target + '/';
       this._watchStopper = null;
-      this._spinnerIdPrefix = spinnerIdPrefix || "mqttRpc";
+      this._spinnerIdPrefix = spinnerIdPrefix || 'mqttRpc';
     }
 
-//.............................................................................
-    _init () {
-      ensureSubscription(this._prefix + "+/" + mqttClient.getID() + "/reply");
+    //.............................................................................
+    _init() {
+      ensureSubscription(this._prefix + '+/' + mqttClient.getID() + '/reply');
     }
 
-//.............................................................................
-    _call (method, params) {
+    //.............................................................................
+    _call(method, params) {
       this._init();
       maybeStartWatching();
       return $q((resolve, reject) => {
@@ -128,39 +133,41 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, mqttRpcMethodAvaila
           return;
         }
         var callId = nextId++;
-        var topic = this._prefix + method + "/" + mqttClient.getID();
+        var topic = this._prefix + method + '/' + mqttClient.getID();
         try {
           mqttClient.send(
             topic,
             JSON.stringify({
               id: callId,
-              params: params || {}
+              params: params || {},
             }),
-            false);
+            false
+          );
         } catch (err) {
-          reject(err)
+          reject(err);
         }
-        var timeout = mqttClient.timeout(invokeResponseHandler.bind(null, callId, null, {
-          error: timeoutError
-        }), mqttRpcTimeout);
+        var timeout = mqttClient.timeout(
+          invokeResponseHandler.bind(null, callId, null, {
+            error: timeoutError,
+          }),
+          mqttRpcTimeout
+        );
 
         Spinner.start(this._spinnerIdPrefix, callId);
         inflight[callId] = (actualTopic, reply) => {
           Spinner.stop(this._spinnerIdPrefix, callId);
           mqttClient.cancel(timeout);
-          if (actualTopic !== null && actualTopic != topic + "/reply")
-            reject("unexpected response topic " + actualTopic);
-          else if (reply.hasOwnProperty("error") && reply.error !== null)
-            reject(reply.error);
-          else
-            resolve(reply.result);
+          if (actualTopic !== null && actualTopic != topic + '/reply')
+            reject('unexpected response topic ' + actualTopic);
+          else if (reply.hasOwnProperty('error') && reply.error !== null) reject(reply.error);
+          else resolve(reply.result);
         };
       });
     }
 
-//.............................................................................
-    _hasMethod (method) {
-      var topic = this._prefix + method
+    //.............................................................................
+    _hasMethod(method) {
+      var topic = this._prefix + method;
       if (!subs[topic]) {
         subs[topic] = true;
         mqttClient.addStickySubscription(topic, () => {
@@ -181,26 +188,25 @@ function mqttRpc($q, $rootScope, mqttClient, mqttRpcTimeout, mqttRpcMethodAvaila
           return defered.promise;
         }
         methods[method].timeout = mqttClient.timeout(() => {
-            methods[method].available = false;
-            defered.resolve(false);
-          },
-          mqttRpcMethodAvailableTimeout);
+          methods[method].available = false;
+          defered.resolve(false);
+        }, mqttRpcMethodAvailableTimeout);
       }
       return methods[method].defered.promise;
     }
   }
 
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   return {
-    getProxy (target, methods, spinnerIdPrefix) {
+    getProxy(target, methods, spinnerIdPrefix) {
       var proxy = new Proxy(target, spinnerIdPrefix),
-          outer = Object.create(proxy);
+        outer = Object.create(proxy);
       methods.forEach(method => {
         outer[method] = proxy._call.bind(proxy, method);
-        outer.hasMethod = (methodName) => proxy._hasMethod(methodName);
+        outer.hasMethod = methodName => proxy._hasMethod(methodName);
       });
       return outer;
-    }
+    },
   };
 }
 

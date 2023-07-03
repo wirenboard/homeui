@@ -1,10 +1,20 @@
 class NavigationCtrl {
-  constructor($scope, $location, EditorProxy, ConfigEditorProxy, mqttClient, whenMqttReady, errors, uiConfig, rolesFactory) {
+  constructor(
+    $scope,
+    $location,
+    EditorProxy,
+    ConfigEditorProxy,
+    mqttClient,
+    whenMqttReady,
+    errors,
+    uiConfig,
+    rolesFactory
+  ) {
     'ngInject';
 
     $scope.roles = rolesFactory;
 
-    $scope.isActive = function(viewLocation){
+    $scope.isActive = function (viewLocation) {
       return viewLocation === $location.path();
     };
 
@@ -16,13 +26,16 @@ class NavigationCtrl {
       return mqttClient.isConnected();
     };
 
-    var scripts = [], rules = [], devices = [], configs = [],
-        needToLoadScripts = false,
-        needToLoadConfigs = false;
+    var scripts = [],
+      rules = [],
+      devices = [],
+      configs = [],
+      needToLoadScripts = false,
+      needToLoadConfigs = false;
 
     whenMqttReady().then(function () {
       needToLoadScripts = needToLoadConfigs = true;
-      mqttClient.subscribe("/wbrules/updates/+", function () {
+      mqttClient.subscribe('/wbrules/updates/+', function () {
         needToLoadScripts = true;
       });
     });
@@ -30,21 +43,23 @@ class NavigationCtrl {
     $scope.getScripts = function () {
       if (needToLoadScripts) {
         needToLoadScripts = false;
-        EditorProxy.List().then(function (result) {
-          scripts = result;
-          rules = this.collectLocs(scripts, "rules");
-          devices = this.collectLocs(scripts, "devices");
-        }).catch(errors.catch("Error listing the scripts"));
+        EditorProxy.List()
+          .then(function (result) {
+            scripts = result;
+            rules = this.collectLocs(scripts, 'rules');
+            devices = this.collectLocs(scripts, 'devices');
+          })
+          .catch(errors.catch('Error listing the scripts'));
       }
       return scripts;
     };
 
-    $scope.getRules = function getRules () {
+    $scope.getRules = function getRules() {
       this.getScripts();
       return rules;
     };
 
-    $scope.getVirtualDevices = function getVirtualDevices () {
+    $scope.getVirtualDevices = function getVirtualDevices() {
       this.getScripts();
       return devices;
     };
@@ -52,9 +67,11 @@ class NavigationCtrl {
     $scope.getConfigs = function () {
       if (needToLoadConfigs) {
         needToLoadConfigs = false;
-        ConfigEditorProxy.List().then(function (result) {
-          configs = result;
-        }).catch(errors.catch("Error listing the configs"));
+        ConfigEditorProxy.List()
+          .then(function (result) {
+            configs = result;
+          })
+          .catch(errors.catch('Error listing the configs'));
       }
       return configs;
     };
@@ -63,13 +80,13 @@ class NavigationCtrl {
       const pageWrapperClassList = document.getElementById('overlay').classList;
       const overlayClass = 'overlay';
 
-      pageWrapperClassList.contains(overlayClass) ? 
-        pageWrapperClassList.remove(overlayClass) : 
-        pageWrapperClassList.add(overlayClass);
-    }
+      pageWrapperClassList.contains(overlayClass)
+        ? pageWrapperClassList.remove(overlayClass)
+        : pageWrapperClassList.add(overlayClass);
+    };
   }
 
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   collectLocs(scripts, member) {
     var m = {};
     scripts.forEach(function (script) {
@@ -77,14 +94,16 @@ class NavigationCtrl {
         m[loc.name] = {
           virtualPath: script.virtualPath,
           name: loc.name,
-          line: loc.line
+          line: loc.line,
         };
       });
     });
     var r = [];
-    Object.keys(m).sort().forEach(function (name) {
-      r.push(m[name]);
-    });
+    Object.keys(m)
+      .sort()
+      .forEach(function (name) {
+        r.push(m[name]);
+      });
     return r;
   }
 }
