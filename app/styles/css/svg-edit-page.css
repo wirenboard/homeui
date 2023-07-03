@@ -58,7 +58,8 @@
 .svg-edit-page svg path,
 .svg-edit-page svg text,
 .svg-edit-page svg tspan,
-.svg-edit-page svg circle {
+.svg-edit-page svg circle
+.svg-edit-page svg rect {
     cursor: pointer;
 }
 
