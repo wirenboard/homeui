@@ -48,7 +48,7 @@ const findBindableElement = elements => {
 const getElement = (e, currentElement) => {
   const elements = getBindableElementsAndGroups(
     document.elementsFromPoint(e.clientX, e.clientY),
-    e.getModifierState('Control')
+    e.getModifierState('Alt')
   );
   const index = elements.findIndex(v => v === currentElement);
   if (index !== -1) {
