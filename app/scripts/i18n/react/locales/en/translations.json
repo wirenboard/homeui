@@ -167,7 +167,8 @@
          "select-dashboard-placeholder": "Select dashboard to move",
          "swipe-enable": "Swipe",
          "left": "Left",
-         "right": "Right"
+         "right": "Right",
+         "select-caption": "Click to select an element, Ctrl+Click to select group"
       },
       "buttons": {
          "save": "Save",

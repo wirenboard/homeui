@@ -164,7 +164,8 @@
          "select-dashboard-placeholder": "Выберите панель для перехода",
          "swipe-enable": "Смахивания",
          "left": "Влево",
-         "right": "Вправо"
+         "right": "Вправо",
+         "select-caption": "Клик — выделить элемент, Ctrl+клик — группу"
       },
       "buttons": {
          "save": "Сохранить",

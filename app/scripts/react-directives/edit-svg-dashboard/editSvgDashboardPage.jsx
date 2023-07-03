@@ -135,6 +135,7 @@ const RightPanel = observer(({ pageStore, toJsonEditMode }) => {
               <span className="flex-max-grow">{t('edit-svg-dashboard.labels.bindings-title')}</span>
               <Button label={t('edit-svg-dashboard.buttons.edit-json')} onClick={toJsonEditMode} />
             </legend>
+            <label>{t('edit-svg-dashboard.labels.select-caption')}</label>
             <VisualBindingsEditor store={pageStore.bindingsStore.editable} />
           </>
         )}
