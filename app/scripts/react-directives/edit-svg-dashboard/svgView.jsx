@@ -1,21 +1,64 @@
 import { observer } from 'mobx-react-lite';
 import React, { useRef, useEffect, useState } from 'react';
 
-const findElement = target => {
-  const allowedNodes = ['path', 'circle', 'text', 'rect'];
-  if (allowedNodes.includes(target.nodeName)) {
-    return target;
-  }
-  let el = null;
-  allowedNodes.find(v => {
-    el = target.closest(v);
-    return el;
-  });
-  return el;
+const isAllowedBindableElement = element => {
+  const allowedNodes = ['path', 'circle', 'text', 'rect', 'g'];
+  return allowedNodes.includes(element?.nodeName);
 };
 
-const getElement = (e, selectedElement) => {
-  const elements = document.elementsFromPoint(e.clientX, e.clientY);
+const getBindableElement = element => {
+  return element?.tagName === 'tspan' ? element.parentElement : element;
+};
+
+const getParentGroups = element => {
+  let res = [];
+  for (let el = element; el && el.tagName !== 'svg'; el = el.parentElement) {
+    if (el.tagName === 'g') {
+      res.push(el);
+    }
+  }
+  return res;
+};
+
+const getBindableElementsAndGroups = (elementsUnderCursor, withGroups) => {
+  const isUnique = (value, index, array) => {
+    return array.indexOf(value) === index;
+  };
+
+  return elementsUnderCursor
+    .flatMap(el => {
+      let res = withGroups ? getParentGroups(el) : [];
+      if (el && !res.length) {
+        res.push(getBindableElement(el));
+      }
+      return res;
+    })
+    .filter(isUnique);
+};
+
+const findBindableElement = elements => {
+  for (let i = 0; i < elements.length && elements[i].tagName !== 'svg'; ++i) {
+    if (isAllowedBindableElement(elements[i])) {
+      return elements[i];
+    }
+  }
+  return null;
+};
+
+const getElement = (e, currentElement) => {
+  const elements = getBindableElementsAndGroups(
+    document.elementsFromPoint(e.clientX, e.clientY),
+    e.getModifierState('Control')
+  );
+  const index = elements.findIndex(v => v === currentElement);
+  if (index !== -1) {
+    return (
+      findBindableElement(elements.slice(index + 1)) ||
+      findBindableElement(elements.slice(0, index)) ||
+      currentElement
+    );
+  }
+  return findBindableElement(elements);
 };
 
 const SvgView = observer(({ svg, onSelectElement, className }) => {
@@ -27,8 +70,7 @@ const SvgView = observer(({ svg, onSelectElement, className }) => {
   }, [svg]);
 
   const onClick = e => {
-    const elements = document.elementsFromPoint(e.clientX, e.clientY);
-    const editable = findElement(e.target || e.srcElement);
+    const editable = getElement(e, selectedElement);
     if (onSelectElement) {
       onSelectElement(editable);
     }
