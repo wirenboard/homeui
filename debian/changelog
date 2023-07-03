@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.72.6) stable; urgency=medium
+
+  * Fit SVG to page height in dashboard editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jul 2023 18:37:52 +0500
+
 wb-mqtt-homeui (2.72.5) stable; urgency=medium
 
   * Disable text selection on dashboards in view mode
