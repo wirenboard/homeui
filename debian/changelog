@@ -1,8 +1,26 @@
-wb-mqtt-homeui (2.72.1) stable; urgency=medium
+wb-mqtt-homeui (2.72.5) stable; urgency=medium
 
   * Disable text selection on dashboards in view mode
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 30 Jun 2023 10:27:13 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jul 2023 18:15:04 +0500
+
+wb-mqtt-homeui (2.72.4) stable; urgency=medium
+
+  * Add bindings in dashboards to SVG rect elements
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jul 2023 18:09:49 +0500
+
+wb-mqtt-homeui (2.72.3) stable; urgency=medium
+
+  * Fix long press/touch handling in SVG dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jul 2023 18:01:55 +0500
+
+wb-mqtt-homeui (2.72.1) stable; urgency=medium
+
+  * Fix SVG dashboard creation
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jul 2023 14:13:31 +0500
 
 wb-mqtt-homeui (2.72.0) stable; urgency=medium
 
