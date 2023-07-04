@@ -60,7 +60,7 @@ const setLongPressHandler = (element, param, onMoveToDashboard) => {
   const onDown = ev => {
     timerId = setTimeout(() => {
       onMoveToDashboard(param.dashboard);
-    }, 1500);
+    }, 500);
     element.setPointerCapture(ev.pointerId);
   };
 
