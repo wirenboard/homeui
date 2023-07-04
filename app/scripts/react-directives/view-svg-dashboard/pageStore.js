@@ -25,7 +25,6 @@ class ViewSvgDashboardPageStore {
     makeObservable(this, {
       key: observable,
       dashboardIndex: observable,
-      // dashboards: observable,
       loading: observable,
       forceFullscreen: observable,
       setDashboard: action,
@@ -86,7 +85,6 @@ class ViewSvgDashboardPageStore {
     }
     this.key = Math.random();
     this.setLoading(false);
-    console.log('t');
   }
 
   setForceFullscreen(value) {
