@@ -114,7 +114,6 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
           if (param['long-press-write']?.enable) {
             disposers.push(
               setLongPressHandler(el, () => {
-                console.log('aaa');
                 onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
               })
             );
