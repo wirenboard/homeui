@@ -72,12 +72,10 @@ const setLongPressHandler = (element, onLongPress) => {
   element.classList.add('switch');
   element.addEventListener('pointerdown', onDown);
   element.addEventListener('pointerup', onCancel);
-  element.addEventListener('pointercancel', onCancel);
   element.addEventListener('contextmenu', dummyHandler);
   return () => {
     element.removeEventListener('pointerdown', onDown);
     element.removeEventListener('pointerup', onCancel);
-    element.removeEventListener('pointercancel', onCancel);
     element.removeEventListener('contextmenu', dummyHandler);
   };
 };
