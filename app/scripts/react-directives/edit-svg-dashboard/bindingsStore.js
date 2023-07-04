@@ -187,7 +187,7 @@ class SvgElementBindingsStore {
         );
         this.addParam(
           'long-press-write',
-          makeWriteBindingStore(dashboards, 'edit-svg-dashboard.labels.long-press-write-enable')
+          makeWriteBindingStore(devices, 'edit-svg-dashboard.labels.long-press-write-enable')
         );
         this.tagName = element.tagName;
       }
@@ -209,14 +209,7 @@ class SvgElementBindingsStore {
 }
 
 const hasBindings = param => {
-  return (
-    param?.write?.enable ||
-    param.read?.enable ||
-    param?.style?.enable ||
-    param?.visible?.enable ||
-    param['long-press']?.enable ||
-    param['long-press-write']?.enable
-  );
+  return Object.values(param).some(p => p?.enable);
 };
 
 class BindingsStore {

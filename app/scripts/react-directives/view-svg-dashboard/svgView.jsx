@@ -55,6 +55,7 @@ const setClickHandler = (element, onClick) => {
 const setLongPressHandler = (element, onLongPress) => {
   let timerId = null;
   const onDown = ev => {
+    ev.stopPropagation();
     timerId = setTimeout(onLongPress, 500);
     element.setPointerCapture(ev.pointerId);
   };
@@ -64,14 +65,20 @@ const setLongPressHandler = (element, onLongPress) => {
     element.releasePointerCapture(ev.pointerId);
   };
 
+  const dummyHandler = ev => {
+    ev.preventDefault();
+  };
+
   element.classList.add('switch');
   element.addEventListener('pointerdown', onDown);
   element.addEventListener('pointerup', onCancel);
   element.addEventListener('pointercancel', onCancel);
+  element.addEventListener('contextmenu', dummyHandler);
   return () => {
     element.removeEventListener('pointerdown', onDown);
     element.removeEventListener('pointerup', onCancel);
     element.removeEventListener('pointercancel', onCancel);
+    element.removeEventListener('contextmenu', dummyHandler);
   };
 };
 
@@ -108,9 +115,10 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
         } else {
           if (param['long-press-write']?.enable) {
             disposers.push(
-              setLongPressHandler(el, () =>
-                onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value)
-              )
+              setLongPressHandler(el, () => {
+                console.log('aaa');
+                onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
+              })
             );
           }
         }
