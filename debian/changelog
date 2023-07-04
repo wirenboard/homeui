@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.74.0) stable; urgency=medium
+
+  * Write to MQTT topic by long press/touch on SVG dashboard
+  * Move to other dashboard by clicking on element 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jul 2023 19:04:00 +0500
+
 wb-mqtt-homeui (2.73.0) stable; urgency=medium
 
   * Add bindings in dashboards to groups of SVG elements

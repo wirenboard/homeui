@@ -91,3 +91,12 @@ export const LineEdit = ({ placeholder, value, onChange }) => {
     />
   );
 };
+
+export const Radio = ({ label, id, value, onChange }) => {
+  return (
+    <label className="radio-inline" htmlFor={id}>
+      <input type="radio" id={id} checked={value} onChange={e => onChange?.(e.target.checked)} />
+      {label}
+    </label>
+  );
+};

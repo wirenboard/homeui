@@ -32,19 +32,19 @@ const addStringValueStore = (formStore, description) => {
   );
 };
 
-const addEnableStore = (formStore, key) => {
+const addEnableStore = (formStore, name) => {
   formStore.add(
     'enable',
     new BooleanStore({
-      name: i18n.t(key),
-      id: key,
+      name: i18n.t(name),
+      id: name,
     })
   );
 };
 
-const makeWriteBindingStore = devices => {
+const makeWriteBindingStore = (devices, name) => {
   let res = new FormStore();
-  addEnableStore(res, 'edit-svg-dashboard.labels.write-enable');
+  addEnableStore(res, name);
   addChannelsStore(res, devices);
   let valueStore = new FormStore();
   valueStore.add(
@@ -121,13 +121,13 @@ const addEnableReaction = (binding, bindingsStore) => {
   );
 };
 
-const makeLongPressBindingStore = dashboards => {
+const makeMoveToBindingStore = (dashboards, name) => {
   let res = new FormStore();
-  addEnableStore(res, 'edit-svg-dashboard.labels.long-press-enable');
+  addEnableStore(res, name);
   res.add(
     'dashboard',
     new OptionsStore({
-      name: i18n.t('edit-svg-dashboard.labels.move-to-dashboard'),
+      name: i18n.t('edit-svg-dashboard.labels.dashboard'),
       placeholder: i18n.t('edit-svg-dashboard.labels.select-dashboard-placeholder'),
       options: dashboards,
     })
@@ -171,10 +171,24 @@ class SvgElementBindingsStore {
         if (element.tagName === 'text') {
           this.addParam('read', makeReadBindingStore(devices));
         }
-        this.addParam('write', makeWriteBindingStore(devices));
+        this.addParam(
+          'write',
+          makeWriteBindingStore(devices, 'edit-svg-dashboard.labels.write-enable')
+        );
+        this.params.add(
+          'click',
+          makeMoveToBindingStore(dashboards, 'edit-svg-dashboard.labels.click-enable')
+        );
         this.addParam('style', makeStyleBindingStore(devices));
         this.addParam('visible', makeVisibleBindingStore(devices));
-        this.params.add('long-press', makeLongPressBindingStore(dashboards));
+        this.params.add(
+          'long-press',
+          makeMoveToBindingStore(dashboards, 'edit-svg-dashboard.labels.long-press-enable')
+        );
+        this.addParam(
+          'long-press-write',
+          makeWriteBindingStore(dashboards, 'edit-svg-dashboard.labels.long-press-write-enable')
+        );
         this.tagName = element.tagName;
       }
       this.params.setValue(cloneDeep(params));
@@ -200,7 +214,8 @@ const hasBindings = param => {
     param.read?.enable ||
     param?.style?.enable ||
     param?.visible?.enable ||
-    param['long-press']?.enable
+    param['long-press']?.enable ||
+    param['long-press-write']?.enable
   );
 };
 
