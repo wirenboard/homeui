@@ -44,23 +44,19 @@ const setVisibleHandler = (element, param, values) => {
   return disposer;
 };
 
-const setWriteHandler = (element, param, onSwitchValue) => {
+const setClickHandler = (element, onClick) => {
   element.classList.add('switch');
-  const onClick = e => {
-    onSwitchValue(param.channel, param.value);
-  };
   element.addEventListener('click', onClick);
   return () => {
     element.removeEventListener('click', onClick);
   };
 };
 
-const setLongPressHandler = (element, param, onMoveToDashboard) => {
+const setLongPressHandler = (element, onLongPress) => {
   let timerId = null;
   const onDown = ev => {
-    timerId = setTimeout(() => {
-      onMoveToDashboard(param.dashboard);
-    }, 500);
+    ev.stopPropagation();
+    timerId = setTimeout(onLongPress, 500);
     element.setPointerCapture(ev.pointerId);
   };
 
@@ -69,14 +65,18 @@ const setLongPressHandler = (element, param, onMoveToDashboard) => {
     element.releasePointerCapture(ev.pointerId);
   };
 
+  const dummyHandler = ev => {
+    ev.preventDefault();
+  };
+
   element.classList.add('switch');
   element.addEventListener('pointerdown', onDown);
   element.addEventListener('pointerup', onCancel);
-  element.addEventListener('pointercancel', onCancel);
+  element.addEventListener('contextmenu', dummyHandler);
   return () => {
     element.removeEventListener('pointerdown', onDown);
     element.removeEventListener('pointerup', onCancel);
-    element.removeEventListener('pointercancel', onCancel);
+    element.removeEventListener('contextmenu', dummyHandler);
   };
 };
 
@@ -98,10 +98,26 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
           disposers.push(setVisibleHandler(el, param.visible, values));
         }
         if (param?.write?.enable) {
-          disposers.push(setWriteHandler(el, param.write, onSwitchValue));
+          disposers.push(
+            setClickHandler(el, () => onSwitchValue(param.write.channel, param.write.value))
+          );
+        } else {
+          if (param?.click?.enable) {
+            disposers.push(setClickHandler(el, () => onMoveToDashboard(param.click.dashboard)));
+          }
         }
         if (param['long-press']?.enable) {
-          disposers.push(setLongPressHandler(el, param['long-press'], onMoveToDashboard));
+          disposers.push(
+            setLongPressHandler(el, () => onMoveToDashboard(param['long-press'].dashboard))
+          );
+        } else {
+          if (param['long-press-write']?.enable) {
+            disposers.push(
+              setLongPressHandler(el, () => {
+                onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
+              })
+            );
+          }
         }
       }
     });

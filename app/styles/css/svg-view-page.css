@@ -15,7 +15,7 @@
     width: unset;  
 }
 
-.svg-view-page svg text{
+.svg-view-page svg text {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -38,8 +38,10 @@
 
 .svg-view-page .switch {
     cursor: pointer;
+}
 
-    &:hover {
+@media (pointer: fine) {
+    .svg-view-page .switch:hover {
         opacity: 0.6;
     }
 }

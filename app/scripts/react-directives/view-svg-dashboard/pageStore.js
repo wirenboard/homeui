@@ -25,7 +25,6 @@ class ViewSvgDashboardPageStore {
     makeObservable(this, {
       key: observable,
       dashboardIndex: observable,
-      dashboards: observable,
       loading: observable,
       forceFullscreen: observable,
       setDashboard: action,
@@ -131,15 +130,27 @@ class ViewSvgDashboardPageStore {
     this?.switchValueFn(channel, value);
   }
 
-  moveToDashboard(dashboardId) {
+  moveToDashboard(dashboardId, noSpinner) {
     if (this.originalDashboardId != dashboardId) {
-      this.moveToDashboardFn(dashboardId);
+      if (noSpinner) {
+        this.setDashboard(dashboardId);
+        setTimeout(() => {
+          this.moveToDashboardFn(dashboardId);
+        });
+      } else {
+        this.setLoading(true);
+        setTimeout(() => {
+          this.moveToDashboardFn(dashboardId);
+          this.setDashboard(dashboardId);
+        });
+      }
+    } else {
+      this.setDashboard(dashboardId);
     }
-    this.setDashboard(dashboardId);
   }
 
   slideChanged(index) {
-    this.moveToDashboard(this.dashboards[index].dashboard.id);
+    this.moveToDashboard(this.dashboards[index].dashboard.id, true);
   }
 }
 
