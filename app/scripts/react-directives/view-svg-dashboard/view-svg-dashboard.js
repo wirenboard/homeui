@@ -6,14 +6,7 @@ import ViewSvgDashboardPageStore from './pageStore';
 import { checkFullscreen } from '../components/fullscreen/fullscreenStore';
 import { reaction } from 'mobx';
 
-function viewSvgDashboardDirective(
-  mqttClient,
-  uiConfig,
-  $location,
-  $rootScope,
-  DeviceData,
-  $state
-) {
+function viewSvgDashboardDirective(mqttClient, uiConfig, $rootScope, DeviceData, $state) {
   'ngInject';
 
   return {
@@ -22,12 +15,12 @@ function viewSvgDashboardDirective(
       id: '=',
     },
     link: function (scope, element) {
-      const params = $location.search();
-      $rootScope.forceFullscreen = params.fullscreen;
+      const params = $state.params;
+      $rootScope.forceFullscreen = params.fullscreen === true;
       $rootScope.checkFullscreen = () => {
         return checkFullscreen() || $rootScope.forceFullscreen;
       };
-      $rootScope.isHMI = params.hmi;
+      $rootScope.isHMI = params.hmi === true;
       $rootScope.hmiColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';
       document.getElementById('page-wrapper').style.backgroundColor = $rootScope.hmiColor;
 
@@ -44,22 +37,37 @@ function viewSvgDashboardDirective(
       scope.store.setEditDashboardFn(dashboardId =>
         $state.go('dashboard-svg-edit', { id: dashboardId })
       );
-      scope.store.setMoveToDashboardFn(dashboardId => {
-        $state.go(
-          'dashboard-svg',
-          {
+
+      scope.store.setMoveToDashboardFn((dashboardId, sourceDashboardId) => {
+        const dashboard = uiConfig.getDashboard(dashboardId);
+        if (dashboard) {
+          let newParams = {
             id: dashboardId,
-            hmi: $rootScope.isHMI,
-            fullscreen: $rootScope.forceFullscreen,
-            hmicolor: $rootScope.hmiColor,
-          },
-          {
-            custom: {
-              noreload: true,
-            },
+          };
+          if ($rootScope.forceFullscreen) {
+            newParams.fullscreen = $rootScope.forceFullscreen;
           }
-        );
-        $rootScope.$apply();
+          if ($rootScope.isHMI) {
+            newParams.hmi = $rootScope.isHMI;
+          }
+          if ($rootScope.hmiColor) {
+            newParams.hmicolor = $rootScope.hmiColor;
+          }
+          if (dashboard.content.isSvg) {
+            $state.go('dashboard-svg', newParams, {
+              custom: {
+                noreload: true,
+              },
+            });
+            $rootScope.$apply();
+          } else {
+            $state.go('dashboard', newParams, {
+              custom: {
+                source: sourceDashboardId,
+              },
+            });
+          }
+        }
       });
 
       scope.root = ReactDOM.createRoot(element[0]);

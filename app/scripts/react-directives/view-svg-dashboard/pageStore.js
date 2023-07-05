@@ -13,7 +13,7 @@ class ViewSvgDashboardPageStore {
     this.deviceData = null;
     this.editFn = null;
     this.moveToDashboardFn = null;
-    this.originalDashboardId = null;
+    this.dashboardId = null;
     this.switchValueFn = null;
     this.key = Math.random();
     this.dashboardIndex = 0;
@@ -40,7 +40,7 @@ class ViewSvgDashboardPageStore {
   }
 
   getDashboard(dashboardId) {
-    const dashboard = this.dashboardConfigs.find(d => d.id == dashboardId);
+    const dashboard = this.dashboardConfigs.find(d => d.isSvg && d.id == dashboardId);
     if (!dashboard) {
       return null;
     }
@@ -65,10 +65,13 @@ class ViewSvgDashboardPageStore {
   }
 
   setDashboard(dashboardId) {
-    this.dashboards = [];
-    this.originalDashboardId = dashboardId;
-    this.dashboardIndex = 0;
     const dashboard = this.getDashboard(dashboardId);
+    if (!dashboard) {
+      return;
+    }
+    this.dashboards = [];
+    this.dashboardId = dashboardId;
+    this.dashboardIndex = 0;
     if (dashboard?.dashboard?.swipe?.enable) {
       const leftDashboard = this.getDashboard(dashboard.dashboard.swipe.right);
       if (leftDashboard) {
@@ -130,27 +133,24 @@ class ViewSvgDashboardPageStore {
     this?.switchValueFn(channel, value);
   }
 
-  moveToDashboard(dashboardId, noSpinner) {
-    if (this.originalDashboardId != dashboardId) {
-      if (noSpinner) {
+  moveToDashboard(dashboardId) {
+    if (this.dashboardId != dashboardId) {
+      this.setLoading(true);
+      setTimeout(() => {
+        this.moveToDashboardFn(dashboardId, this.dashboardId);
         this.setDashboard(dashboardId);
-        setTimeout(() => {
-          this.moveToDashboardFn(dashboardId);
-        });
-      } else {
-        this.setLoading(true);
-        setTimeout(() => {
-          this.moveToDashboardFn(dashboardId);
-          this.setDashboard(dashboardId);
-        });
-      }
-    } else {
-      this.setDashboard(dashboardId);
+      });
     }
   }
 
   slideChanged(index) {
-    this.moveToDashboard(this.dashboards[index].dashboard.id, true);
+    const dashboardId = this.dashboards[index].dashboard.id;
+    if (this.dashboardId != dashboardId) {
+      setTimeout(() => {
+        this.moveToDashboardFn(dashboardId);
+      });
+    }
+    this.setDashboard(dashboardId);
   }
 }
 

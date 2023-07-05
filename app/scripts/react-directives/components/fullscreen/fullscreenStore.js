@@ -15,7 +15,7 @@ export function checkFullscreen() {
 
 export class FullscreenStore {
   constructor() {
-    this.isFullscreen = false;
+    this.isFullscreen = checkFullscreen();
 
     [
       'webkitfullscreenchange',

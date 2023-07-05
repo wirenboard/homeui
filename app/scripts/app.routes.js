@@ -153,7 +153,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('dashboard', {
-      url: '/dashboards/{id}?{hmi}&{hmicolor}&{fullscreen}',
+      url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}',
       controller: 'DashboardCtrl as $ctrl',
       template: require('../views/dashboard.html'),
       resolve: {
@@ -180,7 +180,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('dashboard-svg', {
-      url: '/dashboards/svg/view/:id?{hmi}&{hmicolor}&{fullscreen}',
+      url: '/dashboards/svg/view/:id?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}',
       controller: 'DashboardSvgCtrl as $ctrl',
       template: require('../views/dashboard-svg.html'),
       params: {
@@ -439,4 +439,26 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
 }
 
 //-----------------------------------------------------------------------------
-export default angular.module('homeuiApp.routing', [uiRouter]).config(routing).name;
+export default angular
+  .module('homeuiApp.routing', [uiRouter])
+  .config([
+    '$urlServiceProvider',
+    function ($urlServiceProvider) {
+      $urlServiceProvider.config.type('boolean', {
+        decode: val => {
+          return val == true ? true : val == 'true' ? true : false;
+        },
+        encode: val => {
+          return val ? true : false;
+        },
+        equals: (a, b) => {
+          return a === b;
+        },
+        is: val => {
+          return [true, false].indexOf(val) >= 0;
+        },
+        pattern: /bool|true|false|0|1/,
+      });
+    },
+  ])
+  .config(routing).name;

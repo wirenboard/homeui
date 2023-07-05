@@ -64,6 +64,12 @@ const makeSwipeParametersStore = () => {
   return res;
 };
 
+const makeOptionsFromDashboards = dashboards =>
+  dashboards.map(d => ({
+    label: d.name,
+    value: d.id,
+  }));
+
 class EditSvgDashboardPageStore {
   constructor(showDashboardsList, preview) {
     this.loading = true;
@@ -109,17 +115,17 @@ class EditSvgDashboardPageStore {
     this.commonParameters.setValue(dashboard.content);
     this.dashboard = dashboard;
     this.bindingsStore.setDevices(deviceData, localeId);
-    const dashboardsForSelect = dashboards
-      .filter(d => d.isSvg && d.id !== dashboard.id)
-      .map(d => ({
-        label: d.name,
-        value: d.id,
-      }));
-    this.bindingsStore.setDashboards(dashboardsForSelect);
+    const dashboardsForClicks = makeOptionsFromDashboards(
+      dashboards.filter(d => d.id !== dashboard.id)
+    );
+    this.bindingsStore.setDashboards(dashboardsForClicks);
     this.bindingsStore.setParams(this.dashboard.content.svg.params);
 
-    this.swipeParameters.params.left.setOptions(dashboardsForSelect);
-    this.swipeParameters.params.right.setOptions(dashboardsForSelect);
+    const dashboardsForSwipe = makeOptionsFromDashboards(
+      dashboards.filter(d => d.isSvg && d.id !== dashboard.id)
+    );
+    this.swipeParameters.params.left.setOptions(dashboardsForSwipe);
+    this.swipeParameters.params.right.setOptions(dashboardsForSwipe);
     this.swipeParameters.setValue(this.dashboard.content.swipe);
 
     this.svgStore.setSvg(this.dashboard?.content?.svg?.current);

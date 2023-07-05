@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.0) stable; urgency=medium
+
+  * Move from SVG to text dashboards by click and long press/touch
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 05 Jul 2023 17:40:38 +0500
+
 wb-mqtt-homeui (2.74.0) stable; urgency=medium
 
   * Write to MQTT topic by long press/touch on SVG dashboard

@@ -4,12 +4,12 @@ function fullscreenToggleDirective() {
   'ngInject';
 
   class FullscreenController {
-    constructor($scope, $rootScope, $location) {
+    constructor($scope, $rootScope, $state) {
       'ngInject';
 
-      const params = $location.search();
+      const params = $state.params;
 
-      $rootScope.forceFullscreen = params.fullscreen;
+      $rootScope.forceFullscreen = params.fullscreen === true;
 
       $rootScope.checkFullscreen = () => {
         const fullScreenElement =
