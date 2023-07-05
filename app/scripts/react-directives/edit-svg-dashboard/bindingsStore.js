@@ -282,6 +282,9 @@ class BindingsStore {
     this.saveBinding();
     if (element) {
       const id = element.getAttribute('data-svg-param-id') || element.getAttribute('id');
+      if (id === null) {
+        return;
+      }
       let data = this.params.find(param => param.id === id);
       if (!data) {
         data = {
