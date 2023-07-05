@@ -168,7 +168,7 @@
          "swipe-enable": "Swipe",
          "left": "Left",
          "right": "Right",
-         "select-caption": "Click to select an element, Alt+Click to select group"
+         "select-caption": "Click to select an element, Alt+Click to select a group"
       },
       "buttons": {
          "save": "Save",
