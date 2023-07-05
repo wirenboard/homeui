@@ -169,7 +169,7 @@
          "swipe-enable": "Swipe",
          "left": "Left",
          "right": "Right",
-         "select-caption": "Click to select an element, Alt+Click to select group",
+         "select-caption": "Click to select an element, Alt+Click to select a group",
          "long-press": "Long press/touch",
          "click": "Click/touch",
          "click-enable": "Move to"
