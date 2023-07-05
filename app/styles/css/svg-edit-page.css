@@ -55,11 +55,16 @@
     }
 }
 
-.svg-edit-page svg path,
-.svg-edit-page svg text,
-.svg-edit-page svg tspan,
-.svg-edit-page svg circle
-.svg-edit-page svg rect {
+.svg-edit-page svg path[id],
+.svg-edit-page svg path[data-svg-param-id],
+.svg-edit-page svg text[id],
+.svg-edit-page svg text[data-svg-param-id],
+.svg-edit-page svg tspan[id],
+.svg-edit-page svg tspan[data-svg-param-id],
+.svg-edit-page svg circle[id],
+.svg-edit-page svg circle[data-svg-param-id],
+.svg-edit-page svg rect[id],
+.svg-edit-page svg rect[data-svg-param-id] {
     cursor: pointer;
 }
 
@@ -100,4 +105,9 @@
     .svg-edit-page .json-editor-buttons {
         margin-bottom: 10px;
     }
+}
+
+.svg-edit-page .radios {
+    margin-left: 20px;
+    margin-bottom: 10px;
 }

@@ -162,12 +162,17 @@
          "off": "Value off",
          "read-value-desc": "Example: ((val + 0) > 0) ? 'On' : 'Off'",
          "style-value-desc": "Example: (val) ? ';fill: green' : ';fill: red'",
-         "long-press-enable": "Long click/touch",
-         "move-to-dashboard": "Move to dashboard",
-         "select-dashboard-placeholder": "Select dashboard to move",
+         "long-press-enable": "Move to",
+         "long-press-write-enable": "Write to channel",
+         "dashboard": "Dashboard",
+         "select-dashboard-placeholder": "Select the dashboard to move",
          "swipe-enable": "Swipe",
          "left": "Left",
-         "right": "Right"
+         "right": "Right",
+         "select-caption": "Click to select an element, Alt+Click to select a group",
+         "long-press": "Long press/touch",
+         "click": "Click/touch",
+         "click-enable": "Move to"
       },
       "buttons": {
          "save": "Save",

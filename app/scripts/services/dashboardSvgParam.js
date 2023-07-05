@@ -36,6 +36,20 @@ class DashboardSvgParam {
       enable: false,
       dashboard: null,
     };
+
+    this['long-press-write'] = data['long-press-write'] || {
+      enable: false,
+      channel: null,
+      value: {
+        on: 1,
+        off: 0,
+      },
+    };
+
+    this.click = data.click || {
+      enable: false,
+      dashboard: null,
+    };
   }
 }
 
