@@ -1151,20 +1151,11 @@ body.hmi .show-console {
   height: 100%;
 }
 
-button.dashboard-back {
-  position: fixed;
-  left: 10px;
-  bottom: 30px;
-  opacity: 0.3;
-}
-
-button.dashboard-back:hover {
-  opacity: 1;
-}
-
+button.dashboard-back,
 button.dashboard-back:active {
   position: fixed;
   top: unset;
-  left: 10px;
+  left: unset;
+  right: 10px;
   bottom: 30px;
 }

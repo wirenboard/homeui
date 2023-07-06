@@ -140,6 +140,7 @@ class SvgElementBindingsStore {
     this.tagName = '';
     this.id = null;
     this.element = null;
+    this.params = {};
 
     makeAutoObservable(this);
     this.paramsStoreDisposers = [];
