@@ -1,6 +1,6 @@
 'use strict';
 
-import { makeObservable, observable, action, computed } from 'mobx';
+import { makeObservable, action, computed } from 'mobx';
 import { FormStore } from '../../react-directives/forms/formStore';
 import { BooleanStore } from '../../react-directives/forms/booleanStore';
 import { StringStore } from '../../react-directives/forms/stringStore';
@@ -10,6 +10,8 @@ import { makeNotEmptyValidator } from '../forms/stringValidators';
 import ConfirmModalState from '../components/modals/confirmModalState';
 import BindingsStore from './bindingsStore';
 import SvgStore from './svgStore';
+import AccessLevelStore from '../components/access-level/accessLevelStore';
+import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
 
 const makeCommonParametersStore = () => {
   let res = new FormStore('edit-svg-dashboard.labels.common-parameters-title');
@@ -71,9 +73,7 @@ const makeOptionsFromDashboards = dashboards =>
   }));
 
 class EditSvgDashboardPageStore {
-  constructor(showDashboardsList, preview) {
-    this.loading = true;
-    this.error = '';
+  constructor(showDashboardsList, preview, rolesFactory) {
     this.dashboard = null;
     this.originalId = null;
     this.showDashboardsList = showDashboardsList;
@@ -83,14 +83,13 @@ class EditSvgDashboardPageStore {
     this.bindingsStore = new BindingsStore();
     this.commonParameters = makeCommonParametersStore();
     this.swipeParameters = makeSwipeParametersStore();
+    this.accessLevelStore = new AccessLevelStore(rolesFactory);
+    this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
+    this.pageWrapperStore = new PageWrapperStore();
 
     makeObservable(this, {
-      loading: observable,
-      error: observable,
       isValid: computed,
       isNew: computed,
-      setError: action,
-      setLoading: action,
       setDashboard: action,
     });
   }
@@ -104,31 +103,36 @@ class EditSvgDashboardPageStore {
   }
 
   setError(msg) {
-    this.error = msg;
+    this.pageWrapperStore.setError(msg);
   }
 
   setLoading(isLoading) {
-    this.loading = isLoading;
+    this.pageWrapperStore.setLoading(isLoading);
   }
 
-  setDashboard(dashboard, deviceData, localeId, dashboards) {
-    this.commonParameters.setValue(dashboard.content);
-    this.dashboard = dashboard;
-    this.bindingsStore.setDevices(deviceData, localeId);
-    const dashboardsForClicks = makeOptionsFromDashboards(
-      dashboards.filter(d => d.id !== dashboard.id)
-    );
-    this.bindingsStore.setDashboards(dashboardsForClicks);
-    this.bindingsStore.setParams(this.dashboard.content.svg.params);
+  setDashboard(dashboardId, uiConfig, deviceData, localeId) {
+    if (this.accessLevelStore.accessGranted) {
+      const dashboards = uiConfig.filtered().dashboards;
+      this.dashboard = dashboardId
+        ? uiConfig.getDashboard(dashboardId)
+        : uiConfig.addDashboardWithSvg();
+      this.commonParameters.setValue(this.dashboard.content);
+      this.bindingsStore.setDevices(deviceData, localeId);
+      const dashboardsForClicks = makeOptionsFromDashboards(
+        dashboards.filter(d => d.id !== dashboardId)
+      );
+      this.bindingsStore.setDashboards(dashboardsForClicks);
+      this.bindingsStore.setParams(this.dashboard.content.svg.params);
 
-    const dashboardsForSwipe = makeOptionsFromDashboards(
-      dashboards.filter(d => d.isSvg && d.id !== dashboard.id)
-    );
-    this.swipeParameters.params.left.setOptions(dashboardsForSwipe);
-    this.swipeParameters.params.right.setOptions(dashboardsForSwipe);
-    this.swipeParameters.setValue(this.dashboard.content.swipe);
+      const dashboardsForSwipe = makeOptionsFromDashboards(
+        dashboards.filter(d => d.isSvg && d.id !== dashboardId)
+      );
+      this.swipeParameters.params.left.setOptions(dashboardsForSwipe);
+      this.swipeParameters.params.right.setOptions(dashboardsForSwipe);
+      this.swipeParameters.setValue(this.dashboard.content.swipe);
 
-    this.svgStore.setSvg(this.dashboard?.content?.svg?.current);
+      this.svgStore.setSvg(this.dashboard?.content?.svg?.current);
+    }
     this.setLoading(false);
   }
 

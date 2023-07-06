@@ -6,7 +6,14 @@ import ViewSvgDashboardPageStore from './pageStore';
 import { checkFullscreen } from '../components/fullscreen/fullscreenStore';
 import { reaction } from 'mobx';
 
-function viewSvgDashboardDirective(mqttClient, uiConfig, $rootScope, DeviceData, $state) {
+function viewSvgDashboardDirective(
+  mqttClient,
+  uiConfig,
+  $rootScope,
+  DeviceData,
+  $state,
+  rolesFactory
+) {
   'ngInject';
 
   return {
@@ -24,7 +31,7 @@ function viewSvgDashboardDirective(mqttClient, uiConfig, $rootScope, DeviceData,
       $rootScope.hmiColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';
       document.getElementById('page-wrapper').style.backgroundColor = $rootScope.hmiColor;
 
-      scope.store = new ViewSvgDashboardPageStore();
+      scope.store = new ViewSvgDashboardPageStore(rolesFactory);
       scope.store.setForceFullscreen($rootScope.forceFullscreen);
       // Faster set styles in AngularJs code
       reaction(

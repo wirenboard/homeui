@@ -3,9 +3,10 @@
 import { makeObservable, observable, action, set } from 'mobx';
 import { FullscreenStore } from '../components/fullscreen/fullscreenStore';
 import ViewSvgDashboardStore from './viewStore';
+import AccessLevelStore from '../components/access-level/accessLevelStore';
 
 class ViewSvgDashboardPageStore {
-  constructor() {
+  constructor(rolesFactory) {
     this.loading = true;
     this.fullscreen = new FullscreenStore();
     this.forceFullscreen = false;
@@ -17,6 +18,8 @@ class ViewSvgDashboardPageStore {
     this.switchValueFn = null;
     this.key = Math.random();
     this.dashboardIndex = 0;
+    this.editAccessLevelStore = new AccessLevelStore(rolesFactory);
+    this.editAccessLevelStore.setRole(rolesFactory.ROLE_TWO);
 
     this.dashboards = [];
 

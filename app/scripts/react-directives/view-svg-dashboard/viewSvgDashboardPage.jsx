@@ -32,7 +32,11 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
         ) : (
           <>
             {store.dashboards.length == 1 ? (
-              <ViewSvgDashboard key={store.dashboards[0].id} store={store.dashboards[0]} />
+              <ViewSvgDashboard
+                key={store.dashboards[0].id}
+                store={store.dashboards[0]}
+                canEdit={store.editAccessLevelStore.accessGranted}
+              />
             ) : (
               <Carousel
                 withoutControls={true}
@@ -49,7 +53,11 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
                 swipeScrollTolerance={width / 3}
               >
                 {store.dashboards.map((d, index) => (
-                  <ViewSvgDashboard key={d.dashboard.id} store={d} />
+                  <ViewSvgDashboard
+                    key={d.dashboard.id}
+                    store={d}
+                    canEdit={store.editAccessLevelStore.accessGranted}
+                  />
                 ))}
               </Carousel>
             )}
