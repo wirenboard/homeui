@@ -88,7 +88,8 @@
             }
         },
         "buttons": {
-            "add": "Add widget"
+            "add": "Add widget",
+            "back": "Back"
         }
     },
     "datepicker": {

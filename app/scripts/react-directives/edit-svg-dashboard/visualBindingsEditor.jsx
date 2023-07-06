@@ -127,7 +127,7 @@ const VisualBindingsEditor = observer(({ store }) => {
     <>
       <h6>
         {t('edit-svg-dashboard.labels.tag-name', {
-          tag: store.tagName,
+          tag: store.elementName,
         })}
       </h6>
       <ParamBindingForm store={store.params.params.read} />

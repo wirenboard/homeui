@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next';
 import SvgView from './svgView';
 import { FullscreenContext } from '../components/fullscreen/fullscreenContext';
 
-const ViewSvgDashboardHeader = observer(({ title, forceFullscreen, onEdit }) => {
+const ViewSvgDashboardHeader = observer(({ title, forceFullscreen, onEdit, canEdit }) => {
   const { t } = useTranslation();
   const fullscreen = useContext(FullscreenContext);
   return (
     <h1 className="page-header">
       <span>{title}</span>
       <div className="pull-right button-group">
-        {!(fullscreen.isFullscreen || forceFullscreen) && (
+        {canEdit && !(fullscreen.isFullscreen || forceFullscreen) && (
           <Button
             type="success"
             label={t('view-svg-dashboard.buttons.edit')}
@@ -39,13 +39,14 @@ const ViewSvgDashboardHeader = observer(({ title, forceFullscreen, onEdit }) => 
   );
 });
 
-const ViewSvgDashboard = observer(({ store }) => {
+const ViewSvgDashboard = observer(({ store, canEdit }) => {
   return (
     <div className="view-svg-dashboard">
       <ViewSvgDashboardHeader
         title={store?.dashboard?.name}
         forceFullscreen={store.forceFullscreen}
         onEdit={() => store.editDashboard()}
+        canEdit={canEdit}
       />
       <SvgView
         svg={store?.dashboard?.svg?.current}

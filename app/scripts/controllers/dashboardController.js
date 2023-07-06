@@ -1,5 +1,5 @@
 class DashboardCtrl {
-  constructor($scope, uiConfig, $stateParams, rolesFactory) {
+  constructor($scope, uiConfig, $stateParams, rolesFactory, $transition$, $state, $rootScope) {
     'ngInject';
 
     $scope.roles = rolesFactory;
@@ -7,7 +7,7 @@ class DashboardCtrl {
     $scope.svgDownloadUrl = null;
     $scope.svgDownloadName = null;
 
-    var defaultDashboard = {};
+    $scope.sourceDashboardId = $transition$.options()?.custom?.source;
 
     function getDashboard() {
       return uiConfig.getDashboard($stateParams.id);
@@ -32,6 +32,21 @@ class DashboardCtrl {
 
     $scope.removeWidget = widget => $scope.dashboard.removeWidgetFromDashboard(widget);
     $scope.deleteWidget = widget => uiConfig.deleteWidget(widget);
+    $scope.back = () => {
+      let params = {
+        id: $scope.sourceDashboardId,
+      };
+      if ($rootScope.forceFullscreen) {
+        params.fullscreen = $rootScope.forceFullscreen;
+      }
+      if ($rootScope.isHMI) {
+        params.hmi = $rootScope.isHMI;
+      }
+      if ($rootScope.hmiColor) {
+        params.hmicolor = $rootScope.hmiColor;
+      }
+      $state.go('dashboard-svg', params);
+    };
   }
 }
 

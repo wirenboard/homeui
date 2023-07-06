@@ -4,7 +4,14 @@ import ReactDOM from 'react-dom/client';
 import CreateEditSvgDashboardPage from './editSvgDashboardPage';
 import EditSvgDashboardPageStore from './pageStore';
 
-function editSvgDashboardDirective(mqttClient, uiConfig, $state, DeviceData, $locale) {
+function editSvgDashboardDirective(
+  mqttClient,
+  uiConfig,
+  $state,
+  DeviceData,
+  $locale,
+  rolesFactory
+) {
   'ngInject';
 
   return {
@@ -18,7 +25,8 @@ function editSvgDashboardDirective(mqttClient, uiConfig, $state, DeviceData, $lo
       }
       scope.store = new EditSvgDashboardPageStore(
         () => $state.go('dashboards'),
-        id => $state.go('dashboard-svg', { id: id })
+        id => $state.go('dashboard-svg', { id: id }),
+        rolesFactory
       );
       scope.store.setOriginalId(scope.id);
       scope.root = ReactDOM.createRoot(element[0]);
@@ -28,12 +36,7 @@ function editSvgDashboardDirective(mqttClient, uiConfig, $state, DeviceData, $lo
         .whenReady()
         .then(() => uiConfig.whenReady())
         .then(() => {
-          scope.store.setDashboard(
-            scope.id ? uiConfig.getDashboard(scope.id) : uiConfig.addDashboardWithSvg(),
-            DeviceData,
-            $locale.id,
-            uiConfig.filtered().dashboards
-          );
+          scope.store.setDashboard(scope.id, uiConfig, DeviceData, $locale.id);
         })
         .catch(err => {
           scope.store.setError(err.message);

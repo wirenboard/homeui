@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner, BootstrapRow, ErrorBar } from '../common';
+import { BootstrapRow } from '../common';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../common';
@@ -9,6 +9,7 @@ import JsonBindingsEditor from './jsonBindingsEditor';
 import VisualBindingsEditor from './visualBindingsEditor';
 import { useFilePicker } from 'use-file-picker';
 import ConfirmModal from '../components/modals/confirmModal';
+import { PageWrapper, PageBody } from '../components/page-wrapper/pageWrapper';
 
 const EditSvgDashboardHeader = observer(
   ({ onToDashboardsList, onPreview, onRemove, onSave, onCancel, isValidDashboard, isNew }) => {
@@ -167,30 +168,29 @@ const VisualEditMode = ({ pageStore }) => {
 
 const EditSvgDashboardPage = observer(({ pageStore }) => {
   return (
-    <div className="svg-edit-page">
-      <ErrorBar msg={pageStore.error} />
-      <ConfirmModal {...pageStore.confirmModalState} />
-      {pageStore.loading ? (
-        <Spinner />
-      ) : (
-        <>
-          <EditSvgDashboardHeader
-            onToDashboardsList={() => pageStore.onShowDashboardsList()}
-            onPreview={() => pageStore.onPreview()}
-            onRemove={() => pageStore.onRemoveDashboard()}
-            onSave={() => pageStore.onSaveDashboard()}
-            onCancel={() => pageStore.onRemoveDashboard()}
-            isValidDashboard={pageStore.isValid}
-            isNew={pageStore.isNew}
-          />
-          {pageStore.bindingsStore.jsonEditMode ? (
-            <JsonBindingsEditor bindingsStore={pageStore.bindingsStore} />
-          ) : (
-            <VisualEditMode pageStore={pageStore} />
-          )}
-        </>
-      )}
-    </div>
+    <PageWrapper
+      error={pageStore.pageWrapperStore.error}
+      className={'svg-edit-page'}
+      accessLevelStore={pageStore.accessLevelStore}
+    >
+      <PageBody loading={pageStore.pageWrapperStore.loading}>
+        <ConfirmModal {...pageStore.confirmModalState} />
+        <EditSvgDashboardHeader
+          onToDashboardsList={() => pageStore.onShowDashboardsList()}
+          onPreview={() => pageStore.onPreview()}
+          onRemove={() => pageStore.onRemoveDashboard()}
+          onSave={() => pageStore.onSaveDashboard()}
+          onCancel={() => pageStore.onRemoveDashboard()}
+          isValidDashboard={pageStore.isValid}
+          isNew={pageStore.isNew}
+        />
+        {pageStore.bindingsStore.jsonEditMode ? (
+          <JsonBindingsEditor bindingsStore={pageStore.bindingsStore} />
+        ) : (
+          <VisualEditMode pageStore={pageStore} />
+        )}
+      </PageBody>
+    </PageWrapper>
   );
 });
 

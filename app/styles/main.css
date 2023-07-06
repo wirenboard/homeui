@@ -1150,3 +1150,12 @@ body.hmi .show-console {
   width: 100%;
   height: 100%;
 }
+
+button.dashboard-back,
+button.dashboard-back:active {
+  position: fixed;
+  top: unset;
+  left: unset;
+  right: 10px;
+  bottom: 30px;
+}
