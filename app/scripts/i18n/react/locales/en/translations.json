@@ -172,7 +172,12 @@
          "select-caption": "Click to select an element, Alt+Click to select a group",
          "long-press": "Long press/touch",
          "click": "Click/touch",
-         "click-enable": "Move to"
+         "click-enable": "Move to",
+         "group": "group",
+         "text": "text",
+         "path": "path",
+         "circle": "circle",
+         "rect": "rectangle"
       },
       "buttons": {
          "save": "Save",

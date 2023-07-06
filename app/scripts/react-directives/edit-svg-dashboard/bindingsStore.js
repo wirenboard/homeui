@@ -149,6 +149,17 @@ class SvgElementBindingsStore {
     return !!this.element;
   }
 
+  get elementName() {
+    const captions = {
+      g: 'edit-svg-dashboard.labels.group',
+      text: 'edit-svg-dashboard.labels.text',
+      path: 'edit-svg-dashboard.labels.path',
+      circle: 'edit-svg-dashboard.labels.circle',
+      rect: 'edit-svg-dashboard.labels.rect',
+    };
+    return i18n.t(captions[this.tagName] || this.tagName);
+  }
+
   makeNewParamsStore() {
     this.paramsStoreDisposers.forEach(disposer => disposer());
     this.paramsStoreDisposers = [];
