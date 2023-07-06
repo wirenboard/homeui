@@ -106,7 +106,7 @@ export const FormSelect = observer(({ store }) => {
     >
       <Select
         options={store.options}
-        isSearchable={false}
+        isSearchable={true}
         isClearable={true}
         value={store.selectedOption}
         styles={customStyles}
