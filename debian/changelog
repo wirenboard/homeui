@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.1) stable; urgency=medium
+
+  * Fix displaying of SVG dashboard elements with set visible condition
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 11 Jul 2023 11:26:20 +0500
+
 wb-mqtt-homeui (2.75.0) stable; urgency=medium
 
   * Move from SVG to text dashboards by click and long press/touch
