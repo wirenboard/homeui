@@ -37,7 +37,7 @@ const setVisibleHandler = (element, param, values) => {
   const disposer = reaction(
     () => get(values, param.channel),
     value => {
-      element.style.display = fn(value);
+      element.style.display = fn(value) ? '' : 'none';
     },
     { fireImmediately: true }
   );
