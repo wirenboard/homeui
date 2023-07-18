@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.59.0-wb104) stable; urgency=medium
+
+  * Fix loading wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 17 Jul 2023 19:16:21 +0500
+
 wb-mqtt-homeui (2.59.0-wb103) stable; urgency=medium
 
   * Fix huge value of "range" controls after clearing device's meta topics
