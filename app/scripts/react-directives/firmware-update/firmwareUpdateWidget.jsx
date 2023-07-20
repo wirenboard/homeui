@@ -218,6 +218,7 @@ const CreateFirmwareUpdateWidget = ({ store }) => (
   <Uploady
     autoUpload
     accept={store.accept}
+    concurrent={true}
     multiple={false}
     method="POST"
     destination={{ url: store.destination }}
