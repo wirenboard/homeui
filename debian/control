@@ -4,6 +4,7 @@ Section: misc
 Priority: optional
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 10), pkg-config, nodejs (>= 16)
+Homepage: https://github.com/wirenboard/homeui
 
 Package: wb-mqtt-homeui
 Architecture: all
