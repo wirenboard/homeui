@@ -16,6 +16,7 @@ import {
   ModalFooter,
   ModalTitle,
 } from '../components/modals/modals';
+import {Checkbox} from "../common";
 
 const DoneButton = ({ onDoneClick, doneLabel }) => {
   const { t } = useTranslation();
@@ -123,10 +124,7 @@ const UploadEntrypoint = observer(({ checkboxHandler, showModal }) => {
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
-        <label htmlFor="id_expand_rootfs">
-          <input type="checkbox" checked id="id_expand_rootfs" onChange={checkboxHandler} />{' '}
-          {t('system.update.expandrootfs')}
-        </label>
+        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} value={true} />
       </div>
     </div>
   );
