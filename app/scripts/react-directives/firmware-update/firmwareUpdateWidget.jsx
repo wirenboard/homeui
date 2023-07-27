@@ -124,7 +124,7 @@ const UploadEntrypoint = observer(({ checkboxHandler, showModal }) => {
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
-        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} value={true} />
+        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} defaultChecked={true} />
       </div>
     </div>
   );

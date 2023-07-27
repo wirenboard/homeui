@@ -70,11 +70,11 @@ export const Button = ({ label, type, onClick, disabled, additionalStyles, icon,
   );
 };
 
-export const Checkbox = ({ label, id, value, onChange }) => {
+export const Checkbox = ({ label, id, value, onChange, defaultChecked }) => {
   return (
     <div className="checkbox">
       <label htmlFor={id}>
-        <input type="checkbox" id={id} checked={value} onChange={onChange} /> {label}
+        <input type="checkbox" id={id} checked={value} onChange={onChange} defaultChecked={defaultChecked} /> {label}
       </label>
     </div>
   );
