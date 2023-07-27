@@ -124,7 +124,7 @@ const UploadEntrypoint = observer(({ checkboxHandler, showModal }) => {
       </button>
       <div style={{ margin: '10px' }}>
         <label htmlFor="id_expand_rootfs">
-          <input type="checkbox" id="id_expand_rootfs" onChange={checkboxHandler} />{' '}
+          <input type="checkbox" checked="checked" id="id_expand_rootfs" onChange={checkboxHandler} />{' '}
           {t('system.update.expandrootfs')}
         </label>
       </div>
