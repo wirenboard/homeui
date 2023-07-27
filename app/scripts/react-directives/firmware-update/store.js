@@ -5,7 +5,7 @@ class FirmwareUpdateStore {
   constructor() {
     this.destination = '/fwupdate/upload';
     this.accept = '.fit';
-    this.expandRootfs = false;
+    this.expandRootfs = true;
 
     this.receivedFirstStatus = false;
     this.uploading = false;
