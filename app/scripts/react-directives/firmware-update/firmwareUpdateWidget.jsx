@@ -106,7 +106,7 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint = observer(({ checkboxHandler, showModal }) => {
+const UploadEntrypoint = observer(({ checkboxHandler, showModal, store }) => {
   const { t } = useTranslation();
 
   return (
@@ -124,7 +124,7 @@ const UploadEntrypoint = observer(({ checkboxHandler, showModal }) => {
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
-        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} defaultChecked={true} />
+        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} value={store.expandRootfs} />
       </div>
     </div>
   );
@@ -169,6 +169,7 @@ const UploadWidget = observer(({ store }) => {
           showModal={() => {
             store.modalState.show();
           }}
+          store={store}
         />
       )}
     </>
