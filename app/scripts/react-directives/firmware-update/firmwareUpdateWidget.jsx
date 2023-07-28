@@ -16,6 +16,7 @@ import {
   ModalFooter,
   ModalTitle,
 } from '../components/modals/modals';
+import {Checkbox} from "../common";
 
 const DoneButton = ({ onDoneClick, doneLabel }) => {
   const { t } = useTranslation();
@@ -105,7 +106,7 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint = observer(({ checkboxHandler, showModal }) => {
+const UploadEntrypoint = observer(({ checkboxHandler, showModal, expandRootFs }) => {
   const { t } = useTranslation();
 
   return (
@@ -123,10 +124,7 @@ const UploadEntrypoint = observer(({ checkboxHandler, showModal }) => {
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
-        <label htmlFor="id_expand_rootfs">
-          <input type="checkbox" id="id_expand_rootfs" onChange={checkboxHandler} />{' '}
-          {t('system.update.expandrootfs')}
-        </label>
+        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} value={expandRootFs} />
       </div>
     </div>
   );
@@ -171,6 +169,7 @@ const UploadWidget = observer(({ store }) => {
           showModal={() => {
             store.modalState.show();
           }}
+          expandRootFs={store.expandRootfs}
         />
       )}
     </>

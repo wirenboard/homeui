@@ -9,7 +9,7 @@ it("initializes store", () => {
 
     expect(store.destination).toBe("/fwupdate/upload");
     expect(store.accept).toBe(".fit");
-    expect(store.expandRootfs).toBe(false);
+    expect(store.expandRootfs).toBe(true);
     expect(store.receivedFirstStatus).toBe(false);
     expect(store.uploading).toBe(false);
     expect(store.running).toBe(false);
