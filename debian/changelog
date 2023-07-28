@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.75.3) stable; urgency=medium
 
-  * Update Firmware: enlarge rootfs checkbox is now checked by default
+  * Update Firmware: expand rootfs checkbox is now checked by default
 
  -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Thu, 27 Jul 2023 14:28:00 +0600
 
