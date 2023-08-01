@@ -329,7 +329,7 @@ module
     },
   ]);
 
-module.run(($rootScope, $state) => {
+module.run(($rootScope, $state, $transitions) => {
   'ngInject';
 
   $rootScope.$state = $state;
@@ -338,19 +338,12 @@ module.run(($rootScope, $state) => {
     return Object.keys(collection);
   };
 
-  $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-    $rootScope.refererLocation = fromState;
-  });
-
-  $rootScope.$on('$stateChangeStart', () => {
+  $transitions.onStart({}, function (trans) {
     document.getElementById('overlay').classList.remove('overlay');
-  });
-
-  $rootScope.$on('$stateChangeStart', () => {
     $rootScope.stateIsLoading = true;
   });
 
-  $rootScope.$on('$stateChangeSuccess', () => {
+  $transitions.onSuccess({}, function (trans) {
     $rootScope.stateIsLoading = false;
   });
 });

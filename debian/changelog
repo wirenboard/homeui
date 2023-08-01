@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.4) stable; urgency=medium
+
+  * Fix menu overlay hiding in mobile mode
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 01 Aug 2023 18:03:32 +0500
+
 wb-mqtt-homeui (2.75.3) stable; urgency=medium
 
   * Update Firmware: expand rootfs checkbox is now checked by default
