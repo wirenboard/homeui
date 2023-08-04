@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.5) stable; urgency=medium
+
+  * Fix loss of focus when editing fields in the mobile version 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 04 Aug 2023 14:42:08 +0500
+
 wb-mqtt-homeui (2.75.4) stable; urgency=medium
 
   * Fix menu overlay hiding in mobile mode

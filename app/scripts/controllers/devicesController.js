@@ -26,9 +26,15 @@ class DevicesCtrl {
 
     const deviceIdFromUrl = this.parseDeviceIdFromUrl($injector);
 
+    $scope.windowWidth = window.innerWidth;
     // this listener needed to redraw columns and devices on window resize.
     $(window).resize(() => {
-      this.$state.devicesIdsCount = 0;
+      // Only width changing can cause redraw
+      // Height changing can be a result of onscreen keyboard display
+      if (window.innerWidth != $scope.windowWidth) {
+        $scope.windowWidth = window.innerWidth;
+        this.$state.devicesIdsCount = 0;
+      }
     });
 
     $scope.$locale = $locale;
