@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.6) stable; urgency=medium
+
+  * Move help page content to translations
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 04 Aug 2023 17:00:00 +0400
+
 wb-mqtt-homeui (2.75.5) stable; urgency=medium
 
   * Edited Wiren Board 7 SVG Dashboard

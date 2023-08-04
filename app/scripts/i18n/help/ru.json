@@ -1,12 +1,6 @@
 {
     "help": {
         "title": "Помощь",
-        "list": {
-            "forum": "Портал техподдержки",
-            "docs": "Документация"
-        },
-        "url": {
-            "docs": "https://wirenboard.com/wiki/Documentation/ru"
-        }
+        "content": "<ul><li><a href=\"https://wirenboard.com/wiki/Documentation/ru\" target=\"_blank\" translate>Документация</a></li><li><a href=\"https://support.wirenboard.com\" target=\"_blank\" translate=\"\">Портал техподдержки</a></li></ul>"
     }
 }
