@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.7) stable; urgency=medium
+
+  * Fix loss of focus when editing fields in the mobile version 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 09 Aug 2023 13:38:27 +0500
+
 wb-mqtt-homeui (2.75.6) stable; urgency=medium
 
   * Move help page content to translations
