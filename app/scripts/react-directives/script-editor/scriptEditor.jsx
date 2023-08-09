@@ -8,14 +8,15 @@ const ScriptEditor = observer(({ text, errorLine, onChange }) => {
   const [scrolled, setScrolled] = useState(false);
   const refCallback = ref => {
     if (!scrolled && errorLine != null && ref?.view) {
-      try {
-        const line = ref.view.state.doc.line(errorLine);
-        ref.view.dispatch({
-          selection: EditorSelection.single(line.from, line.to),
-          scrollIntoView: true,
-        });
-        setScrolled(true);
-      } catch (err) {}
+      if (errorLine > ref.view.state.doc.lines) {
+        errorLine = ref.view.state.doc.lines;
+      }
+      const line = ref.view.state.doc.line(errorLine);
+      ref.view.dispatch({
+        selection: EditorSelection.single(line.from, line.to),
+        scrollIntoView: true,
+      });
+      setScrolled(true);
     }
   };
 
