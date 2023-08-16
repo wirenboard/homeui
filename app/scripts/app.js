@@ -477,13 +477,15 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      var language = $window.localStorage['language'];
-      if (!language || i18n.languages.indexOf(language) === -1) {
-        var preferredLanguages = window.navigator.languages.map(lang => lang.split('-')[0]);
-        language =
-          preferredLanguages.filter(lang => i18n.languages.indexOf(lang) !== -1)[0] || 'en';
-        $window.localStorage.setItem('language', language);
-      }
+      // temporary disabled russian language
+      // var language = $window.localStorage['language'];
+      // if (!language || i18n.languages.indexOf(language) === -1) {
+      //   var preferredLanguages = window.navigator.languages.map(lang => lang.split('-')[0]);
+      //   language =
+      //     preferredLanguages.filter(lang => i18n.languages.indexOf(lang) !== -1)[0] || 'en';
+      //   $window.localStorage.setItem('language', language);
+      // }
+      var language = 'en';
       $translate.use(language);
       tmhDynamicLocale.set(language);
       i18n.changeLanguage(language);
