@@ -1,0 +1,18 @@
+.navbar-header {
+  background-color: #29318C;
+}
+
+@media (width >= 768px) {
+  .side-nav {
+    background-color: #29318C;
+  }
+
+  .side-nav>li>ul>li>a {
+    background-color: #3645a5;
+  }
+
+  .side-nav li a:hover,
+  .side-nav li a:focus {
+    background-color: #171f51 !important;
+  }
+}
