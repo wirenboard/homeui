@@ -2,7 +2,7 @@
   background-color: #29318C;
 }
 
-@media (width >= 768px) {
+@media(min-width:768px) {
   .side-nav {
     background-color: #29318C;
   }
