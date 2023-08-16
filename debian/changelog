@@ -1,6 +1,12 @@
-wb-mqtt-homeui (2.75.6-a70ab64c) stable; urgency=medium
+wb-mqtt-homeui (2.75.6-a70ab64c-wb100) stable; urgency=medium
 
   * Vendor related changes
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 16 Aug 2023 22:22:00 +0600
+
+wb-mqtt-homeui (2.75.6-a70ab64c) stable; urgency=medium
+
+  * No functional changes
 
  -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 16 Aug 2023 21:45:00 +0600
 
