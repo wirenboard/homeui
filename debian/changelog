@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.6-cb8ea449-wb100) stable; urgency=medium
+
+  * Fix title
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 17 Aug 2023 09:56:00 +0400
+
 wb-mqtt-homeui (2.75.6-cb8ea449) stable; urgency=medium
 
   * Vendor related changes
