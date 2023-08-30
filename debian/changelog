@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.8) stable; urgency=medium
+
+  * Close the properties modal when we click outside the modal (json-editor updated to 2.5.3-wb10)
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 28 Aug 2023 12:00:00 +0400
+
 wb-mqtt-homeui (2.75.7) stable; urgency=medium
 
   * Fix loss of focus when editing fields in the mobile version 
