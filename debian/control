@@ -2,7 +2,7 @@ Source: wb-mqtt-homeui
 Maintainer: Evgeny Boger <boger@contactless.ru>
 Section: misc
 Priority: optional
-Standards-Version: 3.9.2
+Standards-Version: 4.5.1
 Build-Depends: debhelper (>= 10), pkg-config, nodejs (>= 16)
 Homepage: https://github.com/wirenboard/homeui
 
@@ -15,4 +15,3 @@ Suggests: wb-mqtt-confed (>= 1.4.0),
 Breaks: wb-mqtt-confed (<< 1.0.3), wb-mqtt-db (<< 1.5), wb-mqtt-serial (<< 2.64.0), wb-device-manager (<< 1.4.0~~),
   wb-nm-helper (<< 1.21.0~~), wb-configs (<< 3.14.0~~)
 Description: Wiren Board Web UI web interface
-
