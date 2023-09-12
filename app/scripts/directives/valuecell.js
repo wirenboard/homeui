@@ -21,8 +21,11 @@ function valueCellDirective() {
     getFractionalValue(c) {
       if ('value' in c && c.value !== null && c.value !== undefined) {
         if ('step' in c && c.step !== null && c.step !== undefined) {
-          var digits = c.step.toString().split('.')[1].length;
-          return '.' + c.value.toFixed(digits).split('.')[1];
+          var stepString = c.step.toString();
+          var digits = stepString.includes('.') ? stepString.split('.')[1].length : 0;
+          if (digits !== 0) {
+            return '.' + c.value.toFixed(digits).split('.')[1];
+          }
         } else {
           var fraction = c.value.toString().split('.')[1];
           if (fraction !== undefined) {

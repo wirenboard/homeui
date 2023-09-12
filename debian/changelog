@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.9) stable; urgency=medium
+
+  * Fix fractional value parsing
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 12 Sep 2023 15:33:00 +0400
+
 wb-mqtt-homeui (2.75.8) stable; urgency=medium
 
   * Close the properties modal when we click outside the modal (json-editor updated to 2.5.3-wb10)
