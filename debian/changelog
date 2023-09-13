@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.10) stable; urgency=medium
+
+  * Fix editor for not required parameters in devices configs
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 13 Sep 2023 11:06:02 +0500
+
 wb-mqtt-homeui (2.75.9) stable; urgency=medium
 
   * Fix fractional value parsing
