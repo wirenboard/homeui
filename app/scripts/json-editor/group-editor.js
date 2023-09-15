@@ -711,7 +711,11 @@ function makeGroupsEditor() {
           ret.build();
           ret.postBuild();
           ret.setOptInCheckbox(ret.header);
-          if (this.checkRequired(key, ed) || this.checkDefault(key)) {
+          if (
+            this.checkRequired(key, ed) ||
+            this.checkDefault(key) ||
+            ed.schema?.options?.show_opt_in
+          ) {
             ret.activate();
             ed.show();
           } else {
