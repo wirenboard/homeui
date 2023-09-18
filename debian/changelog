@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.11) stable; urgency=medium
+
+  * Fix can connection saving
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 18 Sep 2023 13:20:00 +0400
+
 wb-mqtt-homeui (2.75.10) stable; urgency=medium
 
   * Fix editor for not required parameters in devices configs

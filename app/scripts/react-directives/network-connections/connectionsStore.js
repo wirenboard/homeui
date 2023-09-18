@@ -136,6 +136,9 @@ class Connections {
 
   updateUuids(connectionsFromJson) {
     connectionsFromJson.forEach(cn => {
+      if (cn.connection_uuid === undefined) {
+        return;
+      }
       let res = this.findConnection(cn.connection_uuid);
       if (!res) {
         res = this.connections.find(
