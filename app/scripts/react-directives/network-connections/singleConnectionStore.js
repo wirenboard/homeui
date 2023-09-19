@@ -181,7 +181,9 @@ export class SingleConnection {
   }
 
   setUuid(uuid) {
-    this.data.connection_uuid = uuid;
+    if (this.managedByNM) {
+      this.data.connection_uuid = uuid;
+    }
   }
 
   submit() {
