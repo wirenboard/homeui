@@ -8,6 +8,7 @@ class DiagnosticCtrl {
     $scope.collecting = false;
     $scope.pathMessage = false;
     $scope.text = '';
+    $scope.href = '';
 
     $scope.path = undefined;
     $scope.basename = undefined;
@@ -29,7 +30,7 @@ class DiagnosticCtrl {
       if (contentType == 'application/zip') {
         $scope.btnEnabled = true;
         changeBtnText('collector.buttons.download');
-        $scope.btnMethod = downloadDiag;
+        $scope.href = 'diag/' + $scope.basename;
       } else {
         $scope.btnVisible = false;
         $scope.pathMessage = true;
@@ -80,11 +81,6 @@ class DiagnosticCtrl {
           changeBtnText('collector.errors.timeout');
         }
       );
-    };
-
-    var downloadDiag = function () {
-      var filename = $scope.basename;
-      window.location.href = 'diag/' + filename;
     };
 
     $scope.btnMethod = diag;

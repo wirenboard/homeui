@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.12) stable; urgency=medium
+
+  * Fix downloading diagnostic archive simultaneously with uploading fit-image
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 03 Oct 2023 10:03:47 +0500
+
 wb-mqtt-homeui (2.75.11) stable; urgency=medium
 
   * Fix can connection saving
