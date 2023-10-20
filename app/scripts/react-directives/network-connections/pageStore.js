@@ -128,11 +128,12 @@ class NetworkConnectionsPageStore {
   }
 
   async deleteConnection(connection) {
-    await this.showDeleteConnectionConfirmModal();
-    if (!connection.isNew) {
-      await this.save(this.connections.connections.filter(item => item !== connection));
+    if ((await this.showDeleteConnectionConfirmModal()) == 'ok') {
+      if (!connection.isNew) {
+        await this.save(this.connections.connections.filter(item => item !== connection));
+      }
+      this.connections.removeConnection(connection);
     }
-    this.connections.removeConnection(connection);
   }
 
   async save(connections) {
