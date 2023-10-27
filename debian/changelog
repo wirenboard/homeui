@@ -1,5 +1,11 @@
 wb-mqtt-homeui (2.75.13) stable; urgency=medium
 
+  * Add wb74 config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 27 Oct 2023 17:57:00 +0400
+
+wb-mqtt-homeui (2.75.13) stable; urgency=medium
+
   * Fix network connection deletion cancel
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 18 Oct 2023 16:35:31 +0500
