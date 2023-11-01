@@ -24,5 +24,11 @@
         "rootfs_warning1": "You cannot restore system state using this archive, it just allows you to have a copy of your files",
         "rootfs_warning2": "System may run slower while downloading the archive",
         "rootfs_warning3": "Files from /mnt/data are not included in the archive"
+    },
+    "factoryreset": {
+        "title": "Reset to factory settings",
+        "warning1": "All your settings and data will be lost",
+        "warning2": "All software will be reverted to factory versions",
+        "button": "Perform factory reset"
     }
 }

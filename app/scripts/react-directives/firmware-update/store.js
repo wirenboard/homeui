@@ -6,6 +6,7 @@ class FirmwareUpdateStore {
     this.destination = '/fwupdate/upload';
     this.accept = '.fit';
     this.expandRootfs = true;
+    this.factoryReset = false;
 
     this.receivedFirstStatus = false;
     this.uploading = false;
@@ -27,6 +28,10 @@ class FirmwareUpdateStore {
 
   setExpandRootfs(value) {
     this.expandRootfs = value;
+  }
+
+  setFactoryReset(value) {
+    this.factoryReset = value;
   }
 
   addLogRow(row) {

@@ -10,6 +10,7 @@ it("initializes store", () => {
     expect(store.destination).toBe("/fwupdate/upload");
     expect(store.accept).toBe(".fit");
     expect(store.expandRootfs).toBe(true);
+    expect(store.factoryReset).toBe(false);
     expect(store.receivedFirstStatus).toBe(false);
     expect(store.uploading).toBe(false);
     expect(store.running).toBe(false);
@@ -38,6 +39,20 @@ it("sets expandRootfs", () => {
     store.setExpandRootfs(false);
 
     expect(store.expandRootfs).toBe(false);
+
+});
+
+it("sets factoryReset", () => {
+
+        let store = new FirmwareUpdateStore();
+
+        store.setFactoryReset(true);
+
+        expect(store.factoryReset).toBe(true);
+
+        store.setFactoryReset(false);
+
+        expect(store.factoryReset).toBe(false);
 
 });
 

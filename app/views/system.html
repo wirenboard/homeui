@@ -3,6 +3,24 @@
 
 <firmware-update-widget></firmware-update-widget>
 
+<div class="panel panel-default" ng-controller="factoryResetCtrl">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <i class="glyphicon glyphicon-repeat"></i> {{'factoryreset.title' | translate}}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <ul class="notes">
+            <li>{{'factoryreset.warning1' | translate}}</li>
+            <li>{{'factoryreset.warning2' | translate}}</li>
+        </ul>
+        <a type="button" class="btn btn-success btn-lg pull-left" ng-href="fwupdate/factoryreset" ng-disabled="!btnEnabled" download>
+            <i class="glyphicon glyphicon-repeat"></i> <span>{{'factoryreset.button' | translate}}</span>
+        </a>
+
+    </div>
+</div>
+
 <div class="panel panel-default" ng-controller="BackupCtrl">
     <div class="panel-heading">
         <h3 class="panel-title">

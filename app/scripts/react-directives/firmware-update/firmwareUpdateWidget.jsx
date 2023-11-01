@@ -106,7 +106,7 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint = observer(({ checkboxHandler, showModal, expandRootFs }) => {
+const UploadEntrypoint = observer(({ expandRootFsHandler, factoryResetHandler, showModal, expandRootFs, factoryReset }) => {
   const { t } = useTranslation();
 
   return (
@@ -124,7 +124,10 @@ const UploadEntrypoint = observer(({ checkboxHandler, showModal, expandRootFs })
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
-        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} value={expandRootFs} />
+        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={expandRootFsHandler} value={expandRootFs} />
+      </div>
+      <div style={{ margin: '10px' }}>
+        <Checkbox id="id_factory_reset" label={t('system.update.factoryreset')} onChange={factoryResetHandler} value={factoryReset} />
       </div>
     </div>
   );
@@ -163,13 +166,17 @@ const UploadWidget = observer(({ store }) => {
         <UploadProgress store={store} />
       ) : (
         <UploadEntrypoint
-          checkboxHandler={e => {
+          expandRootFsHandler={e => {
             store.setExpandRootfs(e.target.checked);
+          }}
+          factoryResetHandler={e => {
+            store.setFactoryReset(e.target.checked);
           }}
           showModal={() => {
             store.modalState.show();
           }}
           expandRootFs={store.expandRootfs}
+          factoryReset={store.factoryReset}
         />
       )}
     </>

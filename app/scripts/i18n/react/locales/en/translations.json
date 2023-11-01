@@ -107,6 +107,7 @@
             "title": "Firmware update",
             "help": "Download firmware",
             "expandrootfs": "Expand rootfs, if firmware supports it",
+            "factoryreset": "During update, reset all settings to factory defaults",
             "backup_modal_title": "rootfs backup archive",
             "backup_first_page": "<p>During update only files stored in /mnt/data are saved. <strong>Third-party software like nodered or SH will be removed!</strong></p><p>Press <strong>Download backup</strong> to download a rootfs backup archive, where some useful files like third-party service configs may be stored.</p><p>This backup archive currently can't be used to restore Wiren Board state.</p>",
             "backup_second_page": "<p>Great! Now <strong>wait until file is downloaded</strong> and press <strong>Select firmware file</strong> button to begin update process.</p>"
