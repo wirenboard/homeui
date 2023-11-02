@@ -52,6 +52,8 @@
          "deactivating": "Disconnecting",
          "not-connected": "Not connected",
          "deprecated": "Deprecated",
+         "deactivating-by-cm": "Disconnecting because a higher priority connection is available",
+         "deactivated-by-cm": "Disconnected because a higher priority connection is available",
          "limited-connectivity": "No internet access",
          "new": "New connection",
          "select-type": "Select connection type",
