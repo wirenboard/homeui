@@ -197,9 +197,12 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemErrorListener(store.onUploadError);
 
   useRequestPreSend(({ items, options }) => {
-    let params = { expand_rootfs: store.expandRootfs };
+    let params = {
+      expand_rootfs: store.expandRootfs,
+      factory_reset: store.factoryReset,
+    };
     return {
-      options: { params }, //will be merged with the rest of the options
+      options: { params }, // will be merged with the rest of the options
     };
   });
 
