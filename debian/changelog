@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.15) stable; urgency=medium
+
+  * Add legacy current control type
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 03 Nov 2023 09:54:06 +0500
+
 wb-mqtt-homeui (2.75.14) stable; urgency=medium
 
   * Add wb74 config
