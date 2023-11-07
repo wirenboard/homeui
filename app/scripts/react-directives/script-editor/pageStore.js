@@ -30,6 +30,7 @@ class ScriptEditorStore {
   }
 
   setRuleText(value) {
+    this.errorLine = null;
     this.ruleText = value;
     this.pageWrapperStore.setLoading(false);
   }

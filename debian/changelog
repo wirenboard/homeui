@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.16) stable; urgency=medium
+
+  * Preserve focus after saving in rules editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 07 Nov 2023 16:55:50 +0500
+
 wb-mqtt-homeui (2.75.15) stable; urgency=medium
 
   * Add legacy current control type

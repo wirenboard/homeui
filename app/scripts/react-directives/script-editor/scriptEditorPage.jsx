@@ -30,11 +30,12 @@ const ScriptEditorPage = observer(({ store }) => {
           disabled={!store.canSave}
         />
       </PageTitle>
-      <PageBody loading={store.pageWrapperStore.loading}>
+      <PageBody loading={store.pageWrapperStore.loading} renderChildren={true}>
         <ScriptEditor
           text={store.ruleText}
           errorLine={store.errorLine}
           onChange={value => store.setRuleText(value)}
+          visible={!store.pageWrapperStore.loading}
         />
       </PageBody>
     </PageWrapper>
