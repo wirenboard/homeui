@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.16) stable; urgency=medium
+
+  * Move debug console button so it doesn't block vertical scrolling of rules editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 08 Nov 2023 09:34:56 +0500
+
 wb-mqtt-homeui (2.75.15) stable; urgency=medium
 
   * Add legacy current control type
