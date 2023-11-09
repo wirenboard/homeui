@@ -1159,3 +1159,11 @@ button.dashboard-back:active {
   right: 10px;
   bottom: 30px;
 }
+
+.form-edit-default-text
+{
+  padding: .2em .4em;
+  white-space: break-spaces;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+}
