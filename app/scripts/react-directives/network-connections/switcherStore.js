@@ -123,7 +123,7 @@ class SwitcherStore {
       new IntegerStore({
         name: i18n.t('network-connections.labels.sticky-connection-period'),
         description: i18n.t('network-connections.labels.sticky-connection-period-desc'),
-        placeholder: i18n.t('network-connections.labels.sticky-connection-period-placeholder'),
+        defaultText: i18n.t('network-connections.labels.sticky-connection-period-default-text'),
         min: 0,
       })
     );
@@ -132,7 +132,7 @@ class SwitcherStore {
       new StringStore({
         name: i18n.t('network-connections.labels.connectivity-url'),
         description: i18n.t('network-connections.labels.connectivity-url-desc'),
-        placeholder: i18n.t('network-connections.labels.connectivity-url-placeholder'),
+        defaultText: i18n.t('network-connections.labels.connectivity-url-default-text'),
         validator: value => {
           if (value !== '') {
             if (value.length < this.urlProperties.minLength) {
@@ -153,7 +153,7 @@ class SwitcherStore {
       new StringStore({
         name: i18n.t('network-connections.labels.connectivity-payload'),
         description: i18n.t('network-connections.labels.connectivity-payload-desc'),
-        placeholder: i18n.t('network-connections.labels.connectivity-payload-placeholder'),
+        defaultText: i18n.t('network-connections.labels.connectivity-payload-default-text'),
       })
     );
 
@@ -169,7 +169,7 @@ class SwitcherStore {
 
   setUrlProperties(urlProperties) {
     this.urlProperties = urlProperties;
-    this.connectivityUrl.setPlaceholder(this.urlProperties.default);
+    this.connectivityUrl.setDefaultText(this.urlProperties.default);
   }
 
   submit() {

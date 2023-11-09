@@ -4,16 +4,33 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox, LineEdit } from '../common';
 import Select from 'react-select';
 
-export const FormEdit = observer(({ name, error, hasErrors, description, children }) => {
-  return (
-    <div className={hasErrors ? 'form-group has-error' : 'form-group'}>
-      <label className="control-label">{name}</label>
-      {children}
-      {description && <p className="help-block">{description}</p>}
-      {error && <div className="help-block">{error}</div>}
-    </div>
-  );
+export const FormEditDescription = observer(({ description, defaultText }) => {
+  const { t } = useTranslation();
+  if (defaultText) {
+    return (
+      <p className="help-block">
+        {description && <>{description} </>}
+        {t('forms.default-text-prefix')}
+        <span className="form-edit-default-text">{defaultText}</span>
+        {t('forms.default-text-postfix')}
+      </p>
+    );
+  }
+  return <>{description && <p className="help-block">{description}</p>}</>;
 });
+
+export const FormEdit = observer(
+  ({ name, error, hasErrors, description, defaultText, children }) => {
+    return (
+      <div className={hasErrors ? 'form-group has-error' : 'form-group'}>
+        <label className="control-label">{name}</label>
+        {children}
+        <FormEditDescription description={description} defaultText={defaultText} />
+        {error && <div className="help-block">{error}</div>}
+      </div>
+    );
+  }
+);
 
 export const FormStringEdit = observer(({ store }) => {
   return (
@@ -22,6 +39,7 @@ export const FormStringEdit = observer(({ store }) => {
       error={store.error}
       hasErrors={store.hasErrors}
       description={store.description}
+      defaultText={store.defaultText}
     >
       <LineEdit
         value={store.value}
