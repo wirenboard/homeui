@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.16) stable; urgency=medium
+
+  * Remove bottom padding in hmi mode
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 14:58:02 +0500
+
 wb-mqtt-homeui (2.75.15) stable; urgency=medium
 
   * Add legacy current control type
