@@ -61,7 +61,7 @@
 }
 
 @media (max-width: 767px) {
-    .svg-view-page {
+    body:not(.hmi) .svg-view-page {
         padding-bottom: 5px;
     }
 }
