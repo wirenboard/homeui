@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.18) stable; urgency=medium
+
+  * Move debug console button so it doesn't block vertical scrolling of rules editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 19:44:25 +0500
+
 wb-mqtt-homeui (2.75.17) stable; urgency=medium
 
   * Change default values display in network connections settings editor
