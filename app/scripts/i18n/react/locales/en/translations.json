@@ -200,6 +200,6 @@
    },
    "forms": {
       "default-text-prefix": "If the value is not set, ",
-      "default-text-postfix": " is used"
+      "default-text-postfix": " is used."
    }
 }

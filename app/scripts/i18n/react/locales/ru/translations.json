@@ -197,6 +197,6 @@
    },
    "forms": {
       "default-text-prefix": "Если значение не указано, используется ",
-      "default-text-postfix": ""
+      "default-text-postfix": "."
    }
 }
