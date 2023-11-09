@@ -3,12 +3,13 @@
 import { makeAutoObservable } from 'mobx';
 
 export class StringStore {
-  constructor({ name, description, value, placeholder, validator }) {
+  constructor({ name, description, value, placeholder, validator, defaultText }) {
     this.type = 'string';
     this.name = name;
     this.description = description;
     this.validator = validator;
     this.placeholder = placeholder;
+    this.defaultText = defaultText;
     this.setValue(value);
 
     makeAutoObservable(this);
@@ -28,6 +29,10 @@ export class StringStore {
 
   setPlaceholder(placeholder) {
     this.placeholder = placeholder;
+  }
+
+  setDefaultText(text) {
+    this.defaultText = text;
   }
 
   get hasErrors() {
