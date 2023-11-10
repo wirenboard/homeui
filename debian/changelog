@@ -1,8 +1,26 @@
-wb-mqtt-homeui (2.75.16) stable; urgency=medium
+wb-mqtt-homeui (2.75.19) stable; urgency=medium
 
   * Preserve focus after saving in rules editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 07 Nov 2023 16:55:50 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Nov 2023 13:55:07 +0500
+
+wb-mqtt-homeui (2.75.18) stable; urgency=medium
+
+  * Move debug console button so it doesn't block vertical scrolling of rules editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 19:44:25 +0500
+
+wb-mqtt-homeui (2.75.17) stable; urgency=medium
+
+  * Change default values display in network connections settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 19:38:22 +0500
+
+wb-mqtt-homeui (2.75.16) stable; urgency=medium
+
+  * Remove bottom padding in hmi mode
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 14:58:02 +0500
 
 wb-mqtt-homeui (2.75.15) stable; urgency=medium
 
