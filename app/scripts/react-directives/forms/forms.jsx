@@ -63,7 +63,7 @@ export const FormCheckbox = observer(({ store }) => {
   );
 });
 
-export const FormSelect = observer(({ store }) => {
+export const FormSelect = observer(({ store, isClearable }) => {
   const withGroups = store.options.some(el => 'options' in el);
   const borderColor = store.hasErrors ? '#b94a48' : '#ccc';
   const customStyles = {
@@ -125,7 +125,7 @@ export const FormSelect = observer(({ store }) => {
       <Select
         options={store.options}
         isSearchable={true}
-        isClearable={true}
+        isClearable={isClearable}
         value={store.selectedOption}
         styles={customStyles}
         placeholder={store.placeholder}
