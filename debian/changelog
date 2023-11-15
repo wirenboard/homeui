@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.77.0) stable; urgency=medium
+
+  * Add minimalistic widget for Wiren Board Cloud connection status
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 23 Nov 2023 14:43:03 +0600
+
 wb-mqtt-homeui (2.76.2) stable; urgency=medium
 
   * Css: fix "History" input box overlapping
