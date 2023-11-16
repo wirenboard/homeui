@@ -466,6 +466,10 @@ const realApp = angular
         port: 18883,
       };
 
+      if (location.protocol === 'https:') {
+        demoLoginData.port = 443;
+      }
+
       if (!$window.localStorage.host || !$window.localStorage.port) {
         $window.localStorage.setItem('host', demoLoginData.host);
         $window.localStorage.setItem('port', demoLoginData.port);
