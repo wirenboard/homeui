@@ -53,7 +53,7 @@ function getNewConnectionData(type, connections) {
       type: type,
       connection_uuid: '',
       connection_id: 'gsm ' + findIndexForNewConnectionName('gsm (\\d+)', connections),
-      'close-by-priority': false,
+      'deactivate-by-priority': false,
     };
   }
   return { type: type, connection_uuid: '', connection_id: connection_id };
