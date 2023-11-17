@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.76.0) stable; urgency=medium
+
+  * Add status labels for connections deactivated by wb-connection-manager
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Nov 2023 09:54:56 +0500
+
 wb-mqtt-homeui (2.75.20) stable; urgency=medium
 
   * Fix SVG bindings parameters editor layout on medium screens
