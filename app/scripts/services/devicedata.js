@@ -181,6 +181,12 @@ function deviceDataService(mqttClient, $window) {
       readOnly: false,
       displayType: 'rgb',
     },
+    current: {
+      valueType: 'number',
+      units: 'A',
+      readOnly: true,
+      displayType: 'value',
+    },
   };
 
   function splitTopic(topic) {
@@ -356,9 +362,9 @@ function deviceDataService(mqttClient, $window) {
     receiveValue(newValue) {
       if (!newValue)
         /// ozk замена null на  '-' тут и в 342 строке
-        this._value = this._isString()
-          ? ''
-          : '-' /*null*/; // value removed, non-pushbutton/text cell becomes incomplete
+        // if value is removed, non-pushbutton/text cell becomes incomplete
+        // so replace null by '-'
+        this._value = this._isString() ? '' : '-' /*null*/;
       else this._setCellValue(newValue);
       this._updateCompleteness();
     }

@@ -62,7 +62,7 @@
          "ethernet": "Wired connection (Ethernet)",
          "modem": "GSM-modem connection",
          "canbus": "CAN bus",
-         "confirm-delete-connection": "Do you realy want to delete the connection?",
+         "confirm-delete-connection": "Do you really want to delete the connection?",
          "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
          "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>",
          "manual-connect": "Manual connect",
@@ -72,17 +72,17 @@
          "medium": "Medium priority",
          "low": "Low priority",
          "sticky-connection-period": "Deny SIM/Wi-Fi switching period in seconds",
-         "sticky-connection-period-desc": "The GSM modem can work with only one SIM card. To test connectivity, the current SIM card is disconnected and the tested one is connected. If a modem connection is successfully established with one of the SIM cards, do not switch the SIM card for testing for the specified period. This timeout also applies to Wi-Fi connections which also share a single physical wireless device",
-         "sticky-connection-period-placeholder": "900",
+         "sticky-connection-period-desc": "The GSM modem can work with only one SIM card. To test connectivity, the current SIM card is disconnected and the tested one is connected. If a modem connection is successfully established with one of the SIM cards, do not switch the SIM card for testing for the specified period. This timeout also applies to Wi-Fi connections which also share a single physical wireless device.",
+         "sticky-connection-period-default-text": "900",
          "debug": "Enable debug logging",
          "connectivity-url": "Connectivity check URL",
-         "connectivity-url-desc": "To test connectivity, the service sends an HTTP GET request to specified URL",
-         "connectivity-url-placeholder": "http://network-test.debian.org/nm",
+         "connectivity-url-desc": "To test connectivity, the service sends an HTTP GET request to specified URL.",
+         "connectivity-url-default-text": "http://network-test.debian.org/nm",
          "connectivity-url-error-length": "The minimum URL length is {{length}} characters",
          "connectivity-url-error-format": "The URL must start with 'http://' or 'https://'",
          "connectivity-payload": "Connectivity check payload",
-         "connectivity-payload-desc": "Connectivity check response content must contain specified string",
-         "connectivity-payload-placeholder": "NetworkManager is online",
+         "connectivity-payload-desc": "Connectivity check response content must contain specified string.",
+         "connectivity-payload-default-text": "NetworkManager is online",
          "switcher-desc": "The service will automatically select the highest priority internet connection and route internet traffic through it. All connections except the modem will remain active and can be used for other tasks. The manager checks internet access every 5 seconds."
       },
       "buttons": {
@@ -116,7 +116,7 @@
         "errors": {
             "unavailable": "Firmware update service is not available",
             "stalled": "Firmware update stalled, something gone wrong",
-            "reboot": "It tooks too long to reboot",
+            "reboot": "Reboot took too long",
             "unknown": "Firmware update error"
         },
         "buttons": {
@@ -199,5 +199,9 @@
    "errors": {
       "access-failed": "You cannot view this page. You can change ",
       "access-failed-link-text": "access level"
+   },
+   "forms": {
+      "default-text-prefix": "If the value is not set, ",
+      "default-text-postfix": " is used"
    }
 }

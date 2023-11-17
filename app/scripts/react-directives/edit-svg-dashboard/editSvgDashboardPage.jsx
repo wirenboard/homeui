@@ -117,8 +117,8 @@ export const SwipeParametersForm = observer(({ store }) => {
       <FormCheckbox key={store.params.enable.id} store={store.params.enable} />
       {store.params.enable.value && (
         <>
-          <FormSelect store={store.params.left} />
-          <FormSelect store={store.params.right} />
+          <FormSelect store={store.params.left} isClearable={true} />
+          <FormSelect store={store.params.right} isClearable={true} />
         </>
       )}
     </div>

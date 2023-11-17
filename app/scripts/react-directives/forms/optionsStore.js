@@ -41,6 +41,8 @@ export class OptionsStore {
     });
     if (this.strict) {
       this.hasErrors = !this.selectedOption;
+    } else {
+      this.hasErrors = false;
     }
   }
 
@@ -50,8 +52,7 @@ export class OptionsStore {
   }
 
   setSelectedOption(option) {
-    this.setValue(option ? option.value : null);
     this.selectedOption = option;
-    this.hasErrors = false;
+    this.setValue(option ? option.value : null);
   }
 }

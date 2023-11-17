@@ -4,7 +4,7 @@ import { makeAutoObservable } from 'mobx';
 import i18n from '../../i18n/react/config';
 
 export class IntegerStore {
-  constructor({ name, description, placeholder, min, max, value }) {
+  constructor({ name, description, placeholder, min, max, value, defaultText }) {
     this.type = 'integer';
     this.name = name;
     this.description = description;
@@ -12,6 +12,7 @@ export class IntegerStore {
     this.value = value || '';
     this.min = min;
     this.max = max;
+    this.defaultText = defaultText;
 
     makeAutoObservable(this);
   }

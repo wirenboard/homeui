@@ -44,8 +44,8 @@ function scriptEditorDirective(whenMqttReady, EditorProxy, rolesFactory, $locati
             return EditorProxy.Load({ path: scope.path });
           })
           .then(r => {
-            scope.store.setError(r.error);
             scope.store.setRuleText(r.content);
+            scope.store.setError(r.error);
           })
           .catch(e => {
             scope.store.setError(e);

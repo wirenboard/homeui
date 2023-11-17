@@ -25,6 +25,14 @@ export const PageTitle = ({ title, children }) => {
   );
 };
 
-export const PageBody = ({ loading, children }) => {
+export const PageBody = ({ loading, children, renderChildren }) => {
+  if (renderChildren) {
+    return (
+      <>
+        {loading && <Spinner />}
+        <>{children}</>
+      </>
+    );
+  }
   return <>{loading ? <Spinner /> : <>{children}</>}</>;
 };
