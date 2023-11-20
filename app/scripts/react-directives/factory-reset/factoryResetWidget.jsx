@@ -153,15 +153,6 @@ const FactoryResetWidget = observer(({ store }) => {
     return () => store.clearTimeouts();
   });
 
-  useRequestPreSend(({ items, options }) => {
-    let params = {
-      factory_reset: store.factoryReset,
-    };
-    return {
-      options: { params }, // will be merged with the rest of the options
-    };
-  });
-
   return (
     <>
       <DownloadBackupModal {...store.modalState} />
@@ -184,6 +175,7 @@ const CreateFactoryResetWidget = ({ store }) => (
     method="POST"
     action={{ url: store.destination }}
   >
+    <input type="hidden" name="factory_reset" value={store.factoryReset} />
     <FactoryResetWidget store={store} />
   </form>
 );
