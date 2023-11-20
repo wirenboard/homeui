@@ -135,7 +135,7 @@ const UploadWidget = observer(({ store }) => {
       ) : (
         <ResetEntrypoint
           factoryResetHandler={e => { store.setFactoryReset(e.target.checked); }}
-          showModal={() => { store.modalState.show();}}
+          showModal={() => { store.modalState.show(); SendPostRequest(store); }}
           factoryReset={store.factoryReset}
         />
       )}
@@ -168,14 +168,18 @@ const FactoryResetWidget = observer(({ store }) => {
   );
 });
 
+async function SendPostRequest({store}) {
+  const requestOptions = {
+    method: 'POST',
+    data: { factory_reset: store.factoryReset },
+  };
+  const response = await fetch(store.destination, requestOptions);
+  const data = response.statusCode;
+  alert(data);
+}
+
 const CreateFactoryResetWidget = ({ store }) => (
-  <form
-    method="POST"
-    action={{ url: store.destination }}
-  >
-    <input type="hidden" name="factory_reset" value={store.factoryReset} />
     <FactoryResetWidget store={store} />
-  </form>
 );
 
 export default CreateFactoryResetWidget;
