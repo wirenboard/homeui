@@ -76,7 +76,6 @@ import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
-import FactoryResetCtrl from "./controllers/factoryResetController";
 import DashboardSvgCtrl from './controllers/dashboardSvgController';
 import DashboardSvgEditCtrl from './controllers/dashboardSvgEditController';
 import ScriptCtrl from './controllers/scriptController';
@@ -107,6 +106,7 @@ import fullscreenToggleDirective from './directives/fullscreenToggle';
 import scanDirective from './react-directives/scan/scan';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
+import factoryResetDirective from './react-directives/factory-reset/factory-reset';
 import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
 import scriptEditorDirective from './react-directives/script-editor/script-editor';
@@ -198,7 +198,6 @@ module
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
-  .controller('FactoryResetCtrl', FactoryResetCtrl)
   .controller('NavigationCtrl', NavigationCtrl)
   .controller('DashboardSvgCtrl', DashboardSvgCtrl)
   .controller('DashboardSvgEditCtrl', DashboardSvgEditCtrl)
@@ -290,6 +289,7 @@ module
   .directive('deviceManagerPage', scanDirective)
   .directive('networkConnectionsPage', networkConnectionsDirective)
   .directive('firmwareUpdateWidget', firmwareUpdateDirective)
+  .directive('factoryResetWidget', factoryResetDirective)
   .directive('editSvgDashboardPage', editSvgDashboardDirective)
   .directive('viewSvgDashboardPage', viewSvgDashboardDirective)
   .directive('scriptEditorPage', scriptEditorDirective);
