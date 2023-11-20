@@ -1,13 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalTitle,
-} from '../components/modals/modals';
+import { Modal, ModalHeader, ModalBody, ModalFooter, ModalTitle } from '../components/modals/modals';
 import {Checkbox} from "../common";
 
 const DoneButton = ({ onDoneClick, doneLabel }) => {
@@ -101,8 +95,12 @@ const ResetEntrypoint = observer(({ factoryResetHandler, showModal, factoryReset
 
   return (
     <div>
+      <ul class="notes">
+        <li>{t('factoryreset.warning1')}</li>
+        <li>{t('factoryreset.warning2')}</li>
+      </ul>
       <button type="button" className="btn btn-lg btn-success" onClick={showModal}>
-        {t('system.buttons.select')}
+        {t('factoryreset.button')}
       </button>
       <div style={{ margin: '10px' }}>
         <Checkbox id="id_factory_reset" label={t('system.update.factoryreset')} onChange={factoryResetHandler} value={factoryReset} />
@@ -159,7 +157,7 @@ const FactoryResetWidget = observer(({ store }) => {
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
-            <i className="glyphicon glyphicon-upload"></i> {t('system.update.title')}
+            <i class="glyphicon glyphicon-repeat"></i> {t('factoryreset.title')}
           </h3>
         </div>
         <div className="panel-body">
