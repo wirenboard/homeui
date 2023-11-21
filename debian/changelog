@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.76.2) stable; urgency=medium
+
+  * Css: fix "History" input box overlapping
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 21 Nov 2023 19:21:12 +0500
+
 wb-mqtt-homeui (2.76.1) stable; urgency=medium
 
   * Fix translation
