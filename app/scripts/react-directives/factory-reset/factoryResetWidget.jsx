@@ -174,9 +174,9 @@ async function SendPostRequest(store) {
     data: { factory_reset: store.factoryReset },
   };
   const response = await fetch(store.destination, requestOptions);
-  const data = response.statusCode;
-  console.log(response);
-  alert(response.statusCode);
+  if (response.status !== 200) {
+    alert(`Error: ${response.body}`);
+  }
 }
 
 const CreateFactoryResetWidget = ({ store }) => (
