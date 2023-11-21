@@ -175,7 +175,8 @@ async function SendPostRequest(store) {
   };
   const response = await fetch(store.destination, requestOptions);
   if (response.status !== 200) {
-    alert(`Error: ${response.body}`);
+    const text = await response.text();
+    alert(`Error: ${text}`);
   }
 }
 
