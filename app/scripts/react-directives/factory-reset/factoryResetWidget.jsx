@@ -168,7 +168,9 @@ const FactoryResetWidget = observer(({ store }) => {
   );
 });
 
-async function SendPostRequest({store}) {
+async function SendPostRequest(store) {
+  console.log('factoryReset: ');
+  console.log(store);
   const requestOptions = {
     method: 'POST',
     data: { factory_reset: store.factoryReset },
