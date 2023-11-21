@@ -169,9 +169,11 @@ const FactoryResetWidget = observer(({ store }) => {
 });
 
 async function SendPostRequest(store) {
+  const form = new FormData();
+  form.append('factory_reset', store.factoryReset);
   const requestOptions = {
     method: 'POST',
-    data: { factory_reset: store.factoryReset },
+    body: form,
   };
   const response = await fetch(store.destination, requestOptions);
   if (response.status !== 200) {
