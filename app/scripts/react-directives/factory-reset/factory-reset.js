@@ -9,6 +9,7 @@ function factoryResetDirective(mqttClient, whenMqttReady) {
 
   return {
     restrict: 'E',
+    scope: {},
     link: function (scope, element) {
       if (scope.root) {
         scope.root.unmount();
