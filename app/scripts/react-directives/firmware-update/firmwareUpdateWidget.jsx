@@ -127,7 +127,7 @@ const UploadEntrypoint = observer(({ expandRootFsHandler, factoryResetHandler, s
         <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={expandRootFsHandler} value={expandRootFs} />
       </div>
       <div style={{ margin: '10px' }}>
-        <Checkbox id="id_factory_reset" label={t('system.update.factoryreset')} onChange={factoryResetHandler} value={factoryReset} />
+        <Checkbox id="id_fu_factory_reset" label={t('system.update.factoryreset')} onChange={factoryResetHandler} value={factoryReset} />
       </div>
     </div>
   );

@@ -123,7 +123,7 @@ const ResetEntrypoint = observer(({ factoryResetHandler, showModal, factoryReset
         {t('system.buttons.perform_factory_reset')}
       </button>
       <div style={{ margin: '10px' }}>
-        <Checkbox id="id_factory_reset" label={t('system.update.factoryreset')} onChange={factoryResetHandler} value={factoryReset} />
+        <Checkbox id="id_fr_factory_reset" label={t('system.update.factoryreset')} onChange={factoryResetHandler} value={factoryReset} />
       </div>
     </div>
   );
