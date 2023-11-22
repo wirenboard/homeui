@@ -54,9 +54,9 @@ async function SubmitRequest(store) {
   }
 }
 
-const UploadButton = ({ label, style, onClick }) => {
+const UploadButton = ({ label, style, onClick, store }) => {
   const onClickInternal = () => {
-    SubmitRequest();
+    SubmitRequest(store);
     if (onClick) onClick();
   };
   const { t } = useTranslation();
@@ -72,7 +72,7 @@ const BackupDownloadModalPage = () => {
   return <Trans i18nKey="system.update.backup_first_page" />;
 };
 
-const BackupDownloadButtons = ({ onDownloadClick, hide }) => {
+const BackupDownloadButtons = ({ onDownloadClick, hide, store }) => {
   const { t } = useTranslation();
 
   return (
@@ -80,18 +80,18 @@ const BackupDownloadButtons = ({ onDownloadClick, hide }) => {
       <button type="button" className="btn btn-success" onClick={onDownloadClick}>
         {t('system.buttons.download_backup')}
       </button>
-      <UploadButton label="system.buttons.select_anyway" style="default" onClick={hide} />
+      <UploadButton label="system.buttons.select_anyway" style="default" onClick={hide} store={store} />
     </>
   );
 };
 
 const AfterDownloadModalPage = () => <Trans i18nKey="system.update.backup_second_page" />;
 
-const AfterDownloadModalButtons = ({ hide }) => (
-  <UploadButton label="system.buttons.select" style="success" onClick={hide} />
+const AfterDownloadModalButtons = ({ hide, store }) => (
+  <UploadButton label="system.buttons.select" style="success" onClick={hide} store={store} />
 );
 
-const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick }) => {
+const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick, store }) => {
   const { t } = useTranslation();
 
   return (
@@ -104,9 +104,9 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
       </ModalBody>
       <ModalFooter>
         {isFirstPage ? (
-          <BackupDownloadButtons onDownloadClick={onDownloadClick} hide={onCancel} />
+          <BackupDownloadButtons onDownloadClick={onDownloadClick} hide={onCancel} store={store} />
         ) : (
-          <AfterDownloadModalButtons hide={onCancel} />
+          <AfterDownloadModalButtons hide={onCancel} store={store} />
         )}
       </ModalFooter>
     </Modal>
@@ -184,7 +184,7 @@ const FactoryResetWidget = observer(({ store }) => {
 
   return (
     <>
-      <DownloadBackupModal {...store.modalState} />
+      <DownloadBackupModal {...store.modalState} store={store} />
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
