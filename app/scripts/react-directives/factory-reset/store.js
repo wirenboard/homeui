@@ -7,6 +7,7 @@ class FactoryResetStore {
     this.factoryReset = false;
 
     this.receivedFirstStatus = false;
+    this.is_active = false;
     this.uploading = false;
     this.running = false;
     this.progressPercents = 0;
@@ -55,6 +56,7 @@ class FactoryResetStore {
   }
 
   onDoneClick() {
+    this.is_active = false;
     this.isDone = false;
     this.running = false;
     this.uploading = false;
@@ -95,10 +97,11 @@ class FactoryResetStore {
   }
 
   get inProgress() {
-    return this.running || this.uploading;
+    return this.is_active && (this.running || this.uploading);
   }
 
   onUploadStart() {
+    this.is_active = true;
     this.clearLog();
     this.uploading = true;
     this.showState('info', 'system.states.uploading');
