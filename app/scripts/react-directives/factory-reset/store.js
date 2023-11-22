@@ -7,6 +7,9 @@ class FactoryResetStore {
     this.factoryReset = false;
 
     this.receivedFirstStatus = false;
+    this.uploading = false;
+    this.running = false;
+    this.progressPercents = 0;
     this.logRows = [];
     this.stateType = '';
     this.stateMsg = '';
@@ -34,6 +37,9 @@ class FactoryResetStore {
   }
 
   showState(type, msg) {
+    if (this.progressPercents === 0) {
+      this.progressPercents = 100;
+    }
     this.stateType = type;
     this.stateMsg = msg;
   }
@@ -50,11 +56,14 @@ class FactoryResetStore {
 
   onDoneClick() {
     this.isDone = false;
+    this.running = false;
+    this.uploading = false;
     this.logRows = [];
     this.error = null;
   }
 
   setTimeout(seconds, msg) {
+    this.running = true;
     if (this._timer) {
       clearTimeout(this._timer);
       this._timer = null;
@@ -79,6 +88,44 @@ class FactoryResetStore {
       clearTimeout(this._timer);
       this._timer = null;
     }
+  }
+
+  get canUpload() {
+    return this.receivedFirstStatus && !this.running && !this.uploading;
+  }
+
+  get inProgress() {
+    return this.running || this.uploading;
+  }
+
+  onUploadStart() {
+    this.clearLog();
+    this.uploading = true;
+    this.showState('info', 'system.states.uploading');
+    this.progressPercents = 0;
+  }
+
+  onUploadProgress(event) {
+    this.progressPercents = event.completed;
+  }
+
+  onUploadFinish() {
+    this.uploading = false;
+    this.running = true;
+    this.setProgressTimeout();
+    if (!this._mqttStatusIsSet) {
+      this.showState('info', 'system.states.uploaded');
+    }
+  }
+
+  onUploadError(event) {
+    var message = event.uploadResponse.data;
+    this.addLogRow('Upload error: ' + message);
+    console.error('Upload error: ', message);
+    if (!this._mqttStatusIsSet) {
+      this.showState('danger', 'system.states.upload_error');
+    }
+    this.showDoneButton();
   }
 
   /*
