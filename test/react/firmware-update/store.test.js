@@ -12,6 +12,7 @@ it("initializes store", () => {
     expect(store.expandRootfs).toBe(true);
     expect(store.factoryReset).toBe(false);
     expect(store.receivedFirstStatus).toBe(false);
+    expect(store.is_active).toBe(false);
     expect(store.uploading).toBe(false);
     expect(store.running).toBe(false);
     expect(store.progressPercents).toBe(0);
@@ -122,6 +123,7 @@ it("shows done button", () => {
 it("handles done click", () => {
 
     let store = new FirmwareUpdateStore();
+    store.is_active = true;
     store.isDone = true;
     store.running = true;
     store.uploading = true;
@@ -129,6 +131,7 @@ it("handles done click", () => {
 
     store.onDoneClick();
 
+    expect(store.is_active).toBe(false);
     expect(store.isDone).toBe(false);
     expect(store.running).toBe(false);
     expect(store.uploading).toBe(false);
@@ -261,25 +264,48 @@ it('sets canUpload', () => {
 it('sets inProgress', () => {
 
     const store = new FirmwareUpdateStore();
+
+    store.is_active = false;
     store.uploading = false;
     store.running = false;
 
     expect(store.inProgress).toBe(false);
 
+    store.is_active = true;
     store.uploading = true;
     store.running = false;
 
     expect(store.inProgress).toBe(true);
 
+    store.is_active = true;
     store.uploading = false;
     store.running = true;
 
     expect(store.inProgress).toBe(true);
 
+    store.is_active = true;
     store.uploading = true;
     store.running = true;
 
     expect(store.inProgress).toBe(true);
+
+    store.is_active = false;
+    store.uploading = true;
+    store.running = false;
+
+    expect(store.inProgress).toBe(false);
+
+    store.is_active = false;
+    store.uploading = false;
+    store.running = true;
+
+    expect(store.inProgress).toBe(false);
+
+    store.is_active = false;
+    store.uploading = true;
+    store.running = true;
+
+    expect(store.inProgress).toBe(false);
 
 });
 
