@@ -120,7 +120,7 @@ const ResetEntrypoint = observer(({ factoryResetHandler, showModal, factoryReset
   return (
     <div>
       <button type="button" className="btn btn-lg btn-success" onClick={showModal}>
-        {t('system.buttons.select')}
+        {t('system.buttons.perform_factory_reset')}
       </button>
       <div style={{ margin: '10px' }}>
         <Checkbox id="id_factory_reset" label={t('system.update.factoryreset')} onChange={factoryResetHandler} value={factoryReset} />
@@ -189,7 +189,7 @@ const FactoryResetWidget = observer(({ store }) => {
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
-            <i className="glyphicon glyphicon-upload"></i> {t('system.update.title')}
+            <i className="glyphicon glyphicon-upload"></i> {t('system.factory_reset.title')}
           </h3>
         </div>
         <div className="panel-body">

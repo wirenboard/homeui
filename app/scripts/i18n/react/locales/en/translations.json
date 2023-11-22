@@ -103,6 +103,9 @@
       }
    },
    "system": {
+        "factory_reset": {
+            "title": "Factory reset"
+        },
         "update": {
             "title": "Firmware update",
             "help": "Download firmware",
@@ -119,6 +122,7 @@
             "unknown": "Firmware update error"
         },
         "buttons": {
+            "perform_factory_reset": "Perform factory reset",
             "select": "Select firmware file",
             "dismiss": "Dismiss",
             "hide": "Hide",
