@@ -48,7 +48,8 @@ async function SubmitRequest(store) {
   };
   const response = await fetch(store.destination, requestOptions);
   if (response.status !== 200) {
-    store.onUploadError({ uploadResponse: { data: response.text() } });
+    const text = await response.text();
+    store.onUploadError({ uploadResponse: { data: text } });
   } else {
     store.onUploadFinish();
   }
