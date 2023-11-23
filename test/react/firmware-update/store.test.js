@@ -7,7 +7,9 @@ it("initializes store", () => {
 
     let store = new FirmwareUpdateStore();
 
-    expect(store.destination).toBe("/fwupdate/upload");
+    expect(store.upload_destination).toBe("/fwupdate/upload");
+    expect(store.reset_destination).toBe("/fwupdate/factoryreset");
+    expect(store.reset_mode).toBe(false);
     expect(store.accept).toBe(".fit");
     expect(store.expandRootfs).toBe(true);
     expect(store.factoryReset).toBe(false);
@@ -27,6 +29,9 @@ it("initializes store", () => {
     expect(store.modalState).toBeDefined();
     expect(store.modalState.id).toBe("downloadBackupModal");
 
+    store = new FirmwareUpdateStore(true);
+    expect(store.reset_mode).toBe(true);
+
 });
 
 it("sets expandRootfs", () => {
@@ -40,20 +45,6 @@ it("sets expandRootfs", () => {
     store.setExpandRootfs(false);
 
     expect(store.expandRootfs).toBe(false);
-
-});
-
-it("sets factoryReset", () => {
-
-        let store = new FirmwareUpdateStore();
-
-        store.setFactoryReset(true);
-
-        expect(store.factoryReset).toBe(true);
-
-        store.setFactoryReset(false);
-
-        expect(store.factoryReset).toBe(false);
 
 });
 

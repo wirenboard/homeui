@@ -2,8 +2,10 @@ import { makeAutoObservable } from 'mobx';
 import DownloadBackupModalState from './modal';
 
 class FirmwareUpdateStore {
-  constructor() {
-    this.destination = '/fwupdate/upload';
+  constructor(resetMode = false) {
+    this.upload_destination = '/fwupdate/upload';
+    this.reset_destination = '/fwupdate/factoryreset';
+    this.reset_mode = resetMode;
     this.accept = '.fit';
     this.expandRootfs = true;
     this.factoryReset = false;
@@ -29,10 +31,6 @@ class FirmwareUpdateStore {
 
   setExpandRootfs(value) {
     this.expandRootfs = value;
-  }
-
-  setFactoryReset(value) {
-    this.factoryReset = value;
   }
 
   addLogRow(row) {
