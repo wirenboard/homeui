@@ -141,11 +141,12 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
   const { t } = useTranslation();
 
   return (
-   <div>
+    <div>
       <div>
         <ul className="notes">
           <li>
-            warnings go here
+            <li>{t('system.factoryreset.warning1')}</li>
+            <li>{t('system.factoryreset.warning2')}</li>
           </li>
         </ul>
       </div>
@@ -154,7 +155,7 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
       </button>
       &nbsp;
       <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
-        {t('system.buttons.reset')}
+        {t('system.factoryreset.button')}
       </button>
     </div>
   );
@@ -278,7 +279,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
           <h3 className="panel-title">
             {store.reset_mode ? (
               <span>
-                <i className="glyphicon glyphicon-repeat"></i> {t('system.reset.title')}
+                <i className="glyphicon glyphicon-repeat"></i> {t('system.factoryreset.title')}
               </span>
             ) : (
               <span>

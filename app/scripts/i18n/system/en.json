@@ -27,8 +27,8 @@
     },
     "factoryreset": {
         "title": "Reset to factory settings",
-        "warning1": "All your settings and data will be lost",
-        "warning2": "All software will be reverted to factory versions",
+        "warning1": "You can perform update with FIT file with settings reset (use Select firmware file button)",
+        "warning2": "Or you can do full factory reset (use Perform factory reset button)",
         "button": "Perform factory reset"
     }
 }
