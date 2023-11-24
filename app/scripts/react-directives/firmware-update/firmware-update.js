@@ -10,10 +10,12 @@ function firmwareUpdateDirective(mqttClient, whenMqttReady) {
   return {
     restrict: 'E',
     scope: {
-      id: '=',
+      id: '&',
+      id2: '@',
     },
     link: function (scope, element) {
       console.log('firmwareUpdateDirective id: ', scope.id);
+      console.log('firmwareUpdateDirective id2: ', scope.id2);
       if (scope.root) {
         scope.root.unmount();
       }
