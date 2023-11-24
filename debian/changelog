@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.76.3) stable; urgency=medium
+wb-mqtt-homeui (2.77.1) stable; urgency=medium
 
   * Fix focus jumping when editing new rule
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Nov 2023 12:41:21 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Nov 2023 14:28:38 +0500
+
+wb-mqtt-homeui (2.77.0) stable; urgency=medium
+
+  * Add minimalistic widget for Wiren Board Cloud connection status
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 23 Nov 2023 14:43:03 +0600
 
 wb-mqtt-homeui (2.76.2) stable; urgency=medium
 
