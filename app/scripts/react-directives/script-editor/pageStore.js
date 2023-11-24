@@ -11,8 +11,12 @@ class ScriptEditorStore {
     this.accessLevelStore.setRole(rolesFactory.ROLE_THREE);
     this.ruleText = '';
     this.errorLine = null;
+    this.focusElement = null;
     this.saveFn = saveFn;
     this.isNew = !fileName;
+    if (this.isNew) {
+      this.focusElement = 'title';
+    }
     this.setFileName(fileName);
     if (this.isNew) {
       this.pageWrapperStore.setLoading(false);
@@ -59,14 +63,25 @@ class ScriptEditorStore {
     this.isNew = false;
   }
 
+  setFocusElement(element) {
+    this.focusElement = element;
+  }
+
   async save() {
     this.pageWrapperStore.setLoading(true);
     try {
       await this.saveFn(this.pageWrapperStore.title, this.ruleText);
       this.setError(null);
       this.setNotNew();
+      this.setFocusElement('editor');
     } catch (e) {
       this.setError(e);
+      if (this.isNew && e.code == 1008) {
+        // wrong file name
+        this.setFocusElement('title');
+      } else {
+        this.setFocusElement('editor');
+      }
     }
     this.pageWrapperStore.setLoading(false);
   }
