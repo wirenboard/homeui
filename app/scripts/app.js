@@ -105,6 +105,7 @@ import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import scanDirective from './react-directives/scan/scan';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
+import cloudStatusDirective from './react-directives/cloud-status/cloud-status';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
 import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
@@ -288,6 +289,7 @@ module
   .directive('deviceManagerPage', scanDirective)
   .directive('networkConnectionsPage', networkConnectionsDirective)
   .directive('firmwareUpdateWidget', firmwareUpdateDirective)
+  .directive('cloudStatusWidget', cloudStatusDirective)
   .directive('editSvgDashboardPage', editSvgDashboardDirective)
   .directive('viewSvgDashboardPage', viewSvgDashboardDirective)
   .directive('scriptEditorPage', scriptEditorDirective);
@@ -463,6 +465,10 @@ const realApp = angular
         host: $window.location.hostname,
         port: 18883,
       };
+
+      if (location.protocol === 'https:') {
+        demoLoginData.port = 443;
+      }
 
       if (!$window.localStorage.host || !$window.localStorage.port) {
         $window.localStorage.setItem('host', demoLoginData.host);
