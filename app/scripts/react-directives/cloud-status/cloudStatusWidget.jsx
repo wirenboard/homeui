@@ -1,14 +1,17 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
-const ActivationLink = observer(({ store }) => (
-  <div className="alert alert-info">
-    <Trans i18nKey="system.cloud-status.activation-link-preamble" />
-    {' '}
-    <a href={store.activationLink} className="alert-link" target="_blank" rel="noreferrer"><Trans i18nKey="system.cloud-status.activation-link" /></a>
-  </div>
-));
+const ActivationLink = observer(({ store }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="alert alert-info">
+      { t('system.cloud-status.activation-link-preamble') }
+      {' '}
+      <a href={store.activationLink} className="alert-link" target="_blank" rel="noreferrer">{ t('system.cloud-status.activation-link') }</a>
+    </div>
+  );
+});
 
 const CloudStatus = observer(({ store }) => {
   const { t } = useTranslation();
@@ -60,13 +63,12 @@ const CloudStatusWidget = observer(({ store }) => {
         </h3>
       </div>
       <div className="panel-body">
-        { store.activationLink != null ? <ActivationLink store={store} /> : null }
         { store.activationLink == null ? (
           <>
             <CloudStatus store={store} />
             <CloudLink />
           </>
-        ) : null }
+        ) : <ActivationLink store={store} /> }
       </div>
     </div>
   );
