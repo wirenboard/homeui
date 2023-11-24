@@ -2,21 +2,21 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 
-const ActivationLink = observer(({ store }) => {
+const ActivationLink = observer(({ link }) => {
   const { t } = useTranslation();
   return (
     <div className="alert alert-info">
       { t('system.cloud-status.activation-link-preamble') }
       {' '}
-      <a href={store.activationLink} className="alert-link" target="_blank" rel="noreferrer">{ t('system.cloud-status.activation-link') }</a>
+      <a href={link} className="alert-link" target="_blank" rel="noreferrer">{ t('system.cloud-status.activation-link') }</a>
     </div>
   );
 });
 
-const CloudStatus = observer(({ store }) => {
+const CloudStatus = observer(({ status }) => {
   const { t } = useTranslation();
 
-  if (store.status == 'ok') {
+  if (status == 'ok') {
     return (
       <div className="alert alert-success">
         <i className="glyphicon glyphicon-ok" />
@@ -29,7 +29,7 @@ const CloudStatus = observer(({ store }) => {
     <div className="alert alert-danger">
       <i className="glyphicon glyphicon-remove" />
       {' '}
-      {t('system.cloud-status.status-error') + store.status}
+      {t('system.cloud-status.status-error') + status}
     </div>
   );
 });
@@ -65,10 +65,10 @@ const CloudStatusWidget = observer(({ store }) => {
       <div className="panel-body">
         { store.activationLink == null ? (
           <>
-            <CloudStatus store={store} />
+            <CloudStatus status={store.status} />
             <CloudLink />
           </>
-        ) : <ActivationLink store={store} /> }
+        ) : <ActivationLink link={store.activationLink} /> }
       </div>
     </div>
   );
