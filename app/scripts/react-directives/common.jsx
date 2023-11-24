@@ -80,9 +80,10 @@ export const Checkbox = ({ label, id, value, onChange }) => {
   );
 };
 
-export const LineEdit = ({ placeholder, value, onChange }) => {
+export const LineEdit = React.forwardRef(({ placeholder, value, onChange }, ref) => {
   return (
     <input
+      ref={ref}
       className="form-control"
       type="text"
       placeholder={placeholder}
@@ -90,7 +91,7 @@ export const LineEdit = ({ placeholder, value, onChange }) => {
       onChange={onChange}
     />
   );
-};
+});
 
 export const Radio = ({ label, id, value, onChange }) => {
   return (

@@ -46,9 +46,11 @@ function scriptEditorDirective(whenMqttReady, EditorProxy, rolesFactory, $locati
           .then(r => {
             scope.store.setRuleText(r.content);
             scope.store.setError(r.error);
+            scope.store.setFocusElement('editor');
           })
           .catch(e => {
             scope.store.setError(e);
+            scope.store.setFocusElement('editor');
           });
       }
 
