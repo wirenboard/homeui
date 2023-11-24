@@ -18,6 +18,23 @@ import {
 } from '../components/modals/modals';
 import {Checkbox} from "../common";
 
+async function SubmitRequest(store) {
+  store.onUploadStart();
+  const form = new FormData();
+  form.append('factory_reset', 'true');
+  const requestOptions = {
+    method: 'POST',
+    body: form,
+  };
+  const response = await fetch(store.reset_destination, requestOptions);
+  if (response.status !== 200) {
+    const text = await response.text();
+    store.onUploadError({ uploadResponse: { data: text } });
+  } else {
+    store.onUploadFinish();
+  }
+}
+
 const DoneButton = ({ onDoneClick, doneLabel }) => {
   const { t } = useTranslation();
 
@@ -43,6 +60,20 @@ const FirmwareUpdateLog = ({ logRows }) => {
         <div ref={bottomRef} />
       </pre>
     </>
+  );
+};
+
+const ResetButton = ({ label, style, onClick, store }) => {
+  const onClickInternal = () => {
+    SubmitRequest(store);
+    if (onClick) onClick();
+  };
+  const { t } = useTranslation();
+
+  return (
+    <button type="file" className={'btn btn-' + style} onClick={onClickInternal}>
+      {t(label)}
+    </button>
   );
 };
 
@@ -106,7 +137,30 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint = observer(({ expandRootFsHandler, factoryResetHandler, showModal, expandRootFs, factoryReset }) => {
+const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
+  const { t } = useTranslation();
+
+  return (
+   <div>
+      <div>
+        <ul className="notes">
+          <li>
+            warnings go here
+          </li>
+        </ul>
+      </div>
+      <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
+        {t('system.buttons.select')}
+      </button>
+      &nbsp;
+      <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
+        {t('system.buttons.reset')}
+      </button>
+    </div>
+  );
+});
+
+const UploadEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootFs }) => {
   const { t } = useTranslation();
 
   return (
@@ -165,19 +219,31 @@ const UploadWidget = observer(({ store }) => {
       {store.inProgress ? (
         <UploadProgress store={store} />
       ) : (
-        <UploadEntrypoint
-          expandRootFsHandler={e => {
-            store.setExpandRootfs(e.target.checked);
-          }}
-          factoryResetHandler={e => {
-            store.setFactoryReset(e.target.checked);
-          }}
-          showModal={() => {
-            store.modalState.show();
-          }}
-          expandRootFs={store.expandRootfs}
-          factoryReset={store.factoryReset}
-        />
+        <>
+          {store.reset_mode ? (
+            <div>
+              <ResetEntrypoint
+                onUploadClick={() => {
+                  store.modalState.show();
+                }}
+                onResetClick={() => {
+                  store.modalState.show();
+                }}
+              />
+            </div>
+          ) : (
+            <UploadEntrypoint
+              expandRootFsHandler={e => {
+                store.setExpandRootfs(e.target.checked);
+              }}
+              showModal={() => {
+                store.modalState.show();
+              }}
+              expandRootFs={store.expandRootfs}
+            />
+          )}
+        </>
+
       )}
     </>
   );
@@ -197,12 +263,13 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemErrorListener(store.onUploadError);
 
   useRequestPreSend(({ items, options }) => {
-    let params = {
-      expand_rootfs: store.expandRootfs,
-      factory_reset: store.factoryReset,
-    };
+    if (store.reset_mode) {
+      return {
+        options: { factory_reset: true }, // will be merged with the rest of the options
+      };
+    }
     return {
-      options: { params }, // will be merged with the rest of the options
+      options: { expand_rootfs: store.expandRootfs }, // will be merged with the rest of the options
     };
   });
 
@@ -212,7 +279,15 @@ const FirmwareUpdateWidget = observer(({ store }) => {
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
-            <i className="glyphicon glyphicon-upload"></i> {t('system.update.title')}
+            {store.reset_mode ? (
+              <span>
+                <i className="glyphicon glyphicon-repeat"></i> {t('system.reset.title')}
+              </span>
+            ) : (
+              <span>
+                <i className="glyphicon glyphicon-upload"></i> {t('system.update.title')}
+              </span>
+            )}
           </h3>
         </div>
         <div className="panel-body">
@@ -224,21 +299,15 @@ const FirmwareUpdateWidget = observer(({ store }) => {
 });
 
 const CreateFirmwareUpdateWidget = ({ store }) => (
-  <>
-    {store.reset_mode ? (
-      <div>reset</div>
-    ) : (
-      <Uploady
-        autoUpload
-        accept={store.accept}
-        multiple={false}
-        method="POST"
-        destination={{ url: store.upload_destination }}
-      >
-        <FirmwareUpdateWidget store={store} />
-      </Uploady>
-    )}
-  </>
+  <Uploady
+    autoUpload
+    accept={store.accept}
+    multiple={false}
+    method="POST"
+    destination={{ url: store.upload_destination }}
+  >
+    <FirmwareUpdateWidget store={store} />
+  </Uploady>
 );
 
 export default CreateFirmwareUpdateWidget;

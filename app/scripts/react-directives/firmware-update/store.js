@@ -8,7 +8,6 @@ class FirmwareUpdateStore {
     this.reset_mode = resetMode;
     this.accept = '.fit';
     this.expandRootfs = true;
-    this.factoryReset = false;
 
     this.receivedFirstStatus = false;
     this.is_active = false;
@@ -24,7 +23,7 @@ class FirmwareUpdateStore {
     this._mqttStatusIsSet = false;
     this._timer = null;
 
-    this.modalState = new DownloadBackupModalState();
+    this.modalState = new DownloadBackupModalState(this.reset_mode ? 'factoryResetModal' : 'downloadBackupModal', this.reset_mode);
 
     makeAutoObservable(this, {}, { autoBind: true });
   }

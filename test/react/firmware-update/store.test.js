@@ -3,7 +3,7 @@ import React from 'react';
 import FirmwareUpdateStore from '../../../app/scripts/react-directives/firmware-update/store';
 
 
-it("initializes store", () => {
+it("initializes upload store", () => {
 
     let store = new FirmwareUpdateStore();
 
@@ -12,7 +12,6 @@ it("initializes store", () => {
     expect(store.reset_mode).toBe(false);
     expect(store.accept).toBe(".fit");
     expect(store.expandRootfs).toBe(true);
-    expect(store.factoryReset).toBe(false);
     expect(store.receivedFirstStatus).toBe(false);
     expect(store.is_active).toBe(false);
     expect(store.uploading).toBe(false);
@@ -29,8 +28,32 @@ it("initializes store", () => {
     expect(store.modalState).toBeDefined();
     expect(store.modalState.id).toBe("downloadBackupModal");
 
-    store = new FirmwareUpdateStore(true);
+});
+
+it("initializes reset store", () => {
+
+    let store = new FirmwareUpdateStore(true);
+
+    expect(store.upload_destination).toBe("/fwupdate/upload");
+    expect(store.reset_destination).toBe("/fwupdate/factoryreset");
     expect(store.reset_mode).toBe(true);
+    expect(store.accept).toBe(".fit");
+    expect(store.expandRootfs).toBe(true);
+    expect(store.receivedFirstStatus).toBe(false);
+    expect(store.is_active).toBe(false);
+    expect(store.uploading).toBe(false);
+    expect(store.running).toBe(false);
+    expect(store.progressPercents).toBe(0);
+    expect(store.logRows).toEqual([]);
+    expect(store.stateType).toBe("");
+    expect(store.stateMsg).toBe("");
+    expect(store.doneLabel).toBe("");
+    expect(store.isDone).toBe(false);
+    expect(store.error).toBe(null);
+    expect(store._mqttStatusIsSet).toBe(false);
+    expect(store._timer).toBe(null);
+    expect(store.modalState).toBeDefined();
+    expect(store.modalState.id).toBe("factoryResetModal");
 
 });
 

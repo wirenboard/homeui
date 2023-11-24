@@ -6,9 +6,11 @@ class DownloadBackupModalState {
   isFirstPage = true;
   onCancel = undefined;
   onDownloadClick = undefined;
+  resetMode = false;
 
-  constructor(id) {
+  constructor(id, resetMode = false) {
     this.id = id ? id : this.id;
+    this.resetMode = resetMode;
     makeAutoObservable(this);
   }
 
