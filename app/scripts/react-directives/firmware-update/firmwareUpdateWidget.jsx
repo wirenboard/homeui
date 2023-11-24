@@ -224,15 +224,21 @@ const FirmwareUpdateWidget = observer(({ store }) => {
 });
 
 const CreateFirmwareUpdateWidget = ({ store }) => (
-  <Uploady
-    autoUpload
-    accept={store.accept}
-    multiple={false}
-    method="POST"
-    destination={{ url: store.destination }}
-  >
-    <FirmwareUpdateWidget store={store} />
-  </Uploady>
+  <>
+    {store.reset_mode ? (
+      <div>reset</div>
+    ) : (
+      <Uploady
+        autoUpload
+        accept={store.accept}
+        multiple={false}
+        method="POST"
+        destination={{ url: store.upload_destination }}
+      >
+        <FirmwareUpdateWidget store={store} />
+      </Uploady>
+    )}
+  </>
 );
 
 export default CreateFirmwareUpdateWidget;

@@ -10,17 +10,14 @@ function firmwareUpdateDirective(mqttClient, whenMqttReady) {
   return {
     restrict: 'E',
     scope: {
-      id: '&',
-      id2: '@',
+      id: '@',
     },
     link: function (scope, element) {
-      console.log('firmwareUpdateDirective id: ', scope.id);
-      console.log('firmwareUpdateDirective id2: ', scope.id2);
       if (scope.root) {
         scope.root.unmount();
       }
 
-      scope.store = new FirmwareUpdateStore();
+      scope.store = new FirmwareUpdateStore(scope.id === 'reset');
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(CreateFirmwareUpdateWidget({ store: scope.store }));
 
