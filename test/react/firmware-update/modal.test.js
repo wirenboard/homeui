@@ -16,7 +16,7 @@ it('initializes without id', () => {
     expect(modalState.id).toBe('downloadBackupModal');
     expect(modalState.active).toBe(false);
     expect(modalState.isFirstPage).toBe(true);
-    expect(modalState.resetMode).toBe(false);
+    expect(modalState.mode).toBe(undefined);
     expect(modalState.onCancel).toBe(undefined);
     expect(modalState.onDownloadClick).toBe(undefined);
     expect(spyMakeAutoObservable).toHaveBeenCalledWith(modalState);
@@ -26,11 +26,10 @@ it('initializes without id', () => {
 it('initializes with id', () => {
 
         const spyMakeAutoObservable = jest.spyOn(mobx, 'makeAutoObservable');
-        const modalState = new DownloadBackupModalState('test', true);
+        const modalState = new DownloadBackupModalState('test');
 
         expect(modalState.id).toBe('test');
         expect(modalState.active).toBe(false);
-        expect(modalState.resetMode).toBe(true);
         expect(modalState.isFirstPage).toBe(true);
         expect(modalState.onCancel).toBe(undefined);
         expect(modalState.onDownloadClick).toBe(undefined);
@@ -65,12 +64,13 @@ it('shows modal', async () => {
     const modalState = new DownloadBackupModalState();
     const spyDownload = jest.spyOn(modalState, 'download');
 
-    modalState.show();
+    modalState.show('testvalue');
 
     expect(modalState.onCancel).not.toBe(undefined);
     expect(modalState.onDownloadClick).not.toBe(undefined);
     expect(modalState.isFirstPage).toBe(true);
     expect(modalState.active).toBe(true);
+    expect(modalState.mode).toBe('testvalue');
 
     modalState.onCancel();
 

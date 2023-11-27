@@ -32,7 +32,7 @@ class DownloadBackupModalState {
     document.body.removeChild(link);
   }
 
-  show(mode: string) {
+  show(mode) {
     this.mode = mode;
     this.onCancel = () => {
       this.active = false;
