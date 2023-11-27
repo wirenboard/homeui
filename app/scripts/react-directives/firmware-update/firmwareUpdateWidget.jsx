@@ -16,7 +16,8 @@ import {
   ModalFooter,
   ModalTitle,
 } from '../components/modals/modals';
-import {Checkbox} from "../common";
+import {Checkbox} from '../common';
+import {MODAL_MODE_UPDATE, MODAL_MODE_UPDATE_RESET, MODAL_MODE_FACTORY_RESET} from './modal';
 
 async function SubmitRequest(store) {
   store.onUploadStart();
@@ -115,12 +116,13 @@ const AfterDownloadModalButtons = ({ hide }) => (
   <UploadButton label="system.buttons.select" style="success" onClick={hide} />
 );
 
-const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick }) => {
+const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick, mode }) => {
   const { t } = useTranslation();
 
   return (
     <Modal id={id} active={active} onCancel={onCancel}>
       <ModalHeader>
+        <div>{mode}</div>
         <ModalTitle id={id} text={t('system.update.backup_modal_title')}></ModalTitle>
       </ModalHeader>
       <ModalBody>
@@ -161,7 +163,7 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
   );
 });
 
-const UploadEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootFs }) => {
+const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootFs }) => {
   const { t } = useTranslation();
 
   return (
@@ -222,20 +224,20 @@ const UploadWidget = observer(({ store }) => {
             <div>
               <ResetEntrypoint
                 onUploadClick={() => {
-                  store.modalState.show();
+                  store.modalState.show(MODAL_MODE_UPDATE_RESET);
                 }}
                 onResetClick={() => {
-                  store.modalState.show();
+                  store.modalState.show(MODAL_MODE_FACTORY_RESET);
                 }}
               />
             </div>
           ) : (
-            <UploadEntrypoint
+            <UpdateEntrypoint
               expandRootFsHandler={e => {
                 store.setExpandRootfs(e.target.checked);
               }}
               showModal={() => {
-                store.modalState.show();
+                store.modalState.show(MODAL_MODE_UPDATE);
               }}
               expandRootFs={store.expandRootfs}
             />

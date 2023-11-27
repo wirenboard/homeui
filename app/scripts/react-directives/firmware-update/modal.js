@@ -1,10 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 
-export enum Modes {
-    Update,
-    FactoryReset,
-    ResetUpdate
-}
+const MODAL_MODE_UPDATE = 'update';
+const MODAL_MODE_UPDATE_RESET = 'update_reset';
+const MODAL_MODE_FACTORY_RESET = 'factory_reset';
+
 
 class DownloadBackupModalState {
   id = 'downloadBackupModal';
@@ -12,11 +11,10 @@ class DownloadBackupModalState {
   isFirstPage = true;
   onCancel = undefined;
   onDownloadClick = undefined;
-  resetMode = false;
+  mode = undefined;
 
-  constructor(id, resetMode = false) {
+  constructor(id) {
     this.id = id ? id : this.id;
-    this.resetMode = resetMode;
     makeAutoObservable(this);
   }
 
@@ -34,7 +32,8 @@ class DownloadBackupModalState {
     document.body.removeChild(link);
   }
 
-  show() {
+  show(mode: string) {
+    this.mode = mode;
     this.onCancel = () => {
       this.active = false;
     };
@@ -49,3 +48,4 @@ class DownloadBackupModalState {
 }
 
 export default DownloadBackupModalState;
+export { MODAL_MODE_UPDATE, MODAL_MODE_UPDATE_RESET, MODAL_MODE_FACTORY_RESET };
