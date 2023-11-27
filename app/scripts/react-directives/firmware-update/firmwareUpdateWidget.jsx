@@ -159,7 +159,7 @@ const ResetConfirmation = ({ mode, onChange }) => {
   );
 };
 
-const DownloadBackupModal = ({ store }) => {
+const DownloadBackupModal = observer(({ store }) => {
   const { t } = useTranslation();
 
   return (
@@ -181,7 +181,8 @@ const DownloadBackupModal = ({ store }) => {
       </ModalFooter>
     </Modal>
   );
-};
+}
+);
 
 const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
   const { t } = useTranslation();
