@@ -115,7 +115,7 @@ const AfterDownloadModalButtons = ({ hide }) => (
   <UploadButton label="system.buttons.select" style="success" onClick={hide} />
 );
 
-const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick, onProceedClick }) => {
+const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick }) => {
   const { t } = useTranslation();
 
   return (
