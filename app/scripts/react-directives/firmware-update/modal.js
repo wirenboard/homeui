@@ -4,7 +4,6 @@ const MODAL_MODE_UPDATE = 'update';
 const MODAL_MODE_UPDATE_RESET = 'update_reset';
 const MODAL_MODE_FACTORY_RESET = 'factory_reset';
 
-
 class DownloadBackupModalState {
   id = 'downloadBackupModal';
   active = false;
@@ -12,10 +11,15 @@ class DownloadBackupModalState {
   onCancel = undefined;
   onDownloadClick = undefined;
   mode = undefined;
+  enableButtons = false;
 
   constructor(id) {
     this.id = id ? id : this.id;
     makeAutoObservable(this);
+  }
+
+  onConfirmationTextChange(event) {
+    this.enableButtons = event.target.value === 'factoryreset';
   }
 
   download(url) {
@@ -34,6 +38,8 @@ class DownloadBackupModalState {
 
   show(mode) {
     this.mode = mode;
+    // disable buttons for other modes until confirmation text is entered
+    this.enableButtons = mode === MODAL_MODE_UPDATE;
     this.onCancel = () => {
       this.active = false;
     };

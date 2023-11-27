@@ -93,46 +93,90 @@ const UploadButton = ({ label, style, onClick }) => {
   );
 };
 
-const BackupDownloadModalPage = () => {
-  return <Trans i18nKey="system.update.backup_first_page" />;
+const BackupDownloadModalPage = ({ mode }) => {
+  return (
+    <>
+      {mode === MODAL_MODE_UPDATE ? (
+        <Trans i18nKey="system.update.backup_first_page" />
+      ) : mode === MODAL_MODE_UPDATE_RESET ? (
+        <Trans />
+      ) : mode === MODAL_MODE_FACTORY_RESET ? (
+        <Trans />
+      ) : (
+        <span>(unknown mode {mode})</span>
+      )}
+    </>
+  );
 };
 
-const BackupDownloadButtons = ({ onDownloadClick, hide }) => {
+const BackupDownloadButtons = ({ store }) => {
   const { t } = useTranslation();
 
   return (
     <>
-      <button type="button" className="btn btn-success" onClick={onDownloadClick}>
+      <button disabled={!store.enableButtons} type="button" className="btn btn-success" onClick={store.onDownloadClick}>
         {t('system.buttons.download_backup')}
       </button>
-      <UploadButton label="system.buttons.select_anyway" style="default" onClick={hide} />
+      {store.mode === MODAL_MODE_UPDATE ? (
+        <UploadButton disabled={!store.enableButtons} label="system.buttons.select_anyway" style="default" onClick={store.hide} />
+      ) : store.mode === MODAL_MODE_UPDATE_RESET ? (
+        <UploadButton disabled={!store.enableButtons} label="system.buttons.select_anyway" style="default" onClick={store.hide} />
+      ) : store.mode === MODAL_MODE_FACTORY_RESET ? (
+        <ResetButton disabled={!store.enableButtons} label="system.buttons.select_anyway" style="default" onClick={store.hide} />
+      ) : (
+        <span>(unknown mode {store.mode})</span>
+      )}
     </>
   );
 };
 
 const AfterDownloadModalPage = () => <Trans i18nKey="system.update.backup_second_page" />;
 
-const AfterDownloadModalButtons = ({ hide }) => (
-  <UploadButton label="system.buttons.select" style="success" onClick={hide} />
+const AfterDownloadModalButtons = ({ store }) => (
+  <>
+    {store.mode === MODAL_MODE_UPDATE ? (
+      <UploadButton disabled={!store.enableButtons} label="system.buttons.select" style="success" onClick={store.hide} />
+    ) : store.mode === MODAL_MODE_UPDATE_RESET ? (
+      <UploadButton disabled={!store.enableButtons} label="system.buttons.select" style="success" onClick={store.hide} />
+    ) : store.mode === MODAL_MODE_FACTORY_RESET ? (
+      <ResetButton disabled={!store.enableButtons} label="system.buttons.reset" style="danger" onClick={store.hide} />
+    ) : (
+      <span>(unknown mode {store.mode})</span>
+    )}
+  </>
 );
 
-const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick, mode }) => {
+const ResetConfirmation = ({ mode, onChange }) => {
+  return (
+    <>
+      {mode === MODAL_MODE_UPDATE_RESET || mode === MODAL_MODE_FACTORY_RESET ? (
+        <div>
+          <Trans i18nKey="system.factory_reset.backup_first_page" />
+          <input onChange={onChange} type="text" />
+        </div>
+      ) : null}
+    </>
+  );
+};
+
+const DownloadBackupModal = ({ store }) => {
   const { t } = useTranslation();
 
   return (
-    <Modal id={id} active={active} onCancel={onCancel}>
+    <Modal id={store.id} active={store.active} onCancel={store.onCancel}>
       <ModalHeader>
-        <div>{mode}</div>
-        <ModalTitle id={id} text={t('system.update.backup_modal_title')}></ModalTitle>
+        <div>{store.mode}</div>
+        <ModalTitle id={store.id} text={t('system.update.backup_modal_title')}></ModalTitle>
       </ModalHeader>
       <ModalBody>
-        {isFirstPage ? <BackupDownloadModalPage /> : <AfterDownloadModalPage />}
+        {store.isFirstPage ? <BackupDownloadModalPage mode={store.mode} /> : <AfterDownloadModalPage />}
+        <ResetConfirmation mode={store.mode} onChange={store.onConfirmationTextChange} />
       </ModalBody>
       <ModalFooter>
-        {isFirstPage ? (
-          <BackupDownloadButtons onDownloadClick={onDownloadClick} hide={onCancel} />
+        {store.isFirstPage ? (
+          <BackupDownloadButtons store={store} />
         ) : (
-          <AfterDownloadModalButtons hide={onCancel} />
+          <AfterDownloadModalButtons store={store} />
         )}
       </ModalFooter>
     </Modal>
@@ -275,7 +319,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
 
   return (
     <>
-      <DownloadBackupModal {...store.modalState} />
+      <DownloadBackupModal store={store} />
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
