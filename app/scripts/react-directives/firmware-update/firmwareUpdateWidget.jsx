@@ -115,7 +115,7 @@ const AfterDownloadModalButtons = ({ hide }) => (
   <UploadButton label="system.buttons.select" style="success" onClick={hide} />
 );
 
-const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick }) => {
+const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick, onProceedClick }) => {
   const { t } = useTranslation();
 
   return (
@@ -145,8 +145,8 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
       <div>
         <ul className="notes">
           <li>
-            <li>{t('system.factoryreset.warning1')}</li>
-            <li>{t('system.factoryreset.warning2')}</li>
+            <li>{t('system.factory_reset.warning1')}</li>
+            <li>{t('system.factory_reset.warning2')}</li>
           </li>
         </ul>
       </div>
@@ -155,7 +155,7 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
       </button>
       &nbsp;
       <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
-        {t('system.factoryreset.button')}
+        {t('system.buttons.reset')}
       </button>
     </div>
   );
@@ -279,7 +279,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
           <h3 className="panel-title">
             {store.reset_mode ? (
               <span>
-                <i className="glyphicon glyphicon-repeat"></i> {t('system.factoryreset.title')}
+                <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
               </span>
             ) : (
               <span>

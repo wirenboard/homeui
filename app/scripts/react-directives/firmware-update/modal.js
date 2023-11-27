@@ -1,5 +1,11 @@
 import { makeAutoObservable } from 'mobx';
 
+export enum Modes {
+    Update,
+    FactoryReset,
+    ResetUpdate
+}
+
 class DownloadBackupModalState {
   id = 'downloadBackupModal';
   active = false;

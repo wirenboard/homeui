@@ -24,11 +24,5 @@
         "rootfs_warning1": "You cannot restore system state using this archive, it just allows you to have a copy of your files",
         "rootfs_warning2": "System may run slower while downloading the archive",
         "rootfs_warning3": "Files from /mnt/data are not included in the archive"
-    },
-    "factoryreset": {
-        "title": "Reset to factory settings",
-        "warning1": "You can perform update with FIT file with settings reset (use Select firmware file button)",
-        "warning2": "Or you can do full factory reset (use Perform factory reset button)",
-        "button": "Perform factory reset"
     }
 }
