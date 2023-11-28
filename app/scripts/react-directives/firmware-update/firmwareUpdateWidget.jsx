@@ -94,28 +94,26 @@ const UploadButton = ({ label, style, onClick, disabled }) => {
 };
 
 const BackupDownloadModalPage = () => {
-  return (
-    <Trans i18nKey="system.update.backup_first_page" />
-  );
+  return <Trans i18nKey="system.update.backup_first_page" />;
 };
 
-const BackupDownloadButtons = ({ state }) => {
+const BackupDownloadButtons = ({ onDownloadClick, hide }) => {
   const { t } = useTranslation();
 
   return (
     <>
-      <button type="button" className="btn btn-success" onClick={state.onDownloadClick}>
+      <button type="button" className="btn btn-success" onClick={onDownloadClick}>
         {t('system.buttons.download_backup')}
       </button>
-      <UploadButton label="system.buttons.select_anyway" style="default" onClick={state.onCancel} />
+      <UploadButton label="system.buttons.select_anyway" style="default" onClick={hide} />
     </>
   );
 };
 
 const AfterDownloadModalPage = () => <Trans i18nKey="system.update.backup_second_page" />;
 
-const AfterDownloadModalButtons = ({ state }) => (
-  <UploadButton label="system.buttons.select" style="success" onClick={state.onCancel} />
+const AfterDownloadModalButtons = ({ hide }) => (
+  <UploadButton label="system.buttons.select" style="success" onClick={hide} />
 );
 
 const ResetConfirmation = ({ mode, onChange, value }) => {
@@ -135,6 +133,33 @@ const ResetConfirmation = ({ mode, onChange, value }) => {
     </>
   );
 };
+
+const DownloadBackupModal = observer(({ state }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
+      <ModalHeader>
+        <ModalTitle id={state.id} text={t('system.update.backup_modal_title')}></ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        {state.isFirstPage ? (
+          <BackupDownloadModalPage />
+        ) : (
+          <AfterDownloadModalPage />
+        )}
+      </ModalBody>
+      <ModalFooter>
+        {state.isFirstPage ? (
+          <BackupDownloadButtons onDownloadClick={state.onDownloadClick} hide={state.onCancel} />
+        ) : (
+          <AfterDownloadModalButtons hide={state.onCancel} />
+        )}
+      </ModalFooter>
+    </Modal>
+  );
+}
+);
 
 const FactoryResetModal = observer(({ state, store }) => {
   const { t } = useTranslation();
@@ -171,33 +196,6 @@ const FactoryResetModal = observer(({ state, store }) => {
     </Modal>
   );
 });
-
-const DownloadBackupModal = observer(({ state }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
-      <ModalHeader>
-        <ModalTitle id={state.id} text={t('system.update.backup_modal_title')}></ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        {state.isFirstPage ? (
-          <BackupDownloadModalPage />
-        ) : (
-          <AfterDownloadModalPage />
-        )}
-      </ModalBody>
-      <ModalFooter>
-        {state.isFirstPage ? (
-          <BackupDownloadButtons state={state} />
-        ) : (
-          <AfterDownloadModalButtons state={state} />
-        )}
-      </ModalFooter>
-    </Modal>
-  );
-}
-);
 
 const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
   const { t } = useTranslation();
