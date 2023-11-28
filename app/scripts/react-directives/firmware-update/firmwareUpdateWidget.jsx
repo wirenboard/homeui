@@ -72,13 +72,13 @@ const ResetButton = ({ label, style, onClick, store }) => {
   const { t } = useTranslation();
 
   return (
-    <button type="file" className={'btn btn-' + style} onClick={onClickInternal}>
+    <button type="file" disabled={!store.modalState.enableButtons} className={'btn btn-' + style} onClick={onClickInternal}>
       {t(label)}
     </button>
   );
 };
 
-const UploadButton = ({ label, style, onClick }) => {
+const UploadButton = ({ label, style, onClick, disabled }) => {
   const uploady = useUploady();
   const onClickInternal = () => {
     uploady.showFileUpload();
@@ -87,96 +87,111 @@ const UploadButton = ({ label, style, onClick }) => {
   const { t } = useTranslation();
 
   return (
-    <button type="file" className={'btn btn-' + style} onClick={onClickInternal}>
+    <button type="file" disabled={disabled} className={'btn btn-' + style} onClick={onClickInternal}>
       {t(label)}
     </button>
   );
 };
 
-const BackupDownloadModalPage = ({ mode }) => {
+const BackupDownloadModalPage = () => {
   return (
-    <>
-      {mode === MODAL_MODE_UPDATE ? (
-        <Trans i18nKey="system.update.backup_first_page" />
-      ) : mode === MODAL_MODE_UPDATE_RESET ? (
-        <Trans />
-      ) : mode === MODAL_MODE_FACTORY_RESET ? (
-        <Trans />
-      ) : (
-        <span>(unknown mode {mode})</span>
-      )}
-    </>
+    <Trans i18nKey="system.update.backup_first_page" />
   );
 };
 
-const BackupDownloadButtons = ({ store }) => {
+const BackupDownloadButtons = ({ state }) => {
   const { t } = useTranslation();
 
   return (
     <>
-      <button disabled={!store.enableButtons} type="button" className="btn btn-success" onClick={store.onDownloadClick}>
+      <button type="button" className="btn btn-success" onClick={state.onDownloadClick}>
         {t('system.buttons.download_backup')}
       </button>
-      {store.mode === MODAL_MODE_UPDATE ? (
-        <UploadButton disabled={!store.enableButtons} label="system.buttons.select_anyway" style="default" onClick={store.hide} />
-      ) : store.mode === MODAL_MODE_UPDATE_RESET ? (
-        <UploadButton disabled={!store.enableButtons} label="system.buttons.select_anyway" style="default" onClick={store.hide} />
-      ) : store.mode === MODAL_MODE_FACTORY_RESET ? (
-        <ResetButton disabled={!store.enableButtons} label="system.buttons.select_anyway" style="default" onClick={store.hide} />
-      ) : (
-        <span>(unknown mode {store.mode})</span>
-      )}
+      <UploadButton label="system.buttons.select_anyway" style="default" onClick={state.onCancel} />
     </>
   );
 };
 
 const AfterDownloadModalPage = () => <Trans i18nKey="system.update.backup_second_page" />;
 
-const AfterDownloadModalButtons = ({ store }) => (
-  <>
-    {store.mode === MODAL_MODE_UPDATE ? (
-      <UploadButton disabled={!store.enableButtons} label="system.buttons.select" style="success" onClick={store.hide} />
-    ) : store.mode === MODAL_MODE_UPDATE_RESET ? (
-      <UploadButton disabled={!store.enableButtons} label="system.buttons.select" style="success" onClick={store.hide} />
-    ) : store.mode === MODAL_MODE_FACTORY_RESET ? (
-      <ResetButton disabled={!store.enableButtons} label="system.buttons.reset" style="danger" onClick={store.hide} />
-    ) : (
-      <span>(unknown mode {store.mode})</span>
-    )}
-  </>
+const AfterDownloadModalButtons = ({ state }) => (
+  <UploadButton label="system.buttons.select" style="success" onClick={state.onCancel} />
 );
 
-const ResetConfirmation = ({ mode, onChange }) => {
+const ResetConfirmation = ({ mode, onChange, value }) => {
   return (
     <>
       {mode === MODAL_MODE_UPDATE_RESET || mode === MODAL_MODE_FACTORY_RESET ? (
         <div>
-          <Trans i18nKey="system.factory_reset.backup_first_page" />
-          <input onChange={onChange} type="text" />
+          <Trans i18nKey="system.factory_reset.modal_page" />
+          <div>
+            <hr/>
+            <Trans i18nKey="system.factory_reset.confirm_prompt" />
+            &nbsp;<input onChange={onChange} type="text" value={value} />
+          </div>
+
         </div>
       ) : null}
     </>
   );
 };
 
-const DownloadBackupModal = observer(({ store }) => {
+const FactoryResetModal = observer(({ state, store }) => {
   const { t } = useTranslation();
 
   return (
-    <Modal id={store.id} active={store.active} onCancel={store.onCancel}>
+    <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
       <ModalHeader>
-        <div>{store.mode}</div>
-        <ModalTitle id={store.id} text={t('system.update.backup_modal_title')}></ModalTitle>
+        <ModalTitle id={state.id} text={t('system.factory_reset.modal_title')}></ModalTitle>
       </ModalHeader>
       <ModalBody>
-        {store.isFirstPage ? <BackupDownloadModalPage mode={store.mode} /> : <AfterDownloadModalPage />}
-        <ResetConfirmation mode={store.mode} onChange={store.onConfirmationTextChange} />
+        <ResetConfirmation
+          mode={state.mode}
+          onChange={(e) => { state.onConfirmationTextChange(e); }}
+          value={state.enteredConfirmationText}
+        />
       </ModalBody>
       <ModalFooter>
-        {store.isFirstPage ? (
-          <BackupDownloadButtons store={store} />
+        {state.mode === MODAL_MODE_UPDATE_RESET ? (
+          <UploadButton
+              disabled={!state.enableButtons}
+              label={t('system.buttons.select_and_reset')}
+              style="danger"
+              onClick={state.onCancel}
+          />
+        ) : state.mode === MODAL_MODE_FACTORY_RESET ? (
+          <ResetButton
+            store={store}
+            label={t('system.buttons.reset')}
+            style="danger"
+            onClick={state.onCancel}
+          />
+        ) : null}
+      </ModalFooter>
+    </Modal>
+  );
+});
+
+const DownloadBackupModal = observer(({ state }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
+      <ModalHeader>
+        <ModalTitle id={state.id} text={t('system.update.backup_modal_title')}></ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        {state.isFirstPage ? (
+          <BackupDownloadModalPage />
         ) : (
-          <AfterDownloadModalButtons store={store} />
+          <AfterDownloadModalPage />
+        )}
+      </ModalBody>
+      <ModalFooter>
+        {state.isFirstPage ? (
+          <BackupDownloadButtons state={state} />
+        ) : (
+          <AfterDownloadModalButtons state={state} />
         )}
       </ModalFooter>
     </Modal>
@@ -191,10 +206,8 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
     <div>
       <div>
         <ul className="notes">
-          <li>
-            <li>{t('system.factory_reset.warning1')}</li>
-            <li>{t('system.factory_reset.warning2')}</li>
-          </li>
+          <li>{t('system.factory_reset.warning1')}</li>
+          <li>{t('system.factory_reset.warning2')}</li>
         </ul>
       </div>
       <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
@@ -268,22 +281,14 @@ const UploadWidget = observer(({ store }) => {
           {store.reset_mode ? (
             <div>
               <ResetEntrypoint
-                onUploadClick={() => {
-                  store.modalState.show(MODAL_MODE_UPDATE_RESET);
-                }}
-                onResetClick={() => {
-                  store.modalState.show(MODAL_MODE_FACTORY_RESET);
-                }}
+                onUploadClick={() => { store.modalState.show(MODAL_MODE_UPDATE_RESET); }}
+                onResetClick={() => { store.modalState.show(MODAL_MODE_FACTORY_RESET); }}
               />
             </div>
           ) : (
             <UpdateEntrypoint
-              expandRootFsHandler={e => {
-                store.setExpandRootfs(e.target.checked);
-              }}
-              showModal={() => {
-                store.modalState.show(MODAL_MODE_UPDATE);
-              }}
+              expandRootFsHandler={e => { store.setExpandRootfs(e.target.checked); }}
+              showModal={() => { store.modalState.show(MODAL_MODE_UPDATE); }}
               expandRootFs={store.expandRootfs}
             />
           )}
@@ -320,7 +325,11 @@ const FirmwareUpdateWidget = observer(({ store }) => {
 
   return (
     <>
-      <DownloadBackupModal store={store} />
+      {store.reset_mode ? (
+        <FactoryResetModal state={store.modalState} store={store} />
+      ) : (
+        <DownloadBackupModal state={store.modalState} />
+      )}
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">

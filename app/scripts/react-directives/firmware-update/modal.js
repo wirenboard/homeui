@@ -12,6 +12,7 @@ class DownloadBackupModalState {
   onDownloadClick = undefined;
   mode = undefined;
   enableButtons = false;
+  enteredConfirmationText = '';
 
   constructor(id) {
     this.id = id ? id : this.id;
@@ -19,7 +20,9 @@ class DownloadBackupModalState {
   }
 
   onConfirmationTextChange(event) {
-    this.enableButtons = event.target.value === 'factoryreset';
+    this.enteredConfirmationText = event.target.value;
+    let unlock = (event.target.value === 'factoryreset');
+    this.enableButtons = unlock;
   }
 
   download(url) {
@@ -40,6 +43,7 @@ class DownloadBackupModalState {
     this.mode = mode;
     // disable buttons for other modes until confirmation text is entered
     this.enableButtons = mode === MODAL_MODE_UPDATE;
+    this.enteredConfirmationText = '';
     this.onCancel = () => {
       this.active = false;
     };
