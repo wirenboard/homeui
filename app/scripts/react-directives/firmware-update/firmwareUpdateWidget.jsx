@@ -230,7 +230,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
       {store.reset_mode ? (
         <FactoryResetModal state={store.modalState} store={store} />
       ) : (
-        <DownloadBackupModal state={store.modalState} />
+        <DownloadBackupModal {...store.modalState} />
       )}
       <div className="panel panel-default">
         <div className="panel-heading">
