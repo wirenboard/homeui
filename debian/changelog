@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.76.0) stable; urgency=medium
 
-  * Add factory reset checkbox to firmware update feature
+  * Add update with reset button to system options page
   * Add factory reset button to system options page
 
  -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 1 Nov 2023 17:52:00 +0600
