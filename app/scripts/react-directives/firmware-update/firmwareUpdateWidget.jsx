@@ -64,20 +64,6 @@ const FirmwareUpdateLog = ({ logRows }) => {
   );
 };
 
-const ResetButton = ({ label, style, onClick, store }) => {
-  const onClickInternal = () => {
-    SubmitRequest(store);
-    if (onClick) onClick();
-  };
-  const { t } = useTranslation();
-
-  return (
-    <button type="file" disabled={!store.modalState.enableButtons} className={'btn btn-' + style} onClick={onClickInternal}>
-      {t(label)}
-    </button>
-  );
-};
-
 const UploadButton = ({ label, style, onClick, disabled }) => {
   const uploady = useUploady();
   const onClickInternal = () => {
@@ -116,24 +102,6 @@ const AfterDownloadModalButtons = ({ hide }) => (
   <UploadButton label="system.buttons.select" style="success" onClick={hide} />
 );
 
-const ResetConfirmation = ({ mode, onChange, value }) => {
-  return (
-    <>
-      {mode === MODAL_MODE_UPDATE_RESET || mode === MODAL_MODE_FACTORY_RESET ? (
-        <div>
-          <Trans i18nKey="system.factory_reset.modal_page" />
-          <div>
-            <hr/>
-            <Trans i18nKey="system.factory_reset.confirm_prompt" />
-            &nbsp;<input onChange={onChange} type="text" value={value} />
-          </div>
-
-        </div>
-      ) : null}
-    </>
-  );
-};
-
 const DownloadBackupModal = observer(({ state }) => {
   const { t } = useTranslation();
 
@@ -160,64 +128,6 @@ const DownloadBackupModal = observer(({ state }) => {
   );
 }
 );
-
-const FactoryResetModal = observer(({ state, store }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
-      <ModalHeader>
-        <ModalTitle id={state.id} text={t('system.factory_reset.modal_title')}></ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <ResetConfirmation
-          mode={state.mode}
-          onChange={(e) => { state.onConfirmationTextChange(e); }}
-          value={state.enteredConfirmationText}
-        />
-      </ModalBody>
-      <ModalFooter>
-        {state.mode === MODAL_MODE_UPDATE_RESET ? (
-          <UploadButton
-              disabled={!state.enableButtons}
-              label={t('system.buttons.select_and_reset')}
-              style="danger"
-              onClick={state.onCancel}
-          />
-        ) : state.mode === MODAL_MODE_FACTORY_RESET ? (
-          <ResetButton
-            store={store}
-            label={t('system.buttons.reset')}
-            style="danger"
-            onClick={state.onCancel}
-          />
-        ) : null}
-      </ModalFooter>
-    </Modal>
-  );
-});
-
-const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
-  const { t } = useTranslation();
-
-  return (
-    <div>
-      <div>
-        <ul className="notes">
-          <li>{t('system.factory_reset.warning1')}</li>
-          <li>{t('system.factory_reset.warning2')}</li>
-        </ul>
-      </div>
-      <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
-        {t('system.buttons.select')}
-      </button>
-      &nbsp;
-      <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
-        {t('system.buttons.reset')}
-      </button>
-    </div>
-  );
-});
 
 const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootFs }) => {
   const { t } = useTranslation();
@@ -291,7 +201,6 @@ const UploadWidget = observer(({ store }) => {
             />
           )}
         </>
-
       )}
     </>
   );
@@ -349,6 +258,96 @@ const FirmwareUpdateWidget = observer(({ store }) => {
     </>
   );
 });
+
+const ResetConfirmation = ({ mode, onChange, value }) => {
+  return (
+    <>
+      {mode === MODAL_MODE_UPDATE_RESET || mode === MODAL_MODE_FACTORY_RESET ? (
+        <div>
+          <Trans i18nKey="system.factory_reset.modal_page" />
+          <div>
+            <hr/>
+            <Trans i18nKey="system.factory_reset.confirm_prompt" />
+            &nbsp;<input onChange={onChange} type="text" value={value} />
+          </div>
+
+        </div>
+      ) : null}
+    </>
+  );
+};
+
+const FactoryResetModal = observer(({ state, store }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
+      <ModalHeader>
+        <ModalTitle id={state.id} text={t('system.factory_reset.modal_title')}></ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <ResetConfirmation
+          mode={state.mode}
+          onChange={(e) => { state.onConfirmationTextChange(e); }}
+          value={state.enteredConfirmationText}
+        />
+      </ModalBody>
+      <ModalFooter>
+        {state.mode === MODAL_MODE_UPDATE_RESET ? (
+          <UploadButton
+              disabled={!state.enableButtons}
+              label={t('system.buttons.select_and_reset')}
+              style="danger"
+              onClick={state.onCancel}
+          />
+        ) : state.mode === MODAL_MODE_FACTORY_RESET ? (
+          <ResetButton
+            store={store}
+            label={t('system.buttons.reset')}
+            style="danger"
+            onClick={state.onCancel}
+          />
+        ) : null}
+      </ModalFooter>
+    </Modal>
+  );
+});
+
+const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <div>
+        <ul className="notes">
+          <li>{t('system.factory_reset.warning1')}</li>
+          <li>{t('system.factory_reset.warning2')}</li>
+        </ul>
+      </div>
+      <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
+        {t('system.buttons.select')}
+      </button>
+      &nbsp;
+      <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
+        {t('system.buttons.reset')}
+      </button>
+    </div>
+  );
+});
+
+const ResetButton = ({ label, style, onClick, store }) => {
+  const onClickInternal = () => {
+    SubmitRequest(store);
+    if (onClick) onClick();
+  };
+  const { t } = useTranslation();
+
+  return (
+    <button type="file" disabled={!store.modalState.enableButtons} className={'btn btn-' + style} onClick={onClickInternal}>
+      {t(label)}
+    </button>
+  );
+};
 
 const CreateFirmwareUpdateWidget = ({ store }) => (
   <Uploady
