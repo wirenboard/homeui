@@ -126,7 +126,7 @@
         "buttons": {
             "reset": "Сброс к заводским настройкам",
             "select": "Выбрать файл прошивки",
-            "select_and_reset": "Select firmware file and update with reset",
+            "select_and_reset": "Выбрать файл прошивки и обновить со сбросом",
             "dismiss": "Отменить",
             "hide": "Скрыть",
             "download_backup": "Скачать архив",
