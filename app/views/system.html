@@ -42,7 +42,12 @@
         </button>
 
         <a type="button" class="btn btn-success btn-lg pull-left" ng-href="{{href}}" ng-disabled="!btnEnabled"
-            ng-if="href" ng-show="btnVisible" downloadn>
+            ng-if="href" ng-show="btnVisible" download>
+            {{ text }}
+        </a>
+
+        <div class="col-xs-1" ng-show="collecting">
+            <span class="spinner-loader"></span>
         </div>
 
         <div ng-show="pathMessage">
