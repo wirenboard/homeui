@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PageWrapper, PageTitle, PageBody } from '../components/page-wrapper/pageWrapper';
 import { Button, LineEdit } from '../common';
@@ -7,6 +7,19 @@ import ScriptEditor from './scriptEditor';
 
 const ScriptEditorPage = observer(({ store }) => {
   const { t } = useTranslation();
+  var titleRef = useRef();
+  var editorRef = useRef();
+  useEffect(() => {
+    if (store.focusElement === 'title' && titleRef.current) {
+      titleRef.current.focus();
+      store.setFocusElement(null);
+      return;
+    }
+    if (store.focusElement === 'editor' && editorRef.current) {
+      editorRef.current.focus();
+      store.setFocusElement(null);
+    }
+  });
   return (
     <PageWrapper
       error={store.pageWrapperStore.error}
@@ -17,6 +30,7 @@ const ScriptEditorPage = observer(({ store }) => {
         {store.isNew && (
           <div className="pull-left" style={{ width: '70%' }}>
             <LineEdit
+              ref={titleRef}
               value={store.pageWrapperStore.title}
               onChange={e => store.setFileName(e.target.value)}
             />
@@ -30,11 +44,13 @@ const ScriptEditorPage = observer(({ store }) => {
           disabled={!store.canSave}
         />
       </PageTitle>
-      <PageBody loading={store.pageWrapperStore.loading}>
+      <PageBody loading={store.pageWrapperStore.loading} renderChildren={true}>
         <ScriptEditor
+          ref={editorRef}
           text={store.ruleText}
           errorLine={store.errorLine}
           onChange={value => store.setRuleText(value)}
+          visible={!store.pageWrapperStore.loading}
         />
       </PageBody>
     </PageWrapper>

@@ -1,9 +1,76 @@
-wb-mqtt-homeui (2.76.0) stable; urgency=medium
+wb-mqtt-homeui (2.78.0) stable; urgency=medium
 
   * Add update with reset button to system options page
   * Add factory reset button to system options page
 
- -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 1 Nov 2023 17:52:00 +0600
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 29 Nov 2023 16:52:00 +0600
+
+wb-mqtt-homeui (2.77.1) stable; urgency=medium
+
+  * Fix focus jumping when editing new rule
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Nov 2023 14:28:38 +0500
+
+wb-mqtt-homeui (2.77.0) stable; urgency=medium
+
+  * Add minimalistic widget for Wiren Board Cloud connection status
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 23 Nov 2023 14:43:03 +0600
+
+wb-mqtt-homeui (2.76.2) stable; urgency=medium
+
+  * Css: fix "History" input box overlapping
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Tue, 21 Nov 2023 19:21:12 +0500
+
+wb-mqtt-homeui (2.76.1) stable; urgency=medium
+
+  * Fix translation
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Nov 2023 16:16:51 +0500
+
+wb-mqtt-homeui (2.76.0) stable; urgency=medium
+
+  * Add status labels for connections deactivated by wb-connection-manager
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Nov 2023 09:54:56 +0500
+
+wb-mqtt-homeui (2.75.20) stable; urgency=medium
+
+  * Fix SVG bindings parameters editor layout on medium screens
+  * Remove clear button from option selects in SVG bindings parameters editor 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Nov 2023 17:39:21 +0500
+
+wb-mqtt-homeui (2.75.19) stable; urgency=medium
+
+  * Preserve focus after saving in rules editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Nov 2023 13:55:07 +0500
+
+wb-mqtt-homeui (2.75.18) stable; urgency=medium
+
+  * Move debug console button so it doesn't block vertical scrolling of rules editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 19:44:25 +0500
+
+wb-mqtt-homeui (2.75.17) stable; urgency=medium
+
+  * Change default values display in network connections settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 19:38:22 +0500
+
+wb-mqtt-homeui (2.75.16) stable; urgency=medium
+
+  * Remove bottom padding in hmi mode
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Nov 2023 14:58:02 +0500
+
+wb-mqtt-homeui (2.75.15) stable; urgency=medium
+
+  * Add legacy current control type
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 03 Nov 2023 09:54:06 +0500
 
 wb-mqtt-homeui (2.75.14) stable; urgency=medium
 

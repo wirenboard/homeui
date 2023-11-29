@@ -384,11 +384,17 @@ footer{
 
 button.show-console {
   position: fixed;
-  right: 10px;
+  right: 30px;
   bottom: 30px;
   font-size: 18px;
   padding: 6px 10px;
   opacity: 0.3;
+}
+
+@media (min-width: 1200px) {
+  button.show-console {
+    right: 40px;
+  }
 }
 
 .show-console:hover {
@@ -806,6 +812,7 @@ button.show-console span {
 
 .history-time-col-r {
     padding-top: 34px;
+    padding-left: 2em;
 }
 
 .jarviswidget > div {
@@ -1158,4 +1165,12 @@ button.dashboard-back:active {
   left: unset;
   right: 10px;
   bottom: 30px;
+}
+
+.form-edit-default-text
+{
+  padding: .2em .4em;
+  white-space: break-spaces;
+  background-color: #f0f0f0;
+  border-radius: 6px;
 }

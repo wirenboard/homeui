@@ -41,10 +41,10 @@ export const VisibleBindingForm = observer(({ store }) => {
         <>
           <FormSelect store={store.params.channel} />
           <BootstrapRow>
-            <div className="col-xs-6 col-sm-3 col-md-2 col-lg-2">
+            <div className="col-xs-6 col-sm-3 col-md-4 col-lg-3">
               <FormSelect store={store.params.condition} />
             </div>
-            <div className="col-sx-6 col-sm-9 col-md-10 col-lg-10">
+            <div className="col-sx-6 col-sm-9 col-md-8 col-lg-9">
               <FormStringEdit store={store.params.value} />
             </div>
           </BootstrapRow>

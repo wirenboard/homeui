@@ -12,6 +12,8 @@ export class SingleConnection {
   // "deprecated"
   // "new"
   // "unknown"
+  // "deactivating-by-cm"
+  // "deactivated-by-cm"
   state = 'unknown';
   icon = '';
   schema = {};
@@ -113,7 +115,7 @@ export class SingleConnection {
   }
 
   get allowSwitchState() {
-    return !this.isNew && ['activated', 'not-connected'].includes(this.state);
+    return !this.isNew && ['activated', 'not-connected', 'deactivated-by-cm'].includes(this.state);
   }
 
   get hasErrors() {
@@ -129,8 +131,14 @@ export class SingleConnection {
   }
 
   setState(newState) {
-    const states = ['activated', 'activating', 'deactivating'];
-    this.state = states.find(state => state == newState) || 'not-connected';
+    const states = {
+      activated: 'activated',
+      activating: 'activating',
+      deactivating: 'deactivating',
+      'deactivating by wb-connection-manager': 'deactivating-by-cm',
+      'deactivated by wb-connection-manager': 'deactivated-by-cm',
+    };
+    this.state = states[newState] || 'not-connected';
   }
 
   setConnectivity(connectivity) {

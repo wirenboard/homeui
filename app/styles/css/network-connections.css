@@ -18,12 +18,14 @@
 }
 
 .network-connections-page .not-connected i,
+.network-connections-page .deactivated-by-cm i,
 .network-connections-page .unknown i {
     color: #b1b1b1;
 }
 
 .network-connections-page .activating i,
-.network-connections-page .deactivating i {
+.network-connections-page .deactivating i,
+.network-connections-page .deactivating-by-cm i {
     color: #dfb56c;
 }
 
