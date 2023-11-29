@@ -176,7 +176,7 @@ class NetworkConnectionsPageStore {
     if (connection.state === 'activated') {
       connection.setState('deactivating');
     } else {
-      if (connection.state === 'not-connected') {
+      if (connection.state === 'not-connected' || connection.state === 'deactivated-by-cm') {
         connection.setState('activating');
       }
     }
