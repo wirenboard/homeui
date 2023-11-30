@@ -111,7 +111,8 @@
             "warning2": "Use \"Perform factory reset\" button to reset all settings and software versions to factory defaults",
             "confirm_prompt": "Type \"factoryreset\" to confirm and continue",
             "modal_title": "Confirm reset",
-            "modal_page": "<p><strong>All your data will be lost!</strong></p><p>You must confirm this action. It cannot be undone.</p>"
+            "modal_page": "<p><strong>All your data will be lost!</strong></p><p>You must confirm this action. It cannot be undone.</p>",
+            "not_compatible": "Your current factoryreset.fit doesn't support factory reset via web UI"
         },
         "update": {
             "title": "Firmware update",

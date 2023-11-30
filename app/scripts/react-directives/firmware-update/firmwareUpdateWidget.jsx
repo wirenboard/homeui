@@ -27,7 +27,7 @@ async function SubmitRequest(store) {
     method: 'POST',
     body: form,
   };
-  const response = await fetch(store.reset_destination, requestOptions);
+  const response = await fetch(store.resetDestination, requestOptions);
   if (response.status !== 200) {
     const text = await response.text();
     store.onUploadError({ uploadResponse: { data: text } });
@@ -175,17 +175,20 @@ const UploadProgress = observer(({ store }) => {
 });
 
 const UploadWidget = observer(({ store }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       {store.inProgress ? (
         <UploadProgress store={store} />
       ) : (
         <>
-          {store.reset_mode ? (
+          {store.resetMode ? (
             <div>
               <ResetEntrypoint
                 onUploadClick={() => { store.modalState.show(MODAL_MODE_UPDATE_RESET); }}
                 onResetClick={() => { store.modalState.show(MODAL_MODE_FACTORY_RESET); }}
+                canFactoryReset={store.factoryResetFitsState.canDoFactoryReset}
               />
             </div>
           ) : (
@@ -215,7 +218,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemErrorListener(store.onUploadError);
 
   useRequestPreSend(({ items, options }) => {
-    if (store.reset_mode) {
+    if (store.resetMode) {
       return {
         options: { factory_reset: true }, // will be merged with the rest of the options
       };
@@ -227,7 +230,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
 
   return (
     <>
-      {store.reset_mode ? (
+      {store.resetMode ? (
         <FactoryResetModal state={store.modalState} store={store} />
       ) : (
         <DownloadBackupModal {...store.modalState} />
@@ -235,7 +238,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
-            {store.reset_mode ? (
+            {store.resetMode ? (
               <span>
                 <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
               </span>
@@ -308,7 +311,7 @@ const FactoryResetModal = observer(({ state, store }) => {
   );
 });
 
-const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
+const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset }) => {
   const { t } = useTranslation();
 
   return (
@@ -316,16 +319,20 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick }) => {
       <div>
         <ul className="notes">
           <li>{t('system.factory_reset.warning1')}</li>
-          <li>{t('system.factory_reset.warning2')}</li>
+          {canFactoryReset ? (
+            <li>{t('system.factory_reset.warning2')}</li>
+          ) : null}
         </ul>
       </div>
       <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
         {t('system.buttons.select')}
       </button>
       &nbsp;
-      <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
-        {t('system.buttons.reset')}
-      </button>
+      {canFactoryReset ? (
+        <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
+          {t('system.buttons.reset')}
+        </button>
+      ) : null}
     </div>
   );
 });
@@ -350,7 +357,7 @@ const CreateFirmwareUpdateWidget = ({ store }) => (
     accept={store.accept}
     multiple={false}
     method="POST"
-    destination={{ url: store.upload_destination }}
+    destination={{ url: store.uploadDestination }}
   >
     <FirmwareUpdateWidget store={store} />
   </Uploady>
