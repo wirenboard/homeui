@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.14-wb101) stable; urgency=medium
+
+  * Add status labels for connections deactivated by wb-connection-manager
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 29 Nov 2023 10:28:11 +0500
+
 wb-mqtt-homeui (2.75.14-wb100) stable; urgency=medium
 
   * Remove bottom padding in hmi mode
