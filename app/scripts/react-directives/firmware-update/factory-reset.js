@@ -1,9 +1,15 @@
+import {makeAutoObservable} from "mobx";
+
 class FactoryResetFitsState {
   factoryresetFitPresent = false;
   factoryresetFitCompatibility = '';
   factoryresetOriginalFitPresent = false;
   factoryresetOriginalFitCompatibility = '';
   canDoFactoryReset = false;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
 
   setFactoryResetFitPresent(factoryresetFitPresent) {
     this.factoryresetFitPresent = factoryresetFitPresent === 'true';
