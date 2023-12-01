@@ -218,13 +218,9 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemErrorListener(store.onUploadError);
 
   useRequestPreSend(({ items, options }) => {
-    if (store.resetMode) {
-      return {
-        options: { factory_reset: true }, // will be merged with the rest of the options
-      };
-    }
+    const params = store.resetMode ? { factory_reset: true } : { expand_rootfs: store.expandRootfs };
     return {
-      options: { expand_rootfs: store.expandRootfs }, // will be merged with the rest of the options
+      options: { params }, // will be merged with the rest of the options
     };
   });
 
