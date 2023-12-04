@@ -27,12 +27,16 @@ async function SubmitRequest(store) {
     method: 'POST',
     body: form,
   };
-  const response = await fetch(store.resetDestination, requestOptions);
-  if (response.status !== 200) {
-    const text = await response.text();
-    store.onUploadError({ uploadResponse: { data: text } });
-  } else {
-    store.onUploadFinish();
+  try {
+    const response = await fetch(store.resetDestination, requestOptions);
+    if (response.status !== 200) {
+      const text = await response.text();
+      store.onUploadError({ uploadResponse: { data: text } });
+    } else {
+      store.onUploadFinish();
+    }
+  } catch (e) {
+    store.onUploadError({ uploadResponse: { data: e.message } });
   }
 }
 
@@ -68,7 +72,7 @@ const UploadButton = ({ label, style, onClick, disabled }) => {
   const uploady = useUploady();
   const onClickInternal = () => {
     uploady.showFileUpload();
-    if (onClick) onClick();
+    onClick?.();
   };
   const { t } = useTranslation();
 
@@ -177,30 +181,24 @@ const UploadProgress = observer(({ store }) => {
 const UploadWidget = observer(({ store }) => {
   const { t } = useTranslation();
 
+  if (store.inProgress) {
+    return <UploadProgress store={store} />;
+  }
+  if (store.resetMode) {
+    return (
+      <ResetEntrypoint
+        onUploadClick={() => { store.modalState.show(MODAL_MODE_UPDATE_RESET); }}
+        onResetClick={() => { store.modalState.show(MODAL_MODE_FACTORY_RESET); }}
+        canFactoryReset={store.factoryResetFitsState.canDoFactoryReset}
+      />
+    );
+  }
   return (
-    <>
-      {store.inProgress ? (
-        <UploadProgress store={store} />
-      ) : (
-        <>
-          {store.resetMode ? (
-            <div>
-              <ResetEntrypoint
-                onUploadClick={() => { store.modalState.show(MODAL_MODE_UPDATE_RESET); }}
-                onResetClick={() => { store.modalState.show(MODAL_MODE_FACTORY_RESET); }}
-                canFactoryReset={store.factoryResetFitsState.canDoFactoryReset}
-              />
-            </div>
-          ) : (
-            <UpdateEntrypoint
-              expandRootFsHandler={e => { store.setExpandRootfs(e.target.checked); }}
-              showModal={() => { store.modalState.show(MODAL_MODE_UPDATE); }}
-              expandRootFs={store.expandRootfs}
-            />
-          )}
-        </>
-      )}
-    </>
+    <UpdateEntrypoint
+      expandRootFsHandler={e => { store.setExpandRootfs(e.target.checked); }}
+      showModal={() => { store.modalState.show(MODAL_MODE_UPDATE); }}
+      expandRootFs={store.expandRootfs}
+    />
   );
 });
 
@@ -224,25 +222,30 @@ const FirmwareUpdateWidget = observer(({ store }) => {
     };
   });
 
+  if (store.resetMode) {
+    return (
+      <>
+        <FactoryResetModal state={store.modalState} store={store} />
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <h3 className="panel-title">
+                <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
+            </h3>
+          </div>
+          <div className="panel-body">
+            {store.receivedFirstStatus ? <UploadWidget store={store} /> : <ServiceUnavailable />}
+          </div>
+        </div>
+      </>
+    );
+  }
   return (
     <>
-      {store.resetMode ? (
-        <FactoryResetModal state={store.modalState} store={store} />
-      ) : (
-        <DownloadBackupModal {...store.modalState} />
-      )}
+      <DownloadBackupModal {...store.modalState} />
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
-            {store.resetMode ? (
-              <span>
-                <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
-              </span>
-            ) : (
-              <span>
-                <i className="glyphicon glyphicon-upload"></i> {t('system.update.title')}
-              </span>
-            )}
+            <i className="glyphicon glyphicon-upload"></i> {t('system.update.title')}
           </h3>
         </div>
         <div className="panel-body">
@@ -254,20 +257,20 @@ const FirmwareUpdateWidget = observer(({ store }) => {
 });
 
 const ResetConfirmation = ({ mode, onChange, value }) => {
-  return (
-    <>
-      {mode === MODAL_MODE_UPDATE_RESET || mode === MODAL_MODE_FACTORY_RESET ? (
-        <div>
-          <Trans i18nKey="system.factory_reset.modal_page" />
-          <div>
-            <hr/>
-            <Trans i18nKey="system.factory_reset.confirm_prompt" />
-            &nbsp;<input onChange={onChange} type="text" value={value} />
-          </div>
+  if (mode !== MODAL_MODE_UPDATE_RESET && mode !== MODAL_MODE_FACTORY_RESET) {
+    return null;
+  }
 
-        </div>
-      ) : null}
-    </>
+  return (
+    <div>
+      <Trans i18nKey="system.factory_reset.modal_page" />
+      <div>
+        <hr />
+        <Trans i18nKey="system.factory_reset.confirm_prompt" />
+        &nbsp;
+        <input onChange={onChange} type="text" value={value} />
+      </div>
+    </div>
   );
 };
 
@@ -336,7 +339,7 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset
 const ResetButton = ({ label, style, onClick, store }) => {
   const onClickInternal = () => {
     SubmitRequest(store);
-    if (onClick) onClick();
+    onClick?.();
   };
   const { t } = useTranslation();
 
