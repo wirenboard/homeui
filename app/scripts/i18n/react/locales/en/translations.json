@@ -111,15 +111,13 @@
             "warning2": "Use \"Perform factory reset\" button to reset all settings and software versions to factory defaults",
             "confirm_prompt": "Type \"factoryreset\" to confirm and continue",
             "modal_title": "Confirm reset",
-            "modal_page": "<p><strong>All your data will be lost!</strong></p><p>You must confirm this action. It cannot be undone.</p>",
-            "not_compatible": "Your current factoryreset.fit doesn't support factory reset via web UI"
+            "modal_page": "<p><strong>All your data will be lost!</strong></p><p>You must confirm this action. It cannot be undone.</p>"
         },
         "update": {
             "title": "Firmware update",
             "help": "Download firmware",
             "expandrootfs": "Expand rootfs, if firmware supports it",
             "backup_modal_title": "rootfs backup archive",
-            "reset_modal_title": "Factory reset",
             "backup_first_page": "<p>During update only files stored in /mnt/data are saved. <strong>Third-party software like nodered or SH will be removed!</strong></p><p>Press <strong>Download backup</strong> to download a rootfs backup archive, where some useful files like third-party service configs may be stored.</p><p>This backup archive currently can't be used to restore Wiren Board state.</p>",
             "backup_second_page": "<p>Great! Now <strong>wait until file is downloaded</strong> and press <strong>Select firmware file</strong> button to begin update process.</p>"
         },
