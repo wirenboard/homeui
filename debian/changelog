@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.78.0) stable; urgency=medium
+
+  * Add update with reset button to system options page
+  * Add factory reset button to system options page
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 29 Nov 2023 16:52:00 +0600
+
 wb-mqtt-homeui (2.77.1) stable; urgency=medium
 
   * Fix focus jumping when editing new rule

@@ -3,14 +3,17 @@ import React from 'react';
 import FirmwareUpdateStore from '../../../app/scripts/react-directives/firmware-update/store';
 
 
-it("initializes store", () => {
+it("initializes upload store", () => {
 
     let store = new FirmwareUpdateStore();
 
-    expect(store.destination).toBe("/fwupdate/upload");
+    expect(store.uploadDestination).toBe("/fwupdate/upload");
+    expect(store.resetDestination).toBe("/fwupdate/factoryreset");
+    expect(store.resetMode).toBe(false);
     expect(store.accept).toBe(".fit");
     expect(store.expandRootfs).toBe(true);
     expect(store.receivedFirstStatus).toBe(false);
+    expect(store.isActive).toBe(false);
     expect(store.uploading).toBe(false);
     expect(store.running).toBe(false);
     expect(store.progressPercents).toBe(0);
@@ -24,6 +27,33 @@ it("initializes store", () => {
     expect(store._timer).toBe(null);
     expect(store.modalState).toBeDefined();
     expect(store.modalState.id).toBe("downloadBackupModal");
+
+});
+
+it("initializes reset store", () => {
+
+    let store = new FirmwareUpdateStore(true);
+
+    expect(store.uploadDestination).toBe("/fwupdate/upload");
+    expect(store.resetDestination).toBe("/fwupdate/factoryreset");
+    expect(store.resetMode).toBe(true);
+    expect(store.accept).toBe(".fit");
+    expect(store.expandRootfs).toBe(true);
+    expect(store.receivedFirstStatus).toBe(false);
+    expect(store.isActive).toBe(false);
+    expect(store.uploading).toBe(false);
+    expect(store.running).toBe(false);
+    expect(store.progressPercents).toBe(0);
+    expect(store.logRows).toEqual([]);
+    expect(store.stateType).toBe("");
+    expect(store.stateMsg).toBe("");
+    expect(store.doneLabel).toBe("");
+    expect(store.isDone).toBe(false);
+    expect(store.error).toBe(null);
+    expect(store._mqttStatusIsSet).toBe(false);
+    expect(store._timer).toBe(null);
+    expect(store.modalState).toBeDefined();
+    expect(store.modalState.id).toBe("factoryResetModal");
 
 });
 
@@ -107,6 +137,7 @@ it("shows done button", () => {
 it("handles done click", () => {
 
     let store = new FirmwareUpdateStore();
+    store.isActive = true;
     store.isDone = true;
     store.running = true;
     store.uploading = true;
@@ -114,6 +145,7 @@ it("handles done click", () => {
 
     store.onDoneClick();
 
+    expect(store.isActive).toBe(false);
     expect(store.isDone).toBe(false);
     expect(store.running).toBe(false);
     expect(store.uploading).toBe(false);
@@ -246,25 +278,48 @@ it('sets canUpload', () => {
 it('sets inProgress', () => {
 
     const store = new FirmwareUpdateStore();
+
+    store.isActive = false;
     store.uploading = false;
     store.running = false;
 
     expect(store.inProgress).toBe(false);
 
+    store.isActive = true;
     store.uploading = true;
     store.running = false;
 
     expect(store.inProgress).toBe(true);
 
+    store.isActive = true;
     store.uploading = false;
     store.running = true;
 
     expect(store.inProgress).toBe(true);
 
+    store.isActive = true;
     store.uploading = true;
     store.running = true;
 
     expect(store.inProgress).toBe(true);
+
+    store.isActive = false;
+    store.uploading = true;
+    store.running = false;
+
+    expect(store.inProgress).toBe(false);
+
+    store.isActive = false;
+    store.uploading = false;
+    store.running = true;
+
+    expect(store.inProgress).toBe(false);
+
+    store.isActive = false;
+    store.uploading = true;
+    store.running = true;
+
+    expect(store.inProgress).toBe(false);
 
 });
 

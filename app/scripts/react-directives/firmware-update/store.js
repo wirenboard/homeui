@@ -1,13 +1,16 @@
 import { makeAutoObservable } from 'mobx';
 import DownloadBackupModalState from './modal';
+import FactoryResetFitsState from './factory-reset';
 
 class FirmwareUpdateStore {
-  constructor() {
-    this.destination = '/fwupdate/upload';
+  constructor(resetMode = false) {
+    this.uploadDestination = '/fwupdate/upload';
+    this.resetDestination = '/fwupdate/factoryreset';
+    this.resetMode = resetMode;
     this.accept = '.fit';
     this.expandRootfs = true;
-
     this.receivedFirstStatus = false;
+    this.isActive = false;
     this.uploading = false;
     this.running = false;
     this.progressPercents = 0;
@@ -20,7 +23,8 @@ class FirmwareUpdateStore {
     this._mqttStatusIsSet = false;
     this._timer = null;
 
-    this.modalState = new DownloadBackupModalState();
+    this.modalState = new DownloadBackupModalState(this.resetMode ? 'factoryResetModal' : 'downloadBackupModal', this.resetMode);
+    this.factoryResetFitsState = new FactoryResetFitsState();
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -56,6 +60,7 @@ class FirmwareUpdateStore {
   }
 
   onDoneClick() {
+    this.isActive = false;
     this.isDone = false;
     this.running = false;
     this.uploading = false;
@@ -96,10 +101,11 @@ class FirmwareUpdateStore {
   }
 
   get inProgress() {
-    return this.running || this.uploading;
+    return this.isActive && (this.running || this.uploading);
   }
 
   onUploadStart() {
+    this.isActive = true;
     this.clearLog();
     this.uploading = true;
     this.showState('info', 'system.states.uploading');

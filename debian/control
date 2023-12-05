@@ -9,7 +9,8 @@ Homepage: https://github.com/wirenboard/homeui
 Package: wb-mqtt-homeui
 Architecture: all
 Conflicts: wb-homa-webinterface
-Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools, nginx-extras, wb-utils (>= 2.0)
+Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools, nginx-extras, wb-utils (>= 4.20.1),
+  wb-configs (>= 3.21.0)
 Recommends: wb-mqtt-logs, wb-device-manager
 Suggests: wb-mqtt-confed (>= 1.4.0),
 Breaks: wb-mqtt-confed (<< 1.0.3), wb-mqtt-db (<< 1.5), wb-mqtt-serial (<< 2.64.0), wb-device-manager (<< 1.4.0~~),

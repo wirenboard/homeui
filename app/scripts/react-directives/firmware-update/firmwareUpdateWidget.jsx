@@ -16,7 +16,29 @@ import {
   ModalFooter,
   ModalTitle,
 } from '../components/modals/modals';
-import {Checkbox} from "../common";
+import {Checkbox} from '../common';
+import {MODAL_MODE_UPDATE, MODAL_MODE_UPDATE_RESET, MODAL_MODE_FACTORY_RESET} from './modal';
+
+async function SubmitRequest(store) {
+  store.onUploadStart();
+  const form = new FormData();
+  form.append('factory_reset', 'true');
+  const requestOptions = {
+    method: 'POST',
+    body: form,
+  };
+  try {
+    const response = await fetch(store.resetDestination, requestOptions);
+    if (response.status !== 200) {
+      const text = await response.text();
+      store.onUploadError({ uploadResponse: { data: text } });
+    } else {
+      store.onUploadFinish();
+    }
+  } catch (e) {
+    store.onUploadError({ uploadResponse: { data: e.message } });
+  }
+}
 
 const DoneButton = ({ onDoneClick, doneLabel }) => {
   const { t } = useTranslation();
@@ -46,16 +68,16 @@ const FirmwareUpdateLog = ({ logRows }) => {
   );
 };
 
-const UploadButton = ({ label, style, onClick }) => {
+const UploadButton = ({ label, style, onClick, disabled }) => {
   const uploady = useUploady();
   const onClickInternal = () => {
     uploady.showFileUpload();
-    if (onClick) onClick();
+    onClick?.();
   };
   const { t } = useTranslation();
 
   return (
-    <button type="file" className={'btn btn-' + style} onClick={onClickInternal}>
+    <button type="file" disabled={disabled} className={'btn btn-' + style} onClick={onClickInternal}>
       {t(label)}
     </button>
   );
@@ -106,7 +128,7 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   );
 };
 
-const UploadEntrypoint = observer(({ checkboxHandler, showModal, expandRootFs }) => {
+const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootFs }) => {
   const { t } = useTranslation();
 
   return (
@@ -124,7 +146,7 @@ const UploadEntrypoint = observer(({ checkboxHandler, showModal, expandRootFs })
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
-        <Checkbox id="id_expand_rootfs" label={t('system.update.expandrootfs')} onChange={checkboxHandler} value={expandRootFs} />
+        <Checkbox id="id_fu_expand_rootfs" label={t('system.update.expandrootfs')} onChange={expandRootFsHandler} value={expandRootFs} />
       </div>
     </div>
   );
@@ -157,22 +179,26 @@ const UploadProgress = observer(({ store }) => {
 });
 
 const UploadWidget = observer(({ store }) => {
+  const { t } = useTranslation();
+
+  if (store.inProgress) {
+    return <UploadProgress store={store} />;
+  }
+  if (store.resetMode) {
+    return (
+      <ResetEntrypoint
+        onUploadClick={() => { store.modalState.show(MODAL_MODE_UPDATE_RESET); }}
+        onResetClick={() => { store.modalState.show(MODAL_MODE_FACTORY_RESET); }}
+        canFactoryReset={store.factoryResetFitsState.canDoFactoryReset}
+      />
+    );
+  }
   return (
-    <>
-      {store.inProgress ? (
-        <UploadProgress store={store} />
-      ) : (
-        <UploadEntrypoint
-          checkboxHandler={e => {
-            store.setExpandRootfs(e.target.checked);
-          }}
-          showModal={() => {
-            store.modalState.show();
-          }}
-          expandRootFs={store.expandRootfs}
-        />
-      )}
-    </>
+    <UpdateEntrypoint
+      expandRootFsHandler={e => { store.setExpandRootfs(e.target.checked); }}
+      showModal={() => { store.modalState.show(MODAL_MODE_UPDATE); }}
+      expandRootFs={store.expandRootfs}
+    />
   );
 });
 
@@ -190,12 +216,29 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemErrorListener(store.onUploadError);
 
   useRequestPreSend(({ items, options }) => {
-    let params = { expand_rootfs: store.expandRootfs };
+    const params = store.resetMode ? { factory_reset: true } : { expand_rootfs: store.expandRootfs };
     return {
-      options: { params }, //will be merged with the rest of the options
+      options: { params }, // will be merged with the rest of the options
     };
   });
 
+  if (store.resetMode) {
+    return (
+      <>
+        <FactoryResetModal state={store.modalState} store={store} />
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <h3 className="panel-title">
+                <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
+            </h3>
+          </div>
+          <div className="panel-body">
+            {store.receivedFirstStatus ? <UploadWidget store={store} /> : <ServiceUnavailable />}
+          </div>
+        </div>
+      </>
+    );
+  }
   return (
     <>
       <DownloadBackupModal {...store.modalState} />
@@ -213,13 +256,107 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   );
 });
 
+const ResetConfirmation = ({ mode, onChange, value }) => {
+  if (mode !== MODAL_MODE_UPDATE_RESET && mode !== MODAL_MODE_FACTORY_RESET) {
+    return null;
+  }
+
+  return (
+    <div>
+      <Trans i18nKey="system.factory_reset.modal_page" />
+      <div>
+        <hr />
+        <Trans i18nKey="system.factory_reset.confirm_prompt" />
+        &nbsp;
+        <input onChange={onChange} type="text" value={value} />
+      </div>
+    </div>
+  );
+};
+
+const FactoryResetModal = observer(({ state, store }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
+      <ModalHeader>
+        <ModalTitle id={state.id} text={t('system.factory_reset.modal_title')}></ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <ResetConfirmation
+          mode={state.mode}
+          onChange={(e) => { state.onConfirmationTextChange(e); }}
+          value={state.enteredConfirmationText}
+        />
+      </ModalBody>
+      <ModalFooter>
+        {state.mode === MODAL_MODE_UPDATE_RESET ? (
+          <UploadButton
+              disabled={!state.enableButtons}
+              label={t('system.buttons.select_and_reset')}
+              style="danger"
+              onClick={state.onCancel}
+          />
+        ) : state.mode === MODAL_MODE_FACTORY_RESET ? (
+          <ResetButton
+            store={store}
+            label={t('system.buttons.reset')}
+            style="danger"
+            onClick={state.onCancel}
+          />
+        ) : null}
+      </ModalFooter>
+    </Modal>
+  );
+});
+
+const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <div>
+        <ul className="notes">
+          <li>{t('system.factory_reset.warning1')}</li>
+          {canFactoryReset ? (
+            <li>{t('system.factory_reset.warning2')}</li>
+          ) : null}
+        </ul>
+      </div>
+      <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
+        {t('system.buttons.select')}
+      </button>
+      &nbsp;
+      {canFactoryReset ? (
+        <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
+          {t('system.buttons.reset')}
+        </button>
+      ) : null}
+    </div>
+  );
+});
+
+const ResetButton = ({ label, style, onClick, store }) => {
+  const onClickInternal = () => {
+    SubmitRequest(store);
+    onClick?.();
+  };
+  const { t } = useTranslation();
+
+  return (
+    <button type="file" disabled={!store.modalState.enableButtons} className={'btn btn-' + style} onClick={onClickInternal}>
+      {t(label)}
+    </button>
+  );
+};
+
 const CreateFirmwareUpdateWidget = ({ store }) => (
   <Uploady
     autoUpload
     accept={store.accept}
     multiple={false}
     method="POST"
-    destination={{ url: store.destination }}
+    destination={{ url: store.uploadDestination }}
   >
     <FirmwareUpdateWidget store={store} />
   </Uploady>
