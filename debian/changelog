@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.44.4-wb101) stable; urgency=medium
+
+  * Add Wiren Board cloud widget
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Thu, 07 Dec 2023 16:20:25 +0600
+
 wb-mqtt-homeui (2.44.4-wb100) stable; urgency=medium
 
   * Fix MAI6 config editing
