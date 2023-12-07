@@ -5,7 +5,7 @@ PATH := /usr/local/bin:$(PATH)
 all: build
 
 clean:
-	npm run clean
+	[ -n $$SCHROOT_SESSION_ID ] && npm run clean || true
 
 build:
 	# FIXME: this replaces git:// with https:// somewhere in node modules
