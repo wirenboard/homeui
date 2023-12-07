@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.1) stable; urgency=medium
+
+  * Fix diag-collect "download" button, if connected via cloud
+
+ -- Vladimir Romanov <v.romanov@wirenboard.ru>  Thu, 07 Dec 2023 10:21:21 +0500
+
 wb-mqtt-homeui (2.78.0) stable; urgency=medium
 
   * Add update with reset button to system options page

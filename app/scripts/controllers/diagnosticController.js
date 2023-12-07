@@ -74,7 +74,7 @@ class DiagnosticCtrl {
           $scope.path = names['fullname'];
           $scope.basename = names['basename'];
           var url = getUrl();
-          fileIsOk('http://' + url + '/diag/' + $scope.basename, callbackFileIsOk);
+          fileIsOk(location.protocol + '//' + url + '/diag/' + $scope.basename, callbackFileIsOk);
         },
         err => {
           $scope.collecting = false;
