@@ -19,6 +19,14 @@
             "reboot": "Rebooting, please wait",
             "uploading": "Uploading firmware file",
             "uploaded": "Upload complete"
+        },
+        "cloud-status": {
+            "title": "Cloud status",
+            "activation-link-preamble": "To connect this Wiren Board to cloud, press",
+            "activation-link": "this link",
+            "status-ok": "Connected to cloud",
+            "status-error": "Cloud connection error",
+            "goto-cloud": "Open this controller in cloud"
         }
     },
     "collector": {

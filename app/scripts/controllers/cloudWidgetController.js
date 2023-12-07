@@ -6,6 +6,7 @@ class CloudWidgetCtrl {
     $scope.cloudOk = false;
     $scope.cloudError = null;
     $scope.activationLink = null;
+    $scope.cloudLink = "https://wirenboard.cloud/";
 
     mqttClient.addStickySubscription('/devices/system__wb-cloud-agent/controls/status', function(msg) {
       if (msg.payload == "") {
@@ -17,10 +18,13 @@ class CloudWidgetCtrl {
       }
     });
 
-    mqttClient.addStickySubscription('/devices/system__wb-cloud-agent/controls/activation-link', function(msg) {
+    mqttClient.addStickySubscription('/devices/system__wb-cloud-agent/controls/activation_link', function(msg) {
       $scope.activationLink = (msg.payload.startsWith("http")) ? msg.payload : null;
     });
 
+    mqttClient.addStickySubscription('/devices/system/controls/Short SN', function(msg) {
+      $scope.cloudLink = "https://wirenboard.cloud/controllers/" + msg.payload;
+    });
   }
 }
 

@@ -19,6 +19,14 @@
             "reboot": "Перезагрузка, пожалуйста, подождите",
             "uploading": "Файл прошивки загружается",
             "uploaded": "Загрузка завершена"
+        },
+        "cloud-status": {
+            "title": "Подключение к облаку",
+            "activation-link-preamble": "Почти готово! Для подключения контроллера к Wiren Board Cloud, нажмите",
+            "activation-link": "эту ссылку",
+            "status-ok": "Этот контроллер подключен к облаку",
+            "status-error": "Ошибка подключения к облаку",
+            "goto-cloud": "Перейти в Wiren Board Cloud"
         }
     },
     "collector": {
