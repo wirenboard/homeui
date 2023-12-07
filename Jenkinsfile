@@ -1,1 +1,1 @@
-buildDebArchAll defaultDebianRelease: 'stretch'
+buildDebSbuild defaultTargets: 'stretch-host'
