@@ -1,6 +1,26 @@
 
 <h1 class="page-header" translate>{{'system.title'}}</h1>
 
+<div ng-controller="CloudWidgetCtrl">
+    <div class="panel panel-heading" ng-if="cloudAvailable">
+        <h3 class="panel-title"><i class="glyphicon glyphicon-cloud"></i> {{'system.cloud-status.title' | translate}}</h3>
+        <div class="panel-body">
+            <div class="alert alert-success" ng-show="cloudOk && !activationLink" translate>
+                {{'system.cloud-status.status-ok' | translate}}
+                <a href="https://wirenboard.cloud" target="_blank" class="btn btn-success btn-lg">
+                  <i class="glyphicon glyphicon-cloud"></i> {{'system.cloud-status.goto-cloud' | translate}}
+                </a>
+            </div>
+            <div class="alert alert-danger" ng-show="!cloudOk" translate>
+                {{'system.cloud-status.status-error' | translate}}: {{cloudError}}
+            </div>
+            <div class="alert alert-info" ng-show="activationLink && cloudOk" translate>
+                {{'system.cloud-status.activation-link-preamble' | translate}} <a href="{{activationLink}}" target="_blank">{{'system.cloud-status.activation-link' | translate}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="panel panel-default" ng-controller="FirmwareCtrl">
     <div class="panel-heading">
         <h3 class="panel-title"><i class="glyphicon glyphicon-upload"></i> {{'system.update.title' | translate}}</h3>
