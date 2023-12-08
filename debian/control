@@ -3,8 +3,8 @@ Maintainer: Evgeny Boger <boger@contactless.ru>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9), pkg-config, nodejs-12 | nodejs (<< 13)
-Build-Conflicts: node-rimraf
+Build-Depends: debhelper (>= 9), pkg-config, nodejs-12
+Build-Conflicts: nodejs (> 12)
 
 Package: wb-mqtt-homeui
 Architecture: all
