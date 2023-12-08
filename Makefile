@@ -5,7 +5,7 @@ PATH := /usr/local/bin:$(PATH)
 all: build
 
 clean:
-	npm run clean || true
+	if [ -n "$(SCHROOT_SESSION_ID)" ]; then npm install rimraf; npm run clean ; fi
 
 build:
 	# FIXME: this replaces git:// with https:// somewhere in node modules

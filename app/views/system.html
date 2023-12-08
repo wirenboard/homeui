@@ -1,6 +1,30 @@
 
 <h1 class="page-header" translate>{{'system.title'}}</h1>
 
+<div ng-controller="CloudWidgetCtrl">
+    <div class="panel panel-default" ng-if="cloudAvailable">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="glyphicon glyphicon-cloud"></i> {{'system.cloud-status.title' | translate}}</h3>
+        </div>
+        <div class="panel-body">
+            <div ng-show="cloudOk && !activationLink">
+                <div class="alert alert-success">
+                    <i class="glyphicon glyphicon-ok"></i> {{'system.cloud-status.status-ok' | translate}}
+                </div>
+                <a href="{{cloudLink}}" target="_blank" class="btn btn-success btn-lg">
+                    <i class="glyphicon glyphicon-cloud"></i> {{'system.cloud-status.goto-cloud' | translate}}
+                </a>
+            </div>
+            <div class="alert alert-danger" ng-show="!cloudOk">
+                <i class="glyphicon glyphicon-remove"></i> {{'system.cloud-status.status-error' | translate}}: {{cloudError}}
+            </div>
+            <div class="alert alert-info" ng-show="activationLink && cloudOk">
+                {{'system.cloud-status.activation-link-preamble' | translate}} <a href="{{activationLink}}" target="_blank" class="alert-link">{{'system.cloud-status.activation-link' | translate}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="panel panel-default" ng-controller="FirmwareCtrl">
     <div class="panel-heading">
         <h3 class="panel-title"><i class="glyphicon glyphicon-upload"></i> {{'system.update.title' | translate}}</h3>
