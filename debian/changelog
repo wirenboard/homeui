@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.14-wb102) stable; urgency=medium
+
+  * Minimal WB Cloud support
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Mon, 11 Dec 2023 19:42:57 +0600
+
 wb-mqtt-homeui (2.75.14-wb101) stable; urgency=medium
 
   * Add status labels for connections deactivated by wb-connection-manager
