@@ -136,6 +136,10 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
 
     id = clientid;
 
+    if (parseInt(port) === 443 || location.protocol === 'https:') {
+        connectOptions.useSSL = true;
+    }
+
     retainIsDone = false;
     retainHackTopic = "/tmp/" + id + "/retain_hack";
     retainReady = $q.defer();
@@ -169,7 +173,11 @@ function mqttClient($window, $rootScope, $timeout, $q, topicMatches, mqttConnect
       get: () => MAX_QUEUED_MESSAGES - client.inFlightMessages.length,
     });
 
-    client.connect(angular.copy(connectOptions));
+    try {
+        client.connect(angular.copy(connectOptions));
+    } catch (e) {
+        console.error(e);
+    }
   };
 
   //...........................................................................
