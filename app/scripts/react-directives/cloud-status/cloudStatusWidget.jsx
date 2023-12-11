@@ -6,9 +6,10 @@ const ActivationLink = observer(({ link }) => {
   const { t } = useTranslation();
   return (
     <div className="alert alert-info">
-      { t('system.cloud-status.activation-link-preamble') }
-      {' '}
-      <a href={link} className="alert-link" target="_blank" rel="noreferrer">{ t('system.cloud-status.activation-link') }</a>
+      {t('system.cloud-status.activation-link-preamble')}{' '}
+      <a href={link} className="alert-link" target="_blank" rel="noreferrer">
+        {t('system.cloud-status.activation-link')}
+      </a>
     </div>
   );
 });
@@ -19,29 +20,23 @@ const CloudStatus = observer(({ status }) => {
   if (status == 'ok') {
     return (
       <div className="alert alert-success">
-        <i className="glyphicon glyphicon-ok" />
-        {' '}
-        {t('system.cloud-status.status-ok')}
+        <i className="glyphicon glyphicon-ok" /> {t('system.cloud-status.status-ok')}
       </div>
     );
   }
   return (
     <div className="alert alert-danger">
-      <i className="glyphicon glyphicon-remove" />
-      {' '}
-      {t('system.cloud-status.status-error') + status}
+      <i className="glyphicon glyphicon-remove" /> {t('system.cloud-status.status-error') + status}
     </div>
   );
 });
 
-function CloudLink() {
+function CloudLink({ link }) {
   const { t } = useTranslation();
 
   return (
-    <a href="https://wirenboard.cloud" target="_blank" className="btn btn-success btn-lg" rel="noreferrer">
-      <i className="glyphicon glyphicon-cloud" />
-      {' '}
-      {t('system.cloud-status.goto-cloud')}
+    <a href={link} target="_blank" className="btn btn-success btn-lg" rel="noreferrer">
+      <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.goto-cloud')}
     </a>
   );
 }
@@ -57,18 +52,18 @@ const CloudStatusWidget = observer(({ store }) => {
     <div className="panel panel-default">
       <div className="panel-heading">
         <h3 className="panel-title">
-          <i className="glyphicon glyphicon-cloud" />
-          {' '}
-          {t('system.cloud-status.title')}
+          <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.title')}
         </h3>
       </div>
       <div className="panel-body">
-        { store.activationLink == null ? (
+        {store.activationLink == null ? (
           <>
             <CloudStatus status={store.status} />
-            <CloudLink />
+            <CloudLink link={store.cloudLink} />
           </>
-        ) : <ActivationLink link={store.activationLink} /> }
+        ) : (
+          <ActivationLink link={store.activationLink} />
+        )}
       </div>
     </div>
   );
