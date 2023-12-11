@@ -5,6 +5,7 @@ class CloudStatusStore {
     this.initialized = false;
     this.status = null;
     this.activationLink = null;
+    this.cloudLink = 'https://wirenboard.cloud';
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -21,6 +22,12 @@ class CloudStatusStore {
       return;
     }
     this.activationLink = activationLink;
+  }
+
+  setSn(sn) {
+    if (sn) {
+      this.cloudLink = 'https://wirenboard.cloud/controllers/' + sn;
+    }
   }
 }
 

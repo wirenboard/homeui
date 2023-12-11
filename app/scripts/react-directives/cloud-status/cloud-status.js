@@ -20,12 +20,19 @@ function cloudStatusDirective(mqttClient, whenMqttReady) {
       scope.root.render(CreateCloudStatusWidget({ store: scope.store }));
 
       whenMqttReady().then(() => {
-        mqttClient.addStickySubscription('/devices/system__wb-cloud-agent/controls/status', (msg) => {
+        mqttClient.addStickySubscription('/devices/system__wb-cloud-agent/controls/status', msg => {
           scope.store.updateStatus(msg.payload);
         });
 
-        mqttClient.addStickySubscription('/devices/system__wb-cloud-agent/controls/activation_link', (msg) => {
-          scope.store.updateActivationLink(msg.payload);
+        mqttClient.addStickySubscription(
+          '/devices/system__wb-cloud-agent/controls/activation_link',
+          msg => {
+            scope.store.updateActivationLink(msg.payload);
+          }
+        );
+
+        mqttClient.addStickySubscription('/devices/system/controls/Short SN', msg => {
+          scope.store.setSn(msg.payload);
         });
       });
 

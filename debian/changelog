@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.2) stable; urgency=medium
+
+  * Cloud link points to the device
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 11 Dec 2023 09:52:45 +0500
+
 wb-mqtt-homeui (2.78.1) stable; urgency=medium
 
   * Fix diag-collect "download" button, if connected via cloud
