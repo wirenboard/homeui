@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import CreateCloudStatusWidget from './cloudStatusWidget';
 import CloudStatusStore from './store';
 
-function cloudStatusDirective(mqttClient, whenMqttReady, DeviceData) {
+function cloudStatusDirective(mqttClient, whenMqttReady) {
   'ngInject';
 
   return {
@@ -30,12 +30,10 @@ function cloudStatusDirective(mqttClient, whenMqttReady, DeviceData) {
             scope.store.updateActivationLink(msg.payload);
           }
         );
-      });
 
-      mqttClient.whenReady().then(() => {
-        try {
-          scope.store.setSn(DeviceData.cell('system/Short SN').value);
-        } catch (e) {}
+        mqttClient.addStickySubscription('/devices/system/controls/Short SN', msg => {
+          scope.store.setSn(msg.payload);
+        });
       });
 
       element.on('$destroy', () => {
