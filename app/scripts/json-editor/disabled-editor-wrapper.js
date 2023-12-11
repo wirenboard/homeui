@@ -7,14 +7,9 @@ function makeDisabledEditorWrapper(Base) {
       this.disabledEditor = this.theme.getFormInputField(this.input_type);
       this.disabledEditor.style.display = 'none';
       this.disabledEditor.disabled = true;
-      if (
-        this.schema.options &&
-        this.schema.options.inputAttributes &&
-        this.schema.options.inputAttributes.placeholder
-      ) {
-        this.disabledEditor.value = this.translateProperty(
-          this.schema.options.inputAttributes.placeholder
-        );
+      disabledEditorText = this?.schema?.options?.wb?.disabledEditorText;
+      if (disabledEditorText) {
+        this.disabledEditor.value = this.translateProperty(disabledEditorText);
       } else {
         this.disabledEditor.value = this.translate('unknown');
       }
