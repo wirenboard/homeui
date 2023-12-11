@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.44.4-wb102-upgrade2) stable; urgency=medium
+
+  * Fix web ui in cloud
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Mon, 11 Dec 2023 19:26:21 +0600
+
 wb-mqtt-homeui (2.44.4-wb101-upgrade2) stable; urgency=medium
 
   * Add Wiren Board Cloud widget
