@@ -1,20 +1,3 @@
-    ******************************************************
-                    _                  __
-                   | |                / _|
-      ___ ____   __| |__   ___  _ __ | |_ ____ _    __  __
-     / __/_-. \/ __| '_ \ / _ \| '_ \|  _/_-. \ \  / / / /
-    | (__,--' | |  | |_) | (_) | | | | | ,--' |\ \/ / / /
-     \___\__,_|_|  |_.__/ \___/|_| |_|_| \__,_| \  / / /
-                                                /_/ /_/
-
-    *                                                    *
-    *   Made by Carbonfay & Contactless                  *
-    *                                                    *
-    *   http://carbonfay.ru     support@carbonfay.ru     *
-    *   http://contactless.ru   support@contactless.ru   *
-    *                                                    *
-    ******************************************************
-
 # homeui
 
 This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
