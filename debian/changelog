@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.3) stable; urgency=medium
+
+  * Fix optional parameters display in network connections settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 20 Dec 2023 10:04:02 +0500
+
 wb-mqtt-homeui (2.78.2) stable; urgency=medium
 
   * Cloud link points to the device
