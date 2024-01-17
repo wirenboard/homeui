@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.4) stable; urgency=medium
+
+  * Fix control error evaluating in meta JSON
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Wed, 17 Jan 2024 21:26:42 +0300
+
 wb-mqtt-homeui (2.78.3) stable; urgency=medium
 
   * Fix optional parameters display in network connections settings
