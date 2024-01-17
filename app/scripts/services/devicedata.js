@@ -494,6 +494,7 @@ function deviceDataService(mqttClient, $window) {
           this.setStep(m.precision);
           this.setUnits(m.units);
           this.setOrder(m.order);
+          this.setError(m.error);
         } catch (e) {}
       } else {
         this._nameTranslations = {};
@@ -504,6 +505,7 @@ function deviceDataService(mqttClient, $window) {
         this.setStep('');
         this.setUnits('');
         this.setOrder(0);
+        this.setError('');
       }
     }
 
