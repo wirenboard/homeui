@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.78.4) stable; urgency=medium
 
-  * Fix error handling if control meta has JSON type
+  * Add coloring of urri controls in red in case of error
 
  -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Wed, 17 Jan 2024 21:26:42 +0300
 
