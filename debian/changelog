@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.4) stable; urgency=medium
+
+  * Handle network configuration save errors
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 18 Jan 2024 18:12:23 +0500
+
 wb-mqtt-homeui (2.78.3) stable; urgency=medium
 
   * Fix optional parameters display in network connections settings

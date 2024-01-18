@@ -79,24 +79,21 @@ const NetworkConnectionsPage = observer(({ pageStore }) => {
       <h1 className="page-header">{t('network-connections.labels.connections')}</h1>
       <ConfirmModal {...pageStore.confirmModalState} />
       <SelectModal {...pageStore.selectNewConnectionModalState} />
-      {pageStore.loading ? (
-        <Spinner />
-      ) : (
-        <>
-          <DeprecationWarning deprecatedConnections={pageStore.connections.deprecatedConnections} />
-          <PageTabs
-            connections={pageStore.connections}
-            switcher={pageStore.switcher}
-            selectedIndex={pageStore.selectedTabIndex}
-            onSelect={(index, lastIndex) => pageStore.onSelect(index, lastIndex)}
-            onSelectConnection={index => pageStore.selectConnection(index)}
-            onAdd={() => pageStore.createConnection()}
-            onDeleteConnection={connection => pageStore.deleteConnection(connection)}
-            onToggleConnectionState={connection => pageStore.toggleConnectionState(connection)}
-            onSave={() => pageStore.saveAll()}
-          />
-        </>
-      )}
+      {pageStore.loading && <Spinner />}
+      <div style={{ display: pageStore.loading ? 'none' : '' }}>
+        <DeprecationWarning deprecatedConnections={pageStore.connections.deprecatedConnections} />
+        <PageTabs
+          connections={pageStore.connections}
+          switcher={pageStore.switcher}
+          selectedIndex={pageStore.selectedTabIndex}
+          onSelect={(index, lastIndex) => pageStore.onSelect(index, lastIndex)}
+          onSelectConnection={index => pageStore.selectConnection(index)}
+          onAdd={() => pageStore.createConnection()}
+          onDeleteConnection={connection => pageStore.deleteConnection(connection)}
+          onToggleConnectionState={connection => pageStore.toggleConnectionState(connection)}
+          onSave={() => pageStore.saveAll()}
+        />
+      </div>
     </div>
   );
 });
