@@ -1,6 +1,9 @@
 {
     "mqtt": {
         "title": "MQTT Channels",
+        "search": {
+            "placeholder": "Search for devices"
+        },
         "header": {
             "device": "Device",
             "control": "Control",
