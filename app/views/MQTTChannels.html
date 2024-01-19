@@ -1,5 +1,12 @@
 <h1 class="page-header" translate> {{'mqtt.title'}}</h1>
 
+<div class="form-group">
+    <div class="input-group">
+        <label for="mqtt-search" class="input-group-addon"><i class="glyphicon glyphicon-search"></i></label>
+        <input id="mqtt-search" type="text" class="form-control" placeholder="{{'mqtt.search.placeholder' | translate}}" ng-model="search" />
+    </div>
+</div>
+
 <div class="table-responsive">
     <table class="table table-bordered table-hover">
         <thead>
@@ -12,7 +19,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="row in $ctrl.getRows()">
+        <tr ng-repeat="row in $ctrl.getRows() | filter:search">
             <td>{{row.deviceId}}/{{row.controlId}}</td>
             <td>
                 {{row.type }}
