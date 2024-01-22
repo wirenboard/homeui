@@ -1,4 +1,3 @@
-import angular from 'angular';
 import template from './displaycell.html';
 
 function displayCellDirective(displayCellConfig, $compile) {
