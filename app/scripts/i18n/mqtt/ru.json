@@ -1,6 +1,9 @@
 {
     "mqtt": {
         "title": "Каналы MQTT",
+        "search": {
+            "placeholder": "Поиск по устройствам"
+        },
         "header": {
             "device": "Устройство",
             "control": "Контрол",
