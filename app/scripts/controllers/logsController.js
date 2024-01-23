@@ -269,7 +269,7 @@ class LogsCtrl {
             return this.convertTime(entry);
           });
           if (uiScrollIndex < this.logsTopUiScrollIndex) {
-            this.logsTopUiScrollIndex = this.logsTopUiScrollIndex - res.length;
+            this.logsTopUiScrollIndex = this.logsTopUiScrollIndex;
             this.logs.unshift(...res);
           } else {
             this.logs.push(...res);
