@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.9) stable; urgency=medium
+
+  * Fix displaying of cells with long text in Chrome-based browsers
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Jan 2024 10:43:45 +0500
+
 wb-mqtt-homeui (2.78.8) stable; urgency=medium
 
   * Handle network configuration save errors

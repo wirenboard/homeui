@@ -80,7 +80,7 @@ function displayCellDirective(displayCellConfig, $compile) {
           $compile('<' + directive + '></' + directive + '>')(scope, clonedElement => {
             let element_wrapper = element[0].querySelector('.display-cell-content');
             if (displayType == 'text') {
-              element_wrapper.style.overflowX = 'scroll';
+              element_wrapper.style.overflowX = 'auto';
             } else {
               element_wrapper.style.overflowX = null;
             }
