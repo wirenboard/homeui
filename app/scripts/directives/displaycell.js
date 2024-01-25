@@ -78,9 +78,13 @@ function displayCellDirective(displayCellConfig, $compile) {
           ).directive;
 
           $compile('<' + directive + '></' + directive + '>')(scope, clonedElement => {
-            angular
-              .element(element[0].querySelector('.display-cell-content').children[0])
-              .replaceWith(clonedElement);
+            let element_wrapper = element[0].querySelector('.display-cell-content');
+            if (displayType == 'text') {
+              element_wrapper.style.overflowX = 'scroll';
+            } else {
+              element_wrapper.style.overflowX = null;
+            }
+            angular.element(element_wrapper.children[0]).replaceWith(clonedElement);
           });
         }
       );
