@@ -80,7 +80,7 @@ const TabPaneButtons = observer(({ onSave, onDelete, connection }) => {
             key="save"
             label={t('network-connections.buttons.save')}
             type="success"
-            onClick={() => onSave(connection)}
+            onClick={onSave}
             disabled={!connection.isDirty || connection.hasErrors}
           />
           <Button

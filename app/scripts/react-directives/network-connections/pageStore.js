@@ -7,6 +7,8 @@ import SelectNewConnectionModalState from './selectNewConnectionModalState';
 import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
 
+const CONFED_WRITE_FILE_ERROR = 1002;
+
 class NetworkConnectionsPageStore {
   constructor(saveConnectionsFn, loadConnectionsFn, onToggleConnectionState) {
     this.confirmModalState = new ConfirmModalState();
@@ -62,7 +64,9 @@ class NetworkConnectionsPageStore {
           activePageStore.reset();
         }
         if (action === 'save') {
-          await this.saveAll();
+          if (!(await this.saveAll())) {
+            return false;
+          }
           activePageStore.submit();
         }
       }
@@ -91,10 +95,10 @@ class NetworkConnectionsPageStore {
     );
   }
 
-  async beforeConnectionSwitch() {
+  async allowConnectionSwitch() {
     const activeConnection = this.connections.connections[this.connections.selectedConnectionIndex];
     if (!activeConnection?.isDirty) {
-      return;
+      return true;
     }
 
     const action = activeConnection.hasErrors
@@ -102,35 +106,41 @@ class NetworkConnectionsPageStore {
       : await this.showHasChangesConfirmModal();
 
     if (action === 'save') {
-      await this.saveAll();
-    } else {
-      if (activeConnection.isNew) {
-        this.connections.removeConnection(activeConnection);
-      } else {
-        activeConnection.reset();
-      }
+      return await this.saveAll();
     }
+    if (activeConnection.isNew) {
+      this.connections.removeConnection(activeConnection);
+    } else {
+      activeConnection.reset();
+    }
+    return true;
   }
 
   async selectConnection(index) {
-    if (index >= 0 && index < this.connections.connections.length) {
-      await this.beforeConnectionSwitch();
+    if (
+      index >= 0 &&
+      index < this.connections.connections.length &&
+      (await this.allowConnectionSwitch())
+    ) {
       this.connections.setSelectedConnectionIndex(index);
     }
   }
 
   async createConnection() {
-    await this.beforeConnectionSwitch();
-    const connectionType = await this.selectNewConnectionModalState.show();
-    this.connections.setSelectedConnectionIndex(
-      this.connections.addConnection({ type: connectionType, state: 'new' })
-    );
+    if (await this.allowConnectionSwitch()) {
+      const connectionType = await this.selectNewConnectionModalState.show();
+      this.connections.setSelectedConnectionIndex(
+        this.connections.addConnection({ type: connectionType, state: 'new' })
+      );
+    }
   }
 
   async deleteConnection(connection) {
     if ((await this.showDeleteConnectionConfirmModal()) == 'ok') {
       if (!connection.isNew) {
-        await this.save(this.connections.connections.filter(item => item !== connection));
+        if (!(await this.save(this.connections.connections.filter(item => item !== connection)))) {
+          return;
+        }
       }
       this.connections.removeConnection(connection);
     }
@@ -138,6 +148,7 @@ class NetworkConnectionsPageStore {
 
   async save(connections) {
     this.setLoading(true);
+    this.setError('');
     const jsonToSave = {
       ui: {
         connections: connectionsToJson(connections),
@@ -154,10 +165,15 @@ class NetworkConnectionsPageStore {
         this.connections.updateUuids(savedConnections);
       }
       this.setLoading(false);
+      return true;
     } catch (err) {
-      this.setError(err.message);
+      if (err.data === 'EditorError' && err.code === CONFED_WRITE_FILE_ERROR) {
+        this.setError(i18n.t('network-connections.errors.write'));
+      } else {
+        this.setError(err.message);
+      }
       this.setLoading(false);
-      throw err;
+      return false;
     }
   }
 
@@ -184,7 +200,7 @@ class NetworkConnectionsPageStore {
   }
 
   async saveAll() {
-    await this.save(this.connections.connections);
+    return await this.save(this.connections.connections);
   }
 
   setConnectionState(connectionUuid, state) {

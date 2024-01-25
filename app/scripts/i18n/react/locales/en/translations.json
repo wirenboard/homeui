@@ -94,6 +94,9 @@
          "add": "Add",
          "connect": "Connect",
          "disconnect": "Disconnect"
+      },
+      "errors": {
+         "write": "Error writing config. See wb-mqtt-confed logs for details"
       }
    },
    "editors": {
