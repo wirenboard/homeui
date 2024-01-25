@@ -377,6 +377,10 @@ function makeGroupsEditor() {
     preBuildEditors() {
       Object.entries(this.schema.properties).forEach(([key, schema]) => {
         var group = this.groups.get(schema.group);
+        // schema.group is not declared in groups array, use root group
+        if (!group) {
+          group = this.groups.get(undefined);
+        }
         group.addEditor(key, this.storeEditor(key, undefined, group, schema));
       });
     }

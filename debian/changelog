@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.7) stable; urgency=medium
+
+  * Fix display of wb-mqtt-serial device configurations with incorrectly defined groups in template 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Jan 2024 10:22:51 +0500
+
 wb-mqtt-homeui (2.78.6) stable; urgency=medium
 
   * Fix displaying of cells with long text
