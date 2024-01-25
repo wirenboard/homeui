@@ -1,8 +1,32 @@
-wb-mqtt-homeui (2.78.4) stable; urgency=medium
+wb-mqtt-homeui (2.78.8) stable; urgency=medium
 
   * Handle network configuration save errors
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 18 Jan 2024 18:12:23 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Jan 2024 10:29:01 +0500
+
+wb-mqtt-homeui (2.78.7) stable; urgency=medium
+
+  * Fix display of wb-mqtt-serial device configurations with incorrectly defined groups in template 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Jan 2024 10:22:51 +0500
+
+wb-mqtt-homeui (2.78.6) stable; urgency=medium
+
+  * Fix displaying of cells with long text
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 22 Jan 2024 15:47:00 +0500
+
+wb-mqtt-homeui (2.78.5) stable; urgency=medium
+
+  * Add search bar in MQTT channels widget (thanks @iamdeuterium !)
+
+ -- Nikita Maslov <nikita.maslov@wirenboard.ru>  Fri, 19 Jan 2024 21:16:11 +0600
+
+wb-mqtt-homeui (2.78.4) stable; urgency=medium
+
+  * Add coloring of urri controls in red in case of error
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Wed, 17 Jan 2024 21:26:42 +0300
 
 wb-mqtt-homeui (2.78.3) stable; urgency=medium
 
