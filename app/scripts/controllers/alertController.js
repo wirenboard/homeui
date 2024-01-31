@@ -19,7 +19,11 @@ class AlertCtrl {
         return;
       }
       $scope.visible = true;
-      $scope.messageHtml = $('<div/>').text(message).html().replace(/\n/g, '<br>');
+      $scope.messageHtml = $('<div/>')
+        .text(message)
+        .html()
+        .replace(/\n/g, '<br>')
+        .replace(/\t/g, '&emsp;');
       if (!sticky) {
         oldTimeout = $timeout(function () {
           oldTimeout = null;

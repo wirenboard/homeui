@@ -14,7 +14,8 @@
         },
         "errors": {
             "load": "Error loading the file",
-            "save": "Error saving {{name}}"
+            "save": "Error saving {{name}}",
+            "unknown_device": "Unknown device signatures:\n{{devices}}"
         }
     }
 }
