@@ -13,6 +13,11 @@ function CreateNewDevice(schema, slaveId) {
       res[paramName] = paramSchema.enum[0];
     }
   });
+  Object.entries(schema.properties).forEach(([key, value]) => {
+    if (value.hasOwnProperty('requiredProp')) {
+      res[key] = value.default;
+    }
+  });
   return res;
 }
 
