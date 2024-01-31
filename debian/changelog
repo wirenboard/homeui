@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.75.6-cb8ea449-wb101) stable; urgency=medium
+
+  * Hide Settings->Scan
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 31 Jan 2024 13:34:00 +0400
+
 wb-mqtt-homeui (2.75.6-cb8ea449-wb100) stable; urgency=medium
 
   * Fix title
