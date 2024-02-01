@@ -102,7 +102,6 @@ function AddToConfig(config, devices, schema) {
         device.cfg.parity != port.parity ||
         device.cfg.stop_bits != port.stop_bits
       ) {
-        res.errors.push(MakeUnknownDeviceError(device));
         res.errors.push(MakeMisconfiguredDeviceError(device));
       }
     }
