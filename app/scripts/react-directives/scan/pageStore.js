@@ -201,15 +201,17 @@ class DeviceManagerStore {
 
   updateSerialConfig() {
     this.updateSerialConfigFn(
-      this.devicesStore.devices.map(d => {
-        return {
-          title: d.title,
-          device_signature: d.device_signature,
-          port: d.port.path,
-          slave_id: d.cfg.slave_id,
-          fw: d.fw.version,
-        };
-      })
+      this.devicesStore.devices
+        .filter(d => !d.bootloader_mode)
+        .map(d => {
+          return {
+            title: d.title,
+            device_signature: d.device_signature,
+            port: d.port.path,
+            cfg: d.cfg,
+            fw: d.fw.version,
+          };
+        })
     );
   }
 }

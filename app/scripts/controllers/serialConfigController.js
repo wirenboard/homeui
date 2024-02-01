@@ -42,8 +42,6 @@ function GetTemplateDeviceType(deviceSignature, fw, schema) {
   let deviceType = undefined;
   schema.definitions.device.oneOf.forEach(deviceSchema => {
     deviceSchema?.hw?.forEach(hw => {
-      console.log(hw.fw);
-      console.log(fw);
       if (
         hw.signature == deviceSignature &&
         FirmwareIsNewer(hw.fw, fw) &&
@@ -57,34 +55,72 @@ function GetTemplateDeviceType(deviceSignature, fw, schema) {
   return deviceType;
 }
 
+/**
+ * Add scanned devices to wb-mqtt-serial config
+ *
+ * @typedef {object} Scanned_Device_Config
+ * @property {number} slave_id
+ * @property {number} baud_rate
+ * @property {string} parity
+ * @property {number} data_bits
+ * @property {number} stop_bits
+ *
+ * @typedef {object} Scanned_Device
+ * @property {string} title
+ * @property {string} device_signature
+ * @property {string} port
+ * @property {Scanned_Device_Config} cfg
+ * @property {string} fw
+ *
+ * @typedef {object} Add_Result
+ * @property {object[]} errors errors array
+ * @property {added} added true if something is added to config
+ *
+ * @param {object} config wb-mqtt-serial config
+ * @param {Scanned_Device[]} devices scanned devices
+ * @param {object} schema JSON-schema for json-editor
+ * @returns {Add_Result}
+ */
 function AddToConfig(config, devices, schema) {
-  let res = { unknownDevices: [], added: false };
+  let res = { errors: [], added: false };
   devices.forEach(device => {
     const deviceType = GetTemplateDeviceType(device.device_signature, device.fw, schema);
     if (!deviceType) {
-      res.unknownDevices.push(device);
+      res.errors.push(MakeUnknownDeviceError(device));
       return;
     }
     let port = config.ports.find(p => p.path == device.port);
     if (!port) {
       return;
     }
-    if (!port.devices.find(d => d.slave_id == device.slave_id && d.device_type == deviceType)) {
-      port.devices.push(CreateNewDevice(GetDeviceSchema(schema, deviceType), device.slave_id));
+    if (!port.devices.find(d => d.slave_id == device.cfg.slave_id && d.device_type == deviceType)) {
+      port.devices.push(CreateNewDevice(GetDeviceSchema(schema, deviceType), device.cfg.slave_id));
       res.added = true;
+      if (
+        device.cfg.baud_rate != port.baud_rate ||
+        device.cfg.data_bits != port.data_bits ||
+        device.cfg.parity != port.parity ||
+        device.cfg.stop_bits != port.stop_bits
+      ) {
+        res.errors.push(MakeUnknownDeviceError(device));
+        res.errors.push(MakeMisconfiguredDeviceError(device));
+      }
     }
   });
   return res;
 }
 
-function MakeUnknownDevicesError(unknownDevices) {
+function MakeUnknownDeviceError(device) {
   return {
     msg: 'configurations.errors.unknown_device',
-    data: {
-      devices: unknownDevices
-        .map(d => `\t\t${d.title}:${d.slave_id} (${d.fw}): ${d.device_signature}`)
-        .join('\n'),
-    },
+    data: device,
+  };
+}
+
+function MakeMisconfiguredDeviceError(device) {
+  return {
+    msg: 'configurations.errors.misconfigured_device',
+    data: device,
   };
 }
 
@@ -132,9 +168,7 @@ class SerialConfigCtrl {
         .then(function (r) {
           $scope.file.configPath = r.configPath;
           const addResult = AddToConfig(r.content, $stateParams.devices, r.schema);
-          if (addResult.unknownDevices.length) {
-            errors.showError(MakeUnknownDevicesError(addResult.unknownDevices));
-          }
+          errors.showErrors(addResult.errors);
           PageState.setDirty(addResult.added);
           $scope.file.content = r.content;
           $scope.file.schema = r.schema;

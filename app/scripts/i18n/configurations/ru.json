@@ -15,7 +15,8 @@
         "errors": {
             "load": "Ошибка загрузки файла",
             "save": "Ошибка записи {{name}}",
-            "unknown_device": "Неизвестные типы устройств:\n{{devices}}"
+            "unknown_device": "Устройство {{title}}:{{cfg.slave_id}} имеет неизвестную сигнатуру {{device_signature}}. {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
+            "misconfigured_device": "Устройство {{title}}:{{cfg.slave_id}} имеет настройки порта {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}, отличающиеся от текущих"
         }
     }
 }

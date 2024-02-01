@@ -15,7 +15,8 @@
         "errors": {
             "load": "Error loading the file",
             "save": "Error saving {{name}}",
-            "unknown_device": "Unknown device signatures:\n{{devices}}"
+            "unknown_device": "Device {{title}}:{{cfg.slave_id}} has unknown signature {{device_signature}}. {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
+            "misconfigured_device": "Device {{title}}:{{cfg.slave_id}} has mismatching port settings {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}"
         }
     }
 }
