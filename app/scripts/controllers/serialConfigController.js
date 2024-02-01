@@ -73,7 +73,8 @@ function GetTemplateDeviceType(deviceSignature, fw, schema) {
  * @property {string} fw
  *
  * @typedef {object} Add_Result
- * @property {object[]} errors errors array
+ * @property {Scanned_Device[]} unknown unknown devices
+ * @property {Scanned_Device[]} misconfigured misconfigured devices
  * @property {added} added true if something is added to config
  *
  * @param {object} config wb-mqtt-serial config
@@ -82,11 +83,11 @@ function GetTemplateDeviceType(deviceSignature, fw, schema) {
  * @returns {Add_Result}
  */
 function AddToConfig(config, devices, schema) {
-  let res = { errors: [], added: false };
+  let res = { unknown: [], misconfigured: [], added: false };
   devices.forEach(device => {
     const deviceType = GetTemplateDeviceType(device.device_signature, device.fw, schema);
     if (!deviceType) {
-      res.errors.push(MakeUnknownDeviceError(device));
+      res.unknown.push(device);
       return;
     }
     let port = config.ports.find(p => p.path == device.port);
@@ -102,23 +103,27 @@ function AddToConfig(config, devices, schema) {
         device.cfg.parity != port.parity ||
         device.cfg.stop_bits != port.stop_bits
       ) {
-        res.errors.push(MakeMisconfiguredDeviceError(device));
+        res.misconfigured.push(device);
       }
     }
   });
   return res;
 }
 
-function MakeUnknownDeviceError(device) {
+function MakeUnknownDeviceError(device, first) {
   return {
-    msg: 'configurations.errors.unknown_device',
+    msg: first
+      ? 'configurations.errors.first_unknown_device'
+      : 'configurations.errors.unknown_device',
     data: device,
   };
 }
 
-function MakeMisconfiguredDeviceError(device) {
+function MakeMisconfiguredDeviceError(device, first) {
   return {
-    msg: 'configurations.errors.misconfigured_device',
+    msg: first
+      ? 'configurations.errors.first_misconfigured_device'
+      : 'configurations.errors.misconfigured_device',
     data: device,
   };
 }
@@ -166,9 +171,13 @@ class SerialConfigCtrl {
       ConfigEditorProxy.Load({ path: $scope.file.schemaPath })
         .then(function (r) {
           $scope.file.configPath = r.configPath;
-          const addResult = AddToConfig(r.content, $stateParams.devices, r.schema);
-          errors.showErrors(addResult.errors);
-          PageState.setDirty(addResult.added);
+          const res = AddToConfig(r.content, $stateParams.devices, r.schema);
+          errors.showErrors(
+            res.unknown
+              .map((dev, i) => MakeUnknownDeviceError(dev, i == 0))
+              .concat(res.misconfigured.map((dev, i) => MakeMisconfiguredDeviceError(dev, i == 0)))
+          );
+          PageState.setDirty(res.added);
           $scope.file.content = r.content;
           $scope.file.schema = r.schema;
           $scope.file.loaded = true;
