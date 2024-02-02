@@ -42,7 +42,7 @@ function errorsService($rootScope, $translate) {
             errors[index].reason
           );
         })
-        .join('\n\t');
+        .join('\n');
       if (message.length) {
         raiseError(message);
       }
