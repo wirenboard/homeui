@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.78.10) stable; urgency=medium
+
+  * Handle network connection creation cancel. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 20 Feb 2024 10:50:12 +0500
+
 wb-mqtt-homeui (2.78.9) stable; urgency=medium
 
   * Fix displaying of cells with long text in Chrome-based browsers

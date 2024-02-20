@@ -128,7 +128,14 @@ class NetworkConnectionsPageStore {
 
   async createConnection() {
     if (await this.allowConnectionSwitch()) {
-      const connectionType = await this.selectNewConnectionModalState.show();
+      let connectionType;
+      try {
+        connectionType = await this.selectNewConnectionModalState.show();
+      } catch (err) {
+        if (err == 'cancel') {
+          return;
+        }
+      }
       this.connections.setSelectedConnectionIndex(
         this.connections.addConnection({ type: connectionType, state: 'new' })
       );
