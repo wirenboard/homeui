@@ -1,4 +1,4 @@
-function CreateNewDevice(schema, slaveId) {
+function createNewDevice(schema, slaveId) {
   let res = { slave_id: String(slaveId) };
   schema.required.forEach(paramName => {
     if (paramName === 'slave_id') {
@@ -21,13 +21,13 @@ function CreateNewDevice(schema, slaveId) {
   return res;
 }
 
-function GetDeviceSchema(schema, deviceType) {
+function getDeviceSchema(schema, deviceType) {
   return schema.definitions.device.oneOf.find(deviceSchema => {
     return deviceSchema?.properties?.device_type?.default === deviceType;
   });
 }
 
-function FirmwareIsNewer(fw1, fw2) {
+function firmwareIsNewer(fw1, fw2) {
   if (fw1 === undefined) {
     return true;
   }
@@ -37,15 +37,15 @@ function FirmwareIsNewer(fw1, fw2) {
   return fw1.localeCompare(fw2, undefined, { numeric: true, sensitivity: 'base' }) == -1;
 }
 
-function GetTemplateDeviceType(deviceSignature, fw, schema) {
+function getTemplateDeviceType(deviceSignature, fw, schema) {
   let lastFwVersion = undefined;
   let deviceType = undefined;
   schema.definitions.device.oneOf.forEach(deviceSchema => {
     deviceSchema?.hw?.forEach(hw => {
       if (
         hw.signature == deviceSignature &&
-        FirmwareIsNewer(hw.fw, fw) &&
-        FirmwareIsNewer(lastFwVersion, hw.fw)
+        firmwareIsNewer(hw.fw, fw) &&
+        firmwareIsNewer(lastFwVersion, hw.fw)
       ) {
         lastFwVersion = hw.fw;
         deviceType = deviceSchema?.properties?.device_type?.default;
@@ -82,10 +82,10 @@ function GetTemplateDeviceType(deviceSignature, fw, schema) {
  * @param {object} schema JSON-schema for json-editor
  * @returns {Add_Result}
  */
-function AddToConfig(config, devices, schema) {
+function addToConfig(config, devices, schema) {
   let res = { unknown: [], misconfigured: [], added: false };
   devices.forEach(device => {
-    const deviceType = GetTemplateDeviceType(device.device_signature, device.fw, schema);
+    const deviceType = getTemplateDeviceType(device.device_signature, device.fw, schema);
     if (!deviceType) {
       res.unknown.push(device);
       return;
@@ -95,7 +95,7 @@ function AddToConfig(config, devices, schema) {
       return;
     }
     if (!port.devices.find(d => d.slave_id == device.cfg.slave_id && d.device_type == deviceType)) {
-      port.devices.push(CreateNewDevice(GetDeviceSchema(schema, deviceType), device.cfg.slave_id));
+      port.devices.push(createNewDevice(getDeviceSchema(schema, deviceType), device.cfg.slave_id));
       res.added = true;
       if (
         device.cfg.baud_rate != port.baud_rate ||
@@ -110,7 +110,7 @@ function AddToConfig(config, devices, schema) {
   return res;
 }
 
-function MakeUnknownDeviceError(device, first) {
+function makeUnknownDeviceError(device, first) {
   return {
     msg: first
       ? 'configurations.errors.first_unknown_device'
@@ -119,7 +119,7 @@ function MakeUnknownDeviceError(device, first) {
   };
 }
 
-function MakeMisconfiguredDeviceError(device, first) {
+function makeMisconfiguredDeviceError(device, first) {
   return {
     msg: first
       ? 'configurations.errors.first_misconfigured_device'
@@ -171,11 +171,11 @@ class SerialConfigCtrl {
       ConfigEditorProxy.Load({ path: $scope.file.schemaPath })
         .then(function (r) {
           $scope.file.configPath = r.configPath;
-          const res = AddToConfig(r.content, $stateParams.devices, r.schema);
+          const res = addToConfig(r.content, $stateParams.devices, r.schema);
           errors.showErrors(
             res.unknown
-              .map((dev, i) => MakeUnknownDeviceError(dev, i == 0))
-              .concat(res.misconfigured.map((dev, i) => MakeMisconfiguredDeviceError(dev, i == 0)))
+              .map((dev, i) => makeUnknownDeviceError(dev, i == 0))
+              .concat(res.misconfigured.map((dev, i) => makeMisconfiguredDeviceError(dev, i == 0)))
           );
           PageState.setDirty(res.added);
           $scope.file.content = r.content;
