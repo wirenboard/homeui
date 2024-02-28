@@ -1,3 +1,5 @@
+import firmwareIsNewer from '../utils/fwUtils';
+
 function createNewDevice(schema, slaveId) {
   let res = { slave_id: String(slaveId) };
   schema.required.forEach(paramName => {
@@ -25,16 +27,6 @@ function getDeviceSchema(schema, deviceType) {
   return schema.definitions.device.oneOf.find(deviceSchema => {
     return deviceSchema?.properties?.device_type?.default === deviceType;
   });
-}
-
-function firmwareIsNewer(fw1, fw2) {
-  if (fw1 === undefined) {
-    return true;
-  }
-  if (fw2 === undefined) {
-    return false;
-  }
-  return fw1.localeCompare(fw2, undefined, { numeric: true, sensitivity: 'base' }) == -1;
 }
 
 function getTemplateDeviceType(deviceSignature, fw, schema) {
