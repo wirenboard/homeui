@@ -230,7 +230,8 @@
          "confirm-delete": "Вы действительно хотите удалить {{item}}?",
          "add-device": "Добавить устройство",
          "port": "Порт",
-         "device-type": "Тип устройства"
+         "device-type": "Тип устройства",
+         "settings": "Настройки wb-mqtt-serial"
       },
       "buttons": {
          "save": "Сохранить настройки",

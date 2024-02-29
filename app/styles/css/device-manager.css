@@ -70,6 +70,20 @@
     flex-grow: 1;
 }
 
+.device-manager-page .settings-tab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 9px 10px;
+    gap: 3px;
+    border-radius: 2px;
+    border: 1px solid #ddd;
+}
+
+.device-manager-page .settings-tab span {
+    flex-grow: 1;
+}
+
 .device-manager-page .tab-content.well.well-small {
     margin-bottom: 0px;
 }

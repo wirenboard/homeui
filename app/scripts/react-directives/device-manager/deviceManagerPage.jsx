@@ -8,6 +8,7 @@ import JsonEditor from '../components/json-editor/jsonEditor';
 import { SelectModal } from '../components/modals/selectModal';
 import ConfirmModal from '../components/modals/confirmModal';
 import AddDeviceModal from './addDeviceModal';
+import { TabType } from './tabsStore';
 
 const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore }) => {
   if (!hasChildren) {
@@ -34,7 +35,7 @@ const PortTab = observer(({ title, hasErrors, hasChildren, collapsed, onCollapse
         onRestore={onRestore}
       />
       <span>{title}</span>
-      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign pull-right"></i>}
+      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
 });
@@ -43,14 +44,23 @@ const DeviceTab = ({ title, hasErrors }) => {
   return (
     <div className="device-tab">
       <span>{title}</span>
-      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign pull-right"></i>}
+      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign"></i>}
+    </div>
+  );
+};
+
+const SettingsTab = ({ title, hasErrors }) => {
+  return (
+    <div className="settings-tab">
+      <span>{title}</span>
+      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
 };
 
 function makeTabItems(tabs) {
   return tabs.map((tab, index) => {
-    if (tab.type == 'port') {
+    if (tab.type == TabType.PORT) {
       return (
         <TabItem key={index}>
           <PortTab
@@ -61,6 +71,13 @@ function makeTabItems(tabs) {
             onCollapse={tab.collapse}
             onRestore={tab.restore}
           />
+        </TabItem>
+      );
+    }
+    if (tab.type == TabType.SETTINGS) {
+      return (
+        <TabItem key={index}>
+          <SettingsTab title={tab.name} hasErrors={tab.hasErrors} />
         </TabItem>
       );
     }
@@ -77,7 +94,7 @@ function makeTabPanes(tabs, onDeleteTab) {
   return tabs.map((tab, index) => {
     return (
       <TabPane key={index}>
-        <div className={tab.type == 'port' ? 'port-tab-content' : 'device-tab-content'}>
+        <div className={tab.type == TabType.PORT ? 'port-tab-content' : 'device-tab-content'}>
           {tab.childrenHasErrors && <ErrorBar msg={t('device-manager.errors.device-config')} />}
           <JsonEditor
             schema={tab.schema}
@@ -85,13 +102,15 @@ function makeTabPanes(tabs, onDeleteTab) {
             root={'cn' + index}
             onChange={tab.setData}
           />
-          <Button
-            additionalStyles="pull-right delete-button"
-            key="delete"
-            label={t('device-manager.buttons.delete')}
-            type="danger"
-            onClick={onDeleteTab}
-          />
+          {tab.type != TabType.SETTINGS && (
+            <Button
+              additionalStyles="pull-right delete-button"
+              key="delete"
+              label={t('device-manager.buttons.delete')}
+              type="danger"
+              onClick={onDeleteTab}
+            />
+          )}
         </div>
       </TabPane>
     );
@@ -155,7 +174,7 @@ const DeviceManagerPage = observer(({ pageStore }) => {
       <PageHeader
         showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
         allowSave={pageStore.allowSave}
-        allowAddDevice={!pageStore.tabs.isEmpty}
+        allowAddDevice={pageStore.tabs.hasPortTabs}
         onSave={() => pageStore.save()}
         onAddDevice={() => pageStore.addDevice()}
       />

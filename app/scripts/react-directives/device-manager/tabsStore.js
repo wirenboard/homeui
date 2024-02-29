@@ -4,6 +4,12 @@ import { makeAutoObservable, makeObservable, observable, computed, action } from
 import { cloneDeep, isEqual } from 'lodash';
 import i18n from '../../i18n/react/config';
 
+export const TabType = {
+  PORT: 'port',
+  DEVICE: 'device',
+  SETTINGS: 'settings',
+};
+
 function getTranslation(key, translations) {
   return translations[i18n.language]?.[key] || translations?.en?.[key] || key;
 }
@@ -22,6 +28,10 @@ export function makeModbusTcpPortTabName(data, schema) {
 
 export function makeDeviceTabName(data, schema) {
   return `${data.slave_id || ''} ` + getTranslation(schema.title, schema.translations);
+}
+
+export function makeSettingsTabName(data, schema) {
+  return i18n.t('device-manager.labels.settings');
 }
 
 export class Tab {
@@ -111,12 +121,19 @@ export class TabsStore {
   }
 
   addPortTab(tab, initial) {
-    this.items.push(tab);
+    let i = this.items.length;
+    if (i > 0 && this.items[i - 1].type == TabType.SETTINGS) {
+      i--;
+    }
+    this.items.splice(i, 0, tab);
     if (!initial) {
-      this.selectedTabIndex = this.items.length - 1;
+      this.selectedTabIndex = i;
       this.hasNewOrDeletedItems = true;
     }
-    tab.children.forEach(child => this.items.push(child));
+    tab.children.forEach(child => {
+      i++;
+      this.items.splice(i, 0, child);
+    });
   }
 
   addDeviceTab(portTab, deviceTab, initial) {
@@ -127,7 +144,7 @@ export class TabsStore {
     this.items[portTabIndex].children.push(deviceTab);
     this.items[portTabIndex].restore();
     let i = portTabIndex + 1;
-    while (i < this.items.length && this.items[i]?.type != 'port') {
+    while (i < this.items.length && this.items[i]?.type == TabType.DEVICE) {
       i++;
     }
     this.items.splice(i, 0, deviceTab);
@@ -135,6 +152,10 @@ export class TabsStore {
       this.selectedTabIndex = i;
       this.hasNewOrDeletedItems = true;
     }
+  }
+
+  addSettingsTab(tab) {
+    this.items.push(tab);
   }
 
   onSelectTab(index, lastIndex) {
@@ -148,10 +169,10 @@ export class TabsStore {
 
   deleteSelectedTab() {
     let count = 1;
-    if (this.items[this.selectedTabIndex]?.type == 'port') {
+    if (this.items[this.selectedTabIndex]?.type == TabType.PORT) {
       while (
         this.selectedTabIndex + count < this.items.length &&
-        this.items[this.selectedTabIndex + count]?.type == 'device'
+        this.items[this.selectedTabIndex + count]?.type == TabType.DEVICE
       ) {
         count++;
       }
@@ -163,7 +184,7 @@ export class TabsStore {
 
   get selectedPortTab() {
     let i = this.selectedTabIndex;
-    while (i >= 0 && this.items[i]?.type != 'port') {
+    while (i >= 0 && this.items[i]?.type != TabType.PORT) {
       i--;
     }
     if (i >= this.items.length) {
@@ -173,9 +194,7 @@ export class TabsStore {
   }
 
   get portTabs() {
-    return this.items.filter(item => {
-      return item.type == 'port';
-    });
+    return this.items.filter(item => item.type == TabType.PORT);
   }
 
   get isValid() {
@@ -188,6 +207,10 @@ export class TabsStore {
 
   get isEmpty() {
     return this.items.length == 0;
+  }
+
+  get hasPortTabs() {
+    return this.items.some(item => item.type == TabType.PORT);
   }
 
   submit() {

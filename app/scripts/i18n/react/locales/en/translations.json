@@ -233,7 +233,8 @@
          "confirm-delete": "Do you really want to delete {{item}}?",
          "add-device": "Add device",
          "port": "Port",
-         "device-type": "Device type"
+         "device-type": "Device type",
+         "settings": "wb-mqtt-serial settings"
       },
       "buttons": {
          "save": "Save config",

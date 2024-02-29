@@ -11,10 +11,12 @@ import ConfirmModalState from '../components/modals/confirmModalState';
 import AddDeviceModalState from './addDeviceModalState';
 import {
   Tab,
+  TabType,
   TabsStore,
   makeDeviceTabName,
   makeModbusTcpPortTabName,
   makeSerialPortTabName,
+  makeSettingsTabName,
   makeTcpPortTabName,
 } from './tabsStore';
 
@@ -48,6 +50,13 @@ function getModbusTcpPortSchema(schema) {
   let res = getPortSchemaCommon(schema, 'modbusTcpPort');
   res.definitions['commonTcpPortSettings'] = cloneDeep(schema.definitions['commonTcpPortSettings']);
   return res;
+}
+
+function getGeneralSettingsSchema(schema) {
+  delete schema.definitions;
+  delete schema.properties.ports;
+  schema.description = '';
+  return schema;
 }
 
 function makePortSchemaMap(schema) {
@@ -193,7 +202,7 @@ class DeviceManagerPageStore {
   createPortTab(portConfig) {
     if (portConfig.port_type == 'serial' || portConfig.port_type === undefined) {
       return new Tab(
-        'port',
+        TabType.PORT,
         getPortData(portConfig),
         this.portSchemaMap['serial'],
         makeSerialPortTabName
@@ -201,7 +210,7 @@ class DeviceManagerPageStore {
     }
     if (portConfig.port_type == 'tcp') {
       return new Tab(
-        'port',
+        TabType.PORT,
         getPortData(portConfig),
         this.portSchemaMap['tcp'],
         makeTcpPortTabName
@@ -209,7 +218,7 @@ class DeviceManagerPageStore {
     }
     if (portConfig.port_type == 'modbus tcp') {
       return new Tab(
-        'port',
+        TabType.PORT,
         getPortData(portConfig),
         this.portSchemaMap['modbus tcp'],
         makeModbusTcpPortTabName
@@ -220,11 +229,16 @@ class DeviceManagerPageStore {
 
   createDeviceTab(deviceConfig) {
     return new Tab(
-      'device',
+      TabType.DEVICE,
       deviceConfig,
       this.deviceSchemaMap[deviceConfig?.device_type || deviceConfig?.protocol || 'modbus'],
       makeDeviceTabName
     );
+  }
+
+  createSettingsTab(config, schema) {
+    delete config.ports;
+    return new Tab(TabType.SETTINGS, config, getGeneralSettingsSchema(schema), makeSettingsTabName);
   }
 
   async load() {
@@ -243,6 +257,7 @@ class DeviceManagerPageStore {
         });
         this.tabs.addPortTab(portTab, true);
       });
+      this.tabs.addSettingsTab(this.createSettingsTab(config, schema));
       this.pageWrapperStore.clearError();
       this.loaded = true;
     } catch (err) {
@@ -313,18 +328,19 @@ class DeviceManagerPageStore {
     this.tabs.addDeviceTab(portTab, deviceTab);
   }
 
+  // TODO: Move to tabs store
   makeConfigJson() {
-    let config = { ports: [] };
+    let config = cloneDeep(this.tabs.items[this.tabs.items.length - 1].editedData);
     let lastPort = undefined;
     this.tabs.items.forEach(tab => {
-      if (tab.type == 'port') {
+      if (tab.type == TabType.PORT) {
         if (lastPort !== undefined) {
           config.ports.push(lastPort);
         }
         lastPort = cloneDeep(tab.editedData);
         lastPort.devices = [];
       } else {
-        if (lastPort !== undefined) {
+        if (this.tabs.type == TabType.DEVICE && lastPort !== undefined) {
           lastPort.devices.push(cloneDeep(tab.editedData));
         }
       }
