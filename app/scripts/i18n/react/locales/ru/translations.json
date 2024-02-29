@@ -8,7 +8,8 @@
       },
       "buttons": {
          "scan": "Сканировать",
-         "stop": "Остановить"
+         "stop": "Остановить",
+         "to-serial": "Добавить в wb-mqtt-serial"
       },
       "labels": {
          "available": "доступна {{version}}",

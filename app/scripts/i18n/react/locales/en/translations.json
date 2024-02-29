@@ -8,7 +8,8 @@
       },
       "buttons": {
          "scan": "Start scan",
-         "stop": "Stop scan"
+         "stop": "Stop scan",
+         "to-serial": "Add to wb-mqtt-serial"
       },
       "labels": {
          "device": "Device",

@@ -4,7 +4,7 @@ import { useMediaQuery } from 'react-responsive';
 import DevicesTable from './desktop';
 import DevicesList from './mobile';
 import { Trans, useTranslation } from 'react-i18next';
-import { ScanState } from './scan';
+import { ScanState } from './pageStore';
 import { Spinner, ErrorBar } from '../common';
 
 const Desktop = ({ children }) => {
@@ -29,10 +29,24 @@ function InfoMessage({ msg }) {
   );
 }
 
+const ToConfigButton = ({ onClick, actualState, hasDevices }) => {
+  const { t } = useTranslation();
+  const scanInProgress = actualState == ScanState.Started;
+  return (
+    <button
+      className={'btn btn-default'}
+      onClick={onClick}
+      disabled={scanInProgress || !hasDevices}
+    >
+      {t('device-manager.buttons.to-serial')}
+    </button>
+  );
+};
+
 function ScanButton({ actualState, requiredState, onStartScanning, onStopScanning }) {
   const { t } = useTranslation();
   const scanInProgress = actualState == ScanState.Started;
-  const classNames = 'btn pull-right ' + (scanInProgress ? 'btn-danger' : 'btn-success');
+  const classNames = 'btn ' + (scanInProgress ? 'btn-danger' : 'btn-success');
   const onClick = scanInProgress ? onStopScanning : onStartScanning;
 
   const transition = requiredState !== ScanState.NotSpecified && actualState != requiredState;
@@ -43,12 +57,31 @@ function ScanButton({ actualState, requiredState, onStartScanning, onStopScannin
   );
 }
 
-function Header(params) {
+function Header({
+  actualState,
+  requiredState,
+  onStartScanning,
+  onStopScanning,
+  onUpdateSerialConfig,
+  hasDevices,
+}) {
   const { t } = useTranslation();
   return (
-    <h1>
-      {t('device-manager.title')}
-      <ScanButton {...params} />
+    <h1 className="page-header">
+      <span>{t('device-manager.title')}</span>
+      <div className="pull-right button-group">
+        <ToConfigButton
+          onClick={onUpdateSerialConfig}
+          actualState={actualState}
+          hasDevices={hasDevices}
+        />
+        <ScanButton
+          actualState={actualState}
+          requiredState={requiredState}
+          onStartScanning={onStartScanning}
+          onStopScanning={onStopScanning}
+        />
+      </div>
     </h1>
   );
 }
@@ -96,8 +129,7 @@ function NotFoundMessage({ firstStart }) {
 }
 
 const DevicesPage = observer(
-  ({ mqtt, scanning, devices, errors, onStartScanning, onStopScanning }) => {
-    const { t } = useTranslation();
+  ({ mqtt, scanning, devices, errors, onStartScanning, onStopScanning, onUpdateSerialConfig }) => {
     if (mqtt.waitStartup) {
       return <Spinner />;
     }
@@ -107,13 +139,15 @@ const DevicesPage = observer(
     const nothingFound = devices.devices.length == 0;
     const scanInProgress = scanning.actualState == ScanState.Started;
     return (
-      <>
+      <div className="device-manager-page">
         {!(scanning.firstStart && nothingFound) && <ErrorBar msg={errors.error} />}
         <Header
           actualState={scanning.actualState}
           requiredState={scanning.requiredState}
           onStartScanning={onStartScanning}
           onStopScanning={onStopScanning}
+          onUpdateSerialConfig={onUpdateSerialConfig}
+          hasDevices={devices.devices.length}
         />
         <ScanProgressBar scanning={scanInProgress} progress={scanning.progress} />
         <Desktop>{!nothingFound && <DevicesTable devices={devices.devices} />}</Desktop>
@@ -126,13 +160,23 @@ const DevicesPage = observer(
           />
         )}
         {!scanInProgress && nothingFound && <NotFoundMessage firstStart={scanning.firstStart} />}
-      </>
+      </div>
     );
   }
 );
 
-function CreateDevicesPage(props) {
-  return <DevicesPage {...props} />;
+function CreateDevicesPage(store) {
+  return (
+    <DevicesPage
+      mqtt={store.mqttStore}
+      scanning={store.scanStore}
+      devices={store.devicesStore}
+      errors={store.globalError}
+      onStartScanning={() => store.startScanning()}
+      onStopScanning={() => store.stopScanning()}
+      onUpdateSerialConfig={() => store.updateSerialConfig()}
+    />
+  );
 }
 
 export default CreateDevicesPage;

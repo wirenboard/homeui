@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.79.0) stable; urgency=medium
+
+  * Add button to append scanned devices to wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 29 Feb 2024 09:39:15 +0500
+
 wb-mqtt-homeui (2.78.10) stable; urgency=medium
 
   * Handle network connection creation cancel. No functional changes
