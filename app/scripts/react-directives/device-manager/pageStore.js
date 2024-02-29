@@ -8,6 +8,7 @@ import { getDefaultObject } from './jsonSchemaUtils';
 import AccessLevelStore from '../components/access-level/accessLevelStore';
 import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
+import AddDeviceModalState from './addDeviceModalState';
 import {
   Tab,
   TabsStore,
@@ -143,6 +144,18 @@ function makeDeviceTypeSelectOptions(deviceSchemaMap) {
     });
 }
 
+function makePortTypeSelectOptions(portSchemaMap) {
+  return Object.entries(portSchemaMap).map(([portType, schema]) => {
+    return { label: getTranslation(schema.title, schema.translations), value: portType };
+  });
+}
+
+function makePortSelectOptions(portTabs) {
+  return portTabs.map(tab => {
+    return { label: tab.name, value: tab };
+  });
+}
+
 class DeviceManagerPageStore {
   constructor(loadConfigFn, saveConfigFn, rolesFactory) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
@@ -150,6 +163,7 @@ class DeviceManagerPageStore {
     this.pageWrapperStore = new PageWrapperStore();
     this.selectModalState = new SelectModalState();
     this.confirmModalState = new ConfirmModalState();
+    this.addDeviceModalState = new AddDeviceModalState();
     this.tabs = new TabsStore();
     this.deviceSchemaMap = {};
     this.portSchemaMap = {};
@@ -224,10 +238,10 @@ class DeviceManagerPageStore {
         if (portTab === undefined) {
           return;
         }
-        this.tabs.addTab(portTab, true);
         port.devices.forEach(device => {
-          this.tabs.addTab(this.createDeviceTab(device), true);
+          portTab.children.push(this.createDeviceTab(device));
         });
+        this.tabs.addPortTab(portTab, true);
       });
       this.pageWrapperStore.clearError();
       this.loaded = true;
@@ -249,9 +263,7 @@ class DeviceManagerPageStore {
       newPortType = await this.selectModalState.show(
         i18n.t('device-manager.buttons.add-port'),
         i18n.t('device-manager.buttons.add-port'),
-        Object.entries(this.portSchemaMap).map(([portType, schema]) => {
-          return { label: getTranslation(schema.title, schema.translations), value: portType };
-        })
+        makePortTypeSelectOptions(this.portSchemaMap)
       );
     } catch (err) {
       if (err == 'cancel') {
@@ -259,7 +271,7 @@ class DeviceManagerPageStore {
       }
     }
     let tab = this.createPortTab(getDefaultObject(this.portSchemaMap[newPortType]));
-    this.tabs.addTab(tab);
+    this.tabs.addPortTab(tab);
   }
 
   async showDeleteConfirmModal() {
@@ -284,19 +296,21 @@ class DeviceManagerPageStore {
 
   async addDevice() {
     let newDeviceType;
+    let portTab;
     try {
-      newDeviceType = await this.selectModalState.show(
-        i18n.t('device-manager.labels.add-device', { port: this.tabs.selectedPortTab.name }),
-        i18n.t('device-manager.buttons.add-device'),
-        makeDeviceTypeSelectOptions(this.deviceSchemaMap)
+      [portTab, newDeviceType] = await this.addDeviceModalState.show(
+        makePortSelectOptions(this.tabs.portTabs),
+        makeDeviceTypeSelectOptions(this.deviceSchemaMap),
+        this.tabs.selectedPortTab
       );
     } catch (err) {
       if (err == 'cancel') {
         return;
       }
+      throw err;
     }
-    let tab = this.createDeviceTab(getDefaultObject(this.deviceSchemaMap[newDeviceType]));
-    this.tabs.addTab(tab);
+    let deviceTab = this.createDeviceTab(getDefaultObject(this.deviceSchemaMap[newDeviceType]));
+    this.tabs.addDeviceTab(portTab, deviceTab);
   }
 
   makeConfigJson() {

@@ -231,7 +231,9 @@
          "title": "Device manager",
          "serial-port": "Serial port",
          "confirm-delete": "Do you really want to delete {{item}}?",
-         "add-device": "Add device to port {{port}}"
+         "add-device": "Add device",
+         "port": "Port",
+         "device-type": "Device type"
       },
       "buttons": {
          "save": "Save config",
@@ -240,7 +242,8 @@
          "add-device": "Add device"
       },
       "errors": {
-         "write":"Error writing config. See wb-mqtt-confed logs for details"
+         "write":"Error writing config. See wb-mqtt-confed logs for details",
+         "device-config": "Error in the settings of one or more devices"
       }
    }
 }

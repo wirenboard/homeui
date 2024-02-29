@@ -51,7 +51,9 @@ export class Tab {
       commitData: action,
       collapse: action.bound,
       restore: action.bound,
+      children: observable,
       hasChildren: computed,
+      hasErrors: computed,
     });
   }
 
@@ -89,6 +91,14 @@ export class Tab {
   get hasChildren() {
     return this.children.length != 0;
   }
+
+  get childrenHasErrors() {
+    return this.children.some(child => child.hasErrors);
+  }
+
+  get hasErrors() {
+    return !this.isValid || this.childrenHasErrors;
+  }
 }
 
 export class TabsStore {
@@ -100,30 +110,30 @@ export class TabsStore {
     makeAutoObservable(this);
   }
 
-  addTab(tab, initial) {
-    if (tab.type == 'port') {
-      this.items.push(tab);
-      if (!initial) {
-        this.selectedTabIndex = this.items.length - 1;
-        this.hasNewOrDeletedItems = true;
-      }
+  addPortTab(tab, initial) {
+    this.items.push(tab);
+    if (!initial) {
+      this.selectedTabIndex = this.items.length - 1;
+      this.hasNewOrDeletedItems = true;
+    }
+    tab.children.forEach(child => this.items.push(child));
+  }
+
+  addDeviceTab(portTab, deviceTab, initial) {
+    let portTabIndex = this.items.indexOf(portTab);
+    if (portTabIndex == -1) {
       return;
     }
-    let i = this.selectedTabIndex;
-    while (i > 0 && this.items[i]?.type != 'port') {
-      i--;
+    this.items[portTabIndex].children.push(deviceTab);
+    this.items[portTabIndex].restore();
+    let i = portTabIndex + 1;
+    while (i < this.items.length && this.items[i]?.type != 'port') {
+      i++;
     }
-    if (this.items[i]?.type == 'port') {
-      this.items[i].children.push(tab);
-      i = this.selectedTabIndex + 1;
-      while (i < this.items.length && this.items[i]?.type != 'port') {
-        i++;
-      }
-      this.items.splice(i, 0, tab);
-      if (!initial) {
-        this.selectedTabIndex = i;
-        this.hasNewOrDeletedItems = true;
-      }
+    this.items.splice(i, 0, deviceTab);
+    if (!initial) {
+      this.selectedTabIndex = i;
+      this.hasNewOrDeletedItems = true;
     }
   }
 
@@ -160,6 +170,12 @@ export class TabsStore {
       return undefined;
     }
     return this.items[i];
+  }
+
+  get portTabs() {
+    return this.items.filter(item => {
+      return item.type == 'port';
+    });
   }
 
   get isValid() {

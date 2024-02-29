@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../common';
+import { Button, ErrorBar } from '../common';
 import { PageWrapper, PageBody, PageTitle } from '../components/page-wrapper/pageWrapper';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { VerticalTabs, TabContent, TabItem, TabPane, TabsList } from '../compone
 import JsonEditor from '../components/json-editor/jsonEditor';
 import { SelectModal } from '../components/modals/selectModal';
 import ConfirmModal from '../components/modals/confirmModal';
+import AddDeviceModal from './addDeviceModal';
 
 const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore }) => {
   if (!hasChildren) {
@@ -16,16 +17,14 @@ const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore
   return (
     <i
       className={
-        collapsed
-          ? 'collapse-button glyphicon glyphicon-chevron-right'
-          : 'collapse-button glyphicon glyphicon-chevron-down'
+        collapsed ? 'glyphicon glyphicon-chevron-right' : 'glyphicon glyphicon-chevron-down'
       }
       onClick={() => (collapsed ? onRestore() : onCollapse())}
     ></i>
   );
 });
 
-const PortTab = observer(({ title, isValid, hasChildren, collapsed, onCollapse, onRestore }) => {
+const PortTab = observer(({ title, hasErrors, hasChildren, collapsed, onCollapse, onRestore }) => {
   return (
     <div className="port-tab">
       <CollapseButton
@@ -35,16 +34,16 @@ const PortTab = observer(({ title, isValid, hasChildren, collapsed, onCollapse, 
         onRestore={onRestore}
       />
       <span>{title}</span>
-      {!isValid && <i className="glyphicon glyphicon-exclamation-sign pull-right"></i>}
+      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign pull-right"></i>}
     </div>
   );
 });
 
-const DeviceTab = ({ title, isValid }) => {
+const DeviceTab = ({ title, hasErrors }) => {
   return (
     <div className="device-tab">
       <span>{title}</span>
-      {!isValid && <i className="glyphicon glyphicon-exclamation-sign pull-right"></i>}
+      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign pull-right"></i>}
     </div>
   );
 };
@@ -56,7 +55,7 @@ function makeTabItems(tabs) {
         <TabItem key={index}>
           <PortTab
             title={tab.name}
-            isValid={tab.isValid}
+            hasErrors={tab.hasErrors}
             hasChildren={tab.hasChildren}
             collapsed={tab.collapsed}
             onCollapse={tab.collapse}
@@ -67,7 +66,7 @@ function makeTabItems(tabs) {
     }
     return (
       <TabItem key={index} className={tab.hidden ? 'hidden' : ''}>
-        <DeviceTab title={tab.name} isValid={tab.isValid} />
+        <DeviceTab title={tab.name} hasErrors={tab.hasErrors} />
       </TabItem>
     );
   });
@@ -79,6 +78,7 @@ function makeTabPanes(tabs, onDeleteTab) {
     return (
       <TabPane key={index}>
         <div className={tab.type == 'port' ? 'port-tab-content' : 'device-tab-content'}>
+          {tab.childrenHasErrors && <ErrorBar msg={t('device-manager.errors.device-config')} />}
           <JsonEditor
             schema={tab.schema}
             data={tab.editedData}
@@ -151,6 +151,7 @@ const DeviceManagerPage = observer(({ pageStore }) => {
     >
       <SelectModal {...pageStore.selectModalState} />
       <ConfirmModal {...pageStore.confirmModalState} />
+      <AddDeviceModal {...pageStore.addDeviceModalState} />
       <PageHeader
         showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
         allowSave={pageStore.allowSave}
