@@ -12,7 +12,7 @@ class PageWrapperStore {
   }
 
   setError(value) {
-    this.error = value;
+    this.error = String(value);
   }
 
   clearError() {

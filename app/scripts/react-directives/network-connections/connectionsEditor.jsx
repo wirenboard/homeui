@@ -1,9 +1,9 @@
 import React from 'react';
-import { VerticalTabs, TabsList, TabContent, TabPane, TabItem } from './tabs';
+import { VerticalTabs, TabsList, TabContent, TabPane, TabItem } from '../components/tabs/tabs';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { BootstrapRow } from '../common';
-import JsonEditor from './jsonEditor';
+import JsonEditor from '../components/json-editor/jsonEditor';
 import { Button } from '../common';
 import ConnectionItem from './connectionItem';
 

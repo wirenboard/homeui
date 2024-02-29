@@ -417,13 +417,26 @@ function makeGroupsEditor() {
     }
 
     build() {
-      this.error_holder = document.createElement('div');
-      this.container.appendChild(this.error_holder);
-      this.editor_holder = document.createElement('div');
-      this.container.appendChild(this.editor_holder);
+      if (!this.options.wb || !this.options.wb.disable_title) {
+        this.header = document.createElement('label');
+        this.header.textContent = this.getTitle();
+        this.title = this.theme.getHeader(this.header, this.getPathDepth());
+        this.title.classList.add('je-object__title');
+        this.title.classList.add('disable_collapse');
+        this.container.appendChild(this.title);
+      }
 
       this.controls = this.theme.getButtonHolder();
       this.controls.classList.add('je-object__controls');
+      if (!this.options.wb || !this.options.wb.disable_title) {
+        this.container.appendChild(this.controls);
+      }
+
+      this.error_holder = document.createElement('div');
+      this.container.appendChild(this.error_holder);
+      this.editor_holder = document.createElement('div');
+      this.editor_holder.classList.add('group-editor');
+      this.container.appendChild(this.editor_holder);
       /* Object Properties Button */
       this.addproperty_button = this.getButton(
         'properties',

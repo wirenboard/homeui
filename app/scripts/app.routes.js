@@ -43,6 +43,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       url: '/scan',
       template: require('../views/scan.html'),
     })
+    .state('deviceManager', {
+      url: '/device-manager',
+      template: require('../views/device-manager.html'),
+    })
     //...........................................................................
     .state('devices', {
       url: '/devices',

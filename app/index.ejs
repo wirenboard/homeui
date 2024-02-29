@@ -101,6 +101,9 @@
                           <li ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="scan" ui-sref-active="active">{{'navigation.menu.scan' | translate}}</a>
                           </li>
+                          <li ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
+                            <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="deviceManager" ui-sref-active="active">{{'navigation.menu.device-manager' | translate}}</a>
+                          </li>
                           <li>
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="accessLevel" ui-sref-active="active">{{'navigation.menu.access' | translate}}</a>
                           </li>

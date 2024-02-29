@@ -1,0 +1,66 @@
+.scan-page {
+    display: flex;
+    flex-flow: column;
+}
+
+.scan-page .tag {
+    margin-left: 3px;
+    padding-top: 1px;
+    padding-left: 7px;
+    padding-bottom: 1px;
+    padding-right: 7px;
+    border-radius: 5px;
+}
+
+.scan-page .tag:first-of-type {
+    margin-left: 0px;
+    padding-top: 1px;
+    padding-left: 7px;
+    padding-bottom: 1px;
+    padding-right: 7px;
+    border-radius: 5px;
+}
+
+.scan-page .row-with-error > td {
+    padding-bottom: 0px!important;
+}
+
+.scan-page .row-with-error + tr > td {
+    border-top: none!important;
+}
+
+.scan-page .error {
+    margin-top: 5px;
+}
+
+.scan-page .scan-progress {
+    height: 1px;
+    box-shadow: none;
+    margin-bottom: 18px;
+}
+
+.scan-page .page-header {
+    border-bottom: unset;
+    margin-bottom: 0px;
+    text-align: left;
+}
+
+.scan-page .button-group button:not(:first-child) {
+    margin-left: 5px;
+}
+
+.scan-page .separator {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 18px;
+}
+
+.scan-page .table .slave-id {
+    display: inline-block;
+    width: 3ch;
+}
+
+.scan-page .table .baudrate {
+    display: inline-block;
+    width: 6ch;
+    text-align: right;
+}

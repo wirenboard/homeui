@@ -38,7 +38,7 @@ const ToConfigButton = ({ onClick, actualState, hasDevices }) => {
       onClick={onClick}
       disabled={scanInProgress || !hasDevices}
     >
-      {t('device-manager.buttons.to-serial')}
+      {t('scan.buttons.to-serial')}
     </button>
   );
 };
@@ -52,7 +52,7 @@ function ScanButton({ actualState, requiredState, onStartScanning, onStopScannin
   const transition = requiredState !== ScanState.NotSpecified && actualState != requiredState;
   return (
     <button disabled={transition} className={classNames} onClick={onClick}>
-      {scanInProgress ? t('device-manager.buttons.stop') : t('device-manager.buttons.scan')}
+      {scanInProgress ? t('scan.buttons.stop') : t('scan.buttons.scan')}
     </button>
   );
 }
@@ -68,7 +68,7 @@ function Header({
   const { t } = useTranslation();
   return (
     <h1 className="page-header">
-      <span>{t('device-manager.title')}</span>
+      <span>{t('scan.title')}</span>
       <div className="pull-right button-group">
         <ToConfigButton
           onClick={onUpdateSerialConfig}
@@ -109,13 +109,13 @@ function ScanningMessage({ ports, count, ext }) {
   return (
     <>
       <Spinner />
-      <InfoMessage msg={t('device-manager.labels.found-devices', { count })} />
+      <InfoMessage msg={t('scan.labels.found-devices', { count })} />
       <InfoMessage
-        msg={t(ext ? 'device-manager.labels.fast-scanning' : 'device-manager.labels.scanning', {
+        msg={t(ext ? 'scan.labels.fast-scanning' : 'scan.labels.scanning', {
           ports,
         })}
       />
-      <InfoMessage msg={t('device-manager.labels.scanning-stop')} />
+      <InfoMessage msg={t('scan.labels.scanning-stop')} />
     </>
   );
 }
@@ -123,9 +123,9 @@ function ScanningMessage({ ports, count, ext }) {
 function NotFoundMessage({ firstStart }) {
   const { t } = useTranslation();
   if (firstStart) {
-    return <InfoMessage msg={t('device-manager.labels.first-start')} />;
+    return <InfoMessage msg={t('scan.labels.first-start')} />;
   }
-  return <InfoMessage msg={t('device-manager.labels.not-found')} />;
+  return <InfoMessage msg={t('scan.labels.not-found')} />;
 }
 
 const DevicesPage = observer(
@@ -139,7 +139,7 @@ const DevicesPage = observer(
     const nothingFound = devices.devices.length == 0;
     const scanInProgress = scanning.actualState == ScanState.Started;
     return (
-      <div className="device-manager-page">
+      <div className="scan-page">
         {!(scanning.firstStart && nothingFound) && <ErrorBar msg={errors.error} />}
         <Header
           actualState={scanning.actualState}

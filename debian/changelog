@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.80.0) stable; urgency=medium
+
+  * Add device manager page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 26 Feb 2024 18:10:53 +0500
+
 wb-mqtt-homeui (2.79.0) stable; urgency=medium
 
   * Add button to append scanned devices to wb-mqtt-serial config

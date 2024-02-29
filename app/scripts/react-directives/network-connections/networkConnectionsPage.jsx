@@ -6,7 +6,7 @@ import ConnectionsEditor from './connectionsEditor';
 import SwitcherEditor from './switcherEditor';
 import { SelectModal } from './modals';
 import ConfirmModal from '../components/modals/confirmModal';
-import { HorizontalTabs, TabContent, TabItem, TabPane, TabsList } from './tabs';
+import { HorizontalTabs, TabContent, TabItem, TabPane, TabsList } from '../components/tabs/tabs';
 
 const TabTitle = ({ title }) => {
   return <div className="tab-title">{title}</div>;

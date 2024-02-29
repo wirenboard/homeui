@@ -1,5 +1,5 @@
 {
-   "device-manager": {
+   "scan": {
       "title": "Scan",
       "errors": {
          "scan": "Start scan failed",
@@ -225,5 +225,22 @@
    "forms": {
       "default-text-prefix": "If the value is not set, ",
       "default-text-postfix": " is used"
+   },
+   "device-manager": {
+      "labels": {
+         "title": "Device manager",
+         "serial-port": "Serial port",
+         "confirm-delete": "Do you really want to delete {{item}}?",
+         "add-device": "Add device to port {{port}}"
+      },
+      "buttons": {
+         "save": "Save config",
+         "add-port": "Add port",
+         "delete": "Delete",
+         "add-device": "Add device"
+      },
+      "errors": {
+         "write":"Error writing config. See wb-mqtt-confed logs for details"
+      }
    }
 }

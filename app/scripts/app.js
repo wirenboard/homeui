@@ -30,6 +30,7 @@ import 'ng-toast/dist/ngToast.css';
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
+import '../styles/css/scan.css';
 import '../styles/css/network-connections.css';
 import '../styles/css/svg-edit-page.css';
 import '../styles/css/svg-view-page.css';
@@ -110,6 +111,7 @@ import firmwareUpdateDirective from './react-directives/firmware-update/firmware
 import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
 import scriptEditorDirective from './react-directives/script-editor/script-editor';
+import deviceManagerDirective from './react-directives/device-manager/device-manager';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -286,7 +288,8 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('deviceManagerPage', scanDirective)
+  .directive('scanPage', scanDirective)
+  .directive('deviceManagerPage', deviceManagerDirective)
   .directive('networkConnectionsPage', networkConnectionsDirective)
   .directive('firmwareUpdateWidget', firmwareUpdateDirective)
   .directive('cloudStatusWidget', cloudStatusDirective)
