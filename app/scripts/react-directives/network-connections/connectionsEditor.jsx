@@ -118,7 +118,7 @@ const ConnectionsEditor = observer(
     const { t } = useTranslation();
     return (
       <VerticalTabs selectedIndex={connections.selectedConnectionIndex} onSelect={onSelect}>
-        <TabsList>
+        <TabsList className={'col-sm-4 col-md-3 col-lg-2'}>
           {makeTabItems(connections.connections)}
           <Button
             label={t('network-connections.buttons.add-connection')}
@@ -127,7 +127,7 @@ const ConnectionsEditor = observer(
             onClick={onAdd}
           />
         </TabsList>
-        <TabContent>
+        <TabContent className={'col-sm-8 col-md-9 col-lg-10'}>
           {makeTabPanes(connections.connections, onSave, onDelete, onToggleState)}
         </TabContent>
       </VerticalTabs>

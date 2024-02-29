@@ -102,9 +102,9 @@ const PageTabs = observer(
   ({ tabs, onSelect, selectedIndex, onDeleteTab, onAddPort, showButtons }) => {
     const { t } = useTranslation();
     return (
-      <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect}>
-        <TabsList>
-          {makeTabItems(tabs)}
+      <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect} className={'device-settings'}>
+        <div className="device-list-panel">
+          <TabsList className={'device-list'}>{makeTabItems(tabs)}</TabsList>
           {showButtons && (
             <Button
               additionalStyles={'add-port-button'}
@@ -112,8 +112,8 @@ const PageTabs = observer(
               onClick={onAddPort}
             />
           )}
-        </TabsList>
-        <TabContent>{makeTabPanes(tabs, onDeleteTab)}</TabContent>
+        </div>
+        <TabContent className={'settings-panel'}>{makeTabPanes(tabs, onDeleteTab)}</TabContent>
       </VerticalTabs>
     );
   }

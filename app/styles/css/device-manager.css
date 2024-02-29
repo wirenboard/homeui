@@ -1,3 +1,9 @@
+.device-manager-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 .device-manager-page .nav-tabs li.active {
     box-shadow: 0 -2px 0 #3276b1;
     border-top-width: 0 !important;
@@ -5,11 +11,6 @@
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
     border-bottom: 1px solid #fff;
-}
-
-.device-manager-page .tab-content {
-    border-top: 1px solid #ddd;
-    padding-bottom: 10px;
 }
 
 .device-manager-page .nav-tabs {
@@ -49,10 +50,6 @@
     padding: 10px 9px 10px 20px;
 }
 
-.device-manager-page .nav-pills {
-    padding-bottom: 10px;
-}
-
 .device-manager-page .tab-content.well.well-small {
     margin-bottom: 0px;
 }
@@ -77,4 +74,31 @@
 .device-manager-page .collapse-button {
     margin-right: 3px;
     line-height: 14px;
+}
+
+.device-manager-page .device-settings {
+    flex-grow: 1;
+    height: 1px;
+    display: flex;
+    flex-direction: row;
+}
+
+.device-manager-page .device-list-panel {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+    width: 20%;
+    flex-shrink: 0;
+    max-width: 250px;
+}
+
+.device-manager-page .settings-panel {
+    overflow-y: scroll;
+    padding-bottom: 10px;
+    flex-grow: 1;
+}
+
+.device-manager-page .device-list {
+    overflow-y: scroll;
+    flex-grow: 1;
 }
