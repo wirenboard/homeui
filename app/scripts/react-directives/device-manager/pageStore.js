@@ -30,9 +30,6 @@ function getPortSchemaCommon(schema, subSchemaName) {
   res.definitions['commonPortSettings'] = cloneDeep(schema.definitions['commonPortSettings']);
   delete res.definitions['commonPortSettings'].properties.devices;
   res.translations = schema.translations;
-  res.defaultProperties = res.defaultProperties.filter(p => p != 'devices');
-  res.options['disable_collapse'] = true;
-  res.options['disable_edit_json'] = true;
   return res;
 }
 
@@ -307,6 +304,10 @@ class DeviceManagerPageStore {
     if ((await this.showDeleteConfirmModal()) == 'ok') {
       this.tabs.deleteSelectedTab();
     }
+  }
+
+  copyTab() {
+    this.tabs.copySelectedTab();
   }
 
   async addDevice() {

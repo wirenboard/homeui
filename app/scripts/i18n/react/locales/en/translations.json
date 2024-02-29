@@ -240,7 +240,8 @@
          "save": "Save config",
          "add-port": "Add port",
          "delete": "Delete",
-         "add-device": "Add device"
+         "add-device": "Add device",
+         "copy": "Copy"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",

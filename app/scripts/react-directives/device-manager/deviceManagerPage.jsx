@@ -58,67 +58,123 @@ const SettingsTab = ({ title, hasErrors }) => {
   );
 };
 
+function getTabItemContent(tab) {
+  if (tab.type == TabType.PORT) {
+    return (
+      <PortTab
+        title={tab.name}
+        hasErrors={tab.hasErrors}
+        hasChildren={tab.hasChildren}
+        collapsed={tab.collapsed}
+        onCollapse={tab.collapse}
+        onRestore={tab.restore}
+      />
+    );
+  }
+  if (tab.type == TabType.SETTINGS) {
+    return <SettingsTab title={tab.name} hasErrors={tab.hasErrors} />;
+  }
+
+  if (tab.type == TabType.DEVICE) {
+    return <DeviceTab title={tab.name} hasErrors={tab.hasErrors} />;
+  }
+
+  return null;
+}
+
 function makeTabItems(tabs) {
   return tabs.map((tab, index) => {
-    if (tab.type == TabType.PORT) {
-      return (
-        <TabItem key={index}>
-          <PortTab
-            title={tab.name}
-            hasErrors={tab.hasErrors}
-            hasChildren={tab.hasChildren}
-            collapsed={tab.collapsed}
-            onCollapse={tab.collapse}
-            onRestore={tab.restore}
-          />
-        </TabItem>
-      );
-    }
-    if (tab.type == TabType.SETTINGS) {
-      return (
-        <TabItem key={index}>
-          <SettingsTab title={tab.name} hasErrors={tab.hasErrors} />
-        </TabItem>
-      );
-    }
     return (
       <TabItem key={index} className={tab.hidden ? 'hidden' : ''}>
-        <DeviceTab title={tab.name} hasErrors={tab.hasErrors} />
+        {getTabItemContent(tab)}
       </TabItem>
     );
   });
 }
 
-function makeTabPanes(tabs, onDeleteTab) {
+const DeviceTabContent = ({ tab, index, onDeleteTab, onCopyTab }) => {
   const { t } = useTranslation();
-  return tabs.map((tab, index) => {
-    return (
-      <TabPane key={index}>
-        <div className={tab.type == TabType.PORT ? 'port-tab-content' : 'device-tab-content'}>
-          {tab.childrenHasErrors && <ErrorBar msg={t('device-manager.errors.device-config')} />}
-          <JsonEditor
-            schema={tab.schema}
-            data={tab.editedData}
-            root={'cn' + index}
-            onChange={tab.setData}
+  return (
+    <div>
+      <div className="pull-right button-group">
+        <Button
+          key="delete"
+          label={t('device-manager.buttons.delete')}
+          type="danger"
+          onClick={onDeleteTab}
+        />
+        <Button key="copy" label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+      </div>
+      <JsonEditor
+        schema={tab.schema}
+        data={tab.editedData}
+        root={'cn' + index}
+        onChange={tab.setData}
+      />
+    </div>
+  );
+};
+
+const PortTabContent = ({ tab, index, onDeleteTab }) => {
+  const { t } = useTranslation();
+  return (
+    <div>
+      {tab.childrenHasErrors && <ErrorBar msg={t('device-manager.errors.device-config')} />}
+      <div>
+        <span>{tab.title}</span>
+        <div className="pull-right button-group">
+          <Button
+            key="delete"
+            label={t('device-manager.buttons.delete')}
+            type="danger"
+            onClick={onDeleteTab}
           />
-          {tab.type != TabType.SETTINGS && (
-            <Button
-              additionalStyles="pull-right delete-button"
-              key="delete"
-              label={t('device-manager.buttons.delete')}
-              type="danger"
-              onClick={onDeleteTab}
-            />
-          )}
         </div>
-      </TabPane>
+      </div>
+      <JsonEditor
+        schema={tab.schema}
+        data={tab.editedData}
+        root={'cn' + index}
+        onChange={tab.setData}
+      />
+    </div>
+  );
+};
+
+const SettingsTabContent = ({ tab, index }) => {
+  return (
+    <JsonEditor
+      schema={tab.schema}
+      data={tab.editedData}
+      root={'cn' + index}
+      onChange={tab.setData}
+    />
+  );
+};
+
+function getTabPaneContent(tab, index, onDeleteTab, onCopyTab) {
+  if (tab.type == TabType.PORT) {
+    return <PortTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} />;
+  }
+  if (tab.type == TabType.DEVICE) {
+    return (
+      <DeviceTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} onCopyTab={onCopyTab} />
     );
+  }
+  if (tab.type == TabType.SETTINGS) {
+    return <SettingsTabContent tab={tab} index={index} />;
+  }
+  return null;
+}
+
+function makeTabPanes(tabs, onDeleteTab, onCopyTab) {
+  return tabs.map((tab, index) => {
+    return <TabPane key={index}>{getTabPaneContent(tab, index, onDeleteTab, onCopyTab)}</TabPane>;
   });
 }
 
 const PageTabs = observer(
-  ({ tabs, onSelect, selectedIndex, onDeleteTab, onAddPort, showButtons }) => {
+  ({ tabs, onSelect, selectedIndex, onDeleteTab, onCopyTab, onAddPort, showButtons }) => {
     const { t } = useTranslation();
     return (
       <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect} className={'device-settings'}>
@@ -132,7 +188,9 @@ const PageTabs = observer(
             />
           )}
         </div>
-        <TabContent className={'settings-panel'}>{makeTabPanes(tabs, onDeleteTab)}</TabContent>
+        <TabContent className={'settings-panel'}>
+          {makeTabPanes(tabs, onDeleteTab, onCopyTab)}
+        </TabContent>
       </VerticalTabs>
     );
   }
@@ -185,6 +243,7 @@ const DeviceManagerPage = observer(({ pageStore }) => {
             selectedIndex={pageStore.tabs.selectedTabIndex}
             onSelect={(index, lastIndex) => pageStore.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}
+            onCopyTab={() => pageStore.copyTab()}
             onAddPort={() => pageStore.addPort()}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
           />

@@ -37,6 +37,7 @@ export function makeSettingsTabName(data, schema) {
 export class Tab {
   constructor(type, data, schema, nameGenerationFn) {
     this.name = '';
+    this.title = getTranslation(schema.title, schema.translations);
     this.type = type;
     this.data = data;
     this.editedData = cloneDeep(data);
@@ -180,6 +181,17 @@ export class TabsStore {
     this.items.splice(this.selectedTabIndex, count);
     this.selectedTabIndex = 0;
     this.hasNewOrDeletedItems = true;
+  }
+
+  copySelectedTab() {
+    let portTab = this.selectedPortTab;
+    let newTab = new Tab(
+      this.items[this.selectedTabIndex].type,
+      cloneDeep(this.items[this.selectedTabIndex].editedData),
+      this.items[this.selectedTabIndex].schema,
+      this.items[this.selectedTabIndex].nameGenerationFn
+    );
+    this.addDeviceTab(portTab, newTab);
   }
 
   get selectedPortTab() {
