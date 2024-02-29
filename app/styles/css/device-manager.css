@@ -73,3 +73,8 @@
     width: 100%;
     margin-top: 10px;
 }
+
+.device-manager-page .collapse-button {
+    margin-right: 3px;
+    line-height: 14px;
+}

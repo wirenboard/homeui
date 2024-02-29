@@ -17,9 +17,9 @@ export const TabsList = ({ children, ...otherProps }) => {
 };
 TabsList.tabsRole = 'TabList';
 
-export const TabItem = observer(({ children, ...otherProps }) => {
+export const TabItem = observer(({ children, className, ...otherProps }) => {
   return (
-    <Tab tabIndex={'0'} className={''} selectedClassName={'active'} {...otherProps}>
+    <Tab tabIndex={'0'} className={className} selectedClassName={'active'} {...otherProps}>
       {children}
     </Tab>
   );

@@ -8,9 +8,32 @@ import JsonEditor from '../components/json-editor/jsonEditor';
 import { SelectModal } from '../components/modals/selectModal';
 import ConfirmModal from '../components/modals/confirmModal';
 
-const PortTab = observer(({ title, isValid }) => {
+const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore }) => {
+  if (!hasChildren) {
+    return null;
+  }
+
+  return (
+    <i
+      className={
+        collapsed
+          ? 'collapse-button glyphicon glyphicon-chevron-right'
+          : 'collapse-button glyphicon glyphicon-chevron-down'
+      }
+      onClick={() => (collapsed ? onRestore() : onCollapse())}
+    ></i>
+  );
+});
+
+const PortTab = observer(({ title, isValid, hasChildren, collapsed, onCollapse, onRestore }) => {
   return (
     <div className="port-tab">
+      <CollapseButton
+        hasChildren={hasChildren}
+        collapsed={collapsed}
+        onCollapse={onCollapse}
+        onRestore={onRestore}
+      />
       <span>{title}</span>
       {!isValid && <i className="glyphicon glyphicon-exclamation-sign pull-right"></i>}
     </div>
@@ -31,12 +54,19 @@ function makeTabItems(tabs) {
     if (tab.type == 'port') {
       return (
         <TabItem key={index}>
-          <PortTab title={tab.name} isValid={tab.isValid} />
+          <PortTab
+            title={tab.name}
+            isValid={tab.isValid}
+            hasChildren={tab.hasChildren}
+            collapsed={tab.collapsed}
+            onCollapse={tab.collapse}
+            onRestore={tab.restore}
+          />
         </TabItem>
       );
     }
     return (
-      <TabItem key={index}>
+      <TabItem key={index} className={tab.hidden ? 'hidden' : ''}>
         <DeviceTab title={tab.name} isValid={tab.isValid} />
       </TabItem>
     );
