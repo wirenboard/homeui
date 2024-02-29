@@ -85,15 +85,15 @@ function getPortData(data) {
 }
 
 function makeSerialPortTabName(data, schema) {
-  return (
-    getTranslation(schema.title, schema.translations) + ' ' + data?.path?.replace(/^\/dev\/tty/, '')
-  );
+  return data?.path?.replace(/^\/dev\/tty/, '');
 }
 
 function makeTcpPortTabName(data, schema) {
-  return `${getTranslation(schema.title, schema.translations)} ${data.address || ''}:${
-    data.port || ''
-  }`;
+  return `TCP ${data.address || ''}:${data.port || ''}`;
+}
+
+function makeModbusTcpPortTabName(data, schema) {
+  return `MODBUS TCP ${data.address || ''}:${data.port || ''}`;
 }
 
 function makeDeviceTabName(data, schema) {
@@ -283,7 +283,7 @@ class DeviceManagerPageStore {
         'port',
         getPortData(portConfig),
         this.portSchemaMap['modbus tcp'],
-        makeTcpPortTabName
+        makeModbusTcpPortTabName
       );
     }
     return undefined;
