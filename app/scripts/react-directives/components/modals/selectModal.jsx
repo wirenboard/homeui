@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '../../common';
+import { Button, BootstrapLikeSelect } from '../../common';
 import {
   Modal,
   ModalHeader,
@@ -18,33 +18,33 @@ export const SelectModal = ({
   onSelect,
   onCancel,
 }) => {
-  const [selectedValue, setSelectedValue] = useState(undefined);
+  const [selectedOption, setSelectedOption] = useState(undefined);
   useEffect(() => {
     if (options?.length) {
-      setSelectedValue(options[0].value);
+      if (options[0]?.options) {
+        setSelectedOption(options[0].options[0]);
+      } else {
+        setSelectedOption(options[0]);
+      }
     }
   }, [options]);
-  const onChange = event => setSelectedValue(event.target.value);
   return (
     <Modal id={id} active={active} onCancel={onCancel}>
       <ModalHeader>
         <ModalTitle id={id} text={title} />
       </ModalHeader>
       <ModalBody>
-        <select className="form-control" value={selectedValue} onChange={onChange}>
-          {options?.length &&
-            options.map(({ title, value }, index) => (
-              <option key={index} value={value}>
-                {title}
-              </option>
-            ))}
-        </select>
+        <BootstrapLikeSelect
+          options={options}
+          selectedOption={selectedOption}
+          onChange={option => setSelectedOption(option)}
+        />
       </ModalBody>
       <ModalFooter>
         <Button
           label={selectButtonLabel}
           type={'success'}
-          onClick={() => onSelect(selectedValue)}
+          onClick={() => onSelect(selectedOption.value)}
         />
         <ModalCancelButton onClick={onCancel} />
       </ModalFooter>

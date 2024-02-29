@@ -100,6 +100,57 @@ function makeDeviceTabName(data, schema) {
   return `${data.slave_id || ''} ` + getTranslation(schema.title, schema.translations);
 }
 
+function makeDeviceTypeSelectOptions(deviceSchemaMap) {
+  let groups = {};
+  let wbDevicesGroupName;
+  let deprecatedWbDevicesGroupName;
+
+  Object.entries(deviceSchemaMap)
+    .filter(([deviceType, schema]) => {
+      return !schema?.options?.wb?.hide_from_selection;
+    })
+    .forEach(([deviceType, schema]) => {
+      const groupTag = schema?.options?.wb?.group;
+      if (groupTag) {
+        const groupName = getTranslation(groupTag, schema.translations);
+        if (groupTag == 'g-wb') {
+          wbDevicesGroupName = groupName;
+        }
+        if (groupTag == 'g-wb-old') {
+          deprecatedWbDevicesGroupName = groupName;
+        }
+        groups[groupName] ??= [];
+        groups[groupName].push({
+          label: getTranslation(schema.title, schema.translations),
+          value: deviceType,
+        });
+      }
+    });
+  return Object.entries(groups)
+    .map(([groupName, devices]) => {
+      devices.sort((a, b) => a.label.localeCompare(b.label));
+      return { label: groupName, options: devices };
+    })
+    .sort((a, b) => {
+      if (a.label == b.label) {
+        return 0;
+      }
+      if (a.label == wbDevicesGroupName) {
+        return -1;
+      }
+      if (b.label == wbDevicesGroupName) {
+        return 1;
+      }
+      if (a.label == deprecatedWbDevicesGroupName) {
+        return -1;
+      }
+      if (b.label == deprecatedWbDevicesGroupName) {
+        return 1;
+      }
+      return a.label.localeCompare(b.label);
+    });
+}
+
 class Tab {
   constructor(type, data, schema, nameGenerationFn) {
     this.name = '';
@@ -373,13 +424,7 @@ class DeviceManagerPageStore {
       newDeviceType = await this.selectModalState.show(
         i18n.t('device-manager.labels.add-device', { port: this.tabs.selectedPortTab.name }),
         i18n.t('device-manager.buttons.add-device'),
-        Object.entries(this.deviceSchemaMap)
-          .filter(([deviceType, schema]) => {
-            return !schema?.options?.wb?.hide_from_selection;
-          })
-          .map(([deviceType, schema]) => {
-            return { title: getTranslation(schema.title, schema.translations), value: deviceType };
-          })
+        makeDeviceTypeSelectOptions(this.deviceSchemaMap)
       );
     } catch (err) {
       if (err == 'cancel') {
