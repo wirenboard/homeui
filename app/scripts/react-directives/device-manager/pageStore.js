@@ -386,7 +386,7 @@ class DeviceManagerPageStore {
         i18n.t('device-manager.buttons.add-port'),
         i18n.t('device-manager.buttons.add-port'),
         Object.entries(this.portSchemaMap).map(([portType, schema]) => {
-          return { title: getTranslation(schema.title, schema.translations), value: portType };
+          return { label: getTranslation(schema.title, schema.translations), value: portType };
         })
       );
     } catch (err) {
