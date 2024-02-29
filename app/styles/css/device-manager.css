@@ -68,3 +68,8 @@
 .device-manager-page .glyphicon-exclamation-sign {
     color: #a90329;
 }
+
+.device-manager-page .add-port-button {
+    width: 100%;
+    margin-top: 10px;
+}

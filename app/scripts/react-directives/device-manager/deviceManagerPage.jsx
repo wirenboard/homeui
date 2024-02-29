@@ -68,16 +68,28 @@ function makeTabPanes(tabs, onDeleteTab) {
   });
 }
 
-const PageTabs = observer(({ tabs, onSelect, selectedIndex, onDeleteTab }) => {
-  return (
-    <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect}>
-      <TabsList>{makeTabItems(tabs)}</TabsList>
-      <TabContent>{makeTabPanes(tabs, onDeleteTab)}</TabContent>
-    </VerticalTabs>
-  );
-});
+const PageTabs = observer(
+  ({ tabs, onSelect, selectedIndex, onDeleteTab, onAddPort, showButtons }) => {
+    const { t } = useTranslation();
+    return (
+      <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect}>
+        <TabsList>
+          {makeTabItems(tabs)}
+          {showButtons && (
+            <Button
+              additionalStyles={'add-port-button'}
+              label={t('device-manager.buttons.add-port')}
+              onClick={onAddPort}
+            />
+          )}
+        </TabsList>
+        <TabContent>{makeTabPanes(tabs, onDeleteTab)}</TabContent>
+      </VerticalTabs>
+    );
+  }
+);
 
-const PageHeader = ({ showButtons, allowSave, allowAddDevice, onSave, onAddPort, onAddDevice }) => {
+const PageHeader = ({ showButtons, allowSave, allowAddDevice, onSave, onAddDevice }) => {
   const { t } = useTranslation();
   return (
     <PageTitle title={t('device-manager.labels.title')}>
@@ -89,7 +101,6 @@ const PageHeader = ({ showButtons, allowSave, allowAddDevice, onSave, onAddPort,
             onClick={onSave}
             disabled={!allowSave}
           />
-          <Button label={t('device-manager.buttons.add-port')} onClick={onAddPort} />
           <Button
             label={t('device-manager.buttons.add-device')}
             onClick={onAddDevice}
@@ -115,7 +126,6 @@ const DeviceManagerPage = observer(({ pageStore }) => {
         allowSave={pageStore.allowSave}
         allowAddDevice={!pageStore.tabs.isEmpty}
         onSave={() => pageStore.save()}
-        onAddPort={() => pageStore.addPort()}
         onAddDevice={() => pageStore.addDevice()}
       />
       <PageBody loading={pageStore.pageWrapperStore.loading}>
@@ -125,6 +135,8 @@ const DeviceManagerPage = observer(({ pageStore }) => {
             selectedIndex={pageStore.tabs.selectedTabIndex}
             onSelect={(index, lastIndex) => pageStore.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}
+            onAddPort={() => pageStore.addPort()}
+            showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
           />
         )}
       </PageBody>
