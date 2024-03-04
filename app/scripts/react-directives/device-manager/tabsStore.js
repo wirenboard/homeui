@@ -67,13 +67,12 @@ export class TabsStore {
 
   deleteSelectedTab() {
     let count = 1;
-    if (this.items[this.selectedTabIndex]?.type == TabType.PORT) {
-      while (
-        this.selectedTabIndex + count < this.items.length &&
-        this.items[this.selectedTabIndex + count]?.type == TabType.DEVICE
-      ) {
-        count++;
-      }
+    const tab = this.items[this.selectedTabIndex];
+    if (tab?.type == TabType.PORT) {
+      count = count + tab.children.length;
+    } else {
+      let portTab = this.selectedPortTab;
+      portTab.children.splice(portTab.children.indexOf(tab, 1));
     }
     this.items.splice(this.selectedTabIndex, count);
     this.selectedTabIndex = 0;
