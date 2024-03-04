@@ -63,22 +63,16 @@ export const DeviceTabContent = ({
         options={deviceTypeSelectOptions}
         selectedOption={selectedDeviceType}
         onChange={option => onDeviceTypeChange(tab, option.value)}
-        className={'pull-left device-tab-control device-type-select'}
+        className={'pull-left device-type-select'}
       />
-      <div className="pull-right button-group device-tab-control">
+      <div className="pull-right button-group">
         <Button
           key="delete"
           label={t('device-manager.buttons.delete')}
           type="danger"
           onClick={onDeleteTab}
-          additionalStyles={'device-tab-control'}
         />
-        <Button
-          key="copy"
-          label={t('device-manager.buttons.copy')}
-          onClick={onCopyTab}
-          additionalStyles={' device-tab-control'}
-        />
+        <Button key="copy" label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
       </div>
       <JsonEditor
         schema={tab.schema}
