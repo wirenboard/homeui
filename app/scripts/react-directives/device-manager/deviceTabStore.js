@@ -17,7 +17,6 @@ export class DeviceTab {
     this.isValid = true;
     this.isDirty = false;
     this.hidden = false;
-    console.log(schema);
     this.isDeprecated = !!schema?.options?.wb?.hide_from_selection;
 
     this.updateName();

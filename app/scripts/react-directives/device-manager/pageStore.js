@@ -233,9 +233,11 @@ class DeviceManagerPageStore {
         if (portTab === undefined) {
           return;
         }
-        port.devices.forEach(device => {
-          portTab.children.push(this.createDeviceTab(device));
-        });
+        if (port?.devices) {
+          port.devices.forEach(device => {
+            portTab.children.push(this.createDeviceTab(device));
+          });
+        }
         this.tabs.addPortTab(portTab, true);
       });
       this.tabs.addSettingsTab(this.createSettingsTab(config, schema));
@@ -312,25 +314,15 @@ class DeviceManagerPageStore {
 
   makeConfigJson() {
     let config = cloneDeep(this.tabs.items[this.tabs.items.length - 1].editedData);
-    let lastPort = undefined;
-    this.tabs.items.forEach(tab => {
-      if (tab.type == TabType.PORT) {
-        if (lastPort !== undefined) {
-          config.ports ??= [];
-          config.ports.push(lastPort);
-        }
-        lastPort = cloneDeep(tab.editedData);
-        lastPort.devices = [];
-      } else {
-        if (tab.type == TabType.DEVICE && lastPort !== undefined) {
-          lastPort.devices.push(cloneDeep(tab.editedData));
-        }
-      }
-    });
-    if (lastPort !== undefined) {
+    this.tabs.portTabs.forEach(portTab => {
       config.ports ??= [];
-      config.ports.push(lastPort);
-    }
+      let portConfig = cloneDeep(portTab.editedData);
+      portTab.children.forEach(deviceTab => {
+        portConfig.devices ??= [];
+        portConfig.devices.push(cloneDeep(deviceTab.editedData));
+      });
+      config.ports.push(portConfig);
+    });
     return config;
   }
 
