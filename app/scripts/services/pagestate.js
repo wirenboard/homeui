@@ -1,4 +1,10 @@
-function pageStateService($rootScope, $window, forceBeforeUnloadConfirmationForTests, $translate) {
+function pageStateService(
+  $rootScope,
+  $window,
+  forceBeforeUnloadConfirmationForTests,
+  $translate,
+  $transitions
+) {
   'ngInject';
 
   var dirty = false;
@@ -12,10 +18,15 @@ function pageStateService($rootScope, $window, forceBeforeUnloadConfirmationForT
   updateTranslations();
   $rootScope.$on('$translateChangeSuccess', () => updateTranslations());
 
-  $rootScope.$on('$locationChangeStart', (event, newUrl, oldUrl) => {
-    if (!dirty) return;
-    if ($window.confirm(CONFIRMATION_MSG)) dirty = false;
-    else event.preventDefault();
+  $transitions.onBefore({}, function (transition) {
+    if (!dirty) {
+      return true;
+    }
+    if ($window.confirm(CONFIRMATION_MSG)) {
+      dirty = false;
+      return true;
+    }
+    return false;
   });
 
   // https://developer.mozilla.org/en-US/docs/Web/Events/beforeunload
