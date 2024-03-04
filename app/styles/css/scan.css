@@ -1,9 +1,9 @@
-.device-manager-page {
+.scan-page {
     display: flex;
     flex-flow: column;
 }
 
-.device-manager-page .tag {
+.scan-page .tag {
     margin-left: 3px;
     padding-top: 1px;
     padding-left: 7px;
@@ -12,7 +12,7 @@
     border-radius: 5px;
 }
 
-.device-manager-page .tag:first-of-type {
+.scan-page .tag:first-of-type {
     margin-left: 0px;
     padding-top: 1px;
     padding-left: 7px;
@@ -21,45 +21,45 @@
     border-radius: 5px;
 }
 
-.device-manager-page .row-with-error > td {
+.scan-page .row-with-error > td {
     padding-bottom: 0px!important;
 }
 
-.device-manager-page .row-with-error + tr > td {
+.scan-page .row-with-error + tr > td {
     border-top: none!important;
 }
 
-.device-manager-page .error {
+.scan-page .error {
     margin-top: 5px;
 }
 
-.device-manager-page .scan-progress {
+.scan-page .scan-progress {
     height: 1px;
     box-shadow: none;
     margin-bottom: 18px;
 }
 
-.device-manager-page .page-header {
+.scan-page .page-header {
     border-bottom: unset;
     margin-bottom: 0px;
     text-align: left;
 }
 
-.device-manager-page .button-group button:not(:first-child) {
+.scan-page .button-group button:not(:first-child) {
     margin-left: 5px;
 }
 
-.device-manager-page .separator {
+.scan-page .separator {
     border-bottom: 1px solid #eee;
     margin-bottom: 18px;
 }
 
-.device-manager-page .table .slave-id {
+.scan-page .table .slave-id {
     display: inline-block;
     width: 3ch;
 }
 
-.device-manager-page .table .baudrate {
+.scan-page .table .baudrate {
     display: inline-block;
     width: 6ch;
     text-align: right;

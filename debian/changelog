@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.79.1) stable; urgency=medium
+
+  * Source code refactoring. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 04 Mar 2024 15:17:15 +0500
+
 wb-mqtt-homeui (2.79.0) stable; urgency=medium
 
   * Add button to append scanned devices to wb-mqtt-serial config

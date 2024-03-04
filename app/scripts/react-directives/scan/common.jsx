@@ -27,14 +27,9 @@ export function FirmwareVersion({ version, availableFw, extSupport, errors }) {
   return (
     <ErrorCheck errors={errors} errorId={'com.wb.device_manager.device.read_fw_version_error'}>
       {version}
-      {availableFw && (
-        <WarningTag text={t('device-manager.labels.available', { version: availableFw })} />
-      )}
+      {availableFw && <WarningTag text={t('scan.labels.available', { version: availableFw })} />}
       {extSupport && (
-        <span
-          className="glyphicon glyphicon-flash"
-          title={t('device-manager.labels.extended-modbus')}
-        ></span>
+        <span className="glyphicon glyphicon-flash" title={t('scan.labels.extended-modbus')}></span>
       )}
     </ErrorCheck>
   );
@@ -51,9 +46,9 @@ export const DeviceName = ({ title, bootloaderMode, online, poll, errors }) => {
         <b>{title}</b>
       </div>
       <div className="pull-right">
-        {bootloaderMode && <ErrorTag text={t('device-manager.labels.in-bootloder')} />}
-        {!online && <ErrorTag text={t('device-manager.labels.offline')} />}
-        {!poll && <WarningTag text={t('device-manager.labels.not-polled')} />}
+        {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
+        {!online && <ErrorTag text={t('scan.labels.offline')} />}
+        {!poll && <WarningTag text={t('scan.labels.not-polled')} />}
       </div>
     </ErrorCheck>
   );
@@ -64,7 +59,7 @@ export const SlaveId = ({ slaveId, isDuplicate }) => {
   return (
     <>
       <span className="slave-id">{slaveId}</span>{' '}
-      {isDuplicate && <ErrorTag text={t('device-manager.labels.duplicate')} />}
+      {isDuplicate && <ErrorTag text={t('scan.labels.duplicate')} />}
     </>
   );
 };
