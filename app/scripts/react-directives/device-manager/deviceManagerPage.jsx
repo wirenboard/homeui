@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ErrorBar } from '../common';
+import { BootstrapLikeSelect, Button, ErrorBar } from '../common';
 import { PageWrapper, PageBody, PageTitle } from '../components/page-wrapper/pageWrapper';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -74,11 +74,9 @@ function getTabItemContent(tab) {
   if (tab.type == TabType.SETTINGS) {
     return <SettingsTab title={tab.name} hasErrors={tab.hasErrors} />;
   }
-
   if (tab.type == TabType.DEVICE) {
     return <DeviceTab title={tab.name} hasErrors={tab.hasErrors} />;
   }
-
   return null;
 }
 
@@ -92,24 +90,64 @@ function makeTabItems(tabs) {
   });
 }
 
-const DeviceTabContent = ({ tab, index, onDeleteTab, onCopyTab }) => {
+function findDeviceTypeSelectOption(options, value) {
+  let res;
+  options.find(option => {
+    if (option?.options) {
+      res = option.options.find(option => option.value === value);
+      if (res) {
+        return true;
+      }
+      return false;
+    }
+    if (option.value === value) {
+      res = option;
+      return true;
+    }
+    return false;
+  });
+  return res;
+}
+
+const DeviceTabContent = ({
+  tab,
+  index,
+  onDeleteTab,
+  onCopyTab,
+  deviceTypeSelectOptions,
+  onDeviceTypeChange,
+}) => {
   const { t } = useTranslation();
+  const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
   return (
     <div>
-      <div className="pull-right button-group">
+      <BootstrapLikeSelect
+        options={deviceTypeSelectOptions}
+        selectedOption={selectedDeviceType}
+        onChange={option => onDeviceTypeChange(tab, option.value)}
+        className={'pull-left device-tab-control device-type-select'}
+      />
+      <div className="pull-right button-group device-tab-control">
         <Button
           key="delete"
           label={t('device-manager.buttons.delete')}
           type="danger"
           onClick={onDeleteTab}
+          additionalStyles={'device-tab-control'}
         />
-        <Button key="copy" label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+        <Button
+          key="copy"
+          label={t('device-manager.buttons.copy')}
+          onClick={onCopyTab}
+          additionalStyles={' device-tab-control'}
+        />
       </div>
       <JsonEditor
         schema={tab.schema}
         data={tab.editedData}
         root={'cn' + index}
         onChange={tab.setData}
+        className={'device-tab-properties'}
       />
     </div>
   );
@@ -152,13 +190,27 @@ const SettingsTabContent = ({ tab, index }) => {
   );
 };
 
-function getTabPaneContent(tab, index, onDeleteTab, onCopyTab) {
+function getTabPaneContent(
+  tab,
+  index,
+  onDeleteTab,
+  onCopyTab,
+  deviceTypeSelectOptions,
+  onDeviceTypeChange
+) {
   if (tab.type == TabType.PORT) {
     return <PortTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} />;
   }
   if (tab.type == TabType.DEVICE) {
     return (
-      <DeviceTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} onCopyTab={onCopyTab} />
+      <DeviceTabContent
+        tab={tab}
+        index={index}
+        onDeleteTab={onDeleteTab}
+        onCopyTab={onCopyTab}
+        deviceTypeSelectOptions={deviceTypeSelectOptions}
+        onDeviceTypeChange={onDeviceTypeChange}
+      />
     );
   }
   if (tab.type == TabType.SETTINGS) {
@@ -167,14 +219,35 @@ function getTabPaneContent(tab, index, onDeleteTab, onCopyTab) {
   return null;
 }
 
-function makeTabPanes(tabs, onDeleteTab, onCopyTab) {
+function makeTabPanes(tabs, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange) {
   return tabs.map((tab, index) => {
-    return <TabPane key={index}>{getTabPaneContent(tab, index, onDeleteTab, onCopyTab)}</TabPane>;
+    return (
+      <TabPane key={index}>
+        {getTabPaneContent(
+          tab,
+          index,
+          onDeleteTab,
+          onCopyTab,
+          deviceTypeSelectOptions,
+          onDeviceTypeChange
+        )}
+      </TabPane>
+    );
   });
 }
 
 const PageTabs = observer(
-  ({ tabs, onSelect, selectedIndex, onDeleteTab, onCopyTab, onAddPort, showButtons }) => {
+  ({
+    tabs,
+    onSelect,
+    selectedIndex,
+    onDeleteTab,
+    onCopyTab,
+    onAddPort,
+    showButtons,
+    deviceTypeSelectOptions,
+    onDeviceTypeChange,
+  }) => {
     const { t } = useTranslation();
     return (
       <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect} className={'device-settings'}>
@@ -189,7 +262,7 @@ const PageTabs = observer(
           )}
         </div>
         <TabContent className={'settings-panel'}>
-          {makeTabPanes(tabs, onDeleteTab, onCopyTab)}
+          {makeTabPanes(tabs, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange)}
         </TabContent>
       </VerticalTabs>
     );
@@ -246,6 +319,8 @@ const DeviceManagerPage = observer(({ pageStore }) => {
             onCopyTab={() => pageStore.copyTab()}
             onAddPort={() => pageStore.addPort()}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
+            deviceTypeSelectOptions={pageStore.deviceTypeSelectOptions}
+            onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
           />
         )}
       </PageBody>

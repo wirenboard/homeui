@@ -43,7 +43,7 @@ const JsonEditor = observer(props => {
       }
     }
   });
-  return <div ref={container} />;
+  return <div ref={container} className={props.className} />;
 });
 
 export default JsonEditor;

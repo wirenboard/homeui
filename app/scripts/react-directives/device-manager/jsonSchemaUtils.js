@@ -1,6 +1,30 @@
 'use strict';
 
-function getDefaultPropertyValue(schema) {
+function isNotEmptyArray(schema) {
+  return schema?.type === 'array' && schema?.minItems;
+}
+
+function getSchemaByRef(ref, node, root) {
+  ref.split('/').forEach(nodeName => {
+    if (nodeName == '#') {
+      node = root;
+    } else {
+      node = node?.[nodeName];
+    }
+  });
+  return node;
+}
+
+function getDefaultArrayValue(schema, root) {
+  if (schema?.minItems) {
+    if (Array.isArray(schema.items)) {
+      return schema.items.map(item => getDefaultPropertyValue(item, root));
+    }
+  }
+  return [];
+}
+
+function getDefaultPropertyValue(schema, root, defaultProperties) {
   if (schema?.hasOwnProperty('default')) {
     return schema.default;
   }
@@ -8,44 +32,48 @@ function getDefaultPropertyValue(schema) {
     return schema.enum[0];
   }
   if (schema?.type === 'array') {
-    return [];
+    return getDefaultArrayValue(schema, root);
+  }
+  if (schema.hasOwnProperty('$ref')) {
+    return getDefaultPropertyValue(getSchemaByRef(schema['$ref'], schema, root), root);
+  }
+  if (schema?.type === 'object' || schema?.type === undefined) {
+    return getDefaultObject(schema, root, defaultProperties);
   }
   return undefined;
 }
 
-function addProperties(obj, schema, defaultProperties) {
-  [...(schema?.required || []), ...(defaultProperties || [])].forEach(propName => {
-    const defaultValue = getDefaultPropertyValue(schema?.properties?.[propName]);
-    if (defaultValue !== undefined) {
-      obj[propName] = defaultValue;
-    }
-  });
+export function getDefaultObject(schema, root, defaultProperties) {
+  let res = {};
+  root ??= schema;
+  defaultProperties ??= [];
+  defaultProperties = [
+    ...defaultProperties,
+    ...(schema?.required || []),
+    ...(schema?.defaultProperties || []),
+  ];
 
   Object.entries(schema?.properties || {}).forEach(([key, value]) => {
-    if (value.hasOwnProperty('requiredProp')) {
-      const defaultValue = getDefaultPropertyValue(value);
+    if (
+      value.hasOwnProperty('requiredProp') ||
+      defaultProperties.includes(key) ||
+      isNotEmptyArray(value)
+    ) {
+      const defaultValue = getDefaultPropertyValue(value, root);
       if (defaultValue !== undefined) {
-        obj[key] = defaultValue;
+        res[key] = defaultValue;
       }
     }
   });
-}
 
-export function getDefaultObject(schema) {
-  let res = {};
-  addProperties(res, schema, schema?.defaultProperties);
-  schema?.allOf?.forEach(subSchema => {
-    let node = subSchema;
-    if (subSchema.hasOwnProperty('$ref')) {
-      subSchema['$ref'].split('/').forEach(nodeName => {
-        if (nodeName == '#') {
-          node = schema;
-        } else {
-          node = node?.[nodeName];
-        }
-      });
-    }
-    addProperties(res, node, schema?.defaultProperties);
-  });
+  if (schema?.allOf && Array.isArray(schema.allOf) && schema.allOf.length) {
+    schema.allOf.forEach(subSchema => {
+      Object.assign(res, getDefaultPropertyValue(subSchema, root, defaultProperties));
+    });
+  }
+
+  if (schema?.oneOf && Array.isArray(schema.oneOf) && schema.oneOf.length) {
+    return getDefaultPropertyValue(schema.oneOf[0], root);
+  }
   return res;
 }

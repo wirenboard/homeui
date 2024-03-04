@@ -110,6 +110,7 @@ export const BootstrapLikeSelect = ({
   onChange,
   isClearable,
   hasErrors,
+  className,
 }) => {
   const withGroups = options.some(el => 'options' in el);
   const borderColor = hasErrors ? '#b94a48' : '#ccc';
@@ -155,9 +156,12 @@ export const BootstrapLikeSelect = ({
         fontWeight: 'bold',
       };
     },
-    option: provided => {
+    option: (provided, { data }) => {
       if (withGroups) {
         provided.paddingLeft = '20px';
+      }
+      if (data?.hidden) {
+        provided.display = 'none';
       }
       return provided;
     },
@@ -171,6 +175,7 @@ export const BootstrapLikeSelect = ({
       styles={customStyles}
       placeholder={placeholder}
       onChange={onChange}
+      className={className}
     />
   );
 };

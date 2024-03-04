@@ -3,6 +3,7 @@
 import { makeAutoObservable, makeObservable, observable, computed, action } from 'mobx';
 import { cloneDeep, isEqual } from 'lodash';
 import i18n from '../../i18n/react/config';
+import { getDefaultObject } from './jsonSchemaUtils';
 
 export const TabType = {
   PORT: 'port',
@@ -27,7 +28,7 @@ export function makeModbusTcpPortTabName(data, schema) {
 }
 
 export function makeDeviceTabName(data, schema) {
-  return `${data.slave_id || ''} ` + getTranslation(schema.title, schema.translations);
+  return `${data?.slave_id || ''} ` + getTranslation(schema.title, schema.translations);
 }
 
 export function makeSettingsTabName(data, schema) {
@@ -35,13 +36,14 @@ export function makeSettingsTabName(data, schema) {
 }
 
 export class Tab {
-  constructor(type, data, schema, nameGenerationFn) {
+  constructor(type, data, deviceType, schema, nameGenerationFn) {
     this.name = '';
     this.title = getTranslation(schema.title, schema.translations);
     this.type = type;
     this.data = data;
     this.editedData = cloneDeep(data);
     this.schema = schema;
+    this.deviceType = deviceType;
     this.isValid = true;
     this.isDirty = false;
     this.hidden = false;
@@ -65,6 +67,7 @@ export class Tab {
       children: observable,
       hasChildren: computed,
       hasErrors: computed,
+      setDeviceType: action,
     });
   }
 
@@ -76,6 +79,17 @@ export class Tab {
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
     this.isValid = errors.length == 0;
+    this.updateName();
+  }
+
+  setDeviceType(type, schema) {
+    this.schema = schema;
+    this.deviceType = type;
+    this.data = getDefaultObject(schema);
+    this.data.slave_id = this.editedData.slave_id;
+    this.editedData = cloneDeep(this.data);
+    this.isDirty = false;
+    this.isValid = false;
     this.updateName();
   }
 
@@ -116,7 +130,8 @@ export class TabsStore {
   constructor() {
     this.items = [];
     this.selectedTabIndex = 0;
-    this.hasNewOrDeletedItems = false;
+    // Has added, deleted items or items with changed type
+    this.hasModifiedStructure = false;
 
     makeAutoObservable(this);
   }
@@ -129,7 +144,7 @@ export class TabsStore {
     this.items.splice(i, 0, tab);
     if (!initial) {
       this.selectedTabIndex = i;
-      this.hasNewOrDeletedItems = true;
+      this.hasModifiedStructure = true;
     }
     tab.children.forEach(child => {
       i++;
@@ -151,7 +166,7 @@ export class TabsStore {
     this.items.splice(i, 0, deviceTab);
     if (!initial) {
       this.selectedTabIndex = i;
-      this.hasNewOrDeletedItems = true;
+      this.hasModifiedStructure = true;
     }
   }
 
@@ -180,7 +195,7 @@ export class TabsStore {
     }
     this.items.splice(this.selectedTabIndex, count);
     this.selectedTabIndex = 0;
-    this.hasNewOrDeletedItems = true;
+    this.hasModifiedStructure = true;
   }
 
   copySelectedTab() {
@@ -188,6 +203,7 @@ export class TabsStore {
     let newTab = new Tab(
       this.items[this.selectedTabIndex].type,
       cloneDeep(this.items[this.selectedTabIndex].editedData),
+      this.items[this.selectedTabIndex].deviceType,
       this.items[this.selectedTabIndex].schema,
       this.items[this.selectedTabIndex].nameGenerationFn
     );
@@ -214,7 +230,7 @@ export class TabsStore {
   }
 
   get isDirty() {
-    return this.hasNewOrDeletedItems || this.items.some(item => item.isDirty);
+    return this.hasModifiedStructure || this.items.some(item => item.isDirty);
   }
 
   get isEmpty() {
@@ -227,11 +243,11 @@ export class TabsStore {
 
   submit() {
     this.items.forEach(item => item.submit());
-    this.hasNewOrDeletedItems = false;
+    this.hasModifiedStructure = false;
   }
 
   clear() {
     this.items.splice(0, this.items.length);
-    this.hasNewOrDeletedItems = false;
+    this.hasModifiedStructure = false;
   }
 }

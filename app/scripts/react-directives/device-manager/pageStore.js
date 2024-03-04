@@ -104,27 +104,24 @@ function makeDeviceTypeSelectOptions(deviceSchemaMap) {
   let wbDevicesGroupName;
   let deprecatedWbDevicesGroupName;
 
-  Object.entries(deviceSchemaMap)
-    .filter(([deviceType, schema]) => {
-      return !schema?.options?.wb?.hide_from_selection;
-    })
-    .forEach(([deviceType, schema]) => {
-      const groupTag = schema?.options?.wb?.group;
-      if (groupTag) {
-        const groupName = getTranslation(groupTag, schema.translations);
-        if (groupTag == 'g-wb') {
-          wbDevicesGroupName = groupName;
-        }
-        if (groupTag == 'g-wb-old') {
-          deprecatedWbDevicesGroupName = groupName;
-        }
-        groups[groupName] ??= [];
-        groups[groupName].push({
-          label: getTranslation(schema.title, schema.translations),
-          value: deviceType,
-        });
+  Object.entries(deviceSchemaMap).forEach(([deviceType, schema]) => {
+    const groupTag = schema?.options?.wb?.group;
+    if (groupTag) {
+      const groupName = getTranslation(groupTag, schema.translations);
+      if (groupTag == 'g-wb') {
+        wbDevicesGroupName = groupName;
       }
-    });
+      if (groupTag == 'g-wb-old') {
+        deprecatedWbDevicesGroupName = groupName;
+      }
+      groups[groupName] ??= [];
+      groups[groupName].push({
+        label: getTranslation(schema.title, schema.translations),
+        value: deviceType,
+        hidden: !!schema?.options?.wb?.hide_from_selection,
+      });
+    }
+  });
   return Object.entries(groups)
     .map(([groupName, devices]) => {
       devices.sort((a, b) => a.label.localeCompare(b.label));
@@ -176,6 +173,7 @@ class DeviceManagerPageStore {
     this.saveConfigFn = saveConfigFn;
     this.loadConfigFn = loadConfigFn;
     this.loaded = false;
+    this.deviceTypeSelectOptions = [];
 
     makeObservable(this, {
       allowSave: computed,
@@ -201,6 +199,7 @@ class DeviceManagerPageStore {
       return new Tab(
         TabType.PORT,
         getPortData(portConfig),
+        undefined,
         this.portSchemaMap['serial'],
         makeSerialPortTabName
       );
@@ -209,6 +208,7 @@ class DeviceManagerPageStore {
       return new Tab(
         TabType.PORT,
         getPortData(portConfig),
+        undefined,
         this.portSchemaMap['tcp'],
         makeTcpPortTabName
       );
@@ -217,6 +217,7 @@ class DeviceManagerPageStore {
       return new Tab(
         TabType.PORT,
         getPortData(portConfig),
+        undefined,
         this.portSchemaMap['modbus tcp'],
         makeModbusTcpPortTabName
       );
@@ -225,17 +226,25 @@ class DeviceManagerPageStore {
   }
 
   createDeviceTab(deviceConfig) {
+    const deviceType = deviceConfig?.device_type || deviceConfig?.protocol || 'modbus';
     return new Tab(
       TabType.DEVICE,
       deviceConfig,
-      this.deviceSchemaMap[deviceConfig?.device_type || deviceConfig?.protocol || 'modbus'],
+      deviceType,
+      this.deviceSchemaMap[deviceType],
       makeDeviceTabName
     );
   }
 
   createSettingsTab(config, schema) {
     delete config.ports;
-    return new Tab(TabType.SETTINGS, config, getGeneralSettingsSchema(schema), makeSettingsTabName);
+    return new Tab(
+      TabType.SETTINGS,
+      config,
+      undefined,
+      getGeneralSettingsSchema(schema),
+      makeSettingsTabName
+    );
   }
 
   async load() {
@@ -244,6 +253,7 @@ class DeviceManagerPageStore {
       const { config, schema } = await this.loadConfigFn();
       this.portSchemaMap = makePortSchemaMap(schema);
       this.deviceSchemaMap = makeDeviceSchemaMap(schema);
+      this.deviceTypeSelectOptions = makeDeviceTypeSelectOptions(this.deviceSchemaMap);
       config.ports.forEach(port => {
         const portTab = this.createPortTab(port);
         if (portTab === undefined) {
@@ -316,7 +326,7 @@ class DeviceManagerPageStore {
     try {
       [portTab, newDeviceType] = await this.addDeviceModalState.show(
         makePortSelectOptions(this.tabs.portTabs),
-        makeDeviceTypeSelectOptions(this.deviceSchemaMap),
+        this.deviceTypeSelectOptions,
         this.tabs.selectedPortTab
       );
     } catch (err) {
@@ -366,6 +376,10 @@ class DeviceManagerPageStore {
       }
     }
     this.pageWrapperStore.setLoading(false);
+  }
+
+  changeDeviceType(tab, type) {
+    tab.setDeviceType(type, this.deviceSchemaMap[type]);
   }
 }
 

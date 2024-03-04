@@ -127,3 +127,16 @@
     overflow-y: scroll;
     flex-grow: 1;
 }
+
+.device-manager-page .device-tab-control {
+    z-index: 1;
+    position: relative;
+}
+
+.device-manager-page .device-type-select {
+    width: 45%;
+}
+
+.device-manager-page .device-tab-properties > div > .je-header > label {
+    display: none;
+}
