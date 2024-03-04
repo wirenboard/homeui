@@ -66,15 +66,17 @@ export class TabsStore {
   }
 
   deleteSelectedTab() {
-    let count = 1;
     const tab = this.items[this.selectedTabIndex];
     if (tab?.type == TabType.PORT) {
-      count = count + tab.children.length;
-    } else {
+      this.items.splice(this.selectedTabIndex, tab.children.length + 1);
+    } else if (tab?.type == TabType.DEVICE) {
       let portTab = this.selectedPortTab;
       portTab.children.splice(portTab.children.indexOf(tab, 1));
+      this.items.splice(this.selectedTabIndex, 1);
+    } else {
+      return;
     }
-    this.items.splice(this.selectedTabIndex, count);
+
     this.selectedTabIndex = 0;
     this.hasModifiedStructure = true;
   }
