@@ -274,6 +274,7 @@ class DeviceManagerPageStore {
     return this.confirmModalState.show(
       i18n.t('device-manager.labels.confirm-delete', {
         item: this.tabs.selectedTab?.name,
+        interpolation: { escapeValue: false },
       }),
       [
         {
