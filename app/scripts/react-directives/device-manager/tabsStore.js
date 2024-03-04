@@ -120,8 +120,8 @@ export class TabsStore {
     return this.items.some(item => item.type == TabType.PORT);
   }
 
-  submit() {
-    this.items.forEach(item => item.submit());
+  commitData() {
+    this.items.forEach(item => item.commitData());
     this.hasModifiedStructure = false;
   }
 

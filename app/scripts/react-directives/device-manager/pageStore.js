@@ -315,17 +315,19 @@ class DeviceManagerPageStore {
     this.tabs.items.forEach(tab => {
       if (tab.type == TabType.PORT) {
         if (lastPort !== undefined) {
+          config.ports ??= [];
           config.ports.push(lastPort);
         }
         lastPort = cloneDeep(tab.editedData);
         lastPort.devices = [];
       } else {
-        if (this.tabs.type == TabType.DEVICE && lastPort !== undefined) {
+        if (tab.type == TabType.DEVICE && lastPort !== undefined) {
           lastPort.devices.push(cloneDeep(tab.editedData));
         }
       }
     });
     if (lastPort !== undefined) {
+      config.ports ??= [];
       config.ports.push(lastPort);
     }
     return config;
