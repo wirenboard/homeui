@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, LineEdit } from '../common';
-import Select from 'react-select';
+import BootstrapLikeSelect from '../components/select/select';
 
 export const FormEditDescription = observer(({ description, defaultText }) => {
   const { t } = useTranslation();
@@ -64,57 +64,6 @@ export const FormCheckbox = observer(({ store }) => {
 });
 
 export const FormSelect = observer(({ store, isClearable }) => {
-  const withGroups = store.options.some(el => 'options' in el);
-  const borderColor = store.hasErrors ? '#b94a48' : '#ccc';
-  const customStyles = {
-    indicatorSeparator: () => ({
-      display: 'none',
-    }),
-    dropdownIndicator: provided => ({
-      ...provided,
-      color: 'black',
-      paddingLeft: '0px',
-      paddingRight: '0px',
-      width: '15px',
-    }),
-    clearIndicator: provided => ({
-      ...provided,
-      color: 'black',
-      paddingLeft: '0px',
-      paddingRight: '0px',
-      width: '15px',
-    }),
-    indicatorsContainer: provided => ({
-      ...provided,
-      height: '32px',
-    }),
-    control: provided => ({
-      ...provided,
-      borderRadius: '0px',
-      borderColor: borderColor,
-      boxShadow: 'unset',
-      height: '32px',
-      minHeight: '32px',
-      ':hover': {
-        borderColor: borderColor,
-      },
-    }),
-    groupHeading: provided => {
-      return {
-        ...provided,
-        textTransform: 'unset',
-        fontSize: 'unset',
-        color: 'black',
-        fontWeight: 'bold',
-      };
-    },
-    option: provided => {
-      if (withGroups) {
-        provided.paddingLeft = '20px';
-      }
-      return provided;
-    },
-  };
   return (
     <FormEdit
       name={store.name}
@@ -122,12 +71,10 @@ export const FormSelect = observer(({ store, isClearable }) => {
       hasErrors={store.hasErrors}
       description={store.description}
     >
-      <Select
+      <BootstrapLikeSelect
         options={store.options}
-        isSearchable={true}
         isClearable={isClearable}
-        value={store.selectedOption}
-        styles={customStyles}
+        setSelectedOption={store.selectedOption}
         placeholder={store.placeholder}
         onChange={value => store.setSelectedOption(value)}
       />
