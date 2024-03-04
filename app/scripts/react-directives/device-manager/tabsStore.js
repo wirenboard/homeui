@@ -1,130 +1,12 @@
 'use strict';
 
-import { makeAutoObservable, makeObservable, observable, computed, action } from 'mobx';
-import { cloneDeep, isEqual } from 'lodash';
-import i18n from '../../i18n/react/config';
-import { getDefaultObject } from './jsonSchemaUtils';
+import { makeAutoObservable } from 'mobx';
 
 export const TabType = {
   PORT: 'port',
   DEVICE: 'device',
   SETTINGS: 'settings',
 };
-
-function getTranslation(key, translations) {
-  return translations[i18n.language]?.[key] || translations?.en?.[key] || key;
-}
-
-export function makeSerialPortTabName(data, schema) {
-  return data?.path?.replace(/^\/dev\/tty/, '');
-}
-
-export function makeTcpPortTabName(data, schema) {
-  return `TCP ${data.address || ''}:${data.port || ''}`;
-}
-
-export function makeModbusTcpPortTabName(data, schema) {
-  return `MODBUS TCP ${data.address || ''}:${data.port || ''}`;
-}
-
-export function makeDeviceTabName(data, schema) {
-  return `${data?.slave_id || ''} ` + getTranslation(schema.title, schema.translations);
-}
-
-export function makeSettingsTabName(data, schema) {
-  return i18n.t('device-manager.labels.settings');
-}
-
-export class Tab {
-  constructor(type, data, deviceType, schema, nameGenerationFn) {
-    this.name = '';
-    this.title = getTranslation(schema.title, schema.translations);
-    this.type = type;
-    this.data = data;
-    this.editedData = cloneDeep(data);
-    this.schema = schema;
-    this.deviceType = deviceType;
-    this.isValid = true;
-    this.isDirty = false;
-    this.hidden = false;
-    this.collapsed = false;
-    this.nameGenerationFn = nameGenerationFn;
-    this.children = [];
-
-    this.updateName();
-
-    makeObservable(this, {
-      name: observable,
-      isValid: observable,
-      isDirty: observable,
-      hidden: observable,
-      collapsed: observable,
-      setData: action.bound,
-      updateName: action,
-      commitData: action,
-      collapse: action.bound,
-      restore: action.bound,
-      children: observable,
-      hasChildren: computed,
-      hasErrors: computed,
-      setDeviceType: action,
-    });
-  }
-
-  updateName() {
-    this.name = this.nameGenerationFn(this.editedData, this.schema);
-  }
-
-  setData(data, errors) {
-    this.isDirty = !isEqual(this.data, data);
-    this.editedData = cloneDeep(data);
-    this.isValid = errors.length == 0;
-    this.updateName();
-  }
-
-  setDeviceType(type, schema) {
-    this.schema = schema;
-    this.deviceType = type;
-    this.data = getDefaultObject(schema);
-    this.data.slave_id = this.editedData.slave_id;
-    this.editedData = cloneDeep(this.data);
-    this.isDirty = false;
-    this.isValid = false;
-    this.updateName();
-  }
-
-  commitData() {
-    this.data = cloneDeep(this.editedData);
-    this.isValid = true;
-    this.isDirty = false;
-  }
-
-  collapse() {
-    this.children.forEach(child => {
-      child.hidden = true;
-    });
-    this.collapsed = true;
-  }
-
-  restore() {
-    this.children.forEach(child => {
-      child.hidden = false;
-    });
-    this.collapsed = false;
-  }
-
-  get hasChildren() {
-    return this.children.length != 0;
-  }
-
-  get childrenHasErrors() {
-    return this.children.some(child => child.hasErrors);
-  }
-
-  get hasErrors() {
-    return !this.isValid || this.childrenHasErrors;
-  }
-}
 
 export class TabsStore {
   constructor() {
@@ -200,14 +82,7 @@ export class TabsStore {
 
   copySelectedTab() {
     let portTab = this.selectedPortTab;
-    let newTab = new Tab(
-      this.items[this.selectedTabIndex].type,
-      cloneDeep(this.items[this.selectedTabIndex].editedData),
-      this.items[this.selectedTabIndex].deviceType,
-      this.items[this.selectedTabIndex].schema,
-      this.items[this.selectedTabIndex].nameGenerationFn
-    );
-    this.addDeviceTab(portTab, newTab);
+    this.addDeviceTab(portTab, this.items[this.selectedTabIndex].getCopy());
   }
 
   get selectedPortTab() {
@@ -219,6 +94,10 @@ export class TabsStore {
       return undefined;
     }
     return this.items[i];
+  }
+
+  get selectedTab() {
+    return this.items?.[this.selectedTabIndex];
   }
 
   get portTabs() {

@@ -245,7 +245,8 @@
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
-         "device-config": "Error in the settings of one or more devices"
+         "device-config": "Error in the settings of one or more devices",
+         "deprecated": "Device template is deprecated, use newer version"
       }
    }
 }

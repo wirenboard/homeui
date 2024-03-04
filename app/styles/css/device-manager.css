@@ -92,8 +92,12 @@
     margin-left: 5px;
 }
 
-.device-manager-page .glyphicon-exclamation-sign {
+.device-manager-page li .error .glyphicon-exclamation-sign {
     color: #a90329;
+}
+
+.device-manager-page li .warning .glyphicon-exclamation-sign {
+    color: #826430;
 }
 
 .device-manager-page .add-port-button {

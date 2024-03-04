@@ -1,81 +1,26 @@
 import React from 'react';
-import { BootstrapLikeSelect, Button, ErrorBar } from '../common';
+import { Button } from '../common';
 import { PageWrapper, PageBody, PageTitle } from '../components/page-wrapper/pageWrapper';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { VerticalTabs, TabContent, TabItem, TabPane, TabsList } from '../components/tabs/tabs';
-import JsonEditor from '../components/json-editor/jsonEditor';
 import { SelectModal } from '../components/modals/selectModal';
 import ConfirmModal from '../components/modals/confirmModal';
 import AddDeviceModal from './addDeviceModal';
 import { TabType } from './tabsStore';
-
-const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore }) => {
-  if (!hasChildren) {
-    return null;
-  }
-
-  return (
-    <i
-      className={
-        collapsed ? 'glyphicon glyphicon-chevron-right' : 'glyphicon glyphicon-chevron-down'
-      }
-      onClick={() => (collapsed ? onRestore() : onCollapse())}
-    ></i>
-  );
-});
-
-const PortTab = observer(({ title, hasErrors, hasChildren, collapsed, onCollapse, onRestore }) => {
-  return (
-    <div className="port-tab">
-      <CollapseButton
-        hasChildren={hasChildren}
-        collapsed={collapsed}
-        onCollapse={onCollapse}
-        onRestore={onRestore}
-      />
-      <span>{title}</span>
-      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign"></i>}
-    </div>
-  );
-});
-
-const DeviceTab = ({ title, hasErrors }) => {
-  return (
-    <div className="device-tab">
-      <span>{title}</span>
-      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign"></i>}
-    </div>
-  );
-};
-
-const SettingsTab = ({ title, hasErrors }) => {
-  return (
-    <div className="settings-tab">
-      <span>{title}</span>
-      {hasErrors && <i className="glyphicon glyphicon-exclamation-sign"></i>}
-    </div>
-  );
-};
+import { PortTab, PortTabContent } from './portTab';
+import { DeviceTab, DeviceTabContent } from './deviceTab';
+import { SettingsTab, SettingsTabContent } from './settingsPage';
 
 function getTabItemContent(tab) {
   if (tab.type == TabType.PORT) {
-    return (
-      <PortTab
-        title={tab.name}
-        hasErrors={tab.hasErrors}
-        hasChildren={tab.hasChildren}
-        collapsed={tab.collapsed}
-        onCollapse={tab.collapse}
-        onRestore={tab.restore}
-      />
-    );
+    return <PortTab tab={tab} />;
   }
   if (tab.type == TabType.SETTINGS) {
-    return <SettingsTab title={tab.name} hasErrors={tab.hasErrors} />;
+    return <SettingsTab tab={tab} />;
   }
   if (tab.type == TabType.DEVICE) {
-    return <DeviceTab title={tab.name} hasErrors={tab.hasErrors} />;
+    return <DeviceTab tab={tab} />;
   }
   return null;
 }
@@ -83,112 +28,12 @@ function getTabItemContent(tab) {
 function makeTabItems(tabs) {
   return tabs.map((tab, index) => {
     return (
-      <TabItem key={index} className={tab.hidden ? 'hidden' : ''}>
+      <TabItem key={index} className={tab?.hidden ? 'hidden' : ''}>
         {getTabItemContent(tab)}
       </TabItem>
     );
   });
 }
-
-function findDeviceTypeSelectOption(options, value) {
-  let res;
-  options.find(option => {
-    if (option?.options) {
-      res = option.options.find(option => option.value === value);
-      if (res) {
-        return true;
-      }
-      return false;
-    }
-    if (option.value === value) {
-      res = option;
-      return true;
-    }
-    return false;
-  });
-  return res;
-}
-
-const DeviceTabContent = ({
-  tab,
-  index,
-  onDeleteTab,
-  onCopyTab,
-  deviceTypeSelectOptions,
-  onDeviceTypeChange,
-}) => {
-  const { t } = useTranslation();
-  const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
-  return (
-    <div>
-      <BootstrapLikeSelect
-        options={deviceTypeSelectOptions}
-        selectedOption={selectedDeviceType}
-        onChange={option => onDeviceTypeChange(tab, option.value)}
-        className={'pull-left device-tab-control device-type-select'}
-      />
-      <div className="pull-right button-group device-tab-control">
-        <Button
-          key="delete"
-          label={t('device-manager.buttons.delete')}
-          type="danger"
-          onClick={onDeleteTab}
-          additionalStyles={'device-tab-control'}
-        />
-        <Button
-          key="copy"
-          label={t('device-manager.buttons.copy')}
-          onClick={onCopyTab}
-          additionalStyles={' device-tab-control'}
-        />
-      </div>
-      <JsonEditor
-        schema={tab.schema}
-        data={tab.editedData}
-        root={'cn' + index}
-        onChange={tab.setData}
-        className={'device-tab-properties'}
-      />
-    </div>
-  );
-};
-
-const PortTabContent = ({ tab, index, onDeleteTab }) => {
-  const { t } = useTranslation();
-  return (
-    <div>
-      {tab.childrenHasErrors && <ErrorBar msg={t('device-manager.errors.device-config')} />}
-      <div>
-        <span>{tab.title}</span>
-        <div className="pull-right button-group">
-          <Button
-            key="delete"
-            label={t('device-manager.buttons.delete')}
-            type="danger"
-            onClick={onDeleteTab}
-          />
-        </div>
-      </div>
-      <JsonEditor
-        schema={tab.schema}
-        data={tab.editedData}
-        root={'cn' + index}
-        onChange={tab.setData}
-      />
-    </div>
-  );
-};
-
-const SettingsTabContent = ({ tab, index }) => {
-  return (
-    <JsonEditor
-      schema={tab.schema}
-      data={tab.editedData}
-      root={'cn' + index}
-      onChange={tab.setData}
-    />
-  );
-};
 
 function getTabPaneContent(
   tab,
@@ -314,9 +159,9 @@ const DeviceManagerPage = observer(({ pageStore }) => {
           <PageTabs
             tabs={pageStore.tabs.items}
             selectedIndex={pageStore.tabs.selectedTabIndex}
-            onSelect={(index, lastIndex) => pageStore.onSelectTab(index, lastIndex)}
+            onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}
-            onCopyTab={() => pageStore.copyTab()}
+            onCopyTab={() => pageStore.tabs.copySelectedTab()}
             onAddPort={() => pageStore.addPort()}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
             deviceTypeSelectOptions={pageStore.deviceTypeSelectOptions}

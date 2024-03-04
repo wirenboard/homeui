@@ -9,16 +9,16 @@ import AccessLevelStore from '../components/access-level/accessLevelStore';
 import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
 import AddDeviceModalState from './addDeviceModalState';
+import { TabType, TabsStore } from './tabsStore';
+
+import { DeviceTab } from './deviceTabStore';
 import {
-  Tab,
-  TabType,
-  TabsStore,
-  makeDeviceTabName,
+  PortTab,
   makeModbusTcpPortTabName,
   makeSerialPortTabName,
-  makeSettingsTabName,
   makeTcpPortTabName,
-} from './tabsStore';
+} from './portTabStore';
+import { SettingsTab } from './settingsTabStore';
 
 function getTranslation(key, translations) {
   return translations[i18n.language]?.[key] || translations?.en?.[key] || key;
@@ -182,10 +182,6 @@ class DeviceManagerPageStore {
     });
   }
 
-  onSelectTab(index, lastIndex) {
-    return this.tabs.onSelectTab(index, lastIndex);
-  }
-
   get isDirty() {
     return this.tabs.isDirty;
   }
@@ -196,28 +192,18 @@ class DeviceManagerPageStore {
 
   createPortTab(portConfig) {
     if (portConfig.port_type == 'serial' || portConfig.port_type === undefined) {
-      return new Tab(
-        TabType.PORT,
+      return new PortTab(
         getPortData(portConfig),
-        undefined,
         this.portSchemaMap['serial'],
         makeSerialPortTabName
       );
     }
     if (portConfig.port_type == 'tcp') {
-      return new Tab(
-        TabType.PORT,
-        getPortData(portConfig),
-        undefined,
-        this.portSchemaMap['tcp'],
-        makeTcpPortTabName
-      );
+      return new PortTab(getPortData(portConfig), this.portSchemaMap['tcp'], makeTcpPortTabName);
     }
     if (portConfig.port_type == 'modbus tcp') {
-      return new Tab(
-        TabType.PORT,
+      return new PortTab(
         getPortData(portConfig),
-        undefined,
         this.portSchemaMap['modbus tcp'],
         makeModbusTcpPortTabName
       );
@@ -227,24 +213,12 @@ class DeviceManagerPageStore {
 
   createDeviceTab(deviceConfig) {
     const deviceType = deviceConfig?.device_type || deviceConfig?.protocol || 'modbus';
-    return new Tab(
-      TabType.DEVICE,
-      deviceConfig,
-      deviceType,
-      this.deviceSchemaMap[deviceType],
-      makeDeviceTabName
-    );
+    return new DeviceTab(deviceConfig, deviceType, this.deviceSchemaMap[deviceType]);
   }
 
   createSettingsTab(config, schema) {
     delete config.ports;
-    return new Tab(
-      TabType.SETTINGS,
-      config,
-      undefined,
-      getGeneralSettingsSchema(schema),
-      makeSettingsTabName
-    );
+    return new SettingsTab(config, getGeneralSettingsSchema(schema));
   }
 
   async load() {
@@ -299,7 +273,7 @@ class DeviceManagerPageStore {
   async showDeleteConfirmModal() {
     return this.confirmModalState.show(
       i18n.t('device-manager.labels.confirm-delete', {
-        item: this.tabs.items[this.tabs.selectedTabIndex].name,
+        item: this.tabs.selectedTab?.name,
       }),
       [
         {
@@ -314,10 +288,6 @@ class DeviceManagerPageStore {
     if ((await this.showDeleteConfirmModal()) == 'ok') {
       this.tabs.deleteSelectedTab();
     }
-  }
-
-  copyTab() {
-    this.tabs.copySelectedTab();
   }
 
   async addDevice() {
@@ -339,7 +309,6 @@ class DeviceManagerPageStore {
     this.tabs.addDeviceTab(portTab, deviceTab);
   }
 
-  // TODO: Move to tabs store
   makeConfigJson() {
     let config = cloneDeep(this.tabs.items[this.tabs.items.length - 1].editedData);
     let lastPort = undefined;

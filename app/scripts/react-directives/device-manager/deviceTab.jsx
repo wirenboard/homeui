@@ -1,0 +1,92 @@
+import React from 'react';
+import { BootstrapLikeSelect, Button, WarningBar } from '../common';
+import { useTranslation } from 'react-i18next';
+import JsonEditor from '../components/json-editor/jsonEditor';
+import { observer } from 'mobx-react-lite';
+
+export const DeviceTab = observer(({ tab }) => {
+  let className = 'device-tab';
+  if (!tab.isValid) {
+    className = className + ' error';
+  } else {
+    if (tab.isDeprecated) {
+      className = className + ' warning';
+    }
+  }
+  return (
+    <div className={className}>
+      <span>{tab.name}</span>
+      {(!tab.isValid || tab.isDeprecated) && (
+        <i className="glyphicon glyphicon-exclamation-sign"></i>
+      )}
+    </div>
+  );
+});
+
+function findDeviceTypeSelectOption(options, value) {
+  let res;
+  options.find(option => {
+    if (option?.options) {
+      res = option.options.find(option => option.value === value);
+      if (res) {
+        return true;
+      }
+      return false;
+    }
+    if (option.value === value) {
+      res = option;
+      return true;
+    }
+    return false;
+  });
+  return res;
+}
+
+export const DeviceTabContent = ({
+  tab,
+  index,
+  onDeleteTab,
+  onCopyTab,
+  deviceTypeSelectOptions,
+  onDeviceTypeChange,
+}) => {
+  const { t } = useTranslation();
+  const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
+  return (
+    <div>
+      {tab.isDeprecated && (
+        <WarningBar>
+          <span>{t('device-manager.errors.deprecated')}</span>
+        </WarningBar>
+      )}
+      <BootstrapLikeSelect
+        options={deviceTypeSelectOptions}
+        selectedOption={selectedDeviceType}
+        onChange={option => onDeviceTypeChange(tab, option.value)}
+        className={'pull-left device-tab-control device-type-select'}
+      />
+      <div className="pull-right button-group device-tab-control">
+        <Button
+          key="delete"
+          label={t('device-manager.buttons.delete')}
+          type="danger"
+          onClick={onDeleteTab}
+          additionalStyles={'device-tab-control'}
+        />
+        <Button
+          key="copy"
+          label={t('device-manager.buttons.copy')}
+          onClick={onCopyTab}
+          additionalStyles={' device-tab-control'}
+        />
+      </div>
+      <JsonEditor
+        schema={tab.schema}
+        data={tab.editedData}
+        root={'dev' + index}
+        onChange={tab.setData}
+        className={'device-tab-properties'}
+      />
+    </div>
+  );
+};
