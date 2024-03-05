@@ -29,7 +29,7 @@ import 'ng-toast/dist/ngToast.css';
 
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
-import '../styles/css/device-manager.css';
+import '../styles/css/scan.css';
 import '../styles/css/network-connections.css';
 import '../styles/css/svg-edit-page.css';
 import '../styles/css/svg-view-page.css';
@@ -286,7 +286,7 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('deviceManagerPage', scanDirective)
+  .directive('scanPage', scanDirective)
   .directive('networkConnectionsPage', networkConnectionsDirective)
   .directive('firmwareUpdateWidget', firmwareUpdateDirective)
   .directive('cloudStatusWidget', cloudStatusDirective)

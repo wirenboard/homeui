@@ -45,10 +45,10 @@ const DevicePanel = props => {
           />
         </Row>
         <RowWithTitle title="SN">{props.sn}</RowWithTitle>
-        <RowWithTitle title={t('device-manager.labels.address')}>
+        <RowWithTitle title={t('scan.labels.address')}>
           <SlaveId slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_collision} />
         </RowWithTitle>
-        <RowWithTitle title={t('device-manager.labels.port')}>
+        <RowWithTitle title={t('scan.labels.port')}>
           <Port
             path={props.port.path}
             baudRate={props.cfg.baud_rate}
@@ -57,7 +57,7 @@ const DevicePanel = props => {
             stopBits={props.cfg.stop_bits}
           />
         </RowWithTitle>
-        <RowWithTitle title={t('device-manager.labels.firmware')}>
+        <RowWithTitle title={t('scan.labels.firmware')}>
           <FirmwareVersion
             version={props.fw?.version}
             availableFw={props.fw?.update?.available_fw}
