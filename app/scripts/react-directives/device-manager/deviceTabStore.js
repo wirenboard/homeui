@@ -66,6 +66,8 @@ export class DeviceTab {
   }
 
   getCopy() {
-    return new DeviceTab(cloneDeep(this.editedData), this.deviceType, this.schema);
+    let dataCopy = cloneDeep(this.editedData);
+    dataCopy.slave_id = '';
+    return new DeviceTab(dataCopy, this.deviceType, this.schema);
   }
 }
