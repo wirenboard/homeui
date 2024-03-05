@@ -241,7 +241,8 @@
          "add-port": "Add port",
          "delete": "Delete",
          "add-device": "Add device",
-         "copy": "Copy"
+         "copy": "Copy",
+         "to-port-list": "To port list"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",

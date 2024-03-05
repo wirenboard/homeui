@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '../common';
 import { PageWrapper, PageBody, PageTitle } from '../components/page-wrapper/pageWrapper';
 import { observer } from 'mobx-react-lite';
@@ -11,6 +11,7 @@ import { TabType } from './tabsStore';
 import { PortTab, PortTabContent } from './portTab';
 import { DeviceTab, DeviceTabContent } from './deviceTab';
 import { SettingsTab, SettingsTabContent } from './settingsPage';
+import { useMediaQuery } from 'react-responsive';
 
 function getTabItemContent(tab) {
   if (tab.type == TabType.PORT) {
@@ -92,11 +93,23 @@ const PageTabs = observer(
     showButtons,
     deviceTypeSelectOptions,
     onDeviceTypeChange,
+    tabPanels,
+    setTabPanels,
   }) => {
     const { t } = useTranslation();
+    const onSelectWrapper = index => {
+      if (!tabPanels.includes('content')) {
+        setTabPanels(['content']);
+      }
+      return onSelect(index);
+    };
     return (
-      <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect} className={'device-settings'}>
-        <div className="device-list-panel">
+      <VerticalTabs
+        selectedIndex={selectedIndex}
+        onSelect={onSelectWrapper}
+        className={'device-settings'}
+      >
+        <div className={tabPanels.includes('tabs') ? 'device-list-panel' : 'hidden'}>
           <TabsList className={'device-list'}>{makeTabItems(tabs)}</TabsList>
           {showButtons && (
             <Button
@@ -106,7 +119,7 @@ const PageTabs = observer(
             />
           )}
         </div>
-        <TabContent className={'settings-panel'}>
+        <TabContent className={tabPanels.includes('content') ? 'settings-panel' : 'hidden'}>
           {makeTabPanes(tabs, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange)}
         </TabContent>
       </VerticalTabs>
@@ -114,22 +127,63 @@ const PageTabs = observer(
   }
 );
 
-const PageHeader = ({ showButtons, allowSave, allowAddDevice, onSave, onAddDevice }) => {
+const HeaderButtons = ({
+  allowSave,
+  allowAddDevice,
+  onSave,
+  onAddDevice,
+  tabPanels,
+  setTabPanels,
+}) => {
+  const { t } = useTranslation();
+  if (tabPanels.includes('tabs')) {
+    return (
+      <>
+        <Button
+          type="success"
+          label={t('device-manager.buttons.save')}
+          onClick={onSave}
+          disabled={!allowSave}
+        />
+        <Button
+          label={t('device-manager.buttons.add-device')}
+          onClick={onAddDevice}
+          disabled={!allowAddDevice}
+        />
+      </>
+    );
+  }
+  return (
+    <Button
+      label={t('device-manager.buttons.to-port-list')}
+      onClick={() => {
+        setTabPanels(['tabs']);
+      }}
+    />
+  );
+};
+
+const PageHeader = ({
+  showButtons,
+  allowSave,
+  allowAddDevice,
+  onSave,
+  onAddDevice,
+  tabPanels,
+  setTabPanels,
+}) => {
   const { t } = useTranslation();
   return (
     <PageTitle title={t('device-manager.labels.title')}>
       {showButtons && (
         <div className="pull-right button-group">
-          <Button
-            type="success"
-            label={t('device-manager.buttons.save')}
-            onClick={onSave}
-            disabled={!allowSave}
-          />
-          <Button
-            label={t('device-manager.buttons.add-device')}
-            onClick={onAddDevice}
-            disabled={!allowAddDevice}
+          <HeaderButtons
+            allowSave={allowSave}
+            allowAddDevice={allowAddDevice}
+            onSave={onSave}
+            onAddDevice={onAddDevice}
+            tabPanels={tabPanels}
+            setTabPanels={setTabPanels}
           />
         </div>
       )}
@@ -138,6 +192,15 @@ const PageHeader = ({ showButtons, allowSave, allowAddDevice, onSave, onAddDevic
 };
 
 const DeviceManagerPage = observer(({ pageStore }) => {
+  const checkMobile = useMediaQuery({ maxWidth: 991 });
+  const [tabPanels, setTabPanels] = useState(['tabs', 'content']);
+  const [isMobile, setMobile] = useState(false);
+  useEffect(() => {
+    if (isMobile != checkMobile) {
+      setTabPanels(checkMobile ? ['tabs'] : ['tabs', 'content']);
+      setMobile(checkMobile);
+    }
+  });
   return (
     <PageWrapper
       error={pageStore.pageWrapperStore.error}
@@ -153,6 +216,8 @@ const DeviceManagerPage = observer(({ pageStore }) => {
         allowAddDevice={pageStore.tabs.hasPortTabs}
         onSave={() => pageStore.save()}
         onAddDevice={() => pageStore.addDevice()}
+        tabPanels={tabPanels}
+        setTabPanels={setTabPanels}
       />
       <PageBody loading={pageStore.pageWrapperStore.loading}>
         {!pageStore.tabs.isEmpty && (
@@ -166,6 +231,8 @@ const DeviceManagerPage = observer(({ pageStore }) => {
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
             deviceTypeSelectOptions={pageStore.deviceTypeSelectOptions}
             onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
+            tabPanels={tabPanels}
+            setTabPanels={setTabPanels}
           />
         )}
       </PageBody>

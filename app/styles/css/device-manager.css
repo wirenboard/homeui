@@ -4,37 +4,20 @@
     height: 100%;
 }
 
-.device-manager-page .nav-tabs li.active {
-    box-shadow: 0 -2px 0 #3276b1;
-    border-top-width: 0 !important;
-    font-weight: 700;
-    border-left: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #fff;
-}
 
-.device-manager-page .nav-tabs {
-    border-bottom: 0px;
-}
-
-.device-manager-page .nav-stacked li,
-.device-manager-page .nav-tabs li {
+.device-manager-page .nav-stacked li {
     cursor: pointer;
 }
 
-.device-manager-page .nav-stacked li:not(.active):hover,
-.device-manager-page .nav-tabs li:not(.active):hover
-.device-manager-page .nav-tabs li:not(.active):focus,
-.device-manager-page .nav-stacked li:not(.active):focus {
-    background-color: #eee;
-}
 
 .device-manager-page .nav-stacked li {
     border-radius: 2px;
 }
-.device-manager-page .nav-stacked li.active {
-    color: #fff;
-    background-color: #3276b1;
+
+
+.device-manager-page .nav-stacked li:hover,
+.device-manager-page .nav-stacked li:focus {
+    background-color: #eee;
 }
 
 .device-manager-page .port-tab {
@@ -43,6 +26,7 @@
     align-items: center;
     padding: 10px 9px 10px;
     gap: 3px;
+    border-radius: 2px;
 }
 
 .device-manager-page .port-tab .glyphicon {
@@ -53,10 +37,6 @@
     flex-grow: 1;
 }
 
-.device-manager-page li:not(.active):not(:hover):not(:focus) .port-tab {
-    background-color: #f5f5f5;
-    border-radius: 2px;
-}
 
 .device-manager-page .device-tab {
     display: flex;
@@ -78,6 +58,11 @@
     gap: 3px;
     border-radius: 2px;
     border: 1px solid #ddd;
+}
+
+.device-manager-page li:not(.active):hover .settings-tab,
+.device-manager-page li:not(.active):focus .settings-tab {
+    border: 1px solid #eee;
 }
 
 .device-manager-page .settings-tab span {
@@ -142,4 +127,54 @@
 
 .device-manager-page .device-tab-properties > .je-object__container {
     position: unset;
+}
+
+@media (max-width: 991px) {
+    .device-manager-page {
+        margin-bottom: 10px;
+    }
+
+    .device-manager-page .device-type-select {
+        width: 100%;
+        padding-bottom: 10px;
+    }
+
+    .device-manager-page .device-list-panel {
+        width: 100%;
+        max-width: unset;
+    }
+
+    .device-manager-page .device-tab-properties > div > .je-object__controls {
+        margin-left: unset;
+        margin-bottom: 15px;
+    }
+
+    .device-manager-page li:not(:hover):not(:focus) .port-tab {
+        background-color: #f5f5f5;
+    }
+
+    .device-manager-page li:not(:hover):not(:focus) .settings-tab {
+        border: 1px solid #ddd;
+    }
+}
+
+@media (min-width: 992px) {
+    .device-manager-page .nav-stacked li.active {
+        color: #fff;
+        background-color: #3276b1;
+    }
+
+    .device-manager-page li:not(.active):not(:hover):not(:focus) .port-tab {
+        background-color: #f5f5f5;
+    }
+
+    .device-manager-page li.active .settings-tab {
+        border: 1px solid #3276b1;
+    }
+}
+
+@media (max-width: 767px) {
+    .device-manager-page {
+        padding-bottom: 10px;
+    }
 }

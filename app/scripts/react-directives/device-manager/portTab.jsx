@@ -3,8 +3,10 @@ import { Button, ErrorBar } from '../common';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import JsonEditor from '../components/json-editor/jsonEditor';
+import { useMediaQuery } from 'react-responsive';
 
 const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore }) => {
+  const isMobile = useMediaQuery({ maxWidth: 991 });
   if (!hasChildren) {
     return null;
   }
@@ -14,7 +16,13 @@ const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore
       className={
         collapsed ? 'glyphicon glyphicon-chevron-right' : 'glyphicon glyphicon-chevron-down'
       }
-      onClick={() => (collapsed ? onRestore() : onCollapse())}
+      onClick={e => {
+        // Block selection of a tab after clicking on button
+        if (isMobile) {
+          e.stopPropagation();
+        }
+        collapsed ? onRestore() : onCollapse();
+      }}
     ></i>
   );
 });
