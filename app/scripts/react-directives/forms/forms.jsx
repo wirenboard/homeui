@@ -74,6 +74,7 @@ export const FormSelect = observer(({ store, isClearable }) => {
       <BootstrapLikeSelect
         options={store.options}
         isClearable={isClearable}
+        selectedOption={store.selectedOption}
         setSelectedOption={store.selectedOption}
         placeholder={store.placeholder}
         onChange={value => store.setSelectedOption(value)}
