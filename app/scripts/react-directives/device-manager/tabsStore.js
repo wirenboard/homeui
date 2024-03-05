@@ -1,6 +1,6 @@
 'use strict';
 
-import { makeAutoObservable } from 'mobx';
+import { action, makeAutoObservable, makeObservable, observable } from 'mobx';
 
 export const TabType = {
   PORT: 'port',
@@ -8,12 +8,38 @@ export const TabType = {
   SETTINGS: 'settings',
 };
 
+export class MobileModeTabsStore {
+  constructor() {
+    this.inMobileMode = false;
+    this.activePanel = 'tabs';
+
+    makeObservable(this, {
+      inMobileMode: observable,
+      activePanel: observable,
+      setActivePanel: action.bound,
+      setMobileMode: action.bound,
+    });
+  }
+
+  setActivePanel(panel) {
+    this.activePanel = panel;
+  }
+
+  setMobileMode(value) {
+    if (this.inMobileMode != value) {
+      this.inMobileMode = value;
+      this.activePanel = 'tabs';
+    }
+  }
+}
+
 export class TabsStore {
   constructor() {
     this.items = [];
     this.selectedTabIndex = 0;
     // Has added, deleted items or items with changed type
     this.hasModifiedStructure = false;
+    this.mobileModeStore = new MobileModeTabsStore();
 
     makeAutoObservable(this);
   }
@@ -27,6 +53,9 @@ export class TabsStore {
     if (!initial) {
       this.selectedTabIndex = i;
       this.hasModifiedStructure = true;
+      if (this.mobileModeStore.inMobileMode) {
+        this.mobileModeStore.setActivePanel('content');
+      }
     }
     tab.children.forEach(child => {
       i++;
@@ -49,6 +78,9 @@ export class TabsStore {
     if (!initial) {
       this.selectedTabIndex = i;
       this.hasModifiedStructure = true;
+      if (this.mobileModeStore.inMobileMode) {
+        this.mobileModeStore.setActivePanel('content');
+      }
     }
   }
 
@@ -58,6 +90,9 @@ export class TabsStore {
 
   onSelectTab(index, lastIndex) {
     this.selectedTabIndex = index;
+    if (this.mobileModeStore.inMobileMode) {
+      this.mobileModeStore.setActivePanel('content');
+    }
     return true;
   }
 
@@ -79,11 +114,15 @@ export class TabsStore {
 
     this.selectedTabIndex = 0;
     this.hasModifiedStructure = true;
+    this.mobileModeStore.setActivePanel('tabs');
   }
 
   copySelectedTab() {
     let portTab = this.selectedPortTab;
     this.addDeviceTab(portTab, this.items[this.selectedTabIndex].getCopy());
+    if (this.mobileModeStore.inMobileMode) {
+      this.mobileModeStore.setActivePanel('content');
+    }
   }
 
   get selectedPortTab() {

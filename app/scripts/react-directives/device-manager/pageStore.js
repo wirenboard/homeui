@@ -9,7 +9,7 @@ import AccessLevelStore from '../components/access-level/accessLevelStore';
 import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
 import AddDeviceModalState from './addDeviceModalState';
-import { TabType, TabsStore } from './tabsStore';
+import { TabsStore } from './tabsStore';
 
 import { DeviceTab } from './deviceTabStore';
 import {
