@@ -421,8 +421,7 @@ function makeGroupsEditor() {
         this.header = document.createElement('label');
         this.header.textContent = this.getTitle();
         this.title = this.theme.getHeader(this.header, this.getPathDepth());
-        this.title.classList.add('je-object__title');
-        this.title.classList.add('disable_collapse');
+        this.title.classList.add('je-object__title', 'disable_collapse');
         this.container.appendChild(this.title);
       }
 
