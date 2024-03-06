@@ -11,24 +11,29 @@ export const TabType = {
 export class MobileModeTabsStore {
   constructor() {
     this.inMobileMode = false;
-    this.activePanel = 'tabs';
+    this.tabsPanelIsActive = true;
 
     makeObservable(this, {
       inMobileMode: observable,
-      activePanel: observable,
-      setActivePanel: action.bound,
+      tabsPanelIsActive: observable,
+      showTabsPanel: action.bound,
+      showContentPanel: action.bound,
       setMobileMode: action.bound,
     });
   }
 
-  setActivePanel(panel) {
-    this.activePanel = panel;
+  showTabsPanel() {
+    this.tabsPanelIsActive = true;
+  }
+
+  showContentPanel() {
+    this.tabsPanelIsActive = false;
   }
 
   setMobileMode(value) {
     if (this.inMobileMode != value) {
       this.inMobileMode = value;
-      this.activePanel = 'tabs';
+      this.tabsPanelIsActive = true;
     }
   }
 }
@@ -54,7 +59,7 @@ export class TabsStore {
       this.selectedTabIndex = i;
       this.hasModifiedStructure = true;
       if (this.mobileModeStore.inMobileMode) {
-        this.mobileModeStore.setActivePanel('content');
+        this.mobileModeStore.showContentPanel();
       }
     }
     tab.children.forEach(child => {
@@ -79,7 +84,7 @@ export class TabsStore {
       this.selectedTabIndex = i;
       this.hasModifiedStructure = true;
       if (this.mobileModeStore.inMobileMode) {
-        this.mobileModeStore.setActivePanel('content');
+        this.mobileModeStore.showContentPanel();
       }
     }
   }
@@ -91,7 +96,7 @@ export class TabsStore {
   onSelectTab(index, lastIndex) {
     this.selectedTabIndex = index;
     if (this.mobileModeStore.inMobileMode) {
-      this.mobileModeStore.setActivePanel('content');
+      this.mobileModeStore.showContentPanel();
     }
     return true;
   }
@@ -114,14 +119,14 @@ export class TabsStore {
 
     this.selectedTabIndex = 0;
     this.hasModifiedStructure = true;
-    this.mobileModeStore.setActivePanel('tabs');
+    this.mobileModeStore.showTabsPanel();
   }
 
   copySelectedTab() {
     let portTab = this.selectedPortTab;
     this.addDeviceTab(portTab, this.items[this.selectedTabIndex].getCopy());
     if (this.mobileModeStore.inMobileMode) {
-      this.mobileModeStore.setActivePanel('content');
+      this.mobileModeStore.showContentPanel();
     }
   }
 
@@ -168,5 +173,9 @@ export class TabsStore {
   clear() {
     this.items.splice(0, this.items.length);
     this.hasModifiedStructure = false;
+  }
+
+  setModifiedStructure() {
+    this.hasModifiedStructure = true;
   }
 }

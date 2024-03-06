@@ -10,7 +10,6 @@ import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
 import AddDeviceModalState from './addDeviceModalState';
 import { TabsStore } from './tabsStore';
-
 import { DeviceTab } from './deviceTabStore';
 import {
   PortTab,
@@ -19,9 +18,30 @@ import {
   makeTcpPortTabName,
 } from './portTabStore';
 import { SettingsTab } from './settingsTabStore';
+import { getTranslation } from './jsonSchemaUtils';
+import { addToConfig } from './configUtils';
 
-function getTranslation(key, translations) {
-  return translations[i18n.language]?.[key] || translations?.en?.[key] || key;
+function makeUnknownDeviceError(device, first) {
+  return i18n.t(
+    first ? 'device-manager.errors.first_unknown_device' : 'device-manager.errors.unknown_device',
+    { dev: device, interpolation: { escapeValue: false } }
+  );
+}
+
+function makeMisconfiguredDeviceError(device, first) {
+  return i18n.t(
+    first
+      ? 'device-manager.errors.first_misconfigured_device'
+      : 'device-manager.errors.misconfigured_device',
+    { dev: device, interpolation: { escapeValue: false } }
+  );
+}
+
+function makeMergeErrorMessage(unknown, misconfigured) {
+  return unknown
+    .map((dev, i) => makeUnknownDeviceError(dev, i == 0))
+    .concat(misconfigured.map((dev, i) => makeMisconfiguredDeviceError(dev, i == 0)))
+    .join('\n');
 }
 
 function getPortSchemaCommon(schema, subSchemaName) {
@@ -107,7 +127,7 @@ function makeDeviceTypeSelectOptions(deviceSchemaMap) {
   Object.entries(deviceSchemaMap).forEach(([deviceType, schema]) => {
     const groupTag = schema?.options?.wb?.group;
     if (groupTag) {
-      const groupName = getTranslation(groupTag, schema.translations);
+      const groupName = getTranslation(groupTag, i18n.language, schema.translations);
       if (groupTag == 'g-wb') {
         wbDevicesGroupName = groupName;
       }
@@ -116,7 +136,7 @@ function makeDeviceTypeSelectOptions(deviceSchemaMap) {
       }
       groups[groupName] ??= [];
       groups[groupName].push({
-        label: getTranslation(schema.title, schema.translations),
+        label: getTranslation(schema.title, i18n.language, schema.translations),
         value: deviceType,
         hidden: !!schema?.options?.wb?.hide_from_selection,
       });
@@ -149,7 +169,10 @@ function makeDeviceTypeSelectOptions(deviceSchemaMap) {
 
 function makePortTypeSelectOptions(portSchemaMap) {
   return Object.entries(portSchemaMap).map(([portType, schema]) => {
-    return { label: getTranslation(schema.title, schema.translations), value: portType };
+    return {
+      label: getTranslation(schema.title, i18n.language, schema.translations),
+      value: portType,
+    };
   });
 }
 
@@ -224,10 +247,18 @@ class DeviceManagerPageStore {
   async load() {
     try {
       this.loaded = false;
-      const { config, schema } = await this.loadConfigFn();
+      this.pageWrapperStore.clearError();
+      const { config, schema, devices } = await this.loadConfigFn();
       this.portSchemaMap = makePortSchemaMap(schema);
       this.deviceSchemaMap = makeDeviceSchemaMap(schema);
       this.deviceTypeSelectOptions = makeDeviceTypeSelectOptions(this.deviceSchemaMap);
+      if (devices) {
+        const mergeRes = addToConfig(config, devices, this.deviceSchemaMap);
+        this.setError(makeMergeErrorMessage(mergeRes.unknown, mergeRes.misconfigured));
+        if (mergeRes.added) {
+          this.tabs.setModifiedStructure();
+        }
+      }
       config.ports.forEach(port => {
         const portTab = this.createPortTab(port);
         if (portTab === undefined) {
@@ -241,7 +272,6 @@ class DeviceManagerPageStore {
         this.tabs.addPortTab(portTab, true);
       });
       this.tabs.addSettingsTab(this.createSettingsTab(config, schema));
-      this.pageWrapperStore.clearError();
       this.loaded = true;
     } catch (err) {
       this.tabs.clear();

@@ -100,7 +100,7 @@ const PageTabs = observer(
       <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect} className={'device-settings'}>
         <div
           className={
-            mobileModeStore.inMobileMode && mobileModeStore.activePanel == 'content'
+            mobileModeStore.inMobileMode && !mobileModeStore.tabsPanelIsActive
               ? 'hidden'
               : 'device-list-panel'
           }
@@ -116,7 +116,7 @@ const PageTabs = observer(
         </div>
         <TabContent
           className={
-            mobileModeStore.inMobileMode && mobileModeStore.activePanel == 'tabs'
+            mobileModeStore.inMobileMode && mobileModeStore.tabsPanelIsActive
               ? 'hidden'
               : 'settings-panel'
           }
@@ -131,12 +131,12 @@ const PageTabs = observer(
 const HeaderButtons = observer(
   ({ allowSave, allowAddDevice, onSave, onAddDevice, mobileModeStore }) => {
     const { t } = useTranslation();
-    if (mobileModeStore.inMobileMode && mobileModeStore.activePanel == 'content') {
+    if (mobileModeStore.inMobileMode && !mobileModeStore.tabsPanelIsActive) {
       return (
         <Button
           label={t('device-manager.buttons.to-port-list')}
           onClick={() => {
-            mobileModeStore.setActivePanel('tabs');
+            mobileModeStore.showTabsPanel();
           }}
         />
       );

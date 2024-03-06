@@ -10,7 +10,9 @@ function deviceManagerDirective(whenMqttReady, ConfigEditorProxy, PageState, rol
 
   return {
     restrict: 'E',
-    scope: {},
+    scope: {
+      devices: '=',
+    },
     link: function (scope, element) {
       if (scope.root) {
         scope.root.unmount();
@@ -22,7 +24,7 @@ function deviceManagerDirective(whenMqttReady, ConfigEditorProxy, PageState, rol
       };
       const loadConfig = async () => {
         const r = await ConfigEditorProxy.Load({ path: path });
-        return { config: r.content, schema: r.schema };
+        return { config: r.content, schema: r.schema, devices: scope.devices };
       };
 
       scope.store = new DeviceManagerPageStore(loadConfig, saveConfig, rolesFactory);
