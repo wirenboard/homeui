@@ -3,16 +3,16 @@
 import Connections, { connectionsStoreFromJson, connectionsToJson } from './connectionsStore';
 import SwitcherStore, { switcherStoreToJson, switcherStoreFromJson } from './switcherStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
-import SelectNewConnectionModalState from './selectNewConnectionModalState';
 import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
+import SelectModalState from '../components/modals/selectModalState';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
 class NetworkConnectionsPageStore {
   constructor(saveConnectionsFn, loadConnectionsFn, onToggleConnectionState) {
     this.confirmModalState = new ConfirmModalState();
-    this.selectNewConnectionModalState = new SelectNewConnectionModalState();
+    this.selectNewConnectionModalState = new SelectModalState('selectNewConnectionModal');
     this.connections = new Connections();
     this.switcher = new SwitcherStore(this.connections);
     this.onToggleConnectionState = onToggleConnectionState;
@@ -130,7 +130,17 @@ class NetworkConnectionsPageStore {
     if (await this.allowConnectionSwitch()) {
       let connectionType;
       try {
-        connectionType = await this.selectNewConnectionModalState.show();
+        connectionType = await this.selectNewConnectionModalState.show(
+          i18n.t('network-connections.labels.select-type'),
+          i18n.t('network-connections.buttons.add'),
+          [
+            { label: i18n.t('network-connections.labels.ethernet'), value: '01_nm_ethernet' },
+            { label: i18n.t('network-connections.labels.wifi'), value: '03_nm_wifi' },
+            { label: i18n.t('network-connections.labels.modem'), value: '02_nm_modem' },
+            { label: i18n.t('network-connections.labels.canbus'), value: 'can' },
+            { label: i18n.t('network-connections.labels.wifi-ap'), value: '04_nm_wifi_ap' },
+          ]
+        );
       } catch (err) {
         if (err == 'cancel') {
           return;

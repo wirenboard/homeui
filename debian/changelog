@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.79.3) stable; urgency=medium
+
+  * Source code refactoring. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 06 Mar 2024 12:56:58 +0500
+
 wb-mqtt-homeui (2.79.2) stable; urgency=medium
 
   * Source code refactoring. No functional changes

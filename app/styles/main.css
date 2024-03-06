@@ -1174,3 +1174,48 @@ button.dashboard-back:active {
   background-color: #f0f0f0;
   border-radius: 6px;
 }
+
+.has-error .wb-react-select .wb-react-select__control,
+.has-error .wb-react-select .wb-react-select__control:hover {
+  border-color: #b94a48;
+}
+
+.wb-react-select .wb-react-select__indicator-separator {
+  display: none,
+}
+
+.wb-react-select .wb-react-select__dropdown-indicator {
+  color: black;
+  padding-left: 0px;
+  padding-right: 0px;
+  width: 15px;
+}
+
+.wb-react-select .wb-react-select__clear-indicator {
+  color: black;
+  padding-left: 0px;
+  padding-right: 0px;
+  width: 15px;
+}
+
+.wb-react-select .wb-react-select__indicators {
+  height: 32px;
+}
+
+.wb-react-select .wb-react-select__control {
+  border-radius: 0px;
+  box-shadow: unset;
+  height: 32px;
+  min-height: 32px;
+}
+
+.wb-react-select  .wb-react-select__group-heading {
+    text-transform: unset;
+    font-size: unset;
+    color: black;
+    font-weight: bold;
+}
+
+.wb-react-select .wb-react-select__option.with-groups {
+  padding-left: 20px;
+}
