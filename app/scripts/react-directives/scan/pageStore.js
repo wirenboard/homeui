@@ -153,7 +153,7 @@ class DeviceManagerStore {
 
   setDeviceManagerUnavailable() {
     this.mqttStore.setDeviceManagerUnavailable();
-    scope.globalError.setError(i18n.t('device-manager.errors.unavailable'));
+    scope.globalError.setError(i18n.t('scan.errors.unavailable'));
   }
 
   setScanFailed(err) {

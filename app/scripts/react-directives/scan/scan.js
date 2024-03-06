@@ -1,7 +1,7 @@
 'use strict';
 
 import ReactDOM from 'react-dom/client';
-import CreateDevicesPage from './deviceManager';
+import CreateDevicesPage from './scan.jsx';
 import DeviceManagerStore from './pageStore';
 
 function scanDirective(DeviceManagerProxy, whenMqttReady, mqttClient, $state) {
