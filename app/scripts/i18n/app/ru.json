@@ -34,7 +34,8 @@
             "access": "Права доступа",
             "logs": "Системный журнал",
             "serial-metrics": "Метрики wb-mqtt-serial",
-            "scan": "Сканирование"
+            "scan": "Сканирование",
+            "device-manager": "Устройства"
         },
         "access": {
             "title": "Уровень доступа:"

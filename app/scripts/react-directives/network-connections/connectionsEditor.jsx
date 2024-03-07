@@ -1,9 +1,9 @@
 import React from 'react';
-import { VerticalTabs, TabsList, TabContent, TabPane, TabItem } from './tabs';
+import { VerticalTabs, TabsList, TabContent, TabPane, TabItem } from '../components/tabs/tabs';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { BootstrapRow } from '../common';
-import JsonEditor from './jsonEditor';
+import JsonEditor from '../components/json-editor/jsonEditor';
 import { Button } from '../common';
 import ConnectionItem from './connectionItem';
 
@@ -118,7 +118,7 @@ const ConnectionsEditor = observer(
     const { t } = useTranslation();
     return (
       <VerticalTabs selectedIndex={connections.selectedConnectionIndex} onSelect={onSelect}>
-        <TabsList>
+        <TabsList className={'col-sm-4 col-md-3 col-lg-2'}>
           {makeTabItems(connections.connections)}
           <Button
             label={t('network-connections.buttons.add-connection')}
@@ -127,7 +127,7 @@ const ConnectionsEditor = observer(
             onClick={onAdd}
           />
         </TabsList>
-        <TabContent>
+        <TabContent className={'col-sm-8 col-md-9 col-lg-10'}>
           {makeTabPanes(connections.connections, onSave, onDelete, onToggleState)}
         </TabContent>
       </VerticalTabs>

@@ -1,0 +1,180 @@
+.device-manager-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+
+.device-manager-page .nav-stacked li {
+    cursor: pointer;
+}
+
+
+.device-manager-page .nav-stacked li {
+    border-radius: 2px;
+}
+
+
+.device-manager-page .nav-stacked li:hover,
+.device-manager-page .nav-stacked li:focus {
+    background-color: #eee;
+}
+
+.device-manager-page .port-tab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 9px 10px;
+    gap: 3px;
+    border-radius: 2px;
+}
+
+.device-manager-page .port-tab .glyphicon {
+    top: unset;
+}
+
+.device-manager-page .port-tab span {
+    flex-grow: 1;
+}
+
+
+.device-manager-page .device-tab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 9px 10px 20px;
+    gap: 3px;
+}
+
+.device-manager-page .device-tab span {
+    flex-grow: 1;
+}
+
+.device-manager-page .settings-tab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 9px 10px;
+    gap: 3px;
+    border-radius: 2px;
+    border: 1px solid #ddd;
+}
+
+.device-manager-page li:not(.active):hover .settings-tab,
+.device-manager-page li:not(.active):focus .settings-tab {
+    border: 1px solid #eee;
+}
+
+.device-manager-page .settings-tab span {
+    flex-grow: 1;
+}
+
+.device-manager-page .tab-content.well.well-small {
+    margin-bottom: 0px;
+}
+
+.device-manager-page .button-group button:not(:first-child) {
+    margin-left: 5px;
+}
+
+.device-manager-page li .error .glyphicon-exclamation-sign {
+    color: #a90329;
+}
+
+.device-manager-page li .warning .glyphicon-exclamation-sign {
+    color: #826430;
+}
+
+.device-manager-page .add-port-button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.device-manager-page .device-settings {
+    flex-grow: 1;
+    height: 1px;
+    display: flex;
+    flex-direction: row;
+}
+
+.device-manager-page .device-list-panel {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+    width: 20%;
+    flex-shrink: 0;
+    max-width: 250px;
+}
+
+.device-manager-page .settings-panel {
+    overflow-y: scroll;
+    padding-bottom: 10px;
+    flex-grow: 1;
+}
+
+.device-manager-page .device-list {
+    overflow-y: scroll;
+    flex-grow: 1;
+}
+
+.device-manager-page .device-type-select {
+    width: 45%;
+}
+
+.device-manager-page .device-tab-properties > div > .je-header > label {
+    display: none;
+}
+
+.device-manager-page .device-tab-properties > .je-object__container {
+    position: unset;
+}
+
+@media (max-width: 991px) {
+    .device-manager-page {
+        margin-bottom: 10px;
+    }
+
+    .device-manager-page .device-type-select {
+        width: 100%;
+        padding-bottom: 10px;
+    }
+
+    .device-manager-page .device-list-panel {
+        width: 100%;
+        max-width: unset;
+    }
+
+    .device-manager-page .device-tab-properties > div > .je-object__controls {
+        margin-left: unset;
+        margin-bottom: 15px;
+    }
+
+    .device-manager-page li:not(:hover):not(:focus) .port-tab {
+        background-color: #f5f5f5;
+    }
+
+    .device-manager-page li:not(:hover):not(:focus) .settings-tab {
+        border: 1px solid #ddd;
+    }
+}
+
+@media (min-width: 992px) {
+    .device-manager-page .nav-stacked li.active {
+        color: #fff;
+        background-color: #3276b1;
+    }
+
+    .device-manager-page li:not(.active):not(:hover):not(:focus) .port-tab {
+        background-color: #f5f5f5;
+    }
+
+    .device-manager-page li.active .settings-tab {
+        border: 1px solid #3276b1;
+    }
+}
+
+@media (max-width: 767px) {
+    .device-manager-page {
+        padding-bottom: 10px;
+    }
+}

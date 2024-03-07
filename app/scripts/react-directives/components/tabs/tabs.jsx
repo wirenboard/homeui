@@ -4,22 +4,22 @@ import { Tabs, TabList, TabPanel, Tab } from 'react-tabs';
 
 const TabsOrientationContext = createContext('horizontal');
 
-export const TabsList = ({ children, ...otherProps }) => {
+export const TabsList = ({ children, className, ...otherProps }) => {
   const classes =
     useContext(TabsOrientationContext) === 'horizontal'
       ? 'nav nav-tabs'
-      : 'col-sm-4 col-md-3 col-lg-2 nav nav-pills nav-stacked';
+      : 'nav nav-pills nav-stacked';
   return (
-    <TabList className={classes} {...otherProps}>
+    <TabList className={className ? classes + ' ' + className : classes} {...otherProps}>
       {children}
     </TabList>
   );
 };
 TabsList.tabsRole = 'TabList';
 
-export const TabItem = observer(({ children, ...otherProps }) => {
+export const TabItem = observer(({ children, className, ...otherProps }) => {
   return (
-    <Tab tabIndex={'0'} className={''} selectedClassName={'active'} {...otherProps}>
+    <Tab tabIndex={'0'} className={className} selectedClassName={'active'} {...otherProps}>
       {children}
     </Tab>
   );
@@ -35,27 +35,25 @@ export const TabPane = observer(({ children, ...otherProps }) => {
 });
 TabPane.tabsRole = 'TabPanel';
 
-export const TabContent = ({ children, ...otherProps }) => {
+export const TabContent = ({ className, children, ...otherProps }) => {
   const classes =
     useContext(TabsOrientationContext) === 'horizontal'
       ? 'tab-content'
-      : 'col-sm-8 col-md-9 col-lg-10 tab-content well well-small';
+      : 'tab-content well well-small';
   return (
-    <div className={classes} {...otherProps}>
+    <div className={className ? classes + ' ' + className : classes} {...otherProps}>
       {children}
     </div>
   );
 };
 
-export const VerticalTabs = ({ selectedIndex, onSelect, children }) => {
+export const VerticalTabs = ({ selectedIndex, onSelect, className, children }) => {
   return (
-    <div>
-      <TabsOrientationContext.Provider value={'vertical'}>
-        <Tabs selectedIndex={selectedIndex} onSelect={onSelect}>
-          {children}
-        </Tabs>
-      </TabsOrientationContext.Provider>
-    </div>
+    <TabsOrientationContext.Provider value={'vertical'}>
+      <Tabs selectedIndex={selectedIndex} onSelect={onSelect} className={className}>
+        {children}
+      </Tabs>
+    </TabsOrientationContext.Provider>
   );
 };
 

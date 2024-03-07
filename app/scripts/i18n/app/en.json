@@ -34,7 +34,8 @@
             "access": "Change access level",
             "logs": "Logs",
             "serial-metrics": "wb-mqtt-serial metrics",
-            "scan": "Scan"
+            "scan": "Scan",
+            "device-manager": "Device manager"
         },
         "access": {
             "title": "Access level:"

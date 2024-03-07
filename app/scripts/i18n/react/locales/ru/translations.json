@@ -222,5 +222,33 @@
    "forms": {
       "default-text-prefix": "Если значение не указано, используется ",
       "default-text-postfix": ""
+   },
+   "device-manager": {
+      "labels": {
+         "title": "Устройства",
+         "serial-port": "Последовательный порт",
+         "confirm-delete": "Вы действительно хотите удалить {{item}}?",
+         "add-device": "Добавить устройство",
+         "port": "Порт",
+         "device-type": "Тип устройства",
+         "settings": "Настройки wb-mqtt-serial"
+      },
+      "buttons": {
+         "save": "Сохранить настройки",
+         "add-port": "Добавить порт",
+         "delete": "Удалить",
+         "add-device": "Добавить устройство",
+         "copy": "Скопировать",
+         "to-port-list": "К списку портов и устройств"
+      },
+      "errors": {
+         "write": "Ошибка при сохранении настроек. Более детальная информация находится в журнале работы сервиса wb-mqtt-confed",
+         "device-config": "Ошибка в настройках одного или нескольких устройств",
+         "deprecated": "Шаблон устройства устарел, рекомендуется использовать новую версию",
+         "first_unknown_device": "Не смог подобрать шаблоны для устройств, добавьте их вручную:\n\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "unknown_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "first_misconfigured_device": "У некоторых добавленных устройств настройки связи отличаются от настроек порта:\n\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "misconfigured_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}"
+      }
    }
 }
