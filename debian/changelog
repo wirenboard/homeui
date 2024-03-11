@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.79.4) stable; urgency=medium
+
+  * Add support for enums in templates
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 11 Mar 2024 15:37:00 +0400
+
 wb-mqtt-homeui (2.79.3) stable; urgency=medium
 
   * Source code refactoring. No functional changes
