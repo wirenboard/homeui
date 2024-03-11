@@ -67,13 +67,8 @@ export const DeviceTabContent = ({
         className={'pull-left device-type-select'}
       />
       <div className="pull-right button-group">
-        <Button
-          key="delete"
-          label={t('device-manager.buttons.delete')}
-          type="danger"
-          onClick={onDeleteTab}
-        />
-        <Button key="copy" label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+        <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
+        <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
       </div>
       <JsonEditor
         schema={tab.schema}
