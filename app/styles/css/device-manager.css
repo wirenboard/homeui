@@ -130,10 +130,6 @@
 }
 
 @media (max-width: 991px) {
-    .device-manager-page {
-        margin-bottom: 10px;
-    }
-
     .device-manager-page .device-type-select {
         width: 100%;
         padding-bottom: 10px;
