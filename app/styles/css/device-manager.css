@@ -4,16 +4,26 @@
     height: 100%;
 }
 
+.device-manager-page .page-header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+}
+
+.device-manager-page .page-header>span {
+    flex-grow: 1;
+}
 
 .device-manager-page .nav-stacked li {
     cursor: pointer;
 }
 
-
 .device-manager-page .nav-stacked li {
     border-radius: 2px;
 }
-
 
 .device-manager-page .nav-stacked li:hover,
 .device-manager-page .nav-stacked li:focus {
@@ -36,7 +46,6 @@
 .device-manager-page .port-tab span {
     flex-grow: 1;
 }
-
 
 .device-manager-page .device-tab {
     display: flex;

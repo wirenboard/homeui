@@ -171,7 +171,7 @@ const PageHeader = ({
   return (
     <PageTitle title={t('device-manager.labels.title')}>
       {showButtons && (
-        <div className="pull-right button-group">
+        <div className="button-group">
           <HeaderButtons
             allowSave={allowSave}
             allowAddDevice={allowAddDevice}
