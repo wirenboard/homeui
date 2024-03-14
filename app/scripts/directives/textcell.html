@@ -13,7 +13,7 @@
     ng-if="cell.readOnly"
     class="cell cell-text"
   >
-    {{ cell.value }}
+    {{ cell.getEnumName($locale.id, cell.value) }}
   </p>
   <input
     ng-hide="cell.readOnly"
