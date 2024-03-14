@@ -111,7 +111,7 @@ export class TabsStore {
       this.items.splice(this.selectedTabIndex, tab.children.length + 1);
     } else if (tab?.type == TabType.DEVICE) {
       let portTab = this.selectedPortTab;
-      portTab.children.splice(portTab.children.indexOf(tab, 1));
+      portTab.children.splice(portTab.children.indexOf(tab, 1), 1);
       this.items.splice(this.selectedTabIndex, 1);
     } else {
       return;
