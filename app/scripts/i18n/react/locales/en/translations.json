@@ -225,5 +225,33 @@
    "forms": {
       "default-text-prefix": "If the value is not set, ",
       "default-text-postfix": " is used"
+   },
+   "device-manager": {
+      "labels": {
+         "title": "Device manager",
+         "serial-port": "Serial port",
+         "confirm-delete": "Do you really want to delete {{item}}?",
+         "add-device": "Add device",
+         "port": "Port",
+         "device-type": "Device type",
+         "settings": "wb-mqtt-serial settings"
+      },
+      "buttons": {
+         "save": "Save config",
+         "add-port": "Add port",
+         "delete": "Delete",
+         "add-device": "Add device",
+         "copy": "Copy",
+         "to-port-list": "To ports and devices list"
+      },
+      "errors": {
+         "write":"Error writing config. See wb-mqtt-confed logs for details",
+         "device-config": "Error in the settings of one or more devices",
+         "deprecated": "Device template is deprecated, use newer version",
+         "first_unknown_device": "Unable to find templates for devices, add them manually:\n\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "unknown_device": "\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "first_misconfigured_device": "Some added devices has connection settings different from current:\n\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "misconfigured_device": "\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}"
+      }
    }
 }

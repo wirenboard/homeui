@@ -39,7 +39,7 @@ export const ErrorBar = ({ msg }) => {
     return null;
   }
   return (
-    <div className="alert alert-danger" role="alert">
+    <div className="alert alert-danger" role="alert" style={{ whiteSpace: 'pre-wrap' }}>
       <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
       <span> {msg}</span>
     </div>
