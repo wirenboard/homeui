@@ -276,6 +276,7 @@ function deviceDataService(mqttClient, $window) {
       this.order = null;
       this._seq = nextCellSeq++;
       this._nameTranslations = {};
+      this._enumTranslations = {};
     }
 
     get value() {
@@ -471,22 +472,36 @@ function deviceDataService(mqttClient, $window) {
     // meta must be a string with JSON or empty string or undefined
     // {
     //   title: {
-    //    en: ...,
-    //    ru: ...,
-    //    ...
-    //  },
-    //  readonly: ...,
-    //  type: ...,
-    //  min: ...,
-    //  max: ...,
-    //  precision: ...,
-    //  units: ...
+    //     en: ...,
+    //     ru: ...,
+    //     ...
+    //   },
+    //   enum: {
+    //     v1: {
+    //       en: ...,
+    //       ru: ...,
+    //       ...
+    //     },
+    //     v2: {
+    //       en: ...,
+    //       ru: ...,
+    //       ...
+    //     },
+    //     ...
+    //   },
+    //   readonly: ...,
+    //   type: ...,
+    //   min: ...,
+    //   max: ...,
+    //   precision: ...,
+    //   units: ...
     // }
     setMeta(meta) {
       if (meta) {
         try {
           const m = JSON.parse(meta);
           this._nameTranslations = m.title || {};
+          this._enumTranslations = m.enum || {};
           this.setExplicitReadOnly(m.readonly);
           this.setType(m.type);
           this.setMin(m.min);
@@ -498,6 +513,7 @@ function deviceDataService(mqttClient, $window) {
         } catch (e) {}
       } else {
         this._nameTranslations = {};
+        this._enumTranslations = {};
         this.setExplicitReadOnly(null);
         this.setType('');
         this.setMin('');
@@ -517,6 +533,17 @@ function deviceDataService(mqttClient, $window) {
         return this._nameTranslations['en'];
       }
       return this.name;
+    }
+
+    isEnumName(lang, value) {
+      return this._enumTranslations.hasOwnProperty(value) && this._enumTranslations[value].hasOwnProperty(lang);
+    }
+
+    getEnumName(lang, value) {
+      if (this.isEnumName(lang, value)) {
+        return this._enumTranslations[value][lang];
+      }
+      return value;
     }
   }
 
@@ -780,6 +807,14 @@ function deviceDataService(mqttClient, $window) {
 
     getName(lang) {
       return this.cell.getName(lang);
+    }
+
+    isEnumName(lang, value) {
+      return this.cell.isEnumName(lang, value);
+    }
+
+    getEnumName(lang, value) {
+      return this.cell.getEnumName(lang, value);
     }
   }
 
