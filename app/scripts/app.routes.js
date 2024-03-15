@@ -413,6 +413,13 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       },
     })
     //...........................................................................
+    .state('serial-config.properties', {
+      url: '/properties',
+      params: {
+        hint: false,
+      },
+    })
+    //...........................................................................
     .state('logs', {
       url: '/logs',
       controller: 'LogsCtrl as $ctrl',

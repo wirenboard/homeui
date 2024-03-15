@@ -9,12 +9,12 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-end;
-    align-items: center;
     gap: 5px;
 }
 
 .device-manager-page .page-header>span {
     flex-grow: 1;
+    margin-top: 2px;
 }
 
 .device-manager-page .nav-stacked li {

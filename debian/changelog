@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.81.1) stable; urgency=medium
+
+  * Use Back button to navigate from device settings to the list of devices and ports in wb-mqtt-serial config in mobile mode 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 15 Mar 2024 11:02:18 +0500
+
 wb-mqtt-homeui (2.81.0) stable; urgency=medium
 
   * New interface for wb-mqtt-serial config

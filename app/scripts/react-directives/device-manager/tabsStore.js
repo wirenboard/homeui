@@ -9,9 +9,11 @@ export const TabType = {
 };
 
 export class MobileModeTabsStore {
-  constructor() {
+  constructor(toMobileContent, toTabs) {
     this.inMobileMode = false;
     this.tabsPanelIsActive = true;
+    this.toMobileContent = toMobileContent;
+    this.toTabs = toTabs;
 
     makeObservable(this, {
       inMobileMode: observable,
@@ -19,15 +21,22 @@ export class MobileModeTabsStore {
       showTabsPanel: action.bound,
       showContentPanel: action.bound,
       setMobileMode: action.bound,
+      movedToTabsPanel: action,
     });
   }
 
   showTabsPanel() {
-    this.tabsPanelIsActive = true;
+    this.movedToTabsPanel();
+    this.toTabs();
   }
 
   showContentPanel() {
     this.tabsPanelIsActive = false;
+    this.toMobileContent();
+  }
+
+  movedToTabsPanel() {
+    this.tabsPanelIsActive = true;
   }
 
   setMobileMode(value) {
@@ -39,12 +48,12 @@ export class MobileModeTabsStore {
 }
 
 export class TabsStore {
-  constructor() {
+  constructor(toMobileContent, toTabs) {
     this.items = [];
     this.selectedTabIndex = 0;
     // Has added, deleted items or items with changed type
     this.hasModifiedStructure = false;
-    this.mobileModeStore = new MobileModeTabsStore();
+    this.mobileModeStore = new MobileModeTabsStore(toMobileContent, toTabs);
 
     makeAutoObservable(this);
   }

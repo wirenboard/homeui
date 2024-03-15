@@ -5,7 +5,14 @@ import CreateDeviceManagerPage from './deviceManagerPage';
 import { autorun } from 'mobx';
 import DeviceManagerPageStore from './pageStore';
 
-function deviceManagerDirective(whenMqttReady, ConfigEditorProxy, PageState, rolesFactory) {
+function deviceManagerDirective(
+  whenMqttReady,
+  ConfigEditorProxy,
+  PageState,
+  rolesFactory,
+  $state,
+  $transitions
+) {
   'ngInject';
 
   return {
@@ -17,6 +24,9 @@ function deviceManagerDirective(whenMqttReady, ConfigEditorProxy, PageState, rol
       if (scope.root) {
         scope.root.unmount();
       }
+      if (scope.deleteTransitionHook) {
+        scope.deleteTransitionHook();
+      }
 
       const path = '/var/lib/wb-mqtt-confed/schemas/wb-mqtt-serial.schema.json';
       const saveConfig = async data => {
@@ -27,7 +37,39 @@ function deviceManagerDirective(whenMqttReady, ConfigEditorProxy, PageState, rol
         return { config: r.content, schema: r.schema, devices: scope.devices };
       };
 
-      scope.store = new DeviceManagerPageStore(loadConfig, saveConfig, rolesFactory);
+      const toMobileContent = () => {
+        $state.go('serial-config.properties', { hint: true });
+      };
+      const toTabs = () => {
+        $state.go('serial-config', {}, { location: 'replace' });
+      };
+
+      scope.store = new DeviceManagerPageStore(
+        loadConfig,
+        saveConfig,
+        toMobileContent,
+        toTabs,
+        rolesFactory
+      );
+
+      scope.deleteTransitionHook = $transitions.onBefore({}, function (transition) {
+        if (
+          transition.to().name == 'serial-config' &&
+          transition.from().name == 'serial-config.properties'
+        ) {
+          scope.store.tabs.mobileModeStore.movedToTabsPanel();
+          return true;
+        }
+        if (
+          transition.from().name == 'serial-config' &&
+          transition.to().name == 'serial-config.properties' &&
+          !transition.params('to').hint
+        ) {
+          return $state.target('serial-config');
+        }
+        return true;
+      });
+
       autorun(() => {
         PageState.setDirty(scope.store.isDirty);
       });
@@ -37,6 +79,7 @@ function deviceManagerDirective(whenMqttReady, ConfigEditorProxy, PageState, rol
 
       element.on('$destroy', function () {
         scope.root.unmount();
+        scope.deleteTransitionHook();
       });
     },
   };
