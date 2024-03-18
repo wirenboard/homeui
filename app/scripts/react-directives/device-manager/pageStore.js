@@ -183,14 +183,14 @@ function makePortSelectOptions(portTabs) {
 }
 
 class DeviceManagerPageStore {
-  constructor(loadConfigFn, saveConfigFn, rolesFactory) {
+  constructor(loadConfigFn, saveConfigFn, toMobileContent, toTabs, rolesFactory) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
     this.pageWrapperStore = new PageWrapperStore();
     this.selectModalState = new SelectModalState();
     this.confirmModalState = new ConfirmModalState();
     this.addDeviceModalState = new AddDeviceModalState();
-    this.tabs = new TabsStore();
+    this.tabs = new TabsStore(toMobileContent, toTabs);
     this.deviceSchemaMap = {};
     this.portSchemaMap = {};
     this.saveConfigFn = saveConfigFn;
