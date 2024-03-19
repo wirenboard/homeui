@@ -259,7 +259,7 @@ class DeviceManagerPageStore {
       }
       throw err;
     }
-    let deviceTab = this.createDeviceTab(new DeviceTab({}, newDeviceType, this.deviceTypesStore));
+    let deviceTab = new DeviceTab({}, newDeviceType, this.deviceTypesStore);
     this.tabs.addDeviceTab(portTab, deviceTab);
     deviceTab.setDefaultData();
   }
