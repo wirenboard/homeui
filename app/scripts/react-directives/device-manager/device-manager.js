@@ -36,11 +36,11 @@ function deviceManagerDirective(
       };
 
       const loadConfig = async () => {
-        const r = await SerialProxy.Load({ lang: i18n.language });
+        const response = await SerialProxy.Load({ lang: i18n.language });
         return {
-          config: r.config,
-          schema: r.schema,
-          deviceTypeGroups: r.types,
+          config: response.config,
+          schema: response.schema,
+          deviceTypeGroups: response.types,
           devicesToAdd: scope.devices,
         };
       };
