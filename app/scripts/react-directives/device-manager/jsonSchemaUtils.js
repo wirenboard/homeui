@@ -79,5 +79,5 @@ export function getDefaultObject(schema, root, defaultProperties) {
 }
 
 export function getTranslation(key, lang, translations) {
-  return translations[lang]?.[key] || translations?.en?.[key] || key;
+  return translations?.[lang]?.[key] || translations?.en?.[key] || key;
 }

@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import CreateDeviceManagerPage from './deviceManagerPage';
 import { autorun } from 'mobx';
 import DeviceManagerPageStore from './pageStore';
+import i18n from '../../i18n/react/config';
 
 function deviceManagerDirective(
   whenMqttReady,
@@ -11,7 +12,8 @@ function deviceManagerDirective(
   PageState,
   rolesFactory,
   $state,
-  $transitions
+  $transitions,
+  SerialProxy
 ) {
   'ngInject';
 
@@ -32,9 +34,15 @@ function deviceManagerDirective(
       const saveConfig = async data => {
         await ConfigEditorProxy.Save({ path: path, content: data });
       };
+
       const loadConfig = async () => {
-        const r = await ConfigEditorProxy.Load({ path: path });
-        return { config: r.content, schema: r.schema, devices: scope.devices };
+        const r = await SerialProxy.Load({ lang: i18n.language });
+        return {
+          config: r.config,
+          schema: r.schema,
+          deviceTypeGroups: r.types,
+          devicesToAdd: scope.devices,
+        };
       };
 
       const toMobileContent = () => {
@@ -44,11 +52,20 @@ function deviceManagerDirective(
         $state.go('serial-config', {}, { location: 'replace' });
       };
 
+      const loadDeviceTypeSchema = async deviceType => {
+        try {
+          return await SerialProxy.GetSchema({ type: deviceType });
+        } catch (err) {
+          throw new Error(err.message + (err.data ? ': ' + err.data : ''));
+        }
+      };
+
       scope.store = new DeviceManagerPageStore(
         loadConfig,
         saveConfig,
         toMobileContent,
         toTabs,
+        loadDeviceTypeSchema,
         rolesFactory
       );
 

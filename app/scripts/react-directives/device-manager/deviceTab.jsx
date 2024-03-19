@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, WarningBar } from '../common';
+import { Button, ErrorBar, Spinner, WarningBar } from '../common';
 import { useTranslation } from 'react-i18next';
 import JsonEditor from '../components/json-editor/jsonEditor';
 import { observer } from 'mobx-react-lite';
@@ -7,7 +7,7 @@ import BootstrapLikeSelect from '../components/select/select';
 
 export const DeviceTab = observer(({ tab }) => {
   let className = 'device-tab';
-  if (!tab.isValid) {
+  if (!tab.hasErrors) {
     className = className + ' error';
   } else {
     if (tab.isDeprecated) {
@@ -43,40 +43,54 @@ function findDeviceTypeSelectOption(options, value) {
   return res;
 }
 
-export const DeviceTabContent = ({
-  tab,
-  index,
-  onDeleteTab,
-  onCopyTab,
-  deviceTypeSelectOptions,
-  onDeviceTypeChange,
-}) => {
+export const UnknownDeviceTabContent = observer(({ tab }) => {
   const { t } = useTranslation();
-  const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
   return (
-    <div>
-      {tab.isDeprecated && (
-        <WarningBar>
-          <span>{t('device-manager.errors.deprecated')}</span>
-        </WarningBar>
-      )}
-      <BootstrapLikeSelect
-        options={deviceTypeSelectOptions}
-        selectedOption={selectedDeviceType}
-        onChange={option => onDeviceTypeChange(tab, option.value)}
-        className={'pull-left device-type-select'}
-      />
-      <div className="pull-right button-group">
-        <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
-        <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
-      </div>
-      <JsonEditor
-        schema={tab.schema}
-        data={tab.editedData}
-        root={'dev' + index}
-        onChange={tab.setData}
-        className={'device-tab-properties'}
-      />
-    </div>
+    <>
+      <ErrorBar msg={t('device-manager.errors.unknown-device-type', { type: tab.deviceType })} />
+      <pre>{JSON.stringify(tab.data, null, 2)}</pre>
+    </>
   );
-};
+});
+
+export const DeviceTabContent = observer(
+  ({ tab, index, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange }) => {
+    const { t } = useTranslation();
+    if (tab.loading) {
+      return <Spinner />;
+    }
+    if (tab.error) {
+      return <ErrorBar msg={tab.error} />;
+    }
+    if (tab.isUnknownType) {
+      return <UnknownDeviceTabContent tab={tab} />;
+    }
+    const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
+    return (
+      <div>
+        {tab.isDeprecated && (
+          <WarningBar>
+            <span>{t('device-manager.errors.deprecated')}</span>
+          </WarningBar>
+        )}
+        <BootstrapLikeSelect
+          options={deviceTypeSelectOptions}
+          selectedOption={selectedDeviceType}
+          onChange={option => onDeviceTypeChange(tab, option.value)}
+          className={'pull-left device-type-select'}
+        />
+        <div className="pull-right button-group">
+          <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
+          <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+        </div>
+        <JsonEditor
+          schema={tab.schema}
+          data={tab.editedData}
+          root={'dev' + index}
+          onChange={tab.setData}
+          className={'device-tab-properties'}
+        />
+      </div>
+    );
+  }
+);

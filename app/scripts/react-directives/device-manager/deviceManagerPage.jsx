@@ -217,7 +217,7 @@ const DeviceManagerPage = observer(({ pageStore }) => {
             onCopyTab={() => pageStore.tabs.copySelectedTab()}
             onAddPort={() => pageStore.addPort()}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
-            deviceTypeSelectOptions={pageStore.deviceTypeSelectOptions}
+            deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeSelectOptions}
             onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
             mobileModeStore={pageStore.tabs.mobileModeStore}
           />
