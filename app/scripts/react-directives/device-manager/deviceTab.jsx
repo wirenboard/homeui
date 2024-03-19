@@ -7,7 +7,7 @@ import BootstrapLikeSelect from '../components/select/select';
 
 export const DeviceTab = observer(({ tab }) => {
   let className = 'device-tab';
-  if (!tab.hasErrors) {
+  if (tab.hasErrors) {
     className = className + ' error';
   } else {
     if (tab.isDeprecated) {
