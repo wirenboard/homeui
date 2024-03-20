@@ -30,7 +30,7 @@ function deviceManagerDirective(
         scope.deleteTransitionHook();
       }
 
-      const path = '/var/lib/wb-mqtt-confed/schemas/wb-mqtt-serial.schema.json';
+      const path = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-serial-dummy.schema.json';
       const saveConfig = async data => {
         await ConfigEditorProxy.Save({ path: path, content: data });
       };

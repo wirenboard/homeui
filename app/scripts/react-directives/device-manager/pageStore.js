@@ -22,6 +22,8 @@ import { getTranslation } from './jsonSchemaUtils';
 import { addToConfig } from './configUtils';
 import DeviceTypesStore from './deviceTypesStore';
 
+const CONFED_WRITE_FILE_ERROR = 1002;
+
 function makeUnknownDeviceError(device, first) {
   return i18n.t(
     first ? 'device-manager.errors.first_unknown_device' : 'device-manager.errors.unknown_device',
