@@ -90,7 +90,9 @@ export class DeviceTab {
   getCopy() {
     let dataCopy = cloneDeep(this.editedData);
     dataCopy.slave_id = '';
-    return new DeviceTab(dataCopy, this.deviceType, this.deviceTypesStore);
+    let tab = new DeviceTab(dataCopy, this.deviceType, this.deviceTypesStore);
+    tab.loadSchema();
+    return tab;
   }
 
   async loadSchema() {
