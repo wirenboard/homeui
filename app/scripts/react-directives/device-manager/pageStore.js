@@ -172,11 +172,11 @@ class DeviceManagerPageStore {
     try {
       this.loaded = false;
       this.pageWrapperStore.clearError();
-      const { config, schema, deviceTypeGroups, devicesTaAdd } = await this.loadConfigFn();
+      const { config, schema, deviceTypeGroups, devicesToAdd } = await this.loadConfigFn();
       this.deviceTypesStore.setDeviceTypeGroups(deviceTypeGroups);
       this.portSchemaMap = makePortSchemaMap(schema);
-      if (devicesTaAdd) {
-        const mergeRes = addToConfig(config, devicesTaAdd, this.deviceSchemaMap);
+      if (devicesToAdd) {
+        const mergeRes = await addToConfig(config, devicesToAdd, this.deviceTypesStore);
         this.setError(makeMergeErrorMessage(mergeRes.unknown, mergeRes.misconfigured));
         if (mergeRes.added) {
           this.tabs.setModifiedStructure();

@@ -1,5 +1,7 @@
 'use strict';
 
+import firmwareIsNewer from '../../utils/fwUtils';
+
 class DeviceTypesStore {
   constructor(loadDeviceSchemaFn) {
     this.loadDeviceSchemaFn = loadDeviceSchemaFn;
@@ -12,14 +14,18 @@ class DeviceTypesStore {
       return {
         label: deviceTypeGroup.name,
         options: deviceTypeGroup.types.map(deviceType => {
-          return { label: deviceType.name, value: deviceType.type, hidden: deviceType.hidden };
+          return { label: deviceType.name, value: deviceType.type, hidden: deviceType.deprecated };
         }),
       };
     });
 
     this.deviceTypesMap = deviceTypeGroups.reduce((groupsAcc, deviceTypeGroup) => {
       return deviceTypeGroup.types.reduce((typesAcc, deviceType) => {
-        typesAcc[deviceType.type] = { name: deviceType.name, isDeprecated: deviceType.hidden };
+        typesAcc[deviceType.type] = {
+          name: deviceType.name,
+          isDeprecated: deviceType.deprecated,
+          hw: deviceType.hw,
+        };
         return typesAcc;
       }, groupsAcc);
     }, this.deviceTypesMap);
@@ -32,6 +38,24 @@ class DeviceTypesStore {
     let schema = await this.loadDeviceSchemaFn(deviceType);
     this.deviceTypesMap[deviceType].schema = schema;
     return schema;
+  }
+
+  findDeviceType(deviceSignature, fw) {
+    let lastFwVersion = undefined;
+    let deviceType = undefined;
+    Object.entries(this.deviceTypesMap).forEach(([typeName, desc]) => {
+      desc.hw?.forEach(hw => {
+        if (
+          hw.signature == deviceSignature &&
+          firmwareIsNewer(hw.fw, fw) &&
+          firmwareIsNewer(lastFwVersion, hw.fw)
+        ) {
+          lastFwVersion = hw.fw;
+          deviceType = typeName;
+        }
+      });
+    });
+    return deviceType;
   }
 
   getName(deviceType) {
