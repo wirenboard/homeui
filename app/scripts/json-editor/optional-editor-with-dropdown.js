@@ -34,6 +34,9 @@ function makeOptionalEditorWithDropDown() {
     }
 
     build() {
+      // Dummy checkbox for json-editor logic
+      this.optInCheckbox = document.createElement('input');
+
       this.header = this.label = this.theme.getFormInputLabel(this.getTitle(), this.isRequired());
       this.container.appendChild(this.header);
 
