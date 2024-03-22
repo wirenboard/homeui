@@ -43,40 +43,35 @@ function findDeviceTypeSelectOption(options, value) {
   return res;
 }
 
-export const DeviceTabContent = ({
-  tab,
-  index,
-  onDeleteTab,
-  onCopyTab,
-  deviceTypeSelectOptions,
-  onDeviceTypeChange,
-}) => {
-  const { t } = useTranslation();
-  const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
-  return (
-    <div>
-      {tab.isDeprecated && (
-        <WarningBar>
-          <span>{t('device-manager.errors.deprecated')}</span>
-        </WarningBar>
-      )}
-      <BootstrapLikeSelect
-        options={deviceTypeSelectOptions}
-        selectedOption={selectedDeviceType}
-        onChange={option => onDeviceTypeChange(tab, option.value)}
-        className={'pull-left device-type-select'}
-      />
-      <div className="pull-right button-group">
-        <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
-        <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+export const DeviceTabContent = observer(
+  ({ tab, index, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange }) => {
+    const { t } = useTranslation();
+    const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
+    return (
+      <div>
+        {tab.isDeprecated && (
+          <WarningBar>
+            <span>{t('device-manager.errors.deprecated')}</span>
+          </WarningBar>
+        )}
+        <BootstrapLikeSelect
+          options={deviceTypeSelectOptions}
+          selectedOption={selectedDeviceType}
+          onChange={option => onDeviceTypeChange(tab, option.value)}
+          className={'pull-left device-type-select'}
+        />
+        <div className="pull-right button-group">
+          <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
+          <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+        </div>
+        <JsonEditor
+          schema={tab.schema}
+          data={tab.editedData}
+          root={'dev' + index}
+          onChange={tab.setData}
+          className={'device-tab-properties'}
+        />
       </div>
-      <JsonEditor
-        schema={tab.schema}
-        data={tab.editedData}
-        root={'dev' + index}
-        onChange={tab.setData}
-        className={'device-tab-properties'}
-      />
-    </div>
-  );
-};
+    );
+  }
+);
