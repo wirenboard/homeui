@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.81.3) stable; urgency=medium
+
+  * Fix device type selection in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 22 Mar 2024 11:33:51 +0500
+
 wb-mqtt-homeui (2.81.2) stable; urgency=medium
 
   * Adjust text style on tabs. No functional changes

@@ -27,6 +27,7 @@ export class DeviceTab {
       isDirty: observable,
       hidden: observable,
       isDeprecated: observable,
+      deviceType: observable,
       setData: action.bound,
       updateName: action,
       commitData: action,
@@ -54,7 +55,7 @@ export class DeviceTab {
     this.data.slave_id = this.editedData.slave_id;
     this.editedData = cloneDeep(this.data);
     this.isDirty = false;
-    this.isValid = false;
+    this.isValid = true;
     this.isDeprecated = !!schema?.options?.wb?.hide_from_selection;
     this.updateName();
   }
