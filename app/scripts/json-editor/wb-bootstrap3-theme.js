@@ -21,7 +21,6 @@ function makeWbBootstrap3Theme() {
       a.setAttribute('aria-controls', tabId);
       a.setAttribute('role', 'tab');
       a.setAttribute('data-toggle', 'tab');
-      text.style.marginLeft = '5px';
       li.appendChild(a);
       return li;
     }

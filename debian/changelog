@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.81.2) stable; urgency=medium
+
+  * Adjust text style on tabs. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 22 Mar 2024 09:56:24 +0500
+
 wb-mqtt-homeui (2.81.1) stable; urgency=medium
 
   * Use Back button to navigate from device settings to the list of devices and ports in wb-mqtt-serial config in mobile mode 
