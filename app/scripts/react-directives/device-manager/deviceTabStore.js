@@ -18,10 +18,11 @@ export class DeviceTab {
     this.isDirty = false;
     this.hidden = false;
     this.loading = true;
-    this.isDeprecated = false;
+    this.isDeprecated = deviceTypesStore.isDeprecated(deviceType);
     this.schema = undefined;
     this.isUnknownType = deviceTypesStore.isUnknown(deviceType);
     this.error = '';
+    this.acceptJsonEditorInitial = true;
 
     this.updateName();
 
@@ -51,7 +52,13 @@ export class DeviceTab {
     this.name = `${this.editedData?.slave_id || ''} ` + name;
   }
 
-  setData(data, errors) {
+  setData(data, errors, initial) {
+    // On first start json-editor modifies json according to defaults.
+    // It is not a config change, so use resulting object as initial device config
+    if (initial && this.acceptJsonEditorInitial) {
+      this.data = cloneDeep(data);
+      this.acceptJsonEditorInitial = false;
+    }
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
     this.isValid = errors.length == 0;
@@ -72,9 +79,9 @@ export class DeviceTab {
     runInAction(() => {
       this.deviceType = type;
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
-      this.data = getDefaultObject(this.schema);
-      this.data.slave_id = this.editedData.slave_id;
-      this.editedData = cloneDeep(this.data);
+      const currentSlaveId = this.editedData.slave_id;
+      this.editedData = getDefaultObject(this.schema);
+      this.editedData.slave_id = currentSlaveId;
       this.isDirty = false;
       this.isValid = false;
       this.updateName();
@@ -116,7 +123,25 @@ export class DeviceTab {
   }
 
   async setDefaultData() {
-    await this.setDeviceType(this.deviceType);
+    this.loading = true;
+    try {
+      this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
+    } catch (err) {
+      runInAction(() => {
+        this.error = err.message;
+        this.loading = false;
+      });
+      return;
+    }
+    runInAction(() => {
+      this.acceptJsonEditorInitial = true;
+      this.editedData = getDefaultObject(this.schema);
+      this.data = cloneDeep(this.editedData);
+      this.isDirty = false;
+      this.isValid = false;
+      this.updateName();
+      this.loading = false;
+    });
   }
 
   get hasErrors() {
