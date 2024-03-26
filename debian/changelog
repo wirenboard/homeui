@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1) stable; urgency=medium
+
+  * Improve unsaved changes tracking on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 26 Mar 2024 16:57:36 +0500
+
 wb-mqtt-homeui (2.82.0) stable; urgency=medium
 
   * Load device settings in wb-mqtt-serial config editor on demand
