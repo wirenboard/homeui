@@ -234,7 +234,8 @@
          "add-device": "Add device",
          "port": "Port",
          "device-type": "Device type",
-         "settings": "wb-mqtt-serial settings"
+         "settings": "wb-mqtt-serial settings",
+         "unknown-device-type": "Unknown device type"
       },
       "buttons": {
          "save": "Save config",
@@ -251,7 +252,8 @@
          "first_unknown_device": "Unable to find templates for devices, add them manually:\n\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
          "unknown_device": "\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
          "first_misconfigured_device": "Some added devices has connection settings different from current:\n\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "misconfigured_device": "\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}"
+         "misconfigured_device": "\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "unknown-device-type": "Unknown device type: {{type}}"
       }
    }
 }

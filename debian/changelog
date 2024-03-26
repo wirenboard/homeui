@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.0) stable; urgency=medium
+
+  * Load device settings in wb-mqtt-serial config editor on demand
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 26 Mar 2024 14:19:21 +0500
+
 wb-mqtt-homeui (2.81.3) stable; urgency=medium
 
   * Fix device type selection in wb-mqtt-serial config editor

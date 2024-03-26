@@ -231,7 +231,8 @@
          "add-device": "Добавить устройство",
          "port": "Порт",
          "device-type": "Тип устройства",
-         "settings": "Настройки wb-mqtt-serial"
+         "settings": "Настройки wb-mqtt-serial",
+         "unknown-device-type": "Неизвестный тип устройства"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -248,7 +249,8 @@
          "first_unknown_device": "Не смог подобрать шаблоны для устройств, добавьте их вручную:\n\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
          "unknown_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
          "first_misconfigured_device": "У некоторых добавленных устройств настройки связи отличаются от настроек порта:\n\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "misconfigured_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}"
+         "misconfigured_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
+         "unknown-device-type": "Неизвестный тип устройства: {{type}}"
       }
    }
 }
