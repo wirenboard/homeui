@@ -107,6 +107,10 @@ export class TabsStore {
     if (this.mobileModeStore.inMobileMode) {
       this.mobileModeStore.showContentPanel();
     }
+    let tab = this.items[index];
+    if (tab.type == TabType.DEVICE) {
+      tab.loadSchema();
+    }
     return true;
   }
 

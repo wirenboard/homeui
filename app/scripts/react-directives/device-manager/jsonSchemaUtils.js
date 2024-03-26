@@ -34,8 +34,15 @@ function getDefaultPropertyValue(schema, root, defaultProperties) {
   if (schema?.type === 'array') {
     return getDefaultArrayValue(schema, root);
   }
+  if (schema?.type === 'string') {
+    return '';
+  }
   if (schema.hasOwnProperty('$ref')) {
-    return getDefaultPropertyValue(getSchemaByRef(schema['$ref'], schema, root), root);
+    return getDefaultPropertyValue(
+      getSchemaByRef(schema['$ref'], schema, root),
+      root,
+      defaultProperties
+    );
   }
   if (schema?.type === 'object' || schema?.type === undefined) {
     return getDefaultObject(schema, root, defaultProperties);
@@ -52,6 +59,8 @@ export function getDefaultObject(schema, root, defaultProperties) {
     ...(schema?.required || []),
     ...(schema?.defaultProperties || []),
   ];
+  // Filter duplicates
+  defaultProperties = [...new Set(defaultProperties)];
 
   Object.entries(schema?.properties || {}).forEach(([key, value]) => {
     if (
@@ -79,5 +88,5 @@ export function getDefaultObject(schema, root, defaultProperties) {
 }
 
 export function getTranslation(key, lang, translations) {
-  return translations[lang]?.[key] || translations?.en?.[key] || key;
+  return translations?.[lang]?.[key] || translations?.en?.[key] || key;
 }

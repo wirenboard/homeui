@@ -20,6 +20,9 @@ import {
 import { SettingsTab } from './settingsTabStore';
 import { getTranslation } from './jsonSchemaUtils';
 import { addToConfig } from './configUtils';
+import DeviceTypesStore from './deviceTypesStore';
+
+const CONFED_WRITE_FILE_ERROR = 1002;
 
 function makeUnknownDeviceError(device, first) {
   return i18n.t(
@@ -47,8 +50,11 @@ function makeMergeErrorMessage(unknown, misconfigured) {
 function getPortSchemaCommon(schema, subSchemaName) {
   let res = cloneDeep(schema.definitions[subSchemaName]);
   res.definitions = {};
-  res.definitions['commonPortSettings'] = cloneDeep(schema.definitions['commonPortSettings']);
-  delete res.definitions['commonPortSettings'].properties.devices;
+  Object.entries(schema.definitions).forEach(([key, value]) => {
+    if (key != subSchemaName) {
+      res.definitions[key] = value;
+    }
+  });
   res.translations = schema.translations;
   return res;
 }
@@ -58,15 +64,11 @@ function getSerialPortSchema(schema) {
 }
 
 function getTcpPortSchema(schema) {
-  let res = getPortSchemaCommon(schema, 'tcpPort');
-  res.definitions['commonTcpPortSettings'] = cloneDeep(schema.definitions['commonTcpPortSettings']);
-  return res;
+  return getPortSchemaCommon(schema, 'tcpPort');
 }
 
 function getModbusTcpPortSchema(schema) {
-  let res = getPortSchemaCommon(schema, 'modbusTcpPort');
-  res.definitions['commonTcpPortSettings'] = cloneDeep(schema.definitions['commonTcpPortSettings']);
-  return res;
+  return getPortSchemaCommon(schema, 'modbusTcpPort');
 }
 
 function getGeneralSettingsSchema(schema) {
@@ -84,87 +86,10 @@ function makePortSchemaMap(schema) {
   return res;
 }
 
-function makeDeviceSchemaMap(schema) {
-  let res = {};
-  schema.definitions.device.oneOf.forEach(d => {
-    if (d.properties?.device_type?.enum !== undefined) {
-      res[d.properties.device_type.enum[0]] = d;
-    } else {
-      if (d.properties?.protocol?.enum !== undefined) {
-        res[d.properties.protocol.enum[0]] = d;
-      }
-    }
-  });
-  delete schema.definitions.device;
-  Object.values(res).forEach(d => {
-    d.definitions = schema.definitions;
-    d.translations = schema.translations;
-    if (!d?.options) {
-      d.options = {};
-    }
-    d.options['disable_collapse'] = true;
-    d.options['disable_edit_json'] = true;
-    if (!d.options?.wb) {
-      d.options.wb = {};
-    }
-    d.options.wb['disable_panel'] = true;
-    delete d.options.wb['disable_title'];
-  });
-  return res;
-}
-
 function getPortData(data) {
   let res = cloneDeep(data);
   delete res.devices;
   return res;
-}
-
-function makeDeviceTypeSelectOptions(deviceSchemaMap) {
-  let groups = {};
-  let wbDevicesGroupName;
-  let deprecatedWbDevicesGroupName;
-
-  Object.entries(deviceSchemaMap).forEach(([deviceType, schema]) => {
-    const groupTag = schema?.options?.wb?.group;
-    if (groupTag) {
-      const groupName = getTranslation(groupTag, i18n.language, schema.translations);
-      if (groupTag == 'g-wb') {
-        wbDevicesGroupName = groupName;
-      }
-      if (groupTag == 'g-wb-old') {
-        deprecatedWbDevicesGroupName = groupName;
-      }
-      groups[groupName] ??= [];
-      groups[groupName].push({
-        label: getTranslation(schema.title, i18n.language, schema.translations),
-        value: deviceType,
-        hidden: !!schema?.options?.wb?.hide_from_selection,
-      });
-    }
-  });
-  return Object.entries(groups)
-    .map(([groupName, devices]) => {
-      devices.sort((a, b) => a.label.localeCompare(b.label));
-      return { label: groupName, options: devices };
-    })
-    .sort((a, b) => {
-      if (a.label == b.label) {
-        return 0;
-      }
-      if (a.label == wbDevicesGroupName) {
-        return -1;
-      }
-      if (b.label == wbDevicesGroupName) {
-        return 1;
-      }
-      if (a.label == deprecatedWbDevicesGroupName) {
-        return -1;
-      }
-      if (b.label == deprecatedWbDevicesGroupName) {
-        return 1;
-      }
-      return a.label.localeCompare(b.label);
-    });
 }
 
 function makePortTypeSelectOptions(portSchemaMap) {
@@ -183,7 +108,7 @@ function makePortSelectOptions(portTabs) {
 }
 
 class DeviceManagerPageStore {
-  constructor(loadConfigFn, saveConfigFn, toMobileContent, toTabs, rolesFactory) {
+  constructor(loadConfigFn, saveConfigFn, toMobileContent, toTabs, loadDeviceTypeFn, rolesFactory) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
     this.pageWrapperStore = new PageWrapperStore();
@@ -191,12 +116,11 @@ class DeviceManagerPageStore {
     this.confirmModalState = new ConfirmModalState();
     this.addDeviceModalState = new AddDeviceModalState();
     this.tabs = new TabsStore(toMobileContent, toTabs);
-    this.deviceSchemaMap = {};
+    this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
     this.portSchemaMap = {};
     this.saveConfigFn = saveConfigFn;
     this.loadConfigFn = loadConfigFn;
     this.loaded = false;
-    this.deviceTypeSelectOptions = [];
 
     makeObservable(this, {
       allowSave: computed,
@@ -236,7 +160,7 @@ class DeviceManagerPageStore {
 
   createDeviceTab(deviceConfig) {
     const deviceType = deviceConfig?.device_type || deviceConfig?.protocol || 'modbus';
-    return new DeviceTab(deviceConfig, deviceType, this.deviceSchemaMap[deviceType]);
+    return new DeviceTab(deviceConfig, deviceType, this.deviceTypesStore);
   }
 
   createSettingsTab(config, schema) {
@@ -248,12 +172,11 @@ class DeviceManagerPageStore {
     try {
       this.loaded = false;
       this.pageWrapperStore.clearError();
-      const { config, schema, devices } = await this.loadConfigFn();
+      const { config, schema, deviceTypeGroups, devicesToAdd } = await this.loadConfigFn();
+      this.deviceTypesStore.setDeviceTypeGroups(deviceTypeGroups);
       this.portSchemaMap = makePortSchemaMap(schema);
-      this.deviceSchemaMap = makeDeviceSchemaMap(schema);
-      this.deviceTypeSelectOptions = makeDeviceTypeSelectOptions(this.deviceSchemaMap);
-      if (devices) {
-        const mergeRes = addToConfig(config, devices, this.deviceSchemaMap);
+      if (devicesToAdd) {
+        const mergeRes = await addToConfig(config, devicesToAdd, this.deviceTypesStore);
         this.setError(makeMergeErrorMessage(mergeRes.unknown, mergeRes.misconfigured));
         if (mergeRes.added) {
           this.tabs.setModifiedStructure();
@@ -329,7 +252,7 @@ class DeviceManagerPageStore {
     try {
       [portTab, newDeviceType] = await this.addDeviceModalState.show(
         makePortSelectOptions(this.tabs.portTabs),
-        this.deviceTypeSelectOptions,
+        this.deviceTypesStore.deviceTypeSelectOptions,
         this.tabs.selectedPortTab
       );
     } catch (err) {
@@ -338,8 +261,9 @@ class DeviceManagerPageStore {
       }
       throw err;
     }
-    let deviceTab = this.createDeviceTab(getDefaultObject(this.deviceSchemaMap[newDeviceType]));
+    let deviceTab = new DeviceTab({}, newDeviceType, this.deviceTypesStore);
     this.tabs.addDeviceTab(portTab, deviceTab);
+    deviceTab.setDefaultData();
   }
 
   makeConfigJson() {
@@ -373,7 +297,7 @@ class DeviceManagerPageStore {
   }
 
   changeDeviceType(tab, type) {
-    tab.setDeviceType(type, this.deviceSchemaMap[type]);
+    tab.setDeviceType(type);
   }
 }
 

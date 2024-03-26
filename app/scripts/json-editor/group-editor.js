@@ -11,6 +11,7 @@ class Editor {
     this.group = group;
     this.oneOfIndex = 0;
     this.errors = undefined;
+    this.conditionFn = undefined;
   }
 
   isTopLevelEditor() {
@@ -100,10 +101,13 @@ class Editor {
 
   checkCondition(paramNames, paramValues, schema) {
     try {
-      return new Function(
-        paramNames,
-        'let isDefined = p => p!==undefined; return ' + schema.condition + ';'
-      ).apply(null, paramValues);
+      if (!this.conditionFn) {
+        this.conditionFn = new Function(
+          paramNames,
+          'let isDefined = p => p!==undefined; return ' + schema.condition + ';'
+        );
+      }
+      return this.conditionFn.apply(null, paramValues);
     } catch (e) {
       return false;
     }
@@ -820,7 +824,11 @@ function makeGroupsEditor() {
 
     getParamsForConditions(params, paramNames, paramValues) {
       let props = {};
-      Object.keys(this.editors).forEach(key => (props[key] = undefined));
+      Object.entries(this.editors).forEach(([key, ed]) => {
+        if (!ed.isChannel) {
+          props[key] = undefined;
+        }
+      });
       Object.entries(params)
         .filter(([key, value]) => this.editors.hasOwnProperty(key) && !this.editors[key].isChannel)
         .forEach(([key, value]) => {
