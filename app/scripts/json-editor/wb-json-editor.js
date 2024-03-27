@@ -18,6 +18,7 @@ import makeOptionalEditorWithDropDown from './optional-editor-with-dropdown';
 import makeWbBootstrap3Theme from './wb-bootstrap3-theme';
 import makeWbBootstrap3Iconlib from './wb-bootstrap3-iconlib';
 import makeWbArrayEditor from './wb-array-editor';
+import makeFirstOneOfEditor from './first-oneof-editor';
 import { compileTemplate } from '../services/dumbtemplate';
 
 var needOverride = true;
@@ -190,6 +191,9 @@ function overrideJSONEditor() {
     schema => schema.oneOf && schema.format === 'wb-multiple' && 'wb-multiple'
   );
   JSONEditor.defaults.resolvers.unshift(
+    schema => schema.oneOf && schema.format === 'wb-first-oneof' && 'wb-first-oneof'
+  );
+  JSONEditor.defaults.resolvers.unshift(
     schema => schema.type === 'object' && schema.format === 'merge-default' && 'merge-default'
   );
   JSONEditor.defaults.resolvers.unshift(
@@ -228,6 +232,7 @@ function overrideJSONEditor() {
   JSONEditor.defaults.editors['groups'] = makeGroupsEditor();
   JSONEditor.defaults.editors['wb-optional'] = makeOptionalEditorWithDropDown();
   JSONEditor.defaults.editors['wb-array'] = makeWbArrayEditor();
+  JSONEditor.defaults.editors['wb-first-oneof'] = makeFirstOneOfEditor();
 
   JSONEditor.defaults.languages.en.error_oneOf = 'One or more parameters are invalid';
 
