@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1) stable; urgency=medium
+
+  * Fix slave id editor in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 27 Mar 2024 10:47:41 +0500
+
 wb-mqtt-homeui (2.82.0) stable; urgency=medium
 
   * Load device settings in wb-mqtt-serial config editor on demand
