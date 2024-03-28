@@ -183,3 +183,9 @@
         padding-bottom: 10px;
     }
 }
+
+@media (min-width: 992px) {
+    .device-manager-page .group-editor {
+        margin-top: 15px;
+    }
+}
