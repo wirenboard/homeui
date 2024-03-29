@@ -182,7 +182,7 @@ class DeviceManagerPageStore {
           this.tabs.setModifiedStructure();
         }
       }
-      config.ports.forEach(port => {
+      config?.ports?.forEach(port => {
         const portTab = this.createPortTab(port);
         if (portTab === undefined) {
           return;
@@ -204,8 +204,16 @@ class DeviceManagerPageStore {
     this.pageWrapperStore.setLoading(false);
   }
 
-  setError(msg) {
-    this.pageWrapperStore.setError(msg);
+  setError(error) {
+    if (typeof error === 'object') {
+      if (error.hasOwnProperty('code')) {
+        this.pageWrapperStore.setError(`${error.message}: ${error.data}(${error.code})`);
+      } else {
+        this.pageWrapperStore.setError(error.message);
+      }
+      return;
+    }
+    this.pageWrapperStore.setError(error);
   }
 
   async addPort() {

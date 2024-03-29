@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.3) stable; urgency=medium
+
+  * Improve wb-mqtt-serial config loading errors handling
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 29 Mar 2024 11:50:40 +0500
+
 wb-mqtt-homeui (2.82.2) stable; urgency=medium
 
   * Improve unsaved changes tracking on wb-mqtt-serial config page

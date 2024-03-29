@@ -36,7 +36,7 @@ export async function addToConfig(config, devices, deviceTypesStore) {
         res.unknown.push(device);
         return;
       }
-      let port = config.ports.find(p => p.path == device.port);
+      let port = config?.ports?.find(p => p.path == device.port);
       if (!port) {
         return;
       }
