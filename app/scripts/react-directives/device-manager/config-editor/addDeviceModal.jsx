@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../common';
+import { Button } from '../../common';
 import {
   Modal,
   ModalHeader,
@@ -8,8 +8,8 @@ import {
   ModalFooter,
   ModalTitle,
   ModalCancelButton,
-} from '../components/modals/modals';
-import BootstrapLikeSelect from '../components/select/select';
+} from '../../components/modals/modals';
+import BootstrapLikeSelect from '../../components/select/select';
 
 const AddDeviceModal = ({ active, ports, devices, currentPort, onSelect, onCancel }) => {
   const { t } = useTranslation();
@@ -56,7 +56,7 @@ const AddDeviceModal = ({ active, ports, devices, currentPort, onSelect, onCance
       </ModalBody>
       <ModalFooter>
         <Button
-          label={t('device-manager.buttons.add-device')}
+          label={t('device-manager.buttons.add')}
           type={'success'}
           onClick={() => onSelect(selectedPort.value, selectedDevice.value)}
         />

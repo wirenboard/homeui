@@ -1,15 +1,16 @@
 {
    "scan": {
-      "title": "Сканирование",
+      "title": "Найденные новые устройства",
       "errors": {
          "scan": "Не удалось запустить сканирование",
          "common": "Ошибка",
          "unavailable": "Сервис wb-device-manager недоступен или устарел"
       },
       "buttons": {
-         "scan": "Сканировать",
-         "stop": "Остановить",
-         "to-serial": "Добавить в wb-mqtt-serial"
+         "scan": "Начать медленное сканирование",
+         "stop": "Остановить медленное сканирование",
+         "to-serial": "Добавить в wb-mqtt-serial",
+         "cancel": "Отмена"
       },
       "labels": {
          "available": "доступна {{version}}",
@@ -28,7 +29,11 @@
          "found-devices": "Найдено устройств: {{count}}",
          "first-start": "Сканирование ещё не выполнялось.<br>Нажмите \"Сканировать\"",
          "not-found": "Ничего не найдено.<br>Для повторного сканирования нажмите \"Сканировать\"",
-         "extended-modbus": "Это устройство было найдено сканированием через быстрый Modbus"
+         "extended-modbus": "Это устройство было найдено сканированием через быстрый Modbus",
+         "try-normal-scan": "Если нужные устройства не найдены, запустите медленное сканирование",
+         "misconfigured-port": "отличается от настроек порта",
+         "duplicate-topic": "есть устройство с аналогичным MQTT топиком",
+         "unknown-device-type": "неизвестный тип устройства"
       }
    },
    "com": {
@@ -229,6 +234,7 @@
          "serial-port": "Последовательный порт",
          "confirm-delete": "Вы действительно хотите удалить {{item}}?",
          "add-device": "Добавить устройство",
+         "add-devices": "Добавить устройства",
          "port": "Порт",
          "device-type": "Тип устройства",
          "settings": "Настройки wb-mqtt-serial",
@@ -238,7 +244,9 @@
          "save": "Сохранить настройки",
          "add-port": "Добавить порт",
          "delete": "Удалить",
-         "add-device": "Добавить устройство",
+         "add-custom-device": "Другие",
+         "add": "Добавить",
+         "add-wb-device": "Wiren Board",
          "copy": "Скопировать",
          "to-port-list": "К списку портов и устройств"
       },
@@ -246,10 +254,6 @@
          "write": "Ошибка при сохранении настроек. Более детальная информация находится в журнале работы сервиса wb-mqtt-confed",
          "device-config": "Ошибка в настройках одного или нескольких устройств",
          "deprecated": "Шаблон устройства устарел, рекомендуется использовать новую версию",
-         "first_unknown_device": "Не смог подобрать шаблоны для устройств, добавьте их вручную:\n\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "unknown_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "first_misconfigured_device": "У некоторых добавленных устройств настройки связи отличаются от настроек порта:\n\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "misconfigured_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
          "unknown-device-type": "Неизвестный тип устройства: {{type}}"
       }
    }

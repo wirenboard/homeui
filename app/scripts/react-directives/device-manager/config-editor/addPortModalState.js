@@ -1,6 +1,6 @@
 'use strict';
 
-import i18n from '../../i18n/react/config';
+import i18n from '../../../i18n/react/config';
 import { makeAutoObservable } from 'mobx';
 
 class SelectNewConnectionModalState {

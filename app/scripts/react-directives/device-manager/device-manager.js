@@ -3,25 +3,25 @@
 import ReactDOM from 'react-dom/client';
 import CreateDeviceManagerPage from './deviceManagerPage';
 import { autorun } from 'mobx';
-import DeviceManagerPageStore from './pageStore';
+import DeviceManagerPageStore from './deviceManagerPageStore';
 import i18n from '../../i18n/react/config';
 
 function deviceManagerDirective(
   whenMqttReady,
   ConfigEditorProxy,
+  DeviceManagerProxy,
   PageState,
   rolesFactory,
   $state,
   $transitions,
-  SerialProxy
+  SerialProxy,
+  mqttClient
 ) {
   'ngInject';
 
   return {
     restrict: 'E',
-    scope: {
-      devices: '=',
-    },
+    scope: {},
     link: function (scope, element) {
       if (scope.root) {
         scope.root.unmount();
@@ -41,7 +41,6 @@ function deviceManagerDirective(
           config: response.config,
           schema: response.schema,
           deviceTypeGroups: response.types,
-          devicesToAdd: scope.devices,
         };
       };
 
@@ -60,13 +59,22 @@ function deviceManagerDirective(
         }
       };
 
+      const startScan = extended =>
+        DeviceManagerProxy.Start({
+          scan_type: extended ? 'extended' : 'standard',
+          preserve_old_results: false,
+        });
+      const stopScan = () => DeviceManagerProxy.Stop();
+
       scope.store = new DeviceManagerPageStore(
         loadConfig,
         saveConfig,
         toMobileContent,
         toTabs,
         loadDeviceTypeSchema,
-        rolesFactory
+        rolesFactory,
+        startScan,
+        stopScan
       );
 
       scope.deleteTransitionHook = $transitions.onBefore({}, function (transition) {
@@ -74,7 +82,7 @@ function deviceManagerDirective(
           transition.to().name == 'serial-config' &&
           transition.from().name == 'serial-config.properties'
         ) {
-          scope.store.tabs.mobileModeStore.movedToTabsPanel();
+          scope.store.movedToTabsPanel();
           return true;
         }
         if (
@@ -92,7 +100,24 @@ function deviceManagerDirective(
       });
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(CreateDeviceManagerPage({ pageStore: scope.store }));
-      whenMqttReady().then(() => scope.store.load());
+      whenMqttReady()
+        .then(() => {
+          scope.store.loadConfig();
+          return DeviceManagerProxy.hasMethod('Start');
+        })
+        .then(available => {
+          if (available) {
+            scope.store.setDeviceManagerAvailable();
+            mqttClient.addStickySubscription('/wb-device-manager/state', msg =>
+              scope.store.updateScanState(msg.payload)
+            );
+          } else {
+            scope.store.setDeviceManagerUnavailable();
+          }
+        })
+        .catch(() => {
+          scope.store.setDeviceManagerUnavailable();
+        });
 
       element.on('$destroy', function () {
         scope.root.unmount();

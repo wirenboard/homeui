@@ -16,8 +16,8 @@ import {
   ModalFooter,
   ModalTitle,
 } from '../components/modals/modals';
-import {Checkbox} from '../common';
-import {MODAL_MODE_UPDATE, MODAL_MODE_UPDATE_RESET, MODAL_MODE_FACTORY_RESET} from './modal';
+import { Checkbox } from '../common';
+import { MODAL_MODE_UPDATE, MODAL_MODE_UPDATE_RESET, MODAL_MODE_FACTORY_RESET } from './modal';
 
 async function SubmitRequest(store) {
   store.onUploadStart();
@@ -77,7 +77,12 @@ const UploadButton = ({ label, style, onClick, disabled }) => {
   const { t } = useTranslation();
 
   return (
-    <button type="file" disabled={disabled} className={'btn btn-' + style} onClick={onClickInternal}>
+    <button
+      type="file"
+      disabled={disabled}
+      className={'btn btn-' + style}
+      onClick={onClickInternal}
+    >
       {t(label)}
     </button>
   );
@@ -146,7 +151,11 @@ const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootF
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
-        <Checkbox id="id_fu_expand_rootfs" label={t('system.update.expandrootfs')} onChange={expandRootFsHandler} value={expandRootFs} />
+        <Checkbox
+          label={t('system.update.expandrootfs')}
+          onChange={expandRootFsHandler}
+          value={expandRootFs}
+        />
       </div>
     </div>
   );
@@ -187,16 +196,24 @@ const UploadWidget = observer(({ store }) => {
   if (store.resetMode) {
     return (
       <ResetEntrypoint
-        onUploadClick={() => { store.modalState.show(MODAL_MODE_UPDATE_RESET); }}
-        onResetClick={() => { store.modalState.show(MODAL_MODE_FACTORY_RESET); }}
+        onUploadClick={() => {
+          store.modalState.show(MODAL_MODE_UPDATE_RESET);
+        }}
+        onResetClick={() => {
+          store.modalState.show(MODAL_MODE_FACTORY_RESET);
+        }}
         canFactoryReset={store.factoryResetFitsState.canDoFactoryReset}
       />
     );
   }
   return (
     <UpdateEntrypoint
-      expandRootFsHandler={e => { store.setExpandRootfs(e.target.checked); }}
-      showModal={() => { store.modalState.show(MODAL_MODE_UPDATE); }}
+      expandRootFsHandler={e => {
+        store.setExpandRootfs(e.target.checked);
+      }}
+      showModal={() => {
+        store.modalState.show(MODAL_MODE_UPDATE);
+      }}
       expandRootFs={store.expandRootfs}
     />
   );
@@ -216,7 +233,9 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemErrorListener(store.onUploadError);
 
   useRequestPreSend(({ items, options }) => {
-    const params = store.resetMode ? { factory_reset: true } : { expand_rootfs: store.expandRootfs };
+    const params = store.resetMode
+      ? { factory_reset: true }
+      : { expand_rootfs: store.expandRootfs };
     return {
       options: { params }, // will be merged with the rest of the options
     };
@@ -229,7 +248,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">
-                <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
+              <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
             </h3>
           </div>
           <div className="panel-body">
@@ -285,17 +304,19 @@ const FactoryResetModal = observer(({ state, store }) => {
       <ModalBody>
         <ResetConfirmation
           mode={state.mode}
-          onChange={(e) => { state.onConfirmationTextChange(e); }}
+          onChange={e => {
+            state.onConfirmationTextChange(e);
+          }}
           value={state.enteredConfirmationText}
         />
       </ModalBody>
       <ModalFooter>
         {state.mode === MODAL_MODE_UPDATE_RESET ? (
           <UploadButton
-              disabled={!state.enableButtons}
-              label={t('system.buttons.select_and_reset')}
-              style="danger"
-              onClick={state.onCancel}
+            disabled={!state.enableButtons}
+            label={t('system.buttons.select_and_reset')}
+            style="danger"
+            onClick={state.onCancel}
           />
         ) : state.mode === MODAL_MODE_FACTORY_RESET ? (
           <ResetButton
@@ -318,9 +339,7 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset
       <div>
         <ul className="notes">
           <li>{t('system.factory_reset.warning1')}</li>
-          {canFactoryReset ? (
-            <li>{t('system.factory_reset.warning2')}</li>
-          ) : null}
+          {canFactoryReset ? <li>{t('system.factory_reset.warning2')}</li> : null}
         </ul>
       </div>
       <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
@@ -344,7 +363,12 @@ const ResetButton = ({ label, style, onClick, store }) => {
   const { t } = useTranslation();
 
   return (
-    <button type="file" disabled={!store.modalState.enableButtons} className={'btn btn-' + style} onClick={onClickInternal}>
+    <button
+      type="file"
+      disabled={!store.modalState.enableButtons}
+      className={'btn btn-' + style}
+      onClick={onClickInternal}
+    >
       {t(label)}
     </button>
   );

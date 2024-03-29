@@ -3,10 +3,9 @@
 import { makeAutoObservable } from 'mobx';
 
 export class BooleanStore {
-  constructor({ name, value, id }) {
+  constructor({ name, value }) {
     this.type = 'boolean';
     this.name = name;
-    this.id = id;
     this.setValue(value);
 
     makeAutoObservable(this);

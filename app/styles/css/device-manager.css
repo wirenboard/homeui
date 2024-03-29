@@ -8,13 +8,18 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-end;
     gap: 5px;
+    align-items: center;
+    margin-top: 33px;
+    padding-bottom: 5px;
 }
 
-.device-manager-page .page-header>span {
+.device-manager-page .add-devices-label {
     flex-grow: 1;
-    margin-top: 2px;
+    text-align: right;
+    font-size: 13px;
+    letter-spacing: normal;
+    align-self: center;
 }
 
 .device-manager-page .nav-stacked li {
@@ -188,4 +193,11 @@
     .device-manager-page .group-editor {
         margin-top: 15px;
     }
+}
+
+.device-manager-page .add-devices-panel {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row;
+    gap: 5px;
 }

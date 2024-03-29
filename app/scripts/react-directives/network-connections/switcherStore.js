@@ -160,7 +160,6 @@ class SwitcherStore {
     this.debug = createViewModel(
       new BooleanStore({
         name: i18n.t('network-connections.labels.debug'),
-        id: 'switcher-debug',
       })
     );
 

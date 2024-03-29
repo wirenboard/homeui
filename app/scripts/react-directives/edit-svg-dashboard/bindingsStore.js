@@ -37,7 +37,6 @@ const addEnableStore = (formStore, name) => {
     'enable',
     new BooleanStore({
       name: i18n.t(name),
-      id: name,
     })
   );
 };

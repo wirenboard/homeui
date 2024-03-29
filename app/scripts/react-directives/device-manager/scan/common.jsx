@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Checkbox } from '../../common';
 
 export function WarningTag({ text }) {
   return <span className="tag bg-warning text-nowrap">{text}</span>;
@@ -15,7 +16,7 @@ export function ErrorTag({ text, title }) {
 
 export const ErrorCheck = ({ errors, errorId, children }) => {
   const { t } = useTranslation();
-  const error = errors.find(e => e.id === errorId);
+  const error = errors?.find(e => e.id === errorId);
   if (error) {
     return <ErrorTag text={t('com.wb.device_manager.error')} title={t(errorId) || error.message} />;
   }
@@ -35,21 +36,26 @@ export function FirmwareVersion({ version, availableFw, extSupport, errors }) {
   );
 }
 
-export const DeviceName = ({ title, bootloaderMode, online, poll, errors }) => {
+export const DeviceName = ({
+  title,
+  bootloaderMode,
+  errors,
+  duplicateMqttTopic,
+  unknownType,
+  selected,
+  onSelectionChange,
+  disabled,
+}) => {
   const { t } = useTranslation();
   return (
     <ErrorCheck
       errors={errors}
       errorId={'com.wb.device_manager.device.read_device_signature_error'}
     >
-      <div className="pull-left">
-        <b>{title}</b>
-      </div>
-      <div className="pull-right">
-        {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
-        {!online && <ErrorTag text={t('scan.labels.offline')} />}
-        {!poll && <WarningTag text={t('scan.labels.not-polled')} />}
-      </div>
+      <Checkbox value={selected} onChange={onSelectionChange} disabled={disabled} label={title} />
+      {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
+      {duplicateMqttTopic && <ErrorTag text={t('scan.labels.duplicate-topic')} />}
+      {unknownType && <ErrorTag text={t('scan.labels.unknown-device-type')} />}
     </ErrorCheck>
   );
 };
@@ -64,12 +70,14 @@ export const SlaveId = ({ slaveId, isDuplicate }) => {
   );
 };
 
-export const Port = ({ path, baudRate, dataBits, parity, stopBits }) => {
+export const Port = ({ path, baudRate, dataBits, parity, stopBits, misconfiguredPort }) => {
+  const { t } = useTranslation();
   return (
     <>
       {path} <span className="baudrate">{baudRate}</span> {dataBits.toString()}
       {parity}
-      {stopBits.toString()}
+      {stopBits.toString()}{' '}
+      {misconfiguredPort && <ErrorTag text={t('scan.labels.misconfigured-port')} />}
     </>
   );
 };
