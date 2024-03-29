@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.2) stable; urgency=medium
+
+  * Improve unsaved changes tracking on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 29 Mar 2024 11:45:00 +0500
+
 wb-mqtt-homeui (2.82.1) stable; urgency=medium
 
   * Fix slave id editor in wb-mqtt-serial config
