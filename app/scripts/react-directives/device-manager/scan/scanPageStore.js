@@ -246,9 +246,13 @@ class DevicesStore {
       d.setDuplicateSlaveId();
     }
 
+    const configuredDevice = this.configuredDevices[scannedDevice.port.path];
     if (
-      this.configuredDevices.hasOwnProperty(scannedDevice.port.path) &&
-      !isEqual(scannedDevice.cfg, this.configuredDevices[scannedDevice.port.path].cfg)
+      configuredDevice &&
+      (scannedDevice.cfg.baud_rate != configuredDevice.cfg.baud_rate ||
+        scannedDevice.cfg.data_bits != configuredDevice.cfg.data_bits ||
+        scannedDevice.cfg.parity != configuredDevice.cfg.parity ||
+        scannedDevice.cfg.stop_bits != configuredDevice.cfg.stop_bits)
     ) {
       d.setMisconfiguredPort();
     }
