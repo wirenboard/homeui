@@ -19,7 +19,7 @@ export const PageWrapper = observer(({ error, className, accessLevelStore, child
 export const PageTitle = ({ title, children }) => {
   return (
     <h1 className="page-header">
-      {title && <span className="page-header-title">{title}</span>}
+      {title && <span>{title}</span>}
       {children}
     </h1>
   );
