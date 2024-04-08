@@ -2,7 +2,7 @@
 
 import { action, makeAutoObservable, makeObservable, observable } from 'mobx';
 import i18n from '../../../i18n/react/config';
-import { isEqual } from 'lodash';
+
 class GlobalErrorStore {
   error = '';
 

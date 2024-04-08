@@ -97,7 +97,7 @@ const PageTabs = observer(
   }) => {
     const { t } = useTranslation();
     return (
-      <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect} className={'device-settings'}>
+      <VerticalTabs selectedIndex={selectedIndex} onSelect={onSelect} className="device-settings">
         <div
           className={
             mobileModeStore.inMobileMode && !mobileModeStore.tabsPanelIsActive
@@ -105,7 +105,7 @@ const PageTabs = observer(
               : 'device-list-panel'
           }
         >
-          <TabsList className={'device-list'}>{makeTabItems(tabs)}</TabsList>
+          <TabsList className="device-list">{makeTabItems(tabs)}</TabsList>
           {showButtons && (
             <Button
               additionalStyles={'add-port-button'}
@@ -206,7 +206,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice }) => {
   return (
     <PageWrapper
       error={pageStore.pageWrapperStore.error}
-      className={'device-manager-page'}
+      className="device-manager-page"
       accessLevelStore={pageStore.accessLevelStore}
     >
       <SelectModal {...pageStore.selectModalState} />

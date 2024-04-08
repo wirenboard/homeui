@@ -179,10 +179,8 @@ const UploadProgress = observer(({ store }) => {
           <span>{t(store.stateMsg)}</span>
         </div>
       </div>
-      {store.logRows.length > 0 ? <FirmwareUpdateLog logRows={store.logRows} /> : null}
-      {store.isDone ? (
-        <DoneButton onDoneClick={store.onDoneClick} doneLabel={store.doneLabel} />
-      ) : null}
+      {store.logRows.length > 0 && <FirmwareUpdateLog logRows={store.logRows} />}
+      {store.isDone && <DoneButton onDoneClick={store.onDoneClick} doneLabel={store.doneLabel} />}
     </>
   );
 });
@@ -339,18 +337,18 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset
       <div>
         <ul className="notes">
           <li>{t('system.factory_reset.warning1')}</li>
-          {canFactoryReset ? <li>{t('system.factory_reset.warning2')}</li> : null}
+          {canFactoryReset && <li>{t('system.factory_reset.warning2')}</li>}
         </ul>
       </div>
       <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
         {t('system.buttons.select')}
       </button>
       &nbsp;
-      {canFactoryReset ? (
+      {canFactoryReset && (
         <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
           {t('system.buttons.reset')}
         </button>
-      ) : null}
+      )}
     </div>
   );
 });
