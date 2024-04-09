@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.84.2) stable; urgency=medium
+
+  * Detect, is running via cloud or not; pass "from_cloud" flag
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Thu, 25 Apr 2024 19:21:34 +0300
+
 wb-mqtt-homeui (2.84.1) stable; urgency=medium
 
   * Do not disconnect from controller after receiving malformed data from MQTT 
