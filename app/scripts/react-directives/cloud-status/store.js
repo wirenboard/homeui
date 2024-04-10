@@ -29,16 +29,12 @@ class CloudStatusStore {
 
   updateCloudBaseUrl(cloudBaseUrl) {
     this.cloudBaseUrl = cloudBaseUrl;
-    console.log('cloudBaseUrl', cloudBaseUrl);
     this.recalcCloudLink();
-    console.log('cloudLink', this.cloudLink);
   }
 
   updateSerialNum(sn) {
     this.serialNum = sn;
-    console.log('serialNum', sn);
     this.recalcCloudLink();
-    console.log('cloudLink', this.cloudLink);
   }
 
   recalcCloudLink() {
