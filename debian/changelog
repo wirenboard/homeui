@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.4) stable; urgency=medium
+
+  * Fix tooltip on alarm control
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 08 Apr 2024 19:37:00 +0400
+
 wb-mqtt-homeui (2.82.3) stable; urgency=medium
 
   * Improve wb-mqtt-serial config loading errors handling
