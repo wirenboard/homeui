@@ -5,7 +5,6 @@ class CloudStatusMetaStore {
   constructor(mqttClient, whenMqttReady) {
     this.mqttClient = mqttClient;
     this.whenMqttReady = whenMqttReady;
-    this.providers = {};
     this.stores = {};
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -40,9 +39,9 @@ class CloudStatusMetaStore {
   }
 
   updateProviderList(value) {
-    this.providers = value.split(',');
+    const providers = value.split(',');
     this.stores = {};
-    for (const provider of this.providers) {
+    for (const provider of providers) {
       this.stores[provider] = this.instantiateStore(provider);
     }
   }

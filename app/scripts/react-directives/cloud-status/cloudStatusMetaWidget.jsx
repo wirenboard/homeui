@@ -6,11 +6,10 @@ import CloudStatusWidget from "./cloudStatusWidget";
 const CloudStatusMetaWidget = observer(({ store }) => {
   const { t } = useTranslation();
 
-  const rows = [];
-  for (let i = 0; i < store.providers.length; i++) {
-    rows.push(<CloudStatusWidget store={store.stores[store.providers[i]]} />);
-  }
-  return rows;
+  return Object.values(store.stores).map((storeItem) => (
+    <CloudStatusWidget store={storeItem} />
+  ));
+
 });
 
 function CreateCloudStatusMetaWidget({ store }) {
