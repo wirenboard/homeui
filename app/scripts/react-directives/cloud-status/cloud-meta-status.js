@@ -20,7 +20,7 @@ function cloudStatusMetaDirective(mqttClient, whenMqttReady) {
       scope.root.render(CreateCloudStatusMetaWidget({ store: scope.store }));
 
       whenMqttReady().then(() => {
-        mqttClient.addStickySubscription('/devices/system__wb-cloud-agent/providers', msg => {
+        mqttClient.addStickySubscription('/wb-cloud-agent/providers', msg => {
           scope.store.updateProviderList(msg.payload);
         });
       });
