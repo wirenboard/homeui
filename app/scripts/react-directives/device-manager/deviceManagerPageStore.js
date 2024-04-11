@@ -124,10 +124,10 @@ class DeviceManagerPageStore {
   }
 
   async addDevices(devices) {
-    await this.configEditorPageStore.addDevices(devices);
     runInAction(() => {
       this.showScan = false;
     });
+    await this.configEditorPageStore.addDevices(devices);
   }
 }
 
