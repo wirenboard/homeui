@@ -130,29 +130,35 @@ const BottomPanel = observer(({ scanStore, nothingFound, onStartScanning, onStop
   return null;
 });
 
-const DevicesPanel = ({ devicesStore }) => {
-  const isDesktop = useMediaQuery({ minWidth: 874 });
-  if (isDesktop) {
-    return <DevicesTable devices={devicesStore.devices} />;
-  }
-  return <DevicesList devices={devicesStore.devices} />;
-};
-
 const ScanPageBody = observer(({ pageStore, onStartScanning, onStopScanning }) => {
+  const isDesktop = useMediaQuery({ minWidth: 874 });
   if (pageStore.mqttStore.waitStartup) {
     return <Spinner />;
   }
   const nothingFound = pageStore.devicesStore.devices.length == 0;
+  if (isDesktop) {
+    return (
+      <>
+        {!nothingFound && <DevicesTable devices={pageStore.devicesStore.devices} />}
+        <BottomPanel
+          scanStore={pageStore.scanStore}
+          nothingFound={nothingFound}
+          onStartScanning={onStartScanning}
+          onStopScanning={onStopScanning}
+        />
+      </>
+    );
+  }
   return (
-    <>
-      {!nothingFound && <DevicesPanel devicesStore={pageStore.devicesStore} />}
+    <div className="mobile-devices-list">
+      {!nothingFound && <DevicesList devices={pageStore.devicesStore.devices} />}
       <BottomPanel
         scanStore={pageStore.scanStore}
         nothingFound={nothingFound}
         onStartScanning={onStartScanning}
         onStopScanning={onStopScanning}
       />
-    </>
+    </div>
   );
 });
 

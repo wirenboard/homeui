@@ -12,14 +12,11 @@
     align-items: center;
     margin-top: 33px;
     padding-bottom: 5px;
+    justify-content: flex-end;
 }
 
-.device-manager-page .add-devices-label {
+.device-manager-page .page-header .page-header-title{
     flex-grow: 1;
-    text-align: right;
-    font-size: 13px;
-    letter-spacing: normal;
-    align-self: center;
 }
 
 .device-manager-page .nav-stacked li {
@@ -85,10 +82,6 @@
 
 .device-manager-page .tab-content.well.well-small {
     margin-bottom: 0px;
-}
-
-.device-manager-page .button-group button:not(:first-child) {
-    margin-left: 5px;
 }
 
 .device-manager-page li .error .glyphicon-exclamation-sign {
@@ -181,23 +174,39 @@
     .device-manager-page li.active .settings-tab {
         border: 1px solid #3276b1;
     }
+
+    .device-manager-page .group-editor {
+        margin-top: 15px;
+    }
 }
 
 @media (max-width: 767px) {
     .device-manager-page {
         padding-bottom: 10px;
     }
-}
 
-@media (min-width: 992px) {
-    .device-manager-page .group-editor {
-        margin-top: 15px;
+    .device-manager-page .page-header {
+        margin-top: 0px;
     }
 }
 
 .device-manager-page .add-devices-panel {
     display: flex;
-    flex-grow: 1;
     flex-direction: row;
     gap: 5px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
+
+@media (max-width: 799px) {
+    .device-manager-page .add-devices-panel .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .device-manager-page .add-devices-panel {
+        width: 100%;
+    }
+}
+

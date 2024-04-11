@@ -60,6 +60,7 @@
 .scan-page .scrollable-table-wrapper table thead {
     position: sticky;
     top: 0;
+    z-index: 1;
 }
 
 /* Fix bootstrap style */
@@ -86,6 +87,10 @@
     margin: unset;
 }
 
+.scan-page .panel-body .checkbox {
+    margin-top: unset;
+}
+
 .scan-page .table {
     border-collapse: unset;
 }
@@ -104,4 +109,9 @@
 
 .scan-page .checkbox label {
     font-weight: bold;
+}
+
+
+.scan-page .mobile-devices-list {
+    overflow-y: scroll;
 }

@@ -237,7 +237,6 @@
          "serial-port": "Serial port",
          "confirm-delete": "Do you really want to delete {{item}}?",
          "add-device": "Add device",
-         "add-devices": "Add devices",
          "port": "Port",
          "device-type": "Device type",
          "settings": "wb-mqtt-serial settings",
@@ -247,8 +246,8 @@
          "save": "Save config",
          "add-port": "Add port",
          "delete": "Delete",
-         "add-custom-device": "Other",
-         "add-wb-device": "Wiren Board",
+         "add-custom-device": "Manually add any device",
+         "add-wb-device": "Find and add Wiren Board devices",
          "add": "Add",
          "copy": "Copy",
          "to-port-list": "To ports and devices list"

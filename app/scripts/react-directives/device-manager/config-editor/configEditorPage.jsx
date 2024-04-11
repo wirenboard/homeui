@@ -150,20 +150,17 @@ const HeaderButtons = observer(
           disabled={!allowSave}
         />
         <div className="add-devices-panel">
-          <span className="add-devices-label">{t('device-manager.labels.add-devices')}</span>
-          <div className="button-group">
-            <Button
-              type="success"
-              label={t('device-manager.buttons.add-wb-device')}
-              onClick={onAddWbDevice}
-              disabled={!allowAddDevice}
-            />
-            <Button
-              label={t('device-manager.buttons.add-custom-device')}
-              onClick={onAddDevice}
-              disabled={!allowAddDevice}
-            />
-          </div>
+          <Button
+            type="primary"
+            label={t('device-manager.buttons.add-wb-device')}
+            onClick={onAddWbDevice}
+            disabled={!allowAddDevice}
+          />
+          <Button
+            label={t('device-manager.buttons.add-custom-device')}
+            onClick={onAddDevice}
+            disabled={!allowAddDevice}
+          />
         </div>
       </>
     );

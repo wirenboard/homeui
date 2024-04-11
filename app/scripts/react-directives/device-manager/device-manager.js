@@ -15,7 +15,8 @@ function deviceManagerDirective(
   $state,
   $transitions,
   SerialProxy,
-  mqttClient
+  mqttClient,
+  $rootScope
 ) {
   'ngInject';
 
@@ -23,6 +24,8 @@ function deviceManagerDirective(
     restrict: 'E',
     scope: {},
     link: function (scope, element) {
+      $rootScope.noConsole = true;
+
       if (scope.root) {
         scope.root.unmount();
       }
