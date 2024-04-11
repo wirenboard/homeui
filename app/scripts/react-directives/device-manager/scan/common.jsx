@@ -44,7 +44,6 @@ export const DeviceName = ({
   unknownType,
   selected,
   onSelectionChange,
-  disabled,
 }) => {
   const { t } = useTranslation();
   return (
@@ -52,7 +51,12 @@ export const DeviceName = ({
       errors={errors}
       errorId={'com.wb.device_manager.device.read_device_signature_error'}
     >
-      <Checkbox value={selected} onChange={onSelectionChange} disabled={disabled} label={title} />
+      <Checkbox
+        value={selected}
+        onChange={onSelectionChange}
+        disabled={unknownType}
+        label={title}
+      />
       {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
       {duplicateMqttTopic && <ErrorTag text={t('scan.labels.duplicate-topic')} />}
       {unknownType && <ErrorTag text={t('scan.labels.unknown-device-type')} />}
@@ -64,7 +68,7 @@ export const SlaveId = ({ slaveId, isDuplicate }) => {
   const { t } = useTranslation();
   return (
     <>
-      <span className="slave-id">{slaveId}</span>{' '}
+      <span className="slave-id">{slaveId}</span> <wbr></wbr>
       {isDuplicate && <ErrorTag text={t('scan.labels.duplicate')} />}
     </>
   );
@@ -76,7 +80,7 @@ export const Port = ({ path, baudRate, dataBits, parity, stopBits, misconfigured
     <>
       {path} <span className="baudrate">{baudRate}</span> {dataBits.toString()}
       {parity}
-      {stopBits.toString()}{' '}
+      {stopBits.toString()} <wbr></wbr>
       {misconfiguredPort && <ErrorTag text={t('scan.labels.misconfigured-port')} />}
     </>
   );

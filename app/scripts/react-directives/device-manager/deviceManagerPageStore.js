@@ -98,7 +98,10 @@ class DeviceManagerPageStore {
   addWbDevice() {
     const configuredModbusDevices = this.configEditorPageStore.tabs.portTabs.reduce(
       (acc, portTab) => {
-        if (portTab.editedData.port_type != 'serial') {
+        if (
+          portTab.editedData.port_type != 'serial' &&
+          portTab.editedData.port_type !== undefined
+        ) {
           return acc;
         }
         acc[portTab.editedData.path] = {

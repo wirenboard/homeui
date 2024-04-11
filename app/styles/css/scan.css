@@ -4,16 +4,6 @@
 }
 
 .scan-page .tag {
-    margin-left: 3px;
-    padding-top: 1px;
-    padding-left: 7px;
-    padding-bottom: 1px;
-    padding-right: 7px;
-    border-radius: 5px;
-}
-
-.scan-page .tag:first-of-type {
-    margin-left: 0px;
     padding-top: 1px;
     padding-left: 7px;
     padding-bottom: 1px;
@@ -81,6 +71,8 @@
 .scan-page .device-title-cell {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 3px;
 }
 
 .scan-page .device-title-cell .checkbox {
@@ -89,6 +81,7 @@
 
 .scan-page .panel-body .checkbox {
     margin-top: unset;
+    margin-bottom: unset;
 }
 
 .scan-page .table {

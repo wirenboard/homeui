@@ -27,10 +27,9 @@ const DeviceRow = observer(({ deviceStore }) => {
             bootloaderMode={deviceStore.bootloader_mode}
             errors={deviceStore?.errors}
             duplicateMqttTopic={deviceStore.duplicateMqttTopic}
-            unknownType={!deviceStore.deviceType}
+            unknownType={deviceStore.isUnknownType}
             selected={deviceStore.selected}
             onSelectionChange={e => deviceStore.setSelected(e.target.checked)}
-            disabled={!deviceStore.deviceType}
           />
         </td>
         <td>{deviceStore.sn}</td>

@@ -42,10 +42,9 @@ const DevicePanel = ({ deviceStore }) => {
             bootloaderMode={deviceStore.bootloader_mode}
             errors={deviceStore?.errors}
             duplicateMqttTopic={deviceStore.duplicateMqttTopic}
-            unknownType={!deviceStore.deviceType}
+            unknownType={deviceStore.isUnknownType}
             selected={deviceStore.selected}
             onSelectionChange={e => deviceStore.setSelected(e.target.checked)}
-            disabled={!deviceStore.deviceType}
           />
         </Row>
         <RowWithTitle title="SN">{deviceStore.sn}</RowWithTitle>

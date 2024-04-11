@@ -105,12 +105,12 @@ class ScanningProgressStore {
 class SingleDeviceStore {
   constructor(scannedDevice, name, deviceType) {
     this.scannedDevice = scannedDevice;
-    this.selected = !!deviceType;
+    this.deviceType = deviceType;
+    this.selected = !this.isUnknownType;
     this.duplicateSlaveId = false;
     this.misconfiguredPort = false;
     this.duplicateMqttTopic = false;
     this.name = name;
-    this.deviceType = deviceType;
 
     makeObservable(this, {
       scannedDevice: observable.ref,
@@ -174,6 +174,10 @@ class SingleDeviceStore {
 
   setDuplicateMqttTopic() {
     this.duplicateMqttTopic = true;
+  }
+
+  get isUnknownType() {
+    return !this.deviceType;
   }
 }
 
@@ -257,14 +261,13 @@ class DevicesStore {
       d.setMisconfiguredPort();
     }
 
-    const topic = this.deviceTypesStore.getDefaultId(
-      scannedDevice.device_signature,
-      scannedDevice.cfg.slave_id
-    );
-    if (this.topics.has(topic)) {
-      d.setDuplicateMqttTopic();
-    } else {
-      this.topics.add(topic);
+    if (!d.isUnknownType) {
+      const topic = this.deviceTypesStore.getDefaultId(deviceType, scannedDevice.cfg.slave_id);
+      if (this.topics.has(topic)) {
+        d.setDuplicateMqttTopic();
+      } else {
+        this.topics.add(topic);
+      }
     }
 
     this.devicesByUuid.add(scannedDevice.uuid);
