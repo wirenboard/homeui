@@ -202,11 +202,7 @@
     .device-manager-page .add-devices-panel .btn {
         width: 100%;
     }
-}
-
-@media (max-width: 1100px) {
     .device-manager-page .add-devices-panel {
         width: 100%;
     }
 }
-

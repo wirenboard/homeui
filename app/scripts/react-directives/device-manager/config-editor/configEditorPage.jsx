@@ -128,10 +128,53 @@ const PageTabs = observer(
   }
 );
 
+const SaveSettingsButton = ({ onClick, disabled }) => {
+  const { t } = useTranslation();
+  return (
+    <Button
+      type="success"
+      label={t('device-manager.buttons.save')}
+      onClick={onClick}
+      disabled={disabled}
+    />
+  );
+};
+
+const AddDevicesButtonsPanel = ({ allowAddDevice, onAddDevice, onAddWbDevice }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="add-devices-panel">
+      <Button
+        type="primary"
+        label={t('device-manager.buttons.add-wb-device')}
+        onClick={onAddWbDevice}
+        disabled={!allowAddDevice}
+      />
+      <Button
+        label={t('device-manager.buttons.add-custom-device')}
+        onClick={onAddDevice}
+        disabled={!allowAddDevice}
+      />
+    </div>
+  );
+};
+
 const HeaderButtons = observer(
   ({ allowSave, allowAddDevice, onSave, onAddDevice, onAddWbDevice, mobileModeStore }) => {
     const { t } = useTranslation();
-    if (mobileModeStore.inMobileMode && !mobileModeStore.tabsPanelIsActive) {
+    if (mobileModeStore.inMobileMode) {
+      if (mobileModeStore.tabsPanelIsActive) {
+        return (
+          <>
+            <SaveSettingsButton onClick={onSave} disabled={!allowSave} />
+            <AddDevicesButtonsPanel
+              onAddDevice={onAddDevice}
+              onAddWbDevice={onAddWbDevice}
+              allowAddDevice={allowAddDevice}
+            />
+          </>
+        );
+      }
       return (
         <Button
           label={t('device-manager.buttons.to-port-list')}
@@ -143,25 +186,12 @@ const HeaderButtons = observer(
     }
     return (
       <>
-        <Button
-          type="success"
-          label={t('device-manager.buttons.save')}
-          onClick={onSave}
-          disabled={!allowSave}
+        <AddDevicesButtonsPanel
+          onAddDevice={onAddDevice}
+          onAddWbDevice={onAddWbDevice}
+          allowAddDevice={allowAddDevice}
         />
-        <div className="add-devices-panel">
-          <Button
-            type="primary"
-            label={t('device-manager.buttons.add-wb-device')}
-            onClick={onAddWbDevice}
-            disabled={!allowAddDevice}
-          />
-          <Button
-            label={t('device-manager.buttons.add-custom-device')}
-            onClick={onAddDevice}
-            disabled={!allowAddDevice}
-          />
-        </div>
+        <SaveSettingsButton onClick={onSave} disabled={!allowSave} />
       </>
     );
   }
