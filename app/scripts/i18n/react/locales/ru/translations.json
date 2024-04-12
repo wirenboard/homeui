@@ -149,6 +149,9 @@
             "activation-link-preamble": "Почти готово! Для подключения контроллера к Wiren Board Cloud, нажмите",
             "activation-link": "эту ссылку",
             "status-ok": "Этот контроллер подключен к облаку",
+            "status-starting": "Сервис wb-cloud-agent запускается",
+            "status-connecting": "Подключаемся к облаку",
+            "status-stopped": "Сервис wb-cloud-agent не запущен",
             "status-error": "Ошибка подключения к облаку",
             "goto-cloud": "Перейти в Wiren Board Cloud"
         }
