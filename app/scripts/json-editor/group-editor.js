@@ -11,7 +11,7 @@ class Editor {
     this.group = group;
     this.oneOfIndex = 0;
     this.errors = undefined;
-    this.conditionFn = undefined;
+    this.conditionFns = {};
   }
 
   isTopLevelEditor() {
@@ -101,13 +101,14 @@ class Editor {
 
   checkCondition(paramNames, paramValues, schema) {
     try {
-      if (!this.conditionFn) {
-        this.conditionFn = new Function(
+      const condition = schema.condition;
+      if (!this.conditionFns.hasOwnProperty(condition)) {
+        this.conditionFns[condition] = new Function(
           paramNames,
-          'let isDefined = p => p!==undefined; return ' + schema.condition + ';'
+          'let isDefined = p => p!==undefined; return ' + condition + ';'
         );
       }
-      return this.conditionFn.apply(null, paramValues);
+      return this.conditionFns[condition].apply(null, paramValues);
     } catch (e) {
       return false;
     }
