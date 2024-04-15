@@ -2,8 +2,43 @@
 
 import { JSONEditor } from '../../3rdparty/jsoneditor';
 
+class Conditions {
+  constructor() {
+    this.paramNames = [];
+    this.functions = {};
+  }
+
+  setParamNames(paramNames) {
+    this.paramNames = paramNames;
+    this.functions = {};
+  }
+
+  makeParamValues(params) {
+    return this.paramNames.map(key => params?.[key]);
+  }
+
+  check(conditionText, paramValues) {
+    if (!conditionText) {
+      return true;
+    }
+    try {
+      let fn = this.functions?.[conditionText];
+      if (!fn) {
+        fn = new Function(
+          this.paramNames,
+          'let isDefined = p => p!==undefined; return ' + conditionText + ';'
+        );
+        this.functions[conditionText] = fn;
+      }
+      return fn.apply(null, paramValues);
+    } catch (e) {
+      return false;
+    }
+  }
+}
+
 class Editor {
-  constructor(editor, group, schema) {
+  constructor(editor, group, schema, conditions) {
     this.editor = editor;
     this.isEnabled = true;
     this.schema = schema;
@@ -11,7 +46,7 @@ class Editor {
     this.group = group;
     this.oneOfIndex = 0;
     this.errors = undefined;
-    this.conditionFn = undefined;
+    this.conditions = conditions;
   }
 
   isTopLevelEditor() {
@@ -85,8 +120,8 @@ class Editor {
     }
   }
 
-  updateState(paramNames, paramValues) {
-    var enable = this.shouldEnable(paramNames, paramValues);
+  updateState(paramValues) {
+    var enable = this.shouldEnable(paramValues);
     if (enable == this.isEnabled) {
       this.updateEditorDisplay();
       return false;
@@ -99,24 +134,14 @@ class Editor {
     return true;
   }
 
-  checkCondition(paramNames, paramValues, schema) {
-    try {
-      if (!this.conditionFn) {
-        this.conditionFn = new Function(
-          paramNames,
-          'let isDefined = p => p!==undefined; return ' + schema.condition + ';'
-        );
-      }
-      return this.conditionFn.apply(null, paramValues);
-    } catch (e) {
-      return false;
-    }
+  checkCondition(paramValues, schema) {
+    return this.conditions.check(schema.condition, paramValues);
   }
 
-  shouldEnable(paramNames, paramValues) {
+  shouldEnable(paramValues) {
     if (this.isConditionalOneOfEditor()) {
       var index = this.schema.oneOf.findIndex(schema => {
-        return this.checkCondition(paramNames, paramValues, schema);
+        return this.checkCondition(paramValues, schema);
       });
       if (index == -1) {
         return false;
@@ -127,7 +152,7 @@ class Editor {
     if (!this.schema.condition) {
       return true;
     }
-    return this.checkCondition(paramNames, paramValues, this.schema);
+    return this.checkCondition(paramValues, this.schema);
   }
 
   show() {
@@ -313,6 +338,7 @@ function makeGroupsEditor() {
     constructor(options, defaults) {
       super(options, defaults);
       this.MAX_GRID_COLUMNS = 12;
+      this.conditions = new Conditions();
     }
 
     getDefault() {
@@ -379,14 +405,20 @@ function makeGroupsEditor() {
     }
 
     preBuildEditors() {
+      let paramNames = [];
       Object.entries(this.schema.properties).forEach(([key, schema]) => {
         var group = this.groups.get(schema.group);
         // schema.group is not declared in groups array, use root group
         if (!group) {
           group = this.groups.get(undefined);
         }
-        group.addEditor(key, this.storeEditor(key, undefined, group, schema));
+        const editor = this.storeEditor(key, undefined, group, schema);
+        if (!editor.isChannel) {
+          paramNames.push(key);
+        }
+        group.addEditor(key, editor);
       });
+      this.conditions.setParamNames(paramNames);
     }
 
     preBuild() {
@@ -646,7 +678,7 @@ function makeGroupsEditor() {
     }
 
     storeEditor(key, editor, group, schema) {
-      var ed = new Editor(editor, group, schema);
+      var ed = new Editor(editor, group, schema, this.conditions);
       this.editors[key] = ed;
       return ed;
     }
@@ -822,36 +854,14 @@ function makeGroupsEditor() {
       });
     }
 
-    getParamsForConditions(params, paramNames, paramValues) {
-      let props = {};
-      Object.entries(this.editors).forEach(([key, ed]) => {
-        if (!ed.isChannel) {
-          props[key] = undefined;
-        }
-      });
-      Object.entries(params)
-        .filter(([key, value]) => this.editors.hasOwnProperty(key) && !this.editors[key].isChannel)
-        .forEach(([key, value]) => {
-          props[key] = value;
-        });
-      Object.entries(props).forEach(([key, value]) => {
-        paramNames.push(key);
-        paramValues.push(value);
-      });
-      paramNames = paramNames.join(',');
-      return [paramNames, paramValues];
-    }
-
     updateEditorsState() {
       var hasChanges = true;
       var cycles = 0;
       for (; hasChanges && cycles < 10; ++cycles) {
-        var paramValues = [];
-        var paramNames = [];
-        this.getParamsForConditions(this.value, paramNames, paramValues);
+        const paramValues = this.conditions.makeParamValues(this.value);
         hasChanges = false;
         Object.entries(this.editors).forEach(([key, ed]) => {
-          hasChanges = ed.updateState(paramNames, paramValues) || hasChanges;
+          hasChanges = ed.updateState(paramValues) || hasChanges;
           if (ed.isEnabled) {
             if (ed.editor) {
               if (ed.editor.isActive()) {
