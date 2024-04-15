@@ -55,7 +55,7 @@ const setStyleHandler = (element, param, values) => {
 };
 
 const setVisibleHandler = (element, param, values) => {
-  let fn = undefined;
+  let fn;
   try {
     fn = new Function('val', `return val${param.condition}${param.value}`);
   } catch (e) {
