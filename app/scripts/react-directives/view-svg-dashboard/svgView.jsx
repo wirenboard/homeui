@@ -8,11 +8,18 @@ const getSvgElement = (svg, id) => {
 
 const setReadHandler = (element, param, values) => {
   let el = element.querySelector('tspan') || element;
-  const fn = new Function('val', `return ${param.value}`);
+  let fn = undefined;
+  try {
+    fn = new Function('val', `return ${param.value}`);
+  } catch (e) {
+    // Syntax error in rule
+  }
   const disposer = reaction(
     () => get(values, param.channel),
     value => {
-      el.innerHTML = fn(value);
+      if (fn) {
+        el.innerHTML = fn(value);
+      }
     },
     { fireImmediately: true }
   );
@@ -20,12 +27,19 @@ const setReadHandler = (element, param, values) => {
 };
 
 const setStyleHandler = (element, param, values) => {
-  const fn = new Function('val', `return ${param.value}`);
+  let fn = undefined;
+  try {
+    fn = new Function('val', `return ${param.value}`);
+  } catch (e) {
+    // Syntax error in rule
+  }
   const oldStyle = element.style.cssText;
   const disposer = reaction(
     () => get(values, param.channel),
     value => {
-      element.style.cssText = oldStyle + fn(value);
+      if (fn) {
+        element.style.cssText = oldStyle + fn(value);
+      }
     },
     { fireImmediately: true }
   );
@@ -33,11 +47,18 @@ const setStyleHandler = (element, param, values) => {
 };
 
 const setVisibleHandler = (element, param, values) => {
-  const fn = new Function('val', `return val${param.condition}${param.value}`);
+  let fn = undefined;
+  try {
+    fn = new Function('val', `return val${param.condition}${param.value}`);
+  } catch (e) {
+    // Syntax error in rule
+  }
   const disposer = reaction(
     () => get(values, param.channel),
     value => {
-      element.style.display = fn(value) ? '' : 'none';
+      if (fn) {
+        element.style.display = fn(value) ? '' : 'none';
+      }
     },
     { fireImmediately: true }
   );
