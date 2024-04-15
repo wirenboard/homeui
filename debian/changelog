@@ -1,6 +1,7 @@
 wb-mqtt-homeui (2.82.1-wb100) stable; urgency=medium
 
   * Fix WB-LED configuration
+  * Fix WB-LED and WB-MRGBW-D config editors
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 15 May 2024 16:07:51 +0500
 
