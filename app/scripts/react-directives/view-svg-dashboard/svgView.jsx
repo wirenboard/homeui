@@ -18,7 +18,11 @@ const setReadHandler = (element, param, values) => {
     () => get(values, param.channel),
     value => {
       if (fn) {
-        el.innerHTML = fn(value);
+        try {
+          el.innerHTML = fn(value);
+        } catch (e) {
+          // Exception in rule
+        }
       }
     },
     { fireImmediately: true }
@@ -38,7 +42,11 @@ const setStyleHandler = (element, param, values) => {
     () => get(values, param.channel),
     value => {
       if (fn) {
-        element.style.cssText = oldStyle + fn(value);
+        try {
+          element.style.cssText = oldStyle + fn(value);
+        } catch (e) {
+          // Exception in rule
+        }
       }
     },
     { fireImmediately: true }
@@ -57,7 +65,11 @@ const setVisibleHandler = (element, param, values) => {
     () => get(values, param.channel),
     value => {
       if (fn) {
-        element.style.display = fn(value) ? '' : 'none';
+        try {
+          element.style.display = fn(value) ? '' : 'none';
+        } catch (e) {
+          // Exception in rule
+        }
       }
     },
     { fireImmediately: true }
