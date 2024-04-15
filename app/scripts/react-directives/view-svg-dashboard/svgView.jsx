@@ -8,11 +8,22 @@ const getSvgElement = (svg, id) => {
 
 const setReadHandler = (element, param, values) => {
   let el = element.querySelector('tspan') || element;
-  const fn = new Function('val', `return ${param.value}`);
+  let fn = undefined;
+  try {
+    fn = new Function('val', `return ${param.value}`);
+  } catch (e) {
+    // Syntax error in rule
+  }
   const disposer = reaction(
     () => get(values, param.channel),
     value => {
-      el.innerHTML = fn(value);
+      if (fn) {
+        try {
+          el.innerHTML = fn(value);
+        } catch (e) {
+          // Exception in rule
+        }
+      }
     },
     { fireImmediately: true }
   );
@@ -20,12 +31,23 @@ const setReadHandler = (element, param, values) => {
 };
 
 const setStyleHandler = (element, param, values) => {
-  const fn = new Function('val', `return ${param.value}`);
+  let fn = undefined;
+  try {
+    fn = new Function('val', `return ${param.value}`);
+  } catch (e) {
+    // Syntax error in rule
+  }
   const oldStyle = element.style.cssText;
   const disposer = reaction(
     () => get(values, param.channel),
     value => {
-      element.style.cssText = oldStyle + fn(value);
+      if (fn) {
+        try {
+          element.style.cssText = oldStyle + fn(value);
+        } catch (e) {
+          // Exception in rule
+        }
+      }
     },
     { fireImmediately: true }
   );
@@ -33,11 +55,22 @@ const setStyleHandler = (element, param, values) => {
 };
 
 const setVisibleHandler = (element, param, values) => {
-  const fn = new Function('val', `return val${param.condition}${param.value}`);
+  let fn;
+  try {
+    fn = new Function('val', `return val${param.condition}${param.value}`);
+  } catch (e) {
+    // Syntax error in rule
+  }
   const disposer = reaction(
     () => get(values, param.channel),
     value => {
-      element.style.display = fn(value) ? '' : 'none';
+      if (fn) {
+        try {
+          element.style.display = fn(value) ? '' : 'none';
+        } catch (e) {
+          // Exception in rule
+        }
+      }
     },
     { fireImmediately: true }
   );
