@@ -52,8 +52,8 @@ const AngularJsonEditorModule = angular
               scope.editor.destroy();
             }
 
-            if (Object.values(schema.properties).some((item) => item.format === 'autocomplete'
-              && item.options && item.options.data === 'devices')) {
+            if (Object.values(schema.properties).some((item) => item.format === 'wb-autocomplete'
+              && item.options?.wb?.data === 'devices')) {
               additionalData = Object.keys(DeviceData.cells).filter((item) => !item.startsWith('system__'));
             }
 

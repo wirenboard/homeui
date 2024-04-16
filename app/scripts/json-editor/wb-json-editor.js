@@ -207,7 +207,7 @@ function overrideJSONEditor(data) {
     schema => schema.format === 'unknown-device' && 'unknown-device'
   );
   JSONEditor.defaults.resolvers.unshift(schema => schema.format === 'wb-optional' && 'wb-optional');
-  JSONEditor.defaults.resolvers.unshift(schema => schema.format === 'autocomplete' && 'autocomplete');
+  JSONEditor.defaults.resolvers.unshift(schema => schema.format === 'wb-autocomplete' && 'wb-autocomplete');
   JSONEditor.defaults.resolvers.unshift(
     schema => schema.type === 'array' && schema.format === 'wb-array' && 'wb-array'
   );
@@ -228,7 +228,7 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['roMultiple'] = makeReadonlyOneOfEditor();
   JSONEditor.defaults.editors['merge-default'] = makeMergedDefaultValuesEditor();
   JSONEditor.defaults.editors['edWb'] = makeEditWithDropdownEditor();
-  JSONEditor.defaults.editors['autocomplete'] = makeAutocompleteEditor(data);
+  JSONEditor.defaults.editors['wb-autocomplete'] = makeAutocompleteEditor(data);
   JSONEditor.defaults.editors['collapsible-list'] = makeCollapsibleArrayEditor();
   JSONEditor.defaults.editors['wb-multiple'] = makeCollapsibleMultipleEditor();
   JSONEditor.defaults.editors['wb-object'] = makeObjectEditorWithButtonsOnTop();

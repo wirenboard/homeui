@@ -2,14 +2,17 @@
 
 import { JSONEditor } from '../../3rdparty/jsoneditor';
 
-function makeAutocompleteEditor(options) {
-  return class extends JSONEditor.AbstractEditor {
+export default function makeAutocompleteEditor(options = []) {
+  return class extends JSONEditor.defaults.editors.string {
     build() {
       super.build();
 
-      this.label = this.theme.getFormInputLabel(this.getTitle());
-      this.input = this.theme.getFormInputField('text');
-      this.description = this.theme.getFormInputDescription(this.translateProperty(this.schema.description));
+      if (options.length) {
+        this.addDatalist(options)
+      }
+    }
+
+    addDatalist(options) {
       this.datalist = document.createElement('datalist');
       this.datalist.id = 'options-datalist';
 
@@ -21,33 +24,7 @@ function makeAutocompleteEditor(options) {
 
       this.input.setAttribute('list', this.datalist.id);
 
-      this.container.append(this.label, this.input, this.description, this.datalist);
-    }
-
-    postBuild() {
-      super.postBuild();
-      this.input.addEventListener('change', this.onInputValueChange.bind(this));
-    }
-
-    onInputValueChange(ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      this.setValue(ev.target.value);
-    }
-
-    setValue(value, initial) {
-      this.input.value = value;
-      super.setValue(value, initial);
-      this.change();
-    }
-
-    destroy() {
-      if (this.input) {
-        this.input.removeEventListener('change', this.onInputValueChange.bind(this));
-      }
-      super.destroy();
+      this.container.appendChild(this.datalist);
     }
   };
 }
-
-export default makeAutocompleteEditor;
