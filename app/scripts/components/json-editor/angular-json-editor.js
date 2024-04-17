@@ -52,8 +52,22 @@ const AngularJsonEditorModule = angular
               scope.editor.destroy();
             }
 
-            if (Object.values(schema.properties).some((item) => item.format === 'wb-autocomplete'
-              && item.options?.wb?.data === 'devices')) {
+            const hasAdditionalDataOptions = (node, dataType) => {
+              if (node?.format === 'wb-autocomplete' && node.options?.wb?.data === dataType) {
+                return node.options.wb.data;
+              }
+              if (typeof node === 'object') {
+                for (let key in node) {
+                  const result = hasAdditionalDataOptions(node[key], dataType);
+                  if (result) {
+                    return result;
+                  }
+                }
+              }
+              return null;
+            }
+
+            if (hasAdditionalDataOptions(schema, 'devices')) {
               additionalData = Object.keys(DeviceData.cells).filter((item) => !item.startsWith('system__'));
             }
 
