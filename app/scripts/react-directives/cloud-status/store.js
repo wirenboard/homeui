@@ -1,11 +1,14 @@
 import { makeAutoObservable } from 'mobx';
 
 class CloudStatusStore {
-  constructor() {
+  constructor(provider) {
+    this.provider = provider;
+    this.cloudBaseUrl = '';
+    this.serialNum = '';
     this.initialized = false;
     this.status = null;
     this.activationLink = null;
-    this.cloudLink = 'https://wirenboard.cloud';
+    this.cloudLink = '';
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -24,11 +27,24 @@ class CloudStatusStore {
     this.activationLink = activationLink;
   }
 
-  setSn(sn) {
-    if (sn) {
-      this.cloudLink = 'https://wirenboard.cloud/controllers/' + sn;
+  updateCloudBaseUrl(cloudBaseUrl) {
+    this.cloudBaseUrl = cloudBaseUrl;
+    this.recalcCloudLink();
+  }
+
+  updateSerialNum(sn) {
+    this.serialNum = sn;
+    this.recalcCloudLink();
+  }
+
+  recalcCloudLink() {
+    if (this.serialNum) {
+      this.cloudLink = this.cloudBaseUrl + '/controllers/' + this.serialNum;
+    } else {
+      this.cloudLink = '';
     }
   }
+
 }
 
 export default CloudStatusStore;

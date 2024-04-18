@@ -52,7 +52,7 @@ const CloudStatusWidget = observer(({ store }) => {
     <div className="panel panel-default">
       <div className="panel-heading">
         <h3 className="panel-title">
-          <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.title')}
+          <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.title')} ({store.provider})
         </h3>
       </div>
       <div className="panel-body">

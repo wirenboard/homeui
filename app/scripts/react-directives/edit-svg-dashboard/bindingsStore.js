@@ -10,6 +10,18 @@ import i18n from '../../i18n/react/config';
 import { makeNotEmptyValidator } from '../forms/stringValidators';
 import DashboardSvgParam from '../../services/dashboardSvgParam';
 
+const jsFunctionValidator = value => {
+  if (!value) {
+    return i18n.t('validator.errors.empty');
+  }
+  try {
+    new Function('val', `return ${value}`);
+  } catch (err) {
+    return i18n.t('validator.errors.syntax');
+  }
+  return null;
+};
+
 const addChannelsStore = (formStore, devices) => {
   formStore.add(
     'channel',
@@ -21,12 +33,12 @@ const addChannelsStore = (formStore, devices) => {
   );
 };
 
-const addStringValueStore = (formStore, description) => {
+const addStringValueStore = (formStore, description, validator) => {
   formStore.add(
     'value',
     new StringStore({
       name: i18n.t('edit-svg-dashboard.labels.value'),
-      validator: makeNotEmptyValidator(),
+      validator: validator || makeNotEmptyValidator(),
       description: description,
     })
   );
@@ -68,7 +80,11 @@ const makeReadBindingStore = devices => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.read-enable');
   addChannelsStore(res, devices);
-  addStringValueStore(res, i18n.t('edit-svg-dashboard.labels.read-value-desc'));
+  addStringValueStore(
+    res,
+    i18n.t('edit-svg-dashboard.labels.read-value-desc'),
+    jsFunctionValidator
+  );
   return res;
 };
 
@@ -76,7 +92,11 @@ const makeStyleBindingStore = devices => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.style-enable');
   addChannelsStore(res, devices);
-  addStringValueStore(res, i18n.t('edit-svg-dashboard.labels.style-value-desc'));
+  addStringValueStore(
+    res,
+    i18n.t('edit-svg-dashboard.labels.style-value-desc'),
+    jsFunctionValidator
+  );
   return res;
 };
 

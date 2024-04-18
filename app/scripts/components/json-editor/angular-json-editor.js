@@ -14,7 +14,8 @@ const AngularJsonEditorModule = angular
   })
   .directive('jsonEditor', [
     '$locale',
-    function ($locale) {
+    'DeviceData',
+    function ($locale, DeviceData) {
       return {
         restrict: 'E',
         scope: {
@@ -35,6 +36,7 @@ const AngularJsonEditorModule = angular
             }
 
             var schema = newValue;
+            let additionalData;
             var startVal = scope.startval;
 
             if (schema === null) {
@@ -49,7 +51,27 @@ const AngularJsonEditorModule = angular
             if (scope.editor) {
               scope.editor.destroy();
             }
-            scope.editor = createJSONEditor(element[0], schema, startVal, $locale.id);
+
+            const hasAdditionalDataOptions = (node, dataType) => {
+              if (node?.format === 'wb-autocomplete' && node.options?.wb?.data === dataType) {
+                return node.options.wb.data;
+              }
+              if (typeof node === 'object') {
+                for (let key in node) {
+                  const result = hasAdditionalDataOptions(node[key], dataType);
+                  if (result) {
+                    return result;
+                  }
+                }
+              }
+              return null;
+            }
+
+            if (hasAdditionalDataOptions(schema, 'devices')) {
+              additionalData = Object.keys(DeviceData.cells).filter((item) => !item.startsWith('system__'));
+            }
+
+            scope.editor = createJSONEditor(element[0], schema, startVal, $locale.id, undefined, additionalData);
 
             scope.editor.on('ready', () => {
               scope.isValid = scope.editor.validate().length === 0;

@@ -106,7 +106,7 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
-import cloudStatusDirective from './react-directives/cloud-status/cloud-status';
+import cloudStatusMetaDirective from './react-directives/cloud-status/cloud-meta-status';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
 import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
@@ -292,7 +292,7 @@ module
   .directive('deviceManagerPage', deviceManagerDirective)
   .directive('networkConnectionsPage', networkConnectionsDirective)
   .directive('firmwareUpdateWidget', firmwareUpdateDirective)
-  .directive('cloudStatusWidget', cloudStatusDirective)
+  .directive('cloudStatusMetaWidget', cloudStatusMetaDirective)
   .directive('editSvgDashboardPage', editSvgDashboardDirective)
   .directive('viewSvgDashboardPage', viewSvgDashboardDirective)
   .directive('scriptEditorPage', scriptEditorDirective);
