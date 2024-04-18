@@ -125,6 +125,7 @@ function deviceManagerDirective(
       element.on('$destroy', function () {
         scope.root.unmount();
         scope.deleteTransitionHook();
+        $rootScope.noConsole = false;
       });
     },
   };
