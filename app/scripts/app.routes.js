@@ -39,6 +39,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       template: require('../views/access-level.html'),
       controller: 'AccessLevelCtrl as $ctrl',
     })
+    .state('scan', {
+      url: '/scan',
+      redirectTo: 'serial-config',
+    })
     //...........................................................................
     .state('devices', {
       url: '/devices',
