@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FirmwareVersion, DeviceName, SlaveId, Port } from './common';
+import { DeviceName, SlaveId, Port } from './common';
+import { Checkbox } from '../../common';
 
 const Row = ({ children }) => {
   return (
@@ -30,42 +31,37 @@ const Error = ({ error }) => {
   );
 };
 
-const DevicePanel = props => {
+const DevicePanel = ({ deviceStore }) => {
   const { t } = useTranslation();
   return (
     <div className="panel panel-default">
       <div className="panel-body">
         <Row>
           <DeviceName
-            title={props.title}
-            bootloaderMode={props.bootloader_mode}
-            online={props.online}
-            poll={props.poll}
-            errors={props.errors}
+            title={deviceStore.title}
+            bootloaderMode={deviceStore.bootloader_mode}
+            errors={deviceStore?.errors}
+            duplicateMqttTopic={deviceStore.duplicateMqttTopic}
+            unknownType={deviceStore.isUnknownType}
+            selected={deviceStore.selected}
+            onSelectionChange={e => deviceStore.setSelected(e.target.checked)}
           />
         </Row>
-        <RowWithTitle title="SN">{props.sn}</RowWithTitle>
+        <RowWithTitle title="SN">{deviceStore.sn}</RowWithTitle>
         <RowWithTitle title={t('scan.labels.address')}>
-          <SlaveId slaveId={props.cfg.slave_id} isDuplicate={props.slave_id_collision} />
+          <SlaveId slaveId={deviceStore.address} isDuplicate={deviceStore.duplicateSlaveId} />
         </RowWithTitle>
         <RowWithTitle title={t('scan.labels.port')}>
           <Port
-            path={props.port.path}
-            baudRate={props.cfg.baud_rate}
-            dataBits={props.cfg.data_bits}
-            parity={props.cfg.parity}
-            stopBits={props.cfg.stop_bits}
+            path={deviceStore.port}
+            baudRate={deviceStore.baudRate}
+            dataBits={deviceStore.dataBits}
+            parity={deviceStore.parity}
+            stopBits={deviceStore.stopBits}
+            misconfiguredPort={deviceStore.misconfiguredPort}
           />
         </RowWithTitle>
-        <RowWithTitle title={t('scan.labels.firmware')}>
-          <FirmwareVersion
-            version={props.fw?.version}
-            availableFw={props.fw?.update?.available_fw}
-            extSupport={props.fw?.ext_support}
-            errors={props.errors}
-          />
-        </RowWithTitle>
-        <Error error={props?.fw?.update?.error} />
+        <Error error={deviceStore?.fw?.update?.error} />
       </div>
     </div>
   );
@@ -75,7 +71,7 @@ const DevicesList = ({ devices }) => {
   return (
     <>
       {devices.map(d => (
-        <DevicePanel key={d.uuid} {...d} />
+        <DevicePanel key={d.uuid} deviceStore={d} />
       ))}
     </>
   );

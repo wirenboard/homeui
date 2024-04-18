@@ -1,4 +1,5 @@
 import React from 'react';
+import { useId } from 'react';
 
 export const WarningTag = ({ text }) => {
   return <span className="tag bg-warning text-nowrap">{text}</span>;
@@ -70,11 +71,13 @@ export const Button = ({ label, type, onClick, disabled, additionalStyles, icon,
   );
 };
 
-export const Checkbox = ({ label, id, value, onChange }) => {
+export const Checkbox = ({ label, value, onChange, disabled }) => {
+  const id = useId();
   return (
     <div className="checkbox">
-      <label htmlFor={id}>
-        <input type="checkbox" id={id} checked={value} onChange={onChange} /> {label}
+      <label htmlFor={id} disabled={disabled}>
+        <input type="checkbox" id={id} checked={value} onChange={onChange} disabled={disabled} />
+        {label}
       </label>
     </div>
   );

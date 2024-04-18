@@ -63,7 +63,6 @@ export const ClickBindingForm = observer(({ title, clickStore, writeStore, write
     <div>
       <div className="form-group">
         <Checkbox
-          id={clickStore.params.enable.id + writeStore.params.enable.id}
           label={title}
           value={enabled}
           onChange={e => {

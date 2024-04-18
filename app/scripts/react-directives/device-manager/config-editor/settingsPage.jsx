@@ -1,5 +1,5 @@
 import React from 'react';
-import JsonEditor from '../components/json-editor/jsonEditor';
+import JsonEditor from '../../components/json-editor/jsonEditor';
 
 export const SettingsTab = ({ tab }) => {
   return (

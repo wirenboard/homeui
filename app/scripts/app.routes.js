@@ -41,7 +41,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('scan', {
       url: '/scan',
-      template: require('../views/scan.html'),
+      redirectTo: 'serial-config',
     })
     //...........................................................................
     .state('devices', {
@@ -386,31 +386,6 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('serial-config', {
       url: '/serial-config',
       template: require('../views/serial-config.html'),
-      controller: 'SerialConfigCtrl as $ctrl',
-      params: {
-        devices: [],
-      },
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/serialConfigController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'serial-config'
-          );
-          return deferred.promise;
-        },
-      },
     })
     //...........................................................................
     .state('serial-config.properties', {

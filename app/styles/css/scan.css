@@ -4,16 +4,6 @@
 }
 
 .scan-page .tag {
-    margin-left: 3px;
-    padding-top: 1px;
-    padding-left: 7px;
-    padding-bottom: 1px;
-    padding-right: 7px;
-    border-radius: 5px;
-}
-
-.scan-page .tag:first-of-type {
-    margin-left: 0px;
     padding-top: 1px;
     padding-left: 7px;
     padding-bottom: 1px;
@@ -31,18 +21,6 @@
 
 .scan-page .error {
     margin-top: 5px;
-}
-
-.scan-page .scan-progress {
-    height: 1px;
-    box-shadow: none;
-    margin-bottom: 18px;
-}
-
-.scan-page .page-header {
-    border-bottom: unset;
-    margin-bottom: 0px;
-    text-align: left;
 }
 
 .scan-page .button-group button:not(:first-child) {
@@ -63,4 +41,70 @@
     display: inline-block;
     width: 6ch;
     text-align: right;
+}
+
+.scan-page .scrollable-table-wrapper {
+    overflow-y: scroll;
+}
+
+.scan-page .scrollable-table-wrapper table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* Fix bootstrap style */
+.scan-page .progress-bar-striped.active {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.scan-page .bottom-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.scan-page .progress {
+    width: 90%;
+}
+
+.scan-page .device-title-cell {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+
+.scan-page .device-title-cell .checkbox {
+    margin: unset;
+}
+
+.scan-page .panel-body .checkbox {
+    margin-top: unset;
+    margin-bottom: unset;
+}
+
+.scan-page .table {
+    border-collapse: unset;
+}
+
+.scan-page .table thead tr th {
+    border-bottom: unset;
+}
+
+.scan-page .page-header span {
+    flex-grow: 1;
+}
+
+.scan-page .checkbox input {
+    margin-top: 2px;
+}
+
+.scan-page .checkbox label {
+    font-weight: bold;
+}
+
+
+.scan-page .mobile-devices-list {
+    overflow-y: scroll;
 }

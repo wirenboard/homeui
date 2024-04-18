@@ -2,7 +2,7 @@
 
 import { makeObservable, observable, action } from 'mobx';
 import { cloneDeep, isEqual } from 'lodash';
-import i18n from '../../i18n/react/config';
+import i18n from '../../../i18n/react/config';
 import { TabType } from './tabsStore';
 
 export class SettingsTab {

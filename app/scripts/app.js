@@ -105,7 +105,6 @@ import plotlyDirective from './directives/plotly';
 import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
-import scanDirective from './react-directives/scan/scan';
 import networkConnectionsDirective from './react-directives/network-connections/network-connections';
 import cloudStatusMetaDirective from './react-directives/cloud-status/cloud-meta-status';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
@@ -290,7 +289,6 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('scanPage', scanDirective)
   .directive('deviceManagerPage', deviceManagerDirective)
   .directive('networkConnectionsPage', networkConnectionsDirective)
   .directive('firmwareUpdateWidget', firmwareUpdateDirective)

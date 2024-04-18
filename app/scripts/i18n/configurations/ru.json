@@ -14,11 +14,7 @@
         },
         "errors": {
             "load": "Ошибка загрузки файла",
-            "save": "Ошибка записи {{name}}",
-            "first_unknown_device": "Не смог подобрать шаблоны для устройств, добавьте их вручную:\n\t\t{{title}} адрес {{cfg.slave_id}}, порт {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
-            "unknown_device": "\t\t{{title}} адрес {{cfg.slave_id}}, порт {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
-            "first_misconfigured_device": "У некоторых добавленных устройств настройки связи отличаются от настроек порта:\n\t\t{{title}} адрес {{cfg.slave_id}}, порт {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
-            "misconfigured_device": "\t\t{{title}} адрес {{cfg.slave_id}}, порт {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}"
+            "save": "Ошибка записи {{name}}"
         }
     }
 }

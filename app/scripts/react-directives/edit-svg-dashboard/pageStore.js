@@ -32,7 +32,6 @@ const makeCommonParametersStore = () => {
     'svg_fullwidth',
     new BooleanStore({
       name: i18n.t('edit-svg-dashboard.labels.common-parameters-fullscreen'),
-      id: 'svg_fullwidth',
     })
   );
   return res;
@@ -44,7 +43,6 @@ const makeSwipeParametersStore = () => {
     'enable',
     new BooleanStore({
       name: i18n.t('edit-svg-dashboard.labels.swipe-enable'),
-      id: 'edit-svg-dashboard.labels.swipe-enable',
     })
   );
   res.add(

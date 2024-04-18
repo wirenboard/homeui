@@ -1,15 +1,16 @@
 {
    "scan": {
-      "title": "Scan",
+      "title": "New devices",
       "errors": {
          "scan": "Start scan failed",
          "common": "Error",
          "unavailable": "wb-device-manager service is unavailable or outdated"
       },
       "buttons": {
-         "scan": "Start scan",
-         "stop": "Stop scan",
-         "to-serial": "Add to wb-mqtt-serial"
+         "scan": "Start slow scan",
+         "stop": "Stop slow scan",
+         "to-serial": "Add to wb-mqtt-serial",
+         "cancel": "Cancel"
       },
       "labels": {
          "device": "Device",
@@ -28,7 +29,11 @@
          "found-devices": "Found devices: {{count}}",
          "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
          "not-found": "Nothing found.<br>For rescan press \"Start scan\"",
-         "extended-modbus": "This device was found by scanning via fast Modbus"
+         "extended-modbus": "This device was found by scanning via fast Modbus",
+         "try-normal-scan": "If the required devices are not found, run slow scan",
+         "misconfigured-port": "differs from port settings",
+         "duplicate-topic": "There is a device with the same MQTT topic",
+         "unknown-device-type": "unknown device type"
       }
    },
    "com": {
@@ -242,7 +247,9 @@
          "save": "Save config",
          "add-port": "Add port",
          "delete": "Delete",
-         "add-device": "Add device",
+         "add-custom-device": "Manually add any device",
+         "add-wb-device": "Find and add Wiren Board devices",
+         "add": "Add",
          "copy": "Copy",
          "to-port-list": "To ports and devices list"
       },
@@ -250,10 +257,6 @@
          "write":"Error writing config. See wb-mqtt-confed logs for details",
          "device-config": "Error in the settings of one or more devices",
          "deprecated": "Device template is deprecated, use newer version",
-         "first_unknown_device": "Unable to find templates for devices, add them manually:\n\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "unknown_device": "\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "first_misconfigured_device": "Some added devices has connection settings different from current:\n\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
-         "misconfigured_device": "\t\t{{dev.title}} address {{dev.cfg.slave_id}}, port {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
          "unknown-device-type": "Unknown device type: {{type}}"
       }
    }

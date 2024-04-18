@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.83.0) stable; urgency=medium
+
+  * Integrate device scanning page into wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 18 Apr 2024 17:51:17 +0500
+
 wb-mqtt-homeui (2.82.9) stable; urgency=medium
 
   * Add json editor autocomplete for devices
