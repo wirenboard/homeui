@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1-wb102) stable; urgency=medium
+
+  * Add wb8 config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 18 Apr 2023 16:20:00 +0400
+
 wb-mqtt-homeui (2.82.1-wb101) stable; urgency=medium
 
   * Fix History page infinite loading because of widgets without id
