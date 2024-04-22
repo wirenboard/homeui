@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.84.2) stable; urgency=medium
+
+  * Generate configs, no functional changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 22 Apr 2024 14:20:00 +0400
+
 wb-mqtt-homeui (2.84.1) stable; urgency=medium
 
   * Do not disconnect from controller after receiving malformed data from MQTT 
@@ -8,7 +14,7 @@ wb-mqtt-homeui (2.84.0) stable; urgency=medium
 
   * Add wb8 config
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 18 Apr 2023 16:20:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 18 Apr 2024 16:20:00 +0400
 
 wb-mqtt-homeui (2.83.0) stable; urgency=medium
 
