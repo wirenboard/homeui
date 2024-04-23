@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.84.3) stable; urgency=medium
+
+  * Remove useless scrollbars on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Apr 2024 22:23:52 +0500
+
 wb-mqtt-homeui (2.84.2) stable; urgency=medium
 
   * Generate configs, no functional changes

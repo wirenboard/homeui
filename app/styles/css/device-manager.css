@@ -114,13 +114,13 @@
 }
 
 .device-manager-page .settings-panel {
-    overflow-y: scroll;
+    overflow-y: auto;
     padding-bottom: 10px;
     flex-grow: 1;
 }
 
 .device-manager-page .device-list {
-    overflow-y: scroll;
+    overflow-y: auto;
     flex-grow: 1;
 }
 
