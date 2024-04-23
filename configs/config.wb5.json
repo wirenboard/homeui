@@ -1,0 +1,86 @@
+{
+    "dashboards": [
+        {
+            "id": "dashboard1",
+            "isSvg": false,
+            "name": "Порты контроллера",
+            "widgets": [
+                "widget3",
+                "widget2",
+                "widget0",
+                "widget1",
+                "widget4"
+            ]
+        },
+        {
+            "id": "room1",
+            "isSvg": false,
+            "name": "Комната с Wiren Board",
+            "widgets": [
+                "widget3",
+                "widget2",
+                "widget1",
+                "widget0",
+                "widget4"
+            ]
+        }
+    ],
+    "defaultDashboardId": "dashboard1",
+    "widgets": [
+        {
+            "cells": [
+                {
+                    "id": "power_status/working on battery"
+                }
+            ],
+            "compact": true,
+            "description": "",
+            "id": "widget0",
+            "name": "Питание от аккумулятора"
+        },
+        {
+            "cells": [
+                {
+                    "id": "power_status/Vin"
+                }
+            ],
+            "compact": true,
+            "description": "",
+            "id": "widget1",
+            "name": "Напряжение питания"
+        },
+        {
+            "cells": [
+                {
+                    "id": "buzzer/enabled"
+                }
+            ],
+            "compact": true,
+            "description": "",
+            "id": "widget2",
+            "name": "Звуковой сигнал"
+        },
+        {
+            "cells": [
+                {
+                    "id": "network/Ethernet IP"
+                }
+            ],
+            "compact": true,
+            "description": "",
+            "id": "widget3",
+            "name": "IP-адрес Ethernet"
+        },
+        {
+            "cells": [
+                {
+                    "id": "wb-adc/A1"
+                }
+            ],
+            "compact": true,
+            "description": "",
+            "id": "widget4",
+            "name": "Напряжение на клемме A1"
+        }
+    ]
+}
