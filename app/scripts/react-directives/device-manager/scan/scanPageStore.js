@@ -103,14 +103,14 @@ class ScanningProgressStore {
 }
 
 class SingleDeviceStore {
-  constructor(scannedDevice, name, deviceType) {
+  constructor(scannedDevice, names, deviceTypes) {
     this.scannedDevice = scannedDevice;
-    this.deviceType = deviceType;
+    this.deviceTypes = deviceTypes;
     this.selected = !this.isUnknownType;
     this.duplicateSlaveId = false;
     this.misconfiguredPort = false;
     this.duplicateMqttTopic = false;
-    this.name = name;
+    this.names = names;
 
     makeObservable(this, {
       scannedDevice: observable.ref,
@@ -121,7 +121,10 @@ class SingleDeviceStore {
   }
 
   get title() {
-    return this.name || this.scannedDevice.title;
+    if (this.names.length) {
+      return this.names[0];
+    }
+    return this.scannedDevice.title;
   }
 
   get address() {
@@ -156,6 +159,20 @@ class SingleDeviceStore {
     return this.scannedDevice.uuid;
   }
 
+  get name() {
+    if (this.names.length) {
+      return this.names[0];
+    }
+    return this.scannedDevice.title;
+  }
+
+  get deviceType() {
+    if (this.deviceTypes.length) {
+      return this.deviceTypes[0];
+    }
+    return undefined;
+  }
+
   setSelected(value) {
     this.selected = value;
   }
@@ -177,7 +194,7 @@ class SingleDeviceStore {
   }
 
   get isUnknownType() {
-    return !this.deviceType;
+    return !this.deviceTypes.length;
   }
 }
 
@@ -234,14 +251,15 @@ class DevicesStore {
       return;
     }
 
-    const deviceType = this.deviceTypesStore.findDeviceType(
+    const deviceTypes = this.deviceTypesStore.findDeviceTypes(
       scannedDevice.device_signature,
       scannedDevice.fw
     );
+
     let d = new SingleDeviceStore(
       scannedDevice,
-      this.deviceTypesStore.getName(deviceType) || scannedDevice.title,
-      deviceType
+      deviceTypes.map(dt => this.deviceTypesStore.getName(dt)),
+      deviceTypes
     );
     if (
       configuredDevicesWithSameAddress?.length ||
@@ -262,7 +280,7 @@ class DevicesStore {
     }
 
     if (!d.isUnknownType) {
-      const topic = this.deviceTypesStore.getDefaultId(deviceType, scannedDevice.cfg.slave_id);
+      const topic = this.deviceTypesStore.getDefaultId(d.deviceType, scannedDevice.cfg.slave_id);
       if (this.topics.has(topic)) {
         d.setDuplicateMqttTopic();
       } else {

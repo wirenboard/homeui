@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.84.3) stable; urgency=medium
+
+  * Add warning if multiple device templates match the same scanned device in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Apr 2024 19:06:19 +0500
+
 wb-mqtt-homeui (2.84.2) stable; urgency=medium
 
   * Generate configs, no functional changes

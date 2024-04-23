@@ -108,3 +108,11 @@
 .scan-page .mobile-devices-list {
     overflow-y: scroll;
 }
+
+.scan-page .flex-break {
+    width: 100%;
+}
+
+.scan-page .multiline-tag {
+    width: 100%;
+}
