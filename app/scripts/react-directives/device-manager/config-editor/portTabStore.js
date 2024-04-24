@@ -1,10 +1,27 @@
 'use strict';
 
-import { makeObservable, observable, computed, action } from 'mobx';
+import { makeObservable, observable, computed, action, autorun } from 'mobx';
 import { cloneDeep, isEqual } from 'lodash';
 import i18n from '../../../i18n/react/config';
 import { getTranslation } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
+
+function checkDuplicateSlaveIds(deviceTabs) {
+  const tabsBySlaveId = deviceTabs.reduce((acc, tab) => {
+    if (tab.isModbusDevice) {
+      acc[tab.editedData.slave_id] ??= [];
+      acc[tab.editedData.slave_id].push(tab);
+    }
+    return acc;
+  }, {});
+  Object.values(tabsBySlaveId).forEach(tabs => {
+    if (tabs.length == 1) {
+      tabs[0].setSlaveIdIsDuplicate(false);
+    } else {
+      tabs.forEach(tab => tab.setSlaveIdIsDuplicate(true));
+    }
+  });
+}
 
 export function makeSerialPortTabName(data) {
   return data?.path?.replace(/^\/dev\/tty/, '');
@@ -31,6 +48,7 @@ export class PortTab {
     this.collapsed = false;
     this.nameGenerationFn = nameGenerationFn;
     this.children = [];
+    this.reactionDisposers = [];
 
     this.updateName();
 
@@ -79,6 +97,20 @@ export class PortTab {
       child.hidden = false;
     });
     this.collapsed = false;
+  }
+
+  addChildren(deviceTab) {
+    const disposer = autorun(() => checkDuplicateSlaveIds(this.children));
+    this.children.push(deviceTab);
+    this.reactionDisposers.push(disposer);
+  }
+
+  deleteChildren(index) {
+    if (this.reactionDisposers.length > index) {
+      this.reactionDisposers[index]();
+      this.reactionDisposers.splice(index, 1);
+    }
+    this.children.splice(index, 1);
   }
 
   get hasChildren() {

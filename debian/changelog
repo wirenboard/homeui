@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.85.0) stable; urgency=medium
+
+  * Add duplicate slave id checking in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 24 Apr 2024 17:21:49 +0500
+
 wb-mqtt-homeui (2.84.3) stable; urgency=medium
 
   * Fix config generation, no functional changes

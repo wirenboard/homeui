@@ -257,7 +257,8 @@
          "write":"Error writing config. See wb-mqtt-confed logs for details",
          "device-config": "Error in the settings of one or more devices",
          "deprecated": "Device template is deprecated, use newer version",
-         "unknown-device-type": "Unknown device type: {{type}}"
+         "unknown-device-type": "Unknown device type: {{type}}",
+         "duplicate-slave-id": "Duplicate slave id"
       }
    }
 }

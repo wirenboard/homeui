@@ -14,7 +14,7 @@ export class DeviceTab {
     this.editedData = cloneDeep(data);
     this.deviceTypesStore = deviceTypesStore;
     this.deviceType = deviceType;
-    this.isValid = true;
+    this.hasValidationErrors = false;
     this.isDirty = false;
     this.hidden = false;
     this.loading = true;
@@ -23,24 +23,30 @@ export class DeviceTab {
     this.isUnknownType = deviceTypesStore.isUnknown(deviceType);
     this.error = '';
     this.acceptJsonEditorInitial = true;
+    this.slaveIdIsDuplicate = false;
+    this.isModbusDevice = deviceTypesStore.isModbusDevice(deviceType);
 
     this.updateName();
 
     makeObservable(this, {
       name: observable,
-      isValid: observable,
       isDirty: observable,
+      hasValidationErrors: observable,
       hidden: observable,
       isDeprecated: observable,
       deviceType: observable,
       loading: observable,
       error: observable,
+      slaveIdIsDuplicate: observable,
+      editedData: observable.ref,
       setData: action.bound,
       updateName: action,
       commitData: action,
       setDeviceType: action,
       loadSchema: action,
+      setSlaveIdIsDuplicate: action,
       hasErrors: computed,
+      isValid: computed,
     });
   }
 
@@ -61,7 +67,7 @@ export class DeviceTab {
     }
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.isValid = errors.length == 0;
+    this.hasValidationErrors = errors.length != 0;
     this.updateName();
   }
 
@@ -79,11 +85,12 @@ export class DeviceTab {
     runInAction(() => {
       this.deviceType = type;
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
+      this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);
       const currentSlaveId = this.editedData.slave_id;
       this.editedData = getDefaultObject(this.schema);
       this.editedData.slave_id = currentSlaveId;
       this.isDirty = false;
-      this.isValid = false;
+      this.hasValidationErrors = false;
       this.updateName();
       this.loading = false;
     });
@@ -91,7 +98,7 @@ export class DeviceTab {
 
   commitData() {
     this.data = cloneDeep(this.editedData);
-    this.isValid = true;
+    this.hasValidationErrors = false;
     this.isDirty = false;
   }
 
@@ -138,7 +145,7 @@ export class DeviceTab {
       this.editedData = getDefaultObject(this.schema);
       this.data = cloneDeep(this.editedData);
       this.isDirty = false;
-      this.isValid = false;
+      this.hasValidationErrors = false;
       this.updateName();
       this.loading = false;
     });
@@ -146,5 +153,13 @@ export class DeviceTab {
 
   get hasErrors() {
     return !this.isValid || this.error || this.isUnknownType;
+  }
+
+  get isValid() {
+    return !this.hasValidationErrors && !this.slaveIdIsDuplicate;
+  }
+
+  setSlaveIdIsDuplicate(value) {
+    this.slaveIdIsDuplicate = value;
   }
 }

@@ -73,6 +73,7 @@ export const DeviceTabContent = observer(
             <span>{t('device-manager.errors.deprecated')}</span>
           </WarningBar>
         )}
+        {tab.slaveIdIsDuplicate && <ErrorBar msg={t('device-manager.errors.duplicate-slave-id')} />}
         <BootstrapLikeSelect
           options={deviceTypeSelectOptions}
           selectedOption={selectedDeviceType}

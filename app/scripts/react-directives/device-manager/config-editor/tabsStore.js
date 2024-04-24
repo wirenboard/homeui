@@ -82,7 +82,7 @@ export class TabsStore {
     if (portTabIndex == -1) {
       return;
     }
-    this.items[portTabIndex].children.push(deviceTab);
+    this.items[portTabIndex].addChildren(deviceTab);
     this.items[portTabIndex].restore();
     let i = portTabIndex + 1;
     while (i < this.items.length && this.items[i]?.type == TabType.DEVICE) {
@@ -124,7 +124,7 @@ export class TabsStore {
       this.items.splice(this.selectedTabIndex, tab.children.length + 1);
     } else if (tab?.type == TabType.DEVICE) {
       let portTab = this.selectedPortTab;
-      portTab.children.splice(portTab.children.indexOf(tab), 1);
+      portTab.deleteChildren(portTab.children.indexOf(tab));
       this.items.splice(this.selectedTabIndex, 1);
     } else {
       return;

@@ -1,6 +1,6 @@
 'use strict';
 
-import { makeObservable, observable, computed, action } from 'mobx';
+import { makeObservable, observable, computed } from 'mobx';
 import { cloneDeep } from 'lodash';
 import i18n from '../../../i18n/react/config';
 import SelectModalState from '../../components/modals/selectModalState';
@@ -157,7 +157,7 @@ class ConfigEditorPageStore {
         }
         if (port?.devices) {
           port.devices.forEach(device => {
-            portTab.children.push(this.createDeviceTab(device));
+            portTab.addChildren(this.createDeviceTab(device));
           });
         }
         this.tabs.addPortTab(portTab, true);
