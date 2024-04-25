@@ -158,6 +158,9 @@
             "activation-link-preamble": "To connect this Wiren Board to cloud, press",
             "activation-link": "this link",
             "status-ok": "Connected to cloud",
+            "status-starting": "wb-cloud-agent service starting up",
+            "status-connecting": "Connecting to cloud",
+            "status-stopped": "wb-cloud-agent service is not running",
             "status-error": "Cloud connection error",
             "goto-cloud": "Open this controller in cloud"
         }
