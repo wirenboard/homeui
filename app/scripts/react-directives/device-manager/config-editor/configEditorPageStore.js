@@ -1,13 +1,13 @@
 'use strict';
 
-import { makeObservable, observable, computed } from 'mobx';
+import { makeObservable, observable, computed, action } from 'mobx';
 import { cloneDeep } from 'lodash';
-import i18n from '../../i18n/react/config';
-import SelectModalState from '../components/modals/selectModalState';
+import i18n from '../../../i18n/react/config';
+import SelectModalState from '../../components/modals/selectModalState';
 import { getDefaultObject } from './jsonSchemaUtils';
-import AccessLevelStore from '../components/access-level/accessLevelStore';
-import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
-import ConfirmModalState from '../components/modals/confirmModalState';
+import AccessLevelStore from '../../components/access-level/accessLevelStore';
+import PageWrapperStore from '../../components/page-wrapper/pageWrapperStore';
+import ConfirmModalState from '../../components/modals/confirmModalState';
 import AddDeviceModalState from './addDeviceModalState';
 import { TabsStore } from './tabsStore';
 import { DeviceTab } from './deviceTabStore';
@@ -19,33 +19,8 @@ import {
 } from './portTabStore';
 import { SettingsTab } from './settingsTabStore';
 import { getTranslation } from './jsonSchemaUtils';
-import { addToConfig } from './configUtils';
-import DeviceTypesStore from './deviceTypesStore';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
-
-function makeUnknownDeviceError(device, first) {
-  return i18n.t(
-    first ? 'device-manager.errors.first_unknown_device' : 'device-manager.errors.unknown_device',
-    { dev: device, interpolation: { escapeValue: false } }
-  );
-}
-
-function makeMisconfiguredDeviceError(device, first) {
-  return i18n.t(
-    first
-      ? 'device-manager.errors.first_misconfigured_device'
-      : 'device-manager.errors.misconfigured_device',
-    { dev: device, interpolation: { escapeValue: false } }
-  );
-}
-
-function makeMergeErrorMessage(unknown, misconfigured) {
-  return unknown
-    .map((dev, i) => makeUnknownDeviceError(dev, i == 0))
-    .concat(misconfigured.map((dev, i) => makeMisconfiguredDeviceError(dev, i == 0)))
-    .join('\n');
-}
 
 function getPortSchemaCommon(schema, subSchemaName) {
   let res = cloneDeep(schema.definitions[subSchemaName]);
@@ -107,8 +82,8 @@ function makePortSelectOptions(portTabs) {
   });
 }
 
-class DeviceManagerPageStore {
-  constructor(loadConfigFn, saveConfigFn, toMobileContent, toTabs, loadDeviceTypeFn, rolesFactory) {
+class ConfigEditorPageStore {
+  constructor(loadConfigFn, saveConfigFn, toMobileContent, toTabs, deviceTypesStore, rolesFactory) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
     this.pageWrapperStore = new PageWrapperStore();
@@ -116,7 +91,7 @@ class DeviceManagerPageStore {
     this.confirmModalState = new ConfirmModalState();
     this.addDeviceModalState = new AddDeviceModalState();
     this.tabs = new TabsStore(toMobileContent, toTabs);
-    this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
+    this.deviceTypesStore = deviceTypesStore;
     this.portSchemaMap = {};
     this.saveConfigFn = saveConfigFn;
     this.loadConfigFn = loadConfigFn;
@@ -172,16 +147,9 @@ class DeviceManagerPageStore {
     try {
       this.loaded = false;
       this.pageWrapperStore.clearError();
-      const { config, schema, deviceTypeGroups, devicesToAdd } = await this.loadConfigFn();
+      const { config, schema, deviceTypeGroups } = await this.loadConfigFn();
       this.deviceTypesStore.setDeviceTypeGroups(deviceTypeGroups);
       this.portSchemaMap = makePortSchemaMap(schema);
-      if (devicesToAdd) {
-        const mergeRes = await addToConfig(config, devicesToAdd, this.deviceTypesStore);
-        this.setError(makeMergeErrorMessage(mergeRes.unknown, mergeRes.misconfigured));
-        if (mergeRes.added) {
-          this.tabs.setModifiedStructure();
-        }
-      }
       config?.ports?.forEach(port => {
         const portTab = this.createPortTab(port);
         if (portTab === undefined) {
@@ -307,6 +275,39 @@ class DeviceManagerPageStore {
   changeDeviceType(tab, type) {
     tab.setDeviceType(type);
   }
+
+  async addDevices(devices) {
+    try {
+      this.pageWrapperStore.setLoading(true);
+      let added = false;
+      this.loaded = false;
+      this.pageWrapperStore.clearError();
+      await Promise.all(
+        devices.map(async device => {
+          if (!device.type) {
+            return;
+          }
+          let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
+          if (!portTab) {
+            return;
+          }
+          let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
+          deviceConfig.slave_id = String(device.cfg.slave_id);
+          this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), true);
+          added = true;
+        })
+      );
+
+      if (added) {
+        this.tabs.setModifiedStructure();
+      }
+      this.loaded = true;
+    } catch (err) {
+      this.setError(err);
+      this.loaded = false;
+    }
+    this.pageWrapperStore.setLoading(false);
+  }
 }
 
-export default DeviceManagerPageStore;
+export default ConfigEditorPageStore;

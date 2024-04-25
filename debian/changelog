@@ -1,8 +1,74 @@
-wb-mqtt-homeui (2.82.6) stable; urgency=medium
+wb-mqtt-homeui (2.84.6) stable; urgency=medium
 
   * Fixes around cloud connection status, no functional changes
 
- -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Fri, 12 Apr 2024 16:30:17 +0500
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Thu, 25 Apr 2024 18:49:17 +0500
+
+wb-mqtt-homeui (2.84.5) stable; urgency=medium
+
+  * Add warning if multiple device templates match the same scanned device in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Apr 2024 10:28:51 +0500
+
+wb-mqtt-homeui (2.84.4) stable; urgency=medium
+
+  * Remove useless scrollbars on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 24 Apr 2024 19:18:13 +0500
+
+wb-mqtt-homeui (2.84.3) stable; urgency=medium
+
+  * Fix config generation, no functional changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 23 Apr 2024 14:20:00 +0400
+
+wb-mqtt-homeui (2.84.2) stable; urgency=medium
+
+  * Generate configs, no functional changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 22 Apr 2024 14:20:00 +0400
+
+wb-mqtt-homeui (2.84.1) stable; urgency=medium
+
+  * Do not disconnect from controller after receiving malformed data from MQTT 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 22 Apr 2024 09:29:38 +0500
+
+wb-mqtt-homeui (2.84.0) stable; urgency=medium
+
+  * Add wb8 config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 18 Apr 2024 16:20:00 +0400
+
+wb-mqtt-homeui (2.83.0) stable; urgency=medium
+
+  * Integrate device scanning page into wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 18 Apr 2024 17:51:17 +0500
+
+wb-mqtt-homeui (2.82.9) stable; urgency=medium
+
+  * Add json editor autocomplete for devices
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 17 Apr 2024 13:54:42 +0300
+
+wb-mqtt-homeui (2.82.8) stable; urgency=medium
+
+  * Add SVG-dashboard's style and visibility bindings value validation 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Apr 2024 16:02:20 +0500
+
+wb-mqtt-homeui (2.82.7) stable; urgency=medium
+
+  * Fix SVG dashboard display with poorly written style, reading or visibility rules
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Apr 2024 12:31:33 +0500
+
+wb-mqtt-homeui (2.82.6) stable; urgency=medium
+
+  * Fix WB-LED and WB-MRGBW-D config editors
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Sun, 14 Apr 2024 11:23:34 +0500
 
 wb-mqtt-homeui (2.82.5) stable; urgency=medium
 
@@ -54,7 +120,7 @@ wb-mqtt-homeui (2.81.2) stable; urgency=medium
 
 wb-mqtt-homeui (2.81.1) stable; urgency=medium
 
-  * Use Back button to navigate from device settings to the list of devices and ports in wb-mqtt-serial config in mobile mode 
+  * Use Back button to navigate from device settings to the list of devices and ports in wb-mqtt-serial config in mobile mode
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 15 Mar 2024 11:02:18 +0500
 
@@ -114,7 +180,7 @@ wb-mqtt-homeui (2.78.8) stable; urgency=medium
 
 wb-mqtt-homeui (2.78.7) stable; urgency=medium
 
-  * Fix display of wb-mqtt-serial device configurations with incorrectly defined groups in template 
+  * Fix display of wb-mqtt-serial device configurations with incorrectly defined groups in template
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Jan 2024 10:22:51 +0500
 
@@ -194,7 +260,7 @@ wb-mqtt-homeui (2.76.0) stable; urgency=medium
 wb-mqtt-homeui (2.75.20) stable; urgency=medium
 
   * Fix SVG bindings parameters editor layout on medium screens
-  * Remove clear button from option selects in SVG bindings parameters editor 
+  * Remove clear button from option selects in SVG bindings parameters editor
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 10 Nov 2023 17:39:21 +0500
 
@@ -272,7 +338,7 @@ wb-mqtt-homeui (2.75.8) stable; urgency=medium
 
 wb-mqtt-homeui (2.75.7) stable; urgency=medium
 
-  * Fix loss of focus when editing fields in the mobile version 
+  * Fix loss of focus when editing fields in the mobile version
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 09 Aug 2023 13:38:27 +0500
 
@@ -321,7 +387,7 @@ wb-mqtt-homeui (2.75.0) stable; urgency=medium
 wb-mqtt-homeui (2.74.0) stable; urgency=medium
 
   * Write to MQTT topic by long press/touch on SVG dashboard
-  * Move to other dashboard by clicking on element 
+  * Move to other dashboard by clicking on element
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jul 2023 19:04:00 +0500
 
@@ -399,7 +465,7 @@ wb-mqtt-homeui (2.69.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.68.0) stable; urgency=medium
 
-  * Add binding to svg element ids in dashboards visual editor. 
+  * Add binding to svg element ids in dashboards visual editor.
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 19 Jun 2023 13:44:24 +0500
 
@@ -423,8 +489,8 @@ wb-mqtt-homeui (2.67.1) stable; urgency=medium
 
 wb-mqtt-homeui (2.67.0) stable; urgency=medium
 
-  * Add binding to svg element ids in dashboards. 
-    It is possible to set native SVG element id instead 
+  * Add binding to svg element ids in dashboards.
+    It is possible to set native SVG element id instead
     of data-svg-param-id in JSON editor.
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 08 Jun 2023 12:14:13 +0500

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, ErrorBar, Spinner, WarningBar } from '../common';
+import { Button, ErrorBar, Spinner, WarningBar } from '../../common';
 import { useTranslation } from 'react-i18next';
-import JsonEditor from '../components/json-editor/jsonEditor';
+import JsonEditor from '../../components/json-editor/jsonEditor';
 import { observer } from 'mobx-react-lite';
-import BootstrapLikeSelect from '../components/select/select';
+import BootstrapLikeSelect from '../../components/select/select';
 
 export const DeviceTab = observer(({ tab }) => {
   let className = 'device-tab';

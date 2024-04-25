@@ -4,7 +4,7 @@ import { makeObservable, observable, action, runInAction, computed } from 'mobx'
 import { cloneDeep, isEqual } from 'lodash';
 import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
-import i18n from '../../i18n/react/config';
+import i18n from '../../../i18n/react/config';
 
 export class DeviceTab {
   constructor(data, deviceType, deviceTypesStore) {

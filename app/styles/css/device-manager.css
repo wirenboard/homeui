@@ -8,13 +8,15 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-end;
     gap: 5px;
+    align-items: center;
+    margin-top: 33px;
+    padding-bottom: 5px;
+    justify-content: flex-end;
 }
 
-.device-manager-page .page-header>span {
+.device-manager-page .page-header .page-header-title{
     flex-grow: 1;
-    margin-top: 2px;
 }
 
 .device-manager-page .nav-stacked li {
@@ -82,10 +84,6 @@
     margin-bottom: 0px;
 }
 
-.device-manager-page .button-group button:not(:first-child) {
-    margin-left: 5px;
-}
-
 .device-manager-page li .error .glyphicon-exclamation-sign {
     color: #a90329;
 }
@@ -116,13 +114,13 @@
 }
 
 .device-manager-page .settings-panel {
-    overflow-y: scroll;
+    overflow-y: auto;
     padding-bottom: 10px;
     flex-grow: 1;
 }
 
 .device-manager-page .device-list {
-    overflow-y: scroll;
+    overflow-y: auto;
     flex-grow: 1;
 }
 
@@ -176,16 +174,35 @@
     .device-manager-page li.active .settings-tab {
         border: 1px solid #3276b1;
     }
+
+    .device-manager-page .group-editor {
+        margin-top: 15px;
+    }
 }
 
 @media (max-width: 767px) {
     .device-manager-page {
         padding-bottom: 10px;
     }
+
+    .device-manager-page .page-header {
+        margin-top: 0px;
+    }
 }
 
-@media (min-width: 992px) {
-    .device-manager-page .group-editor {
-        margin-top: 15px;
+.device-manager-page .add-devices-panel {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+@media (max-width: 799px) {
+    .device-manager-page .add-devices-panel .btn {
+        width: 100%;
+    }
+    .device-manager-page .add-devices-panel {
+        width: 100%;
     }
 }

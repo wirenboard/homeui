@@ -1,6 +1,6 @@
 'use strict';
 
-import firmwareIsNewer from '../../utils/fwUtils';
+import firmwareIsNewer from '../../../utils/fwUtils';
 
 class DeviceTypesStore {
   constructor(loadDeviceSchemaFn) {
@@ -21,14 +21,10 @@ class DeviceTypesStore {
 
     this.deviceTypesMap = deviceTypeGroups.reduce((groupsAcc, deviceTypeGroup) => {
       return deviceTypeGroup.types.reduce((typesAcc, deviceType) => {
-        typesAcc[deviceType.type] = {
-          name: deviceType.name,
-          isDeprecated: deviceType.deprecated,
-          hw: deviceType.hw,
-        };
+        typesAcc[deviceType.type] = deviceType;
         return typesAcc;
       }, groupsAcc);
-    }, this.deviceTypesMap);
+    }, {});
   }
 
   async getSchema(deviceType) {
@@ -40,22 +36,29 @@ class DeviceTypesStore {
     return schema;
   }
 
-  findDeviceType(deviceSignature, fw) {
-    let lastFwVersion = undefined;
-    let deviceType = undefined;
-    Object.entries(this.deviceTypesMap).forEach(([typeName, desc]) => {
+  findDeviceTypes(deviceSignature, fw) {
+    // Filter only types with the same signature and older or equal firmware
+    let deviceTypes = Object.entries(this.deviceTypesMap).filter(([_typeName, desc]) => {
+      return desc.hw?.some(hw => hw.signature == deviceSignature && !firmwareIsNewer(fw, hw.fw));
+    });
+
+    // Find closest firmware
+    let closestFw;
+    deviceTypes.forEach(([_typeName, desc]) => {
       desc.hw?.forEach(hw => {
-        if (
-          hw.signature == deviceSignature &&
-          firmwareIsNewer(hw.fw, fw) &&
-          firmwareIsNewer(lastFwVersion, hw.fw)
-        ) {
-          lastFwVersion = hw.fw;
-          deviceType = typeName;
+        if (hw.signature == deviceSignature && firmwareIsNewer(closestFw, hw.fw)) {
+          closestFw = hw.fw;
         }
       });
     });
-    return deviceType;
+
+    // Return device types with the closest firmware
+    return deviceTypes
+      .filter(([_typeName, desc]) =>
+        desc.hw?.some(hw => hw.signature == deviceSignature && closestFw === hw.fw)
+      )
+      .map(([typeName, _desc]) => typeName)
+      .sort();
   }
 
   getName(deviceType) {
@@ -64,11 +67,28 @@ class DeviceTypesStore {
 
   isDeprecated(deviceType) {
     const desc = this.deviceTypesMap[deviceType];
-    return desc === undefined ? false : desc.isDeprecated;
+    return desc === undefined ? false : desc.deprecated;
   }
 
   isUnknown(deviceType) {
     return !this.deviceTypesMap.hasOwnProperty(deviceType);
+  }
+
+  isModbusDevice(deviceType) {
+    return this.deviceTypesMap[deviceType]?.protocol == 'modbus';
+  }
+
+  getDeviceSignatures(deviceType) {
+    const typeDesc = this.deviceTypesMap[deviceType];
+    if (typeDesc?.hw) {
+      return typeDesc.hw.map(hw => hw.signature);
+    }
+    return [];
+  }
+
+  getDefaultId(deviceType, slaveId) {
+    const id = this.deviceTypesMap[deviceType]?.id || deviceType;
+    return `${id}_${slaveId}`;
   }
 }
 

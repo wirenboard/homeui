@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button, ErrorBar } from '../common';
+import { Button, ErrorBar } from '../../common';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import JsonEditor from '../components/json-editor/jsonEditor';
+import JsonEditor from '../../components/json-editor/jsonEditor';
 import { useMediaQuery } from 'react-responsive';
 
 const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore }) => {

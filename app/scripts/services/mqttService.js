@@ -346,13 +346,20 @@ function mqttClient(
         if (!topicMatches(pattern, topic)) {
           return;
         }
-        callbackMap[pattern].forEach(function (callback) {
-          callback({
+        let data;
+        try {
+          data = {
             topic: topic,
             payload: message.payloadString,
             qos: message.qos,
             retained: message.retained,
-          });
+          };
+        } catch (err) {
+          console.error('malformed data in MQTT topic %s: %s', topic, String(err));
+          return;
+        }
+        callbackMap[pattern].forEach(function (callback) {
+          callback(data);
         });
       });
     if (!messageDigestTimer)

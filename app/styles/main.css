@@ -1219,3 +1219,7 @@ button.dashboard-back:active {
 .wb-react-select .wb-react-select__option.with-groups {
   padding-left: 20px;
 }
+
+body.no-console .show-console {
+  display: none
+}
