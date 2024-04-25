@@ -159,13 +159,6 @@ class SingleDeviceStore {
     return this.scannedDevice.uuid;
   }
 
-  get name() {
-    if (this.names.length) {
-      return this.names[0];
-    }
-    return this.scannedDevice.title;
-  }
-
   get deviceType() {
     if (this.deviceTypes.length) {
       return this.deviceTypes[0];
@@ -435,7 +428,6 @@ class ScanPageStore {
         .filter(d => d.selected && !d.scannedDevice.bootloader_mode)
         .map(d => {
           return {
-            title: d.scannedDevice.title,
             port: d.scannedDevice.port.path,
             cfg: d.scannedDevice.cfg,
             type: d.deviceType,
