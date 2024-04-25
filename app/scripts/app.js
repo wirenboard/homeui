@@ -79,8 +79,6 @@ import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
 import DashboardSvgCtrl from './controllers/dashboardSvgController';
-import DashboardSvgEditCtrl from './controllers/dashboardSvgEditController';
-import ScriptCtrl from './controllers/scriptController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -101,24 +99,18 @@ import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
 import userRolesDirective from './directives/user-roles.directive';
 import dashboardPickerDirective from './directives/dashboardpicker';
-import plotlyDirective from './directives/plotly';
 import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
-import networkConnectionsDirective from './react-directives/network-connections/network-connections';
 import cloudStatusMetaDirective from './react-directives/cloud-status/cloud-meta-status';
 import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
-import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
-import scriptEditorDirective from './react-directives/script-editor/script-editor';
-import deviceManagerDirective from './react-directives/device-manager/device-manager';
 
 // Angular routes
 import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm/index';
-import AngularJsonEditorModule from './components/json-editor/angular-json-editor';
 
 //-----------------------------------------------------------------------------
 /**
@@ -138,7 +130,6 @@ const module = angular
     'xeditable',
     'ui.select',
     'monospaced.elastic',
-    AngularJsonEditorModule,
     'oc.lazyLoad',
     'pascalprecht.translate',
     'angular-spinkit',
@@ -202,9 +193,7 @@ module
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
   .controller('NavigationCtrl', NavigationCtrl)
-  .controller('DashboardSvgCtrl', DashboardSvgCtrl)
-  .controller('DashboardSvgEditCtrl', DashboardSvgEditCtrl)
-  .controller('ScriptCtrl', ScriptCtrl);
+  .controller('DashboardSvgCtrl', DashboardSvgCtrl);
 
 module.directive('scriptForm', function (PageState) {
   'ngInject';
@@ -285,17 +274,12 @@ module
   .directive('editableElasticTextarea', editableElasticTextareaDirective)
   .directive('userRole', userRolesDirective)
   .directive('dashboardPicker', dashboardPickerDirective)
-  .directive('plotly', ['$window', plotlyDirective])
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('deviceManagerPage', deviceManagerDirective)
-  .directive('networkConnectionsPage', networkConnectionsDirective)
   .directive('firmwareUpdateWidget', firmwareUpdateDirective)
   .directive('cloudStatusMetaWidget', cloudStatusMetaDirective)
-  .directive('editSvgDashboardPage', editSvgDashboardDirective)
-  .directive('viewSvgDashboardPage', viewSvgDashboardDirective)
-  .directive('scriptEditorPage', scriptEditorDirective);
+  .directive('viewSvgDashboardPage', viewSvgDashboardDirective);
 
 module
   .config([
@@ -305,19 +289,7 @@ module
       [
         'app',
         'console',
-        'help',
-        'access',
-        'mqtt',
-        'system',
-        'ui',
-        'logs',
-        'configurations',
-        'rules',
-        'history',
-        'widgets',
-        'devices',
         'units',
-        'serial-metrics',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {

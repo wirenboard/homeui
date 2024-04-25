@@ -1,3 +1,5 @@
+import plotlyDirective from '../directives/plotly';
+
 class ChartsControl {
   constructor(deviceId, controlId, deviceName, controlName, valueType, groupName, widget) {
     this.name = (deviceName || deviceId) + ' / ' + (controlName || controlId);
@@ -820,4 +822,7 @@ class HistoryCtrl {
 } // class HistoryCtrl
 
 //-----------------------------------------------------------------------------
-export default angular.module('homeuiApp.history', []).controller('HistoryCtrl', HistoryCtrl);
+export default angular
+  .module('homeuiApp.history', [])
+  .controller('HistoryCtrl', HistoryCtrl)
+  .directive('plotly', ['$window', plotlyDirective]);

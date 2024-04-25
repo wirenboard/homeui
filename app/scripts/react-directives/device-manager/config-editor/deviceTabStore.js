@@ -1,7 +1,8 @@
 'use strict';
 
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
-import { cloneDeep, isEqual } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
 import i18n from '../../../i18n/react/config';

@@ -1,11 +1,11 @@
 'use strict';
 
-import { makeAutoObservable, makeObservable, observable, action, reaction, autorun } from 'mobx';
+import { makeAutoObservable, makeObservable, observable, action, reaction } from 'mobx';
+import cloneDeep from 'lodash/cloneDeep';
 import { FormStore } from '../../react-directives/forms/formStore';
 import { BooleanStore } from '../../react-directives/forms/booleanStore';
 import { StringStore } from '../../react-directives/forms/stringStore';
 import { OptionsStore } from '../../react-directives/forms/optionsStore';
-import { cloneDeep } from 'lodash';
 import i18n from '../../i18n/react/config';
 import { makeNotEmptyValidator } from '../forms/stringValidators';
 import DashboardSvgParam from '../../services/dashboardSvgParam';

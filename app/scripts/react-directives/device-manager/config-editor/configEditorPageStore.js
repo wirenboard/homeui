@@ -1,7 +1,7 @@
 'use strict';
 
-import { makeObservable, observable, computed, action } from 'mobx';
-import { cloneDeep } from 'lodash';
+import { makeObservable, observable, computed } from 'mobx';
+import cloneDeep from 'lodash/cloneDeep';
 import i18n from '../../../i18n/react/config';
 import SelectModalState from '../../components/modals/selectModalState';
 import { getDefaultObject } from './jsonSchemaUtils';

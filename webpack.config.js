@@ -117,7 +117,6 @@ module.exports = (function makeWebpackConfig() {
         'jquery',
         './lib/mqttws31',
         'bootstrap',
-        './3rdparty/jsoneditor',
         'angular-touch',
         'angular-sanitize',
         './3rdparty/ui-bootstrap',
@@ -151,6 +150,23 @@ module.exports = (function makeWebpackConfig() {
     splitChunks: {
       chunks: 'all',
       minChunks: 1,
+      cacheGroups: {
+        plotly: {
+          test: /[\\/]node_modules[\\/]plotly\.js-basic-dist-min[\\/]/,
+          name: 'plotly',
+          chunks: 'all',
+        },
+        codemirror: {
+          test: /[\\/]node_modules[\\/](@codemirror|@uiw)[\\/]/,
+          name: 'codemirror',
+          chunks: 'all',
+        },
+        jsoneditor: {
+          test: /[\\/]app[\\/]3rdparty[\\/]jsoneditor.js/,
+          name: 'jsoneditor',
+          chunks: 'all',
+        },
+      },
     },
   };
 

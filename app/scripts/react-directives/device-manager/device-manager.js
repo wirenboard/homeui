@@ -1,8 +1,8 @@
 'use strict';
 
 import ReactDOM from 'react-dom/client';
-import CreateDeviceManagerPage from './deviceManagerPage';
 import { autorun } from 'mobx';
+import CreateDeviceManagerPage from './deviceManagerPage';
 import DeviceManagerPageStore from './deviceManagerPageStore';
 import i18n from '../../i18n/react/config';
 

@@ -18,26 +18,56 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('help', {
       url: '/help',
       template: require('../views/help.html'),
+      resolve: {
+        ctrl: async ($translatePartialLoader, $translate) => {
+          $translatePartialLoader.addPart('help');
+          await $translate.refresh();
+        }
+      }
     })
     .state('webUI', {
       url: '/web-ui',
       template: require('../views/web-ui.html'),
       controller: 'WebUICtrl as $ctrl',
+      resolve: {
+        ctrl: async ($translatePartialLoader, $translate) => {
+          $translatePartialLoader.addPart('ui');
+          await $translate.refresh();
+        }
+      }
     })
     .state('system', {
       url: '/system',
       template: require('../views/system.html'),
       controller: 'SystemCtrl as $ctrl',
+      resolve: {
+        ctrl: async ($translatePartialLoader, $translate) => {
+          $translatePartialLoader.addPart('system');
+          await $translate.refresh();
+        }
+      }
     })
     .state('MQTTChannels', {
       url: '/MQTTChannels',
       template: require('../views/MQTTChannels.html'),
       controller: 'MQTTCtrl as $ctrl',
+      resolve: {
+        ctrl: async ($translatePartialLoader, $translate) => {
+          $translatePartialLoader.addPart('mqtt');
+          await $translate.refresh();
+        }
+      }
     })
     .state('accessLevel', {
       url: '/access-level',
       template: require('../views/access-level.html'),
       controller: 'AccessLevelCtrl as $ctrl',
+      resolve: {
+        ctrl: async ($translatePartialLoader, $translate) => {
+          $translatePartialLoader.addPart('access');
+          await $translate.refresh();
+        }
+      }
     })
     .state('scan', {
       url: '/scan',
@@ -49,8 +79,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'DevicesCtrl as $ctrl',
       template: require('../views/devices.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
+          $translatePartialLoader.addPart('devices');
+          await $translate.refresh();
           let deferred = $q.defer();
           require.ensure(
             [],
@@ -76,8 +108,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'DevicesCtrl as $ctrl',
       template: require('../views/devices.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
+          $translatePartialLoader.addPart('devices');
+          await $translate.refresh();
           let deferred = $q.defer();
           require.ensure(
             [],
@@ -103,8 +137,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'WidgetsCtrl as $ctrl',
       template: require('../views/widgets.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
+          $translatePartialLoader.addPart('widgets');
+          await $translate.refresh();
           let deferred = $q.defer();
           require.ensure(
             [],
@@ -194,12 +230,26 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       url: '/dashboards/svg/add',
       controller: 'DashboardSvgEditCtrl as $ctrl',
       template: require('../views/dashboard-svg-edit.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import('./controllers/dashboardSvgEditController')
+            .then((module) => $ocLazyLoad.load({ name: module.default.name }))
+        },
+      },
     })
     //...........................................................................
     .state('dashboard-svg-edit', {
       url: '/dashboards/svg/edit/{id}',
       controller: 'DashboardSvgEditCtrl as $ctrl',
       template: require('../views/dashboard-svg-edit.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import('./controllers/dashboardSvgEditController')
+            .then((module) => $ocLazyLoad.load({ name: module.default.name }))
+        },
+      },
     })
     //...........................................................................
     .state('login', {
@@ -213,24 +263,12 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'ScriptsCtrl as $ctrl',
       template: require('../views/scripts.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/scriptsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'rules'
-          );
-          return deferred.promise;
+          $translatePartialLoader.addPart('rules');
+          await $translate.refresh();
+          return import('./controllers/scriptsController')
+            .then((module) => $ocLazyLoad.load({ name: module.default.name }))
         },
       },
     })
@@ -238,13 +276,31 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('rules-edit', {
       url: '/rules/edit/{path:.*}',
       template: require('../views/script.html'),
-      controller: 'ScriptCtrl as $ctrl',
+      controller: 'ScriptsCtrl as $ctrl',
+      resolve: {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
+          'ngInject';
+          $translatePartialLoader.addPart('rules');
+          await $translate.refresh();
+          return import('./controllers/scriptsController')
+            .then((module) => $ocLazyLoad.load({ name: module.default.name }))
+        },
+      },
     })
     //...........................................................................
     .state('rules-new', {
       url: '/rules/new',
       template: require('../views/script.html'),
-      controller: 'ScriptCtrl as $ctrl',
+      controller: 'ScriptsCtrl as $ctrl',
+      resolve: {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
+          'ngInject';
+          $translatePartialLoader.addPart('rules');
+          await $translate.refresh();
+          return import('./controllers/scriptsController')
+            .then((module) => $ocLazyLoad.load({ name: module.default.name }))
+        },
+      },
     })
     //...........................................................................
     .state('history', {
@@ -252,8 +308,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'HistoryCtrl as $ctrl',
       template: require('../views/history.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
+          $translatePartialLoader.addPart('history');
+          await $translate.refresh();
           let deferred_1 = $q.defer();
           require.ensure(
             [],
@@ -306,8 +364,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'ConfigsCtrl as $ctrl',
       template: require('../views/configs.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
+          $translatePartialLoader.addPart('configurations');
+          await $translate.refresh();
           let deferred = $q.defer();
           require.ensure(
             [],
@@ -336,22 +396,8 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/configController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'config-edit'
-          );
-          return deferred.promise;
+          return import('./controllers/configController.js')
+            .then((module) => $ocLazyLoad.load({ name: module.default.name }))
         },
       },
     })
@@ -386,6 +432,13 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('serial-config', {
       url: '/serial-config',
       template: require('../views/serial-config.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import('./controllers/deviceManagerController.js')
+            .then((module) => $ocLazyLoad.load({ name: module.default.name }))
+        },
+      },
     })
     //...........................................................................
     .state('serial-config.properties', {
@@ -400,8 +453,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'LogsCtrl as $ctrl',
       template: require('../views/logs.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
+          $translatePartialLoader.addPart('logs');
+          await $translate.refresh();
           let deferred_1 = $q.defer();
           require.ensure(
             [],
@@ -427,8 +482,10 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       controller: 'SerialMetricsCtrl as $ctrl',
       template: require('../views/serial-metrics.html'),
       resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
+        ctrl: async ($q, $ocLazyLoad, $translatePartialLoader, $translate) => {
           'ngInject';
+          $translatePartialLoader.addPart('serial-metrics');
+          await $translate.refresh();
           let deferred_1 = $q.defer();
           require.ensure(
             [],
