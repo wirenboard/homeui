@@ -33,7 +33,8 @@
          "try-normal-scan": "If the required devices are not found, run slow scan",
          "misconfigured-port": "differs from port settings",
          "duplicate-topic": "There is a device with the same MQTT topic",
-         "unknown-device-type": "unknown device type"
+         "unknown-device-type": "unknown device type",
+         "similar-device-signatures": "also matches templates:<br>{{types}}"
       }
    },
    "com": {

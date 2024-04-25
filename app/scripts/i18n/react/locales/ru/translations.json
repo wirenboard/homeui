@@ -33,7 +33,8 @@
          "try-normal-scan": "Если нужные устройства не найдены, запустите медленное сканирование",
          "misconfigured-port": "отличается от настроек порта",
          "duplicate-topic": "есть устройство с аналогичным MQTT топиком",
-         "unknown-device-type": "неизвестный тип устройства"
+         "unknown-device-type": "неизвестный тип устройства",
+         "similar-device-signatures": "также подходят шаблоны:<br>{{types}}"
       }
    },
    "com": {
