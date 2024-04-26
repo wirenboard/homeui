@@ -7,19 +7,20 @@ import BootstrapLikeSelect from '../../components/select/select';
 
 export const DeviceTab = observer(({ tab }) => {
   let className = 'device-tab';
-  if (tab.hasErrors) {
+  let showSign = false;
+  if (tab.hasInvalidConfig || tab.isDisconnected) {
     className = className + ' error';
+    showSign = true;
   } else {
     if (tab.isDeprecated) {
       className = className + ' warning';
+      showSign = true;
     }
   }
   return (
     <div className={className}>
       <span>{tab.name}</span>
-      {(!tab.isValid || tab.isDeprecated) && (
-        <i className="glyphicon glyphicon-exclamation-sign"></i>
-      )}
+      {showSign && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
 });
@@ -29,10 +30,7 @@ function findDeviceTypeSelectOption(options, value) {
   options.find(option => {
     if (option?.options) {
       res = option.options.find(option => option.value === value);
-      if (res) {
-        return true;
-      }
-      return false;
+      return !!res;
     }
     if (option.value === value) {
       res = option;
@@ -53,8 +51,65 @@ export const UnknownDeviceTabContent = observer(({ tab }) => {
   );
 });
 
+const DeprecatedWarning = ({ isDeprecated }) => {
+  const { t } = useTranslation();
+  if (isDeprecated) {
+    return (
+      <WarningBar>
+        <span>{t('device-manager.errors.deprecated')}</span>
+      </WarningBar>
+    );
+  }
+  return null;
+};
+
+const DuplicateSlaveIdError = ({ isDuplicate }) => {
+  const { t } = useTranslation();
+  if (isDuplicate) {
+    return <ErrorBar msg={t('device-manager.errors.duplicate-slave-id')} />;
+  }
+  return null;
+};
+
+const SameMqttIdError = ({ devicesWithTheSameId, onSetUniqueMqttTopic }) => {
+  const { t } = useTranslation();
+  if (devicesWithTheSameId.length != 0) {
+    return (
+      <ErrorBar
+        msg={t('device-manager.errors.duplicate-mqtt-topic', {
+          device: devicesWithTheSameId.join(', '),
+          interpolation: { escapeValue: false },
+        })}
+      >
+        <Button
+          label={t('device-manager.buttons.resolve-duplicate-mqtt-topic')}
+          type="danger"
+          onClick={onSetUniqueMqttTopic}
+        />
+      </ErrorBar>
+    );
+  }
+  return null;
+};
+
+const DisconnectedError = ({ isDisconnected }) => {
+  const { t } = useTranslation();
+  if (isDisconnected) {
+    return <ErrorBar msg={t('device-manager.errors.is-disconnected')} />;
+  }
+  return null;
+};
+
 export const DeviceTabContent = observer(
-  ({ tab, index, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange }) => {
+  ({
+    tab,
+    index,
+    onDeleteTab,
+    onCopyTab,
+    deviceTypeSelectOptions,
+    onDeviceTypeChange,
+    onSetUniqueMqttTopic,
+  }) => {
     const { t } = useTranslation();
     if (tab.loading) {
       return <Spinner />;
@@ -68,12 +123,13 @@ export const DeviceTabContent = observer(
     const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
     return (
       <div>
-        {tab.isDeprecated && (
-          <WarningBar>
-            <span>{t('device-manager.errors.deprecated')}</span>
-          </WarningBar>
-        )}
-        {tab.slaveIdIsDuplicate && <ErrorBar msg={t('device-manager.errors.duplicate-slave-id')} />}
+        <DeprecatedWarning isDeprecated={tab.isDeprecated} />
+        <DisconnectedError isDisconnected={tab.isDisconnected} />
+        <DuplicateSlaveIdError isDuplicate={tab.slaveIdIsDuplicate} />
+        <SameMqttIdError
+          devicesWithTheSameId={tab.devicesWithTheSameId}
+          onSetUniqueMqttTopic={onSetUniqueMqttTopic}
+        />
         <BootstrapLikeSelect
           options={deviceTypeSelectOptions}
           selectedOption={selectedDeviceType}

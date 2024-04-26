@@ -80,7 +80,7 @@ class DeviceTypesStore {
   }
 
   getDefaultId(deviceType, slaveId) {
-    const id = this.deviceTypesMap[deviceType]?.id || deviceType;
+    const id = this.deviceTypesMap[deviceType]?.['mqtt-id'] || deviceType;
     return `${id}_${slaveId}`;
   }
 }

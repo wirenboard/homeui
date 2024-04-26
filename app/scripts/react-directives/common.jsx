@@ -35,14 +35,17 @@ export const Spinner = () => {
   );
 };
 
-export const ErrorBar = ({ msg }) => {
+export const ErrorBar = ({ msg, children }) => {
   if (!msg) {
     return null;
   }
   return (
     <div className="alert alert-danger" role="alert" style={{ whiteSpace: 'pre-wrap' }}>
-      <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-      <span> {msg}</span>
+      <div className="alert-header">
+        <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span className="alert-text"> {msg}</span>
+      </div>
+      {children}
     </div>
   );
 };

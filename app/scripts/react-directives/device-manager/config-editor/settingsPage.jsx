@@ -5,7 +5,7 @@ export const SettingsTab = ({ tab }) => {
   return (
     <div className="settings-tab">
       <span>{tab.name}</span>
-      {!tab.isValid && <i className="glyphicon glyphicon-exclamation-sign"></i>}
+      {tab.hasInvalidConfig && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
 };

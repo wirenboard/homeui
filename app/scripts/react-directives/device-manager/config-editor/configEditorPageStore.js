@@ -109,7 +109,7 @@ class ConfigEditorPageStore {
   }
 
   get allowSave() {
-    return this.isDirty && this.tabs.isValid;
+    return this.isDirty && !this.tabs.hasInvalidConfig;
   }
 
   createPortTab(portConfig) {
@@ -307,6 +307,11 @@ class ConfigEditorPageStore {
       this.loaded = false;
     }
     this.pageWrapperStore.setLoading(false);
+  }
+
+  setDeviceDisconnected(topic, error) {
+    const tab = this.tabs.findDeviceTabByTopic(topic);
+    tab?.setDisconnected(error == 'r');
   }
 }
 

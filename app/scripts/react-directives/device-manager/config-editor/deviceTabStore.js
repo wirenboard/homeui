@@ -14,7 +14,7 @@ export class DeviceTab {
     this.editedData = cloneDeep(data);
     this.deviceTypesStore = deviceTypesStore;
     this.deviceType = deviceType;
-    this.hasValidationErrors = false;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
     this.hidden = false;
     this.loading = true;
@@ -25,19 +25,23 @@ export class DeviceTab {
     this.acceptJsonEditorInitial = true;
     this.slaveIdIsDuplicate = false;
     this.isModbusDevice = deviceTypesStore.isModbusDevice(deviceType);
+    this.devicesWithTheSameId = [];
+    this.isDisconnected = false;
 
     this.updateName();
 
     makeObservable(this, {
       name: observable,
       isDirty: observable,
-      hasValidationErrors: observable,
+      hasJsonValidationErrors: observable,
       hidden: observable,
       isDeprecated: observable,
       deviceType: observable,
       loading: observable,
       error: observable,
       slaveIdIsDuplicate: observable,
+      devicesWithTheSameId: observable,
+      isDisconnected: observable,
       editedData: observable.ref,
       setData: action.bound,
       updateName: action,
@@ -45,8 +49,9 @@ export class DeviceTab {
       setDeviceType: action,
       loadSchema: action,
       setSlaveIdIsDuplicate: action,
-      hasErrors: computed,
-      isValid: computed,
+      setDevicesWithTheSameId: action,
+      setDisconnected: action,
+      hasInvalidConfig: computed,
     });
   }
 
@@ -67,7 +72,7 @@ export class DeviceTab {
     }
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.hasValidationErrors = errors.length != 0;
+    this.hasJsonValidationErrors = errors.length != 0;
     this.updateName();
   }
 
@@ -90,7 +95,7 @@ export class DeviceTab {
       this.editedData = getDefaultObject(this.schema);
       this.editedData.slave_id = currentSlaveId;
       this.isDirty = false;
-      this.hasValidationErrors = false;
+      this.hasJsonValidationErrors = false;
       this.updateName();
       this.loading = false;
     });
@@ -98,7 +103,7 @@ export class DeviceTab {
 
   commitData() {
     this.data = cloneDeep(this.editedData);
-    this.hasValidationErrors = false;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
   }
 
@@ -145,21 +150,45 @@ export class DeviceTab {
       this.editedData = getDefaultObject(this.schema);
       this.data = cloneDeep(this.editedData);
       this.isDirty = false;
-      this.hasValidationErrors = false;
+      this.hasJsonValidationErrors = false;
       this.updateName();
       this.loading = false;
     });
   }
 
-  get hasErrors() {
-    return !this.isValid || this.error || this.isUnknownType;
+  get hasInvalidConfig() {
+    return (
+      this.hasJsonValidationErrors || this.slaveIdIsDuplicate || this.devicesWithTheSameId.length
+    );
   }
 
-  get isValid() {
-    return !this.hasValidationErrors && !this.slaveIdIsDuplicate;
+  get mqttId() {
+    return (
+      this.editedData.id ||
+      this.deviceTypesStore.getDefaultId(this.deviceType, this.editedData.slave_id)
+    );
   }
 
   setSlaveIdIsDuplicate(value) {
     this.slaveIdIsDuplicate = value;
+  }
+
+  setUniqueMqttTopic() {
+    if (this.editedData.id) {
+      this.editedData.id = this.editedData.id + '_2';
+    } else {
+      this.editedData.id =
+        this.deviceTypesStore.getDefaultId(this.deviceType, this.editedData.slave_id) + '_2';
+    }
+    // To trigger mobx update
+    this.editedData = cloneDeep(this.editedData);
+  }
+
+  setDevicesWithTheSameId(devices) {
+    this.devicesWithTheSameId = devices;
+  }
+
+  setDisconnected(value) {
+    this.isDisconnected = value;
   }
 }

@@ -43,7 +43,7 @@ export class PortTab {
     this.data = data;
     this.editedData = cloneDeep(data);
     this.schema = schema;
-    this.isValid = true;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
     this.collapsed = false;
     this.nameGenerationFn = nameGenerationFn;
@@ -54,17 +54,19 @@ export class PortTab {
 
     makeObservable(this, {
       name: observable,
-      isValid: observable,
+      hasJsonValidationErrors: observable,
       isDirty: observable,
       collapsed: observable,
       setData: action.bound,
       updateName: action,
       commitData: action,
+      addChildren: action,
+      deleteChildren: action,
       collapse: action.bound,
       restore: action.bound,
       children: observable,
       hasChildren: computed,
-      hasErrors: computed,
+      hasInvalidConfig: computed,
     });
   }
 
@@ -75,13 +77,13 @@ export class PortTab {
   setData(data, errors) {
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.isValid = errors.length == 0;
+    this.hasJsonValidationErrors = errors.length != 0;
     this.updateName();
   }
 
   commitData() {
     this.data = cloneDeep(this.editedData);
-    this.isValid = true;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
   }
 
@@ -117,11 +119,11 @@ export class PortTab {
     return this.children.length != 0;
   }
 
-  get childrenHasErrors() {
-    return this.children.some(child => !child.isValid);
+  get childrenHasInvalidConfig() {
+    return this.children.some(child => child.hasInvalidConfig);
   }
 
-  get hasErrors() {
-    return !this.isValid || this.childrenHasErrors;
+  get hasInvalidConfig() {
+    return this.hasJsonValidationErrors || this.childrenHasInvalidConfig;
   }
 }
