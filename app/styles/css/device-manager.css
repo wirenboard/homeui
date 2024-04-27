@@ -206,3 +206,13 @@
         width: 100%;
     }
 }
+
+.device-manager-page .port-tab-content-header {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.device-manager-page .port-tab-content-header span{
+    flex-grow: 1;
+}

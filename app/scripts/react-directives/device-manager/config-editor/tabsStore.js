@@ -120,19 +120,31 @@ export class TabsStore {
 
   deleteSelectedTab() {
     const tab = this.items[this.selectedTabIndex];
-    if (tab?.type == TabType.PORT) {
-      this.items.splice(this.selectedTabIndex, tab.children.length + 1);
-    } else if (tab?.type == TabType.DEVICE) {
-      let portTab = this.selectedPortTab;
-      portTab.children.splice(portTab.children.indexOf(tab), 1);
-      this.items.splice(this.selectedTabIndex, 1);
-    } else {
-      return;
+    switch (tab?.type) {
+      case TabType.PORT: {
+        this.items.splice(this.selectedTabIndex, tab.children.length + 1);
+        break;
+      }
+      case TabType.DEVICE: {
+        let portTab = this.selectedPortTab;
+        const childIndex = portTab.children.indexOf(tab);
+        portTab.children.splice(childIndex, 1);
+        this.items.splice(this.selectedTabIndex, 1);
+        if (
+          (childIndex == 0 && !portTab.children.length) ||
+          (childIndex != 0 && childIndex == portTab.children.length)
+        ) {
+          this.selectedTabIndex = this.selectedTabIndex - 1;
+        }
+        break;
+      }
+      default: {
+        return;
+      }
     }
-
-    this.selectedTabIndex = 0;
     this.hasModifiedStructure = true;
     this.mobileModeStore.showTabsPanel();
+    this.onSelectTab(this.selectedTabIndex);
   }
 
   copySelectedTab() {
