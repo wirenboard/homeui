@@ -2,10 +2,13 @@
 
 import ReactDOM from 'react-dom/client';
 import CreateCloudStatusMetaWidget from './cloudStatusMetaWidget';
-import CloudStatusMetaStore from "./meta-store";
+import CloudStatusMetaStore from './meta-store';
+import { setReactLocale } from '../locale';
 
 function cloudStatusMetaDirective(mqttClient, whenMqttReady) {
   'ngInject';
+
+  setReactLocale();
 
   return {
     restrict: 'E',

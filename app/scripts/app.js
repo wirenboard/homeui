@@ -2,16 +2,10 @@
 
 // Import slylesheets
 import '../styles/css/bootstrap.min.css';
-import '../styles/css/fixes.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';
 import '../styles/css/fontawesome5-solid.min.css';
-import '../styles/css/invoice.min.css';
-import '../styles/css/lockscreen.min.css';
-import '../styles/css/smartadmin-production-plugins.min.css';
 import '../styles/css/smartadmin-production.min.css';
-import '../styles/css/smartadmin-rtl.min.css';
-import '../styles/css/smartadmin-skins.min.css';
 import '../styles/css/icons.css';
 
 import '../styles/css/new.css';
@@ -23,7 +17,7 @@ import '../styles/css/wb-switch.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'angular-xeditable/dist/css/xeditable.css';
-import '../lib/css-spinners/css/spinner/spinner.css';
+import '../styles/css/spinner.css';
 import '../styles/css/angular.rangeSlider.css';
 import 'ng-toast/dist/ngToast.css';
 
@@ -35,9 +29,6 @@ import '../styles/css/network-connections.css';
 import '../styles/css/svg-edit-page.css';
 import '../styles/css/svg-view-page.css';
 import '../styles/css/script-editor-page.css';
-
-// React-related imports
-import i18n from './i18n/react/config';
 
 // homeui modules: sevices
 import errorsService from './services/errors';
@@ -71,14 +62,11 @@ import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
-import WebUICtrl from './controllers/webUiController';
-import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
-import DashboardSvgCtrl from './controllers/dashboardSvgController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -102,9 +90,6 @@ import dashboardPickerDirective from './directives/dashboardpicker';
 import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
-import cloudStatusMetaDirective from './react-directives/cloud-status/cloud-meta-status';
-import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
-import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -185,15 +170,12 @@ module
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('LoginCtrl', LoginCtrl)
-  .controller('WebUICtrl', WebUICtrl)
-  .controller('SystemCtrl', SystemCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
   .controller('AccessLevelCtrl', AccessLevelCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
-  .controller('NavigationCtrl', NavigationCtrl)
-  .controller('DashboardSvgCtrl', DashboardSvgCtrl);
+  .controller('NavigationCtrl', NavigationCtrl);
 
 module.directive('scriptForm', function (PageState) {
   'ngInject';
@@ -277,9 +259,6 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('firmwareUpdateWidget', firmwareUpdateDirective)
-  .directive('cloudStatusMetaWidget', cloudStatusMetaDirective)
-  .directive('viewSvgDashboardPage', viewSvgDashboardDirective);
 
 module
   .config([
@@ -289,7 +268,19 @@ module
       [
         'app',
         'console',
+        'help',
+        'access',
+        'mqtt',
+        'system',
+        'ui',
+        'logs',
+        'configurations',
+        'rules',
+        'history',
+        'widgets',
+        'devices',
         'units',
+        'serial-metrics',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {
@@ -458,16 +449,16 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      var language = $window.localStorage['language'];
-      if (!language || i18n.languages.indexOf(language) === -1) {
-        var preferredLanguages = window.navigator.languages.map(lang => lang.split('-')[0]);
-        language =
-          preferredLanguages.filter(lang => i18n.languages.indexOf(lang) !== -1)[0] || 'en';
-        $window.localStorage.setItem('language', language);
+      let language = localStorage.getItem('language');
+      const supportedLanguages = ['en', 'ru'];
+      if (!language || !supportedLanguages.includes(language)) {
+        language = navigator.languages
+          .map((lang) => lang.split('-')[0])
+          .find((lang) => supportedLanguages.includes(lang)) || 'en';
+        localStorage.setItem('language', language);
       }
       $translate.use(language);
       tmhDynamicLocale.set(language);
-      i18n.changeLanguage(language);
 
       $rootScope.requestConfig(loginData);
 

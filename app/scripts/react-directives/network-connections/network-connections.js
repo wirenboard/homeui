@@ -1,13 +1,15 @@
 'use strict';
 
+import { autorun } from 'mobx';
 import ReactDOM from 'react-dom/client';
 import CreateNetworkConnectionsPage from './networkConnectionsPage';
-import { autorun } from 'mobx';
 import NetworkConnectionsPageStore from './pageStore';
+import { setReactLocale } from '../locale';
 
 function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProxy, PageState) {
   'ngInject';
 
+  setReactLocale();
   return {
     restrict: 'E',
     scope: {

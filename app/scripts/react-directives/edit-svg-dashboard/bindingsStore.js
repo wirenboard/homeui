@@ -2,10 +2,10 @@
 
 import { makeAutoObservable, makeObservable, observable, action, reaction } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
-import { FormStore } from '../../react-directives/forms/formStore';
-import { BooleanStore } from '../../react-directives/forms/booleanStore';
-import { StringStore } from '../../react-directives/forms/stringStore';
-import { OptionsStore } from '../../react-directives/forms/optionsStore';
+import { FormStore } from '../forms/formStore';
+import { BooleanStore } from '../forms/booleanStore';
+import { StringStore } from '../forms/stringStore';
+import { OptionsStore } from '../forms/optionsStore';
 import i18n from '../../i18n/react/config';
 import { makeNotEmptyValidator } from '../forms/stringValidators';
 import DashboardSvgParam from '../../services/dashboardSvgParam';

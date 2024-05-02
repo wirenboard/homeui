@@ -151,6 +151,11 @@ module.exports = (function makeWebpackConfig() {
       chunks: 'all',
       minChunks: 1,
       cacheGroups: {
+        react: {
+          test: /[\\/]node_modules[\\/](react|react-dom|react-select|mobx|mobx-react-lite|mobx-utils|react-tabs|react-focus-lock|react-responsive|react-responsive-carousel)[\\/]/,
+          name: 'react',
+          chunks: 'all',
+        },
         plotly: {
           test: /[\\/]node_modules[\\/]plotly\.js-basic-dist-min[\\/]/,
           name: 'plotly',
@@ -278,8 +283,13 @@ module.exports = (function makeWebpackConfig() {
     // Load styles
     config.module.rules.push({
       test: /\.(sa|sc|c)ss$/i,
-      use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'],
+      use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
     });
+
+    config.plugins.push(
+      // Extract CSS files from JS
+      new MiniCssExtractPlugin({ filename: 'css/[name].css' })
+    );
   }
 
   /**
@@ -291,6 +301,7 @@ module.exports = (function makeWebpackConfig() {
       directory: path.join(__dirname, 'app'),
     },
     port: 8080,
+    hot: true,
   };
 
   return config;
