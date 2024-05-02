@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.84.7) stable; urgency=medium
+wb-mqtt-homeui (2.85.0) stable; urgency=medium
 
   * Add separate chunks to decrease bundle weight
 
