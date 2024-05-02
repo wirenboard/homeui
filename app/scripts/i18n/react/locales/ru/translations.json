@@ -33,7 +33,8 @@
          "try-normal-scan": "Если нужные устройства не найдены, запустите медленное сканирование",
          "misconfigured-port": "отличается от настроек порта",
          "duplicate-topic": "есть устройство с аналогичным MQTT топиком",
-         "unknown-device-type": "неизвестный тип устройства"
+         "unknown-device-type": "неизвестный тип устройства",
+         "similar-device-signatures": "также подходят шаблоны:<br>{{types}}"
       }
    },
    "com": {
@@ -154,6 +155,9 @@
             "activation-link-preamble": "Почти готово! Для подключения контроллера к Wiren Board Cloud, нажмите",
             "activation-link": "эту ссылку",
             "status-ok": "Этот контроллер подключен к облаку",
+            "status-starting": "Сервис wb-cloud-agent запускается",
+            "status-connecting": "Подключаемся к облаку",
+            "status-stopped": "Сервис wb-cloud-agent не запущен",
             "status-error": "Ошибка подключения к облаку",
             "goto-cloud": "Перейти в Wiren Board Cloud"
         }

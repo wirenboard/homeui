@@ -36,22 +36,29 @@ class DeviceTypesStore {
     return schema;
   }
 
-  findDeviceType(deviceSignature, fw) {
-    let lastFwVersion = undefined;
-    let deviceType = undefined;
-    Object.entries(this.deviceTypesMap).forEach(([typeName, desc]) => {
+  findDeviceTypes(deviceSignature, fw) {
+    // Filter only types with the same signature and older or equal firmware
+    let deviceTypes = Object.entries(this.deviceTypesMap).filter(([_typeName, desc]) => {
+      return desc.hw?.some(hw => hw.signature == deviceSignature && !firmwareIsNewer(fw, hw.fw));
+    });
+
+    // Find closest firmware
+    let closestFw;
+    deviceTypes.forEach(([_typeName, desc]) => {
       desc.hw?.forEach(hw => {
-        if (
-          hw.signature == deviceSignature &&
-          firmwareIsNewer(hw.fw, fw) &&
-          firmwareIsNewer(lastFwVersion, hw.fw)
-        ) {
-          lastFwVersion = hw.fw;
-          deviceType = typeName;
+        if (hw.signature == deviceSignature && firmwareIsNewer(closestFw, hw.fw)) {
+          closestFw = hw.fw;
         }
       });
     });
-    return deviceType;
+
+    // Return device types with the closest firmware
+    return deviceTypes
+      .filter(([_typeName, desc]) =>
+        desc.hw?.some(hw => hw.signature == deviceSignature && closestFw === hw.fw)
+      )
+      .map(([typeName, _desc]) => typeName)
+      .sort();
   }
 
   getName(deviceType) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Checkbox } from '../../common';
 
 export function WarningTag({ text }) {
@@ -11,6 +11,17 @@ export function ErrorTag({ text, title }) {
     <span className="tag bg-danger text-nowrap" title={title}>
       {text}
     </span>
+  );
+}
+
+export function MultilineErrorTag({ text, title }) {
+  return (
+    <>
+      <div className="flex-break"></div>
+      <div className="tag multiline-tag bg-danger" title={title}>
+        <Trans>{text}</Trans>
+      </div>
+    </>
   );
 }
 
@@ -44,6 +55,7 @@ export const DeviceName = ({
   unknownType,
   selected,
   onSelectionChange,
+  matchingDeviceTypes,
 }) => {
   const { t } = useTranslation();
   return (
@@ -60,6 +72,14 @@ export const DeviceName = ({
       {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
       {duplicateMqttTopic && <ErrorTag text={t('scan.labels.duplicate-topic')} />}
       {unknownType && <ErrorTag text={t('scan.labels.unknown-device-type')} />}
+      {matchingDeviceTypes.length > 1 && (
+        <MultilineErrorTag
+          text={t('scan.labels.similar-device-signatures', {
+            types: matchingDeviceTypes.map(deviceType => '- ' + deviceType).join(',<br>'),
+            interpolation: { escapeValue: false },
+          })}
+        />
+      )}
     </ErrorCheck>
   );
 };

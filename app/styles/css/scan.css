@@ -44,7 +44,7 @@
 }
 
 .scan-page .scrollable-table-wrapper {
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .scan-page .scrollable-table-wrapper table thead {
@@ -106,5 +106,13 @@
 
 
 .scan-page .mobile-devices-list {
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+.scan-page .flex-break {
+    width: 100%;
+}
+
+.scan-page .multiline-tag {
+    width: 100%;
 }
