@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.85.0) stable; urgency=medium
 
   * Add separate chunks to decrease bundle weight
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 3 May 2024 10:40:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 3 May 2024 16:20:00 +0300
+
+wb-mqtt-homeui (2.84.8) stable; urgency=medium
+
+  * Remove svg.original from configs
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 May 2024 15:40:00 +0400
 
 wb-mqtt-homeui (2.84.7) stable; urgency=medium
 
