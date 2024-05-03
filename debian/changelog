@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.84.8) stable; urgency=medium
+
+  * Remove svg.original from configs
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 May 2024 15:40:00 +0400
+
 wb-mqtt-homeui (2.84.7) stable; urgency=medium
 
   * Move selection to next device after deletion on wb-mqtt-serial config page
