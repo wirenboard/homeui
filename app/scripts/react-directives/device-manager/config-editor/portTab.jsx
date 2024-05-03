@@ -47,16 +47,14 @@ export const PortTabContent = ({ tab, index, onDeleteTab }) => {
   return (
     <div>
       {tab.childrenHasErrors && <ErrorBar msg={t('device-manager.errors.device-config')} />}
-      <div>
+      <div className="port-tab-content-header">
         <span>{tab.title}</span>
-        <div className="pull-right button-group">
-          <Button
-            key="delete"
-            label={t('device-manager.buttons.delete')}
-            type="danger"
-            onClick={onDeleteTab}
-          />
-        </div>
+        <Button
+          key="delete"
+          label={t('device-manager.buttons.delete')}
+          type="danger"
+          onClick={onDeleteTab}
+        />
       </div>
       <JsonEditor
         schema={tab.schema}

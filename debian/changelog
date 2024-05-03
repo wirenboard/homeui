@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.85.0) stable; urgency=medium
 
   * Add separate chunks to decrease bundle weight
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 5 May 2024 10:00:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 3 May 2024 10:40:00 +0300
+
+wb-mqtt-homeui (2.84.7) stable; urgency=medium
+
+  * Move selection to next device after deletion on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Apr 2024 18:43:57 +0500
 
 wb-mqtt-homeui (2.84.6) stable; urgency=medium
 
