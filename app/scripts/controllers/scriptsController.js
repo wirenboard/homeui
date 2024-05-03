@@ -1,5 +1,3 @@
-import scriptEditorDirective from '../react-directives/script-editor/script-editor';
-
 class ScriptsCtrl {
   constructor(EditorProxy, whenMqttReady, errors, rolesFactory, $scope) {
     'ngInject';
@@ -50,5 +48,4 @@ class ScriptsCtrl {
 //-----------------------------------------------------------------------------
 export default angular
   .module('homeuiApp.scripts', [])
-  .controller('ScriptsCtrl', ScriptsCtrl)
-  .directive('scriptEditorPage', scriptEditorDirective);
+  .controller('ScriptsCtrl', ScriptsCtrl);

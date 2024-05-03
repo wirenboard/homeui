@@ -202,11 +202,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('rules-new', {
       url: '/rules/new',
       template: require('../views/script.html'),
-      controller: 'ScriptsCtrl as $ctrl',
+      controller: 'ScriptCtrl as $ctrl',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptsController')
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController')
             .then((module) => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
