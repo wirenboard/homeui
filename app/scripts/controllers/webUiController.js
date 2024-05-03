@@ -1,5 +1,7 @@
+import { setReactLocale } from '../react-directives/locale';
+
 class WebUICtrl {
-  constructor(uiConfig, errors, rolesFactory, $window) {
+  constructor(uiConfig, errors, rolesFactory, $window, $translate, tmhDynamicLocale) {
     'ngInject';
 
     this.rolesFactory = rolesFactory;
@@ -15,6 +17,13 @@ class WebUICtrl {
         this.defaultDashboardId = data.defaultDashboardId;
       })
       .catch(errors.catch('Error loading WebUI config'));
+
+    this.changeLanguage = () => {
+      $translate.use(this.language);
+      tmhDynamicLocale.set(this.language);
+      localStorage.setItem('language', this.language);
+      setReactLocale();
+    };
 
     this.setShowSystemDevices = () => {
       $window.localStorage.setItem('show-system-devices', this.showSystemDevices);
