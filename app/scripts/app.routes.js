@@ -189,11 +189,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('rules-edit', {
       url: '/rules/edit/{path:.*}',
       template: require('../views/script.html'),
-      controller: 'ScriptsCtrl as $ctrl',
+      controller: 'ScriptCtrl as $ctrl',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptsController')
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController')
             .then((module) => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
