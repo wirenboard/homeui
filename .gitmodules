@@ -1,6 +1,3 @@
-[submodule "app/lib/css-spinners"]
-	path = app/lib/css-spinners
-	url = https://github.com/jlong/css-spinners.git
 [submodule "app/lib/angular-spectrum-colorpicker"]
 	path = app/lib/angular-spectrum-colorpicker
 	url = https://github.com/wirenboard/angular-spectrum-colorpicker.git

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.85.0) stable; urgency=medium
+
+  * Add separate chunks to decrease bundle weight
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 3 May 2024 16:20:00 +0300
+
 wb-mqtt-homeui (2.84.8) stable; urgency=medium
 
   * Remove svg.original from configs
@@ -42,7 +48,7 @@ wb-mqtt-homeui (2.84.2) stable; urgency=medium
 
 wb-mqtt-homeui (2.84.1) stable; urgency=medium
 
-  * Do not disconnect from controller after receiving malformed data from MQTT 
+  * Do not disconnect from controller after receiving malformed data from MQTT
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 22 Apr 2024 09:29:38 +0500
 
@@ -66,7 +72,7 @@ wb-mqtt-homeui (2.82.9) stable; urgency=medium
 
 wb-mqtt-homeui (2.82.8) stable; urgency=medium
 
-  * Add SVG-dashboard's style and visibility bindings value validation 
+  * Add SVG-dashboard's style and visibility bindings value validation
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Apr 2024 16:02:20 +0500
 

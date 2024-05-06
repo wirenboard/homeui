@@ -2,16 +2,10 @@
 
 // Import slylesheets
 import '../styles/css/bootstrap.min.css';
-import '../styles/css/fixes.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';
 import '../styles/css/fontawesome5-solid.min.css';
-import '../styles/css/invoice.min.css';
-import '../styles/css/lockscreen.min.css';
-import '../styles/css/smartadmin-production-plugins.min.css';
 import '../styles/css/smartadmin-production.min.css';
-import '../styles/css/smartadmin-rtl.min.css';
-import '../styles/css/smartadmin-skins.min.css';
 import '../styles/css/icons.css';
 
 import '../styles/css/new.css';
@@ -23,7 +17,7 @@ import '../styles/css/wb-switch.css';
 import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
 import 'angular-xeditable/dist/css/xeditable.css';
-import '../lib/css-spinners/css/spinner/spinner.css';
+import '../styles/css/spinner.css';
 import '../styles/css/angular.rangeSlider.css';
 import 'ng-toast/dist/ngToast.css';
 
@@ -35,9 +29,6 @@ import '../styles/css/network-connections.css';
 import '../styles/css/svg-edit-page.css';
 import '../styles/css/svg-view-page.css';
 import '../styles/css/script-editor-page.css';
-
-// React-related imports
-import i18n from './i18n/react/config';
 
 // homeui modules: sevices
 import errorsService from './services/errors';
@@ -71,16 +62,11 @@ import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
-import WebUICtrl from './controllers/webUiController';
-import SystemCtrl from './controllers/systemController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
 import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
-import DashboardSvgCtrl from './controllers/dashboardSvgController';
-import DashboardSvgEditCtrl from './controllers/dashboardSvgEditController';
-import ScriptCtrl from './controllers/scriptController';
 
 // homeui modules: directives
 import cellDirective from './directives/cell';
@@ -101,24 +87,15 @@ import explicitChangesDirective from './directives/explicitchanges';
 import editableElasticTextareaDirective from './directives/editableelastictextarea';
 import userRolesDirective from './directives/user-roles.directive';
 import dashboardPickerDirective from './directives/dashboardpicker';
-import plotlyDirective from './directives/plotly';
 import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
-import networkConnectionsDirective from './react-directives/network-connections/network-connections';
-import cloudStatusMetaDirective from './react-directives/cloud-status/cloud-meta-status';
-import firmwareUpdateDirective from './react-directives/firmware-update/firmware-update';
-import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edit-svg-dashboard';
-import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
-import scriptEditorDirective from './react-directives/script-editor/script-editor';
-import deviceManagerDirective from './react-directives/device-manager/device-manager';
 
 // Angular routes
 import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm/index';
-import AngularJsonEditorModule from './components/json-editor/angular-json-editor';
 
 //-----------------------------------------------------------------------------
 /**
@@ -138,7 +115,6 @@ const module = angular
     'xeditable',
     'ui.select',
     'monospaced.elastic',
-    AngularJsonEditorModule,
     'oc.lazyLoad',
     'pascalprecht.translate',
     'angular-spinkit',
@@ -194,17 +170,12 @@ module
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('LoginCtrl', LoginCtrl)
-  .controller('WebUICtrl', WebUICtrl)
-  .controller('SystemCtrl', SystemCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
   .controller('AccessLevelCtrl', AccessLevelCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
-  .controller('NavigationCtrl', NavigationCtrl)
-  .controller('DashboardSvgCtrl', DashboardSvgCtrl)
-  .controller('DashboardSvgEditCtrl', DashboardSvgEditCtrl)
-  .controller('ScriptCtrl', ScriptCtrl);
+  .controller('NavigationCtrl', NavigationCtrl);
 
 module.directive('scriptForm', function (PageState) {
   'ngInject';
@@ -285,17 +256,9 @@ module
   .directive('editableElasticTextarea', editableElasticTextareaDirective)
   .directive('userRole', userRolesDirective)
   .directive('dashboardPicker', dashboardPickerDirective)
-  .directive('plotly', ['$window', plotlyDirective])
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('deviceManagerPage', deviceManagerDirective)
-  .directive('networkConnectionsPage', networkConnectionsDirective)
-  .directive('firmwareUpdateWidget', firmwareUpdateDirective)
-  .directive('cloudStatusMetaWidget', cloudStatusMetaDirective)
-  .directive('editSvgDashboardPage', editSvgDashboardDirective)
-  .directive('viewSvgDashboardPage', viewSvgDashboardDirective)
-  .directive('scriptEditorPage', scriptEditorDirective);
 
 module
   .config([
@@ -486,16 +449,16 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      var language = $window.localStorage['language'];
-      if (!language || i18n.languages.indexOf(language) === -1) {
-        var preferredLanguages = window.navigator.languages.map(lang => lang.split('-')[0]);
-        language =
-          preferredLanguages.filter(lang => i18n.languages.indexOf(lang) !== -1)[0] || 'en';
-        $window.localStorage.setItem('language', language);
+      let language = localStorage.getItem('language');
+      const supportedLanguages = ['en', 'ru'];
+      if (!language || !supportedLanguages.includes(language)) {
+        language = navigator.languages
+          .map((lang) => lang.split('-')[0])
+          .find((lang) => supportedLanguages.includes(lang)) || 'en';
+        localStorage.setItem('language', language);
       }
       $translate.use(language);
       tmhDynamicLocale.set(language);
-      i18n.changeLanguage(language);
 
       $rootScope.requestConfig(loginData);
 

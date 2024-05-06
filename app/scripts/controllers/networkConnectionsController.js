@@ -1,3 +1,5 @@
+import networkConnectionsDirective from '../react-directives/network-connections/network-connections';
+
 class NetworkConnectionsCtrl {
   constructor($scope, $stateParams, rolesFactory) {
     'ngInject';
@@ -15,4 +17,5 @@ class NetworkConnectionsCtrl {
 //-----------------------------------------------------------------------------
 export default angular
   .module('homeuiApp.config', [])
-  .controller('NetworkConnectionsCtrl', NetworkConnectionsCtrl);
+  .controller('NetworkConnectionsCtrl', NetworkConnectionsCtrl)
+  .directive('networkConnectionsPage', networkConnectionsDirective);

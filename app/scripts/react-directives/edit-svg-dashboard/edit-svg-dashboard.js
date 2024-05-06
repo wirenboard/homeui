@@ -3,6 +3,7 @@
 import ReactDOM from 'react-dom/client';
 import CreateEditSvgDashboardPage from './editSvgDashboardPage';
 import EditSvgDashboardPageStore from './pageStore';
+import { setReactLocale } from '../locale';
 
 function editSvgDashboardDirective(
   mqttClient,
@@ -13,6 +14,8 @@ function editSvgDashboardDirective(
   rolesFactory
 ) {
   'ngInject';
+
+  setReactLocale();
 
   return {
     restrict: 'E',

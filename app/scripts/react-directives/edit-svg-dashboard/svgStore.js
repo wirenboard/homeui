@@ -1,7 +1,7 @@
 'use strict';
 
 import { makeAutoObservable } from 'mobx';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 class SvgStore {
   constructor() {

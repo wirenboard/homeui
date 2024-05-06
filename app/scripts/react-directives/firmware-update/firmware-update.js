@@ -3,9 +3,12 @@
 import ReactDOM from 'react-dom/client';
 import CreateFirmwareUpdateWidget from './firmwareUpdateWidget';
 import FirmwareUpdateStore from './store';
+import { setReactLocale } from '../locale';
 
 function firmwareUpdateDirective(mqttClient, whenMqttReady) {
   'ngInject';
+
+  setReactLocale();
 
   return {
     restrict: 'E',
