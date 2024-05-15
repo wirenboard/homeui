@@ -86,6 +86,32 @@ export function createJSONEditor(element, schema, value, locale, root, data) {
   return new JSONEditor(element, options);
 }
 
+function conditionalOneOfValidator(schema, value, path) {
+  if (
+    schema.options &&
+    schema.options.wb &&
+    schema.options.wb.groups &&
+    schema.format != 'wb-multiple'
+  ) {
+    const editor = this.jsoneditor.getEditor(path);
+    const paramValues = editor?.conditions?.makeParamValues(value);
+    Object.entries(schema.properties).forEach(([key, subSchema]) => {
+      if (subSchema.hasOwnProperty('oneOf')) {
+        subSchema.oneOf.forEach(item => {
+          if (item.condition && !editor?.conditions?.check(item.condition, paramValues)) {
+            angular.merge(item.options, { wb: { error: 'disabled' } });
+          } else {
+            if (item.options && item.options.wb) {
+              delete item.options.wb.error;
+            }
+          }
+        });
+      }
+    });
+  }
+  return [];
+}
+
 function overrideJSONEditor(data) {
   JSONEditor.defaults.options.show_errors = 'always';
   JSONEditor.defaults.options.iconlib = 'wb-bootstrap3';
@@ -107,43 +133,7 @@ function overrideJSONEditor(data) {
     return errors;
   });
 
-  JSONEditor.defaults.custom_validators.push((schema, value, path) => {
-    if (
-      schema.options &&
-      schema.options.wb &&
-      schema.options.wb.groups &&
-      schema.format != 'wb-multiple'
-    ) {
-      var paramValues = [];
-      var paramNames = [];
-      Object.entries(value).forEach(([k, v]) => {
-        paramNames.push(k);
-        paramValues.push(v);
-      });
-      paramNames = paramNames.join(',');
-      var checkCondition = function (condition) {
-        try {
-          return new Function(paramNames, 'return ' + condition + ';').apply(null, paramValues);
-        } catch (e) {
-          return false;
-        }
-      };
-      Object.entries(schema.properties).forEach(([key, subSchema]) => {
-        if (subSchema.hasOwnProperty('oneOf')) {
-          subSchema.oneOf.forEach(item => {
-            if (item.condition && !checkCondition(item.condition)) {
-              angular.merge(item.options, { wb: { error: 'disabled' } });
-            } else {
-              if (item.options && item.options.wb) {
-                delete item.options.wb.error;
-              }
-            }
-          });
-        }
-      });
-    }
-    return [];
-  });
+  JSONEditor.defaults.custom_validators.push(conditionalOneOfValidator);
 
   JSONEditor.defaults.custom_validators.push((schema, value, path) => {
     const errors = [];
@@ -207,7 +197,9 @@ function overrideJSONEditor(data) {
     schema => schema.format === 'unknown-device' && 'unknown-device'
   );
   JSONEditor.defaults.resolvers.unshift(schema => schema.format === 'wb-optional' && 'wb-optional');
-  JSONEditor.defaults.resolvers.unshift(schema => schema.format === 'wb-autocomplete' && 'wb-autocomplete');
+  JSONEditor.defaults.resolvers.unshift(
+    schema => schema.format === 'wb-autocomplete' && 'wb-autocomplete'
+  );
   JSONEditor.defaults.resolvers.unshift(
     schema => schema.type === 'array' && schema.format === 'wb-array' && 'wb-array'
   );

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.85.1) stable; urgency=medium
+
+  * Fix WB-LED configuration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 15 May 2024 16:07:51 +0500
+
 wb-mqtt-homeui (2.85.0) stable; urgency=medium
 
   * Add separate chunks to decrease bundle weight
