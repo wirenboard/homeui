@@ -699,6 +699,10 @@ class HistoryCtrl {
       }
     });
     this.fixAxes(minValue, maxValue);
+    // 450 - default height in plotly.js
+    // 19 - minimal legend item height in plotly.js sources
+    // It can be bigger if font is bigger, but it is too difficult to calculate, so use minimal value
+    // See computeTextDimensions in components/legend/draw.js in plotly.js sources
     this.layoutConfig.height = 450 + this.chartConfig.length * 19;
   }
 
