@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.85.2) stable; urgency=medium
+
+  * Preserve history plot height
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 23 May 2024 14:02:48 +0500
+
 wb-mqtt-homeui (2.85.1) stable; urgency=medium
 
   * Fix WB-LED configuration

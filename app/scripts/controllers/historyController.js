@@ -699,6 +699,7 @@ class HistoryCtrl {
       }
     });
     this.fixAxes(minValue, maxValue);
+    this.layoutConfig.height = 450 + this.chartConfig.length * 19;
   }
 
   getMax(v1, v2) {
