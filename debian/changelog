@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.86.0) stable; urgency=medium
+
+  * Add duplicate MQTT id checking in wb-mqtt-serial config
+  * Show disconnected devices in wb-mqtt-serial config
+  * Add duplicate slave id checking in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 May 2024 09:38:50 +0500
+
 wb-mqtt-homeui (2.85.2) stable; urgency=medium
 
   * Preserve history plot height

@@ -108,7 +108,12 @@ function deviceManagerDirective(
       scope.root.render(CreateDeviceManagerPage({ pageStore: scope.store }));
       whenMqttReady()
         .then(() => {
-          scope.store.loadConfig();
+          return scope.store.loadConfig();
+        })
+        .then(() => {
+          mqttClient.addStickySubscription('/devices/+/meta/error', msg => {
+            scope.store.setDeviceDisconnected(msg.topic, msg.payload);
+          });
           return DeviceManagerProxy.hasMethod('Start');
         })
         .then(available => {

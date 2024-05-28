@@ -56,6 +56,7 @@ function getTabPaneContent(
         onCopyTab={onCopyTab}
         deviceTypeSelectOptions={deviceTypeSelectOptions}
         onDeviceTypeChange={onDeviceTypeChange}
+        onSetUniqueMqttTopic={() => tab.setUniqueMqttTopic()}
       />
     );
   }

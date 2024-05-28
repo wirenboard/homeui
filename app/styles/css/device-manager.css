@@ -97,6 +97,10 @@
     margin-top: 10px;
 }
 
+.device-manager-page .button-group button:not(:first-child) {
+    margin-left: 5px;
+}
+
 .device-manager-page .device-settings {
     flex-grow: 1;
     height: 1px;
@@ -188,6 +192,15 @@
     .device-manager-page .page-header {
         margin-top: 0px;
     }
+
+    .device-manager-page div.alert {
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .device-manager-page div.alert button {
+        flex-grow: 1;
+    }
 }
 
 .device-manager-page .add-devices-panel {
@@ -214,5 +227,14 @@
 }
 
 .device-manager-page .port-tab-content-header span{
+    flex-grow: 1;
+}
+
+.device-manager-page div.alert {
+    display: flex;
+    align-items: baseline;
+}
+
+.device-manager-page div.alert .alert-header {
     flex-grow: 1;
 }

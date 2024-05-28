@@ -109,7 +109,7 @@ class ConfigEditorPageStore {
   }
 
   get allowSave() {
-    return this.isDirty && this.tabs.isValid;
+    return this.isDirty && !this.tabs.hasInvalidConfig;
   }
 
   createPortTab(portConfig) {
@@ -157,7 +157,7 @@ class ConfigEditorPageStore {
         }
         if (port?.devices) {
           port.devices.forEach(device => {
-            portTab.children.push(this.createDeviceTab(device));
+            portTab.addChildren(this.createDeviceTab(device));
           });
         }
         this.tabs.addPortTab(portTab, true);
@@ -307,6 +307,11 @@ class ConfigEditorPageStore {
       this.loaded = false;
     }
     this.pageWrapperStore.setLoading(false);
+  }
+
+  setDeviceDisconnected(topic, error) {
+    const tab = this.tabs.findDeviceTabByTopic(topic);
+    tab?.setDisconnected(error == 'r');
   }
 }
 
