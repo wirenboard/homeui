@@ -52,8 +52,8 @@ class DeviceManagerPageStore {
     this.tabs.mobileModeStore.movedToTabsPanel();
   }
 
-  loadConfig() {
-    this.configEditorPageStore.load();
+  async loadConfig() {
+    await this.configEditorPageStore.load();
   }
 
   setDeviceManagerAvailable() {
@@ -66,6 +66,10 @@ class DeviceManagerPageStore {
 
   updateScanState(data) {
     this.scanPageStore.update(data);
+  }
+
+  setDeviceDisconnected(topic, error) {
+    this.configEditorPageStore.setDeviceDisconnected(topic, error);
   }
 
   makeConfiguredDevicesList(portTabChildren) {

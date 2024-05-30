@@ -29,7 +29,7 @@ const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore
 
 export const PortTab = observer(({ tab }) => {
   return (
-    <div className={'port-tab' + (tab.hasErrors ? ' error' : '')}>
+    <div className={'port-tab' + (tab.hasInvalidConfig ? ' error' : '')}>
       <CollapseButton
         hasChildren={tab.hasChildren}
         collapsed={tab.collapsed}
@@ -37,7 +37,7 @@ export const PortTab = observer(({ tab }) => {
         onRestore={tab.restore}
       />
       <span>{tab.name}</span>
-      {tab.hasErrors && <i className="glyphicon glyphicon-exclamation-sign"></i>}
+      {tab.hasInvalidConfig && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
 });
@@ -46,7 +46,7 @@ export const PortTabContent = ({ tab, index, onDeleteTab }) => {
   const { t } = useTranslation();
   return (
     <div>
-      {tab.childrenHasErrors && <ErrorBar msg={t('device-manager.errors.device-config')} />}
+      {tab.childrenHasInvalidConfig && <ErrorBar msg={t('device-manager.errors.device-config')} />}
       <div className="port-tab-content-header">
         <span>{tab.title}</span>
         <Button
