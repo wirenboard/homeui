@@ -55,20 +55,21 @@ class WidgetsCtrl {
       $scope.rows = Array.prototype.concat.apply(
         [],
         uiConfig.data.widgets.map((widget, i) => {
+          const cells = widget.cells.filter(cell => cell.id !== undefined);
           var primaryRow = {
             name: widget.name,
             id: widget.id,
             _id: i + 1,
             widget: widget,
             get rowSpan() {
-              return this.preview ? 1 : Math.max(widget.cells.length, 1);
+              return this.preview ? 1 : Math.max(cells.length, 1);
             },
             dashboards: dashboardMap[widget.id] || [],
             availableDashboards: dashboards.filter(
               d => !(dashboardMap[widget.id] || []).some(dm => d.id === dm.id) && !d.isSvg
             ),
             cellIndex: 1,
-            cell: widget.cells.length ? wrapWidgetCell(widget.cells[0]) : null,
+            cell: cells.length ? wrapWidgetCell(cells[0]) : null,
             show: true,
             preview: false,
             addDashboard: dashboard => {
@@ -79,7 +80,7 @@ class WidgetsCtrl {
             },
           };
           return [primaryRow].concat(
-            widget.cells.slice(1).map((cell, n) => ({
+            cells.slice(1).map((cell, n) => ({
               name: widget.name,
               id: widget.id,
               _id: widget.id.slice(6),

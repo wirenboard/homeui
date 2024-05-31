@@ -91,7 +91,7 @@ export const MakeFormFields = params => {
       return <FormStringEdit key={key} store={param} />;
     }
     if (param.type === 'boolean') {
-      return <FormCheckbox key={param.id} store={param} />;
+      return <FormCheckbox key={key} store={param} />;
     }
     if (param.type === 'options') {
       return <FormSelect key={key} store={param} />;

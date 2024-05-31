@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.86.1) stable; urgency=medium
+
+  * Fix History page infinite loading because of widgets without id
+  * Fix Widgets page display when there are widgets without id
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 31 May 2024 18:37:26 +0500
+
 wb-mqtt-homeui (2.86.0) stable; urgency=medium
 
   * Add duplicate MQTT id checking in wb-mqtt-serial config
