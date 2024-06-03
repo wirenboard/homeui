@@ -55,7 +55,7 @@ class WidgetsCtrl {
       $scope.rows = Array.prototype.concat.apply(
         [],
         uiConfig.data.widgets.map((widget, i) => {
-          const cells = widget.cells.filter(cell => cell.id !== undefined);
+          const cells = widget.cells.filter(cell => cell.id);
           var primaryRow = {
             name: widget.name,
             id: widget.id,

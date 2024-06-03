@@ -214,7 +214,7 @@ class HistoryCtrl {
         [],
         widgets.map(widget =>
           widget.cells
-            .filter(item => item.id !== undefined)
+            .filter(item => item.id)
             .map(item => {
               try {
                 const cell = DeviceData.cell(item.id);
