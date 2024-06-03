@@ -211,24 +211,26 @@ class HistoryCtrl {
       Array.prototype.concat.apply(
         [],
         widgets.map(widget =>
-          widget.cells.map(item => {
-            try {
-              const cell = DeviceData.cell(item.id);
-              const device = DeviceData.devices[cell.deviceId];
-              return this.makeChartsControlFromCell(device, cell, this.widgetChannelsMsg, widget);
-            } catch (er) {
-              const deviceControl = item.id.split('/');
-              return new ChartsControl(
-                deviceControl[0],
-                deviceControl[1],
-                undefined,
-                undefined,
-                undefined,
-                this.widgetChannelsMsg,
-                widget
-              );
-            }
-          })
+          widget.cells
+            .filter(item => item.id)
+            .map(item => {
+              try {
+                const cell = DeviceData.cell(item.id);
+                const device = DeviceData.devices[cell.deviceId];
+                return this.makeChartsControlFromCell(device, cell, this.widgetChannelsMsg, widget);
+              } catch (er) {
+                const deviceControl = item.id.split('/');
+                return new ChartsControl(
+                  deviceControl[0],
+                  deviceControl[1],
+                  undefined,
+                  undefined,
+                  undefined,
+                  this.widgetChannelsMsg,
+                  widget
+                );
+              }
+            })
         ),
         'name'
       )
