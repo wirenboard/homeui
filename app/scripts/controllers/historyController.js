@@ -78,7 +78,8 @@ class HistoryCtrl {
     historyUrlService,
     $locale,
     $translate,
-    $element
+    $element,
+    $rootScope
   ) {
     'ngInject';
 
@@ -99,6 +100,8 @@ class HistoryCtrl {
     this.$translate = $translate;
     this.$locale = $locale;
     this.$element = $element;
+
+    $rootScope.forceFullscreen = this.$stateParams.fullscreen === true;
 
     angular.extend(this, {
       scope: $scope,
@@ -329,7 +332,12 @@ class HistoryCtrl {
         : undefined
     );
 
-    this.$state.go('history.sample', { data }, { reload: true, inherit: false, notify: true });
+    let params = { data: data };
+    if (this.$stateParams.fullscreen) {
+      params.fullscreen = true;
+    }
+
+    this.$state.go('history.sample', params, { reload: true, inherit: false, notify: true });
   }
 
   // считаю часы + минуты в мсек
