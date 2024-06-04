@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.87.0) stable; urgency=medium
+
+  * Add configuration of device port parameters when adding it to wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 04 Jun 2024 12:30:35 +0500
+
 wb-mqtt-homeui (2.86.1) stable; urgency=medium
 
   * Fix History page infinite loading because of widgets without id

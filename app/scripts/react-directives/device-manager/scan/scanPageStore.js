@@ -2,6 +2,7 @@
 
 import { action, makeAutoObservable, makeObservable, observable } from 'mobx';
 import i18n from '../../../i18n/react/config';
+import SetupDevicesModalState from './setupDevicesModalState';
 
 class GlobalErrorStore {
   error = '';
@@ -103,7 +104,7 @@ class ScanningProgressStore {
 }
 
 class SingleDeviceStore {
-  constructor(scannedDevice, names, deviceTypes) {
+  constructor(scannedDevice, gotByFastScan, names, deviceTypes) {
     this.scannedDevice = scannedDevice;
     this.deviceTypes = deviceTypes;
     this.selected = !this.isUnknownType;
@@ -111,6 +112,7 @@ class SingleDeviceStore {
     this.misconfiguredPort = false;
     this.duplicateMqttTopic = false;
     this.names = names;
+    this.gotByFastScan = gotByFastScan;
 
     makeObservable(this, {
       scannedDevice: observable.ref,
@@ -218,7 +220,7 @@ class DevicesStore {
     makeObservable(this, { devices: observable, setDevices: action });
   }
 
-  addDevice(scannedDevice) {
+  addDevice(scannedDevice, gotByFastScan) {
     if (this.devicesByUuid.has(scannedDevice.uuid)) {
       return;
     }
@@ -251,6 +253,7 @@ class DevicesStore {
 
     let d = new SingleDeviceStore(
       scannedDevice,
+      gotByFastScan,
       deviceTypes.map(dt => this.deviceTypesStore.getName(dt)),
       deviceTypes
     );
@@ -262,12 +265,14 @@ class DevicesStore {
     }
 
     const configuredDevice = this.configuredDevices[scannedDevice.port.path];
+    // Devices with fast modbus support accept both 1 and 2 stop bits
+    // So it is not a misconfiguration if the setting differs from port's one
     if (
       configuredDevice &&
       (scannedDevice.cfg.baud_rate != configuredDevice.cfg.baud_rate ||
         scannedDevice.cfg.data_bits != configuredDevice.cfg.data_bits ||
         scannedDevice.cfg.parity != configuredDevice.cfg.parity ||
-        scannedDevice.cfg.stop_bits != configuredDevice.cfg.stop_bits)
+        (!gotByFastScan && scannedDevice.cfg.stop_bits != configuredDevice.cfg.stop_bits))
     ) {
       d.setMisconfiguredPort();
     }
@@ -285,11 +290,11 @@ class DevicesStore {
     this.devices.push(d);
   }
 
-  setDevices(scannedDevicesList) {
+  setDevices(scannedDevicesList, gotByFastScan) {
     if (!Array.isArray(scannedDevicesList)) {
       return;
     }
-    scannedDevicesList.forEach(device => this.addDevice(device));
+    scannedDevicesList.forEach(device => this.addDevice(device, gotByFastScan));
   }
 
   init(configuredDevices) {
@@ -346,7 +351,7 @@ class ScanPageStore {
     this.addDevicesFn = addDevicesFn;
     this.acceptUpdates = false;
     this.updateSerialConfigFn = updateSerialConfigFn;
-
+    this.setupDevicesModalState = new SetupDevicesModalState();
     makeAutoObservable(this);
   }
 
@@ -414,7 +419,7 @@ class ScanPageStore {
         data.scanning_ports,
         data.is_ext_scan
       );
-      this.devicesStore.setDevices(data.devices);
+      this.devicesStore.setDevices(data.devices, data.is_ext_scan);
       this.mqttStore.setStartupComplete();
       if (this.scanStore.actualState == ScanState.Stopped) {
         this.acceptUpdates = false;
@@ -422,15 +427,29 @@ class ScanPageStore {
     }
   }
 
-  updateSerialConfig() {
+  async updateSerialConfig() {
+    const hasMisconfiguredPorItems = this.devicesStore.devices.some(
+      d => d.selected && d.misconfiguredPort
+    );
+    if (
+      hasMisconfiguredPorItems &&
+      !(await this.setupDevicesModalState.show(hasMisconfiguredPorItems))
+    ) {
+      return;
+    }
     this.updateSerialConfigFn(
       this.devicesStore.devices
         .filter(d => d.selected && !d.scannedDevice.bootloader_mode)
         .map(d => {
           return {
+            title: d.title,
             port: d.scannedDevice.port.path,
             cfg: d.scannedDevice.cfg,
             type: d.deviceType,
+            gotByFastScan: d.gotByFastScan,
+            setup: {
+              port: d.misconfiguredPort && this.setupDevicesModalState.setupPort,
+            },
           };
         })
     );

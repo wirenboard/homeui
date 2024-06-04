@@ -22,6 +22,19 @@ import { getTranslation } from './jsonSchemaUtils';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
+function getErrorMessage(error) {
+  if (typeof error === 'object') {
+    if (error.data === 'EditorError' && error.code === CONFED_WRITE_FILE_ERROR) {
+      return i18n.t('device-manager.errors.write');
+    }
+    if (error.hasOwnProperty('code')) {
+      return `${error.message}: ${error.data}(${error.code})`;
+    }
+    return error.message;
+  }
+  return String(error);
+}
+
 function getPortSchemaCommon(schema, subSchemaName) {
   let res = cloneDeep(schema.definitions[subSchemaName]);
   res.definitions = {};
@@ -83,7 +96,15 @@ function makePortSelectOptions(portTabs) {
 }
 
 class ConfigEditorPageStore {
-  constructor(loadConfigFn, saveConfigFn, toMobileContent, toTabs, deviceTypesStore, rolesFactory) {
+  constructor(
+    loadConfigFn,
+    saveConfigFn,
+    toMobileContent,
+    toTabs,
+    deviceTypesStore,
+    rolesFactory,
+    setupDeviceFn
+  ) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
     this.pageWrapperStore = new PageWrapperStore();
@@ -96,6 +117,7 @@ class ConfigEditorPageStore {
     this.saveConfigFn = saveConfigFn;
     this.loadConfigFn = loadConfigFn;
     this.loaded = false;
+    this.setupDeviceFn = setupDeviceFn;
 
     makeObservable(this, {
       allowSave: computed,
@@ -238,7 +260,7 @@ class ConfigEditorPageStore {
       throw err;
     }
     let deviceTab = new DeviceTab({}, newDeviceType, this.deviceTypesStore);
-    this.tabs.addDeviceTab(portTab, deviceTab);
+    this.tabs.addDeviceTab(portTab, deviceTab, true);
     deviceTab.setDefaultData();
   }
 
@@ -263,11 +285,7 @@ class ConfigEditorPageStore {
       await this.saveConfigFn(this.makeConfigJson());
       this.tabs.commitData();
     } catch (err) {
-      if (err.data === 'EditorError' && err.code === CONFED_WRITE_FILE_ERROR) {
-        this.pageWrapperStore.setError(i18n.t('device-manager.errors.write'));
-      } else {
-        this.pageWrapperStore.setError(err.message);
-      }
+      this.pageWrapperStore.setError(getErrorMessage(err));
     }
     this.pageWrapperStore.setLoading(false);
   }
@@ -276,31 +294,49 @@ class ConfigEditorPageStore {
     tab.setDeviceType(type);
   }
 
+  async addScannedDeviceToConfig(device, errors, selectTab) {
+    if (!device.type) {
+      return false;
+    }
+
+    let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
+    if (!portTab) {
+      return false;
+    }
+
+    if (device.setup.port) {
+      try {
+        await this.setupPort(device, portTab);
+      } catch (err) {
+        errors.push(
+          i18n.t('device-manager.errors.setup', {
+            device: `${device.title} (${device.cfg.slave_id})`,
+            error: getErrorMessage(err),
+          })
+        );
+        return false;
+      }
+    }
+
+    let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
+    deviceConfig.slave_id = String(device.cfg.slave_id);
+    this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), selectTab);
+    return true;
+  }
+
   async addDevices(devices) {
+    let errors = [];
     try {
       this.pageWrapperStore.setLoading(true);
-      let added = false;
       this.loaded = false;
       this.pageWrapperStore.clearError();
-      await Promise.all(
-        devices.map(async device => {
-          if (!device.type) {
-            return;
-          }
-          let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
-          if (!portTab) {
-            return;
-          }
-          let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
-          deviceConfig.slave_id = String(device.cfg.slave_id);
-          this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), true);
-          added = true;
-        })
+      const addResults = await Promise.all(
+        devices.map(device => this.addScannedDeviceToConfig(device, errors, devices.length == 1))
       );
-
-      if (added) {
+      if (addResults.some(r => r)) {
         this.tabs.setModifiedStructure();
       }
+      this.setError(errors.join('\n'));
       this.loaded = true;
     } catch (err) {
       this.setError(err);
@@ -312,6 +348,50 @@ class ConfigEditorPageStore {
   setDeviceDisconnected(topic, error) {
     const tab = this.tabs.findDeviceTabByTopic(topic);
     tab?.setDisconnected(error == 'r');
+  }
+
+  async setupPort(device, portTab) {
+    let params = {
+      path: device.port,
+      items: [],
+    };
+
+    let commonCfg = {
+      slave_id: device.cfg.slave_id,
+      baud_rate: device.cfg.baud_rate,
+      stop_bits: device.cfg.stop_bits,
+      parity: device.cfg.parity,
+    };
+
+    if (device.cfg.baud_rate != portTab.editedData.baud_rate) {
+      let item = Object.assign({}, commonCfg);
+      item.cfg = { baud_rate: portTab.editedData.baud_rate };
+      params.items.push(item);
+      commonCfg.baud_rate = item.cfg.baud_rate;
+    }
+
+    if (device.cfg.stop_bits != portTab.editedData.stop_bits) {
+      // Devices with fast modbus support accept both 1 and 2 stop bits
+      // So it is not a misconfiguration if the setting differs from port's one
+      if (!device.gotByFastScan) {
+        let item = Object.assign({}, commonCfg);
+        item.cfg = { stop_bits: portTab.editedData.stop_bits };
+        params.items.push(item);
+        commonCfg.stop_bits = item.cfg.stop_bits;
+      }
+    }
+
+    if (device.cfg.parity != portTab.editedData.parity) {
+      const mapping = {
+        O: 1,
+        E: 2,
+      };
+      let item = Object.assign({}, commonCfg);
+      item.cfg = { parity: mapping[portTab.editedData.parity] || 0 };
+      params.items.push(item);
+    }
+    console.log('setupPort', params);
+    await this.setupDeviceFn(params);
   }
 }
 

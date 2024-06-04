@@ -14,7 +14,8 @@ class DeviceManagerPageStore {
     loadDeviceTypeFn,
     rolesFactory,
     startScanFn,
-    stopScanFn
+    stopScanFn,
+    setupDeviceFn
   ) {
     this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
     this.configEditorPageStore = new ConfigEditorPageStore(
@@ -23,7 +24,8 @@ class DeviceManagerPageStore {
       toMobileContent,
       toTabs,
       this.deviceTypesStore,
-      rolesFactory
+      rolesFactory,
+      setupDeviceFn
     );
     this.scanPageStore = new ScanPageStore(
       startScanFn,

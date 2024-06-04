@@ -6,6 +6,7 @@ import DevicesList from './mobile';
 import { Trans, useTranslation } from 'react-i18next';
 import { ScanState } from './scanPageStore';
 import { Spinner, ErrorBar, Button } from '../../common';
+import SetupDevicesModal from './setupDevicesModal';
 
 const InfoMessage = ({ msg }) => {
   if (!msg) {
@@ -166,6 +167,7 @@ export const ScanPage = observer(({ pageStore, onCancel }) => {
   return (
     <div className="scan-page device-manager-page">
       <ErrorBar msg={pageStore.globalError.error} />
+      <SetupDevicesModal store={pageStore.setupDevicesModalState} />
       <Header
         actualState={pageStore.scanStore.actualState}
         onUpdateSerialConfig={() => pageStore.updateSerialConfig()}
