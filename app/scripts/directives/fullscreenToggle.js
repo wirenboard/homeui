@@ -11,17 +11,6 @@ function fullscreenToggleDirective() {
 
       $rootScope.forceFullscreen = params.fullscreen === true;
 
-      $rootScope.checkFullscreen = () => {
-        const fullScreenElement =
-          document.fullscreenElement ||
-          document.webkitFullscreenElement ||
-          document.mozFullScreenElement ||
-          document.msFullscreenElement ||
-          null;
-
-        return fullScreenElement !== null || $rootScope.forceFullscreen;
-      };
-
       $rootScope.isHMI = params.hmi === true;
 
       const bgColor = $rootScope.isHMI && params.hmicolor !== '' ? params.hmicolor : '';

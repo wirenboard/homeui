@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.86.2) stable; urgency=medium
+
+  * Fix fullscreen mode on text dashboards and history page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jun 2024 16:48:15 +0500
+
 wb-mqtt-homeui (2.86.1) stable; urgency=medium
 
   * Fix History page infinite loading because of widgets without id
