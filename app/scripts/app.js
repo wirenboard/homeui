@@ -260,7 +260,7 @@ module
   .directive('dashboardPicker', dashboardPickerDirective)
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
-  .directive('fullscreenToggle', fullscreenToggleDirective)
+  .directive('fullscreenToggle', fullscreenToggleDirective);
 
 module
   .config([
@@ -316,6 +316,19 @@ module.run(($rootScope, $state, $transitions) => {
   $transitions.onSuccess({}, function (trans) {
     $rootScope.stateIsLoading = false;
   });
+
+  $rootScope.checkFullscreen = () => {
+    const fullScreenElement =
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement ||
+      null;
+
+    return fullScreenElement !== null || $rootScope.forceFullscreen;
+  };
+
+  $rootScope.forceFullscreen = false;
 });
 
 //-----------------------------------------------------------------------------
@@ -454,9 +467,10 @@ const realApp = angular
       let language = localStorage.getItem('language');
       const supportedLanguages = ['en', 'ru'];
       if (!language || !supportedLanguages.includes(language)) {
-        language = navigator.languages
-          .map((lang) => lang.split('-')[0])
-          .find((lang) => supportedLanguages.includes(lang)) || 'en';
+        language =
+          navigator.languages
+            .map(lang => lang.split('-')[0])
+            .find(lang => supportedLanguages.includes(lang)) || 'en';
         localStorage.setItem('language', language);
       }
       $translate.use(language);
