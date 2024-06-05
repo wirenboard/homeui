@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.86.3) stable; urgency=medium
+
+  * Add delete button for unknown devices in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 05 Jun 2024 10:24:11 +0500
+
 wb-mqtt-homeui (2.86.2) stable; urgency=medium
 
   * Fix fullscreen mode on text dashboards and history page
