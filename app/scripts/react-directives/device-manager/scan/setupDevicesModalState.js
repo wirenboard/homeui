@@ -5,7 +5,6 @@ import SimpleModalState from '../../components/modals/simpleModalState';
 import i18n from '../../../i18n/react/config';
 
 class SetupDevicesModalState {
-  showSetupPort = false;
   setupPort = true;
 
   constructor() {
@@ -18,8 +17,7 @@ class SetupDevicesModalState {
   }
 
   show(showSetupPort) {
-    this.showSetupPort = showSetupPort;
-    this.setupPort = showSetupPort;
+    this.setupPort = showSetupPort ? true : undefined;
     return this.simpleModalState.show(
       i18n.t('device-manager.labels.options'),
       i18n.t('device-manager.buttons.apply')

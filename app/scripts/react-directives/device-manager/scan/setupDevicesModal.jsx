@@ -8,7 +8,7 @@ const SetupDevicesModal = observer(({ store }) => {
   const { t } = useTranslation();
   return (
     <SimpleModal {...store.simpleModalState}>
-      {store.showSetupPort && (
+      {store.setupPort !== undefined && (
         <Checkbox
           label={t('device-manager.labels.setup-port')}
           value={store.setupPort}
