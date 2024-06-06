@@ -232,7 +232,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
 
   useRequestPreSend(({ items, options }) => {
     const params = {};
-    if (window.location.href.indexOf('wirenboard.cloud') !== -1) {
+    if (window.hasOwnProperty('wbCloudProxyInfo')) {  // filled by WB Cloud in auth tunnel's auth.js
       params.from_cloud = true;
     }
     if (store.resetMode) {
