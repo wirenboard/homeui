@@ -35,11 +35,13 @@ function findDeviceTypeSelectOption(options, value) {
   return res;
 }
 
-export const UnknownDeviceTabContent = observer(({ tab }) => {
+export const UnknownDeviceTabContent = observer(({ tab, onDeleteTab }) => {
   const { t } = useTranslation();
   return (
     <>
-      <ErrorBar msg={t('device-manager.errors.unknown-device-type', { type: tab.deviceType })} />
+      <ErrorBar msg={t('device-manager.errors.unknown-device-type', { type: tab.deviceType })}>
+        <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
+      </ErrorBar>
       <pre>{JSON.stringify(tab.data, null, 2)}</pre>
     </>
   );
@@ -112,7 +114,7 @@ export const DeviceTabContent = observer(
       return <ErrorBar msg={tab.error} />;
     }
     if (tab.isUnknownType) {
-      return <UnknownDeviceTabContent tab={tab} />;
+      return <UnknownDeviceTabContent tab={tab} onDeleteTab={onDeleteTab} />;
     }
     const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
     return (
