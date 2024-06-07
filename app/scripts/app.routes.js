@@ -26,8 +26,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'webUi' */ './controllers/webUiController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'webUi' */ './controllers/webUiController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -38,8 +39,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'system' */ './controllers/systemController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'system' */ './controllers/systemController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -65,8 +67,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'devices' */ './controllers/devicesController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'devices' */ './controllers/devicesController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -78,8 +81,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'devices' */ './controllers/devicesController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'devices' */ './controllers/devicesController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -91,8 +95,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'widgets' */ './controllers/widgetsController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'widgets' */ './controllers/widgetsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -104,8 +109,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'dashboards' */ './controllers/dashboardsController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'dashboards' */ './controllers/dashboardsController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -117,8 +123,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'dashboard' */ './controllers/dashboardController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'dashboard' */ './controllers/dashboardController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -135,8 +142,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'dashboard-svg' */ './controllers/dashboardSvgController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'dashboard-svg' */ './controllers/dashboardSvgController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -148,8 +156,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'dashboard-svg-edit' */ './controllers/dashboardSvgEditController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'dashboard-svg-edit' */ './controllers/dashboardSvgEditController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -161,8 +170,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'dashboard-svg-edit' */ './controllers/dashboardSvgEditController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'dashboard-svg-edit' */ './controllers/dashboardSvgEditController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -180,8 +190,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptsController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -193,8 +204,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -206,21 +218,23 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
     //...........................................................................
     .state('history', {
-      url: '/history',
+      url: '/history?{fullscreen:boolean}',
       controller: 'HistoryCtrl as $ctrl',
       template: require('../views/history.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'history' */ './controllers/historyController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'history' */ './controllers/historyController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -232,8 +246,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'history' */ './controllers/historyController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'history' */ './controllers/historyController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -245,8 +260,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'configs' */ './controllers/configsController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'configs' */ './controllers/configsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -259,8 +275,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'config' */ './controllers/configController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'config' */ './controllers/configController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -272,8 +289,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'network-connections' */ './controllers/networkConnectionsController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'network-connections' */ './controllers/networkConnectionsController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -284,8 +302,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'device-manager' */ './controllers/deviceManagerController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'device-manager' */ './controllers/deviceManagerController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -304,8 +323,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'logs' */ './controllers/logsController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'logs' */ './controllers/logsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })
@@ -317,8 +337,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'serial-metrics' */ './controllers/serialMetricsController')
-            .then((module) => $ocLazyLoad.load({ name: module.default.name }));
+          return import(
+            /* webpackChunkName: 'serial-metrics' */ './controllers/serialMetricsController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     });

@@ -63,8 +63,10 @@
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref-active="active" ui-sref="dashboards" translate>{{'navigation.menu.list'}}</a>
                           </li>
                           <li ng-repeat="d in dashboards()" dashboard-menu-item>
-                              <a data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
-                              <a data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
+                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
+                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
+                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id, fullscreen: true })" ui-sref-active="active">{{ d.name }}</a>
+                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id, fullscreen: true })" ui-sref-active="active">{{ d.name }}</a>
                           </li>
                       </ul>
                   </li>
@@ -75,7 +77,8 @@
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="widgets"><i class="glyphicon glyphicon-list-alt"></i> {{'navigation.menu.widgets' | translate}}</a>
                   </li>
                   <li ui-sref-active="active">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
+                      <a ng-if="forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history({fullscreen: true})"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
+                      <a ng-if="!forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
                   </li>
                   <li ng-if="!checkFullscreen() && isConnected()" ui-sref-active="active"
                       user-role="mtt" current-role="roles.current.role">
