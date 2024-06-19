@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceName, Port, SlaveId } from './common';
-import { Checkbox } from '../../common';
 import { observer } from 'mobx-react-lite';
 
 function ErrorRow({ error }) {
