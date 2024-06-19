@@ -246,7 +246,7 @@ class DevicesStore {
 
     const deviceTypes = this.deviceTypesStore.findDeviceTypes(
       scannedDevice.device_signature,
-      scannedDevice.fw
+      scannedDevice.fw?.version
     );
 
     let d = new SingleDeviceStore(
