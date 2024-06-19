@@ -1,6 +1,6 @@
 'use strict';
 
-import { makeObservable, observable, computed } from 'mobx';
+import { makeObservable, observable, computed, action } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
 import i18n from '../../../i18n/react/config';
 import SelectModalState from '../../components/modals/selectModalState';
@@ -21,6 +21,19 @@ import { SettingsTab } from './settingsTabStore';
 import { getTranslation } from './jsonSchemaUtils';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
+
+function getErrorMessage(error) {
+  if (typeof error === 'object') {
+    if (error.data === 'EditorError' && error.code === CONFED_WRITE_FILE_ERROR) {
+      return i18n.t('device-manager.errors.write');
+    }
+    if (error.hasOwnProperty('code')) {
+      return `${error.message}: ${error.data}(${error.code})`;
+    }
+    return error.message;
+  }
+  return String(error);
+}
 
 function getPortSchemaCommon(schema, subSchemaName) {
   let res = cloneDeep(schema.definitions[subSchemaName]);
@@ -82,8 +95,92 @@ function makePortSelectOptions(portTabs) {
   });
 }
 
+function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
+  if (device === undefined) {
+    return undefined;
+  }
+
+  let params = {
+    path: device.port,
+    items: [],
+  };
+
+  let commonCfg = {
+    slave_id: device.address,
+    baud_rate: device.baudRate,
+    stop_bits: device.stopBits,
+    parity: device.parity,
+  };
+
+  const numberSn = parseInt(device.sn);
+  if (!Number.isNaN(numberSn)) {
+    commonCfg.sn = numberSn;
+  }
+
+  if (device.baudRate != portBaudRate) {
+    let item = Object.assign({}, commonCfg);
+    item.cfg = { baud_rate: portBaudRate };
+    params.items.push(item);
+    commonCfg.baud_rate = item.cfg.baud_rate;
+  }
+
+  if (device.stopBits != portStopBits) {
+    // Devices with fast modbus support accept both 1 and 2 stop bits
+    // So it is not a misconfiguration if the setting differs from port's one
+    if (!device.gotByFastScan) {
+      let item = Object.assign({}, commonCfg);
+      item.cfg = { stop_bits: portStopBits };
+      params.items.push(item);
+      commonCfg.stop_bits = item.cfg.stop_bits;
+    }
+  }
+
+  if (device.parity != portParity) {
+    const mapping = {
+      O: 1,
+      E: 2,
+    };
+    let item = Object.assign({}, commonCfg);
+    item.cfg = { parity: mapping[portParity] || 0 };
+    params.items.push(item);
+  }
+
+  if (device.newAddress) {
+    let item = Object.assign({}, commonCfg);
+    item.cfg = {
+      slave_id: Number.isInteger(device.newAddress)
+        ? device.newAddress
+        : parseInt(device.newAddress),
+    };
+    params.items.push(item);
+  }
+
+  return params.items.length !== 0 ? params : undefined;
+}
+
+function getTopics(portTabs, deviceTypesStore) {
+  let topics = new Set();
+  portTabs.forEach(portTab => {
+    portTab.children.forEach(deviceTab => {
+      topics.add(
+        deviceTab.editedData.id ||
+          deviceTypesStore.getDefaultId(deviceTab.deviceType, deviceTab.editedData.slave_id)
+      );
+    });
+  });
+  return topics;
+}
+
 class ConfigEditorPageStore {
-  constructor(loadConfigFn, saveConfigFn, toMobileContent, toTabs, deviceTypesStore, rolesFactory) {
+  constructor(
+    loadConfigFn,
+    saveConfigFn,
+    toMobileContent,
+    toTabs,
+    deviceTypesStore,
+    rolesFactory,
+    setupDeviceFn
+  ) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
     this.pageWrapperStore = new PageWrapperStore();
@@ -96,11 +193,13 @@ class ConfigEditorPageStore {
     this.saveConfigFn = saveConfigFn;
     this.loadConfigFn = loadConfigFn;
     this.loaded = false;
+    this.setupDeviceFn = setupDeviceFn;
 
     makeObservable(this, {
       allowSave: computed,
       isDirty: computed,
       loaded: observable,
+      addDevices: action,
     });
   }
 
@@ -238,7 +337,7 @@ class ConfigEditorPageStore {
       throw err;
     }
     let deviceTab = new DeviceTab({}, newDeviceType, this.deviceTypesStore);
-    this.tabs.addDeviceTab(portTab, deviceTab);
+    this.tabs.addDeviceTab(portTab, deviceTab, true);
     deviceTab.setDefaultData();
   }
 
@@ -263,11 +362,7 @@ class ConfigEditorPageStore {
       await this.saveConfigFn(this.makeConfigJson());
       this.tabs.commitData();
     } catch (err) {
-      if (err.data === 'EditorError' && err.code === CONFED_WRITE_FILE_ERROR) {
-        this.pageWrapperStore.setError(i18n.t('device-manager.errors.write'));
-      } else {
-        this.pageWrapperStore.setError(err.message);
-      }
+      this.pageWrapperStore.setError(getErrorMessage(err));
     }
     this.pageWrapperStore.setLoading(false);
   }
@@ -276,37 +371,93 @@ class ConfigEditorPageStore {
     tab.setDeviceType(type);
   }
 
+  /**
+   * @typedef {Object} ScannedDevice
+   * @property {string} title
+   * @property {string} sn
+   * @property {number} address
+   * @property {number} newAddress
+   * @property {string} type
+   * @property {string} port
+   * @property {string} baudRate
+   * @property {string} parity
+   * @property {string} stopBits
+   * @property {boolean} gotByFastScan
+   *
+   * @param {ScannedDevice[]} devices
+   */
   async addDevices(devices) {
+    if (!Array.isArray(devices) || !devices.length) {
+      return;
+    }
     try {
       this.pageWrapperStore.setLoading(true);
-      let added = false;
       this.loaded = false;
       this.pageWrapperStore.clearError();
-      await Promise.all(
-        devices.map(async device => {
-          if (!device.type) {
-            return;
-          }
-          let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
-          if (!portTab) {
-            return;
-          }
-          let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
-          deviceConfig.slave_id = String(device.cfg.slave_id);
-          this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), true);
-          added = true;
-        })
+      let errors = [];
+      const setupResults = await Promise.all(
+        devices.map(device => this.setupDevice(device, errors))
       );
-
-      if (added) {
+      devices = devices.filter((_, i) => setupResults[i]);
+      if (devices.length) {
+        const topics = getTopics(this.tabs.portTabs, this.deviceTypesStore);
+        await Promise.all(
+          devices.map(device => this.addScannedDeviceToConfig(device, topics, devices.length == 1))
+        );
         this.tabs.setModifiedStructure();
       }
-      this.loaded = true;
+      this.setError(errors.join('\n'));
     } catch (err) {
       this.setError(err);
-      this.loaded = false;
     }
+    this.loaded = true;
     this.pageWrapperStore.setLoading(false);
+  }
+
+  async addScannedDeviceToConfig(device, topics, selectTab) {
+    let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
+    deviceConfig.slave_id = String(device.address);
+    const defaultId = this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
+    if (topics.includes(deviceConfig?.id ?? defaultId)) {
+      deviceConfig.id = defaultId + '_2';
+    }
+    let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
+    this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), selectTab);
+  }
+
+  async setupDevice(device, errors) {
+    if (!device.type) {
+      return false;
+    }
+
+    let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
+    if (!portTab) {
+      return false;
+    }
+
+    try {
+      const params = getDeviceSetupParams(
+        device,
+        portTab.editedData.baudRate,
+        portTab.editedData.parity,
+        portTab.editedData.stopBits
+      );
+      if (params) {
+        await this.setupDeviceFn(params);
+        device.address = device?.newAddress ?? device.address;
+      }
+    } catch (err) {
+      errors.push(
+        i18n.t('device-manager.errors.setup', {
+          device: `${device.title} (${device.address})`,
+          error: getErrorMessage(err),
+          interpolation: { escapeValue: false },
+        })
+      );
+      return false;
+    }
+
+    return true;
   }
 
   setDeviceDisconnected(topic, error) {

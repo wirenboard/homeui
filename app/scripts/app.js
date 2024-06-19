@@ -54,6 +54,7 @@ import serialMetricsProxyService from './services/serialMetricsProxy';
 import translationService from './services/translationService';
 import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
+import serialPortProxyService from './services/serialPortProxy';
 
 import handleDataService from './services/handle-data';
 
@@ -151,6 +152,7 @@ module
   .factory('TranslationService', translationService)
   .factory('DeviceManagerProxy', deviceManagerProxyService)
   .factory('SerialProxy', serialProxyService)
+  .factory('SerialPortProxy', serialPortProxyService)
 
   .service('handleData', handleDataService)
   .service('userAgentFactory', userAgentFactory)

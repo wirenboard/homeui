@@ -103,7 +103,7 @@ class ScanningProgressStore {
 }
 
 class SingleDeviceStore {
-  constructor(scannedDevice, names, deviceTypes) {
+  constructor(scannedDevice, gotByFastScan, names, deviceTypes) {
     this.scannedDevice = scannedDevice;
     this.deviceTypes = deviceTypes;
     this.selected = !this.isUnknownType;
@@ -111,6 +111,7 @@ class SingleDeviceStore {
     this.misconfiguredPort = false;
     this.duplicateMqttTopic = false;
     this.names = names;
+    this.gotByFastScan = gotByFastScan;
 
     makeObservable(this, {
       scannedDevice: observable.ref,
@@ -191,56 +192,17 @@ class SingleDeviceStore {
   }
 }
 
-function isCompletelySameDevice(scannedDevice, configuredDevice) {
-  return (
-    configuredDevice.slave_id == scannedDevice.cfg.slave_id &&
-    configuredDevice.signatures.includes(scannedDevice.device_signature) &&
-    configuredDevice.sn == scannedDevice.sn
-  );
-}
-
-function isPotentiallySameDevice(scannedDevice, configuredDevice) {
-  return (
-    configuredDevice.slave_id == scannedDevice.cfg.slave_id &&
-    configuredDevice.signatures.includes(scannedDevice.device_signature) &&
-    !configuredDevice.sn
-  );
-}
-
 class DevicesStore {
   constructor(deviceTypesStore) {
     this.devices = [];
-    this.configuredDevices = {};
     this.devicesByUuid = new Set();
-    this.topics = new Set();
     this.deviceTypesStore = deviceTypesStore;
 
     makeObservable(this, { devices: observable, setDevices: action });
   }
 
-  addDevice(scannedDevice) {
+  addDevice(scannedDevice, gotByFastScan) {
     if (this.devicesByUuid.has(scannedDevice.uuid)) {
-      return;
-    }
-
-    const configuredDevicesWithSameAddress = this.configuredDevices[
-      scannedDevice.port.path
-    ]?.devices?.filter(d => d.slave_id == scannedDevice.cfg.slave_id);
-
-    if (configuredDevicesWithSameAddress?.some(d => isCompletelySameDevice(scannedDevice, d))) {
-      return;
-    }
-
-    // Config has devices without SN. They are configured but never polled, maybe found device is one of them
-    const maybeSameDevices = configuredDevicesWithSameAddress?.filter(d =>
-      isPotentiallySameDevice(scannedDevice, d)
-    );
-    if (maybeSameDevices.find(d => d.uuidFoundByScan == scannedDevice.uuid)) {
-      return;
-    }
-    const maybeSameDevice = maybeSameDevices.find(d => !d.uuidFoundByScan);
-    if (maybeSameDevice) {
-      maybeSameDevice.uuidFoundByScan = scannedDevice.uuid;
       return;
     }
 
@@ -249,59 +211,27 @@ class DevicesStore {
       scannedDevice.fw
     );
 
-    let d = new SingleDeviceStore(
+    let deviceStore = new SingleDeviceStore(
       scannedDevice,
+      gotByFastScan,
       deviceTypes.map(dt => this.deviceTypesStore.getName(dt)),
       deviceTypes
     );
-    if (
-      configuredDevicesWithSameAddress?.length ||
-      this.devices.some(foundDevice => foundDevice.address == scannedDevice.slave_id)
-    ) {
-      d.setDuplicateSlaveId();
-    }
-
-    const configuredDevice = this.configuredDevices[scannedDevice.port.path];
-    if (
-      configuredDevice &&
-      (scannedDevice.cfg.baud_rate != configuredDevice.cfg.baud_rate ||
-        scannedDevice.cfg.data_bits != configuredDevice.cfg.data_bits ||
-        scannedDevice.cfg.parity != configuredDevice.cfg.parity ||
-        scannedDevice.cfg.stop_bits != configuredDevice.cfg.stop_bits)
-    ) {
-      d.setMisconfiguredPort();
-    }
-
-    if (!d.isUnknownType) {
-      const topic = this.deviceTypesStore.getDefaultId(d.deviceType, scannedDevice.cfg.slave_id);
-      if (this.topics.has(topic)) {
-        d.setDuplicateMqttTopic();
-      } else {
-        this.topics.add(topic);
-      }
-    }
 
     this.devicesByUuid.add(scannedDevice.uuid);
-    this.devices.push(d);
+    this.devices.push(deviceStore);
   }
 
-  setDevices(scannedDevicesList) {
+  setDevices(scannedDevicesList, gotByFastScan) {
     if (!Array.isArray(scannedDevicesList)) {
       return;
     }
-    scannedDevicesList.forEach(device => this.addDevice(device));
+    scannedDevicesList.forEach(device => this.addDevice(device, gotByFastScan));
   }
 
-  init(configuredDevices) {
+  init(deviceFilter) {
     this.devices = [];
-    this.configuredDevices = configuredDevices;
     this.devicesByUuid.clear();
-    this.topics.clear();
-    Object.values(configuredDevices).forEach(port => {
-      port.devices.forEach(device => {
-        this.topics.add(device.topic);
-      });
-    });
   }
 }
 
@@ -327,25 +257,15 @@ class MqttStateStore {
   }
 }
 
-class ScanPageStore {
-  constructor(
-    startScanFn,
-    stopScanFn,
-    cancelFn,
-    addDevicesFn,
-    deviceTypesStore,
-    updateSerialConfigFn
-  ) {
+class CommonScanStore {
+  constructor(startScanFn, stopScanFn, deviceTypesStore) {
     this.startScanFn = startScanFn;
     this.stopScanFn = stopScanFn;
     this.mqttStore = new MqttStateStore();
     this.scanStore = new ScanningProgressStore();
     this.devicesStore = new DevicesStore(deviceTypesStore);
     this.globalError = new GlobalErrorStore();
-    this.cancelFn = cancelFn;
-    this.addDevicesFn = addDevicesFn;
     this.acceptUpdates = false;
-    this.updateSerialConfigFn = updateSerialConfigFn;
 
     makeAutoObservable(this);
   }
@@ -370,8 +290,7 @@ class ScanPageStore {
     }
   }
 
-  startExtendedScanning(configuredDevices) {
-    this.devicesStore.init(configuredDevices);
+  startExtendedScanning() {
     this.scanStore.startScan();
     this.globalError.clearError();
     this.startScanFn(true)
@@ -396,45 +315,55 @@ class ScanPageStore {
 
   // Expected props structure
   // https://github.com/wirenboard/wb-device-manager/blob/main/README.md
-  update(dataToRender) {
-    // wb-device-manager could be stopped, so it will clear state topic and send empty string
-    if (dataToRender == '') {
-      this.setDeviceManagerUnavailable();
-    } else {
-      const data = JSON.parse(dataToRender);
-      if (data.error) {
-        this.globalError.setError(data.error);
-      }
-      if (!this.acceptUpdates) {
-        return;
-      }
-      this.scanStore.setStateFromMqtt(
-        data.scanning,
-        data.progress,
-        data.scanning_ports,
-        data.is_ext_scan
-      );
-      this.devicesStore.setDevices(data.devices);
-      this.mqttStore.setStartupComplete();
-      if (this.scanStore.actualState == ScanState.Stopped) {
-        this.acceptUpdates = false;
-      }
+  update(data) {
+    if (data.error) {
+      this.globalError.setError(data.error);
+    }
+    if (!this.acceptUpdates) {
+      return;
+    }
+    this.scanStore.setStateFromMqtt(
+      data.scanning,
+      data.progress,
+      data.scanning_ports,
+      data.is_ext_scan
+    );
+    this.devicesStore.setDevices(data.devices, data.is_ext_scan);
+    this.mqttStore.setStartupComplete();
+    if (this.scanStore.actualState == ScanState.Stopped) {
+      this.acceptUpdates = false;
     }
   }
 
-  updateSerialConfig() {
-    this.updateSerialConfigFn(
-      this.devicesStore.devices
-        .filter(d => d.selected && !d.scannedDevice.bootloader_mode)
-        .map(d => {
-          return {
-            port: d.scannedDevice.port.path,
-            cfg: d.scannedDevice.cfg,
-            type: d.deviceType,
-          };
-        })
+  startScanning() {
+    this.devicesStore.init();
+    this.startExtendedScanning();
+  }
+
+  getSelectedDevices() {
+    return this.devicesStore.devices
+      .filter(d => d.selected && !d.scannedDevice.bootloader_mode)
+      .map(d => {
+        return {
+          title: d.title,
+          port: d.port,
+          sn: d.sn,
+          address: d.scannedDevice.cfg.slave_id,
+          baudRate: d.scannedDevice.cfg.baud_rate,
+          parity: d.scannedDevice.cfg.parity,
+          stopBits: d.scannedDevice.cfg.stop_bits,
+          type: d.deviceType,
+          gotByFastScan: d.gotByFastScan,
+        };
+      });
+  }
+
+  get hasSelectedItems() {
+    return (
+      this.devicesStore.devices.some(d => d.selected) &&
+      this.scanStore.actualState !== ScanState.Started
     );
   }
 }
 
-export default ScanPageStore;
+export default CommonScanStore;

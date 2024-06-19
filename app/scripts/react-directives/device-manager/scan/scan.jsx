@@ -5,7 +5,7 @@ import DevicesTable from './desktop';
 import DevicesList from './mobile';
 import { Trans, useTranslation } from 'react-i18next';
 import { ScanState } from './scanPageStore';
-import { Spinner, ErrorBar, Button } from '../../common';
+import { Spinner, Button } from '../../common';
 
 const InfoMessage = ({ msg }) => {
   if (!msg) {
@@ -17,36 +17,6 @@ const InfoMessage = ({ msg }) => {
         <Trans>{msg}</Trans>
       </strong>
     </p>
-  );
-};
-
-const ToConfigButton = ({ onClick, actualState, hasDevices }) => {
-  const { t } = useTranslation();
-  const scanInProgress = actualState == ScanState.Started;
-  return (
-    <Button
-      type={'success'}
-      label={t('scan.buttons.to-serial')}
-      onClick={onClick}
-      disabled={scanInProgress || !hasDevices}
-    />
-  );
-};
-
-const Header = ({ actualState, onUpdateSerialConfig, hasDevices, onCancel }) => {
-  const { t } = useTranslation();
-  return (
-    <h1 className="page-header">
-      <span>{t('scan.title')}</span>
-      <div className="pull-right button-group">
-        <ToConfigButton
-          onClick={onUpdateSerialConfig}
-          actualState={actualState}
-          hasDevices={hasDevices}
-        />
-        <Button label={t('scan.buttons.cancel')} onClick={onCancel} />
-      </div>
-    </h1>
   );
 };
 
@@ -130,55 +100,36 @@ const BottomPanel = observer(({ scanStore, nothingFound, onStartScanning, onStop
   return null;
 });
 
-const ScanPageBody = observer(({ pageStore, onStartScanning, onStopScanning }) => {
+const ScanPageBody = observer(({ store }) => {
   const isDesktop = useMediaQuery({ minWidth: 874 });
-  if (pageStore.mqttStore.waitStartup) {
+  if (store.mqttStore.waitStartup) {
     return <Spinner />;
   }
-  const nothingFound = pageStore.devicesStore.devices.length == 0;
+  const nothingFound = store.devicesStore.devices.length == 0;
   if (isDesktop) {
     return (
       <>
-        {!nothingFound && <DevicesTable devices={pageStore.devicesStore.devices} />}
+        {!nothingFound && <DevicesTable devices={store.devicesStore.devices} />}
         <BottomPanel
-          scanStore={pageStore.scanStore}
+          scanStore={store.scanStore}
           nothingFound={nothingFound}
-          onStartScanning={onStartScanning}
-          onStopScanning={onStopScanning}
+          onStartScanning={() => store.startStandardScanning()}
+          onStopScanning={() => store.stopScanning()}
         />
       </>
     );
   }
   return (
     <div className="mobile-devices-list">
-      {!nothingFound && <DevicesList devices={pageStore.devicesStore.devices} />}
+      {!nothingFound && <DevicesList devices={store.devicesStore.devices} />}
       <BottomPanel
-        scanStore={pageStore.scanStore}
+        scanStore={store.scanStore}
         nothingFound={nothingFound}
-        onStartScanning={onStartScanning}
-        onStopScanning={onStopScanning}
+        onStartScanning={() => store.startStandardScanning()}
+        onStopScanning={() => store.stopScanning()}
       />
     </div>
   );
 });
 
-export const ScanPage = observer(({ pageStore, onCancel }) => {
-  return (
-    <div className="scan-page device-manager-page">
-      <ErrorBar msg={pageStore.globalError.error} />
-      <Header
-        actualState={pageStore.scanStore.actualState}
-        onUpdateSerialConfig={() => pageStore.updateSerialConfig()}
-        hasDevices={pageStore.devicesStore.devices.length}
-        onCancel={onCancel}
-      />
-      <ScanPageBody
-        pageStore={pageStore}
-        onStartScanning={() => pageStore.startStandardScanning()}
-        onStopScanning={() => pageStore.stopScanning()}
-      />
-    </div>
-  );
-});
-
-export default ScanPage;
+export default ScanPageBody;

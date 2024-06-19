@@ -1,16 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import ScanPage from './scan/scan.jsx';
+import NewDevicesScanPage from './scan/newDevicesScanPage.jsx';
 import ConfigEditorPage from './config-editor/configEditorPage.jsx';
 
 const DeviceManagerPage = observer(({ pageStore }) => {
-  if (pageStore.showScan) {
-    return (
-      <ScanPage
-        pageStore={pageStore.scanPageStore}
-        onCancel={() => pageStore.cancelAddingDevices()}
-      />
-    );
+  if (pageStore.newDevicesScanPageStore.active) {
+    return <NewDevicesScanPage pageStore={pageStore.newDevicesScanPageStore} />;
   }
   return (
     <ConfigEditorPage
