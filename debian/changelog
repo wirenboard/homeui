@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.86.5) stable; urgency=medium
+
+  * Fix loading of device templates with defined firmware versions
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 19 Jun 2024 10:21:47 +0500
+
 wb-mqtt-homeui (2.86.4) stable; urgency=medium
 
   * Make tables responsive (json-editor updated to 2.5.3-wb11)
