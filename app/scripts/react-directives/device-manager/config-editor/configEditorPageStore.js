@@ -379,9 +379,9 @@ class ConfigEditorPageStore {
    * @property {number} newAddress
    * @property {string} type
    * @property {string} port
-   * @property {string} baudRate
+   * @property {number} baudRate
    * @property {string} parity
-   * @property {string} stopBits
+   * @property {number} stopBits
    * @property {boolean} gotByFastScan
    *
    * @param {ScannedDevice[]} devices
@@ -418,7 +418,7 @@ class ConfigEditorPageStore {
     let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
     deviceConfig.slave_id = String(device.address);
     const defaultId = this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
-    if (topics.includes(deviceConfig?.id ?? defaultId)) {
+    if (topics.has(deviceConfig?.id ?? defaultId)) {
       deviceConfig.id = defaultId + '_2';
     }
     let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
@@ -438,9 +438,9 @@ class ConfigEditorPageStore {
     try {
       const params = getDeviceSetupParams(
         device,
-        portTab.editedData.baudRate,
+        portTab.editedData.baud_rate,
         portTab.editedData.parity,
-        portTab.editedData.stopBits
+        portTab.editedData.stop_bits
       );
       if (params) {
         await this.setupDeviceFn(params);
