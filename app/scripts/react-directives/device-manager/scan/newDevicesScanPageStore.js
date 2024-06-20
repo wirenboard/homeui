@@ -22,7 +22,10 @@ function isPotentiallySameDevice(scannedDevice, configuredDevice) {
 }
 
 function getConfiguredDeviceByAddress(configuredDevices, scannedDevice) {
-  return configuredDevices[scannedDevice.port.path]?.filter(
+  if (!configuredDevices.hasOwnProperty(scannedDevice.port.path)) {
+    return [];
+  }
+  return configuredDevices[scannedDevice.port.path].filter(
     d => d.address == scannedDevice.cfg.slave_id
   );
 }
@@ -125,14 +128,15 @@ class NewDevicesScanPageStore {
       scannedDevice
     );
 
-    if (configuredDevicesWithSameAddress?.some(d => isCompletelySameDevice(scannedDevice, d))) {
+    if (configuredDevicesWithSameAddress.some(d => isCompletelySameDevice(scannedDevice, d))) {
       return false;
     }
 
     // Config has devices without SN. They are configured but never polled, maybe found device is one of them
-    const maybeSameDevices = configuredDevicesWithSameAddress?.filter(d =>
+    const maybeSameDevices = configuredDevicesWithSameAddress.filter(d =>
       isPotentiallySameDevice(scannedDevice, d)
     );
+
     if (maybeSameDevices.find(d => d.uuidFoundByScan == scannedDevice.uuid)) {
       return false;
     }
