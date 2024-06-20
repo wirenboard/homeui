@@ -1,10 +1,28 @@
 'use strict';
 
-import { makeObservable, observable, computed, action } from 'mobx';
-import { cloneDeep, isEqual } from 'lodash';
+import { makeObservable, observable, computed, action, autorun } from 'mobx';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import i18n from '../../../i18n/react/config';
 import { getTranslation } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
+
+function checkDuplicateSlaveIds(deviceTabs) {
+  const tabsBySlaveId = deviceTabs.reduce((acc, tab) => {
+    if (tab.isModbusDevice) {
+      acc[tab.editedData.slave_id] ??= [];
+      acc[tab.editedData.slave_id].push(tab);
+    }
+    return acc;
+  }, {});
+  Object.values(tabsBySlaveId).forEach(tabs => {
+    if (tabs.length == 1) {
+      tabs[0].setSlaveIdIsDuplicate(false);
+    } else {
+      tabs.forEach(tab => tab.setSlaveIdIsDuplicate(true));
+    }
+  });
+}
 
 export function makeSerialPortTabName(data) {
   return data?.path?.replace(/^\/dev\/tty/, '');
@@ -26,27 +44,30 @@ export class PortTab {
     this.data = data;
     this.editedData = cloneDeep(data);
     this.schema = schema;
-    this.isValid = true;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
     this.collapsed = false;
     this.nameGenerationFn = nameGenerationFn;
     this.children = [];
+    this.reactionDisposers = [];
 
     this.updateName();
 
     makeObservable(this, {
       name: observable,
-      isValid: observable,
+      hasJsonValidationErrors: observable,
       isDirty: observable,
       collapsed: observable,
       setData: action.bound,
       updateName: action,
       commitData: action,
+      addChildren: action,
+      deleteChildren: action,
       collapse: action.bound,
       restore: action.bound,
       children: observable,
       hasChildren: computed,
-      hasErrors: computed,
+      hasInvalidConfig: computed,
     });
   }
 
@@ -57,13 +78,13 @@ export class PortTab {
   setData(data, errors) {
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.isValid = errors.length == 0;
+    this.hasJsonValidationErrors = errors.length != 0;
     this.updateName();
   }
 
   commitData() {
     this.data = cloneDeep(this.editedData);
-    this.isValid = true;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
   }
 
@@ -81,15 +102,29 @@ export class PortTab {
     this.collapsed = false;
   }
 
+  addChildren(deviceTab) {
+    const disposer = autorun(() => checkDuplicateSlaveIds(this.children));
+    this.children.push(deviceTab);
+    this.reactionDisposers.push(disposer);
+  }
+
+  deleteChildren(index) {
+    if (this.reactionDisposers.length > index) {
+      this.reactionDisposers[index]();
+      this.reactionDisposers.splice(index, 1);
+    }
+    this.children.splice(index, 1);
+  }
+
   get hasChildren() {
     return this.children.length != 0;
   }
 
-  get childrenHasErrors() {
-    return this.children.some(child => !child.isValid);
+  get childrenHasInvalidConfig() {
+    return this.children.some(child => child.hasInvalidConfig);
   }
 
-  get hasErrors() {
-    return !this.isValid || this.childrenHasErrors;
+  get hasInvalidConfig() {
+    return this.hasJsonValidationErrors || this.childrenHasInvalidConfig;
   }
 }

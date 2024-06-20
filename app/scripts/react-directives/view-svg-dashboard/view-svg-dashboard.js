@@ -1,10 +1,11 @@
 'use strict';
 
+import { reaction } from 'mobx';
 import ReactDOM from 'react-dom/client';
 import CreateViewSvgDashboardPage from './viewSvgDashboardPage';
 import ViewSvgDashboardPageStore from './pageStore';
 import { checkFullscreen } from '../components/fullscreen/fullscreenStore';
-import { reaction } from 'mobx';
+import { setReactLocale } from '../locale';
 
 function viewSvgDashboardDirective(
   mqttClient,
@@ -16,6 +17,7 @@ function viewSvgDashboardDirective(
 ) {
   'ngInject';
 
+  setReactLocale();
   return {
     restrict: 'E',
     scope: {

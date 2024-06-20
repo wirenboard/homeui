@@ -2,7 +2,76 @@ wb-mqtt-homeui (2.84.7) stable; urgency=medium
 
   * Detect, is running via cloud or not; pass "from_cloud" flag
 
- -- Vladimir Romanov <v.romanov@wirenboard.com>  Thu, 02 May 2024 11:02:21 +0300
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Thu, 20 Jun 2024 12:23:56 +0300
+
+wb-mqtt-homeui (2.86.5) stable; urgency=medium
+
+  * Fix loading of device templates with defined firmware versions
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 19 Jun 2024 10:21:47 +0500
+
+wb-mqtt-homeui (2.86.4) stable; urgency=medium
+
+  * Make tables responsive (json-editor updated to 2.5.3-wb11)
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 07 Jun 2024 09:00:00 +0400
+
+wb-mqtt-homeui (2.86.3) stable; urgency=medium
+
+  * Add delete button for unknown devices in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 05 Jun 2024 10:24:11 +0500
+
+wb-mqtt-homeui (2.86.2) stable; urgency=medium
+
+  * Fix fullscreen mode on text dashboards and history page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jun 2024 16:48:15 +0500
+
+wb-mqtt-homeui (2.86.1) stable; urgency=medium
+
+  * Fix History page infinite loading because of widgets without id
+  * Fix Widgets page display when there are widgets without id
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 31 May 2024 18:37:26 +0500
+
+wb-mqtt-homeui (2.86.0) stable; urgency=medium
+
+  * Add duplicate MQTT id checking in wb-mqtt-serial config
+  * Show disconnected devices in wb-mqtt-serial config
+  * Add duplicate slave id checking in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 May 2024 09:38:50 +0500
+
+wb-mqtt-homeui (2.85.2) stable; urgency=medium
+
+  * Preserve history plot height
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 23 May 2024 14:02:48 +0500
+
+wb-mqtt-homeui (2.85.1) stable; urgency=medium
+
+  * Fix WB-LED configuration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 15 May 2024 16:07:51 +0500
+
+wb-mqtt-homeui (2.85.0) stable; urgency=medium
+
+  * Add separate chunks to decrease bundle weight
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 3 May 2024 16:20:00 +0300
+
+wb-mqtt-homeui (2.84.8) stable; urgency=medium
+
+  * Remove svg.original from configs
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 May 2024 15:40:00 +0400
+
+wb-mqtt-homeui (2.84.7) stable; urgency=medium
+
+  * Move selection to next device after deletion on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Apr 2024 18:43:57 +0500
 
 wb-mqtt-homeui (2.84.6) stable; urgency=medium
 
@@ -36,7 +105,7 @@ wb-mqtt-homeui (2.84.2) stable; urgency=medium
 
 wb-mqtt-homeui (2.84.1) stable; urgency=medium
 
-  * Do not disconnect from controller after receiving malformed data from MQTT 
+  * Do not disconnect from controller after receiving malformed data from MQTT
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 22 Apr 2024 09:29:38 +0500
 
@@ -60,7 +129,7 @@ wb-mqtt-homeui (2.82.9) stable; urgency=medium
 
 wb-mqtt-homeui (2.82.8) stable; urgency=medium
 
-  * Add SVG-dashboard's style and visibility bindings value validation 
+  * Add SVG-dashboard's style and visibility bindings value validation
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Apr 2024 16:02:20 +0500
 

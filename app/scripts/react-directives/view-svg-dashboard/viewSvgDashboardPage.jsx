@@ -54,7 +54,7 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
               >
                 {store.dashboards.map((d, index) => (
                   <ViewSvgDashboard
-                    key={d.dashboard.id}
+                    key={d.dashboard.id || index}
                     store={d}
                     canEdit={store.editAccessLevelStore.accessGranted}
                   />

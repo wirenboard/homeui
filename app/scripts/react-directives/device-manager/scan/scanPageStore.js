@@ -246,7 +246,7 @@ class DevicesStore {
 
     const deviceTypes = this.deviceTypesStore.findDeviceTypes(
       scannedDevice.device_signature,
-      scannedDevice.fw
+      scannedDevice.fw?.version
     );
 
     let d = new SingleDeviceStore(
@@ -397,9 +397,6 @@ class ScanPageStore {
   // Expected props structure
   // https://github.com/wirenboard/wb-device-manager/blob/main/README.md
   update(dataToRender) {
-    if (!this.acceptUpdates) {
-      return;
-    }
     // wb-device-manager could be stopped, so it will clear state topic and send empty string
     if (dataToRender == '') {
       this.setDeviceManagerUnavailable();
@@ -407,6 +404,9 @@ class ScanPageStore {
       const data = JSON.parse(dataToRender);
       if (data.error) {
         this.globalError.setError(data.error);
+      }
+      if (!this.acceptUpdates) {
+        return;
       }
       this.scanStore.setStateFromMqtt(
         data.scanning,

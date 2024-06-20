@@ -1,7 +1,8 @@
 'use strict';
 
-import { makeObservable, observable, action } from 'mobx';
-import { cloneDeep, isEqual } from 'lodash';
+import { makeObservable, observable, action, computed } from 'mobx';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import i18n from '../../../i18n/react/config';
 import { TabType } from './tabsStore';
 
@@ -12,26 +13,31 @@ export class SettingsTab {
     this.data = data;
     this.editedData = cloneDeep(data);
     this.schema = schema;
-    this.isValid = true;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
 
     makeObservable(this, {
-      isValid: observable,
+      hasJsonValidationErrors: observable,
       isDirty: observable,
       setData: action.bound,
       commitData: action,
+      hasInvalidConfig: computed,
     });
   }
 
   setData(data, errors) {
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.isValid = errors.length == 0;
+    this.hasJsonValidationErrors = errors.length != 0;
   }
 
   commitData() {
     this.data = cloneDeep(this.editedData);
-    this.isValid = true;
+    this.hasJsonValidationErrors = false;
     this.isDirty = false;
+  }
+
+  get hasInvalidConfig() {
+    return this.hasJsonValidationErrors;
   }
 }

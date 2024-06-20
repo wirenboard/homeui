@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import React, { useLayoutEffect, useRef, useState } from 'react';
+import isEqual from 'lodash/isEqual';
 import i18n from '../../../i18n/react/config';
 import { createJSONEditor } from '../../../json-editor/wb-json-editor';
-import { isEqual } from 'lodash';
 
 const JsonEditor = observer(props => {
   const container = useRef();

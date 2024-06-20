@@ -1,17 +1,14 @@
-
-
 .pointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
-.pointer-none{
-    pointer-events:none;
-    opacity: 0.5;  /*cursor: auto;*/
+.pointer-none {
+  pointer-events:none;
+  opacity: 0.5;
 }
-
 
 .custom-tooltip .tooltip-inner {
-    max-width: 300px;
+  max-width: 300px;
 }
 
 .custom-tooltip.cell-name-tooltip {
@@ -23,119 +20,106 @@
 }
 
 .show-on-parent-hover {
-    display: none;
+  display: none;
 }
 
 *:hover > .show-on-parent-hover {
-    display: block;
+  display: block;
 }
 
 .border-bottom {
-    border-bottom: 1px solid #ccc
-}
-
-#jarviswidget-fullscreen-mode .widget-body {
-    min-height: 100vh;
-}
-
-#jarviswidget-fullscreen-mode .only-fullscreen, .not-fullscreen {
-    display: block!important
-}
-
-
-.only-fullscreen, #jarviswidget-fullscreen-mode .not-fullscreen{
-    display: none!important
+  border-bottom: 1px solid #ccc
 }
 
 .alert-danger a {
-    color: #404040;
+  color: #404040;
 }
 
 .label.label-custom {
-    margin-right: 10px;
-    padding: .2em .4em .3em .6em;
+  margin-right: 10px;
+  padding: .2em .4em .3em .6em;
 }
 
 .table-scroll {
-    display: block;
-    max-width: 100%;
-    min-height: 500px;
-    overflow: auto
+  display: block;
+  max-width: 100%;
+  min-height: 500px;
+  overflow: auto
 }
 
 div[uib-datepicker-popup-wrap] {
-    z-index: 10000;
-    position: relative;
+  z-index: 10000;
+  position: relative;
 }
 
 .relative {
-    position: relative;
+  position: relative;
 }
 
 .floating {
-    position: absolute;
+  position: absolute;
 }
 
 .spinner-floating {
-    position: relative;
-    width: 33px;
-    margin: 0 auto;
+  position: relative;
+  width: 33px;
+  margin: 0 auto;
 }
 
 .spinner-floating .spinner{
-    position: absolute;
+  position: absolute;
 }
 
 .hidden-picker .form-group.uib-time {
-     pointer-events: none;
-     opacity: 0.9
- }
+  pointer-events: none;
+  opacity: 0.9
+}
 
 .turn-off-group-button .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
-    border-bottom-right-radius: 2px;
-    border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
 }
 
 .stretch-height {
-    min-height: calc(100vh - 200px)
+  min-height: calc(100vh - 200px)
 }
 
 .relative {
-    position: relative;
+  position: relative;
 }
 .progress-history{
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 300px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 300px;
 }
 .history-page select{
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 .history-page .progress {
-    margin-bottom: 1px;
-    height: 32px;
+  margin-bottom: 1px;
+  height: 32px;
 }
 .history-page .progress-bar > div {
-    font-size: 11px;
-    margin-top: 7px;
+  font-size: 11px;
+  margin-top: 7px;
 }
 
 @media (max-width: 991px){
-    .history-page .progress {
-        height: 4px;
-        margin-bottom: 1px;
-    }
-    .history-page select{
-        margin-bottom: 1px;
-    }
-    .progress-bar {
-        font-size: 1px;
-    }
+  .history-page .progress {
+    height: 4px;
+    margin-bottom: 1px;
+  }
+  .history-page select{
+    margin-bottom: 1px;
+  }
+  .progress-bar {
+    font-size: 1px;
+  }
 }
 
 .device-panel .display-cell{
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .cell.cell-value {
@@ -143,41 +127,41 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .cell-value .value {
-    margin-right: -10px;
-    width: 110px;
-    display: inline-block;
+  margin-right: -10px;
+  width: 110px;
+  display: inline-block;
 }
 
 .cell-value span{
-    display: inline-block;
-    vertical-align: bottom;
+  display: inline-block;
+  vertical-align: bottom;
 }
 
 .value .int {
-    display: inline-block;
-    width: 50px;
+  display: inline-block;
+  width: 50px;
 }
 
 .value .int span {
-    float: right;
+  float: right;
 }
 
 .cell-value .units {
-    width: 20px;
-    white-space: nowrap;
+  width: 20px;
+  white-space: nowrap;
 }
 
 .value .decimal, .value .comma {
-    margin-left: -7px;
+  margin-left: -7px;
 }
 
 .value .decimal {
-    width: 6ch;
-    overflow: hidden;
+  width: 6ch;
+  overflow: hidden;
 }
 
 .ma-0 {
-    margin: 0px;
+  margin: 0px;
 }
 
 .wb-navbar-brand {
@@ -337,5 +321,23 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .notes {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+  padding: 8px 10px
+}
+
+a[ng-click] {
+  text-decoration: none;
+}
+
+a[ng-click]:hover {
+  text-decoration: none;
+  cursor: pointer;
 }

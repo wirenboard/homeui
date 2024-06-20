@@ -1,8 +1,13 @@
 'use strict';
 
+import { setReactLocale } from '../react-directives/locale';
+import viewSvgDashboardDirective from '../react-directives/view-svg-dashboard/view-svg-dashboard';
+
 class DashboardSvgController {
   constructor($scope, $stateParams, rolesFactory, $state) {
     'ngInject';
+
+    setReactLocale();
 
     this.$state = $state;
     $scope.roles = rolesFactory;
@@ -16,4 +21,7 @@ class DashboardSvgController {
   }
 }
 
-export default DashboardSvgController;
+export default angular
+  .module('homeuiApp.dashboardsvg', [])
+  .controller('DashboardSvgCtrl', DashboardSvgController)
+  .directive('viewSvgDashboardPage', viewSvgDashboardDirective);

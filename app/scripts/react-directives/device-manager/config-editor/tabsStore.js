@@ -1,6 +1,77 @@
 'use strict';
 
-import { action, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { action, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
+
+function getMqttIdFromTopic(topic) {
+  const components = topic.split('/');
+  return components?.[2];
+}
+
+class UniqueMqttIdChecker {
+  constructor() {
+    this.idToTab = {};
+    this.tabToId = new Map();
+  }
+
+  updateState(deviceTabsWithSameId) {
+    deviceTabsWithSameId.forEach((tabItem, index, arr) => {
+      const others = arr.filter(tab => tab != tabItem);
+      tabItem.tab.setDevicesWithTheSameId(others.map(d => `${d.tab.name} (${d.port.name})`));
+    });
+  }
+
+  addTab(portTab, deviceTab) {
+    const disposer = reaction(
+      () => {
+        return deviceTab.editedData;
+      },
+      () => {
+        this.updateTab(deviceTab);
+      }
+    );
+    const id = deviceTab.mqttId;
+    this.idToTab[id] ??= [];
+    this.idToTab[id].push({ tab: deviceTab, port: portTab, disposer: disposer });
+    this.tabToId.set(deviceTab, id);
+    this.updateState(this.idToTab[id]);
+  }
+
+  extractTabItem(id, deviceTab) {
+    let deviceTabs = this.idToTab[id] || [];
+    let tabIndex = deviceTabs.findIndex(tab => tab.tab === deviceTab);
+    if (tabIndex == -1) {
+      return;
+    }
+    const tabItem = deviceTabs[tabIndex];
+    deviceTabs.splice(tabIndex, 1);
+    this.idToTab[id] = deviceTabs;
+    this.tabToId.delete(deviceTab);
+    this.updateState(deviceTabs);
+    return tabItem;
+  }
+
+  removeTab(deviceTab) {
+    this.extractTabItem(deviceTab.mqttId, deviceTab).disposer();
+  }
+
+  updateTab(deviceTab) {
+    const id = this.tabToId.get(deviceTab);
+    if (id === undefined || id == deviceTab.mqttId) {
+      return;
+    }
+
+    const tabItem = this.extractTabItem(id, deviceTab);
+    if (!tabItem) {
+      return;
+    }
+
+    let deviceTabs = this.idToTab[deviceTab.mqttId] || [];
+    deviceTabs.push(tabItem);
+    this.idToTab[deviceTab.mqttId] = deviceTabs;
+    this.tabToId.set(deviceTab, deviceTab.mqttId);
+    this.updateState(deviceTabs);
+  }
+}
 
 export const TabType = {
   PORT: 'port',
@@ -54,6 +125,7 @@ export class TabsStore {
     // Has added, deleted items or items with changed type
     this.hasModifiedStructure = false;
     this.mobileModeStore = new MobileModeTabsStore(toMobileContent, toTabs);
+    this.uniqueMqttIdChecker = new UniqueMqttIdChecker();
 
     makeAutoObservable(this);
   }
@@ -74,6 +146,7 @@ export class TabsStore {
     tab.children.forEach(child => {
       i++;
       this.items.splice(i, 0, child);
+      this.uniqueMqttIdChecker.addTab(tab, child);
     });
   }
 
@@ -82,8 +155,9 @@ export class TabsStore {
     if (portTabIndex == -1) {
       return;
     }
-    this.items[portTabIndex].children.push(deviceTab);
-    this.items[portTabIndex].restore();
+    portTab.addChildren(deviceTab);
+    portTab.restore();
+    this.uniqueMqttIdChecker.addTab(portTab, deviceTab);
     let i = portTabIndex + 1;
     while (i < this.items.length && this.items[i]?.type == TabType.DEVICE) {
       i++;
@@ -120,19 +194,33 @@ export class TabsStore {
 
   deleteSelectedTab() {
     const tab = this.items[this.selectedTabIndex];
-    if (tab?.type == TabType.PORT) {
-      this.items.splice(this.selectedTabIndex, tab.children.length + 1);
-    } else if (tab?.type == TabType.DEVICE) {
-      let portTab = this.selectedPortTab;
-      portTab.children.splice(portTab.children.indexOf(tab), 1);
-      this.items.splice(this.selectedTabIndex, 1);
-    } else {
-      return;
+    switch (tab?.type) {
+      case TabType.PORT: {
+        tab.children.forEach(deviceTab => this.uniqueMqttIdChecker.removeTab(deviceTab));
+        this.items.splice(this.selectedTabIndex, tab.children.length + 1);
+        break;
+      }
+      case TabType.DEVICE: {
+        let portTab = this.selectedPortTab;
+        const childIndex = portTab.children.indexOf(tab);
+        portTab.deleteChildren(childIndex);
+        this.items.splice(this.selectedTabIndex, 1);
+        this.uniqueMqttIdChecker.removeTab(tab);
+        if (
+          (childIndex == 0 && !portTab.children.length) ||
+          (childIndex != 0 && childIndex == portTab.children.length)
+        ) {
+          this.selectedTabIndex = this.selectedTabIndex - 1;
+        }
+        break;
+      }
+      default: {
+        return;
+      }
     }
-
-    this.selectedTabIndex = 0;
     this.hasModifiedStructure = true;
     this.mobileModeStore.showTabsPanel();
+    this.onSelectTab(this.selectedTabIndex);
   }
 
   copySelectedTab() {
@@ -162,8 +250,8 @@ export class TabsStore {
     return this.items.filter(item => item.type == TabType.PORT);
   }
 
-  get isValid() {
-    return this.items.every(item => item.isValid);
+  get hasInvalidConfig() {
+    return this.items.some(item => item.hasInvalidConfig);
   }
 
   get isDirty() {
@@ -190,5 +278,15 @@ export class TabsStore {
 
   setModifiedStructure() {
     this.hasModifiedStructure = true;
+  }
+
+  findDeviceTabByTopic(topic) {
+    const mqttId = getMqttIdFromTopic(topic);
+    return this.items.find(item => {
+      if (item.type == TabType.DEVICE) {
+        return item.mqttId == mqttId;
+      }
+      return false;
+    });
   }
 }

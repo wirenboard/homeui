@@ -1,7 +1,8 @@
 'use strict';
 
 import { action, observable, makeObservable, computed } from 'mobx';
-import { isEqual, cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 
 export class SingleConnection {
   name = '';

@@ -1,10 +1,11 @@
 'use strict';
 
 import ReactDOM from 'react-dom/client';
-import CreateDeviceManagerPage from './deviceManagerPage';
 import { autorun } from 'mobx';
+import CreateDeviceManagerPage from './deviceManagerPage';
 import DeviceManagerPageStore from './deviceManagerPageStore';
 import i18n from '../../i18n/react/config';
+import { setReactLocale } from '../locale';
 
 function deviceManagerDirective(
   whenMqttReady,
@@ -19,6 +20,8 @@ function deviceManagerDirective(
   $rootScope
 ) {
   'ngInject';
+
+  setReactLocale();
 
   return {
     restrict: 'E',
@@ -105,7 +108,12 @@ function deviceManagerDirective(
       scope.root.render(CreateDeviceManagerPage({ pageStore: scope.store }));
       whenMqttReady()
         .then(() => {
-          scope.store.loadConfig();
+          return scope.store.loadConfig();
+        })
+        .then(() => {
+          mqttClient.addStickySubscription('/devices/+/meta/error', msg => {
+            scope.store.setDeviceDisconnected(msg.topic, msg.payload);
+          });
           return DeviceManagerProxy.hasMethod('Start');
         })
         .then(available => {
