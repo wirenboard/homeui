@@ -33,6 +33,7 @@ class ModbusAddressSet {
     }
 
     if (!usedAddresses.has(address)) {
+      usedAddresses.add(address);
       return address;
     }
 
