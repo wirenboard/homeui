@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.86.6) stable; urgency=medium
+
+  * Detect, is running via cloud or not; pass "from_cloud" flag
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Thu, 20 Jun 2024 12:23:56 +0300
+
 wb-mqtt-homeui (2.86.5) stable; urgency=medium
 
   * Fix loading of device templates with defined firmware versions

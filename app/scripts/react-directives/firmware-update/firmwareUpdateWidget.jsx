@@ -231,9 +231,15 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemErrorListener(store.onUploadError);
 
   useRequestPreSend(({ items, options }) => {
-    const params = store.resetMode
-      ? { factory_reset: true }
-      : { expand_rootfs: store.expandRootfs };
+    const params = {};
+    if (window.hasOwnProperty('wbCloudProxyInfo')) {  // filled by WB Cloud in auth tunnel's auth.js
+      params.from_cloud = true;
+    }
+    if (store.resetMode) {
+      params.factory_reset = true;
+    } else {
+      params.expand_rootfs = store.expandRootFs;
+    }
     return {
       options: { params }, // will be merged with the rest of the options
     };
