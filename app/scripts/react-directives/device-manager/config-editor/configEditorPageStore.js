@@ -112,9 +112,12 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     parity: device.parity,
   };
 
-  const numberSn = parseInt(device.sn);
-  if (!Number.isNaN(numberSn)) {
-    commonCfg.sn = numberSn;
+  if (device.gotByFastScan) {
+    // Specifying SN will result fast modbus request
+    const numberSn = parseInt(device.sn);
+    if (!Number.isNaN(numberSn)) {
+      commonCfg.sn = numberSn;
+    }
   }
 
   if (device.baudRate != portBaudRate) {
