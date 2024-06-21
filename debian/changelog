@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.84.7) stable; urgency=medium
+wb-mqtt-homeui (2.86.6) stable; urgency=medium
 
   * Detect, is running via cloud or not; pass "from_cloud" flag
 
