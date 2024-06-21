@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.88.0) stable; urgency=medium
+
+  * Find disconnected wb-mqtt-serial devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 20 Jun 2024 11:03:47 +0500
+
 wb-mqtt-homeui (2.87.0) stable; urgency=medium
 
   * Add configuration of device port parameters when adding it to wb-mqtt-serial config

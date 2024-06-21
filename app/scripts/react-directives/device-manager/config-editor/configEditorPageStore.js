@@ -35,6 +35,14 @@ function getErrorMessage(error) {
   return String(error);
 }
 
+function getDeviceSetupErrorMessage(device, error) {
+  return i18n.t('device-manager.errors.setup', {
+    device: `${device.title} (${device.address})`,
+    error: getErrorMessage(error),
+    interpolation: { escapeValue: false },
+  });
+}
+
 function getPortSchemaCommon(schema, subSchemaName) {
   let res = cloneDeep(schema.definitions[subSchemaName]);
   res.definitions = {};
@@ -399,7 +407,14 @@ class ConfigEditorPageStore {
       this.pageWrapperStore.clearError();
       let errors = [];
       const setupResults = await Promise.all(
-        devices.map(device => this.setupDevice(device, errors))
+        devices.map(async device => {
+          try {
+            return await this.setupDevice(device);
+          } catch (err) {
+            errors.push(getDeviceSetupErrorMessage(device, err));
+          }
+          return false;
+        })
       );
       devices = devices.filter((_, i) => setupResults[i]);
       if (devices.length) {
@@ -428,7 +443,7 @@ class ConfigEditorPageStore {
     this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), selectTab);
   }
 
-  async setupDevice(device, errors) {
+  async setupDevice(device) {
     if (!device.type) {
       return false;
     }
@@ -438,26 +453,15 @@ class ConfigEditorPageStore {
       return false;
     }
 
-    try {
-      const params = getDeviceSetupParams(
-        device,
-        portTab.editedData.baud_rate,
-        portTab.editedData.parity,
-        portTab.editedData.stop_bits
-      );
-      if (params) {
-        await this.setupDeviceFn(params);
-        device.address = device?.newAddress ?? device.address;
-      }
-    } catch (err) {
-      errors.push(
-        i18n.t('device-manager.errors.setup', {
-          device: `${device.title} (${device.address})`,
-          error: getErrorMessage(err),
-          interpolation: { escapeValue: false },
-        })
-      );
-      return false;
+    const params = getDeviceSetupParams(
+      device,
+      portTab.editedData.baud_rate,
+      portTab.editedData.parity,
+      portTab.editedData.stop_bits
+    );
+    if (params) {
+      await this.setupDeviceFn(params);
+      device.address = device?.newAddress ?? device.address;
     }
 
     return true;
