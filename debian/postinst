@@ -39,6 +39,14 @@ function install_default_config()
     ucf --debconf-ok $BOARD_CONF $CONFFILE
 }
 
+function is_config_untouched()
+{
+    for fname in $(ls /usr/share/wb-mqtt-homeui/config.*.json); do
+        diff -q $CONFFILE $fname && return 0
+    done
+    return 1
+}
+
 case "$1" in
     configure)
 
@@ -58,7 +66,11 @@ case "$1" in
             if `dpkg --compare-versions "${OLD_VERSION}" "lt" "2.0~beta9"`; then
                 convert_config
             else
-                install_default_config
+                if is_config_untouched; then
+                    cp $BOARD_CONF $CONFFILE
+                else
+                    install_default_config
+                fi
             fi
         fi
     ;;
