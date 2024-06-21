@@ -1,9 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceName, SlaveId, Port } from './common';
-import { Checkbox } from '../../common';
 
-const Row = ({ children }) => {
+export const Row = ({ children }) => {
   return (
     <div className="row">
       <div className="col-xs-12">{children}</div>
@@ -11,7 +10,7 @@ const Row = ({ children }) => {
   );
 };
 
-const RowWithTitle = ({ title, children }) => {
+export const RowWithTitle = ({ title, children }) => {
   return (
     <div className="row">
       <div className="col-xs-3">{title}</div>

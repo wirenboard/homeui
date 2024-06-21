@@ -52,6 +52,7 @@ export class DeviceTab {
       setSlaveIdIsDuplicate: action,
       setDevicesWithTheSameId: action,
       setDisconnected: action,
+      setLoading: action,
       hasInvalidConfig: computed,
     });
   }
@@ -191,5 +192,9 @@ export class DeviceTab {
 
   setDisconnected(value) {
     this.isDisconnected = value;
+  }
+
+  setLoading(value) {
+    this.loading = value;
   }
 }

@@ -43,7 +43,8 @@
     text-align: right;
 }
 
-.scan-page .scrollable-table-wrapper {
+.scan-page .scrollable-table-wrapper,
+.scan-page .scrollable-panels-wrapper {
     overflow-y: auto;
 }
 
@@ -115,4 +116,21 @@
 
 .scan-page .multiline-tag {
     width: 100%;
+}
+
+@media (min-width: 767px) {
+    .scan-page #confirm-setup-device-addresses-modal .modal-dialog {
+        width: 800px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .scan-page #confirm-setup-device-addresses-modal .modal-dialog {
+        width: 1000px;
+    }
+}
+
+.scan-page #confirm-setup-device-addresses-modal .modal-dialog .scrollable-table-wrapper,
+.scan-page #confirm-setup-device-addresses-modal .modal-dialog .scrollable-panels-wrapper {
+    max-height: 65vh;
 }

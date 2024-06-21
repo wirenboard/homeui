@@ -47,6 +47,7 @@ export const Modal = ({ id, active, onCancel, children }) => {
       var backdrop = document.createElement('div');
       backdrop.classList.add('modal-backdrop');
       backdrop.classList.add('in');
+      backdrop.style.zIndex = 1040;
       document.body.appendChild(backdrop);
       document.body.classList.add('modal-open');
       return () => {

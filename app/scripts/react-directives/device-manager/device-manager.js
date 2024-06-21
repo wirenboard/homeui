@@ -16,6 +16,7 @@ function deviceManagerDirective(
   $state,
   $transitions,
   SerialProxy,
+  SerialPortProxy,
   mqttClient,
   $rootScope
 ) {
@@ -50,6 +51,10 @@ function deviceManagerDirective(
         };
       };
 
+      const setupPort = deviceCfg => {
+        return SerialPortProxy.Setup(deviceCfg);
+      };
+
       const toMobileContent = () => {
         $state.go('serial-config.properties', { hint: true });
       };
@@ -80,7 +85,8 @@ function deviceManagerDirective(
         loadDeviceTypeSchema,
         rolesFactory,
         startScan,
-        stopScan
+        stopScan,
+        setupPort
       );
 
       scope.deleteTransitionHook = $transitions.onBefore({}, function (transition) {
