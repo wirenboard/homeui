@@ -52,21 +52,10 @@ install:
 	install -m 0644 dist/robots.txt $(DESTDIR)/var/www/
 	install -m 0644 dist/index.html $(DESTDIR)/var/www/
 
-	install -d $(DESTDIR)/usr/share/wb-mqtt-homeui
-	install -m 0644 config.default.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
-	install -m 0644 config.wb5.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
-	install -m 0644 config.wb6.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
-	install -m 0644 config.wb7.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
-	install -m 0644 config.wb74.json $(DESTDIR)/usr/share/wb-mqtt-homeui/
-
-	install -d $(DESTDIR)/usr/lib/wb-mqtt-homeui
-	install -m 0755 convert_config_v1v2.py $(DESTDIR)/usr/lib/wb-mqtt-homeui/convert_config_v1v2
-
-	install -d $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
-	install -m 0644 webui.schema.json $(DESTDIR)/usr/share/wb-mqtt-confed/schemas/webui.schema.json
-
-	install -d  $(DESTDIR)/etc/wb-configs.d
-	install -m 0644 wb-configs.rules $(DESTDIR)/etc/wb-configs.d/20wb-mqtt-homeui
+	install -Dm0644 config.*.json -t $(DESTDIR)/usr/share/wb-mqtt-homeui
+	install -Dm0755 convert_config_v1v2.py $(DESTDIR)/usr/lib/wb-mqtt-homeui/convert_config_v1v2
+	install -Dm0644 webui.schema.json -t $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
+	install -Dm0644 wb-configs.rules $(DESTDIR)/etc/wb-configs.d/20wb-mqtt-homeui
 
 uninstall:
 	rm -fR $(DESTDIR)/var/www/*
