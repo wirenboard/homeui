@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1-wb103) stable; urgency=medium
+
+  * Postinst: replace config with a correct board-one, if config was not edited by user
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Mon, 24 Jun 2024 10:12:21 +0300
+
 wb-mqtt-homeui (2.82.1-wb102) stable; urgency=medium
 
   * Add wb8 config
