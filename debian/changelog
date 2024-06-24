@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.86.7) stable; urgency=medium
+
+  * Postinst: replace config with a correct board-one, if config was not edited by user
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Mon, 24 Jun 2024 10:12:21 +0300
+
 wb-mqtt-homeui (2.86.6) stable; urgency=medium
 
   * Detect, is running via cloud or not; pass "from_cloud" flag
