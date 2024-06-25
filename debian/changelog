@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.86.9) stable; urgency=medium
+
+  * Fix tooltip of dropdown editor for channels with defined set of values
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Jun 2024 15:22:17 +0500
+
 wb-mqtt-homeui (2.86.8) stable; urgency=medium
 
   * Add dropdown editor for channels with defined set of values 
