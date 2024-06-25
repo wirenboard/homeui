@@ -1,12 +1,12 @@
 <div
-  ng-click="cell.copy(cell.value, cell.readOnly || cell.isEnum())"
+  ng-click="cell.copy(cell.value, cell.readOnly)"
   tooltip-popup-close-delay="500"
   uib-tooltip="'{{ copyText }}' {{ 'widgets.labels.copy' | translate}}"
   tooltip-trigger="{
     'outsideClick': 'mouseleave',
     'focus': 'mouseleave'
   }"
-  tooltip-enable="{{ cell.readOnly || cell.isEnum() }}"
+  tooltip-enable="{{ cell.readOnly }}"
   class="text-cell"
 >
   <p
