@@ -435,9 +435,12 @@ class ConfigEditorPageStore {
   async addScannedDeviceToConfig(device, topics, selectTab) {
     let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
     deviceConfig.slave_id = String(device.address);
-    const defaultId = this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
-    if (topics.has(deviceConfig?.id ?? defaultId)) {
-      deviceConfig.id = defaultId + '_2';
+    const deviceId =
+      deviceConfig?.id || this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
+    if (topics.has(deviceId)) {
+      deviceConfig.id = deviceId + '_2';
+    } else {
+      topics.add(deviceId);
     }
     let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
     this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), selectTab);
