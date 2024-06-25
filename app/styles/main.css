@@ -578,7 +578,9 @@ button.show-console span {
   width: 120px;
 }
 
-.display-cell .cell-value input {
+.display-cell .cell-value input,
+.display-cell .cell-value select
+{
   width: 120px;
 }
 

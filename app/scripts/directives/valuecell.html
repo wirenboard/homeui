@@ -1,6 +1,6 @@
 <span
   class="cell cell-value"
-  ng-click="cell.copy(cell.value, cell.readOnly)"
+  ng-click="cell.copy(cell.value, cell.readOnly || cell.isEnum())"
   tooltip-popup-close-delay="500"
   uib-tooltip="'{{ copyText }}' {{ 'widgets.labels.copy' | translate}}"
   tooltip-trigger="{
@@ -8,17 +8,21 @@
     'focus': 'mouseleave'
   }"
   tooltip-class="custom-tooltip"
-  tooltip-enable="{{ cell.readOnly }}"
+  tooltip-enable="{{ cell.readOnly || cell.isEnum() }}"
 >
-  <input ng-if="cell.valueType == 'number' && !cell.readOnly" type="number"
+  <input ng-if="cell.valueType == 'number' && !cell.readOnly && !cell.isEnum()" type="number"
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"
          ng-model="cell.value" explicit-changes>
+  <select ng-if="cell.valueType == 'number' && !cell.readOnly && cell.isEnum()" 
+          ng-options="item.value as item.name for item in cell.getEnumValues($locale.id)"
+          ng-model="cell.value">
+  </select>
   <span ng-if="cell.readOnly" class="value">
-    <span ng-if="cell.isEnumName($locale.id, cell.value)" class="cell cell-text">{{ cell.getEnumName($locale.id, cell.value) }}</span>
-    <span ng-if="!cell.isEnumName($locale.id, cell.value)" class="int">
+    <span ng-if="cell.isEnum()" class="cell cell-text">{{ cell.getEnumName($locale.id, cell.value) }}</span>
+    <span ng-if="!cell.isEnum()" class="int">
       <span>{{ vCtrl.getIntegerValue(cell) }}</span>
     </span>
-    <span ng-if="!cell.isEnumName($locale.id, cell.value)" class="decimal">{{ vCtrl.getFractionalValue(cell) }}</span>
+    <span ng-if="!cell.isEnum()" class="decimal">{{ vCtrl.getFractionalValue(cell) }}</span>
   </span>
   <span class="units">{{ vCtrl.getUnitsName(cell) }}</span>
 </span>

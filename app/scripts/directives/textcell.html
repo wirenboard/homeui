@@ -1,22 +1,26 @@
 <div
-  ng-click="cell.copy(cell.value, cell.readOnly)"
+  ng-click="cell.copy(cell.value, cell.readOnly || cell.isEnum())"
   tooltip-popup-close-delay="500"
   uib-tooltip="'{{ copyText }}' {{ 'widgets.labels.copy' | translate}}"
   tooltip-trigger="{
     'outsideClick': 'mouseleave',
     'focus': 'mouseleave'
   }"
-  tooltip-enable="{{ cell.readOnly }}"
+  tooltip-enable="{{ cell.readOnly || cell.isEnum() }}"
   class="text-cell"
 >
   <p
-    ng-if="cell.readOnly"
+    ng-if="cell.readOnly && cell.isEnum()"
     class="cell cell-text"
   >
     {{ cell.getEnumName($locale.id, cell.value) }}
   </p>
+  <select ng-if="!cell.readOnly && cell.isEnum()" 
+          ng-options="item.value as item.name for item in cell.getEnumValues($locale.id)"
+          ng-model="cell.value">
+  </select>
   <input
-    ng-hide="cell.readOnly"
+    ng-hide="cell.readOnly || cell.isEnum()"
     ng-model="cell.value"
     type="text"
     class="cell cell-text"
