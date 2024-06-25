@@ -23,8 +23,8 @@
         "download_rootfs_button": "Download rootfs archive",
         "download_configs_button": "Download configs",
         "download_everything_button": "Download everything",
-        "rootfs_warning1": "You cannot restore system state using this archive, it just allows you to have a copy of your files",
+        "rootfs_warning1": "You cannot restore system state using this archives, it just allows you to have a copy of your files",
         "rootfs_warning2": "System may run slower while downloading the archive",
-        "rootfs_warning3": "Files from /mnt/data are not included in the archive"
+        "rootfs_warning3": "Rootfs archive does not include files from /mnt/data"
     }
 }
