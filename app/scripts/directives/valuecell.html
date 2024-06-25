@@ -1,6 +1,6 @@
 <span
   class="cell cell-value"
-  ng-click="cell.copy(cell.value, cell.readOnly)"
+  ng-click="cell.copy(cell.value, cell.readOnly || cell.isEnum())"
   tooltip-popup-close-delay="500"
   uib-tooltip="'{{ copyText }}' {{ 'widgets.labels.copy' | translate}}"
   tooltip-trigger="{
@@ -8,7 +8,7 @@
     'focus': 'mouseleave'
   }"
   tooltip-class="custom-tooltip"
-  tooltip-enable="{{ cell.readOnly }}"
+  tooltip-enable="{{ cell.readOnly || cell.isEnum() }}"
 >
   <input ng-if="cell.valueType == 'number' && !cell.readOnly && !cell.isEnum()" type="number"
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"
