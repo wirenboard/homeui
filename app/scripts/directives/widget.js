@@ -26,6 +26,7 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
       this.multipleDashboards = false;
       this.$translate = $translate;
       this.$locale = $locale;
+      $scope.$locale = $locale;
       $scope.$watch(
         () => this._source(),
         newSource => {

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.86.8) stable; urgency=medium
+
+  * Add dropdown editor for channels with defined set of values 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Jun 2024 11:51:57 +0500
+
 wb-mqtt-homeui (2.86.7) stable; urgency=medium
 
   * Postinst: replace config with a correct board-one, if config was not edited by user
