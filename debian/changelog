@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1-wb104) stable; urgency=medium
+
+  * Add download configs and download everything buttons under System page
+
+ -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 25 Jun 2024 18:02:17 +0500
+
 wb-mqtt-homeui (2.82.1-wb103) stable; urgency=medium
 
   * Postinst: replace config with a correct board-one, if config was not edited by user
