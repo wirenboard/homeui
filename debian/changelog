@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.87.1) stable; urgency=medium
+
+  * Fix displaying of text parameters on dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Jun 2024 09:17:23 +0500
+
 wb-mqtt-homeui (2.87.0) stable; urgency=medium
 
   * Add download configs and download everything buttons under System page

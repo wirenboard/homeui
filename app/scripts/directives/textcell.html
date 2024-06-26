@@ -10,7 +10,7 @@
   class="text-cell"
 >
   <p
-    ng-if="cell.readOnly && cell.isEnum()"
+    ng-if="cell.readOnly"
     class="cell cell-text"
   >
     {{ cell.getEnumName($locale.id, cell.value) }}
