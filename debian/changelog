@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1-wb106) stable; urgency=medium
+
+  * Dependencies updated, no functional changes
+
+ -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 26 Jun 2024 12:46:17 +0500
+
 wb-mqtt-homeui (2.82.1-wb105) stable; urgency=medium
 
   * Version increment for technical reasons, no functional changes
