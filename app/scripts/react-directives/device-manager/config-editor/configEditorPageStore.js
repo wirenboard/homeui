@@ -417,12 +417,17 @@ class ConfigEditorPageStore {
         })
       );
       devices = devices.filter((_, i) => setupResults[i]);
+      const selectedTab = this.tabs.selectedTab;
+      const selectAddedTab = devices.length == 1;
       if (devices.length) {
         const topics = getTopics(this.tabs.portTabs, this.deviceTypesStore);
         await Promise.all(
-          devices.map(device => this.addScannedDeviceToConfig(device, topics, devices.length == 1))
+          devices.map(device => this.addScannedDeviceToConfig(device, topics, selectAddedTab))
         );
         this.tabs.setModifiedStructure();
+        if (!selectAddedTab) {
+          this.tabs.selectTab(selectedTab);
+        }
       }
       this.setError(errors.join('\n'));
     } catch (err) {
