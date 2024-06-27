@@ -38,13 +38,6 @@ const ExpStatusWidget = observer(({ store }) => {
           </p>
       </div>
     );
-  } else {
-      return (
-          <div style={{ backgroundColor: "lightgreen" }}>
-              <span>all clear</span>
-              {store.result}
-          </div>
-      )
   }
 });
 
