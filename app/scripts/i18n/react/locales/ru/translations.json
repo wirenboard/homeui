@@ -270,6 +270,7 @@
       "details_text": "Злоумышленники могут получить доступ к вашему контроллеру, вот список обнаруженных проблем:",
       "ssh_desc": "доступ к консоли контроллера со стандартным паролем root/wirenboard",
       "http_desc": "доступ к веб-интерфейсу без пароля",
-      "found_instructions": "Как защитить контроллер Wiren Board"
+      "found_instructions": "Как защитить контроллер Wiren Board",
+      "support_url": "https://wirenboard.com/wiki/Security"
    }
 }

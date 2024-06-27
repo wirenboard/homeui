@@ -31,9 +31,10 @@ const ExpStatusWidget = observer(({ store }) => {
           </ul>
           <br />
           <p className="mb-0">
-          <a href={"https://wirenboard.com/wiki/Security"} style={{textDecoration: "underline"}} target={"_blank"}>
-              {t('exp-check.found_instructions')}
-          </a>
+
+              {t('exp-check.found_instructions')}: <a href={t('exp-check.support_url')} style={{textDecoration: "underline", color: 'white'}} target={"_blank"}>
+              {t('exp-check.support_url')}
+            </a>
           </p>
       </div>
     );
