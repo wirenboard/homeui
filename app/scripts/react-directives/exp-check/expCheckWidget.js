@@ -2,20 +2,39 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 
+function ResultItem({ item }) {
+  const { t } = useTranslation();
+
+  if (item[2] === 'ssh')
+    return (
+      <li>{item[0]}:{item[1]} &mdash; {t('exp-check.ssh_desc')}</li>
+    )
+  return (
+    <li>{item[0]}:{item[1]} &mdash; {t('exp-check.http_desc')}</li>
+  )
+
+}
+
 const ExpStatusWidget = observer(({ store }) => {
   const { t } = useTranslation();
 
   if (store.result === 'found') {
     return (
       <div className="alert alert-danger" role="alert">
-        <h4 className="alert-heading">{t('exp_check.found_title')}</h4>
-        <p>{t('exp_check.details_text')}</p>
+        <h4 className="alert-heading">{t('exp-check.found_title')}</h4>
+
         <hr />
-        <p className="mb-0">{t('exp_found.found_instructions')}</p>
+          <p>{t('exp-check.details_text')}</p>
           <br />
           <ul>
-          {store.details.map(item => <li>{item[0]}:{item[1]} ({item[2]})</li>)}
+            {store.details.map(item => <ResultItem item={item}/>)}
           </ul>
+          <br />
+          <p className="mb-0">
+          <a href={"https://wirenboard.com/wiki/Security"} style={{textDecoration: "underline"}} target={"_blank"}>
+              {t('exp-check.found_instructions')}
+          </a>
+          </p>
       </div>
     );
   } else {

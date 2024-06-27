@@ -23,6 +23,7 @@ function expCheckMetaDirective(mqttClient, whenMqttReady) {
       scope.root.render(CreateExpCheckWidget({ store: scope.store }));
 
       whenMqttReady().then(() => {
+        fetch('/api/check');
         mqttClient.addStickySubscription('/rpc/v1/exp-check', msg => {
           let payload = JSON.parse(msg.payload);
           scope.store.updateResult(payload.result);
