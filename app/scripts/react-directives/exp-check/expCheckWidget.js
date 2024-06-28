@@ -8,10 +8,14 @@ function ResultItem({ item }) {
   if (item[2] === 'ssh')
     return (
       <li>{item[0]}:{item[1]} &mdash; {t('exp-check.ssh_desc')}</li>
-    )
+    );
+  if (item[2] === 'mqtt')
+    return (
+      <li>{item[0]}:{item[1]} &mdash; {t('exp-check.mqtt_desc')}</li>
+    );
   return (
     <li>{item[0]}:{item[1]} &mdash; {t('exp-check.http_desc')}</li>
-  )
+  );
 
 }
 
