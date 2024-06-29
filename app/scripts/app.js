@@ -113,6 +113,7 @@ import editSvgDashboardDirective from './react-directives/edit-svg-dashboard/edi
 import viewSvgDashboardDirective from './react-directives/view-svg-dashboard/view-svg-dashboard';
 import scriptEditorDirective from './react-directives/script-editor/script-editor';
 import deviceManagerDirective from './react-directives/device-manager/device-manager';
+import expCheckMetaDirective from './react-directives/exp-check/exp-check';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -297,7 +298,9 @@ module
   .directive('cloudStatusWidget', cloudStatusDirective)
   .directive('editSvgDashboardPage', editSvgDashboardDirective)
   .directive('viewSvgDashboardPage', viewSvgDashboardDirective)
-  .directive('scriptEditorPage', scriptEditorDirective);
+  .directive('scriptEditorPage', scriptEditorDirective)
+  .directive('fullscreenToggle', fullscreenToggleDirective)
+  .directive('expCheckWidget', expCheckMetaDirective);
 
 module
   .config([
