@@ -26,7 +26,6 @@ const ExpStatusWidget = observer(({ store }) => {
     return (
       <div className="alert alert-danger" role="alert">
         <h4 className="alert-heading">{t('exp-check.found_title')}</h4>
-
         <hr />
           <p>{t('exp-check.details_text')}</p>
           <br />
@@ -35,7 +34,6 @@ const ExpStatusWidget = observer(({ store }) => {
           </ul>
           <br />
           <p className="mb-0">
-
               {t('exp-check.found_instructions')}: <a href={t('exp-check.support_url')} style={{textDecoration: "underline", color: 'white'}} target={"_blank"}>
               {t('exp-check.support_url')}
             </a>

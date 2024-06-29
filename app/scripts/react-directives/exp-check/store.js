@@ -14,7 +14,6 @@ class ExpCheckStore {
   updateDetails(details) {
     this.details = details;
   }
-
 }
 
 export default ExpCheckStore;
