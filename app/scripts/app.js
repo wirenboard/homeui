@@ -299,7 +299,6 @@ module
   .directive('editSvgDashboardPage', editSvgDashboardDirective)
   .directive('viewSvgDashboardPage', viewSvgDashboardDirective)
   .directive('scriptEditorPage', scriptEditorDirective)
-  .directive('fullscreenToggle', fullscreenToggleDirective)
   .directive('expCheckWidget', expCheckMetaDirective);
 
 module
