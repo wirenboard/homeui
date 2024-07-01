@@ -252,5 +252,14 @@
          "misconfigured_device": "\t\t{{dev.title}} адрес {{dev.cfg.slave_id}}, порт {{dev.port}} {{dev.cfg.baud_rate}} {{dev.cfg.data_bits}}{{dev.cfg.parity}}{{dev.cfg.stop_bits}}",
          "unknown-device-type": "Неизвестный тип устройства: {{type}}"
       }
+   },
+   "exp-check": {
+      "found_title": "Защитите свой контроллер!",
+      "details_text": "Злоумышленники могут получить доступ к вашему контроллеру, вот список обнаруженных проблем:",
+      "ssh_desc": "доступ к консоли контроллера со стандартным паролем root/wirenboard",
+      "http_desc": "доступ к веб-интерфейсу без пароля",
+      "mqtt_desc": "доступ к MQTT-брокеру без пароля",
+      "found_instructions": "Как защитить контроллер Wiren Board",
+      "support_url": "https://wirenboard.com/wiki/Security"
    }
 }
