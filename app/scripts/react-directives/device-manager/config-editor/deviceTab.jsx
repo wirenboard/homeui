@@ -88,10 +88,18 @@ const SameMqttIdError = ({ devicesWithTheSameId, onSetUniqueMqttTopic }) => {
   return null;
 };
 
-const DisconnectedError = ({ isDisconnected }) => {
+const DisconnectedError = ({ isDisconnected, onSearchDisconnectedDevice }) => {
   const { t } = useTranslation();
   if (isDisconnected) {
-    return <ErrorBar msg={t('device-manager.errors.is-disconnected')} />;
+    return (
+      <ErrorBar msg={t('device-manager.errors.is-disconnected')}>
+        <Button
+          label={t('device-manager.buttons.search-disconnected-device')}
+          type="danger"
+          onClick={onSearchDisconnectedDevice}
+        />
+      </ErrorBar>
+    );
   }
   return null;
 };
@@ -105,6 +113,7 @@ export const DeviceTabContent = observer(
     deviceTypeSelectOptions,
     onDeviceTypeChange,
     onSetUniqueMqttTopic,
+    onSearchDisconnectedDevice,
   }) => {
     const { t } = useTranslation();
     if (tab.loading) {
@@ -120,7 +129,10 @@ export const DeviceTabContent = observer(
     return (
       <div>
         <DeprecatedWarning isDeprecated={tab.isDeprecated} />
-        <DisconnectedError isDisconnected={tab.isDisconnected} />
+        <DisconnectedError
+          isDisconnected={tab.isDisconnected}
+          onSearchDisconnectedDevice={onSearchDisconnectedDevice}
+        />
         <DuplicateSlaveIdError isDuplicate={tab.slaveIdIsDuplicate} />
         <SameMqttIdError
           devicesWithTheSameId={tab.devicesWithTheSameId}

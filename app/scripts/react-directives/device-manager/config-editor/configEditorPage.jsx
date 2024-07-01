@@ -42,7 +42,8 @@ function getTabPaneContent(
   onDeleteTab,
   onCopyTab,
   deviceTypeSelectOptions,
-  onDeviceTypeChange
+  onDeviceTypeChange,
+  onSearchDisconnectedDevice
 ) {
   if (tab.type == TabType.PORT) {
     return <PortTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} />;
@@ -57,6 +58,7 @@ function getTabPaneContent(
         deviceTypeSelectOptions={deviceTypeSelectOptions}
         onDeviceTypeChange={onDeviceTypeChange}
         onSetUniqueMqttTopic={() => tab.setUniqueMqttTopic()}
+        onSearchDisconnectedDevice={onSearchDisconnectedDevice}
       />
     );
   }
@@ -66,7 +68,14 @@ function getTabPaneContent(
   return null;
 }
 
-function makeTabPanes(tabs, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange) {
+function makeTabPanes(
+  tabs,
+  onDeleteTab,
+  onCopyTab,
+  deviceTypeSelectOptions,
+  onDeviceTypeChange,
+  onSearchDisconnectedDevice
+) {
   return tabs.map((tab, index) => {
     return (
       <TabPane key={index}>
@@ -76,7 +85,8 @@ function makeTabPanes(tabs, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onD
           onDeleteTab,
           onCopyTab,
           deviceTypeSelectOptions,
-          onDeviceTypeChange
+          onDeviceTypeChange,
+          onSearchDisconnectedDevice
         )}
       </TabPane>
     );
@@ -95,6 +105,7 @@ const PageTabs = observer(
     deviceTypeSelectOptions,
     onDeviceTypeChange,
     mobileModeStore,
+    onSearchDisconnectedDevice,
   }) => {
     const { t } = useTranslation();
     return (
@@ -122,7 +133,14 @@ const PageTabs = observer(
               : 'settings-panel'
           }
         >
-          {makeTabPanes(tabs, onDeleteTab, onCopyTab, deviceTypeSelectOptions, onDeviceTypeChange)}
+          {makeTabPanes(
+            tabs,
+            onDeleteTab,
+            onCopyTab,
+            deviceTypeSelectOptions,
+            onDeviceTypeChange,
+            onSearchDisconnectedDevice
+          )}
         </TabContent>
       </VerticalTabs>
     );
@@ -226,7 +244,7 @@ const PageHeader = observer(
   }
 );
 
-const ConfigEditorPage = observer(({ pageStore, onAddWbDevice }) => {
+const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnectedDevice }) => {
   const checkMobile = useMediaQuery({ maxWidth: 991 });
   useEffect(() => {
     pageStore.tabs.mobileModeStore.setMobileMode(checkMobile);
@@ -262,6 +280,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice }) => {
             deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeSelectOptions}
             onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
             mobileModeStore={pageStore.tabs.mobileModeStore}
+            onSearchDisconnectedDevice={onSearchDisconnectedDevice}
           />
         )}
       </PageBody>

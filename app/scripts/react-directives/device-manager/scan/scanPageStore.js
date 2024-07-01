@@ -1,7 +1,12 @@
 'use strict';
 
-import { action, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { action, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
 import i18n from '../../../i18n/react/config';
+
+export const SelectionPolicy = {
+  Single: 'Select only one item',
+  Multiple: 'Multiple selection',
+};
 
 class GlobalErrorStore {
   error = '';
@@ -112,6 +117,7 @@ class SingleDeviceStore {
     this.duplicateMqttTopic = false;
     this.names = names;
     this.gotByFastScan = gotByFastScan;
+    this.disposer = undefined;
 
     makeObservable(this, {
       scannedDevice: observable.ref,
@@ -197,6 +203,7 @@ class DevicesStore {
     this.devices = [];
     this.devicesByUuid = new Set();
     this.deviceTypesStore = deviceTypesStore;
+    this.selectionPolicy = SelectionPolicy.Multiple;
 
     makeObservable(this, { devices: observable, setDevices: action });
   }
@@ -218,6 +225,15 @@ class DevicesStore {
       deviceTypes
     );
 
+    if (this.selectionPolicy === SelectionPolicy.Single) {
+      const disposer = reaction(
+        () => deviceStore.selected,
+        () => this.checkSingleSelection(deviceStore)
+      );
+      deviceStore.disposer = disposer;
+      deviceStore.setSelected(false);
+    }
+
     this.devicesByUuid.add(scannedDevice.uuid);
     this.devices.push(deviceStore);
   }
@@ -229,9 +245,22 @@ class DevicesStore {
     scannedDevicesList.forEach(device => this.addDevice(device, gotByFastScan));
   }
 
-  init(deviceFilter) {
+  init(selectionPolicy) {
+    this.devices.forEach(device => device.disposer?.());
+    this.selectionPolicy = selectionPolicy ?? SelectionPolicy.Multiple;
     this.devices = [];
     this.devicesByUuid.clear();
+  }
+
+  checkSingleSelection(selectedDevice) {
+    if (!selectedDevice.selected) {
+      return;
+    }
+    this.devices.forEach(device => {
+      if (device != selectedDevice && device.selected) {
+        device.setSelected(false);
+      }
+    });
   }
 }
 
@@ -335,8 +364,8 @@ class CommonScanStore {
     }
   }
 
-  startScanning() {
-    this.devicesStore.init();
+  startScanning(selectionPolicy) {
+    this.devicesStore.init(selectionPolicy);
     this.startExtendedScanning();
   }
 

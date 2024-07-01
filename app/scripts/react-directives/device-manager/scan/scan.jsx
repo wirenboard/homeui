@@ -100,7 +100,20 @@ const BottomPanel = observer(({ scanStore, nothingFound, onStartScanning, onStop
   return null;
 });
 
-const ScanPageBody = observer(({ store }) => {
+export const ScanPageHeader = ({ okButtonLabel, onOk, onCancel, disableOkButton }) => {
+  const { t } = useTranslation();
+  return (
+    <h1 className="page-header">
+      <span>{t('scan.title')}</span>
+      <div className="pull-right button-group">
+        <Button type={'success'} label={okButtonLabel} onClick={onOk} disabled={disableOkButton} />
+        <Button label={t('scan.buttons.cancel')} onClick={onCancel} />
+      </div>
+    </h1>
+  );
+};
+
+export const ScanPageBody = observer(({ store }) => {
   const isDesktop = useMediaQuery({ minWidth: 874 });
   if (store.mqttStore.waitStartup) {
     return <Spinner />;
@@ -131,5 +144,3 @@ const ScanPageBody = observer(({ store }) => {
     </div>
   );
 });
-
-export default ScanPageBody;

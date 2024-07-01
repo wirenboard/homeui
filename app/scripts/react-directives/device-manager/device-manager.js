@@ -70,11 +70,16 @@ function deviceManagerDirective(
         }
       };
 
-      const startScan = extended =>
-        DeviceManagerProxy.Start({
+      const startScan = (extended, portPath) => {
+        let params = {
           scan_type: extended ? 'extended' : 'standard',
           preserve_old_results: false,
-        });
+        };
+        if (portPath) {
+          params.port = { path: portPath };
+        }
+        return DeviceManagerProxy.Start(params);
+      };
       const stopScan = () => DeviceManagerProxy.Stop();
 
       scope.store = new DeviceManagerPageStore(

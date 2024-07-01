@@ -185,8 +185,11 @@ export class TabsStore {
     return true;
   }
 
-  selectTab(index) {
-    this.selectedTabIndex = index;
+  selectTab(tab) {
+    let index = this.items.indexOf(tab);
+    if (index != -1) {
+      this.onSelectTab(index, this.selectedTabIndex);
+    }
   }
 
   deleteSelectedTab() {

@@ -1,9 +1,10 @@
 'use strict';
 
-import { makeObservable, computed, action } from 'mobx';
+import { makeObservable, computed } from 'mobx';
 import NewDevicesScanPageStore from './scan/newDevicesScanPageStore';
 import ConfigEditorPageStore from './config-editor/configEditorPageStore';
 import DeviceTypesStore from './common/deviceTypesStore';
+import SearchDisconnectedScanPageStore from './scan/searchDisconnectedScanPageStore';
 
 class DeviceManagerPageStore {
   constructor(
@@ -32,11 +33,14 @@ class DeviceManagerPageStore {
       stopScanFn,
       this.deviceTypesStore
     );
-    this.startScanFn = startScanFn;
+    this.searchDisconnectedScanPageStore = new SearchDisconnectedScanPageStore(
+      startScanFn,
+      stopScanFn,
+      this.deviceTypesStore
+    );
 
     makeObservable(this, {
       isDirty: computed,
-      addWbDevice: action,
     });
   }
 
@@ -54,15 +58,21 @@ class DeviceManagerPageStore {
 
   setDeviceManagerAvailable() {
     this.newDevicesScanPageStore.setDeviceManagerAvailable();
+    this.searchDisconnectedScanPageStore.setDeviceManagerAvailable();
   }
 
   setDeviceManagerUnavailable() {
     this.newDevicesScanPageStore.setDeviceManagerUnavailable();
+    this.searchDisconnectedScanPageStore.setDeviceManagerUnavailable();
   }
 
   updateScanState(data) {
     if (this.newDevicesScanPageStore.active) {
       this.newDevicesScanPageStore.update(data);
+      return;
+    }
+    if (this.searchDisconnectedScanPageStore.active) {
+      this.searchDisconnectedScanPageStore.update(data);
       return;
     }
   }
@@ -107,6 +117,26 @@ class DeviceManagerPageStore {
     await this.configEditorPageStore.addDevices(
       await this.newDevicesScanPageStore.select(configuredModbusDevices)
     );
+  }
+
+  async searchDisconnectedDevice() {
+    const selectedDeviceTab = this.configEditorPageStore.tabs.selectedTab;
+    const selectedPortTab = this.configEditorPageStore.tabs.selectedPortTab;
+    try {
+      const device = await this.searchDisconnectedScanPageStore.select(
+        selectedDeviceTab.deviceType,
+        selectedPortTab.editedData.path
+      );
+      if (device) {
+        device.newAddress = selectedDeviceTab.editedData.slave_id;
+        selectedDeviceTab.setLoading(true);
+        await this.configEditorPageStore.setupDevice(device);
+        selectedDeviceTab.setDisconnected(false);
+      }
+    } catch (err) {
+      this.configEditorPageStore.setError(err);
+    }
+    selectedDeviceTab.setLoading(false);
   }
 }
 
