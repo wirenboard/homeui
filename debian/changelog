@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.89.0) stable; urgency=medium
+
+  * Add configuration of device port parameters when adding it to wb-mqtt-serial config
+  * Resolve MQTT topic collisions when adding new devices to wb-mqtt-serial config
+  * Resolve address collisions when adding new devices to wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 03 Jul 2024 11:04:14 +0500
+
 wb-mqtt-homeui (2.88.0) stable; urgency=medium
 
   * Add exp-check

@@ -150,7 +150,7 @@ export class TabsStore {
     });
   }
 
-  addDeviceTab(portTab, deviceTab, initial) {
+  addDeviceTab(portTab, deviceTab, selectTab) {
     let portTabIndex = this.items.indexOf(portTab);
     if (portTabIndex == -1) {
       return;
@@ -163,12 +163,9 @@ export class TabsStore {
       i++;
     }
     this.items.splice(i, 0, deviceTab);
-    if (!initial) {
-      this.selectedTabIndex = i;
-      this.hasModifiedStructure = true;
-      if (this.mobileModeStore.inMobileMode) {
-        this.mobileModeStore.showContentPanel();
-      }
+    this.hasModifiedStructure = true;
+    if (selectTab) {
+      this.onSelectTab(i, this.selectedTabIndex);
     }
   }
 
@@ -224,11 +221,7 @@ export class TabsStore {
   }
 
   copySelectedTab() {
-    let portTab = this.selectedPortTab;
-    this.addDeviceTab(portTab, this.items[this.selectedTabIndex].getCopy());
-    if (this.mobileModeStore.inMobileMode) {
-      this.mobileModeStore.showContentPanel();
-    }
+    this.addDeviceTab(this.selectedPortTab, this.items[this.selectedTabIndex].getCopy(), true);
   }
 
   get selectedPortTab() {

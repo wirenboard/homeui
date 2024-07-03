@@ -245,7 +245,9 @@
          "port": "Port",
          "device-type": "Device type",
          "settings": "wb-mqtt-serial settings",
-         "unknown-device-type": "Unknown device type"
+         "unknown-device-type": "Unknown device type",
+         "address-conflicts-note": "The addresses of conflicting devices will be changed",
+         "address-conflicts": "Address conflicts"
       },
       "buttons": {
          "save": "Save config",
@@ -256,7 +258,8 @@
          "add": "Add",
          "copy": "Copy",
          "to-port-list": "To ports and devices list",
-         "resolve-duplicate-mqtt-topic": "Set unique id"
+         "resolve-duplicate-mqtt-topic": "Set unique id",
+         "apply": "Apply"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -265,7 +268,8 @@
          "unknown-device-type": "Unknown device type: {{type}}",
          "duplicate-slave-id": "Duplicate slave id",
          "duplicate-mqtt-topic": "MQTT id is the same as for {{device}}",
-         "is-disconnected": "The device is not responding. Check the physical connection of the RS-485 bus and the communication settings of the port and device, which should be the same"
+         "is-disconnected": "The device is not responding. Check the physical connection of the RS-485 bus and the communication settings of the port and device, which should be the same",
+         "setup": "{{device}} setup failed: {{error}}"
       }
    },
    "exp-check": {
