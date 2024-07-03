@@ -5,6 +5,7 @@ import NewDevicesScanPageStore from './scan/newDevicesScanPageStore';
 import ConfigEditorPageStore from './config-editor/configEditorPageStore';
 import DeviceTypesStore from './common/deviceTypesStore';
 import SearchDisconnectedScanPageStore from './scan/searchDisconnectedScanPageStore';
+import ConfiguredDevices from './config-editor/configuredDevices';
 
 class DeviceManagerPageStore {
   constructor(
@@ -49,7 +50,7 @@ class DeviceManagerPageStore {
   }
 
   movedToTabsPanel() {
-    this.tabs.mobileModeStore.movedToTabsPanel();
+    this.configEditorPageStore.tabs.mobileModeStore.movedToTabsPanel();
   }
 
   async loadConfig() {
@@ -81,41 +82,11 @@ class DeviceManagerPageStore {
     this.configEditorPageStore.setDeviceDisconnected(topic, error);
   }
 
-  makeConfiguredDevicesList(portTabChildren) {
-    return portTabChildren.reduce((acc, deviceTab) => {
-      const deviceType = deviceTab.editedData.device_type;
-      if (this.deviceTypesStore.isModbusDevice(deviceType)) {
-        acc.push({
-          address: deviceTab.editedData.slave_id,
-          sn: deviceTab.editedData.sn,
-          deviceType: deviceType,
-          signatures: this.deviceTypesStore.getDeviceSignatures(deviceType),
-        });
-      }
-      if (deviceTab.editedData.protocol == 'modbus') {
-        acc.push({
-          address: deviceTab.editedData.slave_id,
-          sn: deviceTab.editedData.sn,
-          deviceType: undefined,
-          signatures: [],
-        });
-      }
-      return acc;
-    }, []);
-  }
-
   async addWbDevice() {
-    const configuredModbusDevices = this.configEditorPageStore.tabs.portTabs.reduce(
-      (acc, portTab) => {
-        if (portTab.editedData.port_type == 'serial') {
-          acc[portTab.editedData.path] = this.makeConfiguredDevicesList(portTab.children);
-        }
-        return acc;
-      },
-      {}
-    );
     await this.configEditorPageStore.addDevices(
-      await this.newDevicesScanPageStore.select(configuredModbusDevices)
+      await this.newDevicesScanPageStore.select(
+        new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore)
+      )
     );
   }
 
@@ -125,7 +96,8 @@ class DeviceManagerPageStore {
     try {
       const device = await this.searchDisconnectedScanPageStore.select(
         selectedDeviceTab.deviceType,
-        selectedPortTab.editedData.path
+        selectedPortTab.editedData.path,
+        new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore)
       );
       if (device) {
         device.newAddress = selectedDeviceTab.editedData.slave_id;

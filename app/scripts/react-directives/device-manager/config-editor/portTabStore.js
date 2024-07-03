@@ -6,6 +6,7 @@ import isEqual from 'lodash/isEqual';
 import i18n from '../../../i18n/react/config';
 import { getTranslation } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
+import CollapseButtonState from '../../components/buttons/collapseButtonState';
 
 function checkDuplicateSlaveIds(deviceTabs) {
   const tabsBySlaveId = deviceTabs.reduce((acc, tab) => {
@@ -46,7 +47,11 @@ export class PortTab {
     this.schema = schema;
     this.hasJsonValidationErrors = false;
     this.isDirty = false;
-    this.collapsed = false;
+    this.collapseButtonState = new CollapseButtonState(
+      false,
+      () => this.collapse(),
+      () => this.restore()
+    );
     this.nameGenerationFn = nameGenerationFn;
     this.children = [];
     this.reactionDisposers = [];
@@ -57,7 +62,6 @@ export class PortTab {
       name: observable,
       hasJsonValidationErrors: observable,
       isDirty: observable,
-      collapsed: observable,
       setData: action.bound,
       updateName: action,
       commitData: action,
@@ -92,14 +96,12 @@ export class PortTab {
     this.children.forEach(child => {
       child.hidden = true;
     });
-    this.collapsed = true;
   }
 
   restore() {
     this.children.forEach(child => {
       child.hidden = false;
     });
-    this.collapsed = false;
   }
 
   addChildren(deviceTab) {

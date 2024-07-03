@@ -27,15 +27,14 @@
          "scanning": "Slow scanning in progress {{-ports}}...",
          "fast-scanning": "Fast scanning in progress {{-ports}}...",
          "scanning-stop": "Press \"Stop scan\", if all devices are found, or wait for completion",
-         "found-devices": "Found devices: {{count}}",
-         "first-start": "Scanning has not been performed yet.<br>Press \"Start scan\"",
-         "not-found": "Nothing found.<br>For rescan press \"Start scan\"",
+         "not-found": "Nothing found",
          "extended-modbus": "This device was found by scanning via fast Modbus",
          "try-normal-scan": "If the required devices are not found, run slow scan",
          "misconfigured-port": "differs from port settings",
          "duplicate-topic": "There is a device with the same MQTT topic",
          "unknown-device-type": "unknown device type",
-         "similar-device-signatures": "also matches templates:<br>{{types}}"
+         "similar-device-signatures": "also matches templates:<br>{{types}}",
+         "device-in-config": "Devices in config"
       }
    },
    "com": {

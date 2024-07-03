@@ -2,24 +2,12 @@
 
 class ModbusAddressSet {
   /**
-   * @typedef {Object} ConfiguredDevice
-   * @property {number} address
-   *
    * @constructor
-   * @param {Object.<string, ConfiguredDevice>} configuredDevices - Configured devices grouped by port path
+   * @param {Map<string, Set<number>>} usedAddresses - Devices addresses grouped by port path
    */
-  constructor(configuredDevices) {
-    this.usedAddresses = new Map();
+  constructor(usedAddresses) {
+    this.usedAddresses = usedAddresses;
     this.freeAddresses = new Map();
-    Object.entries(configuredDevices).forEach(([path, devices]) => {
-      this.usedAddresses.set(
-        path,
-        devices.reduce((acc, device) => {
-          acc.add(Number.isInteger(device.address) ? device.address : parseInt(device.address));
-          return acc;
-        }, new Set())
-      );
-    });
   }
 
   tryToAddUsedAddress(portPath, address) {

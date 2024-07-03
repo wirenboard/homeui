@@ -4,38 +4,15 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import JsonEditor from '../../components/json-editor/jsonEditor';
 import { useMediaQuery } from 'react-responsive';
-
-const CollapseButton = observer(({ hasChildren, collapsed, onCollapse, onRestore }) => {
-  const isMobile = useMediaQuery({ maxWidth: 991 });
-  if (!hasChildren) {
-    return null;
-  }
-
-  return (
-    <i
-      className={
-        collapsed ? 'glyphicon glyphicon-chevron-right' : 'glyphicon glyphicon-chevron-down'
-      }
-      onClick={e => {
-        // Block selection of a tab after clicking on button
-        if (isMobile) {
-          e.stopPropagation();
-        }
-        collapsed ? onRestore() : onCollapse();
-      }}
-    ></i>
-  );
-});
+import CollapseButton from '../../components/buttons/collapseButton';
 
 export const PortTab = observer(({ tab }) => {
+  const isMobile = useMediaQuery({ maxWidth: 991 });
   return (
     <div className={'port-tab' + (tab.hasInvalidConfig ? ' error' : '')}>
-      <CollapseButton
-        hasChildren={tab.hasChildren}
-        collapsed={tab.collapsed}
-        onCollapse={tab.collapse}
-        onRestore={tab.restore}
-      />
+      {tab.hasChildren && (
+        <CollapseButton state={tab.collapseButtonState} stopPropagation={isMobile} />
+      )}
       <span>{tab.name}</span>
       {tab.hasInvalidConfig && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>

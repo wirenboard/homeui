@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceName, SlaveId, Port } from './common';
+import { observer } from 'mobx-react-lite';
+import CollapseButton from '../../components/buttons/collapseButton';
 
 export const Row = ({ children }) => {
   return (
@@ -30,10 +32,28 @@ const Error = ({ error }) => {
   );
 };
 
+const AlreadyConfiguredDevicesHeader = observer(
+  ({ alreadyConfiguredDevices, collapseButtonState }) => {
+    const { t } = useTranslation();
+    if (!alreadyConfiguredDevices.length) {
+      return null;
+    }
+    return (
+      <div className="devices-in-config-mobile-header">
+        <CollapseButton state={collapseButtonState} /> &nbsp;
+        {t('scan.labels.device-in-config')}
+      </div>
+    );
+  }
+);
+
 const DevicePanel = ({ deviceStore }) => {
   const { t } = useTranslation();
+  const panelClasses = deviceStore.selectable
+    ? 'panel panel-default'
+    : 'panel panel-default not-selectable';
   return (
-    <div className="panel panel-default">
+    <div className={panelClasses}>
       <div className="panel-body">
         <Row>
           <DeviceName
@@ -45,6 +65,7 @@ const DevicePanel = ({ deviceStore }) => {
             selected={deviceStore.selected}
             onSelectionChange={e => deviceStore.setSelected(e.target.checked)}
             matchingDeviceTypes={deviceStore.names.slice(1)}
+            selectable={deviceStore.selectable}
           />
         </Row>
         <RowWithTitle title="SN">{deviceStore.sn}</RowWithTitle>
@@ -67,14 +88,20 @@ const DevicePanel = ({ deviceStore }) => {
   );
 };
 
-const DevicesList = ({ devices }) => {
+const DevicesList = observer(({ newDevices, alreadyConfiguredDevices, collapseButtonState }) => {
   return (
     <>
-      {devices.map(d => (
+      {newDevices.map(d => (
         <DevicePanel key={d.uuid} deviceStore={d} />
       ))}
+      <AlreadyConfiguredDevicesHeader
+        alreadyConfiguredDevices={alreadyConfiguredDevices}
+        collapseButtonState={collapseButtonState}
+      />
+      {!collapseButtonState.collapsed &&
+        alreadyConfiguredDevices.map((d, index) => <DevicePanel key={index} deviceStore={d} />)}
     </>
   );
-};
+});
 
 export default DevicesList;
