@@ -1,6 +1,6 @@
 'use strict';
 
-import { makeObservable, observable, runInAction } from 'mobx';
+import { makeObservable, observable, action, runInAction } from 'mobx';
 import CommonScanStore from './scanPageStore';
 import SetupAddressModalState from './setupAddressModalState';
 import ModbusAddressSet from '../common/modbusAddressesSet';
@@ -39,7 +39,7 @@ class NewDevicesScanPageStore {
     this.configuredDevices = [];
     this.setupAddressModalState = new SetupAddressModalState();
 
-    makeObservable(this, { active: observable });
+    makeObservable(this, { active: observable, select: action });
   }
 
   setDeviceManagerUnavailable() {
@@ -152,8 +152,11 @@ class NewDevicesScanPageStore {
   async confirmAddressChange() {
     let modbusAddressesSet = new ModbusAddressSet(this.configuredDevices);
     const devices = this.commonScanStore.getSelectedDevices();
+    const devicesWithDuplicateAddresses = devices.filter(
+      device => !modbusAddressesSet.tryToAddUsedAddress(device.port, device.address)
+    );
     const devicesToModify = [];
-    devices.forEach(scannedDevice => {
+    devicesWithDuplicateAddresses.forEach(scannedDevice => {
       const newAddress = modbusAddressesSet.fixAddress(scannedDevice.port, scannedDevice.address);
       if (newAddress != scannedDevice.address) {
         scannedDevice.newAddress = newAddress;

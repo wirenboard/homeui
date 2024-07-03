@@ -22,6 +22,22 @@ class ModbusAddressSet {
     });
   }
 
+  tryToAddUsedAddress(portPath, address) {
+    if (!Number.isInteger(address)) {
+      address = parseInt(address);
+    }
+    let usedAddresses = this.usedAddresses.get(portPath);
+    if (usedAddresses === undefined) {
+      usedAddresses = new Set();
+      this.usedAddresses.set(portPath, usedAddresses);
+    }
+    if (usedAddresses.has(address)) {
+      return false;
+    }
+    usedAddresses.add(address);
+    return true;
+  }
+
   fixAddress(portPath, address) {
     if (!Number.isInteger(address)) {
       address = parseInt(address);
