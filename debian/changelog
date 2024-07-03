@@ -1,10 +1,58 @@
-wb-mqtt-homeui (2.87.0) stable; urgency=medium
+wb-mqtt-homeui (2.89.0) stable; urgency=medium
 
   * Add configuration of device port parameters when adding it to wb-mqtt-serial config
   * Resolve MQTT topic collisions when adding new devices to wb-mqtt-serial config
   * Resolve address collisions when adding new devices to wb-mqtt-serial config
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 19 Jun 2024 12:21:49 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 03 Jul 2024 11:04:14 +0500
+
+wb-mqtt-homeui (2.88.0) stable; urgency=medium
+
+  * Add exp-check
+
+ -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Sat, 29 Jun 2024 11:16:26 +0300
+
+wb-mqtt-homeui (2.87.2) stable; urgency=medium
+
+  * Disallow indexing
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 27 Jun 2024 15:56:00 +0300
+
+wb-mqtt-homeui (2.87.1) stable; urgency=medium
+
+  * Fix displaying of text parameters on dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Jun 2024 09:17:23 +0500
+
+wb-mqtt-homeui (2.87.0) stable; urgency=medium
+
+  * Add download configs and download everything buttons under System page
+
+ -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 25 Jun 2024 18:02:17 +0500
+
+wb-mqtt-homeui (2.86.9) stable; urgency=medium
+
+  * Fix tooltip of dropdown editor for channels with defined set of values
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Jun 2024 15:22:17 +0500
+
+wb-mqtt-homeui (2.86.8) stable; urgency=medium
+
+  * Add dropdown editor for channels with defined set of values
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Jun 2024 11:51:57 +0500
+
+wb-mqtt-homeui (2.86.7) stable; urgency=medium
+
+  * Postinst: replace config with a correct board-one, if config was not edited by user
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Mon, 24 Jun 2024 10:12:21 +0300
+
+wb-mqtt-homeui (2.86.6) stable; urgency=medium
+
+  * Detect, is running via cloud or not; pass "from_cloud" flag
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Thu, 20 Jun 2024 12:23:56 +0300
 
 wb-mqtt-homeui (2.86.5) stable; urgency=medium
 

@@ -277,6 +277,8 @@ function deviceDataService(mqttClient, $window) {
       this._seq = nextCellSeq++;
       this._nameTranslations = {};
       this._enumTranslations = {};
+      this._isEnum = false;
+      this._enumValues = {};
     }
 
     get value() {
@@ -502,6 +504,8 @@ function deviceDataService(mqttClient, $window) {
           const m = JSON.parse(meta);
           this._nameTranslations = m.title || {};
           this._enumTranslations = m.enum || {};
+          this._isEnum = Object.keys(this._enumTranslations).length > 0;
+          this._enumValues = {};
           this.setExplicitReadOnly(m.readonly);
           this.setType(m.type);
           this.setMin(m.min);
@@ -514,6 +518,8 @@ function deviceDataService(mqttClient, $window) {
       } else {
         this._nameTranslations = {};
         this._enumTranslations = {};
+        this._isEnum = false;
+        this._enumValues = {};
         this.setExplicitReadOnly(null);
         this.setType('');
         this.setMin('');
@@ -535,15 +541,35 @@ function deviceDataService(mqttClient, $window) {
       return this.name;
     }
 
-    isEnumName(lang, value) {
-      return this._enumTranslations.hasOwnProperty(value) && this._enumTranslations[value].hasOwnProperty(lang);
+    isEnum() {
+      return this._isEnum;
     }
 
     getEnumName(lang, value) {
-      if (this.isEnumName(lang, value)) {
-        return this._enumTranslations[value][lang];
+      if (this._enumTranslations.hasOwnProperty(value)) {
+        if (this._enumTranslations[value].hasOwnProperty(lang)) {
+          return this._enumTranslations[value][lang];
+        }
+        if (lang !== 'en' && this._enumTranslations[value].hasOwnProperty('en')) {
+          return this._enumTranslations[value]['en'];
+        }
       }
       return value;
+    }
+
+    getEnumValues(lang) {
+      console.log(lang);
+      if (!this._enumValues.hasOwnProperty(lang)) {
+        let values = Object.keys(this._enumTranslations).map(value => {
+          return {
+            name: this.getEnumName(lang, value),
+            value: this.valueType == 'number' ? Number(value) : value,
+          };
+        });
+        values.sort((a, b) => a.value - b.value);
+        this._enumValues[lang] = values;
+      }
+      return this._enumValues[lang];
     }
   }
 
@@ -809,12 +835,16 @@ function deviceDataService(mqttClient, $window) {
       return this.cell.getName(lang);
     }
 
-    isEnumName(lang, value) {
-      return this.cell.isEnumName(lang, value);
+    isEnum() {
+      return this.cell.isEnum();
     }
 
     getEnumName(lang, value) {
       return this.cell.getEnumName(lang, value);
+    }
+
+    getEnumValues(lang) {
+      return this.cell.getEnumValues(lang);
     }
   }
 

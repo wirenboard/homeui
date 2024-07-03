@@ -91,6 +91,7 @@ import dashboardPickerDirective from './directives/dashboardpicker';
 import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
+import expCheckMetaDirective from './react-directives/exp-check/exp-check';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -260,7 +261,8 @@ module
   .directive('dashboardPicker', dashboardPickerDirective)
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
-  .directive('fullscreenToggle', fullscreenToggleDirective);
+  .directive('fullscreenToggle', fullscreenToggleDirective)
+  .directive('expCheckWidget', expCheckMetaDirective);
 
 module
   .config([

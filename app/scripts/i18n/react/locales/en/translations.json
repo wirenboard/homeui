@@ -271,5 +271,14 @@
          "is-disconnected": "The device is not responding. Check the physical connection of the RS-485 bus and the communication settings of the port and device, which should be the same",
          "setup": "{{device}} setup failed: {{error}}"
       }
+   },
+   "exp-check": {
+      "found_title": "Your controller is at risk!",
+      "details_text": "Anybody can access your controller from the Internet, here's list of problems detected:",
+      "ssh_desc": "publicly accessible ssh with default root/wirenboard credentials",
+      "http_desc": "web interface is available from the Internet without password",
+      "mqtt_desc": "mqtt is available from the Internet without password",
+      "found_instructions": "How to protect your Wiren Board controller",
+      "support_url": "https://wirenboard.com/wiki/Security"
    }
 }
