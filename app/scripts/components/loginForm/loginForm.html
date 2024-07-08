@@ -6,19 +6,12 @@
         <div class="panel-body">
             <form class="form-horizontal" name="$ctrl.loginForm"
                   ng-submit="$ctrl.loginForm.$valid ? $ctrl.updateLoginSettings() : ''" novalidate>
-                <div class="form-group">
-                    <label for="loginHost" class="col-sm-2 control-label" translate>{{'login.labels.host'}}</label>
+
+                <div class="form-group" ng-if="$ctrl.isDev">
+                    <label for="loginURL" class="col-sm-2 control-label" translate>{{'login.labels.url'}}</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="loginHost" name="host" ng-model="$ctrl.host"
-                               required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="loginPort" class="col-sm-2 control-label" translate>{{'login.labels.port'}}</label>
-
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="loginPort" name="port" ng-model="$ctrl.port"
+                        <input type="text" class="form-control" id="loginURL" name="url" ng-model="$ctrl.url"
                                required>
                     </div>
                 </div>

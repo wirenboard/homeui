@@ -103,6 +103,12 @@ module.exports = (function makeWebpackConfig() {
 
   config.resolve = {
     extensions: ['*', '.js', '.jsx'],
+    alias: {
+      'paho-mqtt': path.resolve(
+        __dirname,
+        'node_modules/paho-mqtt/src/paho-mqtt.js'
+      ),
+    },
   };
 
   /**
@@ -115,7 +121,7 @@ module.exports = (function makeWebpackConfig() {
         'angular',
         'oclazyload',
         'jquery',
-        './lib/mqttws31',
+        'paho-mqtt',
         'bootstrap',
         'angular-touch',
         'angular-sanitize',

@@ -4,14 +4,13 @@ class LoginFormCtrl {
     'ngInject';
 
     this.rootScope = $rootScope;
+    this.isDev = ($window.location.host === 'localhost:8080'); // FIXME: find more beautiful way to detect local dev
     this.localStorage = $window.localStorage;
     this.state = $state;
     this.rolesFactory = rolesFactory;
-    this.currentHost = $location.host();
-
+    this.currentURL = $location.protocol().replace('http', 'ws') + '://' + $location.host() + ':' + $location.port() + '/mqtt';
     this.loginSettings = {};
-    this.loginSettings.host = this.localStorage['host'];
-    this.loginSettings.port = this.localStorage['port'];
+    this.loginSettings.url = this.localStorage['url'];
     this.loginSettings.user = this.localStorage['user'];
     this.loginSettings.password = this.localStorage['password'];
     this.loginSettings.prefix = this.localStorage['prefix'];
@@ -24,22 +23,16 @@ class LoginFormCtrl {
 
   //...........................................................................
   $postLink() {
-    let host = this.loginSettings.host;
-    let port = this.loginSettings.port;
+    let url = this.loginSettings.url;
     let useCredentials = this.loginSettings.useCredentials;
     let user = this.loginSettings.user;
     let password = this.loginSettings.password;
     let prefix = this.loginSettings.prefix;
 
-    if (host) {
-      this.host = host;
+    if (url) {
+      this.url = url;
     } else {
-      this.host = this.currentHost;
-    }
-    if (port) {
-      this.port = port;
-    } else {
-      this.port = '18883';
+      this.url = this.currentURL;
     }
     if (useCredentials) {
       this.useCredentials = useCredentials;
@@ -66,8 +59,8 @@ class LoginFormCtrl {
   //...........................................................................
   updateLoginSettings() {
     // Update settings in Local Storage
-    this.localStorage.setItem('host', this.host);
-    this.localStorage.setItem('port', this.port);
+    if (this.isDev)
+      this.localStorage.setItem('url', this.url);
 
     this.localStorage.setItem('prefix', this.prefix);
 
@@ -81,11 +74,11 @@ class LoginFormCtrl {
 
     // Try to fetch UI config this new settings
     let loginData = {
-      host: this.host,
-      port: this.port,
+      url: this.url,
       user: this.user,
       password: this.password,
       prefix: this.prefix,
+      isDev: this.isDev,
     };
 
     this.rolesFactory.setRole(1);
