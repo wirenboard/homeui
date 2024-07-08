@@ -235,7 +235,7 @@ function mqttClient(
     // почистить именно ее а не другую ошибку
     showConnectError = true;
     const params = {
-      host: client.host + ':' + client.port,
+      host: client.host,
     };
     console.log(
       'Connection failed (' +
