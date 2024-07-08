@@ -1,42 +1,21 @@
 'use strict';
 
 import { makeObservable, observable, action, runInAction } from 'mobx';
-import CommonScanStore from './scanPageStore';
+import CommonScanStore, { SelectionPolicy } from './scanPageStore';
 import SetupAddressModalState from './setupAddressModalState';
 import ModbusAddressSet from '../common/modbusAddressesSet';
 
-function isCompletelySameDevice(scannedDevice, configuredDevice) {
-  return (
-    configuredDevice.address == scannedDevice.cfg.slave_id &&
-    configuredDevice.signatures.includes(scannedDevice.device_signature) &&
-    configuredDevice.sn == scannedDevice.sn
-  );
-}
-
-function isPotentiallySameDevice(scannedDevice, configuredDevice) {
-  return (
-    configuredDevice.address == scannedDevice.cfg.slave_id &&
-    configuredDevice.signatures.includes(scannedDevice.device_signature) &&
-    !configuredDevice.sn
-  );
-}
-
-function getConfiguredDeviceByAddress(configuredDevices, scannedDevice) {
-  if (!configuredDevices.hasOwnProperty(scannedDevice.port.path)) {
-    return [];
-  }
-  return configuredDevices[scannedDevice.port.path].filter(
-    d => d.address == scannedDevice.cfg.slave_id
-  );
-}
-
 class NewDevicesScanPageStore {
+  configuredDevices;
+  onCancel;
+  onOk;
+  active;
+  commonScanStore;
+  setupAddressModalState;
+
   constructor(startScanFn, stopScanFn, deviceTypesStore) {
     this.commonScanStore = new CommonScanStore(startScanFn, stopScanFn, deviceTypesStore);
-    this.onCancel = undefined;
-    this.onOk = undefined;
     this.active = false;
-    this.configuredDevices = [];
     this.setupAddressModalState = new SetupAddressModalState();
 
     makeObservable(this, { active: observable, select: action });
@@ -69,19 +48,11 @@ class NewDevicesScanPageStore {
       return;
     }
 
-    data.devices = data.devices.filter(device => this.filter(device));
-
     this.commonScanStore.update(data);
   }
 
   /**
    * Selects configured devices and starts scanning for new devices.
-   *
-   * @typedef {Object} ConfiguredDevice
-   * @property {number} address
-   * @property {string} sn
-   * @property {string} deviceType
-   * @property {Array} signatures
    *
    * @typedef {Object} SelectedDevice
    * @property {string} title
@@ -94,13 +65,12 @@ class NewDevicesScanPageStore {
    * @property {string} stopBits
    * @property {boolean} gotByFastScan
    *
-   * @param {Object.<string, ConfiguredDevice[]>}  configuredDevices - Configured devices grouped by port path
    * @returns {Promise<SelectedDevice[]>} - A promise that resolves with the list of devices after confirmation or an empty array if canceled
    */
   select(configuredDevices) {
     this.configuredDevices = configuredDevices;
     this.active = true;
-    this.commonScanStore.startScanning();
+    this.commonScanStore.startScanning(SelectionPolicy.Multiple, configuredDevices);
     return new Promise((resolve, reject) => {
       this.onOk = async () => {
         try {
@@ -122,35 +92,8 @@ class NewDevicesScanPageStore {
     });
   }
 
-  filter(scannedDevice) {
-    const configuredDevicesWithSameAddress = getConfiguredDeviceByAddress(
-      this.configuredDevices,
-      scannedDevice
-    );
-
-    if (configuredDevicesWithSameAddress.some(d => isCompletelySameDevice(scannedDevice, d))) {
-      return false;
-    }
-
-    // Config has devices without SN. They are configured but never polled, maybe found device is one of them
-    const maybeSameDevices = configuredDevicesWithSameAddress.filter(d =>
-      isPotentiallySameDevice(scannedDevice, d)
-    );
-
-    if (maybeSameDevices.find(d => d.uuidFoundByScan == scannedDevice.uuid)) {
-      return false;
-    }
-    const maybeSameDevice = maybeSameDevices.find(d => !d.uuidFoundByScan);
-    if (maybeSameDevice) {
-      maybeSameDevice.uuidFoundByScan = scannedDevice.uuid;
-      return false;
-    }
-
-    return true;
-  }
-
   async confirmAddressChange() {
-    let modbusAddressesSet = new ModbusAddressSet(this.configuredDevices);
+    let modbusAddressesSet = new ModbusAddressSet(this.configuredDevices.getUsedAddresses());
     const devices = this.commonScanStore.getSelectedDevices();
     const devicesWithDuplicateAddresses = devices.filter(
       device => !modbusAddressesSet.tryToAddUsedAddress(device.port, device.address)

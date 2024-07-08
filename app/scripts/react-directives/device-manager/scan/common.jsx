@@ -47,6 +47,15 @@ export function FirmwareVersion({ version, availableFw, extSupport, errors }) {
   );
 }
 
+const DeviceNameLabel = ({ title, selectable, selected, onSelectionChange, disabled }) => {
+  if (selectable) {
+    return (
+      <Checkbox value={selected} onChange={onSelectionChange} disabled={disabled} label={title} />
+    );
+  }
+  return <b>{title}</b>;
+};
+
 export const DeviceName = ({
   title,
   bootloaderMode,
@@ -56,6 +65,7 @@ export const DeviceName = ({
   selected,
   onSelectionChange,
   matchingDeviceTypes,
+  selectable,
 }) => {
   const { t } = useTranslation();
   return (
@@ -63,11 +73,12 @@ export const DeviceName = ({
       errors={errors}
       errorId={'com.wb.device_manager.device.read_device_signature_error'}
     >
-      <Checkbox
-        value={selected}
-        onChange={onSelectionChange}
+      <DeviceNameLabel
+        title={title}
+        selectable={selectable}
+        selected={selected}
+        onSelectionChange={onSelectionChange}
         disabled={unknownType}
-        label={title}
       />
       {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
       {duplicateMqttTopic && <ErrorTag text={t('scan.labels.duplicate-topic')} />}

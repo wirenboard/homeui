@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceName, Port, SlaveId } from './common';
 import { observer } from 'mobx-react-lite';
+import CollapseButton from '../../components/buttons/collapseButton';
 
 function ErrorRow({ error }) {
   if (!error) {
@@ -17,9 +18,11 @@ function ErrorRow({ error }) {
 }
 
 const DeviceRow = observer(({ deviceStore }) => {
+  const errorClass = deviceStore?.fw?.update?.error ? 'row-with-error' : '';
+  const notSelectableClass = !deviceStore.selectable ? 'not-selectable' : '';
   return (
     <React.Fragment>
-      <tr className={deviceStore?.fw?.update?.error && 'row-with-error'}>
+      <tr className={[errorClass, notSelectableClass].join(' ')}>
         <td className="device-title-cell">
           <DeviceName
             title={deviceStore.title}
@@ -30,6 +33,7 @@ const DeviceRow = observer(({ deviceStore }) => {
             selected={deviceStore.selected}
             onSelectionChange={e => deviceStore.setSelected(e.target.checked)}
             matchingDeviceTypes={deviceStore.names.slice(1)}
+            selectable={deviceStore.selectable}
           />
         </td>
         <td>{deviceStore.sn}</td>
@@ -52,7 +56,24 @@ const DeviceRow = observer(({ deviceStore }) => {
   );
 });
 
-function DevicesTable({ devices }) {
+const AlreadyConfiguredDevicesHeader = observer(
+  ({ alreadyConfiguredDevices, collapseButtonState }) => {
+    const { t } = useTranslation();
+    if (!alreadyConfiguredDevices.length) {
+      return null;
+    }
+    return (
+      <tr className="devices-in-config-header">
+        <td colSpan={4}>
+          <CollapseButton state={collapseButtonState} /> &nbsp;
+          {t('scan.labels.device-in-config')}
+        </td>
+      </tr>
+    );
+  }
+);
+
+const DevicesTable = observer(({ newDevices, alreadyConfiguredDevices, collapseButtonState }) => {
   const { t } = useTranslation();
   return (
     <div className="scrollable-table-wrapper">
@@ -66,13 +87,19 @@ function DevicesTable({ devices }) {
           </tr>
         </thead>
         <tbody>
-          {devices.map(d => (
+          {newDevices.map(d => (
             <DeviceRow key={d.uuid} deviceStore={d} />
           ))}
+          <AlreadyConfiguredDevicesHeader
+            alreadyConfiguredDevices={alreadyConfiguredDevices}
+            collapseButtonState={collapseButtonState}
+          />
+          {!collapseButtonState.collapsed &&
+            alreadyConfiguredDevices.map((d, index) => <DeviceRow key={index} deviceStore={d} />)}
         </tbody>
       </table>
     </div>
   );
-}
+});
 
 export default DevicesTable;

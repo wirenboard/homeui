@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.91.0) stable; urgency=medium
+
+  * Show configured devices during fast modbus scan 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 08 Jul 2024 14:40:51 +0500
+
 wb-mqtt-homeui (2.90.1) stable; urgency=medium
 
   * Remove empty line after svg dashboard

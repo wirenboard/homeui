@@ -2,6 +2,7 @@
 
 import { action, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
 import i18n from '../../../i18n/react/config';
+import CollapseButtonState from '../../components/buttons/collapseButtonState';
 
 export const SelectionPolicy = {
   Single: 'Select only one item',
@@ -108,16 +109,17 @@ class ScanningProgressStore {
 }
 
 class SingleDeviceStore {
-  constructor(scannedDevice, gotByFastScan, names, deviceTypes) {
+  constructor(scannedDevice, gotByFastScan, names, deviceTypes, selectable) {
     this.scannedDevice = scannedDevice;
     this.deviceTypes = deviceTypes;
-    this.selected = !this.isUnknownType;
+    this.selected = selectable && !this.isUnknownType;
     this.duplicateSlaveId = false;
     this.misconfiguredPort = false;
     this.duplicateMqttTopic = false;
     this.names = names;
     this.gotByFastScan = gotByFastScan;
     this.disposer = undefined;
+    this.selectable = selectable;
 
     makeObservable(this, {
       scannedDevice: observable.ref,
@@ -174,7 +176,7 @@ class SingleDeviceStore {
   }
 
   setSelected(value) {
-    this.selected = value;
+    this.selected = this.selectable && value;
   }
 
   update(scannedDevice) {
@@ -200,12 +202,18 @@ class SingleDeviceStore {
 
 class DevicesStore {
   constructor(deviceTypesStore) {
-    this.devices = [];
+    this.newDevices = [];
+    this.alreadyConfiguredDevices = [];
+    this.configuredDevices = {};
     this.devicesByUuid = new Set();
     this.deviceTypesStore = deviceTypesStore;
     this.selectionPolicy = SelectionPolicy.Multiple;
 
-    makeObservable(this, { devices: observable, setDevices: action });
+    makeObservable(this, {
+      newDevices: observable,
+      alreadyConfiguredDevices: observable,
+      setDevices: action,
+    });
   }
 
   addDevice(scannedDevice, gotByFastScan) {
@@ -218,24 +226,37 @@ class DevicesStore {
       scannedDevice.fw?.version
     );
 
+    const isNewDevice = !this.configuredDevices.findMatch(scannedDevice);
+
     let deviceStore = new SingleDeviceStore(
       scannedDevice,
       gotByFastScan,
       deviceTypes.map(dt => this.deviceTypesStore.getName(dt)),
-      deviceTypes
+      deviceTypes,
+      isNewDevice
     );
 
-    if (this.selectionPolicy === SelectionPolicy.Single) {
-      const disposer = reaction(
-        () => deviceStore.selected,
-        () => this.checkSingleSelection(deviceStore)
-      );
-      deviceStore.disposer = disposer;
-      deviceStore.setSelected(false);
+    if (isNewDevice) {
+      if (this.selectionPolicy === SelectionPolicy.Single) {
+        const disposer = reaction(
+          () => deviceStore.selected,
+          () => this.checkSingleSelection(deviceStore)
+        );
+        deviceStore.disposer = disposer;
+        deviceStore.setSelected(false);
+      }
+      this.newDevices.push(deviceStore);
+    } else {
+      this.alreadyConfiguredDevices.push(deviceStore);
+      this.alreadyConfiguredDevices.sort((d1, d2) => {
+        if (d1.port == d2.port) {
+          return d1.address - d2.address;
+        }
+        return d1.port.localeCompare(d2.port);
+      });
     }
 
     this.devicesByUuid.add(scannedDevice.uuid);
-    this.devices.push(deviceStore);
   }
 
   setDevices(scannedDevicesList, gotByFastScan) {
@@ -245,10 +266,12 @@ class DevicesStore {
     scannedDevicesList.forEach(device => this.addDevice(device, gotByFastScan));
   }
 
-  init(selectionPolicy) {
-    this.devices.forEach(device => device.disposer?.());
+  init(selectionPolicy, configuredDevices) {
+    this.configuredDevices = configuredDevices;
+    this.newDevices.forEach(device => device.disposer?.());
     this.selectionPolicy = selectionPolicy ?? SelectionPolicy.Multiple;
-    this.devices = [];
+    this.newDevices = [];
+    this.alreadyConfiguredDevices = [];
     this.devicesByUuid.clear();
   }
 
@@ -256,7 +279,7 @@ class DevicesStore {
     if (!selectedDevice.selected) {
       return;
     }
-    this.devices.forEach(device => {
+    this.newDevices.forEach(device => {
       if (device != selectedDevice && device.selected) {
         device.setSelected(false);
       }
@@ -295,6 +318,7 @@ class CommonScanStore {
     this.devicesStore = new DevicesStore(deviceTypesStore);
     this.globalError = new GlobalErrorStore();
     this.acceptUpdates = false;
+    this.alreadyConfiguredDevicesCollapseButtonState = new CollapseButtonState(true);
 
     makeAutoObservable(this);
   }
@@ -364,13 +388,13 @@ class CommonScanStore {
     }
   }
 
-  startScanning(selectionPolicy) {
-    this.devicesStore.init(selectionPolicy);
+  startScanning(selectionPolicy, configuredDevices) {
+    this.devicesStore.init(selectionPolicy, configuredDevices);
     this.startExtendedScanning();
   }
 
   getSelectedDevices() {
-    return this.devicesStore.devices
+    return this.devicesStore.newDevices
       .filter(d => d.selected && !d.scannedDevice.bootloader_mode)
       .map(d => {
         return {
@@ -389,7 +413,7 @@ class CommonScanStore {
 
   get hasSelectedItems() {
     return (
-      this.devicesStore.devices.some(d => d.selected) &&
+      this.devicesStore.newDevices.some(d => d.selected) &&
       this.scanStore.actualState !== ScanState.Started
     );
   }
