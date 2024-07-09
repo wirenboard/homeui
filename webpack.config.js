@@ -106,7 +106,7 @@ module.exports = (function makeWebpackConfig() {
     alias: {
       'paho-mqtt': path.resolve(
         __dirname,
-        'node_modules/paho-mqtt/src/paho-mqtt.js'
+        'node_modules/paho-mqtt/paho-mqtt.js',
       ),
     },
   };

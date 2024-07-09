@@ -98,6 +98,7 @@
     "mini-css-extract-plugin": "^2.9.0",
     "node-sass": "^7.0.3",
     "normalize.css": "^8.0.1",
+    "paho-mqtt": "^1.1.0",
     "postcss-loader": "^7.0.1",
     "rimraf": "^2.6.1",
     "sass-loader": "^13.2.0",
