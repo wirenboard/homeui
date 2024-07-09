@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.92.0) stable; urgency=medium
+
+  * Copy device configurations between ports
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 09 Jul 2024 10:07:54 +0500
+
 wb-mqtt-homeui (2.91.0) stable; urgency=medium
 
   * Show configured devices during fast modbus scan 

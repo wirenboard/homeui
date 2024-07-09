@@ -15,7 +15,10 @@ class UniqueMqttIdChecker {
 
   updateState(deviceTabsWithSameId) {
     deviceTabsWithSameId.forEach((tabItem, index, arr) => {
-      const others = arr.filter(tab => tab != tabItem);
+      let others = [];
+      if (tabItem.tab.slaveId !== undefined) {
+        others = arr.filter(tab => tab != tabItem);
+      }
       tabItem.tab.setDevicesWithTheSameId(others.map(d => `${d.tab.name} (${d.port.name})`));
     });
   }
@@ -221,10 +224,6 @@ export class TabsStore {
     this.hasModifiedStructure = true;
     this.mobileModeStore.showTabsPanel();
     this.onSelectTab(this.selectedTabIndex);
-  }
-
-  copySelectedTab() {
-    this.addDeviceTab(this.selectedPortTab, this.items[this.selectedTabIndex].getCopy(), true);
   }
 
   get selectedPortTab() {

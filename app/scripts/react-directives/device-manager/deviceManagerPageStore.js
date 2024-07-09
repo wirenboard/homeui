@@ -100,7 +100,7 @@ class DeviceManagerPageStore {
         new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore)
       );
       if (device) {
-        device.newAddress = selectedDeviceTab.editedData.slave_id;
+        device.newAddress = selectedDeviceTab.slaveId;
         selectedDeviceTab.setLoading(true);
         await this.configEditorPageStore.setupDevice(device);
         selectedDeviceTab.setDisconnected(false);

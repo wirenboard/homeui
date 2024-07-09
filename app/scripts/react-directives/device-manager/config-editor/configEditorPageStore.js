@@ -8,7 +8,7 @@ import { getDefaultObject } from './jsonSchemaUtils';
 import AccessLevelStore from '../../components/access-level/accessLevelStore';
 import PageWrapperStore from '../../components/page-wrapper/pageWrapperStore';
 import ConfirmModalState from '../../components/modals/confirmModalState';
-import AddDeviceModalState from './addDeviceModalState';
+import showAddDeviceModal from './addDeviceModal';
 import { TabsStore } from './tabsStore';
 import { DeviceTab } from './deviceTabStore';
 import {
@@ -19,6 +19,8 @@ import {
 } from './portTabStore';
 import { SettingsTab } from './settingsTabStore';
 import { getTranslation } from './jsonSchemaUtils';
+import FormModalState from '../../components/modals/formModalState';
+import showCopyDeviceModal from './copyDeviceModal';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
@@ -175,7 +177,7 @@ function getTopics(portTabs, deviceTypesStore) {
     portTab.children.forEach(deviceTab => {
       topics.add(
         deviceTab.editedData.id ||
-          deviceTypesStore.getDefaultId(deviceTab.deviceType, deviceTab.editedData.slave_id)
+          deviceTypesStore.getDefaultId(deviceTab.deviceType, deviceTab.slaveId)
       );
     });
   });
@@ -197,7 +199,6 @@ class ConfigEditorPageStore {
     this.pageWrapperStore = new PageWrapperStore();
     this.selectModalState = new SelectModalState();
     this.confirmModalState = new ConfirmModalState();
-    this.addDeviceModalState = new AddDeviceModalState();
     this.tabs = new TabsStore(toMobileContent, toTabs);
     this.deviceTypesStore = deviceTypesStore;
     this.portSchemaMap = {};
@@ -205,6 +206,7 @@ class ConfigEditorPageStore {
     this.loadConfigFn = loadConfigFn;
     this.loaded = false;
     this.setupDeviceFn = setupDeviceFn;
+    this.formModalState = new FormModalState();
 
     makeObservable(this, {
       allowSave: computed,
@@ -333,22 +335,17 @@ class ConfigEditorPageStore {
   }
 
   async addDevice() {
-    let newDeviceType;
-    let portTab;
-    try {
-      [portTab, newDeviceType] = await this.addDeviceModalState.show(
-        makePortSelectOptions(this.tabs.portTabs),
-        this.deviceTypesStore.deviceTypeSelectOptions,
-        this.tabs.selectedPortTab
-      );
-    } catch (err) {
-      if (err == 'cancel') {
-        return;
-      }
-      throw err;
+    const res = await showAddDeviceModal(
+      this.formModalState,
+      makePortSelectOptions(this.tabs.portTabs),
+      this.deviceTypesStore.deviceTypeSelectOptions,
+      this.tabs.selectedPortTab
+    );
+    if (res === undefined) {
+      return;
     }
-    let deviceTab = new DeviceTab({}, newDeviceType, this.deviceTypesStore);
-    this.tabs.addDeviceTab(portTab, deviceTab, true);
+    let deviceTab = new DeviceTab({}, res.deviceType, this.deviceTypesStore);
+    this.tabs.addDeviceTab(res.port, deviceTab, true);
     deviceTab.setDefaultData();
   }
 
@@ -478,6 +475,21 @@ class ConfigEditorPageStore {
   setDeviceDisconnected(topic, error) {
     const tab = this.tabs.findDeviceTabByTopic(topic);
     tab?.setDisconnected(error == 'r');
+  }
+
+  async copyTab() {
+    let portTab = this.tabs.selectedPortTab;
+    let deviceTab = this.tabs.selectedTab;
+    const res = await showCopyDeviceModal(
+      this.formModalState,
+      makePortSelectOptions(this.tabs.portTabs),
+      portTab
+    );
+    if (res) {
+      for (let i = 0; i < res.count; ++i) {
+        this.tabs.addDeviceTab(portTab, deviceTab.getCopy(), i == 0);
+      }
+    }
   }
 }
 

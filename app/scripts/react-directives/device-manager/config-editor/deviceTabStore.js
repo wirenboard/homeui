@@ -114,6 +114,9 @@ export class DeviceTab {
     dataCopy.slave_id = '';
     let tab = new DeviceTab(dataCopy, this.deviceType, this.deviceTypesStore);
     tab.loadSchema();
+    runInAction(() => {
+      tab.hasJsonValidationErrors = true;
+    });
     return tab;
   }
 
@@ -152,7 +155,6 @@ export class DeviceTab {
       this.editedData = getDefaultObject(this.schema);
       this.data = cloneDeep(this.editedData);
       this.isDirty = false;
-      this.hasJsonValidationErrors = false;
       this.updateName();
       this.loading = false;
     });
@@ -169,6 +171,12 @@ export class DeviceTab {
       this.editedData.id ||
       this.deviceTypesStore.getDefaultId(this.deviceType, this.editedData.slave_id)
     );
+  }
+
+  get slaveId() {
+    return this.editedData.slave_id === undefined || this.editedData.slave_id === ''
+      ? undefined
+      : this.editedData.slave_id;
   }
 
   setSlaveIdIsDuplicate(value) {
