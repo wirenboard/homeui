@@ -48,11 +48,11 @@ class SearchDisconnectedScanPageStore {
     this.commonScanStore.update(data);
   }
 
-  select(deviceType, portPath) {
+  select(deviceType, portPath, configuredDevices) {
     this.signatures = this.deviceTypesStore.getDeviceSignatures(deviceType);
     this.portPath = portPath;
     this.active = true;
-    this.commonScanStore.startScanning(SelectionPolicy.Single);
+    this.commonScanStore.startScanning(SelectionPolicy.Single, configuredDevices);
     return new Promise((resolve, reject) => {
       this.onOk = async () => {
         try {

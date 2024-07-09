@@ -134,3 +134,18 @@
 .scan-page #confirm-setup-device-addresses-modal .modal-dialog .scrollable-panels-wrapper {
     max-height: 65vh;
 }
+
+.scan-page .not-selectable {
+    color: gray;
+}
+
+.scan-page .devices-in-config-header {
+    font-weight: bold;
+    font-size: 12px;
+    background-color: #eeeeee;
+}
+
+.scan-page .devices-in-config-mobile-header {
+    font-weight: bold;
+    margin-bottom: 18px;
+}

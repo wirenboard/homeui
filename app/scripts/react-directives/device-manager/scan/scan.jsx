@@ -118,14 +118,21 @@ export const ScanPageBody = observer(({ store }) => {
   if (store.mqttStore.waitStartup) {
     return <Spinner />;
   }
-  const nothingFound = store.devicesStore.devices.length == 0;
+  const noNewDevices = store.devicesStore.newDevices.length == 0;
+  const nothingFound = noNewDevices && store.devicesStore.alreadyConfiguredDevices.length == 0;
   if (isDesktop) {
     return (
       <>
-        {!nothingFound && <DevicesTable devices={store.devicesStore.devices} />}
+        {!nothingFound && (
+          <DevicesTable
+            newDevices={store.devicesStore.newDevices}
+            alreadyConfiguredDevices={store.devicesStore.alreadyConfiguredDevices}
+            collapseButtonState={store.alreadyConfiguredDevicesCollapseButtonState}
+          />
+        )}
         <BottomPanel
           scanStore={store.scanStore}
-          nothingFound={nothingFound}
+          nothingFound={noNewDevices}
           onStartScanning={() => store.startStandardScanning()}
           onStopScanning={() => store.stopScanning()}
         />
@@ -134,10 +141,16 @@ export const ScanPageBody = observer(({ store }) => {
   }
   return (
     <div className="mobile-devices-list">
-      {!nothingFound && <DevicesList devices={store.devicesStore.devices} />}
+      {!nothingFound && (
+        <DevicesList
+          newDevices={store.devicesStore.newDevices}
+          alreadyConfiguredDevices={store.devicesStore.alreadyConfiguredDevices}
+          collapseButtonState={store.alreadyConfiguredDevicesCollapseButtonState}
+        />
+      )}
       <BottomPanel
         scanStore={store.scanStore}
-        nothingFound={nothingFound}
+        nothingFound={noNewDevices}
         onStartScanning={() => store.startStandardScanning()}
         onStopScanning={() => store.stopScanning()}
       />
