@@ -393,14 +393,13 @@ const realApp = angular
         uiConfig
       ) {
         return function (loginData) {
-          if (loginData.host && loginData.port) {
+          if (loginData.url) {
             var clientID = 'wb-mqtt-homeui-' + randomString(10);
             if (mqttClient.isConnected()) {
               mqttClient.disconnect();
             }
             mqttClient.connect(
-              loginData.host,
-              loginData.port,
+              loginData.url,
               clientID,
               loginData.user,
               loginData.password
@@ -444,27 +443,31 @@ const realApp = angular
       );
 
       //.........................................................................
-      const demoLoginData = {
-        host: $window.location.hostname,
-        port: 18883,
-      };
 
-      if (location.protocol === 'https:') {
-        demoLoginData.port = 443;
-      }
-
-      if (!$window.localStorage.host || !$window.localStorage.port) {
-        $window.localStorage.setItem('host', demoLoginData.host);
-        $window.localStorage.setItem('port', demoLoginData.port);
-      }
-
+      // common settings for all scenarios
       var loginData = {
-        host: $window.localStorage['host'],
-        port: $window.localStorage['port'],
         user: $window.localStorage['user'],
         password: $window.localStorage['password'],
         prefix: $window.localStorage['prefix'],
       };
+
+      // detect auto url
+      var autoURL = new URL("/mqtt", $window.location.href);
+      autoURL.protocol = autoURL.protocol.replace('http', 'ws');
+
+      // FIXME: I know it's ugly, let's find more elegant way later
+      var isDev = ($window.location.host === 'localhost:8080');
+
+      if (isDev) {
+        // local debug detected, enable MQTT url override via settings
+        if (!$window.localStorage.url) {
+          $window.localStorage.setItem('url', autoURL.href);
+        }
+        loginData['url'] = $window.localStorage['url'];
+      } else {
+        // no local debug detected, full auto
+        loginData['url'] = autoURL.href;
+      }
 
       let language = localStorage.getItem('language');
       const supportedLanguages = ['en', 'ru'];
@@ -479,18 +482,6 @@ const realApp = angular
       tmhDynamicLocale.set(language);
 
       $rootScope.requestConfig(loginData);
-
-      if (
-        loginData['host'] === demoLoginData['host'] &&
-        loginData['port'] === demoLoginData['port']
-      ) {
-        ngToast.danger({
-          content: $sce.trustAsHtml(
-            'Please specify connection data in <a ui-sref="webUI" href="javascript:"> Settings -> web-ui </a>'
-          ),
-          compileContent: true,
-        });
-      }
 
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
