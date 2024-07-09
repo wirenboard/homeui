@@ -3,12 +3,15 @@ class LoginFormCtrl {
   constructor($window, $rootScope, $state, $location, rolesFactory) {
     'ngInject';
 
+    var currentURL = new URL("/mqtt", $window.location.href);
+    currentURL.protocol = currentURL.protocol.replace('http', 'ws');
+
     this.rootScope = $rootScope;
     this.isDev = ($window.location.host === 'localhost:8080'); // FIXME: find more beautiful way to detect local dev
     this.localStorage = $window.localStorage;
     this.state = $state;
     this.rolesFactory = rolesFactory;
-    this.currentURL = $location.protocol().replace('http', 'ws') + '://' + $location.host() + ':' + $location.port() + '/mqtt';
+    this.currentURL = currentURL.href;
     this.loginSettings = {};
     this.loginSettings.url = this.localStorage['url'];
     this.loginSettings.user = this.localStorage['user'];
