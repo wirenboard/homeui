@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1-wb108) stable; urgency=medium
+
+  * Remove direct websocket port usage in favor of built-in nginx proxy, remove host+port settings
+
+ -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 10 Jul 2024 11:51:26 +0500
+
 wb-mqtt-homeui (2.82.1-wb107) stable; urgency=medium
 
   * add remote probe to check for open ports
