@@ -247,7 +247,9 @@
          "settings": "wb-mqtt-serial settings",
          "unknown-device-type": "Unknown device type",
          "address-conflicts-note": "The addresses of conflicting devices will be changed",
-         "address-conflicts": "Address conflicts"
+         "address-conflicts": "Address conflicts",
+         "copy-count": "Copy count",
+         "copy-device": "Copy device"
       },
       "buttons": {
          "save": "Save config",

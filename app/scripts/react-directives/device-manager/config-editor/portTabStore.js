@@ -10,9 +10,9 @@ import CollapseButtonState from '../../components/buttons/collapseButtonState';
 
 function checkDuplicateSlaveIds(deviceTabs) {
   const tabsBySlaveId = deviceTabs.reduce((acc, tab) => {
-    if (tab.isModbusDevice) {
-      acc[tab.editedData.slave_id] ??= [];
-      acc[tab.editedData.slave_id].push(tab);
+    if (tab.isModbusDevice && tab.slaveId !== undefined) {
+      acc[tab.slaveId] ??= [];
+      acc[tab.slaveId].push(tab);
     }
     return acc;
   }, {});

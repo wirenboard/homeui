@@ -244,7 +244,9 @@
          "settings": "Настройки wb-mqtt-serial",
          "unknown-device-type": "Неизвестный тип устройства",
          "address-conflicts-note": "Адреса конфликтующих устройств будут изменены",
-         "address-conflicts": "Найдены конфликты адресов" 
+         "address-conflicts": "Найдены конфликты адресов",
+         "copy-count": "Число копий",
+         "copy-device": "Скопировать устройство"
       },
       "buttons": {
          "save": "Сохранить настройки",

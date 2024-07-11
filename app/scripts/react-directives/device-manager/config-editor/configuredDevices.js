@@ -5,7 +5,7 @@ function makeConfiguredDevicesList(portTabChildren, deviceTypesStore) {
     const deviceType = deviceTab.editedData.device_type;
     if (deviceTypesStore.isModbusDevice(deviceType)) {
       acc.push({
-        address: deviceTab.editedData.slave_id,
+        address: deviceTab.slaveId,
         sn: deviceTab.editedData.sn,
         deviceType: deviceType,
         signatures: deviceTypesStore.getDeviceSignatures(deviceType),

@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { VerticalTabs, TabContent, TabItem, TabPane, TabsList } from '../../components/tabs/tabs';
 import { SelectModal } from '../../components/modals/selectModal';
 import ConfirmModal from '../../components/modals/confirmModal';
-import AddDeviceModal from './addDeviceModal';
 import { TabType } from './tabsStore';
 import { PortTab, PortTabContent } from './portTab';
 import { DeviceTab, DeviceTabContent } from './deviceTab';
 import { SettingsTab, SettingsTabContent } from './settingsPage';
 import { useMediaQuery } from 'react-responsive';
+import FormModal from '../../components/modals/formModal';
 
 function getTabItemContent(tab) {
   if (tab.type == TabType.PORT) {
@@ -257,7 +257,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
     >
       <SelectModal {...pageStore.selectModalState} />
       <ConfirmModal {...pageStore.confirmModalState} />
-      <AddDeviceModal {...pageStore.addDeviceModalState} />
+      <FormModal {...pageStore.formModalState} />
       <PageHeader
         showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
         allowSave={pageStore.allowSave}
@@ -274,7 +274,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             selectedIndex={pageStore.tabs.selectedTabIndex}
             onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}
-            onCopyTab={() => pageStore.tabs.copySelectedTab()}
+            onCopyTab={() => pageStore.copyTab()}
             onAddPort={() => pageStore.addPort()}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
             deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeSelectOptions}
