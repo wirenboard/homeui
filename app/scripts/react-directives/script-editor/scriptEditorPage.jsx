@@ -45,13 +45,15 @@ const ScriptEditorPage = observer(({ store }) => {
         />
       </PageTitle>
       <PageBody loading={store.pageWrapperStore.loading} renderChildren={true}>
-        <ScriptEditor
-          ref={editorRef}
-          text={store.ruleText}
-          errorLine={store.errorLine}
-          onChange={value => store.setRuleText(value)}
-          visible={!store.pageWrapperStore.loading}
-        />
+        {!store.pageWrapperStore.loading && (
+          <ScriptEditor
+            ref={editorRef}
+            text={store.ruleText}
+            errorLine={store.errorLine}
+            onChange={(value) => store.setRuleText(value)}
+            visible={!store.pageWrapperStore.loading}
+          />
+        )}
       </PageBody>
     </PageWrapper>
   );
