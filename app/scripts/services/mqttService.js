@@ -209,9 +209,7 @@ function mqttClient(
     }
     connected = true;
 
-    console.log(
-      'Connected to ' + client.host + " as '" + client.clientId + "'"
-    );
+    console.log('Connected to ' + client.host + " as '" + client.clientId + "'");
     if (globalPrefix !== '') console.log('With globalPrefix: ' + globalPrefix);
 
     client.subscribe(globalPrefix + '/config/widgets/#');
@@ -317,8 +315,6 @@ function mqttClient(
         });
       }
     }
-
-    console.log('Delivered message: ', JSON.stringify(message));
   };
 
   //...........................................................................
