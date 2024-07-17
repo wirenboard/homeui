@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.93.3) stable; urgency=medium
+
+  * Add missed units translations
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Wed, 17 Jul 2024 16:06:00 +0400
+
 wb-mqtt-homeui (2.93.2) stable; urgency=medium
 
   * Fix address assignment in wb-mqtt-serial config
