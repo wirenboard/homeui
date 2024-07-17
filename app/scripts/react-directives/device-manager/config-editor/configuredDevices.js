@@ -103,8 +103,18 @@ class ConfiguredDevices {
    * @returns {Map<string, Set<number>>} - Device addresses grouped by port path
    */
   getUsedAddresses() {
+    const getAddressesSet = devices => {
+      return devices.reduce((addressAcc, d) => {
+        if (Number.isInteger(d.address)) {
+          return addressAcc.add(d.address);
+        }
+        const addrNumber = parseInt(d.address);
+        return Number.isNaN(addrNumber) ? addressAcc : addressAcc.add(addrNumber);
+      }, new Set());
+    };
+
     return Object.entries(this.configuredDevices).reduce(
-      (acc, [path, port]) => acc.set(path, new Set(port.devices.map(d => d.address))),
+      (acc, [path, port]) => acc.set(path, getAddressesSet(port.devices)),
       new Map()
     );
   }
