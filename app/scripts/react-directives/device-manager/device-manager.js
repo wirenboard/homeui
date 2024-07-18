@@ -18,7 +18,9 @@ function deviceManagerDirective(
   SerialProxy,
   SerialPortProxy,
   mqttClient,
-  $rootScope
+  $rootScope,
+  $window,
+  $translate
 ) {
   'ngInject';
 
@@ -94,6 +96,16 @@ function deviceManagerDirective(
         setupPort
       );
 
+      let CONFIRMATION_MSG;
+
+      const updateTranslations = () => {
+        $translate('app.prompt.serial-config-leave').then(translation => {
+          CONFIRMATION_MSG = translation;
+        });
+      };
+      updateTranslations();
+      $rootScope.$on('$translateChangeSuccess', () => updateTranslations());
+
       scope.deleteTransitionHook = $transitions.onBefore({}, function (transition) {
         if (
           transition.to().name == 'serial-config' &&
@@ -108,6 +120,12 @@ function deviceManagerDirective(
           !transition.params('to').hint
         ) {
           return $state.target('serial-config');
+        }
+        if (transition.from().name == 'serial-config' && scope.store.shouldConfirmLeavePage()) {
+          if (!$window.confirm(CONFIRMATION_MSG)) {
+            return false;
+          }
+          scope.store.stopScanning();
         }
         return true;
       });

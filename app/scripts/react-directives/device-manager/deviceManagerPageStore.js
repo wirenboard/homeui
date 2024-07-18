@@ -110,6 +110,17 @@ class DeviceManagerPageStore {
     }
     selectedDeviceTab.setLoading(false);
   }
+
+  shouldConfirmLeavePage() {
+    return (
+      this.newDevicesScanPageStore.isScanning || this.searchDisconnectedScanPageStore.isScanning
+    );
+  }
+
+  stopScanning() {
+    this.newDevicesScanPageStore.stopScanning();
+    this.searchDisconnectedScanPageStore.stopScanning();
+  }
 }
 
 export default DeviceManagerPageStore;

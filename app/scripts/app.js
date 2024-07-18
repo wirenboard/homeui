@@ -365,7 +365,8 @@ const realApp = angular
       $sce,
       $translate,
       uibDatepickerPopupConfig,
-      tmhDynamicLocale
+      tmhDynamicLocale,
+      DeviceManagerProxy
     ) => {
       'ngInject';
 
@@ -398,12 +399,7 @@ const realApp = angular
             if (mqttClient.isConnected()) {
               mqttClient.disconnect();
             }
-            mqttClient.connect(
-              loginData.url,
-              clientID,
-              loginData.user,
-              loginData.password
-            );
+            mqttClient.connect(loginData.url, clientID, loginData.user, loginData.password);
           } else {
             return false;
           }
@@ -452,11 +448,11 @@ const realApp = angular
       };
 
       // detect auto url
-      var autoURL = new URL("/mqtt", $window.location.href);
+      var autoURL = new URL('/mqtt', $window.location.href);
       autoURL.protocol = autoURL.protocol.replace('http', 'ws');
 
       // FIXME: I know it's ugly, let's find more elegant way later
-      var isDev = ($window.location.host === 'localhost:8080');
+      var isDev = $window.location.host === 'localhost:8080';
 
       if (isDev) {
         // local debug detected, enable MQTT url override via settings
@@ -519,6 +515,14 @@ const realApp = angular
         },
         true
       );
+
+      whenMqttReady()
+        .then(() => DeviceManagerProxy.Stop())
+        .then(result => {
+          if (result == 'Ok') {
+            $translate('app.errors.stop-scan').then(m => ngToast.danger(m));
+          }
+        });
 
       setTimeout(() => {
         $('double-bounce-spinner').addClass('ng-hide');

@@ -98,11 +98,7 @@ class ScanningProgressStore {
     this.progress = 0;
   }
 
-  stopScan() {
-    this.requiredState = ScanState.Stopped;
-  }
-
-  scanFailed() {
+  scanStopped() {
     this.requiredState = ScanState.NotSpecified;
     this.actualState = ScanState.Stopped;
   }
@@ -335,7 +331,7 @@ class CommonScanStore {
 
   setScanFailed(err) {
     this.acceptUpdates = false;
-    this.scanStore.scanFailed();
+    this.scanStore.scanStopped();
     if ('MqttTimeoutError'.localeCompare(err.data) == 0) {
       this.setDeviceManagerUnavailable();
     } else {
@@ -360,10 +356,9 @@ class CommonScanStore {
   }
 
   stopScanning() {
-    this.scanStore.stopScan();
-    this.stopScanFn()
-      .then(() => (this.acceptUpdates = false))
-      .catch(err => this.setScanFailed(err));
+    this.scanStore.scanStopped();
+    this.acceptUpdates = false;
+    this.stopScanFn();
   }
 
   // Expected props structure
@@ -415,6 +410,13 @@ class CommonScanStore {
     return (
       this.devicesStore.newDevices.some(d => d.selected) &&
       this.scanStore.actualState !== ScanState.Started
+    );
+  }
+
+  get isScanning() {
+    return (
+      this.scanStore.requiredState == ScanState.Started ||
+      this.scanStore.actualState == ScanState.Started
     );
   }
 }

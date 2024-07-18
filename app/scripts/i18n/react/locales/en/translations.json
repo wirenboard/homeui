@@ -29,7 +29,7 @@
          "scanning-stop": "Press \"Stop scan\", if all devices are found, or wait for completion",
          "not-found": "Nothing found",
          "extended-modbus": "This device was found by scanning via fast Modbus",
-         "try-normal-scan": "If the required devices are not found, run slow scan",
+         "try-normal-scan": "If the required devices are not found, run slow scan. During this time, already configured devices will not be polled or accept commands",
          "misconfigured-port": "differs from port settings",
          "duplicate-topic": "There is a device with the same MQTT topic",
          "unknown-device-type": "unknown device type",
