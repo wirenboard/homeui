@@ -17,7 +17,7 @@ function makeConfiguredDevicesList(portTabChildren, deviceTypesStore) {
 
 function getConfiguredModbusDevices(portTabs, deviceTypesStore) {
   return portTabs.reduce((acc, portTab) => {
-    if (portTab.editedData.port_type == 'serial') {
+    if (portTab.portType == 'serial') {
       acc[portTab.editedData.path] = {
         config: {
           baudRate: portTab.editedData.baud_rate,
