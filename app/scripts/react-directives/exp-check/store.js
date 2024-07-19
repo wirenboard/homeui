@@ -12,16 +12,16 @@ class ExpCheckStore {
   update(result, details) {
     this.result = result;
     this.details = details || [];
-    if (result === 'found') {
-      if (this.timerHandler === null) {
-        this.timerHandler = setInterval(() => fetch('/api/check'), 1000 * 60 * 10);
-      }
-    } else {
-      if (this.timerHandler !== null) {
-        clearInterval(this.timerHandler);
-        this.timerHandler = null;
-      }
+    if (this.timerHandler !== null) {
+      clearTimeout(this.timerHandler);
+      this.timerHandler = null;
     }
+    const TEN_MINUTES = 1000 * 60 * 10;
+    const ONE_HOUR = 1000 * 60 * 60;
+    this.timerHandler = setTimeout(
+      () => fetch('/api/check'),
+      result === 'found' ? TEN_MINUTES : ONE_HOUR
+    );
   }
 }
 
