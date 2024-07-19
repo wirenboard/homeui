@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.82.1-wb108) stable; urgency=medium
+
+  * Hide vulnerability warning if the problem is fixed
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 19 Jul 2024 13:29:05 +0500
+
 wb-mqtt-homeui (2.82.1-wb107) stable; urgency=medium
 
   * add remote probe to check for open ports
