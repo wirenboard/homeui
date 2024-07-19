@@ -129,4 +129,8 @@ export class PortTab {
   get hasInvalidConfig() {
     return this.hasJsonValidationErrors || this.childrenHasInvalidConfig;
   }
+
+  get portType() {
+    return this.editedData?.port_type || 'serial';
+  }
 }
