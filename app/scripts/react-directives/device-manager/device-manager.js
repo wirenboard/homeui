@@ -1,28 +1,35 @@
 'use strict';
 
 import ReactDOM from 'react-dom/client';
-import CreateDeviceManagerPage from './deviceManagerPage';
 import { autorun } from 'mobx';
-import DeviceManagerPageStore from './pageStore';
+import CreateDeviceManagerPage from './deviceManagerPage';
+import DeviceManagerPageStore from './deviceManagerPageStore';
 import i18n from '../../i18n/react/config';
+import { setReactLocale } from '../locale';
 
 function deviceManagerDirective(
   whenMqttReady,
   ConfigEditorProxy,
+  DeviceManagerProxy,
   PageState,
   rolesFactory,
   $state,
   $transitions,
-  SerialProxy
+  SerialProxy,
+  SerialPortProxy,
+  mqttClient,
+  $rootScope
 ) {
   'ngInject';
 
+  setReactLocale();
+
   return {
     restrict: 'E',
-    scope: {
-      devices: '=',
-    },
+    scope: {},
     link: function (scope, element) {
+      $rootScope.noConsole = true;
+
       if (scope.root) {
         scope.root.unmount();
       }
@@ -41,8 +48,11 @@ function deviceManagerDirective(
           config: response.config,
           schema: response.schema,
           deviceTypeGroups: response.types,
-          devicesToAdd: scope.devices,
         };
+      };
+
+      const setupPort = deviceCfg => {
+        return SerialPortProxy.Setup(deviceCfg);
       };
 
       const toMobileContent = () => {
@@ -60,13 +70,28 @@ function deviceManagerDirective(
         }
       };
 
+      const startScan = (extended, portPath) => {
+        let params = {
+          scan_type: extended ? 'extended' : 'standard',
+          preserve_old_results: false,
+        };
+        if (portPath) {
+          params.port = { path: portPath };
+        }
+        return DeviceManagerProxy.Start(params);
+      };
+      const stopScan = () => DeviceManagerProxy.Stop();
+
       scope.store = new DeviceManagerPageStore(
         loadConfig,
         saveConfig,
         toMobileContent,
         toTabs,
         loadDeviceTypeSchema,
-        rolesFactory
+        rolesFactory,
+        startScan,
+        stopScan,
+        setupPort
       );
 
       scope.deleteTransitionHook = $transitions.onBefore({}, function (transition) {
@@ -74,7 +99,7 @@ function deviceManagerDirective(
           transition.to().name == 'serial-config' &&
           transition.from().name == 'serial-config.properties'
         ) {
-          scope.store.tabs.mobileModeStore.movedToTabsPanel();
+          scope.store.movedToTabsPanel();
           return true;
         }
         if (
@@ -92,11 +117,34 @@ function deviceManagerDirective(
       });
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(CreateDeviceManagerPage({ pageStore: scope.store }));
-      whenMqttReady().then(() => scope.store.load());
+      whenMqttReady()
+        .then(() => {
+          return scope.store.loadConfig();
+        })
+        .then(() => {
+          mqttClient.addStickySubscription('/devices/+/meta/error', msg => {
+            scope.store.setDeviceDisconnected(msg.topic, msg.payload);
+          });
+          return DeviceManagerProxy.hasMethod('Start');
+        })
+        .then(available => {
+          if (available) {
+            scope.store.setDeviceManagerAvailable();
+            mqttClient.addStickySubscription('/wb-device-manager/state', msg =>
+              scope.store.updateScanState(msg.payload)
+            );
+          } else {
+            scope.store.setDeviceManagerUnavailable();
+          }
+        })
+        .catch(() => {
+          scope.store.setDeviceManagerUnavailable();
+        });
 
       element.on('$destroy', function () {
         scope.root.unmount();
         scope.deleteTransitionHook();
+        $rootScope.noConsole = false;
       });
     },
   };

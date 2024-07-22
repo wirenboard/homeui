@@ -46,4 +46,6 @@ class ScriptsCtrl {
 }
 
 //-----------------------------------------------------------------------------
-export default angular.module('homeuiApp.scripts', []).controller('ScriptsCtrl', ScriptsCtrl);
+export default angular
+  .module('homeuiApp.scripts', [])
+  .controller('ScriptsCtrl', ScriptsCtrl);

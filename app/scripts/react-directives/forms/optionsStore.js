@@ -2,6 +2,10 @@
 
 import { makeObservable, observable, action } from 'mobx';
 
+export function getFirstOptionValue(options) {
+  return options?.[0]?.options ? options[0].options?.[0]?.value : options?.[0]?.value;
+}
+
 export class OptionsStore {
   constructor({ name, description, value, placeholder, options, strict }) {
     this.type = 'options';

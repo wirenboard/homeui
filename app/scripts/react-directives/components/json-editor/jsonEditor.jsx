@@ -1,13 +1,16 @@
 import { observer } from 'mobx-react-lite';
 import React, { useLayoutEffect, useRef, useState } from 'react';
+import isEqual from 'lodash/isEqual';
 import i18n from '../../../i18n/react/config';
 import { createJSONEditor } from '../../../json-editor/wb-json-editor';
-import { isEqual } from 'lodash';
 
 const JsonEditor = observer(props => {
   const container = useRef();
   var jse = useRef(null);
+  const stateRef = useRef();
   const [schema, setSchema] = useState(undefined);
+  const [firstStart, setFirstStart] = useState(true);
+  stateRef.current = firstStart;
 
   const constructEditor = props => {
     var editor = createJSONEditor(
@@ -19,7 +22,10 @@ const JsonEditor = observer(props => {
     );
     editor.on('change', () => {
       if (props.onChange) {
-        props.onChange(editor.getValue(), editor.validate(), false);
+        props.onChange(editor.getValue(), editor.validate(), stateRef.current);
+      }
+      if (stateRef.current) {
+        setFirstStart(false);
       }
     });
     // json-editor can modify an internal schema object,

@@ -578,7 +578,9 @@ button.show-console span {
   width: 120px;
 }
 
-.display-cell .cell-value input {
+.display-cell .cell-value input,
+.display-cell .cell-value select
+{
   width: 120px;
 }
 
@@ -900,7 +902,7 @@ body > double-bounce-spinner .double-bounce-spinner {
 
 body > double-bounce-spinner .double-bounce-spinner .double-bounce1,
 body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
-  background-color: #3276b1;
+  background: #5cb300;
 }
 
 @media (max-width: 500px) {
@@ -1073,7 +1075,7 @@ body.hmi #widgets-list {
 }
 
 body.hmi #wrapper .navbar,
-body.hmi .page-header, 
+body.hmi .page-header,
 body.hmi .show-console {
   display: none
 }
@@ -1218,4 +1220,8 @@ button.dashboard-back:active {
 
 .wb-react-select .wb-react-select__option.with-groups {
   padding-left: 20px;
+}
+
+body.no-console .show-console {
+  display: none
 }

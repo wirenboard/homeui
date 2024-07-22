@@ -3,10 +3,12 @@
 import ReactDOM from 'react-dom/client';
 import CreateScriptEditorPage from './scriptEditorPage';
 import ScriptEditorStore from './pageStore';
+import { setReactLocale } from '../locale';
 
 function scriptEditorDirective(whenMqttReady, EditorProxy, rolesFactory, $location) {
   'ngInject';
 
+  setReactLocale();
   return {
     restrict: 'E',
     scope: {

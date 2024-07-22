@@ -1,3 +1,5 @@
+import plotlyDirective from '../directives/plotly';
+
 class ChartsControl {
   constructor(deviceId, controlId, deviceName, controlName, valueType, groupName, widget) {
     this.name = (deviceName || deviceId) + ' / ' + (controlName || controlId);
@@ -76,7 +78,8 @@ class HistoryCtrl {
     historyUrlService,
     $locale,
     $translate,
-    $element
+    $element,
+    $rootScope
   ) {
     'ngInject';
 
@@ -97,6 +100,8 @@ class HistoryCtrl {
     this.$translate = $translate;
     this.$locale = $locale;
     this.$element = $element;
+
+    $rootScope.forceFullscreen = this.$stateParams.fullscreen === true;
 
     angular.extend(this, {
       scope: $scope,
@@ -327,7 +332,12 @@ class HistoryCtrl {
         : undefined
     );
 
-    this.$state.go('history.sample', { data }, { reload: true, inherit: false, notify: true });
+    let params = { data: data };
+    if (this.$stateParams.fullscreen) {
+      params.fullscreen = true;
+    }
+
+    this.$state.go('history.sample', params, { reload: true, inherit: false, notify: true });
   }
 
   // считаю часы + минуты в мсек
@@ -699,6 +709,11 @@ class HistoryCtrl {
       }
     });
     this.fixAxes(minValue, maxValue);
+    // 450 - default height in plotly.js
+    // 19 - minimal legend item height in plotly.js sources
+    // It can be bigger if font is bigger, but it is too difficult to calculate, so use minimal value
+    // See computeTextDimensions in components/legend/draw.js in plotly.js sources
+    this.layoutConfig.height = 450 + this.chartConfig.length * 19;
   }
 
   getMax(v1, v2) {
@@ -822,4 +837,7 @@ class HistoryCtrl {
 } // class HistoryCtrl
 
 //-----------------------------------------------------------------------------
-export default angular.module('homeuiApp.history', []).controller('HistoryCtrl', HistoryCtrl);
+export default angular
+  .module('homeuiApp.history', [])
+  .controller('HistoryCtrl', HistoryCtrl)
+  .directive('plotly', ['$window', plotlyDirective]);

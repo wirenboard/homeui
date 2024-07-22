@@ -54,7 +54,6 @@ export const FormCheckbox = observer(({ store }) => {
   return (
     <div className="form-group">
       <Checkbox
-        id={store.id}
         label={store.name}
         value={store.value}
         onChange={e => store.setValue(e.target.checked)}

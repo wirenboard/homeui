@@ -1,59 +1,296 @@
-wb-mqtt-homeui (2.82.1-wb108) stable; urgency=medium
+wb-mqtt-homeui (2.93.6) stable; urgency=medium
 
-  * fix firefox error whitescreen error
+  * Hide vulnerability warning if the problem is fixed
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Jul 2024 16:50:05 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 19 Jul 2024 13:29:05 +0500
 
-wb-mqtt-homeui (2.82.1-wb107) stable; urgency=medium
+wb-mqtt-homeui (2.93.5) stable; urgency=medium
 
-  * add remote probe to check for open ports
+  * Fix address assignment in wb-mqtt-serial config
 
- -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 29 Jun 2024 22:33:17 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 19 Jul 2024 13:11:34 +0500
 
-wb-mqtt-homeui (2.82.1-wb106) stable; urgency=medium
+wb-mqtt-homeui (2.93.4) stable; urgency=medium
 
-  * Dependencies updated, no functional changes
+  * Add Hz and rpm units translations
 
- -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 26 Jun 2024 12:46:17 +0500
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Thu, 18 Jul 2024 12:32:00 +0400
 
-wb-mqtt-homeui (2.82.1-wb105) stable; urgency=medium
+wb-mqtt-homeui (2.93.3) stable; urgency=medium
 
-  * Version increment for technical reasons, no functional changes
+  * Add missed units translations
 
- -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 26 Jun 2024 12:00:17 +0500
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Wed, 17 Jul 2024 16:06:00 +0400
 
-wb-mqtt-homeui (2.82.1-wb104) stable; urgency=medium
+wb-mqtt-homeui (2.93.2) stable; urgency=medium
+
+  * Fix address assignment in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 17 Jul 2024 10:11:33 +0500
+
+wb-mqtt-homeui (2.93.1) stable; urgency=medium
+
+  * Clear rule editor history on init
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 11 Jul 2024 17:25:15 +0300
+
+wb-mqtt-homeui (2.93.0) stable; urgency=medium
+
+  * Copy device configurations between ports
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 11 Jul 2024 10:43:23 +0500
+
+wb-mqtt-homeui (2.92.0) stable; urgency=medium
+
+  * Remove direct websocket port usage in favor of built-in nginx proxy, remove host+port settings
+
+ -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 09 Jul 2024 11:51:26 +0500
+
+wb-mqtt-homeui (2.91.0) stable; urgency=medium
+
+  * Show configured devices during fast modbus scan
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 08 Jul 2024 14:40:51 +0500
+
+wb-mqtt-homeui (2.90.1) stable; urgency=medium
+
+  * Remove empty line after svg dashboard
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Jul 2024 11:47:13 +0300
+
+wb-mqtt-homeui (2.90.0) stable; urgency=medium
+
+  * Find disconnected wb-mqtt-serial devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 03 Jul 2024 11:20:33 +0500
+
+wb-mqtt-homeui (2.89.0) stable; urgency=medium
+
+  * Add configuration of device port parameters when adding it to wb-mqtt-serial config
+  * Resolve MQTT topic collisions when adding new devices to wb-mqtt-serial config
+  * Resolve address collisions when adding new devices to wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 03 Jul 2024 11:04:14 +0500
+
+wb-mqtt-homeui (2.88.0) stable; urgency=medium
+
+  * Add exp-check
+
+ -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Sat, 29 Jun 2024 11:16:26 +0300
+
+wb-mqtt-homeui (2.87.2) stable; urgency=medium
+
+  * Disallow indexing
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 27 Jun 2024 15:56:00 +0300
+
+wb-mqtt-homeui (2.87.1) stable; urgency=medium
+
+  * Fix displaying of text parameters on dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Jun 2024 09:17:23 +0500
+
+wb-mqtt-homeui (2.87.0) stable; urgency=medium
 
   * Add download configs and download everything buttons under System page
 
  -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 25 Jun 2024 18:02:17 +0500
 
-wb-mqtt-homeui (2.82.1-wb103) stable; urgency=medium
+wb-mqtt-homeui (2.86.9) stable; urgency=medium
+
+  * Fix tooltip of dropdown editor for channels with defined set of values
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Jun 2024 15:22:17 +0500
+
+wb-mqtt-homeui (2.86.8) stable; urgency=medium
+
+  * Add dropdown editor for channels with defined set of values
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Jun 2024 11:51:57 +0500
+
+wb-mqtt-homeui (2.86.7) stable; urgency=medium
 
   * Postinst: replace config with a correct board-one, if config was not edited by user
 
  -- Vladimir Romanov <v.romanov@wirenboard.com>  Mon, 24 Jun 2024 10:12:21 +0300
 
-wb-mqtt-homeui (2.82.1-wb102) stable; urgency=medium
+wb-mqtt-homeui (2.86.6) stable; urgency=medium
 
-  * Add wb8 config
+  * Detect, is running via cloud or not; pass "from_cloud" flag
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 18 Apr 2023 16:20:00 +0400
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Thu, 20 Jun 2024 12:23:56 +0300
 
-wb-mqtt-homeui (2.82.1-wb101) stable; urgency=medium
+wb-mqtt-homeui (2.86.5) stable; urgency=medium
+
+  * Fix loading of device templates with defined firmware versions
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 19 Jun 2024 10:21:47 +0500
+
+wb-mqtt-homeui (2.86.4) stable; urgency=medium
+
+  * Make tables responsive (json-editor updated to 2.5.3-wb11)
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 07 Jun 2024 09:00:00 +0400
+
+wb-mqtt-homeui (2.86.3) stable; urgency=medium
+
+  * Add delete button for unknown devices in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 05 Jun 2024 10:24:11 +0500
+
+wb-mqtt-homeui (2.86.2) stable; urgency=medium
+
+  * Fix fullscreen mode on text dashboards and history page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jun 2024 16:48:15 +0500
+
+wb-mqtt-homeui (2.86.1) stable; urgency=medium
 
   * Fix History page infinite loading because of widgets without id
   * Fix Widgets page display when there are widgets without id
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 03 Jun 2024 16:58:06 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 31 May 2024 18:37:26 +0500
 
-wb-mqtt-homeui (2.82.1-wb100) stable; urgency=medium
+wb-mqtt-homeui (2.86.0) stable; urgency=medium
+
+  * Add duplicate MQTT id checking in wb-mqtt-serial config
+  * Show disconnected devices in wb-mqtt-serial config
+  * Add duplicate slave id checking in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 May 2024 09:38:50 +0500
+
+wb-mqtt-homeui (2.85.2) stable; urgency=medium
+
+  * Preserve history plot height
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 23 May 2024 14:02:48 +0500
+
+wb-mqtt-homeui (2.85.1) stable; urgency=medium
 
   * Fix WB-LED configuration
-  * Fix WB-LED and WB-MRGBW-D config editors
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 15 May 2024 16:07:51 +0500
 
+wb-mqtt-homeui (2.85.0) stable; urgency=medium
+
+  * Add separate chunks to decrease bundle weight
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 3 May 2024 16:20:00 +0300
+
+wb-mqtt-homeui (2.84.8) stable; urgency=medium
+
+  * Remove svg.original from configs
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 03 May 2024 15:40:00 +0400
+
+wb-mqtt-homeui (2.84.7) stable; urgency=medium
+
+  * Move selection to next device after deletion on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Apr 2024 18:43:57 +0500
+
+wb-mqtt-homeui (2.84.6) stable; urgency=medium
+
+  * Fixes around cloud connection status, no functional changes
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Thu, 25 Apr 2024 18:49:17 +0500
+
+wb-mqtt-homeui (2.84.5) stable; urgency=medium
+
+  * Add warning if multiple device templates match the same scanned device in wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Apr 2024 10:28:51 +0500
+
+wb-mqtt-homeui (2.84.4) stable; urgency=medium
+
+  * Remove useless scrollbars on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 24 Apr 2024 19:18:13 +0500
+
+wb-mqtt-homeui (2.84.3) stable; urgency=medium
+
+  * Fix config generation, no functional changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 23 Apr 2024 14:20:00 +0400
+
+wb-mqtt-homeui (2.84.2) stable; urgency=medium
+
+  * Generate configs, no functional changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 22 Apr 2024 14:20:00 +0400
+
+wb-mqtt-homeui (2.84.1) stable; urgency=medium
+
+  * Do not disconnect from controller after receiving malformed data from MQTT
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 22 Apr 2024 09:29:38 +0500
+
+wb-mqtt-homeui (2.84.0) stable; urgency=medium
+
+  * Add wb8 config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 18 Apr 2024 16:20:00 +0400
+
+wb-mqtt-homeui (2.83.0) stable; urgency=medium
+
+  * Integrate device scanning page into wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 18 Apr 2024 17:51:17 +0500
+
+wb-mqtt-homeui (2.82.9) stable; urgency=medium
+
+  * Add json editor autocomplete for devices
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 17 Apr 2024 13:54:42 +0300
+
+wb-mqtt-homeui (2.82.8) stable; urgency=medium
+
+  * Add SVG-dashboard's style and visibility bindings value validation
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Apr 2024 16:02:20 +0500
+
+wb-mqtt-homeui (2.82.7) stable; urgency=medium
+
+  * Fix SVG dashboard display with poorly written style, reading or visibility rules
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Apr 2024 12:31:33 +0500
+
+wb-mqtt-homeui (2.82.6) stable; urgency=medium
+
+  * Fix WB-LED and WB-MRGBW-D config editors
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Sun, 14 Apr 2024 11:23:34 +0500
+
+wb-mqtt-homeui (2.82.5) stable; urgency=medium
+
+  * Add multitenancy suppport for wb-cloud-agent UI
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Wed, 10 Apr 2024 13:50:40 +0500
+
+wb-mqtt-homeui (2.82.4) stable; urgency=medium
+
+  * Fix tooltip on alarm control
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 08 Apr 2024 19:37:00 +0400
+
+wb-mqtt-homeui (2.82.3) stable; urgency=medium
+
+  * Improve wb-mqtt-serial config loading errors handling
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 29 Mar 2024 11:50:40 +0500
+
+wb-mqtt-homeui (2.82.2) stable; urgency=medium
+
+  * Improve unsaved changes tracking on wb-mqtt-serial config page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 29 Mar 2024 11:45:00 +0500
+
+wb-mqtt-homeui (2.82.1-wb108) stable; urgency=medium
+
+  * fix firefox error whitescreen error
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Jul 2024 16:50:05 +0300
+ 
 wb-mqtt-homeui (2.82.1) stable; urgency=medium
 
   * Fix slave id editor in wb-mqtt-serial config

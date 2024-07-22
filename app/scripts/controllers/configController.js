@@ -1,3 +1,5 @@
+import AngularJsonEditorModule from '../components/json-editor/angular-json-editor';
+
 class ConfigCtrl {
   constructor(
     $scope,
@@ -72,4 +74,6 @@ class ConfigCtrl {
 }
 
 //-----------------------------------------------------------------------------
-export default angular.module('homeuiApp.config', []).controller('ConfigCtrl', ConfigCtrl);
+export default angular
+  .module('homeuiApp.config', [AngularJsonEditorModule])
+  .controller('ConfigCtrl', ConfigCtrl);

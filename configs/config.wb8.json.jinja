@@ -1,0 +1,2825 @@
+{% set svg_content -%}
+    {% include 'dist/configs/wb8.svg' -%}
+{% endset -%}
+{
+    "dashboards": [
+        {
+            "id": "dashboard1",
+            "isSvg": false,
+            "name": "Demo Dashboard",
+            "widgets": [
+                "widget3",
+                "widget2",
+                "widget1",
+                "widget5",
+                "widget4",
+                "widget6",
+                "widget7",
+                "widget8",
+                "widget9"
+            ]
+        },
+        {
+            "name": "Demo SVG Dashboard",
+            "isSvg": true,
+            "svg_url": "local",
+            "svg_fullwidth": true,
+            "widgets": [],
+            "svg": {
+                "current": "{{ svg_content | replace('\\', '\\\\') | replace('"', '\\"') }}",
+                "params": [
+                    {
+                        "id": "f1780d222b55",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/Vin",
+                            "value": "\"V in: \" + val + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d22bf6a",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Ethernet IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d22d4fe",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Ethernet 2 IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d231e8b",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Ethernet IP",
+                            "value": "(val) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d271cbe",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Ethernet 2 IP",
+                            "value": "(val) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d274071",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": "network/Ethernet 2 IP",
+                            "value": "(val) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d278351",
+                        "read": {
+                            "enable": true,
+                            "channel": "hwmon/CPU Temperature",
+                            "value": "val + \" °C\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d27c279",
+                        "read": {
+                            "enable": true,
+                            "channel": "hwmon/Board Temperature",
+                            "value": "val + \" °C\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d27eaa0",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/HW Revision",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d280b1b",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Short SN",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d283b7a",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d286e3a",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A1",
+                            "value": "\"A1: \" + val + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d28b866",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A2",
+                            "value": "\"A2: \" + val + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d28d8c3",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A3",
+                            "value": "\"A3: \" + val + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d28fa72",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A4",
+                            "value": "\"A4: \" + val + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d291ab9",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/5Vout",
+                            "value": "\"5V out: \" + val + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d298ace",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A1_IN",
+                            "value": "((val + 0) > 0) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d29ce75",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A2_IN",
+                            "value": "((val + 0) > 0) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d29ed9b",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A3_IN",
+                            "value": "((val + 0) > 0) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d2a0ad7",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A4_IN",
+                            "value": "((val + 0) > 0) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d2a3825",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A1_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2a5824",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A2_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2a7047",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A3_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2a8a84",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A4_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2aa539",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/5V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2ad500",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/5V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2b037f",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2b2112",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2b4bf1",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "buzzer/enabled",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f1780d2cb54a",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d2d42b0",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d2d6031",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f1780d2d7db9",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? ';fill: green' : ';fill: red'"
+                        }
+                    },
+                    {
+                        "id": "f17d23faaa04",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Current uptime",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d23fafaac",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Release name",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d23fb167b",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Release suite",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d241093e6",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Ethernet IP",
+                            "value": "(val) ? ';fill: #008136' : ';fill: #1A1A18'"
+                        }
+                    },
+                    {
+                        "id": "f17d2411821d",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Ethernet 2 IP",
+                            "value": "(val) ? ';fill: #008136' : ';fill: #1A1A18'"
+                        }
+                    },
+                    {
+                        "id": "f17d2411a1c6",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? ';fill: #008136' : ';fill: #1A1A18'"
+                        }
+                    },
+                    {
+                        "id": "f17d241201dd",
+                        "read": {
+                            "enable": true,
+                            "channel": "hwmon/CPU Temperature",
+                            "value": "val.toFixed(2) + ' °C'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d24127cb5",
+                        "read": {
+                            "enable": true,
+                            "channel": "hwmon/Board Temperature",
+                            "value": "val.toFixed(2) + ' °C'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d24129edd",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/GPRS IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2412ca4d",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/GPRS IP",
+                            "value": "(val) ? ';fill: #23FF00' : ';fill: white'"
+                        }
+                    },
+                    {
+                        "id": "f17d24135595",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "system/Reboot",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d24139a9d",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "buzzer/enabled",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "buzzer/enabled",
+                            "value": "(val) ? ';fill: #EA5A06' : ';fill: #D1D1D1'"
+                        }
+                    },
+                    {
+                        "id": "f17d24172913",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/HW Revision",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2417988d",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Short SN",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d24182641",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A1",
+                            "value": "'A1: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": "wb-gpio/A1_OUT",
+                            "condition": "==",
+                            "value": "0"
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": "wb-gpio/A1_OUT",
+                            "value": "(val) ? 'fill-opacity: 0.5' : 'fill-opacity: 1.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d2418f7f1",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A2",
+                            "value": "'A2: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": "wb-gpio/A2_OUT",
+                            "value": "(val) ? 'fill-opacity: 0.5' : 'fill-opacity: 1.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d24191d89",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A3",
+                            "value": "'A3: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": "wb-gpio/A3_OUT",
+                            "value": "(val) ? 'fill-opacity: 0.5' : 'fill-opacity: 1.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d2419af98",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A4",
+                            "value": "'A4: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": "wb-gpio/A4_OUT",
+                            "value": "(val) ? 'fill-opacity: 0.5' : 'fill-opacity: 1.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d241d9e55",
+                        "read": {
+                            "enable": true,
+                            "channel": "power_status/Vin",
+                            "value": "val.toFixed(2) + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d241e5dd6",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Ethernet IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d241e74d6",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Ethernet 2 IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d241e8c6e",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "'Wi-Fi AP: ' + val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": "network/Wi-Fi IP",
+                            "condition": "!=",
+                            "value": "null"
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? 'fill-opacity: 1.0' : 'fill-opacity: 0.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d241ea3ee",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi 2 IP",
+                            "value": "'Wi-Fi Client: ' + val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": "network/Wi-Fi 2 IP",
+                            "condition": "!=",
+                            "value": "null"
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi 2 IP",
+                            "value": "(val) ? 'fill-opacity: 1.0' : 'fill-opacity: 0.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d242089a4",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/5V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/5V_OUT",
+                            "value": "(val) ? ';fill: #FF6973' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d242426db",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": "(val) ? ';fill: #FF6973' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d242473db",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": "(val) ? ';fill: #FF6973' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d242bffd7",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A1_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A1_OUT",
+                            "value": "(val) ? ';fill: #FFaB69' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2439ce89",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A2_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A2_OUT",
+                            "value": "(val) ? ';fill: #FFaB69' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d243a84d9",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A3_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A3_OUT",
+                            "value": "(val) ? ';fill: #FFaB69' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d243abb99",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A4_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A4_OUT",
+                            "value": "(val) ? ';fill: #FFaB69' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2419e2ef",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/5Vout",
+                            "value": "'5V: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": "wb-gpio/5V_OUT",
+                            "value": "(val) ? 'fill-opacity: 1.0' : 'fill-opacity: 0.5'"
+                        }
+                    },
+                    {
+                        "id": "f17d2486de58",
+                        "read": {
+                            "enable": true,
+                            "channel": "buzzer/volume",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": true,
+                            "channel": "buzzer/enabled",
+                            "condition": "==",
+                            "value": "1"
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea31d67",
+                        "read": {
+                            "enable": true,
+                            "channel": "power_status/Vin",
+                            "value": "val.toFixed(2) + \" V\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea56874",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Ethernet IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea5876d",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Ethernet 2 IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea5f90c",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Ethernet IP",
+                            "value": "(val) ? ';fill: #007146' : ';fill: #1A1A18'"
+                        }
+                    },
+                    {
+                        "id": "f17d2ea69824",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Ethernet 2 IP",
+                            "value": "(val) ? ';fill: #007146' : ';fill: #1A1A18'"
+                        }
+                    },
+                    {
+                        "id": "f17d2ea7f212",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? ';fill: #007146' : ';fill: #1A1A18'"
+                        }
+                    },
+                    {
+                        "id": "f17d2ea8256a",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/GPRS IP",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea8405b",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Current uptime",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea86cd3",
+                        "read": {
+                            "enable": true,
+                            "channel": "hwmon/CPU Temperature",
+                            "value": "val.toFixed(2) + \" °C\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea8aa93",
+                        "read": {
+                            "enable": true,
+                            "channel": "hwmon/Board Temperature",
+                            "value": "val.toFixed(2) + \" °C\""
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea8d19b",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Release name",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea8f543",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Release suite",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea90dfb",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/Short SN",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea9253a",
+                        "read": {
+                            "enable": true,
+                            "channel": "system/HW Revision",
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2ea96e32",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "'Wi-Fi IP: ' + val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi IP",
+                            "value": "(val) ? 'fill-opacity: 1.0' : 'fill-opacity: 0.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d2ea9d302",
+                        "read": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi 2 IP",
+                            "value": "'Wi-Fi 2 IP: ' + val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/Wi-Fi 2 IP",
+                            "value": "(val) ? 'fill-opacity: 1.0' : 'fill-opacity: 0.0'"
+                        }
+                    },
+                    {
+                        "id": "f17d2eaa69f9",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A1",
+                            "value": "'A1: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2eaae192",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A2",
+                            "value": "'A2: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2eab115a",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A3",
+                            "value": "'A3: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2eab7591",
+                        "read": {
+                            "enable": true,
+                            "channel": "wb-adc/A4",
+                            "value": "'A4: ' + val.toFixed(2) + ' V'"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": false,
+                            "channel": null,
+                            "value": null
+                        }
+                    },
+                    {
+                        "id": "f17d2eac8e01",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A1_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A1_OUT",
+                            "value": "(val) ? ';fill: #FFAB69' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2ead3d47",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A2_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A2_OUT",
+                            "value": "(val) ? ';fill: #FFAB69' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2ead7ce9",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A3_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A3_OUT",
+                            "value": "(val) ? ';fill: #FFAB69' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2eadacf8",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/A4_OUT",
+                            "value": {
+                                "off": "0",
+                                "on": "1"
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": ""
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/A4_OUT",
+                            "value": "(val) ? ';fill: #00a3d3' : ';fill: #CCCCCC'"
+                        },
+                        "click": {
+                            "enable": false,
+                            "dashboard": null
+                        },
+                        "long-press": {
+                            "enable": false,
+                            "dashboard": null
+                        },
+                        "long-press-write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "off": "0",
+                                "on": "1"
+                            }
+                        }
+                    },
+                    {
+                        "id": "f17d2eade600",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/5V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/5V_OUT",
+                            "value": "(val) ? ';fill: #FF6973' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2eae62f0",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": "(val) ? ';fill: #FF6973' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2eaec158",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "wb-gpio/V_OUT",
+                            "value": "(val) ? ';fill: #FF6973' : ';fill: #CCCCCC'"
+                        }
+                    },
+                    {
+                        "id": "f17d2eaf9247",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": false,
+                            "channel": null,
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "network/GPRS IP",
+                            "value": "(val) ? ';fill: #23FF00' : ';fill: #FFFFFF'"
+                        }
+                    },
+                    {
+                        "id": "f17d3778fbb1",
+                        "read": {
+                            "enable": false,
+                            "channel": null,
+                            "value": "val"
+                        },
+                        "write": {
+                            "enable": true,
+                            "channel": "buzzer/enabled",
+                            "value": {
+                                "on": 1,
+                                "off": 0
+                            }
+                        },
+                        "visible": {
+                            "enable": false,
+                            "channel": null,
+                            "condition": "==",
+                            "value": null
+                        },
+                        "style": {
+                            "enable": true,
+                            "channel": "buzzer/enabled",
+                            "value": "(val) ? ';fill: #FFAB69' : ';fill: #CCCCCC'"
+                        }
+                    }
+                ]
+            },
+            "id": "dashboard2",
+            "swipe": {
+                "enable": false
+            }
+        }
+    ],
+    "widgets": [
+        {
+            "cells": [
+                {
+                    "id": "power_status/Vin",
+                    "name": "Input Voltage"
+                },
+                {
+                    "id": "power_status/working on battery",
+                    "name": "On Battery",
+                    "extra": {},
+                    "type": "switch"
+                },
+                {
+                    "id": "wb-gpio/V_OUT",
+                    "name": "Vout Switch",
+                    "extra": {},
+                    "type": "switch"
+                }
+            ],
+            "compact": false,
+            "description": "",
+            "id": "widget1",
+            "name": "Power Supply"
+        },
+        {
+            "cells": [
+                {
+                    "id": "buzzer/enabled"
+                }
+            ],
+            "compact": true,
+            "description": "",
+            "id": "widget2",
+            "name": "Buzzer"
+        },
+        {
+            "cells": [
+                {
+                    "id": "network/Ethernet IP",
+                    "name": "Ethernet 1",
+                    "extra": {},
+                    "type": "text"
+                },
+                {
+                    "id": "network/Ethernet 2 IP",
+                    "name": "Ethernet 2",
+                    "extra": {},
+                    "type": "text"
+                },
+                {
+                    "id": "network/Wi-Fi IP",
+                    "extra": {},
+                    "type": "text"
+                },
+                {
+                    "id": "network/Wi-Fi 2 IP",
+                    "extra": {},
+                    "type": "text"
+                },
+                {
+                    "id": "network/GPRS IP",
+                    "name": "WWAN",
+                    "extra": {},
+                    "type": "text"
+                }
+            ],
+            "compact": false,
+            "description": "",
+            "id": "widget3",
+            "name": "Network IP Addresses"
+        },
+        {
+            "cells": [
+                {
+                    "id": "wb-adc/A1",
+                    "name": "Input Voltage",
+                    "extra": {},
+                    "type": "voltage"
+                },
+                {
+                    "id": "wb-gpio/A1_IN",
+                    "name": "Input State",
+                    "extra": {},
+                    "type": "switch"
+                },
+                {
+                    "id": "wb-gpio/A1_OUT",
+                    "name": "Output Switch",
+                    "extra": {},
+                    "type": "switch"
+                }
+            ],
+            "compact": false,
+            "description": "",
+            "id": "widget4",
+            "name": "A1 Terminal"
+        },
+        {
+            "name": "System Info",
+            "description": "",
+            "compact": false,
+            "cells": [
+                {
+                    "id": "system/HW Revision",
+                    "extra": {},
+                    "type": "text"
+                },
+                {
+                    "id": "system/Short SN",
+                    "extra": {},
+                    "type": "text",
+                    "name": "Serial Number"
+                },
+                {
+                    "id": "system/Batch No",
+                    "extra": {},
+                    "type": "text"
+                },
+                {
+                    "id": "system/Current uptime",
+                    "name": "Uptime",
+                    "extra": {},
+                    "type": "text"
+                },
+                {
+                    "id": "hwmon/Board Temperature",
+                    "extra": {},
+                    "type": "temperature"
+                },
+                {
+                    "id": "hwmon/CPU Temperature",
+                    "extra": {},
+                    "type": "temperature"
+                }
+            ],
+            "id": "widget5"
+        },
+        {
+            "name": "A2 Terminal",
+            "description": "",
+            "compact": false,
+            "cells": [
+                {
+                    "id": "wb-adc/A2",
+                    "name": "Input Voltage",
+                    "extra": {},
+                    "type": "voltage"
+                },
+                {
+                    "id": "wb-gpio/A2_IN",
+                    "name": "Input State",
+                    "extra": {},
+                    "type": "switch"
+                },
+                {
+                    "id": "wb-gpio/A2_OUT",
+                    "name": "Output Switch",
+                    "extra": {},
+                    "type": "switch"
+                }
+            ],
+            "id": "widget6"
+        },
+        {
+            "name": "A3 Terminal",
+            "description": "",
+            "compact": false,
+            "cells": [
+                {
+                    "id": "wb-adc/A3",
+                    "name": "Input Voltage",
+                    "extra": {},
+                    "type": "voltage"
+                },
+                {
+                    "id": "wb-gpio/A3_IN",
+                    "name": "Input State",
+                    "extra": {},
+                    "type": "switch"
+                },
+                {
+                    "id": "wb-gpio/A3_OUT",
+                    "name": "Output Switch",
+                    "extra": {},
+                    "type": "switch"
+                }
+            ],
+            "id": "widget7"
+        },
+        {
+            "name": "A4 Terminal",
+            "description": "",
+            "compact": false,
+            "cells": [
+                {
+                    "id": "wb-adc/A4",
+                    "name": "Input Voltage",
+                    "extra": {},
+                    "type": "voltage"
+                },
+                {
+                    "id": "wb-gpio/A4_IN",
+                    "name": "Input State",
+                    "extra": {},
+                    "type": "switch"
+                },
+                {
+                    "id": "wb-gpio/A4_OUT",
+                    "name": "Output Switch",
+                    "extra": {},
+                    "type": "switch"
+                }
+            ],
+            "id": "widget8"
+        },
+        {
+            "name": "5Vout Teminal",
+            "description": "",
+            "compact": false,
+            "cells": [
+                {
+                    "id": "wb-gpio/5V_OUT",
+                    "name": "Output Switch",
+                    "extra": {},
+                    "type": "switch"
+                }
+            ],
+            "id": "widget9"
+        }
+    ],
+    "defaultDashboardId": "dashboard1"
+}

@@ -23,11 +23,27 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       url: '/web-ui',
       template: require('../views/web-ui.html'),
       controller: 'WebUICtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'webUi' */ './controllers/webUiController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     .state('system', {
       url: '/system',
       template: require('../views/system.html'),
       controller: 'SystemCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'system' */ './controllers/systemController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     .state('MQTTChannels', {
       url: '/MQTTChannels',
@@ -41,7 +57,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('scan', {
       url: '/scan',
-      template: require('../views/scan.html'),
+      redirectTo: 'serial-config',
     })
     //...........................................................................
     .state('devices', {
@@ -51,22 +67,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/devicesController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'devices'
+          return import(/* webpackChunkName: 'devices' */ './controllers/devicesController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred.promise;
         },
       },
     })
@@ -78,22 +81,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/devicesController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'devices'
+          return import(/* webpackChunkName: 'devices' */ './controllers/devicesController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred.promise;
         },
       },
     })
@@ -105,22 +95,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/widgetsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'widgets'
+          return import(/* webpackChunkName: 'widgets' */ './controllers/widgetsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred.promise;
         },
       },
     })
@@ -132,22 +109,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/dashboardsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'dashboards'
-          );
-          return deferred.promise;
+          return import(
+            /* webpackChunkName: 'dashboards' */ './controllers/dashboardsController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -159,22 +123,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/dashboardController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'dashboard'
-          );
-          return deferred.promise;
+          return import(
+            /* webpackChunkName: 'dashboard' */ './controllers/dashboardController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -188,18 +139,42 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           dynamic: true,
         },
       },
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(
+            /* webpackChunkName: 'dashboard-svg' */ './controllers/dashboardSvgController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
+        },
+      },
     })
     //...........................................................................
     .state('dashboard-svg-add', {
       url: '/dashboards/svg/add',
       controller: 'DashboardSvgEditCtrl as $ctrl',
       template: require('../views/dashboard-svg-edit.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(
+            /* webpackChunkName: 'dashboard-svg-edit' */ './controllers/dashboardSvgEditController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
+        },
+      },
     })
     //...........................................................................
     .state('dashboard-svg-edit', {
       url: '/dashboards/svg/edit/{id}',
       controller: 'DashboardSvgEditCtrl as $ctrl',
       template: require('../views/dashboard-svg-edit.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(
+            /* webpackChunkName: 'dashboard-svg-edit' */ './controllers/dashboardSvgEditController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
+        },
+      },
     })
     //...........................................................................
     .state('login', {
@@ -215,22 +190,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/scriptsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'rules'
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred.promise;
         },
       },
     })
@@ -239,37 +201,40 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       url: '/rules/edit/{path:.*}',
       template: require('../views/script.html'),
       controller: 'ScriptCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     //...........................................................................
     .state('rules-new', {
       url: '/rules/new',
       template: require('../views/script.html'),
       controller: 'ScriptCtrl as $ctrl',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     //...........................................................................
     .state('history', {
-      url: '/history',
+      url: '/history?{fullscreen:boolean}',
       controller: 'HistoryCtrl as $ctrl',
       template: require('../views/history.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred_1 = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module_1 = require('./controllers/historyController.js');
-              $ocLazyLoad
-                .load({
-                  name: module_1.default.name,
-                })
-                .then(() => {
-                  deferred_1.resolve(module_1);
-                });
-            },
-            'history'
+          return import(/* webpackChunkName: 'history' */ './controllers/historyController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred_1.promise;
         },
       },
     })
@@ -281,22 +246,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred_1 = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module_1 = require('./controllers/historyController.js');
-              $ocLazyLoad
-                .load({
-                  name: module_1.default.name,
-                })
-                .then(() => {
-                  deferred_1.resolve(module_1);
-                });
-            },
-            'history'
+          return import(/* webpackChunkName: 'history' */ './controllers/historyController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred_1.promise;
         },
       },
     })
@@ -308,22 +260,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/configsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'configs'
+          return import(/* webpackChunkName: 'configs' */ './controllers/configsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred.promise;
         },
       },
     })
@@ -336,22 +275,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/configController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'config-edit'
+          return import(/* webpackChunkName: 'config' */ './controllers/configController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred.promise;
         },
       },
     })
@@ -363,22 +289,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/networkConnectionsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'network-connections'
-          );
-          return deferred.promise;
+          return import(
+            /* webpackChunkName: 'network-connections' */ './controllers/networkConnectionsController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -386,29 +299,12 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('serial-config', {
       url: '/serial-config',
       template: require('../views/serial-config.html'),
-      controller: 'SerialConfigCtrl as $ctrl',
-      params: {
-        devices: [],
-      },
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module = require('./controllers/serialConfigController.js');
-              $ocLazyLoad
-                .load({
-                  name: module.default.name,
-                })
-                .then(() => {
-                  deferred.resolve(module);
-                });
-            },
-            'serial-config'
-          );
-          return deferred.promise;
+          return import(
+            /* webpackChunkName: 'device-manager' */ './controllers/deviceManagerController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })
@@ -427,22 +323,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred_1 = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module_1 = require('./controllers/logsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module_1.default.name,
-                })
-                .then(() => {
-                  deferred_1.resolve(module_1);
-                });
-            },
-            'logs'
+          return import(/* webpackChunkName: 'logs' */ './controllers/logsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
           );
-          return deferred_1.promise;
         },
       },
     })
@@ -454,22 +337,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          let deferred_1 = $q.defer();
-          require.ensure(
-            [],
-            require => {
-              let module_1 = require('./controllers/serialMetricsController.js');
-              $ocLazyLoad
-                .load({
-                  name: module_1.default.name,
-                })
-                .then(() => {
-                  deferred_1.resolve(module_1);
-                });
-            },
-            'serial-metrics'
-          );
-          return deferred_1.promise;
+          return import(
+            /* webpackChunkName: 'serial-metrics' */ './controllers/serialMetricsController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     });

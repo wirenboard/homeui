@@ -1,14 +1,26 @@
 'use strict';
 
-import { makeAutoObservable, makeObservable, observable, action, reaction, autorun } from 'mobx';
-import { FormStore } from '../../react-directives/forms/formStore';
-import { BooleanStore } from '../../react-directives/forms/booleanStore';
-import { StringStore } from '../../react-directives/forms/stringStore';
-import { OptionsStore } from '../../react-directives/forms/optionsStore';
-import { cloneDeep } from 'lodash';
+import { makeAutoObservable, makeObservable, observable, action, reaction } from 'mobx';
+import cloneDeep from 'lodash/cloneDeep';
+import { FormStore } from '../forms/formStore';
+import { BooleanStore } from '../forms/booleanStore';
+import { StringStore } from '../forms/stringStore';
+import { OptionsStore } from '../forms/optionsStore';
 import i18n from '../../i18n/react/config';
 import { makeNotEmptyValidator } from '../forms/stringValidators';
 import DashboardSvgParam from '../../services/dashboardSvgParam';
+
+const jsFunctionValidator = value => {
+  if (!value) {
+    return i18n.t('validator.errors.empty');
+  }
+  try {
+    new Function('val', `return ${value}`);
+  } catch (err) {
+    return i18n.t('validator.errors.syntax');
+  }
+  return null;
+};
 
 const addChannelsStore = (formStore, devices) => {
   formStore.add(
@@ -21,12 +33,12 @@ const addChannelsStore = (formStore, devices) => {
   );
 };
 
-const addStringValueStore = (formStore, description) => {
+const addStringValueStore = (formStore, description, validator) => {
   formStore.add(
     'value',
     new StringStore({
       name: i18n.t('edit-svg-dashboard.labels.value'),
-      validator: makeNotEmptyValidator(),
+      validator: validator || makeNotEmptyValidator(),
       description: description,
     })
   );
@@ -37,7 +49,6 @@ const addEnableStore = (formStore, name) => {
     'enable',
     new BooleanStore({
       name: i18n.t(name),
-      id: name,
     })
   );
 };
@@ -69,7 +80,11 @@ const makeReadBindingStore = devices => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.read-enable');
   addChannelsStore(res, devices);
-  addStringValueStore(res, i18n.t('edit-svg-dashboard.labels.read-value-desc'));
+  addStringValueStore(
+    res,
+    i18n.t('edit-svg-dashboard.labels.read-value-desc'),
+    jsFunctionValidator
+  );
   return res;
 };
 
@@ -77,7 +92,11 @@ const makeStyleBindingStore = devices => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.style-enable');
   addChannelsStore(res, devices);
-  addStringValueStore(res, i18n.t('edit-svg-dashboard.labels.style-value-desc'));
+  addStringValueStore(
+    res,
+    i18n.t('edit-svg-dashboard.labels.style-value-desc'),
+    jsFunctionValidator
+  );
   return res;
 };
 

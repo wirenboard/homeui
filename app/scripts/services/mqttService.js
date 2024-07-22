@@ -3,6 +3,8 @@
 // above those messages that are currently in flight. Defaults to 100.
 const MAX_QUEUED_MESSAGES = 100;
 
+import Paho from 'paho-mqtt';
+
 const mqttServiceModule = angular
   .module('homeuiApp.mqttServiceModule', [])
   .factory('whenMqttReady', whenMqttReady)
@@ -126,7 +128,7 @@ function mqttClient(
   };
 
   //...........................................................................
-  service.connect = function (host, port, clientid, user, password) {
+  service.connect = function (url, clientid, user, password) {
     clearReconnectTimeout();
 
     connectOptions = {
@@ -140,10 +142,6 @@ function mqttClient(
       connectOptions.password = password;
     }
 
-    if (parseInt(port) === 443 || location.protocol === 'https:') {
-      connectOptions.useSSL = true;
-    }
-
     id = clientid;
 
     retainIsDone = false;
@@ -152,9 +150,7 @@ function mqttClient(
 
     console.log(
       'Try to connect to MQTT Broker on ' +
-        host +
-        ':' +
-        port +
+        url +
         ' with username ' +
         user +
         ' and clientid ' +
@@ -173,7 +169,8 @@ function mqttClient(
       localStorage.removeItem(key);
     });
 
-    client = new Paho.MQTT.Client(host, parseInt(port), '/mqtt', clientid);
+    connectOptions.uris = [url];
+    client = new Paho.Client(url, 0, '', clientid); // details here does not matter since we use connectOptions.uris
     client.onConnectionLost = service.onConnectionLost;
     client.onMessageDelivered = service.onMessageDelivered;
     client.onMessageArrived = service.onMessageArrived;
@@ -212,9 +209,7 @@ function mqttClient(
     }
     connected = true;
 
-    console.log(
-      'Connected to ' + client.host + ':' + client.port + " as '" + client.clientId + "'"
-    );
+    console.log('Connected to ' + client.host + " as '" + client.clientId + "'");
     if (globalPrefix !== '') console.log('With globalPrefix: ' + globalPrefix);
 
     client.subscribe(globalPrefix + '/config/widgets/#');
@@ -225,7 +220,7 @@ function mqttClient(
 
     // prepare retain hack
     client.subscribe(globalPrefix + retainHackTopic);
-    var msg = new Paho.MQTT.Message('1');
+    var msg = new Paho.Message('1');
     msg.destinationName = globalPrefix + retainHackTopic;
     msg.qos = 2;
     client.send(msg);
@@ -238,7 +233,7 @@ function mqttClient(
     // почистить именно ее а не другую ошибку
     showConnectError = true;
     const params = {
-      host: client.host + ':' + client.port,
+      host: client.host,
     };
     console.log(
       'Connection failed (' +
@@ -320,8 +315,6 @@ function mqttClient(
         });
       }
     }
-
-    console.log('Delivered message: ', JSON.stringify(message));
   };
 
   //...........................................................................
@@ -346,13 +339,20 @@ function mqttClient(
         if (!topicMatches(pattern, topic)) {
           return;
         }
-        callbackMap[pattern].forEach(function (callback) {
-          callback({
+        let data;
+        try {
+          data = {
             topic: topic,
             payload: message.payloadString,
             qos: message.qos,
             retained: message.retained,
-          });
+          };
+        } catch (err) {
+          console.error('malformed data in MQTT topic %s: %s', topic, String(err));
+          return;
+        }
+        callbackMap[pattern].forEach(function (callback) {
+          callback(data);
         });
       });
     if (!messageDigestTimer)
@@ -380,7 +380,7 @@ function mqttClient(
     if (payload == null) {
       payload = new ArrayBuffer();
     }
-    var message = new Paho.MQTT.Message(payload);
+    var message = new Paho.Message(payload);
     message.destinationName = topic;
     message.qos = qos === undefined ? 1 : qos;
     if (retained !== undefined) {

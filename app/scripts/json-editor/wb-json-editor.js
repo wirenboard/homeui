@@ -9,6 +9,7 @@ import makeIntegerEditorWithSpecialValue from './integer-editor-with-special-val
 import makeReadonlyOneOfEditor from './readonly-oneof-editor';
 import makeMergedDefaultValuesEditor from './merged-default-values-editor';
 import makeEditWithDropdownEditor from './edit-with-dropdown';
+import makeAutocompleteEditor from './autocomplete';
 import makeCollapsibleArrayEditor from './collapsible-array-editor';
 import makeCollapsibleMultipleEditor from './collapsible-multiple-editor';
 import makeObjectEditorWithButtonsOnTop from './object-editor-with-buttons-on-top';
@@ -23,9 +24,9 @@ import { compileTemplate } from '../services/dumbtemplate';
 
 var needOverride = true;
 
-export function createJSONEditor(element, schema, value, locale, root) {
+export function createJSONEditor(element, schema, value, locale, root, data) {
   if (needOverride) {
-    overrideJSONEditor();
+    overrideJSONEditor(data);
     needOverride = false;
   }
 
@@ -111,7 +112,7 @@ function conditionalOneOfValidator(schema, value, path) {
   return [];
 }
 
-function overrideJSONEditor() {
+function overrideJSONEditor(data) {
   JSONEditor.defaults.options.show_errors = 'always';
   JSONEditor.defaults.options.iconlib = 'wb-bootstrap3';
   JSONEditor.defaults.options.theme = 'wb-bootstrap3';
@@ -197,6 +198,9 @@ function overrideJSONEditor() {
   );
   JSONEditor.defaults.resolvers.unshift(schema => schema.format === 'wb-optional' && 'wb-optional');
   JSONEditor.defaults.resolvers.unshift(
+    schema => schema.format === 'wb-autocomplete' && 'wb-autocomplete'
+  );
+  JSONEditor.defaults.resolvers.unshift(
     schema => schema.type === 'array' && schema.format === 'wb-array' && 'wb-array'
   );
 
@@ -216,6 +220,7 @@ function overrideJSONEditor() {
   JSONEditor.defaults.editors['roMultiple'] = makeReadonlyOneOfEditor();
   JSONEditor.defaults.editors['merge-default'] = makeMergedDefaultValuesEditor();
   JSONEditor.defaults.editors['edWb'] = makeEditWithDropdownEditor();
+  JSONEditor.defaults.editors['wb-autocomplete'] = makeAutocompleteEditor(data);
   JSONEditor.defaults.editors['collapsible-list'] = makeCollapsibleArrayEditor();
   JSONEditor.defaults.editors['wb-multiple'] = makeCollapsibleMultipleEditor();
   JSONEditor.defaults.editors['wb-object'] = makeObjectEditorWithButtonsOnTop();

@@ -14,11 +14,7 @@
         },
         "errors": {
             "load": "Error loading the file",
-            "save": "Error saving {{name}}",
-            "first_unknown_device": "Unable to find templates for devices, add them manually:\n\t\t{{title}} address {{cfg.slave_id}}, port {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
-            "unknown_device": "\t\t{{title}} address {{cfg.slave_id}}, port {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
-            "first_misconfigured_device": "Some added devices has connection settings different from current:\n\t\t{{title}} address {{cfg.slave_id}}, port {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}",
-            "misconfigured_device": "\t\t{{title}} address {{cfg.slave_id}}, port {{port}} {{cfg.baud_rate}} {{cfg.data_bits}}{{cfg.parity}}{{cfg.stop_bits}}"
+            "save": "Error saving {{name}}"
         }
     }
 }

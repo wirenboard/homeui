@@ -17,16 +17,37 @@ const ActivationLink = observer(({ link }) => {
 const CloudStatus = observer(({ status }) => {
   const { t } = useTranslation();
 
-  if (status == 'ok') {
+  if (status === 'ok') {
     return (
       <div className="alert alert-success">
         <i className="glyphicon glyphicon-ok" /> {t('system.cloud-status.status-ok')}
       </div>
     );
   }
+  if (status === 'starting') {
+    return (
+      <div className="alert alert-warning">
+        <i className="glyphicon glyphicon-refresh" /> {t('system.cloud-status.status-starting')}
+      </div>
+    );
+  }
+  if (status === 'connecting') {
+    return (
+      <div className="alert alert-warning">
+        <i className="glyphicon glyphicon-refresh" /> {t('system.cloud-status.status-connecting')}
+      </div>
+    );
+  }
+  if (status === 'stopped') {
+    return (
+      <div className="alert alert-danger">
+        <i className="glyphicon glyphicon-refresh" /> {t('system.cloud-status.status-stopped')}
+      </div>
+    );
+  }
   return (
     <div className="alert alert-danger">
-      <i className="glyphicon glyphicon-remove" /> {t('system.cloud-status.status-error') + status}
+      <i className="glyphicon glyphicon-remove" /> {t('system.cloud-status.status-error')}: {status}
     </div>
   );
 });
@@ -52,7 +73,7 @@ const CloudStatusWidget = observer(({ store }) => {
     <div className="panel panel-default">
       <div className="panel-heading">
         <h3 className="panel-title">
-          <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.title')}
+          <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.title')} ({store.provider})
         </h3>
       </div>
       <div className="panel-body">

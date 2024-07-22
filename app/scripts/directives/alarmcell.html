@@ -1,1 +1,13 @@
-<h4 class="cell cell-alarm alarm" ng-class="{ 'alarm-active': cell.value }">{{ cell.getName($locale.id) }}</h4>
+<h4
+  class="cell cell-alarm alarm"
+  ng-class="{ 'alarm-active': cell.value }"
+  ng-click="displayCellCtrl.copy(cell.id, true)"
+  tooltip-popup-close-delay="500"
+  uib-tooltip="'{{ cell.id }}' {{ 'widgets.labels.copy' | translate}}"
+  tooltip-trigger="{
+    'outsideClick': 'mouseleave',
+    'focus': 'mouseleave'
+  }"
+>
+    {{ cell.getName($locale.id) }}
+</h4>

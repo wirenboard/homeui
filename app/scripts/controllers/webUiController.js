@@ -1,6 +1,6 @@
-import i18n from '../i18n/react/config';
+import { setReactLocale } from '../react-directives/locale';
 
-export default class WebUICtrl {
+class WebUICtrl {
   constructor(uiConfig, errors, rolesFactory, $window, $translate, tmhDynamicLocale) {
     'ngInject';
 
@@ -8,12 +8,6 @@ export default class WebUICtrl {
     this.uiConfig = uiConfig;
     this.language = $window.localStorage['language'];
     this.showSystemDevices = $window.localStorage['show-system-devices'] || 'no';
-
-    if (!this.language || i18n.languages.indexOf(this.language) === -1) {
-      let preferredLanguages = window.navigator.languages.map(lang => lang.split('-')[0]);
-      this.language =
-        preferredLanguages.filter(lang => i18n.languages.indexOf(lang) !== -1)[0] || 'en';
-    }
 
     uiConfig
       .whenReady()
@@ -27,8 +21,8 @@ export default class WebUICtrl {
     this.changeLanguage = () => {
       $translate.use(this.language);
       tmhDynamicLocale.set(this.language);
-      $window.localStorage.setItem('language', this.language);
-      i18n.changeLanguage(this.language);
+      localStorage.setItem('language', this.language);
+      setReactLocale();
     };
 
     this.setShowSystemDevices = () => {
@@ -41,3 +35,7 @@ export default class WebUICtrl {
     this.uiConfig.setDefaultDashboard(id);
   }
 }
+
+export default angular
+  .module('homeuiApp.webui', [])
+  .controller('WebUICtrl', WebUICtrl);

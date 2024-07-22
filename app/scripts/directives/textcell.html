@@ -15,8 +15,12 @@
   >
     {{ cell.getEnumName($locale.id, cell.value) }}
   </p>
+  <select ng-if="!cell.readOnly && cell.isEnum()" 
+          ng-options="item.value as item.name for item in cell.getEnumValues($locale.id)"
+          ng-model="cell.value">
+  </select>
   <input
-    ng-hide="cell.readOnly"
+    ng-hide="cell.readOnly || cell.isEnum()"
     ng-model="cell.value"
     type="text"
     class="cell cell-text"

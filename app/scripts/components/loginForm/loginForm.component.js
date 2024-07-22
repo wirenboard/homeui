@@ -4,8 +4,7 @@ import controller from './loginForm.controller';
 const loginFormComponent = {
   restrict: 'E',
   bindings: {
-    host: '<',
-    port: '<',
+    url: '<',
   },
   template,
   controller,
