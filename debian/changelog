@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.93.7) stable; urgency=medium
+
+  * Fix firefox error whitescreen error
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Jul 2024 16:50:05 +0300
+
 wb-mqtt-homeui (2.93.6) stable; urgency=medium
 
   * Hide vulnerability warning if the problem is fixed
