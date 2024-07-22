@@ -285,6 +285,12 @@ wb-mqtt-homeui (2.82.2) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 29 Mar 2024 11:45:00 +0500
 
+wb-mqtt-homeui (2.82.1-wb108) stable; urgency=medium
+
+  * fix firefox error whitescreen error
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Jul 2024 16:50:05 +0300
+
 wb-mqtt-homeui (2.82.1) stable; urgency=medium
 
   * Fix slave id editor in wb-mqtt-serial config
