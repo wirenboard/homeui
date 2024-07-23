@@ -71,7 +71,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.2",
     "@babel/eslint-parser": "^7.22.5",
-    "@babel/preset-env": "^7.22.4",
+    "@babel/plugin-transform-logical-assignment-operators": "^7.24.7",
+    "@babel/preset-env": "^7.24.8",
     "@babel/preset-react": "^7.22.5",
     "angular-mocks": "^1.8.3",
     "autoprefixer": "^10.4.13",

@@ -1,12 +1,18 @@
-wb-mqtt-homeui (2.82.1-wb108) stable; urgency=medium
+wb-mqtt-homeui (2.82.1-wb109) stable; urgency=medium
 
   * Hide vulnerability warning if the problem is fixed
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 19 Jul 2024 13:29:05 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jul 2024 09:43:35 +0500
+
+wb-mqtt-homeui (2.82.1-wb108) stable; urgency=medium
+
+  * Fix firefox error whitescreen error
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Jul 2024 16:50:05 +0300
 
 wb-mqtt-homeui (2.82.1-wb107) stable; urgency=medium
 
-  * add remote probe to check for open ports
+  * Add remote probe to check for open ports
 
  -- Aleskandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Tue, 29 Jun 2024 22:33:17 +0500
 
