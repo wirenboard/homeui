@@ -18,7 +18,7 @@ class NewDevicesScanPageStore {
     this.active = false;
     this.setupAddressModalState = new SetupAddressModalState();
 
-    makeObservable(this, { active: observable, select: action });
+    makeObservable(this, { active: observable, select: action, stopScanning: action });
   }
 
   setDeviceManagerUnavailable() {
@@ -83,10 +83,7 @@ class NewDevicesScanPageStore {
       };
 
       this.onCancel = () => {
-        this.commonScanStore.stopScanning();
-        runInAction(() => {
-          this.active = false;
-        });
+        this.stopScanning();
         resolve([]);
       };
     });
@@ -115,6 +112,15 @@ class NewDevicesScanPageStore {
       return devices;
     }
     throw new Error('Address change canceled');
+  }
+
+  get isScanning() {
+    return this.commonScanStore.isScanning;
+  }
+
+  stopScanning() {
+    this.commonScanStore.stopScanning();
+    this.active = false;
   }
 }
 

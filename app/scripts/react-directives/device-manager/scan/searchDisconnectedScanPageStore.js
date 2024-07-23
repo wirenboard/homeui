@@ -16,7 +16,7 @@ class SearchDisconnectedScanPageStore {
     this.portPath = undefined;
     this.deviceTypesStore = deviceTypesStore;
 
-    makeObservable(this, { active: observable, select: action });
+    makeObservable(this, { active: observable, select: action, stopScanning: action });
   }
 
   setDeviceManagerUnavailable() {
@@ -64,13 +64,19 @@ class SearchDisconnectedScanPageStore {
       };
 
       this.onCancel = () => {
-        this.commonScanStore.stopScanning();
-        runInAction(() => {
-          this.active = false;
-        });
+        this.stopScanning();
         resolve(undefined);
       };
     });
+  }
+
+  get isScanning() {
+    return this.commonScanStore.isScanning;
+  }
+
+  stopScanning() {
+    this.commonScanStore.stopScanning();
+    this.active = false;
   }
 }
 
