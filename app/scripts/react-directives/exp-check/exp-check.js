@@ -1,8 +1,8 @@
 'use strict';
 
 import ReactDOM from 'react-dom/client';
-import CreateExpCheckWidget from "./expCheckWidget";
-import ExpCheckStore from "./store";
+import CreateExpCheckWidget from './expCheckWidget';
+import ExpCheckStore from './store';
 import { setReactLocale } from '../locale';
 
 function expCheckMetaDirective(mqttClient, whenMqttReady) {
@@ -25,9 +25,10 @@ function expCheckMetaDirective(mqttClient, whenMqttReady) {
       whenMqttReady().then(() => {
         fetch('/api/check');
         mqttClient.addStickySubscription('/rpc/v1/exp-check', msg => {
-          let payload = JSON.parse(msg.payload);
-          scope.store.updateResult(payload.result);
-          scope.store.updateDetails(payload.details || null);
+          try {
+            let payload = JSON.parse(msg.payload);
+            scope.store.update(payload.result, payload.details);
+          } catch (e) {}
         });
       });
 

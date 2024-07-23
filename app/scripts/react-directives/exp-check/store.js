@@ -1,18 +1,27 @@
-import { makeAutoObservable } from 'mobx';
+import { makeObservable, observable } from 'mobx';
 
 class ExpCheckStore {
   constructor() {
     this.result = null;
-    this.details = null;
-    makeAutoObservable(this, {}, { autoBind: true });
+    this.details = [];
+    this.timerHandler = null;
+
+    makeObservable(this, { result: observable, details: observable });
   }
 
-  updateResult(result) {
+  update(result, details) {
     this.result = result;
-  }
-
-  updateDetails(details) {
-    this.details = details;
+    this.details = details || [];
+    if (this.timerHandler !== null) {
+      clearTimeout(this.timerHandler);
+      this.timerHandler = null;
+    }
+    const TEN_MINUTES = 1000 * 60 * 10;
+    const ONE_HOUR = 1000 * 60 * 60;
+    this.timerHandler = setTimeout(
+      () => fetch('/api/check'),
+      result === 'found' ? TEN_MINUTES : ONE_HOUR
+    );
   }
 }
 
