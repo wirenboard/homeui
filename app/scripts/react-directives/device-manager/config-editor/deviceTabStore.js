@@ -53,6 +53,7 @@ export class DeviceTab {
       setDevicesWithTheSameId: action,
       setDisconnected: action,
       setLoading: action,
+      setUniqueMqttTopic: action,
       hasInvalidConfig: computed,
     });
   }

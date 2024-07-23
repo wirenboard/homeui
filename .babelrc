@@ -1,4 +1,7 @@
 {
   "presets": [["@babel/preset-env", { "targets": "defaults" }], "@babel/preset-react"],
-  "plugins": [["angularjs-annotate"]]
+  "plugins": [
+    "@babel/plugin-transform-logical-assignment-operators",
+    "angularjs-annotate"
+  ]
 }
