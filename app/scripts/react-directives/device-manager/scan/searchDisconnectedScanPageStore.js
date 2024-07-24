@@ -4,12 +4,8 @@ import { makeObservable, observable, action, runInAction } from 'mobx';
 import CommonScanStore, { SelectionPolicy } from './scanPageStore';
 
 class SearchDisconnectedScanPageStore {
-  constructor(startScanFn, stopScanFn, deviceTypesStore) {
-    this.commonScanStore = new CommonScanStore(
-      isExtendedScan => startScanFn(isExtendedScan, this.portPath),
-      stopScanFn,
-      deviceTypesStore
-    );
+  constructor(deviceManagerProxy, deviceTypesStore) {
+    this.commonScanStore = new CommonScanStore(deviceManagerProxy, deviceTypesStore);
     this.onCancel = undefined;
     this.onOk = undefined;
     this.active = false;
@@ -17,14 +13,6 @@ class SearchDisconnectedScanPageStore {
     this.deviceTypesStore = deviceTypesStore;
 
     makeObservable(this, { active: observable, select: action, stopScanning: action });
-  }
-
-  setDeviceManagerUnavailable() {
-    this.commonScanStore.setDeviceManagerUnavailable();
-  }
-
-  setDeviceManagerAvailable() {
-    this.commonScanStore.setDeviceManagerAvailable();
   }
 
   // Expected props structure
@@ -52,7 +40,7 @@ class SearchDisconnectedScanPageStore {
     this.signatures = this.deviceTypesStore.getDeviceSignatures(deviceType);
     this.portPath = portPath;
     this.active = true;
-    this.commonScanStore.startScanning(SelectionPolicy.Single, configuredDevices);
+    this.commonScanStore.startScanning(SelectionPolicy.Single, configuredDevices, this.portPath);
     return new Promise((resolve, reject) => {
       this.onOk = async () => {
         try {

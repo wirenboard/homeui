@@ -1,4 +1,4 @@
-import { makeObservable, observable } from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 
 class ExpCheckStore {
   constructor() {
@@ -6,7 +6,7 @@ class ExpCheckStore {
     this.details = [];
     this.timerHandler = null;
 
-    makeObservable(this, { result: observable, details: observable });
+    makeObservable(this, { result: observable, details: observable, update: action });
   }
 
   update(result, details) {

@@ -1,6 +1,6 @@
 'use strict';
 
-import { action, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
+import { action, makeAutoObservable, makeObservable, observable, reaction, computed } from 'mobx';
 import i18n from '../../../i18n/react/config';
 import CollapseButtonState from '../../components/buttons/collapseButtonState';
 
@@ -306,17 +306,17 @@ class MqttStateStore {
 }
 
 class CommonScanStore {
-  constructor(startScanFn, stopScanFn, deviceTypesStore) {
-    this.startScanFn = startScanFn;
-    this.stopScanFn = stopScanFn;
+  constructor(deviceManagerProxy, deviceTypesStore) {
+    this.deviceManagerProxy = deviceManagerProxy;
     this.mqttStore = new MqttStateStore();
     this.scanStore = new ScanningProgressStore();
     this.devicesStore = new DevicesStore(deviceTypesStore);
     this.globalError = new GlobalErrorStore();
     this.acceptUpdates = false;
+    this.portPath = null;
     this.alreadyConfiguredDevicesCollapseButtonState = new CollapseButtonState(true);
 
-    makeAutoObservable(this);
+    makeObservable(this, { hasSelectedItems: computed });
   }
 
   setDeviceManagerUnavailable() {
@@ -339,26 +339,40 @@ class CommonScanStore {
     }
   }
 
-  startExtendedScanning() {
+  async startScanningCommon(isExtended) {
     this.scanStore.startScan();
     this.globalError.clearError();
-    this.startScanFn(true)
-      .then(() => (this.acceptUpdates = true))
-      .catch(err => this.setScanFailed(err));
+    try {
+      if (await this.deviceManagerProxy.hasMethod('Start')) {
+        let params = {
+          scan_type: isExtended ? 'extended' : 'standard',
+          preserve_old_results: false,
+        };
+        if (this.portPath) {
+          params.port_path = this.portPath;
+        }
+        await this.deviceManagerProxy.Start(params);
+        this.acceptUpdates = true;
+      } else {
+        this.setDeviceManagerUnavailable();
+      }
+    } catch (err) {
+      this.setScanFailed(err);
+    }
   }
 
-  startStandardScanning() {
-    this.scanStore.startScan();
-    this.globalError.clearError();
-    this.startScanFn(false)
-      .then(() => (this.acceptUpdates = true))
-      .catch(err => this.setScanFailed(err));
+  async startExtendedScanning() {
+    await this.startScanningCommon(true);
+  }
+
+  async startStandardScanning() {
+    await this.startScanningCommon(false);
   }
 
   stopScanning() {
     this.scanStore.scanStopped();
     this.acceptUpdates = false;
-    this.stopScanFn();
+    this.deviceManagerProxy.Stop();
   }
 
   // Expected props structure
@@ -383,8 +397,9 @@ class CommonScanStore {
     }
   }
 
-  startScanning(selectionPolicy, configuredDevices) {
+  startScanning(selectionPolicy, configuredDevices, portPath) {
     this.devicesStore.init(selectionPolicy, configuredDevices);
+    this.portPath = portPath;
     this.startExtendedScanning();
   }
 

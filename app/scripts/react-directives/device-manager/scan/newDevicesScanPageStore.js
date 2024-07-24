@@ -13,20 +13,12 @@ class NewDevicesScanPageStore {
   commonScanStore;
   setupAddressModalState;
 
-  constructor(startScanFn, stopScanFn, deviceTypesStore) {
-    this.commonScanStore = new CommonScanStore(startScanFn, stopScanFn, deviceTypesStore);
+  constructor(deviceManagerProxy, deviceTypesStore) {
+    this.commonScanStore = new CommonScanStore(deviceManagerProxy, deviceTypesStore);
     this.active = false;
     this.setupAddressModalState = new SetupAddressModalState();
 
     makeObservable(this, { active: observable, select: action, stopScanning: action });
-  }
-
-  setDeviceManagerUnavailable() {
-    this.commonScanStore.setDeviceManagerUnavailable();
-  }
-
-  setDeviceManagerAvailable() {
-    this.commonScanStore.setDeviceManagerAvailable();
   }
 
   // Expected props structure
@@ -39,12 +31,7 @@ class NewDevicesScanPageStore {
     }
 
     const data = JSON.parse(stringDataToRender);
-    if (data.error) {
-      this.commonScanStore.update(data);
-      return;
-    }
-
-    if (!this.commonScanStore.acceptUpdates) {
+    if (!data.error && !this.commonScanStore.acceptUpdates) {
       return;
     }
 
