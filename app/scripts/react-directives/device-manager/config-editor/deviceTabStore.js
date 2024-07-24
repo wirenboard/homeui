@@ -6,9 +6,59 @@ import isEqual from 'lodash/isEqual';
 import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
 import i18n from '../../../i18n/react/config';
+import firmwareIsNewer from '../../../utils/fwUtils';
+import { getIntAddress } from '../common/modbusAddressesSet';
+
+export class FirmwareVersion {
+  current = '';
+  available = '';
+  deviceManagerProxy;
+
+  constructor(deviceManagerProxy) {
+    this.deviceManagerProxy = deviceManagerProxy;
+    makeObservable(this, {
+      current: observable,
+      available: observable,
+      hasUpdate: computed,
+      clear: action,
+    });
+  }
+
+  async update(address, portConfig) {
+    try {
+      if (await this.deviceManagerProxy.hasMethod('GetFirmwareInfo')) {
+        let res = await this.deviceManagerProxy.GetFirmwareInfo({
+          address: getIntAddress(address),
+          path: portConfig.path,
+          baud_rate: portConfig.baudRate,
+          parity: portConfig.parity,
+          stop_bits: portConfig.stopBits,
+        });
+        runInAction(() => {
+          this.current = res.fw;
+          this.available = res.available_fw;
+        });
+      }
+    } catch (err) {
+      this.clear();
+    }
+  }
+
+  clear() {
+    this.current = '';
+    this.available = '';
+  }
+
+  get hasUpdate() {
+    if (this.current === '' || this.available === '') {
+      return false;
+    }
+    return firmwareIsNewer(this.current, this.available);
+  }
+}
 
 export class DeviceTab {
-  constructor(data, deviceType, deviceTypesStore) {
+  constructor(data, deviceType, deviceTypesStore, deviceManagerProxy) {
     this.name = '';
     this.type = TabType.DEVICE;
     this.data = data;
@@ -28,6 +78,7 @@ export class DeviceTab {
     this.isModbusDevice = deviceTypesStore.isModbusDevice(deviceType);
     this.devicesWithTheSameId = [];
     this.isDisconnected = false;
+    this.firmwareVersion = new FirmwareVersion(deviceManagerProxy);
 
     this.updateName();
 
@@ -200,10 +251,17 @@ export class DeviceTab {
   }
 
   setDisconnected(value) {
+    if (value) {
+      this.firmwareVersion.clear();
+    }
     this.isDisconnected = value;
   }
 
   setLoading(value) {
     this.loading = value;
+  }
+
+  updateFirmwareVersion(portConfig) {
+    this.firmwareVersion.update(this.slaveId, portConfig);
   }
 }

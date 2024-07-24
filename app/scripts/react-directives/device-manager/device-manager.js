@@ -72,18 +72,6 @@ function deviceManagerDirective(
         }
       };
 
-      const startScan = (extended, portPath) => {
-        let params = {
-          scan_type: extended ? 'extended' : 'standard',
-          preserve_old_results: false,
-        };
-        if (portPath) {
-          params.port = { path: portPath };
-        }
-        return DeviceManagerProxy.Start(params);
-      };
-      const stopScan = () => DeviceManagerProxy.Stop();
-
       scope.store = new DeviceManagerPageStore(
         loadConfig,
         saveConfig,
@@ -91,8 +79,7 @@ function deviceManagerDirective(
         toTabs,
         loadDeviceTypeSchema,
         rolesFactory,
-        startScan,
-        stopScan,
+        DeviceManagerProxy,
         setupPort
       );
 
@@ -143,20 +130,9 @@ function deviceManagerDirective(
           mqttClient.addStickySubscription('/devices/+/meta/error', msg => {
             scope.store.setDeviceDisconnected(msg.topic, msg.payload);
           });
-          return DeviceManagerProxy.hasMethod('Start');
-        })
-        .then(available => {
-          if (available) {
-            scope.store.setDeviceManagerAvailable();
-            mqttClient.addStickySubscription('/wb-device-manager/state', msg =>
-              scope.store.updateScanState(msg.payload)
-            );
-          } else {
-            scope.store.setDeviceManagerUnavailable();
-          }
-        })
-        .catch(() => {
-          scope.store.setDeviceManagerUnavailable();
+          mqttClient.addStickySubscription('/wb-device-manager/state', msg =>
+            scope.store.updateScanState(msg.payload)
+          );
         });
 
       element.on('$destroy', function () {

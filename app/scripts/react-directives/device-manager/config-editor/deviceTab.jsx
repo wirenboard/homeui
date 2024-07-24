@@ -14,6 +14,7 @@ export const DeviceTab = observer(({ tab }) => {
   return (
     <div className={className}>
       <span>{tab.name}</span>
+      {tab.firmwareVersion.hasUpdate && <i className="glyphicon glyphicon-refresh"></i>}
       {showSign && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
@@ -45,6 +46,23 @@ export const UnknownDeviceTabContent = observer(({ tab, onDeleteTab }) => {
       <pre>{JSON.stringify(tab.data, null, 2)}</pre>
     </>
   );
+});
+
+const NewFirmwareAvailableWarning = observer(({ firmwareVersion }) => {
+  const { t } = useTranslation();
+  if (firmwareVersion.hasUpdate) {
+    return (
+      <WarningBar>
+        <span>
+          {t('device-manager.errors.new-firmware', {
+            firmware: firmwareVersion.current,
+            newFirmware: firmwareVersion.available,
+          })}
+        </span>
+      </WarningBar>
+    );
+  }
+  return null;
 });
 
 const DeprecatedWarning = ({ isDeprecated }) => {
@@ -129,6 +147,7 @@ export const DeviceTabContent = observer(
     return (
       <div>
         <DeprecatedWarning isDeprecated={tab.isDeprecated} />
+        <NewFirmwareAvailableWarning firmwareVersion={tab.firmwareVersion} />
         <DisconnectedError
           isDisconnected={tab.isDisconnected}
           onSearchDisconnectedDevice={onSearchDisconnectedDevice}

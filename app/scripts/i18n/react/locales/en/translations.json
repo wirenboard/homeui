@@ -272,7 +272,8 @@
          "duplicate-slave-id": "Duplicate slave id",
          "duplicate-mqtt-topic": "MQTT id is the same as for {{device}}",
          "is-disconnected": "The device is not responding. Check the physical connection of the RS-485 bus and the communication settings of the port and device, which should be the same",
-         "setup": "{{device}} setup failed: {{error}}"
+         "setup": "{{device}} setup failed: {{error}}",
+         "new-firmware": "Firmware {{firmware}}, there is a newer version {{newFirmware}}"
       }
    },
    "exp-check": {

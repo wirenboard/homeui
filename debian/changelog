@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.94.0) stable; urgency=medium
+
+  * Add notification about new available firmware for Modbus device
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 24 Jul 2024 10:31:53 +0500
+
 wb-mqtt-homeui (2.93.8) stable; urgency=medium
 
   * Fix slow scanning cancel 

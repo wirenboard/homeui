@@ -1,5 +1,7 @@
 'use strict';
 
+import { getIntAddress } from '../common/modbusAddressesSet';
+
 function makeConfiguredDevicesList(portTabChildren, deviceTypesStore) {
   return portTabChildren.reduce((acc, deviceTab) => {
     const deviceType = deviceTab.editedData.device_type;
@@ -19,11 +21,7 @@ function getConfiguredModbusDevices(portTabs, deviceTypesStore) {
   return portTabs.reduce((acc, portTab) => {
     if (portTab.portType == 'serial') {
       acc[portTab.editedData.path] = {
-        config: {
-          baudRate: portTab.editedData.baud_rate,
-          parity: portTab.editedData.parity,
-          stopBits: portTab.editedData.stop_bits,
-        },
+        config: portTab.baseConfig,
         devices: makeConfiguredDevicesList(portTab.children, deviceTypesStore),
       };
     }
@@ -105,10 +103,7 @@ class ConfiguredDevices {
   getUsedAddresses() {
     const getAddressesSet = devices => {
       return devices.reduce((addressAcc, d) => {
-        if (Number.isInteger(d.address)) {
-          return addressAcc.add(d.address);
-        }
-        const addrNumber = parseInt(d.address);
+        const addrNumber = getIntAddress(d.address);
         return Number.isNaN(addrNumber) ? addressAcc : addressAcc.add(addrNumber);
       }, new Set());
     };

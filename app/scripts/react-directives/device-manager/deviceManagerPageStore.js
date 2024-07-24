@@ -15,8 +15,7 @@ class DeviceManagerPageStore {
     toTabs,
     loadDeviceTypeFn,
     rolesFactory,
-    startScanFn,
-    stopScanFn,
+    deviceManagerProxy,
     setupDeviceFn
   ) {
     this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
@@ -27,16 +26,15 @@ class DeviceManagerPageStore {
       toTabs,
       this.deviceTypesStore,
       rolesFactory,
-      setupDeviceFn
+      setupDeviceFn,
+      deviceManagerProxy
     );
     this.newDevicesScanPageStore = new NewDevicesScanPageStore(
-      startScanFn,
-      stopScanFn,
+      deviceManagerProxy,
       this.deviceTypesStore
     );
     this.searchDisconnectedScanPageStore = new SearchDisconnectedScanPageStore(
-      startScanFn,
-      stopScanFn,
+      deviceManagerProxy,
       this.deviceTypesStore
     );
 
@@ -55,16 +53,6 @@ class DeviceManagerPageStore {
 
   async loadConfig() {
     await this.configEditorPageStore.load();
-  }
-
-  setDeviceManagerAvailable() {
-    this.newDevicesScanPageStore.setDeviceManagerAvailable();
-    this.searchDisconnectedScanPageStore.setDeviceManagerAvailable();
-  }
-
-  setDeviceManagerUnavailable() {
-    this.newDevicesScanPageStore.setDeviceManagerUnavailable();
-    this.searchDisconnectedScanPageStore.setDeviceManagerUnavailable();
   }
 
   updateScanState(data) {

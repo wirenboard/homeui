@@ -238,3 +238,7 @@
 .device-manager-page div.alert .alert-header {
     flex-grow: 1;
 }
+
+.device-manager-page .device-tab .glyphicon-refresh {
+    color: #bd882b;
+}

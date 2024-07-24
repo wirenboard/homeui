@@ -1,5 +1,9 @@
 'use strict';
 
+export function getIntAddress(address) {
+  return Number.isInteger(address) ? address : parseInt(address);
+}
+
 class ModbusAddressSet {
   /**
    * @constructor
@@ -11,9 +15,7 @@ class ModbusAddressSet {
   }
 
   tryToAddUsedAddress(portPath, address) {
-    if (!Number.isInteger(address)) {
-      address = parseInt(address);
-    }
+    address = getIntAddress(address);
     let usedAddresses = this.usedAddresses.get(portPath);
     if (usedAddresses === undefined) {
       usedAddresses = new Set();
@@ -27,9 +29,7 @@ class ModbusAddressSet {
   }
 
   fixAddress(portPath, address) {
-    if (!Number.isInteger(address)) {
-      address = parseInt(address);
-    }
+    address = getIntAddress(address);
     let usedAddresses = this.usedAddresses.get(portPath);
     if (usedAddresses === undefined) {
       usedAddresses = new Set();
