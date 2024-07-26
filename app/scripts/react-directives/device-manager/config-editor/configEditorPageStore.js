@@ -487,7 +487,7 @@ class ConfigEditorPageStore {
     );
     if (res) {
       for (let i = 0; i < res.count; ++i) {
-        this.tabs.addDeviceTab(portTab, deviceTab.getCopy(), i == 0);
+        this.tabs.addDeviceTab(res.port, deviceTab.getCopy(), i == 0);
       }
     }
   }
