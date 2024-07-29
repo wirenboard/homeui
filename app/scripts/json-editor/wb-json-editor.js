@@ -99,6 +99,9 @@ function conditionalOneOfValidator(schema, value, path) {
       if (subSchema.hasOwnProperty('oneOf')) {
         subSchema.oneOf.forEach(item => {
           if (item.condition && !editor?.conditions?.check(item.condition, paramValues)) {
+            if (!item.hasOwnProperty('options')) {
+              item.options = {};
+            }
             angular.merge(item.options, { wb: { error: 'disabled' } });
           } else {
             if (item.options && item.options.wb) {
