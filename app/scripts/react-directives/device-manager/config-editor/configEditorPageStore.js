@@ -130,14 +130,14 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     }
   }
 
-  if (device.baudRate != portBaudRate) {
+  if (portBaudRate !== undefined && device.baudRate != portBaudRate) {
     let item = Object.assign({}, commonCfg);
     item.cfg = { baud_rate: portBaudRate };
     params.items.push(item);
     commonCfg.baud_rate = item.cfg.baud_rate;
   }
 
-  if (device.stopBits != portStopBits) {
+  if (portStopBits !== undefined && device.stopBits != portStopBits) {
     // Devices with fast modbus support accept both 1 and 2 stop bits
     // So it is not a misconfiguration if the setting differs from port's one
     if (!device.gotByFastScan) {
@@ -148,7 +148,7 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     }
   }
 
-  if (device.parity != portParity) {
+  if (portParity !== undefined && device.parity != portParity) {
     const mapping = {
       O: 1,
       E: 2,
@@ -444,7 +444,7 @@ class ConfigEditorPageStore {
     } else {
       topics.add(deviceId);
     }
-    let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
+    let portTab = this.tabs.portTabs.find(p => p.path == device.port);
     this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), selectTab);
   }
 
@@ -453,16 +453,16 @@ class ConfigEditorPageStore {
       return false;
     }
 
-    let portTab = this.tabs.portTabs.find(p => p.editedData?.path == device.port);
+    let portTab = this.tabs.portTabs.find(p => p.path == device.port);
     if (!portTab) {
       return false;
     }
 
     const params = getDeviceSetupParams(
       device,
-      portTab.editedData.baud_rate,
-      portTab.editedData.parity,
-      portTab.editedData.stop_bits
+      portTab.serialConfig?.baudRate,
+      portTab.serialConfig?.parity,
+      portTab.serialConfig?.stopBits
     );
     if (params) {
       await this.setupDeviceFn(params);

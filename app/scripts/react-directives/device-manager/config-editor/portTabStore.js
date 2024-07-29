@@ -133,4 +133,25 @@ export class PortTab {
   get portType() {
     return this.editedData?.port_type || 'serial';
   }
+
+  get path() {
+    if (this.portType === 'serial') {
+      return this.editedData?.path;
+    }
+    if (this.portType === 'tcp' || this.portType === 'modbus tcp') {
+      return `${this.editedData?.address}:${this.editedData?.port}`;
+    }
+    return '';
+  }
+
+  get serialConfig() {
+    if (this.portType !== 'serial') {
+      return undefined;
+    }
+    return {
+      baudRate: this.editedData.baud_rate,
+      stopBits: this.editedData.stop_bits,
+      parity: this.editedData.parity,
+    };
+  }
 }
