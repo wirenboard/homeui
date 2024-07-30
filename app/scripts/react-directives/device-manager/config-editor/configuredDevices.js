@@ -17,13 +17,9 @@ function makeConfiguredDevicesList(portTabChildren, deviceTypesStore) {
 
 function getConfiguredModbusDevices(portTabs, deviceTypesStore) {
   return portTabs.reduce((acc, portTab) => {
-    if (portTab.portType == 'serial') {
-      acc[portTab.editedData.path] = {
-        config: {
-          baudRate: portTab.editedData.baud_rate,
-          parity: portTab.editedData.parity,
-          stopBits: portTab.editedData.stop_bits,
-        },
+    if (portTab.portType == 'serial' || portTab.portType == 'tcp') {
+      acc[portTab.path] = {
+        serialConfig: portTab.serialConfig,
         devices: makeConfiguredDevicesList(portTab.children, deviceTypesStore),
       };
     }
@@ -47,6 +43,14 @@ function isPotentiallySameDevice(scannedDevice, configuredDevice) {
   );
 }
 
+function hasSameSerialConfig(port, scannedDevice) {
+  return (
+    port.serialConfig.baudRate == scannedDevice.cfg.baud_rate &&
+    port.serialConfig.parity == scannedDevice.cfg.parity &&
+    port.serialConfig.stopBits == scannedDevice.cfg.stop_bits
+  );
+}
+
 function getConfiguredDeviceByAddress(configuredDevices, scannedDevice) {
   if (!configuredDevices.hasOwnProperty(scannedDevice.port.path)) {
     return [];
@@ -55,9 +59,7 @@ function getConfiguredDeviceByAddress(configuredDevices, scannedDevice) {
   return port.devices.filter(
     d =>
       d.address == scannedDevice.cfg.slave_id &&
-      scannedDevice.cfg.baud_rate == port.config.baudRate &&
-      scannedDevice.cfg.parity == port.config.parity &&
-      scannedDevice.cfg.stop_bits == port.config.stopBits
+      (!port?.serialConfig || hasSameSerialConfig(port, scannedDevice))
   );
 }
 

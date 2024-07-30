@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.93.11) stable; urgency=medium
+
+  * Fix adding devices connected via Modbus over TCP gateways to wb-mqtt-serial configuration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 30 Jul 2024 09:40:52 +0500
+
 wb-mqtt-homeui (2.93.10) stable; urgency=medium
 
   * Fix WB-MRWM2 config page
