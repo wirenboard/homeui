@@ -1,6 +1,6 @@
 'use strict';
 
-import firmwareIsNewer from '../../utils/fwUtils';
+import firmwareIsNewerOrEqual from '../../utils/fwUtils';
 
 class DeviceTypesStore {
   constructor(loadDeviceSchemaFn) {
@@ -47,8 +47,8 @@ class DeviceTypesStore {
       desc.hw?.forEach(hw => {
         if (
           hw.signature == deviceSignature &&
-          firmwareIsNewer(hw.fw, fw) &&
-          firmwareIsNewer(lastFwVersion, hw.fw)
+          firmwareIsNewerOrEqual(hw.fw, fw) &&
+          firmwareIsNewerOrEqual(lastFwVersion, hw.fw)
         ) {
           lastFwVersion = hw.fw;
           deviceType = typeName;
