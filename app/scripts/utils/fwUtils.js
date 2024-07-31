@@ -32,9 +32,9 @@ function splitVersion(version) {
  *
  * @param {string|undefined} fw1
  * @param {string|undefined} fw2
- * @returns {boolean} true if fw2 is newer than fw1 (i.e. fw2 has bigger version)
+ * @returns {boolean} true if fw2 is newer than or equal to fw1 (i.e. fw2 has bigger or same version)
  */
-function firmwareIsNewer(fw1, fw2) {
+function firmwareIsNewerOrEqual(fw1, fw2) {
   if (fw1 === undefined) {
     return true;
   }
@@ -47,11 +47,11 @@ function firmwareIsNewer(fw1, fw2) {
   // Same major, minor and patch
   if (baseRes == 0) {
     if (v1.suffix < 0 && v2.suffix < 0) {
-      return v1.suffix > v2.suffix;
+      return v1.suffix >= v2.suffix;
     }
-    return v1.suffix < v2.suffix;
+    return v1.suffix <= v2.suffix;
   }
-  return baseRes < 0;
+  return baseRes <= 0;
 }
 
-export default firmwareIsNewer;
+export default firmwareIsNewerOrEqual;
