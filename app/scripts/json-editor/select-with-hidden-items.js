@@ -43,8 +43,8 @@ function makeSelectWithHiddenItems() {
     }
 
     hideFromChoices() {
-      var options = (this.switcher_options = this.theme.getSwitcherOptions(this.input));
-      options.forEach((op, i) => {
+      this.switcher_options = Array.from(this.theme.getSwitcherOptions(this.input));
+      this.switcher_options.forEach((op, i) => {
         if (
           this.schema.options &&
           this.schema.options.enum_hidden &&
