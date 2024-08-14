@@ -4,11 +4,9 @@ class DevicesCtrl {
     $state,
     $injector,
     DeviceData,
-    handleData,
     rolesFactory,
     historyUrlService,
     $locale,
-    $window
   ) {
     'ngInject';
 
@@ -16,7 +14,6 @@ class DevicesCtrl {
     if (!this.haveRights) return;
 
     this.$state = $state;
-    this.handleData = handleData;
     this.DeviceData = DeviceData;
     this.historyUrlService = historyUrlService;
 
@@ -26,100 +23,116 @@ class DevicesCtrl {
 
     const deviceIdFromUrl = this.parseDeviceIdFromUrl($injector);
 
+    const repaint = () => {
+      $scope.windowWidth = window.innerWidth;
+      this.$state.devicesIdsCount = 0;
+    };
+
     $scope.windowWidth = window.innerWidth;
     // this listener needed to redraw columns and devices on window resize.
     $(window).resize(() => {
       // Only width changing can cause redraw
       // Height changing can be a result of onscreen keyboard display
       if (window.innerWidth != $scope.windowWidth) {
-        $scope.windowWidth = window.innerWidth;
-        this.$state.devicesIdsCount = 0;
+        repaint();
       }
     });
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target.offsetWidth) {
+          repaint();
+          resizeObserver.disconnect();
+        }
+      }
+    });
+
+    const container = document.getElementById('devices-list');
+    resizeObserver.observe(container);
 
     $scope.$locale = $locale;
     $scope.dev = devId => DeviceData.devices[devId];
     $scope.cell = id => DeviceData.cell(id);
-    ($scope.devicesCount = () => Object.keys(DeviceData.devices).length),
-      ($scope.deviceIdsInColumns = () => {
-        const devicesIdsList = Object.keys(DeviceData.devices).sort();
-        const devicesIdsCount = devicesIdsList.length;
+    $scope.devicesCount = () => Object.keys(DeviceData.devices).length;
+    $scope.deviceIdsInColumns = () => {
+      const devicesIdsList = Object.keys(DeviceData.devices).sort();
+      const devicesIdsCount = devicesIdsList.length;
 
-        if (devicesIdsCount <= 0) return;
+      if (devicesIdsCount <= 0) return;
 
-        // devices are loaded dynamically by sockets, therefore
-        // their number may change. If there is a new device,
-        // it is entered into the devicesVisibility object, collapsed - by default.
-        if (devicesIdsCount != this.$state.devicesIdsCount) {
-          let devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
-
-          // check localStorage for outdated (deleted) devices
-          Object.keys(devicesVisibility.devices).forEach(deviceId => {
-            if (!devicesIdsList.includes(deviceId)) {
-              delete devicesVisibility.devices[deviceId];
-            }
-          });
-
-          // add new devices to localStorage
-          devicesIdsList.forEach(deviceId => {
-            if (!devicesVisibility.devices.hasOwnProperty(deviceId)) {
-              devicesVisibility.devices[deviceId] = { isOpen: false };
-            }
-          });
-
-          devicesVisibility.isFirstRender = true;
-          this.$state.devicesIdsCount = devicesIdsCount;
-
-          window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
-        }
-
+      // devices are loaded dynamically by sockets, therefore
+      // their number may change. If there is a new device,
+      // it is entered into the devicesVisibility object, collapsed - by default.
+      if (devicesIdsCount != this.$state.devicesIdsCount) {
         let devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
 
-        // if there are devices to display, split them into columns
-        // and determine their minimized / expanded state.
-        if (devicesVisibility.isFirstRender) {
-          this.$state.deviceIdsIntoColumns = this.splitDevicesIdsIntoColumns(devicesIdsList);
-
-          // if url contain deviceId, this device will be open,
-          // all other devices will be folded.
-          if (deviceIdFromUrl && DeviceData.devices.hasOwnProperty(deviceIdFromUrl)) {
-            devicesIdsList.map(deviceId => {
-              const isOpen = deviceIdFromUrl === deviceId;
-              devicesVisibility.devices[deviceId] = { isOpen: isOpen };
-            });
+        // check localStorage for outdated (deleted) devices
+        Object.keys(devicesVisibility.devices).forEach(deviceId => {
+          if (!devicesIdsList.includes(deviceId)) {
+            delete devicesVisibility.devices[deviceId];
           }
-          // display expanded only devices, that fit on the screen.
-          else {
-            const containerHeight = document.getElementById('page-wrapper').offsetHeight - 34;
-            const collapsedPanelHeight = 60;
-            const panelRowHeight = 30;
-            const panelContentPadding = 20;
+        });
 
-            this.$state.deviceIdsIntoColumns.forEach(columnOfIds => {
-              let availableSpace = containerHeight - columnOfIds.length * collapsedPanelHeight;
+        // add new devices to localStorage
+        devicesIdsList.forEach(deviceId => {
+          if (!devicesVisibility.devices.hasOwnProperty(deviceId)) {
+            devicesVisibility.devices[deviceId] = { isOpen: false };
+          }
+        });
 
-              columnOfIds.forEach(deviceId => {
-                devicesVisibility.devices[deviceId].isOpen = false;
+        devicesVisibility.isFirstRender = true;
+        this.$state.devicesIdsCount = devicesIdsCount;
 
-                if (availableSpace > 0) {
-                  const deviceRowCount = DeviceData.devices[deviceId].cellIds.length;
-                  const deviceInnerHeight = panelContentPadding + deviceRowCount * panelRowHeight;
+        window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+      }
 
-                  if (availableSpace - deviceInnerHeight > 0) {
-                    availableSpace -= deviceInnerHeight;
-                    devicesVisibility.devices[deviceId].isOpen = true;
-                  }
+      let devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
+
+      // if there are devices to display, split them into columns
+      // and determine their minimized / expanded state.
+      if (devicesVisibility.isFirstRender) {
+        this.$state.deviceIdsIntoColumns = this.splitDevicesIdsIntoColumns(devicesIdsList);
+
+        // if url contain deviceId, this device will be open,
+        // all other devices will be folded.
+        if (deviceIdFromUrl && DeviceData.devices.hasOwnProperty(deviceIdFromUrl)) {
+          devicesIdsList.map(deviceId => {
+            const isOpen = deviceIdFromUrl === deviceId;
+            devicesVisibility.devices[deviceId] = { isOpen: isOpen };
+          });
+        }
+        // display expanded only devices, that fit on the screen.
+        else {
+          const containerHeight = document.getElementById('page-wrapper').offsetHeight - 34;
+          const collapsedPanelHeight = 60;
+          const panelRowHeight = 30;
+          const panelContentPadding = 20;
+
+          this.$state.deviceIdsIntoColumns.forEach(columnOfIds => {
+            let availableSpace = containerHeight - columnOfIds.length * collapsedPanelHeight;
+
+            columnOfIds.forEach(deviceId => {
+              devicesVisibility.devices[deviceId].isOpen = false;
+
+              if (availableSpace > 0) {
+                const deviceRowCount = DeviceData.devices[deviceId].cellIds.length;
+                const deviceInnerHeight = panelContentPadding + deviceRowCount * panelRowHeight;
+
+                if (availableSpace - deviceInnerHeight > 0) {
+                  availableSpace -= deviceInnerHeight;
+                  devicesVisibility.devices[deviceId].isOpen = true;
                 }
-              });
+              }
             });
-          }
-
-          devicesVisibility.isFirstRender = false;
-          window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+          });
         }
 
-        return this.$state.deviceIdsIntoColumns || [];
-      });
+        devicesVisibility.isFirstRender = false;
+        window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+      }
+
+      return this.$state.deviceIdsIntoColumns || [];
+    };
   }
 
   getDevicesColumnsCount() {

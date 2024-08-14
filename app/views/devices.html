@@ -1,39 +1,41 @@
 <div class="alert alert-danger alert-dismissible" role="alert"
-  ng-hide="$ctrl.haveRights">{{'devices.labels.notice' | translate}}
-    <a ui-sref="accessLevel">{{'devices.labels.access' | translate}}</a>.
+     ng-hide="$ctrl.haveRights">{{'devices.labels.notice' | translate}}
+  <a ui-sref="accessLevel">{{'devices.labels.access' | translate}}</a>.
 </div>
-<section ng-if="$ctrl.haveRights" id="devices-list">
+<section id="devices-list">
+  <div ng-if="$ctrl.haveRights">
     <div class="empty-list well" ng-if="devicesCount() == 0" translate>{{'devices.labels.nothing'}}</div>
 
-    <uib-accordion close-others="false" class="devices-panel-list" >
-        <div ng-repeat="deviceIdsInColumn in deviceIdsInColumns()">
-            <div
-              uib-accordion-group
-              class="panel-default device-panel display-cell-bin"
-              ng-repeat="deviceId in deviceIdsInColumn"
-              is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
-            >
-                <uib-accordion-heading>
-                  <div class="device-panel__header" ng-click="$ctrl.invertDeviceVisibility(deviceId)">
-                      <span class="device-panel__header-title">{{ dev(deviceId).getName($locale.id) }}</span>
-                      <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
-                  </div>
-                  <span
-                    ng-confirm="{{'devices.prompt.delete' | translate: { name: dev(deviceId).getName($locale.id) || deviceId } }}"
-                    confirmed-click="$ctrl.deleteDevice(deviceId)"
-                    title="{{'devices.labels.delete' | translate}}"
-                    class="device-panel__header-delete-button"
-                  >
-                    <i class="glyphicon glyphicon-trash white"></i>
-                  </span>
-                </uib-accordion-heading>
-                <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
-                    <display-cell
-                      ng-repeat="cellId in dev(deviceId).cellIds"
-                      cell="cell(cellId)"
-                    />
-                </div>
+    <uib-accordion close-others="false" class="devices-panel-list">
+      <div ng-repeat="deviceIdsInColumn in deviceIdsInColumns()">
+        <div
+          uib-accordion-group
+          class="panel-default device-panel display-cell-bin"
+          ng-repeat="deviceId in deviceIdsInColumn"
+          is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
+        >
+          <uib-accordion-heading>
+            <div class="device-panel__header" ng-click="$ctrl.invertDeviceVisibility(deviceId)">
+              <span class="device-panel__header-title">{{ dev(deviceId).getName($locale.id) }}</span>
+              <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
             </div>
+            <span
+              ng-confirm="{{'devices.prompt.delete' | translate: { name: dev(deviceId).getName($locale.id) || deviceId } }}"
+              confirmed-click="$ctrl.deleteDevice(deviceId)"
+              title="{{'devices.labels.delete' | translate}}"
+              class="device-panel__header-delete-button"
+            >
+              <i class="glyphicon glyphicon-trash white"></i>
+            </span>
+          </uib-accordion-heading>
+          <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
+            <display-cell
+              ng-repeat="cellId in dev(deviceId).cellIds"
+              cell="cell(cellId)"
+            />
+          </div>
         </div>
+      </div>
     </uib-accordion>
+  </div>
 </section>
