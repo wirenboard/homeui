@@ -193,8 +193,12 @@ function makeEditWithDropdownEditor() {
     }
 
     refreshValue() {
-      this.value = this.input.value;
-      this.dropdown.value = undefined;
+      if (this.input) {
+        this.value = this.input.value;
+      }
+      if (this.dropdown) {
+        this.dropdown.value = undefined;
+      }
     }
 
     showValidationErrors(errors) {

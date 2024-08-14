@@ -39,9 +39,11 @@ const JsonEditor = observer(props => {
       jse.current = constructEditor(props);
     } else {
       if (isEqual(props.schema, schema)) {
-        if (!isEqual(props.data, jse.current.getValue())) {
-          jse.current.setValue(props.data);
-        }
+        jse.current.load().then(res => {
+          if (!isEqual(props.data, jse.current.getValue())) {
+            jse.current.setValue(props.data);
+          }
+        })
       } else {
         jse.current.destroy();
         jse.current = undefined;
