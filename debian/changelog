@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.93.12) stable; urgency=medium
+
+  * Change collapsing logic — all panes are expanded by default
+  * Fix devices panes collapsed in one column after page refresh
+  * Sort devices panes by title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 14 Aug 2024 16:30:05 +0300
+
 wb-mqtt-homeui (2.93.11) stable; urgency=medium
 
   * Fix adding devices connected via Modbus over TCP gateways to wb-mqtt-serial configuration
@@ -18,7 +26,7 @@ wb-mqtt-homeui (2.93.9) stable; urgency=medium
 
 wb-mqtt-homeui (2.93.8) stable; urgency=medium
 
-  * Fix slow scanning cancel 
+  * Fix slow scanning cancel
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jul 2024 10:04:21 +0500
 

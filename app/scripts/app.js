@@ -525,8 +525,8 @@ const realApp = angular
         });
 
       setTimeout(() => {
-        $('double-bounce-spinner').addClass('ng-hide');
-        $('#wrapper').removeClass('ng-hide');
+        $('double-bounce-spinner').remove();
+        $('#wrapper').removeClass('fade');
       }, 500);
     }
   );

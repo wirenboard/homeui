@@ -1,39 +1,44 @@
 <div class="alert alert-danger alert-dismissible" role="alert"
-  ng-hide="$ctrl.haveRights">{{'devices.labels.notice' | translate}}
-    <a ui-sref="accessLevel">{{'devices.labels.access' | translate}}</a>.
+     ng-hide="$ctrl.haveRights">{{'devices.labels.notice' | translate}}
+  <a ui-sref="accessLevel">{{'devices.labels.access' | translate}}</a>.
 </div>
-<section ng-if="$ctrl.haveRights" id="devices-list">
-    <div class="empty-list well" ng-if="devicesCount() == 0" translate>{{'devices.labels.nothing'}}</div>
+<section id="devices-list" ng-if="$ctrl.haveRights">
+  <div class="empty-list well" ng-if="!$ctrl.getDevicesCount()" translate>{{'devices.labels.nothing'}}</div>
 
-    <uib-accordion close-others="false" class="devices-panel-list" >
-        <div ng-repeat="deviceIdsInColumn in deviceIdsInColumns()">
-            <div
-              uib-accordion-group
-              class="panel-default device-panel display-cell-bin"
-              ng-repeat="deviceId in deviceIdsInColumn"
-              is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
-            >
-                <uib-accordion-heading>
-                  <div class="device-panel__header" ng-click="$ctrl.invertDeviceVisibility(deviceId)">
-                      <span class="device-panel__header-title">{{ dev(deviceId).getName($locale.id) }}</span>
-                      <i class="pull-right glyphicon device-panel__header-glyphicon" ng-class="$ctrl.getDeviceShevronClasses(deviceId)"></i>
-                  </div>
-                  <span
-                    ng-confirm="{{'devices.prompt.delete' | translate: { name: dev(deviceId).getName($locale.id) || deviceId } }}"
-                    confirmed-click="$ctrl.deleteDevice(deviceId)"
-                    title="{{'devices.labels.delete' | translate}}"
-                    class="device-panel__header-delete-button"
-                  >
-                    <i class="glyphicon glyphicon-trash white"></i>
-                  </span>
-                </uib-accordion-heading>
-                <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
-                    <display-cell
-                      ng-repeat="cellId in dev(deviceId).cellIds"
-                      cell="cell(cellId)"
-                    />
-                </div>
-            </div>
+  <uib-accordion close-others="false" class="devices-panel-list">
+    <div ng-repeat="deviceIdsInColumn in $ctrl.getColumns()">
+      <div
+        uib-accordion-group
+        class="panel-default device-panel display-cell-bin"
+        ng-repeat="deviceId in deviceIdsInColumn"
+        is-open="$ctrl.getDeviceVisibility(deviceId).isOpen"
+      >
+        <uib-accordion-heading>
+          <div class="device-panel__header" ng-click="$ctrl.toggleDeviceVisibility(deviceId)">
+            <span class="device-panel__header-title">{{ $ctrl.getDevice(deviceId).getName($ctrl.locale) }}</span>
+            <i
+              class="pull-right glyphicon device-panel__header-glyphicon"
+              ng-class="{
+                  'glyphicon-chevron-down': $ctrl.getDeviceVisibility(deviceId).isOpen,
+                  'glyphicon-chevron-right': !$ctrl.getDeviceVisibility(deviceId).isOpen
+                }"></i>
+          </div>
+          <span
+            ng-confirm="{{'devices.prompt.delete' | translate: { name: $ctrl.getDevice(deviceId).getName($ctrl.locale) || deviceId } }}"
+            confirmed-click="$ctrl.deleteDevice(deviceId)"
+            title="{{'devices.labels.delete' | translate}}"
+            class="device-panel__header-delete-button"
+          >
+              <i class="glyphicon glyphicon-trash white"></i>
+            </span>
+        </uib-accordion-heading>
+        <div class="device-panel__body" ng-if="$ctrl.getDeviceVisibility(deviceId).isOpen">
+          <display-cell
+            ng-repeat="cellId in $ctrl.getDevice(deviceId).cellIds"
+            cell="$ctrl.getCell(cellId)"
+          />
         </div>
-    </uib-accordion>
+      </div>
+    </div>
+  </uib-accordion>
 </section>
