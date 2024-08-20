@@ -29,11 +29,7 @@ class DevicesCtrl {
 
   getColumns() {
     const devicesIdsList = Array.from(Object.values(this.deviceData.devices))
-      .sort(((a, b) => {
-        const aCompare = a._nameTranslations[this.locale] || a.name;
-        const bCompare = b._nameTranslations[this.locale] || b.name;
-        return aCompare.localeCompare(bCompare);
-      }))
+      .sort(((a, b) => a.getName(this.locale).localeCompare(b.getName(this.locale))))
       .map((device) => device.id);
 
     // devices are loaded dynamically by sockets, their number may change
