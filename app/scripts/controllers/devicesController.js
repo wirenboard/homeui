@@ -29,7 +29,11 @@ class DevicesCtrl {
 
   getColumns() {
     const devicesIdsList = Array.from(Object.values(this.deviceData.devices))
-      .sort(((a, b) => a.name.localeCompare(b.name)))
+      .sort(((a, b) => {
+        const aCompare = a._nameTranslations[this.locale] || a.name;
+        const bCompare = b._nameTranslations[this.locale] || b.name;
+        return aCompare.localeCompare(bCompare);
+      }))
       .map((device) => device.id);
 
     // devices are loaded dynamically by sockets, their number may change
@@ -51,7 +55,7 @@ class DevicesCtrl {
         }
       });
 
-      localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+      localStorage.setItem('visibleDevices', JSON.stringify(devicesVisibility));
     }
 
     return this.deviceIdsIntoColumns || [];
@@ -80,12 +84,12 @@ class DevicesCtrl {
   // create object to keep devices open/close condition in localeStorage, if it's not there
   createDevicesVisibilityObject() {
     if (!this.getVisibilityObject()) {
-      localStorage.setItem('devicesVisibility', JSON.stringify({ devices: {} }));
+      localStorage.setItem('visibleDevices', JSON.stringify({ devices: {} }));
     }
   }
 
   getVisibilityObject() {
-    return JSON.parse(localStorage.getItem('devicesVisibility'));
+    return JSON.parse(localStorage.getItem('visibleDevices'));
   }
 
   // return Object { isOpen: bool }, instead of bool value
@@ -97,7 +101,7 @@ class DevicesCtrl {
   toggleDeviceVisibility(deviceId) {
     const devicesVisibility = this.getVisibilityObject();
     devicesVisibility.devices[deviceId].isOpen = !devicesVisibility.devices[deviceId].isOpen;
-    localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+    localStorage.setItem('visibleDevices', JSON.stringify(devicesVisibility));
   }
 
   getCell(id) {
