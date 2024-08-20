@@ -1,138 +1,60 @@
 class DevicesCtrl {
   constructor(
-    $scope,
-    $state,
     $injector,
+    $locale,
     DeviceData,
     rolesFactory,
-    historyUrlService,
-    $locale,
   ) {
     'ngInject';
 
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
-    if (!this.haveRights) return;
+    if (!this.haveRights) {
+      return;
+    }
 
-    this.$state = $state;
-    this.DeviceData = DeviceData;
-    this.historyUrlService = historyUrlService;
+    this.locale = $locale.id;
+    this.deviceData = DeviceData;
+    this.stateParams = $injector.get('$stateParams');
 
-    // will create object to keep devices open/close condition
-    // in localeStorage, if it's not there.
     this.createDevicesVisibilityObject();
 
-    const deviceIdFromUrl = this.parseDeviceIdFromUrl($injector);
-
-    const repaint = () => {
-      $scope.windowWidth = window.innerWidth;
-      this.$state.devicesIdsCount = 0;
-    };
-
-    $scope.windowWidth = window.innerWidth;
-    // this listener needed to redraw columns and devices on window resize.
+    // this listener needed to redraw columns and devices on window width change
     $(window).resize(() => {
-      // Only width changing can cause redraw
-      // Height changing can be a result of onscreen keyboard display
-      if (window.innerWidth != $scope.windowWidth) {
-        repaint();
+      if (window.innerWidth !== this.windowWidth) {
+        this.windowWidth = window.innerWidth;
+        this.devicesIdsCount = null;
       }
     });
+  }
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target.offsetWidth) {
-          repaint();
-          resizeObserver.disconnect();
-        }
-      }
-    });
+  getColumns() {
+    const devicesIdsList = Array.from(Object.values(this.deviceData.devices))
+      .sort(((a, b) => a.name.localeCompare(b.name)))
+      .map((device) => device.id);
 
-    const container = document.getElementById('devices-list');
-    resizeObserver.observe(container);
+    // devices are loaded dynamically by sockets, their number may change
+    if (this.devicesIdsCount !== devicesIdsList.length) {
+      const devicesVisibility = this.getVisibilityObject();
+      this.devicesIdsCount = devicesIdsList.length;
+      this.deviceIdsIntoColumns = this.splitDevicesIdsIntoColumns(devicesIdsList);
+      const deviceIdFromUrl = this.stateParams.deviceId;
 
-    $scope.$locale = $locale;
-    $scope.dev = devId => DeviceData.devices[devId];
-    $scope.cell = id => DeviceData.cell(id);
-    $scope.devicesCount = () => Object.keys(DeviceData.devices).length;
-    $scope.deviceIdsInColumns = () => {
-      const devicesIdsList = Object.keys(DeviceData.devices).sort();
-      const devicesIdsCount = devicesIdsList.length;
-
-      if (devicesIdsCount <= 0) return;
-
-      // devices are loaded dynamically by sockets, therefore
-      // their number may change. If there is a new device,
-      // it is entered into the devicesVisibility object, collapsed - by default.
-      if (devicesIdsCount != this.$state.devicesIdsCount) {
-        let devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
-
-        // check localStorage for outdated (deleted) devices
-        Object.keys(devicesVisibility.devices).forEach(deviceId => {
-          if (!devicesIdsList.includes(deviceId)) {
-            delete devicesVisibility.devices[deviceId];
-          }
-        });
-
+      devicesIdsList.forEach((deviceId) => {
         // add new devices to localStorage
-        devicesIdsList.forEach(deviceId => {
-          if (!devicesVisibility.devices.hasOwnProperty(deviceId)) {
-            devicesVisibility.devices[deviceId] = { isOpen: false };
-          }
-        });
-
-        devicesVisibility.isFirstRender = true;
-        this.$state.devicesIdsCount = devicesIdsCount;
-
-        window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
-      }
-
-      let devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
-
-      // if there are devices to display, split them into columns
-      // and determine their minimized / expanded state.
-      if (devicesVisibility.isFirstRender) {
-        this.$state.deviceIdsIntoColumns = this.splitDevicesIdsIntoColumns(devicesIdsList);
-
-        // if url contain deviceId, this device will be open,
-        // all other devices will be folded.
-        if (deviceIdFromUrl && DeviceData.devices.hasOwnProperty(deviceIdFromUrl)) {
-          devicesIdsList.map(deviceId => {
-            const isOpen = deviceIdFromUrl === deviceId;
-            devicesVisibility.devices[deviceId] = { isOpen: isOpen };
-          });
-        }
-        // display expanded only devices, that fit on the screen.
-        else {
-          const containerHeight = document.getElementById('page-wrapper').offsetHeight - 34;
-          const collapsedPanelHeight = 60;
-          const panelRowHeight = 30;
-          const panelContentPadding = 20;
-
-          this.$state.deviceIdsIntoColumns.forEach(columnOfIds => {
-            let availableSpace = containerHeight - columnOfIds.length * collapsedPanelHeight;
-
-            columnOfIds.forEach(deviceId => {
-              devicesVisibility.devices[deviceId].isOpen = false;
-
-              if (availableSpace > 0) {
-                const deviceRowCount = DeviceData.devices[deviceId].cellIds.length;
-                const deviceInnerHeight = panelContentPadding + deviceRowCount * panelRowHeight;
-
-                if (availableSpace - deviceInnerHeight > 0) {
-                  availableSpace -= deviceInnerHeight;
-                  devicesVisibility.devices[deviceId].isOpen = true;
-                }
-              }
-            });
-          });
+        if (!devicesVisibility.devices[deviceId]) {
+          devicesVisibility.devices[deviceId] = { isOpen: true };
         }
 
-        devicesVisibility.isFirstRender = false;
-        window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
-      }
+        // if there is a device in url, then open only it
+        if (deviceIdFromUrl && this.deviceData.devices[deviceIdFromUrl]) {
+          devicesVisibility.devices[deviceId].isOpen = deviceIdFromUrl === deviceId;
+        }
+      });
 
-      return this.$state.deviceIdsIntoColumns || [];
-    };
+      localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+    }
+
+    return this.deviceIdsIntoColumns || [];
   }
 
   getDevicesColumnsCount() {
@@ -144,85 +66,54 @@ class DevicesCtrl {
 
   splitDevicesIdsIntoColumns(devicesIdsList) {
     const columnCount = this.getDevicesColumnsCount();
-    let devicesIdsInColumns = [];
-
-    for (let i = 0; i < columnCount; i++) {
-      devicesIdsInColumns.push([]);
-    }
+    const devicesIdsInColumns = Array.from({ length: columnCount }, () => []);
 
     let index = 0;
-
-    devicesIdsList.forEach(deviceId => {
-      if (index > columnCount - 1) {
-        index = 0;
-      }
-
+    devicesIdsList.forEach((deviceId) => {
       devicesIdsInColumns[index].push(deviceId);
-      index += 1;
+      index = (index + 1) % columnCount;
     });
 
     return devicesIdsInColumns;
   }
 
+  // create object to keep devices open/close condition in localeStorage, if it's not there
   createDevicesVisibilityObject() {
-    if (!window.localStorage.devicesVisibility) {
-      window.localStorage.setItem(
-        'devicesVisibility',
-        JSON.stringify({
-          devices: {}, // { 'deviceId': { isOpen: bool }}
-          isFirstRender: true,
-        })
-      );
+    if (!this.getVisibilityObject()) {
+      localStorage.setItem('devicesVisibility', JSON.stringify({ devices: {} }));
     }
   }
 
-  parseDeviceIdFromUrl($injector) {
-    const deviceIdFromUrl = $injector.get('$stateParams').deviceId;
-
-    // if URL contains deviceId we must display it panel open,
-    // so change the flag isFirstRender to true
-    if (deviceIdFromUrl) this.setFirstRender(true);
-
-    return deviceIdFromUrl;
+  getVisibilityObject() {
+    return JSON.parse(localStorage.getItem('devicesVisibility'));
   }
 
   // return Object { isOpen: bool }, instead of bool value
   // to be used as model 'is-open' in devices.html view
   getDeviceVisibility(deviceId) {
-    const devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
-    return devicesVisibility.devices[deviceId];
+    return this.getVisibilityObject().devices[deviceId];
   }
 
-  invertDeviceVisibility(deviceId) {
-    const devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
+  toggleDeviceVisibility(deviceId) {
+    const devicesVisibility = this.getVisibilityObject();
     devicesVisibility.devices[deviceId].isOpen = !devicesVisibility.devices[deviceId].isOpen;
-    window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+    localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
   }
 
-  setFirstRender(isFirst) {
-    const devicesVisibility = JSON.parse(window.localStorage.devicesVisibility);
-    devicesVisibility.isFirstRender = isFirst;
-    window.localStorage.setItem('devicesVisibility', JSON.stringify(devicesVisibility));
+  getCell(id) {
+    return this.deviceData.cell(id);
   }
 
-  // dynamic classes for arrow chevron in device panel-header
-  getDeviceShevronClasses(deviceId) {
-    const isOpen = this.getDeviceVisibility(deviceId).isOpen;
-    return {
-      'glyphicon-chevron-down': isOpen,
-      'glyphicon-chevron-right': !isOpen,
-    };
+  getDevice(id) {
+    return this.deviceData.devices[id];
+  }
+
+  getDevicesCount() {
+    return Object.keys(this.deviceData.devices).length;
   }
 
   deleteDevice(deviceId) {
-    this.DeviceData.deleteDevice(deviceId);
-  }
-
-  redirect(contr) {
-    var [device, control] = contr.split('/');
-    this.$state.go('history.sample', {
-      data: this.historyUrlService.encodeControl(device, control),
-    });
+    this.deviceData.deleteDevice(deviceId);
   }
 }
 
