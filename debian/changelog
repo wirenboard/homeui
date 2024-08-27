@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.93.13) stable; urgency=medium
+
+  * Fix device units white space
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Aug 2024 15:50:00 +0300
+
 wb-mqtt-homeui (2.93.12) stable; urgency=medium
 
   * Change collapsing logic — all panes are expanded by default

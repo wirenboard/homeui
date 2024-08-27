@@ -120,6 +120,7 @@ div[uib-datepicker-popup-wrap] {
 
 .device-panel .display-cell{
   cursor: pointer;
+  overflow: hidden;
 }
 
 .cell.cell-value {
@@ -129,7 +130,8 @@ div[uib-datepicker-popup-wrap] {
 .cell-value .value {
   margin-right: -10px;
   width: 110px;
-  display: inline-block;
+  display: flex;
+  align-items: center;
 }
 
 .cell-value span{
@@ -148,7 +150,6 @@ div[uib-datepicker-popup-wrap] {
 
 .cell-value .units {
   width: 20px;
-  white-space: nowrap;
 }
 
 .value .decimal, .value .comma {
