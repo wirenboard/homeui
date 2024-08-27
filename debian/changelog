@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.93.14) stable; urgency=medium
+
+  * Fix network disconection alert on reconnect
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 27 Aug 2024 11:30:00 +0300
+
 wb-mqtt-homeui (2.93.13) stable; urgency=medium
 
   * Fix device units white space
