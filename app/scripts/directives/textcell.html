@@ -13,10 +13,10 @@
     ng-if="cell.readOnly"
     class="cell cell-text"
   >
-    {{ cell.getEnumName($locale.id, cell.value) }}
+    {{ cell.getEnumName(locale, cell.value) }}
   </p>
   <select ng-if="!cell.readOnly && cell.isEnum()" 
-          ng-options="item.value as item.name for item in cell.getEnumValues($locale.id)"
+          ng-options="item.value as item.name for item in cell.getEnumValues(locale)"
           ng-model="cell.value">
   </select>
   <input
