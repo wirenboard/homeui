@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.94.1) stable; urgency=medium
+
+  * Fix decimal float in devices
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 28 Aug 2024 12:15:00 +0300
+
 wb-mqtt-homeui (2.94.0) stable; urgency=medium
 
   * Add if-then-else condition to json-editor
