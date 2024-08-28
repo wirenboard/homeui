@@ -6,9 +6,105 @@ import isEqual from 'lodash/isEqual';
 import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
 import i18n from '../../../i18n/react/config';
+import firmwareIsNewer from '../../../utils/fwUtils';
+import { getIntAddress } from '../common/modbusAddressesSet';
+
+function toRpcPortConfig(portConfig) {
+  if (portConfig.hasOwnProperty('address')) {
+    return {
+      address: portConfig.address,
+      port: portConfig.port,
+    };
+  }
+  return {
+    path: portConfig.path,
+    baud_rate: portConfig.baudRate,
+    parity: portConfig.parity,
+    stop_bits: portConfig.stopBits,
+  };
+}
+
+export class Firmware {
+  current = '';
+  available = '';
+  fwUpdateProxy;
+  updateProgress = null;
+  canUpdate = false;
+
+  constructor(fwUpdateProxy) {
+    this.fwUpdateProxy = fwUpdateProxy;
+    makeObservable(this, {
+      current: observable,
+      available: observable,
+      updateProgress: observable,
+      hasUpdate: computed,
+      clearVersion: action,
+      setUpdateProgress: action,
+      startFirmwareUpdate: action,
+    });
+  }
+
+  async updateVersion(address, portConfig) {
+    try {
+      if (await this.fwUpdateProxy.hasMethod('GetFirmwareInfo')) {
+        let res = await this.fwUpdateProxy.GetFirmwareInfo({
+          slave_id: getIntAddress(address),
+          port: toRpcPortConfig(portConfig),
+        });
+        runInAction(() => {
+          this.current = res.fw;
+          this.available = res.available_fw;
+          this.canUpdate = res.can_update;
+        });
+      }
+    } catch (err) {
+      this.clearVersion();
+    }
+  }
+
+  clearVersion() {
+    this.current = '';
+    this.available = '';
+  }
+
+  get hasUpdate() {
+    if (this.current === '' || this.available === '') {
+      return false;
+    }
+    return firmwareIsNewer(this.current, this.available);
+  }
+
+  setUpdateProgress(fromFw, toFw, value) {
+    this.updateProgress = value;
+    this.current = fromFw;
+    this.available = toFw;
+    if (this.updateProgress === 100) {
+      this.updateProgress = null;
+      this.current = '';
+      this.available = '';
+    }
+  }
+
+  get isUpdating() {
+    return this.updateProgress !== null;
+  }
+
+  async startFirmwareUpdate(address, portConfig) {
+    this.updateProgress = 0;
+    try {
+      await this.fwUpdateProxy.Update({
+        slave_id: getIntAddress(address),
+        port: toRpcPortConfig(portConfig),
+      });
+    } catch (err) {
+      this.updateProgress = null;
+      throw err;
+    }
+  }
+}
 
 export class DeviceTab {
-  constructor(data, deviceType, deviceTypesStore) {
+  constructor(data, deviceType, deviceTypesStore, fwUpdateProxy) {
     this.name = '';
     this.type = TabType.DEVICE;
     this.data = data;
@@ -28,6 +124,8 @@ export class DeviceTab {
     this.isModbusDevice = deviceTypesStore.isModbusDevice(deviceType);
     this.devicesWithTheSameId = [];
     this.isDisconnected = false;
+    this.firmware = new Firmware(fwUpdateProxy);
+    this.waitingForDeviceReconnect = false;
 
     this.updateName();
 
@@ -43,6 +141,7 @@ export class DeviceTab {
       slaveIdIsDuplicate: observable,
       devicesWithTheSameId: observable,
       isDisconnected: observable,
+      waitingForDeviceReconnect: observable,
       editedData: observable.ref,
       setData: action.bound,
       updateName: action,
@@ -54,7 +153,10 @@ export class DeviceTab {
       setDisconnected: action,
       setLoading: action,
       setUniqueMqttTopic: action,
+      setError: action,
+      setFirmwareUpdateProgress: action,
       hasInvalidConfig: computed,
+      showDisconnectedError: computed,
     });
   }
 
@@ -84,10 +186,8 @@ export class DeviceTab {
     try {
       this.schema = await this.deviceTypesStore.getSchema(type);
     } catch (err) {
-      runInAction(() => {
-        this.error = err.message;
-        this.loading = false;
-      });
+      this.setError(err.message);
+      this.setLoading(false);
       return;
     }
     runInAction(() => {
@@ -130,9 +230,7 @@ export class DeviceTab {
     try {
       this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
     } catch (err) {
-      runInAction(() => {
-        this.error = err.message;
-      });
+      this.setError(err.message);
     }
     runInAction(() => {
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
@@ -145,10 +243,8 @@ export class DeviceTab {
     try {
       this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
     } catch (err) {
-      runInAction(() => {
-        this.error = err.message;
-        this.loading = false;
-      });
+      this.setError(err.message);
+      this.setLoading(false);
       return;
     }
     runInAction(() => {
@@ -200,10 +296,53 @@ export class DeviceTab {
   }
 
   setDisconnected(value) {
+    if (value) {
+      if (!this.firmware.isUpdating) {
+        this.firmware.clearVersion();
+      }
+    } else {
+      this.waitingForDeviceReconnect = false;
+    }
     this.isDisconnected = value;
   }
 
   setLoading(value) {
     this.loading = value;
+  }
+
+  updateFirmwareVersion(portConfig) {
+    this.firmware.updateVersion(this.slaveId, portConfig);
+  }
+
+  async startFirmwareUpdate(portConfig) {
+    try {
+      await this.firmware.startFirmwareUpdate(this.slaveId, portConfig);
+    } catch (err) {
+      this.setError(err.message);
+    }
+  }
+
+  setError(err) {
+    this.error = err.message;
+  }
+
+  clearError() {
+    this.setError('');
+  }
+
+  setFirmwareUpdateProgress(from_fw, to_fw, progress) {
+    this.firmware.setUpdateProgress(from_fw, to_fw, progress);
+    if (progress === 100) {
+      this.waitingForDeviceReconnect = true;
+      setTimeout(() => {
+        runInAction(() => {
+          this.waitingForDeviceReconnect = false;
+        });
+      }, 2000);
+    }
+  }
+
+  get showDisconnectedError() {
+    return this.isDisconnected && !this.firmware.isUpdating && !this.waitingForDeviceReconnect;
   }
 }

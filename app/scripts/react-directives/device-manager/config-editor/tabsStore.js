@@ -284,4 +284,13 @@ export class TabsStore {
       return false;
     });
   }
+
+  findPortTab(portPath) {
+    return this.items.find(item => {
+      if (item.type == TabType.PORT) {
+        return item.path == portPath;
+      }
+      return false;
+    });
+  }
 }

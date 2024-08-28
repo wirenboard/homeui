@@ -43,7 +43,8 @@ function getTabPaneContent(
   onCopyTab,
   deviceTypeSelectOptions,
   onDeviceTypeChange,
-  onSearchDisconnectedDevice
+  onSearchDisconnectedDevice,
+  onUpdateFirmware
 ) {
   if (tab.type == TabType.PORT) {
     return <PortTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} />;
@@ -59,6 +60,7 @@ function getTabPaneContent(
         onDeviceTypeChange={onDeviceTypeChange}
         onSetUniqueMqttTopic={() => tab.setUniqueMqttTopic()}
         onSearchDisconnectedDevice={onSearchDisconnectedDevice}
+        onUpdateFirmware={onUpdateFirmware}
       />
     );
   }
@@ -74,7 +76,8 @@ function makeTabPanes(
   onCopyTab,
   deviceTypeSelectOptions,
   onDeviceTypeChange,
-  onSearchDisconnectedDevice
+  onSearchDisconnectedDevice,
+  onUpdateFirmware
 ) {
   return tabs.map((tab, index) => {
     return (
@@ -86,7 +89,8 @@ function makeTabPanes(
           onCopyTab,
           deviceTypeSelectOptions,
           onDeviceTypeChange,
-          onSearchDisconnectedDevice
+          onSearchDisconnectedDevice,
+          onUpdateFirmware
         )}
       </TabPane>
     );
@@ -106,6 +110,7 @@ const PageTabs = observer(
     onDeviceTypeChange,
     mobileModeStore,
     onSearchDisconnectedDevice,
+    onUpdateFirmware,
   }) => {
     const { t } = useTranslation();
     return (
@@ -139,7 +144,8 @@ const PageTabs = observer(
             onCopyTab,
             deviceTypeSelectOptions,
             onDeviceTypeChange,
-            onSearchDisconnectedDevice
+            onSearchDisconnectedDevice,
+            onUpdateFirmware
           )}
         </TabContent>
       </VerticalTabs>
@@ -281,6 +287,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
             mobileModeStore={pageStore.tabs.mobileModeStore}
             onSearchDisconnectedDevice={onSearchDisconnectedDevice}
+            onUpdateFirmware={() => pageStore.updateFirmware()}
           />
         )}
       </PageBody>

@@ -21,6 +21,7 @@ import { SettingsTab } from './settingsTabStore';
 import { getTranslation } from './jsonSchemaUtils';
 import FormModalState from '../../components/modals/formModalState';
 import showCopyDeviceModal from './copyDeviceModal';
+import { getIntAddress } from '../common/modbusAddressesSet';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
@@ -161,9 +162,7 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
   if (device.newAddress) {
     let item = Object.assign({}, commonCfg);
     item.cfg = {
-      slave_id: Number.isInteger(device.newAddress)
-        ? device.newAddress
-        : parseInt(device.newAddress),
+      slave_id: getIntAddress(device.newAddress),
     };
     params.items.push(item);
   }
@@ -192,7 +191,8 @@ class ConfigEditorPageStore {
     toTabs,
     deviceTypesStore,
     rolesFactory,
-    setupDeviceFn
+    setupDeviceFn,
+    fwUpdateProxy
   ) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
@@ -207,6 +207,7 @@ class ConfigEditorPageStore {
     this.loaded = false;
     this.setupDeviceFn = setupDeviceFn;
     this.formModalState = new FormModalState();
+    this.fwUpdateProxy = fwUpdateProxy;
 
     makeObservable(this, {
       allowSave: computed,
@@ -247,7 +248,7 @@ class ConfigEditorPageStore {
 
   createDeviceTab(deviceConfig) {
     const deviceType = deviceConfig?.device_type || deviceConfig?.protocol || 'modbus';
-    return new DeviceTab(deviceConfig, deviceType, this.deviceTypesStore);
+    return new DeviceTab(deviceConfig, deviceType, this.deviceTypesStore, this.fwUpdateProxy);
   }
 
   createSettingsTab(config, schema) {
@@ -269,7 +270,11 @@ class ConfigEditorPageStore {
         }
         if (port?.devices) {
           port.devices.forEach(device => {
-            portTab.addChildren(this.createDeviceTab(device));
+            let tab = this.createDeviceTab(device);
+            portTab.addChildren(tab);
+            if (['tcp', 'serial'].includes(portTab.portType)) {
+              tab.updateFirmwareVersion(portTab.baseConfig);
+            }
           });
         }
         this.tabs.addPortTab(portTab, true);
@@ -445,7 +450,9 @@ class ConfigEditorPageStore {
       topics.add(deviceId);
     }
     let portTab = this.tabs.portTabs.find(p => p.path == device.port);
-    this.tabs.addDeviceTab(portTab, this.createDeviceTab(deviceConfig), selectTab);
+    let deviceTab = this.createDeviceTab(deviceConfig);
+    deviceTab.updateFirmwareVersion(portTab.baseConfig);
+    this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
   }
 
   async setupDevice(device) {
@@ -474,7 +481,16 @@ class ConfigEditorPageStore {
 
   setDeviceDisconnected(topic, error) {
     const tab = this.tabs.findDeviceTabByTopic(topic);
-    tab?.setDisconnected(error == 'r');
+    if (!tab) {
+      return;
+    }
+    const isDisconnected = error == 'r';
+    tab.setDisconnected(isDisconnected);
+    if (!isDisconnected) {
+      if (['tcp', 'serial'].includes(this.tabs.selectedPortTab.portType)) {
+        tab.updateFirmwareVersion(this.tabs.selectedPortTab.baseConfig);
+      }
+    }
   }
 
   async copyTab() {
@@ -489,6 +505,31 @@ class ConfigEditorPageStore {
       for (let i = 0; i < res.count; ++i) {
         this.tabs.addDeviceTab(res.port, deviceTab.getCopy(), i == 0);
       }
+    }
+  }
+
+  updateFirmwareUpdateState(data) {
+    data.devices.forEach(device => {
+      const portTab = this.tabs.findPortTab(device.port.path);
+      if (portTab) {
+        const deviceTab = portTab.children.find(tab => tab.slaveId == device.slave_id);
+        if (deviceTab) {
+          if (device.hasOwnProperty('error')) {
+            deviceTab.setError(device.error.message);
+          } else {
+            deviceTab.clearError();
+            deviceTab.setFirmwareUpdateProgress(device.from_fw, device.to_fw, device.progress);
+          }
+        }
+      }
+    });
+  }
+
+  updateFirmware() {
+    const tab = this.tabs.selectedTab;
+    if (tab) {
+      const portTab = this.tabs.selectedPortTab;
+      tab.startFirmwareUpdate(portTab.baseConfig);
     }
   }
 }

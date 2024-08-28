@@ -1,12 +1,22 @@
 import React from 'react';
 import { Button, ErrorBar, Spinner, WarningBar } from '../../common';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import JsonEditor from '../../components/json-editor/jsonEditor';
 import { observer } from 'mobx-react-lite';
 import BootstrapLikeSelect from '../../components/select/select';
 
+const FirmwareUpdateIcon = observer(({ firmware }) => {
+  if (firmware.isUpdating) {
+    return <i className="glyphicon glyphicon-refresh animation-rotate"></i>;
+  }
+  if (firmware.hasUpdate) {
+    return <i className="glyphicon glyphicon-refresh"></i>;
+  }
+  return null;
+});
+
 export const DeviceTab = observer(({ tab }) => {
-  const isError = tab.hasInvalidConfig || tab.isDisconnected;
+  const isError = tab.hasInvalidConfig || tab.showDisconnectedError;
   const isWarning = tab.isDeprecated;
   const className = `device-tab${isError ? ' error' : isWarning ? ' warning' : ''}`;
   const showSign = isError || isWarning;
@@ -14,6 +24,7 @@ export const DeviceTab = observer(({ tab }) => {
   return (
     <div className={className}>
       <span>{tab.name}</span>
+      <FirmwareUpdateIcon firmware={tab.firmware} />
       {showSign && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
@@ -45,6 +56,95 @@ export const UnknownDeviceTabContent = observer(({ tab, onDeleteTab }) => {
       <pre>{JSON.stringify(tab.data, null, 2)}</pre>
     </>
   );
+});
+
+const UpdateProgressBar = observer(({ progress }) => {
+  return (
+    <div className="progress">
+      <div
+        className="progress-bar progress-bar-striped active"
+        role="progressbar"
+        aria-valuenow={progress}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style={{ width: progress + '%' }}
+      >
+        {progress + '%'}
+      </div>
+    </div>
+  );
+});
+
+const FirmwareUpdatePanel = observer(({ firmware }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="firmware-update-panel">
+      <span>
+        <b>
+          {t('device-manager.labels.updating-firmware', {
+            firmware: firmware.current,
+            newFirmware: firmware.available,
+          })}
+        </b>
+      </span>
+      <UpdateProgressBar progress={firmware.updateProgress} />
+    </div>
+  );
+});
+
+const ActualFirmwarePanel = observer(({ firmwareVersion }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="actual-firmware-panel">
+      <b>
+        {t('device-manager.labels.actual-firmware', {
+          firmware: firmwareVersion,
+        })}
+      </b>
+    </div>
+  );
+});
+
+const NewFirmwareWarning = observer(({ firmware, onUpdateFirmware }) => {
+  const { t } = useTranslation();
+  return (
+    <WarningBar>
+      <span className="warning-text">
+        <Trans
+          i18nKey={
+            firmware.canUpdate
+              ? 'device-manager.labels.new-firmware'
+              : 'device-manager.labels.new-firmware-cant-upgrade'
+          }
+          components={[<a></a>]}
+          values={{
+            firmware: firmware.current,
+            newFirmware: firmware.available,
+          }}
+        />
+      </span>
+      {firmware.canUpdate && (
+        <Button
+          label={t('device-manager.buttons.update')}
+          type="warning"
+          onClick={onUpdateFirmware}
+        />
+      )}
+    </WarningBar>
+  );
+});
+
+const FirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
+  if (firmware.isUpdating) {
+    return <FirmwareUpdatePanel firmware={firmware} />;
+  }
+  if (firmware.hasUpdate) {
+    return <NewFirmwareWarning firmware={firmware} onUpdateFirmware={onUpdateFirmware} />;
+  }
+  if (firmware.current) {
+    return <ActualFirmwarePanel firmwareVersion={firmware.current} />;
+  }
+  return null;
 });
 
 const DeprecatedWarning = ({ isDeprecated }) => {
@@ -114,6 +214,7 @@ export const DeviceTabContent = observer(
     onDeviceTypeChange,
     onSetUniqueMqttTopic,
     onSearchDisconnectedDevice,
+    onUpdateFirmware,
   }) => {
     const { t } = useTranslation();
     if (tab.loading) {
@@ -129,8 +230,9 @@ export const DeviceTabContent = observer(
     return (
       <div>
         <DeprecatedWarning isDeprecated={tab.isDeprecated} />
+        <FirmwarePanel firmware={tab.firmware} onUpdateFirmware={onUpdateFirmware} />
         <DisconnectedError
-          isDisconnected={tab.isDisconnected}
+          isDisconnected={tab.showDisconnectedError}
           onSearchDisconnectedDevice={onSearchDisconnectedDevice}
         />
         <DuplicateSlaveIdError isDuplicate={tab.slaveIdIsDuplicate} />

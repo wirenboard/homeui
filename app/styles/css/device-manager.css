@@ -238,3 +238,38 @@
 .device-manager-page div.alert .alert-header {
     flex-grow: 1;
 }
+
+.device-manager-page .device-tab .glyphicon-refresh {
+    color: #bd882b;
+}
+
+.device-manager-page div.alert .warning-text {
+    flex-grow: 1;
+}
+
+.device-manager-page .firmware-update-panel {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.device-manager-page .firmware-update-panel .progress{
+    flex-grow: 1;
+}
+
+.device-manager-page .actual-firmware-panel {
+    margin-bottom: 10px;
+}
+
+/* Fix bootstrap style */
+.device-manager-page .progress-bar-striped.active {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.device-manager-page .animation-rotate {
+    animation: rotate 2s linear infinite;
+}
+
+.device-manager-page .alert a {
+    white-space: pre;
+}
