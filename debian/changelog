@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.94.4) stable; urgency=medium
+
+  * Add style variables
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Aug 2024 12:55:09 +0300
+
 wb-mqtt-homeui (2.94.3) stable; urgency=medium
 
   * Fix localization of widget on Devices page
