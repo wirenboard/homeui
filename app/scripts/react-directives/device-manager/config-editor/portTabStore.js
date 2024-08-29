@@ -153,9 +153,12 @@ export class PortTab {
         parity: this.editedData.parity,
       };
     }
-    return {
-      address: this.editedData.address,
-      port: this.editedData.port,
-    };
+    if (this.portType === 'tcp' || this.portType === 'modbus tcp') {
+      return {
+        address: this.editedData.address,
+        port: this.editedData.port,
+      };
+    }
+    return undefined;
   }
 }

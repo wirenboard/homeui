@@ -467,9 +467,9 @@ class ConfigEditorPageStore {
 
     const params = getDeviceSetupParams(
       device,
-      portTab.serialConfig?.baudRate,
-      portTab.serialConfig?.parity,
-      portTab.serialConfig?.stopBits
+      portTab.baseConfig?.baudRate,
+      portTab.baseConfig?.parity,
+      portTab.baseConfig?.stopBits
     );
     if (params) {
       await this.setupDeviceFn(params);

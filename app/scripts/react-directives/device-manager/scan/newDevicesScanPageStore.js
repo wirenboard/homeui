@@ -39,7 +39,8 @@ class NewDevicesScanPageStore {
   }
 
   /**
-   * Selects configured devices and starts scanning for new devices.
+   * Starts scanning for new devices
+   * and activates page with a list of found devices to select
    *
    * @typedef {Object} SelectedDevice
    * @property {string} title
