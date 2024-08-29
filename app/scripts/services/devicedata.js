@@ -558,7 +558,6 @@ function deviceDataService(mqttClient, $window) {
     }
 
     getEnumValues(lang) {
-      console.log(lang);
       if (!this._enumValues.hasOwnProperty(lang)) {
         let values = Object.keys(this._enumTranslations).map(value => {
           return {

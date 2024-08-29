@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.94.3) stable; urgency=medium
+
+  * Fix localization of widget on Devices page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 29 Aug 2024 10:22:03 +0500
+
 wb-mqtt-homeui (2.94.2) stable; urgency=medium
 
   * Remove unnecessary libs
