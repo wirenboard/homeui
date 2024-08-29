@@ -1,14 +1,12 @@
 {
-  "name": "homeui-webpack",
+  "name": "homeui",
   "version": "0.1.0",
-  "description": "A workflow for Angular made with Webpack",
+  "description": "Wiren Board web interface",
   "scripts": {
     "clean": "rimraf -G dist coverage ./tmp",
     "build": "rimraf -G dist && webpack --progress",
-    "server": "npx webpack serve --history-api-fallback --client-progress --open",
     "test": "jest test/react",
-    "start": "npm run server",
-    "start-dist": "cd ./dist && python3 ../test/dist_server.py ",
+    "start": "npx webpack serve --history-api-fallback --client-progress --open",
     "lint": "npx eslint \"**/*.{js,jsx}\""
   },
   "repository": {
@@ -97,12 +95,9 @@
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "mini-css-extract-plugin": "^2.9.0",
-    "node-sass": "^7.0.3",
-    "normalize.css": "^8.0.1",
     "paho-mqtt": "^1.1.0",
     "postcss-loader": "^7.0.1",
     "rimraf": "^2.6.1",
-    "sass-loader": "^13.2.0",
     "style-loader": "4.0.0",
     "terser-webpack-plugin": "^5.3.6",
     "webpack": "^5.75.0",

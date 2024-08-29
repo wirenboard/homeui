@@ -261,8 +261,8 @@ module.exports = (function makeWebpackConfig() {
 
     // Load styles
     config.module.rules.push({
-      test: /\.(sa|sc|c)ss$/i,
-      use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+      test: /\.css$/i,
+      use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
     });
   } else {
     // Development settings
@@ -288,8 +288,8 @@ module.exports = (function makeWebpackConfig() {
 
     // Load styles
     config.module.rules.push({
-      test: /\.(sa|sc|c)ss$/i,
-      use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+      test: /\.css$/i,
+      use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
     });
 
     config.plugins.push(
