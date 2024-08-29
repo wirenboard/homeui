@@ -54,7 +54,7 @@
 }
 
 .wb-switch-input:checked ~ .wb-switch-label {
-  background: #3276b1;
+  background: var(--primary-color);
 }
 
 .wb-switch-input:checked ~ .wb-switch-label:before {
