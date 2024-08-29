@@ -18,7 +18,7 @@ wb-mqtt-homeui (2.93.9) stable; urgency=medium
 
 wb-mqtt-homeui (2.93.8) stable; urgency=medium
 
-  * Fix slow scanning cancel 
+  * Fix slow scanning cancel
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jul 2024 10:04:21 +0500
 
