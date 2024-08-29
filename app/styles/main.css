@@ -574,10 +574,15 @@ button.show-console span {
   border-bottom: 1px dotted #ccc;
   width: 80%;
   margin: 0 auto 4px auto;
+  min-height: 18px;
 }
 
 .display-cell  button.cell-button {
   margin: 4px 0;
+}
+
+.display-cell .ngrs-value-min .ng-binding {
+  display: none;
 }
 
 .display-cell  button.cell-button h4 {
