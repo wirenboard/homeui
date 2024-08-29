@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.93.11-e1d931dd-001) stable; urgency=medium
+
+  * Add keaz theme
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Aug 2024 13:45:52 +0300
+
 wb-mqtt-homeui (2.93.11) stable; urgency=medium
 
   * Fix adding devices connected via Modbus over TCP gateways to wb-mqtt-serial configuration
