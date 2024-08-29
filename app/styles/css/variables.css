@@ -1,0 +1,21 @@
+:root {
+    --primary-color: #337ab7;
+    --primary-color-hover: #5393c8;
+    --success-color: #739e73;
+    --success-color-disabled: #739e73;
+    --success-color-hover: #5b835b;
+    --success-color-border: #659265;
+
+    --bar-color: #222;
+    --bar-border: #080808;
+    --bar-hover-color: #000;
+    --bar-inside-color: rgba(69, 69, 69, .6);
+    --bar-burger-color: #333;
+    --bar-burger-border-color: #333;
+    --bar-inside-text-color: #999;
+    --bar-text-color: #999;
+    --online-color: var(--success-color);
+    --bar-font-size: 14px;
+
+    --font: "Open Sans", Arial, Helvetica, Sans-Serif;
+}
