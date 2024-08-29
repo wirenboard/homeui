@@ -1,7 +1,6 @@
 'use strict';
 
 // Import slylesheets
-import '../styles/css/variables.css';
 import '../styles/css/bootstrap.min.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';

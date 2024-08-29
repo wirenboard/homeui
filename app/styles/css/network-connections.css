@@ -121,7 +121,7 @@
 }
 
 .network-connections-page .nav-tabs li.active {
-    box-shadow: 0 -2px 0 var(--primary-color);
+    box-shadow: 0 -2px 0 #3276b1;
     border-top-width: 0 !important;
     font-weight: 700;
     border-left: 1px solid #ddd;
@@ -158,7 +158,7 @@
 }
 .network-connections-page .nav-stacked li.active {
     color: #fff;
-    background-color: var(--primary-color);
+    background-color: #3276b1;
 }
 .network-connections-page .nav-stacked li > *:first-child {
     padding: 10px 9px 10px;

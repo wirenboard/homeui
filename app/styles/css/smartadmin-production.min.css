@@ -264,7 +264,7 @@
 
 .ui-buttonset .ui-state-active.ui-state-hover {
   color: #fff;
-  background-color: var(--primary-color);
+  background-color: #3276b1;
   border-color: #285e8e
 }
 
@@ -613,7 +613,7 @@ time.icon strong {
 time.icon em {
   position: absolute;
   bottom: 3px;
-  color: var(--primary-color)
+  color: #3276b1
 }
 
 time.icon span {
@@ -645,7 +645,7 @@ h2,
 h3,
 h4 {
   margin: 0;
-  font-family: var(--font);
+  font-family: "Open Sans", Arial, Helvetica, Sans-Serif;
   font-weight: 300
 }
 
@@ -802,7 +802,7 @@ h6 {
 
 nav ul li a {
   line-height: normal;
-  font-size: var(--bar-font-size);
+  font-size: 14px;
   padding: 10px 10px 10px 11px;
   color: #c0bbb7;
   display: block;
@@ -814,7 +814,7 @@ nav ul li a {
 nav ul ul {
   margin: 0;
   display: none;
-  background: var(--bar-inside-color);
+  background: rgba(69, 69, 69, .6);
   padding: 7px 0
 }
 
@@ -1627,7 +1627,7 @@ img.away {
 }
 
 .progress-bar-success {
-  background-color: var(--success-color);
+  background-color: #739e73
 }
 
 .progress-striped .progress-bar-success {
