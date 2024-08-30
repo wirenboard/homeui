@@ -181,6 +181,7 @@ div[uib-datepicker-popup-wrap] {
   border: none !important;
   box-shadow: none;
   margin-right: 18px;
+  overflow: hidden;
 }
 
 @media (max-width: 410px) {
@@ -252,7 +253,6 @@ div[uib-datepicker-popup-wrap] {
   border: 1px solid var(--primary-color);
   border-top: 0px;
   padding: 10px;
-  overflow: hidden;
 }
 
 .device-panel__body .display-cell + .display-cell {
