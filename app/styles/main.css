@@ -589,6 +589,7 @@ button.show-console span {
 
 .display-cell .ngrs-value-max .ng-binding {
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .display-cell .ngrs-value-max .ng-binding::after {
