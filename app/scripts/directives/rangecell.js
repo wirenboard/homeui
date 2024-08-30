@@ -42,6 +42,9 @@ function rangeCellDirective() {
       watchAttr('min', DEFAULT_MIN);
       watchAttr('step', DEFAULT_STEP);
 
+      const units = $scope.rCtrl.TranslationService.getUnitsName(cellCtrl.cell);
+      element.get(0).querySelector('.ngrs-value-max .ng-binding')?.setAttribute('data-units', ` ${units}`)
+
       $scope.$watch(
         () => $scope.cell.value,
         value => {

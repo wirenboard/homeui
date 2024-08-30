@@ -568,13 +568,15 @@ button.show-console span {
   flex-grow: 1;
 }
 
-.display-cell .cell-range .value-wrapper {
-  display: block;
-  text-align: center;
-  border-bottom: 1px dotted #ccc;
-  width: 80%;
+.display-cell .cell-range {
   margin: 0 auto 4px auto;
-  min-height: 18px;
+}
+
+.display-cell .cell-range .cell-border {
+  width: 80%;
+  display: block;
+  margin: 18px auto 0;
+  border-bottom: 1px dotted #ccc;
 }
 
 .display-cell  button.cell-button {
@@ -583,6 +585,10 @@ button.show-console span {
 
 .display-cell .ngrs-value-min .ng-binding {
   display: none;
+}
+
+.display-cell .ngrs-value-max .ng-binding::after {
+  content: attr(data-units);
 }
 
 .display-cell  button.cell-button h4 {
