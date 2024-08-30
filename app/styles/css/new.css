@@ -120,7 +120,6 @@ div[uib-datepicker-popup-wrap] {
 
 .device-panel .display-cell{
   cursor: pointer;
-  overflow: hidden;
 }
 
 .cell.cell-value {
@@ -253,6 +252,7 @@ div[uib-datepicker-popup-wrap] {
   border: 1px solid var(--primary-color);
   border-top: 0px;
   padding: 10px;
+  overflow: hidden;
 }
 
 .device-panel__body .display-cell + .display-cell {

@@ -43,7 +43,13 @@ function rangeCellDirective() {
       watchAttr('step', DEFAULT_STEP);
 
       const units = $scope.rCtrl.TranslationService.getUnitsName(cellCtrl.cell);
-      element.get(0).querySelector('.ngrs-value-max .ng-binding')?.setAttribute('data-units', ` ${units}`)
+      const valueCell = element.get(0).querySelector('.ngrs-value-max .ng-binding');
+      valueCell?.setAttribute('data-units', ` ${units}`);
+
+      // emulate click to display copy tooltip
+      valueCell.onclick = () => {
+        element.get(0).click();
+      };
 
       $scope.$watch(
         () => $scope.cell.value,

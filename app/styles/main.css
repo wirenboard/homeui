@@ -587,6 +587,10 @@ button.show-console span {
   display: none;
 }
 
+.display-cell .ngrs-value-max .ng-binding {
+  cursor: pointer;
+}
+
 .display-cell .ngrs-value-max .ng-binding::after {
   content: attr(data-units);
 }
