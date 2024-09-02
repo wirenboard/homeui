@@ -1,8 +1,13 @@
 import dtPickerTemplate from '../../views/dateTimePickerModal.html';
 
 class LogsCtrl {
-  constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope, $filter) {
+  constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope, $filter, rolesFactory) {
     'ngInject';
+
+    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
+    if (!this.haveRights) {
+      return;
+    }
 
     var vm = this;
 
