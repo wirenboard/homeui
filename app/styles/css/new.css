@@ -32,7 +32,8 @@
 }
 
 .alert-danger a {
-  color: #404040;
+  color: #fff;
+  text-decoration: underline;
 }
 
 .label.label-custom {
