@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.96.0) stable; urgency=medium
+
+  * Add realtime value show to range slider
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Aug 2024 17:05:09 +0300
+
 wb-mqtt-homeui (2.95.0) stable; urgency=medium
 
   * Add style variables
