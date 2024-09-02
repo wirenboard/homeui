@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.93.11-wb100) stable; urgency=medium
+
+  * Restrict access to system and log pages
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Sep 2024 15:46:01 +0300
+
 wb-mqtt-homeui (2.93.11) stable; urgency=medium
 
   * Fix adding devices connected via Modbus over TCP gateways to wb-mqtt-serial configuration
@@ -18,7 +24,7 @@ wb-mqtt-homeui (2.93.9) stable; urgency=medium
 
 wb-mqtt-homeui (2.93.8) stable; urgency=medium
 
-  * Fix slow scanning cancel 
+  * Fix slow scanning cancel
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jul 2024 10:04:21 +0500
 
