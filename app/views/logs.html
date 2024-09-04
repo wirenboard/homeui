@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <div ng-if="$ctrl.haveRights" id="logs-wrapper" ng-cloak ng-show="!$ctrl.waitBootsAndServices && $ctrl.logs.length" on-resize="$ctrl.logsResize(size)">
+    <div ng-hide="$ctrl.haveRights" id="logs-wrapper" ng-cloak ng-show="!$ctrl.waitBootsAndServices && $ctrl.logs.length" on-resize="$ctrl.logsResize(size)">
         <table id="logs-table" ui-scroll-viewport>
             <tr ui-scroll="log in datasource" adapter="adapter">
                 <td class="logs-time-column">

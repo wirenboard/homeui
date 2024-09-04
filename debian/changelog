@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.96.2) stable; urgency=medium
+
+  * Fix loading system logs
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 04 Sep 2024 14:10:19 +0300
+
 wb-mqtt-homeui (2.96.1) stable; urgency=medium
 
   * Restrict access to system and log pages
