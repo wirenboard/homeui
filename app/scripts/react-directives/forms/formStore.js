@@ -1,18 +1,20 @@
 'use strict';
 
 import { makeAutoObservable } from 'mobx';
-import { createViewModel } from 'mobx-utils';
 
 export class FormStore {
-  constructor(title) {
-    this.title = title;
+  constructor(name) {
+    this.type = 'object';
+    this.name = name;
     this.params = {};
 
     makeAutoObservable(this);
   }
 
   add(key, param) {
-    this.params[key] = createViewModel(param);
+    if (param !== null && param !== undefined) {
+      this.params[key] = param;
+    }
   }
 
   remove(key) {
@@ -43,8 +45,18 @@ export class FormStore {
 
   get value() {
     return Object.entries(this.params).reduce((obj, [key, value]) => {
-      obj[key] = value.value;
+      if (value.strict || value.value !== undefined) {
+        obj[key] = value.value;
+      }
       return obj;
     }, {});
+  }
+
+  submit() {
+    Object.entries(this.params).forEach(([k, v]) => v.submit());
+  }
+
+  reset() {
+    Object.entries(this.params).forEach(([k, v]) => v.reset());
   }
 }

@@ -111,7 +111,11 @@
          "integer": "Value must be an integer",
          "integer_min": "Value must be an integer equal or bigger than {{min}}",
          "integer_max": "Value must be an integer equal or less than {{max}}",
-         "integer_minmax": "Value must be an integer in the range from {{min}} to {{max}}"
+         "integer_minmax": "Value must be an integer in the range from {{min}} to {{max}}",
+         "number": "Value must be a number",
+         "number_min": "Value must be a number equal or bigger than {{min}}",
+         "number_max": "Value must be a number equal or less than {{max}}",
+         "number_minmax": "Value must be a number in the range from {{min}} to {{max}}"
       }
    },
    "system": {
@@ -234,7 +238,9 @@
    },
    "forms": {
       "default-text-prefix": "If the value is not set, ",
-      "default-text-postfix": " is used"
+      "default-text-postfix": " is used",
+      "remove": "Remove",
+      "confirm-remove": "Do you really want to remove this item?"
    },
    "device-manager": {
       "labels": {
@@ -283,5 +289,18 @@
       "mqtt_desc": "mqtt is available from the Internet without password",
       "found_instructions": "How to protect your Wiren Board controller",
       "support_url": "https://wirenboard.com/wiki/Security"
+   },
+   "mbgate": {
+      "title": "MQTT to Modbus TCP and RTU slave gateway configuration",
+      "buttons": {
+         "save": "Save",
+         "add": "Add"
+      },
+      "labels": {
+         "no-controls": "All available channels are already configured",
+         "select-channels": "Select channels",
+         "search-device": "Search device...",
+         "search-control": "Search channel..."
+      }
    }
 }

@@ -86,7 +86,7 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
   );
 };
 
-export const LineEdit = React.forwardRef(({ placeholder, value, onChange }, ref) => {
+export const LineEdit = React.forwardRef(({ placeholder, value, onChange, disabled }, ref) => {
   return (
     <input
       ref={ref}
@@ -95,6 +95,7 @@ export const LineEdit = React.forwardRef(({ placeholder, value, onChange }, ref)
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      disabled={disabled}
     />
   );
 });

@@ -1,7 +1,7 @@
 'use strict';
 
 import { OptionsStore } from '../../forms/optionsStore';
-import { IntegerStore } from '../../forms/numberStore';
+import { NumberStore } from '../../forms/numberStore';
 import i18n from '../../../i18n/react/config';
 import { FormStore } from '../../forms/formStore';
 
@@ -17,7 +17,8 @@ async function showCopyDeviceModal(formModalState, portOptions, currentPort) {
   );
   form.add(
     'count',
-    new IntegerStore({
+    new NumberStore({
+      type: 'integer',
       name: i18n.t('device-manager.labels.copy-count'),
       min: 1,
       value: 1,

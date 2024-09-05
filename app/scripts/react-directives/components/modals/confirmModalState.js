@@ -17,7 +17,7 @@ class ConfirmModalState {
   show(text, buttons) {
     return new Promise((resolve, reject) => {
       this.text = text;
-      this.buttons = buttons.map(bt => {
+      this.buttons = buttons?.map(bt => {
         return {
           label: bt.label,
           type: bt.type,

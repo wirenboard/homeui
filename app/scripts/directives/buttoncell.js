@@ -6,7 +6,6 @@ function buttonCellDirective(DeviceData) {
   class buttonCellController {
     getCellName(id) {
       try {
-        console.log(DeviceData.cell(id));
         return DeviceData.cell(id);
       } catch (e) {
         console.error('bad cell id: ' + id);

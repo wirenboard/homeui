@@ -108,7 +108,11 @@
          "integer": "Введите целое число",
          "integer_min": "Введите целое число больше или равное {{min}}",
          "integer_max": "Введите целое число меньше или равное {{max}}",
-         "integer_minmax": "Введите целое число в интервале от {{min}} до {{max}}"
+         "integer_minmax": "Введите целое число в интервале от {{min}} до {{max}}",
+         "number": "Введите число",
+         "number_min": "Введите число больше или равное {{min}}",
+         "number_max": "Введите число меньше или равное {{max}}",
+         "number_minmax": "Введите число в интервале от {{min}} до {{max}}"
       }
    },
    "system": {
@@ -231,7 +235,9 @@
    },
    "forms": {
       "default-text-prefix": "Если значение не указано, используется ",
-      "default-text-postfix": ""
+      "default-text-postfix": "",
+      "remove": "Удалить",
+      "confirm-remove": "Действительно удалить?"
    },
    "device-manager": {
       "labels": {
@@ -280,5 +286,18 @@
       "mqtt_desc": "доступ к MQTT-брокеру без пароля",
       "found_instructions": "Как защитить контроллер Wiren Board",
       "support_url": "https://wirenboard.com/wiki/Security"
+   },
+   "mbgate": {
+      "title": "Шлюз MQTT - Modbus RTU/TCP slave",
+      "buttons": {
+         "save": "Сохранить",
+         "add": "Добавить"
+      },
+      "labels": {
+         "no-controls": "Все доступные каналы уже настроены",
+         "select-channels": "Выберите каналы",
+         "search-device": "Найти устройство...",
+         "search-control": "Найти канал..."
+      }
    }
 }

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.97.0) stable; urgency=medium
+
+  * Add config editor for wb-mqtt-mbgate 1.8.0
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 11 Sep 2024 11:09:39 +0500
+
 wb-mqtt-homeui (2.96.2) stable; urgency=medium
 
   * Fix loading system logs
