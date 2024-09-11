@@ -46,6 +46,12 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
       const re = new RegExp('/devices/system__networks__([^/]+)/');
       const getUuidFromTopic = topic => topic.match(re)?.[1];
 
+      scope.$watch(() => mqttClient.isConnected(), (isConnected) => {
+        if (scope.store.error && isConnected) {
+          scope.store.setError('');
+        }
+      });
+
       whenMqttReady().then(() => {
         ConfigEditorProxy.Load({ path: scope.path })
           .then(r => {

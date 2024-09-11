@@ -32,7 +32,8 @@
 }
 
 .alert-danger a {
-  color: #404040;
+  color: #fff;
+  text-decoration: underline;
 }
 
 .label.label-custom {
@@ -120,7 +121,6 @@ div[uib-datepicker-popup-wrap] {
 
 .device-panel .display-cell{
   cursor: pointer;
-  overflow: hidden;
 }
 
 .cell.cell-value {
@@ -152,10 +152,6 @@ div[uib-datepicker-popup-wrap] {
   width: 20px;
 }
 
-.value .decimal, .value .comma {
-  margin-left: -7px;
-}
-
 .value .decimal {
   width: 6ch;
   overflow: hidden;
@@ -167,6 +163,10 @@ div[uib-datepicker-popup-wrap] {
 
 .wb-navbar-brand {
   padding: 7px 10px;
+}
+
+.navbar-brand img {
+  max-height: 42px;
 }
 
 .devices-panel-list .device-panel:not(:last-child) {
@@ -182,6 +182,7 @@ div[uib-datepicker-popup-wrap] {
   border: none !important;
   box-shadow: none;
   margin-right: 18px;
+  overflow: hidden;
 }
 
 @media (max-width: 410px) {
@@ -193,7 +194,7 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .device-panel > .panel-heading {
-  background-color: #3276b1;
+  background-color: var(--primary-color);
   color: white;
   padding: 0;
   border: none !important;
@@ -220,7 +221,7 @@ div[uib-datepicker-popup-wrap] {
 
 .device-panel__header-wrapper {
   position: relative;
-  background-color: #3276b1;
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -250,7 +251,7 @@ div[uib-datepicker-popup-wrap] {
 }
 
 .device-panel__body {
-  border: 1px solid #3276b1;
+  border: 1px solid var(--primary-color);
   border-top: 0px;
   padding: 10px;
 }
@@ -289,7 +290,7 @@ div[uib-datepicker-popup-wrap] {
   }
 
   .navbar-inverse > * {
-    background-color: black;
+    background-color: var(--bar-color);
   }
 
   .navbar-collapse {

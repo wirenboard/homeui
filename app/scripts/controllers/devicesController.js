@@ -1,10 +1,5 @@
 class DevicesCtrl {
-  constructor(
-    $injector,
-    $locale,
-    DeviceData,
-    rolesFactory,
-  ) {
+  constructor($injector, $locale, DeviceData, rolesFactory, $scope) {
     'ngInject';
 
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
@@ -13,6 +8,7 @@ class DevicesCtrl {
     }
 
     this.locale = $locale.id;
+    $scope.locale = this.locale;
     this.deviceData = DeviceData;
     this.stateParams = $injector.get('$stateParams');
 
@@ -29,8 +25,8 @@ class DevicesCtrl {
 
   getColumns() {
     const devicesIdsList = Array.from(Object.values(this.deviceData.devices))
-      .sort(((a, b) => a.getName(this.locale).localeCompare(b.getName(this.locale))))
-      .map((device) => device.id);
+      .sort((a, b) => a.getName(this.locale).localeCompare(b.getName(this.locale)))
+      .map(device => device.id);
 
     // devices are loaded dynamically by sockets, their number may change
     if (this.devicesIdsCount !== devicesIdsList.length) {
@@ -39,7 +35,7 @@ class DevicesCtrl {
       this.deviceIdsIntoColumns = this.splitDevicesIdsIntoColumns(devicesIdsList);
       const deviceIdFromUrl = this.stateParams.deviceId;
 
-      devicesIdsList.forEach((deviceId) => {
+      devicesIdsList.forEach(deviceId => {
         // add new devices to localStorage
         if (!devicesVisibility.devices[deviceId]) {
           devicesVisibility.devices[deviceId] = { isOpen: true };
@@ -69,7 +65,7 @@ class DevicesCtrl {
     const devicesIdsInColumns = Array.from({ length: columnCount }, () => []);
 
     let index = 0;
-    devicesIdsList.forEach((deviceId) => {
+    devicesIdsList.forEach(deviceId => {
       devicesIdsInColumns[index].push(deviceId);
       index = (index + 1) % columnCount;
     });

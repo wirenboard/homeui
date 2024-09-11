@@ -14,11 +14,11 @@
          min="{{ cell.min }}" max="{{ cell.max }}" step="{{ cell.step }}"
          ng-model="cell.value" explicit-changes>
   <select ng-if="cell.valueType == 'number' && !cell.readOnly && cell.isEnum()" 
-          ng-options="item.value as item.name for item in cell.getEnumValues($locale.id)"
+          ng-options="item.value as item.name for item in cell.getEnumValues(locale)"
           ng-model="cell.value">
   </select>
   <span ng-if="cell.readOnly" class="value">
-    <span ng-if="cell.isEnum()" class="cell cell-text">{{ cell.getEnumName($locale.id, cell.value) }}</span>
+    <span ng-if="cell.isEnum()" class="cell cell-text">{{ cell.getEnumName(locale, cell.value) }}</span>
     <span ng-if="!cell.isEnum()" class="int">
       <span>{{ vCtrl.getIntegerValue(cell) }}</span>
     </span>

@@ -168,7 +168,7 @@
 @media (min-width: 992px) {
     .device-manager-page .nav-stacked li.active {
         color: #fff;
-        background-color: #3276b1;
+        background-color: var(--primary-color);
     }
 
     .device-manager-page li:not(.active):not(:hover):not(:focus) .port-tab {
@@ -176,7 +176,7 @@
     }
 
     .device-manager-page li.active .settings-tab {
-        border: 1px solid #3276b1;
+        border: 1px solid var(--primary-color);
     }
 
     .device-manager-page .group-editor {
