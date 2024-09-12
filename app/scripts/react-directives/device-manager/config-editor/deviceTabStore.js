@@ -55,6 +55,7 @@ export class DeviceTab {
       setLoading: action,
       setUniqueMqttTopic: action,
       hasInvalidConfig: computed,
+      isWbDevice: computed,
     });
   }
 
@@ -178,6 +179,10 @@ export class DeviceTab {
     return this.editedData.slave_id === undefined || this.editedData.slave_id === ''
       ? undefined
       : this.editedData.slave_id;
+  }
+
+  get isWbDevice() {
+    return this.deviceTypesStore.isWbDevice(this.deviceType);
   }
 
   setSlaveIdIsDuplicate(value) {
