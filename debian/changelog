@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.97.1) stable; urgency=medium
+
+  * Fix uptime history plot
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Sep 2024 17:59:25 +0500
+
 wb-mqtt-homeui (2.97.0) stable; urgency=medium
 
   * Add notification about new available firmware for Modbus device
