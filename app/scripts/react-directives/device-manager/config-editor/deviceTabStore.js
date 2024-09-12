@@ -157,6 +157,7 @@ export class DeviceTab {
       setFirmwareUpdateProgress: action,
       hasInvalidConfig: computed,
       showDisconnectedError: computed,
+      isWbDevice: computed,
     });
   }
 
@@ -274,6 +275,10 @@ export class DeviceTab {
     return this.editedData.slave_id === undefined || this.editedData.slave_id === ''
       ? undefined
       : this.editedData.slave_id;
+  }
+
+  get isWbDevice() {
+    return this.deviceTypesStore.isWbDevice(this.deviceType);
   }
 
   setSlaveIdIsDuplicate(value) {

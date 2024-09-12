@@ -90,6 +90,10 @@ class DeviceTypesStore {
     const id = this.deviceTypesMap[deviceType]?.['mqtt-id'] || deviceType;
     return `${id}_${slaveId}`;
   }
+
+  isWbDevice(deviceType) {
+    return !!this.deviceTypesMap?.[deviceType]?.hw;
+  }
 }
 
 export default DeviceTypesStore;
