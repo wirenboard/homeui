@@ -144,14 +144,21 @@ export class PortTab {
     return '';
   }
 
-  get serialConfig() {
-    if (this.portType !== 'serial') {
-      return undefined;
+  get baseConfig() {
+    if (this.portType === 'serial') {
+      return {
+        path: this.editedData.path,
+        baudRate: this.editedData.baud_rate,
+        stopBits: this.editedData.stop_bits,
+        parity: this.editedData.parity,
+      };
     }
-    return {
-      baudRate: this.editedData.baud_rate,
-      stopBits: this.editedData.stop_bits,
-      parity: this.editedData.parity,
-    };
+    if (this.portType === 'tcp' || this.portType === 'modbus tcp') {
+      return {
+        address: this.editedData.address,
+        port: this.editedData.port,
+      };
+    }
+    return undefined;
   }
 }

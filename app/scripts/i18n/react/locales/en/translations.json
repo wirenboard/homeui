@@ -249,7 +249,11 @@
          "address-conflicts-note": "The addresses of conflicting devices will be changed",
          "address-conflicts": "Address conflicts",
          "copy-count": "Copy count",
-         "copy-device": "Copy device"
+         "copy-device": "Copy device",
+         "updating-firmware": "Updating firmware {{firmware}} to {{newFirmware}}",
+         "actual-firmware": "Current firmware version: {{firmware}} (actual)",
+         "new-firmware": "Firmware {{firmware}}, there is a newer version {{newFirmware}}",
+         "new-firmware-cant-upgrade": "Firmware {{firmware}}, there is a newer version {{newFirmware}}.<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\"> How to update</0>"
       },
       "buttons": {
          "save": "Save config",
@@ -262,7 +266,8 @@
          "to-port-list": "To ports and devices list",
          "resolve-duplicate-mqtt-topic": "Set unique id",
          "apply": "Apply",
-         "search-disconnected-device": "Search for the device"
+         "search-disconnected-device": "Search for the device",
+         "update": "Update"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",

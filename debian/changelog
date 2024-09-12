@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.97.0) stable; urgency=medium
+
+  * Add notification about new available firmware for Modbus device
+  * Add firmware update functionality for Wiren Board devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Sep 2024 17:40:54 +0500
+
 wb-mqtt-homeui (2.96.3) stable; urgency=medium
 
   * Allow to find only Wiren Board disconnected devices
