@@ -41,14 +41,14 @@ export const RegistersForm = observer(({ pageStore, registersStore }) => {
 
 const MbGateSettingsPage = observer(({ pageStore }) => {
   const { t } = useTranslation();
-  const buildRegistersForm = (param, key) => {
-    if (key === 'registers') {
-      return <RegistersForm pageStore={pageStore} registersStore={param} key={key} />;
+  const buildRegistersForm = (param, paramName) => {
+    if (paramName === 'registers') {
+      return <RegistersForm pageStore={pageStore} registersStore={param} />;
     }
-    if (key?.startsWith('topic')) {
+    if (paramName?.startsWith('topic')) {
       return (
         <div style={{ minWidth: '300px' }}>
-          <FormStringEdit key={key} store={param} />
+          <FormStringEdit store={param} />
         </div>
       );
     }

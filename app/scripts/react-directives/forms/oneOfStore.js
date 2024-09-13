@@ -9,11 +9,10 @@ export class OneOfStore {
     this.optionsStore = new OptionsStore({
       name: name,
       value: null,
+      strict: true,
     });
     this.items = [];
     this.matchFns = [];
-
-    // TODO: Make dirty on selected form change
 
     makeObservable(this, {
       items: observable,
@@ -52,14 +51,14 @@ export class OneOfStore {
     if (this.optionsStore.selectedOption === null) {
       return false;
     }
-    return this.selectedForm.isDirty;
+    return this.selectedForm?.isDirty || this.optionsStore.isDirty;
   }
 
   get hasErrors() {
     if (this.optionsStore.selectedOption === null) {
       return true;
     }
-    return this.selectedForm.hasErrors;
+    return this.selectedForm?.hasErrors || this.optionsStore.hasErrors;
   }
 
   get value() {
@@ -72,9 +71,11 @@ export class OneOfStore {
 
   submit() {
     this.selectedForm?.submit();
+    this.optionsStore.submit();
   }
 
   reset() {
+    this.optionsStore.reset();
     this.selectedForm?.reset();
   }
 }

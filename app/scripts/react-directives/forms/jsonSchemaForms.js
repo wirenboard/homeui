@@ -7,6 +7,7 @@ import { StringStore } from './stringStore';
 import { ArrayStore } from './arrayStore';
 import { OneOfStore } from './oneOfStore';
 import { OptionsStore } from './optionsStore';
+import { makeMinLengthValidator } from './stringValidators';
 
 class Translator {
   constructor(translations, lang) {
@@ -56,12 +57,17 @@ function makeStringStore(schema, translator) {
   if (Array.isArray(schema?.enum)) {
     return makeOptionsStore(schema, translator);
   }
+  let validator;
+  if (schema?.minLength) {
+    validator = makeMinLengthValidator(schema.minLength);
+  }
   return new StringStore({
     name: translator.find(schema?.title),
     description: translator.find(schema?.description),
     value: schema?.default,
     placeholder: translator.find(schema?.options?.inputAttributes?.placeholder),
     readOnly: schema?.readOnly,
+    validator: validator,
   });
 }
 

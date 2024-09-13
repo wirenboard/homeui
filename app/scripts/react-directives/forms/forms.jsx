@@ -102,7 +102,7 @@ export const FormOneOf = observer(({ store }) => {
             <FormSelect store={store.optionsStore} isClearable={false} />
           </div>
         </legend>
-        {store.selectedForm && MakeFormEditor(store.selectedForm, store.name, true)}
+        {store.selectedForm && <FormEditor param={store.selectedForm} paramName={store.name} />}
       </div>
     </ShowParamCaptionContext.Provider>
   );
@@ -126,7 +126,11 @@ export const FormCollapsibleTable = observer(({ store }) => {
             {store.items.map((item, index) => (
               <tr key={index}>
                 {Object.entries(item.params).map(([key, param]) => {
-                  return <td key={key + index}>{MakeFormEditor(param, key + index)}</td>;
+                  return (
+                    <td key={key + index}>
+                      <FormEditor param={param} paramName={key + index} />
+                    </td>
+                  );
                 })}
                 <td>
                   <Button
@@ -148,43 +152,43 @@ export const FormCollapsibleTable = observer(({ store }) => {
   );
 });
 
-export const MakeFormEditor = (param, key) => {
+export const FormEditor = ({ param, paramName }) => {
   const customEditorBuilder = useContext(CustomEditorBuilderContext);
   if (customEditorBuilder) {
-    const customEditor = customEditorBuilder(param, key);
+    const customEditor = customEditorBuilder(param, paramName);
     if (customEditor) {
       return customEditor;
     }
   }
   if (param.type === 'string') {
-    return <FormStringEdit key={key} store={param} />;
+    return <FormStringEdit store={param} />;
   }
   if (param.type === 'integer') {
-    return <FormStringEdit key={key} store={param} />;
+    return <FormStringEdit store={param} />;
   }
   if (param.type === 'number') {
-    return <FormStringEdit key={key} store={param} />;
+    return <FormStringEdit store={param} />;
   }
   if (param.type === 'boolean') {
-    return <FormCheckbox key={key} store={param} />;
+    return <FormCheckbox store={param} />;
   }
   if (param.type === 'options') {
-    return <FormSelect key={key} store={param} />;
+    return <FormSelect store={param} />;
   }
   if (param.type === 'object') {
-    return <Form key={key} store={param} />;
+    return <Form store={param} />;
   }
   if (param.type === 'array') {
-    return <FormCollapsibleTable key={key} store={param} />;
+    return <FormCollapsibleTable store={param} />;
   }
   if (param.type === 'oneOf') {
-    return <FormOneOf key={key} store={param} />;
+    return <FormOneOf store={param} />;
   }
   return null;
 };
 
 export const MakeFormFields = params => {
-  return params.map(([key, param]) => MakeFormEditor(param, key));
+  return params.map(([name, param]) => <FormEditor param={param} paramName={name} key={name} />);
 };
 
 export const Form = observer(({ store, children }) => {

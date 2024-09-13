@@ -229,7 +229,8 @@
    "validator": {
       "errors": {
          "empty": "Enter value",
-         "syntax": "Syntax error. Check that all quotes and parentheses are closed and periods and commas are in place"
+         "syntax": "Syntax error. Check that all quotes and parentheses are closed and periods and commas are in place",
+         "min-length": "Enter at least {{min}} characters"
       }
    },
    "errors": {

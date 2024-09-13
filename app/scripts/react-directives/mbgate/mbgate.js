@@ -18,7 +18,7 @@ function mbGateDirective(whenMqttReady, ConfigEditorProxy, PageState, rolesFacto
         scope.root.unmount();
       }
 
-      const path = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-mbgate2.schema.json';
+      const path = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-mbgate.schema.json';
       const saveConfig = async data => {
         await ConfigEditorProxy.Save({ path: path, content: data });
       };
