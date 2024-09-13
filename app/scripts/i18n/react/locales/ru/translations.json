@@ -296,8 +296,8 @@
       "labels": {
          "no-controls": "Все доступные каналы уже настроены",
          "select-channels": "Выберите каналы",
-         "search-device": "Найти устройство...",
-         "search-control": "Найти канал..."
+         "search-device": "Найти устройство",
+         "search-control": "Найти канал"
       }
    }
 }

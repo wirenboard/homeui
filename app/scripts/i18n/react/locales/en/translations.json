@@ -299,8 +299,8 @@
       "labels": {
          "no-controls": "All available channels are already configured",
          "select-channels": "Select channels",
-         "search-device": "Search device...",
-         "search-control": "Search channel..."
+         "search-device": "Search device",
+         "search-control": "Search channel"
       }
    }
 }
