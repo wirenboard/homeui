@@ -21,6 +21,13 @@ class ChartsControl {
   }
 }
 
+const ChartTypes = {
+  NUMBER: 'number',
+  BOOLEAN: 'boolean',
+  STRING: 'string',
+  UPTIME: 'up-time',
+};
+
 class ChartTraits {
   constructor(chartsControl) {
     this.channelName = chartsControl.name;
@@ -28,9 +35,16 @@ class ChartTraits {
       value: 0,
       isLoaded: false,
     };
-    this.hasStringValues = false;
-    this.hasErrors = false;
-    this.hasBooleanValues = chartsControl.valueType === 'boolean';
+    this.type = ChartTypes.NUMBER;
+    if (chartsControl.valueType === 'boolean' || chartsControl.valueType === 'pushbutton') {
+      this.type = ChartTypes.BOOLEAN;
+    }
+    if (chartsControl.valueType === 'string' || chartsControl.valueType === 'rgb') {
+      this.type = ChartTypes.STRING;
+    }
+    if (chartsControl.deviceId === 'system' && chartsControl.controlId === 'Current uptime') {
+      this.type = ChartTypes.UPTIME;
+    }
     this.xValues = [];
     this.yValues = [];
     this.text = [];
@@ -38,6 +52,14 @@ class ChartTraits {
     this.minErrors = [];
     this.minValue = undefined; // Minimum value for charts of number values
     this.maxValue = undefined; // Maximum value for charts of number values
+  }
+
+  get hasErrors() {
+    return this.type == ChartTypes.NUMBER;
+  }
+
+  get hasBooleanValues() {
+    return this.type == ChartTypes.BOOLEAN;
   }
 }
 
@@ -118,10 +140,6 @@ class HistoryCtrl {
 
     // данные графика в формате plotly.js
     this.chartConfig = [];
-
-    this.BOOL_AXIS = 'b';
-    this.COMMON_AXIS = 'c';
-    this.STRING_AXIS = 's';
 
     // Array of ChartTraits
     this.charts = [];
@@ -474,7 +492,11 @@ class HistoryCtrl {
         for (var i = 0; i < ctrl.xValues.length; i++) {
           // если не нахожу то останется null
           if (date === ctrl.xValues[i].valueOf()) {
-            graph[graph.length - 1].value[iCtrl] = ctrl.yValues[i];
+            if (ctrl.type === ChartTypes.UPTIME) {
+              graph[graph.length - 1].value[iCtrl] = ctrl.text[i];
+            } else {
+              graph[graph.length - 1].value[iCtrl] = ctrl.yValues[i];
+            }
             if (ctrl.hasBooleanValues) {
               graph[graph.length - 1].showMs = true;
             }
@@ -525,10 +547,6 @@ class HistoryCtrl {
     });
   }
 
-  hasStringValues(ar) {
-    return ar.values.some(item => item.v != parseFloat(item.v));
-  }
-
   createMainChart(chart, lineColor, axisName) {
     return {
       name: chart.channelName,
@@ -541,7 +559,7 @@ class HistoryCtrl {
         size: 3,
       },
       line: {
-        shape: chart.hasStringValues || chart.hasBooleanValues ? 'hv' : 'linear',
+        shape: [ChartTypes.BOOLEAN, ChartTypes.STRING].includes(chart.type) ? 'hv' : 'linear',
         color: lineColor,
         width: 1,
       },
@@ -573,7 +591,7 @@ class HistoryCtrl {
   makeStringAxis() {
     return {
       type: 'category',
-      customdata: this.STRING_AXIS,
+      customdata: ChartTypes.STRING,
     };
   }
 
@@ -582,7 +600,7 @@ class HistoryCtrl {
       type: 'linear',
       tickmode: 'array',
       tickvals: [0, 1],
-      customdata: this.BOOL_AXIS,
+      customdata: ChartTypes.BOOLEAN,
     };
     if (axisCount > 1) {
       axis.domain = [index / axisCount, (index + 1) / axisCount];
@@ -602,7 +620,7 @@ class HistoryCtrl {
       // https://plot.ly/javascript/setting-graph-size/#automatically-adjust-margins
       automargin: true,
       type: 'linear',
-      customdata: this.COMMON_AXIS,
+      customdata: ChartTypes.NUMBER,
     };
     if (minValue !== undefined && maxValue !== undefined) {
       const d = maxValue - minValue;
@@ -620,36 +638,49 @@ class HistoryCtrl {
     return axis;
   }
 
+  makeUptimeAxis() {
+    var axis = {
+      automargin: true,
+      type: 'linear',
+      tickmode: 'array',
+      tickvals: [],
+      ticktext: [],
+      customdata: ChartTypes.UPTIME,
+    };
+    return axis;
+  }
+
   makeAxis(chart) {
-    if (chart.hasStringValues) {
+    if (chart.type == ChartTypes.STRING) {
       return this.makeStringAxis();
     }
-    if (chart.hasBooleanValues) {
+    if (chart.type == ChartTypes.BOOLEAN) {
       return this.makeBoolAxis(0, 1);
+    }
+    if (chart.type == ChartTypes.UPTIME) {
+      return this.makeUptimeAxis();
     }
     return this.makeCommonAxis();
   }
 
   getAxis(chart) {
-    var axisType = this.COMMON_AXIS;
-    if (chart.hasStringValues) {
-      axisType = this.STRING_AXIS;
-    } else if (chart.hasBooleanValues) {
-      axisType = this.BOOL_AXIS;
-    }
+    var axisType = chart.type;
 
+    // No axis defined yet
     if (!this.layoutConfig.yaxis.customdata) {
       this.layoutConfig.yaxis = this.makeAxis(chart);
       return 'y';
     }
-    if (axisType == this.layoutConfig.yaxis.customdata && !chart.hasStringValues) {
+
+    // Chart has type compatible with existing axis
+    if (
+      axisType == this.layoutConfig.yaxis.customdata &&
+      [ChartTypes.BOOLEAN, ChartTypes.NUMBER].includes(chart.type)
+    ) {
       return 'y';
     }
-    if (
-      !this.layoutConfig.yaxis2 ||
-      axisType != this.layoutConfig.yaxis2.customdata ||
-      chart.hasStringValues
-    ) {
+
+    if (!this.layoutConfig.yaxis2) {
       this.layoutConfig.yaxis2 = this.makeAxis(chart);
       this.setAsSecond(this.layoutConfig.yaxis2);
     }
@@ -657,14 +688,14 @@ class HistoryCtrl {
   }
 
   isBoolAxis(axis) {
-    return axis && axis.customdata && axis.customdata == this.BOOL_AXIS;
+    return axis?.customdata == ChartTypes.BOOLEAN;
   }
 
   isCommonAxis(axis) {
-    return axis && axis.customdata && axis.customdata == this.COMMON_AXIS;
+    return axis?.customdata == ChartTypes.NUMBER;
   }
 
-  fixAxes(minValue, maxValue) {
+  fixBoolAxes(minValue, maxValue) {
     // Bool axis in combination with common axis has additional range attribute
     // It is used to scale bool axis to the full height of plot
     // Unfortunately plolty.js draws two 0X axes: one for bool, other for common axis.
@@ -693,6 +724,74 @@ class HistoryCtrl {
     }
   }
 
+  makeUpTimeAxisTicks(axis) {
+    const chart = this.charts.find(chart => chart.type == ChartTypes.UPTIME);
+    if (!chart) {
+      return;
+    }
+
+    const intervalCount = 5;
+    const minuteFraction = 60;
+    const fiveMinuteFraction = 5 * minuteFraction;
+    const hourFraction = 60 * minuteFraction;
+    const dayFraction = 24 * hourFraction;
+
+    let range = (chart.maxValue - chart.minValue) / intervalCount;
+    let realMaxValue = chart.maxValue;
+    let realMinValue = chart.minValue;
+    let stepFraction = fiveMinuteFraction;
+    if (range > dayFraction) {
+      stepFraction = dayFraction;
+    } else {
+      if (range > hourFraction) {
+        stepFraction = hourFraction;
+      }
+    }
+    realMaxValue = Math.ceil(chart.maxValue / stepFraction) * stepFraction;
+    realMinValue = Math.floor(chart.minValue / stepFraction) * stepFraction;
+    if (stepFraction == fiveMinuteFraction) {
+      realMinValue = Math.floor(realMinValue / fiveMinuteFraction) * fiveMinuteFraction;
+      realMaxValue = realMaxValue + (realMaxValue - realMinValue) * 0.1;
+    }
+    range = (realMaxValue - realMinValue) / intervalCount;
+
+    let step;
+    if (range > dayFraction) {
+      step = Math.ceil(range / dayFraction) * dayFraction;
+    } else {
+      if (range > hourFraction) {
+        step = Math.ceil(range / hourFraction) * hourFraction;
+      } else {
+        step = Math.ceil(range / fiveMinuteFraction) * fiveMinuteFraction;
+      }
+    }
+    const tickvals = Array.from({ length: intervalCount + 1 }, (_, i) => realMinValue + i * step);
+    const ticktext = tickvals.map(t => {
+      const days = Math.floor(t / dayFraction);
+      t -= days * dayFraction;
+      const hours = Math.floor(t / hourFraction);
+      t -= hours * hourFraction;
+      const minutes = Math.floor(t / minuteFraction);
+      let res = '';
+      if (days || step > dayFraction) {
+        res += days + 'd ';
+      }
+      if (step > dayFraction) {
+        return res;
+      }
+      if (hours || step > hourFraction) {
+        res += hours + 'h ';
+      }
+      if (step > hourFraction) {
+        return res;
+      }
+      return res + minutes + 'm';
+    });
+    axis.tickvals = tickvals;
+    axis.ticktext = ticktext;
+    axis.range = [realMinValue, realMaxValue];
+  }
+
   createCharts() {
     var minValue = undefined;
     var maxValue = undefined;
@@ -708,7 +807,16 @@ class HistoryCtrl {
         }
       }
     });
-    this.fixAxes(minValue, maxValue);
+
+    this.fixBoolAxes(minValue, maxValue);
+
+    if (this.layoutConfig?.yaxis?.customdata == ChartTypes.UPTIME) {
+      this.makeUpTimeAxisTicks(this.layoutConfig.yaxis);
+    }
+    if (this.layoutConfig.yaxis2?.customdata == ChartTypes.UPTIME) {
+      this.makeUpTimeAxisTicks(this.layoutConfig.yaxis2);
+    }
+
     // 450 - default height in plotly.js
     // 19 - minimal legend item height in plotly.js sources
     // It can be bigger if font is bigger, but it is too difficult to calculate, so use minimal value
@@ -740,6 +848,43 @@ class HistoryCtrl {
     return !isNaN(vf2) ? vf2 : undefined;
   }
 
+  addUptimeRecord(chart, ts, value) {
+    let uptime = value.split(' ');
+    let seconds = 0;
+    for (let i = 0; i < uptime.length; ++i) {
+      let intValue = parseInt(uptime[i]);
+      let unit = uptime[i][uptime[i].length - 1];
+      if (unit == 'd') {
+        seconds += intValue * 24 * 60 * 60;
+      } else if (unit == 'h') {
+        seconds += intValue * 60 * 60;
+      } else if (unit == 'm') {
+        seconds += intValue * 60;
+      }
+    }
+    if (chart.xValues.length > 0) {
+      const lastUpTime = chart.yValues[chart.yValues.length - 1];
+      if (lastUpTime > seconds) {
+        let newDate = new Date(chart.xValues[chart.xValues.length - 1]);
+        newDate.setMilliseconds(newDate.getMilliseconds() + 1);
+        chart.xValues.push(newDate);
+        chart.yValues.push(0);
+        chart.text.push('0d 0h 0m');
+        newDate = new Date(ts);
+        newDate.setMilliseconds(ts.getMilliseconds() - seconds * 1000);
+        chart.xValues.push(newDate);
+        chart.yValues.push(0);
+        chart.text.push('0d 0h 0m');
+        chart.minValue = 0;
+      }
+    }
+    chart.yValues.push(seconds);
+    chart.xValues.push(ts);
+    chart.text.push(value);
+    chart.maxValue = this.getMax(chart.maxValue, seconds);
+    chart.minValue = this.getMin(chart.minValue, seconds);
+  }
+
   processDbRecord(record, chart) {
     var ts = new Date();
     // For discrete signals store timestamp with ms
@@ -748,13 +893,14 @@ class HistoryCtrl {
     } else {
       ts.setTime(Math.round(record.t) * 1000);
     }
+    if (chart.type == ChartTypes.UPTIME) {
+      this.addUptimeRecord(chart, ts, record.v);
+      return;
+    }
     chart.xValues.push(ts);
     chart.yValues.push(record.v);
     if ((record.max && record.max != record.v) || (record.min && record.min != record.v)) {
       chart.text.push(record.v + ' [' + record.min + ', ' + record.max + ']');
-      if (!chart.hasBooleanValues) {
-        chart.hasErrors = true;
-      }
     } else {
       if (chart.hasBooleanValues) {
         chart.text.push(parseInt(record.v));
@@ -764,7 +910,7 @@ class HistoryCtrl {
     }
     chart.maxErrors.push(record.max ? record.max : record.v);
     chart.minErrors.push(record.min ? record.min : record.v);
-    if (!chart.hasBooleanValues && !chart.hasStringValues) {
+    if (chart.type == ChartTypes.NUMBER) {
       chart.minValue = this.getMin(this.getMin(chart.minValue, record.v), record.min);
       chart.maxValue = this.getMax(this.getMax(chart.maxValue, record.v), record.max);
     }
@@ -773,11 +919,6 @@ class HistoryCtrl {
   processChunk(chunk, indexOfControl, indexOfChunk, chunks) {
     var chart = this.charts[indexOfControl];
     chart.progress.value = indexOfChunk + 1;
-
-    if (!chart.xValues.length && this.hasStringValues(chunk)) {
-      chart.hasStringValues = true;
-      chart.hasErrors = false;
-    }
 
     chunk.values.forEach(item => this.processDbRecord(item, chart));
 
