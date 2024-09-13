@@ -62,7 +62,6 @@ function makeStringStore(schema, translator) {
     value: schema?.default,
     placeholder: translator.find(schema?.options?.inputAttributes?.placeholder),
     readOnly: schema?.readOnly,
-    // TODO: validator
   });
 }
 
