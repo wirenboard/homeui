@@ -1,8 +1,27 @@
-wb-mqtt-homeui (2.97.0) stable; urgency=medium
+wb-mqtt-homeui (2.98.0) stable; urgency=medium
 
   * Add config editor for wb-mqtt-mbgate 1.8.0
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 11 Sep 2024 11:09:39 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 18 Sep 2024 09:23:47 +0500
+
+wb-mqtt-homeui (2.97.1) stable; urgency=medium
+
+  * Fix uptime history plot
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Sep 2024 17:59:25 +0500
+
+wb-mqtt-homeui (2.97.0) stable; urgency=medium
+
+  * Add notification about new available firmware for Modbus device
+  * Add firmware update functionality for Wiren Board devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Sep 2024 17:40:54 +0500
+
+wb-mqtt-homeui (2.96.3) stable; urgency=medium
+
+  * Allow to find only Wiren Board disconnected devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Sep 2024 10:38:27 +0500
 
 wb-mqtt-homeui (2.96.2) stable; urgency=medium
 
