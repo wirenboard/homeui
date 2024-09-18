@@ -199,11 +199,15 @@ export class TabsStore {
     const tab = this.items[this.selectedTabIndex];
     switch (tab?.type) {
       case TabType.PORT: {
-        tab.children.forEach(deviceTab => this.uniqueMqttIdChecker.removeTab(deviceTab));
+        tab.children.forEach(deviceTab => {
+          deviceTab.beforeDelete();
+          this.uniqueMqttIdChecker.removeTab(deviceTab);
+        });
         this.items.splice(this.selectedTabIndex, tab.children.length + 1);
         break;
       }
       case TabType.DEVICE: {
+        tab.beforeDelete();
         let portTab = this.selectedPortTab;
         const childIndex = portTab.children.indexOf(tab);
         portTab.deleteChildren(childIndex);
