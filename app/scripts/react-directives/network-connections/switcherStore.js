@@ -2,10 +2,9 @@
 
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
-import { IntegerStore } from '../forms/numberStore';
+import { NumberStore } from '../forms/numberStore';
 import { StringStore } from '../forms/stringStore';
 import { BooleanStore } from '../forms/booleanStore';
-import { createViewModel } from 'mobx-utils';
 
 export const HIGH_TIER = 'high';
 export const MEDIUM_TIER = 'medium';
@@ -119,49 +118,42 @@ class ConnectionPrioritiesStore {
 
 class SwitcherStore {
   constructor(connectionsStore) {
-    this.stickyConnectionPeriod = createViewModel(
-      new IntegerStore({
-        name: i18n.t('network-connections.labels.sticky-connection-period'),
-        description: i18n.t('network-connections.labels.sticky-connection-period-desc'),
-        defaultText: i18n.t('network-connections.labels.sticky-connection-period-default-text'),
-        min: 0,
-      })
-    );
+    this.stickyConnectionPeriod = new NumberStore({
+      type: 'integer',
+      name: i18n.t('network-connections.labels.sticky-connection-period'),
+      description: i18n.t('network-connections.labels.sticky-connection-period-desc'),
+      defaultText: i18n.t('network-connections.labels.sticky-connection-period-default-text'),
+      min: 0,
+    });
 
-    this.connectivityUrl = createViewModel(
-      new StringStore({
-        name: i18n.t('network-connections.labels.connectivity-url'),
-        description: i18n.t('network-connections.labels.connectivity-url-desc'),
-        defaultText: i18n.t('network-connections.labels.connectivity-url-default-text'),
-        validator: value => {
-          if (value !== '') {
-            if (value.length < this.urlProperties.minLength) {
-              return i18n.t('network-connections.labels.connectivity-url-error-length', {
-                length: this.urlProperties.minLength,
-              });
-            }
-            if (!(value.startsWith('http://') || value.startsWith('https://'))) {
-              return i18n.t('network-connections.labels.connectivity-url-error-format');
-            }
+    this.connectivityUrl = new StringStore({
+      name: i18n.t('network-connections.labels.connectivity-url'),
+      description: i18n.t('network-connections.labels.connectivity-url-desc'),
+      defaultText: i18n.t('network-connections.labels.connectivity-url-default-text'),
+      validator: value => {
+        if (value !== '') {
+          if (value.length < this.urlProperties.minLength) {
+            return i18n.t('network-connections.labels.connectivity-url-error-length', {
+              length: this.urlProperties.minLength,
+            });
           }
-          return false;
-        },
-      })
-    );
+          if (!(value.startsWith('http://') || value.startsWith('https://'))) {
+            return i18n.t('network-connections.labels.connectivity-url-error-format');
+          }
+        }
+        return false;
+      },
+    });
 
-    this.connectivityPayload = createViewModel(
-      new StringStore({
-        name: i18n.t('network-connections.labels.connectivity-payload'),
-        description: i18n.t('network-connections.labels.connectivity-payload-desc'),
-        defaultText: i18n.t('network-connections.labels.connectivity-payload-default-text'),
-      })
-    );
+    this.connectivityPayload = new StringStore({
+      name: i18n.t('network-connections.labels.connectivity-payload'),
+      description: i18n.t('network-connections.labels.connectivity-payload-desc'),
+      defaultText: i18n.t('network-connections.labels.connectivity-payload-default-text'),
+    });
 
-    this.debug = createViewModel(
-      new BooleanStore({
-        name: i18n.t('network-connections.labels.debug'),
-      })
-    );
+    this.debug = new BooleanStore({
+      name: i18n.t('network-connections.labels.debug'),
+    });
 
     this.connectionPriorities = new ConnectionPrioritiesStore(connectionsStore);
   }

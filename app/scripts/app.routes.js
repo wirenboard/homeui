@@ -330,6 +330,19 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       },
     })
     //...........................................................................
+    .state('mbgate', {
+      url: '/mbgate',
+      template: require('../views/mbgate.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'mbgate' */ './controllers/mbGateController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
+    })
+    //...........................................................................
     .state('serial-metrics', {
       url: '/serial-metrics',
       controller: 'SerialMetricsCtrl as $ctrl',

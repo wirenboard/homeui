@@ -104,10 +104,7 @@ module.exports = (function makeWebpackConfig() {
   config.resolve = {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      'paho-mqtt': path.resolve(
-        __dirname,
-        'node_modules/paho-mqtt/paho-mqtt.js',
-      ),
+      'paho-mqtt': path.resolve(__dirname, 'node_modules/paho-mqtt/paho-mqtt.js'),
     },
   };
 
@@ -158,7 +155,7 @@ module.exports = (function makeWebpackConfig() {
       minChunks: 1,
       cacheGroups: {
         react: {
-          test: /[\\/]node_modules[\\/](react|react-dom|react-select|mobx|mobx-react-lite|mobx-utils|react-tabs|react-focus-lock|react-responsive|react-responsive-carousel)[\\/]/,
+          test: /[\\/]node_modules[\\/](react|react-dom|react-select|mobx|mobx-react-lite|react-tabs|react-focus-lock|react-responsive|react-responsive-carousel)[\\/]/,
           name: 'react',
           chunks: 'all',
         },

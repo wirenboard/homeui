@@ -1,18 +1,32 @@
 'use strict';
 
-import { makeAutoObservable } from 'mobx';
+import { makeObservable, observable, action, computed } from 'mobx';
 
 export class StringStore {
-  constructor({ name, description, value, placeholder, validator, defaultText }) {
+  constructor({ name, description, value, placeholder, validator, defaultText, readOnly }) {
     this.type = 'string';
     this.name = name;
     this.description = description;
     this.validator = validator;
     this.placeholder = placeholder;
     this.defaultText = defaultText;
+    this.formColumns = null;
+    this.error = '';
+    this.readOnly = readOnly;
     this.setValue(value);
+    this.initialValue = this.value;
 
-    makeAutoObservable(this);
+    makeObservable(this, {
+      value: observable,
+      formColumns: observable,
+      setValue: action,
+      setFormColumns: action,
+      error: observable,
+      hasErrors: computed,
+      isDirty: computed,
+      submit: action,
+      reset: action,
+    });
   }
 
   setValue(value) {
@@ -35,7 +49,23 @@ export class StringStore {
     this.defaultText = text;
   }
 
+  setFormColumns(columns) {
+    this.formColumns = columns;
+  }
+
   get hasErrors() {
     return !!this.error;
+  }
+
+  get isDirty() {
+    return this.value !== this.initialValue;
+  }
+
+  submit() {
+    this.initialValue = this.value;
+  }
+
+  reset() {
+    this.setValue(this.initialValue);
   }
 }

@@ -1,0 +1,21 @@
+.mbgate-page legend {
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.mbgate-page .form-group {
+    margin-bottom: 5px;
+}
+
+.mbgate-page .table .form-group {
+    margin-bottom: 0px;
+}
+
+.mbgate-page .help-block {
+    margin-bottom: 5px;
+}
+
+.mbgate-page .checkbox {
+    margin-top: 4px;
+    margin-bottom: 0px;
+}

@@ -17,6 +17,8 @@ export class OptionsStore {
     this.strict = strict ?? true;
     this.value = null;
     this.selectedOption = null;
+    this.formColumns = null;
+    this.initialValue = value;
     this.setValue(value);
 
     makeObservable(this, {
@@ -24,9 +26,12 @@ export class OptionsStore {
       value: observable,
       hasErrors: observable,
       selectedOption: observable,
+      formColumns: observable,
       setValue: action,
       setSelectedOption: action,
       setOptions: action,
+      setFormColumns: action,
+      addOption: action,
     });
   }
 
@@ -55,8 +60,28 @@ export class OptionsStore {
     this.setValue(this.value);
   }
 
+  addOption(option) {
+    this.options.push(option);
+  }
+
   setSelectedOption(option) {
     this.selectedOption = option;
     this.setValue(option ? option.value : null);
+  }
+
+  setFormColumns(columns) {
+    this.formColumns = columns;
+  }
+
+  get isDirty() {
+    return this.value !== this.initialValue;
+  }
+
+  submit() {
+    this.initialValue = this.value;
+  }
+
+  reset() {
+    this.setValue(this.initialValue);
   }
 }

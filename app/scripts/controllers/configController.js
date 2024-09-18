@@ -58,7 +58,7 @@ class ConfigCtrl {
       ConfigEditorProxy.Save({ path: $scope.file.schemaPath, content: $scope.file.content })
         .then(function () {
           $scope.file.content = angular.merge({}, $scope.file.content);
-          if ($scope.file.schema.needReload) load();
+          if ($scope.file.schema.configFile.needReload) load();
         })
         .catch(function (e) {
           PageState.setDirty(true);

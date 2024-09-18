@@ -1,8 +1,21 @@
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useContext, createContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, LineEdit } from '../common';
+import { Checkbox, LineEdit, Button } from '../common';
 import BootstrapLikeSelect from '../components/select/select';
+import CollapsiblePanel from './collapsiblePanel';
+
+export const ShowParamCaptionContext = createContext(true);
+export const CustomEditorBuilderContext = createContext(null);
+
+function makeFlexItemStyle(columns) {
+  const MAX_COLUMNS = 12;
+  columns = columns || MAX_COLUMNS;
+  return {
+    flexGrow: columns / MAX_COLUMNS,
+    flexBasis: `${(columns / MAX_COLUMNS) * 100 * 0.9}%`,
+  };
+}
 
 export const FormEditDescription = observer(({ description, defaultText }) => {
   const { t } = useTranslation();
@@ -19,42 +32,42 @@ export const FormEditDescription = observer(({ description, defaultText }) => {
   return <>{description && <p className="help-block">{description}</p>}</>;
 });
 
-export const FormEdit = observer(
-  ({ name, error, hasErrors, description, defaultText, children }) => {
-    return (
-      <div className={hasErrors ? 'form-group has-error' : 'form-group'}>
-        <label className="control-label">{name}</label>
-        {children}
-        <FormEditDescription description={description} defaultText={defaultText} />
-        {error && <div className="help-block">{error}</div>}
-      </div>
-    );
-  }
-);
+export const FormEdit = observer(({ store, children }) => {
+  const showCaption = useContext(ShowParamCaptionContext);
+  return (
+    <div
+      className={store.hasErrors ? 'form-group has-error' : 'form-group'}
+      style={makeFlexItemStyle(store?.formColumns)}
+    >
+      {showCaption && <label className="control-label">{store.name}</label>}
+      {children}
+      {showCaption && (
+        <FormEditDescription description={store.description} defaultText={store.defaultText} />
+      )}
+      {store.error && <div className="help-block">{store.error}</div>}
+    </div>
+  );
+});
 
 export const FormStringEdit = observer(({ store }) => {
   return (
-    <FormEdit
-      name={store.name}
-      error={store.error}
-      hasErrors={store.hasErrors}
-      description={store.description}
-      defaultText={store.defaultText}
-    >
+    <FormEdit store={store}>
       <LineEdit
-        value={store.value}
+        value={store.value === undefined ? '' : store.value}
         placeholder={store.placeholder}
         onChange={e => store.setValue(e.target.value)}
+        disabled={store.readOnly}
       />
     </FormEdit>
   );
 });
 
 export const FormCheckbox = observer(({ store }) => {
+  const showCaption = useContext(ShowParamCaptionContext);
   return (
-    <div className="form-group">
+    <div className="form-group" style={makeFlexItemStyle(store?.formColumns)}>
       <Checkbox
-        label={store.name}
+        label={showCaption ? store.name : undefined}
         value={store.value}
         onChange={e => store.setValue(e.target.checked)}
       />
@@ -64,12 +77,7 @@ export const FormCheckbox = observer(({ store }) => {
 
 export const FormSelect = observer(({ store, isClearable }) => {
   return (
-    <FormEdit
-      name={store.name}
-      error={store.error}
-      hasErrors={store.hasErrors}
-      description={store.description}
-    >
+    <FormEdit store={store}>
       <BootstrapLikeSelect
         options={store.options}
         isClearable={isClearable}
@@ -82,32 +90,121 @@ export const FormSelect = observer(({ store, isClearable }) => {
   );
 });
 
+export const FormOneOf = observer(({ store }) => {
+  return (
+    <ShowParamCaptionContext.Provider value={false}>
+      <div style={makeFlexItemStyle(store?.formColumns)}>
+        <legend
+          style={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'baseline' }}
+        >
+          <span>{store.optionsStore.name}</span>
+          <div style={{ fontSize: '13px' }}>
+            <FormSelect store={store.optionsStore} isClearable={false} />
+          </div>
+        </legend>
+        {store.selectedForm && <FormEditor param={store.selectedForm} paramName={store.name} />}
+      </div>
+    </ShowParamCaptionContext.Provider>
+  );
+});
+
+export const FormCollapsibleTable = observer(({ store }) => {
+  const { t } = useTranslation();
+  return (
+    <CollapsiblePanel title={store.name}>
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            {store.headers.map(header => (
+              <th key={header}>{header}</th>
+            ))}
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ShowParamCaptionContext.Provider value={false}>
+            {store.items.map((item, index) => (
+              <tr key={index}>
+                {Object.entries(item.params).map(([key, param]) => {
+                  return (
+                    <td key={key + index}>
+                      <FormEditor param={param} paramName={key + index} />
+                    </td>
+                  );
+                })}
+                <td>
+                  <Button
+                    icon={'glyphicon glyphicon-trash'}
+                    onClick={() => {
+                      if (confirm(t('forms.confirm-remove'))) {
+                        store.remove(index);
+                      }
+                    }}
+                    title={t('forms.remove')}
+                  />
+                </td>
+              </tr>
+            ))}
+          </ShowParamCaptionContext.Provider>
+        </tbody>
+      </table>
+    </CollapsiblePanel>
+  );
+});
+
+export const FormEditor = ({ param, paramName }) => {
+  const customEditorBuilder = useContext(CustomEditorBuilderContext);
+  if (customEditorBuilder) {
+    const customEditor = customEditorBuilder(param, paramName);
+    if (customEditor) {
+      return customEditor;
+    }
+  }
+  if (param.type === 'string') {
+    return <FormStringEdit store={param} />;
+  }
+  if (param.type === 'integer') {
+    return <FormStringEdit store={param} />;
+  }
+  if (param.type === 'number') {
+    return <FormStringEdit store={param} />;
+  }
+  if (param.type === 'boolean') {
+    return <FormCheckbox store={param} />;
+  }
+  if (param.type === 'options') {
+    return <FormSelect store={param} />;
+  }
+  if (param.type === 'object') {
+    return <Form store={param} />;
+  }
+  if (param.type === 'array') {
+    return <FormCollapsibleTable store={param} />;
+  }
+  if (param.type === 'oneOf') {
+    return <FormOneOf store={param} />;
+  }
+  return null;
+};
+
 export const MakeFormFields = params => {
-  return params.map(([key, param]) => {
-    if (param.type === 'string') {
-      return <FormStringEdit key={key} store={param} />;
-    }
-    if (param.type === 'integer') {
-      return <FormStringEdit key={key} store={param} />;
-    }
-    if (param.type === 'boolean') {
-      return <FormCheckbox key={key} store={param} />;
-    }
-    if (param.type === 'options') {
-      return <FormSelect key={key} store={param} />;
-    }
-  });
+  return params.map(([name, param]) => <FormEditor param={param} paramName={name} key={name} />);
 };
 
 export const Form = observer(({ store, children }) => {
   const { t } = useTranslation();
+  const showCaption = useContext(ShowParamCaptionContext);
   if (!store) {
     return null;
   }
   return (
-    <div>
-      <legend>{t(store.title)}</legend>
-      {MakeFormFields(Object.entries(store.params))}
+    <div style={makeFlexItemStyle(store?.formColumns)}>
+      {showCaption && <legend>{t(store.name)}</legend>}
+      <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
+        <ShowParamCaptionContext.Provider value={true}>
+          {MakeFormFields(Object.entries(store.params))}
+        </ShowParamCaptionContext.Provider>
+      </div>
       {children}
     </div>
   );
