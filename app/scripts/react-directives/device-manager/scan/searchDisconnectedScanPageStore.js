@@ -24,15 +24,11 @@ class SearchDisconnectedScanPageStore {
       return;
     }
 
-    const data = JSON.parse(stringDataToRender);
-    if (!data.error) {
-      if (!this.commonScanStore.acceptUpdates) {
-        return;
-      }
-      data.devices = data.devices.filter(device =>
-        this.signatures.includes(device.device_signature)
-      );
+    let data = JSON.parse(stringDataToRender);
+    if (!data.error && !this.commonScanStore.acceptUpdates) {
+      return;
     }
+    data.devices = data.devices.filter(device => this.signatures.includes(device.device_signature));
     this.commonScanStore.update(data);
   }
 
