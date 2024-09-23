@@ -285,10 +285,19 @@ export class TabsStore {
     });
   }
 
-  findPortTab(portPath) {
+  findPortTabByPath(portPath) {
     return this.items.find(item => {
       if (item.type == TabType.PORT) {
         return item.path == portPath;
+      }
+      return false;
+    });
+  }
+
+  findPortTabByDevice(deviceTab) {
+    return this.items.find(item => {
+      if (item.type == TabType.PORT) {
+        return item.children.includes(deviceTab);
       }
       return false;
     });

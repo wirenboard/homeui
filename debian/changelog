@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.98.3) stable; urgency=medium
+
+  * Fix requesting firmware info of reconnected devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 23 Sep 2024 18:01:16 +0500
+
 wb-mqtt-homeui (2.98.2) stable; urgency=medium
 
   * Fix configured devices list on new devices searching page

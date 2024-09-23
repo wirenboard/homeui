@@ -480,15 +480,16 @@ class ConfigEditorPageStore {
   }
 
   setDeviceDisconnected(topic, error) {
-    const tab = this.tabs.findDeviceTabByTopic(topic);
-    if (!tab) {
+    const deviceTab = this.tabs.findDeviceTabByTopic(topic);
+    if (!deviceTab) {
       return;
     }
     const isDisconnected = error == 'r';
-    tab.setDisconnected(isDisconnected);
+    deviceTab.setDisconnected(isDisconnected);
     if (!isDisconnected) {
-      if (['tcp', 'serial'].includes(this.tabs.selectedPortTab.portType)) {
-        tab.updateFirmwareVersion(this.tabs.selectedPortTab.baseConfig);
+      const portTab = this.tabs.findPortTabByDevice(deviceTab);
+      if (portTab && ['tcp', 'serial'].includes(portTab.portType)) {
+        deviceTab.updateFirmwareVersion(portTab.baseConfig);
       }
     }
   }
@@ -510,7 +511,7 @@ class ConfigEditorPageStore {
 
   updateFirmwareUpdateState(data) {
     data.devices.forEach(device => {
-      const portTab = this.tabs.findPortTab(device.port.path);
+      const portTab = this.tabs.findPortTabByPath(device.port.path);
       if (portTab) {
         const deviceTab = portTab.children.find(tab => tab.slaveId == device.slave_id);
         if (deviceTab) {
