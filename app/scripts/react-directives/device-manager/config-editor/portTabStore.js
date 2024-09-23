@@ -151,6 +151,7 @@ export class PortTab {
         baudRate: this.editedData.baud_rate,
         stopBits: this.editedData.stop_bits,
         parity: this.editedData.parity,
+        dataBits: this.editedData.data_bits,
       };
     }
     if (this.portType === 'tcp' || this.portType === 'modbus tcp') {

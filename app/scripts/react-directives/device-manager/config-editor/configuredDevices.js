@@ -47,10 +47,11 @@ function isPotentiallySameDevice(scannedDevice, configuredDevice) {
 }
 
 function hasSameSerialConfig(port, scannedDevice) {
+  // WB devices can operate regardless to stop bits setting, so compare baud rate, parity and data bits
   return (
     port.config?.baudRate == scannedDevice.cfg.baud_rate &&
     port.config?.parity == scannedDevice.cfg.parity &&
-    port.config?.stopBits == scannedDevice.cfg.stop_bits
+    port.config?.dataBits == scannedDevice.cfg.data_bits
   );
 }
 
