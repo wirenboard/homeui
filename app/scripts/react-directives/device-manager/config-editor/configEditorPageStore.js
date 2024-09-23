@@ -511,18 +511,11 @@ class ConfigEditorPageStore {
 
   updateFirmwareUpdateState(data) {
     data.devices.forEach(device => {
-      const portTab = this.tabs.findPortTabByPath(device.port.path);
-      if (portTab) {
-        const deviceTab = portTab.children.find(tab => tab.slaveId == device.slave_id);
-        if (deviceTab) {
-          if (device.hasOwnProperty('error')) {
-            deviceTab.setError(device.error.message);
-          } else {
-            deviceTab.clearError();
-            deviceTab.setFirmwareUpdateProgress(device.from_fw, device.to_fw, device.progress);
-          }
-        }
-      }
+      const tab = this.tabs
+        .findPortTabByPath(device.port.path)
+        ?.children?.find(deviceTab => deviceTab.slaveId == device.slave_id);
+      tab?.clearError();
+      tab?.setFirmwareUpdateProgress(device.from_fw, device.to_fw, device.progress);
     });
   }
 

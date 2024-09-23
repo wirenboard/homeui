@@ -16,7 +16,7 @@ const FirmwareUpdateIcon = observer(({ firmware }) => {
 });
 
 export const DeviceTab = observer(({ tab }) => {
-  const isError = tab.hasInvalidConfig || tab.showDisconnectedError;
+  const isError = tab.hasInvalidConfig || tab.showDisconnectedError || tab.firmware.hasError;
   const isWarning = tab.isDeprecated;
   const className = `device-tab${isError ? ' error' : isWarning ? ' warning' : ''}`;
   const showSign = isError || isWarning;
@@ -134,7 +134,27 @@ const NewFirmwareWarning = observer(({ firmware, onUpdateFirmware }) => {
   );
 });
 
+const FirmwareUpdateError = observer(({ firmware }) => {
+  const { t } = useTranslation();
+  return (
+    <ErrorBar
+      msg={t('device-manager.errors.firmware-update-error', {
+        error: firmware.errorData.error.message,
+        firmware: firmware.errorData.from_fw,
+        newFirmware: firmware.errorData.to_fw,
+      })}
+    >
+      <button type="button" className="close" onClick={() => firmware.clearError()}>
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </ErrorBar>
+  );
+});
+
 const FirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
+  if (firmware.hasError) {
+    return <FirmwareUpdateError firmware={firmware} />;
+  }
   if (firmware.isUpdating) {
     return <FirmwareUpdatePanel firmware={firmware} />;
   }

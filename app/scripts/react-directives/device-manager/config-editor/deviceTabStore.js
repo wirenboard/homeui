@@ -30,6 +30,7 @@ export class Firmware {
   fwUpdateProxy;
   updateProgress = null;
   canUpdate = false;
+  errorData = {};
 
   constructor(fwUpdateProxy) {
     this.fwUpdateProxy = fwUpdateProxy;
@@ -37,6 +38,7 @@ export class Firmware {
       current: observable,
       available: observable,
       updateProgress: observable,
+      errorData: observable.ref,
       hasUpdate: computed,
       clearVersion: action,
       setUpdateProgress: action,
@@ -74,10 +76,15 @@ export class Firmware {
     return firmwareIsNewer(this.current, this.available);
   }
 
-  setUpdateProgress(fromFw, toFw, value) {
-    this.updateProgress = value;
-    this.current = fromFw;
-    this.available = toFw;
+  setUpdateProgress(data) {
+    this.updateProgress = data.progress;
+    this.current = data.from_fw;
+    this.available = data.to_fw;
+    this.errorData = data;
+    if (this.hasError) {
+      this.updateProgress = null;
+      return;
+    }
     if (this.updateProgress === 100) {
       this.updateProgress = null;
       this.current = '';
@@ -100,6 +107,26 @@ export class Firmware {
       this.updateProgress = null;
       throw err;
     }
+  }
+
+  get hasError() {
+    return !!this.errorData.error?.message;
+  }
+
+  async clearError() {
+    if (!this.hasError) {
+      return;
+    }
+    try {
+      await this.fwUpdateProxy.ClearError({
+        slave_id: this.errorData.slave_id,
+        port: this.errorData.port,
+      });
+    } catch (err) {}
+    runInAction(() => {
+      this.errorData = {};
+      this.clearVersion();
+    });
   }
 }
 
@@ -335,9 +362,9 @@ export class DeviceTab {
     this.setError('');
   }
 
-  setFirmwareUpdateProgress(from_fw, to_fw, progress) {
-    this.firmware.setUpdateProgress(from_fw, to_fw, progress);
-    if (progress === 100) {
+  setFirmwareUpdateProgress(data) {
+    this.firmware.setUpdateProgress(data);
+    if (data?.progress === 100) {
       this.waitingForDeviceReconnect = true;
       setTimeout(() => {
         runInAction(() => {
@@ -349,5 +376,9 @@ export class DeviceTab {
 
   get showDisconnectedError() {
     return this.isDisconnected && !this.firmware.isUpdating && !this.waitingForDeviceReconnect;
+  }
+
+  beforeDelete() {
+    this.firmware.clearError();
   }
 }
