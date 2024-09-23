@@ -480,15 +480,16 @@ class ConfigEditorPageStore {
   }
 
   setDeviceDisconnected(topic, error) {
-    const tab = this.tabs.findDeviceTabByTopic(topic);
-    if (!tab) {
+    const deviceTab = this.tabs.findDeviceTabByTopic(topic);
+    if (!deviceTab) {
       return;
     }
     const isDisconnected = error == 'r';
-    tab.setDisconnected(isDisconnected);
+    deviceTab.setDisconnected(isDisconnected);
     if (!isDisconnected) {
-      if (['tcp', 'serial'].includes(this.tabs.selectedPortTab.portType)) {
-        tab.updateFirmwareVersion(this.tabs.selectedPortTab.baseConfig);
+      const portTab = this.tabs.findPortTabByDevice(deviceTab);
+      if (portTab && ['tcp', 'serial'].includes(portTab.portType)) {
+        deviceTab.updateFirmwareVersion(portTab.baseConfig);
       }
     }
   }
@@ -509,12 +510,13 @@ class ConfigEditorPageStore {
   }
 
   updateFirmwareUpdateState(data) {
-    data.devices.forEach(device =>
-      this.tabs
-        .findPortTab(device.port.path)
-        ?.children?.find(tab => tab.slaveId == device.slave_id)
-        ?.setFirmwareUpdateProgress(device)
-    );
+    data.devices.forEach(device => {
+      const tab = this.tabs
+        .findPortTabByPath(device.port.path)
+        ?.children?.find(deviceTab => deviceTab.slaveId == device.slave_id);
+      tab?.clearError();
+      tab?.setFirmwareUpdateProgress(device.from_fw, device.to_fw, device.progress);
+    });
   }
 
   updateFirmware() {

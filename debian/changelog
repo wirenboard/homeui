@@ -1,8 +1,26 @@
-wb-mqtt-homeui (2.98.1) stable; urgency=medium
+wb-mqtt-homeui (2.99.0) stable; urgency=medium
 
   * Allow to close firmware update error message
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 18 Sep 2024 10:21:10 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 23 Sep 2024 20:32:43 +0500
+
+wb-mqtt-homeui (2.98.3) stable; urgency=medium
+
+  * Fix requesting firmware info of reconnected devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 23 Sep 2024 18:01:16 +0500
+
+wb-mqtt-homeui (2.98.2) stable; urgency=medium
+
+  * Fix configured devices list on new devices searching page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 23 Sep 2024 11:05:41 +0500
+
+wb-mqtt-homeui (2.98.1) stable; urgency=medium
+
+  * Fix filter when searching for disconnected devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 20 Sep 2024 15:49:15 +0500
 
 wb-mqtt-homeui (2.98.0) stable; urgency=medium
 
