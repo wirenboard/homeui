@@ -260,7 +260,8 @@
          "updating-firmware": "Updating firmware {{firmware}} to {{newFirmware}}",
          "actual-firmware": "Current firmware version: {{firmware}} (actual)",
          "new-firmware": "Firmware {{firmware}}, there is a newer version {{newFirmware}}",
-         "new-firmware-cant-upgrade": "Firmware {{firmware}}, there is a newer version {{newFirmware}}.<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\"> How to update</0>"
+         "new-firmware-cant-upgrade": "Firmware {{firmware}}, there is a newer version {{newFirmware}}. <0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
+         "update-firmware-notice": "Do not disconnect the device during the update"
       },
       "buttons": {
          "save": "Save config",
@@ -285,7 +286,7 @@
          "duplicate-mqtt-topic": "MQTT id is the same as for {{device}}",
          "is-disconnected": "The device is not responding. Check the physical connection of the RS-485 bus and the communication settings of the port and device, which should be the same",
          "setup": "{{device}} setup failed: {{error}}",
-         "firmware-update-error": "Updating firmware {{firmware}} to {{newFirmware}} failed: {{error}}"
+         "firmware-update-error": "Updating firmware {{firmware}} to {{newFirmware}} failed: {{error}}. If the device is not responding, <0 href=\"https://wirenboard.com/wiki/Wb-mcu-fw-updater#%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_(recover)\">try to recover</0>" 
       }
    },
    "exp-check": {

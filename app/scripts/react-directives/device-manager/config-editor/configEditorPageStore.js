@@ -515,7 +515,7 @@ class ConfigEditorPageStore {
         .findPortTabByPath(device.port.path)
         ?.children?.find(deviceTab => deviceTab.slaveId == device.slave_id);
       tab?.clearError();
-      tab?.setFirmwareUpdateProgress(device.from_fw, device.to_fw, device.progress);
+      tab?.setFirmwareUpdateProgress(device);
     });
   }
 

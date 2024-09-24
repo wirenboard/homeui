@@ -1,5 +1,14 @@
 import React from 'react';
-import { Button, ErrorBar, Spinner, WarningBar } from '../../common';
+import {
+  Button,
+  ErrorBar,
+  Spinner,
+  WarningBar,
+  WarningHeader,
+  WarningPanel,
+  ErrorPanel,
+  ErrorHeader,
+} from '../../common';
 import { useTranslation, Trans } from 'react-i18next';
 import JsonEditor from '../../components/json-editor/jsonEditor';
 import { observer } from 'mobx-react-lite';
@@ -78,17 +87,20 @@ const UpdateProgressBar = observer(({ progress }) => {
 const FirmwareUpdatePanel = observer(({ firmware }) => {
   const { t } = useTranslation();
   return (
-    <div className="firmware-update-panel">
-      <span>
-        <b>
+    <WarningPanel className={'firmware-update-panel'}>
+      <WarningHeader>
+        <span>
           {t('device-manager.labels.updating-firmware', {
             firmware: firmware.current,
             newFirmware: firmware.available,
           })}
-        </b>
-      </span>
+        </span>
+      </WarningHeader>
       <UpdateProgressBar progress={firmware.updateProgress} />
-    </div>
+      <span>
+        <b>{t('device-manager.labels.update-firmware-notice')}</b>
+      </span>
+    </WarningPanel>
   );
 });
 
@@ -108,8 +120,8 @@ const ActualFirmwarePanel = observer(({ firmwareVersion }) => {
 const NewFirmwareWarning = observer(({ firmware, onUpdateFirmware }) => {
   const { t } = useTranslation();
   return (
-    <WarningBar>
-      <span className="warning-text">
+    <WarningPanel>
+      <WarningHeader>
         <Trans
           i18nKey={
             firmware.canUpdate
@@ -122,7 +134,7 @@ const NewFirmwareWarning = observer(({ firmware, onUpdateFirmware }) => {
             newFirmware: firmware.available,
           }}
         />
-      </span>
+      </WarningHeader>
       {firmware.canUpdate && (
         <Button
           label={t('device-manager.buttons.update')}
@@ -130,34 +142,32 @@ const NewFirmwareWarning = observer(({ firmware, onUpdateFirmware }) => {
           onClick={onUpdateFirmware}
         />
       )}
-    </WarningBar>
+    </WarningPanel>
   );
 });
 
 const FirmwareUpdateError = observer(({ firmware }) => {
-  const { t } = useTranslation();
   return (
-    <ErrorBar
-      msg={t('device-manager.errors.firmware-update-error', {
-        error: firmware.errorData.error.message,
-        firmware: firmware.errorData.from_fw,
-        newFirmware: firmware.errorData.to_fw,
-      })}
-    >
+    <ErrorPanel className={'firmware-update-error-panel'}>
+      <ErrorHeader>
+        <Trans
+          i18nKey={'device-manager.errors.firmware-update-error'}
+          components={[<a></a>]}
+          values={{
+            error: firmware.errorData.error.message,
+            firmware: firmware.errorData.from_fw,
+            newFirmware: firmware.errorData.to_fw,
+          }}
+        />
+      </ErrorHeader>
       <button type="button" className="close" onClick={() => firmware.clearError()}>
         <span aria-hidden="true">&times;</span>
       </button>
-    </ErrorBar>
+    </ErrorPanel>
   );
 });
 
-const FirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
-  if (firmware.hasError) {
-    return <FirmwareUpdateError firmware={firmware} />;
-  }
-  if (firmware.isUpdating) {
-    return <FirmwareUpdatePanel firmware={firmware} />;
-  }
+const CurrentFirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
   if (firmware.hasUpdate) {
     return <NewFirmwareWarning firmware={firmware} onUpdateFirmware={onUpdateFirmware} />;
   }
@@ -165,6 +175,21 @@ const FirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
     return <ActualFirmwarePanel firmwareVersion={firmware.current} />;
   }
   return null;
+});
+
+const FirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
+  if (firmware.hasError) {
+    return (
+      <>
+        <FirmwareUpdateError firmware={firmware} />
+        <CurrentFirmwarePanel firmware={firmware} onUpdateFirmware={onUpdateFirmware} />
+      </>
+    );
+  }
+  if (firmware.isUpdating) {
+    return <FirmwareUpdatePanel firmware={firmware} />;
+  }
+  return <CurrentFirmwarePanel firmware={firmware} onUpdateFirmware={onUpdateFirmware} />;
 });
 
 const DeprecatedWarning = ({ isDeprecated }) => {

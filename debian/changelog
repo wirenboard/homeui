@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.99.1) stable; urgency=medium
+
+  * Add link to Wiren Board Modbus device firmware recovery instruction
+  * Add notification about power off during Modbus device firmware update
+  * Fix Modbus device firmware update progress display
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 24 Sep 2024 11:16:49 +0500
+
 wb-mqtt-homeui (2.99.0) stable; urgency=medium
 
   * Allow to close firmware update error message
