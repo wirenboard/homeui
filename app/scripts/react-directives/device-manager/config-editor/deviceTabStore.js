@@ -38,6 +38,7 @@ export class Firmware {
       current: observable,
       available: observable,
       updateProgress: observable,
+      canUpdate: observable,
       errorData: observable.ref,
       hasUpdate: computed,
       clearVersion: action,
@@ -81,8 +82,10 @@ export class Firmware {
     this.current = data.from_fw;
     this.available = data.to_fw;
     this.errorData = data;
-    if (this.hasError) {
+    if (this.hasError && this.isUpdating) {
       this.updateProgress = null;
+      this.current = '';
+      this.available = '';
       return;
     }
     if (this.updateProgress === 100) {
@@ -98,6 +101,7 @@ export class Firmware {
 
   async startFirmwareUpdate(address, portConfig) {
     this.updateProgress = 0;
+    this.errorData = {};
     try {
       await this.fwUpdateProxy.Update({
         slave_id: getIntAddress(address),

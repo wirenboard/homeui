@@ -35,16 +35,61 @@ export const Spinner = () => {
   );
 };
 
+export const ErrorPanel = ({ className, children }) => {
+  const classes = 'alert alert-danger' + (className ? ' ' + className : '');
+  return (
+    <div className={classes} role="alert" style={{ whiteSpace: 'pre-wrap' }}>
+      {children}
+    </div>
+  );
+};
+
+export const ErrorSign = () => {
+  return <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>;
+};
+
+export const ErrorHeader = ({ children }) => {
+  return (
+    <div className="alert-header">
+      <ErrorSign />
+      &nbsp;
+      {children}
+    </div>
+  );
+};
+
 export const ErrorBar = ({ msg, children }) => {
   if (!msg) {
     return null;
   }
   return (
-    <div className="alert alert-danger" role="alert" style={{ whiteSpace: 'pre-wrap' }}>
-      <div className="alert-header">
-        <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-        <span className="alert-text"> {msg}</span>
-      </div>
+    <ErrorPanel>
+      <ErrorHeader>
+        <span>{msg}</span>
+      </ErrorHeader>
+      {children}
+    </ErrorPanel>
+  );
+};
+
+export const WarningPanel = ({ className, children }) => {
+  const classes = 'alert alert-warning' + (className ? ' ' + className : '');
+  return (
+    <div className={classes} role="alert">
+      {children}
+    </div>
+  );
+};
+
+const WarningSign = () => {
+  return <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>;
+};
+
+export const WarningHeader = ({ children }) => {
+  return (
+    <div className="alert-header">
+      <WarningSign />
+      &nbsp;
       {children}
     </div>
   );
@@ -52,10 +97,9 @@ export const ErrorBar = ({ msg, children }) => {
 
 export const WarningBar = ({ children }) => {
   return (
-    <div className="alert alert-warning" role="alert">
-      <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;
-      {children}
-    </div>
+    <WarningPanel>
+      <WarningHeader>{children}</WarningHeader>
+    </WarningPanel>
   );
 };
 

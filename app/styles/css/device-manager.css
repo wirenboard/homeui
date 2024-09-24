@@ -194,7 +194,6 @@
     }
 
     .device-manager-page div.alert {
-        gap: 5px;
         flex-wrap: wrap;
     }
 
@@ -232,29 +231,16 @@
 
 .device-manager-page div.alert {
     display: flex;
-    align-items: baseline;
+    align-items: center;
+    gap: 5px;   
 }
 
 .device-manager-page div.alert .alert-header {
-    flex-grow: 1;
+    flex-basis: 100%;
 }
 
 .device-manager-page .device-tab .glyphicon-refresh {
     color: #bd882b;
-}
-
-.device-manager-page div.alert .warning-text {
-    flex-grow: 1;
-}
-
-.device-manager-page .firmware-update-panel {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-}
-
-.device-manager-page .firmware-update-panel .progress{
-    flex-grow: 1;
 }
 
 .device-manager-page .actual-firmware-panel {
@@ -272,4 +258,27 @@
 
 .device-manager-page .alert a {
     white-space: pre;
+}
+
+.device-manager-page .firmware-update-panel {
+    flex-wrap: wrap;
+}
+
+.device-manager-page div.firmware-update-panel .alert-header {
+    flex-basis: unset;
+}
+
+.device-manager-page div.firmware-update-error-panel {
+    align-items: baseline;
+    flex-wrap: nowrap;
+}
+
+.device-manager-page .firmware-update-panel .progress {
+    margin-bottom: 0px;
+    flex-grow: 1;
+    min-width: '200px';
+}
+
+.device-manager-page .firmware-update-panel span:last-of-type{
+    flex-basis: 100%;
 }
