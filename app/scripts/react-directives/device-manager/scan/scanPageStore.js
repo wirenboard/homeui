@@ -349,7 +349,7 @@ class CommonScanStore {
           preserve_old_results: false,
         };
         if (this.portPath) {
-          params.port_path = this.portPath;
+          params.port = { path: this.portPath };
         }
         await this.deviceManagerProxy.Start(params);
         this.acceptUpdates = true;
