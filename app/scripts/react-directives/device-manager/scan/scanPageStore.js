@@ -108,14 +108,14 @@ class SingleDeviceStore {
   constructor(scannedDevice, gotByFastScan, names, deviceTypes, selectable) {
     this.scannedDevice = scannedDevice;
     this.deviceTypes = deviceTypes;
-    this.selected = selectable && !this.isUnknownType;
+    this.selectable = selectable && !this.bootloaderMode;
+    this.selected = this.selectable && !this.isUnknownType;
     this.duplicateSlaveId = false;
     this.misconfiguredPort = false;
     this.duplicateMqttTopic = false;
     this.names = names;
     this.gotByFastScan = gotByFastScan;
     this.disposer = undefined;
-    this.selectable = selectable;
 
     makeObservable(this, {
       scannedDevice: observable.ref,
@@ -192,7 +192,11 @@ class SingleDeviceStore {
   }
 
   get isUnknownType() {
-    return !this.deviceTypes.length;
+    return !this.bootloaderMode && !this.deviceTypes.length;
+  }
+
+  get bootloaderMode() {
+    return this.scannedDevice.bootloader_mode;
   }
 }
 
@@ -314,6 +318,7 @@ class CommonScanStore {
     this.globalError = new GlobalErrorStore();
     this.acceptUpdates = false;
     this.portPath = null;
+    this.outOfOrderSlaveIds = null;
     this.alreadyConfiguredDevicesCollapseButtonState = new CollapseButtonState(true);
 
     makeObservable(this, { hasSelectedItems: computed });
@@ -339,17 +344,23 @@ class CommonScanStore {
     }
   }
 
-  async startScanningCommon(isExtended) {
+  async startScanningCommon(type) {
     this.scanStore.startScan();
-    this.globalError.clearError();
+    const preserve_old_results = type != 'extended';
+    if (!preserve_old_results) {
+      this.globalError.clearError();
+    }
     try {
       if (await this.deviceManagerProxy.hasMethod('Start')) {
         let params = {
-          scan_type: isExtended ? 'extended' : 'standard',
-          preserve_old_results: false,
+          scan_type: type,
+          preserve_old_results: preserve_old_results,
         };
         if (this.portPath) {
           params.port = { path: this.portPath };
+        }
+        if (this.outOfOrderSlaveIds) {
+          params.out_of_order_slave_ids = this.outOfOrderSlaveIds;
         }
         await this.deviceManagerProxy.Start(params);
         this.acceptUpdates = true;
@@ -362,11 +373,15 @@ class CommonScanStore {
   }
 
   async startExtendedScanning() {
-    await this.startScanningCommon(true);
+    await this.startScanningCommon('extended');
   }
 
   async startStandardScanning() {
-    await this.startScanningCommon(false);
+    await this.startScanningCommon('standard');
+  }
+
+  async startBootloaderScanning() {
+    await this.startScanningCommon('bootloader');
   }
 
   stopScanning() {
@@ -397,9 +412,10 @@ class CommonScanStore {
     }
   }
 
-  startScanning(selectionPolicy, configuredDevices, portPath) {
+  startScanning(selectionPolicy, configuredDevices, portPath, outOfOrderSlaveIds) {
     this.devicesStore.init(selectionPolicy, configuredDevices);
     this.portPath = portPath;
+    this.outOfOrderSlaveIds = outOfOrderSlaveIds;
     this.startExtendedScanning();
   }
 

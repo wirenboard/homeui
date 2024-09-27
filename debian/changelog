@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.100.0) stable; urgency=medium
+
+  * Add searching of Wiren Board devices in bootloader mode
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 27 Sep 2024 18:30:40 +0500
+
 wb-mqtt-homeui (2.99.2) stable; urgency=medium
 
   * Fix searching of a disconnected device

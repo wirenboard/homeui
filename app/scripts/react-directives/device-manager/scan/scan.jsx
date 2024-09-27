@@ -72,33 +72,36 @@ const NormalScanProgressPanel = observer(({ scanStore, onStopScanning }) => {
   );
 });
 
-const FastScanResultPanel = ({ onStartScanning }) => {
+const FastScanResultPanel = ({ onStartStandardScanning, onStartBootloaderScanning }) => {
   const { t } = useTranslation();
   return (
     <div className="bottom-panel">
       <InfoMessage msg={t('scan.labels.try-normal-scan')} />
-      <Button label={t('scan.buttons.scan')} onClick={onStartScanning} />
+      <div className="button-group">
+        <Button label={t('scan.buttons.scan')} onClick={onStartStandardScanning} />
+        <Button label={t('scan.buttons.bootloader-scan')} onClick={onStartBootloaderScanning} />
+      </div>
     </div>
   );
 };
 
-const BottomPanel = observer(({ scanStore, nothingFound, onStartScanning, onStopScanning }) => {
-  const { t } = useTranslation();
-  const scanInProgress = scanStore.actualState == ScanState.Started;
-  if (scanInProgress) {
-    if (scanStore.isExtendedScanning) {
-      return <FastScanProgressPanel scanStore={scanStore} />;
+const BottomPanel = observer(
+  ({ scanStore, onStartStandardScanning, onStartBootloaderScanning, onStopScanning }) => {
+    const scanInProgress = scanStore.actualState == ScanState.Started;
+    if (scanInProgress) {
+      if (scanStore.isExtendedScanning) {
+        return <FastScanProgressPanel scanStore={scanStore} />;
+      }
+      return <NormalScanProgressPanel scanStore={scanStore} onStopScanning={onStopScanning} />;
     }
-    return <NormalScanProgressPanel scanStore={scanStore} onStopScanning={onStopScanning} />;
+    return (
+      <FastScanResultPanel
+        onStartStandardScanning={onStartStandardScanning}
+        onStartBootloaderScanning={onStartBootloaderScanning}
+      />
+    );
   }
-  if (scanStore.isExtendedScanning) {
-    return <FastScanResultPanel onStartScanning={onStartScanning} />;
-  }
-  if (nothingFound) {
-    return <InfoMessage msg={t('scan.labels.not-found')} />;
-  }
-  return null;
-});
+);
 
 export const ScanPageHeader = ({ okButtonLabel, onOk, onCancel, disableOkButton }) => {
   const { t } = useTranslation();
@@ -132,8 +135,8 @@ export const ScanPageBody = observer(({ store }) => {
         )}
         <BottomPanel
           scanStore={store.scanStore}
-          nothingFound={noNewDevices}
-          onStartScanning={() => store.startStandardScanning()}
+          onStartStandardScanning={() => store.startStandardScanning()}
+          onStartBootloaderScanning={() => store.startBootloaderScanning()}
           onStopScanning={() => store.stopScanning()}
         />
       </>
@@ -150,8 +153,8 @@ export const ScanPageBody = observer(({ store }) => {
       )}
       <BottomPanel
         scanStore={store.scanStore}
-        nothingFound={noNewDevices}
-        onStartScanning={() => store.startStandardScanning()}
+        onStartStandardScanning={() => store.startStandardScanning()}
+        onStartBootloaderScanning={() => store.startBootloaderScanning()}
         onStopScanning={() => store.stopScanning()}
       />
     </div>

@@ -65,6 +65,17 @@
     align-items: center;
 }
 
+@media (max-width: 530px) {
+    .scan-page .bottom-panel .button-group button {
+        width: 100%;
+    }
+
+    .scan-page .bottom-panel .button-group button:not(:first-child) {
+        margin-left: 0px;
+        margin-top: 5px;
+    }
+}
+
 .scan-page .progress {
     width: 90%;
 }
