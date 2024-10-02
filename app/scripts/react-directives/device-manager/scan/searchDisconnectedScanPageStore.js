@@ -28,15 +28,27 @@ class SearchDisconnectedScanPageStore {
     if (!data.error && !this.commonScanStore.acceptUpdates) {
       return;
     }
-    data.devices = data.devices.filter(device => this.signatures.includes(device.device_signature));
+    data.devices = data.devices.filter(
+      device => device.bootloader_mode || this.signatures.includes(device.device_signature)
+    );
     this.commonScanStore.update(data);
   }
 
-  select(deviceType, portPath, configuredDevices) {
+  select(deviceType, portPath, configuredDevices, slaveId) {
     this.signatures = this.deviceTypesStore.getDeviceSignatures(deviceType);
     this.portPath = portPath;
     this.active = true;
-    this.commonScanStore.startScanning(SelectionPolicy.Single, configuredDevices, this.portPath);
+    const slaveIdInt = parseInt(slaveId);
+    let outOfOrderSlaveIds = [];
+    if (!isNaN(slaveIdInt)) {
+      outOfOrderSlaveIds.push(slaveIdInt);
+    }
+    this.commonScanStore.startScanning(
+      SelectionPolicy.Single,
+      configuredDevices,
+      this.portPath,
+      outOfOrderSlaveIds
+    );
     return new Promise((resolve, reject) => {
       this.onOk = async () => {
         try {

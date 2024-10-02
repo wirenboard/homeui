@@ -8,7 +8,7 @@
       },
       "buttons": {
          "scan": "Start slow scan",
-         "stop": "Stop slow scan",
+         "stop": "Stop",
          "to-serial": "Add to wb-mqtt-serial",
          "cancel": "Cancel",
          "setup-as-selected": "Setup"
@@ -24,10 +24,8 @@
          "not-polled": "not polled",
          "offline": "offline",
          "duplicate": "duplicate",
-         "scanning": "Slow scanning in progress {{-ports}}...",
+         "scanning": "Searching {{-ports}}...",
          "fast-scanning": "Fast scanning in progress {{-ports}}...",
-         "scanning-stop": "Press \"Stop scan\", if all devices are found, or wait for completion",
-         "not-found": "Nothing found",
          "extended-modbus": "This device was found by scanning via fast Modbus",
          "try-normal-scan": "If the required devices are not found, run slow scan. During this time, already configured devices will not be polled or accept commands",
          "misconfigured-port": "differs from port settings",

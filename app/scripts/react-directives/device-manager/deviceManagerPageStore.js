@@ -90,7 +90,8 @@ class DeviceManagerPageStore {
       const device = await this.searchDisconnectedScanPageStore.select(
         selectedDeviceTab.deviceType,
         selectedPortTab.editedData.path,
-        new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore)
+        new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore),
+        selectedDeviceTab.slaveId
       );
       if (device) {
         device.newAddress = selectedDeviceTab.slaveId;
