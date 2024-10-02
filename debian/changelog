@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.100.1) stable; urgency=medium
 
   * Add translate for Pa units
 
- --  Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Wed, 02 Oct 2024 16:20:27 +0300
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Wed, 02 Oct 2024 16:20:27 +0300
 
 wb-mqtt-homeui (2.100.0) stable; urgency=medium
 
