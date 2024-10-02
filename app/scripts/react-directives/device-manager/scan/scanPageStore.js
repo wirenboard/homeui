@@ -212,47 +212,61 @@ class DevicesStore {
     });
   }
 
-  addDevice(scannedDevice, gotByFastScan) {
-    if (this.devicesByUuid.has(scannedDevice.uuid)) {
-      return;
-    }
+  addConfiguredDevice(scannedDevice, configuredDevice, gotByFastScan) {
+    const deviceStore = new SingleDeviceStore(
+      scannedDevice,
+      gotByFastScan,
+      [this.deviceTypesStore.getName(configuredDevice.deviceType)],
+      [configuredDevice.deviceType],
+      false
+    );
+    this.alreadyConfiguredDevices.push(deviceStore);
+    this.alreadyConfiguredDevices.sort((d1, d2) => {
+      if (d1.port == d2.port) {
+        return d1.address - d2.address;
+      }
+      return d1.port.localeCompare(d2.port);
+    });
+    this.devicesByUuid.add(scannedDevice.uuid);
+  }
 
-    const deviceTypes = this.deviceTypesStore.findDeviceTypes(
+  addNewDevice(scannedDevice, gotByFastScan) {
+    const deviceTypes = this.deviceTypesStore.findNotDeprecatedDeviceTypes(
       scannedDevice.device_signature,
       scannedDevice.fw?.version
     );
-
-    const isNewDevice = !this.configuredDevices.findMatch(scannedDevice);
 
     let deviceStore = new SingleDeviceStore(
       scannedDevice,
       gotByFastScan,
       deviceTypes.map(dt => this.deviceTypesStore.getName(dt)),
       deviceTypes,
-      isNewDevice
+      true
     );
 
-    if (isNewDevice) {
-      if (this.selectionPolicy === SelectionPolicy.Single) {
-        const disposer = reaction(
-          () => deviceStore.selected,
-          () => this.checkSingleSelection(deviceStore)
-        );
-        deviceStore.disposer = disposer;
-        deviceStore.setSelected(false);
-      }
-      this.newDevices.push(deviceStore);
-    } else {
-      this.alreadyConfiguredDevices.push(deviceStore);
-      this.alreadyConfiguredDevices.sort((d1, d2) => {
-        if (d1.port == d2.port) {
-          return d1.address - d2.address;
-        }
-        return d1.port.localeCompare(d2.port);
-      });
+    if (this.selectionPolicy === SelectionPolicy.Single) {
+      const disposer = reaction(
+        () => deviceStore.selected,
+        () => this.checkSingleSelection(deviceStore)
+      );
+      deviceStore.disposer = disposer;
+      deviceStore.setSelected(false);
+    }
+    this.newDevices.push(deviceStore);
+    this.devicesByUuid.add(scannedDevice.uuid);
+  }
+
+  addDevice(scannedDevice, gotByFastScan) {
+    if (this.devicesByUuid.has(scannedDevice.uuid)) {
+      return;
     }
 
-    this.devicesByUuid.add(scannedDevice.uuid);
+    const configuredDevice = this.configuredDevices.findMatch(scannedDevice);
+    if (configuredDevice) {
+      this.addConfiguredDevice(scannedDevice, configuredDevice, gotByFastScan);
+    } else {
+      this.addNewDevice(scannedDevice, gotByFastScan);
+    }
   }
 
   setDevices(scannedDevicesList, gotByFastScan) {

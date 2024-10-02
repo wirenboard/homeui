@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.99.3) stable; urgency=medium
+
+  * Remove warning about other matching templates for already configured devices in scanning results
+  * Choose only not deprecated templates for new devices found by scan 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 01 Oct 2024 17:06:22 +0500
+
 wb-mqtt-homeui (2.99.2) stable; urgency=medium
 
   * Fix searching of a disconnected device
