@@ -25,12 +25,4 @@ export default class MQTTChannelsCtrl {
     });
     return this.rows;
   }
-
-  filterRows(item) {
-    var search = (this.search || '').toLowerCase();
-    return !search
-      || item.id.toLowerCase().includes(search)
-      || item.type.includes(search)
-      || String(item._value).toLowerCase().includes(search);
-  }
 }
