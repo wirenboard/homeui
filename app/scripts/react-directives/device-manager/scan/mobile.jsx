@@ -58,7 +58,7 @@ const DevicePanel = ({ deviceStore }) => {
         <Row>
           <DeviceName
             title={deviceStore.title}
-            bootloaderMode={deviceStore.bootloader_mode}
+            bootloaderMode={deviceStore.bootloaderMode}
             errors={deviceStore?.errors}
             duplicateMqttTopic={deviceStore.duplicateMqttTopic}
             unknownType={deviceStore.isUnknownType}

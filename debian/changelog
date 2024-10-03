@@ -1,9 +1,21 @@
-wb-mqtt-homeui (2.99.3) stable; urgency=medium
+wb-mqtt-homeui (2.100.2) stable; urgency=medium
 
   * Remove warning about other matching templates for already configured devices in scanning results
   * Choose only not deprecated templates for new devices found by scan 
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 01 Oct 2024 17:06:22 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 03 Oct 2024 10:07:01 +0500
+
+wb-mqtt-homeui (2.100.1) stable; urgency=medium
+
+  * Add translate for Pa units
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Wed, 02 Oct 2024 16:20:27 +0300
+
+wb-mqtt-homeui (2.100.0) stable; urgency=medium
+
+  * Add searching of Wiren Board devices in bootloader mode
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 27 Sep 2024 18:30:40 +0500
 
 wb-mqtt-homeui (2.99.2) stable; urgency=medium
 
