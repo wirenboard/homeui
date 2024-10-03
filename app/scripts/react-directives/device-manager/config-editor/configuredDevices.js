@@ -2,6 +2,21 @@
 
 import { getIntAddress } from '../common/modbusAddressesSet';
 
+/**
+ * @typedef {Object} ConfiguredDevice
+ * @property {number} address - The address of the device.
+ * @property {string} sn - The serial number of the device.
+ * @property {string} deviceType - The type of the device.
+ * @property {Array} signatures - The signatures of the device.
+ */
+
+/**
+ * Generates a list of configured devices based on the given portTabChildren and deviceTypesStore.
+ *
+ * @param {Array} portTabChildren - The array of port tab children.
+ * @param {Object} deviceTypesStore - The device types store object.
+ * @returns {Array.<ConfiguredDevice>} - The list of configured devices.
+ */
 function makeConfiguredDevicesList(portTabChildren, deviceTypesStore) {
   return portTabChildren.reduce((acc, deviceTab) => {
     const deviceType = deviceTab.editedData.device_type;
@@ -68,23 +83,42 @@ function getConfiguredDevicesByAddress(configuredDevices, scannedDevice) {
 }
 
 class ConfiguredDevices {
-  configuredDevices;
-  uuidFoundByScan;
+  configuredDevices = [];
+
+  /**
+   * Key is the UUID of the scanned device
+   *
+   * @type {Object.<string, ConfiguredDevice>}
+   */
+  foundDevices = {};
 
   constructor(portTabs, deviceTypesStore) {
     this.configuredDevices = getConfiguredModbusDevices(portTabs, deviceTypesStore);
-    this.foundDevices = [];
-    this.uuidFoundByScan = [];
   }
 
+  /**
+   * Finds a match for a scanned device in the configured devices.
+   *
+   * @param {Object} scannedDevice - The scanned device to find a match for.
+   * @returns {ConfiguredDevice|null} - The matched configured device, or null if no match is found.
+   */
   findMatch(scannedDevice) {
+    let configuredDevice = this.foundDevices?.[scannedDevice.uuid];
+    if (configuredDevice) {
+      return configuredDevice;
+    }
+
     const configuredDevicesWithSameAddress = getConfiguredDevicesByAddress(
       this.configuredDevices,
       scannedDevice
     );
 
-    if (configuredDevicesWithSameAddress.some(d => isCompletelySameDevice(scannedDevice, d))) {
-      return true;
+    configuredDevice = configuredDevicesWithSameAddress.find(d =>
+      isCompletelySameDevice(scannedDevice, d)
+    );
+    if (configuredDevice) {
+      this.foundDevices[scannedDevice.uuid] = configuredDevice;
+      return configuredDevice;
     }
 
     // Config has devices without SN. They are configured but never polled, maybe found device is one of them
@@ -92,17 +126,14 @@ class ConfiguredDevices {
       isPotentiallySameDevice(scannedDevice, d)
     );
 
-    if (this.uuidFoundByScan.includes(scannedDevice.uuid)) {
-      return true;
-    }
-    const maybeSameDevice = maybeSameDevices.find(d => !this.foundDevices.includes(d));
+    const foundDevicesList = Object.values(this.foundDevices);
+    const maybeSameDevice = maybeSameDevices.find(d => !foundDevicesList.includes(d));
     if (maybeSameDevice) {
-      this.foundDevices.push(maybeSameDevice);
-      this.uuidFoundByScan.push(scannedDevice.uuid);
-      return true;
+      this.foundDevices[scannedDevice.uuid] = maybeSameDevice;
+      return maybeSameDevice;
     }
 
-    return false;
+    return null;
   }
 
   /**

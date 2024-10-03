@@ -64,7 +64,7 @@ const DevicePanel = ({ deviceStore }) => {
             unknownType={deviceStore.isUnknownType}
             selected={deviceStore.selected}
             onSelectionChange={e => deviceStore.setSelected(e.target.checked)}
-            matchingDeviceTypes={deviceStore.names.slice(1)}
+            otherMatchingDeviceTypesNames={deviceStore.names.slice(1)}
             selectable={deviceStore.selectable}
           />
         </Row>

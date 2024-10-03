@@ -64,7 +64,7 @@ export const DeviceName = ({
   unknownType,
   selected,
   onSelectionChange,
-  matchingDeviceTypes,
+  otherMatchingDeviceTypesNames,
   selectable,
 }) => {
   const { t } = useTranslation();
@@ -83,10 +83,10 @@ export const DeviceName = ({
       {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
       {duplicateMqttTopic && <ErrorTag text={t('scan.labels.duplicate-topic')} />}
       {unknownType && <ErrorTag text={t('scan.labels.unknown-device-type')} />}
-      {matchingDeviceTypes.length > 1 && (
+      {otherMatchingDeviceTypesNames.length > 0 && (
         <MultilineErrorTag
           text={t('scan.labels.similar-device-signatures', {
-            types: matchingDeviceTypes.map(deviceType => '- ' + deviceType).join(',<br>'),
+            types: otherMatchingDeviceTypesNames.map(deviceType => '- ' + deviceType).join(',<br>'),
             interpolation: { escapeValue: false },
           })}
         />

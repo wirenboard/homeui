@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.100.2) stable; urgency=medium
+
+  * Remove warning about other matching templates for already configured devices in scanning results
+  * Choose only not deprecated templates for new devices found by scan 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 03 Oct 2024 10:07:01 +0500
+
 wb-mqtt-homeui (2.100.1) stable; urgency=medium
 
   * Add translate for Pa units

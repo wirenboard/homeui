@@ -36,10 +36,13 @@ class DeviceTypesStore {
     return schema;
   }
 
-  findDeviceTypes(deviceSignature, fw) {
-    // Filter only types with the same signature and older or equal firmware
+  findNotDeprecatedDeviceTypes(deviceSignature, fw) {
+    // Filter only not deprecated types with the same signature and older or equal firmware
     let deviceTypes = Object.entries(this.deviceTypesMap).filter(([_typeName, desc]) => {
-      return desc.hw?.some(hw => hw.signature == deviceSignature && !firmwareIsNewer(fw, hw.fw));
+      return (
+        !desc.deprecated &&
+        desc.hw?.some(hw => hw.signature == deviceSignature && !firmwareIsNewer(fw, hw.fw))
+      );
     });
 
     // Find closest firmware
