@@ -19,7 +19,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="row in $ctrl.getRows() | filter:search">
+        <tr ng-repeat="row in $ctrl.getRows() | filter:$ctrl.filterRows.bind({ search })">
             <td>{{row.deviceId}}/{{row.controlId}}</td>
             <td>
                 {{row.type }}
