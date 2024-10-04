@@ -1,7 +1,13 @@
+wb-mqtt-homeui (2.100.3) stable; urgency=medium
+
+  * Remove type filter from widgets
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 03 Oct 2024 16:20:24 +0300
+
 wb-mqtt-homeui (2.100.2) stable; urgency=medium
 
   * Remove warning about other matching templates for already configured devices in scanning results
-  * Choose only not deprecated templates for new devices found by scan 
+  * Choose only not deprecated templates for new devices found by scan
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 03 Oct 2024 10:07:01 +0500
 
