@@ -536,6 +536,7 @@ button.show-console span {
 
 .display-cell {
     width: 100%;
+    min-height: 22px;
     position: relative;
     padding-right: 35px;
 }
