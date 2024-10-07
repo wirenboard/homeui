@@ -37,18 +37,9 @@ def main():
     RW_DIR = "/mnt/data/.wb-update/"
     os.makedirs(RW_DIR, exist_ok=True)
 
-    # create flags file
-    FLAGS_FILE = os.path.join(RW_DIR, 'install_update.web.flags')
-    with open(FLAGS_FILE, "w") as flags_file_h:
-        flags_file_h.write('--factoryreset --from-emmc-factoryreset ')
-
-    # make hardlink to factoryreset.fit
-    SRC_FIT = "/mnt/data/.wb-restore/factoryreset.fit"
-    DST_FIT = os.path.join(RW_DIR, "webupd.fit")
-    os.link(SRC_FIT, DST_FIT)
-
-    # open/close it for writing to trigger wb-watch-update
-    with open(DST_FIT, "ab") as fp:
+    # open/close it for writing to trigger wb-watch-update's special mode
+    USE_FACTORY_FIT_FLAG = os.path.join(RW_DIR, "wb_use_factory_fit.flag")
+    with open(USE_FACTORY_FIT_FLAG, "ab") as fp:
         pass
 
     sys.stdout.write("Status: 200\r\n\r\n")
