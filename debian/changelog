@@ -1,9 +1,15 @@
-wb-mqtt-homeui (2.100.3) stable; urgency=medium
+wb-mqtt-homeui (2.100.4) stable; urgency=medium
 
   * Increase device cell height
   * Remove unnecessary switch cell margin
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 04 Oct 2024 15:55:01 +0300
+ 
+ wb-mqtt-homeui (2.100.3) stable; urgency=medium
+ 
+  * Remove type filter from widgets
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 03 Oct 2024 16:20:24 +0300
 
 wb-mqtt-homeui (2.100.2) stable; urgency=medium
 

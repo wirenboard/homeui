@@ -18,7 +18,6 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
     constructor($scope, $element, $attrs, $translate, $rootScope, $locale) {
       'ngInject';
       this.roles = rolesFactory;
-      this.cellType = 'any';
       this.source = {};
       this.jsonSource = angular.toJson(this.source, true);
       this.originalSource = {};
@@ -141,10 +140,6 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
         console.error('bad cell id: ' + id);
         return '<error>';
       }
-    }
-
-    cellTypeFilter() {
-      return this.cellType == 'any' ? '' : this.cellType;
     }
 
     prepareToEdit() {

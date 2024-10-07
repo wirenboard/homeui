@@ -73,11 +73,8 @@
       <div class="add-cell">
       <label>
         {{'widgets.labels.find' | translate}}
-        <select name="type-filter" ng-options="name for name in ctrl.cellTypesUsed track by name"
-                ng-model="ctrl.cellType" class="form-control"></select>
       </label>
-      <cell-picker placeholder="{{'widgets.labels.add' | translate}}"
-                   ng-model="ctrl.newCellId" filter-by-type="ctrl.cellTypeFilter()"></cell-picker>
+      <cell-picker placeholder="{{'widgets.labels.add' | translate}}" ng-model="ctrl.newCellId"></cell-picker>
     </div>
       <div class="widget-description"
          placeholder="{{'widgets.labels.description' | translate}}"
