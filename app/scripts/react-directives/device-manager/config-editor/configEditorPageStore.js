@@ -455,6 +455,26 @@ class ConfigEditorPageStore {
     this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
   }
 
+  async restoreDevice(device, portTab) {
+    if (!device.bootloaderMode) {
+      await this.setupDevice(device);
+      return;
+    }
+
+    let params = { slave_id: device.address };
+    if (portTab.isTcpGateway) {
+      params.port = portTab.baseConfig;
+    } else {
+      params.port = {
+        path: device.port,
+        baud_rate: device.baudRate,
+        parity: device.parity,
+        stop_bits: device.stopBits,
+      };
+    }
+    await this.fwUpdateProxy.Restore(params);
+  }
+
   async setupDevice(device) {
     if (!device.type) {
       return false;

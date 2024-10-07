@@ -138,7 +138,7 @@ export class PortTab {
     if (this.portType === 'serial') {
       return this.editedData?.path;
     }
-    if (this.portType === 'tcp' || this.portType === 'modbus tcp') {
+    if (this.isTcpGateway) {
       return `${this.editedData?.address}:${this.editedData?.port}`;
     }
     return '';
@@ -154,12 +154,16 @@ export class PortTab {
         dataBits: this.editedData.data_bits,
       };
     }
-    if (this.portType === 'tcp' || this.portType === 'modbus tcp') {
+    if (this.isTcpGateway) {
       return {
         address: this.editedData.address,
         port: this.editedData.port,
       };
     }
     return undefined;
+  }
+
+  get isTcpGateway() {
+    return this.portType === 'tcp' || this.portType === 'modbus tcp';
   }
 }

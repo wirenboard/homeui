@@ -3,7 +3,7 @@ function fwUpdateProxyService(MqttRpc) {
 
   return MqttRpc.getProxy(
     'wb-device-manager/fw-update',
-    ['GetFirmwareInfo', 'Update', 'ClearError'],
+    ['GetFirmwareInfo', 'Update', 'ClearError', 'Restore'],
     'fwUpdateProxy'
   );
 }

@@ -96,7 +96,7 @@ class DeviceManagerPageStore {
       if (device) {
         device.newAddress = selectedDeviceTab.slaveId;
         selectedDeviceTab.setLoading(true);
-        await this.configEditorPageStore.setupDevice(device);
+        await this.configEditorPageStore.restoreDevice(device, selectedPortTab);
         selectedDeviceTab.setDisconnected(false);
       }
     } catch (err) {
