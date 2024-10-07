@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.100.5) stable; urgency=medium
+
+  * Fix MQTT topics search
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 07 Oct 2024 10:45:24 +0300
+
 wb-mqtt-homeui (2.100.4) stable; urgency=medium
 
   * Increase device cell height
