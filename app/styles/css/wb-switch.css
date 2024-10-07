@@ -1,9 +1,9 @@
 .wb-switch {
   font-family: Trebuchet,Arial,sans-serif;
   width: 58px;
-  height: 25px;
   position: relative;
-  display: inline-block;
+  display: block;
+  margin: 0;
   cursor: pointer;
 }
 
@@ -17,15 +17,13 @@
 }
 
 .wb-switch-label {
-  margin-top: 4px;
-  position: relative;
   display: block;
-  height: 17px;
   font-size: 10px;
   font-weight: 700;
   background: white;
   border-radius: 17px;
-  border: 1px solid #9a9a9a;
+  outline: 1px solid #9a9a9a;
+  height: 15px;
 }
 
 .wb-switch-label:before,
@@ -49,8 +47,8 @@
   content: attr(data-on);
   color: white;
   opacity: 0;
-  margin-left: 3px;
-  margin-right: 21px;
+  margin-left: 4px;
+  margin-right: 19px;
 }
 
 .wb-switch-input:checked ~ .wb-switch-label {
@@ -84,16 +82,16 @@
   background: white;
   border-radius: 20px;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
-  border: 1px solid #9a9a9a;
-  width: 21px;
-  height: 21px;
+  outline: 1px solid #9a9a9a;
+  width: 19px;
+  height: 19px;
   font-family: FontAwesome;
   font-size: 10px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -2px;
+  top: -6px;
   z-index: 1;
 }
 
@@ -110,5 +108,5 @@
 
 .wb-switch-input:checked {
   left: unset;
-  right: 21px;
+  right: 19px;
 }

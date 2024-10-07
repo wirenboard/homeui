@@ -16,7 +16,7 @@
             "warning-popup": "You added this widget to several dashboards, so when applying changes, they will be applied on each.",
             "warning": "Сhanges affect other dashboards",
             "invert": "Invert",
-            "find": "Find controls of type",
+            "find": "Find control",
             "add": "Add control...",
             "copy": "copied to clipboard"
         },
