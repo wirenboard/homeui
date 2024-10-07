@@ -108,7 +108,7 @@ class SingleDeviceStore {
   constructor(scannedDevice, gotByFastScan, names, deviceTypes, selectable) {
     this.scannedDevice = scannedDevice;
     this.deviceTypes = deviceTypes;
-    this.selectable = selectable && !this.bootloaderMode;
+    this.selectable = selectable;
     this.selected = this.selectable && !this.isUnknownType;
     this.duplicateSlaveId = false;
     this.misconfiguredPort = false;
@@ -208,6 +208,7 @@ class DevicesStore {
     this.devicesByUuid = new Set();
     this.deviceTypesStore = deviceTypesStore;
     this.selectionPolicy = SelectionPolicy.Multiple;
+    this.allowToSelectDevicesInBootloader = false;
 
     makeObservable(this, {
       newDevices: observable,
@@ -240,12 +241,14 @@ class DevicesStore {
       scannedDevice.fw?.version
     );
 
+    const isSelectable = this.allowToSelectDevicesInBootloader || !scannedDevice.bootloader_mode;
+
     let deviceStore = new SingleDeviceStore(
       scannedDevice,
       gotByFastScan,
       deviceTypes.map(dt => this.deviceTypesStore.getName(dt)),
       deviceTypes,
-      true
+      isSelectable
     );
 
     if (this.selectionPolicy === SelectionPolicy.Single) {
@@ -280,8 +283,9 @@ class DevicesStore {
     scannedDevicesList.forEach(device => this.addDevice(device, gotByFastScan));
   }
 
-  init(selectionPolicy, configuredDevices) {
+  init(selectionPolicy, configuredDevices, allowToSelectDevicesInBootloader) {
     this.configuredDevices = configuredDevices;
+    this.allowToSelectDevicesInBootloader = !!allowToSelectDevicesInBootloader;
     this.newDevices.forEach(device => device.disposer?.());
     this.selectionPolicy = selectionPolicy ?? SelectionPolicy.Multiple;
     this.newDevices = [];
@@ -426,8 +430,24 @@ class CommonScanStore {
     }
   }
 
-  startScanning(selectionPolicy, configuredDevices, portPath, outOfOrderSlaveIds) {
-    this.devicesStore.init(selectionPolicy, configuredDevices);
+  /**
+   * Starts the scanning process.
+   *
+   * @param {SelectionPolicy} selectionPolicy - The selection policy for scanning.
+   * @param {Array} configuredDevices - The list of configured devices.
+   * @param {string} portPath - The path of the port.
+   * @param {Array} outOfOrderSlaveIds - The list of out-of-order slave IDs.
+   * @param {boolean} allowToSelectDevicesInBootloader - The flag to allow to select devices in bootloader.
+   * @returns {void}
+   */
+  startScanning(
+    selectionPolicy,
+    configuredDevices,
+    portPath,
+    outOfOrderSlaveIds,
+    allowToSelectDevicesInBootloader
+  ) {
+    this.devicesStore.init(selectionPolicy, configuredDevices, allowToSelectDevicesInBootloader);
     this.portPath = portPath;
     this.outOfOrderSlaveIds = outOfOrderSlaveIds;
     this.startExtendedScanning();
@@ -435,7 +455,7 @@ class CommonScanStore {
 
   getSelectedDevices() {
     return this.devicesStore.newDevices
-      .filter(d => d.selected && !d.scannedDevice.bootloader_mode)
+      .filter(d => d.selected)
       .map(d => {
         return {
           title: d.title,
@@ -447,6 +467,7 @@ class CommonScanStore {
           stopBits: d.scannedDevice.cfg.stop_bits,
           type: d.deviceType,
           gotByFastScan: d.gotByFastScan,
+          bootloaderMode: d.bootloaderMode,
         };
       });
   }

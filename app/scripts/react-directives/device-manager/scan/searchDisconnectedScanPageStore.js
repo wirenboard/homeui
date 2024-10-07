@@ -47,7 +47,8 @@ class SearchDisconnectedScanPageStore {
       SelectionPolicy.Single,
       configuredDevices,
       this.portPath,
-      outOfOrderSlaveIds
+      outOfOrderSlaveIds,
+      true
     );
     return new Promise((resolve, reject) => {
       this.onOk = async () => {

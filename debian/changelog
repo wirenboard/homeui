@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.101.0) stable; urgency=medium
+
+  * Add firmware recovery for devices in bootloader mode
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 07 Oct 2024 11:26:33 +0500
+
 wb-mqtt-homeui (2.100.3) stable; urgency=medium
 
   * Remove type filter from widgets
