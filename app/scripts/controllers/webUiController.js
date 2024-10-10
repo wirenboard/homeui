@@ -6,7 +6,7 @@ class WebUICtrl {
 
     this.rolesFactory = rolesFactory;
     this.uiConfig = uiConfig;
-    this.language = $window.localStorage['language'];
+    this.language = 'en';
     this.showSystemDevices = $window.localStorage['show-system-devices'] || 'no';
 
     uiConfig

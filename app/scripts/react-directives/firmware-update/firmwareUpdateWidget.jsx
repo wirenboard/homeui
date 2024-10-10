@@ -141,7 +141,7 @@ const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootF
       <div>
         <ul className="notes">
           <li>
-            <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">
+            <a href="https://storage.z-wave.me/z-way-server">
               {t('system.update.help')}
             </a>
           </li>
