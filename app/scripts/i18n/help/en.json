@@ -1,6 +1,6 @@
 {
     "help": {
         "title": "Help",
-        "content": "<ul><li><a href=\"https://wirenboard.com/wiki/Documentation/en\" target=\"_blank\" translate>Documentation</a></li><li><a href=\"https://support.wirenboard.com\" target=\"_blank\" translate=\"\">Technical support</a></li></ul>"
+        "content": "<ul><li><a href=\"https://z-wave.me/manual/wb7/\" target=\"_blank\" translate>Documentation</a></li><li><a href=\"https://help.z-wave.me\" target=\"_blank\" translate=\"\">Technical support</a></li></ul>"
     }
 }

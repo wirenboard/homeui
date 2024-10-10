@@ -465,15 +465,7 @@ const realApp = angular
         loginData['url'] = autoURL.href;
       }
 
-      let language = localStorage.getItem('language');
-      const supportedLanguages = ['en', 'ru'];
-      if (!language || !supportedLanguages.includes(language)) {
-        language =
-          navigator.languages
-            .map(lang => lang.split('-')[0])
-            .find(lang => supportedLanguages.includes(lang)) || 'en';
-        localStorage.setItem('language', language);
-      }
+      let language = 'en';
       $translate.use(language);
       tmhDynamicLocale.set(language);
 
