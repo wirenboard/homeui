@@ -14,18 +14,19 @@ import JsonEditor from '../../components/json-editor/jsonEditor';
 import { observer } from 'mobx-react-lite';
 import BootstrapLikeSelect from '../../components/select/select';
 
-const FirmwareUpdateIcon = observer(({ firmware }) => {
-  if (firmware.isUpdating) {
+const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }) => {
+  if (embeddedSoftware.isUpdating) {
     return <i className="glyphicon glyphicon-refresh animation-rotate"></i>;
   }
-  if (firmware.hasUpdate) {
+  if (embeddedSoftware.hasUpdate) {
     return <i className="glyphicon glyphicon-refresh"></i>;
   }
   return null;
 });
 
 export const DeviceTab = observer(({ tab }) => {
-  const isError = tab.hasInvalidConfig || tab.showDisconnectedError || tab.firmware.hasError;
+  const isError =
+    tab.hasInvalidConfig || tab.showDisconnectedError || tab.embeddedSoftware.hasError;
   const isWarning = tab.isDeprecated;
   const className = `device-tab${isError ? ' error' : isWarning ? ' warning' : ''}`;
   const showSign = isError || isWarning;
@@ -33,7 +34,7 @@ export const DeviceTab = observer(({ tab }) => {
   return (
     <div className={className}>
       <span>{tab.name}</span>
-      <FirmwareUpdateIcon firmware={tab.firmware} />
+      <EmbeddedSoftwareUpdateIcon embeddedSoftware={tab.embeddedSoftware} />
       {showSign && <i className="glyphicon glyphicon-exclamation-sign"></i>}
     </div>
   );
@@ -84,19 +85,24 @@ const UpdateProgressBar = observer(({ progress }) => {
   );
 });
 
-const FirmwareUpdatePanel = observer(({ firmware }) => {
+const EmbeddedSoftwareUpdatePanel = observer(({ component }) => {
   const { t } = useTranslation();
   return (
     <WarningPanel className={'firmware-update-panel'}>
       <WarningHeader>
         <span>
-          {t('device-manager.labels.updating-firmware', {
-            firmware: firmware.current,
-            newFirmware: firmware.available,
-          })}
+          {t(
+            component.type == 'firmware'
+              ? 'device-manager.labels.updating-firmware'
+              : 'device-manager.labels.updating-bootloader',
+            {
+              current: component.current,
+              available: component.available,
+            }
+          )}
         </span>
       </WarningHeader>
-      <UpdateProgressBar progress={firmware.updateProgress} />
+      <UpdateProgressBar progress={component.updateProgress} />
       <span>
         <b>{t('device-manager.labels.update-firmware-notice')}</b>
       </span>
@@ -117,59 +123,58 @@ const ActualFirmwarePanel = observer(({ firmwareVersion }) => {
   );
 });
 
-const NewFirmwareWarning = observer(({ firmware, onUpdateFirmware }) => {
+const NewEmbeddedSoftwareComponentWarning = observer(({ component, onUpdate }) => {
   const { t } = useTranslation();
   return (
     <WarningPanel>
       <WarningHeader>
         <Trans
           i18nKey={
-            firmware.canUpdate
-              ? 'device-manager.labels.new-firmware'
-              : 'device-manager.labels.new-firmware-cant-upgrade'
+            component.canUpdate
+              ? 'device-manager.labels.new-' + component.type
+              : 'device-manager.labels.cant-update-new-' + component.type
           }
           components={[<a></a>]}
           values={{
-            firmware: firmware.current,
-            newFirmware: firmware.available,
+            current: component.current,
+            available: component.available,
           }}
         />
       </WarningHeader>
-      {firmware.canUpdate && (
-        <Button
-          label={t('device-manager.buttons.update')}
-          type="warning"
-          onClick={onUpdateFirmware}
-        />
+      {component.canUpdate && (
+        <Button label={t('device-manager.buttons.update')} type="warning" onClick={onUpdate} />
       )}
     </WarningPanel>
   );
 });
 
-const FirmwareUpdateError = observer(({ firmware }) => {
+const EmbeddedSoftwareComponentUpdateError = observer(({ component }) => {
+  if (!component.hasError) {
+    return null;
+  }
   return (
     <ErrorPanel className={'firmware-update-error-panel'}>
       <ErrorHeader>
         <Trans
-          i18nKey={'device-manager.errors.firmware-update-error'}
+          i18nKey={'device-manager.errors.update-error-' + component.type}
           components={[<a></a>]}
           values={{
-            error: firmware.errorData.error.message,
-            firmware: firmware.errorData.from_fw,
-            newFirmware: firmware.errorData.to_fw,
+            error: component.errorData.error.message,
+            from_version: component.errorData.from_version,
+            to_version: component.errorData.to_version,
           }}
         />
       </ErrorHeader>
-      <button type="button" className="close" onClick={() => firmware.clearError()}>
+      <button type="button" className="close" onClick={() => component.clearError()}>
         <span aria-hidden="true">&times;</span>
       </button>
     </ErrorPanel>
   );
 });
 
-const CurrentFirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
+const CurrentFirmwarePanel = observer(({ firmware, onUpdate }) => {
   if (firmware.hasUpdate) {
-    return <NewFirmwareWarning firmware={firmware} onUpdateFirmware={onUpdateFirmware} />;
+    return <NewEmbeddedSoftwareComponentWarning component={firmware} onUpdate={onUpdate} />;
   }
   if (firmware.current) {
     return <ActualFirmwarePanel firmwareVersion={firmware.current} />;
@@ -177,20 +182,29 @@ const CurrentFirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
   return null;
 });
 
-const FirmwarePanel = observer(({ firmware, onUpdateFirmware }) => {
-  if (firmware.hasError) {
+const EmbeddedSoftwarePanel = observer(
+  ({ embeddedSoftware, onUpdateFirmware, onUpdateBootloader }) => {
+    if (embeddedSoftware.bootloader.isUpdating) {
+      return <EmbeddedSoftwareUpdatePanel component={embeddedSoftware.bootloader} />;
+    }
+    if (embeddedSoftware.firmware.isUpdating) {
+      return <EmbeddedSoftwareUpdatePanel component={embeddedSoftware.firmware} />;
+    }
     return (
       <>
-        <FirmwareUpdateError firmware={firmware} />
-        <CurrentFirmwarePanel firmware={firmware} onUpdateFirmware={onUpdateFirmware} />
+        <EmbeddedSoftwareComponentUpdateError component={embeddedSoftware.bootloader} />
+        <EmbeddedSoftwareComponentUpdateError component={embeddedSoftware.firmware} />
+        {embeddedSoftware.bootloader.hasUpdate && (
+          <NewEmbeddedSoftwareComponentWarning
+            component={embeddedSoftware.bootloader}
+            onUpdate={onUpdateBootloader}
+          />
+        )}
+        <CurrentFirmwarePanel firmware={embeddedSoftware.firmware} onUpdate={onUpdateFirmware} />
       </>
     );
   }
-  if (firmware.isUpdating) {
-    return <FirmwareUpdatePanel firmware={firmware} />;
-  }
-  return <CurrentFirmwarePanel firmware={firmware} onUpdateFirmware={onUpdateFirmware} />;
-});
+);
 
 const DeprecatedWarning = ({ isDeprecated }) => {
   const { t } = useTranslation();
@@ -262,6 +276,7 @@ export const DeviceTabContent = observer(
     onSetUniqueMqttTopic,
     onSearchDisconnectedDevice,
     onUpdateFirmware,
+    onUpdateBootloader,
   }) => {
     const { t } = useTranslation();
     if (tab.loading) {
@@ -277,7 +292,11 @@ export const DeviceTabContent = observer(
     return (
       <div>
         <DeprecatedWarning isDeprecated={tab.isDeprecated} />
-        <FirmwarePanel firmware={tab.firmware} onUpdateFirmware={onUpdateFirmware} />
+        <EmbeddedSoftwarePanel
+          embeddedSoftware={tab.embeddedSoftware}
+          onUpdateFirmware={onUpdateFirmware}
+          onUpdateBootloader={onUpdateBootloader}
+        />
         <DisconnectedError
           isDisconnected={tab.showDisconnectedError}
           isWbDevice={tab.isWbDevice}

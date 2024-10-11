@@ -232,7 +232,8 @@
 .device-manager-page div.alert {
     display: flex;
     align-items: center;
-    gap: 5px;   
+    gap: 5px;
+    margin-bottom: 10px; 
 }
 
 .device-manager-page div.alert .alert-header {

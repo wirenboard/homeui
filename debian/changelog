@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.101.1) stable; urgency=medium
+
+  * 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 11 Oct 2024 12:39:33 +0500
+
 wb-mqtt-homeui (2.101.0) stable; urgency=medium
 
   * Add firmware recovery for devices in bootloader mode
