@@ -258,10 +258,10 @@
          "updating-firmware": "Updating firmware {{current}} to {{available}}",
          "updating-bootloader": "Updating bootloader {{current}} to {{available}}",
          "actual-firmware": "Current firmware version: {{firmware}} (actual)",
-         "new-firmware": "Firmware {{current}}, there is a newer version {{available}}",
-         "cant-update-new-firmware": "Firmware {{current}}, there is a newer version {{available}}. <0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
-         "new-bootloader": "Bootloader {{current}}, there is a newer version {{available}}",
-         "cant-update-new-bootloader": "Bootloader {{current}}, there is a newer version {{available}}. <0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
+         "new-firmware": "There is a new firmware: {{available}}. Current: {{current}}",
+         "cant-update-new-firmware": "There is a new firmware: {{available}}. Current: {{current}}. <0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
+         "new-bootloader": "There is a new bootloader: {{available}}. Current: {{current}}",
+         "cant-update-new-bootloader": "There is a new bootloader: {{available}}. Current: {{current}}. <0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
          "update-firmware-notice": "Do not disconnect the device during the update"
       },
       "buttons": {
