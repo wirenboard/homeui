@@ -12,7 +12,7 @@ html, body {
 
 body {
     margin-top: 50px;
-    background: #222;
+    background: var(--bar-color);
 }
 
 @media(min-width:768px) {
@@ -135,7 +135,7 @@ ul.alert-dropdown {
         border: none;
         border-radius: 0;
         overflow-y: auto;
-        background-color: #222;
+        background-color: var(--bar-color);
         bottom:0;
         overflow-x:hidden;
     }
@@ -147,7 +147,7 @@ ul.alert-dropdown {
     .side-nav li a:hover,
     .side-nav li a:focus {
         outline: none;
-        background-color: #000 !important;
+        background-color: var(--bar-hover-color) !important;
     }
 }
 
@@ -159,7 +159,7 @@ ul.alert-dropdown {
     display: block;
     padding: 10px 15px 10px 38px;
     text-decoration: none;
-    color: #999;
+    color: var(--bar-inside-text-color);
 }
 
 .side-nav>li>ul>li>a:hover {
@@ -311,7 +311,16 @@ ul.alert-dropdown {
 .navbar-nav .active > a,
 .navbar-nav a.active{
   color: #fff !important;
-  background-color: #080808 !important;
+  background-color: var(--bar-hover-color) !important;
+}
+
+.navbar-nav > li .glyphicon {
+  margin-right: 4px;
+}
+
+.navbar-text .label {
+  padding: 3px 6px;
+  display: inline-block;
 }
 
 /* Glyphicons */
@@ -361,12 +370,12 @@ footer{
 
 
 .btn-primary {
-	background-color: #337ab7;
+	background-color: var(--primary-color);
 	color: #ffffff;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
-	background-color: #5393c8;
+	background-color: var(--primary-color-hover);
 }
 
 .btn-primary:active, .btn-primary.active {
@@ -776,7 +785,7 @@ button.show-console span {
 }
 
 .widgets-table .button-col button {
-  color: #337ab7;
+  color: var(--primary-color);
   margin: 0;
   padding: 2px;
 }
@@ -834,14 +843,12 @@ svg:not(:root) {
     background-color: #456b7b;
     border-color: #456b7b;
 }
-.uib-datepicker-popup .btn-info {
-    background-color: #5b835b;
-    border-color: #5b835b;
-}
+.uib-datepicker-popup .btn-info,
 .uib-daypicker .btn-info {
-  background-color: #5b835b;
-  border-color: #5b835b;
+    background-color: var(--success-color);
+    border-color: var(--success-color);
 }
+
 /*разъединяю btn-group */
 .uib-datepicker-popup .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
     border-bottom-right-radius: 2px;
