@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.101.1) stable; urgency=medium
+
+  * Do not collapse white spaces in rules console messages 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 16 Oct 2024 12:33:18 +0500
+
 wb-mqtt-homeui (2.101.0) stable; urgency=medium
 
   * Add firmware recovery for devices in bootloader mode
