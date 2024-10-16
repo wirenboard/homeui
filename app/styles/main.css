@@ -487,6 +487,10 @@ button.show-console span {
   color: #009;
 }
 
+.console .console-view .console-message-text {
+  white-space: pre;
+}
+
 .spinner {
   padding: 30px 0;
   text-align: center;
