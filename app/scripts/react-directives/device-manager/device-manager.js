@@ -136,7 +136,7 @@ function deviceManagerDirective(
             scope.store.updateScanState(msg.payload)
           );
           mqttClient.addStickySubscription('/wb-device-manager/firmware_update/state', msg =>
-            scope.store.updateFirmwareUpdateState(msg.payload)
+            scope.store.setEmbeddedSoftwareUpdateProgress(msg.payload)
           );
         });
 

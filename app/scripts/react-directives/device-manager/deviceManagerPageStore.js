@@ -67,8 +67,8 @@ class DeviceManagerPageStore {
     }
   }
 
-  updateFirmwareUpdateState(stringData) {
-    this.configEditorPageStore.updateFirmwareUpdateState(JSON.parse(stringData));
+  setEmbeddedSoftwareUpdateProgress(stringData) {
+    this.configEditorPageStore.setEmbeddedSoftwareUpdateProgress(JSON.parse(stringData));
   }
 
   setDeviceDisconnected(topic, error) {

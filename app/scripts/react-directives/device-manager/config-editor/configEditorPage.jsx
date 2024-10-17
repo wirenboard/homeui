@@ -44,7 +44,8 @@ function getTabPaneContent(
   deviceTypeSelectOptions,
   onDeviceTypeChange,
   onSearchDisconnectedDevice,
-  onUpdateFirmware
+  onUpdateFirmware,
+  onUpdateBootloader
 ) {
   if (tab.type == TabType.PORT) {
     return <PortTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} />;
@@ -61,6 +62,7 @@ function getTabPaneContent(
         onSetUniqueMqttTopic={() => tab.setUniqueMqttTopic()}
         onSearchDisconnectedDevice={onSearchDisconnectedDevice}
         onUpdateFirmware={onUpdateFirmware}
+        onUpdateBootloader={onUpdateBootloader}
       />
     );
   }
@@ -77,7 +79,8 @@ function makeTabPanes(
   deviceTypeSelectOptions,
   onDeviceTypeChange,
   onSearchDisconnectedDevice,
-  onUpdateFirmware
+  onUpdateFirmware,
+  onUpdateBootloader
 ) {
   return tabs.map((tab, index) => {
     return (
@@ -90,7 +93,8 @@ function makeTabPanes(
           deviceTypeSelectOptions,
           onDeviceTypeChange,
           onSearchDisconnectedDevice,
-          onUpdateFirmware
+          onUpdateFirmware,
+          onUpdateBootloader
         )}
       </TabPane>
     );
@@ -111,6 +115,7 @@ const PageTabs = observer(
     mobileModeStore,
     onSearchDisconnectedDevice,
     onUpdateFirmware,
+    onUpdateBootloader,
   }) => {
     const { t } = useTranslation();
     return (
@@ -145,7 +150,8 @@ const PageTabs = observer(
             deviceTypeSelectOptions,
             onDeviceTypeChange,
             onSearchDisconnectedDevice,
-            onUpdateFirmware
+            onUpdateFirmware,
+            onUpdateBootloader
           )}
         </TabContent>
       </VerticalTabs>
@@ -288,6 +294,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             mobileModeStore={pageStore.tabs.mobileModeStore}
             onSearchDisconnectedDevice={onSearchDisconnectedDevice}
             onUpdateFirmware={() => pageStore.updateFirmware()}
+            onUpdateBootloader={() => pageStore.updateBootloader()}
           />
         )}
       </PageBody>
