@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.102.0) stable; urgency=medium
 
   * Add bootloader update for Wiren Board devices
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 11 Oct 2024 12:39:33 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 17 Oct 2024 11:44:41 +0500
+
+wb-mqtt-homeui (2.101.1) stable; urgency=medium
+
+  * Do not collapse white spaces in rules console messages 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 16 Oct 2024 12:33:18 +0500
 
 wb-mqtt-homeui (2.101.0) stable; urgency=medium
 
