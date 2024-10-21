@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.0) stable; urgency=medium
+
+  * Add notification about deleting settings when updating firmware
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 21 Oct 2024 12:29:14 +0500
+
 wb-mqtt-homeui (2.102.0) stable; urgency=medium
 
   * Add bootloader update for Wiren Board devices
