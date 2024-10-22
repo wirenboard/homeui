@@ -1,19 +1,12 @@
 'use strict';
 
-import {
-  makeObservable,
-  makeAutoObservable,
-  observable,
-  action,
-  runInAction,
-  computed,
-} from 'mobx';
+import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
 import i18n from '../../../i18n/react/config';
-import firmwareIsNewer from '../../../utils/fwUtils';
+import { firmwareIsNewer, firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
 
 function toRpcPortConfig(portConfig) {
@@ -36,7 +29,6 @@ export class EmbeddedSoftwareComponent {
   available = '';
   fwUpdateProxy;
   updateProgress = null;
-  canUpdate = false;
   errorData = {};
 
   constructor(fwUpdateProxy, type) {
@@ -46,7 +38,6 @@ export class EmbeddedSoftwareComponent {
       current: observable,
       available: observable,
       updateProgress: observable,
-      canUpdate: observable,
       errorData: observable.ref,
       hasUpdate: computed,
       clearVersion: action,
@@ -56,10 +47,9 @@ export class EmbeddedSoftwareComponent {
     });
   }
 
-  setVersion(current, available, canUpdate) {
+  setVersion(current, available) {
     this.current = current;
     this.available = available;
-    this.canUpdate = canUpdate;
   }
 
   clearVersion() {
@@ -131,8 +121,10 @@ export class EmbeddedSoftware {
     this.fwUpdateProxy = fwUpdateProxy;
     this.firmware = new EmbeddedSoftwareComponent(fwUpdateProxy, 'firmware');
     this.bootloader = new EmbeddedSoftwareComponent(fwUpdateProxy, 'bootloader');
+    this.canUpdate = false;
 
     makeObservable(this, {
+      canUpdate: observable,
       setUpdateProgress: action,
       startFirmwareUpdate: action,
       isUpdating: computed,
@@ -148,8 +140,11 @@ export class EmbeddedSoftware {
           slave_id: getIntAddress(address),
           port: toRpcPortConfig(portConfig),
         });
-        this.firmware.setVersion(res.fw, res.available_fw, res.can_update);
-        this.bootloader.setVersion(res.bootloader, res.available_bootloader, res.can_update);
+        runInAction(() => {
+          this.canUpdate = res.can_update;
+        });
+        this.firmware.setVersion(res.fw, res.available_fw);
+        this.bootloader.setVersion(res.bootloader, res.available_bootloader);
       }
     } catch (err) {
       this.clearVersion();
@@ -188,6 +183,10 @@ export class EmbeddedSoftware {
 
   get hasError() {
     return this.firmware.hasError || this.bootloader.hasError;
+  }
+
+  get bootloaderCanSaveSettings() {
+    return firmwareIsNewerOrEqual('1.2.0', this.bootloader.current);
   }
 }
 

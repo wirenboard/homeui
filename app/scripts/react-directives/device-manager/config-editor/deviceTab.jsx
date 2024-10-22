@@ -123,30 +123,96 @@ const ActualFirmwarePanel = observer(({ firmwareVersion }) => {
   );
 });
 
-const NewEmbeddedSoftwareComponentWarning = observer(({ component, onUpdate }) => {
+const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
   const { t } = useTranslation();
-  return (
-    <WarningPanel>
-      <WarningHeader>
+  if (embeddedSoftware.bootloader.hasUpdate && embeddedSoftware.firmware.hasUpdate) {
+    return (
+      <span style={{ whiteSpace: 'pre' }}>
         <Trans
-          i18nKey={
-            component.canUpdate
-              ? 'device-manager.labels.new-' + component.type
-              : 'device-manager.labels.cant-update-new-' + component.type
-          }
-          components={[<a></a>]}
+          i18nKey={'device-manager.labels.new-firmware-bootloader'}
           values={{
-            current: component.current,
-            available: component.available,
+            current_firmware: embeddedSoftware.firmware.current,
+            available_firmware: embeddedSoftware.firmware.available,
+            current_bootloader: embeddedSoftware.bootloader.current,
+            available_bootloader: embeddedSoftware.bootloader.available,
           }}
         />
-      </WarningHeader>
-      {component.canUpdate && (
-        <Button label={t('device-manager.buttons.update')} type="warning" onClick={onUpdate} />
-      )}
-    </WarningPanel>
+      </span>
+    );
+  }
+  if (embeddedSoftware.bootloader.hasUpdate) {
+    return (
+      <span>
+        {t('device-manager.labels.new-bootloader', {
+          current: embeddedSoftware.bootloader.current,
+          available: embeddedSoftware.bootloader.available,
+        })}
+      </span>
+    );
+  }
+  if (embeddedSoftware.firmware.hasUpdate) {
+    return (
+      <span>
+        {t('device-manager.labels.new-firmware', {
+          current: embeddedSoftware.firmware.current,
+          available: embeddedSoftware.firmware.available,
+        })}
+      </span>
+    );
+  }
+  return null;
+});
+
+const NewEmbeddedSoftwareErasesSettingsText = observer(({ embeddedSoftware }) => {
+  const { t } = useTranslation();
+  if (!embeddedSoftware.canUpdate || embeddedSoftware.bootloaderCanSaveSettings) {
+    return null;
+  }
+  return (
+    <>
+      <div style={{ width: '100%' }} />
+      <b>{t('device-manager.labels.erase-settings-notice')}</b>
+    </>
   );
 });
+
+const NewEmbeddedSoftwareManualUpdateText = observer(({ embeddedSoftware }) => {
+  if (embeddedSoftware.canUpdate) {
+    return null;
+  }
+  return (
+    <span>
+      {embeddedSoftware.bootloader.hasUpdate && embeddedSoftware.firmware.hasUpdate && <br />}
+      <Trans i18nKey={'device-manager.labels.manual-update'} components={[<a></a>]} />
+    </span>
+  );
+});
+
+const NewEmbeddedSoftwareWarning = observer(
+  ({ embeddedSoftware, onUpdateFirmware, onUpdateBootloader }) => {
+    const { t } = useTranslation();
+    if (!embeddedSoftware.hasUpdate) {
+      return null;
+    }
+
+    return (
+      <WarningPanel className={'new-embedded-software-warning'}>
+        <WarningHeader>
+          <NewEmbeddedSoftwareText embeddedSoftware={embeddedSoftware} />
+          <NewEmbeddedSoftwareManualUpdateText embeddedSoftware={embeddedSoftware} />
+          <NewEmbeddedSoftwareErasesSettingsText embeddedSoftware={embeddedSoftware} />
+        </WarningHeader>
+        {embeddedSoftware.canUpdate && (
+          <Button
+            label={t('device-manager.buttons.update')}
+            type="warning"
+            onClick={embeddedSoftware.bootloader.hasUpdate ? onUpdateBootloader : onUpdateFirmware}
+          />
+        )}
+      </WarningPanel>
+    );
+  }
+);
 
 const EmbeddedSoftwareComponentUpdateError = observer(({ component }) => {
   if (!component.hasError) {
@@ -172,14 +238,11 @@ const EmbeddedSoftwareComponentUpdateError = observer(({ component }) => {
   );
 });
 
-const CurrentFirmwarePanel = observer(({ firmware, onUpdate }) => {
-  if (firmware.hasUpdate) {
-    return <NewEmbeddedSoftwareComponentWarning component={firmware} onUpdate={onUpdate} />;
+const CurrentFirmwarePanel = observer(({ firmware }) => {
+  if (firmware.hasUpdate || !firmware.current) {
+    return null;
   }
-  if (firmware.current) {
-    return <ActualFirmwarePanel firmwareVersion={firmware.current} />;
-  }
-  return null;
+  return <ActualFirmwarePanel firmwareVersion={firmware.current} />;
 });
 
 const EmbeddedSoftwarePanel = observer(
@@ -194,13 +257,12 @@ const EmbeddedSoftwarePanel = observer(
       <>
         <EmbeddedSoftwareComponentUpdateError component={embeddedSoftware.bootloader} />
         <EmbeddedSoftwareComponentUpdateError component={embeddedSoftware.firmware} />
-        {embeddedSoftware.bootloader.hasUpdate && (
-          <NewEmbeddedSoftwareComponentWarning
-            component={embeddedSoftware.bootloader}
-            onUpdate={onUpdateBootloader}
-          />
-        )}
-        <CurrentFirmwarePanel firmware={embeddedSoftware.firmware} onUpdate={onUpdateFirmware} />
+        <NewEmbeddedSoftwareWarning
+          embeddedSoftware={embeddedSoftware}
+          onUpdateBootloader={onUpdateBootloader}
+          onUpdateFirmware={onUpdateFirmware}
+        />
+        <CurrentFirmwarePanel firmware={embeddedSoftware.firmware} />
       </>
     );
   }

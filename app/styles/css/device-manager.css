@@ -283,3 +283,7 @@
 .device-manager-page .firmware-update-panel span:last-of-type{
     flex-basis: 100%;
 }
+
+.device-manager-page .new-embedded-software-warning .alert-header span::after {
+    content: ' ';
+}
