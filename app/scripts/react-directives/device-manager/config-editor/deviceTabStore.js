@@ -173,6 +173,11 @@ export class EmbeddedSoftware {
     this.bootloader.clearVersion();
   }
 
+  clearError() {
+    this.firmware.clearError();
+    this.bootloader.clearError();
+  }
+
   get isUpdating() {
     return this.firmware.isUpdating || this.bootloader.isUpdating;
   }
