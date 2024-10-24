@@ -124,18 +124,20 @@ function setSerialNumberForDeviceSetupRPCCall(device, params) {
   if (device === undefined || !device.gotByFastScan) {
     return;
   }
-  // Specifying SN will result fast modbus request
-  let numberSn = parseFloat(device.sn);
-  if (Number.isNaN(numberSn)) {
+  let numberSn;
+  try {
+    numberSn = BigInt(device.sn);
+  } catch {
     return;
   }
   // In a fast modbus call we must use in sn parameter the same value as in 270, 271 registers
   // For MAP devices sn occupies 25 bits in 270, 271 registers and the rest most significant bits are set to 1
   const re = new RegExp('\\S*MAP\\d+\\S*');
   if (re.test(device.type)) {
-    numberSn += 4261412864; // 0xFE000000
+    numberSn = numberSn + 4261412864n; // 0xFE000000
   }
-  params.sn = numberSn;
+  // Specifying SN will result fast modbus request
+  params.sn = Number(numberSn);
 }
 
 /**
@@ -164,9 +166,9 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     parity: device.parity,
   };
 
+  setSerialNumberForDeviceSetupRPCCall(device, commonCfg);
   if (device.newAddress) {
     let item = Object.assign({}, commonCfg);
-    setSerialNumberForDeviceSetupRPCCall(device, item);
     item.cfg = {
       slave_id: getIntAddress(device.newAddress),
     };
