@@ -25,6 +25,20 @@ import { getIntAddress } from '../common/modbusAddressesSet';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
+/**
+ * @typedef {Object} ScannedDevice
+ * @property {string} title
+ * @property {string} sn
+ * @property {number} address
+ * @property {number} newAddress
+ * @property {string} type
+ * @property {string} port
+ * @property {number} baudRate
+ * @property {string} parity
+ * @property {number} stopBits
+ * @property {boolean} gotByFastScan
+ **/
+
 function getErrorMessage(error) {
   if (typeof error === 'object') {
     if (error.data === 'EditorError' && error.code === CONFED_WRITE_FILE_ERROR) {
@@ -106,6 +120,33 @@ function makePortSelectOptions(portTabs) {
   });
 }
 
+function setSerialNumberForDeviceSetupRPCCall(device, params) {
+  if (device === undefined || !device.gotByFastScan) {
+    return;
+  }
+  // Specifying SN will result fast modbus request
+  let numberSn = parseFloat(device.sn);
+  if (Number.isNaN(numberSn)) {
+    return;
+  }
+  // In a fast modbus call we must use in sn parameter the same value as in 270, 271 registers
+  // For MAP devices sn occupies 25 bits in 270, 271 registers and the rest most significant bits are set to 1
+  const re = new RegExp('\\S*MAP\\d+\\S*');
+  if (re.test(device.type)) {
+    numberSn += 0xfe000000;
+  }
+  params.sn = numberSn;
+}
+
+/**
+ * Makes parameters for wb-mqtt-serial's port/Setup RPC call
+ *
+ * @param {ScannedDevice} device - The object containing the device information.
+ * @param {number} portBaudRate - The baud rate of the port.
+ * @param {string} portParity - The parity setting of the port.
+ * @param {number} portStopBits - The stop bits setting of the port.
+ * @returns {object|undefined} - The parameters object containing the device setup parameters, or undefined if no parameters are found.
+ */
 function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
   if (device === undefined) {
     return undefined;
@@ -123,12 +164,14 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     parity: device.parity,
   };
 
-  if (device.gotByFastScan) {
-    // Specifying SN will result fast modbus request
-    const numberSn = parseInt(device.sn);
-    if (!Number.isNaN(numberSn)) {
-      commonCfg.sn = numberSn;
-    }
+  if (device.newAddress) {
+    let item = Object.assign({}, commonCfg);
+    setSerialNumberForDeviceSetupRPCCall(device, item);
+    item.cfg = {
+      slave_id: getIntAddress(device.newAddress),
+    };
+    params.items.push(item);
+    commonCfg.slave_id = item.cfg.slave_id;
   }
 
   if (portBaudRate !== undefined && device.baudRate != portBaudRate) {
@@ -156,14 +199,6 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     };
     let item = Object.assign({}, commonCfg);
     item.cfg = { parity: mapping[portParity] || 0 };
-    params.items.push(item);
-  }
-
-  if (device.newAddress) {
-    let item = Object.assign({}, commonCfg);
-    item.cfg = {
-      slave_id: getIntAddress(device.newAddress),
-    };
     params.items.push(item);
   }
 
@@ -385,18 +420,6 @@ class ConfigEditorPageStore {
   }
 
   /**
-   * @typedef {Object} ScannedDevice
-   * @property {string} title
-   * @property {string} sn
-   * @property {number} address
-   * @property {number} newAddress
-   * @property {string} type
-   * @property {string} port
-   * @property {number} baudRate
-   * @property {string} parity
-   * @property {number} stopBits
-   * @property {boolean} gotByFastScan
-   *
    * @param {ScannedDevice[]} devices
    */
   async addDevices(devices) {
@@ -475,6 +498,10 @@ class ConfigEditorPageStore {
     await this.fwUpdateProxy.Restore(params);
   }
 
+  /**
+   * @param {ScannedDevice} device - The device to be set up.
+   * @returns {boolean} - Returns true if the device was set up successfully, otherwise false.
+   */
   async setupDevice(device) {
     if (!device.type) {
       return false;
