@@ -166,9 +166,9 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     parity: device.parity,
   };
 
-  setSerialNumberForDeviceSetupRPCCall(device, commonCfg);
   if (device.newAddress) {
     let item = Object.assign({}, commonCfg);
+    setSerialNumberForDeviceSetupRPCCall(device, item);
     item.cfg = {
       slave_id: getIntAddress(device.newAddress),
     };
