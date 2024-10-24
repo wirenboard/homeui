@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.103.2) stable; urgency=medium
 
-  * 
+  * Fix error during device configuration when adding from scan to wb-mqtt-serial config
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 24 Oct 2024 10:46:55 +0500
 

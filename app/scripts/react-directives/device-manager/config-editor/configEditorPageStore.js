@@ -133,7 +133,7 @@ function setSerialNumberForDeviceSetupRPCCall(device, params) {
   // For MAP devices sn occupies 25 bits in 270, 271 registers and the rest most significant bits are set to 1
   const re = new RegExp('\\S*MAP\\d+\\S*');
   if (re.test(device.type)) {
-    numberSn += 0xfe000000;
+    numberSn += 4261412864; // 0xFE000000
   }
   params.sn = numberSn;
 }
