@@ -121,7 +121,7 @@ function makePortSelectOptions(portTabs) {
 }
 
 function setSerialNumberForDeviceSetupRPCCall(device, params) {
-  if (device === undefined || !device.gotByFastScan) {
+  if (!device?.gotByFastScan) {
     return;
   }
   let numberSn;
