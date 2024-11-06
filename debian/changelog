@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.3) stable; urgency=medium
+
+  * Add link to firmware recovery instruction
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 06 Nov 2024 12:17:42 +0500
+
 wb-mqtt-homeui (2.103.2) stable; urgency=medium
 
   * Fix error during device configuration when adding from scan to wb-mqtt-serial config
