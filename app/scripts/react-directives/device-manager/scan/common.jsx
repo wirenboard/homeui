@@ -6,10 +6,11 @@ export function WarningTag({ text }) {
   return <span className="tag bg-warning text-nowrap">{text}</span>;
 }
 
-export function ErrorTag({ text, title }) {
+export function ErrorTag({ text, title, children }) {
   return (
     <span className="tag bg-danger text-nowrap" title={title}>
       {text}
+      {children}
     </span>
   );
 }
@@ -56,6 +57,21 @@ const DeviceNameLabel = ({ title, selectable, selected, onSelectionChange, disab
   return <b>{title}</b>;
 };
 
+const InBootloaderErrorTag = ({ bootloaderMode, selectable }) => {
+  const { t } = useTranslation();
+  if (!bootloaderMode) {
+    return null;
+  }
+  if (selectable) {
+    return <ErrorTag text={t('scan.labels.in-bootloder')} />;
+  }
+  return (
+    <ErrorTag>
+      <Trans i18nKey={'scan.labels.in-bootloader-link'} components={[<a></a>]} />
+    </ErrorTag>
+  );
+};
+
 export const DeviceName = ({
   title,
   bootloaderMode,
@@ -80,7 +96,7 @@ export const DeviceName = ({
         onSelectionChange={onSelectionChange}
         disabled={unknownType}
       />
-      {bootloaderMode && <ErrorTag text={t('scan.labels.in-bootloder')} />}
+      <InBootloaderErrorTag bootloaderMode={bootloaderMode} selectable={selectable} />
       {duplicateMqttTopic && <ErrorTag text={t('scan.labels.duplicate-topic')} />}
       {unknownType && <ErrorTag text={t('scan.labels.unknown-device-type')} />}
       {otherMatchingDeviceTypesNames.length > 0 && (
