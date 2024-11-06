@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.103.3) stable; urgency=medium
 
-  * Add link to firmware recover instruction
+  * Add link to firmware recovery instruction
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 06 Nov 2024 12:17:42 +0500
 
