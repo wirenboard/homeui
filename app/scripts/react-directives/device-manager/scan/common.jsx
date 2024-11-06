@@ -63,7 +63,7 @@ const InBootloaderErrorTag = ({ bootloaderMode, selectable }) => {
     return null;
   }
   if (selectable) {
-    return <ErrorTag text={t('scan.labels.in-bootloder')} />;
+    return <ErrorTag text={t('scan.labels.in-bootloader')} />;
   }
   return (
     <ErrorTag>
