@@ -255,7 +255,7 @@ wb-mqtt-homeui (2.93.4) stable; urgency=medium
 
   * Add Hz and rpm units translations
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Thu, 18 Jul 2024 12:32:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 18 Jul 2024 12:32:00 +0400
 
 wb-mqtt-homeui (2.93.3) stable; urgency=medium
 
