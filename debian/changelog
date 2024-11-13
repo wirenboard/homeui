@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.4) stable; urgency=medium
+
+  * Disable deletion of /dev/ttyRS485x ports in wb-mqtt-serial configuration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 13 Nov 2024 11:24:05 +0500
+
 wb-mqtt-homeui (2.103.3) stable; urgency=medium
 
   * Add link to firmware recovery instruction

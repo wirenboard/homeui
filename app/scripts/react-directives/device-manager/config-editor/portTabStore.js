@@ -72,6 +72,7 @@ export class PortTab {
       children: observable,
       hasChildren: computed,
       hasInvalidConfig: computed,
+      canDelete: computed,
     });
   }
 
@@ -165,5 +166,9 @@ export class PortTab {
 
   get isTcpGateway() {
     return this.portType === 'tcp' || this.portType === 'modbus tcp';
+  }
+
+  get canDelete() {
+    return !this.path.startsWith('/dev/ttyRS485');
   }
 }
