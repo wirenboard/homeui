@@ -26,12 +26,14 @@ export const PortTabContent = ({ tab, index, onDeleteTab }) => {
       {tab.childrenHasInvalidConfig && <ErrorBar msg={t('device-manager.errors.device-config')} />}
       <div className="port-tab-content-header">
         <span>{tab.title}</span>
-        <Button
-          key="delete"
-          label={t('device-manager.buttons.delete')}
-          type="danger"
-          onClick={onDeleteTab}
-        />
+        {tab.canDelete && (
+          <Button
+            key="delete"
+            label={t('device-manager.buttons.delete')}
+            type="danger"
+            onClick={onDeleteTab}
+          />
+        )}
       </div>
       <JsonEditor
         schema={tab.schema}
