@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.104.0) stable; urgency=medium
+
+  * Add link to Wiren Board devices firmware change log
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 14 Nov 2024 15:43:55 +0500
+
 wb-mqtt-homeui (2.103.3) stable; urgency=medium
 
   * Add link to firmware recovery instruction
