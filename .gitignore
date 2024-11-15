@@ -8,7 +8,6 @@ dist
 app/bower_components
 npm-debug.log
 .tern-port
-package-lock.json
 
 debian/files
 debian/wb-mqtt-homeui.debhelper.log
