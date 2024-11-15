@@ -65,17 +65,22 @@ const AngularJsonEditorModule = angular
                 }
               }
               return null;
-            }
+            };
 
             if (hasAdditionalDataOptions(schema, 'devices')) {
-              additionalData = Object.keys(DeviceData.cells).filter((item) => !item.startsWith('system__'));
+              additionalData = Object.keys(DeviceData.cells).filter(
+                item => !item.startsWith('system__')
+              );
             }
 
-            scope.editor = createJSONEditor(element[0], schema, startVal, $locale.id, undefined, additionalData);
-
-            scope.editor.on('ready', () => {
-              scope.isValid = scope.editor.validate().length === 0;
-            });
+            scope.editor = createJSONEditor(
+              element[0],
+              schema,
+              startVal,
+              $locale.id,
+              undefined,
+              additionalData
+            );
 
             scope.editor.on('change', () => {
               scope.$apply(() => {
