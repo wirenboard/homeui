@@ -955,12 +955,15 @@ class HistoryCtrl {
       const row = [];
 
       for (let j = 0; j < cols.length; j++) {
-        // warp channel name's in quotes to protect chanel name that contain ',' symbol
-        if (i === 0 && j > 0) {
-          row.push(`"${cols[j].innerText}"`);
-        } else {
-          row.push(cols[j].innerText);
-        }
+        /*
+         See https://www.ietf.org/rfc/rfc4180.txt:
+         6. Fields containing line breaks (CRLF), double quotes, and commas
+            should be enclosed in double-quotes.
+         7. If double-quotes are used to enclose fields, then a double-quote
+            appearing inside a field must be escaped by preceding it with
+            another double quote.
+        */
+        row.push(`"${cols[j].innerText.replace(/"/g, '""')}"`);
       }
 
       csv.push(row.join(','));
