@@ -1,6 +1,7 @@
 wb-mqtt-homeui (2.103.5) stable; urgency=medium
 
-  * 
+  * Fix config editors not opening error
+  * Fix adding mbgate channels
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 15 Nov 2024 11:32:01 +0500
 
