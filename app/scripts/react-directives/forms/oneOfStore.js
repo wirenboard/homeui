@@ -35,15 +35,12 @@ export class OneOfStore {
   }
 
   setValue(value) {
-    const index = this.matchFns.findIndex((fn, index) => {
-      if (fn(value)) {
-        this.optionsStore.setValue(index);
-        return true;
-      }
-      return false;
-    });
+    const index = this.matchFns.findIndex(fn => fn(value));
     if (index === -1) {
       this.optionsStore.setValue(null);
+    } else {
+      this.items.at(index).setValue(value);
+      this.optionsStore.setValue(index);
     }
   }
 
