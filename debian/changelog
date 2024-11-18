@@ -2,7 +2,26 @@ wb-mqtt-homeui (2.104.0) stable; urgency=medium
 
   * Add link to Wiren Board devices firmware change log
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 14 Nov 2024 15:43:55 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 18 Nov 2024 15:31:08 +0500
+
+wb-mqtt-homeui (2.103.6) stable; urgency=medium
+
+  * Fix saving history to csv file
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 15 Nov 2024 22:00:00 +0400
+
+wb-mqtt-homeui (2.103.5) stable; urgency=medium
+
+  * Fix config editors not opening error
+  * Fix adding mbgate channels
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 15 Nov 2024 11:32:01 +0500
+
+wb-mqtt-homeui (2.103.4) stable; urgency=medium
+
+  * Disable deletion of /dev/ttyRS485x ports in wb-mqtt-serial configuration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 13 Nov 2024 11:24:05 +0500
 
 wb-mqtt-homeui (2.103.3) stable; urgency=medium
 
@@ -267,7 +286,7 @@ wb-mqtt-homeui (2.93.3) stable; urgency=medium
 
   * Add missed units translations
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Wed, 17 Jul 2024 16:06:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 17 Jul 2024 16:06:00 +0400
 
 wb-mqtt-homeui (2.93.2) stable; urgency=medium
 
