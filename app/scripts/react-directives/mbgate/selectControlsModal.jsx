@@ -99,7 +99,7 @@ const SelectControlsModal = observer(({ state }) => {
   const [devicePattern, setDevicePattern] = useState('');
   const [controlPattern, setControlPattern] = useState('');
   useEffect(() => {
-    if (state.selected.length === 0) {
+    if (!state.selected.length) {
       treeRef.current?.setSelection({
         ids: [],
         anchor: null,
