@@ -125,38 +125,43 @@ const ActualFirmwarePanel = observer(({ firmwareVersion }) => {
 
 const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
   const { t } = useTranslation();
+  const values = {
+    current_firmware: embeddedSoftware.firmware?.current,
+    available_firmware: embeddedSoftware.firmware?.available,
+    current_bootloader: embeddedSoftware.bootloader?.current,
+    available_bootloader: embeddedSoftware.bootloader?.available,
+    device_model: embeddedSoftware.deviceModel,
+  };
   if (embeddedSoftware.bootloader.hasUpdate && embeddedSoftware.firmware.hasUpdate) {
+    const firmwareTransKey = !embeddedSoftware.deviceModel
+      ? 'device-manager.labels.new-firmware-item'
+      : 'device-manager.labels.new-firmware-item-link';
     return (
-      <span style={{ whiteSpace: 'pre' }}>
-        <Trans
-          i18nKey={'device-manager.labels.new-firmware-bootloader'}
-          values={{
-            current_firmware: embeddedSoftware.firmware.current,
-            available_firmware: embeddedSoftware.firmware.available,
-            current_bootloader: embeddedSoftware.bootloader.current,
-            available_bootloader: embeddedSoftware.bootloader.available,
-          }}
-        />
-      </span>
+      <>
+        <span>{t('device-manager.labels.new-software-components')}</span>
+        <br />
+        <span>
+          &emsp;&nbsp;-&nbsp;
+          {t('device-manager.labels.new-bootloader-item', values)}
+        </span>
+        <br />
+        <span>
+          &emsp;&nbsp;-&nbsp;
+          <Trans i18nKey={firmwareTransKey} values={values} components={[<a></a>]} />
+        </span>
+      </>
     );
   }
   if (embeddedSoftware.bootloader.hasUpdate) {
-    return (
-      <span>
-        {t('device-manager.labels.new-bootloader', {
-          current: embeddedSoftware.bootloader.current,
-          available: embeddedSoftware.bootloader.available,
-        })}
-      </span>
-    );
+    return <span>{t('device-manager.labels.new-bootloader', values)}</span>;
   }
   if (embeddedSoftware.firmware.hasUpdate) {
+    const transKey = !embeddedSoftware.deviceModel
+      ? 'device-manager.labels.new-firmware'
+      : 'device-manager.labels.new-firmware-link';
     return (
       <span>
-        {t('device-manager.labels.new-firmware', {
-          current: embeddedSoftware.firmware.current,
-          available: embeddedSoftware.firmware.available,
-        })}
+        <Trans i18nKey={transKey} values={values} components={[<a></a>]} />
       </span>
     );
   }

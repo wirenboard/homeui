@@ -122,9 +122,11 @@ export class EmbeddedSoftware {
     this.firmware = new EmbeddedSoftwareComponent(fwUpdateProxy, 'firmware');
     this.bootloader = new EmbeddedSoftwareComponent(fwUpdateProxy, 'bootloader');
     this.canUpdate = false;
+    this.deviceModel = '';
 
     makeObservable(this, {
       canUpdate: observable,
+      deviceModel: observable,
       setUpdateProgress: action,
       startFirmwareUpdate: action,
       isUpdating: computed,
@@ -142,6 +144,7 @@ export class EmbeddedSoftware {
         });
         runInAction(() => {
           this.canUpdate = res.can_update;
+          this.deviceModel = res?.model || '';
         });
         this.firmware.setVersion(res.fw, res.available_fw);
         this.bootloader.setVersion(res.bootloader, res.available_bootloader);

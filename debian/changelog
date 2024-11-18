@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.104.0) stable; urgency=medium
+
+  * Add link to Wiren Board devices firmware change log
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 18 Nov 2024 15:31:08 +0500
+
 wb-mqtt-homeui (2.103.6) stable; urgency=medium
 
   * Fix saving history to csv file
