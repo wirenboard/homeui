@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.6) stable; urgency=medium
+
+  * Fix saving history to csv file
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 15 Nov 2024 22:00:00 +0400
+
 wb-mqtt-homeui (2.103.5) stable; urgency=medium
 
   * Fix config editors not opening error
@@ -274,7 +280,7 @@ wb-mqtt-homeui (2.93.3) stable; urgency=medium
 
   * Add missed units translations
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com> Wed, 17 Jul 2024 16:06:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 17 Jul 2024 16:06:00 +0400
 
 wb-mqtt-homeui (2.93.2) stable; urgency=medium
 
