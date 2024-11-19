@@ -276,7 +276,7 @@
          "add-port": "Add port",
          "delete": "Delete",
          "delete-port": "Delete port",
-         "delete-devices": "Delete devices",
+         "delete-devices": "Delete all devices",
          "add-custom-device": "Manually add any device",
          "add-wb-device": "Find and add Wiren Board devices",
          "add": "Add",

@@ -274,7 +274,7 @@
          "add-port": "Добавить порт",
          "delete": "Удалить",
          "delete-port": "Удалить порт",
-         "delete-devices": "Удалить устройства",
+         "delete-devices": "Удалить все устройства",
          "add-custom-device": "Добавить любые устройства вручную",
          "add": "Добавить",
          "add-wb-device": "Найти и добавить устройства Wiren Board",

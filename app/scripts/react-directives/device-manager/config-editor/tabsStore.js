@@ -309,7 +309,7 @@ export class TabsStore {
       return;
     }
     let portTabIndex = this.selectedTabIndex;
-    if (this.items[portTabIndex] !== portTab) {
+    if (this.items.at(portTabIndex) !== portTab) {
       portTabIndex = this.items.findIndex(item => item === portTab);
     }
     if (portTabIndex == -1) {
