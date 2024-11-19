@@ -355,10 +355,10 @@ class ConfigEditorPageStore {
     this.tabs.addPortTab(tab);
   }
 
-  async showDeleteConfirmModal() {
+  async showDeleteConfirmModal(transKey, tabName) {
     return this.confirmModalState.show(
-      i18n.t('device-manager.labels.confirm-delete', {
-        item: this.tabs.selectedTab?.name,
+      i18n.t(transKey, {
+        item: tabName,
         interpolation: { escapeValue: false },
       }),
       [
@@ -370,9 +370,29 @@ class ConfigEditorPageStore {
     );
   }
 
+  async showDeleteTabConfirmModal() {
+    return this.showDeleteConfirmModal(
+      'device-manager.labels.confirm-delete',
+      this.tabs.selectedTab?.name
+    );
+  }
+
+  async showDeletePortDevicesConfirmModal(portTab) {
+    return this.showDeleteConfirmModal(
+      'device-manager.labels.confirm-delete-port-devices',
+      portTab?.name
+    );
+  }
+
   async deleteTab() {
-    if ((await this.showDeleteConfirmModal()) == 'ok') {
+    if ((await this.showDeleteTabConfirmModal()) == 'ok') {
       this.tabs.deleteSelectedTab();
+    }
+  }
+
+  async deletePortDevices(portTab) {
+    if ((await this.showDeletePortDevicesConfirmModal(portTab)) == 'ok') {
+      this.tabs.deletePortDevices(portTab);
     }
   }
 
