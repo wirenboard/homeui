@@ -199,7 +199,7 @@ export class TabsStore {
     const tab = this.items[this.selectedTabIndex];
     switch (tab?.type) {
       case TabType.PORT: {
-        this.deleteDeviceTabs(tab);
+        this.deletePortDevices(tab);
         this.items.splice(this.selectedTabIndex, 1);
         break;
       }
