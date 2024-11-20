@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.3-wb101) stable; urgency=medium
+
+  * Fix loading wb-mqtt-mbgate config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 20 Nov 2024 12:30:01 +0500
+
 wb-mqtt-homeui (2.103.3-wb100) stable; urgency=medium
 
   * Fix config editors not opening error
