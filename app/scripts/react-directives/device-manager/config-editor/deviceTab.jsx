@@ -223,11 +223,15 @@ const EmbeddedSoftwareComponentUpdateError = observer(({ component }) => {
   if (!component.hasError) {
     return null;
   }
+  let errorType = 'generic';
+  if (component.errorData.error.id === 'com.wb.device_manager.download_error') {
+    errorType = 'download';
+  }
   return (
     <ErrorPanel className={'firmware-update-error-panel'}>
       <ErrorHeader>
         <Trans
-          i18nKey={'device-manager.errors.update-error-' + component.type}
+          i18nKey={`device-manager.errors.update-error-${component.type}-${errorType}`}
           components={[<a></a>]}
           values={{
             error: component.errorData.error.message,
