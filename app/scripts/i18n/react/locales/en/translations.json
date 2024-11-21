@@ -297,7 +297,7 @@
          "update-error-bootloader": "Updating bootloader {{from_version}} to {{to_version}} failed.",
          "update-error-generic": "Error: {{error}}. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
          "update-error-recoverable": "If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode.",
-         "update-error-rpc-timeout": "Check wb-mqtt-serial is up and running",
+         "update-error-rpc-timeout": "Check wb-mqtt-serial is up and running.",
          "update-error-download": "File download error. Check the network connection."
       }
    },
