@@ -112,6 +112,8 @@ export class PortTab {
   }
 
   deleteChildren(index) {
+    const deviceTab = this.children.at(index);
+    deviceTab?.beforeDelete();
     if (this.reactionDisposers.length > index) {
       this.reactionDisposers[index]();
       this.reactionDisposers.splice(index, 1);

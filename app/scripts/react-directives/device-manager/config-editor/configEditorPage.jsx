@@ -40,6 +40,7 @@ function getTabPaneContent(
   tab,
   index,
   onDeleteTab,
+  onDeletePortDevices,
   onCopyTab,
   deviceTypeSelectOptions,
   onDeviceTypeChange,
@@ -48,7 +49,7 @@ function getTabPaneContent(
   onUpdateBootloader
 ) {
   if (tab.type == TabType.PORT) {
-    return <PortTabContent tab={tab} index={index} onDeleteTab={onDeleteTab} />;
+    return <PortTabContent tab={tab} index={index} onDeletePortDevices={onDeletePortDevices} />;
   }
   if (tab.type == TabType.DEVICE) {
     return (
@@ -63,6 +64,7 @@ function getTabPaneContent(
         onSearchDisconnectedDevice={onSearchDisconnectedDevice}
         onUpdateFirmware={onUpdateFirmware}
         onUpdateBootloader={onUpdateBootloader}
+        onDeletePortDevices={onDeletePortDevices}
       />
     );
   }
@@ -75,6 +77,7 @@ function getTabPaneContent(
 function makeTabPanes(
   tabs,
   onDeleteTab,
+  onDeletePortDevices,
   onCopyTab,
   deviceTypeSelectOptions,
   onDeviceTypeChange,
@@ -89,6 +92,7 @@ function makeTabPanes(
           tab,
           index,
           onDeleteTab,
+          onDeletePortDevices,
           onCopyTab,
           deviceTypeSelectOptions,
           onDeviceTypeChange,
@@ -107,6 +111,7 @@ const PageTabs = observer(
     onSelect,
     selectedIndex,
     onDeleteTab,
+    onDeletePortDevices,
     onCopyTab,
     onAddPort,
     showButtons,
@@ -146,6 +151,7 @@ const PageTabs = observer(
           {makeTabPanes(
             tabs,
             onDeleteTab,
+            onDeletePortDevices,
             onCopyTab,
             deviceTypeSelectOptions,
             onDeviceTypeChange,
@@ -286,6 +292,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             selectedIndex={pageStore.tabs.selectedTabIndex}
             onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}
+            onDeletePortDevices={tab => pageStore.deletePortDevices(tab)}
             onCopyTab={() => pageStore.copyTab()}
             onAddPort={() => pageStore.addPort()}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
