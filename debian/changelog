@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.105.1) stable; urgency=medium
+
+  * Fix alarm title translation
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 21 Nov 2024 23:55:00 +0400
+
 wb-mqtt-homeui (2.105.0) stable; urgency=medium
 
   * Add button to delete all port devices in wb-mqtt-serial config
