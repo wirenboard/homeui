@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.3-wb102) stable; urgency=medium
+
+  * Fix alarm title translation
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 21 Nov 2024 23:55:00 +0400
+
 wb-mqtt-homeui (2.103.3-wb101) stable; urgency=medium
 
   * Fix loading wb-mqtt-mbgate config
