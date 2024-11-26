@@ -1,3 +1,21 @@
+wb-mqtt-homeui (2.75.6-cb8ea449-wb101) stable; urgency=medium
+
+  * Hide Settings->Scan
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 31 Jan 2024 13:34:00 +0400
+
+wb-mqtt-homeui (2.75.6-cb8ea449-wb100) stable; urgency=medium
+
+  * Fix title
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 17 Aug 2023 09:56:00 +0400
+
+wb-mqtt-homeui (2.75.6-cb8ea449) stable; urgency=medium
+
+  * Vendor related changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 16 Aug 2023 20:00:00 +0400
+
 wb-mqtt-homeui (2.103.3-wb102) stable; urgency=medium
 
   * Fix alarm title translation
