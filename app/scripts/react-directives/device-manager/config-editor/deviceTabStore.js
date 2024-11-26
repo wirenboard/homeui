@@ -111,7 +111,6 @@ export class EmbeddedSoftwareComponent {
     } catch (err) {}
     runInAction(() => {
       this.errorData = {};
-      this.clearVersion();
     });
   }
 }
