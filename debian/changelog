@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.3-wb103) stable; urgency=medium
+
+  * Fix multiple datalists for same autocompletes
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Nov 2024 08:58:11 +0300
+
 wb-mqtt-homeui (2.103.3-wb102) stable; urgency=medium
 
   * Fix alarm title translation
@@ -49,7 +55,7 @@ wb-mqtt-homeui (2.102.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.101.1) stable; urgency=medium
 
-  * Do not collapse white spaces in rules console messages 
+  * Do not collapse white spaces in rules console messages
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 16 Oct 2024 12:33:18 +0500
 
@@ -71,9 +77,9 @@ wb-mqtt-homeui (2.100.4) stable; urgency=medium
   * Remove unnecessary switch cell margin
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 04 Oct 2024 15:55:01 +0300
- 
+
  wb-mqtt-homeui (2.100.3) stable; urgency=medium
- 
+
   * Remove type filter from widgets
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 03 Oct 2024 16:20:24 +0300
