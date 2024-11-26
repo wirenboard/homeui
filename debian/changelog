@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.105.2) stable; urgency=medium
 
-  * Fix multiple datalists for same autocomplits
+  * Fix multiple datalists for same autocompletes
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Nov 2024 08:58:11 +0300
 
