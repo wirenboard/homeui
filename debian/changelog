@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.105.3) stable; urgency=medium
+
+  * Fix device selection on scan page in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 27 Nov 2024 18:21:36 +0500
+
 wb-mqtt-homeui (2.105.2) stable; urgency=medium
 
   * Fix port delete in wb-mqtt-serial config editor
