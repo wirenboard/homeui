@@ -1,20 +1,8 @@
-wb-mqtt-homeui (2.75.6-cb8ea449-wb101) stable; urgency=medium
+wb-mqtt-homeui (2.103.3-wb102-cb8ea449) stable; urgency=medium
 
-  * Hide Settings->Scan
+  * Merge vendor related changes from 2307-cb8ea449 custom release
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 31 Jan 2024 13:34:00 +0400
-
-wb-mqtt-homeui (2.75.6-cb8ea449-wb100) stable; urgency=medium
-
-  * Fix title
-
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 17 Aug 2023 09:56:00 +0400
-
-wb-mqtt-homeui (2.75.6-cb8ea449) stable; urgency=medium
-
-  * Vendor related changes
-
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 16 Aug 2023 20:00:00 +0400
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Tue, 16 Nov 2024 20:00:00 +0300
 
 wb-mqtt-homeui (2.103.3-wb102) stable; urgency=medium
 
