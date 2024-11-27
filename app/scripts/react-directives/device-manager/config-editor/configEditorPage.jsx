@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '../../common';
 import { PageWrapper, PageBody, PageTitle } from '../../components/page-wrapper/pageWrapper';
 import { observer } from 'mobx-react-lite';
@@ -10,7 +10,6 @@ import { TabType } from './tabsStore';
 import { PortTab, PortTabContent } from './portTab';
 import { DeviceTab, DeviceTabContent } from './deviceTab';
 import { SettingsTab, SettingsTabContent } from './settingsPage';
-import { useMediaQuery } from 'react-responsive';
 import FormModal from '../../components/modals/formModal';
 
 function getTabItemContent(tab) {
@@ -263,10 +262,6 @@ const PageHeader = observer(
 );
 
 const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnectedDevice }) => {
-  const checkMobile = useMediaQuery({ maxWidth: 991 });
-  useEffect(() => {
-    pageStore.tabs.mobileModeStore.setMobileMode(checkMobile);
-  });
   return (
     <PageWrapper
       error={pageStore.pageWrapperStore.error}

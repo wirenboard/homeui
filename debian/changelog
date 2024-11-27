@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.106.0) stable; urgency=medium
+
+  * Handle browser's Back button on scan page in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 27 Nov 2024 16:11:47 +0500
+
 wb-mqtt-homeui (2.105.1) stable; urgency=medium
 
   * Fix alarm title translation
