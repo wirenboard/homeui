@@ -13,18 +13,22 @@ export default function makeAutocompleteEditor(options = []) {
     }
 
     addDatalist(options) {
-      this.datalist = document.createElement('datalist');
-      this.datalist.id = 'options-datalist';
+      const datalistId = 'options-datalist';
+      this.input.setAttribute('list', datalistId);
 
-      options.forEach((optionValue) => {
-        const option = document.createElement('option');
-        option.value = optionValue;
-        this.datalist.appendChild(option);
-      });
+      // Since we have autocomplete only for devices it is enough to have only one datalist for multiple similar inputs
+      if (!this.jsoneditor.element.querySelector(`#${datalistId}`)) {
+        const datalist = document.createElement('datalist');
+        datalist.id = datalistId;
 
-      this.input.setAttribute('list', this.datalist.id);
+        options.forEach((optionValue) => {
+          const option = document.createElement('option');
+          option.value = optionValue;
+          datalist.appendChild(option);
+        });
 
-      this.container.appendChild(this.datalist);
+        this.jsoneditor.element.appendChild(datalist);
+      }
     }
   };
 }
