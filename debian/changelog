@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.3-wb103-cb8ea449) stable; urgency=medium
+
+  * Merge vendor related changes from 2307-cb8ea449 custom release
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Tue, 16 Nov 2024 20:00:00 +0300
+
 wb-mqtt-homeui (2.103.3-wb103) stable; urgency=medium
 
   * Fix multiple datalists for same autocompletes

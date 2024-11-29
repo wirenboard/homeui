@@ -1,6 +1,6 @@
 {
-    "help": {
-        "title": "Help",
-        "content": "<ul><li><a href=\"https://wirenboard.com/wiki/Documentation/en\" target=\"_blank\" translate>Documentation</a></li><li><a href=\"https://support.wirenboard.com\" target=\"_blank\" translate=\"\">Technical support</a></li></ul>"
-    }
+  "help": {
+    "title": "Technical support",
+    "content": "<ul><li><a href=\"mailto:support@oni-system.com\">support@oni-system.com</a></li><li><a href=\"https://oni-system.com/podderzhka/\">https://oni-system.com/podderzhka/</a></li><li><a href=\"tel:+74955027981\">+7 (495) 502-79-81</a></li><li><a href=\"tel:88002224205\">8-800-222-42-05</a></li></ul>"
+  }
 }
