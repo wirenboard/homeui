@@ -1,6 +1,7 @@
 wb-mqtt-homeui (2.107.7-wb101-cb8ea449) stable; urgency=medium
 
   * Merge vendor related changes from 2307-cb8ea449 custom release
+  * Fix some translates
 
  -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Tue, 22 Apr 2025 18:48:00 +0300
 
