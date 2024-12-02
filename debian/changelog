@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.105.5) stable; urgency=medium
+
+  * Add wb85 config
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 01 Dec 2024 17:15:00 +0400
+
 wb-mqtt-homeui (2.105.4) stable; urgency=medium
 
   * Fix multiple datalists for same autocompletes
