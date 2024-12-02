@@ -69,8 +69,8 @@
          "modem": "GSM-modem connection",
          "canbus": "CAN bus",
          "confirm-delete-connection": "Do you really want to delete the connection?",
-         "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
-         "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>",
+         "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
+         "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>",
          "manual-connect": "Manual connect",
          "switcher": "Connection priorities",
          "connections": "Network connections",
@@ -131,7 +131,7 @@
             "help": "Download firmware",
             "expandrootfs": "Expand rootfs, if firmware supports it",
             "backup_modal_title": "rootfs backup archive",
-            "backup_first_page": "<p>During update only files stored in /mnt/data are saved. <strong>Third-party software like nodered or SH will be removed!</strong></p><p>Press <strong>Download backup</strong> to download a rootfs backup archive, where some useful files like third-party service configs may be stored.</p><p>This backup archive currently can't be used to restore Wiren Board state.</p>",
+            "backup_first_page": "<p>During update only files stored in /mnt/data are saved. <strong>Third-party software like nodered or SH will be removed!</strong></p><p>Press <strong>Download backup</strong> to download a rootfs backup archive, where some useful files like third-party service configs may be stored.</p><p>This backup archive currently can't be used to restore state.</p>",
             "backup_second_page": "<p>Great! Now <strong>wait until file is downloaded</strong> and press <strong>Select firmware file</strong> button to begin update process.</p>"
         },
         "errors": {
@@ -158,7 +158,7 @@
         },
         "cloud-status": {
             "title": "Cloud status",
-            "activation-link-preamble": "To connect this Wiren Board to cloud, press",
+            "activation-link-preamble": "To connect this controller to cloud, press",
             "activation-link": "this link",
             "status-ok": "Connected to cloud",
             "status-starting": "wb-cloud-agent service starting up",
@@ -271,7 +271,7 @@
          "add-port": "Add port",
          "delete": "Delete",
          "add-custom-device": "Manually add any device",
-         "add-wb-device": "Find and add Wiren Board devices",
+         "add-wb-device": "Find and add devices",
          "add": "Add",
          "copy": "Copy",
          "to-port-list": "To ports and devices list",
@@ -299,7 +299,7 @@
       "ssh_desc": "publicly accessible ssh with default root/wirenboard credentials",
       "http_desc": "web interface is available from the Internet without password",
       "mqtt_desc": "mqtt is available from the Internet without password",
-      "found_instructions": "How to protect your Wiren Board controller",
+      "found_instructions": "How to protect your controller",
       "support_url": "https://wirenboard.com/wiki/Security"
    },
    "mbgate": {

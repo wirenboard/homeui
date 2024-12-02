@@ -70,8 +70,8 @@
          "modem": "GSM-соединение",
          "canbus": "CAN bus",
          "confirm-delete-connection": "Вы действительно хотите удалить это соединение?",
-         "main-deprecation-notice": "Соединения {{connections}} настроены в /etc/network/interfaces. Для них доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается в Wiren Board. Для перехода на NetworkManager используйте существующие из списка (или создайте новые, если нужно) и <strong>удалите устаревшие</strong>.",
-         "main-deprecation-notice_one": "Соединение {{connections}} настроено в /etc/network/interfaces. Для него доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается в Wiren Board. Для перехода на NetworkManager используйте существующее из списка (или создайте новое, если нужно) и <strong>удалите устаревшее</strong>.",
+         "main-deprecation-notice": "Соединения {{connections}} настроены в /etc/network/interfaces. Для них доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается. Для перехода на NetworkManager используйте существующие из списка (или создайте новые, если нужно) и <strong>удалите устаревшие</strong>.",
+         "main-deprecation-notice_one": "Соединение {{connections}} настроено в /etc/network/interfaces. Для него доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается. Для перехода на NetworkManager используйте существующее из списка (или создайте новое, если нужно) и <strong>удалите устаревшее</strong>.",
          "manual-connect": "Подключается вручную",
          "switcher": "Приоритеты соединений",
          "connections": "Сетевые соединения",
@@ -129,7 +129,7 @@
             "help": "Скачать прошивку",
             "expandrootfs": "Расширить rootfs, если прошивка поддерживает эту возможность",
             "backup_modal_title": "Резервная копия rootfs",
-            "backup_first_page": "<p>При обновлении сохраняются пользовательские файлы и настройки только в /mnt/data. <strong>Стороннее ПО (nodered, SH и т.п.) будет удалено!</strong></p><p>Нажмите на кнопку <strong>Скачать архив</strong>, чтобы загрузить резервную копию rootfs, где могут оставаться файлы настроек, не перенесённые в /mnt/data.</p><p>Этот архив сейчас не может быть использован для восстановления Wiren Board.</p>",
+            "backup_first_page": "<p>При обновлении сохраняются пользовательские файлы и настройки только в /mnt/data. <strong>Стороннее ПО (nodered, SH и т.п.) будет удалено!</strong></p><p>Нажмите на кнопку <strong>Скачать архив</strong>, чтобы загрузить резервную копию rootfs, где могут оставаться файлы настроек, не перенесённые в /mnt/data.</p><p>Этот архив сейчас не может быть использован для восстановления.</p>",
             "backup_second_page": "<p>Отлично! <strong>Дождитесь окончания загрузки</strong> архива и нажмите на кнопку <strong>Выбрать файл прошивки</strong>, чтобы начать обновление.</p>"
         },
         "errors": {
@@ -156,14 +156,14 @@
         },
         "cloud-status": {
             "title": "Подключение к облаку",
-            "activation-link-preamble": "Почти готово! Для подключения контроллера к Wiren Board Cloud, нажмите",
+            "activation-link-preamble": "Почти готово! Для подключения контроллера к Cloud, нажмите",
             "activation-link": "эту ссылку",
             "status-ok": "Этот контроллер подключен к облаку",
             "status-starting": "Сервис wb-cloud-agent запускается",
             "status-connecting": "Подключаемся к облаку",
             "status-stopped": "Сервис wb-cloud-agent не запущен",
             "status-error": "Ошибка подключения к облаку",
-            "goto-cloud": "Перейти в Wiren Board Cloud"
+            "goto-cloud": "Перейти в Cloud"
         }
    },
    "view-svg-dashboard": {
@@ -270,7 +270,7 @@
          "delete": "Удалить",
          "add-custom-device": "Добавить любые устройства вручную",
          "add": "Добавить",
-         "add-wb-device": "Найти и добавить устройства Wiren Board",
+         "add-wb-device": "Найти и добавить устройства",
          "copy": "Скопировать",
          "to-port-list": "К списку портов и устройств",
          "resolve-duplicate-mqtt-topic": "Задать уникальный идентификатор",
@@ -297,7 +297,7 @@
       "ssh_desc": "доступ к консоли контроллера со стандартным паролем root/wirenboard",
       "http_desc": "доступ к веб-интерфейсу без пароля",
       "mqtt_desc": "доступ к MQTT-брокеру без пароля",
-      "found_instructions": "Как защитить контроллер Wiren Board",
+      "found_instructions": "Как защитить контроллер",
       "support_url": "https://wirenboard.com/wiki/Security"
    },
    "mbgate": {
