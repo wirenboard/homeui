@@ -19,7 +19,7 @@ function pageStateService(
   $rootScope.$on('$translateChangeSuccess', () => updateTranslations());
 
   $transitions.onBefore({}, function (transition) {
-    const serialConfigStates = ['serial-config.properties', 'serial-config'];
+    const serialConfigStates = ['serial-config.properties', 'serial-config.scan', 'serial-config'];
     if (
       serialConfigStates.includes(transition.from().name) &&
       serialConfigStates.includes(transition.to().name)
