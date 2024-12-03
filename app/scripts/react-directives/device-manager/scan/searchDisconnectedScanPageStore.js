@@ -79,7 +79,7 @@ class SearchDisconnectedScanPageStore {
   }
 
   onOk() {
-    this.stopScanning();
+    this.active = false;
     this?.onLeave(this.commonScanStore.getSelectedDevices()[0]);
   }
 
