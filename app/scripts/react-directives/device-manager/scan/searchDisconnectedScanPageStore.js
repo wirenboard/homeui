@@ -38,7 +38,12 @@ class SearchDisconnectedScanPageStore {
     this.deviceTypesStore = deviceTypesStore;
     this.onLeave = onLeave;
 
-    makeObservable(this, { active: observable, select: action, stopScanning: action });
+    makeObservable(this, {
+      active: observable,
+      select: action,
+      stopScanning: action,
+      onOk: action,
+    });
   }
 
   // Expected props structure
