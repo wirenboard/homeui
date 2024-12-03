@@ -47,7 +47,7 @@ const AlreadyConfiguredDevicesHeader = observer(
   }
 );
 
-const DevicePanel = ({ deviceStore }) => {
+const DevicePanel = observer(({ deviceStore }) => {
   const { t } = useTranslation();
   const panelClasses = deviceStore.selectable
     ? 'panel panel-default'
@@ -86,7 +86,7 @@ const DevicePanel = ({ deviceStore }) => {
       </div>
     </div>
   );
-};
+});
 
 const DevicesList = observer(({ newDevices, alreadyConfiguredDevices, collapseButtonState }) => {
   return (

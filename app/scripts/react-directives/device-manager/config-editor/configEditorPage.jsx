@@ -48,7 +48,14 @@ function getTabPaneContent(
   onUpdateBootloader
 ) {
   if (tab.type == TabType.PORT) {
-    return <PortTabContent tab={tab} index={index} onDeletePortDevices={onDeletePortDevices} />;
+    return (
+      <PortTabContent
+        tab={tab}
+        index={index}
+        onDeleteTab={onDeleteTab}
+        onDeletePortDevices={onDeletePortDevices}
+      />
+    );
   }
   if (tab.type == TabType.DEVICE) {
     return (
