@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.105.6) stable; urgency=medium
+
+  * Fix URL encoding of parameters on history page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 03 Dec 2024 10:12:42 +0500
+
 wb-mqtt-homeui (2.105.5) stable; urgency=medium
 
   * Add wb85 config
