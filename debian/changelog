@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.106.1) stable; urgency=medium
+
+  * Fix URL encoding of parameters on history page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 04 Dec 2024 10:49:15 +0500
+
 wb-mqtt-homeui (2.106.0) stable; urgency=medium
 
   * Handle browser's Back button on scan page in wb-mqtt-serial config editor
