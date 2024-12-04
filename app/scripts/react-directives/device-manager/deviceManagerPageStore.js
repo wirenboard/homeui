@@ -11,8 +11,7 @@ class DeviceManagerPageStore {
   constructor(
     loadConfigFn,
     saveConfigFn,
-    toMobileContent,
-    toTabs,
+    stateTransitions,
     loadDeviceTypeFn,
     rolesFactory,
     deviceManagerProxy,
@@ -23,8 +22,8 @@ class DeviceManagerPageStore {
     this.configEditorPageStore = new ConfigEditorPageStore(
       loadConfigFn,
       saveConfigFn,
-      toMobileContent,
-      toTabs,
+      stateTransitions.toMobileContent,
+      stateTransitions.toTabs,
       this.deviceTypesStore,
       rolesFactory,
       setupDeviceFn,
@@ -32,12 +31,16 @@ class DeviceManagerPageStore {
     );
     this.newDevicesScanPageStore = new NewDevicesScanPageStore(
       deviceManagerProxy,
-      this.deviceTypesStore
+      this.deviceTypesStore,
+      stateTransitions.onLeaveScan
     );
     this.searchDisconnectedScanPageStore = new SearchDisconnectedScanPageStore(
       deviceManagerProxy,
-      this.deviceTypesStore
+      this.deviceTypesStore,
+      stateTransitions.onLeaveSearchDisconnectedDevice
     );
+    this.stateTransitions = stateTransitions;
+    this.inMobileMode = false;
 
     makeObservable(this, {
       isDirty: computed,
@@ -50,6 +53,10 @@ class DeviceManagerPageStore {
 
   movedToTabsPanel() {
     this.configEditorPageStore.tabs.mobileModeStore.movedToTabsPanel();
+  }
+
+  movedToDeviceProperties() {
+    this.configEditorPageStore.tabs.mobileModeStore.movedToContentPanel();
   }
 
   async loadConfig() {
@@ -75,24 +82,33 @@ class DeviceManagerPageStore {
     this.configEditorPageStore.setDeviceDisconnected(topic, error);
   }
 
-  async addWbDevice() {
-    await this.configEditorPageStore.addDevices(
-      await this.newDevicesScanPageStore.select(
-        new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore)
-      )
+  addWbDevice() {
+    this.stateTransitions.toScan();
+    this.newDevicesScanPageStore.select(
+      new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore)
     );
   }
 
-  async searchDisconnectedDevice() {
+  addScannedDevices(selectedDevices) {
+    this.configEditorPageStore.addDevices(selectedDevices);
+  }
+
+  searchDisconnectedDevice() {
+    const selectedDeviceTab = this.configEditorPageStore.tabs.selectedTab;
+    const selectedPortTab = this.configEditorPageStore.tabs.selectedPortTab;
+    this.stateTransitions.toScan();
+    this.searchDisconnectedScanPageStore.select(
+      selectedDeviceTab.deviceType,
+      selectedPortTab.editedData.path,
+      new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore),
+      selectedDeviceTab.slaveId
+    );
+  }
+
+  async restoreDisconnectedDevice(device) {
     const selectedDeviceTab = this.configEditorPageStore.tabs.selectedTab;
     const selectedPortTab = this.configEditorPageStore.tabs.selectedPortTab;
     try {
-      const device = await this.searchDisconnectedScanPageStore.select(
-        selectedDeviceTab.deviceType,
-        selectedPortTab.editedData.path,
-        new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore),
-        selectedDeviceTab.slaveId
-      );
       if (device) {
         device.newAddress = selectedDeviceTab.slaveId;
         selectedDeviceTab.setLoading(true);
@@ -114,6 +130,11 @@ class DeviceManagerPageStore {
   stopScanning() {
     this.newDevicesScanPageStore.stopScanning();
     this.searchDisconnectedScanPageStore.stopScanning();
+  }
+
+  setMobileMode(value) {
+    this.inMobileMode = value;
+    this.configEditorPageStore.tabs.mobileModeStore.setMobileMode(value);
   }
 }
 

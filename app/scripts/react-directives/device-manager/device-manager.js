@@ -40,6 +40,11 @@ function deviceManagerDirective(
         scope.deleteTransitionHook();
       }
 
+      // Can't go to internal states directly by URL
+      if ($state.current.name !== 'serial-config') {
+        $state.go('serial-config', {}, { location: 'replace' });
+      }
+
       const path = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-serial-dummy.schema.json';
       const saveConfig = async data => {
         await ConfigEditorProxy.Save({ path: path, content: data });
@@ -58,11 +63,28 @@ function deviceManagerDirective(
         return SerialPortProxy.Setup(deviceCfg);
       };
 
-      const toMobileContent = () => {
-        $state.go('serial-config.properties', { hint: true });
-      };
-      const toTabs = () => {
-        $state.go('serial-config', {}, { location: 'replace' });
+      const stateTransitions = {
+        toMobileContent: () => {
+          $state.go('serial-config.properties', { hint: true });
+        },
+        toScan: () => {
+          $state.go('serial-config.scan', { hint: true });
+        },
+        toTabs: () => {
+          if (!$state.transition && $state.current.name === 'serial-config.properties') {
+            $state.go('serial-config', {}, { location: 'replace' });
+          }
+        },
+        onLeaveScan: selectedDevices => {
+          $state.go('serial-config', {}, { location: 'replace' });
+          if (selectedDevices) {
+            scope.store.addScannedDevices(selectedDevices);
+          }
+        },
+        onLeaveSearchDisconnectedDevice: selectedDevice => {
+          $state.go('serial-config.properties', { hint: true }, { location: 'replace' });
+          scope.store.restoreDisconnectedDevice(selectedDevice);
+        },
       };
 
       const loadDeviceTypeSchema = async deviceType => {
@@ -76,8 +98,7 @@ function deviceManagerDirective(
       scope.store = new DeviceManagerPageStore(
         loadConfig,
         saveConfig,
-        toMobileContent,
-        toTabs,
+        stateTransitions,
         loadDeviceTypeSchema,
         rolesFactory,
         DeviceManagerProxy,
@@ -96,26 +117,49 @@ function deviceManagerDirective(
       $rootScope.$on('$translateChangeSuccess', () => updateTranslations());
 
       scope.deleteTransitionHook = $transitions.onBefore({}, function (transition) {
+        const from = transition.from().name;
+        const to = transition.to().name;
+
+        // Can move to scan or properties only by clicking on special buttons, not by direct URL or back button.
+        // In this case, redirect to the main page
+        // Button hint is used to distinguish between direct URL and button click
         if (
-          transition.to().name == 'serial-config' &&
-          transition.from().name == 'serial-config.properties'
-        ) {
-          scope.store.movedToTabsPanel();
-          return true;
-        }
-        if (
-          transition.from().name == 'serial-config' &&
-          transition.to().name == 'serial-config.properties' &&
+          from == 'serial-config' &&
+          ['serial-config.properties', 'serial-config.scan'].includes(to) &&
           !transition.params('to').hint
         ) {
           return $state.target('serial-config');
         }
-        if (transition.from().name == 'serial-config' && scope.store.shouldConfirmLeavePage()) {
+
+        // Mobile properties page, browser Back button
+        if (to == 'serial-config') {
+          scope.store.movedToTabsPanel();
+        }
+
+        // Scan page, browser Back button
+        if (from == 'serial-config.scan' && to.startsWith('serial-config')) {
+          scope.store.stopScanning();
+        }
+
+        // Confirm moving from scanning page to any page not related to device-manager
+        if (
+          from == 'serial-config.scan' &&
+          !to.startsWith('serial-config') &&
+          scope.store.shouldConfirmLeavePage()
+        ) {
           if (!$window.confirm(CONFIRMATION_MSG)) {
             return false;
           }
           scope.store.stopScanning();
         }
+
+        if (to == 'serial-config.properties') {
+          if (!scope.store.inMobileMode) {
+            return $state.target('serial-config');
+          }
+          scope.store.movedToDeviceProperties();
+        }
+
         return true;
       });
 

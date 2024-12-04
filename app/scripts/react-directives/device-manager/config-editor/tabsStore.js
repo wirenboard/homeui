@@ -113,10 +113,14 @@ export class MobileModeTabsStore {
     this.tabsPanelIsActive = true;
   }
 
+  movedToContentPanel() {
+    this.tabsPanelIsActive = false;
+  }
+
   setMobileMode(value) {
     if (this.inMobileMode != value) {
       this.inMobileMode = value;
-      this.tabsPanelIsActive = true;
+      this.showTabsPanel();
     }
   }
 }
