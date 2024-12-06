@@ -258,6 +258,7 @@
          "copy-device": "Copy device",
          "updating-firmware": "Updating firmware {{current}} to {{available}}",
          "updating-bootloader": "Updating bootloader {{current}} to {{available}}",
+         "current-firmware": "Current firmware version: {{firmware}}",
          "actual-firmware": "Current firmware version: {{firmware}} (actual)",
          "new-firmware": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}.",
          "new-firmware-link": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>",

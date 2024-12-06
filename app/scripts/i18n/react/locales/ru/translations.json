@@ -256,6 +256,7 @@
          "copy-device": "Скопировать устройство",
          "updating-firmware": "Обновление прошивки {{current}} на {{available}}",
          "updating-bootloader": "Обновление загрузчика {{current}} на {{available}}",
+         "current-firmware": "Текущая версия прошивки: {{firmware}}",
          "actual-firmware": "Текущая версия прошивки: {{firmware}} (актуальная)",
          "new-firmware": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}.",
          "new-firmware-link": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>",

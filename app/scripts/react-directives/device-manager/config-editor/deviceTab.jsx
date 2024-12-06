@@ -110,14 +110,19 @@ const EmbeddedSoftwareUpdatePanel = observer(({ component }) => {
   );
 });
 
-const ActualFirmwarePanel = observer(({ firmwareVersion }) => {
+const FirmwareVersionPanel = observer(({ firmwareVersion, isActual }) => {
   const { t } = useTranslation();
   return (
-    <div className="actual-firmware-panel">
+    <div className="firmware-version-panel">
       <b>
-        {t('device-manager.labels.actual-firmware', {
-          firmware: firmwareVersion,
-        })}
+        {t(
+          isActual
+            ? 'device-manager.labels.actual-firmware'
+            : 'device-manager.labels.current-firmware',
+          {
+            firmware: firmwareVersion,
+          }
+        )}
       </b>
     </div>
   );
@@ -256,7 +261,7 @@ const CurrentFirmwarePanel = observer(({ firmware }) => {
   if (firmware.hasUpdate || !firmware.current) {
     return null;
   }
-  return <ActualFirmwarePanel firmwareVersion={firmware.current} />;
+  return <FirmwareVersionPanel firmwareVersion={firmware.current} isActual={firmware.isActual} />;
 });
 
 const EmbeddedSoftwarePanel = observer(
