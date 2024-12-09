@@ -316,6 +316,13 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       },
     })
     //...........................................................................
+    .state('serial-config.scan', {
+      url: '/scan',
+      params: {
+        hint: false,
+      },
+    })
+    //...........................................................................
     .state('logs', {
       url: '/logs',
       controller: 'LogsCtrl as $ctrl',

@@ -19,21 +19,30 @@ export const PortTab = observer(({ tab }) => {
   );
 });
 
-export const PortTabContent = ({ tab, index, onDeleteTab }) => {
+export const PortTabContent = ({ tab, index, onDeleteTab, onDeletePortDevices }) => {
   const { t } = useTranslation();
   return (
     <div>
       {tab.childrenHasInvalidConfig && <ErrorBar msg={t('device-manager.errors.device-config')} />}
       <div className="port-tab-content-header">
         <span>{tab.title}</span>
-        {tab.canDelete && (
+        <div className="button-panel">
           <Button
-            key="delete"
-            label={t('device-manager.buttons.delete')}
+            key="delete-devices"
+            label={t('device-manager.buttons.delete-devices')}
             type="danger"
-            onClick={onDeleteTab}
+            onClick={() => onDeletePortDevices(tab)}
+            disabled={!tab.hasChildren}
           />
-        )}
+          {tab.canDelete && (
+            <Button
+              key="delete-port"
+              label={t('device-manager.buttons.delete-port')}
+              type="danger"
+              onClick={onDeleteTab}
+            />
+          )}
+        </div>
       </div>
       <JsonEditor
         schema={tab.schema}

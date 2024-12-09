@@ -15,7 +15,7 @@ function historyUrlService() {
       s: startDate,
       e: endDate,
     };
-    return LZString.compressToEncodedURIComponent(JSON.stringify(data));
+    return encodeURIComponent(LZString.compressToEncodedURIComponent(JSON.stringify(data)));
   };
 
   this.encodeControl = function (deviceId, controlId, startDate, endDate) {
@@ -37,7 +37,7 @@ function historyUrlService() {
   // }
   this.decode = function (data) {
     try {
-      var res = JSON.parse(LZString.decompressFromEncodedURIComponent(data));
+      var res = JSON.parse(LZString.decompressFromEncodedURIComponent(decodeURIComponent(data)));
       if (res.s) {
         res.s = new Date(res.s);
       }

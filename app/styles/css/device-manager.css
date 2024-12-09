@@ -223,6 +223,8 @@
     display: flex;
     flex-direction: row;
     align-items: baseline;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
 .device-manager-page .port-tab-content-header span{
@@ -286,4 +288,20 @@
 
 .device-manager-page .new-embedded-software-warning .alert-header span::after {
     content: ' ';
+}
+
+.device-manager-page .button-panel {
+    gap: 5px;
+    display: flex;
+    flex-direction: row;
+}
+
+.device-manager-page .button-panel .btn {
+    flex-grow: 1;
+}
+
+@media (max-width: 500px) {
+    .device-manager-page .port-tab-content-header .button-panel {
+        flex-grow: 1;
+    }
 }

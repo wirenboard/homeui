@@ -1,22 +1,49 @@
 'use strict';
 
-import { makeObservable, observable, action, runInAction } from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 import CommonScanStore, { SelectionPolicy } from './scanPageStore';
 import SetupAddressModalState from './setupAddressModalState';
 import ModbusAddressSet from '../common/modbusAddressesSet';
 
+/**
+ * @typedef {Object} SelectedDevice
+ * @property {string} title
+ * @property {string} sn
+ * @property {number} address
+ * @property {string} type
+ * @property {string} port
+ * @property {string} baudRate
+ * @property {string} parity
+ * @property {string} stopBits
+ * @property {boolean} gotByFastScan
+ */
+
+/**
+ * The function to call when leaving the page.
+ * It should accept an array of selected devices.
+ *
+ * @callback LeaveCallback
+ * @param {SelectedDevice[]} devices
+ */
+
 class NewDevicesScanPageStore {
   configuredDevices;
-  onCancel;
-  onOk;
   active;
   commonScanStore;
   setupAddressModalState;
+  onLeave;
 
-  constructor(deviceManagerProxy, deviceTypesStore) {
+  /**
+   * Constructs a new instance of the NewDevicesScanPageStore.
+   * @param {DeviceManagerProxy} deviceManagerProxy - The device manager proxy.
+   * @param {DeviceTypesStore} deviceTypesStore - The device types store.
+   * @param {LeaveCallback} onLeave - The function to call when leaving the page.
+   */
+  constructor(deviceManagerProxy, deviceTypesStore, onLeave) {
     this.commonScanStore = new CommonScanStore(deviceManagerProxy, deviceTypesStore);
     this.active = false;
     this.setupAddressModalState = new SetupAddressModalState();
+    this.onLeave = onLeave;
 
     makeObservable(this, { active: observable, select: action, stopScanning: action });
   }
@@ -41,40 +68,24 @@ class NewDevicesScanPageStore {
   /**
    * Starts scanning for new devices
    * and activates page with a list of found devices to select
-   *
-   * @typedef {Object} SelectedDevice
-   * @property {string} title
-   * @property {string} sn
-   * @property {number} address
-   * @property {string} type
-   * @property {string} port
-   * @property {string} baudRate
-   * @property {string} parity
-   * @property {string} stopBits
-   * @property {boolean} gotByFastScan
-   *
-   * @returns {Promise<SelectedDevice[]>} - A promise that resolves with the list of devices after confirmation or an empty array if canceled
    */
   select(configuredDevices) {
     this.configuredDevices = configuredDevices;
     this.active = true;
     this.commonScanStore.startScanning(SelectionPolicy.Multiple, configuredDevices);
-    return new Promise((resolve, reject) => {
-      this.onOk = async () => {
-        try {
-          const devices = await this.confirmAddressChange();
-          runInAction(() => {
-            this.active = false;
-          });
-          resolve(devices);
-        } catch (e) {}
-      };
+  }
 
-      this.onCancel = () => {
-        this.stopScanning();
-        resolve([]);
-      };
-    });
+  async onOk() {
+    try {
+      const devices = await this.confirmAddressChange();
+      this.stopScanning();
+      this?.onLeave(devices);
+    } catch (e) {}
+  }
+
+  onCancel() {
+    this.stopScanning();
+    this?.onLeave([]);
   }
 
   async confirmAddressChange() {
@@ -107,7 +118,9 @@ class NewDevicesScanPageStore {
   }
 
   stopScanning() {
-    this.commonScanStore.stopScanning();
+    if (this.isScanning) {
+      this.commonScanStore.stopScanning();
+    }
     this.active = false;
   }
 }

@@ -113,10 +113,14 @@ export class MobileModeTabsStore {
     this.tabsPanelIsActive = true;
   }
 
+  movedToContentPanel() {
+    this.tabsPanelIsActive = false;
+  }
+
   setMobileMode(value) {
     if (this.inMobileMode != value) {
       this.inMobileMode = value;
-      this.tabsPanelIsActive = true;
+      this.showTabsPanel();
     }
   }
 }
@@ -199,15 +203,11 @@ export class TabsStore {
     const tab = this.items[this.selectedTabIndex];
     switch (tab?.type) {
       case TabType.PORT: {
-        tab.children.forEach(deviceTab => {
-          deviceTab.beforeDelete();
-          this.uniqueMqttIdChecker.removeTab(deviceTab);
-        });
-        this.items.splice(this.selectedTabIndex, tab.children.length + 1);
+        this.deletePortDevices(tab);
+        this.items.splice(this.selectedTabIndex, 1);
         break;
       }
       case TabType.DEVICE: {
-        tab.beforeDelete();
         let portTab = this.selectedPortTab;
         const childIndex = portTab.children.indexOf(tab);
         portTab.deleteChildren(childIndex);
@@ -305,5 +305,26 @@ export class TabsStore {
       }
       return false;
     });
+  }
+
+  deletePortDevices(portTab) {
+    const deviceTabsCount = portTab.children.length;
+    if (!deviceTabsCount) {
+      return;
+    }
+    let portTabIndex = this.selectedTabIndex;
+    if (this.items.at(portTabIndex) !== portTab) {
+      portTabIndex = this.items.findIndex(item => item === portTab);
+    }
+    if (portTabIndex == -1) {
+      return;
+    }
+    for (let i = 0; i < deviceTabsCount; i++) {
+      const deviceTab = portTab.children[0];
+      portTab.deleteChildren(0);
+      this.uniqueMqttIdChecker.removeTab(deviceTab);
+    }
+    this.items.splice(portTabIndex + 1, deviceTabsCount);
+    this.hasModifiedStructure = true;
   }
 }

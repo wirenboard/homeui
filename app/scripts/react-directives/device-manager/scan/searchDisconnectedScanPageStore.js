@@ -1,18 +1,49 @@
 'use strict';
 
-import { makeObservable, observable, action, runInAction } from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 import CommonScanStore, { SelectionPolicy } from './scanPageStore';
 
+/**
+ * @typedef {Object} SelectedDevice
+ * @property {string} title
+ * @property {string} sn
+ * @property {number} address
+ * @property {string} type
+ * @property {string} port
+ * @property {string} baudRate
+ * @property {string} parity
+ * @property {string} stopBits
+ * @property {boolean} gotByFastScan
+ */
+
+/**
+ * The function to call when leaving the page.
+ * It should accept a selected device or undefined.
+ *
+ * @callback LeaveCallback
+ * @param {SelectedDevice|undefined} device
+ */
+
 class SearchDisconnectedScanPageStore {
-  constructor(deviceManagerProxy, deviceTypesStore) {
+  /**
+   * Constructs a new instance of the SearchDisconnectedScanPageStore.
+   * @param {DeviceManagerProxy} deviceManagerProxy - The device manager proxy.
+   * @param {DeviceTypesStore} deviceTypesStore - The device types store.
+   * @param {LeaveCallback} onLeave - The callback function to be called when leaving the page.
+   */
+  constructor(deviceManagerProxy, deviceTypesStore, onLeave) {
     this.commonScanStore = new CommonScanStore(deviceManagerProxy, deviceTypesStore);
-    this.onCancel = undefined;
-    this.onOk = undefined;
     this.active = false;
     this.portPath = undefined;
     this.deviceTypesStore = deviceTypesStore;
+    this.onLeave = onLeave;
 
-    makeObservable(this, { active: observable, select: action, stopScanning: action });
+    makeObservable(this, {
+      active: observable,
+      select: action,
+      stopScanning: action,
+      onOk: action,
+    });
   }
 
   // Expected props structure
@@ -50,21 +81,16 @@ class SearchDisconnectedScanPageStore {
       outOfOrderSlaveIds,
       true
     );
-    return new Promise((resolve, reject) => {
-      this.onOk = async () => {
-        try {
-          runInAction(() => {
-            this.active = false;
-          });
-          resolve(this.commonScanStore.getSelectedDevices()[0]);
-        } catch (e) {}
-      };
+  }
 
-      this.onCancel = () => {
-        this.stopScanning();
-        resolve(undefined);
-      };
-    });
+  onOk() {
+    this.active = false;
+    this?.onLeave(this.commonScanStore.getSelectedDevices()[0]);
+  }
+
+  onCancel() {
+    this.stopScanning();
+    this?.onLeave(undefined);
   }
 
   get isScanning() {

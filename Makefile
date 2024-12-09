@@ -34,7 +34,7 @@ build:
 configs:
 	mkdir -p dist/configs
 	cp -a configs/config.*.json dist/configs
-	for wb in wb6 wb7 wb74 wb8; do \
+	for wb in wb6 wb7 wb74 wb8 wb85; do \
 	  minify configs/$$wb.svg > dist/configs/$$wb.svg; \
 	  j2 configs/config.$$wb.json.jinja > dist/configs/config.$$wb.json; \
 	done
