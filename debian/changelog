@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.106.2) stable; urgency=medium
 
   * Make Wiren Board Modbus device update errors more verbose
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 20 Nov 2024 16:11:55 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 09 Dec 2024 11:05:39 +0500
 
 wb-mqtt-homeui (2.106.1) stable; urgency=medium
 
