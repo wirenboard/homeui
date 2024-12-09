@@ -110,14 +110,19 @@ const EmbeddedSoftwareUpdatePanel = observer(({ component }) => {
   );
 });
 
-const ActualFirmwarePanel = observer(({ firmwareVersion }) => {
+const FirmwareVersionPanel = observer(({ firmwareVersion, isActual }) => {
   const { t } = useTranslation();
   return (
-    <div className="actual-firmware-panel">
+    <div className="firmware-version-panel">
       <b>
-        {t('device-manager.labels.actual-firmware', {
-          firmware: firmwareVersion,
-        })}
+        {t(
+          isActual
+            ? 'device-manager.labels.actual-firmware'
+            : 'device-manager.labels.current-firmware',
+          {
+            firmware: firmwareVersion,
+          }
+        )}
       </b>
     </div>
   );
@@ -219,23 +224,32 @@ const NewEmbeddedSoftwareWarning = observer(
   }
 );
 
+function getErrorDescriptionKey(errorId) {
+  const idToKey = new Map([
+    ['com.wb.device_manager.download_error', 'download'],
+    ['com.wb.device_manager.rpc_call_timeout_error', 'rpc-timeout'],
+    ['com.wb.device_manager.device.response_timeout_error', 'recoverable'],
+  ]);
+  const key = idToKey.get(errorId) || 'generic';
+  return 'device-manager.errors.update-error-' + key;
+}
+
 const EmbeddedSoftwareComponentUpdateError = observer(({ component }) => {
+  const { t } = useTranslation();
   if (!component.hasError) {
     return null;
   }
+  const errorPrefix = t(`device-manager.errors.update-error-${component.type}`, {
+    from_version: component.errorData.from_version,
+    to_version: component.errorData.to_version,
+  });
+  const errorDescription = t(getErrorDescriptionKey(component.errorData.error.id), {
+    error: component.errorData.error.metadata?.exception || component.errorData.error.message,
+  });
+
   return (
     <ErrorPanel className={'firmware-update-error-panel'}>
-      <ErrorHeader>
-        <Trans
-          i18nKey={'device-manager.errors.update-error-' + component.type}
-          components={[<a></a>]}
-          values={{
-            error: component.errorData.error.message,
-            from_version: component.errorData.from_version,
-            to_version: component.errorData.to_version,
-          }}
-        />
-      </ErrorHeader>
+      <ErrorHeader>{`${errorPrefix} ${errorDescription}`}</ErrorHeader>
       <button type="button" className="close" onClick={() => component.clearError()}>
         <span aria-hidden="true">&times;</span>
       </button>
@@ -247,7 +261,7 @@ const CurrentFirmwarePanel = observer(({ firmware }) => {
   if (firmware.hasUpdate || !firmware.current) {
     return null;
   }
-  return <ActualFirmwarePanel firmwareVersion={firmware.current} />;
+  return <FirmwareVersionPanel firmwareVersion={firmware.current} isActual={firmware.isActual} />;
 });
 
 const EmbeddedSoftwarePanel = observer(

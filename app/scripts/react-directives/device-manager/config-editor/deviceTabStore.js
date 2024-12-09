@@ -40,6 +40,7 @@ export class EmbeddedSoftwareComponent {
       updateProgress: observable,
       errorData: observable.ref,
       hasUpdate: computed,
+      isActual: computed,
       clearVersion: action,
       setUpdateProgress: action,
       startUpdate: action,
@@ -62,6 +63,10 @@ export class EmbeddedSoftwareComponent {
       return false;
     }
     return firmwareIsNewer(this.current, this.available);
+  }
+
+  get isActual() {
+    return this.available !== '' && this.current === this.available;
   }
 
   setUpdateProgress(data) {
@@ -111,7 +116,6 @@ export class EmbeddedSoftwareComponent {
     } catch (err) {}
     runInAction(() => {
       this.errorData = {};
-      this.clearVersion();
     });
   }
 }

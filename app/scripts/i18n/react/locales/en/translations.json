@@ -259,6 +259,7 @@
          "copy-device": "Copy device",
          "updating-firmware": "Updating firmware {{current}} to {{available}}",
          "updating-bootloader": "Updating bootloader {{current}} to {{available}}",
+         "current-firmware": "Current firmware version: {{firmware}}",
          "actual-firmware": "Current firmware version: {{firmware}} (actual)",
          "new-firmware": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}.",
          "new-firmware-link": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>",
@@ -296,8 +297,12 @@
          "duplicate-mqtt-topic": "MQTT id is the same as for {{device}}",
          "is-disconnected": "The device is not responding. Check the physical connection of the RS-485 bus and the communication settings of the port and device, which should be the same",
          "setup": "{{device}} setup failed: {{error}}",
-         "update-error-firmware": "Updating firmware {{from_version}} to {{to_version}} failed: {{error}}. If the device is not responding, <0 href=\"https://wirenboard.com/wiki/Wb-mcu-fw-updater#%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_(recover)\">try to recover</0>",
-         "update-error-bootloader": "Updating bootloader {{from_version}} to {{to_version}} failed: {{error}}"
+         "update-error-firmware": "Updating firmware {{from_version}} to {{to_version}} failed.",
+         "update-error-bootloader": "Updating bootloader {{from_version}} to {{to_version}} failed.",
+         "update-error-generic": "Error: {{error}}. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
+         "update-error-recoverable": "If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode.",
+         "update-error-rpc-timeout": "Check wb-mqtt-serial is up and running.",
+         "update-error-download": "File download error. Check the network connection."
       }
    },
    "exp-check": {
