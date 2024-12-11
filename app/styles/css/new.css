@@ -343,3 +343,7 @@ a[ng-click]:hover {
   text-decoration: none;
   cursor: pointer;
 }
+
+.mqtt-table-value {
+  word-break: break-all;
+}

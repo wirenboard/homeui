@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.106.3) stable; urgency=medium
+
+  * Fix mqtt channels value cell's width
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 11 Dec 2024 16:10:10 +0300
+
 wb-mqtt-homeui (2.106.2) stable; urgency=medium
 
   * Make Wiren Board Modbus device update errors more verbose
