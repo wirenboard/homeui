@@ -220,6 +220,13 @@ function getTopics(portTabs, deviceTypesStore) {
   return topics;
 }
 
+function getDeviceTypeFromConfig(deviceConfig) {
+  if (deviceConfig?.device_type) {
+    return deviceConfig.device_type;
+  }
+  return 'protocol:' + (deviceConfig?.protocol || 'modbus');
+}
+
 class ConfigEditorPageStore {
   constructor(
     loadConfigFn,
@@ -284,8 +291,12 @@ class ConfigEditorPageStore {
   }
 
   createDeviceTab(deviceConfig) {
-    const deviceType = deviceConfig?.device_type || deviceConfig?.protocol || 'modbus';
-    return new DeviceTab(deviceConfig, deviceType, this.deviceTypesStore, this.fwUpdateProxy);
+    return new DeviceTab(
+      deviceConfig,
+      getDeviceTypeFromConfig(deviceConfig),
+      this.deviceTypesStore,
+      this.fwUpdateProxy
+    );
   }
 
   createSettingsTab(config, schema) {
