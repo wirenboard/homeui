@@ -1,8 +1,20 @@
-wb-mqtt-homeui (2.106.3) stable; urgency=medium
+wb-mqtt-homeui (2.107.1) stable; urgency=medium
 
   * Fix mqtt channels value cell's width
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 11 Dec 2024 16:10:10 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Dec 2024 13:50:10 +0300
+
+wb-mqtt-homeui (2.107.0) stable; urgency=medium
+
+  * Fix displaying of Mercury 230 devices in config of wb-mqtt-serial
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 11 Dec 2024 12:58:04 +0500
+
+wb-mqtt-homeui (2.106.3) stable; urgency=medium
+
+  * Fix displaying of WB-MIO firmware update progress
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 10 Dec 2024 19:53:37 +0500
 
 wb-mqtt-homeui (2.106.2) stable; urgency=medium
 
