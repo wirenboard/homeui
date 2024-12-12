@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.0) stable; urgency=medium
+
+  * Fix displaying of Mercury 230 devices in config of wb-mqtt-serial
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 11 Dec 2024 12:58:04 +0500
+
 wb-mqtt-homeui (2.106.3) stable; urgency=medium
 
   * Fix displaying of WB-MIO firmware update progress
