@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<div class="table-responsive">
+<div class="table-responsive mqtt-table-wrapper">
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
@@ -26,7 +26,9 @@
                 <span ng-show="row._metaReadonly">(ro)</span>
             </td>
             <td>/devices/{{row.deviceId}}/controls/{{row.controlId }}</td>
-            <td>{{row._value}}</td>
+            <td>
+                <div class="mqtt-table-value">{{row._value}}</div>
+            </td>
             <td>
                 <span ng-show="row.error" class="label label-danger">
                   {{'mqtt.error' | translate}}: {{row.error }}
