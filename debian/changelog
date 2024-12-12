@@ -4,6 +4,12 @@ wb-mqtt-homeui (2.107.0) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 11 Dec 2024 12:58:04 +0500
 
+wb-mqtt-homeui (2.106.3) stable; urgency=medium
+
+  * Fix displaying of WB-MIO firmware update progress
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 10 Dec 2024 19:53:37 +0500
+
 wb-mqtt-homeui (2.106.2) stable; urgency=medium
 
   * Make Wiren Board Modbus device update errors more verbose
