@@ -583,7 +583,7 @@ class ConfigEditorPageStore {
       this.tabs
         .findPortTabByPath(device.port.path)
         ?.children?.filter(
-          deviceTab => getIntAddress(deviceTab.slaveId) == getIntAddress(device.slave_id)
+          deviceTab => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id)
         )
         .forEach(deviceTab => {
           deviceTab.clearError();
