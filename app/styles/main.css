@@ -391,7 +391,7 @@ footer{
   font-size: 12px;
 }
 
-button.show-console {
+.show-console-button {
   position: fixed;
   right: 30px;
   bottom: 30px;
@@ -401,16 +401,16 @@ button.show-console {
 }
 
 @media (min-width: 1200px) {
-  button.show-console {
+  .show-console-button {
     right: 40px;
   }
 }
 
-.show-console:hover {
+.show-console-button:hover {
   opacity: 1;
 }
 
-button.show-console span {
+.show-console-button span {
   vertical-align: -1px;
 }
 
@@ -1104,7 +1104,8 @@ body.hmi #widgets-list {
 
 body.hmi #wrapper .navbar,
 body.hmi .page-header,
-body.hmi .show-console {
+body.hmi .show-console-button,
+body.hmi .console {
   display: none
 }
 
@@ -1146,7 +1147,8 @@ body.hmi .show-console {
   }
 
   body.fullscreen .access-level-label,
-  body.fullscreen .show-console {
+  body.fullscreen .show-console-button,
+  body.fullscreen .console {
     display: none;
   }
 
@@ -1250,6 +1252,11 @@ button.dashboard-back:active {
   padding-left: 20px;
 }
 
-body.no-console .show-console {
+body.no-console .show-console-button,
+body.no-console .console {
   display: none
+}
+
+body.no-console .show-console #page-wrapper {
+  padding-bottom: 10px;
 }
