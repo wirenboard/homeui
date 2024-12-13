@@ -111,8 +111,8 @@ class ViewSvgDashboardPageStore {
       return;
     }
     try {
-      let cell = this.deviceData.cell(channel);
-      cell.value = cell.value == value.on ? value.off : value.on;
+      const cell = this.deviceData.cell(channel);
+      cell.value = cell.value === value.on ? value.off : value.on;
     } catch (e) {
       // Do nothing if cell is not found
     }
