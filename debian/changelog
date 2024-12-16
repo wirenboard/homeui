@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.2) stable; urgency=medium
+
+  * Fix switch handling in SVG dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 13 Dec 2024 12:19:22 +0500
+
 wb-mqtt-homeui (2.107.1) stable; urgency=medium
 
   * Fix mqtt channels value cell's width

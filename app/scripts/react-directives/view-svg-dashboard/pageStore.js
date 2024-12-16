@@ -15,7 +15,6 @@ class ViewSvgDashboardPageStore {
     this.editFn = null;
     this.moveToDashboardFn = null;
     this.dashboardId = null;
-    this.switchValueFn = null;
     this.key = Math.random();
     this.dashboardIndex = 0;
     this.editAccessLevelStore = new AccessLevelStore(rolesFactory);
@@ -51,10 +50,6 @@ class ViewSvgDashboardPageStore {
       this.channelValues,
       id => this?.editFn(id),
       id => this.moveToDashboard(id),
-      (channel, value) => {
-        let cell = this.deviceData.cell(channel);
-        cell.value = cell.value == value.on ? value.off : value.on;
-      },
       (channel, value) => this.switchValue(channel, value)
     );
     store.setForceFullscreen(this.forceFullscreen);
@@ -112,8 +107,15 @@ class ViewSvgDashboardPageStore {
   }
 
   switchValue(channel, value) {
-    let cell = this.deviceData.cell(channel);
-    cell.value = cell.value == value.on ? value.off : value.on;
+    if (!this.deviceData) {
+      return;
+    }
+    try {
+      const cell = this.deviceData.cell(channel);
+      cell.value = cell.value === value.on ? value.off : value.on;
+    } catch (e) {
+      // Do nothing if cell is not found
+    }
   }
 
   editDashboard() {
@@ -126,14 +128,6 @@ class ViewSvgDashboardPageStore {
 
   setMoveToDashboardFn(moveToDashboardFn) {
     this.moveToDashboardFn = moveToDashboardFn;
-  }
-
-  setSwitchValueFn(switchValueFn) {
-    this.switchValueFn = switchValueFn;
-  }
-
-  switchValue(channel, value) {
-    this?.switchValueFn(channel, value);
   }
 
   moveToDashboard(dashboardId) {
