@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.3) stable; urgency=medium
+
+  * Fix loading of wb-mqtt-serial configuration when showing wb-rules debug console
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 13 Dec 2024 16:13:48 +0500
+
 wb-mqtt-homeui (2.107.2) stable; urgency=medium
 
   * Fix switch handling in SVG dashboards
