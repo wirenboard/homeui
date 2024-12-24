@@ -30,6 +30,7 @@ class WidgetsCtrl {
       };
     }
 
+    $scope.locale = $locale.id;
     $scope.$locale = $locale;
     $scope.roles = rolesFactory;
     $scope.rows = [];

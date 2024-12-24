@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.4) stable; urgency=medium
+
+  * Fix enum translations in text dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 24 Dec 2024 09:51:56 +0500
+
 wb-mqtt-homeui (2.107.3) stable; urgency=medium
 
   * Fix loading of wb-mqtt-serial configuration when showing wb-rules debug console
