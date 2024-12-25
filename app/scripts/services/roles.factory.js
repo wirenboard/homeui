@@ -64,7 +64,7 @@ export default function rolesFactory() {
   };
 
   roles.setConfiguredUser = configuredUser => {
-    roles.notConfiguredUsers = roles.notConfiguredUsers.filter(user => user != configuredUser);
+    roles.notConfiguredUsers = roles.notConfiguredUsers.filter(user => user !== configuredUser);
     updateMessage();
   };
 
