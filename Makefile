@@ -44,7 +44,7 @@ install: configs
 	install -d -m 0777 $(DESTDIR)/var/www/images
 	install -d -m 0777 $(DESTDIR)/var/www/uploads
 	install -d -m 0777 $(DESTDIR)/var/www/scripts/i18n
-	install -d -m 0777 $(DESTDIR)/var/www/fonts
+	install -d -m 0755 $(DESTDIR)/var/www/fonts
 
 	cp -a dist/css/*.css $(DESTDIR)/var/www/css
 	cp -a dist/images/* $(DESTDIR)/var/www/images
