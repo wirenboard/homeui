@@ -384,4 +384,9 @@ a[ng-click]:hover {
 .user-menu .glyphicon-user {
   font-size: 20px;
   color: lightgray;
+  transition: color 0.2s ease;
+}
+
+.user-menu .glyphicon-user:hover {
+  color: gray;
 }
