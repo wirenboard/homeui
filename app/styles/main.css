@@ -170,23 +170,24 @@ ul.alert-dropdown {
 /* connection status */
 
 .connection-status{
-	float: right;
-	padding-right: 20px;
-    display: none;
+  float: right;
+  padding-right: 22px;
+  display: none;
+  margin-right: 0px;
+  margin-top: 13px;
+  margin-bottom: 0px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-@media(min-width:360px) {
-	.connection-status{
-	  display: inherit;
-	}
+
+.connection-status .glyphicon-user{
+  font-size: 20px;
 }
 
 @media(min-width:768px) {
 	.navbar-header {
 		float: none;
-	}
-
-	.connection-status{
-	  padding-right: 40px;
 	}
 }
 
@@ -932,19 +933,6 @@ body > double-bounce-spinner .double-bounce-spinner .double-bounce1,
 body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
   background: #5cb300;
 }
-
-@media (max-width: 500px) {
-  .big-screen-access-level {
-    display: none;
-  }
-}
-
-@media (min-width: 501px) {
-  .mobile-screen-access-level {
-    display: none;
-  }
-}
-
 
 /* Для совместимости с wb-mqtt-serial >= 2.9.0 */
 h3.je-header {

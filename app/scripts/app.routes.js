@@ -53,7 +53,6 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('accessLevel', {
       url: '/access-level',
       template: require('../views/access-level.html'),
-      controller: 'AccessLevelCtrl as $ctrl',
     })
     .state('scan', {
       url: '/scan',

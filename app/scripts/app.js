@@ -67,7 +67,6 @@ import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
 import LoginCtrl from './controllers/loginController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
-import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
@@ -95,6 +94,7 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
+import usersPageDirective from './react-directives/users/users';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -178,7 +178,6 @@ module
   .controller('HomeCtrl', HomeCtrl)
   .controller('LoginCtrl', LoginCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
-  .controller('AccessLevelCtrl', AccessLevelCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
@@ -266,7 +265,8 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('expCheckWidget', expCheckMetaDirective);
+  .directive('expCheckWidget', expCheckMetaDirective)
+  .directive('usersPage', usersPageDirective);
 
 module
   .config([
@@ -277,7 +277,6 @@ module
         'app',
         'console',
         'help',
-        'access',
         'mqtt',
         'system',
         'ui',

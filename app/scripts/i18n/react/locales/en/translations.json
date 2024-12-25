@@ -233,8 +233,7 @@
       }
    },
    "errors": {
-      "access-failed": "You cannot view this page. You can change ",
-      "access-failed-link-text": "access level"
+      "access-failed": "You cannot view this page. You can change access level"
    },
    "forms": {
       "default-text-prefix": "If the value is not set, ",
@@ -325,6 +324,24 @@
          "select-channels": "Select channels",
          "search-device": "Search device",
          "search-control": "Search channel"
+      }
+   },
+   "users": {
+      "title": "Users",
+      "errors": {
+         "forbidden": "You don't have permission to view this page",
+         "old-backend": "The backend is outdated. Please update it",
+         "unknown": "Error: {{msg}}"
+      },
+      "labels":{
+         "login": "Login",
+         "password": "Password",
+         "edit-user": "Edit user",
+         "edit-operator": "Edit operator",
+         "edit-admin": "Edit admin"
+      },
+      "buttons": {
+         "save": "Save"
       }
    }
 }

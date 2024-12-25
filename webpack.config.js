@@ -87,11 +87,17 @@ module.exports = (function makeWebpackConfig() {
         type: 'asset/resource',
       },
       {
-        // without hash
-        test: /\.(svg|woff|woff2|ttf|eot)$/,
+        test: /\.(svg)$/,
         type: 'asset/resource',
         generator: {
           filename: '[name][ext]',
+        },
+      },
+      {
+        test: /\.(woff|woff2|ttf|eot)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
         },
       },
       {
@@ -305,6 +311,12 @@ module.exports = (function makeWebpackConfig() {
     },
     port: 8080,
     hot: true,
+    proxy: [
+      {
+        context: ['/not_configured_users', '/auth/user', '/login'],
+        target: 'http://10.200.200.1',
+      },
+    ],
   };
 
   return config;

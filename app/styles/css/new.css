@@ -369,3 +369,19 @@ a[ng-click]:hover {
   word-wrap: break-word;
   white-space: break-spaces;
 }
+
+.user-menu span {
+  font-size: var(--bar-font-size);
+  padding: 3px 20px;
+  display: block;
+  color: black;
+}
+
+.user-menu .divider {
+  margin: 4px 0;
+}
+
+.user-menu .glyphicon-user {
+  font-size: 20px;
+  color: lightgray;
+}

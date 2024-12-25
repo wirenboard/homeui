@@ -44,6 +44,7 @@ install: configs
 	install -d -m 0777 $(DESTDIR)/var/www/images
 	install -d -m 0777 $(DESTDIR)/var/www/uploads
 	install -d -m 0777 $(DESTDIR)/var/www/scripts/i18n
+	install -d -m 0777 $(DESTDIR)/var/www/fonts
 
 	cp -a dist/css/*.css $(DESTDIR)/var/www/css
 	cp -a dist/images/* $(DESTDIR)/var/www/images
@@ -52,13 +53,12 @@ install: configs
 	cp -a dist/*.js $(DESTDIR)/var/www/
 	cp -a dist/*.svg $(DESTDIR)/var/www/
 	cp -a dist/*.png $(DESTDIR)/var/www/
-	cp -a dist/*.ttf $(DESTDIR)/var/www/
-	cp -a dist/*.woff $(DESTDIR)/var/www/
-	cp -a dist/*.woff2 $(DESTDIR)/var/www/ || :
+	cp -a dist/fonts/* $(DESTDIR)/var/www/fonts
 
 	install -m 0644 dist/404.html $(DESTDIR)/var/www/
 	install -m 0644 dist/robots.txt $(DESTDIR)/var/www/
 	install -m 0644 dist/index.html $(DESTDIR)/var/www/
+	install -m 0644 login/login.html $(DESTDIR)/var/www/
 
 	install -Dm0644 dist/configs/*.json -t $(DESTDIR)/usr/share/wb-mqtt-homeui
 	install -Dm0755 convert_config_v1v2.py $(DESTDIR)/usr/lib/wb-mqtt-homeui/convert_config_v1v2

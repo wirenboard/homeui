@@ -24,6 +24,10 @@
 
   <div id="wrapper" class="fade" ng-class="{ 'show-console': consoleVisible }">
       <exp-check-widget></exp-check-widget>
+      <div class="alert alert-danger" role="alert" ng-cloak ng-if="roles.notConfiguredUsers.length">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span translate>{{roles.notConfiguredUsersMessage}}</span>
+      </div>
 
       <!-- Navigation -->
       <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl'>
@@ -38,16 +42,22 @@
               <a class="navbar-brand wb-navbar-brand" ui-sref="home">
                 <img src="images/logo.svg" alt="Wiren Board Web UI">
               </a>
-              <p class="navbar-text navbar-right connection-status">
-                <span class="label label-custom access-level-label" ng-class="roles.current.roles.isAdmin ? 'label label-custom label-danger' : 'label label-custom label-warning'"
-                      ng-show="roles.current.roles.shortName"
-                      title="{{'navigation.access.title' | translate}} {{roles.current.roles.name | translate}}">
-                      <span class="mobile-screen-access-level">{{roles.current.roles.shortName | translate}}</span>
-                      <span class="big-screen-access-level">{{'navigation.access.title' | translate}} {{roles.current.roles.name | translate}}</span>
-                    </span>
+              <div class="navbar-text navbar-right connection-status">
                 <span class="connected-status label label-success" ng-show="isConnected()" translate>{{'navigation.connection.active'}}</span>
                 <span class="connected-status label label-danger" ng-show="!isConnected()" translate>{{'navigation.connection.inactive'}}</span>
-              </p>
+                <div class="dropdown user-menu navbar-right">
+                    <i class="glyphicon glyphicon-user" id="userMenu" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                    <ul class="dropdown-menu" aria-labelledby="userMenu">
+                        <li>
+                            <span class='user-name' translate>{{roles.current.roles.name}}</span>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a href="#" ng-click="logout()" translate>{{'app.buttons.logout'}}</a>
+                        </li>
+                    </ul>
+                </div>
+              </div>
           </div>
 
           <div class="nav navbar-nav navbar-right ma-0"></div>
@@ -102,7 +112,7 @@
                           <li>
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="MQTTChannels" ui-sref-active="active">{{'navigation.menu.channels' | translate}}</a>
                           </li>
-                          <li>
+                          <li ng-if="showAccessControl()">
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="accessLevel" ui-sref-active="active">{{'navigation.menu.access' | translate}}</a>
                           </li>
                           <li user-role="mto" current-role="roles.current.role">
