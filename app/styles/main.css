@@ -181,8 +181,9 @@ ul.alert-dropdown {
   gap: 10px;
 }
 
-.connection-status .glyphicon-user{
+.connection-status .glyphicon-user {
   font-size: 20px;
+  cursor: pointer;
 }
 
 @media(min-width:768px) {
