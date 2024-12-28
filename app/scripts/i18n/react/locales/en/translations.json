@@ -336,12 +336,16 @@
       "labels":{
          "login": "Login",
          "password": "Password",
-         "edit-user": "Edit user",
-         "edit-operator": "Edit operator",
-         "edit-admin": "Edit admin"
+         "type": "Type",
+         "admin": "Admin",
+         "user": "User",
+         "operator": "Operator",
+         "confirm-delete":"Do you really want to delete user \"{{name}}\"?"
       },
       "buttons": {
-         "save": "Save"
+         "save": "Save",
+         "add": "Add",
+         "delete": "Delete"
       }
    }
 }

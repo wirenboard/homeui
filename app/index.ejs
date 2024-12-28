@@ -24,9 +24,9 @@
 
   <div id="wrapper" class="fade" ng-class="{ 'show-console': consoleVisible }">
       <exp-check-widget></exp-check-widget>
-      <div class="alert alert-danger" role="alert" ng-cloak ng-if="roles.notConfiguredUsers.length">
+      <div class="alert alert-danger" role="alert" ng-cloak ng-if="roles.notConfiguredAdmin">
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-        <span translate>{{roles.notConfiguredUsersMessage}}</span>
+        <span translate>{{'app.errors.not-configured-admin'}}</span>
       </div>
 
       <!-- Navigation -->

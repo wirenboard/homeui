@@ -313,7 +313,7 @@ module.exports = (function makeWebpackConfig() {
     hot: true,
     proxy: [
       {
-        context: ['/not_configured_users', '/auth/user', '/login'],
+        context: ['/auth/check_config', '/auth/users', '/login'],
         target: 'http://10.200.200.1',
       },
     ],

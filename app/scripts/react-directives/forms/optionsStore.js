@@ -19,6 +19,7 @@ export class OptionsStore {
     this.selectedOption = null;
     this.formColumns = null;
     this.initialValue = value;
+    this.readOnly = false;
     this.setValue(value);
 
     makeObservable(this, {
@@ -73,6 +74,10 @@ export class OptionsStore {
     this.formColumns = columns;
   }
 
+  setReadOnly(value) {
+    this.readOnly = value;
+  }
+
   get isDirty() {
     return this.value !== this.initialValue;
   }
@@ -83,5 +88,6 @@ export class OptionsStore {
 
   reset() {
     this.setValue(this.initialValue);
+    this.setReadOnly(false);
   }
 }

@@ -36,17 +36,11 @@ export default function rolesFactory() {
   };
   const roleId = typeToRoleId[localStorage.getItem('user_type')] || DEFAULT_ROLE;
   roles.current = { role: roleId, roles: roles.ROLES[roleId - 1] };
-  roles.notConfiguredUsers = [];
-  roles.notConfiguredUsersMessage = '';
-
-  const updateMessage = () => {
-    if (!roles.notConfiguredUsers.length) {
-      roles.notConfiguredUsersMessage = '';
-    } else {
-      roles.notConfiguredUsersMessage =
-        'app.errors.not-configured-' + roles.notConfiguredUsers.join('-');
-    }
-  };
+  roles.notConfiguredAdminResolve = null;
+  roles.notConfiguredAdmin = false;
+  roles.notConfiguredAdminPromise = new Promise(resolve => {
+    roles.notConfiguredAdminResolve = resolve;
+  });
 
   // проверяет есть ли права доступа/просмотра
   // принимает значение минимально возможного статуса для доступа/просмотра
@@ -54,23 +48,12 @@ export default function rolesFactory() {
     return roles.current.role >= onlyRoleGreatThanOrEqual;
   };
 
-  roles.setNotConfiguredUsers = notConfiguredUsers => {
-    if (!notConfiguredUsers) {
-      roles.notConfiguredUsers = [];
-    } else {
-      roles.notConfiguredUsers = notConfiguredUsers.split(',').sort();
+  fetch('/auth/check_config').then(response => {
+    if (response.ok) {
+      roles.notConfiguredAdmin = true;
     }
-    updateMessage();
-  };
-
-  roles.setConfiguredUser = configuredUser => {
-    roles.notConfiguredUsers = roles.notConfiguredUsers.filter(user => user !== configuredUser);
-    updateMessage();
-  };
-
-  fetch('/not_configured_users')
-    .then(response => response.text())
-    .then(data => roles.setNotConfiguredUsers(data));
+    roles.notConfiguredAdminResolve();
+  });
 
   return roles;
 }

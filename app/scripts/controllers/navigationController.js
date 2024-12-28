@@ -88,7 +88,7 @@ class NavigationCtrl {
     };
 
     $scope.showAccessControl = function () {
-      return rolesFactory.current.roles.isAdmin || rolesFactory.notConfiguredUsers.length;
+      return rolesFactory.current.roles.isAdmin || rolesFactory.notConfiguredAdmin;
     };
 
     $scope.logout = function () {
