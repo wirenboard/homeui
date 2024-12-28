@@ -6,25 +6,21 @@ export default function rolesFactory() {
   'ngInject';
   var roles = {};
 
+  const DEFAULT_ROLE = 1;
+
   roles._ROLE_ONE = {
     id: 1,
-    name: 'access.user.name',
-    shortName: 'access.user.short',
-    description: 'access.user.description',
+    name: 'app.roles.user',
     isAdmin: false,
   };
   roles._ROLE_TWO = {
     id: 2,
-    name: 'access.operator.name',
-    shortName: 'access.operator.short',
-    description: 'access.operator.description',
+    name: 'app.roles.operator',
     isAdmin: false,
   };
   roles._ROLE_THREE = {
     id: 3,
-    name: 'access.admin.name',
-    shortName: 'access.admin.short',
-    description: 'access.admin.description',
+    name: 'app.roles.admin',
     isAdmin: true,
   };
 
@@ -33,36 +29,31 @@ export default function rolesFactory() {
   roles.ROLE_THREE = roles._ROLE_THREE.id;
   roles.ROLES = [roles._ROLE_ONE, roles._ROLE_TWO, roles._ROLE_THREE];
 
-  const setDefaultRole = (defaultRole = 1) => {
-    localStorage.setItem('role', defaultRole);
-    return defaultRole;
+  const typeToRoleId = {
+    admin: roles.ROLE_THREE,
+    operator: roles.ROLE_TWO,
+    user: roles.ROLE_ONE,
   };
-
-  roles.current = {
-    role: localStorage.getItem('role') || setDefaultRole(),
-    roles: roles.ROLES[(localStorage.getItem('role') || 1) - 1],
-  };
-
-  roles.getRole = () => {
-    roles.current.role = localStorage.getItem('role');
-    roles.current.roles = roles.ROLES[roles.current.role - 1];
-    return roles.current.role;
-  };
-
-  roles.setRole = n => {
-    roles.current = { role: n, roles: roles.ROLES[n - 1] };
-    localStorage.setItem('role', n);
-  };
-
-  roles.resetRole = n => {
-    localStorage.setItem('role', n);
-  };
+  const roleId = typeToRoleId[localStorage.getItem('user_type')] || DEFAULT_ROLE;
+  roles.current = { role: roleId, roles: roles.ROLES[roleId - 1] };
+  roles.notConfiguredAdminResolve = null;
+  roles.notConfiguredAdmin = false;
+  roles.notConfiguredAdminPromise = new Promise(resolve => {
+    roles.notConfiguredAdminResolve = resolve;
+  });
 
   // проверяет есть ли права доступа/просмотра
   // принимает значение минимально возможного статуса для доступа/просмотра
   roles.checkRights = onlyRoleGreatThanOrEqual => {
-    return roles.getRole() >= onlyRoleGreatThanOrEqual;
+    return roles.current.role >= onlyRoleGreatThanOrEqual;
   };
+
+  fetch('/auth/check_config').then(response => {
+    if (response.ok) {
+      roles.notConfiguredAdmin = true;
+    }
+    roles.notConfiguredAdminResolve();
+  });
 
   return roles;
 }
