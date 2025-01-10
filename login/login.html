@@ -111,17 +111,17 @@
         <img src="/images/logo.svg" alt="Wiren Board" class="logo">
         <form method="post">
             <div class="form-group">
-                <label for="login">Username</label>
+                <label for="login" id="login_label">Username</label>
                 <input type="text" id="login" name="login">
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password" id="password_label">Password</label>
                 <input type="password" id="password" name="password">
             </div>
             <div class="form-group">
                 <button id="button" type="submit">
                     <div id="spinner" class="spinner"></div>
-                    <span>Login</span>
+                    <span id="button_label">Login</span>
                 </button>
             </div>
         </form>
@@ -139,6 +139,10 @@
         let item=document.querySelector(id);
         item.disabled = false;
         item.classList.remove('disabled');
+    }
+
+    function getLanguage() {
+        return navigator.language.split('-')[0];
     }
 
     document.querySelector('form').addEventListener('submit', function (e) {
@@ -159,11 +163,23 @@
             if (response.ok) {
                 window.location.href = '/';
             } else {
-                document.querySelector('#error-message').textContent = 'Login failed';
+                if (getLanguage() === 'ru') {
+                    document.querySelector('#error-message').textContent = 'Ошибка входа';
+                } else {
+                    document.querySelector('#error-message').textContent = 'Login failed';
+                }
                 document.querySelector('#spinner').style.display = 'none';
                 formItems.forEach(enable);
             }
         });
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (getLanguage() === 'ru') {
+            document.querySelector('#button_label').textContent = 'Войти';
+            document.querySelector('#login_label').textContent = 'Имя пользователя';
+            document.querySelector('#password_label').textContent = 'Пароль'
+        }
     });
 </script>
 </html>
