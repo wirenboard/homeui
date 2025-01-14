@@ -85,6 +85,7 @@ export const FormSelect = observer(({ store, isClearable }) => {
         setSelectedOption={store.selectedOption}
         placeholder={store.placeholder}
         onChange={value => store.setSelectedOption(value)}
+        disabled={store.readOnly}
       />
     </FormEdit>
   );
