@@ -1,0 +1,44 @@
+.button {
+    border: 0;
+    color: var(--button-color);
+    border-radius: var(--input-border-radius);
+    transition: background 200ms linear, var(--input-active-shadow-transition);
+}
+
+.button:focus {
+    box-shadow: var(--input-active-shadow);
+}
+
+.button-m {
+    padding: 6px 12px;
+}
+
+.button-s {
+    padding: 4px 8px;
+}
+
+.button-primary {
+    background: var(--primary-color);
+}
+
+.button-primary:hover {
+    background: var(--primary-color-hover);
+}
+
+.button-secondary {
+    background: var(--secondary-color);
+    border: 1px solid var(--input-border-color);
+    color: var(--text-color);
+}
+
+.button-secondary:hover {
+    background: var(--secondary-color-hover);
+}
+
+.button-danger {
+    background: var(--danger-color);
+}
+
+.button-danger:hover {
+    background: var(--danger-color-hover);
+}

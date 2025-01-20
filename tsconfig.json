@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "strict": false,
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": ".",
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./app/scripts/*"],
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["app/scripts", "src/custom.d.ts"]
+}

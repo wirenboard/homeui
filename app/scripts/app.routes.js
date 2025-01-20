@@ -62,22 +62,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('devices', {
       url: '/devices',
-      controller: 'DevicesCtrl as $ctrl',
-      template: require('../views/devices.html'),
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          return import(/* webpackChunkName: 'devices' */ './controllers/devicesController').then(
-            module => $ocLazyLoad.load({ name: module.default.name })
-          );
-        },
-      },
-    })
-    //...........................................................................
-    .state('currentDevices', {
-      url: '/devices/{deviceId}',
-      controller: 'DevicesCtrl as $ctrl',
-      template: require('../views/devices.html'),
+      template: '<devices-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
