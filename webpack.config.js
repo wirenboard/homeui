@@ -309,7 +309,7 @@ module.exports = (function makeWebpackConfig() {
       chunkFilename: '[name].bundle.js',
     };
 
-    config.devtool = 'eval';
+    config.devtool = 'eval-source-map';
 
     // Load styles
     config.module.rules.push({
