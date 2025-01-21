@@ -2,7 +2,6 @@
     "login": {
         "title": "Login to MQTT broker",
         "labels": {
-            "url": "Fully qualified URI",
             "access": "Use access credentials",
             "user": "User ID",
             "password": "Password",

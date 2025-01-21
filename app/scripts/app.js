@@ -450,23 +450,14 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      // detect auto url
-      var autoURL = new URL('/mqtt', $window.location.href);
-      autoURL.protocol = autoURL.protocol.replace('http', 'ws');
+      const loginUrl = new URL('/mqtt', $window.location.origin);
 
-      // FIXME: I know it's ugly, let's find more elegant way later
-      var isDev = $window.location.host === 'localhost:8080';
+      const isDev = $window.location.host === 'localhost:8080';
 
-      if (isDev) {
-        // local debug detected, enable MQTT url override via settings
-        if (!$window.localStorage.url) {
-          $window.localStorage.setItem('url', autoURL.href);
-        }
-        loginData['url'] = $window.localStorage['url'];
-      } else {
-        // no local debug detected, full auto
-        loginData['url'] = autoURL.href;
+      if (!isDev) {
+        loginUrl.protocol = loginUrl.protocol.replace('http', 'ws');
       }
+      loginData.url = loginUrl.href;
 
       let language = localStorage.getItem('language');
       const supportedLanguages = ['en', 'ru'];
