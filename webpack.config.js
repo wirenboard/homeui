@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const path = require('path');
+const dotenv = require('dotenv');
 
 process.traceDeprecation = true;
 
@@ -45,6 +46,9 @@ module.exports = (function makeWebpackConfig() {
       $: 'jquery',
       'window.jQuery': 'jquery',
       'window.DOMPurify': 'dompurify',
+    }),
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(dotenv.config().parsed),
     }),
   ];
 
@@ -313,8 +317,9 @@ module.exports = (function makeWebpackConfig() {
     hot: true,
     proxy: [
       {
-        context: ['/auth/check_config', '/auth/users', '/login'],
-        target: 'http://10.200.200.1',
+        context: ['/auth/check_config', '/auth/users', '/login', '/mqtt'],
+        target: process.env.MQTT_BROKER_URI || 'http://10.200.200.1',
+        ws: true,
       },
     ],
   };
