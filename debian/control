@@ -1,5 +1,5 @@
 Source: wb-mqtt-homeui
-Maintainer: Evgeny Boger <boger@contactless.ru>
+Maintainer: Wiren Board team <info@wirenboard.com>
 Section: misc
 Priority: optional
 Standards-Version: 4.5.1
@@ -10,7 +10,7 @@ Package: wb-mqtt-homeui
 Architecture: all
 Conflicts: wb-homa-webinterface
 Depends: ${shlibs:Depends}, ${misc:Depends}, mosquitto, mqtt-wss, mqtt-tools, nginx-extras, diffutils, wb-utils (>= 4.20.1),
-  wb-configs (>= 3.26.0)
+  wb-configs (>= 3.35.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Suggests: wb-mqtt-confed (>= 1.4.0),
 Breaks: wb-mqtt-confed (<< 1.0.3), wb-mqtt-db (<< 1.5), wb-mqtt-serial (<< 2.116.0~~), wb-device-manager (<< 1.4.0~~),

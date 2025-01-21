@@ -24,3 +24,5 @@ coverage
 *.tsv
 .vscode
 .prettierrc
+
+.env

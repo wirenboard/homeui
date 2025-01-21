@@ -3,8 +3,7 @@
         "title": "Rules",
         "labels": {
             "loading": "Loading...",
-            "notice": "You cannot view this page. You can change",
-            "access": "access level"
+            "access-notice": "You don't have enough permissions to view this page"
         },
         "buttons": {
             "new": "New...",

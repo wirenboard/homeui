@@ -1,10 +1,10 @@
 'use strict';
 
-import { makeObservable, observable } from 'mobx';
+import { makeObservable, observable, runInAction } from 'mobx';
 
 class AccessLevelStore {
   constructor(rolesFactory) {
-    this.accessGranted = true;
+    this.accessGranted = false;
     this.rolesFactory = rolesFactory;
 
     makeObservable(this, {
@@ -13,7 +13,11 @@ class AccessLevelStore {
   }
 
   setRole(value) {
-    this.accessGranted = this.rolesFactory.checkRights(value);
+    this.rolesFactory.asyncCheckRights(value, () => {
+      runInAction(() => {
+        this.accessGranted = true;
+      });
+    });
   }
 }
 

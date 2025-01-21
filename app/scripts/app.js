@@ -65,9 +65,7 @@ import handleDataService from './services/handle-data';
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
-import LoginCtrl from './controllers/loginController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
-import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
@@ -95,6 +93,8 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
+import usersPageDirective from './react-directives/users/users';
+import loginModalDirective from './react-directives/login/login-modal';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -176,9 +176,7 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('LoginCtrl', LoginCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
-  .controller('AccessLevelCtrl', AccessLevelCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
@@ -266,7 +264,9 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('expCheckWidget', expCheckMetaDirective);
+  .directive('expCheckWidget', expCheckMetaDirective)
+  .directive('usersPage', usersPageDirective)
+  .directive('loginModal', loginModalDirective);
 
 module
   .config([
@@ -277,7 +277,6 @@ module
         'app',
         'console',
         'help',
-        'access',
         'mqtt',
         'system',
         'ui',
@@ -337,6 +336,54 @@ module.run(($rootScope, $state, $transitions) => {
   $rootScope.forceFullscreen = false;
 });
 
+function isIp(host) {
+  return host.match(/^\d+\.\d+\.\d+\.\d+$/);
+}
+
+function isLocalDomain(host) {
+  return host.match(/\.local$/);
+}
+
+async function preStart() {
+  if (window.location.protocol === 'https:') {
+    return 'ok';
+  }
+
+  if (isIp(window.location.hostname) || isLocalDomain(window.location.hostname)) {
+    try {
+      let response = await fetch('/https/redirect');
+      if (response.status === 200) {
+        const https_domain = await response.text();
+        response = await fetch(`https://${https_domain}/https/check`, {
+          method: 'GET',
+          mode: 'cors',
+        });
+        if (response.status === 200) {
+          window.location.href = `https://${https_domain}`;
+          return 'redirected';
+        }
+      }
+    } catch (e) {}
+  }
+  return 'warn';
+}
+
+async function getUserType(rolesFactory) {
+  try {
+    let response = await fetch('/auth/who_am_i');
+    if (response.status === 200) {
+      const user = await response.json();
+      rolesFactory.setRole(user.user_type, false);
+      return 'ok';
+    }
+    if (response.status === 401) {
+      return 'login';
+    }
+  } catch (e) {}
+  rolesFactory.setRole('user', true);
+  return 'ok';
+}
+
 //-----------------------------------------------------------------------------
 // Register module with communication
 const realApp = angular
@@ -370,7 +417,8 @@ const realApp = angular
       $translate,
       uibDatepickerPopupConfig,
       tmhDynamicLocale,
-      DeviceManagerProxy
+      DeviceManagerProxy,
+      rolesFactory
     ) => {
       'ngInject';
 
@@ -451,23 +499,14 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      // detect auto url
-      var autoURL = new URL('/mqtt', $window.location.href);
-      autoURL.protocol = autoURL.protocol.replace('http', 'ws');
+      const loginUrl = new URL('/mqtt', $window.location.origin);
 
-      // FIXME: I know it's ugly, let's find more elegant way later
-      var isDev = $window.location.host === 'localhost:8080';
+      const isDev = $window.location.host === 'localhost:8080';
 
-      if (isDev) {
-        // local debug detected, enable MQTT url override via settings
-        if (!$window.localStorage.url) {
-          $window.localStorage.setItem('url', autoURL.href);
-        }
-        loginData['url'] = $window.localStorage['url'];
-      } else {
-        // no local debug detected, full auto
-        loginData['url'] = autoURL.href;
+      if (!isDev) {
+        loginUrl.protocol = loginUrl.protocol.replace('http', 'ws');
       }
+      loginData.url = loginUrl.href;
 
       let language = localStorage.getItem('language');
       const supportedLanguages = ['en', 'ru'];
@@ -480,8 +519,6 @@ const realApp = angular
       }
       $translate.use(language);
       tmhDynamicLocale.set(language);
-
-      $rootScope.requestConfig(loginData);
 
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
@@ -528,10 +565,28 @@ const realApp = angular
           }
         });
 
-      setTimeout(() => {
+      rolesFactory.whenReady().then(() => {
+        $rootScope.requestConfig(loginData);
         $('double-bounce-spinner').remove();
         $('#wrapper').removeClass('fade');
-      }, 500);
+      });
+
+      preStart().then(res => {
+        if (res === 'redirected') {
+          return;
+        }
+        if (res === 'warn') {
+          $rootScope.noHttps = true;
+        }
+        getUserType(rolesFactory).then(res => {
+          if (res === 'login') {
+            $rootScope.showLoginModal = true;
+            $rootScope.$apply();
+            $('double-bounce-spinner').remove();
+            $('#wrapper').removeClass('fade');
+          }
+        });
+      });
     }
   );
 

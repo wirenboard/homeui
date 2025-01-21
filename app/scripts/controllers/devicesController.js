@@ -2,17 +2,10 @@ class DevicesCtrl {
   constructor($injector, $locale, DeviceData, rolesFactory, $scope) {
     'ngInject';
 
-    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
-    if (!this.haveRights) {
-      return;
-    }
-
     this.locale = $locale.id;
     $scope.locale = this.locale;
     this.deviceData = DeviceData;
     this.stateParams = $injector.get('$stateParams');
-
-    this.createDevicesVisibilityObject();
 
     // this listener needed to redraw columns and devices on window width change
     $(window).resize(() => {
@@ -20,6 +13,11 @@ class DevicesCtrl {
         this.windowWidth = window.innerWidth;
         this.devicesIdsCount = null;
       }
+    });
+
+    rolesFactory.asyncCheckRights(rolesFactory.ROLE_TWO, () => {
+      this.haveRights = true;
+      this.createDevicesVisibilityObject();
     });
   }
 
