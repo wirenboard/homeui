@@ -1,13 +1,18 @@
 import dtPickerTemplate from '../../views/dateTimePickerModal.html';
 
 class LogsCtrl {
-  constructor($scope, $injector, $q, $uibModal, $element, $translate, $rootScope, $filter, rolesFactory) {
+  constructor(
+    $scope,
+    $injector,
+    $q,
+    $uibModal,
+    $element,
+    $translate,
+    $rootScope,
+    $filter,
+    rolesFactory
+  ) {
     'ngInject';
-
-    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
-    if (!this.haveRights) {
-      return;
-    }
 
     var vm = this;
 
@@ -91,35 +96,38 @@ class LogsCtrl {
     this.caseSensitive = true;
     this.regex = false;
 
-    whenMqttReady()
-      .then(() => this.LogsProxy.hasMethod('Load'))
-      .then(result => {
-        if (result) {
-          this.LogsProxy.hasMethod('CancelLoad').then(result => (this.canCancelLoad = result));
-          vm.loadBootsAndServices();
-        } else {
-          this.enableSpinner = false;
-          this.errors.catch('log.labels.unavailable')();
-        }
-      })
-      .catch(err => {
-        this.enableSpinner = false;
-        this.errors.catch('logs.labels.unavailable')(err);
-      });
-
     $scope.adapter = {};
     $scope.datasource = {};
     $scope.datasource.get = function (index, count, success) {
       return vm.getChunk(index, count, success);
     };
 
-    this.updateTranslations();
-    $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
-
     $scope.$on('$destroy', () => {
       // Do whatever cleanup might be necessary
       vm = null; // MEMLEAK FIX
       $scope = null; // MEMLEAK FIX
+    });
+
+    this.updateTranslations();
+    $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+
+    rolesFactory.asyncCheckRights(rolesFactory.ROLE_TWO, () => {
+      this.haveRights = true;
+      whenMqttReady()
+        .then(() => this.LogsProxy.hasMethod('Load'))
+        .then(result => {
+          if (result) {
+            this.LogsProxy.hasMethod('CancelLoad').then(result => (this.canCancelLoad = result));
+            vm.loadBootsAndServices();
+          } else {
+            this.enableSpinner = false;
+            this.errors.catch('log.labels.unavailable')();
+          }
+        })
+        .catch(err => {
+          this.enableSpinner = false;
+          this.errors.catch('logs.labels.unavailable')(err);
+        });
     });
   } // constructor
 

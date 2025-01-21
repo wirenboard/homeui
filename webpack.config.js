@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const path = require('path');
+const dotenv = require('dotenv');
 
 process.traceDeprecation = true;
 
@@ -45,6 +46,9 @@ module.exports = (function makeWebpackConfig() {
       $: 'jquery',
       'window.jQuery': 'jquery',
       'window.DOMPurify': 'dompurify',
+    }),
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(dotenv.config().parsed),
     }),
   ];
 
@@ -87,11 +91,17 @@ module.exports = (function makeWebpackConfig() {
         type: 'asset/resource',
       },
       {
-        // without hash
-        test: /\.(svg|woff|woff2|ttf|eot)$/,
+        test: /\.(svg)$/,
         type: 'asset/resource',
         generator: {
           filename: '[name][ext]',
+        },
+      },
+      {
+        test: /\.(woff|woff2|ttf|eot)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
         },
       },
       {
@@ -305,6 +315,20 @@ module.exports = (function makeWebpackConfig() {
     },
     port: 8080,
     hot: true,
+    proxy: [
+      {
+        context: [
+          '/auth/check_config',
+          '/auth/users',
+          '/login',
+          '/mqtt',
+          '/auth/who_am_i',
+          '/logout',
+        ],
+        target: process.env.MQTT_BROKER_URI || 'http://10.200.200.1',
+        ws: true,
+      },
+    ],
   };
 
   return config;

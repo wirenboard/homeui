@@ -44,6 +44,7 @@ install: configs
 	install -d -m 0777 $(DESTDIR)/var/www/images
 	install -d -m 0777 $(DESTDIR)/var/www/uploads
 	install -d -m 0777 $(DESTDIR)/var/www/scripts/i18n
+	install -d -m 0755 $(DESTDIR)/var/www/fonts
 
 	cp -a dist/css/*.css $(DESTDIR)/var/www/css
 	cp -a dist/images/* $(DESTDIR)/var/www/images
@@ -52,9 +53,7 @@ install: configs
 	cp -a dist/*.js $(DESTDIR)/var/www/
 	cp -a dist/*.svg $(DESTDIR)/var/www/
 	cp -a dist/*.png $(DESTDIR)/var/www/
-	cp -a dist/*.ttf $(DESTDIR)/var/www/
-	cp -a dist/*.woff $(DESTDIR)/var/www/
-	cp -a dist/*.woff2 $(DESTDIR)/var/www/ || :
+	cp -a dist/fonts/* $(DESTDIR)/var/www/fonts
 
 	install -m 0644 dist/404.html $(DESTDIR)/var/www/
 	install -m 0644 dist/robots.txt $(DESTDIR)/var/www/

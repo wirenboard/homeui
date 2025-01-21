@@ -1,6 +1,5 @@
 <div class="alert alert-danger alert-dismissible" role="alert"
-     ng-hide="$ctrl.haveRights">{{'devices.labels.notice' | translate}}
-  <a ui-sref="accessLevel">{{'devices.labels.access' | translate}}</a>.
+     ng-hide="$ctrl.haveRights">{{'devices.labels.access-notice' | translate}}
 </div>
 <section id="devices-list" ng-if="$ctrl.haveRights">
   <div class="empty-list well" ng-if="!$ctrl.getDevicesCount()" translate>{{'devices.labels.nothing'}}</div>

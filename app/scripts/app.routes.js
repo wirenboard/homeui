@@ -53,7 +53,6 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('accessLevel', {
       url: '/access-level',
       template: require('../views/access-level.html'),
-      controller: 'AccessLevelCtrl as $ctrl',
     })
     .state('scan', {
       url: '/scan',
@@ -175,12 +174,6 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
-    })
-    //...........................................................................
-    .state('login', {
-      url: '/login/{id}',
-      template: require('../views/login.html'),
-      controller: 'LoginCtrl as $ctrl',
     })
     //...........................................................................
     .state('rules', {

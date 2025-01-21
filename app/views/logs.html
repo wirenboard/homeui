@@ -5,8 +5,7 @@
     </h1>
 
     <div class="alert alert-danger alert-dismissible" role="alert"
-         ng-hide="$ctrl.haveRights">{{'rules.labels.notice' | translate}}
-        <a ui-sref="accessLevel">{{'rules.labels.access' | translate}}</a>.
+         ng-hide="$ctrl.haveRights">{{'rules.labels.access-notice' | translate}}
     </div>
 
     <div ng-if="$ctrl.haveRights" class="row" ng-cloak ng-show="!$ctrl.waitBootsAndServices">

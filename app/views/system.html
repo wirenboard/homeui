@@ -1,8 +1,7 @@
 <h1 class="page-header" translate>{{'system.title'}}</h1>
 
 <div class="alert alert-danger alert-dismissible" role="alert"
-     ng-hide="$ctrl.haveRights">{{'rules.labels.notice' | translate}}
-    <a ui-sref="accessLevel">{{'rules.labels.access' | translate}}</a>.
+     ng-hide="$ctrl.haveRights">{{'rules.labels.access-notice' | translate}}
 </div>
 
 <section ng-if="$ctrl.haveRights">

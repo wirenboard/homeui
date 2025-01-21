@@ -4,8 +4,6 @@ class ScriptsCtrl {
 
     this.EditorProxy = EditorProxy;
     this.errors = errors;
-    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-    if (!this.haveRights) return;
 
     const loadList = () => {
       whenMqttReady()
@@ -22,7 +20,9 @@ class ScriptsCtrl {
         .catch('rules.errors.list');
     };
 
-    /*
+    rolesFactory.asyncCheckRights(rolesFactory.ROLE_THREE, () => {
+      this.haveRights = true;
+      /*
      get list
      /rpc/v1/wbrules/Editor/List/wb-mqtt-homeui-uLo93IW6a0 {"id":1,"params":{}}
      get one
@@ -31,7 +31,8 @@ class ScriptsCtrl {
      /rpc/v1/wbrules/Editor/Save/wb-mqtt-homeui-Usf4VuT4Ba {"id":3,"params":{"path":"rules.js","content": ....
      */
 
-    loadList();
+      loadList();
+    });
   }
 
   deleteScript(index) {
@@ -46,6 +47,4 @@ class ScriptsCtrl {
 }
 
 //-----------------------------------------------------------------------------
-export default angular
-  .module('homeuiApp.scripts', [])
-  .controller('ScriptsCtrl', ScriptsCtrl);
+export default angular.module('homeuiApp.scripts', []).controller('ScriptsCtrl', ScriptsCtrl);

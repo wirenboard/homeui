@@ -233,8 +233,7 @@
       }
    },
    "errors": {
-      "access-failed": "You cannot view this page. You can change ",
-      "access-failed-link-text": "access level"
+      "access-failed": "You cannot view this page. You can change access level"
    },
    "forms": {
       "default-text-prefix": "If the value is not set, ",
@@ -326,5 +325,42 @@
          "search-device": "Search device",
          "search-control": "Search channel"
       }
+   },
+   "users": {
+      "title": "Users",
+      "errors": {
+         "forbidden": "You don't have permission to view this page",
+         "old-backend": "The backend is outdated. Please update it",
+         "unknown": "Error: {{msg}}"
+      },
+      "labels":{
+         "login": "Login",
+         "password": "Password",
+         "type": "Type",
+         "admin": "Admin",
+         "user": "User",
+         "operator": "Operator",
+         "confirm-delete":"Do you really want to delete user \"{{name}}\"?"
+      },
+      "buttons": {
+         "save": "Save",
+         "add": "Add",
+         "delete": "Delete"
+      }
+   },
+   "login": {
+      "title": "Login",
+      "errors": {
+         "failed": "Login failed",
+         "http-warning": "The Web UI is running over HTTP. It is recommended to use HTTPS to ensure the security of your credentials and data"
+      },
+      "buttons": {
+         "login": "Log in"
+      },
+      "labels": {
+         "login": "Login",
+         "password": "Password"
+      }
    }
+
 }

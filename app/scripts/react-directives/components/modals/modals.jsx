@@ -41,9 +41,11 @@ export const Modal = ({ id, active, onCancel, children }) => {
           onCancel();
         }
       };
-      document.addEventListener('keydown', handleEsc, true);
-      document.addEventListener('mousedown', handleClick, true);
-      document.addEventListener('touchstart', handleClick, true);
+      if (onCancel) {
+        document.addEventListener('keydown', handleEsc, true);
+        document.addEventListener('mousedown', handleClick, true);
+        document.addEventListener('touchstart', handleClick, true);
+      }
       var backdrop = document.createElement('div');
       backdrop.classList.add('modal-backdrop');
       backdrop.classList.add('in');

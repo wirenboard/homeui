@@ -7,7 +7,9 @@ import firmwareUpdateDirective from '../react-directives/firmware-update/firmwar
 function SystemCtrl(rolesFactory) {
   'ngInject';
 
-  this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
+  rolesFactory.asyncCheckRights(rolesFactory.ROLE_THREE, () => {
+    this.haveRights = true;
+  });
   setReactLocale();
 }
 

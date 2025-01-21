@@ -8,11 +8,13 @@ class NavigationCtrl {
     whenMqttReady,
     errors,
     uiConfig,
-    rolesFactory
+    rolesFactory,
+    $rootScope
   ) {
     'ngInject';
 
     $scope.roles = rolesFactory;
+    $rootScope.roles = rolesFactory;
 
     $scope.isActive = function (viewLocation) {
       return viewLocation === $location.path();
@@ -83,6 +85,18 @@ class NavigationCtrl {
       pageWrapperClassList.contains(overlayClass)
         ? pageWrapperClassList.remove(overlayClass)
         : pageWrapperClassList.add(overlayClass);
+    };
+
+    $scope.showAccessControl = function () {
+      return rolesFactory.current.roles.isAdmin || rolesFactory.notConfiguredAdmin;
+    };
+
+    $scope.logout = function () {
+      fetch('/logout', {
+        method: 'POST',
+      }).then(() => {
+        location.reload();
+      });
     };
   }
 

@@ -26,6 +26,7 @@ export class StringStore {
       isDirty: computed,
       submit: action,
       reset: action,
+      setReadOnly: action,
     });
   }
 
@@ -67,5 +68,9 @@ export class StringStore {
 
   reset() {
     this.setValue(this.initialValue);
+  }
+
+  setReadOnly(readOnly) {
+    this.readOnly = readOnly;
   }
 }

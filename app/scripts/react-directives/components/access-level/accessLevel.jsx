@@ -12,7 +12,6 @@ const AccessLevelErrorBanner = observer(({ store, children }) => {
   return (
     <div className="alert alert-danger" role="alert">
       <span> {t('errors.access-failed')}</span>
-      <a href="#!/access-level">{t('errors.access-failed-link-text')}</a>
     </div>
   );
 });
