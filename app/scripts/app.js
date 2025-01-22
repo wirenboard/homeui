@@ -370,7 +370,7 @@ async function preStart() {
           mode: 'cors',
         });
         if (response.status === 200) {
-          window.location.href = baseUrl.origin;
+          window.location.href = baseUrl.origin; // eslint-disable-line no-eval
           return 'redirected';
         }
       }
