@@ -67,7 +67,7 @@ export default function rolesFactory() {
 
   roles.setRole = (user_type, notConfiguredAdmin) => {
     this.roleIsSet = true;
-    const roleId = typeToRoleId[user_type] || DEFAULT_ROLE;
+    const roleId = typeToRoleId[String(user_type)] || DEFAULT_ROLE;
     roles.current = { role: roleId, roles: roles.ROLES[roleId - 1] };
     roles.notConfiguredAdmin = !!notConfiguredAdmin;
     roles.whenReadyResolve();

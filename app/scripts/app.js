@@ -359,11 +359,13 @@ async function preStart() {
           mode: 'cors',
         });
         if (response.status === 200) {
-          window.location.href = `https://${https_domain}`;
+          window.location.href = encodeURI(`https://${https_domain}`);
           return 'redirected';
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      /* empty */
+    }
   }
   return 'warn';
 }
