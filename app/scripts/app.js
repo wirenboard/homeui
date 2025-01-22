@@ -381,7 +381,9 @@ async function getUserType(rolesFactory) {
     if (response.status === 401) {
       return 'login';
     }
-  } catch (e) {}
+  } catch (e) {
+    /* empty */
+  }
   rolesFactory.setRole('user', true);
   return 'ok';
 }

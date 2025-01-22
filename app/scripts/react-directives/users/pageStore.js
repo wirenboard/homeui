@@ -130,11 +130,11 @@ class UsersPageStore {
     this.users = users;
   }
 
-  async execRequest(url, request) {
+  async fetchWrapper(fetchFn) {
     try {
       this.pageWrapperStore.clearError();
       this.pageWrapperStore.setLoading(true);
-      const res = await fetch(url, request);
+      const res = await fetchFn();
       if (res.ok) {
         this.pageWrapperStore.setLoading(false);
         return res;
@@ -157,13 +157,15 @@ class UsersPageStore {
     if (!user) {
       return;
     }
-    const res = await this.execRequest('/auth/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(user),
-    });
+    const res = await this.fetchWrapper(() =>
+      fetch('/auth/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      })
+    );
     if (res === null) {
       return;
     }
@@ -187,13 +189,15 @@ class UsersPageStore {
     if (!modifiedUser) {
       return;
     }
-    const res = await this.execRequest(`/auth/users/${user.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(modifiedUser),
-    });
+    const res = await this.fetchWrapper(() =>
+      fetch(`/auth/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modifiedUser),
+      })
+    );
     if (res == null) {
       return;
     }
@@ -216,9 +220,11 @@ class UsersPageStore {
 
   async deleteUser(user) {
     if ((await this.showDeleteConfirmModal(user)) == 'ok') {
-      const res = await this.execRequest(`/auth/users/${user.id}`, {
-        method: 'DELETE',
-      });
+      const res = await this.fetchWrapper(() =>
+        fetch(`/auth/users/${user.id}`, {
+          method: 'DELETE',
+        })
+      );
       if (res === null) {
         return;
       }
