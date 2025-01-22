@@ -2,7 +2,7 @@
  * Created by ozknemoy on 21.06.2017.
  */
 
-export default function rolesFactory() {
+export default function rolesFactoryService() {
   'ngInject';
   var roles = {};
 
@@ -31,7 +31,7 @@ export default function rolesFactory() {
 
   roles.current = { role: DEFAULT_ROLE, roles: roles.ROLES[DEFAULT_ROLE - 1] };
   roles.notConfiguredAdmin = false;
-  roles.roleIsSet = false;
+  let roleIsSet = false;
 
   roles.whenReadyResolve = null;
   roles.whenReadyPromise = new Promise(resolve => {
@@ -41,12 +41,10 @@ export default function rolesFactory() {
 
   // проверяет есть ли права доступа/просмотра
   // принимает значение минимально возможного статуса для доступа/просмотра
-  roles.checkRights = onlyRoleGreatThanOrEqual => {
-    return roles.current.role >= onlyRoleGreatThanOrEqual;
-  };
+  roles.checkRights = onlyRoleGreatThanOrEqual => roles.current.role >= onlyRoleGreatThanOrEqual;
 
   roles.asyncCheckRights = (onlyRoleGreatThanOrEqual, successCallback) => {
-    if (this.roleIsSet) {
+    if (roleIsSet) {
       if (roles.checkRights(onlyRoleGreatThanOrEqual)) {
         successCallback();
       }
@@ -65,9 +63,9 @@ export default function rolesFactory() {
     user: roles.ROLE_ONE,
   };
 
-  roles.setRole = (user_type, notConfiguredAdmin) => {
-    this.roleIsSet = true;
-    const roleId = typeToRoleId[String(user_type)] || DEFAULT_ROLE;
+  roles.setRole = (userType, notConfiguredAdmin) => {
+    roleIsSet = true;
+    const roleId = typeToRoleId[String(userType)] || DEFAULT_ROLE;
     roles.current = { role: roleId, roles: roles.ROLES[roleId - 1] };
     roles.notConfiguredAdmin = !!notConfiguredAdmin;
     roles.whenReadyResolve();

@@ -49,7 +49,7 @@ import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
-import rolesFactory from './services/roles.factory';
+import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import serialMetricsProxyService from './services/serialMetricsProxy';
@@ -161,7 +161,7 @@ module
 
   .service('handleData', handleDataService)
   .service('userAgentFactory', userAgentFactory)
-  .service('rolesFactory', rolesFactory)
+  .service('rolesFactory', rolesFactoryService)
   .service('historyUrlService', historyUrlService)
 
   .run(DeviceData => {
@@ -337,7 +337,10 @@ module.run(($rootScope, $state, $transitions) => {
 });
 
 function isIp(host) {
-  return host.match(/^\d+\.\d+\.\d+\.\d+$/);
+  return (
+    /^(\d{1,3}\.){3}\d{1,3}$/.test(host) &&
+    host.split('.').every(num => parseInt(num) >= 0 && parseInt(num) <= 255)
+  );
 }
 
 function isLocalDomain(host) {
@@ -353,13 +356,13 @@ async function preStart() {
     try {
       let response = await fetch('/https/redirect');
       if (response.status === 200) {
-        const https_domain = await response.text();
-        response = await fetch(`https://${https_domain}/https/check`, {
+        const httpsDomain = await response.text();
+        response = await fetch(`https://${httpsDomain}/https/check`, {
           method: 'GET',
           mode: 'cors',
         });
         if (response.status === 200) {
-          window.location.href = encodeURI(`https://${https_domain}`);
+          window.location.href = encodeURI(`https://${httpsDomain}`);
           return 'redirected';
         }
       }
@@ -370,9 +373,9 @@ async function preStart() {
   return 'warn';
 }
 
-async function getUserType(rolesFactory) {
+async function fillUserType(rolesFactory) {
   try {
-    let response = await fetch('/auth/who_am_i');
+    const response = await fetch('/auth/who_am_i');
     if (response.status === 200) {
       const user = await response.json();
       rolesFactory.setRole(user.user_type, false);
@@ -571,8 +574,8 @@ const realApp = angular
 
       rolesFactory.whenReady().then(() => {
         $rootScope.requestConfig(loginData);
-        $('double-bounce-spinner').remove();
-        $('#wrapper').removeClass('fade');
+        angular.element('double-bounce-spinner').remove();
+        angular.element('#wrapper').removeClass('fade');
       });
 
       preStart().then(res => {
@@ -582,12 +585,12 @@ const realApp = angular
         if (res === 'warn') {
           $rootScope.noHttps = true;
         }
-        getUserType(rolesFactory).then(res => {
-          if (res === 'login') {
+        fillUserType(rolesFactory).then(fillUserTypeResult => {
+          if (fillUserTypeResult === 'login') {
             $rootScope.showLoginModal = true;
             $rootScope.$apply();
-            $('double-bounce-spinner').remove();
-            $('#wrapper').removeClass('fade');
+            angular.element('double-bounce-spinner').remove();
+            angular.element('#wrapper').removeClass('fade');
           }
         });
       });

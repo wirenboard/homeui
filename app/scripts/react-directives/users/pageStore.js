@@ -101,7 +101,7 @@ class UsersPageStore {
   }
 
   async showUserEditModal() {
-    return await this.formModalState.show(
+    return this.formModalState.show(
       i18n.t('users.labels.user'),
       this.userParamsStore,
       i18n.t('users.buttons.save')
@@ -185,7 +185,7 @@ class UsersPageStore {
   async editUser(user) {
     this.userParamsStore.reset();
     this.userParamsStore.setValue(user);
-    let modifiedUser = await this.showUserEditModal();
+    const modifiedUser = await this.showUserEditModal();
     if (!modifiedUser) {
       return;
     }
@@ -219,7 +219,7 @@ class UsersPageStore {
   }
 
   async deleteUser(user) {
-    if ((await this.showDeleteConfirmModal(user)) == 'ok') {
+    if ((await this.showDeleteConfirmModal(user)) === 'ok') {
       const res = await this.fetchWrapper(() =>
         fetch(`/auth/users/${user.id}`, {
           method: 'DELETE',
