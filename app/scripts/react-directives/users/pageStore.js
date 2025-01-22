@@ -81,7 +81,7 @@ class UsersPageStore {
     });
   }
 
-  processFetchError(fetchResponse) {
+  async processFetchError(fetchResponse) {
     switch (fetchResponse.status) {
       case 403:
         this.pageWrapperStore.setError(i18n.t('users.errors.forbidden'));
@@ -90,13 +90,10 @@ class UsersPageStore {
         this.pageWrapperStore.setError(i18n.t('users.errors.old-backend'));
         break;
       default:
-        fetchResponse
-          .text()
-          .then(text =>
-            this.pageWrapperStore.setError(
-              i18n.t('users.errors.unknown', { msg: text, interpolation: { escapeValue: false } })
-            )
-          );
+        const text = await fetchResponse.text();
+        this.pageWrapperStore.setError(
+          i18n.t('users.errors.unknown', { msg: text, interpolation: { escapeValue: false } })
+        );
     }
   }
 
@@ -115,7 +112,7 @@ class UsersPageStore {
       if (res.ok) {
         this.setUsers(await res.json());
       } else {
-        this.processFetchError(res);
+        await this.processFetchError(res);
       }
     } catch (error) {
       this.pageWrapperStore.setError(error);
@@ -139,7 +136,7 @@ class UsersPageStore {
         this.pageWrapperStore.setLoading(false);
         return res;
       }
-      this.processFetchError(res);
+      await this.processFetchError(res);
     } catch (error) {
       this.pageWrapperStore.setError(error);
     }

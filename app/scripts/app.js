@@ -337,14 +337,18 @@ module.run(($rootScope, $state, $transitions) => {
 });
 
 function isIp(host) {
-  return (
-    /^(\d{1,3}\.){3}\d{1,3}$/.test(host) &&
-    host.split('.').every(num => parseInt(num) >= 0 && parseInt(num) <= 255)
-  );
+  const ipComponents = host.split('.');
+  if (ipComponents.length !== 4) {
+    return false;
+  }
+  return ipComponents.every(num => {
+    const parsed = parseInt(num, 10);
+    return !isNaN(parsed) && parsed >= 0 && parsed <= 255;
+  });
 }
 
 function isLocalDomain(host) {
-  return host.match(/\.local$/);
+  return host.endsWith('.local');
 }
 
 async function preStart() {
