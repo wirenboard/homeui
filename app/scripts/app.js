@@ -353,6 +353,11 @@ function isLocalDomain(host) {
   return host.endsWith('.local');
 }
 
+function isValidDomainName(name) {
+  const regex = /^[a-zA-Z0-9.-]+$/;
+  return regex.test(name);
+}
+
 async function preStart() {
   if (window.location.protocol === 'https:') {
     return 'ok';
@@ -363,15 +368,15 @@ async function preStart() {
       let response = await fetch('/https/redirect');
       if (response.status === 200) {
         const httpsDomain = await response.text();
-        const baseUrl = new URL(`https://${httpsDomain}`);
-        const checkUrl = new URL('/https/check', baseUrl.origin);
-        response = await fetch(checkUrl.href, {
-          method: 'GET',
-          mode: 'cors',
-        });
-        if (response.status === 200) {
-          window.location.href = baseUrl.origin; // eslint-disable-line no-eval
-          return 'redirected';
+        if (isValidDomainName(httpsDomain)) {
+          response = await fetch(`https://${httpsDomain}/https/check`, {
+            method: 'GET',
+            mode: 'cors',
+          });
+          if (response.status === 200) {
+            window.location.href = `https://${httpsDomain}`;
+            return 'redirected';
+          }
         }
       }
     } catch (e) {
