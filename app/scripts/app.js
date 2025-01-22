@@ -104,6 +104,8 @@ import routingModule from './app.routes';
 // Internal components
 import LoginFormModule from './components/loginForm/index';
 
+import escape from 'lodash/escape';
+
 //-----------------------------------------------------------------------------
 /**
  * @ngdoc overview
@@ -353,11 +355,6 @@ function isLocalDomain(host) {
   return host.endsWith('.local');
 }
 
-function isValidDomainName(name) {
-  const regex = /^[a-zA-Z0-9.-]+$/;
-  return regex.test(name);
-}
-
 async function preStart() {
   if (window.location.protocol === 'https:') {
     return 'ok';
@@ -368,15 +365,13 @@ async function preStart() {
       let response = await fetch('/https/redirect');
       if (response.status === 200) {
         const httpsDomain = await response.text();
-        if (isValidDomainName(httpsDomain)) {
-          response = await fetch(`https://${httpsDomain}/https/check`, {
-            method: 'GET',
-            mode: 'cors',
-          });
-          if (response.status === 200) {
-            window.location.href = `https://${httpsDomain}`;
-            return 'redirected';
-          }
+        response = await fetch(`https://${httpsDomain}/https/check`, {
+          method: 'GET',
+          mode: 'cors',
+        });
+        if (response.status === 200) {
+          window.location.href = escape(`https://${httpsDomain}`);
+          return 'redirected';
         }
       }
     } catch (e) {
