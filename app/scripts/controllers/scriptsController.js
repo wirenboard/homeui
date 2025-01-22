@@ -1,3 +1,7 @@
+/* global angular */
+
+'use strict';
+
 class ScriptsCtrl {
   constructor(EditorProxy, whenMqttReady, errors, rolesFactory, $scope) {
     'ngInject';

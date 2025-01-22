@@ -1,3 +1,5 @@
+/* global angular */
+
 'use strict';
 
 // Import slylesheets

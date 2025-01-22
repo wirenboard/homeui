@@ -83,17 +83,20 @@ class UsersPageStore {
 
   async processFetchError(fetchResponse) {
     switch (fetchResponse.status) {
-      case 403:
+      case 403: {
         this.pageWrapperStore.setError(i18n.t('users.errors.forbidden'));
         break;
-      case 404:
+      }
+      case 404: {
         this.pageWrapperStore.setError(i18n.t('users.errors.old-backend'));
         break;
-      default:
+      }
+      default: {
         const text = await fetchResponse.text();
         this.pageWrapperStore.setError(
           i18n.t('users.errors.unknown', { msg: text, interpolation: { escapeValue: false } })
         );
+      }
     }
   }
 
