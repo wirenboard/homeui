@@ -363,12 +363,14 @@ async function preStart() {
       let response = await fetch('/https/redirect');
       if (response.status === 200) {
         const httpsDomain = await response.text();
-        response = await fetch(`https://${httpsDomain}/https/check`, {
+        const baseUrl = new URL(`https://${httpsDomain}`);
+        const checkUrl = new URL('/https/check', baseUrl.origin);
+        response = await fetch(checkUrl.href, {
           method: 'GET',
           mode: 'cors',
         });
         if (response.status === 200) {
-          window.location.href = encodeURI(`https://${httpsDomain}`);
+          window.location.href = baseUrl.origin;
           return 'redirected';
         }
       }
