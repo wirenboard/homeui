@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.6) stable; urgency=medium
+
+  * Exclude shared ethernet connections from switching
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 22 Jan 2025 17:30:00 +0400
+
 wb-mqtt-homeui (2.107.5) stable; urgency=medium
 
   * Fix default SVG dashboard switches handling
