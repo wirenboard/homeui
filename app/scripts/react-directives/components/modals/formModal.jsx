@@ -12,7 +12,7 @@ import { MakeFormFields } from '../../forms/forms';
 import { observer } from 'mobx-react-lite';
 
 const FormModal = observer(({ id, active, title, formStore, onOk, onCancel, okButtonLabel }) => {
-  const formId = id + 'Form';
+  const formId = `${id}Form`;
   const onSubmit = e => {
     e.preventDefault();
     onOk();
