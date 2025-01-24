@@ -1249,3 +1249,8 @@ body.no-console .console {
 body.no-console .show-console #page-wrapper {
   padding-bottom: 10px;
 }
+
+.navbar-right .dropdown-menu {
+  left:auto;
+  right:0;
+}

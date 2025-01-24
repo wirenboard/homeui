@@ -49,18 +49,21 @@ export const FormEdit = observer(({ store, children }) => {
   );
 });
 
-export const FormStringEdit = observer(({ store }) => {
-  return (
-    <FormEdit store={store}>
-      <LineEdit
-        value={store.value === undefined ? '' : store.value}
-        placeholder={store.placeholder}
-        onChange={e => store.setValue(e.target.value)}
-        disabled={store.readOnly}
-      />
-    </FormEdit>
-  );
-});
+export const FormStringEdit = observer(
+  React.forwardRef(({ store }, ref) => {
+    return (
+      <FormEdit store={store}>
+        <LineEdit
+          value={store.value === undefined ? '' : store.value}
+          placeholder={store.placeholder}
+          onChange={e => store.setValue(e.target.value)}
+          disabled={store.readOnly}
+          ref={ref}
+        />
+      </FormEdit>
+    );
+  })
+);
 
 export const FormCheckbox = observer(({ store }) => {
   const showCaption = useContext(ShowParamCaptionContext);
@@ -153,7 +156,7 @@ export const FormCollapsibleTable = observer(({ store }) => {
   );
 });
 
-export const FormEditor = ({ param, paramName }) => {
+export const FormEditor = React.forwardRef(({ param, paramName }, ref) => {
   const customEditorBuilder = useContext(CustomEditorBuilderContext);
   if (customEditorBuilder) {
     const customEditor = customEditorBuilder(param, paramName);
@@ -162,13 +165,13 @@ export const FormEditor = ({ param, paramName }) => {
     }
   }
   if (param.type === 'string') {
-    return <FormStringEdit store={param} />;
+    return <FormStringEdit store={param} ref={ref} />;
   }
   if (param.type === 'integer') {
-    return <FormStringEdit store={param} />;
+    return <FormStringEdit store={param} ref={ref} />;
   }
   if (param.type === 'number') {
-    return <FormStringEdit store={param} />;
+    return <FormStringEdit store={param} ref={ref} />;
   }
   if (param.type === 'boolean') {
     return <FormCheckbox store={param} />;
@@ -186,10 +189,15 @@ export const FormEditor = ({ param, paramName }) => {
     return <FormOneOf store={param} />;
   }
   return null;
-};
+});
 
-export const MakeFormFields = params => {
-  return params.map(([name, param]) => <FormEditor param={param} paramName={name} key={name} />);
+export const MakeFormFields = (params, firstRef) => {
+  return params.map(([name, param], index) => {
+    if (index === 0) {
+      return <FormEditor param={param} paramName={name} key={name} ref={firstRef} />;
+    }
+    return <FormEditor param={param} paramName={name} key={name} />;
+  });
 };
 
 export const Form = observer(({ store, children }) => {

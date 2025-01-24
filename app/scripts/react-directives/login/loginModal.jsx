@@ -10,9 +10,21 @@ import {
 } from '../components/modals/modals';
 import { MakeFormFields } from '../forms/forms';
 import { ErrorBar, Button } from '../common';
+import { useRef, useEffect } from 'react';
 
 const LoginModal = observer(({ store }) => {
   const { t } = useTranslation();
+  const ref = useRef(null);
+  useEffect(() => {
+    if (store.error) {
+      ref.current?.focus();
+    }
+  });
+
+  const onSubmit = e => {
+    e.preventDefault();
+    store.postLogin();
+  };
 
   return (
     <Modal id={'loginModal'} active={store.active}>
@@ -20,15 +32,18 @@ const LoginModal = observer(({ store }) => {
         <ModalTitle id={'loginModal'} text={t(store.formStore.name)} />
       </ModalHeader>
       <ModalBody>
-        {store.httpWarning && <ErrorBar msg={t('login.errors.http-warning')}></ErrorBar>}
-        {MakeFormFields(Object.entries(store.formStore.params || {}))}
-        {store.error && <ErrorBar msg={t('login.errors.failed')}></ErrorBar>}
+        {store.httpWarning && <ErrorBar msg={t('login.errors.http-warning')} />}
+        <form id="loginModalForm" onSubmit={onSubmit}>
+          {MakeFormFields(Object.entries(store.formStore.params || {}), ref)}
+        </form>
+        {store.error && <ErrorBar msg={t('login.errors.failed')} />}
       </ModalBody>
       <ModalFooter>
         <Button
           label={t('login.buttons.login')}
           type={'success'}
-          onClick={() => store.postLogin()}
+          form={'loginModalForm'}
+          disabled={store.loading}
         />
       </ModalFooter>
     </Modal>

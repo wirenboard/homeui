@@ -2,7 +2,6 @@ import { makeObservable, action, observable } from 'mobx';
 import { FormStore } from '../forms/formStore';
 import { StringStore } from '../forms/stringStore';
 import i18n from '../../i18n/react/config';
-import { makeNotEmptyValidator } from '../forms/stringValidators';
 
 class LoginModalStore {
   constructor(active, rolesFactory, httpWarning) {
@@ -12,15 +11,14 @@ class LoginModalStore {
     this.error = false;
     this.httpWarning = !!httpWarning;
     this.rolesFactory = rolesFactory;
+    this.loading = false;
 
     this.formStore = new FormStore('login.title', {
       login: new StringStore({
         name: i18n.t('login.labels.login'),
-        validator: makeNotEmptyValidator(),
       }),
       password: new StringStore({
         name: i18n.t('login.labels.password'),
-        validator: makeNotEmptyValidator(),
       }),
     });
 
@@ -30,6 +28,7 @@ class LoginModalStore {
       password: observable,
       error: observable,
       httpWarning: observable,
+      loading: observable,
       setLogin: action,
       setPassword: action,
       postLogin: action,
@@ -38,6 +37,7 @@ class LoginModalStore {
       setError: action,
       clearError: action,
       setHttpWarning: action,
+      setLoading: action,
     });
   }
 
@@ -69,29 +69,37 @@ class LoginModalStore {
     this.clearError();
     this.setLogin('');
     this.setPassword('');
+    this.setLoading(false);
     this.active = true;
   }
 
-  postLogin() {
+  setLoading(loading) {
+    this.loading = loading;
+    Object.values(this.formStore.params).forEach(param => param.setReadOnly(loading));
+  }
+
+  async postLogin() {
+    this.setLoading(true);
     this.clearError();
-    Object.values(this.formStore.params).forEach(param => param.setReadOnly(true));
-    fetch('/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.formStore.value),
-    }).then(response => {
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.formStore.value),
+      });
       if (response.ok) {
-        response.json().then(data => {
-          this.rolesFactory.setRole(data.user_type);
-          this.hide();
-        });
-      } else {
-        this.setError();
-        Object.values(this.formStore.params).forEach(param => param.setReadOnly(false));
+        const data = await response.json();
+        this.rolesFactory.setRole(data.user_type);
+        this.hide();
+        return;
       }
-    });
+    } catch (error) {
+      /* empty */
+    }
+    this.setError();
+    this.setLoading(false);
   }
 }
 

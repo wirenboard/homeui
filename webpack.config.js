@@ -326,6 +326,7 @@ module.exports = (function makeWebpackConfig() {
           '/mqtt',
           '/auth/who_am_i',
           '/logout',
+          '/device/info',
         ],
         target: process.env.MQTT_BROKER_URI || 'http://10.200.200.1',
         ws: true,

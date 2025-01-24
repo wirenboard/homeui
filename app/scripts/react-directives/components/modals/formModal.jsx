@@ -12,18 +12,27 @@ import { MakeFormFields } from '../../forms/forms';
 import { observer } from 'mobx-react-lite';
 
 const FormModal = observer(({ id, active, title, formStore, onOk, onCancel, okButtonLabel }) => {
+  const formId = id + 'Form';
+  const onSubmit = e => {
+    e.preventDefault();
+    onOk();
+  };
   return (
     <Modal id={id} active={active} onCancel={onCancel}>
       <ModalHeader>
         <ModalTitle id={id} text={title} />
       </ModalHeader>
-      <ModalBody>{MakeFormFields(Object.entries(formStore?.params || {}))}</ModalBody>
+      <ModalBody>
+        <form id={formId} onSubmit={onSubmit}>
+          {MakeFormFields(Object.entries(formStore?.params || {}))}
+        </form>
+      </ModalBody>
       <ModalFooter>
         <Button
           label={okButtonLabel}
           type={'success'}
-          onClick={onOk}
           disabled={formStore?.hasErrors}
+          form={formId}
         />
         <ModalCancelButton onClick={onCancel} />
       </ModalFooter>

@@ -355,6 +355,24 @@ function isLocalDomain(host) {
   return host.endsWith('.local');
 }
 
+function isDeviceSn(sn) {
+  return /^[A-Z0-9]+$/.test(sn);
+}
+
+const WIRENBOARD_DNS_POSTFIX = 'ip.xcvb.win';
+
+function makeHttpsUrlOrigin(ip, sn) {
+  const ipPrefix = ip.replace(/\./g, '-');
+  return `https://${ipPrefix}.${sn.toLowerCase()}.${WIRENBOARD_DNS_POSTFIX}`;
+}
+
+function getIpForHttpsDomainName(hostname, deviceIp) {
+  if (isIp(hostname)) {
+    return hostname;
+  }
+  return isIp(deviceIp) ? deviceIp : null;
+}
+
 async function preStart() {
   if (window.location.protocol === 'https:') {
     return 'ok';
@@ -362,16 +380,27 @@ async function preStart() {
 
   if (isIp(window.location.hostname) || isLocalDomain(window.location.hostname)) {
     try {
-      let response = await fetch('/https/redirect');
+      let response = await fetch('/device/info');
       if (response.status === 200) {
-        const httpsDomain = await response.text();
-        response = await fetch(`https://${httpsDomain}/https/check`, {
+        const deviceInfo = await response.json();
+        if (!isDeviceSn(deviceInfo.sn)) {
+          return 'warn';
+        }
+        const ip = getIpForHttpsDomainName(window.location.hostname, deviceInfo.ip);
+        if (ip === null) {
+          return 'warn';
+        }
+        const httpsUrlOrigin = makeHttpsUrlOrigin(ip, deviceInfo.sn);
+        response = await fetch(`${httpsUrlOrigin}/device/info`, {
           method: 'GET',
           mode: 'cors',
         });
         if (response.status === 200) {
-          window.location.href = escape(`https://${httpsDomain}`);
-          return 'redirected';
+          const httpsDeviceInfo = await response.json();
+          if (httpsDeviceInfo.sn === deviceInfo.sn) {
+            window.location.href = httpsUrlOrigin;
+            return 'redirected';
+          }
         }
       }
     } catch (e) {
