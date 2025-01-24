@@ -34,9 +34,9 @@ function makeTiers() {
 
 function managableBySwitcher(connection) {
   return (
-    Object.keys(DefaultConnectionPriorities).includes(connection.data.type) &&
-    connection.editedData.ipv4.method !== "shared" &&
-    connection.editedData.connection_autoconnect
+    Object.keys(DefaultConnectionPriorities).includes(connection.data.type)
+     && connection.editedData.ipv4.method !== 'shared'
+     && connection.editedData.connection_autoconnect
   );
 }
 
