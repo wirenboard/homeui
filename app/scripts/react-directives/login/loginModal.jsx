@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,8 +10,6 @@ import {
 } from '../components/modals/modals';
 import { MakeFormFields } from '../forms/forms';
 import { ErrorBar, Button } from '../common';
-import { useRef, useEffect } from 'react';
-
 const LoginModal = observer(({ store }) => {
   const { t } = useTranslation();
   const ref = useRef(null);
