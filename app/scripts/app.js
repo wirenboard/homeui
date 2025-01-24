@@ -104,7 +104,7 @@ import routingModule from './app.routes';
 // Internal components
 import LoginFormModule from './components/loginForm/index';
 
-import escape from 'lodash/escape';
+import lodashEscape from 'lodash/escape';
 
 //-----------------------------------------------------------------------------
 /**
@@ -398,7 +398,7 @@ async function preStart() {
         if (response.status === 200) {
           const httpsDeviceInfo = await response.json();
           if (httpsDeviceInfo.sn === deviceInfo.sn) {
-            window.location.href = httpsUrlOrigin;
+            window.location.href = lodashEscape(httpsUrlOrigin);
             return 'redirected';
           }
         }
