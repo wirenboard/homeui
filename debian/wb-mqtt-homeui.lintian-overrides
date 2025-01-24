@@ -1,1 +1,1 @@
-dir-or-file-in-var-www [var/www/*]
+wb-mqtt-homeui: dir-or-file-in-var-www /var/www
