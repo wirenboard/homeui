@@ -25,7 +25,7 @@ const LoginModal = observer(({ store }) => {
   };
 
   return (
-    <Modal id={'loginModal'} active={store.active}>
+    <Modal id="loginModal" active={store.active}>
       <ModalHeader>
         <ModalTitle id={'loginModal'} text={t(store.formStore.name)} />
       </ModalHeader>
