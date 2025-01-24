@@ -32,10 +32,11 @@ function makeTiers() {
   ];
 }
 
-function managableBySwitcher(connection) {
+function manageableBySwitcher(connection) {
   return (
-    Object.keys(DefaultConnectionPriorities).includes(connection.data.type) &&
-    connection.editedData.connection_autoconnect
+    Object.keys(DefaultConnectionPriorities).includes(connection.data.type)
+     && connection.editedData.ipv4.method !== 'shared'
+     && connection.editedData.connection_autoconnect
   );
 }
 
@@ -55,8 +56,8 @@ function copyTiers(src, dst) {
   });
 }
 
-function getConnectionsManagableBySwitcher(connectionsStore) {
-  return connectionsStore.connections.filter(item => managableBySwitcher(item));
+function getConnectionsManageableBySwitcher(connectionsStore) {
+  return connectionsStore.connections.filter(item => manageableBySwitcher(item));
 }
 
 function updateTiers(connections, connectionPrioritiesStore) {
@@ -91,7 +92,7 @@ class ConnectionPrioritiesStore {
     this.isDirty = false;
 
     reaction(
-      () => getConnectionsManagableBySwitcher(connectionsStore),
+      () => getConnectionsManageableBySwitcher(connectionsStore),
       connections => updateTiers(connections, this)
     );
     makeAutoObservable(this);
@@ -223,18 +224,18 @@ export function switcherStoreFromJson(store, json, connectionsStore) {
   store.debug.setValue(json.debug);
   store.debug.submit();
 
-  const managableConnections = getConnectionsManagableBySwitcher(connectionsStore);
+  const manageableConnections = getConnectionsManageableBySwitcher(connectionsStore);
   store.connectionPriorities.tiers.forEach(tier => {
     tier.connections = [];
     (json?.tiers?.[tier.id] ?? []).forEach(name => {
-      const cn = managableConnections.find(item => item.name === name);
+      const cn = manageableConnections.find(item => item.name === name);
       if (cn) {
         tier.connections.push(cn);
       }
     });
   });
   store.connectionPriorities.submit();
-  updateTiers(managableConnections, store.connectionPriorities);
+  updateTiers(manageableConnections, store.connectionPriorities);
 }
 
 export default SwitcherStore;

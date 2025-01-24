@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.6) stable; urgency=medium
+
+  * Exclude shared ethernet connections from switching
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 22 Jan 2025 17:30:00 +0400
+
 wb-mqtt-homeui (2.107.5) stable; urgency=medium
 
   * Fix default SVG dashboard switches handling
@@ -180,7 +186,7 @@ wb-mqtt-homeui (2.100.4) stable; urgency=medium
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 04 Oct 2024 15:55:01 +0300
 
- wb-mqtt-homeui (2.100.3) stable; urgency=medium
+wb-mqtt-homeui (2.100.3) stable; urgency=medium
 
   * Remove type filter from widgets
 
@@ -280,11 +286,11 @@ wb-mqtt-homeui (2.96.1) stable; urgency=medium
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Sep 2024 12:30:09 +0300
 
- wb-mqtt-homeui (2.96.0) stable; urgency=medium
+wb-mqtt-homeui (2.96.0) stable; urgency=medium
 
   * Add realtime value show to range slider
 
-  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Aug 2024 17:05:09 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 29 Aug 2024 17:05:09 +0300
 
 wb-mqtt-homeui (2.95.0) stable; urgency=medium
 
