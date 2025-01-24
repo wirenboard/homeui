@@ -2,29 +2,25 @@
  * Created by ozknemoy on 21.06.2017.
  */
 
-export default function rolesFactory() {
+export default function rolesFactoryService() {
   'ngInject';
   var roles = {};
 
+  const DEFAULT_ROLE = 1;
+
   roles._ROLE_ONE = {
     id: 1,
-    name: 'access.user.name',
-    shortName: 'access.user.short',
-    description: 'access.user.description',
+    name: 'app.roles.user',
     isAdmin: false,
   };
   roles._ROLE_TWO = {
     id: 2,
-    name: 'access.operator.name',
-    shortName: 'access.operator.short',
-    description: 'access.operator.description',
+    name: 'app.roles.operator',
     isAdmin: false,
   };
   roles._ROLE_THREE = {
     id: 3,
-    name: 'access.admin.name',
-    shortName: 'access.admin.short',
-    description: 'access.admin.description',
+    name: 'app.roles.admin',
     isAdmin: true,
   };
 
@@ -33,35 +29,46 @@ export default function rolesFactory() {
   roles.ROLE_THREE = roles._ROLE_THREE.id;
   roles.ROLES = [roles._ROLE_ONE, roles._ROLE_TWO, roles._ROLE_THREE];
 
-  const setDefaultRole = (defaultRole = 1) => {
-    localStorage.setItem('role', defaultRole);
-    return defaultRole;
-  };
+  roles.current = { role: DEFAULT_ROLE, roles: roles.ROLES[DEFAULT_ROLE - 1] };
+  roles.notConfiguredAdmin = false;
+  let roleIsSet = false;
 
-  roles.current = {
-    role: localStorage.getItem('role') || setDefaultRole(),
-    roles: roles.ROLES[(localStorage.getItem('role') || 1) - 1],
-  };
-
-  roles.getRole = () => {
-    roles.current.role = localStorage.getItem('role');
-    roles.current.roles = roles.ROLES[roles.current.role - 1];
-    return roles.current.role;
-  };
-
-  roles.setRole = n => {
-    roles.current = { role: n, roles: roles.ROLES[n - 1] };
-    localStorage.setItem('role', n);
-  };
-
-  roles.resetRole = n => {
-    localStorage.setItem('role', n);
-  };
+  roles.whenReadyResolve = null;
+  roles.whenReadyPromise = new Promise(resolve => {
+    roles.whenReadyResolve = resolve;
+  });
+  roles.whenReady = () => roles.whenReadyPromise;
 
   // проверяет есть ли права доступа/просмотра
   // принимает значение минимально возможного статуса для доступа/просмотра
-  roles.checkRights = onlyRoleGreatThanOrEqual => {
-    return roles.getRole() >= onlyRoleGreatThanOrEqual;
+  roles.checkRights = onlyRoleGreatThanOrEqual => roles.current.role >= onlyRoleGreatThanOrEqual;
+
+  roles.asyncCheckRights = (onlyRoleGreatThanOrEqual, successCallback) => {
+    if (roleIsSet) {
+      if (roles.checkRights(onlyRoleGreatThanOrEqual)) {
+        successCallback();
+      }
+      return;
+    }
+    roles.whenReady().then(() => {
+      if (roles.checkRights(onlyRoleGreatThanOrEqual)) {
+        successCallback();
+      }
+    });
+  };
+
+  const typeToRoleId = {
+    admin: roles.ROLE_THREE,
+    operator: roles.ROLE_TWO,
+    user: roles.ROLE_ONE,
+  };
+
+  roles.setRole = (userType, notConfiguredAdmin) => {
+    roleIsSet = true;
+    const roleId = typeToRoleId[String(userType)] || DEFAULT_ROLE;
+    roles.current = { role: roleId, roles: roles.ROLES[roleId - 1] };
+    roles.notConfiguredAdmin = !!notConfiguredAdmin;
+    roles.whenReadyResolve();
   };
 
   return roles;

@@ -3,8 +3,7 @@
 
 
 <div class="alert alert-danger alert-dismissible" role="alert"
-     ng-hide="$ctrl.haveRights">{{'rules.labels.notice' | translate}}
-        <a ui-sref="accessLevel">{{'rules.labels.access' | translate}}</a>.
+     ng-hide="$ctrl.haveRights">{{'rules.labels.access-notice' | translate}}
 </div>
 <section ng-if="$ctrl.haveRights">
     <a ui-sref="rules-new" ui-sref-active="active" class="btn btn-success" translate>

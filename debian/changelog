@@ -1,3 +1,15 @@
+wb-mqtt-homeui (2.109.0) stable; urgency=medium
+
+  * Add redirect to HTTPS
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 21 Jan 2025 21:21:37 +0500
+
+wb-mqtt-homeui (2.108.0) stable; urgency=medium
+
+  * Add authentication
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 18 Dec 2024 15:49:56 +0500
+
 wb-mqtt-homeui (2.107.5) stable; urgency=medium
 
   * Fix default SVG dashboard switches handling

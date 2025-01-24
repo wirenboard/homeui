@@ -9,6 +9,7 @@ See into [conventions](https://github.com/wirenboard/conventions/blob/main/READM
 ## Build & development
 
 Run `npm run build` for building and `npm start` for preview.
+To change the mqtt broker url create a "MQTT_BROKER_URI" variable in the .env file with your url.
 
 ## Default SVG-Dashboards
 

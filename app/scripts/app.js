@@ -1,3 +1,5 @@
+/* global angular */
+
 'use strict';
 
 // Import slylesheets
@@ -49,7 +51,7 @@ import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
-import rolesFactory from './services/roles.factory';
+import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import serialMetricsProxyService from './services/serialMetricsProxy';
@@ -65,9 +67,7 @@ import handleDataService from './services/handle-data';
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
-import LoginCtrl from './controllers/loginController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
-import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
@@ -95,12 +95,16 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
+import usersPageDirective from './react-directives/users/users';
+import loginModalDirective from './react-directives/login/login-modal';
 
 // Angular routes
 import routingModule from './app.routes';
 
 // Internal components
 import LoginFormModule from './components/loginForm/index';
+
+import lodashEscape from 'lodash/escape';
 
 //-----------------------------------------------------------------------------
 /**
@@ -161,7 +165,7 @@ module
 
   .service('handleData', handleDataService)
   .service('userAgentFactory', userAgentFactory)
-  .service('rolesFactory', rolesFactory)
+  .service('rolesFactory', rolesFactoryService)
   .service('historyUrlService', historyUrlService)
 
   .run(DeviceData => {
@@ -176,9 +180,7 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('LoginCtrl', LoginCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
-  .controller('AccessLevelCtrl', AccessLevelCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
@@ -266,7 +268,9 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('expCheckWidget', expCheckMetaDirective);
+  .directive('expCheckWidget', expCheckMetaDirective)
+  .directive('usersPage', usersPageDirective)
+  .directive('loginModal', loginModalDirective);
 
 module
   .config([
@@ -277,7 +281,6 @@ module
         'app',
         'console',
         'help',
-        'access',
         'mqtt',
         'system',
         'ui',
@@ -337,6 +340,94 @@ module.run(($rootScope, $state, $transitions) => {
   $rootScope.forceFullscreen = false;
 });
 
+function isIp(host) {
+  const ipComponents = host.split('.');
+  if (ipComponents.length !== 4) {
+    return false;
+  }
+  return ipComponents.every(num => {
+    const parsed = parseInt(num, 10);
+    return !isNaN(parsed) && parsed >= 0 && parsed <= 255;
+  });
+}
+
+function isLocalDomain(host) {
+  return host.endsWith('.local');
+}
+
+function isDeviceSn(sn) {
+  return /^[A-Z0-9]+$/.test(sn);
+}
+
+const WIRENBOARD_DNS_POSTFIX = 'ip.xcvb.win';
+
+function makeHttpsUrlOrigin(ip, sn) {
+  const ipPrefix = ip.replace(/\./g, '-');
+  return `https://${ipPrefix}.${sn.toLowerCase()}.${WIRENBOARD_DNS_POSTFIX}`;
+}
+
+function getIpForHttpsDomainName(hostname, deviceIp) {
+  if (isIp(hostname)) {
+    return hostname;
+  }
+  return isIp(deviceIp) ? deviceIp : null;
+}
+
+async function preStart() {
+  if (window.location.protocol === 'https:') {
+    return 'ok';
+  }
+
+  if (isIp(window.location.hostname) || isLocalDomain(window.location.hostname)) {
+    try {
+      let response = await fetch('/device/info');
+      if (response.status === 200) {
+        const deviceInfo = await response.json();
+        if (!isDeviceSn(deviceInfo.sn)) {
+          return 'warn';
+        }
+        const ip = getIpForHttpsDomainName(window.location.hostname, deviceInfo.ip);
+        if (ip === null) {
+          return 'warn';
+        }
+        const httpsUrlOrigin = makeHttpsUrlOrigin(ip, deviceInfo.sn);
+        response = await fetch(`${httpsUrlOrigin}/device/info`, {
+          method: 'GET',
+          mode: 'cors',
+        });
+        if (response.status === 200) {
+          const httpsDeviceInfo = await response.json();
+          if (httpsDeviceInfo.sn === deviceInfo.sn) {
+            window.location.href = lodashEscape(httpsUrlOrigin);
+            return 'redirected';
+          }
+        }
+      }
+    } catch (e) {
+      /* empty */
+    }
+  }
+  return 'warn';
+}
+
+async function fillUserType(rolesFactory) {
+  try {
+    const response = await fetch('/auth/who_am_i');
+    if (response.status === 200) {
+      const user = await response.json();
+      rolesFactory.setRole(user.user_type, false);
+      return 'ok';
+    }
+    if (response.status === 401) {
+      return 'login';
+    }
+  } catch (e) {
+    /* empty */
+  }
+  rolesFactory.setRole('user', true);
+  return 'ok';
+}
+
 //-----------------------------------------------------------------------------
 // Register module with communication
 const realApp = angular
@@ -370,7 +461,8 @@ const realApp = angular
       $translate,
       uibDatepickerPopupConfig,
       tmhDynamicLocale,
-      DeviceManagerProxy
+      DeviceManagerProxy,
+      rolesFactory
     ) => {
       'ngInject';
 
@@ -451,23 +543,14 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      // detect auto url
-      var autoURL = new URL('/mqtt', $window.location.href);
-      autoURL.protocol = autoURL.protocol.replace('http', 'ws');
+      const loginUrl = new URL('/mqtt', $window.location.origin);
 
-      // FIXME: I know it's ugly, let's find more elegant way later
-      var isDev = $window.location.host === 'localhost:8080';
+      const isDev = $window.location.host === 'localhost:8080';
 
-      if (isDev) {
-        // local debug detected, enable MQTT url override via settings
-        if (!$window.localStorage.url) {
-          $window.localStorage.setItem('url', autoURL.href);
-        }
-        loginData['url'] = $window.localStorage['url'];
-      } else {
-        // no local debug detected, full auto
-        loginData['url'] = autoURL.href;
+      if (!isDev) {
+        loginUrl.protocol = loginUrl.protocol.replace('http', 'ws');
       }
+      loginData.url = loginUrl.href;
 
       let language = localStorage.getItem('language');
       const supportedLanguages = ['en', 'ru'];
@@ -480,8 +563,6 @@ const realApp = angular
       }
       $translate.use(language);
       tmhDynamicLocale.set(language);
-
-      $rootScope.requestConfig(loginData);
 
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
@@ -528,10 +609,28 @@ const realApp = angular
           }
         });
 
-      setTimeout(() => {
-        $('double-bounce-spinner').remove();
-        $('#wrapper').removeClass('fade');
-      }, 500);
+      rolesFactory.whenReady().then(() => {
+        $rootScope.requestConfig(loginData);
+        angular.element('double-bounce-spinner').remove();
+        angular.element('#wrapper').removeClass('fade');
+      });
+
+      preStart().then(res => {
+        if (res === 'redirected') {
+          return;
+        }
+        if (res === 'warn') {
+          $rootScope.noHttps = true;
+        }
+        fillUserType(rolesFactory).then(fillUserTypeResult => {
+          if (fillUserTypeResult === 'login') {
+            $rootScope.showLoginModal = true;
+            $rootScope.$apply();
+            angular.element('double-bounce-spinner').remove();
+            angular.element('#wrapper').removeClass('fade');
+          }
+        });
+      });
     }
   );
 

@@ -2,16 +2,18 @@ class ConfigsCtrl {
   constructor($scope, ConfigEditorProxy, whenMqttReady, errors, rolesFactory, $locale) {
     'ngInject';
 
-    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-    if (!this.haveRights) return;
     $scope.configs = [];
     $scope.$locale = $locale;
-    whenMqttReady()
-      .then(() => ConfigEditorProxy.List())
-      .then(result => {
-        $scope.configs = result;
-      })
-      .catch(errors.catch('Error listing the configs'));
+
+    rolesFactory.asyncCheckRights(rolesFactory.ROLE_THREE, () => {
+      this.haveRights = true;
+      whenMqttReady()
+        .then(() => ConfigEditorProxy.List())
+        .then(result => {
+          $scope.configs = result;
+        })
+        .catch(errors.catch('Error listing the configs'));
+    });
   }
 }
 

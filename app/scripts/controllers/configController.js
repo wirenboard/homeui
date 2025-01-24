@@ -13,8 +13,6 @@ class ConfigCtrl {
   ) {
     'ngInject';
 
-    this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-    if (!this.haveRights) return;
     $scope.file = {
       schemaPath: $stateParams.path,
       configPath: '',
@@ -69,7 +67,10 @@ class ConfigCtrl {
         });
     };
 
-    whenMqttReady().then(load);
+    rolesFactory.asyncCheckRights(rolesFactory.ROLE_THREE, () => {
+      this.haveRights = true;
+      whenMqttReady().then(load);
+    });
   }
 }
 

@@ -3,10 +3,10 @@
 import { makeAutoObservable } from 'mobx';
 
 export class FormStore {
-  constructor(name) {
+  constructor(name, params) {
     this.type = 'object';
     this.name = name;
-    this.params = {};
+    this.params = params || {};
 
     makeAutoObservable(this);
   }
