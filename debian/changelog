@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.7) stable; urgency=medium
+
+  * Remove debian/wb-mqtt-homeui.dirs, no functional changes
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 27 Jan 2025 13:11:00 +0400
+
 wb-mqtt-homeui (2.107.6) stable; urgency=medium
 
   * Exclude shared ethernet connections from switching
