@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.108.0) stable; urgency=medium
+
+  * Upgrade eslint configuration
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 31 Jan 2025 15:52:20 +0300
+
 wb-mqtt-homeui (2.107.7) stable; urgency=medium
 
   * Remove debian/wb-mqtt-homeui.dirs, no functional changes
