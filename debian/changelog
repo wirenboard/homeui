@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.107.8) stable; urgency=medium
+wb-mqtt-homeui (2.108.1) stable; urgency=medium
 
   * Add seconds to journal start date timepicker
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 03 Feb 2025 17:41:00 +0400
+
+wb-mqtt-homeui (2.108.0) stable; urgency=medium
+
+  * Upgrade eslint configuration
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 31 Jan 2025 15:52:20 +0300
 
 wb-mqtt-homeui (2.107.7) stable; urgency=medium
 
