@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.8) stable; urgency=medium
+
+  * Add seconds to journal start date timepicker
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 03 Feb 2025 17:41:00 +0400
+
 wb-mqtt-homeui (2.107.7) stable; urgency=medium
 
   * Remove debian/wb-mqtt-homeui.dirs, no functional changes
