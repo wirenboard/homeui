@@ -247,6 +247,11 @@ class LogsCtrl {
         params.cursor = {
           direction: 'forward',
         };
+      } 
+      if (uiScrollIndex > 0) {
+        params.cursor = {
+          direction: 'backward',
+        };
       }
     } else {
       var logsArrayIndex = this.toLogsArrayIndex(uiScrollIndex);
