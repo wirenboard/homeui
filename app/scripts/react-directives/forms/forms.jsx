@@ -59,6 +59,8 @@ export const FormStringEdit = observer(
           onChange={e => store.setValue(e.target.value)}
           disabled={store.readOnly}
           ref={ref}
+          type={store.editType}
+          required={store.required}
         />
       </FormEdit>
     );

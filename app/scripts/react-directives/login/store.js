@@ -6,8 +6,6 @@ import i18n from '../../i18n/react/config';
 class LoginModalStore {
   constructor(active, rolesFactory, httpWarning) {
     this.active = !!active;
-    this.login = '';
-    this.password = '';
     this.error = false;
     this.httpWarning = !!httpWarning;
     this.rolesFactory = rolesFactory;
@@ -16,21 +14,20 @@ class LoginModalStore {
     this.formStore = new FormStore('login.title', {
       login: new StringStore({
         name: i18n.t('login.labels.login'),
+        required: true,
       }),
       password: new StringStore({
         name: i18n.t('login.labels.password'),
+        required: true,
+        editType: 'password',
       }),
     });
 
     makeObservable(this, {
       active: observable,
-      login: observable,
-      password: observable,
       error: observable,
       httpWarning: observable,
       loading: observable,
-      setLogin: action,
-      setPassword: action,
       postLogin: action,
       show: action,
       hide: action,
@@ -39,14 +36,6 @@ class LoginModalStore {
       setHttpWarning: action,
       setLoading: action,
     });
-  }
-
-  setLogin(login) {
-    this.login = login;
-  }
-
-  setPassword(password) {
-    this.password = password;
   }
 
   setError() {
@@ -67,8 +56,7 @@ class LoginModalStore {
 
   show() {
     this.clearError();
-    this.setLogin('');
-    this.setPassword('');
+    this.formStore.reset();
     this.setLoading(false);
     this.active = true;
   }

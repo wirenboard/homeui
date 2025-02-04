@@ -137,19 +137,23 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
   );
 };
 
-export const LineEdit = React.forwardRef(({ placeholder, value, onChange, disabled }, ref) => {
-  return (
-    <input
-      ref={ref}
-      className="form-control"
-      type="text"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-    />
-  );
-});
+export const LineEdit = React.forwardRef(
+  ({ placeholder, value, onChange, disabled, type, name, required }, ref) => {
+    return (
+      <input
+        ref={ref}
+        className="form-control"
+        type={type || 'text'}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        name={name}
+        required={required}
+      />
+    );
+  }
+);
 
 export const Radio = ({ label, id, value, onChange }) => {
   return (

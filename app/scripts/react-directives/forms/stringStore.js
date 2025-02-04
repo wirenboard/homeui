@@ -3,7 +3,17 @@
 import { makeObservable, observable, action, computed } from 'mobx';
 
 export class StringStore {
-  constructor({ name, description, value, placeholder, validator, defaultText, readOnly }) {
+  constructor({
+    name,
+    description,
+    value,
+    placeholder,
+    validator,
+    defaultText,
+    readOnly,
+    editType,
+    required,
+  }) {
     this.type = 'string';
     this.name = name;
     this.description = description;
@@ -15,6 +25,8 @@ export class StringStore {
     this.readOnly = readOnly;
     this.setValue(value);
     this.initialValue = this.value;
+    this.editType = editType || 'text';
+    this.required = required;
 
     makeObservable(this, {
       value: observable,
