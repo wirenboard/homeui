@@ -1,5 +1,5 @@
+import { useRef, useEffect } from 'react';
 import FocusLock from 'react-focus-lock';
-import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const ModalHeader = ({ children }) => {
@@ -22,7 +22,7 @@ export const ModalTitle = ({ id, text }) => {
   );
 };
 
-const GetLabelId = modalId => {
+const GetLabelId = (modalId) => {
   return modalId + 'Label';
 };
 
@@ -31,12 +31,12 @@ export const Modal = ({ id, active, onCancel, children }) => {
   const ref = useRef();
   useEffect(() => {
     if (active) {
-      const handleClick = event => {
+      const handleClick = (event) => {
         if (ref && ref.current && !ref.current.contains(event.target)) {
           onCancel();
         }
       };
-      const handleEsc = event => {
+      const handleEsc = (event) => {
         if (event.key === 'Escape') {
           onCancel();
         }
@@ -46,7 +46,7 @@ export const Modal = ({ id, active, onCancel, children }) => {
         document.addEventListener('mousedown', handleClick, true);
         document.addEventListener('touchstart', handleClick, true);
       }
-      var backdrop = document.createElement('div');
+      let backdrop = document.createElement('div');
       backdrop.classList.add('modal-backdrop');
       backdrop.classList.add('in');
       backdrop.style.zIndex = 1040;
