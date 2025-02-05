@@ -1,0 +1,86 @@
+import { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
+import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
+import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
+import { CardAction, CardProps } from './types';
+import './styles.css';
+
+const CardHeader = ({
+  id, heading, actions = [], toggleBody, isBodyVisible,
+}: CardProps) => {
+  const actionCall = (ev: MouseEvent<HTMLButtonElement>, action: CardAction) => {
+    ev.stopPropagation();
+    action.action(id);
+  };
+
+  return (
+    <>
+      <h4 className="card-title">{heading}</h4>
+
+      <div className="card-actions">
+        {actions.map((action, i) => (
+          <button
+            type="button"
+            className="card-action"
+            title={action.title}
+            key={i}
+            onClick={(ev) => actionCall(ev, action)}
+          >
+            <action.icon />
+          </button>
+        ))}
+        {!!toggleBody && (
+          isBodyVisible ? <ChevronDownIcon className="card-toggle" /> : <ChevronRightIcon className="card-toggle" />
+        )}
+      </div>
+    </>
+  );
+};
+
+export const Card = ({
+  children, id, heading, actions, toggleBody, isBodyVisible = true,
+}: PropsWithChildren<CardProps>) => {
+  const onKeyHeaderClick = (ev: KeyboardEvent<HTMLDivElement>) => {
+    const target = ev.target as HTMLElement;
+
+    const isHeader = target.classList.contains('card-headerContainer')
+      || target.classList.contains('card-header');
+
+    const isAcceptKey = ev.key === 'Enter' || ev.key === ' ';
+
+    if (isHeader && isAcceptKey) {
+      ev.preventDefault();
+      toggleBody();
+    }
+  };
+
+  return (
+    <div className="card" id={id}>
+      {toggleBody ? (
+        <div className="card-headerContainer">
+          <div
+            role="button"
+            className="card-header card-headerToggable"
+            tabIndex={0}
+            onClick={toggleBody}
+            onKeyDown={onKeyHeaderClick}
+          >
+            <CardHeader
+              heading={heading}
+              id={id}
+              actions={actions}
+              isBodyVisible={isBodyVisible}
+              toggleBody={toggleBody}
+            />
+          </div>
+
+        </div>
+      ) : (
+        <div className="card-header">
+          <CardHeader heading={heading} id={id} actions={actions} />
+        </div>
+      )}
+
+      {isBodyVisible && (<div className="card-body">{children}</div>)}
+    </div>
+  );
+};

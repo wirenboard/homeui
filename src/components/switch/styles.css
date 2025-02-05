@@ -1,0 +1,49 @@
+.toggle-switchy {color:#fff;}
+.toggle-switchy > input + .toggle > .switch {background:#fff;}
+.toggle-switchy > input + .toggle + .label {color:#000;}
+.toggle-switchy > input:checked + .toggle {background:var(--input-action-background);}
+.toggle-switchy > input:not(:checked) + .toggle {background:var(--gray-color);}
+.toggle-switchy > input:checked + .toggle > .switch {border:3px solid var(--input-action-background);}
+.toggle-switchy > input:not(:checked) + .toggle > .switch {border:3px solid var(--gray-color);}
+.toggle-switchy > input:focus + .toggle,
+.toggle-switchy > input:active + .toggle {box-shadow:var(--input-active-shadow);}
+
+.toggle-switchy > input + .toggle {border-radius:4px;}
+.toggle-switchy > input + .toggle .switch {border-radius:6px;}
+
+.toggle-switchy {display:flex; align-items:center; user-select:none; position:relative; vertical-align:middle; margin-bottom:0;}
+.toggle-switchy:hover {cursor:pointer;}
+.toggle-switchy > input {position:absolute; opacity:0;}
+.toggle-switchy > input + .toggle {align-items:center; position:relative;}
+.toggle-switchy > input + .toggle {overflow:hidden; position:relative; flex-shrink:0;}
+.toggle-switchy > input[disabled] + .toggle {opacity:0.5;}
+.toggle-switchy > input[disabled] + .toggle:hover {cursor:not-allowed;}
+.toggle-switchy > input + .toggle {width:100%; height:100%; margin:0; cursor:pointer;}
+.toggle-switchy > input + .toggle > .switch {display:block; height:100%; position:absolute; right:0; box-sizing:border-box;}
+
+.toggle-switchy > input + .toggle:before,
+.toggle-switchy > input + .toggle:after {display:flex; align-items:center; position:absolute; z-index:2; height:100%;}
+.toggle-switchy > input + .toggle:before {right:55%; font-size: 14px;}
+.toggle-switchy > input + .toggle:after {left:50%;}
+.toggle-switchy > input + .toggle + .label {margin-left:10px;}
+
+.toggle-switchy > input + .toggle:before {opacity:0;}
+.toggle-switchy > input:checked + .toggle:before {opacity:1;}
+.toggle-switchy > input:checked + .toggle:after {opacity:0;}
+
+.toggle-switchy > input + .toggle {transition:background 200ms linear, var(--input-active-shadow-transition);}
+.toggle-switchy > input + .toggle:before,
+.toggle-switchy > input + .toggle:after {transition:all 200ms linear;}
+.toggle-switchy > input + .toggle > .switch {transition:right 200ms linear, border-color 200ms linear;}
+
+.toggle-switchy > input + .toggle {width:34px; height:18px;}
+.toggle-switchy > input + .toggle > .switch {width:18px;}
+.toggle-switchy > input + .toggle:before,
+.toggle-switchy > input + .toggle:after {font-size:0.5rem;}
+.toggle-switchy > input:not(:checked) + .toggle > .switch {right:calc(100% - 18px);}
+
+.toggle-switchy > input + .toggle,
+.toggle-switchy > input + .toggle > .switch {border-radius:50px;}
+.toggle-switchy > input + .toggle:before {right:50%; font-size: 12px;}
+.toggle-switchy > input + .toggle:after {left:50%; font-size: 12px;}
+

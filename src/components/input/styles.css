@@ -1,0 +1,20 @@
+.input {
+    border: 1px solid var(--input-border-color);
+    background: var(--input-background);
+    color: var(--input-color);
+    border-radius: var(--input-border-radius);
+    transition: background ease 300ms;
+}
+
+.input:focus {
+    transition: border-color 200ms linear, var(--input-active-shadow-transition);
+    box-shadow: var(--input-active-shadow);
+}
+
+.input-m {
+    padding: 5px 12px;
+}
+
+.input-s {
+    padding: 3px 8px;
+}

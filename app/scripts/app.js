@@ -1,7 +1,8 @@
 'use strict';
 
 // Import slylesheets
-import '../styles/css/variables.css';
+import '@/assets/styles/variables.css';
+import '@/assets/styles/animations.css';
 import '../styles/css/bootstrap.min.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';
@@ -286,7 +287,6 @@ module
         'rules',
         'history',
         'widgets',
-        'devices',
         'units',
         'serial-metrics',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
@@ -335,6 +335,14 @@ module.run(($rootScope, $state, $transitions) => {
   };
 
   $rootScope.forceFullscreen = false;
+
+  $rootScope.theme = localStorage.getItem('theme') || 'bootstrap';
+  window.toggleTheme = () => {
+    const themes = ['bootstrap', 'wirenboard', 'dark'];
+    const themeIndex = themes.indexOf($rootScope.theme || 'bootstrap');
+    localStorage.setItem('theme', themes[themeIndex + 1] || themes[0]);
+    $rootScope.theme = localStorage.getItem('theme');
+  };
 });
 
 //-----------------------------------------------------------------------------

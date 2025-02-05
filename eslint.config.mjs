@@ -1,5 +1,7 @@
 import js from '@eslint/js';
 import stylisticPlugin from '@stylistic/eslint-plugin';
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
 import reactPlugin from 'eslint-plugin-react';
 import globals from 'globals';
@@ -10,6 +12,8 @@ export default [
       '**/*.js',
       '**/*.mjs',
       '**/*.jsx',
+      '**/*.ts',
+      '**/*.tsx',
     ],
     ignores: [
       '.git/**',
@@ -32,7 +36,9 @@ export default [
       'no-empty': 0,
       'no-param-reassign': 2,
       'no-restricted-globals': 0,
-      'no-unused-vars': [2, { args: 'after-used', caughtErrors: 'none', argsIgnorePattern: '^_' }],
+      'no-unused-vars': [2, {
+        args: 'after-used', caughtErrors: 'none', argsIgnorePattern: '^_', varsIgnorePattern: '^(_|[A-Z])[a-zA-Z0-9]*$',
+      }],
       'no-return-assign': 0,
       'no-console': 0,
       'no-underscore-dangle': 0,
@@ -65,7 +71,40 @@ export default [
       'stylistic/jsx-closing-tag-location': [1, 'tag-aligned'],
       'stylistic/max-len': [1, { code: 120, comments: 160 }],
       'stylistic/comma-spacing': 1,
-      'stylistic/comma-dangle': [1, { objects: 'always-multiline', imports: 'never', arrays: 'always-multiline' }],
+      'stylistic/comma-dangle': [1, {
+        objects: 'always-multiline', enums: 'always-multiline', imports: 'never', arrays: 'always-multiline',
+      }],
+      'stylistic/member-delimiter-style': [1, {
+        multiline: { delimiter: 'semi', requireLast: true }, singleline: { delimiter: 'semi', requireLast: false },
+      }],
+      'typescript/naming-convention': [1,
+        {
+          selector: 'variable',
+          format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+          leadingUnderscore: 'allow',
+        },
+        {
+          selector: 'interface',
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'typeAlias',
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'enum',
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'parameter',
+          format: ['camelCase'],
+          leadingUnderscore: 'allow',
+        },
+        {
+          selector: 'class',
+          format: ['PascalCase'],
+        },
+      ],
       'react/jsx-uses-vars': 2,
       'react/react-in-jsx-scope': 0,
       'react/jsx-uses-react': 0,
@@ -74,8 +113,7 @@ export default [
       'import/no-duplicates': 2,
       'import/no-useless-path-segments': 1,
       'import/no-dynamic-require': 1,
-      'import/order': [
-        1,
+      'import/order': [1,
         {
           'newlines-between': 'never',
           groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
@@ -83,7 +121,7 @@ export default [
             { pattern: '@/**', group: 'internal', position: 'after' },
             { pattern: '~/**', group: 'internal', position: 'after' },
           ],
-          pathGroupsExcludedImportTypes: ['internal', 'external', 'builtins'],
+          pathGroupsExcludedImportTypes: ['internal', 'external', 'builtin'],
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
@@ -94,6 +132,7 @@ export default [
       },
     },
     languageOptions: {
+      parser: typescriptParser,
       ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
@@ -108,9 +147,10 @@ export default [
       },
     },
     plugins: {
-      stylistic: stylisticPlugin,
       import: importPlugin,
       react: reactPlugin,
+      stylistic: stylisticPlugin,
+      typescript: typescriptPlugin,
     },
   },
 ];

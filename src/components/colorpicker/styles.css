@@ -1,0 +1,21 @@
+.colorpicker {
+    border-radius: 5px;
+    outline: none;
+    border: 0;
+    background: var(--light-gray-color);
+    width: 28px;
+    height: 28px;
+    transition: background ease 300ms;
+}
+
+.colorpicker:not(:disabled):hover {
+    cursor: pointer;
+}
+
+.colorpicker:disabled {
+    cursor: not-allowed;
+}
+
+.colorpicker:focus {
+    box-shadow: var(--input-active-shadow);
+}

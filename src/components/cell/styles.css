@@ -1,0 +1,119 @@
+.deviceCell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+    position: relative;
+    min-height: 26px;
+    flex-grow: 1;
+}
+
+.deviceCell-error {
+    color: var(--danger-color);
+}
+
+.deviceCell-columns {
+    flex-direction: column;
+    align-items: start;
+}
+
+.deviceCell-name {
+    display: flex;
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.deviceCell-alert {
+    cursor: pointer;
+}
+
+.deviceCell-text {
+    overflow-x: auto;
+    max-width: 260px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.deviceCell-text::-webkit-scrollbar {
+    height: 8px;
+}
+
+.deviceCell-text::-webkit-scrollbar-track {
+    background: var(--light-gray-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.deviceCell-text::-webkit-scrollbar-thumb {
+    background: var(--input-action-background);
+    border-radius: 4px;
+}
+
+.deviceCell-text::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color-hover);
+    cursor: pointer;
+}
+
+.deviceCell-mono {
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.deviceCell-actions {
+    visibility: hidden;
+    position: absolute;
+    right: 0;
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    box-shadow: 0 0 4px 4px #fff;
+}
+
+.deviceCell-action {
+    color: #fff;
+    height: 20px;
+    width: 20px;
+    border: 0;
+    background: #4c4f53;
+    border-radius: 4px;
+    font-size: 10px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deviceCell:hover .deviceCell-actions {
+    visibility: visible;
+}
+
+.deviceCell-value {
+    display: grid;
+    grid-template-columns: 1fr 1fr 40px;
+    justify-items: end;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.deviceCell-int {
+    width: 50px;
+    text-align: right;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.deviceCell-decimal {
+    width: 100%;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.deviceCell-units {
+    width: 100%;
+    font-size: 13px;
+}
+
+.deviceCell-select {
+    max-width: 50%;
+}

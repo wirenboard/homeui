@@ -119,10 +119,6 @@ div[uib-datepicker-popup-wrap] {
   }
 }
 
-.device-panel .display-cell{
-  cursor: pointer;
-}
-
 .cell.cell-value {
   display: flex;
 }
@@ -169,95 +165,10 @@ div[uib-datepicker-popup-wrap] {
   max-height: 42px;
 }
 
-.devices-panel-list .device-panel:not(:last-child) {
-  margin-bottom: 18px;
-}
-
-.devices-panel-list .device-panel + .device-panel {
-  margin-top: 0;
-}
-
-.device-panel {
-  width: 380px;
-  border: none !important;
-  box-shadow: none;
-  margin-right: 18px;
-  overflow: hidden;
-}
-
 @media (max-width: 410px) {
-  .devices-panel-list > div,
-  .panel-group > div,
-  .device-panel {
+  .panel-group > div {
     width: 100%;
   }
-}
-
-.device-panel > .panel-heading {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 0;
-  border: none !important;
-  position: relative;
-}
-
-.device-panel__header-delete-button {
-  position: absolute;
-  opacity: 0;
-  top: 8px;
-  right: 40px;
-  padding: 6px;
-  font-size: 12px;
-  transition: opacity .2s;
-}
-
-.device-panel:hover .device-panel__header-delete-button {
-  opacity: 0.8;
-}
-
-.device-panel:hover .device-panel__header-delete-button:hover {
-  opacity: 1;
-}
-
-.device-panel__header-wrapper {
-  position: relative;
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.device-panel__header {
-  padding: 10px 15px;
-  height: 40px;
-}
-
-.device-panel__header-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-}
-
-.device-panel__header-glyphicon {
-  font-size: 10px;
-}
-
-.device-panel__header-title,
-.device-panel__header-glyphicon {
-  line-height: 18px;
-}
-
-.device-panel .panel-body {
-  padding: 0;
-  border: none !important;
-}
-
-.device-panel__body {
-  border: 1px solid var(--primary-color);
-  border-top: 0px;
-  padding: 10px;
-}
-
-.device-panel__body .display-cell + .display-cell {
-  margin-top: 2px;
 }
 
 .panel-group {

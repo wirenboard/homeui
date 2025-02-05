@@ -1,0 +1,10 @@
+.devices-container {
+    gap: 18px;
+    display: flex;
+    align-items: flex-start;
+    max-width: calc(100% - 10px);
+}
+
+.devices-column {
+    width: 100%;
+}

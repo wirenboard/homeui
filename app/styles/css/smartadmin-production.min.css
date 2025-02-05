@@ -681,9 +681,6 @@ input[type=week]:focus,
 select:focus,
 textarea:focus {
   outline: 0;
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
-  box-shadow: none !important
 }
 
 .form-control,

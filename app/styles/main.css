@@ -28,7 +28,8 @@ body {
 #page-wrapper {
     width: 100%;
     padding: 10px 13px 0px 13px;
-    background-color: #fff;
+    background-color: var(--background-color);
+    transition: background-color ease 300ms;
     height: calc(100vh - 50px);
     overflow: auto;
     position: relative;

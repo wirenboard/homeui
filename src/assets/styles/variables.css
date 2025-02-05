@@ -1,0 +1,111 @@
+:root {
+    --background-color: #fff;
+
+    --primary-color: #337ab7;
+    --primary-color-hover: #5393c8;
+    --secondary-color: #fff;
+    --secondary-color-hover: #e6e6e6;
+    --success-color: #739e73;
+    --success-color-disabled: #739e73;
+    --success-color-hover: #5b835b;
+    --success-color-border: #659265;
+    --danger-color: #dc3545;
+    --danger-color-hover: #f73b3b;
+    --gray-color: #888;
+    --light-gray-color: #d7dcdf;
+    --border-color: #eee;
+    --content-background: #fff;
+
+    --bar-color: #222;
+    --bar-border: #080808;
+    --bar-hover-color: #000;
+    --bar-inside-color: rgba(69, 69, 69, .6);
+    --bar-burger-color: #333;
+    --bar-burger-border-color: #333;
+    --bar-inside-text-color: #999;
+    --bar-text-color: #999;
+    --online-color: var(--success-color);
+    --bar-font-size: 14px;
+
+    --font: "Open Sans", Arial, Helvetica, Sans-Serif;
+
+    --input-action-background: #3498db;
+    --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgb(38 167 255 / 50%);
+    --input-active-shadow-transition: box-shadow 200ms linear;
+    --input-background: #fff;
+    --input-color: #495057;
+    --input-border-color: #ced4da;
+    --input-border-radius: 4px;
+
+    --button-color: #fff;
+
+    --card-header-background: var(--primary-color);
+    --card-header-bottom: var(--primary-color);
+    --card-header-padding: 12px;
+    --card-header-text: #fff;
+    --card-border-radius: 2px;
+    --card-body-background: var(--content-background);
+    --card-body-padding: 8px 12px;
+    --text-color: #333;
+
+    --alert-color: var(--text-color);
+    --alert-info-background: #d1ecf1;
+    --alert-info-border: #bee5eb;
+    --alert-success-background: #d4edda;
+    --alert-success-border: #c3e6cb;
+    --alert-warn-background: #fff3cd;
+    --alert-warn-border: #ffeeba;
+    --alert-danger-background: #f8d7da;
+    --alert-danger-border: #f5c6cb;
+
+    --notification-box-shadow: 0 4px 10px -2px #aa9c9c;
+}
+
+.wirenboard {
+    --primary-color: #5cb300;
+    --primary-color-hover: #68ca00;
+
+    --input-action-background: var(--primary-color);
+    --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary-color);
+
+    --card-header-background: #e2e5e8;
+    --card-header-text: black;
+    --card-border-radius: 6px;
+}
+
+.dark {
+    color-scheme: dark;
+
+    --background-color: #1d1e2e;
+
+    --primary-color: #5d2ae4;
+    --primary-color-hover: #5018e1;
+    --secondary-color: #616991;
+    --light-gray-color: #616991;
+    --content-background: #232436;
+    --border-color: #2a2d41;
+
+    --input-action-background: var(--primary-color);
+    --input-active-shadow: 0 0 0 2px #1d1e2e, 0 0 0 4px var(--primary-color);
+    --input-background: #2a2d41;
+    --input-color: #fff;
+    --input-border-color: var(--light-gray-color);
+
+    --card-header-background: #2a2d41;
+    --card-header-text: #fff;
+    --card-body-background: var(--content-background);
+    --card-border-radius: 6px;
+    --text-color: #e1e8ec;
+
+    --alert-color: #fff;
+    --alert-info-background: #7676ff;
+    --alert-info-border: #7676ff;
+    --alert-success-background: #4ea823;
+    --alert-success-border: #4ea823;
+    --alert-warn-background: #eebc40;
+    --alert-warn-border: #eebc40;
+    --alert-danger-background: #dc3545;
+    --alert-danger-border: #dc3545;
+
+    --notification-box-shadow: 0 4px 10px -2px var(--input-background);
+}
