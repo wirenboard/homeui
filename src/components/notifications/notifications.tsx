@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { Alert } from '@/components/alert';
-import { notificationsStore } from '@/stores/notifications';
+import { notificationsStore, Notification } from '@/stores/notifications';
 import './styles.css';
 
 export const Notifications = observer(() => {
-  const { notifications } = notificationsStore;
+  const { notifications }: { notifications: Notification[] } = notificationsStore;
 
   return (
     <div className="notifications">

@@ -5,7 +5,7 @@ import './styles.css';
 export const Colorpicker = ({
   value, id, isDisabled, onChange, ariaLabel,
 }: ColorpickerProps) => {
-  const [proxyVallue, setProxyValue] = useState('#000000');
+  const [proxyValue, setProxyValue] = useState('#000000');
 
   useEffect(() => {
     setProxyValue(value || '#000000');
@@ -18,7 +18,7 @@ export const Colorpicker = ({
       id={id}
       disabled={isDisabled}
       aria-label={ariaLabel}
-      value={proxyVallue}
+      value={proxyValue}
       onChange={(ev) => {
         if (value !== ev.target.value) {
           setProxyValue(ev.target.value);

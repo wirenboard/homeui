@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 
 export interface PageProps {
   title: string;
-  isHaveRights: boolean;
+  hasRights: boolean;
   isLoading?: boolean;
-  actions?: ReactElement<any, any>;
+  actions?: ReactElement;
 }

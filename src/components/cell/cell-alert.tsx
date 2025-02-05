@@ -15,7 +15,12 @@ export const CellAlert = observer(({ cell }: { cell: Cell }) => {
   };
 
   return (
-    <Alert size="small" variant={cell.value ? 'danger' : 'gray'} className="deviceCell-alert" onClick={copyToClipboard}>
+    <Alert
+      size="small"
+      variant={cell.value ? 'danger' : 'gray'}
+      className="deviceCell-alert"
+      onClick={copyToClipboard}
+    >
       {cell.name}
     </Alert>
   );

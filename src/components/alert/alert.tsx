@@ -25,7 +25,7 @@ export const Alert = ({
     {...rest}
   >
     {withIcon && (
-      <Suspense>
+      <Suspense fallback={<div className="alertMessage-icon" />}>
         {(variant === 'info' || variant === 'gray') && <InfoIcon className="alertMessage-icon" />}
         {(variant === 'warn') && <WarnIcon className="alertMessage-icon" />}
         {(variant === 'danger') && <DangerIcon className="alertMessage-icon" />}

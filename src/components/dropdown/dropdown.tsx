@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import Select from 'react-select';
 import { DropdownProps } from './types';
 import './styles.css';
@@ -12,13 +13,14 @@ export const Dropdown = ({
   onChange,
 }: DropdownProps) => (
   <Select
-    className={`${className || ''}
-     ${size === 'default' ? 'dropdown-m' : ''}
-      ${size === 'small' ? 'dropdown-s' : ''}`}
+    className={classNames(className, {
+      'dropdown-m': size === 'default',
+      'dropdown-s': size === 'small',
+    })}
     classNamePrefix="dropdown"
     options={options}
     isClearable={false}
-    value={options.find((option: any) => option.value === value)}
+    value={options.find((option) => option.value === value)}
     placeholder={placeholder || ''}
     isSearchable={false}
     aria-label={ariaLabel}

@@ -8,8 +8,10 @@ export enum CellComponent {
   Value = 'value',
 }
 
+export type CellValueType = 'string' | 'number' | 'boolean' | 'pushbutton' | 'rgb';
+
 export interface CellTypeEntry {
-  valueType: 'string' | 'number' | 'boolean' | 'pushbutton' | 'rgb';
+  valueType: CellValueType;
   displayType: CellComponent;
   readOnly: boolean;
   units?: string;

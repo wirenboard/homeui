@@ -15,11 +15,11 @@ export default function devicesDirective(mqttClient, rolesFactory) {
       if (scope.root) {
         scope.root.unmount();
       }
-      const isHaveRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
+      const hasRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
 
       scope.store = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<DevicesPage store={scope.store} isHaveRights={isHaveRights} />);
+      scope.root.render(<DevicesPage store={scope.store} hasRights={hasRights} />);
 
       element.on('$destroy', () => {
         scope.root.unmount();

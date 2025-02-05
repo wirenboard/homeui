@@ -239,8 +239,6 @@ export default class Cell {
         return '1';
       case 'rgb':
         return hexToRgb(this._value);
-      case 'number':
-      case 'string':
       default:
         return String(this._value);
     }
@@ -267,7 +265,6 @@ export default class Cell {
           this._value = null;
         }
         break;
-      case 'string':
       default:
         this._value = String(value);
         break;

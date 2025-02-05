@@ -5,7 +5,6 @@ export const Switch = ({
   value, id, isDisabled, onChange, ariaLabel,
 }: SwitchProps) => (
   <label htmlFor={id} className="toggle-switchy">
-    {value}
     <input
       id={id}
       type="checkbox"

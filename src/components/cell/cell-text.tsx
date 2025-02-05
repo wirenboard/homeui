@@ -22,7 +22,7 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
         <Dropdown
           className="deviceCell-select"
           size="small"
-          options={cell.enumValues.map(({ name, value }) => ({ label: name, value } as any))}
+          options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
           value={cell.value}
           onChange={(option) => cell.value = option.value}
         />

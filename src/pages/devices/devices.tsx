@@ -12,12 +12,12 @@ import { PageLayout } from '@/layouts/page';
 import { DeviceStore, Device } from '@/stores/device';
 import './styles.css';
 
-const DevicesPage = observer(({ store, isHaveRights }: { store: DeviceStore; isHaveRights: boolean }) => {
+const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRights: boolean }) => {
   const { t } = useTranslation();
-  const pageWrapper = useRef();
-  const [pageWidth, setPageWidth] = useState();
+  const pageWrapper = useRef<HTMLElement>(null);
+  const [pageWidth, setPageWidth] = useState(0);
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
-  const [devicesInColumns, setDevicesInColumns] = useState([]);
+  const [devicesInColumns, setDevicesInColumns] = useState<Device[][]>([]);
 
   if (!localStorage.getItem('visibleDevices')) {
     localStorage.setItem('visibleDevices', JSON.stringify({ devices: {} }));
@@ -59,8 +59,8 @@ const DevicesPage = observer(({ store, isHaveRights }: { store: DeviceStore; isH
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.contentBoxSize && entry.contentBoxSize.length) {
-          setPageWidth(entry.contentBoxSize[0].inlineSize as any);
+        if (entry.contentBoxSize?.length) {
+          setPageWidth(entry.contentBoxSize[0].inlineSize);
           splitDevicesIntoColumns();
         }
       });
@@ -82,7 +82,7 @@ const DevicesPage = observer(({ store, isHaveRights }: { store: DeviceStore; isH
   }, [store.filteredDevices.size]);
 
   return (
-    <PageLayout title={t('devices.title')} isHaveRights={isHaveRights}>
+    <PageLayout title={t('devices.title')} hasRights={hasRights}>
       <section className="devices-container" ref={pageWrapper}>
         {store.filteredDevices.size ? (
           devicesInColumns.map((column, i) => (
@@ -125,7 +125,7 @@ const DevicesPage = observer(({ store, isHaveRights }: { store: DeviceStore; isH
           values={{
             name: store.devices.get(deletedDeviceId)?.name,
           }}
-          components={[<b />]}
+          components={[<b key="device-name" />]}
         />
       </Confirm>
     </PageLayout>

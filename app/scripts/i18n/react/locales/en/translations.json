@@ -432,7 +432,7 @@
       },
       "prompt": {
          "delete-title": "Delete device",
-         "delete-description": "Do you really want to delete <0>{{name}}</0>>?"
+         "delete-description": "Do you really want to delete <0>{{name}}</0>?"
       }
    },
    "page": {

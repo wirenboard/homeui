@@ -2,7 +2,7 @@ import { FC, SVGProps } from 'react';
 
 export interface CardAction {
   title: string;
-  action: (_args: any) => any;
+  action: (_args: unknown | unknown[]) => void;
   icon: FC<SVGProps<SVGSVGElement>>;
 }
 

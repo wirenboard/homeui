@@ -1,18 +1,18 @@
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { RangeProps } from './types';
 import './styles.css';
 
 export const Range = ({
   value, id, isDisabled, min, max, step, units, onChange, ariaLabel,
 }: RangeProps) => {
-  const [proxyVallue, setProxyValue] = useState(0);
+  const [proxyValue, setProxyValue] = useState(0);
   const rangeBlockWidth = 150;
 
-  const rangeValuePosition = () => {
-    const percent = Number(((proxyVallue / max) * 100).toFixed());
+  const rangeValuePosition = useMemo(() => {
+    const percent = Number(((proxyValue / max) * 100).toFixed());
     const thumbWidth = 16;
     return `calc(${percent}% - ${(percent * thumbWidth) / 100}px - ${rangeBlockWidth / 2}px  + ${thumbWidth / 2}px)`;
-  };
+  }, [proxyValue, max]);
 
   useLayoutEffect(() => {
     setProxyValue(value);
@@ -25,24 +25,24 @@ export const Range = ({
         className="range"
         id={id}
         disabled={isDisabled}
-        value={proxyVallue}
+        value={proxyValue}
         min={min}
         max={max}
         step={step}
         aria-label={ariaLabel}
-        onKeyUp={() => onChange(proxyVallue)}
+        onKeyUp={() => onChange(proxyValue)}
         onChange={(ev) => setProxyValue(ev.target.valueAsNumber)}
-        onMouseUp={() => onChange(proxyVallue)}
+        onMouseUp={() => onChange(proxyValue)}
       />
       <div className="range-value">
         <div
           style={{
             position: 'absolute',
-            left: rangeValuePosition(),
+            left: rangeValuePosition,
             width: `${rangeBlockWidth}px`,
           }}
         >
-          {proxyVallue}
+          {proxyValue}
           {' '}
           {units}
         </div>

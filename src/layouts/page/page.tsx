@@ -7,7 +7,7 @@ import { PageProps } from './types';
 import './styles.css';
 
 export const PageLayout = ({
-  children, title, isHaveRights, isLoading = false, actions,
+  children, title, hasRights, isLoading = false, actions,
 }: PropsWithChildren<PageProps>) => (
   <main>
     <header className="page-headerContainer">
@@ -16,16 +16,16 @@ export const PageLayout = ({
       <div className="page-actions">{actions}</div>
     </header>
 
-    {!isHaveRights && (
+    {!hasRights && (
       <Alert variant="danger">
         <Trans
           i18nKey="page.access-denied"
-          components={[<a href="/#!/access-level" />]}
+          components={[<a href="/#!/access-level" key="access-level" />]}
         />
       </Alert>
     )}
 
-    {isHaveRights && (
+    {hasRights && (
       isLoading ? <Loader className="page-loader" /> : children
     )}
 

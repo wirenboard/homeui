@@ -8,7 +8,7 @@ export const Confirm = ({
   heading, children, confirmCallback, closeCallback, variant = 'default', isOpened = false,
 }: PropsWithChildren<ConfirmationParams>) => {
   const { t } = useTranslation();
-  const confirm = useRef<HTMLDialogElement>();
+  const confirm = useRef<HTMLDialogElement | null>();
 
   useEffect(() => {
     if (confirm.current) {
@@ -18,6 +18,12 @@ export const Confirm = ({
         confirm.current.close();
       }
     }
+
+    return () => {
+      if (confirm.current) {
+        confirm.current.close();
+      }
+    };
   }, [confirm, isOpened]);
 
   return (

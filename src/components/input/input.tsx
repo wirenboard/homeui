@@ -18,7 +18,7 @@ export const Input = ({
     }
   };
 
-  const handleKeyDown = (ev: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (ev: KeyboardEvent<HTMLInputElement>): void => {
     if (ev.key === 'Enter') {
       handleBlurOrChange();
     } else if (ev.key === 'Escape') {
