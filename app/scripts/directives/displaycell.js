@@ -4,12 +4,13 @@ function displayCellDirective(displayCellConfig, $compile) {
   'ngInject';
 
   class DisplayCellController {
-    constructor($scope, $state, $element, $attrs, handleData, historyUrlService) {
+    constructor($scope, $state, $element, $attrs, handleData, historyUrlService, $location) {
       'ngInject';
       this.$scope = $scope;
       this.cell = $scope.cell;
       this.cell.copy = this.copy.bind(this);
       this.$state = $state;
+      this.$location = $location;
       //console.log("+++++++++this.cell",this.cell);
 
       this.handleData = handleData;
@@ -46,8 +47,10 @@ function displayCellDirective(displayCellConfig, $compile) {
 
     redirect(contr) {
       var [device, control] = contr.split('/');
+      const currentParams = this.$location.search();
       this.$state.go('history.sample', {
         data: this.historyUrlService.encodeControl(device, control),
+        ...currentParams,
       });
     }
   }
