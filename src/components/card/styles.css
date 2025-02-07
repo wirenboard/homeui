@@ -45,7 +45,7 @@
     display: flex;
     gap: 12px;
     font-size: 12px;
-    align-items: baseline;
+    align-items: center;
 }
 
 .card-action {
