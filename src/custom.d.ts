@@ -1,12 +1,12 @@
 declare module '*.svg' {
-  import React = require('react');
+  import { FC, SVGProps } from 'react';
 
-  interface CustomSVGProps extends React.SVGProps<SVGSVGElement> {
+  interface CustomSVGProps extends SVGProps<SVGSVGElement> {
     title?: string;
     className?: string;
   }
 
-  export const ReactComponent: React.FC<CustomSVGProps>;
-  const src: React.FC<CustomSVGProps>;
+  export const ReactComponent: FC<CustomSVGProps>;
+  const src: FC<CustomSVGProps>;
   export default src;
 }

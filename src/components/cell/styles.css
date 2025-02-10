@@ -21,7 +21,7 @@
 
 .deviceCell-columns {
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
 }
 
 .deviceCell-name {
@@ -66,34 +66,6 @@
 .deviceCell-mono {
     font-family: monospace;
     font-size: 13px;
-}
-
-.deviceCell-actions {
-    visibility: hidden;
-    position: absolute;
-    right: 0;
-    display: flex;
-    gap: 4px;
-    background: #fff;
-    box-shadow: 0 0 4px 4px #fff;
-}
-
-.deviceCell-action {
-    color: #fff;
-    height: 20px;
-    width: 20px;
-    border: 0;
-    background: #4c4f53;
-    border-radius: 4px;
-    font-size: 10px;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.deviceCell:hover .deviceCell-actions {
-    visibility: visible;
 }
 
 .deviceCell-value {
