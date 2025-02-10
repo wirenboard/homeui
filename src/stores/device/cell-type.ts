@@ -168,4 +168,10 @@ export const cellType = new Map<string, CellTypeEntry>([
   }],
 ]);
 
+export enum CellError {
+  Read = 'r',
+  Write = 'w',
+  Period = 'p',
+}
+
 export type CellType = Parameters<typeof cellType.get>[0];

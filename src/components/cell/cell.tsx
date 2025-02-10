@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CellAlert } from '@/components/cell/cell-alert';
 import { CellButton } from '@/components/cell/cell-button';
@@ -9,8 +10,11 @@ import { CellSwitch } from '@/components/cell/cell-switch';
 import { CellText } from '@/components/cell/cell-text';
 import { CellValue } from '@/components/cell/cell-value';
 import { Cell, CellComponent } from '@/stores/device';
+import { CellError } from '@/stores/device/cell-type';
 import { notificationsStore } from '@/stores/notifications';
 import './styles.css';
+
+const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
 export const CellContent = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
@@ -47,7 +51,7 @@ export const CellContent = observer(({ cell }: { cell: Cell }) => {
       'deviceCell',
       {
         'deviceCell-columns': cell.displayType === CellComponent.Range,
-        'deviceCell-error': cell.error,
+        'deviceCell-error': cell.error && (cell.error.includes(CellError.Read) || cell.error.includes(CellError.Write)),
       }
     )}
     >
@@ -56,6 +60,11 @@ export const CellContent = observer(({ cell }: { cell: Cell }) => {
           className="deviceCell-name"
           onClick={copyToClipboard}
         >
+          {cell.error?.includes(CellError.Period) && (
+            <Suspense>
+              <DangerIcon title={t('widgets.errors.poll')} className="deviceCell-periodError" />
+            </Suspense>
+          )}
           {cell.name}
         </div>
       )}

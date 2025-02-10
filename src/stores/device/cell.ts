@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { hexToRgb, isHex, rgbToHex } from '@/utils/color';
 import i18n from '~/i18n/react/config';
-import { cellType, type CellType, type CellTypeEntry } from './cell-type';
+import { CellError, cellType, type CellType, type CellTypeEntry } from './cell-type';
 import type { CellMeta, EnumTranslations, NameTranslations } from './types';
 
 export default class Cell {
@@ -9,13 +9,13 @@ export default class Cell {
   public deviceId: string;
   public controlId: string;
   public type: CellType | 'incomplete' = 'incomplete';
-  declare error: string | boolean;
-  declare min?: number;
-  declare max?: number;
-  declare step: number;
-  declare order: number;
+  public error: CellError[] | null = null;
+  public min?: number;
+  public max?: number;
+  public step: number;
+  public order: number;
 
-  private _value: any = null;
+  private _value: any = '';
   private _readOnly: boolean | null = null;
   private _name: string;
   private _nameTranslations: NameTranslations = {};
@@ -154,15 +154,8 @@ export default class Cell {
     this.order = Number(order);
   }
 
-  setError(error: string | boolean) {
-    if (typeof error === 'string') {
-      const pos = error.indexOf('p');
-      if (pos !== -1) {
-        this.error = error.replace('p', '');
-        return;
-      }
-    }
-    this.error = error;
+  setError(error: string) {
+    this.error = error.length ? error.split('') as CellError[] : null;
   }
 
   setMeta(meta: string) {
@@ -247,10 +240,11 @@ export default class Cell {
   private _setCellValue(value: any) {
     switch (this.valueType) {
       case 'number':
-        this._value = Number(value);
+        this._value = isNaN(value) ? 0 : Number(value);
         break;
       case 'boolean':
-        this._value = typeof value === 'boolean' ? value : value === '1';
+        // it could be boolean or string '0' | '1'
+        this._value = Boolean(Number(value));
         break;
       case 'pushbutton':
         // unsettable

@@ -117,7 +117,7 @@ module.exports = (function makeWebpackConfig() {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        use: [{ loader: '@svgr/webpack', options: { typescript: true, titleProp: true }}],
       },
       {
         test: /\.html$/,
