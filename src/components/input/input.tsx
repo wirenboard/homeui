@@ -4,7 +4,14 @@ import { InputProps } from './types';
 import './styles.css';
 
 export const Input = ({
-  value, id, className, isDisabled, placeholder, onChange, type = 'text', min, max, step, size = 'default', ariaLabel,
+  value,
+  className,
+  isDisabled,
+  onChange,
+  type = 'text',
+  size = 'default',
+  ariaLabel,
+  ...rest
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
 
@@ -29,22 +36,18 @@ export const Input = ({
 
   return (
     <input
-      id={id}
       type={type}
       className={classNames('input', className, {
         'input-m': size === 'default',
         'input-s': size === 'small',
       })}
       disabled={isDisabled}
-      placeholder={placeholder}
-      min={min}
-      max={max}
-      step={step}
       value={internalValue}
       aria-label={ariaLabel}
       onChange={(ev) => setInternalValue(ev.target.value)}
       onBlur={handleBlurOrChange}
       onKeyDown={handleKeyDown}
+      {...rest}
     />
   );
 };

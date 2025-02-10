@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
@@ -16,28 +17,30 @@ const CardHeader = ({
     <>
       <h4 className="card-title">{heading}</h4>
 
-      <div className="card-actions">
-        {actions.map((action, i) => (
-          <button
-            type="button"
-            className="card-action"
-            title={action.title}
-            key={i}
-            onClick={(ev) => actionCall(ev, action)}
-          >
-            <action.icon />
-          </button>
-        ))}
-        {!!toggleBody && (
-          isBodyVisible ? <ChevronDownIcon className="card-toggle" /> : <ChevronRightIcon className="card-toggle" />
-        )}
-      </div>
+      {!!actions.length && (
+        <div className="card-actions">
+          {actions.map((action, i) => (
+            <button
+              type="button"
+              className="card-action"
+              title={action.title}
+              key={i}
+              onClick={(ev) => actionCall(ev, action)}
+            >
+              <action.icon />
+            </button>
+          ))}
+          {!!toggleBody && (
+            isBodyVisible ? <ChevronDownIcon className="card-toggle" /> : <ChevronRightIcon className="card-toggle" />
+          )}
+        </div>
+      )}
     </>
   );
 };
 
 export const Card = ({
-  children, id, heading, actions, toggleBody, isBodyVisible = true,
+  children, id, className, heading, actions, toggleBody, isBodyVisible = true,
 }: PropsWithChildren<CardProps>) => {
   const onKeyHeaderClick = (ev: KeyboardEvent<HTMLDivElement>) => {
     const target = ev.target as HTMLElement;
@@ -54,7 +57,7 @@ export const Card = ({
   };
 
   return (
-    <div className="card" id={id}>
+    <div className={classNames('card', className)} id={id}>
       {toggleBody ? (
         <div className="card-headerContainer">
           <div
@@ -72,7 +75,6 @@ export const Card = ({
               toggleBody={toggleBody}
             />
           </div>
-
         </div>
       ) : (
         <div className="card-header">

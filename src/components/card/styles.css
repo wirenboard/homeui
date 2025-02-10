@@ -20,6 +20,10 @@
     transition: background-color ease 300ms;
 }
 
+.card-header:not(.card-headerToggable) {
+    border-radius: 0;
+}
+
 .card-headerContainer {
     position: relative;
     background-color: var(--card-header-background);
@@ -39,6 +43,7 @@
 
 .card-title {
     font-size: 13px;
+    width: 100%;
 }
 
 .card-actions {

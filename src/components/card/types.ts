@@ -1,4 +1,4 @@
-import { FC, SVGProps } from 'react';
+import { FC, ReactElement, SVGProps } from 'react';
 
 export interface CardAction {
   title: string;
@@ -8,7 +8,8 @@ export interface CardAction {
 
 export interface CardProps {
   id?: string;
-  heading: string;
+  className?: string;
+  heading: string | ReactElement;
   actions?: CardAction[];
   toggleBody?: () => void;
   isBodyVisible?: boolean;

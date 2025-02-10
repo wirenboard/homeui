@@ -1,5 +1,5 @@
 export interface InputProps {
-  id: string;
+  id?: string;
   type?: 'text' | 'number';
   size?: 'default' | 'small';
   value: string;
@@ -7,7 +7,8 @@ export interface InputProps {
   min?: number;
   max?: number;
   step?: number;
-  isDisabled: boolean;
+  autoFocus?: boolean;
+  isDisabled?: boolean;
   placeholder?: string;
   ariaLabel?: string;
   onChange: (_val: string) => void;
