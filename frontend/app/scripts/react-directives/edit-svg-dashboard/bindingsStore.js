@@ -53,7 +53,7 @@ const addEnableStore = (formStore, name) => {
   );
 };
 
-const makeWriteBindingStore = (devices, name) => {
+const makeLongPressWriteBindingStore = (devices, name) => {
   let res = new FormStore();
   addEnableStore(res, name);
   addChannelsStore(res, devices);
@@ -73,6 +73,24 @@ const makeWriteBindingStore = (devices, name) => {
     })
   );
   res.add('value', valueStore);
+  return res;
+};
+
+const makeWriteBindingStore = (devices, name) => {
+  let res = makeLongPressWriteBindingStore(devices, name);
+  res.add(
+    "check",
+    new BooleanStore({
+      name: i18n.t("edit-svg-dashboard.labels.check"),
+    })
+  );
+  res.add(
+    "question",
+    new StringStore({
+      name: i18n.t("edit-svg-dashboard.labels.question"),
+      validator: makeNotEmptyValidator(),
+    })
+  );
   return res;
 };
 
@@ -218,7 +236,7 @@ class SvgElementBindingsStore {
         );
         this.addParam(
           'long-press-write',
-          makeWriteBindingStore(devices, 'edit-svg-dashboard.labels.long-press-write-enable')
+          makeLongPressWriteBindingStore(devices, 'edit-svg-dashboard.labels.long-press-write-enable')
         );
         this.tagName = element.tagName;
       }
