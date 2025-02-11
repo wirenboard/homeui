@@ -132,7 +132,12 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
         }
         if (param?.write?.enable) {
           disposers.push(
-            setClickHandler(el, () => onSwitchValue(param.write.channel, param.write.value))
+            setClickHandler(el, () => {
+              const question = param?.write?.question || 'Do you want to change it?';
+              if (!param?.write?.check || confirm(question)) {
+                onSwitchValue(param.write.channel, param.write.value);
+              }
+            })
           );
         } else {
           if (param?.click?.enable) {

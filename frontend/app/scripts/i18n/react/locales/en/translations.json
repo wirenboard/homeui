@@ -185,6 +185,8 @@
          "common-parameters-fullscreen": "Fit fullscreen",
          "bindings-title": "Bindings",
          "write-enable": "Write",
+         "check": "Ask before write",
+         "question": "Question before writing",
          "read-enable": "Read",
          "style-enable": "Style",
          "visible-enable": "Visible",
