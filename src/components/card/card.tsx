@@ -20,15 +20,26 @@ const CardHeader = ({
       {!!actions.length && (
         <div className="card-actions">
           {actions.map((action, i) => (
-            <button
-              type="button"
-              className="card-action"
-              title={action.title}
-              key={i}
-              onClick={(ev) => actionCall(ev, action)}
-            >
-              <action.icon />
-            </button>
+            action.url ? (
+              <a
+                href={action.url(id)}
+                className="card-action"
+                title={action.title}
+                key={i}
+              >
+                <action.icon />
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="card-action"
+                title={action.title}
+                key={i}
+                onClick={(ev) => actionCall(ev, action)}
+              >
+                <action.icon />
+              </button>
+            )
           ))}
           {!!toggleBody && (
             isBodyVisible ? <ChevronDownIcon className="card-toggle" /> : <ChevronRightIcon className="card-toggle" />

@@ -1,6 +1,6 @@
 import LZString from 'lz-string';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import StatsIcon from '@/assets/icons/stats.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
@@ -23,18 +23,18 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
     localStorage.setItem('visibleDevices', JSON.stringify({ devices: {} }));
   }
 
-  const redirectToChart = (deviceId: string) => {
-    const data = { c: store.devices.get(deviceId).cellIds.map((cell) => ({ d: deviceId, c: cell.split('/')[1] })) };
+  const getChartUrl = useCallback((deviceId: string) => {
+    const data = { c: store.devices.get(deviceId)?.cellIds.map((cell) => ({ d: deviceId, c: cell.split('/')[1] })) };
     const encodedUrl = encodeURIComponent(LZString.compressToEncodedURIComponent(JSON.stringify(data)));
-    location.assign(`#!/history/${encodedUrl}`);
-  };
+    return `#!/history/${encodedUrl}`;
+  }, [store.devices]);
 
   const actions = [
     {
       title: t('devices.labels.delete'), action: (id: string) => setDeletedDeviceId(id), icon: TrashIcon,
     },
     {
-      title: '', action: redirectToChart, icon: StatsIcon,
+      title: t('widgets.labels.graph'), url: (id: string) => getChartUrl(id), icon: StatsIcon,
     },
   ];
 
@@ -81,6 +81,10 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
     splitDevicesIntoColumns();
   }, [store.filteredDevices.size]);
 
+  const isWithFractionalValues = useCallback((cells) => {
+    return cells.some((cell) => cell.valueType === 'number' && !Number.isInteger(cell.value));
+  }, []);
+
   return (
     <PageLayout title={t('devices.title')} hasRights={hasRights}>
       <section className="devices-container" ref={pageWrapper}>
@@ -97,7 +101,11 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
                   key={device.id}
                 >
                   {store.getDeviceCells(device.id).map((cell) => (
-                    <Cell cell={cell} key={cell.id} />
+                    <Cell
+                      cell={cell}
+                      isDoubleColumn={isWithFractionalValues(store.getDeviceCells(device.id))}
+                      key={cell.id}
+                    />
                   ))}
                 </Card>
               ))}

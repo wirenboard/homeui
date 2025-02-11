@@ -76,15 +76,15 @@ module.exports = (function makeWebpackConfig() {
         exclude: /(node_modules|bower_components)/,
         use: [
           {
-            loader: 'thread-loader', // Многопоточная обработка
+            loader: 'thread-loader',
             options: {
-              workers: 2, // Количество потоков
+              workers: 2,
             },
           },
           {
             loader: 'babel-loader',
             options: {
-              cacheDirectory: true, // Включаем кэширование для Babel
+              cacheDirectory: true,
             },
           },
         ],

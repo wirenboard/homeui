@@ -27,7 +27,7 @@
 .deviceCell-name {
     display: flex;
     flex-grow: 1;
-    align-items: center;
+    align-items: baseline;
     gap: 4px;
     cursor: pointer;
 }
@@ -69,18 +69,26 @@
 }
 
 .deviceCell-value {
-    display: grid;
-    grid-template-columns: 1fr 1fr 40px;
     justify-items: end;
     flex-shrink: 0;
     cursor: pointer;
 }
 
+.deviceCell-value-fractional {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
 .deviceCell-int {
-    width: 50px;
     text-align: right;
     font-family: monospace;
     font-size: 13px;
+}
+
+.deviceCell-int-fractional {
+    width: 50px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .deviceCell-decimal {
@@ -90,8 +98,8 @@
 }
 
 .deviceCell-units {
-    width: 100%;
-    font-size: 13px;
+    font-size: 12px;
+    color: var(--gray-color);
 }
 
 .deviceCell-select {

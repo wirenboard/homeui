@@ -90,7 +90,11 @@ export default class Cell {
 
   receiveValue(newValue: any) {
     if (!newValue) {
-      this._value = this._isString() ? '' : '-';
+      if (this.valueType === 'rgb') {
+        this._value = null;
+      } else {
+        this._value = this._isString() ? '' : '-';
+      }
     } else {
       this._setCellValue(newValue);
     }

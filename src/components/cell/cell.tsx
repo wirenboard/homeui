@@ -16,7 +16,7 @@ import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
-export const CellContent = observer(({ cell }: { cell: Cell }) => {
+export const CellContent = observer(({ cell, isDoubleColumn }: { cell: Cell; isDoubleColumn: boolean }) => {
   const { t } = useTranslation();
   const { showNotification } = notificationsStore;
 
@@ -40,7 +40,7 @@ export const CellContent = observer(({ cell }: { cell: Cell }) => {
       case CellComponent.Colorpicker:
         return <CellColorpicker cell={cell} />;
       case CellComponent.Value:
-        return <CellValue cell={cell} />;
+        return <CellValue cell={cell} isDoubleColumn={isDoubleColumn} />;
       default:
         return null;
     }
@@ -66,6 +66,7 @@ export const CellContent = observer(({ cell }: { cell: Cell }) => {
             </Suspense>
           )}
           {cell.name}
+          {!!cell.units && <div className="deviceCell-units">({cell.units})</div>}
         </div>
       )}
       {renderCellContent()}

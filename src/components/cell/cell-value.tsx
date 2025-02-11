@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
@@ -6,7 +7,7 @@ import { Cell } from '@/stores/device';
 import { notificationsStore } from '@/stores/notifications';
 import './styles.css';
 
-export const CellValue = observer(({ cell }: { cell: Cell }) => {
+export const CellValue = observer(({ cell, isDoubleColumn }: { cell: Cell; isDoubleColumn: boolean }) => {
   const { t } = useTranslation();
   const { showNotification } = notificationsStore;
 
@@ -59,16 +60,24 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
       )}
 
       {cell.readOnly && (
-        <div className="deviceCell-value" onClick={copyToClipboard}>
+        <div className={classNames('deviceCell-value', {
+          'deviceCell-value-fractional': isDoubleColumn,
+        })} onClick={copyToClipboard}
+        >
           {cell.isEnum
             ? <div className="deviceCell-text">{cell.getEnumName(cell.value)}</div>
             : (
               <>
-                <div className="deviceCell-int"><span>{getIntegerValue(cell.value)}</span></div>
-                <div className="deviceCell-decimal">{getFractionalValue(cell.value, cell.step)}</div>
+                <div className={classNames('deviceCell-int', {
+                  'deviceCell-int-fractional': isDoubleColumn,
+                })}
+                ><span>{getIntegerValue(cell.value)}</span>
+                </div>
+                {isDoubleColumn && (
+                  <div className="deviceCell-decimal">{getFractionalValue(cell.value, cell.step)}</div>
+                )}
               </>
             )}
-          <div className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</div>
         </div>
       )}
     </>

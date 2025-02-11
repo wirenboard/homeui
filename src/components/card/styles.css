@@ -61,6 +61,7 @@
     border: 0;
     padding: 0;
     opacity: 0;
+    color: var(--card-header-text);
     transition: opacity ease 150ms, text-shadow ease 150ms;
     border-radius: 4px;
     width: 16px;
@@ -76,6 +77,7 @@
 .card:focus-within .card-action,
 .card-action:focus {
     opacity: 1;
+    color: var(--card-header-text);
 }
 
 .card-action:hover,

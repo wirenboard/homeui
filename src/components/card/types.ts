@@ -2,7 +2,8 @@ import { FC, ReactElement, SVGProps } from 'react';
 
 export interface CardAction {
   title: string;
-  action: (_args: unknown | unknown[]) => void;
+  action?: (_args: unknown | unknown[]) => void;
+  url?: (_id?: string) => string;
   icon: FC<SVGProps<SVGSVGElement>>;
 }
 
