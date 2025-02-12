@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import React, { useRef, useLayoutEffect } from 'react';
 import { get, reaction } from 'mobx';
+import i18n from '../../i18n/react/config';
 
 const getSvgElement = (svg, id) => {
   return svg.querySelector(`#${id}`) || svg.querySelector(`[data-svg-param-id=${id}]`);
@@ -133,7 +134,7 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
         if (param?.write?.enable) {
           disposers.push(
             setClickHandler(el, () => {
-              const question = param?.write?.question || 'Do you want to change it?';
+              const question = param?.write?.question || i18n.t('edit-svg-dashboard.labels.default-question');
               if (!param?.write?.check || confirm(question)) {
                 onSwitchValue(param.write.channel, param.write.value);
               }

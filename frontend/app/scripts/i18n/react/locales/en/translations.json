@@ -187,6 +187,7 @@
          "write-enable": "Write",
          "check": "Ask before write",
          "question": "Question before writing",
+         "default-question": "Do you want to change it?",
          "read-enable": "Read",
          "style-enable": "Style",
          "visible-enable": "Visible",
