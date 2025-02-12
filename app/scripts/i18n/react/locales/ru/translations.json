@@ -185,6 +185,7 @@
          "write-enable": "Запись в канал",
          "check": "Спросить перед записью",
          "question": "Вопрос перед записью",
+         "default-question": "Вы хотите изменить это?",
          "read-enable": "Чтение",
          "style-enable": "Стиль оформления",
          "visible-enable": "Видимость",
