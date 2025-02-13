@@ -1,4 +1,4 @@
-export interface ConfirmationParams {
+export interface ConfirmationProps {
   isOpened: boolean;
   heading?: string;
   confirmCallback: () => Promise<void> | void;

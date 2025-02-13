@@ -134,6 +134,7 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
             name: store.devices.get(deletedDeviceId)?.name,
           }}
           components={[<b key="device-name" />]}
+          shouldUnescape
         />
       </Confirm>
     </PageLayout>

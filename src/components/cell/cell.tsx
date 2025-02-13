@@ -9,14 +9,15 @@ import { CellRange } from '@/components/cell/cell-range';
 import { CellSwitch } from '@/components/cell/cell-switch';
 import { CellText } from '@/components/cell/cell-text';
 import { CellValue } from '@/components/cell/cell-value';
-import { Cell, CellComponent } from '@/stores/device';
+import { CellComponent } from '@/stores/device';
 import { CellError } from '@/stores/device/cell-type';
 import { notificationsStore } from '@/stores/notifications';
+import { CellProps } from './types';
 import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
-export const CellContent = observer(({ cell, isDoubleColumn }: { cell: Cell; isDoubleColumn: boolean }) => {
+export const CellContent = observer(({ cell, name, isDoubleColumn = false }: CellProps) => {
   const { t } = useTranslation();
   const { showNotification } = notificationsStore;
 
@@ -65,8 +66,8 @@ export const CellContent = observer(({ cell, isDoubleColumn }: { cell: Cell; isD
               <DangerIcon title={t('widgets.errors.poll')} className="deviceCell-periodError" />
             </Suspense>
           )}
-          {cell.name}
-          {!!cell.units && <div className="deviceCell-units">({cell.units})</div>}
+          {name || cell.name}
+          {!!cell.units && <div className="deviceCell-units">({t(`units.${cell.units}`, cell.units)})</div>}
         </div>
       )}
       {renderCellContent()}

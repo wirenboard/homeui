@@ -1,12 +1,12 @@
 import { PropsWithChildren, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
-import { ConfirmationParams } from './types';
+import { ConfirmationProps } from './types';
 import './styles.css';
 
 export const Confirm = ({
   heading, children, confirmCallback, closeCallback, variant = 'default', isOpened = false,
-}: PropsWithChildren<ConfirmationParams>) => {
+}: PropsWithChildren<ConfirmationProps>) => {
   const { t } = useTranslation();
   const confirm = useRef<HTMLDialogElement | null>();
 
