@@ -16,8 +16,10 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
   };
 
   return (
-    <div onClick={copyToClipboard}>
-      {cell.readOnly && (<div className="deviceCell-text">{cell.getEnumName(cell.value)}</div>)}
+    <div>
+      {cell.readOnly && (
+        <div className="deviceCell-text" onClick={copyToClipboard}>{cell.getEnumName(cell.value)}</div>
+      )}
       {(!cell.readOnly && cell.isEnum) && (
         <Dropdown
           className="deviceCell-select"
