@@ -1,34 +1,34 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
 import { Input } from '@/components/input';
+import { Tooltip } from '@/components/tooltip';
 import { Cell } from '@/stores/device';
-import { notificationsStore } from '@/stores/notifications';
+import { copyToClipboard } from '@/utils/clipboard';
 import './styles.css';
 
-export const CellValue = observer(({ cell, isDoubleColumn }: { cell: Cell; isDoubleColumn: boolean }) => {
+export const CellValue = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
-  const { showNotification } = notificationsStore;
+  const [capturedValue, setCapturedValue] = useState<string>(null);
 
-  const copyToClipboard = async () => {
-    const text = `${cell.value}${cell.units ? ` ${t(`units.${cell.units}`, cell.units)}` : ''}`;
-    await navigator.clipboard.writeText(text);
-    showNotification({ text: `'${text}' ${t('widgets.labels.copy')}` });
-  };
+  const getCopiedText = useCallback(
+    (val: string) => `${val}${cell.units ? ` ${t(`units.${cell.units}`, cell.units)}` : ''}`,
+    [capturedValue]
+  );
 
-  const getIntegerValue = (value?: number | null) => value?.toString().split('.')[0] || '';
+  const formattedValue = useMemo(() => {
+    if (typeof cell.value === 'number') {
+      const formatter = new Intl.NumberFormat('ru-RU', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+      });
 
-  const getFractionalValue = (value?: number | null, step?: number | null) => {
-    if (value === null) return '';
-
-    const digits = step?.toString().split('.')[1]?.length || 0;
-    const fraction = digits > 0
-      ? value.toFixed(digits).split('.')[1]
-      : value.toString().split('.')[1];
-
-    return fraction ? `.${fraction}` : '';
-  };
+      return formatter.format(cell.value).replace(/\s/g, '\u2009').replace(',', '.');
+    }
+    return cell.value;
+  }, [cell.value]);
 
   return (
     <>
@@ -60,24 +60,33 @@ export const CellValue = observer(({ cell, isDoubleColumn }: { cell: Cell; isDou
       )}
 
       {cell.readOnly && (
-        <div className={classNames('deviceCell-value', {
-          'deviceCell-value-fractional': isDoubleColumn,
-        })} onClick={copyToClipboard}
+        <div
+          className={classNames('deviceCell-value', 'deviceCell-mono')}
+          onClick={() => {
+            setCapturedValue(cell.isEnum
+              ? cell.enumValues.find((item) => item.value === cell.value).name
+              : cell.value);
+            copyToClipboard(cell.isEnum
+              ? cell.enumValues.find((item) => item.value === cell.value).name
+              : getCopiedText(cell.value));
+          }
+          }
         >
-          {cell.isEnum
-            ? <div className="deviceCell-text">{cell.getEnumName(cell.value)}</div>
-            : (
-              <>
-                <div className={classNames('deviceCell-int', {
-                  'deviceCell-int-fractional': isDoubleColumn,
-                })}
-                ><span>{getIntegerValue(cell.value)}</span>
+          <Tooltip
+            text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widgets.labels.copy')}</span>}
+            placement="top"
+            trigger="click"
+          >
+            {cell.isEnum
+              ? <div className="deviceCell-text">{cell.getEnumName(cell.value)}</div>
+              : (
+                <div>
+                  <span>{formattedValue}</span> {!!cell.units && (
+                    <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+                  )}
                 </div>
-                {isDoubleColumn && (
-                  <div className="deviceCell-decimal">{getFractionalValue(cell.value, cell.step)}</div>
-                )}
-              </>
-            )}
+              )}
+          </Tooltip>
         </div>
       )}
     </>

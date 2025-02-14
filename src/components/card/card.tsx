@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
+import { Tooltip } from '@/components/tooltip';
 import { CardAction, CardProps } from './types';
 import './styles.css';
 
@@ -21,24 +22,29 @@ const CardHeader = ({
         <div className="card-actions">
           {actions.map((action, i) => (
             action.url ? (
-              <a
-                href={action.url(id)}
-                className="card-action"
-                title={action.title}
+              <Tooltip
+                text={action.title}
+                placement="top"
                 key={i}
               >
-                <action.icon />
-              </a>
+                <a href={action.url(id)} className="card-action">
+                  <action.icon />
+                </a>
+              </Tooltip>
             ) : (
-              <button
-                type="button"
-                className="card-action"
-                title={action.title}
+              <Tooltip
+                text={action.title}
+                placement="top"
                 key={i}
-                onClick={(ev) => actionCall(ev, action)}
               >
-                <action.icon />
-              </button>
+                <button
+                  type="button"
+                  className="card-action"
+                  onClick={(ev) => actionCall(ev, action)}
+                >
+                  <action.icon />
+                </button>
+              </Tooltip>
             )
           ))}
           {!!toggleBody && (

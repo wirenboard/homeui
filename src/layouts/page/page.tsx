@@ -29,6 +29,8 @@ export const PageLayout = ({
       isLoading ? <Loader className="page-loader" /> : children
     )}
 
+    <div id="floating-container"></div>
+
     <Notifications />
   </main>
 );

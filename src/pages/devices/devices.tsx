@@ -103,7 +103,6 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
                   {store.getDeviceCells(device.id).map((cell) => (
                     <Cell
                       cell={cell}
-                      isDoubleColumn={isWithFractionalValues(store.getDeviceCells(device.id))}
                       key={cell.id}
                     />
                   ))}

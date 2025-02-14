@@ -9,22 +9,17 @@ import { CellRange } from '@/components/cell/cell-range';
 import { CellSwitch } from '@/components/cell/cell-switch';
 import { CellText } from '@/components/cell/cell-text';
 import { CellValue } from '@/components/cell/cell-value';
+import { Tooltip } from '@/components/tooltip';
 import { CellComponent } from '@/stores/device';
 import { CellError } from '@/stores/device/cell-type';
-import { notificationsStore } from '@/stores/notifications';
+import { copyToClipboard } from '@/utils/clipboard';
 import { CellProps } from './types';
 import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
-export const CellContent = observer(({ cell, name, isDoubleColumn = false }: CellProps) => {
+export const CellContent = observer(({ cell, name }: CellProps) => {
   const { t } = useTranslation();
-  const { showNotification } = notificationsStore;
-
-  const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(cell.id);
-    showNotification({ text: `'${cell.id}' ${t('widgets.labels.copy')}` });
-  };
 
   const renderCellContent = () => {
     switch (cell.displayType) {
@@ -41,7 +36,7 @@ export const CellContent = observer(({ cell, name, isDoubleColumn = false }: Cel
       case CellComponent.Colorpicker:
         return <CellColorpicker cell={cell} />;
       case CellComponent.Value:
-        return <CellValue cell={cell} isDoubleColumn={isDoubleColumn} />;
+        return <CellValue cell={cell} />;
       default:
         return null;
     }
@@ -57,18 +52,28 @@ export const CellContent = observer(({ cell, name, isDoubleColumn = false }: Cel
     )}
     >
       {!['alarm', 'button'].includes(cell.displayType) && (
-        <div
-          className="deviceCell-name"
-          onClick={copyToClipboard}
+        <Tooltip
+          text={<span><b>'{cell.id}'</b> {t('widgets.labels.copy')}</span>}
+          placement="top-start"
+          trigger="click"
         >
-          {cell.error?.includes(CellError.Period) && (
-            <Suspense>
-              <DangerIcon title={t('widgets.errors.poll')} className="deviceCell-periodError" />
-            </Suspense>
-          )}
-          {name || cell.name}
-          {!!cell.units && <div className="deviceCell-units">({t(`units.${cell.units}`, cell.units)})</div>}
-        </div>
+          <div
+            className="deviceCell-name"
+            onClick={() => copyToClipboard(cell.id)}
+          >
+            {cell.error?.includes(CellError.Period) && (
+              <Suspense>
+                <Tooltip
+                  text={t('widgets.errors.poll')}
+                  placement="top-start"
+                >
+                  <DangerIcon className="deviceCell-periodError" />
+                </Tooltip>
+              </Suspense>
+            )}
+            {name || cell.name}
+          </div>
+        </Tooltip>
       )}
       {renderCellContent()}
     </div>

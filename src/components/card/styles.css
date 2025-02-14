@@ -18,6 +18,7 @@
     align-items: center;
     justify-content: space-between;
     transition: background-color ease 300ms;
+    user-select: none;
 }
 
 .card-header:not(.card-headerToggable) {

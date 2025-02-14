@@ -2,23 +2,26 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
 import { Input } from '@/components/input';
+import { Tooltip } from '@/components/tooltip';
 import { Cell } from '@/stores/device';
-import { notificationsStore } from '@/stores/notifications';
+import { copyToClipboard } from '@/utils/clipboard';
 import './styles.css';
 
 export const CellText = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
-  const { showNotification } = notificationsStore;
-
-  const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(cell.value);
-    showNotification({ text: `'${cell.value}' ${t('widgets.labels.copy')}` });
-  };
 
   return (
     <div>
       {cell.readOnly && (
-        <div className="deviceCell-text" onClick={copyToClipboard}>{cell.getEnumName(cell.value)}</div>
+        <Tooltip
+          text={<span><b>'{cell.value}'</b> {t('widgets.labels.copy')}</span>}
+          placement="top-end"
+          trigger="click"
+        >
+          <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value)}>
+            {cell.getEnumName(cell.value)}
+          </div>
+        </Tooltip>
       )}
       {(!cell.readOnly && cell.isEnum) && (
         <Dropdown

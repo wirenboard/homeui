@@ -1,0 +1,20 @@
+.wb-tooltip {
+    max-width: 300px;
+    width: fit-content;
+    background-color: var(--tooltip-background);
+    color: var(--tooltip-background);
+    text-align: center;
+    padding: 4px 8px;
+    border-radius: var(--input-border-radius);
+}
+
+.wb-tooltip-container {
+    width: inherit;
+    display: inherit;
+}
+
+.wb-tooltip-text {
+    color: var(--tooltip-color);
+    text-align: center;
+    font-size: 12px;
+}

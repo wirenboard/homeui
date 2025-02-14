@@ -59,6 +59,9 @@
     --alert-danger-border: #f5c6cb;
 
     --notification-box-shadow: 0 4px 10px -2px #aa9c9c;
+
+    --tooltip-background: #333;
+    --tooltip-color: #fff;
 }
 
 .wirenboard {
@@ -108,4 +111,7 @@
     --alert-danger-border: #dc3545;
 
     --notification-box-shadow: 0 4px 10px -2px var(--input-background);
+
+    --tooltip-background: #7676ff;
+    --tooltip-color: #fff;
 }
