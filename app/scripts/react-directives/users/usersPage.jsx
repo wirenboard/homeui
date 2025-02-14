@@ -1,17 +1,16 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { PageWrapper, PageTitle, PageBody } from '../components/page-wrapper/pageWrapper';
 import { useTranslation } from 'react-i18next';
-import FormModal from '../components/modals/formModal';
 import { Button } from '../common';
 import ConfirmModal from '../components/modals/confirmModal';
+import FormModal from '../components/modals/formModal';
+import { PageWrapper, PageTitle, PageBody } from '../components/page-wrapper/pageWrapper';
 
 const UsersPage = observer(({ store }) => {
   const { t } = useTranslation();
   return (
     <PageWrapper
       error={store.pageWrapperStore.error}
-      className={'users-page'}
+      className="users-page"
       accessLevelStore={store.accessLevelStore}
     >
       <FormModal {...store.formModalState} />
@@ -21,9 +20,9 @@ const UsersPage = observer(({ store }) => {
           <Button
             label={t('users.buttons.add')}
             type="primary"
-            onClick={() => store.addUser()}
             icon="glyphicon glyphicon-plus"
             disabled={store.pageWrapperStore.loading}
+            onClick={() => store.addUser()}
           />
         </div>
       </PageTitle>
@@ -37,7 +36,7 @@ const UsersPage = observer(({ store }) => {
             </tr>
           </thead>
           <tbody>
-            {store.users.map(user => (
+            {store.users.map((user) => (
               <tr key={user.id}>
                 <td style={{ verticalAlign: 'middle' }}>{user.login}</td>
                 <td style={{ verticalAlign: 'middle' }}>{t('users.labels.' + user.type)}</td>

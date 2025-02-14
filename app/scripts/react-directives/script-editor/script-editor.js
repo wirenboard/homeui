@@ -1,9 +1,7 @@
-'use strict';
-
 import ReactDOM from 'react-dom/client';
-import CreateScriptEditorPage from './scriptEditorPage';
-import ScriptEditorStore from './pageStore';
 import { setReactLocale } from '../locale';
+import ScriptEditorStore from './pageStore';
+import CreateScriptEditorPage from './scriptEditorPage';
 
 function scriptEditorDirective(whenMqttReady, EditorProxy, rolesFactory, $location) {
   'ngInject';
@@ -19,7 +17,7 @@ function scriptEditorDirective(whenMqttReady, EditorProxy, rolesFactory, $locati
       const save = async (title, content) => {
         return new Promise((resolve, reject) => {
           EditorProxy.Save({ path: title, content: content })
-            .then(reply => {
+            .then((reply) => {
               if (scope.isNew) {
                 $location.path('/rules/edit/' + reply.path);
               }
@@ -32,7 +30,7 @@ function scriptEditorDirective(whenMqttReady, EditorProxy, rolesFactory, $locati
                 resolve();
               }
             })
-            .catch(err => reject(err));
+            .catch((err) => reject(err));
         });
       };
 
@@ -45,12 +43,12 @@ function scriptEditorDirective(whenMqttReady, EditorProxy, rolesFactory, $locati
           .then(() => {
             return EditorProxy.Load({ path: scope.path });
           })
-          .then(r => {
+          .then((r) => {
             scope.store.setRuleText(r.content);
             scope.store.setError(r.error);
             scope.store.setFocusElement('editor');
           })
-          .catch(e => {
+          .catch((e) => {
             scope.store.setError(e);
             scope.store.setFocusElement('editor');
           });

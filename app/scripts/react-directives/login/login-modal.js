@@ -1,9 +1,7 @@
-'use strict';
-
 import ReactDOM from 'react-dom/client';
+import { setReactLocale } from '../locale';
 import CreateLoginModal from './loginModal';
 import LoginModalStore from './store';
-import { setReactLocale } from '../locale';
 
 function loginModalDirective(rolesFactory) {
   'ngInject';
@@ -25,13 +23,13 @@ function loginModalDirective(rolesFactory) {
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(CreateLoginModal({ store: scope.store }));
 
-      scope.$watch('show', newValue => {
+      scope.$watch('show', (newValue) => {
         if (newValue === true) {
           scope.store.show();
         }
       });
 
-      scope.$watch('httpWarning', newValue => {
+      scope.$watch('httpWarning', (newValue) => {
         scope.store.setHttpWarning(newValue);
       });
 
