@@ -359,7 +359,7 @@ function isDeviceSn(sn) {
   return /^[A-Z0-9]+$/.test(sn);
 }
 
-const WIRENBOARD_DNS_POSTFIX = 'ip.xcvb.win';
+const WIRENBOARD_DNS_POSTFIX = 'ip.wirenboard.com';
 
 function makeHttpsUrlOrigin(ip, sn) {
   const ipPrefix = ip.replace(/\./g, '-');
