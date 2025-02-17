@@ -11,7 +11,7 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
 
   return (
-    <div>
+    <>
       {cell.readOnly && (
         <Tooltip
           text={<span><b>'{cell.value}'</b> {t('widgets.labels.copy')}</span>}
@@ -42,6 +42,6 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
           onChange={(value) => cell.value = value}
         />
       )}
-    </div>
+    </>
   );
 });
