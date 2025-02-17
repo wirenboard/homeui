@@ -85,3 +85,10 @@
 .deviceCell-select {
     max-width: 50%;
 }
+
+.deviceCell-space {
+    width: 4px;
+    height: 4px;
+    display: inline-block;
+    content: '\u2009';
+}

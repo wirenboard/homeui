@@ -19,8 +19,8 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
   const [devicesInColumns, setDevicesInColumns] = useState<Device[][]>([]);
 
-  if (!localStorage.getItem('visibleDevices')) {
-    localStorage.setItem('visibleDevices', JSON.stringify({ devices: {} }));
+  if (!localStorage.getItem('foldedDevices')) {
+    localStorage.setItem('foldedDevices', JSON.stringify([]));
   }
 
   const getChartUrl = useCallback((deviceId: string) => {
@@ -81,10 +81,6 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
     splitDevicesIntoColumns();
   }, [store.filteredDevices.size]);
 
-  const isWithFractionalValues = useCallback((cells) => {
-    return cells.some((cell) => cell.valueType === 'number' && !Number.isInteger(cell.value));
-  }, []);
-
   return (
     <PageLayout title={t('devices.title')} hasRights={hasRights}>
       <section className="devices-container" ref={pageWrapper}>
@@ -96,7 +92,7 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
                   heading={device.name}
                   id={device.id}
                   actions={actions}
-                  toggleBody={() => device.toggleDeviceVisibility()}
+                  toggleBody={device.toggleDeviceVisibility}
                   isBodyVisible={device.isVisible}
                   key={device.id}
                 >

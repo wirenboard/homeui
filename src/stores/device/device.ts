@@ -12,8 +12,7 @@ export default class Device {
 
   constructor(id: string) {
     this.id = id;
-    this.isVisible = JSON.parse(localStorage.getItem('visibleDevices')).devices[this.id]?.isOpen;
-
+    this.isVisible = !JSON.parse(localStorage.getItem('foldedDevices')).includes(this.id);
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
@@ -39,12 +38,11 @@ export default class Device {
   }
 
   toggleDeviceVisibility() {
-    const devicesVisibility = JSON.parse(localStorage.getItem('visibleDevices'));
-    devicesVisibility.devices = {
-      ...devicesVisibility.devices,
-      [this.id]: { isOpen: !devicesVisibility.devices[this.id]?.isOpen },
-    };
-    localStorage.setItem('visibleDevices', JSON.stringify(devicesVisibility));
-    this.isVisible = devicesVisibility.devices[this.id].isOpen;
+    const foldedDevices = JSON.parse(localStorage.getItem('foldedDevices'));
+    const updatedFoldedDevices = foldedDevices.includes(this.id)
+      ? foldedDevices.filter((deviceId: string) => deviceId !== this.id)
+      : [...foldedDevices, this.id];
+    localStorage.setItem('foldedDevices', JSON.stringify(updatedFoldedDevices));
+    this.isVisible = foldedDevices.includes(this.id);
   }
 }

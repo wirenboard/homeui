@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
 import { Input } from '@/components/input';
@@ -12,6 +12,7 @@ import './styles.css';
 export const CellValue = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
   const [capturedValue, setCapturedValue] = useState<string>(null);
+  const [minimumFractionDigits, setMinimumFractionDigits] = useState(0);
 
   const getCopiedText = useCallback(
     (val: string) => `${val}${cell.units ? ` ${t(`units.${cell.units}`, cell.units)}` : ''}`,
@@ -22,13 +23,29 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
     if (typeof cell.value === 'number') {
       const formatter = new Intl.NumberFormat('ru-RU', {
         style: 'decimal',
-        minimumFractionDigits: 0,
+        minimumFractionDigits,
       });
 
-      return formatter.format(cell.value).replace(/\s/g, '\u2009').replace(',', '.');
+      return formatter.format(cell.value).replace(/\s/g, '<span class="deviceCell-space"></span>').replace(',', '.');
     }
     return cell.value;
-  }, [cell.value]);
+  }, [cell.value, minimumFractionDigits]);
+
+  // to avoid a jumping interface, we keep the number of decimal
+  useEffect(() => {
+    const countDecimals = (num: number) => {
+      if (!Number.isFinite(num)) return 0;
+      const str = num.toString();
+      if (str.includes('.')) {
+        return str.split('.')[1].length;
+      }
+      return 0;
+    };
+
+    if (countDecimals(cell.value) > minimumFractionDigits) {
+      setMinimumFractionDigits(countDecimals(cell.value));
+    }
+  }, [cell.value, minimumFractionDigits]);
 
   return (
     <>
@@ -63,12 +80,11 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
         <div
           className={classNames('deviceCell-value', 'deviceCell-mono')}
           onClick={() => {
-            setCapturedValue(cell.isEnum
+            const value = cell.isEnum
               ? cell.enumValues.find((item) => item.value === cell.value).name
-              : cell.value);
-            copyToClipboard(cell.isEnum
-              ? cell.enumValues.find((item) => item.value === cell.value).name
-              : getCopiedText(cell.value));
+              : cell.value;
+            setCapturedValue(value);
+            copyToClipboard(cell.isEnum ? value : getCopiedText(value));
           }
           }
         >
@@ -81,7 +97,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               ? <div className="deviceCell-text">{cell.getEnumName(cell.value)}</div>
               : (
                 <div>
-                  <span>{formattedValue}</span> {!!cell.units && (
+                  <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
                     <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
                   )}
                 </div>
