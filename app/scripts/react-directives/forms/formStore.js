@@ -30,11 +30,11 @@ export class FormStore {
   }
 
   get isDirty() {
-    return Object.entries(this.params).some(([_k, v]) => v.isDirty);
+    return Object.values(this.params).some((v) => v.isDirty);
   }
 
   get hasErrors() {
-    return Object.entries(this.params).some(([_k, v]) => v.hasErrors);
+    return Object.values(this.params).some((v) => v.hasErrors);
   }
 
   get hasProperties() {
@@ -51,10 +51,10 @@ export class FormStore {
   }
 
   submit() {
-    Object.entries(this.params).forEach(([_k, v]) => v.submit());
+    Object.values(this.params).forEach((v) => v.submit());
   }
 
   reset() {
-    Object.entries(this.params).forEach(([_k, v]) => v.reset());
+    Object.values(this.params).forEach((v) => v.reset());
   }
 }
