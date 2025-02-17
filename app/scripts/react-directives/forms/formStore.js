@@ -21,12 +21,12 @@ export class FormStore {
 
   setValue(value) {
     Object.entries(this.params).forEach(([k, v]) => {
-      v.setValue(value && k in value ? value[k] : undefined);
+      v.setValue(value && Object.hasOwn(value, k) ? value[k] : undefined);
     });
   }
 
   contains(key) {
-    return key in this.params;
+    return Object.hasOwn(this.params, key);
   }
 
   get isDirty() {
