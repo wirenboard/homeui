@@ -1,14 +1,12 @@
-'use strict';
-
 import { makeAutoObservable, runInAction } from 'mobx';
-import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
-import { StringStore } from '../forms/stringStore';
 import i18n from '../../i18n/react/config';
-import { FormStore } from '../forms/formStore';
-import { makeNotEmptyValidator } from '../forms/stringValidators';
-import FormModalState from '../components/modals/formModalState';
-import { OptionsStore } from '../forms/optionsStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
+import FormModalState from '../components/modals/formModalState';
+import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
+import { FormStore } from '../forms/formStore';
+import { OptionsStore } from '../forms/optionsStore';
+import { StringStore } from '../forms/stringStore';
+import { makeNotEmptyValidator } from '../forms/stringValidators';
 
 function sortUsers(users) {
   users.sort((a, b) => {
@@ -173,7 +171,7 @@ class UsersPageStore {
       location.reload();
       return;
     }
-    res.text().then(text => {
+    res.text().then((text) => {
       runInAction(() => {
         user.id = text;
         this.users.push(user);
@@ -198,7 +196,7 @@ class UsersPageStore {
         body: JSON.stringify(modifiedUser),
       })
     );
-    if (res == null) {
+    if (res === null) {
       return;
     }
     user.name = modifiedUser.name;
@@ -229,7 +227,7 @@ class UsersPageStore {
         return;
       }
       runInAction(() => {
-        this.users = this.users.filter(u => u.id !== user.id);
+        this.users = this.users.filter((u) => u.id !== user.id);
       });
     }
   }

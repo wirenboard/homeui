@@ -1,5 +1,3 @@
-'use strict';
-
 import { makeObservable, observable, action, computed } from 'mobx';
 
 export class StringStore {

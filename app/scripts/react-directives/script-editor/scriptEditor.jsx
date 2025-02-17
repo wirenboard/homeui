@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { EditorSelection } from '@codemirror/state';
+import CodeMirror from '@uiw/react-codemirror';
+import { observer } from 'mobx-react-lite';
+import React, { useEffect } from 'react';
 
 const ScriptEditor = observer(
   React.forwardRef(({ text, errorLine, onChange, visible }, cmRef) => {
-    const refCallback = ref => {
+    const refCallback = (ref) => {
       if (ref?.view && !cmRef.current) {
         cmRef.current = ref.view;
         cmRef.current.dispatch({

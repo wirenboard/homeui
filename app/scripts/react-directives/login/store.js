@@ -1,7 +1,7 @@
 import { makeObservable, action, observable } from 'mobx';
+import i18n from '../../i18n/react/config';
 import { FormStore } from '../forms/formStore';
 import { StringStore } from '../forms/stringStore';
-import i18n from '../../i18n/react/config';
 
 class LoginModalStore {
   constructor(active, rolesFactory, httpWarning) {
@@ -63,7 +63,7 @@ class LoginModalStore {
 
   setLoading(loading) {
     this.loading = loading;
-    Object.values(this.formStore.params).forEach(param => param.setReadOnly(loading));
+    Object.values(this.formStore.params).forEach((param) => param.setReadOnly(loading));
   }
 
   async postLogin() {

@@ -1,15 +1,16 @@
-import React, { useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
+import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ErrorBar, Button } from '../common';
 import {
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  ModalTitle,
+  ModalTitle
 } from '../components/modals/modals';
 import { MakeFormFields } from '../forms/forms';
-import { ErrorBar, Button } from '../common';
+
 const LoginModal = observer(({ store }) => {
   const { t } = useTranslation();
   const ref = useRef(null);
@@ -19,7 +20,7 @@ const LoginModal = observer(({ store }) => {
     }
   });
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     store.postLogin();
   };
@@ -27,7 +28,7 @@ const LoginModal = observer(({ store }) => {
   return (
     <Modal id="loginModal" active={store.active}>
       <ModalHeader>
-        <ModalTitle id={'loginModal'} text={t(store.formStore.name)} />
+        <ModalTitle id="loginModal" text={t(store.formStore.name)} />
       </ModalHeader>
       <ModalBody>
         {store.httpWarning && <ErrorBar msg={t('login.errors.http-warning')} />}
@@ -39,8 +40,8 @@ const LoginModal = observer(({ store }) => {
       <ModalFooter>
         <Button
           label={t('login.buttons.login')}
-          type={'success'}
-          form={'loginModalForm'}
+          type="success"
+          form="loginModalForm"
           disabled={store.loading}
         />
       </ModalFooter>

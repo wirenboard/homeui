@@ -1,9 +1,7 @@
-'use strict';
-
 import ReactDOM from 'react-dom/client';
-import CreateUsersPage from './usersPage';
-import UsersStore from './pageStore';
 import { setReactLocale } from '../locale';
+import UsersStore from './pageStore';
+import CreateUsersPage from './usersPage';
 
 function usersDirective(rolesFactory) {
   'ngInject';

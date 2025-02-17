@@ -1,5 +1,3 @@
-'use strict';
-
 import { makeObservable, observable, runInAction } from 'mobx';
 
 class AccessLevelStore {
