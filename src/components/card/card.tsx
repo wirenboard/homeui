@@ -27,7 +27,11 @@ const CardHeader = ({
                 placement="top"
                 key={i}
               >
-                <a href={action.url(id)} className="card-action">
+                <a
+                  href={action.url(id)}
+                  className="card-action"
+                  onClick={(ev) => ev.stopPropagation()}
+                >
                   <action.icon />
                 </a>
               </Tooltip>

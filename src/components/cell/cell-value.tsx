@@ -14,19 +14,14 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
   const [capturedValue, setCapturedValue] = useState<string>(null);
   const [minimumFractionDigits, setMinimumFractionDigits] = useState(0);
 
-  const getCopiedText = useCallback(
-    (val: string) => `${val}${cell.units ? ` ${t(`units.${cell.units}`, cell.units)}` : ''}`,
-    [capturedValue]
-  );
+  const getCopiedText = useCallback((val: string) => val, []);
 
   const formattedValue = useMemo(() => {
     if (typeof cell.value === 'number') {
-      const formatter = new Intl.NumberFormat('ru-RU', {
-        style: 'decimal',
-        minimumFractionDigits,
-      });
-
-      return formatter.format(cell.value).replace(/\s/g, '<span class="deviceCell-space"></span>').replace(',', '.');
+      return new Intl.NumberFormat('ru-RU', { style: 'decimal', minimumFractionDigits })
+        .format(cell.value)
+        .replace(/\s/g, '<span class="deviceCell-space"></span>')
+        .replace(',', '.');
     }
     return cell.value;
   }, [cell.value, minimumFractionDigits]);
