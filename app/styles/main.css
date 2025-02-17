@@ -1091,11 +1091,18 @@ body.hmi #widgets-list {
   padding: 5px 7px;
 }
 
+body.hmi #not-configured-admin-alert,
+body.hmi #no-https-alert,
 body.hmi #wrapper .navbar,
 body.hmi .page-header,
 body.hmi .show-console-button,
 body.hmi .console {
   display: none
+}
+
+body.fullscreen #not-configured-admin-alert,
+body.fullscreen #no-https-alert {
+  display: none;
 }
 
 @media (min-width: 768px) {

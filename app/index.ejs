@@ -25,11 +25,11 @@
   
   <div id="wrapper" class="fade" ng-class="{ 'show-console': consoleVisible }">
       <exp-check-widget></exp-check-widget>
-      <div class="alert alert-danger" role="alert" ng-cloak ng-if="noHttps">
+      <div class="alert alert-danger" role="alert" id="no-https-alert" ng-cloak ng-if="noHttps">
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
         <span translate>{{'app.errors.no-https'}}</span>
       </div>
-      <div class="alert alert-danger" role="alert" ng-cloak ng-if="roles.notConfiguredAdmin">
+      <div class="alert alert-danger" role="alert" id="not-configured-admin-alert" ng-cloak ng-if="roles.notConfiguredAdmin">
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
         <span translate>{{'app.errors.not-configured-admin'}}</span>
       </div>
