@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.103.3-wb103-cb8ea449-2) stable; urgency=medium
+
+  * Fix mio and mio-e names in scanning
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Mon, 17 Feb 2025 15:32:31 +0300
+
 wb-mqtt-homeui (2.103.3-wb103-cb8ea449-1) stable; urgency=medium
 
   * Fix some translates
