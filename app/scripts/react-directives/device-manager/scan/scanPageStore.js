@@ -129,7 +129,7 @@ class SingleDeviceStore {
     if (this.names.length) {
       return this.names[0];
     }
-    if (this.scannedDevice.title === "WBMIO") {
+    if (this.scannedDevice.device_signature === "WBMIO") {
       return "PLC-W-ACS-MBRTU-EXT";
     }
     return this.scannedDevice.title;
