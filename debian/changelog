@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.109.0) stable; urgency=medium
+
+  * Upgrade devices page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 10 Feb 2025 22:13:30 +0300
+
+
 wb-mqtt-homeui (2.108.2) stable; urgency=medium
 
   * Fix url params transition between dashboard and history

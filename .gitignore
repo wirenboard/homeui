@@ -23,4 +23,5 @@ coverage
 *.sh
 *.tsv
 .vscode
-.prettierrc
+.idea
+*.env

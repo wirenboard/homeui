@@ -76,8 +76,29 @@ module.exports = (function makeWebpackConfig() {
         exclude: /(node_modules|bower_components)/,
         use: [
           {
-            loader: 'babel-loader',
+            loader: 'thread-loader',
+            options: {
+              workers: 2,
+            },
           },
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: [/node_modules/],
+        use: [
+          {
+            loader: 'esbuild-loader',
+            options: {
+              jsx: 'automatic',
+            }
+          }
         ],
       },
       // ASSET LOADER
@@ -88,11 +109,15 @@ module.exports = (function makeWebpackConfig() {
       },
       {
         // without hash
-        test: /\.(svg|woff|woff2|ttf|eot)$/,
+        test: /\.(woff|woff2|ttf|eot)$/,
         type: 'asset/resource',
         generator: {
           filename: '[name][ext]',
         },
+      },
+      {
+        test: /\.svg$/,
+        use: [{ loader: '@svgr/webpack', options: { typescript: true, titleProp: true }}],
       },
       {
         test: /\.html$/,
@@ -102,9 +127,11 @@ module.exports = (function makeWebpackConfig() {
   };
 
   config.resolve = {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'paho-mqtt': path.resolve(__dirname, 'node_modules/paho-mqtt/paho-mqtt.js'),
+      '~': path.resolve(__dirname, 'app/scripts/'),
+      '@': path.resolve(__dirname, 'src/'),
     },
   };
 
@@ -265,6 +292,7 @@ module.exports = (function makeWebpackConfig() {
     // Development settings
 
     config.mode = 'development';
+    config.cache = true;
 
     config.output = {
       // Absolute output directory
@@ -286,7 +314,7 @@ module.exports = (function makeWebpackConfig() {
     // Load styles
     config.module.rules.push({
       test: /\.css$/i,
-      use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+      use: ['style-loader', 'css-loader', 'postcss-loader'],
     });
 
     config.plugins.push(
@@ -305,6 +333,12 @@ module.exports = (function makeWebpackConfig() {
     },
     port: 8080,
     hot: true,
+    liveReload: false,
+    client: {
+      overlay: true,
+      progress: true,
+      reconnect: true,
+    },
   };
 
   return config;

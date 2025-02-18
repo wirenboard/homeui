@@ -1,0 +1,102 @@
+.card {
+    border: 1px solid var(--card-header-background);
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    margin-bottom: 18px;
+    max-width: 450px;
+    width: 100%;
+    transition: background ease 300ms, border ease 300ms;
+}
+
+.card-header {
+    background-color: var(--card-header-background);
+    border-radius: var(--card-border-radius);
+    width: 100%;
+    color: var(--card-header-text);
+    padding: var(--card-header-padding);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color ease 300ms;
+    user-select: none;
+}
+
+.card-header:not(.card-headerToggable) {
+    border-radius: 0;
+}
+
+.card-headerContainer {
+    position: relative;
+    background-color: var(--card-header-background);
+    transition: background-color ease 300ms;
+}
+
+.card-headerToggable {
+    border: 0;
+    width: 100%;
+    cursor: pointer;
+}
+
+.card-headerToggable:focus {
+    box-shadow: var(--input-active-shadow);
+    transition: var(--input-active-shadow-transition);
+}
+
+.card-title {
+    font-size: 13px;
+    width: 100%;
+}
+
+.card-actions {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    align-items: center;
+}
+
+.card-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    opacity: 0;
+    color: var(--card-header-text);
+    transition: opacity ease 150ms, text-shadow ease 150ms;
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+
+    @media(max-width: 768px) {
+        opacity: 1;
+    }
+}
+
+.card:hover .card-action,
+.card:focus-within .card-action,
+.card-action:focus {
+    opacity: 1;
+    color: var(--card-header-text);
+}
+
+.card-action:hover,
+.card-action:focus {
+    box-shadow: var(--input-active-shadow);
+    transition: var(--input-active-shadow-transition);
+}
+
+.card-toggle {
+    width: 16px;
+    height: 16px;
+}
+
+.card-body {
+    background: var(--card-body-background);
+    padding: var(--card-body-padding);
+    font-size: 14px;
+    color: var(--text-color);
+    border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
+    transition: background ease 300ms, color ease 300ms;
+}

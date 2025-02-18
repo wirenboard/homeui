@@ -326,5 +326,122 @@
          "search-device": "Search device",
          "search-control": "Search channel"
       }
+   },
+   "access": {
+      "title": "Access level",
+      "labels": {
+         "active": "active",
+         "confirm": "I take full responsibility for my actions"
+      },
+      "buttons": {
+         "apply": "Apply"
+      },
+      "user": {
+         "name": "User",
+         "short": "U",
+         "description": "Can view dashboards and history"
+      },
+      "operator":  {
+         "name": "Operator",
+         "short": "O",
+         "description": "Can create and edit dashboards"
+      },
+      "admin":  {
+         "name": "Administrator",
+         "short": "A",
+         "description": "Has full access to device settings and rules"
+      }
+   },
+   "configurations": {
+      "title": "Configuration Files",
+      "labels": {
+         "loading": "Loading...",
+         "file": "File",
+         "title": "Title",
+         "description": "Description",
+         "notice": "You cannot view this page. You can change",
+         "access": "access level"
+      },
+      "buttons": {
+         "save": "Save"
+      },
+      "errors": {
+         "load": "Error loading the file",
+         "save": "Error saving {{name}}"
+      }
+   },
+   "units": {
+      "m^3/h": "m³/h",
+      "m^3": "m³",
+      "mbar": "mbar (100 Pa)",
+      "deg C": "°C",
+      "deg": "°"
+   },
+   "widgets": {
+      "title": "Widgets",
+      "labels": {
+         "name": "Name",
+         "cells": "Cells",
+         "types": "Types",
+         "type": "Type",
+         "values": "Values",
+         "graph": "Graph",
+         "description": "Description",
+         "dashboards": "Dashboards",
+         "widget_view": "Widget view",
+         "table_view": "Table view",
+         "compact": "Compact mode",
+         "warning-popup": "You added this widget to several dashboards, so when applying changes, they will be applied on each.",
+         "warning": "Сhanges affect other dashboards",
+         "invert": "Invert",
+         "find": "Find control",
+         "add": "Add control...",
+         "copy": "copied to clipboard"
+      },
+      "errors": {
+         "nothing": "No widgets are currently defined",
+         "empty-name": "Empty widget name is not allowed",
+         "poll": "Desired read period is missed"
+      },
+      "prompt": {
+         "delete": "Really delete the widget?",
+         "remove": "Really remove widget from dashboard?"
+      },
+      "buttons": {
+         "add": "Add dashboard",
+         "edit": "Edit widget",
+         "delete": "Delete widget",
+         "remove": "Remove from this dashboard",
+         "save": "Save",
+         "cancel": "Cancel",
+         "edit-json": "Edit as JSON",
+         "editor": "Visual editor"
+      },
+      "cells": {
+         "on": "ON",
+         "off": "OFF",
+         "history": "History",
+         "size": "{width: '50px'}"
+      }
+   },
+   "devices": {
+      "title": "Devices",
+      "labels": {
+         "nothing": "No devices available for this moment.",
+         "delete": "Delete device"
+      },
+      "prompt": {
+         "delete-title": "Delete device",
+         "delete-description": "Do you really want to delete <0>{{name}}</0>?"
+      }
+   },
+   "page": {
+      "access-denied": "You cannot view this page. You can change <0>access level</0>"
+   },
+   "modal": {
+      "labels": {
+         "yes": "Confirm",
+         "cancel": "Cancel"
+      }
    }
 }

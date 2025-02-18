@@ -1,0 +1,95 @@
+.deviceCell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+    position: relative;
+    min-height: 26px;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.deviceCell-error,
+.deviceCell-error .deviceCell-units {
+    color: var(--danger-color);
+}
+
+.deviceCell-periodError {
+    width: 18px;
+    height: 18px;
+    color: var(--danger-color);
+}
+
+.deviceCell-columns {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.deviceCell-name {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.deviceCell-alert {
+    cursor: pointer;
+}
+
+.deviceCell-text {
+    overflow-x: auto;
+    min-width: 30px;
+    text-align: right;
+    max-width: 260px;
+    flex-grow: 1;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.deviceCell-text::-webkit-scrollbar {
+    height: 8px;
+}
+
+.deviceCell-text::-webkit-scrollbar-track {
+    background: var(--light-gray-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.deviceCell-text::-webkit-scrollbar-thumb {
+    background: var(--input-action-background);
+    border-radius: 4px;
+}
+
+.deviceCell-text::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color-hover);
+    cursor: pointer;
+}
+
+.deviceCell-mono {
+    font-size: 13px;
+}
+
+.deviceCell-value {
+    justify-items: end;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.deviceCell-units {
+    font-size: 12px;
+    color: var(--gray-color);
+}
+
+.deviceCell-select {
+    max-width: 50%;
+}
+
+.deviceCell-space {
+    width: 4px;
+    height: 4px;
+    display: inline-block;
+    content: '\u2009';
+}
