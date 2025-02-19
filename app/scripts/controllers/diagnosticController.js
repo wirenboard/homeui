@@ -71,7 +71,7 @@ class DiagnosticCtrl {
       $scope.collecting = true;
       DiagnosticProxy.diag().then(
         mqttClient.addStickySubscription('/wb-diag-collect/artifact', function (msg) {
-          if (msg.payload != '') {
+          if (msg.payload) {
             const data = JSON.parse(msg.payload)
             $scope.path = data['fullname'];
             $scope.basename = data['basename'];
