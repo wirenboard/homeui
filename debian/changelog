@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.109.1) stable; urgency=medium
+
+  * Fix the rootfs expansion error during the update via FIT.
+
+ -- Anton <anton.tarasov@wirenboard.com>  Wed, 19 Feb 2025 10:11:05 +0300
+
 wb-mqtt-homeui (2.109.0) stable; urgency=medium
 
   * Upgrade devices page
