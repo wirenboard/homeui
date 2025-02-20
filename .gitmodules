@@ -1,3 +1,0 @@
-[submodule "app/lib/angular-spectrum-colorpicker"]
-	path = app/lib/angular-spectrum-colorpicker
-	url = https://github.com/wirenboard/angular-spectrum-colorpicker.git
