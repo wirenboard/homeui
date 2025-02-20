@@ -1,5 +1,5 @@
 class DiagnosticCtrl {
-  constructor($scope, $translate, DiagnosticProxy, errors, whenMqttReady) {
+  constructor($scope, $translate, DiagnosticProxy, errors, whenMqttReady, mqttClient) {
     'ngInject';
 
     $scope.started = false;
@@ -70,16 +70,16 @@ class DiagnosticCtrl {
       changeBtnText('collector.states.collecting');
       $scope.collecting = true;
       DiagnosticProxy.diag().then(
-        names => {
-          $scope.path = names['fullname'];
-          $scope.basename = names['basename'];
-          var url = getUrl();
-          fileIsOk(location.protocol + '//' + url + '/diag/' + $scope.basename, callbackFileIsOk);
-        },
-        err => {
-          $scope.collecting = false;
-          changeBtnText('collector.errors.timeout');
+        mqttClient.addStickySubscription('/wb-diag-collect/artifact', function (msg) {
+          if (msg.payload) {
+            const data = JSON.parse(msg.payload)
+            $scope.path = data['fullname'];
+            $scope.basename = data['basename'];
+            var url = getUrl();
+            fileIsOk(location.protocol + '//' + url + '/diag/' + $scope.basename, callbackFileIsOk);
+          }
         }
+        )
       );
     };
 

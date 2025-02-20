@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.111.0) stable; urgency=medium
+
+  * Rework diag collect to async backend
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Wed, 19 Feb 2025 17:25:22 +0300
+
 wb-mqtt-homeui (2.110.0) stable; urgency=medium
 
   * Source code refactoring. No functional changes
