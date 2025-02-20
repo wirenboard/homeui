@@ -23,19 +23,6 @@ fi
 BOARD_CONF="/usr/share/wb-mqtt-homeui/config.${CONF_SUFFIX}.json"
 CONFFILE="/etc/wb-webui.conf"
 
-function convert_config()
-{
-    TMPFILE=`mktemp`
-    mqtt-get-dump "/config/#" > $TMPFILE
-    NEW_CONFFILE=`mktemp`
-    /usr/lib/wb-mqtt-homeui/convert_config_v1v2 $TMPFILE $NEW_CONFFILE
-    if [ -e $CONFFILE ] && ! `cmp --silent $CONFFILE $NEW_CONFFILE`; then
-        mv $CONFFILE $CONFFILE.bak
-    fi
-    mv $NEW_CONFFILE $CONFFILE            
-    rm $TMPFILE
-}
-
 function install_default_config()
 {
     ucf --debconf-ok $BOARD_CONF $CONFFILE
@@ -57,22 +44,13 @@ case "$1" in
             # fresh install
             # if conffile (i.e. v2) is present, do nothing
             if [ ! -e "$CONFFILE" ]; then
-                #check if old config is present
-                if [ ! `mqtt-get-dump '/config/#' | wc -l` = "0" ]; then
-                    convert_config
-                else
-                    install_default_config
-                fi
+                install_default_config
             fi
         else
-            if `dpkg --compare-versions "${OLD_VERSION}" "lt" "2.0~beta9"`; then
-                convert_config
+            if is_config_untouched; then
+                cp $BOARD_CONF $CONFFILE
             else
-                if is_config_untouched; then
-                    cp $BOARD_CONF $CONFFILE
-                else
-                    install_default_config
-                fi
+                install_default_config
             fi
         fi
     ;;

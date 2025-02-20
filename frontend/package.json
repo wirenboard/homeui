@@ -36,6 +36,7 @@
     "angular-resource": "^1.8.3",
     "angular-sanitize": "^1.8.3",
     "angular-sortable-view": "0.0.21",
+    "angular-spectrum-colorpicker": "github:wirenboard/angular-spectrum-colorpicker",
     "angular-spinkit": "^0.3.4",
     "angular-touch": "^1.8.3",
     "angular-translate": "^2.19.0",
