@@ -1,8 +1,20 @@
-wb-mqtt-homeui (2.110.0) stable; urgency=medium
+wb-mqtt-homeui (2.111.0) stable; urgency=medium
 
   * Rework diag collect to async backend
 
  -- Vladimir Romanov <v.romanov@wirenboard.com>  Wed, 19 Feb 2025 17:25:22 +0300
+
+wb-mqtt-homeui (2.110.0) stable; urgency=medium
+
+  * Source code refactoring. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 20 Feb 2025 15:23:36 +0500
+
+wb-mqtt-homeui (2.109.1) stable; urgency=medium
+
+  * Fix the rootfs expansion error during the update via FIT.
+
+ -- Anton <anton.tarasov@wirenboard.com>  Wed, 19 Feb 2025 10:11:05 +0300
 
 wb-mqtt-homeui (2.109.0) stable; urgency=medium
 
@@ -2417,7 +2429,6 @@ wb-mqtt-homeui (1.3.6) stable; urgency=medium
 
  -- Evgeny Boger <boger@contactless.ru>  Tue, 09 Feb 2016 14:16:05 +0300
 
-
 wb-mqtt-homeui (1.3.5) stable; urgency=medium
 
   * Conditions in dumbtemplate for wb-hwconf-manager
@@ -2441,7 +2452,7 @@ wb-mqtt-homeui (1.3.2) stable; urgency=medium
 
   * fwupdate: fix error handling
 
- -- Alexey Ignatov <lexs@nyapad>  Sun, 01 Nov 2015 01:44:12 +0000
+ -- Alexey Ignatov <lexszero@gmail.com>  Sun, 01 Nov 2015 01:44:12 +0000
 
 wb-mqtt-homeui (1.3.1) stable; urgency=medium
 

@@ -238,7 +238,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
     if (store.resetMode) {
       params.factory_reset = true;
     } else {
-      params.expand_rootfs = store.expandRootFs;
+      params.expand_rootfs = store.expandRootfs;
     }
     return {
       options: { params }, // will be merged with the rest of the options
