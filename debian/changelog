@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.111.0) stable; urgency=medium
+
+  * Added the ability to include rules, copy and rename
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 21 Feb 2025 17:45:40 +0300
+
 wb-mqtt-homeui (2.110.0) stable; urgency=medium
 
   * Source code refactoring. No functional changes
