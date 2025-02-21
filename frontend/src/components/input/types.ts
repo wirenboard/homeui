@@ -11,5 +11,7 @@ export interface InputProps {
   isDisabled?: boolean;
   placeholder?: string;
   ariaLabel?: string;
+  isFullWidth?: boolean;
+  isWithExplicitChanges?: boolean;
   onChange: (_val: string) => void;
 }
