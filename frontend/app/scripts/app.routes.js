@@ -170,12 +170,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('rules', {
       url: '/rules',
-      controller: 'ScriptsCtrl as $ctrl',
-      template: require('../views/scripts.html'),
+      template: '<rules-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptsController').then(
+          return import(/* webpackChunkName: 'rules' */ './controllers/rulesController').then(
             module => $ocLazyLoad.load({ name: module.default.name })
           );
         },
@@ -184,12 +183,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('rules-edit', {
       url: '/rules/edit/{path:.*}',
-      template: require('../views/script.html'),
-      controller: 'ScriptCtrl as $ctrl',
+      template: '<rule-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController').then(
+          return import(/* webpackChunkName: 'rule' */ './controllers/ruleController').then(
             module => $ocLazyLoad.load({ name: module.default.name })
           );
         },
@@ -198,12 +196,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('rules-new', {
       url: '/rules/new',
-      template: require('../views/script.html'),
-      controller: 'ScriptCtrl as $ctrl',
+      template: '<rule-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'rules' */ './controllers/scriptController').then(
+          return import(/* webpackChunkName: 'rule' */ './controllers/ruleController').then(
             module => $ocLazyLoad.load({ name: module.default.name })
           );
         },

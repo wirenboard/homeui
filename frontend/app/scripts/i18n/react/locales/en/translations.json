@@ -435,8 +435,35 @@
          "delete-description": "Do you really want to delete <0>{{name}}</0>?"
       }
    },
+   "rules": {
+      "title": "Rules",
+      "buttons": {
+         "create": "New",
+         "save": "Save",
+         "copy": "Copy",
+         "delete": "Delete"
+      },
+      "labels": {
+         "delete-title": "Rule deletion",
+         "title-placeholder": "Rule name",
+         "success": "Rule saved",
+         "success-errors": "Rule saved with errors",
+         "with-errors": "With errors",
+         "switch-on": "Switch on",
+         "switch-off": "Switch off"
+      },
+      "prompt": {
+         "delete": "Are you sure you want to delete <0>{{name}}</0> rule?"
+      },
+      "errors": {
+         "exists": "A rule with that name already exists",
+         "mqtt-connection": "MQTT client is not connected"
+      }
+   },
    "page": {
-      "access-denied": "You cannot view this page. You can change <0>access level</0>"
+      "access-denied": "You cannot view this page. You can change <0>access level</0>",
+      "not-found": "Page not found: 404",
+      "not-found-description": "You are requesting a page that doesn't exists"
    },
    "modal": {
       "labels": {
