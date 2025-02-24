@@ -4,6 +4,7 @@
     border: 0;
     background: var(--light-gray-color);
     width: 28px;
+    min-width: 28px;
     height: 28px;
     transition: background ease 300ms;
 }

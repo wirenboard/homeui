@@ -5,6 +5,7 @@ import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
 import { Cell } from '@/stores/device';
 import { copyToClipboard } from '@/utils/clipboard';
+import { CellHistory } from './cell-history';
 import './styles.css';
 
 export const CellText = observer(({ cell }: { cell: Cell }) => {
@@ -42,6 +43,8 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
           onChange={(value) => cell.value = value}
         />
       )}
+
+      <CellHistory cell={cell} />
     </>
   );
 });

@@ -1,8 +1,6 @@
-import LZString from 'lz-string';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import StatsIcon from '@/assets/icons/stats.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Card } from '@/components/card';
@@ -23,18 +21,9 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
     localStorage.setItem('foldedDevices', JSON.stringify([]));
   }
 
-  const getChartUrl = useCallback((deviceId: string) => {
-    const data = { c: store.devices.get(deviceId)?.cellIds.map((cell) => ({ d: deviceId, c: cell.split('/')[1] })) };
-    const encodedUrl = encodeURIComponent(LZString.compressToEncodedURIComponent(JSON.stringify(data)));
-    return `#!/history/${encodedUrl}`;
-  }, [store.devices]);
-
   const actions = [
     {
       title: t('devices.labels.delete'), action: (id: string) => setDeletedDeviceId(id), icon: TrashIcon,
-    },
-    {
-      title: t('widgets.labels.graph'), url: (id: string) => getChartUrl(id), icon: StatsIcon,
     },
   ];
 
