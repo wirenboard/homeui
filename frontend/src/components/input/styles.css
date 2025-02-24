@@ -18,3 +18,7 @@
 .input-s {
     padding: 3px 8px;
 }
+
+.input-fullWidth {
+    width: 100%;
+}

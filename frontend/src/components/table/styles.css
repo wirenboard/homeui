@@ -1,0 +1,59 @@
+.wb-tableWrapper {
+    overflow-x: auto;
+}
+
+.wb-table {
+    display: table;
+    position: relative;
+    overflow-x: scroll;
+}
+
+.wb-tableFullWidth {
+    width: 100%;
+}
+
+.wb-tableRow {
+    display: table-row;
+}
+
+.wb-tableRow:hover {
+    background: var(--table-item-hover);
+}
+
+.wb-tableRow:focus-within .rules-icon,
+.wb-tableRow:hover .rules-icon {
+    visibility: visible;
+}
+
+.wb-tableCell {
+    display: table-cell;
+    padding: 8px 12px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.wb-tableRow:not(:last-of-type) .wb-tableCell {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.wb-tableCellFitContent {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.wb-tableCellInvisible {
+    visibility: hidden;
+}
+
+.wb-tableLoading {
+    background: var(--table-item-hover);
+    opacity: 0.7;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+}

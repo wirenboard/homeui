@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { KeyboardEvent, useEffect, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
 import { InputProps } from './types';
 import './styles.css';
 
@@ -7,8 +7,10 @@ export const Input = ({
   value,
   className,
   isDisabled,
+  isWithExplicitChanges,
   onChange,
   type = 'text',
+  isFullWidth = false,
   size = 'default',
   ariaLabel,
   ...rest
@@ -34,17 +36,25 @@ export const Input = ({
     }
   };
 
+  const handleOnChange = (ev: ChangeEvent<HTMLInputElement>): void => {
+    setInternalValue(ev.target.value);
+    if (!isWithExplicitChanges) {
+      onChange(ev.target.value);
+    }
+  };
+
   return (
     <input
       type={type}
       className={classNames('input', className, {
         'input-m': size === 'default',
         'input-s': size === 'small',
+        'input-fullWidth': isFullWidth,
       })}
       disabled={isDisabled}
       value={internalValue}
       aria-label={ariaLabel}
-      onChange={(ev) => setInternalValue(ev.target.value)}
+      onChange={handleOnChange}
       onBlur={handleBlurOrChange}
       onKeyDown={handleKeyDown}
       {...rest}

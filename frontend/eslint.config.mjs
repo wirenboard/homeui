@@ -69,6 +69,8 @@ export default [
       'stylistic/jsx-sort-props': [1, { noSortAlphabetically: true, shorthandLast: true, callbacksLast: true }],
       'stylistic/jsx-curly-brace-presence': [1, 'never'],
       'stylistic/jsx-closing-tag-location': [1, 'tag-aligned'],
+      'stylistic/jsx-max-props-per-line': [1, { when: 'multiline', maximum: 1 }],
+      'stylistic/jsx-first-prop-new-line': [1, 'multiline'],
       'stylistic/max-len': [1, { code: 120, comments: 160 }],
       'stylistic/comma-spacing': 1,
       'stylistic/comma-dangle': [1, {

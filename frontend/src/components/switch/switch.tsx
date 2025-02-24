@@ -2,9 +2,15 @@ import { SwitchProps } from './types';
 import './styles.css';
 
 export const Switch = ({
-  value, id, isDisabled, onChange, ariaLabel,
+  value, id, isDisabled, onChange = () => {}, ariaLabel,
 }: SwitchProps) => (
-  <label htmlFor={id} className="toggle-switchy">
+  <label
+    htmlFor={id}
+    className="toggle-switchy"
+    onClick={(ev) => {
+      ev.stopPropagation();
+    }}
+  >
     <input
       id={id}
       type="checkbox"
