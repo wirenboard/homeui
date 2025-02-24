@@ -17,7 +17,7 @@ export const Button = ({
     })}
     {...rest}
   >
-    {!!icon && <span className="button-icon">{icon}</span>}
+    {!!icon && <span className="button-icon" aria-hidden="true">{icon}</span>}
     {label}
   </button>
 );

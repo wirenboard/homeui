@@ -7,6 +7,7 @@ import WarnIcon from '@/assets/icons/warn.svg';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Switch } from '@/components/switch';
+import { Table, TableRow, TableCell } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { RulesStore } from '@/stores/rules';
@@ -16,6 +17,7 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
   const { t } = useTranslation();
   const { rules } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
+  const [isRulesUpdating, setIsRulesUpdating] = useState(false);
   const [deletedRulePath, setDeletedRulePath] = useState(null);
   const [errors, setErrors] = useState([]);
 
@@ -33,6 +35,18 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
 
   const createRule = () => location.assign('/#!/rules/new');
 
+  const copyRule = async (path: string) => {
+    setIsRulesUpdating(true);
+    await rulesStore.copyRule(path);
+    setIsRulesUpdating(false);
+  };
+
+  const changeRuleState = async (path: string, isEnabled: boolean) => {
+    setIsRulesUpdating(true);
+    await rulesStore.changeState(path, !isEnabled);
+    setIsRulesUpdating(false);
+  };
+
   return (
     <PageLayout
       title={t('rules.title')}
@@ -49,54 +63,56 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
         )
       }
     >
-      {rules.map((rule) => (
-        <a className="rules-item" href={`#!/rules/edit/${rule.virtualPath}`} key={rule.virtualPath}>
-          <div className="rules-itemTitle">
-            {rule.virtualPath}
-            {!!rule.error && (
-              <Tooltip text={t('rules.labels.with-errors')} placement="top">
-                <WarnIcon className="rules-iconError" role="alert" />
+      <Table isLoading={isRulesUpdating} isFullWidth>
+        {rules.map((rule) => (
+          <TableRow url={`#!/rules/edit/${rule.virtualPath}`} key={rule.virtualPath}>
+            <TableCell>
+              {rule.virtualPath}
+            </TableCell>
+            <TableCell visibleOnHover preventClick fitContent>
+              <Tooltip text={t('rules.buttons.copy')} placement="top">
+                <Button
+                  className="rules-icon"
+                  size="small"
+                  variant="secondary"
+                  icon={<CopyIcon />}
+                  aria-label={`${t('rules.buttons.copy')} ${rule.virtualPath}`}
+                  onClick={() => copyRule(rule.virtualPath)}
+                />
               </Tooltip>
-            )}
-          </div>
+            </TableCell>
+            <TableCell visibleOnHover preventClick fitContent>
+              <Tooltip text={t('rules.buttons.delete')} placement="top">
+                <Button
+                  className="rules-icon"
+                  size="small"
+                  variant="secondary"
+                  icon={<TrashIcon />}
+                  aria-label={`${t('rules.buttons.delete')} ${rule.virtualPath}`}
+                  onClick={() => setDeletedRulePath(rule.virtualPath)}
+                />
+              </Tooltip>
+            </TableCell>
+            <TableCell fitContent>
+              {!!rule.error && (
+                <Tooltip text={t('rules.labels.with-errors')} placement="top">
+                  <WarnIcon className="rules-iconError" role="alert" />
+                </Tooltip>
+              )}
+            </TableCell>
+            <TableCell preventClick fitContent>
+              <Tooltip text={rule.enabled ? t('rules.labels.switch-off') : t('rules.labels.switch-on')} placement="top">
+                <Switch
+                  id={rule.virtualPath}
+                  value={rule.enabled}
+                  onChange={() => changeRuleState(rule.virtualPath, rule.enabled)}
+                />
+              </Tooltip>
+            </TableCell>
+          </TableRow>
+        ))}
+      </Table>
 
-          <Tooltip text={t('rules.buttons.copy')} placement="top">
-            <Button
-              className="rules-icon"
-              size="small"
-              variant="secondary"
-              icon={<CopyIcon />}
-              aria-label={`${t('rules.buttons.copy')} ${rule.virtualPath}`}
-              onClick={async (ev) => {
-                ev.preventDefault();
-                await rulesStore.copyRule(rule.virtualPath);
-              }}
-            />
-          </Tooltip>
-
-          <Tooltip text={t('rules.buttons.delete')} placement="top">
-            <Button
-              className="rules-icon"
-              size="small"
-              variant="secondary"
-              icon={<TrashIcon />}
-              aria-label={`${t('rules.buttons.delete')} ${rule.virtualPath}`}
-              onClick={(ev) => {
-                ev.preventDefault();
-                setDeletedRulePath(rule.virtualPath);
-              }}
-            />
-          </Tooltip>
-
-          <Tooltip text={rule.enabled ? t('rules.labels.switch-off') : t('rules.labels.switch-on')} placement="top">
-            <Switch
-              id={rule.virtualPath}
-              value={rule.enabled}
-              onChange={() => rulesStore.changeState(rule.virtualPath, !rule.enabled)}
-            />
-          </Tooltip>
-        </a>
-      ))}
       <Confirm
         isOpened={!!deletedRulePath}
         heading={t('rules.labels.delete-title')}

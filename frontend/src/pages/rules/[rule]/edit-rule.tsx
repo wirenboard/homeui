@@ -56,10 +56,10 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
         });
 
         if (pathName === 'new') {
-          return location.replace('/#!/rules/edit/' + savedRuleName);
+          return location.replace(`/#!/rules/edit/${savedRuleName}`);
         } else if (rule.initName !== savedRuleName) {
           await rulesStore.deleteRule(rule.initName);
-          return location.replace('/#!/rules/edit/' + savedRuleName);
+          return location.replace(`/#!/rules/edit/${savedRuleName}`);
         }
       } catch (err) {
         let message = err.message;
