@@ -10,7 +10,7 @@ export default class RulesStore {
   public rules: RuleListItem[] = [];
 
   #editorProxy: any;
-  #whenMqttReady: any;
+  #whenMqttReady: () => Promise<void>;
 
   // eslint-disable-next-line typescript/naming-convention
   constructor(whenMqttReady: () => Promise<void>, EditorProxy: any) {
@@ -76,16 +76,10 @@ export default class RulesStore {
       });
   }
 
-  async changeState(path: string, state: boolean) {
-    const isChanged = await this.#editorProxy.ChangeState({ path, state });
-    runInAction(() => {
-      this.rules = this.rules.map((rule) => {
-        if (rule.virtualPath === path) {
-          rule.enabled = isChanged ? !rule.enabled : rule.enabled;
-        }
-        return rule;
-      });
-    });
+  async changeState(path: string, state: boolean): Promise<void> {
+    await this.#editorProxy.ChangeState({ path, state });
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await this.getList();
   }
 
   async getList(): Promise<RuleListItem[]> {
@@ -102,8 +96,9 @@ export default class RulesStore {
       this.rules.map((rule) => rule.virtualPath.replace(/\.js$/, '')),
       copiedRule.name.replace(/\.js$/, '')
     );
-    await this.save(copiedRule);
-    await this.getList();
+    const copiedRuleName = await this.save(copiedRule);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await this.changeState(copiedRuleName, false);
   }
 
   async deleteRule(path: string) {

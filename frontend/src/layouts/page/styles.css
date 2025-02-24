@@ -8,6 +8,10 @@
 .page-title {
     color: var(--text-color);
     margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .page-headerContainer {
@@ -26,6 +30,7 @@
     align-items: center;
     flex-grow: 1;
     height: 30px;
+    overflow: hidden;
 }
 
 .page-editTitleIcon {

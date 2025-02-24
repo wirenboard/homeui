@@ -99,7 +99,7 @@ export const PageLayout = ({
           )
       )}
 
-      <div id="floating-container"></div>
+      <div id="floating-container" />
 
       <Notifications />
     </main>

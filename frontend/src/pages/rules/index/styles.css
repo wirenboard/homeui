@@ -1,35 +1,4 @@
-.rules-item {
-    display: grid;
-    gap: 24px;
-    justify-content: space-between;
-    grid-template-columns: 1fr fit-content(30px) fit-content(30px) fit-content(40px);
-    padding: 8px 12px;
-    font-size: 14px;
-    max-width: 500px;
-}
-
-.rules-item:not(:last-of-type) {
-    border-bottom: 1px solid var(--border-color);
-}
-
-.rules-item:hover,
-.rules-item:focus {
-    background-color: var(--table-item-hover);
-}
-
-.rules-itemTitle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.rules-item:focus-within .rules-icon,
-.rules-item:hover .rules-icon {
-    visibility: visible;
-}
-
 .rules-icon {
-    visibility: hidden;
     color: var(--text-color);
 }
 
@@ -37,4 +6,5 @@
     color: var(--warn-color);
     width: 20px;
     height: 20px;
+    margin-top: 5px;
 }

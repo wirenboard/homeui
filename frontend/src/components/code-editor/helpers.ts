@@ -17,13 +17,14 @@ export const breakpointState = StateField.define<RangeSet<GutterMarker>>({
     let updatedSet = set.map(transaction.changes);
     for (let e of transaction.effects) {
       if (e.is(breakpointEffect)) {
-        // @ts-expect-error
-        const alreadyExists = set.between(e.value.pos, e.value.pos, () => true);
-        // @ts-expect-error
+        let alreadyExists = false;
+        updatedSet.between(e.value.pos, e.value.pos, () => {
+          alreadyExists = true;
+        });
         if (!alreadyExists && e.value.on) {
-          updatedSet = set.update({ add: [breakpointMarker.range(e.value.pos)] });
+          updatedSet = updatedSet.update({ add: [breakpointMarker.range(e.value.pos)] });
         } else if (!e.value.on) {
-          updatedSet = set.update({ filter: (from) => from !== e.value.pos });
+          updatedSet = updatedSet.update({ filter: (from) => from !== e.value.pos });
         }
       }
     }
@@ -31,28 +32,9 @@ export const breakpointState = StateField.define<RangeSet<GutterMarker>>({
   },
 });
 
-function toggleBreakpoint(view: EditorView, pos: number) {
-  let breakpoints = view.state.field(breakpointState);
-  let hasBreakpoint = false;
-  breakpoints.between(pos, pos, () => {
-    hasBreakpoint = true;
-  });
-
-  view.dispatch({
-    effects: breakpointEffect.of({ pos, on: !hasBreakpoint }),
-  });
-}
-
 export const customGutter = gutter({
   class: 'codeEditor-gutters',
   markers: (view) => view.state.field(breakpointState) || RangeSet.empty,
-  domEventHandlers: {
-    mousedown(view, line) {
-      toggleBreakpoint(view, line.from);
-      return true;
-    },
-  },
-  initialSpacer: () => null,
 });
 
 export const getGutterEffects = (view: EditorView, state: EditorState, errorLines?: number[]) => {
