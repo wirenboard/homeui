@@ -6,7 +6,8 @@
         "title": "Diagnostic collector",
         "errors": {
             "unavailable": "Diagnostic service is unavailable",
-            "unavailableToDownload": "Can't reach file. Copy it from"
+            "unavailableToDownload": "Can't reach file. Copy it from",
+            "checkLogs": "Server error. Check wb-diag-collect logs"
         },
         "buttons": {
             "download": "Download",

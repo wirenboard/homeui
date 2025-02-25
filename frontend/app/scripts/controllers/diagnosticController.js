@@ -65,24 +65,29 @@ class DiagnosticCtrl {
       })
       .catch(errors.catch('Error while checking availableness of service'));
 
+    mqttClient.addStickySubscription('/wb-diag-collect/artifact', function (msg) {
+      if ($scope.collecting && msg.payload) {
+        const data = JSON.parse(msg.payload);
+        $scope.path = data['fullname'];
+        $scope.basename = data['basename'];
+        const url = getUrl();
+        fileIsOk(`${location.protocol}//${url}/diag/${$scope.basename}`, callbackFileIsOk);
+      }
+    });
+
     var diag = function () {
       $scope.btnEnabled = false;
       changeBtnText('collector.states.collecting');
-      $scope.collecting = true;
       DiagnosticProxy.diag().then(
-        mqttClient.addStickySubscription('/wb-diag-collect/artifact', function (msg) {
-          if (msg.payload) {
-            const data = JSON.parse(msg.payload)
-            $scope.path = data['fullname'];
-            $scope.basename = data['basename'];
-            var url = getUrl();
-            fileIsOk(location.protocol + '//' + url + '/diag/' + $scope.basename, callbackFileIsOk);
-          }
+        () => {
+          $scope.collecting = true;
+        },
+        () => {
+          $scope.collecting = false;
+          changeBtnText('collector.errors.checkLogs');
         }
-        )
       );
     };
-
     $scope.btnMethod = diag;
   }
 }
