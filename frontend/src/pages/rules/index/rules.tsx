@@ -96,7 +96,9 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
             <TableCell fitContent>
               {!!rule.error && (
                 <Tooltip text={t('rules.labels.with-errors')} placement="top">
-                  <WarnIcon className="rules-iconError" role="alert" />
+                  <div className="rules-iconWrapper">
+                    <WarnIcon className="rules-iconError" role="alert" />
+                  </div>
                 </Tooltip>
               )}
             </TableCell>
