@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# restart fcgiwrap to apply group changes
+deb-systemd-invoke restart fcgiwrap || true
+
+deb-systemd-invoke reload nginx || true
+
+#DEBHELPER#

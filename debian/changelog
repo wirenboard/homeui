@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.112.0) stable; urgency=medium
+
+  * Add backend scripts and nginx config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 24 Feb 2025 12:33:36 +0500
+
 wb-mqtt-homeui (2.110.0) stable; urgency=medium
 
   * Source code refactoring. No functional changes

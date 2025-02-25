@@ -1,0 +1,4 @@
+wb_move_nosavefiles /var/www/uploads/ /uploads  # here will be firmware updates
+
+wb_move /etc/nginx/passwd
+wb_move /etc/nginx/sites-enabled/

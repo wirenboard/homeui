@@ -26,7 +26,6 @@ configs:
 install: configs
 	install -d -m 0777 $(DESTDIR)/var/www/css
 	install -d -m 0777 $(DESTDIR)/var/www/images
-	install -d -m 0777 $(DESTDIR)/var/www/uploads
 	install -d -m 0777 $(DESTDIR)/var/www/scripts/i18n
 
 	cp -a dist/css/*.css $(DESTDIR)/var/www/css
