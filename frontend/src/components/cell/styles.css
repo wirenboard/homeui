@@ -32,15 +32,23 @@
     align-items: center;
     gap: 4px;
     cursor: pointer;
+    justify-content: space-between;
 }
 
 .deviceCell-alert {
     cursor: pointer;
 }
 
+.deviceCell-textWrapper {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    gap: 6px;
+    align-items: center;
+}
+
 .deviceCell-text {
     overflow-x: auto;
-    min-width: 30px;
     text-align: right;
     max-width: 260px;
     flex-grow: 1;
@@ -68,10 +76,6 @@
     cursor: pointer;
 }
 
-.deviceCell-mono {
-    font-size: 13px;
-}
-
 .deviceCell-value {
     justify-items: end;
     flex-shrink: 0;
@@ -92,4 +96,18 @@
     height: 4px;
     display: inline-block;
     content: '\u2009';
+}
+
+.deviceCell-historyLink {
+    display: block;
+    width: 0;
+    min-width: 0;
+    height: 18px;
+    transition: width ease 200ms, min-width ease 200ms;
+    cursor: pointer;
+}
+
+.deviceCell:hover .deviceCell-historyLink,
+.deviceCell:focus-within .deviceCell-historyLink {
+    min-width: 18px;
 }

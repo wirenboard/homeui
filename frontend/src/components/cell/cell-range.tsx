@@ -9,7 +9,7 @@ export const CellRange = observer(({ cell }: { cell: Cell }) => {
 
   return (
     <Range
-      value={cell.value}
+      value={cell.value as number}
       id={cell.id}
       min={cell.min}
       max={cell.max}

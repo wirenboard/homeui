@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { CellAlert } from '@/components/cell/cell-alert';
 import { CellButton } from '@/components/cell/cell-button';
 import { CellColorpicker } from '@/components/cell/cell-colorpicker';
+import { CellHistory } from '@/components/cell/cell-history';
 import { CellRange } from '@/components/cell/cell-range';
 import { CellSwitch } from '@/components/cell/cell-switch';
 import { CellText } from '@/components/cell/cell-text';
@@ -51,7 +52,7 @@ export const CellContent = observer(({ cell, name }: CellProps) => {
       }
     )}
     >
-      {!['alarm', 'button'].includes(cell.displayType) && (
+      {![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (
         <Tooltip
           text={<span><b>'{cell.id}'</b> {t('widgets.labels.copy')}</span>}
           placement="top-start"
@@ -72,6 +73,10 @@ export const CellContent = observer(({ cell, name }: CellProps) => {
               </Suspense>
             )}
             {name || cell.name}
+
+            {cell.displayType === CellComponent.Range && (
+              <CellHistory cell={cell} />
+            )}
           </div>
         </Tooltip>
       )}
