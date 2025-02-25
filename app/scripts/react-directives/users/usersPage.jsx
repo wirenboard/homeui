@@ -5,6 +5,17 @@ import ConfirmModal from '../components/modals/confirmModal';
 import FormModal from '../components/modals/formModal';
 import { PageWrapper, PageTitle, PageBody } from '../components/page-wrapper/pageWrapper';
 
+const DeleteUserButton = observer(({ store, user}) => {
+  return (
+    <Button
+      type="danger"
+      icon="glyphicon glyphicon-trash"
+      onClick={() => store.deleteUser(user)}
+      disabled={user.type === 'admin' && store.onlyOneAdmin}
+    />
+  );
+});
+
 const UsersPage = observer(({ store }) => {
   const { t } = useTranslation();
   return (
@@ -48,11 +59,7 @@ const UsersPage = observer(({ store }) => {
                       onClick={() => store.editUser(user)}
                     />
                     &nbsp;
-                    <Button
-                      type="danger"
-                      icon="glyphicon glyphicon-trash"
-                      onClick={() => store.deleteUser(user)}
-                    />
+                    <DeleteUserButton store={store} user={user}/>
                   </div>
                 </td>
               </tr>
