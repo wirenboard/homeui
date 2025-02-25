@@ -38,8 +38,8 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
       return 0;
     };
 
-    if (countDecimals(cell.value) > minimumFractionDigits) {
-      setMinimumFractionDigits(countDecimals(cell.value));
+    if (countDecimals(cell.value as number) > minimumFractionDigits) {
+      setMinimumFractionDigits(countDecimals(cell.value as number));
     }
   }, [cell.value, minimumFractionDigits]);
 
@@ -54,7 +54,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               className="deviceCell-select"
               size="small"
               options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
-              value={cell.value}
+              value={cell.value as string | number}
               ariaLabel={cell.name}
               onChange={(option) => cell.value = option.value}
             />
@@ -67,8 +67,8 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               id={cell.id}
               type="number"
               size="small"
-              className="deviceCell-mono"
-              value={cell.value}
+              className="deviceCell-text"
+              value={cell.value as number}
               isDisabled={cell.readOnly}
               min={cell.min}
               max={cell.max}
@@ -82,14 +82,16 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
 
       {cell.readOnly && (
         <>
+          <CellHistory cell={cell} />
+
           <div
-            className={classNames('deviceCell-value', 'deviceCell-mono')}
+            className={classNames('deviceCell-value', 'deviceCell-text')}
             onClick={() => {
               const value = cell.isEnum
                 ? cell.enumValues.find((item) => item.value === cell.value).name
                 : cell.value;
-              setCapturedValue(value);
-              copyToClipboard(cell.isEnum ? value : getCopiedText(value));
+              setCapturedValue(value as string);
+              copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
             }
             }
           >
@@ -99,7 +101,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               trigger="click"
             >
               {cell.isEnum
-                ? <div className="deviceCell-text">{cell.getEnumName(cell.value)}</div>
+                ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
                 : (
                   <div>
                     <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
@@ -109,8 +111,6 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
                 )}
             </Tooltip>
           </div>
-
-          <CellHistory cell={cell} />
         </>
       )}
     </>

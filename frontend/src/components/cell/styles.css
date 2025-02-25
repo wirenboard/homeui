@@ -39,9 +39,16 @@
     cursor: pointer;
 }
 
+.deviceCell-textWrapper {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    gap: 6px;
+    align-items: center;
+}
+
 .deviceCell-text {
     overflow-x: auto;
-    min-width: 30px;
     text-align: right;
     max-width: 260px;
     flex-grow: 1;
@@ -67,10 +74,6 @@
 .deviceCell-text::-webkit-scrollbar-thumb:hover {
     background: var(--primary-color-hover);
     cursor: pointer;
-}
-
-.deviceCell-mono {
-    font-size: 13px;
 }
 
 .deviceCell-value {

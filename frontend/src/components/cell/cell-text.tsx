@@ -12,15 +12,17 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
 
   return (
-    <>
-      {cell.readOnly && (
+    <div className="deviceCell-textWrapper">
+      <CellHistory cell={cell} />
+
+      {cell.value && cell.readOnly && (
         <Tooltip
           text={<span><b>'{cell.value}'</b> {t('widgets.labels.copy')}</span>}
           placement="top-end"
           trigger="click"
         >
-          <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value)}>
-            {cell.getEnumName(cell.value)}
+          <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
+            {cell.getEnumName(cell.value as string)}
           </div>
         </Tooltip>
       )}
@@ -29,22 +31,20 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
           className="deviceCell-select"
           size="small"
           options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
-          value={cell.value}
+          value={cell.value as string | number}
           onChange={(option) => cell.value = option.value}
         />
       )}
       {(!cell.readOnly && !cell.isEnum) && (
         <Input
           id={cell.id}
-          value={cell.value}
+          value={cell.value as string}
           isDisabled={cell.readOnly}
           size="small"
           ariaLabel={cell.name}
           onChange={(value) => cell.value = value}
         />
       )}
-
-      <CellHistory cell={cell} />
-    </>
+    </div>
   );
 });

@@ -9,7 +9,7 @@ export const CellSwitch = observer(({ cell }: { cell: Cell }) => (
     <CellHistory cell={cell} />
 
     <Switch
-      value={cell.value}
+      value={cell.value as boolean}
       id={cell.id}
       isDisabled={cell.readOnly}
       ariaLabel={cell.name}

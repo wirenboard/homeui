@@ -9,7 +9,7 @@ export const CellColorpicker = observer(({ cell }: { cell: Cell }) => (
     <CellHistory cell={cell} />
 
     <Colorpicker
-      value={cell.value}
+      value={cell.value as string}
       id={cell.id}
       isDisabled={cell.readOnly}
       ariaLabel={cell.name}
