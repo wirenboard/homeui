@@ -5,15 +5,6 @@
     flex-direction: column;
 }
 
-.page-title {
-    color: var(--text-color);
-    margin: 0;
-    max-width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
 .page-headerContainer {
     display: flex;
     align-items: center;
@@ -29,14 +20,28 @@
     gap: 12px;
     align-items: center;
     flex-grow: 1;
+    width: 100%;
+    min-width: 0;
     height: 30px;
+}
+
+.page-title {
+    color: var(--text-color);
+    margin: 0;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .page-editTitleIcon {
     width: 16px;
     display: inline-block;
     cursor: pointer;
+}
+
+.page-actions {
+    flex-shrink: 0;
+    display: flex;
 }
 
 .page-loader {

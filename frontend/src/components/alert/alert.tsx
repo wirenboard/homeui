@@ -32,6 +32,6 @@ export const Alert = ({
         {(variant === 'success') && <SuccessIcon className="alertMessage-icon" />}
       </Suspense>
     )}
-    <div>{children}</div>
+    <div className="alertMessage-content">{children}</div>
   </div>
 );

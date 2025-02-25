@@ -3,6 +3,7 @@
     color: var(--button-color);
     border-radius: var(--input-border-radius);
     transition: background 200ms linear, var(--input-active-shadow-transition);
+    display: block;
 }
 
 .button:disabled {

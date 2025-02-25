@@ -31,6 +31,11 @@
     gap: 6px;
 }
 
+.alertMessage-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .alertMessage-info {
     background: var(--alert-info-background);
     border: 1px solid var(--alert-info-border);

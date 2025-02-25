@@ -32,6 +32,7 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
       setIsLoading(false);
       return;
     }
+    setIsLoading(true);
     rulesStore.load(pathName)
       .then(() => {
         setIsLoading(false);
@@ -46,7 +47,6 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
 
   const save = async () => {
     if (rule.name) {
-      setIsLoading(true);
       try {
         const savedRuleName = await rulesStore.save(rule);
         const isWithErrors = !!rule.error?.message;
@@ -69,8 +69,6 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
           message = t('rules.errors.exists');
         }
         notificationsStore.showNotification({ variant: 'danger', text: message });
-      } finally {
-        setIsLoading(false);
       }
     }
   };
@@ -94,18 +92,16 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
       stickyHeader
       onTitleChange={(title) => rulesStore.setRuleName(title)}
     >
-      {!isLoading && (
-        <div className="editRule-container" style={{ display: isLoading ? 'none' : 'block' }}>
-          <CodeEditor
-            text={rule.content}
-            errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
-            autoFocus={pathName !== 'new'}
-            extensions={[javascript({ jsx: false })]}
-            onChange={(value) => rulesStore.setRule(value)}
-            onSave={save}
-          />
-        </div>
-      )}
+      <div className="editRule-container">
+        <CodeEditor
+          text={rule.content}
+          errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
+          autoFocus={pathName !== 'new'}
+          extensions={[javascript({ jsx: false })]}
+          onChange={(value) => rulesStore.setRule(value)}
+          onSave={save}
+        />
+      </div>
     </PageLayout>
   );
 });
