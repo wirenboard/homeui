@@ -24,3 +24,7 @@ export interface CellMeta {
   order?: number;
   error?: string;
 }
+
+export type ValueType = string | number | boolean | null;
+
+export type SendValueUpdate = (_deviceId: string, _controlId: string, _value: string) => Promise<void>;

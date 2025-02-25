@@ -35,6 +35,7 @@ export const Tooltip = ({ children, text, trigger = 'hover', placement = 'top' }
       shift(),
       arrow({
         element: arrowRef,
+        padding: 8,
       }),
     ],
   });

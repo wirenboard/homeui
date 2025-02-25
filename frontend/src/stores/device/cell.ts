@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { hexToRgb, isHex, rgbToHex } from '@/utils/color';
 import i18n from '~/i18n/react/config';
 import { CellError, cellType, type CellType, type CellTypeEntry } from './cell-type';
-import type { CellMeta, EnumTranslations, NameTranslations } from './types';
+import type { CellMeta, EnumTranslations, NameTranslations, SendValueUpdate, ValueType } from './types';
 
 export default class Cell {
   public id: string;
@@ -15,16 +15,16 @@ export default class Cell {
   public step: number;
   public order: number;
 
-  private _value: any = '';
+  private _value: ValueType = '';
   private _readOnly: boolean | null = null;
   private _name: string;
   private _nameTranslations: NameTranslations = {};
-  private _enumValues: { [lang: string]: { name: string; value: any }[] } = {};
+  private _enumValues: { [lang: string]: { name: string; value: ValueType }[] } = {};
   private _enumTranslations: EnumTranslations = {};
   private _units: string = '';
-  readonly _sendValueUpdate: (_deviceId: string, _controlId: string, _value: any) => Promise<void>;
+  readonly _sendValueUpdate: SendValueUpdate;
 
-  constructor(id: string, sendValueUpdate: (_deviceId: string, _controlId: string, _value: any) => Promise<void>) {
+  constructor(id: string, sendValueUpdate: SendValueUpdate) {
     this.id = id;
     const [deviceId, controlId] = this.id.split('/');
     if (!controlId) {
@@ -37,11 +37,11 @@ export default class Cell {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  get value(): any {
+  get value(): ValueType {
     return this._value;
   }
 
-  set value(newValue: any) {
+  set value(newValue: ValueType) {
     this._sendValue(newValue);
   }
 
@@ -88,7 +88,7 @@ export default class Cell {
     return this.type !== 'incomplete' && (this._isButton() || this._value !== '-'); // / ozk замена null на  '-'
   }
 
-  receiveValue(newValue: any) {
+  receiveValue(newValue: string) {
     if (!newValue) {
       if (this.valueType === 'rgb') {
         this._value = null;
@@ -220,7 +220,7 @@ export default class Cell {
     return value;
   }
 
-  private async _sendValue(value: any) {
+  private async _sendValue(value: ValueType) {
     if (!this.isComplete || this.readOnly) {
       return;
     }
@@ -228,23 +228,23 @@ export default class Cell {
     await this._sendValueUpdate(this.deviceId, this.controlId, this._getStringifiedValue());
   }
 
-  private _getStringifiedValue() {
+  private _getStringifiedValue(): string {
     switch (this.valueType) {
       case 'boolean':
         return this._value ? '1' : '0';
       case 'pushbutton':
         return '1';
       case 'rgb':
-        return hexToRgb(this._value);
+        return hexToRgb(this._value as string);
       default:
         return String(this._value);
     }
   }
 
-  private _setCellValue(value: any) {
+  private _setCellValue(value: ValueType) {
     switch (this.valueType) {
       case 'number':
-        this._value = isNaN(value) ? 0 : Number(value);
+        this._value = isNaN(value as number | null) ? 0 : Number(value);
         break;
       case 'boolean':
         // it could be boolean or string '0' | '1'
@@ -254,10 +254,10 @@ export default class Cell {
         // unsettable
         break;
       case 'rgb':
-        if (isHex(value)) {
+        if (isHex(value as string)) {
           this._value = value;
-        } else if (/^\d{1,3};\d{1,3};\d{1,3}$/.test(value)) {
-          const [r, g, b] = value.split(';');
+        } else if (/^\d{1,3};\d{1,3};\d{1,3}$/.test(value as string)) {
+          const [r, g, b] = (value as string).split(';');
           this._value = rgbToHex(r, g, b);
         } else {
           this._value = null;

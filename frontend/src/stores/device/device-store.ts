@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
@@ -6,10 +7,10 @@ import { isTopicsAreEqual, splitTopic } from './helpers';
 export default class DeviceStore {
   public devices: Map<string, Device> = new Map();
   public cells: Map<string, Cell> = new Map();
-  private _mqttClient: any;
+  private _mqttClient: MqttClient;
   private _allDevicesTopics: { [key: string]: string[] } = {};
 
-  constructor(mqttClient: any) {
+  constructor(mqttClient: MqttClient) {
     this._mqttClient = mqttClient;
 
     const getOrCreateDevice = (id: string) => {
@@ -21,7 +22,7 @@ export default class DeviceStore {
       return this.devices.get(id);
     };
 
-    const sendCellValueUpdate = async (deviceId: string, controlId: string, value: any) => {
+    const sendCellValueUpdate = async (deviceId: string, controlId: string, value: string) => {
       const topic = `/devices/${deviceId}/controls/${controlId}/on`;
       await mqttClient.send(topic, value, false);
     };
