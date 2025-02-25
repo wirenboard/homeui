@@ -4,25 +4,30 @@ import { Alert } from '@/components/alert';
 import { Tooltip } from '@/components/tooltip';
 import { Cell } from '@/stores/device';
 import { copyToClipboard } from '@/utils/clipboard';
+import { CellHistory } from './cell-history';
 import './styles.css';
 
 export const CellAlert = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
 
   return (
-    <Tooltip
-      text={<span><b>'{cell.id}'</b> {t('widgets.labels.copy')}</span>}
-      placement="top-start"
-      trigger="click"
-    >
-      <Alert
-        size="small"
-        variant={cell.value ? 'danger' : 'gray'}
-        className="deviceCell-alert"
-        onClick={() => copyToClipboard(cell.id)}
+    <>
+      <Tooltip
+        text={<span><b>'{cell.id}'</b> {t('widgets.labels.copy')}</span>}
+        placement="top-start"
+        trigger="click"
       >
-        {cell.name}
-      </Alert>
-    </Tooltip>
+        <Alert
+          size="small"
+          variant={cell.value ? 'danger' : 'gray'}
+          className="deviceCell-alert"
+          onClick={() => copyToClipboard(cell.id)}
+        >
+          {cell.name}
+        </Alert>
+      </Tooltip>
+
+      <CellHistory cell={cell} />
+    </>
   );
 });

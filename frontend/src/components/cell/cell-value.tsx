@@ -7,6 +7,7 @@ import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
 import { Cell } from '@/stores/device';
 import { copyToClipboard } from '@/utils/clipboard';
+import { CellHistory } from './cell-history';
 import './styles.css';
 
 export const CellValue = observer(({ cell }: { cell: Cell }) => {
@@ -37,8 +38,8 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
       return 0;
     };
 
-    if (countDecimals(cell.value) > minimumFractionDigits) {
-      setMinimumFractionDigits(countDecimals(cell.value));
+    if (countDecimals(cell.value as number) > minimumFractionDigits) {
+      setMinimumFractionDigits(countDecimals(cell.value as number));
     }
   }, [cell.value, minimumFractionDigits]);
 
@@ -46,59 +47,71 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
     <>
       {cell.valueType === 'number' && !cell.readOnly && (
         cell.isEnum ? (
-          <Dropdown
-            className="deviceCell-select"
-            size="small"
-            options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
-            value={cell.value}
-            ariaLabel={cell.name}
-            onChange={(option) => cell.value = option.value}
-          />
+          <>
+            <CellHistory cell={cell} />
+
+            <Dropdown
+              className="deviceCell-select"
+              size="small"
+              options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
+              value={cell.value as string | number}
+              ariaLabel={cell.name}
+              onChange={(option) => cell.value = option.value}
+            />
+          </>
         ) : (
-          <Input
-            id={cell.id}
-            type="number"
-            size="small"
-            className="deviceCell-mono"
-            value={cell.value}
-            isDisabled={cell.readOnly}
-            min={cell.min}
-            max={cell.max}
-            step={cell.step}
-            ariaLabel={cell.name}
-            onChange={(value) => cell.value = value}
-          />
+          <>
+            <CellHistory cell={cell} />
+
+            <Input
+              id={cell.id}
+              type="number"
+              size="small"
+              className="deviceCell-text"
+              value={cell.value as number}
+              isDisabled={cell.readOnly}
+              min={cell.min}
+              max={cell.max}
+              step={cell.step}
+              ariaLabel={cell.name}
+              onChange={(value) => cell.value = value}
+            />
+          </>
         )
       )}
 
       {cell.readOnly && (
-        <div
-          className={classNames('deviceCell-value', 'deviceCell-mono')}
-          onClick={() => {
-            const value = cell.isEnum
-              ? cell.enumValues.find((item) => item.value === cell.value).name
-              : cell.value;
-            setCapturedValue(value);
-            copyToClipboard(cell.isEnum ? value : getCopiedText(value));
-          }
-          }
-        >
-          <Tooltip
-            text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widgets.labels.copy')}</span>}
-            placement="top"
-            trigger="click"
+        <>
+          <CellHistory cell={cell} />
+
+          <div
+            className={classNames('deviceCell-value', 'deviceCell-text')}
+            onClick={() => {
+              const value = cell.isEnum
+                ? cell.enumValues.find((item) => item.value === cell.value).name
+                : cell.value;
+              setCapturedValue(value as string);
+              copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
+            }
+            }
           >
-            {cell.isEnum
-              ? <div className="deviceCell-text">{cell.getEnumName(cell.value)}</div>
-              : (
-                <div>
-                  <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
-                    <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
-                  )}
-                </div>
-              )}
-          </Tooltip>
-        </div>
+            <Tooltip
+              text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widgets.labels.copy')}</span>}
+              placement="top"
+              trigger="click"
+            >
+              {cell.isEnum
+                ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
+                : (
+                  <div>
+                    <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
+                      <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+                    )}
+                  </div>
+                )}
+            </Tooltip>
+          </div>
+        </>
       )}
     </>
   );

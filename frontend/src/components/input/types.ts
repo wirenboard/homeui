@@ -2,7 +2,7 @@ export interface InputProps {
   id?: string;
   type?: 'text' | 'number';
   size?: 'default' | 'small';
-  value: string;
+  value: string | number;
   className?: string;
   min?: number;
   max?: number;
@@ -11,5 +11,5 @@ export interface InputProps {
   isDisabled?: boolean;
   placeholder?: string;
   ariaLabel?: string;
-  onChange: (_val: string) => void;
+  onChange: (_val: string | number) => void;
 }

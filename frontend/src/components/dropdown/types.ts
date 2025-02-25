@@ -1,6 +1,6 @@
 interface Option {
   label: string;
-  value: string;
+  value: string | boolean | number | null;
 }
 
 export interface DropdownProps {
