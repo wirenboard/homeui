@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.107.7-wb101) stable; urgency=medium
+
+  * Rework diag collect to async backend
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Tue, 25 Feb 2025 17:01:34 +0300
+
 wb-mqtt-homeui (2.107.7-wb100) stable; urgency=medium
 
   * Fix url params transition between dashboard and history
