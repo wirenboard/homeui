@@ -3,17 +3,20 @@
 }
 
 .wb-table {
-    display: table;
+    max-width: 100%;
     position: relative;
-    overflow-x: scroll;
 }
 
 .wb-tableFullWidth {
     width: 100%;
+    display: grid;
 }
 
 .wb-tableRow {
-    display: table-row;
+    display: grid;
+    gap: 12px;
+    align-items: center;
+    padding: 0 12px;
 }
 
 .wb-tableRow:hover {
@@ -27,22 +30,27 @@
 
 .wb-tableCell {
     display: table-cell;
-    padding: 8px 12px;
+    padding: 8px 0;
     font-size: 14px;
     vertical-align: middle;
 }
 
-.wb-tableRow:not(:last-of-type) .wb-tableCell {
-    border-bottom: 1px solid var(--border-color);
+.wb-table:not(.wb-tableFullWidth) .wb-tableCellEllipsis,
+.wb-table:not(.wb-tableFullWidth) .wb-tableCellEllipsis * {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.wb-tableCellFitContent {
-    width: 1%;
-    white-space: nowrap;
+.wb-tableRow:not(:last-of-type) {
+    border-bottom: 1px solid var(--border-color);
 }
 
 .wb-tableCellInvisible {
     visibility: hidden;
+
+    @media(max-width: 640px) {
+        visibility: visible;
+    }
 }
 
 .wb-tableLoading {
