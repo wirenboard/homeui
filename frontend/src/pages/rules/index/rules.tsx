@@ -63,13 +63,13 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
         )
       }
     >
-      <Table isLoading={isRulesUpdating} isFullWidth>
+      <Table isLoading={isRulesUpdating}>
         {rules.map((rule) => (
           <TableRow url={`#!/rules/edit/${rule.virtualPath}`} key={rule.virtualPath}>
-            <TableCell>
-              {rule.virtualPath}
+            <TableCell ellipsis>
+              <div className="rules-name">{rule.virtualPath}</div>
             </TableCell>
-            <TableCell visibleOnHover preventClick fitContent>
+            <TableCell width={40} visibleOnHover preventClick>
               <Tooltip text={t('rules.buttons.copy')} placement="top">
                 <Button
                   className="rules-icon"
@@ -81,7 +81,7 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
                 />
               </Tooltip>
             </TableCell>
-            <TableCell visibleOnHover preventClick fitContent>
+            <TableCell width={40} visibleOnHover preventClick>
               <Tooltip text={t('rules.buttons.delete')} placement="top">
                 <Button
                   className="rules-icon"
@@ -93,7 +93,7 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
                 />
               </Tooltip>
             </TableCell>
-            <TableCell fitContent>
+            <TableCell width={20}>
               {!!rule.error && (
                 <Tooltip text={t('rules.labels.with-errors')} placement="top">
                   <div className="rules-iconWrapper">
@@ -102,7 +102,7 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
                 </Tooltip>
               )}
             </TableCell>
-            <TableCell preventClick fitContent>
+            <TableCell width={34} preventClick>
               <Tooltip text={rule.enabled ? t('rules.labels.switch-off') : t('rules.labels.switch-on')} placement="top">
                 <Switch
                   id={rule.virtualPath}
