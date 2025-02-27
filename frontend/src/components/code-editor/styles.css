@@ -4,3 +4,7 @@
     font-size: 15px;
     cursor: default;
 }
+
+.codeEditor-gutters {
+    width: 18px;
+}

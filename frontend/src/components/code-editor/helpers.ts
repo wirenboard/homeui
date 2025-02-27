@@ -38,23 +38,32 @@ export const customGutter = gutter({
 });
 
 export const getGutterEffects = (view: EditorView, state: EditorState, errorLines?: number[]) => {
-  const breakpoints = view.state.field(breakpointState, false);
   const output = [];
+  const currentErrorLines = new Set(errorLines || []);
+  const breakpoints = view.state.field(breakpointState, false);
+  const existingMarkers = new Set<number>();
 
-  (errorLines || []).forEach((lineNumber) => {
-    if (lineNumber > state.doc.lines) {
-      return;
-    }
-    const line = state.doc.line(lineNumber);
-    let hasMarker = false;
-    breakpoints?.between(line.from, line.from, () => {
-      hasMarker = true;
+  if (breakpoints) {
+    breakpoints.between(0, state.doc.length, (from) => {
+      const lineNumber = state.doc.lineAt(from).number;
+      existingMarkers.add(lineNumber);
     });
+  }
 
-    if (!hasMarker) {
+  existingMarkers.forEach((lineNumber) => {
+    if (!currentErrorLines.has(lineNumber)) {
+      const line = state.doc.line(lineNumber);
+      output.push(breakpointEffect.of({ pos: line.from, on: false }));
+    }
+  });
+
+  currentErrorLines.forEach((lineNumber) => {
+    if (lineNumber > state.doc.lines) return;
+    const line = state.doc.line(lineNumber);
+    if (!existingMarkers.has(lineNumber)) {
       output.push(breakpointEffect.of({ pos: line.from, on: true }));
     }
-
   });
+
   return output;
 };
