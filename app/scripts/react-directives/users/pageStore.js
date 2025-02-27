@@ -183,6 +183,9 @@ class UsersPageStore {
   async editUser(user) {
     this.userParamsStore.reset();
     this.userParamsStore.setValue(user);
+    if (user.type === 'admin' && this.onlyOneAdmin) {
+      this.userParamsStore.params.type.setReadOnly(true);
+    }
     const modifiedUser = await this.showUserEditModal();
     if (!modifiedUser) {
       return;
@@ -230,6 +233,10 @@ class UsersPageStore {
         this.users = this.users.filter((u) => u.id !== user.id);
       });
     }
+  }
+
+  get onlyOneAdmin() {
+    return this.users.filter((user) => user.type === 'admin').length === 1;
   }
 }
 
