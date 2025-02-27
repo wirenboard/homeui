@@ -98,19 +98,14 @@ export const ClickBindingForm = observer(({ title, clickStore, writeStore, write
               }}
             />
           </div>
-          {writeStore.params.check && (
-            <>
-              <Checkbox
-                label={writeStore.params.check.name}
-                value={writeStore.params.check.value}
-                onChange={e => (
-                  writeStore.params.check.setValue(e.target.checked)
-                )}
-              />
-              {writeStore.params.check.value && (
-                <FormStringEdit store={writeStore.params.question} />
+          {(writeStore.params.check && !clickStore.params.enable.value) && (
+            <Checkbox
+              label={writeStore.params.check.name}
+              value={writeStore.params.check.value}
+              onChange={e => (
+                writeStore.params.check.setValue(e.target.checked)
               )}
-            </>
+            />
           )}
         </>
       )}

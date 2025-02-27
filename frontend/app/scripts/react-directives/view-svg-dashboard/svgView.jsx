@@ -134,8 +134,7 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
         if (param?.write?.enable) {
           disposers.push(
             setClickHandler(el, () => {
-              const question = param?.write?.question || i18n.t('edit-svg-dashboard.labels.default-question');
-              if (!param?.write?.check || confirm(question)) {
+              if (!param?.write?.check || confirm(i18n.t('edit-svg-dashboard.labels.confirm-question'))) {
                 onSwitchValue(param.write.channel, param.write.value);
               }
             })
