@@ -77,26 +77,37 @@ export const ClickBindingForm = observer(({ title, clickStore, writeStore, write
         />
       </div>
       {enabled && (
-        <div className="radios">
-          <Radio
-            id={writeStore.params.enable.id}
-            label={writeStore.params.enable.name}
-            value={writeStore.params.enable.value}
-            onChange={checked => {
-              writeStore.params.enable.setValue(checked);
-              clickStore.params.enable.setValue(!checked);
-            }}
-          />
-          <Radio
-            id={clickStore.params.enable.id}
-            label={clickStore.params.enable.name}
-            value={clickStore.params.enable.value}
-            onChange={checked => {
-              clickStore.params.enable.setValue(checked);
-              writeStore.params.enable.setValue(!checked);
-            }}
-          />
-        </div>
+        <>
+          <div className="radios">
+            <Radio
+              id={writeStore.params.enable.id}
+              label={writeStore.params.enable.name}
+              value={writeStore.params.enable.value}
+              onChange={(checked) => {
+                writeStore.params.enable.setValue(checked);
+                clickStore.params.enable.setValue(!checked);
+              }}
+            />
+            <Radio
+              id={clickStore.params.enable.id}
+              label={clickStore.params.enable.name}
+              value={clickStore.params.enable.value}
+              onChange={(checked) => {
+                clickStore.params.enable.setValue(checked);
+                writeStore.params.enable.setValue(!checked);
+              }}
+            />
+          </div>
+          {(writeStore.params.check && !clickStore.params.enable.value) && (
+            <Checkbox
+              label={writeStore.params.check.name}
+              value={writeStore.params.check.value}
+              onChange={e => (
+                writeStore.params.check.setValue(e.target.checked)
+              )}
+            />
+          )}
+        </>
       )}
       <MoveToBindingFormContent store={clickStore} />
       <WriteBindingFormContent store={writeStore} />

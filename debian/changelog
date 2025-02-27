@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.113.0) stable; urgency=medium
+
+  * Ask user confirmation before writing to the channel
+  * External pull request from Margarita Mayer <rita.mayer2001@mail.ru>
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 27 Feb 2025 17:55:31 +0300
+
 wb-mqtt-homeui (2.112.0) stable; urgency=medium
 
   * Rework diag collect to async backend
