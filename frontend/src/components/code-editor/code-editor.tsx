@@ -1,12 +1,13 @@
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
-import CodeMirror from '@uiw/react-codemirror';
-import { useEffect, useState } from 'react';
+import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { useEffect, useRef, useState } from 'react';
 import { breakpointState, customGutter, getGutterEffects } from './helpers';
 import { CodeEditorProps } from './types';
 import './styles.css';
 
 export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onChange, onSave }: CodeEditorProps) => {
+  const editor = useRef<ReactCodeMirrorRef>(null);
   const [allExtensions, setAllExtensions] = useState([]);
 
   const onEditorReInit = (view: EditorView, state: EditorState) => {
@@ -49,8 +50,21 @@ export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onCha
     setAllExtensions(settedExtensions);
   }, [extensions, onSave]);
 
+  useEffect(() => {
+    if (editor.current?.view) {
+      const view = editor.current.view;
+      const state = view.state;
+      const effects = getGutterEffects(view, state, errorLines);
+
+      if (effects.length > 0) {
+        view.dispatch({ effects });
+      }
+    }
+  }, [errorLines]);
+
   return (
     <CodeMirror
+      ref={editor}
       style={{ height: '100%' }}
       value={text}
       height="100%"
