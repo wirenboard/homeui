@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.0) stable; urgency=medium
+
+  * Add backend scripts and nginx config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 27 Mar 2025 15:12:37 +0500
+
 wb-mqtt-homeui (2.114.4) stable; urgency=medium
 
   * Fix inverted switch controls in text dashboards
