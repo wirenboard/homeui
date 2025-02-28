@@ -9,8 +9,16 @@ send_output() {
     echo "$2"
 }
 
+mqtt_send_result() {
+    mosquitto_pub -d -p 1883 -t "/rpc/v1/exp-check" -m "$1" -r 2>&1
+}
+
+mqtt_send_not_found() {
+    mqtt_send_result '{"result": "not found"}'
+}
+
 jq -e '.probeOpenPorts==true' /etc/wb-security.conf  >/dev/null || {
-    mosquitto_pub -d -p 1883 -t "/rpc/v1/exp-check" -r -m '{"result": "not found"}' 2>&1
+    mqtt_send_not_found
     send_output 200 "Check disabled in config"
     exit 0
 }
@@ -27,10 +35,11 @@ fi
 
 result=$(echo "$data" | jq -r '.result')
 if [ "$result" == "cooldown" ]; then
+    mqtt_send_not_found
     send_output 200 "Cooldown"
     exit 0
 else
-    mosquitto_pub -d -p 1883 -t "/rpc/v1/exp-check" -m "$data" -r 2>&1
+    mqtt_send_result "$data"
     send_output 200 "OK"
     exit 0
 fi
