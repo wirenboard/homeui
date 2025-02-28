@@ -10,7 +10,7 @@ send_output() {
 }
 
 mqtt_send_result() {
-    mosquitto_pub -d -p 1883 -t "/rpc/v1/exp-check" -m "$1" -r 2>&1
+    mosquitto_pub -d --unix /var/run/mosquitto/mosquitto.sock -t "/rpc/v1/exp-check" -m "$1" -r 2>&1
 }
 
 mqtt_send_not_found() {
