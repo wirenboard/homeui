@@ -38,6 +38,24 @@ server {
 		add_header Cache-Control "max-age=31536000";
 	}
 
+    location /api/check {
+
+        limit_except GET {
+            deny all;
+        }
+
+        fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/check.sh;
+        fastcgi_param HTTP_SCHEME $scheme;
+        fastcgi_param SCRIPT_NAME check.sh;
+        fastcgi_param QUERY_STRING $query_string;
+        fastcgi_param REQUEST_METHOD $request_method;
+        fastcgi_param CONTENT_TYPE $content_type;
+        fastcgi_param CONTENT_LENGTH $content_length;
+        fastcgi_param REQUEST_URI $request_uri;
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+
+    }
+
     location /fwupdate/download/rootfs {
 
         limit_except GET {
