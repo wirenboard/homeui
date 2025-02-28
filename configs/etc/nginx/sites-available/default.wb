@@ -25,6 +25,12 @@ server {
 
 	root /var/www;
 
+	gzip on;
+	gzip_comp_level 6;
+	gzip_buffers 16 8k;
+	gzip_min_length 1200;
+	gzip_types text/plain text/html text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript application/font-woff image/svg+xml;
+
 	# Make site accessible from http://localhost/
 	server_name localhost;
 
