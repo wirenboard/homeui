@@ -40,7 +40,7 @@
     },
     "translations": {
       "en": {
-        "port_probe_desc": "When enabled, the controller will ask our remote server to check if the web interface, SSH or MQTT ports are open to the Internet without any additional security measures. This is useful to check if your setup is secure.",
+        "port_probe_desc": "When enabled, the controller will ask our remote server to check if the web interface, SSH or MQTT ports are open to the Internet without any additional security measures. This is useful to check if your setup is secure."
       },
       "ru": {
         "Security Settings": "Настройки безопасности",
