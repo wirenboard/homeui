@@ -45,24 +45,20 @@ server {
 		client_body_buffer_size 128K;
 		client_max_body_size 1000M;
 
-		upload_pass @fwupdate;
-		upload_resumable on;
-		upload_store /var/www/uploads;
-		upload_store_access user:rw;
-		upload_state_store /var/www/uploads/state;
+		gzip off;
 
-		upload_set_form_field $upload_field_name.name "$upload_file_name";
-		upload_set_form_field $upload_field_name.content_type "$upload_content_type";
-		upload_set_form_field $upload_field_name.path "$upload_tmp_path";
-		
-		# Inform backend about hash and size of a file
-		upload_aggregate_form_field "$upload_field_name.md5" "$upload_file_md5";
-		upload_aggregate_form_field "$upload_field_name.size" "$upload_file_size";
+		fastcgi_param UPLOADS_DIR /var/www/uploads;
+		fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/fwupdate_upload.py;
+		fastcgi_param SCRIPT_NAME fwupdate_upload.py;
+		fastcgi_param QUERY_STRING $query_string;
+		fastcgi_param REQUEST_METHOD $request_method;
+		fastcgi_param CONTENT_TYPE $content_type;
+		fastcgi_param CONTENT_LENGTH $content_length;
+		fastcgi_param REQUEST_URI $request_uri;
+		fastcgi_pass unix:/var/run/fcgiwrap.socket;
+		fastcgi_request_buffering off;  # to allow stream-downloading via backend
+
 		track_uploads fwupdate 5s;
-	}
-
-	location @fwupdate {
-		return 200;
 	}
 
 	location /fwupdate/progress {
@@ -76,4 +72,3 @@ server {
 	    proxy_set_header Connection upgrade;
 	}
 }
-
