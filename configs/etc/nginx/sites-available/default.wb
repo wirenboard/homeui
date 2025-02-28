@@ -79,6 +79,22 @@ server {
 		track_uploads fwupdate 5s;
 	}
 
+	location /fwupdate/factoryreset {
+		limit_except POST {
+			deny all;
+		}
+		gzip off;
+
+		fastcgi_param SCRIPT_FILENAME /usr/lib/cgi-bin/factory_reset.py;
+		fastcgi_param SCRIPT_NAME factory_reset.py;
+		fastcgi_param QUERY_STRING $query_string;
+		fastcgi_param REQUEST_METHOD $request_method;
+		fastcgi_param CONTENT_TYPE $content_type;
+		fastcgi_param CONTENT_LENGTH $content_length;
+		fastcgi_param REQUEST_URI $request_uri;
+		fastcgi_pass unix:/var/run/fcgiwrap.socket;
+	}
+
 	location /fwupdate/progress {
 		report_uploads fwupdate;
 	}
