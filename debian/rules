@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 %:
-	dh $@ --parallel
+	dh $@ --parallel --with config-package
 
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip
