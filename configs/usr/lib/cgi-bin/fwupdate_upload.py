@@ -64,7 +64,8 @@ def main():
     # handle extra POST arguments
     do_expand_rootfs = "expand_rootfs" in form.keys() and str(form.getvalue("expand_rootfs")) == 'true'
     do_factory_reset = "factory_reset" in form.keys() and str(form.getvalue("factory_reset")) == 'true'
-    if do_factory_reset or do_expand_rootfs:
+    is_from_cloud = "from_cloud" in form.keys() and str(form.getvalue("from_cloud")) == 'true'
+    if do_factory_reset or do_expand_rootfs or is_from_cloud:
         # we need to update-with-reboot in order to expand rootfs, so we're changing output directory to .wb_update
         RW_DIR = "/mnt/data/.wb-update/"
         os.makedirs(RW_DIR, exist_ok=True)
@@ -75,6 +76,8 @@ def main():
                 flags_file_h.write('--factoryreset ')
             if do_expand_rootfs:
                 flags_file_h.write('--force-repartition ')
+            if is_from_cloud:
+                flags_file_h.write('--from-cloud ')
 
     # handle upload
     uploading_file = form["file"]
