@@ -24,13 +24,19 @@ server {
 	#listen   [::]:80 default_server ipv6only=on; ## listen for ipv6
 
 	root /var/www;
-	index index.html;
 
 	# Make site accessible from http://localhost/
 	server_name localhost;
-	try_files $uri $uri/ /index.html;
 
-	expires max;
+	location / {
+		index index.html;
+		try_files $uri $uri/ /index.html;
+		add_header Cache-Control "no-store, no-cache, must-revalidate";
+	}
+
+	location ~* \.(js|jpg|jpeg|gif|png|svg|css)$ {
+		add_header Cache-Control "max-age=31536000";
+	}
 
 	location /fwupdate/upload {
 		limit_except POST {
