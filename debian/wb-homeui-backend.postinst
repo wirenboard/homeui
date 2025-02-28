@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#DEBHELPER#
+
+systemctl --system daemon-reload >/dev/null || true
+
+deb-systemd-invoke restart fcgiwrap || true
+deb-systemd-invoke restart nginx || true
