@@ -74,6 +74,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               max={cell.max}
               step={cell.step}
               ariaLabel={cell.name}
+              isWithExplicitChanges
               onChange={(value) => cell.value = value}
             />
           </>

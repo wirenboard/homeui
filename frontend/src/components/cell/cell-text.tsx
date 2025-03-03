@@ -42,6 +42,7 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
           isDisabled={cell.readOnly}
           size="small"
           ariaLabel={cell.name}
+          isWithExplicitChanges
           onChange={(value) => cell.value = value}
         />
       )}

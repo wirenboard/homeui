@@ -9,6 +9,7 @@
     --success-color-disabled: #739e73;
     --success-color-hover: #5b835b;
     --success-color-border: #659265;
+    --warn-color: #eebc40;
     --danger-color: #dc3545;
     --danger-color-hover: #f73b3b;
     --gray-color: #888;
@@ -62,6 +63,8 @@
 
     --tooltip-background: #333;
     --tooltip-color: #fff;
+
+    --table-item-hover: #fbfbfb;
 }
 
 .wirenboard {

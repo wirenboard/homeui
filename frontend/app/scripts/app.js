@@ -30,7 +30,6 @@ import '../styles/css/scan.css';
 import '../styles/css/network-connections.css';
 import '../styles/css/svg-edit-page.css';
 import '../styles/css/svg-view-page.css';
-import '../styles/css/script-editor-page.css';
 import '../styles/css/mbgate.css';
 
 // homeui modules: sevices
@@ -284,7 +283,6 @@ module
         'ui',
         'logs',
         'configurations',
-        'rules',
         'history',
         'widgets',
         'units',
