@@ -73,6 +73,12 @@ const makeWriteBindingStore = (devices, name) => {
     })
   );
   res.add('value', valueStore);
+  res.add(
+    'check',
+    new BooleanStore({
+      name: i18n.t('edit-svg-dashboard.labels.check'),
+    })
+  );
   return res;
 };
 

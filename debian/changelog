@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.114.0) stable; urgency=medium
+
+  * Ask user confirmation before writing to the channel
+  * External pull request from Margarita Mayer <rita.mayer2001@mail.ru>
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 03 Mar 2025 14:03:31 +0300
+
 wb-mqtt-homeui (2.113.0) stable; urgency=medium
 
   * Add the ability to include rules, copy and rename
