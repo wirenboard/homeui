@@ -1,11 +1,9 @@
-'use strict';
-
 import { makeObservable, computed } from 'mobx';
-import NewDevicesScanPageStore from './scan/newDevicesScanPageStore';
-import ConfigEditorPageStore from './config-editor/configEditorPageStore';
 import DeviceTypesStore from './common/deviceTypesStore';
-import SearchDisconnectedScanPageStore from './scan/searchDisconnectedScanPageStore';
+import ConfigEditorPageStore from './config-editor/configEditorPageStore';
 import ConfiguredDevices from './config-editor/configuredDevices';
+import NewDevicesScanPageStore from './scan/newDevicesScanPageStore';
+import SearchDisconnectedScanPageStore from './scan/searchDisconnectedScanPageStore';
 
 class DeviceManagerPageStore {
   constructor(
@@ -99,7 +97,7 @@ class DeviceManagerPageStore {
     this.stateTransitions.toScan();
     this.searchDisconnectedScanPageStore.select(
       selectedDeviceTab.deviceType,
-      selectedPortTab.editedData.path,
+      selectedPortTab.path,
       new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore),
       selectedDeviceTab.slaveId
     );

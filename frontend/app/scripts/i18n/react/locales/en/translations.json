@@ -1,6 +1,7 @@
 {
    "scan": {
       "title": "New devices",
+      "search-disconnected-title": "Search for disconnected device",
       "errors": {
          "scan": "Start scan failed",
          "common": "Error",
