@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.114.1) stable; urgency=medium
+
+  * Add missing english translation
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 10 Mar 2025 11:24:47 +0500
+
 wb-mqtt-homeui (2.114.0) stable; urgency=medium
 
   * Ask user confirmation before writing to the channel
