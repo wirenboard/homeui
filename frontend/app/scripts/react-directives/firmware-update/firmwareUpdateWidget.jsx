@@ -1,22 +1,22 @@
-import React, { useRef, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useTranslation, Trans } from 'react-i18next';
 import Uploady, {
   useRequestPreSend,
   useUploady,
   useItemStartListener,
   useItemFinishListener,
   useItemProgressListener,
-  useItemErrorListener,
+  useItemErrorListener
 } from '@rpldy/uploady';
+import { observer } from 'mobx-react-lite';
+import { useRef, useEffect } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
+import { Checkbox } from '../common';
 import {
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  ModalTitle,
+  ModalTitle
 } from '../components/modals/modals';
-import { Checkbox } from '../common';
 import { MODAL_MODE_UPDATE, MODAL_MODE_UPDATE_RESET, MODAL_MODE_FACTORY_RESET } from './modal';
 
 async function SubmitRequest(store) {
@@ -117,14 +117,14 @@ const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClic
   return (
     <Modal id={id} active={active} onCancel={onCancel}>
       <ModalHeader>
-        <ModalTitle id={id} text={t('system.update.backup_modal_title')}></ModalTitle>
+        <ModalTitle id={id} text={t('system.update.backup_modal_title')} />
       </ModalHeader>
       <ModalBody>
         {isFirstPage ? <BackupDownloadModalPage /> : <AfterDownloadModalPage />}
       </ModalBody>
       <ModalFooter>
         {isFirstPage ? (
-          <BackupDownloadButtons onDownloadClick={onDownloadClick} hide={onCancel} />
+          <BackupDownloadButtons hide={onCancel} onDownloadClick={onDownloadClick} />
         ) : (
           <AfterDownloadModalButtons hide={onCancel} />
         )}
@@ -153,8 +153,8 @@ const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootF
       <div style={{ margin: '10px' }}>
         <Checkbox
           label={t('system.update.expandrootfs')}
-          onChange={expandRootFsHandler}
           value={expandRootFs}
+          onChange={expandRootFsHandler}
         />
       </div>
     </div>
@@ -172,41 +172,40 @@ const UploadProgress = observer(({ store }) => {
   return (
     <>
       <div className="progress">
+        <span>{t(store.stateMsg)}</span>
         <div
           className={'progress-bar progress-bar-' + store.stateType}
           style={{ width: store.progressPercents.toString() + '%' }}
         >
-          <span>{t(store.stateMsg)}</span>
         </div>
       </div>
       {store.logRows.length > 0 && <FirmwareUpdateLog logRows={store.logRows} />}
-      {store.isDone && <DoneButton onDoneClick={store.onDoneClick} doneLabel={store.doneLabel} />}
+      {store.isDone && <DoneButton doneLabel={store.doneLabel} onDoneClick={store.onDoneClick} />}
     </>
   );
 });
 
 const UploadWidget = observer(({ store }) => {
-  const { t } = useTranslation();
-
   if (store.inProgress) {
     return <UploadProgress store={store} />;
   }
   if (store.resetMode) {
     return (
       <ResetEntrypoint
+        canFactoryReset={store.factoryResetFitsState.canDoFactoryReset}
         onUploadClick={() => {
           store.modalState.show(MODAL_MODE_UPDATE_RESET);
         }}
         onResetClick={() => {
           store.modalState.show(MODAL_MODE_FACTORY_RESET);
         }}
-        canFactoryReset={store.factoryResetFitsState.canDoFactoryReset}
       />
     );
   }
+
   return (
     <UpdateEntrypoint
-      expandRootFsHandler={e => {
+      expandRootFsHandler={(e) => {
         store.setExpandRootfs(e.target.checked);
       }}
       showModal={() => {
@@ -230,9 +229,9 @@ const FirmwareUpdateWidget = observer(({ store }) => {
   useItemFinishListener(store.onUploadFinish);
   useItemErrorListener(store.onUploadError);
 
-  useRequestPreSend(({ items, options }) => {
+  useRequestPreSend(() => {
     const params = {};
-    if (window.hasOwnProperty('wbCloudProxyInfo')) {  // filled by WB Cloud in auth tunnel's auth.js
+    if (window.hasOwnProperty('wbCloudProxyInfo')) { // filled by WB Cloud in auth tunnel's auth.js
       params.from_cloud = true;
     }
     if (store.resetMode) {
@@ -291,7 +290,7 @@ const ResetConfirmation = ({ mode, onChange, value }) => {
         <hr />
         <Trans i18nKey="system.factory_reset.confirm_prompt" />
         &nbsp;
-        <input onChange={onChange} type="text" value={value} />
+        <input type="text" value={value} onChange={onChange} />
       </div>
     </div>
   );
@@ -303,15 +302,15 @@ const FactoryResetModal = observer(({ state, store }) => {
   return (
     <Modal id={state.id} active={state.active} onCancel={state.onCancel}>
       <ModalHeader>
-        <ModalTitle id={state.id} text={t('system.factory_reset.modal_title')}></ModalTitle>
+        <ModalTitle id={state.id} text={t('system.factory_reset.modal_title')} />
       </ModalHeader>
       <ModalBody>
         <ResetConfirmation
           mode={state.mode}
-          onChange={e => {
+          value={state.enteredConfirmationText}
+          onChange={(e) => {
             state.onConfirmationTextChange(e);
           }}
-          value={state.enteredConfirmationText}
         />
       </ModalBody>
       <ModalFooter>
@@ -380,11 +379,11 @@ const ResetButton = ({ label, style, onClick, store }) => {
 
 const CreateFirmwareUpdateWidget = ({ store }) => (
   <Uploady
-    autoUpload
     accept={store.accept}
     multiple={false}
     method="POST"
     destination={{ url: store.uploadDestination }}
+    autoUpload
   >
     <FirmwareUpdateWidget store={store} />
   </Uploady>
