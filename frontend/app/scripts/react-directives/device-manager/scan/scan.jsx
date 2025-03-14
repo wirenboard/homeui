@@ -1,11 +1,10 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { Spinner, Button } from '../../common';
 import DevicesTable from './desktop';
 import DevicesList from './mobile';
-import { Trans, useTranslation } from 'react-i18next';
 import { ScanState } from './scanPageStore';
-import { Spinner, Button } from '../../common';
 
 const InfoMessage = ({ msg }) => {
   if (!msg) {
@@ -30,7 +29,8 @@ const ScanProgressBar = observer(({ progress }) => {
         aria-valuemin="0"
         aria-valuemax="100"
         style={{ width: progress + '%' }}
-      ></div>
+      >
+      </div>
     </div>
   );
 });
@@ -103,13 +103,13 @@ const BottomPanel = observer(
   }
 );
 
-export const ScanPageHeader = ({ okButtonLabel, onOk, onCancel, disableOkButton }) => {
+export const ScanPageHeader = ({ okButtonLabel, onOk, onCancel, disableOkButton, title }) => {
   const { t } = useTranslation();
   return (
     <h1 className="page-header">
-      <span>{t('scan.title')}</span>
+      <span>{title}</span>
       <div className="pull-right button-group">
-        <Button type={'success'} label={okButtonLabel} onClick={onOk} disabled={disableOkButton} />
+        <Button type="success" label={okButtonLabel} disabled={disableOkButton} onClick={onOk} />
         <Button label={t('scan.buttons.cancel')} onClick={onCancel} />
       </div>
     </h1>
