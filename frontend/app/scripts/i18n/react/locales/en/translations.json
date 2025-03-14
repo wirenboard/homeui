@@ -10,6 +10,7 @@
       "buttons": {
          "scan": "Start slow scan",
          "stop": "Stop",
+         "bootloader-scan": "Find devices in bootloader mode",
          "to-serial": "Add to wb-mqtt-serial",
          "cancel": "Cancel",
          "setup-as-selected": "Setup"
