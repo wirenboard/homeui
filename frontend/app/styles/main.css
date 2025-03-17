@@ -503,9 +503,15 @@ footer{
 
 .progress span {
     position: absolute;
-    display: block;
     width: 100%;
     color: black;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    justify-content: center;
+    z-index: 1;
+    text-shadow: 0 0 3px #FFF;
  }
 
 .alarm {
