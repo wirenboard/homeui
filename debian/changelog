@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.114.4) stable; urgency=medium
+
+  * Fix inverted switch controls in text dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 18 Mar 2025 18:20:31 +0500
+
 wb-mqtt-homeui (2.114.3) stable; urgency=medium
 
   * Fix progress text overflow
