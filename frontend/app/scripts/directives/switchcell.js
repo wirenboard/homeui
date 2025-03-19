@@ -14,8 +14,11 @@ function switchCellDirective() {
       scope.$watch(
         () => scope._value,
         (newValue, oldValue) => {
-          if (newValue !== oldValue && scope._value != scope.cell.value) {
-            scope.cell.value = scope.cell.extra.invert ? !scope._value : scope._value;
+          if (newValue !== oldValue) {
+            const valueToSet = scope.cell.extra.invert ? !scope._value : scope._value;
+            if (scope.cell.value != valueToSet) {
+              scope.cell.value = valueToSet;
+            }
           }
         }
       );
