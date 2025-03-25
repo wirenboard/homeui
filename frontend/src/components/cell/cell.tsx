@@ -44,13 +44,15 @@ export const CellContent = observer(({ cell, name }: CellProps) => {
   };
 
   return (
-    <div className={classNames(
-      'deviceCell',
-      {
-        'deviceCell-columns': cell.displayType === CellComponent.Range,
-        'deviceCell-error': cell.error && (cell.error.includes(CellError.Read) || cell.error.includes(CellError.Write)),
-      }
-    )}
+    <div
+      className={classNames(
+        'deviceCell',
+        {
+          'deviceCell-columns': cell.displayType === CellComponent.Range,
+          'deviceCell-error': cell.error?.some((error) => [CellError.Read, CellError.Write].includes(error)),
+          'deviceCell-errorPeriod': cell.error && cell.error.includes(CellError.Period),
+        }
+      )}
     >
       {![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (
         <Tooltip
@@ -68,7 +70,7 @@ export const CellContent = observer(({ cell, name }: CellProps) => {
                   text={t('widgets.errors.poll')}
                   placement="top-start"
                 >
-                  <DangerIcon className="deviceCell-periodError" />
+                  <DangerIcon className="deviceCell-periodErrorIcon" />
                 </Tooltip>
               </Suspense>
             )}
