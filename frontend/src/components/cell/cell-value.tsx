@@ -44,76 +44,64 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
   }, [cell.value, minimumFractionDigits]);
 
   return (
-    <>
+    <div className="deviceCell-valueWrapper">
+      <CellHistory cell={cell} />
       {cell.valueType === 'number' && !cell.readOnly && (
         cell.isEnum ? (
-          <>
-            <CellHistory cell={cell} />
-
-            <Dropdown
-              className="deviceCell-select"
-              size="small"
-              options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
-              value={cell.value as string | number}
-              ariaLabel={cell.name}
-              onChange={(option) => cell.value = option.value}
-            />
-          </>
+          <Dropdown
+            size="small"
+            options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
+            value={cell.value as string | number}
+            ariaLabel={cell.name}
+            onChange={(option) => cell.value = option.value}
+          />
         ) : (
-          <>
-            <CellHistory cell={cell} />
-
-            <Input
-              id={cell.id}
-              type="number"
-              size="small"
-              className="deviceCell-text"
-              value={cell.value as number}
-              isDisabled={cell.readOnly}
-              min={cell.min}
-              max={cell.max}
-              step={cell.step}
-              ariaLabel={cell.name}
-              isWithExplicitChanges
-              onChange={(value) => cell.value = value}
-            />
-          </>
+          <Input
+            id={cell.id}
+            type="number"
+            size="small"
+            className="deviceCell-text"
+            value={cell.value as number}
+            isDisabled={cell.readOnly}
+            min={cell.min}
+            max={cell.max}
+            step={cell.step}
+            ariaLabel={cell.name}
+            isWithExplicitChanges
+            onChange={(value) => cell.value = value}
+          />
         )
       )}
 
       {cell.readOnly && (
-        <>
-          <CellHistory cell={cell} />
-
-          <div
-            className={classNames('deviceCell-value', 'deviceCell-text')}
-            onClick={() => {
-              const value = cell.isEnum
-                ? cell.enumValues.find((item) => item.value === cell.value).name
-                : cell.value;
-              setCapturedValue(value as string);
-              copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
-            }
-            }
+        <div
+          className={classNames('deviceCell-value', 'deviceCell-text')}
+          onClick={() => {
+            const value = cell.isEnum
+              ? cell.enumValues.find((item) => item.value === cell.value).name
+              : cell.value;
+            setCapturedValue(value as string);
+            copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
+          }
+          }
+        >
+          <Tooltip
+            text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widgets.labels.copy')}</span>}
+            placement="top"
+            trigger="click"
           >
-            <Tooltip
-              text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widgets.labels.copy')}</span>}
-              placement="top"
-              trigger="click"
-            >
-              {cell.isEnum
-                ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
-                : (
-                  <div>
-                    <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
-                      <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
-                    )}
-                  </div>
-                )}
-            </Tooltip>
-          </div>
-        </>
+            {cell.isEnum
+              ? <div className="deviceCell-text">{cell.getEnumName(cell.value as string)}</div>
+              : (
+                <div>
+                  <span dangerouslySetInnerHTML={{ __html: formattedValue }}></span> {!!cell.units && (
+                    <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+                  )}
+                </div>
+              )}
+          </Tooltip>
+        </div>
       )}
-    </>
+    </div>
   );
 });
