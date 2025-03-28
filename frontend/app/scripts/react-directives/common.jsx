@@ -1,5 +1,4 @@
-import React from 'react';
-import { useId } from 'react';
+import { useId, forwardRef } from 'react';
 
 export const WarningTag = ({ text }) => {
   return <span className="tag bg-warning text-nowrap">{text}</span>;
@@ -103,11 +102,17 @@ export const WarningBar = ({ children }) => {
   );
 };
 
-export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title }) => {
+export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title, submit }) => {
   const classes =
     'btn btn-' + (type ? type : 'default') + (additionalStyles ? ' ' + additionalStyles : '');
   return (
-    <button type="button" className={classes} onClick={onClick} disabled={disabled} title={title}>
+    <button
+      type={submit ? 'submit' : 'button'}
+      className={classes}
+      disabled={disabled}
+      title={title}
+      onClick={onClick}
+    >
       {icon && (
         <>
           <i className={icon}></i>
@@ -123,31 +128,35 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
   return (
     <div className="checkbox">
       <label htmlFor={id} disabled={disabled}>
-        <input type="checkbox" id={id} checked={value} onChange={onChange} disabled={disabled} />
+        <input type="checkbox" id={id} checked={value} disabled={disabled} onChange={onChange} />
         {label}
       </label>
     </div>
   );
 };
 
-export const LineEdit = React.forwardRef(({ placeholder, value, onChange, disabled }, ref) => {
-  return (
-    <input
-      ref={ref}
-      className="form-control"
-      type="text"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-    />
-  );
-});
+export const LineEdit = forwardRef(
+  ({ placeholder, value, onChange, disabled, type, name, required }, ref) => {
+    return (
+      <input
+        ref={ref}
+        className="form-control"
+        type={type || 'text'}
+        placeholder={placeholder}
+        value={value}
+        disabled={disabled}
+        name={name}
+        required={required}
+        onChange={onChange}
+      />
+    );
+  }
+);
 
 export const Radio = ({ label, id, value, onChange }) => {
   return (
     <label className="radio-inline" htmlFor={id}>
-      <input type="radio" id={id} checked={value} onChange={e => onChange?.(e.target.checked)} />
+      <input type="radio" id={id} checked={value} onChange={(e) => onChange?.(e.target.checked)} />
       {label}
     </label>
   );

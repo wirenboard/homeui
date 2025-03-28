@@ -1,6 +1,3 @@
-'use strict';
-
-import React from 'react';
 import Select from 'react-select';
 
 const BootstrapLikeSelect = ({
@@ -10,8 +7,9 @@ const BootstrapLikeSelect = ({
   onChange,
   isClearable,
   className,
+  disabled,
 }) => {
-  const withGroups = options.some(el => 'options' in el);
+  const withGroups = options.some((el) => 'options' in el);
   const customStyles = {
     option: (provided, { data }) => {
       if (data?.hidden) {
@@ -27,16 +25,17 @@ const BootstrapLikeSelect = ({
   };
   return (
     <Select
-      classNamePrefix={'wb-react-select'}
+      classNamePrefix="wb-react-select"
       options={options}
       isSearchable={true}
       isClearable={isClearable}
       value={selectedOption}
       styles={customStyles}
       placeholder={placeholder}
-      onChange={onChange}
       className={'wb-react-select' + (className ? ' ' + className : '')}
       classNames={customClasses}
+      isDisabled={disabled}
+      onChange={onChange}
     />
   );
 };

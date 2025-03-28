@@ -1,9 +1,17 @@
-'use strict';
-
 import { makeObservable, observable, action, computed } from 'mobx';
 
 export class StringStore {
-  constructor({ name, description, value, placeholder, validator, defaultText, readOnly }) {
+  constructor({
+    name,
+    description,
+    value,
+    placeholder,
+    validator,
+    defaultText,
+    readOnly,
+    editType = 'text',
+    required,
+  }) {
     this.type = 'string';
     this.name = name;
     this.description = description;
@@ -15,10 +23,13 @@ export class StringStore {
     this.readOnly = readOnly;
     this.setValue(value);
     this.initialValue = this.value;
+    this.editType = editType;
+    this.required = required;
 
     makeObservable(this, {
       value: observable,
       formColumns: observable,
+      readOnly: observable,
       setValue: action,
       setFormColumns: action,
       error: observable,
@@ -26,6 +37,7 @@ export class StringStore {
       isDirty: computed,
       submit: action,
       reset: action,
+      setReadOnly: action,
     });
   }
 
@@ -67,5 +79,9 @@ export class StringStore {
 
   reset() {
     this.setValue(this.initialValue);
+  }
+
+  setReadOnly(readOnly) {
+    this.readOnly = readOnly;
   }
 }
