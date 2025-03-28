@@ -21,6 +21,7 @@ export class FormStore {
 
   setValue(value) {
     Object.entries(this.params).forEach(([k, v]) => {
+      // eslint-disable-next-line security/detect-object-injection
       v.setValue(value && Object.hasOwn(value, k) ? value[k] : undefined);
     });
   }
