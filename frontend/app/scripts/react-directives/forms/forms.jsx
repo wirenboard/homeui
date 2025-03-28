@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { useContext, createContext } from 'react';
+import { useContext, createContext, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, LineEdit, Button } from '../common';
 import BootstrapLikeSelect from '../components/select/select';
@@ -10,10 +10,10 @@ export const CustomEditorBuilderContext = createContext(null);
 
 function makeFlexItemStyle(columns) {
   const MAX_COLUMNS = 12;
-  columns = columns || MAX_COLUMNS;
+  const columnsCount = columns || MAX_COLUMNS;
   return {
-    flexGrow: columns / MAX_COLUMNS,
-    flexBasis: `${(columns / MAX_COLUMNS) * 100 * 0.9}%`,
+    flexGrow: columnsCount / MAX_COLUMNS,
+    flexBasis: `${(columnsCount / MAX_COLUMNS) * 100 * 0.9}%`,
   };
 }
 
@@ -49,18 +49,23 @@ export const FormEdit = observer(({ store, children }) => {
   );
 });
 
-export const FormStringEdit = observer(({ store }) => {
-  return (
-    <FormEdit store={store}>
-      <LineEdit
-        value={store.value === undefined ? '' : store.value}
-        placeholder={store.placeholder}
-        onChange={e => store.setValue(e.target.value)}
-        disabled={store.readOnly}
-      />
-    </FormEdit>
-  );
-});
+export const FormStringEdit = observer(
+  forwardRef(({ store }, ref) => {
+    return (
+      <FormEdit store={store}>
+        <LineEdit
+          value={store.value === undefined ? '' : store.value}
+          placeholder={store.placeholder}
+          disabled={store.readOnly}
+          ref={ref}
+          type={store.editType}
+          required={store.required}
+          onChange={(e) => store.setValue(e.target.value)}
+        />
+      </FormEdit>
+    );
+  })
+);
 
 export const FormCheckbox = observer(({ store }) => {
   const showCaption = useContext(ShowParamCaptionContext);
@@ -69,7 +74,7 @@ export const FormCheckbox = observer(({ store }) => {
       <Checkbox
         label={showCaption ? store.name : undefined}
         value={store.value}
-        onChange={e => store.setValue(e.target.checked)}
+        onChange={(e) => store.setValue(e.target.checked)}
       />
     </div>
   );
@@ -84,7 +89,8 @@ export const FormSelect = observer(({ store, isClearable }) => {
         selectedOption={store.selectedOption}
         setSelectedOption={store.selectedOption}
         placeholder={store.placeholder}
-        onChange={value => store.setSelectedOption(value)}
+        disabled={store.readOnly}
+        onChange={(value) => store.setSelectedOption(value)}
       />
     </FormEdit>
   );
@@ -115,7 +121,7 @@ export const FormCollapsibleTable = observer(({ store }) => {
       <table className="table table-bordered">
         <thead>
           <tr>
-            {store.headers.map(header => (
+            {store.headers.map((header) => (
               <th key={header}>{header}</th>
             ))}
             <th></th>
@@ -134,13 +140,13 @@ export const FormCollapsibleTable = observer(({ store }) => {
                 })}
                 <td>
                   <Button
-                    icon={'glyphicon glyphicon-trash'}
+                    icon="glyphicon glyphicon-trash"
+                    title={t('forms.remove')}
                     onClick={() => {
                       if (confirm(t('forms.confirm-remove'))) {
                         store.remove(index);
                       }
                     }}
-                    title={t('forms.remove')}
                   />
                 </td>
               </tr>
@@ -152,7 +158,7 @@ export const FormCollapsibleTable = observer(({ store }) => {
   );
 });
 
-export const FormEditor = ({ param, paramName }) => {
+export const FormEditor = forwardRef(({ param, paramName }, ref) => {
   const customEditorBuilder = useContext(CustomEditorBuilderContext);
   if (customEditorBuilder) {
     const customEditor = customEditorBuilder(param, paramName);
@@ -161,13 +167,13 @@ export const FormEditor = ({ param, paramName }) => {
     }
   }
   if (param.type === 'string') {
-    return <FormStringEdit store={param} />;
+    return <FormStringEdit store={param} ref={ref} />;
   }
   if (param.type === 'integer') {
-    return <FormStringEdit store={param} />;
+    return <FormStringEdit store={param} ref={ref} />;
   }
   if (param.type === 'number') {
-    return <FormStringEdit store={param} />;
+    return <FormStringEdit store={param} ref={ref} />;
   }
   if (param.type === 'boolean') {
     return <FormCheckbox store={param} />;
@@ -185,10 +191,15 @@ export const FormEditor = ({ param, paramName }) => {
     return <FormOneOf store={param} />;
   }
   return null;
-};
+});
 
-export const MakeFormFields = params => {
-  return params.map(([name, param]) => <FormEditor param={param} paramName={name} key={name} />);
+export const MakeFormFields = (params, firstRef) => {
+  return params.map(([name, param], index) => {
+    if (index === 0) {
+      return <FormEditor param={param} paramName={name} key={name} ref={firstRef} />;
+    }
+    return <FormEditor param={param} paramName={name} key={name} />;
+  });
 };
 
 export const Form = observer(({ store, children }) => {
