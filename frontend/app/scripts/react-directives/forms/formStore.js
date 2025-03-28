@@ -1,12 +1,10 @@
-'use strict';
-
 import { makeAutoObservable } from 'mobx';
 
 export class FormStore {
-  constructor(name) {
+  constructor(name, params) {
     this.type = 'object';
     this.name = name;
-    this.params = {};
+    this.params = params || {};
 
     makeAutoObservable(this);
   }
@@ -23,20 +21,21 @@ export class FormStore {
 
   setValue(value) {
     Object.entries(this.params).forEach(([k, v]) => {
-      v.setValue(value && value.hasOwnProperty(k) ? value[k] : undefined);
+      // eslint-disable-next-line security/detect-object-injection
+      v.setValue(value && Object.hasOwn(value, k) ? value[k] : undefined);
     });
   }
 
   contains(key) {
-    return this.params.hasOwnProperty(key);
+    return Object.hasOwn(this.params, key);
   }
 
   get isDirty() {
-    return Object.entries(this.params).some(([k, v]) => v.isDirty);
+    return Object.values(this.params).some((v) => v.isDirty);
   }
 
   get hasErrors() {
-    return Object.entries(this.params).some(([k, v]) => v.hasErrors);
+    return Object.values(this.params).some((v) => v.hasErrors);
   }
 
   get hasProperties() {
@@ -53,10 +52,10 @@ export class FormStore {
   }
 
   submit() {
-    Object.entries(this.params).forEach(([k, v]) => v.submit());
+    Object.values(this.params).forEach((v) => v.submit());
   }
 
   reset() {
-    Object.entries(this.params).forEach(([k, v]) => v.reset());
+    Object.values(this.params).forEach((v) => v.reset());
   }
 }
