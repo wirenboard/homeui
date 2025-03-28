@@ -25,9 +25,14 @@
   padding: 0 2px;
 }
 
+.dropdown__option {
+  white-space: nowrap;
+}
+
 .dropdown-m .dropdown__control,
 .dropdown-m .dropdown__option {
   padding: 6px 12px;
+  width: fit-content;
 }
 
 .dropdown-s .dropdown__control,
@@ -51,4 +56,5 @@
   background: var(--input-background);
   color: var(--input-color);
   border-radius: var(--input-border-radius);
+  width: fit-content !important;
 }

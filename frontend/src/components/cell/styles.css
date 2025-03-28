@@ -10,12 +10,16 @@
     width: 100%;
 }
 
+.deviceCell:has(.deviceCell-alert):not(:hover) {
+    gap: 0;
+}
+
 .deviceCell-error,
 .deviceCell-error .deviceCell-units {
     color: var(--danger-color);
 }
 
-.deviceCell-periodError {
+.deviceCell-periodErrorIcon {
     width: 18px;
     height: 18px;
     color: var(--danger-color);
@@ -33,6 +37,10 @@
     gap: 4px;
     cursor: pointer;
     justify-content: space-between;
+}
+
+.deviceCell-errorPeriod .deviceCell-name {
+    justify-content: flex-start;
 }
 
 .deviceCell-alert {

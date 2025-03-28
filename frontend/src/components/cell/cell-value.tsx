@@ -49,7 +49,6 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
         cell.isEnum ? (
           <>
             <CellHistory cell={cell} />
-
             <Dropdown
               className="deviceCell-select"
               size="small"
@@ -62,7 +61,6 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
         ) : (
           <>
             <CellHistory cell={cell} />
-
             <Input
               id={cell.id}
               type="number"
