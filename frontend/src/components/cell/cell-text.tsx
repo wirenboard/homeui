@@ -28,6 +28,7 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
       )}
       {(!cell.readOnly && cell.isEnum) && (
         <Dropdown
+          className="deviceCell-select"
           size="small"
           options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
           value={cell.value as string | number}

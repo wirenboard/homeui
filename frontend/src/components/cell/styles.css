@@ -84,13 +84,6 @@
     cursor: pointer;
 }
 
-.deviceCell-valueWrapper {
-    display: flex;
-    flex-shrink: 0;
-    gap: 6px;
-    align-items: center;
-}
-
 .deviceCell-value {
     justify-items: end;
     flex-shrink: 0;
@@ -100,6 +93,10 @@
 .deviceCell-units {
     font-size: 12px;
     color: var(--gray-color);
+}
+
+.deviceCell-select {
+    max-width: 50%;
 }
 
 .deviceCell-space {
