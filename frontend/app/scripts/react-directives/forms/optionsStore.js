@@ -1,5 +1,3 @@
-'use strict';
-
 import { makeObservable, observable, action } from 'mobx';
 
 export function getFirstOptionValue(options) {
@@ -19,6 +17,7 @@ export class OptionsStore {
     this.selectedOption = null;
     this.formColumns = null;
     this.initialValue = value;
+    this.readOnly = false;
     this.setValue(value);
 
     makeObservable(this, {
@@ -37,12 +36,12 @@ export class OptionsStore {
 
   setValue(value) {
     this.value = value;
-    this.options.some(item => {
+    this.options.some((item) => {
       if ('options' in item) {
-        this.selectedOption = item.options.find(option => option.value == value);
+        this.selectedOption = item.options.find((option) => option.value === value);
         return !!this.selectedOption;
       }
-      if (item.value == value) {
+      if (item.value === value) {
         this.selectedOption = item;
         return true;
       }
@@ -73,6 +72,10 @@ export class OptionsStore {
     this.formColumns = columns;
   }
 
+  setReadOnly(value) {
+    this.readOnly = value;
+  }
+
   get isDirty() {
     return this.value !== this.initialValue;
   }
@@ -83,5 +86,6 @@ export class OptionsStore {
 
   reset() {
     this.setValue(this.initialValue);
+    this.setReadOnly(false);
   }
 }
