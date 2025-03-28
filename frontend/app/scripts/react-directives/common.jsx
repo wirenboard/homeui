@@ -102,16 +102,15 @@ export const WarningBar = ({ children }) => {
   );
 };
 
-export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title, form }) => {
+export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title, submit }) => {
   const classes =
     'btn btn-' + (type ? type : 'default') + (additionalStyles ? ' ' + additionalStyles : '');
   return (
     <button
-      type={form ? 'submit' : 'button'}
+      type={submit ? 'submit' : 'button'}
       className={classes}
       disabled={disabled}
       title={title}
-      form={form}
       onClick={onClick}
     >
       {icon && (
