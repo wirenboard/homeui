@@ -9,7 +9,7 @@ export class StringStore {
     validator,
     defaultText,
     readOnly,
-    editType,
+    editType = 'text',
     required,
   }) {
     this.type = 'string';
@@ -23,7 +23,7 @@ export class StringStore {
     this.readOnly = readOnly;
     this.setValue(value);
     this.initialValue = this.value;
-    this.editType = editType || 'text';
+    this.editType = editType;
     this.required = required;
 
     makeObservable(this, {
