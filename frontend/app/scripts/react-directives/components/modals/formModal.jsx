@@ -1,32 +1,39 @@
-import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { Button } from '../../common';
+import { MakeFormFields } from '../../forms/forms';
 import {
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
   ModalTitle,
-  ModalCancelButton,
+  ModalCancelButton
 } from './modals';
-import { MakeFormFields } from '../../forms/forms';
-import { observer } from 'mobx-react-lite';
 
 const FormModal = observer(({ id, active, title, formStore, onOk, onCancel, okButtonLabel }) => {
+  const onSubmit = (e) => {
+    e.preventDefault();
+    onOk();
+  };
   return (
     <Modal id={id} active={active} onCancel={onCancel}>
       <ModalHeader>
         <ModalTitle id={id} text={title} />
       </ModalHeader>
-      <ModalBody>{MakeFormFields(Object.entries(formStore?.params || {}))}</ModalBody>
-      <ModalFooter>
-        <Button
-          label={okButtonLabel}
-          type={'success'}
-          onClick={onOk}
-          disabled={formStore?.hasErrors}
-        />
-        <ModalCancelButton onClick={onCancel} />
-      </ModalFooter>
+      <form onSubmit={onSubmit}>
+        <ModalBody>
+          {MakeFormFields(Object.entries(formStore?.params || {}))}
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            label={okButtonLabel}
+            type="success"
+            disabled={formStore?.hasErrors}
+            submit={true}
+          />
+          <ModalCancelButton onClick={onCancel} />
+        </ModalFooter>
+      </form>
     </Modal>
   );
 });
