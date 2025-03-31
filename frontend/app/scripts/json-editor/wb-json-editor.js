@@ -232,7 +232,7 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['wb-array'] = makeWbArrayEditor();
   JSONEditor.defaults.editors['wb-first-oneof'] = makeFirstOneOfEditor();
 
-  JSONEditor.defaults.languages.en.error_oneOf = 'One or more parameters are invalid';
+  JSONEditor.defaults.languages.en.error_oneOf = 'Parameters are set incorrectly';
 
   JSONEditor.defaults.themes['wb-bootstrap3'] = makeWbBootstrap3Theme();
   JSONEditor.defaults.iconlibs['wb-bootstrap3'] = makeWbBootstrap3Iconlib();

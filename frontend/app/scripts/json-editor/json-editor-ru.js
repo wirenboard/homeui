@@ -25,7 +25,7 @@ const JsonEditorRussianTranslation = {
    * When a value doesn't validate
    * @variables This key takes one variable: The number of schemas the value does not validate
    */
-  error_oneOf: 'Один или несколько параметров заданы неверно',
+  error_oneOf: 'Параметры заданы неверно',
   /**
    * When a value does not validate a 'not' schema
    */
