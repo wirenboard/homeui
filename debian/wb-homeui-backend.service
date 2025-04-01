@@ -1,0 +1,14 @@
+[Unit]
+Description=Backend service for Wiren Board web interface
+After=nginx.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/wb-homeui-backend
+Restart=on-failure
+RestartSec=2
+RestartPreventExitStatus=2 3 4 5 6 7
+
+[Install]
+WantedBy=multi-user.target
