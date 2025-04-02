@@ -80,6 +80,11 @@ class Editor {
           this.editor.disable();
         }
       }
+      // Multiple editor sets null as default value in disabled state
+      // So set the correct default value
+      if (!this.editor.isEnabled()) {
+        this.editor.editors[this.editor.type].setValue(this.editor.editors[this.editor.type].getDefault());
+      }
     }
     if (this.isEnabled) {
       if (this.isTopLevelEditor()) {
