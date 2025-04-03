@@ -1,1 +1,4 @@
 backend/configs/* /
+backend/wb-homeui-backend usr/bin
+backend/wb-homeui-users usr/bin
+backend/21wb-homeui-backend etc/wb-configs.d
