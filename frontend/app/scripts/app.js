@@ -1,3 +1,5 @@
+/* global angular */
+
 'use strict';
 
 // Import slylesheets
@@ -49,7 +51,7 @@ import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
-import rolesFactory from './services/roles.factory';
+import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import serialMetricsProxyService from './services/serialMetricsProxy';
@@ -65,9 +67,7 @@ import handleDataService from './services/handle-data';
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
-import LoginCtrl from './controllers/loginController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
-import AccessLevelCtrl from './controllers/accessLevelController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
@@ -95,6 +95,8 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
+import usersPageDirective from './react-directives/users/users';
+import loginPageDirective from './react-directives/login/login-page';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -102,6 +104,8 @@ import routingModule from './app.routes';
 // Internal components
 import LoginFormModule from './components/loginForm/index';
 
+import { checkHttps } from './utils/httpsUtils';
+import { fillUserType}  from './utils/authUtils';
 //-----------------------------------------------------------------------------
 /**
  * @ngdoc overview
@@ -161,7 +165,7 @@ module
 
   .service('handleData', handleDataService)
   .service('userAgentFactory', userAgentFactory)
-  .service('rolesFactory', rolesFactory)
+  .service('rolesFactory', rolesFactoryService)
   .service('historyUrlService', historyUrlService)
 
   .run(DeviceData => {
@@ -176,9 +180,7 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('LoginCtrl', LoginCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
-  .controller('AccessLevelCtrl', AccessLevelCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
@@ -266,7 +268,9 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('expCheckWidget', expCheckMetaDirective);
+  .directive('expCheckWidget', expCheckMetaDirective)
+  .directive('usersPage', usersPageDirective)
+  .directive('loginPage', loginPageDirective);
 
 module
   .config([
@@ -277,7 +281,6 @@ module
         'app',
         'console',
         'help',
-        'access',
         'mqtt',
         'system',
         'ui',
@@ -376,7 +379,10 @@ const realApp = angular
       $translate,
       uibDatepickerPopupConfig,
       tmhDynamicLocale,
-      DeviceManagerProxy
+      DeviceManagerProxy,
+      $transitions,
+      rolesFactory,
+      $state
     ) => {
       'ngInject';
 
@@ -457,23 +463,8 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      // detect auto url
-      var autoURL = new URL('/mqtt', $window.location.href);
-      autoURL.protocol = autoURL.protocol.replace('http', 'ws');
-
-      // FIXME: I know it's ugly, let's find more elegant way later
-      var isDev = $window.location.host === 'localhost:8080';
-
-      if (isDev) {
-        // local debug detected, enable MQTT url override via settings
-        if (!$window.localStorage.url) {
-          $window.localStorage.setItem('url', autoURL.href);
-        }
-        loginData['url'] = $window.localStorage['url'];
-      } else {
-        // no local debug detected, full auto
-        loginData['url'] = autoURL.href;
-      }
+      const loginUrl = new URL('/mqtt', $window.location.origin);
+      loginData.url = loginUrl.href;
 
       let language = localStorage.getItem('language');
       const supportedLanguages = ['en', 'ru'];
@@ -486,8 +477,6 @@ const realApp = angular
       }
       $translate.use(language);
       tmhDynamicLocale.set(language);
-
-      $rootScope.requestConfig(loginData);
 
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
@@ -534,10 +523,38 @@ const realApp = angular
           }
         });
 
-      setTimeout(() => {
-        $('double-bounce-spinner').remove();
-        $('#wrapper').removeClass('fade');
-      }, 500);
+      $transitions.onBefore({}, function (transition) {
+        if ($rootScope.noHttps !== undefined) {
+          return true;
+        }
+        return checkHttps().then(res => {
+          if (res !== 'redirected') {
+            $rootScope.noHttps = res === 'warn';
+          }
+        });
+      });
+
+      let hideGlobalSpinner = true;
+      let connectToMqtt = true;
+      $transitions.onBefore({}, function (transition) {
+        return fillUserType(rolesFactory).then(fillUserTypeResult => {
+          if (hideGlobalSpinner) {
+            angular.element('double-bounce-spinner').remove();
+            angular.element('#wrapper').removeClass('fade');
+            hideGlobalSpinner = false;
+          }
+          if (fillUserTypeResult === 'login') {
+            return transition.to().name === 'login' ? true : $state.target('login');
+          }
+          if (connectToMqtt) {
+            $rootScope.requestConfig(loginData);
+            connectToMqtt = false;
+          }
+          if (transition.to().name === 'login') {
+            return $state.target('home');
+          }
+        });
+      });
     }
   );
 

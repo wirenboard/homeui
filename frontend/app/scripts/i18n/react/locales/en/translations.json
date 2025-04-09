@@ -237,8 +237,7 @@
       }
    },
    "errors": {
-      "access-failed": "You cannot view this page. You can change ",
-      "access-failed-link-text": "access level"
+      "access-failed": "To view this page, you must have the appropriate access rights"
    },
    "forms": {
       "default-text-prefix": "If the value is not set, ",
@@ -473,6 +472,41 @@
       "labels": {
          "yes": "Confirm",
          "cancel": "Cancel"
+      }
+   },
+   "users": {
+      "title": "Users",
+      "errors": {
+         "forbidden": "You don't have permission to view this page",
+         "old-backend": "The software is out of date. Please update it",
+         "unknown": "Error: {{msg}}"
+      },
+      "labels":{
+         "login": "Login",
+         "password": "Password",
+         "type": "Type",
+         "admin": "Admin",
+         "user": "User",
+         "operator": "Operator",
+         "confirm-delete":"Do you really want to delete user \"{{name}}\"?"
+      },
+      "buttons": {
+         "save": "Save",
+         "add": "Add",
+         "delete": "Delete"
+      }
+   },
+   "login": {
+      "title": "Login",
+      "errors": {
+         "failed": "Login failed"
+      },
+      "buttons": {
+         "login": "Log in"
+      },
+      "labels": {
+         "login": "Login",
+         "password": "Password"
       }
    }
 }

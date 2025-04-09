@@ -52,8 +52,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('accessLevel', {
       url: '/access-level',
-      template: require('../views/access-level.html'),
-      controller: 'AccessLevelCtrl as $ctrl',
+      template: '<users-page />',
     })
     .state('scan', {
       url: '/scan',
@@ -163,9 +162,8 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('login', {
-      url: '/login/{id}',
-      template: require('../views/login.html'),
-      controller: 'LoginCtrl as $ctrl',
+      url: '/login',
+      template: '<login-page />'
     })
     //...........................................................................
     .state('rules', {
