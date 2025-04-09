@@ -55,6 +55,7 @@ def check_password(password: str, password_hash: str) -> bool:
 def make_id_cookie(user_id: str, secure: bool) -> cookies.SimpleCookie:
     cookie = cookies.SimpleCookie()
     cookie["id"] = user_id
+    cookie["id"]["path"] = "/"
     cookie["id"]["httponly"] = True
     cookie["id"]["samesite"] = "Lax"
     if secure:
@@ -176,6 +177,7 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     cookie = cookies.SimpleCookie()
     cookie["id"] = ""
+    cookie["id"]["path"] = "/"
     cookie["id"]["expires"] = "Thu, 01 Jan 1970 00:00:00 GMT"
     return response_200(headers=[make_set_cookie_header(cookie)])
 
@@ -366,8 +368,12 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
     def send_error(self, code, message=None, explain=None):
         self.error_message_format = "%(explain)s"
-        return super().send_error(code, message, explain)
-
+        try:
+            return super().send_error(code, message, explain)
+        except BrokenPipeError:
+            # nginx may close the connection before we send the response
+            # resulting in a broken pipe error
+            self.log_message("Failed to send error response: broken pipe")
 
 class UnixSocketHttpServer(socketserver.UnixStreamServer):
     def get_request(self):

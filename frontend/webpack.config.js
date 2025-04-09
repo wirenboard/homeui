@@ -338,6 +338,21 @@ module.exports = (function makeWebpackConfig() {
       progress: true,
       reconnect: true,
     },
+    proxy: [
+      {
+        context: [
+          '/auth/check_config',
+          '/auth/users',
+          '/auth/login',
+          '/auth/who_am_i',
+          '/auth/logout',
+          '/mqtt',
+          '/device/info',
+        ],
+        target: 'http://10.200.200.1',
+        ws: true,
+      },
+    ],
   };
 
   return config;
