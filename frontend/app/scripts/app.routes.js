@@ -163,7 +163,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('login', {
       url: '/login',
-      template: require('../views/login.html')
+      template: '<login-page />'
     })
     //...........................................................................
     .state('rules', {

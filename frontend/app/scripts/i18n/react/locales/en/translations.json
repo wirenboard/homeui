@@ -237,7 +237,7 @@
       }
    },
    "errors": {
-      "access-failed": "You cannot view this page. You can change access level"
+      "access-failed": "To view this page, you must have the appropriate access rights"
    },
    "forms": {
       "default-text-prefix": "If the value is not set, ",
@@ -478,7 +478,7 @@
       "title": "Users",
       "errors": {
          "forbidden": "You don't have permission to view this page",
-         "old-backend": "The backend is outdated. Please update it",
+         "old-backend": "The software is out of date. Please update it",
          "unknown": "Error: {{msg}}"
       },
       "labels":{
