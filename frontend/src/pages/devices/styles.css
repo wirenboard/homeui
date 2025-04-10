@@ -1,7 +1,8 @@
 .devices-container {
     gap: 18px;
-    display: flex;
+    display: grid;
     align-items: flex-start;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     max-width: calc(100% - 10px);
 
     @media (max-width: 1024px) {

@@ -6,8 +6,15 @@
     margin-bottom: 2px;
     position: relative;
     min-height: 26px;
-    flex-grow: 1;
     width: 100%;
+}
+
+.deviceCell > *:not(:last-child) {
+    min-width: 0;
+}
+
+.deviceCell a {
+    flex-shrink: 0;
 }
 
 .deviceCell:has(.deviceCell-alert):not(:hover) {
@@ -37,6 +44,9 @@
     gap: 4px;
     cursor: pointer;
     justify-content: space-between;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .deviceCell-errorPeriod .deviceCell-name {
