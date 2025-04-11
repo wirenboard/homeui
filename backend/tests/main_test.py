@@ -3,6 +3,7 @@ import unittest
 from http.server import BaseHTTPRequestHandler
 from unittest.mock import MagicMock
 
+from wb.homeui_backend.cert import CertificateState
 from wb.homeui_backend.http_response import (
     response_200,
     response_204,
@@ -180,6 +181,8 @@ class DeviceInfoHandlerTests(unittest.TestCase):
     def test_device_info_handler(self):
         self.request.headers = {"X-Forwarded-Host-Ip": "1.2.3.4"}
         self.context.sn = "ABC123"
+        self.context.certificate_thread = MagicMock()
+        self.context.certificate_thread.get_state.return_value = CertificateState.VALID
         response = device_info_handler(self.request, self.context)
 
         self.assertEqual(response.status, 200)
@@ -190,4 +193,4 @@ class DeviceInfoHandlerTests(unittest.TestCase):
                 ["Access-Control-Allow-Origin", "*"],
             ],
         )
-        self.assertEqual(json.loads(response.body), {"sn": "ABC123", "ip": "1.2.3.4"})
+        self.assertEqual(json.loads(response.body), {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid"})

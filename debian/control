@@ -16,7 +16,8 @@ Build-Depends: debhelper (>= 10),
                python3-pytest,
                python3-bcrypt,
                python3-jwt,
-               python3-requests-unixsocket
+               python3-requests-unixsocket,
+               python3-cryptography
 Homepage: https://github.com/wirenboard/homeui
 
 Package: wb-mqtt-homeui
@@ -52,7 +53,8 @@ Depends: ${shlibs:Depends},
          wb-utils (>= 4.24.0~~),
          python3-bcrypt,
          python3-jwt,
-         python3-requests-unixsocket
+         python3-requests-unixsocket,
+         python3-cryptography
 Breaks: wb-configs (<< 3.38.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Description: Wiren Board Web UI web interface
