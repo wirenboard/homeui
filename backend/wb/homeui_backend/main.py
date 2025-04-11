@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import logging
 import os
 import socketserver
 import sqlite3
@@ -384,7 +385,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def send_error(self, code, message=None, explain=None):
         self.error_message_format = "%(explain)s"
         try:
-            return super().send_error(code, message, explain)
+            super().send_error(code, message, explain)
         except BrokenPipeError:
             # nginx may close the connection before we send the response
             # resulting in a broken pipe error
@@ -428,6 +429,11 @@ def main():
     parser.add_argument("--socket-file", default=DEFAULT_SOCKET_FILE, help="Socket file")
     parser.add_argument("--db-file", default=DEFAULT_DB_FILE, help="Database file path")
     args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(levelname)s:%(message)s",
+    )
 
     con = open_db(args.db_file, DB_SCHEMA_VERSION)
 

@@ -28,6 +28,16 @@ def make_domain_name(sn: str) -> str:
     return f"*.{sn}.ip.wirenboard.com"
 
 
+def get_keyspec() -> str:
+    command = (
+        '. /usr/lib/wb-utils/wb_env.sh && wb_source of && of_machine_match "contactless,imx6ul-wirenboard60"'
+    )
+    result = subprocess.run(["/bin/bash", "-c", command], check=False)
+    if result.returncode == 0:
+        return KEYSPEC_WB6
+    return KEYSPEC_WB7_WB8
+
+
 def is_about_to_expire(cert_pem_file_name: str) -> bool:
     with open(cert_pem_file_name, "rb") as cert_file:
         cert_data = x509.load_pem_x509_certificate(cert_file.read())
@@ -35,23 +45,26 @@ def is_about_to_expire(cert_pem_file_name: str) -> bool:
 
 
 def generate_private_key() -> rsa.RSAPrivateKey:
+    logging.debug("Generating private key")
     return rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048,
     )
 
 
-def save_private_key(file, private_key: rsa.RSAPrivateKey) -> None:
-    file.write(
-        private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
+def save_private_key(file_name, private_key: rsa.RSAPrivateKey) -> None:
+    with open(file_name, "wb") as file:
+        file.write(
+            private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
         )
-    )
 
 
 def generate_csr(private_key: rsa.RSAPrivateKey, domain_name: str) -> x509.CertificateSigningRequest:
+    logging.debug("Generating CSR")
     return (
         x509.CertificateSigningRequestBuilder()
         .subject_name(
@@ -106,12 +119,13 @@ def swap_certs(original_pem_file_name, resulting_pem_file_name):
     with open(resulting_pem_file_name, "w", encoding="utf-8") as request_cert_file:
         for cert in certs:
             request_cert_file.writelines(cert)
-    request_cert_file.flush()
 
 
 def request_certificate(
     cert_pem_file_name: str, keyspec: str, csr_file_name: str, output_file_name: str
 ) -> str:
+    logging.debug("Requesting certificate")
+
     curl_command = [
         "curl",
         "-s",
@@ -158,11 +172,15 @@ def update_cert(sn: str) -> None:
                 csr_file.flush()
                 swap_certs(DEVICE_ORIGINAL_CERT, request_cert_file.name)
                 fullchain_pem = request_certificate(
-                    request_cert_file.name, KEYSPEC_WB7_WB8, csr_file.name, output_temp_file.name
+                    request_cert_file.name, get_keyspec(), csr_file.name, output_temp_file.name
                 )
+                save_private_key(SSL_CERT_KEY_PATH, private_key)
                 with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
                     cert_file.write(fullchain_pem)
-                save_private_key(SSL_CERT_KEY_PATH, private_key)
+
+                logging.debug("Generating DH parameters")
+                subprocess.run(["openssl", "dhparam", "-out", "/etc/ssl/dhparam.pem", "256"], check=True)
+
                 logging.info("Certificate updated successfully")
 
 
@@ -170,6 +188,7 @@ def update_nginx_config(sn: str) -> None:
     https_conf_path = os.path.join(WB_DYNAMIC_NGINX_CONF_DIR, "https.conf")
 
     if os.path.exists(https_conf_path):
+        logging.debug("Nginx HTTPS config is already present, skipping creation")
         return
 
     logging.debug("Nginx HTTPS config file does not exist, creating")
@@ -178,8 +197,9 @@ def update_nginx_config(sn: str) -> None:
     with open(f"{NGINX_TEMPLATES_DIR}/https.conf", "r", encoding="utf-8") as template_file:
         template_content = template_file.read()
 
-    updated_content = template_content.replace("SHORT_SN", make_domain_name(sn))
+    updated_content = template_content.replace("SHORT_SN", sn)
 
+    os.makedirs(WB_DYNAMIC_NGINX_CONF_DIR, exist_ok=True)
     with open(https_conf_path, "w", encoding="utf-8") as https_conf_file:
         https_conf_file.write(updated_content)
 
@@ -208,7 +228,6 @@ class CertificateCheckingThread:
         self._run_condition = threading.Condition()
         self._thread = threading.Thread(target=self.run, daemon=True)
         self._thread.start()
-        self.request_certificate()
 
     def get_state(self) -> CertificateState:
         with self._state_lock:
@@ -227,6 +246,7 @@ class CertificateCheckingThread:
             self._state = state
 
     def run(self):
+        logging.debug("Running certificate checking thread")
         first_start = True
         while True:
             with self._run_condition:
