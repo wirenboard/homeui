@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.8) stable; urgency=medium
+
+  * Fix device cell width overflow
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 10 Apr 2025 17:36:37 +0300
+
 wb-mqtt-homeui (2.115.7) stable; urgency=medium
 
   * Fix default values in MAI6 config
