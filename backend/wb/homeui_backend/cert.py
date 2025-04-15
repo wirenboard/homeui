@@ -194,7 +194,7 @@ def update_nginx_config(sn: str) -> None:
     with open(f"{NGINX_TEMPLATES_DIR}/https.conf", "r", encoding="utf-8") as template_file:
         template_content = template_file.read()
 
-    updated_content = template_content.replace("SHORT_SN", sn)
+    updated_content = template_content.format(short_sn=sn)
 
     os.makedirs(WB_DYNAMIC_NGINX_CONF_DIR, exist_ok=True)
     with open(https_conf_path, "w", encoding="utf-8") as https_conf_file:
