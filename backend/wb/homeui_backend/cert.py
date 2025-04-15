@@ -23,6 +23,10 @@ NGINX_TEMPLATES_DIR = "/usr/share/wb-mqtt-homeui/nginx-templates"
 WB_DYNAMIC_NGINX_CONF_DIR = "/var/lib/wb-homeui/nginx"
 WB_NGINX_INCLUDES_DIR = "/etc/nginx/includes/default.wb.d"
 
+CERT_CHECK_INTERVAL_S = 60 * 60 * 24  # 24 hours
+MIN_DAYS_BEFORE_RENEW = 15
+CURL_TIMEOUT_S = 120  # 2 minutes
+
 
 def make_domain_name(sn: str) -> str:
     return f"*.{sn}.ip.wirenboard.com"
@@ -38,10 +42,13 @@ def get_keyspec() -> str:
     return KEYSPEC_WB7_WB8
 
 
-def is_about_to_expire(cert_pem_file_name: str) -> bool:
+def load_certificate(cert_pem_file_name: str) -> x509.Certificate:
     with open(cert_pem_file_name, "rb") as cert_file:
-        cert_data = x509.load_pem_x509_certificate(cert_file.read())
-        return (cert_data.not_valid_after - datetime.datetime.now()).days < 15
+        return x509.load_pem_x509_certificate(cert_file.read())
+
+
+def has_enough_lifetime(cert: x509.Certificate) -> bool:
+    return (cert.not_valid_after - datetime.datetime.now()).days >= MIN_DAYS_BEFORE_RENEW
 
 
 def generate_private_key() -> rsa.RSAPrivateKey:
@@ -100,61 +107,53 @@ def swap_certs(original_pem_file_name, resulting_pem_file_name):
     Swap certificates in original file and store as a new file
     """
     with open(original_pem_file_name, "r", encoding="utf-8") as original_cert_file:
-        cert_lines = original_cert_file.readlines()
-
-    certs = []
-    current_cert = []
-    for line in cert_lines:
-        if "BEGIN CERTIFICATE" in line:
-            if current_cert:
-                certs.append(current_cert)
-                current_cert = []
-        current_cert.append(line)
-    if current_cert:
-        certs.append(current_cert)
+        certs = x509.load_pem_x509_certificate(original_cert_file.read())
 
     if len(certs) >= 2:
         certs = [certs[1], certs[0]]
 
     with open(resulting_pem_file_name, "w", encoding="utf-8") as request_cert_file:
         for cert in certs:
-            request_cert_file.writelines(cert)
+            request_cert_file.write(cert.public_bytes(serialization.Encoding.PEM).decode("utf-8"))
 
 
-def request_certificate(
-    cert_pem_file_name: str, keyspec: str, csr_file_name: str, output_file_name: str
-) -> str:
+def request_certificate(cert_pem_file_name: str, keyspec: str, csr_file_name: str) -> str:
     logging.debug("Requesting certificate")
 
-    curl_command = [
-        "curl",
-        "-s",
-        "-o",
-        output_file_name,
-        "-w",
-        "%{http_code}",
-        "--cert",
-        cert_pem_file_name,
-        "--key",
-        keyspec,
-        "--engine",
-        "ateccx08",
-        "--key-type",
-        "ENG",
-        "-X",
-        "POST",
-        "-F",
-        f"csr=@{csr_file_name}",
-        "https://sslip-cert.wirenboard.com/api/v1/issue",
-    ]
+    with tempfile.NamedTemporaryFile() as output_file:
+        curl_command = [
+            "curl",
+            "-s",
+            "-o",
+            output_file.name,
+            "-w",
+            "%{http_code}",
+            "--cert",
+            cert_pem_file_name,
+            "--key",
+            keyspec,
+            "--engine",
+            "ateccx08",
+            "--key-type",
+            "ENG",
+            "-X",
+            "POST",
+            "-F",
+            f"csr=@{csr_file_name}",
+            "https://sslip-cert.wirenboard.com/api/v1/issue",
+            "-m",
+            str(CURL_TIMEOUT_S),
+        ]
 
-    result = subprocess.run(curl_command, capture_output=True, text=True, check=True)
-    http_result_code = int(result.stdout.strip())
-    if http_result_code != 200:
-        raise RuntimeError(f"Error getting certificate. HTTP code: {http_result_code}")
+        result = subprocess.run(
+            curl_command, capture_output=True, text=True, check=True, timeout=1.5 * CURL_TIMEOUT_S
+        )
+        http_result_code = int(result.stdout.strip())
+        if http_result_code != 200:
+            raise RuntimeError(f"Error getting certificate. HTTP code: {http_result_code}")
 
-    # Successfully got certificate
-    with open(output_file_name, "r", encoding="utf-8") as output_file:
+        # Successfully got certificate
+        output_file.seek(0)
         fullchain_pem = json.loads(output_file.read()).get("fullchain_pem")
         if not fullchain_pem:
             raise RuntimeError("fullchain_pem not found in the response")
@@ -165,23 +164,21 @@ def update_cert(sn: str) -> None:
     domain = make_domain_name(sn)
     private_key = generate_private_key()
     csr = generate_csr(private_key, domain)
-    with tempfile.NamedTemporaryFile() as csr_file:
-        with tempfile.NamedTemporaryFile() as request_cert_file:
-            with tempfile.NamedTemporaryFile() as output_temp_file:
-                csr_file.write(csr.public_bytes(serialization.Encoding.PEM))
-                csr_file.flush()
-                swap_certs(DEVICE_ORIGINAL_CERT, request_cert_file.name)
-                fullchain_pem = request_certificate(
-                    request_cert_file.name, get_keyspec(), csr_file.name, output_temp_file.name
-                )
-                save_private_key(SSL_CERT_KEY_PATH, private_key)
-                with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
-                    cert_file.write(fullchain_pem)
+    with tempfile.NamedTemporaryFile() as csr_file, tempfile.NamedTemporaryFile() as request_cert_file:
+        csr_file.write(csr.public_bytes(serialization.Encoding.PEM))
+        csr_file.flush()  # dump csr to disk to use it in curl request
 
-                logging.debug("Generating DH parameters")
-                subprocess.run(["openssl", "dhparam", "-out", "/etc/ssl/dhparam.pem", "256"], check=True)
+        swap_certs(DEVICE_ORIGINAL_CERT, request_cert_file.name)
 
-                logging.info("Certificate updated successfully")
+        fullchain_pem = request_certificate(request_cert_file.name, get_keyspec(), csr_file.name)
+        save_private_key(SSL_CERT_KEY_PATH, private_key)
+        with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
+            cert_file.write(fullchain_pem)
+
+        logging.debug("Generating DH parameters")
+        subprocess.run(["openssl", "dhparam", "-out", "/etc/ssl/dhparam.pem", "256"], check=True)
+
+        logging.info("Certificate updated successfully")
 
 
 def update_nginx_config(sn: str) -> None:
@@ -217,7 +214,6 @@ class CertificateState(Enum):
     VALID = "valid"
     REQUESTING = "requesting"
     UNAVAILABLE = "unavailable"
-    EXPIRED = "expired"
 
 
 class CertificateCheckingThread:
@@ -251,24 +247,26 @@ class CertificateCheckingThread:
         while True:
             with self._run_condition:
                 if not first_start:
-                    self._run_condition.wait(60 * 60 * 24)
+                    self._run_condition.wait(CERT_CHECK_INTERVAL_S)
                 first_start = False
+
+                state_on_update_fail = CertificateState.UNAVAILABLE
                 self._set_state(CertificateState.REQUESTING)
                 try:
-                    if is_about_to_expire(SSL_CERT_PATH):
-                        state_on_fail = CertificateState.EXPIRED
-                        logging.warning("Certificate is about to expire")
-                    else:
+                    cert = load_certificate(SSL_CERT_PATH)
+                    if has_enough_lifetime(cert):
                         self._set_state(CertificateState.VALID)
                         logging.debug("Certificate is valid")
                         continue
+                    state_on_update_fail = CertificateState.VALID
+                    logging.debug("Certificate needs renewal")
                 except Exception as e:
-                    state_on_fail = CertificateState.UNAVAILABLE
                     logging.debug("Error checking certificate: %s", e)
+
                 try:
                     update_cert(self.sn)
                     self._set_state(CertificateState.VALID)
                     update_nginx_config(self.sn)
                 except Exception as e:
                     logging.error("Error updating certificate: %s", e)
-                    self._set_state(state_on_fail)
+                    self._set_state(state_on_update_fail)
