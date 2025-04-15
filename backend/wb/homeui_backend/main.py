@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import logging
 import os
 import socketserver
 import sqlite3
@@ -17,6 +18,7 @@ from urllib.parse import urlparse
 import bcrypt
 import jwt
 
+from .cert import CertificateCheckingThread
 from .http_response import (
     HttpResponse,
     response_200,
@@ -120,6 +122,7 @@ class WebRequestHandlerContext:
     user: User = None
     users_storage: UsersStorage = None
     keys_storage: KeysStorage = None
+    certificate_thread: CertificateCheckingThread = None
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
@@ -279,7 +282,11 @@ def get_users_handler(request: BaseHTTPRequestHandler, context: WebRequestHandle
 
 def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     host_ip = request.headers.get("X-Forwarded-Host-Ip", "")
-    res = {"sn": context.sn, "ip": host_ip}
+    res = {
+        "sn": context.sn,
+        "ip": host_ip,
+        "https_cert": context.certificate_thread.get_state().value,
+    }
     return response_200(
         [
             ["Content-type", "application/json"],
@@ -287,6 +294,11 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
         ],
         json.dumps(res),
     )
+
+
+def https_setup_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    context.certificate_thread.request_certificate()
+    return response_200()
 
 
 def find_handler(url: str, handlers: dict) -> Optional[callable]:
@@ -307,6 +319,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     keys_storage: KeysStorage = None
     enable_debug: bool = False
     sn: str = ""
+    certificate_thread: CertificateCheckingThread = None
 
     def process_response(self, response: HttpResponse) -> None:
         if response.status == 200:
@@ -331,7 +344,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 current_user = get_current_user(self, self.users_storage, self.keys_storage)
                 response = handler(
                     self,
-                    WebRequestHandlerContext(self.sn, current_user, self.users_storage, self.keys_storage),
+                    WebRequestHandlerContext(
+                        self.sn, current_user, self.users_storage, self.keys_storage, self.certificate_thread
+                    ),
                 )
         except Exception as e:
             response = response_500("%s\n%s" % (str(e), traceback.format_exc()))
@@ -353,6 +368,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/users": add_user_handler,
                 "/auth/login": auth_login_handler,
                 "/auth/logout": auth_logout_handler,
+                "/api/https/setup": https_setup_handler,
             }
         )
 
@@ -369,11 +385,12 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def send_error(self, code, message=None, explain=None):
         self.error_message_format = "%(explain)s"
         try:
-            return super().send_error(code, message, explain)
+            super().send_error(code, message, explain)
         except BrokenPipeError:
             # nginx may close the connection before we send the response
             # resulting in a broken pipe error
             self.log_message("Failed to send error response: broken pipe")
+
 
 class UnixSocketHttpServer(socketserver.UnixStreamServer):
     def get_request(self):
@@ -413,16 +430,25 @@ def main():
     parser.add_argument("--db-file", default=DEFAULT_DB_FILE, help="Database file path")
     args = parser.parse_args()
 
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(levelname)s:%(message)s",
+    )
+
     con = open_db(args.db_file, DB_SCHEMA_VERSION)
+
+    sn = get_sn()
+
+    WebRequestHandler.users_storage = UsersStorage(con)
+    WebRequestHandler.keys_storage = KeysStorage(con)
+    WebRequestHandler.enable_debug = args.debug
+    WebRequestHandler.sn = sn
+    WebRequestHandler.certificate_thread = CertificateCheckingThread(sn)
 
     try:
         os.remove(args.socket_file)
     except OSError:
         pass
-    WebRequestHandler.users_storage = UsersStorage(con)
-    WebRequestHandler.keys_storage = KeysStorage(con)
-    WebRequestHandler.enable_debug = args.debug
-    WebRequestHandler.sn = get_sn()
     server = UnixSocketHttpServer((args.socket_file), WebRequestHandler)
     os.chmod(args.socket_file, 0o662)
     server.serve_forever()

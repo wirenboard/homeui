@@ -26,3 +26,4 @@ coverage
 
 .coveragerc
 .prettierrc
+.config

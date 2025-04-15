@@ -1,6 +1,5 @@
 [Unit]
 Description=Backend service for Wiren Board web interface
-After=nginx.service
 
 [Service]
 Type=simple
