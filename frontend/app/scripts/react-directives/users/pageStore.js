@@ -190,7 +190,7 @@ class UsersPageStore {
     }
     const res = await this.fetchWrapper(() =>
       fetch(`/auth/users/${user.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },

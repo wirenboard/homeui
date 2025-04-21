@@ -51,15 +51,24 @@ def has_enough_lifetime(cert: x509.Certificate) -> bool:
     return (cert.not_valid_after - datetime.datetime.now()).days >= MIN_DAYS_BEFORE_RENEW
 
 
-def generate_private_key() -> rsa.RSAPrivateKey:
+def read_or_generate_private_key(file_name: str) -> rsa.RSAPrivateKey:
+    try:
+        with open(file_name, "rb") as key_file:
+            private_key = serialization.load_pem_private_key(
+                key_file.read(),
+                password=None,
+            )
+            if isinstance(private_key, rsa.RSAPrivateKey):
+                return private_key
+            logging.debug("Data in %s is not RSA private key", file_name)
+    except Exception as e:
+        logging.debug("Error loading private key from file: %s", e)
+
     logging.debug("Generating private key")
-    return rsa.generate_private_key(
+    private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048,
     )
-
-
-def save_private_key(file_name, private_key: rsa.RSAPrivateKey) -> None:
     with open(file_name, "wb") as file:
         file.write(
             private_key.private_bytes(
@@ -68,6 +77,7 @@ def save_private_key(file_name, private_key: rsa.RSAPrivateKey) -> None:
                 encryption_algorithm=serialization.NoEncryption(),
             )
         )
+    return private_key
 
 
 def generate_csr(private_key: rsa.RSAPrivateKey, domain_name: str) -> x509.CertificateSigningRequest:
@@ -106,15 +116,23 @@ def swap_certs(original_pem_file_name, resulting_pem_file_name):
     """
     Swap certificates in original file and store as a new file
     """
+    logging.debug("Swapping certificates")
     with open(original_pem_file_name, "r", encoding="utf-8") as original_cert_file:
-        certs = x509.load_pem_x509_certificate(original_cert_file.read())
+        certs_data = original_cert_file.read()
+
+    cert_header = "-----BEGIN CERTIFICATE-----"
+    certs = []
+    for cert_data in certs_data.split(cert_header):
+        if cert_data.strip():
+            cert_data = cert_header + cert_data
+            certs.append(cert_data)
 
     if len(certs) >= 2:
         certs = [certs[1], certs[0]]
 
     with open(resulting_pem_file_name, "w", encoding="utf-8") as request_cert_file:
         for cert in certs:
-            request_cert_file.write(cert.public_bytes(serialization.Encoding.PEM).decode("utf-8"))
+            request_cert_file.write(cert)
 
 
 def request_certificate(cert_pem_file_name: str, keyspec: str, csr_file_name: str) -> str:
@@ -162,7 +180,7 @@ def request_certificate(cert_pem_file_name: str, keyspec: str, csr_file_name: st
 
 def update_cert(sn: str) -> None:
     domain = make_domain_name(sn)
-    private_key = generate_private_key()
+    private_key = read_or_generate_private_key(SSL_CERT_KEY_PATH)
     csr = generate_csr(private_key, domain)
     with tempfile.NamedTemporaryFile() as csr_file, tempfile.NamedTemporaryFile() as request_cert_file:
         csr_file.write(csr.public_bytes(serialization.Encoding.PEM))
@@ -171,7 +189,6 @@ def update_cert(sn: str) -> None:
         swap_certs(DEVICE_ORIGINAL_CERT, request_cert_file.name)
 
         fullchain_pem = request_certificate(request_cert_file.name, get_keyspec(), csr_file.name)
-        save_private_key(SSL_CERT_KEY_PATH, private_key)
         with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
             cert_file.write(fullchain_pem)
 
@@ -220,8 +237,8 @@ class CertificateCheckingThread:
     def __init__(self, sn: str):
         self.sn = sn
         self._state_lock = threading.Lock()
-        self._state: CertificateState = CertificateState.UNAVAILABLE
-        self._run_condition = threading.Condition()
+        self._state: CertificateState = CertificateState.REQUESTING
+        self._request_condition = threading.Condition(self._state_lock)
         self._thread = threading.Thread(target=self.run, daemon=True)
         self._thread.start()
 
@@ -230,12 +247,11 @@ class CertificateCheckingThread:
             return self._state
 
     def request_certificate(self) -> None:
-        with self._state_lock:
+        with self._request_condition:
             if self._state == CertificateState.REQUESTING:
                 return
-            self._set_state(CertificateState.REQUESTING)
-        with self._run_condition:
-            self._run_condition.notify()
+            self._state = CertificateState.REQUESTING
+            self._request_condition.notify_all()
 
     def _set_state(self, state: CertificateState) -> None:
         with self._state_lock:
@@ -243,30 +259,29 @@ class CertificateCheckingThread:
 
     def run(self):
         logging.debug("Running certificate checking thread")
-        first_start = True
         while True:
-            with self._run_condition:
-                if not first_start:
-                    self._run_condition.wait(CERT_CHECK_INTERVAL_S)
-                first_start = False
+            with self._request_condition:
+                self._request_condition.wait_for(
+                    lambda: self._state == CertificateState.REQUESTING, timeout=CERT_CHECK_INTERVAL_S
+                )
 
-                state_on_update_fail = CertificateState.UNAVAILABLE
-                self._set_state(CertificateState.REQUESTING)
-                try:
-                    cert = load_certificate(SSL_CERT_PATH)
-                    if has_enough_lifetime(cert):
-                        self._set_state(CertificateState.VALID)
-                        logging.debug("Certificate is valid")
-                        continue
-                    state_on_update_fail = CertificateState.VALID
-                    logging.debug("Certificate needs renewal")
-                except Exception as e:
-                    logging.debug("Error checking certificate: %s", e)
-
-                try:
-                    update_cert(self.sn)
+            state_on_update_fail = CertificateState.UNAVAILABLE
+            self._set_state(CertificateState.REQUESTING)
+            try:
+                cert = load_certificate(SSL_CERT_PATH)
+                if has_enough_lifetime(cert):
                     self._set_state(CertificateState.VALID)
-                    update_nginx_config(self.sn)
-                except Exception as e:
-                    logging.error("Error updating certificate: %s", e)
-                    self._set_state(state_on_update_fail)
+                    logging.debug("Certificate is valid")
+                    continue
+                state_on_update_fail = CertificateState.VALID
+                logging.debug("Certificate needs renewal")
+            except Exception as e:
+                logging.debug("Error checking certificate: %s", e)
+
+            try:
+                update_cert(self.sn)
+                update_nginx_config(self.sn)
+                self._set_state(CertificateState.VALID)
+            except Exception as e:
+                logging.error("Error updating certificate: %s", e)
+                self._set_state(state_on_update_fail)

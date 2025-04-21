@@ -1276,3 +1276,15 @@ nav.disabled a {
 nav.disabled .navbar-toggle {
   display: none;
 }
+
+body #https-setup-label {
+  color: white;
+  font-size: 14px;
+  display: none;
+  justify-content: center;
+  position: absolute;
+  top: 55%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

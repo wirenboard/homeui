@@ -1,5 +1,11 @@
 const WIRENBOARD_DNS_POSTFIX = 'ip.wirenboard.com';
 
+const CertificateStatus = Object.freeze({
+  VALID: 'valid',
+  REQUESTING: 'requesting',
+  UNAVAILABLE: 'unavailable'
+});
+
 function isIp(host) {
   const ipComponents = host.split('.');
   if (ipComponents.length !== 4) {
@@ -31,6 +37,48 @@ function getIpForHttpsDomainName(hostname, deviceIp) {
   return isIp(deviceIp) ? deviceIp : null;
 }
 
+async function waitCertificate() {
+  const MAX_WAIT_TIME = 120000; // 2 minutes
+  const CHECK_INTERVAL = 1000; // 1 second
+  const startTime = Date.now();
+  while (Date.now() - startTime < MAX_WAIT_TIME) {
+    await new Promise(resolve => setTimeout(resolve, CHECK_INTERVAL));
+    try {
+      const response = await fetch('/device/info', { method: 'GET' });
+      if (response.status === 200) {
+        const deviceInfo = await response.json();
+        const certStatus = deviceInfo.https_cert || CertificateStatus.UNAVAILABLE;
+        if (certStatus !== CertificateStatus.REQUESTING) {
+          return certStatus;
+        }
+      }
+    } catch (e) {
+      // Ignore errors and retry
+    }
+  }
+  return CertificateStatus.UNAVAILABLE;
+}
+
+async function hasInvalidCertificate(certStatus) {
+  if (certStatus === CertificateStatus.VALID) {
+    return false;
+  }
+  if (certStatus === CertificateStatus.REQUESTING) {
+    certStatus = await waitCertificate();
+    return (certStatus !== CertificateStatus.VALID)
+  }
+  try {
+    const response = await fetch('/api/https/setup', { method: 'POST' });
+    if (response.status === 200) {
+      certStatus = await waitCertificate();
+      return (certStatus !== CertificateStatus.VALID);
+    }
+  } catch (e) {
+    // Ignore errors
+  }
+  return true;
+}
+
 /**
  * Checks the current protocol and attempts to redirect to an HTTPS version of the site if applicable.
  * 
@@ -50,12 +98,16 @@ export async function checkHttps() {
     return 'ok';
   }
 
-  if (isIp(window.location.hostname) || isLocalDomain(window.location.hostname)) {
+  const host = window.location.hostname;
+  if (isIp(host) || isLocalDomain(host)) {
     try {
       let response = await fetch('/device/info');
       if (response.status === 200) {
         const deviceInfo = await response.json();
         if (!isDeviceSn(deviceInfo.sn)) {
+          return 'warn';
+        }
+        if (await hasInvalidCertificate(deviceInfo.https_cert)) {
           return 'warn';
         }
         const ip = getIpForHttpsDomainName(window.location.hostname, deviceInfo.ip);

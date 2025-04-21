@@ -348,6 +348,7 @@ module.exports = (function makeWebpackConfig() {
           '/auth/logout',
           '/mqtt',
           '/device/info',
+          '/api/https/setup'
         ],
         target: 'http://10.200.200.1',
         ws: true,

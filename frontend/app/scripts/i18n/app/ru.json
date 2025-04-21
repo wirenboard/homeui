@@ -19,6 +19,9 @@
             "user": "Пользователь",
             "operator": "Оператор",
             "admin": "Администратор"
+        },
+        "labels": {
+            "setting-up-https": "Настройка HTTPS"
         }
     },
     "home": {

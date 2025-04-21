@@ -106,6 +106,7 @@ import LoginFormModule from './components/loginForm/index';
 
 import { checkHttps } from './utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
+import angular from 'angular';
 //-----------------------------------------------------------------------------
 /**
  * @ngdoc overview
@@ -534,11 +535,17 @@ const realApp = angular
         });
       });
 
+      let httpsSetupTimer = setTimeout(() => {
+        angular.element('#https-setup-label')[0].style.display = 'flex';
+      }, 1000);
+
       let hideGlobalSpinner = true;
       let connectToMqtt = true;
       $transitions.onBefore({}, function (transition) {
         return fillUserType(rolesFactory).then(fillUserTypeResult => {
           if (hideGlobalSpinner) {
+            clearTimeout(httpsSetupTimer);
+            angular.element('#https-setup-label').remove();
             angular.element('double-bounce-spinner').remove();
             angular.element('#wrapper').removeClass('fade');
             hideGlobalSpinner = false;
