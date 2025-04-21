@@ -99,7 +99,7 @@ export async function checkHttps() {
   }
 
   const host = window.location.hostname;
-  if (isIp(host) || isLocalDomain(host) || host == 'localhost') {
+  if (isIp(host) || isLocalDomain(host)) {
     try {
       let response = await fetch('/device/info');
       if (response.status === 200) {

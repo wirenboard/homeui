@@ -19,6 +19,9 @@
             "user": "User",
             "operator": "Operator",
             "admin": "Administrator"
+        },
+        "labels": {
+            "setting-up-https": "Setting up HTTPS"
         }
     },
     "home": {
