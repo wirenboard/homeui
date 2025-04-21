@@ -3,7 +3,7 @@ import { setReactLocale } from '../locale';
 import CreateLoginPage from './loginPage';
 import LoginPageStore from './store';
 
-function loginPageDirective(rolesFactory, $rootScope, $state) {
+function loginPageDirective(rolesFactory, $state) {
   'ngInject';
 
   setReactLocale();
@@ -12,9 +12,6 @@ function loginPageDirective(rolesFactory, $rootScope, $state) {
     restrict: 'E',
     scope: {},
     link(scope, element) {
-      $rootScope.noConsole = true;
-      $rootScope.disableNavigation = true;
-
       if (scope.root) {
         scope.root.unmount();
       }
@@ -29,8 +26,6 @@ function loginPageDirective(rolesFactory, $rootScope, $state) {
 
       element.on('$destroy', () => {
         scope.root.unmount();
-        $rootScope.noConsole = false;
-        $rootScope.disableNavigation = false;
       });
     },
   };

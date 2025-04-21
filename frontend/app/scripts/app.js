@@ -307,7 +307,7 @@ module
     },
   ]);
 
-module.run(($rootScope, $state, $transitions) => {
+module.run(($rootScope, $state, $transitions, rolesFactory) => {
   'ngInject';
 
   $rootScope.$state = $state;
@@ -345,6 +345,15 @@ module.run(($rootScope, $state, $transitions) => {
     localStorage.setItem('theme', themes[themeIndex + 1] || themes[0]);
     $rootScope.theme = localStorage.getItem('theme');
   };
+
+  $rootScope.allowWbRulesDebug = () => {
+    return rolesFactory.checkRights(rolesFactory.ROLE_THREE);
+  }
+
+  $rootScope.disableNavigation = () => {
+    return !rolesFactory.isAuthenticated();
+  }
+
 });
 
 //-----------------------------------------------------------------------------
@@ -517,7 +526,12 @@ const realApp = angular
       );
 
       whenMqttReady()
-        .then(() => DeviceManagerProxy.Stop())
+        .then(() => {
+          if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
+            return DeviceManagerProxy.Stop();
+          }
+          return false;
+        })
         .then(result => {
           if (result == 'Ok') {
             $translate('app.errors.stop-scan').then(m => ngToast.danger(m));
@@ -554,6 +568,16 @@ const realApp = angular
             return transition.to().name === 'login' ? true : $state.target('login');
           }
           if (connectToMqtt) {
+            const loginUrl = new URL('/mqtt', $window.location.origin);
+            let loginData = {
+              url: loginUrl.href,
+            };
+            // Use old credentials if authentication is not configured
+            if (!rolesFactory.hasConfiguredAdmin) {
+              loginData.user = $window.localStorage['user'];
+              loginData.password = $window.localStorage['password'];
+              loginData.prefix = $window.localStorage['prefix'];
+            }
             $rootScope.requestConfig(loginData);
             connectToMqtt = false;
           }

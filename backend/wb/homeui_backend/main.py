@@ -145,7 +145,7 @@ def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     required_user_type = get_required_user_type(request)
     if context.user.has_access_to(required_user_type):
-        return response_200()
+        return response_200(headers=[["Wb-User-Type", context.user.type.value]])
     return response_403()
 
 

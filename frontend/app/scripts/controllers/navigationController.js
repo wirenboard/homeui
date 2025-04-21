@@ -36,10 +36,12 @@ class NavigationCtrl {
       needToLoadConfigs = false;
 
     whenMqttReady().then(function () {
-      needToLoadScripts = needToLoadConfigs = true;
-      mqttClient.subscribe('/wbrules/updates/+', function () {
-        needToLoadScripts = true;
-      });
+      if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
+        needToLoadScripts = needToLoadConfigs = true;
+        mqttClient.subscribe('/wbrules/updates/+', function () {
+          needToLoadScripts = true;
+        });
+      }
     });
 
     $scope.getScripts = function () {

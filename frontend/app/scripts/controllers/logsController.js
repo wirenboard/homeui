@@ -99,7 +99,7 @@ class LogsCtrl {
           vm.loadBootsAndServices();
         } else {
           this.enableSpinner = false;
-          this.errors.catch('log.labels.unavailable')();
+          this.errors.catch('logs.labels.unavailable')();
         }
       })
       .catch(err => {
