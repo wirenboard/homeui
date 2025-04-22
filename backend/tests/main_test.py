@@ -119,7 +119,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
         self.request.headers = {"Required-User-Type": "user"}
         self.context.user = User("1", "user", "password", UserType.USER)
         response = auth_check_handler(self.request, self.context)
-        self.assertEqual(response, response_200())
+        self.assertEqual(response, response_200(headers=[["Wb-User-Type", "user"]]))
 
     def test_required_admin_user_with_users(self):
         self.context.users_storage.has_users.return_value = True
@@ -133,7 +133,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
         self.request.headers = {"Required-User-Type": "user"}
         self.context.user = User("1", "user", "password", UserType.ADMIN)
         response = auth_check_handler(self.request, self.context)
-        self.assertEqual(response, response_200())
+        self.assertEqual(response, response_200(headers=[["Wb-User-Type", "admin"]]))
 
     def test_allow_if_no_users(self):
         self.context.users_storage.has_users.return_value = False

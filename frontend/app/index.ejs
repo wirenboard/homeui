@@ -35,7 +35,7 @@
       </div>
 
       <!-- Navigation -->
-      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl' ng-class="{ 'disabled': disableNavigation }">
+      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl' ng-class="{ 'disabled': disableNavigation() }">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse" ng-click="toggleNavigation()">
@@ -161,18 +161,21 @@
 
   </div>
 
-  <div class="console ng-hide" ng-show="consoleVisible">
-      <console></console>
-      <button type="button" name="close" class="close"
-              ng-click="consoleVisible = false">
-          <span class="glyphicon glyphicon-remove"></span>
-      </button>
-  </div>
+    <div ng-if="allowWbRulesDebug()">
+        <div class="console ng-hide" ng-show="consoleVisible">
+            <console></console>
+            <button type="button" name="close" class="close"
+                    ng-click="consoleVisible = false">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+        </div>
 
-  <button type="button" class="btn-default btn-lg show-console-button"
-          ng-hide="consoleVisible"
-          ng-click="consoleVisible = true">
-      <span class="glyphicon glyphicon-wrench"></span>
-  </button>
+        <button type="button" class="btn-default btn-lg show-console-button"
+                ng-hide="consoleVisible"
+                ng-click="consoleVisible = true">
+            <span class="glyphicon glyphicon-wrench"></span>
+        </button>
+    </div>
+
   </body>
 </html>
