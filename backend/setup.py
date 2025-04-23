@@ -7,7 +7,7 @@ from setuptools import setup
 
 def get_version():
     with open("../debian/changelog", "r", encoding="utf-8") as f:
-        return re.match(r"wb-mqtt-homeui \((?P<version>.*)\)", f.readline()).group("version")
+        return re.match(r"wb-mqtt-homeui \((?P<version>.*)\)", f.readline()).group("version").split("~")[0]
 
 
 setup(
