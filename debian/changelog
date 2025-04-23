@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.11-wb101-cb8ea449) stable; urgency=medium
+
+  * Vendor (cb8ea449): ONI branding/assets and device naming fixes from 2.107.7
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Tue, 22 Apr 2025 18:48:00 +0300
+
 wb-mqtt-homeui (2.117.11-wb101) stable; urgency=medium
 
   * Disable change range value on touch by clicking on slide (only thumb enabled)
