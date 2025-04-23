@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.107.7-wb101-cb8ea449) stable; urgency=medium
+
+  * Merge vendor related changes from 2307-cb8ea449 custom release
+  * Fix some translates
+  * Fix mio and mio-e names in scanning
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Tue, 22 Apr 2025 18:48:00 +0300
+
 wb-mqtt-homeui (2.107.7-wb101) stable; urgency=medium
 
   * Rework diag collect to async backend
