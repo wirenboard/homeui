@@ -36,7 +36,7 @@ def to_chunks(fp, chunk_size=8192):
         yield bs
 
 
-class DiskFieldStorage(FieldStorage):
+class DiskFieldStorage(FieldStorage):  # pylint: disable=too-few-public-methods
     """
     Default FieldStorage's make_file implementation produces tempfile in /tmp dir
     Which is not appropriate due to the lack of free space on wb
@@ -85,13 +85,13 @@ def main():
     if hasattr(uploading_file, "filename") and hasattr(uploading_file, "file"):
         fname = uploading_file.filename or "fwupdate"
         fp_upload = uploading_file.file
+
+        with open(os.path.join(rw_dir, fname), "wb") as fp_save:  # wb-watch-update triggers on fd close
+            for chunk in to_chunks(fp_upload):
+                fp_save.write(chunk)
+        sys.stdout.write("Status: 200\r\n\r\n")
     else:
         _error("Incorrect request body")
-
-    with open(os.path.join(rw_dir, fname), "wb") as fp_save:  # wb-watch-update triggers on fd close
-        for chunk in to_chunks(fp_upload):
-            fp_save.write(chunk)
-    sys.stdout.write("Status: 200\r\n\r\n")
 
 
 try:
