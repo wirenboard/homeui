@@ -6,6 +6,7 @@ Standards-Version: 4.5.1
 X-Python3-Version: >= 3.9
 Build-Depends: debhelper (>= 10),
                nodejs (>= 18),
+               npm,
                j2cli,
                minify,
                rsync,
