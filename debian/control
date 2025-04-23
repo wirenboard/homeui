@@ -29,7 +29,7 @@ Package: wb-homeui-backend
 Architecture: all
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         ${python3:Depends},
+         python3,
          fcgiwrap,
          pigz,
          jq,

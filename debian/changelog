@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.9) stable; urgency=medium
+
+  * Fix build
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 23 Apr 2025 10:40:00 +0400
+
 wb-mqtt-homeui (2.115.8) stable; urgency=medium
 
   * Fix device cell width overflow
@@ -66,7 +72,7 @@ wb-mqtt-homeui (2.114.3) stable; urgency=medium
 
 wb-mqtt-homeui (2.114.2) stable; urgency=medium
 
-* Fix searching for disconnected devices on TCP gateways
+  * Fix searching for disconnected devices on TCP gateways
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 14 Mar 2025 10:47:30 +0500
 
