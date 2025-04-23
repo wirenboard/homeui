@@ -7,6 +7,7 @@ X-Python3-Version: >= 3.9
 Build-Depends: debhelper (>= 10),
                pkg-config,
                nodejs (>= 18),
+               npm,
                j2cli,
                minify,
                config-package-dev,
