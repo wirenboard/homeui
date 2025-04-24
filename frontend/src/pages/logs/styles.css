@@ -1,0 +1,88 @@
+.logs-filters {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    margin-bottom: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logs-filtersPattern {
+    width: 200px;
+
+    @media (max-width: 1024px) {
+        width: calc(100% - 90px);
+    }
+}
+
+.logs-info {
+    width: 18px;
+    height: 18px;
+    color: var(--text-color);
+}
+
+.logs-container {
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.logs-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+
+    @media (max-width: 500px) {
+        grid-template-columns: auto 1fr;
+    }
+}
+
+.logs-item {
+    display: contents;
+}
+
+.logs-cell {
+    padding: 2px 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logs-itemInfo {
+    display: flex;
+    gap: 16px;
+
+    @media (max-width: 1024px) {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.logs-itemWarn * {
+    background: var(--alert-warn-background);
+}
+
+.logs-itemError * {
+    background: var(--alert-danger-background);
+}
+
+.logs-itemDebug .logs-itemText {
+    font-weight: bold;
+    white-space: pre;
+}
+
+.logs-itemDate {
+    @media (max-width: 500px) {
+        width: 85px;
+    }
+}
+
+@media (max-width: 500px) {
+    .logs-filters .formFields-group {
+        width: calc(100% - 30px);
+    }
+}
+
+@media (max-width: 400px) {
+    .react-datepicker-wrapper,
+    .logs-filtersInput {
+        width: 100%;
+    }
+}

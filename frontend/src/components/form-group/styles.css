@@ -1,0 +1,15 @@
+.formFields-group *:not(:first-child):not(:last-child) {
+    border-radius: 0;
+    border-right: none;
+    border-left: none;
+}
+
+.formFields-group *:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.formFields-group *:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}

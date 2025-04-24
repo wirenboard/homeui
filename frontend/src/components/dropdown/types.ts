@@ -1,4 +1,4 @@
-interface Option {
+export interface Option {
   label: string;
   value: string | boolean | number | null;
 }
@@ -8,7 +8,11 @@ export interface DropdownProps {
   options: Option[];
   value: string | number;
   placeholder?: string;
-  onChange: (_val: Option) => void;
+  multiselect?: boolean;
+  isLoading?: boolean;
+  isClearable?: boolean;
+  isDisabled?: boolean;
+  onChange: (_val: Option | Option[]) => void;
   size?: 'default' | 'small';
   ariaLabel?: string;
 }
