@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.116.0) stable; urgency=medium
+
+  * Upgrade logs page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 24 Apr 2025 15:03:17 +0300
+
 wb-mqtt-homeui (2.115.9) stable; urgency=medium
 
   * Fix build

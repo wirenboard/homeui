@@ -8,6 +8,11 @@ export const Dropdown = ({
   className,
   value,
   placeholder,
+  multiselect,
+  isClearable,
+  isLoading,
+  isSearchable,
+  isDisabled,
   size = 'default',
   ariaLabel,
   onChange,
@@ -19,11 +24,14 @@ export const Dropdown = ({
     })}
     classNamePrefix="dropdown"
     options={options}
-    isClearable={false}
     value={options.find((option) => option.value === value)}
     placeholder={placeholder || ''}
-    isSearchable={false}
+    isSearchable={isSearchable}
     aria-label={ariaLabel}
+    isMulti={multiselect}
+    isClearable={isClearable}
+    isLoading={isLoading}
+    isDisabled={isDisabled}
     unstyled
     onChange={onChange}
   />

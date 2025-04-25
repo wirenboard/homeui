@@ -9,10 +9,12 @@
 .input:focus {
     transition: border-color 200ms linear, var(--input-active-shadow-transition);
     box-shadow: var(--input-active-shadow);
+    position: relative;
+    z-index: 100;
 }
 
 .input-m {
-    padding: 5px 12px;
+    padding: 7px 12px;
 }
 
 .input-s {
