@@ -11,6 +11,7 @@ export const Dropdown = ({
   multiselect,
   isClearable,
   isLoading,
+  isSearchable,
   isDisabled,
   size = 'default',
   ariaLabel,
@@ -25,7 +26,7 @@ export const Dropdown = ({
     options={options}
     value={options.find((option) => option.value === value)}
     placeholder={placeholder || ''}
-    isSearchable={false}
+    isSearchable={isSearchable}
     aria-label={ariaLabel}
     isMulti={multiselect}
     isClearable={isClearable}

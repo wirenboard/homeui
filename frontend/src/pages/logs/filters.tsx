@@ -33,34 +33,45 @@ export const LogsFilters = observer((
 
   return (
     <>
-      <Dropdown
-        className="logs-filtersInput"
-        value={filter.service}
-        placeholder={t('logs.labels.all-services')}
-        isLoading={!store.services.length}
-        isDisabled={!store.services.length}
-        options={store.services.map((service) => ({ label: service, value: service }))}
-        isClearable
-        onChange={(option: Option) => onFilterChange({ ...filter, service: option?.value })}
-      />
+      <Tooltip text={t('logs.labels.choose-service')}>
+        <Dropdown
+          className="logs-filtersInput"
+          ariaLabel={t('logs.labels.choose-service')}
+          value={filter.service}
+          placeholder={t('logs.labels.all-services')}
+          isLoading={!store.services.length}
+          isDisabled={!store.services.length}
+          options={store.services.map((service) => ({ label: service, value: service }))}
+          isClearable
+          isSearchable
+          onChange={(option: Option) => onFilterChange({ ...filter, service: option?.value })}
+        />
+      </Tooltip>
 
-      <Dropdown
-        className="logs-filtersInput"
-        value={filter.boot}
-        options={boots}
-        isLoading={!store.boots.length}
-        isDisabled={!store.boots.length}
-        onChange={(option: Option) => onFilterChange({ ...filter, boot: option.value })}
-      />
+      <Tooltip text={t('logs.labels.choose-boot')}>
+        <Dropdown
+          className="logs-filtersInput"
+          ariaLabel={t('logs.labels.choose-boot')}
+          value={filter.boot}
+          options={boots}
+          isLoading={!store.boots.length}
+          isDisabled={!store.boots.length}
+          isSearchable
+          onChange={(option: Option) => onFilterChange({ ...filter, boot: option.value })}
+        />
+      </Tooltip>
 
-      <Dropdown
-        className="logs-filtersInput"
-        value={filter.levels}
-        options={levels}
-        placeholder={t('logs.labels.levels')}
-        multiselect
-        onChange={(options: Option[]) => onFilterChange({ ...filter, levels: options.map((opt) => opt.value) })}
-      />
+      <Tooltip text={t('logs.labels.choose-level')}>
+        <Dropdown
+          className="logs-filtersInput"
+          ariaLabel={t('logs.labels.choose-level')}
+          value={filter.levels}
+          options={levels}
+          placeholder={t('logs.labels.levels')}
+          multiselect
+          onChange={(options: Option[]) => onFilterChange({ ...filter, levels: options.map((opt) => opt.value) })}
+        />
+      </Tooltip>
 
       <DatePicker
         className="logs-filtersInput"
@@ -74,21 +85,29 @@ export const LogsFilters = observer((
         <Input
           className="logs-filtersPattern"
           value={filter.pattern}
+          aria-label={t('logs.labels.pattern')}
           placeholder={t('logs.labels.pattern')}
           onChange={(pattern) => onFilterChange({ ...filter, pattern })}
         />
 
-        <ToggleButton
-          enabled={filter['case-sensitive']}
-          label="Aa"
-          onClick={() => onFilterChange({ ...filter, 'case-sensitive': !filter['case-sensitive'] })}
-        />
+        <Tooltip text={t('logs.buttons.case')}>
+          <ToggleButton
+            enabled={filter['case-sensitive']}
+            aria-label={t('logs.buttons.case')}
+            label="Aa"
+            onClick={() => onFilterChange({ ...filter, 'case-sensitive': !filter['case-sensitive'] })}
+          />
+        </Tooltip>
 
-        <ToggleButton
-          enabled={filter.regex}
-          label="Re"
-          onClick={() => onFilterChange({ ...filter, regex: !filter.regex })}
-        />
+        <Tooltip text={t('logs.buttons.regex')}>
+          <ToggleButton
+            enabled={filter.regex}
+            aria-label={t('logs.buttons.regex')}
+            label="Re"
+            onClick={() => onFilterChange({ ...filter, regex: !filter.regex })}
+          />
+        </Tooltip>
+
       </FormGroup>
 
       <Tooltip text={t('logs.labels.help')} placement="bottom">

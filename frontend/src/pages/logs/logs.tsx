@@ -22,7 +22,7 @@ const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: 
     time: null,
     regex: false,
     pattern: '',
-    'case-sensitive': false,
+    'case-sensitive': true,
   });
   const [hasMore, setHasMore] = useState(true);
   const [errors, setErrors] = useState([]);

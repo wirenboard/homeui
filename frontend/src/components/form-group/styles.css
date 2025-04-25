@@ -1,15 +1,26 @@
-.formFields-group *:not(:first-child):not(:last-child) {
+.formFields-group {
+    display: flex;
+}
+
+.formFields-group *:not(:first-child):not(:last-child),
+.formFields-group .wb-tooltip-container:not(:first-child):not(:last-child) * {
     border-radius: 0;
     border-right: none;
     border-left: none;
 }
 
-.formFields-group *:first-child {
+.formFields-group >:first-child,
+.formFields-group .wb-tooltip-container:first-child * {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.formFields-group *:last-child {
+.formFields-group >:last-child,
+.formFields-group .wb-tooltip-container:last-child * {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+}
+
+.formFields-group .wb-tooltip-container {
+    width: fit-content;
 }

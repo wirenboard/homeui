@@ -10,6 +10,7 @@ export interface DropdownProps {
   placeholder?: string;
   multiselect?: boolean;
   isLoading?: boolean;
+  isSearchable?: boolean;
   isClearable?: boolean;
   isDisabled?: boolean;
   onChange: (_val: Option | Option[]) => void;

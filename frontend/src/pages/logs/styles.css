@@ -82,6 +82,7 @@
 
 @media (max-width: 400px) {
     .react-datepicker-wrapper,
+    .wb-tooltip-container:has(.logs-filtersInput),
     .logs-filtersInput {
         width: 100%;
     }
