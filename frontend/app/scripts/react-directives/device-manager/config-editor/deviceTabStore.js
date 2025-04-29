@@ -1,16 +1,14 @@
-'use strict';
-
-import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
-import { getDefaultObject } from './jsonSchemaUtils';
-import { TabType } from './tabsStore';
+import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import i18n from '../../../i18n/react/config';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
+import { getDefaultObject } from './jsonSchemaUtils';
+import { TabType } from './tabsStore';
 
 function toRpcPortConfig(portConfig) {
-  if (portConfig.hasOwnProperty('address')) {
+  if (Object.hasOwn(portConfig, 'address')) {
     return {
       address: portConfig.address,
       port: portConfig.port,
@@ -277,7 +275,7 @@ export class DeviceTab {
     }
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = errors.length != 0;
+    this.hasJsonValidationErrors = errors.length !== 0;
     this.updateName();
   }
 
@@ -287,6 +285,7 @@ export class DeviceTab {
       this.schema = await this.deviceTypesStore.getSchema(type);
     } catch (err) {
       this.setError(err.message);
+      this.hasJsonValidationErrors = true;
       this.setLoading(false);
       return;
     }
@@ -344,6 +343,7 @@ export class DeviceTab {
       this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
     } catch (err) {
       this.setError(err.message);
+      this.hasJsonValidationErrors = true;
       this.setLoading(false);
       return;
     }
@@ -435,7 +435,7 @@ export class DeviceTab {
   }
 
   setError(err) {
-    this.error = err.message;
+    this.error = err;
   }
 
   clearError() {
