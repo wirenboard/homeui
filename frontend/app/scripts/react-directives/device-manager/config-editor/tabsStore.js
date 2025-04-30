@@ -170,7 +170,7 @@ export class TabsStore {
     this.items.splice(i, 0, deviceTab);
     this.hasModifiedStructure = true;
     if (selectTab) {
-      this.onSelectTab(i, this.selectedTabIndex);
+      this.onSelectTab(i);
     }
   }
 
@@ -178,7 +178,7 @@ export class TabsStore {
     this.items.push(tab);
   }
 
-  onSelectTab(index, _lastIndex) {
+  onSelectTab(index) {
     this.selectedTabIndex = index;
     if (this.mobileModeStore.inMobileMode) {
       this.mobileModeStore.showContentPanel();
@@ -193,7 +193,7 @@ export class TabsStore {
   selectTab(tab) {
     let index = this.items.indexOf(tab);
     if (index !== -1) {
-      this.onSelectTab(index, this.selectedTabIndex);
+      this.onSelectTab(index);
     }
   }
 
