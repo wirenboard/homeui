@@ -1,5 +1,3 @@
-'use strict';
-
 import { action, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
 
 function getMqttIdFromTopic(topic) {
@@ -17,9 +15,9 @@ class UniqueMqttIdChecker {
     deviceTabsWithSameId.forEach((tabItem, index, arr) => {
       let others = [];
       if (tabItem.tab.slaveId !== undefined) {
-        others = arr.filter(tab => tab != tabItem);
+        others = arr.filter((tab) => tab !== tabItem);
       }
-      tabItem.tab.setDevicesWithTheSameId(others.map(d => `${d.tab.name} (${d.port.name})`));
+      tabItem.tab.setDevicesWithTheSameId(others.map((d) => `${d.tab.name} (${d.port.name})`));
     });
   }
 
@@ -41,8 +39,8 @@ class UniqueMqttIdChecker {
 
   extractTabItem(id, deviceTab) {
     let deviceTabs = this.idToTab[id] || [];
-    let tabIndex = deviceTabs.findIndex(tab => tab.tab === deviceTab);
-    if (tabIndex == -1) {
+    let tabIndex = deviceTabs.findIndex((tab) => tab.tab === deviceTab);
+    if (tabIndex === -1) {
       return;
     }
     const tabItem = deviceTabs[tabIndex];
@@ -59,7 +57,7 @@ class UniqueMqttIdChecker {
 
   updateTab(deviceTab) {
     const id = this.tabToId.get(deviceTab);
-    if (id === undefined || id == deviceTab.mqttId) {
+    if (id === undefined || id === deviceTab.mqttId) {
       return;
     }
 
@@ -118,7 +116,7 @@ export class MobileModeTabsStore {
   }
 
   setMobileMode(value) {
-    if (this.inMobileMode != value) {
+    if (this.inMobileMode !== value) {
       this.inMobileMode = value;
       this.showTabsPanel();
     }
@@ -139,7 +137,7 @@ export class TabsStore {
 
   addPortTab(tab, initial) {
     let i = this.items.length;
-    if (i > 0 && this.items[i - 1].type == TabType.SETTINGS) {
+    if (i > 0 && this.items[i - 1].type === TabType.SETTINGS) {
       i--;
     }
     this.items.splice(i, 0, tab);
@@ -150,7 +148,7 @@ export class TabsStore {
         this.mobileModeStore.showContentPanel();
       }
     }
-    tab.children.forEach(child => {
+    tab.children.forEach((child) => {
       i++;
       this.items.splice(i, 0, child);
       this.uniqueMqttIdChecker.addTab(tab, child);
@@ -159,14 +157,14 @@ export class TabsStore {
 
   addDeviceTab(portTab, deviceTab, selectTab) {
     let portTabIndex = this.items.indexOf(portTab);
-    if (portTabIndex == -1) {
+    if (portTabIndex === -1) {
       return;
     }
     portTab.addChildren(deviceTab);
     portTab.restore();
     this.uniqueMqttIdChecker.addTab(portTab, deviceTab);
     let i = portTabIndex + 1;
-    while (i < this.items.length && this.items[i]?.type == TabType.DEVICE) {
+    while (i < this.items.length && this.items[i]?.type === TabType.DEVICE) {
       i++;
     }
     this.items.splice(i, 0, deviceTab);
@@ -180,13 +178,13 @@ export class TabsStore {
     this.items.push(tab);
   }
 
-  onSelectTab(index, lastIndex) {
+  onSelectTab(index, _lastIndex) {
     this.selectedTabIndex = index;
     if (this.mobileModeStore.inMobileMode) {
       this.mobileModeStore.showContentPanel();
     }
     let tab = this.items[index];
-    if (tab.type == TabType.DEVICE) {
+    if (tab.type === TabType.DEVICE) {
       tab.loadSchema();
     }
     return true;
@@ -194,31 +192,28 @@ export class TabsStore {
 
   selectTab(tab) {
     let index = this.items.indexOf(tab);
-    if (index != -1) {
+    if (index !== -1) {
       this.onSelectTab(index, this.selectedTabIndex);
     }
   }
 
-  deleteSelectedTab() {
-    const tab = this.items[this.selectedTabIndex];
+  deleteTab(tab) {
+    const index = this.items.indexOf(tab);
+    if (index === -1) {
+      return;
+    }
     switch (tab?.type) {
       case TabType.PORT: {
         this.deletePortDevices(tab);
-        this.items.splice(this.selectedTabIndex, 1);
+        this.items.splice(index, 1);
         break;
       }
       case TabType.DEVICE: {
         let portTab = this.selectedPortTab;
         const childIndex = portTab.children.indexOf(tab);
         portTab.deleteChildren(childIndex);
-        this.items.splice(this.selectedTabIndex, 1);
+        this.items.splice(index, 1);
         this.uniqueMqttIdChecker.removeTab(tab);
-        if (
-          (childIndex == 0 && !portTab.children.length) ||
-          (childIndex != 0 && childIndex == portTab.children.length)
-        ) {
-          this.selectedTabIndex = this.selectedTabIndex - 1;
-        }
         break;
       }
       default: {
@@ -226,13 +221,29 @@ export class TabsStore {
       }
     }
     this.hasModifiedStructure = true;
+  }
+
+  deleteSelectedTab() {
+    const tab = this.items[this.selectedTabIndex];
+    let newSelectedTabIndex = this.selectedTabIndex;
+    if (tab?.type === TabType.DEVICE) {
+      let portTab = this.selectedPortTab;
+      const childIndex = portTab.children.indexOf(tab);
+      if (
+        (childIndex === 0 && portTab.children.length === 1) ||
+        (childIndex !== 0 && childIndex + 1 === portTab.children.length)
+      ) {
+        newSelectedTabIndex = this.selectedTabIndex - 1;
+      }
+    }
+    this.deleteTab(tab);
     this.mobileModeStore.showTabsPanel();
-    this.onSelectTab(this.selectedTabIndex);
+    this.onSelectTab(newSelectedTabIndex);
   }
 
   get selectedPortTab() {
     let i = this.selectedTabIndex;
-    while (i >= 0 && this.items[i]?.type != TabType.PORT) {
+    while (i >= 0 && this.items[i]?.type !== TabType.PORT) {
       i--;
     }
     if (i >= this.items.length) {
@@ -246,27 +257,27 @@ export class TabsStore {
   }
 
   get portTabs() {
-    return this.items.filter(item => item.type == TabType.PORT);
+    return this.items.filter((item) => item.type === TabType.PORT);
   }
 
   get hasInvalidConfig() {
-    return this.items.some(item => item.hasInvalidConfig);
+    return this.items.some((item) => item.hasInvalidConfig);
   }
 
   get isDirty() {
-    return this.hasModifiedStructure || this.items.some(item => item.isDirty);
+    return this.hasModifiedStructure || this.items.some((item) => item.isDirty);
   }
 
   get isEmpty() {
-    return this.items.length == 0;
+    return this.items.length === 0;
   }
 
   get hasPortTabs() {
-    return this.items.some(item => item.type == TabType.PORT);
+    return this.items.some((item) => item.type === TabType.PORT);
   }
 
   commitData() {
-    this.items.forEach(item => item.commitData());
+    this.items.forEach((item) => item.commitData());
     this.hasModifiedStructure = false;
   }
 
@@ -281,26 +292,26 @@ export class TabsStore {
 
   findDeviceTabByTopic(topic) {
     const mqttId = getMqttIdFromTopic(topic);
-    return this.items.find(item => {
-      if (item.type == TabType.DEVICE) {
-        return item.mqttId == mqttId;
+    return this.items.find((item) => {
+      if (item.type === TabType.DEVICE) {
+        return item.mqttId === mqttId;
       }
       return false;
     });
   }
 
   findPortTabByPath(portPath) {
-    return this.items.find(item => {
-      if (item.type == TabType.PORT) {
-        return item.path == portPath;
+    return this.items.find((item) => {
+      if (item.type === TabType.PORT) {
+        return item.path === portPath;
       }
       return false;
     });
   }
 
   findPortTabByDevice(deviceTab) {
-    return this.items.find(item => {
-      if (item.type == TabType.PORT) {
+    return this.items.find((item) => {
+      if (item.type === TabType.PORT) {
         return item.children.includes(deviceTab);
       }
       return false;
@@ -314,9 +325,9 @@ export class TabsStore {
     }
     let portTabIndex = this.selectedTabIndex;
     if (this.items.at(portTabIndex) !== portTab) {
-      portTabIndex = this.items.findIndex(item => item === portTab);
+      portTabIndex = this.items.findIndex((item) => item === portTab);
     }
-    if (portTabIndex == -1) {
+    if (portTabIndex === -1) {
       return;
     }
     for (let i = 0; i < deviceTabsCount; i++) {

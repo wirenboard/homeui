@@ -1,4 +1,5 @@
-import React from 'react';
+import { observer } from 'mobx-react-lite';
+import { useTranslation, Trans } from 'react-i18next';
 import {
   Button,
   ErrorBar,
@@ -7,11 +8,9 @@ import {
   WarningHeader,
   WarningPanel,
   ErrorPanel,
-  ErrorHeader,
+  ErrorHeader
 } from '../../common';
-import { useTranslation, Trans } from 'react-i18next';
 import JsonEditor from '../../components/json-editor/jsonEditor';
-import { observer } from 'mobx-react-lite';
 import BootstrapLikeSelect from '../../components/select/select';
 
 const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }) => {
@@ -42,9 +41,9 @@ export const DeviceTab = observer(({ tab }) => {
 
 function findDeviceTypeSelectOption(options, value) {
   let res;
-  options.find(option => {
+  options.find((option) => {
     if (option?.options) {
-      res = option.options.find(option => option.value === value);
+      res = option.options.find((option) => option.value === value);
       return !!res;
     }
     if (option.value === value) {
@@ -88,11 +87,11 @@ const UpdateProgressBar = observer(({ progress }) => {
 const EmbeddedSoftwareUpdatePanel = observer(({ component }) => {
   const { t } = useTranslation();
   return (
-    <WarningPanel className={'firmware-update-panel'}>
+    <WarningPanel className="firmware-update-panel">
       <WarningHeader>
         <span>
           {t(
-            component.type == 'firmware'
+            component.type === 'firmware'
               ? 'device-manager.labels.updating-firmware'
               : 'device-manager.labels.updating-bootloader',
             {
@@ -193,7 +192,7 @@ const NewEmbeddedSoftwareManualUpdateText = observer(({ embeddedSoftware }) => {
   return (
     <span>
       {embeddedSoftware.bootloader.hasUpdate && embeddedSoftware.firmware.hasUpdate && <br />}
-      <Trans i18nKey={'device-manager.labels.manual-update'} components={[<a></a>]} />
+      <Trans i18nKey="device-manager.labels.manual-update" components={[<a></a>]} />
     </span>
   );
 });
@@ -206,7 +205,7 @@ const NewEmbeddedSoftwareWarning = observer(
     }
 
     return (
-      <WarningPanel className={'new-embedded-software-warning'}>
+      <WarningPanel className="new-embedded-software-warning">
         <WarningHeader>
           <NewEmbeddedSoftwareText embeddedSoftware={embeddedSoftware} />
           <NewEmbeddedSoftwareManualUpdateText embeddedSoftware={embeddedSoftware} />
@@ -248,7 +247,7 @@ const EmbeddedSoftwareComponentUpdateError = observer(({ component }) => {
   });
 
   return (
-    <ErrorPanel className={'firmware-update-error-panel'}>
+    <ErrorPanel className="firmware-update-error-panel">
       <ErrorHeader>{`${errorPrefix} ${errorDescription}`}</ErrorHeader>
       <button type="button" className="close" onClick={() => component.clearError()}>
         <span aria-hidden="true">&times;</span>
@@ -309,7 +308,7 @@ const DuplicateSlaveIdError = ({ isDuplicate }) => {
 
 const SameMqttIdError = ({ devicesWithTheSameId, onSetUniqueMqttTopic }) => {
   const { t } = useTranslation();
-  if (devicesWithTheSameId.length != 0) {
+  if (devicesWithTheSameId.length !== 0) {
     return (
       <ErrorBar
         msg={t('device-manager.errors.duplicate-mqtt-topic', {
@@ -363,15 +362,13 @@ export const DeviceTabContent = observer(
     if (tab.loading) {
       return <Spinner />;
     }
-    if (tab.error) {
-      return <ErrorBar msg={tab.error} />;
-    }
     if (tab.isUnknownType) {
       return <UnknownDeviceTabContent tab={tab} onDeleteTab={onDeleteTab} />;
     }
     const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
     return (
       <div>
+        {tab.error && <ErrorBar msg={tab.error} />}
         <DeprecatedWarning isDeprecated={tab.isDeprecated} />
         <EmbeddedSoftwarePanel
           embeddedSoftware={tab.embeddedSoftware}
@@ -391,8 +388,8 @@ export const DeviceTabContent = observer(
         <BootstrapLikeSelect
           options={deviceTypeSelectOptions}
           selectedOption={selectedDeviceType}
-          onChange={option => onDeviceTypeChange(tab, option.value)}
-          className={'pull-left device-type-select'}
+          className="pull-left device-type-select"
+          onChange={(option) => onDeviceTypeChange(tab, option.value)}
         />
         <div className="pull-right button-group">
           <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
@@ -402,8 +399,8 @@ export const DeviceTabContent = observer(
           schema={tab.schema}
           data={tab.editedData}
           root={'dev' + index}
+          className="device-tab-properties"
           onChange={tab.setData}
-          className={'device-tab-properties'}
         />
       </div>
     );
