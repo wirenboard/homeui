@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.10) stable; urgency=medium
+
+  * Show error when trying to add device with invalid template to wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 29 Apr 2025 17:51:06 +0500
+
 wb-mqtt-homeui (2.115.9) stable; urgency=medium
 
   * Fix build

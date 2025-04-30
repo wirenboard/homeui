@@ -1,16 +1,14 @@
-'use strict';
-
-import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
-import { getDefaultObject } from './jsonSchemaUtils';
-import { TabType } from './tabsStore';
+import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import i18n from '../../../i18n/react/config';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
+import { getDefaultObject } from './jsonSchemaUtils';
+import { TabType } from './tabsStore';
 
 function toRpcPortConfig(portConfig) {
-  if (portConfig.hasOwnProperty('address')) {
+  if (Object.hasOwn(portConfig, 'address')) {
     return {
       address: portConfig.address,
       port: portConfig.port,
@@ -277,7 +275,7 @@ export class DeviceTab {
     }
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = errors.length != 0;
+    this.hasJsonValidationErrors = errors.length !== 0;
     this.updateName();
   }
 
@@ -286,7 +284,11 @@ export class DeviceTab {
     try {
       this.schema = await this.deviceTypesStore.getSchema(type);
     } catch (err) {
-      this.setError(err.message);
+      const errorMsg = i18n.t('device-manager.errors.change-device-type', {
+        error: err.message,
+        interpolation: { escapeValue: false },
+      });
+      this.setError(errorMsg);
       this.setLoading(false);
       return;
     }
@@ -300,6 +302,7 @@ export class DeviceTab {
       this.isDirty = false;
       this.hasJsonValidationErrors = false;
       this.updateName();
+      this.clearError();
       this.loading = false;
     });
   }
@@ -340,13 +343,7 @@ export class DeviceTab {
 
   async setDefaultData() {
     this.loading = true;
-    try {
-      this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
-    } catch (err) {
-      this.setError(err.message);
-      this.setLoading(false);
-      return;
-    }
+    this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
     runInAction(() => {
       this.acceptJsonEditorInitial = true;
       this.editedData = getDefaultObject(this.schema);
@@ -435,7 +432,7 @@ export class DeviceTab {
   }
 
   setError(err) {
-    this.error = err.message;
+    this.error = err;
   }
 
   clearError() {
