@@ -99,37 +99,50 @@ export async function checkHttps() {
   }
 
   const host = window.location.hostname;
-  if (isIp(host) || isLocalDomain(host)) {
+  if (!isIp(host) && !isLocalDomain(host)) {
+    return 'warn';
+  }
+
+  let deviceInfo;
+  try {
+    let response = await fetch('/device/info');
+    if (response.status !== 200) {
+      return 'warn';
+    }
+    deviceInfo = await response.json();
+    if (!isDeviceSn(deviceInfo.sn)) {
+      return 'warn';
+    }
+  } catch (e) {
+    return 'warn';
+  }
+
+  if (await hasInvalidCertificate(deviceInfo.https_cert)) {
+    return 'warn';
+  }
+
+  const ip = getIpForHttpsDomainName(window.location.hostname, deviceInfo.ip);
+  if (ip) {
+    const httpsUrlOrigin = makeHttpsUrlOrigin(ip, deviceInfo.sn);
     try {
-      let response = await fetch('/device/info');
+      let response = await fetch(`${httpsUrlOrigin}/device/info`, {
+        method: 'GET',
+        mode: 'cors',
+      });
       if (response.status === 200) {
-        const deviceInfo = await response.json();
-        if (!isDeviceSn(deviceInfo.sn)) {
-          return 'warn';
+        const httpsDeviceInfo = await response.json();
+        if (httpsDeviceInfo.sn === deviceInfo.sn) {
+          window.location.href = httpsUrlOrigin;
+          return 'redirected';
         }
-        if (await hasInvalidCertificate(deviceInfo.https_cert)) {
-          return 'warn';
-        }
-        const ip = getIpForHttpsDomainName(window.location.hostname, deviceInfo.ip);
-        if (ip === null) {
-          return 'warn';
-        }
-        const httpsUrlOrigin = makeHttpsUrlOrigin(ip, deviceInfo.sn);
-        response = await fetch(`${httpsUrlOrigin}/device/info`, {
-          method: 'GET',
-          mode: 'cors',
-        });
-        if (response.status === 200) {
-          const httpsDeviceInfo = await response.json();
-          if (httpsDeviceInfo.sn === deviceInfo.sn) {
-            window.location.href = httpsUrlOrigin;
-            return 'redirected';
-          }
-        }
+        return 'warn';
       }
     } catch (e) {
-      /* empty */
     }
   }
-  return 'warn';
+
+  // HTTPS certificate is valid, but the device is not reachable via special crafted URL
+  // Redirect using original URL
+  window.location.href = `https://${host}${window.location.pathname}`;
+  return 'redirected';
 }
