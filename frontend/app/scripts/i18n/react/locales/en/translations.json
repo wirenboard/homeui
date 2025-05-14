@@ -306,7 +306,9 @@
          "update-error-generic": "Error: {{error}}. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
          "update-error-recoverable": "If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode.",
          "update-error-rpc-timeout": "Check wb-mqtt-serial is up and running.",
-         "update-error-download": "File download error. Check the network connection."
+         "update-error-download": "File download error. Check the network connection.",
+         "add-device": "Add device error: {{error}}. See the wb-mqtt-serial system log for detailed information",
+         "change-device-type": "Changing device type error: {{error}}. See the wb-mqtt-serial system log for detailed information"
       }
    },
    "exp-check": {

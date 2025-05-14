@@ -28,7 +28,7 @@ export class SettingsTab {
   setData(data, errors) {
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = errors.length != 0;
+    this.hasJsonValidationErrors = !errors.length;
   }
 
   commitData() {
