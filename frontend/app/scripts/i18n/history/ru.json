@@ -9,7 +9,9 @@
             "nothing": "Нет записей для отображения",
             "date": "Дата и время",
             "all_channels": "Все каналы: ",
-            "widget_channels": "Каналы из виджетов: "
+            "widget_channels": "Каналы из виджетов: ",
+            "choose_template": "- Выберите шаблон -",
+            "new_template": "- Имя шаблона -",
         },
         "buttons": {
             "delete": "удалить",
@@ -17,12 +19,17 @@
             "load": "Загрузить данные",
             "reset": "Сбросить",
             "stop": "Остановить загрузку",
-            "download": "Скачать данные в виде CSV"
+            "download": "Скачать данные в виде CSV",
+            "apply_template": "Применить шаблон",
+            "delete_template": "Удалить шаблон",
+            "update_template": "Изменить шаблон",
+            "save_template": "Сохранить шаблон"
         },
         "errors": {
             "dates": "Некорректный временной интервал, измените одну из дат",
             "load": "Ошибка получения данных",
-            "warning": "Предупреждение"
+            "warning": "Предупреждение",
+            "template_exists": "Такой шаблон уже существует"
         },
         "format": {
             "date_with_ms": "d MMM yyyy г. H:mm:ss:sss"

@@ -28,12 +28,69 @@
             </uib-progressbar>
         </div>
     </div>
+
     <div ng-hide="$ctrl.selectedControls.length==1 && !$ctrl.selectedControls[$ctrl.selectedControls.length-1]">
         <br>
         <button class="btn btn-success" ng-click="$ctrl.addTopic()" ng-disabled="$ctrl.disableUi" translate>
             {{'history.buttons.add'}}
         </button>
         <br>
+    </div>
+
+    <!-- Templates html container -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="form-group">
+                <select 
+                    class="form-control"
+                    ng-model="$ctrl.selectedTemplate"
+                    ng-options="template.name for template in $ctrl.templates track by template.name"
+                    ng-change="$ctrl.applyTemplate()"
+                >
+                    <option value="" translate>{{ 'history.labels.choose_template' }}</option>
+                </select>
+            </div>
+            <button
+                class="btn btn-primary"
+                ng-click="$ctrl.applyTemplate()"
+                ng-disabled="!$ctrl.selectedTemplate"
+                translate
+            >
+                {{ 'history.buttons.apply_template' }}
+            </button>
+            <button
+                class="btn btn-danger"
+                ng-click="$ctrl.deleteTemplate()"
+                ng-disabled="!$ctrl.selectedTemplate"
+                translate
+            >
+                {{ 'history.buttons.delete_template' }}
+            </button>
+            <button
+                class="btn btn-warning"
+                ng-click="$ctrl.updateTemplate()"
+                ng-disabled="!$ctrl.selectedTemplate"
+                translate
+            >
+                {{ 'history.buttons.update_template' }}
+            </button>
+            <div class="form-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    ng-model="$ctrl.newTemplateName"
+                    placeholder="{{ 'history.labels.new_template' | translate }}"
+                />
+            </div>
+            <button
+                class="btn btn-success"
+                ng-click="$ctrl.saveTemplate()"
+                ng-disabled="!$ctrl.selectedControls.length || !$ctrl.newTemplateName"
+                translate
+            >
+                {{ 'history.buttons.save_template' }}
+            </button>
+        </div>
     </div>
 
     <div class="row">

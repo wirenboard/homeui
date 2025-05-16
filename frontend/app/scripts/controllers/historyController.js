@@ -115,6 +115,7 @@ class HistoryCtrl {
     var errors = $injector.get('errors');
     var historyMaxPoints = $injector.get('historyMaxPoints');
     var uiConfig = $injector.get('uiConfig');
+    this.uiConfig = uiConfig;
     this.orderByFilter = $injector.get('orderByFilter');
     this.$timeout = $injector.get('$timeout');
     this.$state = $injector.get('$state');
@@ -184,7 +185,24 @@ class HistoryCtrl {
 
     this.dataPointsMultiple = [];
 
-    // 4. Setup
+    // Templates props
+    this.templates = [];
+    this.selectedTemplate = null;
+    this.newTemplateName = "";
+
+    // 4. Setup - Templates defined
+    uiConfig.whenReady().then(data => {
+      if (!data.hasOwnProperty("templates")) {
+        data.templates = [];
+        console.log("Data: %o", data);
+        // TODO: Print out data to check
+        // And then go modify uiConfig it seems
+      }
+      this.templates = data.templates;
+      console.log("[LOG]: Templates are set up");
+      console.log("[LOG]: templates: %o", this.templates);
+    })
+
     this.updateTranslations()
       .then(() => uiConfig.whenReady())
       .then(data => {
@@ -977,6 +995,93 @@ class HistoryCtrl {
     document.body.appendChild(downloadLink);
 
     downloadLink.click();
+  }
+
+  // Template methods
+  //.........................................................................
+  saveTemplate() {
+    if (!this.newTemplateName || !this.selectedControls.length) return;
+    if (this.templates.find(elem => elem.name === this.newTemplateName)) {
+      alert(this.$translate.instant('history.errors.template_exists'))
+      return;
+    }
+    const newTemplate = {
+      name: this.newTemplateName,
+      data: this.selectedControls.map(control => ({
+        deviceId: control.deviceId,
+        controlId: control.controlId
+      }))
+    };
+    console.log(`[LOG]: New template was created: ${newTemplate.name}`);
+    console.log('[LOG]: New template data: %o', newTemplate.data);
+
+    this.uiConfig.whenReady().then(data => {
+      data.templates.push(newTemplate);
+      this.templates = data.templates;
+      this.newTemplateName = "";
+      this.$scope.$apply();
+
+      console.log("[LOG]: New template was saved");
+    });
+  }
+
+  applyTemplate() {
+    if (!this.selectedTemplate) return;
+    console.log("[LOG]: templates: %o", this.templates);
+    console.log("[LOG]: selectedTemplate: %o", this.selectedTemplate);
+    const template = this.templates.find((t) => t.name === this.selectedTemplate.name);
+    this.selectedControls = template.data.map(
+      data => {
+        const control = this.controls.find(
+          c =>
+            c.deviceId === data.deviceId &&
+            c.controlId === data.controlId
+        );
+        console.log(`[LOG]: Control found: ${control.deviceId} ${control.controlId}`);
+        return control || null;
+      }
+    )
+      .filter(c => c)
+
+    console.log("[LOG]: Template was successfully applied");
+    // WARN: this.charts needs to be updated?
+    // WARN: scope apply needed?
+  }
+
+  updateTemplate() {
+    if (!this.selectedTemplate || !this.selectedControls.length) return;
+    const updatedTemplate = {
+      name: this.selectedTemplate,
+      data: this.selectedControls.map(control => ({
+        deviceId: control.deviceId,
+        controlId: control.controlId,
+      })),
+    };
+
+    console.log("[LOG]: Obtained updated template");
+    console.log(`[LOG]: New template name: ${updatedTemplate.name}`);
+
+    this.uiConfig.whenReady().then(data => {
+      const index = data.templates.findIndex(t => t.name === this.selectedTemplate);
+      console.log(`[LOG]: Existing template found with index ${index}`);
+      if (index !== -1) {
+        data.templates[index] = updatedTemplate;
+        this.templates = data.templates;
+        this.$scope.$apply();
+        console.log("[LOG]: Template was updated");
+      }
+    })
+  }
+
+  deleteTemplate() {
+    if (!this.selectedTemplate) return;
+    this.uiConfig.whenReady().then(data => {
+      data.templates = data.templates.filter(element => element.name !== this.selectedTemplate.name);
+      this.templates = data.templates;
+      this.selectedTemplate = null;
+      this.$scope.$apply();
+      console.log("[LOG]: Template was deleted");
+    })
   }
 } // class HistoryCtrl
 
