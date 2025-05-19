@@ -1,8 +1,6 @@
-'use strict';
-
-import { makeObservable, observable, action, computed } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import { makeObservable, observable, action, computed } from 'mobx';
 import i18n from '../../../i18n/react/config';
 import { TabType } from './tabsStore';
 
@@ -28,7 +26,7 @@ export class SettingsTab {
   setData(data, errors) {
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = !errors.length;
+    this.hasJsonValidationErrors = errors.length !== 0;
   }
 
   commitData() {
