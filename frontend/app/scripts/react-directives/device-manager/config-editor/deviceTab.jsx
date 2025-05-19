@@ -308,7 +308,7 @@ const DuplicateSlaveIdError = ({ isDuplicate }) => {
 
 const SameMqttIdError = ({ devicesWithTheSameId, onSetUniqueMqttTopic }) => {
   const { t } = useTranslation();
-  if (!devicesWithTheSameId.length) {
+  if (devicesWithTheSameId.length) {
     return (
       <ErrorBar
         msg={t('device-manager.errors.duplicate-mqtt-topic', {

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.11) stable; urgency=medium
+
+  * Fix wrong duplicate MQTT topic error in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 19 May 2025 11:26:00 +0500
+
 wb-mqtt-homeui (2.115.10) stable; urgency=medium
 
   * Show error when trying to add device with invalid template to wb-mqtt-serial config
