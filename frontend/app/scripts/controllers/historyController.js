@@ -195,8 +195,6 @@ class HistoryCtrl {
       if (!data.hasOwnProperty("templates")) {
         data.templates = [];
         console.log("Data: %o", data);
-        // TODO: Print out data to check
-        // And then go modify uiConfig it seems
       }
       this.templates = data.templates;
       console.log("[LOG]: Templates are set up");
@@ -997,14 +995,16 @@ class HistoryCtrl {
     downloadLink.click();
   }
 
-  // Template methods
-  //.........................................................................
+  // Template methods ------------------------------------------
   saveTemplate() {
     if (!this.newTemplateName || !this.selectedControls.length) return;
     if (this.templates.find(elem => elem.name === this.newTemplateName)) {
       alert(this.$translate.instant('history.errors.template_exists'))
       return;
     }
+
+    // NOTE: Probably should add more field of the control
+    // because (deviceId, controlId) can duplicate?
     const newTemplate = {
       name: this.newTemplateName,
       data: this.selectedControls.map(control => ({
@@ -1029,7 +1029,7 @@ class HistoryCtrl {
     if (!this.selectedTemplate) return;
     console.log("[LOG]: templates: %o", this.templates);
     console.log("[LOG]: selectedTemplate: %o", this.selectedTemplate);
-    const template = this.templates.find((t) => t.name === this.selectedTemplate.name);
+    const template = this.templates.find((element) => element.name === this.selectedTemplate.name);
     this.selectedControls = template.data.map(
       data => {
         const control = this.controls.find(
@@ -1044,14 +1044,12 @@ class HistoryCtrl {
       .filter(c => c)
 
     console.log("[LOG]: Template was successfully applied");
-    // WARN: this.charts needs to be updated?
-    // WARN: scope apply needed?
   }
 
   updateTemplate() {
     if (!this.selectedTemplate || !this.selectedControls.length) return;
     const updatedTemplate = {
-      name: this.selectedTemplate,
+      name: this.selectedTemplate.name,
       data: this.selectedControls.map(control => ({
         deviceId: control.deviceId,
         controlId: control.controlId,
@@ -1062,7 +1060,7 @@ class HistoryCtrl {
     console.log(`[LOG]: New template name: ${updatedTemplate.name}`);
 
     this.uiConfig.whenReady().then(data => {
-      const index = data.templates.findIndex(t => t.name === this.selectedTemplate);
+      const index = data.templates.findIndex(t => t.name === this.selectedTemplate.name);
       console.log(`[LOG]: Existing template found with index ${index}`);
       if (index !== -1) {
         data.templates[index] = updatedTemplate;
@@ -1080,6 +1078,7 @@ class HistoryCtrl {
       this.templates = data.templates;
       this.selectedTemplate = null;
       this.$scope.$apply();
+
       console.log("[LOG]: Template was deleted");
     })
   }
