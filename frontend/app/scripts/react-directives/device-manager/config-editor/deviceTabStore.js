@@ -188,7 +188,7 @@ export class EmbeddedSoftware {
   }
 
   get hasUpdate() {
-    return this.firmware.hasUpdate || this.bootloader.hasUpdate;
+    return this.firmware.hasUpdate;
   }
 
   get hasError() {
