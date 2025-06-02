@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.116.0) stable; urgency=medium
 
   * Fix a bug where some devices were considered new when searching for new devices in the wb-mqtt-serial configuration editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 22 May 2025 12:50:23 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 02 Jun 2025 11:52:58 +0500
+
+wb-mqtt-homeui (2.115.12) stable; urgency=medium
+
+  * Show notification about new bootloader only if a new firmware is also available
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 23 May 2025 10:10:17 +0500
 
 wb-mqtt-homeui (2.115.11) stable; urgency=medium
 
