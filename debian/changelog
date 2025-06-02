@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.0) stable; urgency=medium
+
+  * Use React based editor for wb-mqtt-serial port configs
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 04 Jun 2025 10:02:36 +0500
+
 wb-mqtt-homeui (2.116.0) stable; urgency=medium
 
   * Fix a bug where some devices were considered new when searching for new devices in the wb-mqtt-serial configuration editor
