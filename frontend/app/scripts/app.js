@@ -284,6 +284,7 @@ module
         'logs',
         'configurations',
         'history',
+        'events',
         'widgets',
         'units',
         'serial-metrics',
@@ -491,7 +492,7 @@ const realApp = angular
 
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
-      var firstBootstrap = true;
+      $rootScope.firstBootstrap = true; // rootScope used because events journal must change it on page load
 
       // Watch for WebUI config changes
       $rootScope.$watch(
@@ -500,8 +501,8 @@ const realApp = angular
           if (angular.equals(newData, oldData)) {
             return;
           }
-          if (firstBootstrap) {
-            firstBootstrap = false;
+          if ($rootScope.firstBootstrap) {
+            $rootScope.firstBootstrap = false;
             return;
           }
           console.log('new data: %o', newData);

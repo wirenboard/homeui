@@ -37,7 +37,8 @@
             "logs": "Logs",
             "serial-metrics": "wb-mqtt-serial metrics",
             "scan": "Scan",
-            "device-manager": "Device manager"
+            "device-manager": "Device manager",
+            "events": "Events"
         },
         "access": {
             "title": "Access level:"

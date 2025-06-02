@@ -190,20 +190,16 @@ class HistoryCtrl {
     this.selectedTemplate = null;
     this.newTemplateName = "";
 
-    // 4. Setup - Templates defined
-    uiConfig.whenReady().then(data => {
-      if (!data.hasOwnProperty("templates")) {
-        data.templates = [];
-        console.log("Data: %o", data);
-      }
-      this.templates = data.templates;
-      console.log("[LOG]: Templates are set up");
-      console.log("[LOG]: templates: %o", this.templates);
-    })
-
+    // 4. Setup
     this.updateTranslations()
       .then(() => uiConfig.whenReady())
       .then(data => {
+        if (!data.hasOwnProperty("templates")) {
+          data.templates = [];
+        }
+        this.templates = data.templates;
+        console.log("[LOG]: Templates are set up: %o", this.templates);
+
         this.updateControls(data.widgets, DeviceData);
         this.setSelectedControlsAndStartLoading(stateFromUrl.c);
       });
@@ -1003,7 +999,7 @@ class HistoryCtrl {
       return;
     }
 
-    // NOTE: Probably should add more field of the control
+    // NOTE: Probably should add more fields of the control
     // because (deviceId, controlId) can duplicate?
     const newTemplate = {
       name: this.newTemplateName,
@@ -1015,19 +1011,15 @@ class HistoryCtrl {
     console.log(`[LOG]: New template was created: ${newTemplate.name}`);
     console.log('[LOG]: New template data: %o', newTemplate.data);
 
-    this.uiConfig.whenReady().then(data => {
-      data.templates.push(newTemplate);
-      this.templates = data.templates;
-      this.newTemplateName = "";
-      this.$scope.$apply();
-
-      console.log("[LOG]: New template was saved");
-    });
+    // Save the template locally and globally
+    // (because this.templates are linked to data from uiConfig)
+    this.templates.push(newTemplate);
+    this.newTemplateName = "";
+    console.log("[LOG]: New template was saved");
   }
 
   applyTemplate() {
     if (!this.selectedTemplate) return;
-    console.log("[LOG]: templates: %o", this.templates);
     console.log("[LOG]: selectedTemplate: %o", this.selectedTemplate);
     const template = this.templates.find((element) => element.name === this.selectedTemplate.name);
     this.selectedControls = template.data.map(
@@ -1037,7 +1029,6 @@ class HistoryCtrl {
             c.deviceId === data.deviceId &&
             c.controlId === data.controlId
         );
-        console.log(`[LOG]: Control found: ${control.deviceId} ${control.controlId}`);
         return control || null;
       }
     )
@@ -1059,28 +1050,24 @@ class HistoryCtrl {
     console.log("[LOG]: Obtained updated template");
     console.log(`[LOG]: New template name: ${updatedTemplate.name}`);
 
-    this.uiConfig.whenReady().then(data => {
-      const index = data.templates.findIndex(t => t.name === this.selectedTemplate.name);
-      console.log(`[LOG]: Existing template found with index ${index}`);
-      if (index !== -1) {
-        data.templates[index] = updatedTemplate;
-        this.templates = data.templates;
-        this.$scope.$apply();
-        console.log("[LOG]: Template was updated");
-      }
-    })
+    // Updating the template by index
+    const index = this.templates.findIndex(t => t.name === this.selectedTemplate.name);
+    console.log(`[LOG]: Existing template found with index ${index}`);
+    if (index !== -1) {
+      this.templates[index] = updatedTemplate;
+      console.log("[LOG]: Template was updated");
+    }
   }
 
   deleteTemplate() {
     if (!this.selectedTemplate) return;
-    this.uiConfig.whenReady().then(data => {
-      data.templates = data.templates.filter(element => element.name !== this.selectedTemplate.name);
-      this.templates = data.templates;
-      this.selectedTemplate = null;
-      this.$scope.$apply();
 
-      console.log("[LOG]: Template was deleted");
-    })
+    const index = this.templates.findIndex((element) => element.name === this.selectedTemplate.name);
+    this.templates.splice(index, 1);
+    this.selectedTemplate = null;
+    this.selectedControls = [null];
+
+    console.log("[LOG]: Template was deleted");
   }
 } // class HistoryCtrl
 

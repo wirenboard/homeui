@@ -1267,3 +1267,18 @@ body.no-console .console {
 body.no-console .show-console #page-wrapper {
   padding-bottom: 10px;
 }
+
+/* Templates styling */
+.form-group {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Events styling */
+.events-table {
+    margin-top: 10px;
+}
+
+.table-header {
+    margin-top: 10px;
+}

@@ -11,7 +11,7 @@
             "all_channels": "Все каналы: ",
             "widget_channels": "Каналы из виджетов: ",
             "choose_template": "- Выберите шаблон -",
-            "new_template": "- Имя шаблона -",
+            "new_template": "- Имя шаблона -"
         },
         "buttons": {
             "delete": "удалить",

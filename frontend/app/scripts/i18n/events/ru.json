@@ -1,0 +1,39 @@
+{
+    "events": {
+        "edit": {
+            "labels": {
+                "choose": "- Выберите канал -",
+                "condition": "Условие",
+                "condition_example": "Пример: '> 5', '= 100'",
+                "message": "Сообщение",
+                "edit_events": "Редактировать журнал",
+                "topic": "Топик",
+                "actions": "Действия",
+                "no_events": "Событий не найдено",
+                "all_channels": "Все каналы: ",
+                "widget_channels": "Каналы из виджетов: ",
+                "existing_events": "Существующие события"
+            },
+            "buttons": {
+                "back": "Назад к журналу",
+                "add_event": "Добавить событие"
+            },
+            "errors": {
+                "validate_condition": "Приведите условие в правильном формате",
+                "no_topic_message": "Заполните поля с каналом и сообщением"
+            }
+        },
+        "labels": {
+            "events_page": "Журнал Событий",
+            "name": "Имя",
+            "message": "Сообщение",
+            "timestamp": "Время срабатывания",
+            "actions": "Действия",
+            "no_events": "Событий не найдено"
+        },
+        "buttons": {
+            "clear_events": "Очистить события",
+            "edit_events": "Редактировать журнал"
+        }
+    }
+}

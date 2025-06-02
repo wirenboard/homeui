@@ -1,0 +1,39 @@
+{
+    "events": {
+        "edit": {
+            "labels": {
+                "choose": "- Choose topic -",
+                "condition": "Condition",
+                "condition_example": "Examples: '> 5', '= 100'",
+                "message": "Message",
+                "edit_events": "Edit events",
+                "topic": "Topic",
+                "actions": "Actions",
+                "no_events": "No events found",
+                "all_channels": "All channels: ",
+                "widget_channels": "Channels used in widgets: ",
+                "existing_events": "Existing events"
+            },
+            "buttons": {
+                "back": "Back to events",
+                "add_event": "Add event"
+            },
+            "errors": {
+                "validate_condition": "Please provide correct condition",
+                "no_topic_message": "Fill out topic and message fields"
+            }
+        },
+        "labels": {
+            "events_page": "Events Journal",
+            "name": "Name",
+            "message": "Message",
+            "timestamp": "Triggered time",
+            "actions": "Actions",
+            "no_events": "No events found"
+        },
+        "buttons": {
+            "clear_events": "Clear events",
+            "edit_events": "Edit events"
+        }
+    }
+}

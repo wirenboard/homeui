@@ -1,0 +1,88 @@
+<div class="events-edit-page">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1 class="page-header">
+                <span>{{ 'events.edit.labels.edit_events' | translate }}</span>
+                <div class="pull-right button-group">
+                    <button class="btn btn-default" ng-click="$ctrl.goBack()" translate>
+                        {{ 'events.edit.buttons.back' }}
+                    </button>
+                </div>
+            </h1>
+        </div>
+    </div>
+
+    <!-- Add new event form -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label translate>{{ 'events.edit.labels.topic' }}</label>
+                <select id="control-select" class="form-control" ng-model="$ctrl.newEvent.topic"
+                    ng-options="control as control.name group by control.group for control in $ctrl.controls track by control.name">
+                    <option value="" translate>{{ 'events.edit.labels.choose' }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label translate>{{ 'events.edit.labels.condition' }}</label>
+                <input type="text" class="form-control" ng-model="$ctrl.newEvent.condition"
+                    placeholder="{{ 'events.edit.labels.condition_example' | translate }}" />
+            </div>
+            <div class="form-group">
+                <label translate>{{ 'events.edit.labels.message' }}</label>
+                <input type="text" class="form-control" ng-model="$ctrl.newEvent.message"
+                    placeholder="{{ 'events.edit.labels.message' | translate }}" />
+            </div>
+            <button class="btn btn-success" ng-click="$ctrl.addEvent()"
+                ng-disabled="!$ctrl.newEvent.topic || !$ctrl.newEvent.condition || !$ctrl.newEvent.message" translate>
+                {{ 'events.edit.buttons.add_event' }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Table of existion events -->
+    <div class="row">
+        <div class="col-xs-12">
+            <h1 class="table-header">
+                <span>{{ 'events.edit.labels.existing_events' | translate }}</span>
+            </h1>
+        </div>
+        <div class="col-xs-12">
+            <table class="table table-striped events-edit-table">
+                <thead>
+                    <tr>
+                        <th translate>{{ 'events.edit.labels.topic' }}</th>
+                        <th translate>{{ 'events.edit.labels.condition' }}</th>
+                        <th translate>{{ 'events.edit.labels.message' }}</th>
+                        <th translate>{{ 'events.edit.labels.actions' }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="event in $ctrl.events track by $index">
+                        <td>
+                            <select id="control-select" class="form-control" ng-model="event.topic"
+                                ng-options="control as control.name group by control.group for control in $ctrl.controls track by control.name">
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" ng-model="event.condition" />
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" ng-model="event.message" />
+                        </td>
+                        <td>
+                            <button class="btn btn-success" ng-click="$ctrl.saveEvent($index)">
+                                <i class="glyphicon glyphicon-save"></i>
+                            </button>
+                            <button class="btn btn-danger" ng-click="$ctrl.deleteEvent($index)">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr ng-if="!$ctrl.events.length">
+                        <td colspan="4" translate>{{ 'events.edit.labels.no_events' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

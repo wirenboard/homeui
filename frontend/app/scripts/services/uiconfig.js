@@ -16,6 +16,8 @@ function uiConfigService($rootScope, $q, $timeout) {
     widgets: [],
     defaultDashboardId: 'default',
     templates: [],
+    events: [],
+    triggeredEvents: [],
   };
 
   var deferReady = $q.defer(),
@@ -217,6 +219,8 @@ function uiConfigService($rootScope, $q, $timeout) {
       widgets: filterCollection(data.widgets),
       defaultDashboardId: data.defaultDashboardId,
       templates: filterCollection(data.templates),
+      events: filterCollection(data.events),
+      triggeredEvents: filterCollection(data.triggeredEvents)
     };
   }
 
@@ -226,11 +230,6 @@ function uiConfigService($rootScope, $q, $timeout) {
     } else {
       throw new Error('invalid dashboard id: ' + id);
     }
-  }
-
-  // Templates functions ------------------------------------------------------
-  function addTemplate() {
-
   }
 
   $rootScope.$watch(
