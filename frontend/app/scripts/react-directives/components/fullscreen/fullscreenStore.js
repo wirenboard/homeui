@@ -1,5 +1,3 @@
-'use strict';
-
 import { makeAutoObservable } from 'mobx';
 
 export function checkFullscreen() {
@@ -16,6 +14,8 @@ export function checkFullscreen() {
 export class FullscreenStore {
   constructor() {
     this.isFullscreen = checkFullscreen();
+    this._listeners = [];
+    const handler = () => this.checkFullscreen();
 
     [
       'webkitfullscreenchange',
@@ -24,10 +24,9 @@ export class FullscreenStore {
       'MSFullscreenChange',
       'webkitbeginfullscreen',
       'webkitendfullscreen',
-    ].forEach(ev => {
-      addEventListener(ev, () => {
-        this.checkFullscreen();
-      });
+    ].forEach((ev) => {
+      window.addEventListener(ev, handler);
+      this._listeners.push([ev, handler]);
     });
 
     makeAutoObservable(this);
@@ -42,8 +41,8 @@ export class FullscreenStore {
   }
 
   toggleFullscreen() {
-    var goFullScreen = null;
-    var exitFullScreen = null;
+    let goFullScreen = null;
+    let exitFullScreen = null;
     if ('requestFullscreen' in document.documentElement) {
       goFullScreen = 'requestFullscreen';
       exitFullScreen = 'exitFullscreen';
@@ -53,7 +52,7 @@ export class FullscreenStore {
     } else if ('webkitRequestFullscreen' in document.documentElement) {
       goFullScreen = 'webkitRequestFullscreen';
       exitFullScreen = 'webkitExitFullscreen';
-    } else if ('msRequestFullscreen') {
+    } else {
       goFullScreen = 'msRequestFullscreen';
       exitFullScreen = 'msExitFullscreen';
     }
@@ -63,5 +62,12 @@ export class FullscreenStore {
     } else {
       document.documentElement[goFullScreen]();
     }
+  }
+
+  dispose() {
+    this._listeners.forEach(([ev, handler]) => {
+      window.removeEventListener(ev, handler);
+    });
+    this._listeners = [];
   }
 }

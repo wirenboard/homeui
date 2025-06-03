@@ -10,13 +10,17 @@ class DashboardsCtrl {
     this.data = uiConfig.data;
     this.updateTranslations();
 
-    $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+    const disposeTranslations = $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
 
     $scope.cancel = dashboard => {
       if (dashboard.isNew) {
         uiConfig.getDashboard(dashboard.id).remove();
       }
     };
+
+    $scope.$on('$destroy', () => {
+      disposeTranslations();
+    });
   }
 
   //.............................................................................
