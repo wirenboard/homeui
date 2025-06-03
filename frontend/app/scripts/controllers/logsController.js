@@ -114,12 +114,13 @@ class LogsCtrl {
     };
 
     this.updateTranslations();
-    $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+    const disposeTranslations = $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
 
     $scope.$on('$destroy', () => {
       // Do whatever cleanup might be necessary
       vm = null; // MEMLEAK FIX
       $scope = null; // MEMLEAK FIX
+      disposeTranslations();
     });
   } // constructor
 
