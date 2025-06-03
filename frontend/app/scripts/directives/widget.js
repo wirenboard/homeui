@@ -72,7 +72,11 @@ function widgetDirective(DeviceData, rolesFactory, uiConfig) {
       );
 
       this.updateTranslations();
-      $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+      const disposeTranslations = $rootScope.$on('$translateChangeSuccess', () => this.updateTranslations());
+
+      $scope.$on('$destroy', () => {
+        disposeTranslations();
+      });
     }
 
     updateTranslations() {

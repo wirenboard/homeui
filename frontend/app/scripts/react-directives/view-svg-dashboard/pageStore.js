@@ -1,9 +1,7 @@
-'use strict';
-
 import { makeObservable, observable, action, set } from 'mobx';
+import AccessLevelStore from '../components/access-level/accessLevelStore';
 import { FullscreenStore } from '../components/fullscreen/fullscreenStore';
 import ViewSvgDashboardStore from './viewStore';
-import AccessLevelStore from '../components/access-level/accessLevelStore';
 
 class ViewSvgDashboardPageStore {
   constructor(rolesFactory) {
@@ -19,6 +17,7 @@ class ViewSvgDashboardPageStore {
     this.dashboardIndex = 0;
     this.editAccessLevelStore = new AccessLevelStore(rolesFactory);
     this.editAccessLevelStore.setRole(rolesFactory.ROLE_TWO);
+    this.unsubscribeDeviceData = () => {};
 
     this.dashboards = [];
 
@@ -42,14 +41,14 @@ class ViewSvgDashboardPageStore {
   }
 
   getDashboard(dashboardId) {
-    const dashboard = this.dashboardConfigs.find(d => d.isSvg && d.id == dashboardId);
+    const dashboard = this.dashboardConfigs.find((d) => d.isSvg && d.id === dashboardId);
     if (!dashboard) {
       return null;
     }
     let store = new ViewSvgDashboardStore(
       this.channelValues,
-      id => this?.editFn(id),
-      id => this.moveToDashboard(id),
+      (id) => this?.editFn(id),
+      (id) => this.moveToDashboard(id),
       (channel, value) => this.switchValue(channel, value)
     );
     store.setForceFullscreen(this.forceFullscreen);
@@ -97,7 +96,7 @@ class ViewSvgDashboardPageStore {
     Object.entries(deviceData.cells).forEach(([channel, cell]) => {
       set(this.channelValues, channel, cell.value);
     });
-    deviceData.onValue((channel, value) => {
+    this.unsubscribeDeviceData = deviceData.onValue((channel, value) => {
       this.setSingleChannelValue(channel, value);
     });
   }
@@ -131,7 +130,7 @@ class ViewSvgDashboardPageStore {
   }
 
   moveToDashboard(dashboardId) {
-    if (this.dashboardId != dashboardId) {
+    if (this.dashboardId !== dashboardId) {
       this.setLoading(true);
       setTimeout(() => {
         this.moveToDashboardFn(dashboardId, this.dashboardId);
@@ -142,12 +141,17 @@ class ViewSvgDashboardPageStore {
 
   slideChanged(index) {
     const dashboardId = this.dashboards[index].dashboard.id;
-    if (this.dashboardId != dashboardId) {
+    if (this.dashboardId !== dashboardId) {
       setTimeout(() => {
         this.moveToDashboardFn(dashboardId);
       });
     }
     this.setDashboard(dashboardId);
+  }
+
+  dispose() {
+    this.unsubscribeDeviceData();
+    this.fullscreen?.dispose();
   }
 }
 
