@@ -25,7 +25,7 @@ class EventsCtrl {
       if (!data.hasOwnProperty('events')) {
         data.events = [];
       }
-      this.triggeredEvents = structuredClone(data.triggeredEvents);
+      this.triggeredEvents = data.triggeredEvents;
       this.events = data.events;
       console.log("[LOG]: Events in EventsCtrl: %o", this.events);
       console.log("[LOG]: Triggered Events: %o", this.triggeredEvents);
@@ -40,6 +40,7 @@ class EventsCtrl {
 
     // Clean up
     $scope.$on('$destroy', () => {
+      console.log("[LOG]: Scope destroy called in EventsCtrl");
       this.$scope = null;
     });
   }
@@ -69,7 +70,6 @@ class EventsCtrl {
     );
 
     console.log("[LOG]: Done checking events, initiating saving...");
-    this.saveEvents();
   }
 
   checkCondition(event) {
@@ -87,33 +87,34 @@ class EventsCtrl {
   }
 
   trimEvents() {
-    const maxEvents = 5000;
+    const maxEvents = 2000;
     if (this.triggeredEvents.length > maxEvents) {
       this.triggeredEvents = this.triggeredEvents.slice(0, maxEvents);
+      console.log(`[LOG]: Events were trimmed to ${maxEvents}`);
+      this.saveEvents();
     }
-    this.saveEvents();
   }
 
   clearEvents() {
     this.triggeredEvents = [];
+    console.log("[LOG]: Events were cleared");
     this.saveEvents();
   }
 
   deleteEvent(index) {
     this.triggeredEvents.splice(index, 1);
-    this.saveEvents();
   }
 
   saveEvents() {
     this.uiConfig.whenReady().then(data => {
-      // HACK: Possibility for bigdata, so don't structuredClone?
+      // structuredClone in case shallow operation was used
+      // but data needs to be saved to file
       data.triggeredEvents = structuredClone(this.triggeredEvents);
     });
-    console.log("[LOG]: Events saved: %o", this.triggeredEvents);
+    console.log("[LOG]: Events saved by method: %o", this.triggeredEvents);
   }
 
   formatTimestamp(timestamp) {
-    // TODO: Add RU locale, not US one
     return new Date(timestamp).toLocaleString();
   }
 

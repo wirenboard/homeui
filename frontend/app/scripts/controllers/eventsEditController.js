@@ -93,7 +93,7 @@ class EventsEditCtrl {
   }
 
   parseAndValidateCondition(cond) {
-    const re = /\s*([><=]|>=|<=)\s*(\d+)/ // TODO: Negative values, float values
+    const re = /\s*([><=]|>=|<=)\s*(-?\d+(\.\d+)?)/
     const match = cond.match(re);
 
     if (match !== null) {
