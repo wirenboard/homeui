@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FormEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { RangeProps } from './types';
 import './styles.css';
 
@@ -33,9 +33,10 @@ export const Range = ({
         step={step}
         aria-label={ariaLabel}
         onKeyUp={() => onChange(proxyValue)}
-        onChange={(ev) => {
-          setProxyValue(ev.target.valueAsNumber);
-          // have to force focus because it's not working on mobile
+        onInput={(ev: FormEvent<HTMLInputElement>) => {
+          setProxyValue(ev.currentTarget.valueAsNumber);
+        }}
+        onTouchEnd={() => {
           input.current.focus();
         }}
         onMouseUp={() => onChange(proxyValue)}
