@@ -1,0 +1,39 @@
+.aliceDeviceSkills {
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-border-radius);
+}
+
+.aliceDeviceSkills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(auto, 1fr)) 40px;
+    gap: 3px 12px;
+    margin-bottom: 6px;
+}
+
+.aliceDeviceSkills-gridLabel {
+    color: var(--text-color);
+    font-size: 12px;
+    height: 18px;
+}
+
+.aliceDeviceSkills-grid div:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) .aliceDeviceSkills-gridHiddenLabel {
+    visibility: hidden;
+}
+
+.aliceDeviceSkills-colspan2 {
+    grid-column: span 2;
+}
+
+.aliceDeviceSkills-gridRange {
+    display: flex;
+    gap: 12px;
+}
+
+.aliceDeviceSkills-deleteButton {
+    margin-top: 24px;
+}
+
+.aliceDeviceSkills-addButton {
+    margin-top: 12px;
+}

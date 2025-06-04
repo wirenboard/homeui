@@ -338,6 +338,13 @@ module.exports = (function makeWebpackConfig() {
       progress: true,
       reconnect: true,
     },
+    proxy: [
+      {
+        context: ['/api/integrations'],
+        target: 'http://10.200.200.1:8000',
+        pathRewrite: { '^/api': '' },
+      },
+    ],
   };
 
   return config;

@@ -255,4 +255,20 @@ export default class DeviceStore {
       });
     });
   }
+
+  get topics() {
+    return Array.from(this.devices).map(([_deviceId, device]) => ({
+      label: device.name,
+      options: device.cellIds.reduce((cells, c) => {
+        let cell = this.cells.get(c);
+        if (cell) {
+          cells.push({
+            value: cell.id,
+            label: `${cell.name} [${cell.id}]`,
+          });
+        }
+        return cells;
+      }, []),
+    }));
+  }
 }
