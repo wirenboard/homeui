@@ -47,6 +47,7 @@ export const Input = ({
     <input
       type={type}
       className={classNames('input', className, {
+        'input-l': size === 'large',
         'input-m': size === 'default',
         'input-s': size === 'small',
         'input-fullWidth': isFullWidth,

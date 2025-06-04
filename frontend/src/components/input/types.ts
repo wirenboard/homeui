@@ -1,7 +1,7 @@
 export interface InputProps {
   id?: string;
   type?: 'text' | 'number';
-  size?: 'default' | 'small';
+  size?: 'default' | 'small' | 'large';
   value: string | number;
   className?: string;
   min?: number;

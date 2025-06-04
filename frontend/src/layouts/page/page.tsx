@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import EditIcon from '@/assets/icons/edit.svg';
+import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import { Alert } from '@/components/alert';
 import { AlertProps } from '@/components/alert/types';
+import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Loader } from '@/components/loader';
 import { Notifications } from '@/components/notifications';
@@ -60,9 +61,14 @@ export const PageLayout = ({
             ) : (<h1 className="page-title">{title}</h1>)}
 
             {(!isEditingTitleState && onTitleChange) && (
-              <sup>
-                <EditIcon className="page-editTitleIcon" onClick={() => setIsEditingTitleState(true)} />
-              </sup>
+              <Button
+                size="small"
+                type="button"
+                icon={<EditSquareIcon />}
+                variant="secondary"
+                isOutlined
+                onClick={() => setIsEditingTitleState(true)}
+              />
             )}
           </div>
 
