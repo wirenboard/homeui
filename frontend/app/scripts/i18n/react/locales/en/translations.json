@@ -510,5 +510,71 @@
          "login": "Login",
          "password": "Password"
       }
+   },
+   "alice": {
+      "title": "Setting up integration with Yandex Alice",
+      "labels": {
+         "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
+         "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
+         "room": "Room",
+         "room-name": "Room name",
+         "empty-list": "No devices added",
+         "device-name": "Device name",
+         "device": "Device",
+         "device-category": "Device category",
+         "device-type": "Device type",
+         "capability": "Capability",
+         "property": "Property",
+         "property-settings": "Property settings",
+         "property-capability": "Capability/Property",
+         "topic": "MQTT topic",
+         "switch-on": "Command on",
+         "switch-off": "Command off",
+         "type": "Type",
+         "mode": "Mode",
+         "mode-type": "Mode type",
+         "min": "Min",
+         "max": "Max",
+         "precision": "Precision",
+         "device-capabilities": "Capabilities and properties",
+         "device-capabilities-description": "The skills of a device describe its capabilities. A device is described by at least one skill if it has no properties.",
+         "device-properties-description": "The properties of a device are usually used to control the environment. A device may not have any properties."
+      },
+      "buttons": {
+         "add-room": "Add room",
+         "add-device": "Add device",
+         "binding": "Bind controller via Yandex ID",
+         "save": "Save",
+         "add-capability": "Add capability",
+         "add-property": "Add property",
+         "all-devices": "All devices"
+      },
+      "prompt": {
+         "delete-room-title": "Removing the room",
+         "delete-room": "Do you really want to delete \"{{name}}\" room?",
+         "delete-device-title": "Removing the device",
+         "delete-device": "Do you really want to delete device \"{{name}}\"?"
+      },
+      "device-types": {
+         "sensor": "Sensors",
+         "smart_meter": "Smart meters",
+         "media": "Media device",
+         "cooking": "Kitchen appliances",
+         "appliances": "Home appliances",
+         "pet": "For pets",
+         "climate": "Climate technology",
+         "electrics": "Electrics",
+         "openable": "Opening/closing control",
+         "other": "Other devices"
+      },
+      "notifications": {
+         "room-added": "Room \"{{name}}\" saved",
+         "room-updated": "\"{{name}}\" room settings updated",
+         "room-deleted": "Room \"{{name}}\" deleted",
+         "device-added": "\"{{name}}\" device saved",
+         "device-updated": "\"{{name}}\" device settings updated",
+         "device-deleted": "Device \"{{name}}\" deleted",
+         "device-copied": "Device copied"
+      }
    }
 }
