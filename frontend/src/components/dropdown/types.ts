@@ -4,6 +4,7 @@ interface Option {
 }
 
 export interface DropdownProps {
+  id?: string;
   className?: string;
   options: Option[];
   value: string | number;
@@ -11,4 +12,5 @@ export interface DropdownProps {
   onChange: (_val: Option) => void;
   size?: 'default' | 'small';
   ariaLabel?: string;
+  isDisabled?: boolean;
 }

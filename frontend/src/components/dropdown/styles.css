@@ -56,5 +56,4 @@
   background: var(--input-background);
   color: var(--input-color);
   border-radius: var(--input-border-radius);
-  width: fit-content !important;
 }

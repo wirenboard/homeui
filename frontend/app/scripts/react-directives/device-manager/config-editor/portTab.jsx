@@ -1,9 +1,8 @@
-import React from 'react';
-import { Button, ErrorBar } from '../../common';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import JsonEditor from '../../components/json-editor/jsonEditor';
 import { useMediaQuery } from 'react-responsive';
+import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { Button, ErrorBar } from '../../common';
 import CollapseButton from '../../components/buttons/collapseButton';
 
 export const PortTab = observer(({ tab }) => {
@@ -31,8 +30,8 @@ export const PortTabContent = ({ tab, index, onDeleteTab, onDeletePortDevices })
             key="delete-devices"
             label={t('device-manager.buttons.delete-devices')}
             type="danger"
-            onClick={() => onDeletePortDevices(tab)}
             disabled={!tab.hasChildren}
+            onClick={() => onDeletePortDevices(tab)}
           />
           {tab.canDelete && (
             <Button
@@ -44,12 +43,7 @@ export const PortTabContent = ({ tab, index, onDeleteTab, onDeletePortDevices })
           )}
         </div>
       </div>
-      <JsonEditor
-        schema={tab.schema}
-        data={tab.editedData}
-        root={'port' + index}
-        onChange={tab.setData}
-      />
+      <JsonSchemaEditor store={tab.schemaStore} translator={tab.schemaTranslator}/>
     </div>
   );
 };

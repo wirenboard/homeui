@@ -1,12 +1,9 @@
-'use strict';
-
 import { makeObservable, observable, computed, action, autorun } from 'mobx';
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
+import { makeStoreFromJsonSchema, Translator } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
+import CollapseButtonState from '../../components/buttons/collapseButtonState';
 import { getTranslation } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
-import CollapseButtonState from '../../components/buttons/collapseButtonState';
 
 function checkDuplicateSlaveIds(deviceTabs) {
   const tabsBySlaveId = deviceTabs.reduce((acc, tab) => {
@@ -16,11 +13,11 @@ function checkDuplicateSlaveIds(deviceTabs) {
     }
     return acc;
   }, {});
-  Object.values(tabsBySlaveId).forEach(tabs => {
-    if (tabs.length == 1) {
+  Object.values(tabsBySlaveId).forEach((tabs) => {
+    if (tabs.length === 1) {
       tabs[0].setSlaveIdIsDuplicate(false);
     } else {
-      tabs.forEach(tab => tab.setSlaveIdIsDuplicate(true));
+      tabs.forEach((tab) => tab.setSlaveIdIsDuplicate(true));
     }
   });
 }
@@ -39,14 +36,11 @@ export function makeModbusTcpPortTabName(data) {
 
 export class PortTab {
   constructor(data, schema, nameGenerationFn) {
-    this.name = '';
     this.title = getTranslation(schema.title, i18n.language, schema.translations);
     this.type = TabType.PORT;
     this.data = data;
-    this.editedData = cloneDeep(data);
-    this.schema = schema;
-    this.hasJsonValidationErrors = false;
-    this.isDirty = false;
+    this.schemaStore = makeStoreFromJsonSchema(schema, data);
+    this.schemaTranslator = new Translator(schema?.translations || {});
     this.collapseButtonState = new CollapseButtonState(
       false,
       () => this.collapse(),
@@ -56,14 +50,10 @@ export class PortTab {
     this.children = [];
     this.reactionDisposers = [];
 
-    this.updateName();
-
     makeObservable(this, {
-      name: observable,
-      hasJsonValidationErrors: observable,
-      isDirty: observable,
-      setData: action.bound,
-      updateName: action,
+      name: computed,
+      hasJsonValidationErrors: computed,
+      isDirty: computed,
       commitData: action,
       addChildren: action,
       deleteChildren: action,
@@ -73,34 +63,40 @@ export class PortTab {
       hasChildren: computed,
       hasInvalidConfig: computed,
       canDelete: computed,
+      path: computed,
+      portType: computed,
     });
   }
 
-  updateName() {
-    this.name = this.nameGenerationFn(this.editedData, this.schema);
+  get name() {
+    return this.nameGenerationFn(this.schemaStore.value, this.schemaStore.schema);
   }
 
-  setData(data, errors) {
-    this.isDirty = !isEqual(this.data, data);
-    this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = errors.length != 0;
-    this.updateName();
+  get hasJsonValidationErrors() {
+    return this.schemaStore.hasErrors;
+  }
+
+  get isDirty() {
+    return this.schemaStore.isDirty;
+  }
+
+  get editedData() {
+    return this.schemaStore.value;
   }
 
   commitData() {
-    this.data = cloneDeep(this.editedData);
-    this.hasJsonValidationErrors = false;
-    this.isDirty = false;
+    this.data = this.schemaStore.value;
+    this.schemaStore.commit();
   }
 
   collapse() {
-    this.children.forEach(child => {
+    this.children.forEach((child) => {
       child.hidden = true;
     });
   }
 
   restore() {
-    this.children.forEach(child => {
+    this.children.forEach((child) => {
       child.hidden = false;
     });
   }
@@ -122,11 +118,11 @@ export class PortTab {
   }
 
   get hasChildren() {
-    return this.children.length != 0;
+    return this.children.length !== 0;
   }
 
   get childrenHasInvalidConfig() {
-    return this.children.some(child => child.hasInvalidConfig);
+    return this.children.some((child) => child.hasInvalidConfig);
   }
 
   get hasInvalidConfig() {
@@ -134,33 +130,35 @@ export class PortTab {
   }
 
   get portType() {
-    return this.editedData?.port_type || 'serial';
+    return this.schemaStore.value.port_type || 'serial';
   }
 
   get path() {
+    const data = this.schemaStore.value;
     if (this.portType === 'serial') {
-      return this.editedData?.path;
+      return data?.path || '';
     }
     if (this.isTcpGateway) {
-      return `${this.editedData?.address}:${this.editedData?.port}`;
+      return `${data?.address}:${data?.port}`;
     }
     return '';
   }
 
   get baseConfig() {
+    const data = this.schemaStore.value;
     if (this.portType === 'serial') {
       return {
-        path: this.editedData.path,
-        baudRate: this.editedData.baud_rate,
-        stopBits: this.editedData.stop_bits,
-        parity: this.editedData.parity,
-        dataBits: this.editedData.data_bits,
+        path: data.path,
+        baudRate: data.baud_rate,
+        stopBits: data.stop_bits,
+        parity: data.parity,
+        dataBits: data.data_bits,
       };
     }
     if (this.isTcpGateway) {
       return {
-        address: this.editedData.address,
-        port: this.editedData.port,
+        address: data.address,
+        port: data.port,
       };
     }
     return undefined;
