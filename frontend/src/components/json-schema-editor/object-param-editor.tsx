@@ -38,7 +38,8 @@ const OptInParameterLabel = ({ title, param, inputId }: EditorWrapperLabelProps)
 };
 
 const EditorWrapperLabel = ({ title, param, inputId }: EditorWrapperLabelProps) => {
-  if (!param.required && !param.store.schema?.options?.wb?.show_editor && param.store.schema?.options?.show_opt_in) {
+  const options = param.store.schema?.options;
+  if (!param.store.required && !options?.wb?.show_editor && options?.show_opt_in) {
     return <OptInParameterLabel inputId={inputId} title={title} param={param}/>;
   }
   return (

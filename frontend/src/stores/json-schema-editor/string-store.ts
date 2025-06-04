@@ -1,5 +1,6 @@
 import { makeObservable, observable, action, computed } from 'mobx';
 import i18n from '~/i18n/react/config';
+import MistypedValue from './mistyped-value';
 import { getDefaultStringValue } from './schema-helpers';
 import { StringSchema } from './types';
 
@@ -9,19 +10,21 @@ interface Option {
 }
 
 export default class StringStore {
-  public value: any;
+  public value: MistypedValue | string | undefined;
   public schema: StringSchema;
   public error: string;
   public required: boolean;
   public enumOptions: Option[] = [];
 
-  private _initialValue: any;
+  private _initialValue: MistypedValue | string | undefined;
 
-  constructor(schema: StringSchema, initialValue: any, required: boolean) {
-    if (initialValue === undefined && schema.options?.wb?.show_editor) {
-      this.value = getDefaultStringValue(schema);
-    } else {
+  constructor(schema: StringSchema, initialValue: unknown, required: boolean) {
+    if (typeof initialValue === 'string') {
       this.value = initialValue;
+    } else if (initialValue === undefined) {
+      this.value = schema.options?.wb?.show_editor ? getDefaultStringValue(schema) : undefined;
+    } else {
+      this.value = { type: typeof initialValue, value: String(initialValue) } as MistypedValue;
     }
     this._initialValue = this.value;
     this.schema = schema;
@@ -50,16 +53,16 @@ export default class StringStore {
   }
 
   _checkConstraints(): void {
-    if (typeof this.value !== 'string' && this.value !== undefined) {
+    if (this.value instanceof MistypedValue) {
       this.error = i18n.t('json-editor.errors.not-a-string');
+      return;
+    }
+    if (this.value === undefined) {
+      this.error = this.required ? i18n.t('json-editor.errors.required') : '';
       return;
     }
     if (this.schema.enum && !this.schema.enum.includes(this.value)) {
       this.error = i18n.t('json-editor.errors.not-in-enum');
-      return;
-    }
-    if (this.required && this.value === undefined) {
-      this.error = i18n.t('json-editor.errors.required');
       return;
     }
     if (this.schema.pattern) {

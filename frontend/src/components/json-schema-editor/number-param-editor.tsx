@@ -23,12 +23,13 @@ export const NumberParamEditor = observer(({
 }: NumberParamEditorProps) => {
   const lang = getI18n().language;
   const value = store.value;
+  const valueToDisplay = typeof value !== 'number' ? '' : value;
   if (store.schema.enum) {
     return (
       <Dropdown
         id={inputId}
         options={store.enumOptions}
-        value={store.value}
+        value={valueToDisplay}
         placeholder={translator.find(store.schema?.options?.inputAttributes?.placeholder, lang)}
         isDisabled={isDisabled}
         size="small"
@@ -42,7 +43,7 @@ export const NumberParamEditor = observer(({
     <Input
       id={inputId}
       type="number"
-      value={typeof value !== 'number' ? '' : value}
+      value={valueToDisplay}
       placeholder={translator.find(store.schema?.options?.inputAttributes?.placeholder, lang)}
       isDisabled={isDisabled}
       ariaDescribedby={descriptionId}

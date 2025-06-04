@@ -1,5 +1,6 @@
 import { action, makeObservable, observable, computed } from 'mobx';
 import i18n from '~/i18n/react/config';
+import MistypedValue from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
 import { NumberSchema } from './types';
 
@@ -9,19 +10,21 @@ interface Option {
 }
 
 export default class NumberStore {
-  public value: any;
+  public value: MistypedValue | number | undefined;
   public schema: NumberSchema;
   public error: string;
   public required: boolean;
   public enumOptions: Option[] = [];
 
-  private _initialValue: any;
+  private _initialValue: MistypedValue | number | undefined;
 
-  constructor(schema: NumberSchema, initialValue: any, required: boolean) {
-    if (initialValue === undefined && schema.options?.wb?.show_editor) {
-      this.value = getDefaultNumberValue(schema);
-    } else {
+  constructor(schema: NumberSchema, initialValue: unknown, required: boolean) {
+    if (typeof initialValue === 'number') {
       this.value = initialValue;
+    } else if (initialValue === undefined) {
+      this.value = schema.options?.wb?.show_editor ? getDefaultNumberValue(schema) : undefined;
+    } else {
+      this.value = { type: typeof initialValue, value: String(initialValue) } as MistypedValue;
     }
     this._initialValue = this.value;
     this.schema = schema;
@@ -50,12 +53,12 @@ export default class NumberStore {
   }
 
   _checkConstraints(): void {
-    if (typeof this.value !== 'number' && this.value !== undefined) {
+    if (this.value instanceof MistypedValue) {
       this.error = i18n.t('json-editor.errors.not-a-number');
       return;
     }
-    if (this.required && this.value === undefined) {
-      this.error = i18n.t('json-editor.errors.required');
+    if (this.value === undefined) {
+      this.error = this.required ? i18n.t('json-editor.errors.required') : '';
       return;
     }
     if (this.schema.enum && !this.schema.enum.includes(this.value)) {
@@ -83,12 +86,15 @@ export default class NumberStore {
   }
 
   setValue(value: number | string): void {
-    this.value = value;
-    if (typeof this.value === 'string') {
-      const parsedValue = parseFloat(this.value);
-      if (!isNaN(parsedValue)) {
+    if (typeof value === 'string') {
+      const parsedValue = parseFloat(value);
+      if (isNaN(parsedValue)) {
+        this.value = { type: 'string', value: value } as MistypedValue;
+      } else {
         this.value = parsedValue;
       }
+    } else {
+      this.value = value;
     }
     this._checkConstraints();
   }

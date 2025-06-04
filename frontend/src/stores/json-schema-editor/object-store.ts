@@ -1,5 +1,6 @@
 import { makeObservable, action, computed, observable } from 'mobx';
 import BooleanStore from './boolean-store';
+import MistypedValue from './mistyped-value';
 import NumberStore from './number-store';
 import StringStore from './string-store';
 import { ObjectSchema } from './types';
@@ -84,7 +85,7 @@ export default class ObjectStore {
 
   get value(): any {
     return this.params.reduce((acc, param) => {
-      if (param.store.value === undefined || param.isDisabled) {
+      if (param.store.value === undefined || param.isDisabled || param.store.value instanceof MistypedValue) {
         return acc;
       }
       acc[param.key] = param.store.value;

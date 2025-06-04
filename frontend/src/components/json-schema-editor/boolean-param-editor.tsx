@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { CSSProperties } from 'react';
 import { getI18n } from 'react-i18next';
-import { BooleanStore, Translator } from '@/stores/json-schema-editor';
+import { BooleanStore, Translator, MistypedValue } from '@/stores/json-schema-editor';
 import { ParamError } from './param-error';
 
 interface BooleanParamEditorProps {
@@ -18,8 +18,8 @@ export const BooleanParamEditor = observer(({ key, store, translator } : Boolean
     style.flexBasis = '100%';
   }
   const value = store.value;
-  const indeterminate = typeof value !== 'boolean';
-  const checked = indeterminate ? false : value;
+  const indeterminate = value instanceof MistypedValue || value === undefined;
+  const checked = indeterminate ? false : value as boolean;
   return (
     <div style={style}>
       <label className="wb-jsonEditor-checkbox">

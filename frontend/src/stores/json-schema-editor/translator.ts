@@ -8,6 +8,6 @@ export default class Translator {
   }
 
   find(key: string, lang: string): string {
-    return this._translations?.[lang]?.[key] || this._translations?.en?.[key] || key;
+    return (this._translations?.[lang]?.[key] ?? this._translations?.en?.[key]) ?? key;
   }
 }

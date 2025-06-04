@@ -1,23 +1,26 @@
 import { observable, action, computed, makeObservable } from 'mobx';
 import i18n from '~/i18n/react/config';
+import MistypedValue from './mistyped-value';
 import { getDefaultBooleanValue } from './schema-helpers';
 import { BooleanSchema } from './types';
 
 export default class BooleanStore {
-  public value: any;
+  public value: MistypedValue | boolean | undefined;
   public schema: BooleanSchema;
   public error: string;
   public required: boolean;
 
   readonly defaultText = '';
 
-  private _initialValue: any;
+  private _initialValue: MistypedValue | boolean | undefined;
 
-  constructor(schema: BooleanSchema, initialValue: any, required: boolean) {
-    if (initialValue === undefined && schema.options?.wb?.show_editor) {
-      this.value = getDefaultBooleanValue(schema);
-    } else {
+  constructor(schema: BooleanSchema, initialValue: unknown, required: boolean) {
+    if (typeof initialValue === 'boolean') {
       this.value = initialValue;
+    } else if (initialValue === undefined) {
+      this.value = schema.options?.wb?.show_editor ? getDefaultBooleanValue(schema) : undefined;
+    } else {
+      this.value = { type: typeof initialValue, value: String(initialValue) } as MistypedValue;
     }
     this.schema = schema;
     this._initialValue = this.value;
@@ -38,7 +41,7 @@ export default class BooleanStore {
   }
 
   _checkConstraints(): void {
-    if (typeof this.value !== 'boolean' && this.value !== undefined) {
+    if (this.value instanceof MistypedValue) {
       this.error = i18n.t('json-editor.errors.not-a-boolean');
       return;
     }
