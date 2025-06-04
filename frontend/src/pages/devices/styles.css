@@ -6,6 +6,7 @@
     max-width: calc(100% - 10px);
 
     @media (max-width: 1024px) {
+        display: block;
         max-width: 100%;
     }
 }
