@@ -4,9 +4,9 @@ export type TranslationsByLocale = {
   [_key in Locale]?: string;
 };
 
-export type Translations = {
+export interface Translations {
   [value: string]: Translations;
-};
+}
 
 export interface SchemaBase {
   // properties from json-schema specification
@@ -80,7 +80,9 @@ export interface NumberSchema extends SchemaBase {
 
 export interface ObjectSchema extends SchemaBase {
   // properties from json-schema specification
+  properties?: Record<string, SchemaBase>;
   default?: Record<string, any>;
+  required?: string[];
 
   // custom json-editor properties
   options?: OptionsBase;

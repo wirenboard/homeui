@@ -31,15 +31,15 @@ const expandSchema = (schema: any, definitions: any, schemaCache: Record<any, an
   return schema;
 };
 
-const makeBooleanStore = (schema: any, _definitions: any, initialValue: any, required: boolean): BooleanStore => {
+const makeBooleanStore = (schema: unknown, _definitions: any, initialValue: any, required: boolean): BooleanStore => {
   return new BooleanStore(schema as BooleanSchema, initialValue, required);
 };
 
-const makeStringStore = (schema: any, _definitions: any, initialValue: any, required: boolean) : StringStore => {
+const makeStringStore = (schema: unknown, _definitions: any, initialValue: any, required: boolean) : StringStore => {
   return new StringStore(schema as StringSchema, initialValue, required);
 };
 
-const makeNumberStore = (schema: any, _definitions: any, initialValue: any, required: boolean): NumberStore => {
+const makeNumberStore = (schema: unknown, _definitions: any, initialValue: any, required: boolean): NumberStore => {
   return new NumberStore(schema as NumberSchema, initialValue, required);
 };
 
@@ -52,21 +52,22 @@ function comparePropertyOrder([key1, schema1], [key2, schema2]) {
   return order1 - order2;
 }
 
-const makeObjectStore = (schema: any, definitions: any, initialValue: any, _required: boolean) : ObjectStore => {
+const makeObjectStore = (schema: unknown, definitions: any, initialValue: any, _required: boolean) : ObjectStore => {
+  const objectSchema = schema as ObjectSchema;
   let params: ObjectStoreParam[] = [];
-  if (schema?.properties) {
-    Object.entries(schema.properties)
+  if (objectSchema?.properties) {
+    Object.entries(objectSchema.properties)
       .sort(comparePropertyOrder)
       .forEach(([key, value]) => {
         params.push(
           new ObjectStoreParam(
             key,
-            createStore(value, definitions, initialValue?.[key], !!schema.required?.includes(key))
+            createStore(value, definitions, initialValue?.[key], !!objectSchema.required?.includes(key))
           )
         );
       });
   }
-  return new ObjectStore(schema as ObjectSchema, params);
+  return new ObjectStore(objectSchema, params);
 };
 
 const createStore = (

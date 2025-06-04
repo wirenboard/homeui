@@ -3,10 +3,10 @@ import i18n from '~/i18n/react/config';
 import { getDefaultNumberValue } from './schema-helpers';
 import { NumberSchema } from './types';
 
-type Option = {
+interface Option {
   label: string;
   value: number;
-};
+}
 
 export default class NumberStore {
   public value: any;
@@ -119,6 +119,7 @@ export default class NumberStore {
   }
 
   reset(): void {
-    this.setValue(this._initialValue);
+    this.value = this._initialValue;
+    this._checkConstraints();
   }
 }

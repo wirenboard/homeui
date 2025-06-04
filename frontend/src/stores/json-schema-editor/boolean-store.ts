@@ -6,8 +6,10 @@ import { BooleanSchema } from './types';
 export default class BooleanStore {
   public value: any;
   public schema: BooleanSchema;
-  public error: string = '';
+  public error: string;
   public required: boolean;
+
+  readonly defaultText = '';
 
   private _initialValue: any;
 
@@ -69,15 +71,12 @@ export default class BooleanStore {
     return this.value !== this._initialValue;
   }
 
-  get defaultText(): string {
-    return '';
-  }
-
   submit(): void {
     this._initialValue = this.value;
   }
 
   reset(): void {
-    this.setValue(this._initialValue);
+    this.value = this._initialValue;
+    this._checkConstraints();
   }
 }

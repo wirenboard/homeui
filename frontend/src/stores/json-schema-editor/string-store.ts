@@ -3,10 +3,10 @@ import i18n from '~/i18n/react/config';
 import { getDefaultStringValue } from './schema-helpers';
 import { StringSchema } from './types';
 
-type Option = {
+interface Option {
   label: string;
   value: string;
-};
+}
 
 export default class StringStore {
   public value: any;
@@ -29,7 +29,7 @@ export default class StringStore {
 
     if (this.schema.enum) {
       this.enumOptions = this.schema.enum.map((value, index) => ({
-        label: this.schema.options?.enum_titles?.[index] || value,
+        label: this.schema.options?.enum_titles?.[index] ?? value,
         value: value,
       }));
     }
@@ -65,7 +65,7 @@ export default class StringStore {
     if (this.schema.pattern) {
       const regExp = new RegExp(this.schema.pattern);
       if (!regExp.test(this.value)) {
-        this.error = this.schema.options?.patternmessage || i18n.t('json-editor.errors.invalid-format');
+        this.error = this.schema.options?.patternmessage ?? i18n.t('json-editor.errors.invalid-format');
         return;
       }
     }
@@ -111,6 +111,7 @@ export default class StringStore {
   }
 
   reset(): void {
-    this.setValue(this._initialValue);
+    this.value = this._initialValue;
+    this._checkConstraints();
   }
 }
