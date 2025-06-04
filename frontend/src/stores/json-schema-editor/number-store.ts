@@ -1,8 +1,7 @@
 import { action, makeObservable, observable, computed } from 'mobx';
-import i18n from '~/i18n/react/config';
 import MistypedValue from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
-import { NumberSchema } from './types';
+import { NumberSchema, ValidationError } from './types';
 
 interface Option {
   label: string;
@@ -12,7 +11,7 @@ interface Option {
 export default class NumberStore {
   public value: MistypedValue | number | undefined;
   public schema: NumberSchema;
-  public error: string;
+  public error: ValidationError | undefined;
   public required: boolean;
   public enumOptions: Option[] = [];
 
@@ -40,8 +39,8 @@ export default class NumberStore {
     this._checkConstraints();
 
     makeObservable(this, {
-      value: observable,
-      error: observable,
+      value: observable.ref,
+      error: observable.ref,
       setValue: action,
       setUndefined: action,
       _checkConstraints: action,
@@ -54,19 +53,19 @@ export default class NumberStore {
 
   _checkConstraints(): void {
     if (this.value instanceof MistypedValue) {
-      this.error = i18n.t('json-editor.errors.not-a-number');
+      this.error = { key: 'json-editor.errors.not-a-number' };
       return;
     }
     if (this.value === undefined) {
-      this.error = this.required ? i18n.t('json-editor.errors.required') : '';
+      this.error = this.required ? { key: 'json-editor.errors.required' } : undefined;
       return;
     }
     if (this.schema.enum && !this.schema.enum.includes(this.value)) {
-      this.error = i18n.t('json-editor.errors.not-in-enum');
+      this.error = { key: 'json-editor.errors.not-in-enum' };
       return;
     }
     if (this.schema.type === 'integer' && !Number.isSafeInteger(this.value)) {
-      this.error = i18n.t('json-editor.errors.not-an-integer');
+      this.error = { key: 'json-editor.errors.not-an-integer' };
       return;
     }
     if (
@@ -75,14 +74,17 @@ export default class NumberStore {
     ) {
       let context = this.schema.minimum !== undefined ? 'min' : '';
       context += this.schema.maximum !== undefined ? 'max' : '';
-      this.error = i18n.t('json-editor.errors.' + context, {
-        context: context,
-        min: this.schema.minimum,
-        max: this.schema.maximum,
-      });
+      this.error = {
+        key: 'json-editor.errors.' + context,
+        data: {
+          context: context,
+          min: this.schema.minimum,
+          max: this.schema.maximum,
+        },
+      };
       return;
     }
-    this.error = '';
+    this.error = undefined;
   }
 
   setValue(value: number | string): void {

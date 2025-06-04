@@ -5,6 +5,7 @@ import NumberStore from './number-store';
 import ObjectStore from './object-store';
 import StringStore from './string-store';
 import Translator from './translator';
+import { ValidationError } from './types';
 
 export {
   makeStoreFromJsonSchema,
@@ -13,5 +14,6 @@ export {
   BooleanStore,
   StringStore,
   NumberStore,
-  MistypedValue
+  MistypedValue,
+  ValidationError
 };

@@ -13,13 +13,13 @@ import { StringParamEditor } from './string-param-editor';
 interface EditorWrapperLabelProps {
   title: string;
   param: ObjectStoreParam;
-  inputId: string;
+  inputId?: string;
 }
 
-const OptInParameterLabel = ({ title, param, inputId }: EditorWrapperLabelProps) => {
+const OptInParameterLabel = ({ title, param }: EditorWrapperLabelProps) => {
   const { t } = useTranslation();
   return (
-    <label htmlFor={inputId} className="wb-jsonEditor-checkbox wb-jsonEditor-optInCheckbox">
+    <label className="wb-jsonEditor-checkbox wb-jsonEditor-optInCheckbox">
       <input
         type="checkbox"
         checked={!param.isDisabled}
@@ -38,9 +38,9 @@ const OptInParameterLabel = ({ title, param, inputId }: EditorWrapperLabelProps)
 };
 
 const EditorWrapperLabel = ({ title, param, inputId }: EditorWrapperLabelProps) => {
-  const options = param.store.schema?.options;
+  const options = param.store.schema.options;
   if (!param.store.required && !options?.wb?.show_editor && options?.show_opt_in) {
-    return <OptInParameterLabel inputId={inputId} title={title} param={param}/>;
+    return <OptInParameterLabel title={title} param={param}/>;
   }
   return (
     <label htmlFor={inputId} style={{ whiteSpace: 'nowrap' }}>
@@ -85,7 +85,7 @@ const EditorWrapper = observer(({
     >
       <EditorWrapperLabel title={title} param={param} inputId={inputId} />
       {children}
-      {!param.isDisabled && <ParamError id={errorId} msg={param.store.error} />}
+      {!param.isDisabled && <ParamError id={errorId} error={param.store.error} translator={translator} />}
       <ParamDescription
         id={descriptionId}
         description={translator.find(param.store.schema.description, lang)}
@@ -149,7 +149,7 @@ const shouldRenderObjectParamEditor = (param: ObjectStoreParam) => {
   if (param.store.schema.options?.hidden) {
     return false;
   }
-  return !param.isDisabled || param.store.schema?.options?.wb?.show_editor || param.store.schema?.options?.show_opt_in;
+  return !param.isDisabled || param.store.schema.options?.wb?.show_editor || param.store.schema.options?.show_opt_in;
 };
 
 const MakeObjectParamEditor = (param: ObjectStoreParam, translator: Translator) => {

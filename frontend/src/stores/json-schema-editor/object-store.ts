@@ -31,7 +31,7 @@ export class ObjectStoreParam {
   }
 
   disable() {
-    if (!this.store.required && !this._disabled && !this.store.schema?.options?.wb?.show_editor) {
+    if (!this.store.required && !this._disabled && !this.store.schema.options?.wb?.show_editor) {
       this._disabled = true;
       this.store.setUndefined();
     }
@@ -69,10 +69,6 @@ export default class ObjectStore {
 
   get hasErrors(): boolean {
     return this.params.some((param) => !param.isDisabled && param.store.hasErrors);
-  }
-
-  get error(): string {
-    return '';
   }
 
   get isDirty(): boolean {

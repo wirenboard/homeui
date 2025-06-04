@@ -30,7 +30,7 @@ export const NumberParamEditor = observer(({
         id={inputId}
         options={store.enumOptions}
         value={valueToDisplay}
-        placeholder={translator.find(store.schema?.options?.inputAttributes?.placeholder, lang)}
+        placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
         isDisabled={isDisabled}
         size="small"
         onChange={(option) => {
@@ -44,7 +44,7 @@ export const NumberParamEditor = observer(({
       id={inputId}
       type="number"
       value={valueToDisplay}
-      placeholder={translator.find(store.schema?.options?.inputAttributes?.placeholder, lang)}
+      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
       isDisabled={isDisabled}
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}

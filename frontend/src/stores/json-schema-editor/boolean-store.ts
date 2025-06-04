@@ -1,13 +1,12 @@
 import { observable, action, computed, makeObservable } from 'mobx';
-import i18n from '~/i18n/react/config';
 import MistypedValue from './mistyped-value';
 import { getDefaultBooleanValue } from './schema-helpers';
-import { BooleanSchema } from './types';
+import { BooleanSchema, ValidationError } from './types';
 
 export default class BooleanStore {
   public value: MistypedValue | boolean | undefined;
   public schema: BooleanSchema;
-  public error: string;
+  public error: ValidationError | undefined;
   public required: boolean;
 
   readonly defaultText = '';
@@ -29,8 +28,8 @@ export default class BooleanStore {
     this._checkConstraints();
 
     makeObservable(this, {
-      value: observable,
-      error: observable,
+      value: observable.ref,
+      error: observable.ref,
       setValue: action,
       setUndefined: action,
       _checkConstraints: action,
@@ -42,14 +41,14 @@ export default class BooleanStore {
 
   _checkConstraints(): void {
     if (this.value instanceof MistypedValue) {
-      this.error = i18n.t('json-editor.errors.not-a-boolean');
+      this.error = { key: 'json-editor.errors.not-a-boolean' };
       return;
     }
     if (this.required && this.value === undefined) {
-      this.error = i18n.t('json-editor.errors.required');
+      this.error = { key: 'json-editor.errors.required' };
       return;
     }
-    this.error = '';
+    this.error = undefined;
   }
 
   setValue(value: boolean): void {

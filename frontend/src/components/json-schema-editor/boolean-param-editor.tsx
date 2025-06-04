@@ -35,7 +35,7 @@ export const BooleanParamEditor = observer(({ key, store, translator } : Boolean
         />
         {translator.find(title, lang)}
       </label>
-      {!store.error && <ParamError msg={store.error} />}
+      {!store.error && <ParamError error={store.error} translator={translator} />}
     </div>
   );
 });

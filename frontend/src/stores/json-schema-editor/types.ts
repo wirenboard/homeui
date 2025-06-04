@@ -81,9 +81,20 @@ export interface NumberSchema extends SchemaBase {
 export interface ObjectSchema extends SchemaBase {
   // properties from json-schema specification
   properties?: Record<string, SchemaBase>;
-  default?: Record<string, any>;
+  default?: Record<string, unknown>;
   required?: string[];
 
   // custom json-editor properties
   options?: OptionsBase;
+}
+
+export interface ValidationError {
+  // Key for i18n translation
+  key?: string;
+
+  // Custom message for the error if key is not provided
+  // The message can be translated using translations provided with the schema
+  msg?: string;
+
+  data?: Record<string, unknown>;
 }

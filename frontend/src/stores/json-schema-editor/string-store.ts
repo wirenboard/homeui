@@ -1,8 +1,7 @@
 import { makeObservable, observable, action, computed } from 'mobx';
-import i18n from '~/i18n/react/config';
 import MistypedValue from './mistyped-value';
 import { getDefaultStringValue } from './schema-helpers';
-import { StringSchema } from './types';
+import { StringSchema, ValidationError } from './types';
 
 interface Option {
   label: string;
@@ -12,7 +11,7 @@ interface Option {
 export default class StringStore {
   public value: MistypedValue | string | undefined;
   public schema: StringSchema;
-  public error: string;
+  public error: ValidationError | undefined;
   public required: boolean;
   public enumOptions: Option[] = [];
 
@@ -54,33 +53,35 @@ export default class StringStore {
 
   _checkConstraints(): void {
     if (this.value instanceof MistypedValue) {
-      this.error = i18n.t('json-editor.errors.not-a-string');
+      this.error = { key: 'json-editor.errors.not-a-string' };
       return;
     }
     if (this.value === undefined) {
-      this.error = this.required ? i18n.t('json-editor.errors.required') : '';
+      this.error = this.required ? { key: 'json-editor.errors.required' } : undefined;
       return;
     }
     if (this.schema.enum && !this.schema.enum.includes(this.value)) {
-      this.error = i18n.t('json-editor.errors.not-in-enum');
+      this.error = { key: 'json-editor.errors.not-in-enum' };
       return;
     }
     if (this.schema.pattern) {
       const regExp = new RegExp(this.schema.pattern);
       if (!regExp.test(this.value)) {
-        this.error = this.schema.options?.patternmessage ?? i18n.t('json-editor.errors.invalid-format');
+        this.error = this.schema.options?.patternmessage ?
+          { msg: this.schema.options.patternmessage } :
+          { key: 'json-editor.errors.invalid-format' };
         return;
       }
     }
     if (this.schema.maxLength !== undefined && this.value.length > this.schema.maxLength) {
-      this.error = i18n.t('json-editor.errors.max-length', { limit: this.schema.maxLength });
+      this.error = { key: 'json-editor.errors.max-length', data: { limit: this.schema.maxLength } };
       return;
     }
     if (this.schema.minLength !== undefined && this.value.length < this.schema.minLength) {
-      this.error = i18n.t('json-editor.errors.min-length', { limit: this.schema.minLength });
+      this.error = { key: 'json-editor.errors.min-length', data: { limit: this.schema.minLength } };
       return;
     }
-    this.error = '';
+    this.error = undefined;
   }
 
   setValue(value: string): void {

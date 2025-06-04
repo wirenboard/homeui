@@ -30,7 +30,7 @@ export const StringParamEditor = observer(({
         id={inputId}
         options={store.enumOptions}
         value={valueToDisplay}
-        placeholder={translator.find(store.schema?.options?.inputAttributes?.placeholder, lang)}
+        placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
         isDisabled={isDisabled}
         size="small"
         onChange={(option) => {
@@ -43,7 +43,7 @@ export const StringParamEditor = observer(({
     <Input
       id={inputId}
       value={valueToDisplay}
-      placeholder={translator.find(store.schema?.options?.inputAttributes?.placeholder, lang)}
+      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
       isDisabled={isDisabled}
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}
