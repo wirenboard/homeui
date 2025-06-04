@@ -35,8 +35,8 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand wb-navbar-brand" ui-sref="home">
-                <img src="images/logo.svg" alt="Wiren Board Web UI">
+              <a class="navbar-brand wb-navbar-brand" ui-sref="home" draggable="false">
+                <img src="images/logo.svg" alt="Wiren Board Web UI" draggable="false">
               </a>
               <p class="navbar-text navbar-right connection-status">
                 <span class="label label-custom access-level-label" ng-class="roles.current.roles.isAdmin ? 'label label-custom label-danger' : 'label label-custom label-warning'"
@@ -56,62 +56,62 @@
           <div class="collapse navbar-collapse navbar-ex1-collapse">
               <ul class="nav navbar-nav side-nav">
                   <li>
-                      <a href="javascript:" data-toggle="collapse" data-target="#dashboards-menu">
+                      <a href="javascript:" data-toggle="collapse" data-target="#dashboards-menu" draggable="false">
                           <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.dashboards' | translate}}
                       </a>
                       <ul id="dashboards-menu" class="collapse in">
                           <li ng-if="!checkFullscreen()">
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref-active="active" ui-sref="dashboards" translate>{{'navigation.menu.list'}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref-active="active" ui-sref="dashboards" draggable="false" translate>{{'navigation.menu.list'}}</a>
                           </li>
                           <li ng-repeat="d in dashboards()" dashboard-menu-item>
-                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
-                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id })" ui-sref-active="active">{{ d.name }}</a>
-                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id, fullscreen: true })" ui-sref-active="active">{{ d.name }}</a>
-                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id, fullscreen: true })" ui-sref-active="active">{{ d.name }}</a>
+                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
+                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
+                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id, fullscreen: true })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
+                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id, fullscreen: true })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
                           </li>
                       </ul>
                   </li>
                   <li ui-sref-active="active" user-role="mto" current-role="roles.current.role" ng-if="!checkFullscreen()">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="devices"><i class="glyphicon glyphicon-cog"></i> {{'navigation.menu.devices' | translate}}</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="devices" draggable="false"><i class="glyphicon glyphicon-cog"></i> {{'navigation.menu.devices' | translate}}</a>
                   </li>
                   <li ui-sref-active="active" ng-if="!checkFullscreen()">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="widgets"><i class="glyphicon glyphicon-list-alt"></i> {{'navigation.menu.widgets' | translate}}</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="widgets" draggable="false"><i class="glyphicon glyphicon-list-alt"></i> {{'navigation.menu.widgets' | translate}}</a>
                   </li>
                   <li ui-sref-active="active">
-                      <a ng-if="forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history({fullscreen: true})"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
-                      <a ng-if="!forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
+                      <a ng-if="forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history({fullscreen: true})" draggable="false"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
+                      <a ng-if="!forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats" draggable="false"></i> {{'navigation.menu.history' | translate}}</a>
                   </li>
                   <li ng-if="!checkFullscreen() && isConnected()" ui-sref-active="active"
                       user-role="mtt" current-role="roles.current.role">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="rules"><i class="glyphicon glyphicon-file"></i> {{'navigation.menu.rules' | translate}}</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="rules" draggable="false"><i class="glyphicon glyphicon-file"></i> {{'navigation.menu.rules' | translate}}</a>
                   </li>
                   <li ui-sref-active="active" ng-if="!checkFullscreen()">
-                      <a href="javascript:" data-toggle="collapse" data-target="#settings-menu">
+                      <a href="javascript:" data-toggle="collapse" data-target="#settings-menu" draggable="false">
                           <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.settings' | translate}}
                       </a>
                       <ul id="settings-menu" class="collapse">
                           <li ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="configs" ui-sref-active="active">{{'navigation.menu.configs' | translate}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="configs" ui-sref-active="active" draggable="false">{{'navigation.menu.configs' | translate}}</a>
                           </li>
                           <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="webUI" ui-sref-active="active">{{'navigation.menu.ui' | translate}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="webUI" ui-sref-active="active" draggable="false">{{'navigation.menu.ui' | translate}}</a>
                           </li>
                           <li user-role="mtt" current-role="roles.current.role">
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="system" ui-sref-active="active">{{'navigation.menu.system' | translate}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="system" ui-sref-active="active" draggable="false">{{'navigation.menu.system' | translate}}</a>
                           </li>
                           <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="MQTTChannels" ui-sref-active="active">{{'navigation.menu.channels' | translate}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="MQTTChannels" ui-sref-active="active" draggable="false">{{'navigation.menu.channels' | translate}}</a>
                           </li>
                           <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="accessLevel" ui-sref-active="active">{{'navigation.menu.access' | translate}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="accessLevel" ui-sref-active="active" draggable="false">{{'navigation.menu.access' | translate}}</a>
                           </li>
                           <li user-role="mto" current-role="roles.current.role">
-                            <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="logs">{{'navigation.menu.logs' | translate}}</a>
+                            <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="logs" draggable="false">{{'navigation.menu.logs' | translate}}</a>
                           </li>
                       </ul>
                   </li>
                   <li ui-sref-active="active" ng-if="!checkFullscreen()">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
+                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help" draggable="false"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
                   </li>
               </ul>
           </div>
@@ -132,7 +132,7 @@
                       <div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="stableNotice">
                         <button type="button" class="close" ng-click="closeStableNotice()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases">testing</a>
+                        {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" draggable="false">testing</a>
                       </div>
                       <% } %>
                       <!-- viewport for child view -->

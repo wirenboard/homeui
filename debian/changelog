@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.116.1) stable; urgency=medium
+
+  * Disable drag on menu elements
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 04 Jun 2025 14:34:11 +0300
+
 wb-mqtt-homeui (2.116.0) stable; urgency=medium
 
   * Fix a bug where some devices were considered new when searching for new devices in the wb-mqtt-serial configuration editor
