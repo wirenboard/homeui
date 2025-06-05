@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { FormEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { RangeProps } from './types';
 import './styles.css';
@@ -7,13 +8,15 @@ export const Range = ({
 }: RangeProps) => {
   const [proxyValue, setProxyValue] = useState(0);
   const input = useRef<HTMLInputElement>(null);
-  const rangeBlockWidth = 150;
+  const rangeBlockWidth = 70;
 
   const rangeValuePosition = useMemo(() => {
-    const percent = Number(((proxyValue / max) * 100).toFixed());
+    const range = max - min;
+    const relativeValue = proxyValue - min;
+    const percent = (relativeValue / range) * 100;
     const thumbWidth = 16;
-    return `calc(${percent}% - ${(percent * thumbWidth) / 100}px - ${rangeBlockWidth / 2}px  + ${thumbWidth / 2}px)`;
-  }, [proxyValue, max]);
+    return `calc(${percent}% - ${(percent * thumbWidth) / 100}px - ${rangeBlockWidth / 2}px + ${thumbWidth / 2}px)`;
+  }, [proxyValue, min, max]);
 
   useLayoutEffect(() => {
     setProxyValue(value);
@@ -43,13 +46,16 @@ export const Range = ({
       />
       <div className="range-value">
         <div
+          className={classNames({
+            'range-negative': proxyValue < 0,
+          })}
           style={{
             position: 'absolute',
             left: rangeValuePosition,
             width: `${rangeBlockWidth}px`,
           }}
         >
-          {proxyValue}
+          {Math.abs(proxyValue)}
           {' '}
           {units}
         </div>
