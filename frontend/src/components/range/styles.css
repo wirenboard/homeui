@@ -78,3 +78,9 @@
 .range:disabled + .range-value {
     color: var(--gray-color);
 }
+
+.range-negative::before {
+    content: '-';
+    margin-left: -6px;
+    margin-right: 2px;
+}
