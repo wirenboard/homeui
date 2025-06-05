@@ -14,3 +14,7 @@
 .devices-column {
     width: 100%;
 }
+
+.devices-column .card-body {
+    overflow: hidden;
+}
