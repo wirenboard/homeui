@@ -22,10 +22,17 @@ else
 fi
 BOARD_CONF="/usr/share/wb-mqtt-homeui/config.${CONF_SUFFIX}.json"
 CONFFILE="/etc/wb-webui.conf"
+EVENTS_CONF="/usr/share/wb-mqtt-homeui/eventsConfig.default.json"
+EVENTS_CONFFILE="/etc/wb-events.conf"
 
 function install_default_config()
 {
     ucf --debconf-ok $BOARD_CONF $CONFFILE
+}
+
+function install_default_events_config()
+{
+    ucf --debconf-ok $EVENTS_CONF $EVENTS_CONFFILE
 }
 
 function is_config_untouched()
@@ -52,6 +59,10 @@ case "$1" in
             else
                 install_default_config
             fi
+        fi
+
+        if [ ! -e "$EVENTS_CONFFILE" ]; then
+            install_default_events_config
         fi
     ;;
 esac

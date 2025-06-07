@@ -1,4 +1,4 @@
-// Same class as in historyContoller.js but only constructor
+// Same ChartsControl class as in historyContoller.js but only constructor
 class ChartsControl {
   constructor(deviceId, controlId, deviceName, controlName, valueType, groupName, widget) {
     this.name = (deviceName || deviceId) + ' / ' + (controlName || controlId);
@@ -14,12 +14,13 @@ class ChartsControl {
 }
 
 class EventsEditCtrl {
-  constructor($scope, $state, uiConfig, DeviceData, $translate, $locale, $injector) {
+  constructor($scope, $state, uiConfig, eventsConfig, DeviceData, $translate, $locale, $injector) {
     'ngInject';
 
     this.$state = $state;
     this.$scope = $scope;
     this.uiConfig = uiConfig;
+    this.eventsConfig = eventsConfig;
     this.DeviceData = DeviceData;
     this.$translate = $translate;
     this.$locale = $locale;
@@ -31,21 +32,45 @@ class EventsEditCtrl {
     this.events = [];
     this.newEvent = { topic: null, condition: '', message: '' };
 
-    // Loading events from uiConfig
+    // Updating controls
     this.updateTranslations()
       .then(() => this.uiConfig.whenReady())
       .then(data => {
-        if (!data.hasOwnProperty('events')) {
-          data.events = [];
-        }
-        this.events = structuredClone(data.events);
-        console.log("[LOG]: Events: %o", this.events);
-        console.log("[LOG]: DeviceData: %o", this.DeviceData);
         this.updateControls(data.widgets, DeviceData);
       });
 
+    // Loading events from eventConfig
+    this.eventsConfig.whenReady().then(data => {
+      console.log("[LOG]: Starting mapping events from file...");
+      this.events = data.events.map(event => {
+        console.log("[LOG]: Mapping event: %o", event);
+        const device = DeviceData.devices[event.topic.deviceId];
+        const cellId = event.topic.deviceId + '/' + event.topic.controlId;
+        const cell = DeviceData.cell(cellId);
+
+        console.log("[LOG]: Device: %o", device);
+        console.log("[LOG]: CellId: %o", cellId);
+        console.log("[LOG]: Cell: %o", cell);
+
+        const objToReturn = {
+          "topic": this.makeChartsControlFromCell(device, cell, this.allChannelsMsg),
+          "condition": event.condition,
+          "message": event.message
+        };
+
+        console.log("[LOG]: Will map: %o", objToReturn);
+
+        return objToReturn;
+      });
+
+      console.log("[LOG]: Events: %o", this.events);
+    });
+
     // Cleanup
     $scope.$on('$destroy', () => {
+      console.log("[LOG]: Leaving events edit, saving...")
+      this.saveEvents();
+
       this.$scope = null;
     });
   }
@@ -80,7 +105,7 @@ class EventsEditCtrl {
         console.log("[LOG]: Event added: %o", this.newEvent);
         const id = this.newEvent.topic.deviceId + '/' + this.newEvent.topic.controlId;
         console.log("[LOG]: DeviceData.cell(id): %o", this.DeviceData.cell(id));
-        this.newEvent = { topic: '', condition: '', message: '' };
+        this.newEvent = { topic: null, condition: '', message: '' };
         this.saveEvents();
       }
       else {
@@ -131,10 +156,25 @@ class EventsEditCtrl {
   }
 
   saveEvents() {
-    this.uiConfig.whenReady().then(data => {
-      data.events = structuredClone(this.events);
+    this.eventsConfig.whenReady().then(data => {
+      data.events = this.events.map(event => {
+        return {
+          "topic": {
+            "deviceId": event.topic.deviceId,
+            "controlId": event.topic.controlId
+          },
+          "condition": event.condition,
+          "message": event.message
+        };
+      });
     });
     console.log("[LOG]: Events saved: %o", this.events);
+  }
+
+  clearEvents() {
+    this.events = [];
+    console.log("[LOG]: Events were cleared");
+    this.saveEvents();
   }
 
   updateControls(widgets, DeviceData) {
@@ -172,9 +212,13 @@ class EventsEditCtrl {
         Object.keys(DeviceData.devices)
           .sort()
           .map(deviceId => {
+            // console.log("[LOG]: DeviceId: %s", deviceId);
             const device = DeviceData.devices[deviceId];
             return device.cellIds.map(cellId => {
+              // console.log("[LOG]: CellId: %o", cellId);
               const cell = DeviceData.cell(cellId);
+              // console.log("[LOG]: Device: %o", device);
+              // console.log("[LOG]: Cell: %o", cell);
               return this.makeChartsControlFromCell(device, cell, this.allChannelsMsg);
             });
           })

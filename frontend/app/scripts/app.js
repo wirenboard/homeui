@@ -47,6 +47,7 @@ import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
 import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
+import eventsConfigService from './services/eventsConfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
 import rolesFactory from './services/roles.factory';
@@ -136,7 +137,8 @@ const module = angular
   .value('historyMaxPoints', 1000)
   .value('logsMaxRows', 50)
   .value('webuiConfigPath', '/etc/wb-webui.conf')
-  .value('configSaveDebounceMs', 300);
+  .value('configSaveDebounceMs', 300)
+  .value('eventsConfigPath', '/etc/wb-events.conf');
 
 // Register services
 module
@@ -169,6 +171,7 @@ module
     // make sure DeviceData is loaded at the startup so no MQTT messages are missed
   })
   .factory('uiConfig', uiConfigService)
+  .factory('eventsConfig', eventsConfigService)
   .filter('hilite', hiliteService);
 
 // Register controllers
@@ -367,9 +370,11 @@ const realApp = angular
       mqttClient,
       ConfigEditorProxy,
       webuiConfigPath,
+      eventsConfigPath,
       errors,
       whenMqttReady,
       uiConfig,
+      eventsConfig,
       $timeout,
       configSaveDebounceMs,
       ngToast,
@@ -400,9 +405,11 @@ const realApp = angular
         mqttClient,
         ConfigEditorProxy,
         webuiConfigPath,
+        eventsConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
+        uiConfig,
+        eventsConfig
       ) {
         return function (loginData) {
           if (loginData.url) {
@@ -426,6 +433,17 @@ const realApp = angular
             })
             .catch(errors.catch('app.errors.load'));
 
+          // Try to obtain events config
+          whenMqttReady()
+            .then(() => {
+              return ConfigEditorProxy.Load({ path: eventsConfigPath });
+            })
+            .then(result => {
+              console.log('LOAD EVENTS CONF: %o', result.content);
+              eventsConfig.ready(result.content);
+            })
+            .catch(errors.catch('app.errors.load'));
+
           return true;
 
           //.....................................................................
@@ -444,9 +462,11 @@ const realApp = angular
         mqttClient,
         ConfigEditorProxy,
         webuiConfigPath,
+        eventsConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
+        uiConfig,
+        eventsConfig
       );
 
       //.........................................................................
@@ -492,6 +512,7 @@ const realApp = angular
 
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
+      var eventsConfigSaveDebounce = null;
       $rootScope.firstBootstrap = true; // rootScope used because events journal must change it on page load
 
       // Watch for WebUI config changes
@@ -514,6 +535,39 @@ const realApp = angular
             ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
               .then(() => {
                 console.log('config saved');
+              })
+              .catch(err => {
+                if (err.name === 'QuotaExceededError') {
+                  errors.showError('app.errors.overflow');
+                } else {
+                  errors.showError('app.errors.save', err);
+                }
+              });
+          }, configSaveDebounceMs);
+        },
+        true
+      );
+
+      // Watch for events config changes
+      $rootScope.$watch(
+        () => eventsConfig.data,
+        (newData, oldData) => {
+          if (angular.equals(newData, oldData)) {
+            return;
+          }
+          if ($rootScope.firstBootstrap) {
+            $rootScope.firstBootstrap = false;
+            return;
+          }
+          console.log('new events data: %o', newData);
+          if (eventsConfigSaveDebounce) {
+            $timeout.cancel(eventsConfigSaveDebounce);
+          }
+          eventsConfigSaveDebounce = $timeout(() => {
+            errors.hideError();
+            ConfigEditorProxy.Save({ path: eventsConfigPath, content: newData })
+              .then(() => {
+                console.log('events config saved');
               })
               .catch(err => {
                 if (err.name === 'QuotaExceededError') {

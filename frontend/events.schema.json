@@ -1,16 +1,14 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
-    "title": "WebUI Configuration",
+    "title": "Events Configuration",
     "description": "For internal use, edit with caution",
     "properties": {
-        "dashboards": {},
-        "widgets": {},
-        "defaultDashboard": {},
-        "templates": {}
+        "events": { "type": "array" },
+        "triggeredEvents": { "type": "array" }
     },
     "configFile": {
-        "path": "/etc/wb-webui.conf",
+        "path": "/etc/wb-events.conf",
         "hide": true
     },
     "options": {
@@ -21,7 +19,7 @@
 
     "translations": {
         "ru": {
-            "WebUI Configuration": "Конфигурация WebUI",
+            "Events Configuration": "Конфигурация событий",
             "For internal use, edit with caution": "Для внутреннего использования, не редактировать"
         }
     }

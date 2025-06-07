@@ -16,7 +16,8 @@
             },
             "buttons": {
                 "back": "Back to events",
-                "add_event": "Add event"
+                "add_event": "Add event",
+                "clear_events": "Clear events"
             },
             "errors": {
                 "validate_condition": "Please provide correct condition",
@@ -33,7 +34,8 @@
         },
         "buttons": {
             "clear_events": "Clear events",
-            "edit_events": "Edit events"
+            "edit_events": "Edit events",
+            "update_events": "Update events"
         }
     }
 }

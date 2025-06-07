@@ -1,12 +1,16 @@
 class EventsCtrl {
-  constructor($rootScope, $scope, $stateParams, $state, uiConfig, $translate, DeviceData) {
+  constructor($rootScope, $scope, $stateParams, $state, eventsConfig, $translate, $locale, DeviceData) {
     'ngInject';
 
     this.$state = $state;
     this.$scope = $scope;
-    this.uiConfig = uiConfig;
+    this.$locale = $locale;
+    this.eventsConfig = eventsConfig;
     this.DeviceData = DeviceData;
     this.$translate = $translate;
+
+    // Allow table to save events on page load
+    $rootScope.firstBootstrap = false;
 
     this.fullscreen = $stateParams.fullscreen || false;
 
@@ -17,30 +21,22 @@ class EventsCtrl {
     // Read-only in this file
     this.events = [];
 
-    // Events initialization
-    this.uiConfig.whenReady().then(data => {
-      if (!data.hasOwnProperty('triggeredEvents')) {
-        data.triggeredEvents = [];
-      }
-      if (!data.hasOwnProperty('events')) {
-        data.events = [];
-      }
-      this.triggeredEvents = data.triggeredEvents;
+    // Events initialization from file
+    this.eventsConfig.whenReady().then(data => {
+      this.triggeredEvents = data.triggeredEvents.map(event => this.transformEvent(event));
       this.events = data.events;
       console.log("[LOG]: Events in EventsCtrl: %o", this.events);
       console.log("[LOG]: Triggered Events: %o", this.triggeredEvents);
 
       this.updateTranslations();
       this.updateEvents();
-      this.trimEvents();
     });
-
-    // Allow table to save events on page load
-    $rootScope.firstBootstrap = false;
 
     // Clean up
     $scope.$on('$destroy', () => {
-      console.log("[LOG]: Scope destroy called in EventsCtrl");
+      console.log("[LOG]: Leaving events, saving...");
+      this.saveEvents();
+
       this.$scope = null;
     });
   }
@@ -55,21 +51,16 @@ class EventsCtrl {
         if (this.checkCondition(event)) {
           console.log("[LOG]: Condition passed");
           console.log("[LOG]: New event triggered, pushing to triggeredEvents");
-          const triggeredEvent = {
-            "topic": {
-              "name": event.topic.name,
-              "deviceId": event.topic.deviceId,
-              "controlId": event.topic.controlId,
-            },
-            "message": event.message,
-            "timestamp": this.formatTimestamp(Date.now()),
-          };
-          this.triggeredEvents.unshift(triggeredEvent);
+          this.triggeredEvents.unshift(this.transformEvent(event));
         }
       }
     );
 
-    console.log("[LOG]: Done checking events, initiating saving...");
+
+    // Post-checking work
+    console.log("[LOG]: Done checking events, saving...");
+    this.trimEvents();
+    this.saveEvents();
   }
 
   checkCondition(event) {
@@ -91,7 +82,6 @@ class EventsCtrl {
     if (this.triggeredEvents.length > maxEvents) {
       this.triggeredEvents = this.triggeredEvents.slice(0, maxEvents);
       console.log(`[LOG]: Events were trimmed to ${maxEvents}`);
-      this.saveEvents();
     }
   }
 
@@ -102,20 +92,57 @@ class EventsCtrl {
   }
 
   deleteEvent(index) {
+    console.log("[LOG]: Deleting event: %o", this.triggeredEvents[index]);
     this.triggeredEvents.splice(index, 1);
+    this.saveEvents();
   }
 
   saveEvents() {
-    this.uiConfig.whenReady().then(data => {
-      // structuredClone in case shallow operation was used
-      // but data needs to be saved to file
-      data.triggeredEvents = structuredClone(this.triggeredEvents);
+    this.eventsConfig.whenReady().then(data => {
+      data.triggeredEvents = this.triggeredEvents.map(event => {
+        // Saving without name so it's calcuated during runtime
+        const triggeredEvent = {
+          "topic": {
+            "deviceId": event.topic.deviceId,
+            "controlId": event.topic.controlId,
+          },
+          "message": event.message,
+          "timestamp": event.timestamp ? event.timestamp : this.formatTimestamp(Date.now()),
+        };
+
+        return triggeredEvent;
+      });
     });
     console.log("[LOG]: Events saved by method: %o", this.triggeredEvents);
   }
 
   formatTimestamp(timestamp) {
     return new Date(timestamp).toLocaleString();
+  }
+
+  transformEvent(event) {
+    const name = this.getTranslatedControlName(event.topic.deviceId, event.topic.controlId);
+    const triggeredEvent = {
+      "topic": {
+        "name": name,
+        "deviceId": event.topic.deviceId,
+        "controlId": event.topic.controlId,
+      },
+      "message": event.message,
+      "timestamp": event.timestamp ? event.timestamp : this.formatTimestamp(Date.now()),
+    };
+
+    return triggeredEvent;
+  }
+
+  getTranslatedControlName(deviceId, controlId) {
+    const device = this.DeviceData.devices[deviceId];
+    const cellId = deviceId + '/' + controlId;
+    const cell = this.DeviceData.cell(cellId);
+
+    const deviceName = device.getName(this.$locale.id);
+    const controlName = cell.getName(this.$locale.id);
+    return (deviceName || deviceId) + ' / ' + (controlName || controlId);
   }
 
   updateTranslations() {

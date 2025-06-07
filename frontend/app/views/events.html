@@ -5,12 +5,28 @@
             <h1 class="page-header">
                 <span>{{ 'events.labels.events_page' | translate }}</span>
                 <div class="pull-right button-group">
-                    <button class="btn btn-danger" ng-click="$ctrl.clearEvents()" translate>
-                        {{ 'events.buttons.clear_events' }}
+                    <button class="btn btn-default" title="{{ 'events.buttons.update_events' | translate }}"
+                        ng-click="$ctrl.updateEvents()">
+                        <i class="glyphicon glyphicon-refresh"></i>
                     </button>
-                    <button class="btn btn-primary" ui-sref="events-edit" translate>
-                        {{ 'events.buttons.edit_events' }}
-                    </button>
+                    <span class="mobile-screen-events-buttons">
+                        <button class="btn btn-danger" ng-click="$ctrl.clearEvents()"
+                            title="{{ 'events.buttons.clear_events' | translate }}" translate>
+                            <i class="glyphicon glyphicon-remove-circle"></i>
+                        </button>
+                        <button class="btn btn-primary" ui-sref="events-edit"
+                            title="{{ 'events.buttons.edit_events' | translate }}" translate>
+                            <i class="glyphicon glyphicon-edit"></i>
+                        </button>
+                    </span>
+                    <span class="big-screen-events-buttons">
+                        <button class="btn btn-danger" ng-click="$ctrl.clearEvents()" translate>
+                            {{ 'events.buttons.clear_events' }}
+                        </button>
+                        <button class="btn btn-primary" ui-sref="events-edit" translate>
+                            {{ 'events.buttons.edit_events' }}
+                        </button>
+                    </span>
                 </div>
             </h1>
         </div>
@@ -30,11 +46,11 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="event in $ctrl.triggeredEvents track by $index">
-                        <td>{{ event.topic.name }}</td>
-                        <td>{{ event.message }}</td>
-                        <td>{{ event.timestamp }}</td>
+                        <td class="events-cell">{{ event.topic.name }}</td>
+                        <td class="events-cell">{{ event.message }}</td>
+                        <td class="events-cell">{{ event.timestamp }}</td>
                         <td>
-                            <button class="btn btn-danger" ng-click="$ctrl.deleteEvent($index)">
+                            <button class="btn btn-danger btn-event-delete" ng-click="$ctrl.deleteEvent($index)">
                                 <i class="glyphicon glyphicon-remove"></i>
                             </button>
                         </td>

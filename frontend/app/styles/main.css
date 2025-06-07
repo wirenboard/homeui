@@ -1276,9 +1276,25 @@ body.no-console .show-console #page-wrapper {
 
 /* Events styling */
 .events-table {
-    margin-top: 10px;
+  margin-top: 10px;
+}
+
+.btn-event-delete {
+  font-size: 11px;
 }
 
 .table-header {
-    margin-top: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 500px) {
+  .big-screen-events-buttons {
+    display: none;
+  }
+}
+
+@media (min-width: 501px) {
+  .mobile-screen-events-buttons {
+    display: none;
+  }
 }

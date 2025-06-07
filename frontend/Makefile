@@ -23,6 +23,7 @@ configs:
 	  minify configs/$$wb.svg > dist/configs/$$wb.svg; \
 	  j2 configs/config.$$wb.json.jinja > dist/configs/config.$$wb.json; \
 	done
+	cp -a configs/eventsConfig.default.json dist/configs
 
 install: configs
 	install -d -m 0777 $(DESTDIR)/var/www/css
@@ -46,6 +47,7 @@ install: configs
 
 	install -Dm0644 dist/configs/*.json -t $(DESTDIR)/usr/share/wb-mqtt-homeui
 	install -Dm0644 webui.schema.json -t $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
+	install -Dm0644 events.schema.json -t $(DESTDIR)/usr/share/wb-mqtt-confed/schemas
 	install -Dm0644 wb-configs.rules $(DESTDIR)/etc/wb-configs.d/20wb-mqtt-homeui
 
 uninstall:

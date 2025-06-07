@@ -4,9 +4,24 @@
             <h1 class="page-header">
                 <span>{{ 'events.edit.labels.edit_events' | translate }}</span>
                 <div class="pull-right button-group">
-                    <button class="btn btn-default" ng-click="$ctrl.goBack()" translate>
-                        {{ 'events.edit.buttons.back' }}
-                    </button>
+                    <div class="mobile-screen-events-buttons">
+                        <button class="btn btn-danger" ng-click="$ctrl.clearEvents()"
+                            title="{{ 'events.edit.buttons.clear_events' | translate }}" translate>
+                            <i class="glyphicon glyphicon-remove-circle"></i>
+                        </button>
+                        <button class="btn btn-default" ng-click="$ctrl.goBack()"
+                            title="{{ 'events.edit.buttons.back' | translate }}" translate>
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                        </button>
+                    </div>
+                    <div class="big-screen-events-buttons">
+                        <button class="btn btn-danger" ng-click="$ctrl.clearEvents()" translate>
+                            {{ 'events.edit.buttons.clear_events' }}
+                        </button>
+                        <button class="btn btn-default" ng-click="$ctrl.goBack()" translate>
+                            {{ 'events.edit.buttons.back' }}
+                        </button>
+                    </div>
                 </div>
             </h1>
         </div>
