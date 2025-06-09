@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.12-wb101) stable; urgency=medium
+
+  * Fix rule name edit empty value
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 09 Jun 2025 15:35:00 +0300
+
 wb-mqtt-homeui (2.115.12-wb100) stable; urgency=medium
 
   * Fix device range on mobile
