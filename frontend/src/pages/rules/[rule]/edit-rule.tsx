@@ -16,6 +16,7 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
   const [isLoading, setIsLoading] = useState(true);
   const [pageLoadError, setPageLoadError] = useState(null);
   const pathName = getPathname();
+  const [isEditingTitle, setIsEditingTitle] = useState(pathName === 'new');
 
   const errors = useMemo(() => {
     if (pageLoadError) {
@@ -54,6 +55,7 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
           variant: isWithErrors ? 'warn' : 'success',
           text: isWithErrors ? t('rules.labels.success-errors') : t('rules.labels.success'),
         });
+        setIsEditingTitle(false);
 
         if (pathName === 'new') {
           return location.replace(`/#!/rules/edit/${savedRuleName}`);
@@ -78,7 +80,7 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
       title={rule.name}
       hasRights={hasRights}
       isLoading={isLoading}
-      isEditingTitle={pathName === 'new'}
+      isEditingTitle={isEditingTitle}
       editingTitlePlaceholder={t('rules.labels.title-placeholder')}
       errors={errors}
       actions={
@@ -91,6 +93,7 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
       }
       stickyHeader
       onTitleChange={(title) => rulesStore.setRuleName(title)}
+      onTitleEditEnable={() => setIsEditingTitle(true)}
     >
       <div className="editRule-container">
         <CodeEditor
