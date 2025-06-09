@@ -1,41 +1,41 @@
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
-import { makeObservable, observable, action, computed } from 'mobx';
+import { makeObservable, computed } from 'mobx';
+import { makeStoreFromJsonSchema } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
 import { TabType } from './tabsStore';
 
 export class SettingsTab {
-  constructor(data, schema) {
+  constructor(data, schema, schemaTranslator) {
     this.name = i18n.t('device-manager.labels.settings');
     this.type = TabType.SETTINGS;
     this.data = data;
-    this.editedData = cloneDeep(data);
-    this.schema = schema;
-    this.hasJsonValidationErrors = false;
-    this.isDirty = false;
+    this.schemaStore = makeStoreFromJsonSchema(schema, data);
+    this.schemaTranslator = schemaTranslator;
 
     makeObservable(this, {
-      hasJsonValidationErrors: observable,
-      isDirty: observable,
-      setData: action.bound,
-      commitData: action,
+      editedData: computed,
+      hasJsonValidationErrors: computed,
+      isDirty: computed,
       hasInvalidConfig: computed,
     });
   }
 
-  setData(data, errors) {
-    this.isDirty = !isEqual(this.data, data);
-    this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = errors.length !== 0;
+  commitData() {
+    this.schemaStore.commit();
   }
 
-  commitData() {
-    this.data = cloneDeep(this.editedData);
-    this.hasJsonValidationErrors = false;
-    this.isDirty = false;
+  get editedData() {
+    return this.schemaStore.value;
+  }
+
+  get hasJsonValidationErrors() {
+    return this.schemaStore.hasErrors;
+  }
+
+  get isDirty() {
+    return this.schemaStore.isDirty;
   }
 
   get hasInvalidConfig() {
-    return this.hasJsonValidationErrors;
+    return this.schemaStore.hasErrors;
   }
 }

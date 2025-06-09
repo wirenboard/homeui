@@ -1,7 +1,15 @@
 import classNames from 'classnames';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import { DropdownProps } from './types';
 import './styles.css';
+
+const DropdownIndicator = (props) => {
+  return (
+    <components.DropdownIndicator {...props}>
+      <components.DownChevron size={18} />
+    </components.DropdownIndicator>
+  );
+};
 
 export const Dropdown = ({
   id,
@@ -13,6 +21,7 @@ export const Dropdown = ({
   ariaLabel,
   isDisabled,
   isSearchable,
+  minWidth = '150px',
   onChange,
 }: DropdownProps) => (
   <Select
@@ -29,6 +38,13 @@ export const Dropdown = ({
     isSearchable={isSearchable}
     isClearable={false}
     aria-label={ariaLabel}
+    components={{ DropdownIndicator }}
+    styles={{
+      control: (baseStyles, _state) => ({
+        ...baseStyles,
+        minWidth: minWidth,
+      }),
+    }}
     unstyled
     onChange={onChange}
   />

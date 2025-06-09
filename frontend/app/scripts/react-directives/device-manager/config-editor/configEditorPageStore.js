@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
+import { loadJsonSchema, Translator, makeTranslator } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
 import AccessLevelStore from '../../components/access-level/accessLevelStore';
 import ConfirmModalState from '../../components/modals/confirmModalState';
@@ -57,35 +58,23 @@ function getDeviceSetupErrorMessage(device, error) {
   });
 }
 
-function getPortSchemaCommon(schema, subSchemaName) {
-  let res = cloneDeep(schema.definitions[subSchemaName]);
-  res.definitions = {};
-  Object.entries(schema.definitions).forEach(([key, value]) => {
-    if (key !== subSchemaName) {
-      res.definitions[key] = value;
-    }
-  });
-  res.translations = schema.translations;
-  return res;
-}
-
 function getSerialPortSchema(schema) {
-  return getPortSchemaCommon(schema, 'serialPort');
+  return loadJsonSchema(schema.definitions['serialPort'], schema.definitions);
 }
 
 function getTcpPortSchema(schema) {
-  return getPortSchemaCommon(schema, 'tcpPort');
+  return loadJsonSchema(schema.definitions['tcpPort'], schema.definitions);
 }
 
 function getModbusTcpPortSchema(schema) {
-  return getPortSchemaCommon(schema, 'modbusTcpPort');
+  return loadJsonSchema(schema.definitions['modbusTcpPort'], schema.definitions);
 }
 
 function getGeneralSettingsSchema(schema) {
   delete schema.definitions;
   delete schema.properties.ports;
   schema.description = '';
-  return schema;
+  return loadJsonSchema(schema, schema.definitions);
 }
 
 function makePortSchemaMap(schema) {
@@ -243,6 +232,7 @@ class ConfigEditorPageStore {
     this.tabs = new TabsStore(toMobileContent, toTabs);
     this.deviceTypesStore = deviceTypesStore;
     this.portSchemaMap = {};
+    this.schemaTranslator = new Translator({});
     this.saveConfigFn = saveConfigFn;
     this.loadConfigFn = loadConfigFn;
     this.loaded = false;
@@ -271,17 +261,23 @@ class ConfigEditorPageStore {
       return new PortTab(
         getPortData(portConfig),
         this.portSchemaMap['serial'],
-        makeSerialPortTabName
+        makeSerialPortTabName,
+        this.schemaTranslator
       );
     }
     if (portConfig.port_type === 'tcp') {
-      return new PortTab(getPortData(portConfig), this.portSchemaMap['tcp'], makeTcpPortTabName);
+      return new PortTab(
+        getPortData(portConfig),
+        this.portSchemaMap['tcp'],
+        makeTcpPortTabName,
+        this.schemaTranslator);
     }
     if (portConfig.port_type === 'modbus tcp') {
       return new PortTab(
         getPortData(portConfig),
         this.portSchemaMap['modbus tcp'],
-        makeModbusTcpPortTabName
+        makeModbusTcpPortTabName,
+        this.schemaTranslator
       );
     }
     return undefined;
@@ -298,7 +294,7 @@ class ConfigEditorPageStore {
 
   createSettingsTab(config, schema) {
     delete config.ports;
-    return new SettingsTab(config, getGeneralSettingsSchema(schema));
+    return new SettingsTab(config, getGeneralSettingsSchema(schema), this.schemaTranslator);
   }
 
   async load() {
@@ -306,6 +302,7 @@ class ConfigEditorPageStore {
       this.loaded = false;
       this.pageWrapperStore.clearError();
       const { config, schema, deviceTypeGroups } = await this.loadConfigFn();
+      this.schemaTranslator = makeTranslator(schema);
       this.deviceTypesStore.setDeviceTypeGroups(deviceTypeGroups);
       this.portSchemaMap = makePortSchemaMap(schema);
       config?.ports?.forEach((port) => {

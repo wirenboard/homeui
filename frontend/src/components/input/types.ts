@@ -11,7 +11,10 @@ export interface InputProps {
   isDisabled?: boolean;
   placeholder?: string;
   ariaLabel?: string;
+  ariaDescribedby?: string;
+  ariaInvalid?: boolean;
+  ariaErrorMessage?: string;
   isFullWidth?: boolean;
   isWithExplicitChanges?: boolean;
-  onChange: (_val: string | number) => void;
+  onChange: (_val: string | number, _badInput?: boolean) => void;
 }

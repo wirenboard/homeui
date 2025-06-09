@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.118.0) stable; urgency=medium
+
+  * Use React based editor for wb-mqtt-serial port configs
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 09 Jun 2025 18:34:21 +0500
+
 wb-mqtt-homeui (2.117.2) stable; urgency=medium
 
   * Fix rule name edit empty value
@@ -21,7 +27,6 @@ wb-mqtt-homeui (2.116.1) stable; urgency=medium
   * Fix device range on mobile
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 04 Jun 2025 15:45:12 +0300
-
 
 wb-mqtt-homeui (2.116.0) stable; urgency=medium
 
