@@ -11,8 +11,12 @@
     box-shadow: var(--input-active-shadow);
 }
 
+.input-l {
+    padding: 8px 12px;
+}
+
 .input-m {
-    padding: 5px 12px;
+    padding: 6px 12px;
 }
 
 .input-s {

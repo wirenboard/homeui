@@ -4,7 +4,14 @@ import { Loader } from '@/components/loader';
 import { TableProps, TableCellProps, TableRowProps } from './types';
 import './styles.css';
 
-export const TableRow = ({ children, url, isFullWidth, ...rest }: PropsWithChildren<TableRowProps>) => {
+export const TableRow = ({
+  children,
+  className,
+  url,
+  isFullWidth,
+  isHeading,
+  ...rest
+}: PropsWithChildren<TableRowProps>) => {
   const Component = url ? 'a' : 'div';
   const [columns, setColumns] = useState([]);
 
@@ -26,7 +33,9 @@ export const TableRow = ({ children, url, isFullWidth, ...rest }: PropsWithChild
   return (
     <Component
       role="row"
-      className="wb-tableRow"
+      className={classNames('wb-tableRow', className, {
+        'wb-tableRowHeading': isHeading,
+      })}
       style={{ gridTemplateColumns }}
       {...(url ? { href: url } : {})}
       {...rest}
@@ -37,12 +46,14 @@ export const TableRow = ({ children, url, isFullWidth, ...rest }: PropsWithChild
 };
 
 export const TableCell = ({
-  children, preventClick, visibleOnHover, ellipsis, ...rest
+  children, preventClick, visibleOnHover, ellipsis, isWithoutPadding, align = 'center', ...rest
 }: PropsWithChildren<TableCellProps>) => (
   <div
     role="gridcell"
     className={classNames('wb-tableCell', {
       'wb-tableCellEllipsis': ellipsis,
+      'wb-tableCellWithoutPadding': isWithoutPadding,
+      'wb-tableCelAlignCenter': align === 'center',
     })}
     onClick={(ev) => {
       if (preventClick) {
@@ -62,7 +73,7 @@ export const TableCell = ({
 );
 
 export const Table = ({
-  children, isLoading, isFullWidth, ...rest
+  children, isLoading, isFullWidth, isWithoutGap, ...rest
 }: PropsWithChildren<TableProps>) => {
 
   const enhancedChildren = Children.map(children, (child) => {
@@ -79,6 +90,7 @@ export const Table = ({
           role="grid"
           className={classNames('wb-table', {
             'wb-tableFullWidth': isFullWidth,
+            'wb-tableWithoutGap': isWithoutGap,
           })}
         >
           {enhancedChildren}

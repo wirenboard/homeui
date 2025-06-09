@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.0) stable; urgency=medium
+
+  * Update react components styles and logic, add edit icon, update page component accessibility
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 04 Jun 2025 16:19:01 +0300
+
 wb-mqtt-homeui (2.116.1) stable; urgency=medium
 
   * Fix device range on mobile
