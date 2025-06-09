@@ -22,10 +22,10 @@ export const PageLayout = ({
   isLoading = false,
   actions,
   onTitleChange,
+  onTitleEditEnable,
 }: PropsWithChildren<PageProps>) => {
   const { t } = useTranslation();
   const [titleValue, setTitleValue] = useState('');
-  const [isEditingTitleState, setIsEditingTitleState] = useState(isEditingTitle);
 
   useEffect(() => {
     setTitleValue(title);
@@ -49,7 +49,7 @@ export const PageLayout = ({
       {(titleValue || isEditingTitle) && (
         <header className="page-headerContainer">
           <div className="page-headerTitleWrapper">
-            {isEditingTitleState ? (
+            {isEditingTitle ? (
               <Input
                 className="editRule-nameInput"
                 value={titleValue}
@@ -60,14 +60,14 @@ export const PageLayout = ({
               />
             ) : (<h1 className="page-title">{title}</h1>)}
 
-            {(!isEditingTitleState && onTitleChange) && (
+            {(!isEditingTitle && onTitleChange) && (
               <Button
                 size="small"
                 type="button"
                 icon={<EditSquareIcon />}
                 variant="secondary"
                 isOutlined
-                onClick={() => setIsEditingTitleState(true)}
+                onClick={() => onTitleEditEnable()}
               />
             )}
           </div>
