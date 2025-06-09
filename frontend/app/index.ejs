@@ -90,12 +90,12 @@
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="devices" draggable="false"><i class="glyphicon glyphicon-cog"></i> {{'navigation.menu.devices' | translate}}</a>
                   </li>
                   <li ui-sref-active="active" ng-if="!checkFullscreen()" user-role="mtt" current-role="roles.current.role">
-                      <a href="javascript:" data-toggle="collapse" data-target="#integrations-menu">
+                      <a href="javascript:" data-toggle="collapse" data-target="#integrations-menu" draggable="false">
                           <i class="glyphicon glyphicon-transfer"></i> {{'navigation.menu.integrations' | translate}}
                       </a>
                       <ul id="integrations-menu" class="collapse" ng-class="{ in: isActive('/integrations/alice') }">
                           <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="integrations-alice" ui-sref-active="active">{{'navigation.menu.alice' | translate}}</a>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="integrations-alice" ui-sref-active="active" draggable="false">{{'navigation.menu.alice' | translate}}</a>
                           </li>
                       </ul>
                   </li>
