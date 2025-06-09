@@ -14,4 +14,5 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   ariaLabel?: string;
   isDisabled?: boolean;
   isSearchable?: boolean;
+  minWidth?: string;
 }

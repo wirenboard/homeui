@@ -1,0 +1,32 @@
+.wb-jsonEditor-propertyDescription {
+    display: block;
+    color: var(--gray-color);
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
+.wb-jsonEditor-defaultText {
+    padding: .1em .3em;
+    white-space: break-spaces;
+    background-color: var(--light-gray-color);
+    border-radius: 6px;
+}
+
+.wb-jsonEditor {
+    margin-top: 10px;
+}
+
+.wb-jsonEditor-propertyError {
+    color: var(--danger-color);
+}
+
+.wb-jsonEditor-propertyError input[type="text"],
+.wb-jsonEditor-propertyError input[type="number"] {
+    border-color: var(--danger-color);
+}
+
+.wb-jsonEditor-errorText {
+    color: var(--danger-color);
+    margin-top: 5px;
+    margin-bottom: 0px;
+}

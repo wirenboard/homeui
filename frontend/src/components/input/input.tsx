@@ -13,6 +13,9 @@ export const Input = ({
   isFullWidth = false,
   size = 'default',
   ariaLabel,
+  ariaDescribedby,
+  ariaInvalid,
+  ariaErrorMessage,
   ...rest
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
@@ -55,6 +58,9 @@ export const Input = ({
       disabled={isDisabled}
       value={internalValue}
       aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
+      aria-invalid={ariaInvalid}
+      aria-errormessage={ariaErrorMessage}
       onChange={handleOnChange}
       onBlur={handleBlurOrChange}
       onKeyDown={handleKeyDown}
