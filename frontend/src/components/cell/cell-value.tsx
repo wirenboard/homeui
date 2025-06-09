@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dropdown } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
 import { Cell } from '@/stores/device';
@@ -55,7 +55,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
               value={cell.value as string | number}
               ariaLabel={cell.name}
-              onChange={(option) => cell.value = option.value}
+              onChange={(option: Option<string>) => cell.value = option.value}
             />
           </>
         ) : (
