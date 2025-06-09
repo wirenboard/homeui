@@ -1,8 +1,14 @@
+wb-mqtt-homeui (2.117.2) stable; urgency=medium
+
+  * Fix rule name edit empty value
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 09 Jun 2025 15:35:00 +0300
+
 wb-mqtt-homeui (2.117.1) stable; urgency=medium
 
   * Disable drag on menu elements
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 04 Jun 2025 14:34:11 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 09 Jun 2025 12:21:00 +0300
 
 wb-mqtt-homeui (2.117.0) stable; urgency=medium
 
