@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { InputProps } from './types';
 import './styles.css';
 
@@ -16,6 +16,7 @@ export const Input = ({
   ...rest
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
+  const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
 
   useEffect(() => {
     setInternalValue(value);
@@ -28,6 +29,7 @@ export const Input = ({
   };
 
   const handleKeyDown = (ev: KeyboardEvent<HTMLInputElement>): void => {
+    inputMethod.current = 'keyboard';
     if (ev.key === 'Enter') {
       handleBlurOrChange();
     } else if (ev.key === 'Escape') {
@@ -38,7 +40,7 @@ export const Input = ({
 
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>): void => {
     setInternalValue(ev.target.value);
-    if (!isWithExplicitChanges) {
+    if (!isWithExplicitChanges || inputMethod.current === 'mouse') {
       onChange(ev.target.value);
     }
   };
@@ -57,6 +59,15 @@ export const Input = ({
       onChange={handleOnChange}
       onBlur={handleBlurOrChange}
       onKeyDown={handleKeyDown}
+      onKeyUp={() => {
+        inputMethod.current = 'unknown';
+      }}
+      onMouseDown={() => {
+        inputMethod.current = 'mouse';
+      }}
+      onMouseUp={() => {
+        inputMethod.current = 'unknown';
+      }}
       {...rest}
     />
   );
