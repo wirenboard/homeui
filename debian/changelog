@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.3) stable; urgency=medium
+
+  * Fix rule list loading error
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Jun 2025 14:33:30 +0300
+
 wb-mqtt-homeui (2.117.2) stable; urgency=medium
 
   * Fix rule name edit empty value
