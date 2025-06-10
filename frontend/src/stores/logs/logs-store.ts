@@ -32,7 +32,8 @@ export default class LogsStore {
     params: { boot?: Boot; service?: string; cursor?: Cursor; levels?: LogLevel[] },
     isFilterChanged?: boolean) {
 
-    return this.#logsProxy.Load({ ...params, limit: 50 })
+    return this.#whenMqttReady()
+      .then(() => this.#logsProxy.Load({ ...params, limit: 50 }))
       .then((logs: Log[]) => {
         return runInAction(() => {
           const reversedLogs = logs.reverse();
