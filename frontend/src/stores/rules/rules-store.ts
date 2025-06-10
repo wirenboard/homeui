@@ -83,11 +83,14 @@ export default class RulesStore {
   }
 
   async getList(): Promise<RuleListItem[]> {
-    const rules = await this.#editorProxy.List();
-    runInAction(() => {
-      this.rules = rules;
-    });
-    return this.rules;
+    return this.#whenMqttReady()
+      .then(() => this.#editorProxy.List())
+      .then((rules: RuleListItem[]) => {
+        return runInAction(() => {
+          this.rules = rules;
+          return this.rules;
+        });
+      });
   }
 
   async copyRule(path: string) {
