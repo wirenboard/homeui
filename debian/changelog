@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.12-wb103) stable; urgency=medium
+
+  * Fix explicit value change with mouse click
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Jun 2025 16:06:20 +0300
+
 wb-mqtt-homeui (2.115.12-wb102) stable; urgency=medium
 
   * Fix rule list loading error
