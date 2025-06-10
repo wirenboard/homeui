@@ -1,17 +1,20 @@
-interface ErrorTraceback {
+interface RuleTemplateData {
   line: number;
   name: string;
 }
 
 export interface RuleError {
   message: string;
-  traceback?: ErrorTraceback[];
+  traceback?: RuleTemplateData[];
 }
 
 export interface RuleListItem {
   virtualPath: string;
   enabled: boolean;
   error?: RuleError;
+  rules: RuleTemplateData[];
+  devices: RuleTemplateData[];
+  timers: RuleTemplateData[];
 }
 
 export interface RuleFetchData {
@@ -22,7 +25,7 @@ export interface RuleFetchData {
 export interface RuleSaveData {
   path: string;
   error?: string;
-  traceback?: ErrorTraceback[];
+  traceback?: RuleTemplateData[];
 }
 
 export interface Rule extends RuleFetchData {
