@@ -1,0 +1,65 @@
+<div class="events-page" ng-class="{ 'fullscreen': $ctrl.fullscreen }">
+    <!-- Header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <h1 class="page-header">
+                <span>{{ 'events.labels.events_page' | translate }}</span>
+                <div class="pull-right button-group">
+                    <button class="btn btn-default" title="{{ 'events.buttons.update_events' | translate }}"
+                        ng-click="$ctrl.updateEvents()">
+                        <i class="glyphicon glyphicon-refresh"></i>
+                    </button>
+                    <span class="mobile-screen-events-buttons">
+                        <button class="btn btn-danger" ng-click="$ctrl.clearEvents()"
+                            title="{{ 'events.buttons.clear_events' | translate }}" translate>
+                            <i class="glyphicon glyphicon-remove-circle"></i>
+                        </button>
+                        <button class="btn btn-primary" ui-sref="events-edit"
+                            title="{{ 'events.buttons.edit_events' | translate }}" translate>
+                            <i class="glyphicon glyphicon-edit"></i>
+                        </button>
+                    </span>
+                    <span class="big-screen-events-buttons">
+                        <button class="btn btn-danger" ng-click="$ctrl.clearEvents()" translate>
+                            {{ 'events.buttons.clear_events' }}
+                        </button>
+                        <button class="btn btn-primary" ui-sref="events-edit" translate>
+                            {{ 'events.buttons.edit_events' }}
+                        </button>
+                    </span>
+                </div>
+            </h1>
+        </div>
+    </div>
+
+    <!-- Events table -->
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-striped events-table">
+                <thead>
+                    <tr>
+                        <th translate>{{ 'events.labels.name' }}</th>
+                        <th translate>{{ 'events.labels.message' }}</th>
+                        <th translate>{{ 'events.labels.timestamp' }}</th>
+                        <th translate>{{ 'events.labels.actions' }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="event in $ctrl.triggeredEvents track by $index">
+                        <td class="events-cell">{{ event.topic.name }}</td>
+                        <td class="events-cell">{{ event.message }}</td>
+                        <td class="events-cell">{{ event.timestamp }}</td>
+                        <td>
+                            <button class="btn btn-danger btn-event-delete" ng-click="$ctrl.deleteEvent($index)">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr ng-if="!$ctrl.triggeredEvents.length">
+                        <td colspan="4" translate>{{ 'events.labels.no_events' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
