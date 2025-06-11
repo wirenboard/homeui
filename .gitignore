@@ -23,5 +23,3 @@ coverage
 .vscode
 .idea
 *.env
-
-*pnpm*

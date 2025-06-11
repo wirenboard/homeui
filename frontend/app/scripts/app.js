@@ -513,7 +513,10 @@ const realApp = angular
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
       var eventsConfigSaveDebounce = null;
-      $rootScope.firstBootstrap = true; // rootScope used because events journal must change it on page load
+
+      // Allow events journal to change firstBootstrap in order to save to config
+      // That's why $rootScope is used
+      $rootScope.firstBootstrap = true;
 
       // Watch for WebUI config changes
       $rootScope.$watch(

@@ -16,8 +16,6 @@ function uiConfigService($rootScope, $q, $timeout) {
     widgets: [],
     defaultDashboardId: 'default',
     templates: [],
-    events: [],
-    triggeredEvents: [],
   };
 
   var deferReady = $q.defer(),
@@ -219,8 +217,6 @@ function uiConfigService($rootScope, $q, $timeout) {
       widgets: filterCollection(data.widgets),
       defaultDashboardId: data.defaultDashboardId,
       templates: filterCollection(data.templates),
-      events: filterCollection(data.events),
-      triggeredEvents: filterCollection(data.triggeredEvents)
     };
   }
 
