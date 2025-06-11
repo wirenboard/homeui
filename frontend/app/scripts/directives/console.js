@@ -36,6 +36,8 @@ function consoleDirective(mqttClient, $rootScope, $timeout, dateFilter, getTime,
     link: (scope, element, attrs) => {
       var scrollTimeout = null,
         messageContainer = element.find('.console-messages');
+      var MAX_MESSAGES = 200;
+
       scope.$on('wbrulesLog', (event, level, message) => {
         var msgEl = $("<div class='console-message'></div>").addClass(
             'console-message-level-' + level
@@ -46,6 +48,12 @@ function consoleDirective(mqttClient, $rootScope, $timeout, dateFilter, getTime,
           .appendTo(msgEl);
         var textEl = $("<span class='console-message-text'></span>").text(message).appendTo(msgEl);
         textEl.html(textEl.html().replace(/\n/g, '<br>'));
+
+        var messages = messageContainer.children('.console-message');
+        if (messages.length > MAX_MESSAGES) {
+          messages.first().remove();
+        }
+
         msgEl.appendTo(messageContainer);
         if (scrollTimeout !== null) $timeout.cancel(scrollTimeout);
         scrollTimeout = $timeout(() => {
