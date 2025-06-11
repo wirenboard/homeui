@@ -334,13 +334,15 @@ module.run(($rootScope, $state, $transitions) => {
 
   $rootScope.forceFullscreen = false;
 
-  $rootScope.theme = localStorage.getItem('theme') || 'bootstrap';
-  window.toggleTheme = () => {
-    const themes = ['bootstrap', 'wirenboard', 'dark'];
-    const themeIndex = themes.indexOf($rootScope.theme || 'bootstrap');
-    localStorage.setItem('theme', themes[themeIndex + 1] || themes[0]);
-    $rootScope.theme = localStorage.getItem('theme');
-  };
+  if (!__IS_PROD__) {
+    $rootScope.theme = localStorage.getItem('theme') || 'bootstrap';
+    window.toggleTheme = () => {
+      const themes = ['bootstrap', 'wirenboard', 'dark'];
+      const themeIndex = themes.indexOf($rootScope.theme || 'bootstrap');
+      localStorage.setItem('theme', themes[themeIndex + 1] || themes[0]);
+      $rootScope.theme = localStorage.getItem('theme');
+    };
+  }
 });
 
 //-----------------------------------------------------------------------------
