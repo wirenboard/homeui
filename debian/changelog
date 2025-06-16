@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.5) stable; urgency=medium
+
+  * Fix dropdown width and overflow
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 16 Jun 2025 14:03:10 +0300
+
 wb-mqtt-homeui (2.117.4) stable; urgency=medium
 
   * Fix explicit value change with mouse click
