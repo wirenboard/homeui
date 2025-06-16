@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
@@ -12,7 +13,11 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="deviceCell-textWrapper">
+    <div
+      className={classNames('deviceCell-textWrapper', {
+        'deviceCell-withSelect': (!cell.readOnly && cell.isEnum),
+      })}
+    >
       <CellHistory cell={cell} />
 
       {cell.value && cell.readOnly && (
@@ -28,7 +33,6 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
       )}
       {(!cell.readOnly && cell.isEnum) && (
         <Dropdown
-          className="deviceCell-select"
           size="small"
           options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
           value={cell.value as string | number}
