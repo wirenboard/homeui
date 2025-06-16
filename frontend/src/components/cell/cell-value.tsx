@@ -47,7 +47,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
     <>
       {cell.valueType === 'number' && !cell.readOnly && (
         cell.isEnum ? (
-          <>
+          <div className="deviceCell-withSelect">
             <CellHistory cell={cell} />
             <Dropdown
               className="deviceCell-select"
@@ -57,7 +57,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               ariaLabel={cell.name}
               onChange={(option: Option<string>) => cell.value = option.value}
             />
-          </>
+          </div>
         ) : (
           <>
             <CellHistory cell={cell} />
