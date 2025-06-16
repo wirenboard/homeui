@@ -8,9 +8,10 @@
   transition: background ease 300ms;
 }
 
-.dropdown__control--is-focused{
+.dropdown__control--is-focused {
   transition: border-color 200ms linear, var(--input-active-shadow-transition);
   box-shadow: var(--input-active-shadow);
+  z-index: 100;
 }
 
 .dropdown-m .dropdown__indicator {
