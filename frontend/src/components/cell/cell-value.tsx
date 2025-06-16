@@ -50,7 +50,6 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
           <div className="deviceCell-withSelect">
             <CellHistory cell={cell} />
             <Dropdown
-              className="deviceCell-select"
               size="small"
               options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
               value={cell.value as string | number}
