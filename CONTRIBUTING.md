@@ -4,7 +4,7 @@ We welcome external contributions, especially when it comes to fixing bugs, impr
 
 If you're planning to submit a **new feature**, please note:
 
-> **You must discuss the idea on [our support forum](https://support.wirenboard.com/) before starting development.**
+> **You should discuss the idea on [our support forum](https://support.wirenboard.com/) before starting development.**
 
 Some changes may not align with our product vision, so it's important to confirm relevance in advance.
 
