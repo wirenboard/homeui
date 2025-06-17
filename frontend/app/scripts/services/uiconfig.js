@@ -15,6 +15,7 @@ function uiConfigService($rootScope, $q, $timeout) {
     dashboards: [DEFAULT_DASHBOARD],
     widgets: [],
     defaultDashboardId: 'default',
+    templates: [],
   };
 
   var deferReady = $q.defer(),
@@ -215,6 +216,7 @@ function uiConfigService($rootScope, $q, $timeout) {
       dashboards: filterCollection(data.dashboards),
       widgets: filterCollection(data.widgets),
       defaultDashboardId: data.defaultDashboardId,
+      templates: filterCollection(data.templates),
     };
   }
 

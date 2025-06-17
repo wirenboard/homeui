@@ -9,7 +9,9 @@
             "nothing": "No data points to display",
             "date": "Date and time",
             "all_channels": "All channels: ",
-            "widget_channels": "Channels used in widgets: "
+            "widget_channels": "Channels used in widgets: ",
+            "choose_template": "- Choose template -",
+            "new_template": "- Name for a new template -"
         },
         "buttons": {
             "delete": "delete",
@@ -17,12 +19,17 @@
             "load": "Load data",
             "reset": "Reset",
             "stop": "Stop loading",
-            "download": "Download history as CSV"
+            "download": "Download history as CSV",
+            "apply_template": "Apply template",
+            "delete_template": "Delete template",
+            "update_template": "Update template",
+            "save_template": "Save template"
         },
         "errors": {
             "dates": "Date range is invalid. Change one of dates",
             "load": "Error getting history",
-            "warning": "Warning"
+            "warning": "Warning",
+            "template_exists": "This template already exists"
         },
         "format": {
             "date_with_ms": "MMM d, yyyy h:mm:ss:sss a"

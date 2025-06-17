@@ -36,6 +36,41 @@
         <br>
     </div>
 
+    <!-- Templates html container -->
+    <div class="row">
+        <div class="form-group col-xs-8 col-md-5">
+            <select class="form-control" ng-model="$ctrl.selectedTemplate"
+                ng-options="template.name for template in $ctrl.templates track by template.name"
+                ng-change="$ctrl.applyTemplate()">
+                <option value="" translate>{{ 'history.labels.choose_template' }}</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-primary template" ng-click="$ctrl.applyTemplate()" ng-disabled="!$ctrl.selectedTemplate"
+        translate>
+        {{ 'history.buttons.apply_template' }}
+    </button>
+    <button class="btn btn-danger template" ng-click="$ctrl.deleteTemplate()" ng-disabled="!$ctrl.selectedTemplate"
+        translate>
+        {{ 'history.buttons.delete_template' }}
+    </button>
+    <button class="btn btn-warning template" ng-click="$ctrl.updateTemplate()" ng-disabled="!$ctrl.selectedTemplate"
+        translate>
+        {{ 'history.buttons.update_template' }}
+    </button>
+    <div class="new-template">
+        <div class="row">
+            <div class="form-group col-xs-8 col-md-5">
+                <input type="text" class="form-control" ng-model="$ctrl.newTemplateName"
+                    placeholder="{{ 'history.labels.new_template' | translate }}" />
+            </div>
+        </div>
+        <button class="btn btn-success template" ng-click="$ctrl.saveTemplate()"
+            ng-disabled="!$ctrl.selectedControls.length || !$ctrl.newTemplateName" translate>
+            {{ 'history.buttons.save_template' }}
+        </button>
+    </div>
+
     <div class="row">
         <div class="col-md-6 col-lg-5">
             <div class="row">
