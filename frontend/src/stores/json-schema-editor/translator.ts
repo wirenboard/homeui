@@ -1,4 +1,4 @@
-import { TranslationsByLocale, Translations } from './types';
+import type { TranslationsByLocale, Translations } from './types';
 
 export class Translator {
   private _translations: TranslationsByLocale;

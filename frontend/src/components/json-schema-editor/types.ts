@@ -5,7 +5,7 @@ import {
   NumberStore,
   BooleanStore,
   Translator,
-  ValidationError
+  type ValidationError
 } from '@/stores/json-schema-editor';
 
 export interface JsonSchemaEditorProps {
@@ -21,9 +21,9 @@ export interface BooleanParamEditorProps {
 
 export interface NumberParamEditorProps {
   store: NumberStore;
-  inputId?: string;
-  descriptionId?: string;
-  errorId?: string;
+  inputId: string;
+  descriptionId: string;
+  errorId: string;
   translator: Translator;
 }
 

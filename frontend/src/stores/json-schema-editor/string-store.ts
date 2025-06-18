@@ -2,7 +2,7 @@ import { makeObservable, observable, action, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
 import MistypedValue from './mistyped-value';
 import { getDefaultStringValue } from './schema-helpers';
-import { JsonSchema, ValidationError } from './types';
+import type { JsonSchema, ValidationError } from './types';
 
 export default class StringStore {
   public value: MistypedValue | string | undefined;

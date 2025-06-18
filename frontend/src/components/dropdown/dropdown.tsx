@@ -42,7 +42,7 @@ export const Dropdown = ({
     styles={{
       control: (baseStyles, _state) => ({
         ...baseStyles,
-        minWidth: minWidth,
+        minWidth,
       }),
     }}
     unstyled

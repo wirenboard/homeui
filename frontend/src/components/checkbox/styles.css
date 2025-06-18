@@ -10,6 +10,7 @@
 .wb-checkbox input:focus {
     transition: border-color 200ms linear, var(--input-active-shadow-transition);
     box-shadow: var(--input-active-shadow);
+    z-index: 10;
 }
 
 .wb-checkbox input {

@@ -1,7 +1,7 @@
 import { observable, action, computed, makeObservable } from 'mobx';
 import MistypedValue from './mistyped-value';
 import { getDefaultBooleanValue } from './schema-helpers';
-import { JsonSchema, ValidationError } from './types';
+import type { JsonSchema, ValidationError } from './types';
 
 export default class BooleanStore {
   public value: MistypedValue | boolean | undefined;

@@ -3,7 +3,7 @@ import BooleanStore from './boolean-store';
 import MistypedValue from './mistyped-value';
 import NumberStore from './number-store';
 import StringStore from './string-store';
-import { JsonSchema } from './types';
+import type { JsonSchema } from './types';
 
 type ParamStore = ObjectStore | NumberStore | BooleanStore | StringStore;
 

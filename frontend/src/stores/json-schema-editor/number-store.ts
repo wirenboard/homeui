@@ -2,7 +2,7 @@ import { action, makeObservable, observable, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
 import MistypedValue from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
-import { JsonSchema, ValidationError } from './types';
+import type { JsonSchema, ValidationError } from './types';
 
 export default class NumberStore {
   public value: MistypedValue | number | undefined;

@@ -2,7 +2,7 @@ import BooleanStore from './boolean-store';
 import NumberStore from './number-store';
 import { ObjectStore, ObjectStoreParam } from './object-store';
 import StringStore from './string-store';
-import { JsonSchema } from './types';
+import type { JsonSchema } from './types';
 
 const makeBooleanStore = (schema: JsonSchema, initialValue: unknown, required: boolean): BooleanStore => {
   return new BooleanStore(schema, initialValue, required);

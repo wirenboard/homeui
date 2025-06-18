@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
 import { CheckboxProps } from './types';
 import './styles.css';
 
@@ -10,6 +10,10 @@ export const Checkbox = ({
   className,
   onChange,
 }: CheckboxProps) => {
+  const checkboxRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    checkboxRef.current.indeterminate = !!indeterminate;
+  }, [indeterminate]);
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>): void => {
     onChange(ev.target.checked);
   };
@@ -18,11 +22,7 @@ export const Checkbox = ({
       <input
         type="checkbox"
         checked={checked}
-        ref={(el) => {
-          if (el) {
-            el.indeterminate = !!indeterminate;
-          }
-        }}
+        ref={checkboxRef}
         onChange={handleOnChange}
       />
       {title}

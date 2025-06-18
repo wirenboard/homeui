@@ -1,4 +1,4 @@
-import { JsonSchema, JsonEditorOptions } from './types';
+import type { JsonSchema, JsonEditorOptions } from './types';
 
 type Definitions = Record<string, JsonSchema>;
 

@@ -6,7 +6,7 @@ import NumberStore from './number-store';
 import { ObjectStore, ObjectStoreParam } from './object-store';
 import StringStore from './string-store';
 import { Translator, makeTranslator } from './translator';
-import { ValidationError } from './types';
+import type { ValidationError } from './types';
 
 export {
   loadJsonSchema,
@@ -18,6 +18,6 @@ export {
   StringStore,
   NumberStore,
   MistypedValue,
-  ValidationError,
-  ObjectStoreParam
+  ObjectStoreParam,
+  type ValidationError
 };
