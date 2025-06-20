@@ -1,4 +1,4 @@
-import { makeObservable, action, computed } from 'mobx';
+import { makeObservable, action, computed, observable } from 'mobx';
 import BooleanStore from './boolean-store';
 import MistypedValue from './mistyped-value';
 import NumberStore from './number-store';
@@ -10,10 +10,37 @@ type ParamStore = ObjectStore | NumberStore | BooleanStore | StringStore;
 export class ObjectStoreParam {
   public key: string;
   public store: ParamStore;
+  public disabled: boolean;
+  public hasPermanentEditor: boolean;
 
   constructor(key: string, store: ParamStore) {
     this.key = key;
     this.store = store;
+    this.hasPermanentEditor = this.store.required ||
+      this.store.schema.options?.wb?.show_editor ||
+      this.store.schema.options?.show_opt_in ||
+      this.store.schema.options?.hidden;
+    this.disabled = !this.hasPermanentEditor;
+
+    makeObservable(this, {
+      disabled: observable,
+      enable: action,
+      disable: action,
+    });
+  }
+
+  enable() {
+    if (!this.hasPermanentEditor && this.disabled) {
+      this.store.setDefault();
+      this.disabled = false;
+    }
+  }
+
+  disable() {
+    if (!this.hasPermanentEditor && !this.disabled) {
+      this.disabled = true;
+      this.store.setUndefined();
+    }
   }
 }
 
@@ -43,7 +70,7 @@ export class ObjectStore {
   }
 
   get hasErrors() {
-    return this.params.some((param) => param.store.hasErrors);
+    return this.params.some((param) => !param.disabled && param.store.hasErrors);
   }
 
   get isDirty() {
@@ -86,5 +113,9 @@ export class ObjectStore {
     this.params.forEach((param) => {
       param.store.reset();
     });
+  }
+
+  getParamByKey(key: string): ObjectStoreParam | undefined {
+    return this._paramByKey[key];
   }
 }

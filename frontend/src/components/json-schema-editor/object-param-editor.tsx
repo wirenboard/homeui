@@ -41,10 +41,11 @@ const EditorWrapper = observer(({
       style.flexBasis = `${(gridColumns / 12) * 100 - 7}%`;
     }
   }
-  const defaultText = param.store.schema.options?.wb?.show_editor ? '' : param.store.defaultText;
+  const showDefaultText = param.store.schema.options?.show_opt_in;
+  const defaultText = showDefaultText ? param.store.defaultText : '';
   const title = translator.find(param.store.schema.title || param.key, lang);
-  const showError = param.store.error;
-  const showDescription = param.store.schema.description || defaultText;
+  const showError = !!param.store.error;
+  const showDescription = !!param.store.schema.description || showDefaultText;
   return (
     <div
       className={classNames({ 'wb-jsonEditor-propertyError': param.store.hasErrors })}
@@ -116,7 +117,10 @@ const shouldRenderObjectParamEditor = (param: ObjectStoreParam) => {
   if (param.store.schema.options?.hidden) {
     return false;
   }
-  return param.store.required || param.store.schema.options?.wb?.show_editor || param.store.schema.options?.show_opt_in;
+  return param.store.required ||
+         param.store.schema.options?.wb?.show_editor ||
+         param.store.schema.options?.show_opt_in ||
+         !param.disabled;
 };
 
 const MakeObjectParamEditor = (param: ObjectStoreParam, translator: Translator) => {

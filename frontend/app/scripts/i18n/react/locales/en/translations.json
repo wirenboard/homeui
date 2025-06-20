@@ -290,7 +290,8 @@
          "resolve-duplicate-mqtt-topic": "Set unique id",
          "apply": "Apply",
          "search-disconnected-device": "Search for the device",
-         "update": "Update"
+         "update": "Update",
+         "parameters": "Parameters"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -493,7 +494,7 @@
          "required": "This field is required"
       },
       "labels": {
-         "opt-in-param": "Enable optional parameter \"{{title}}\""
+         "select-params": "Add or remove parameters"
       }
    }
 }

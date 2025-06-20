@@ -59,3 +59,10 @@ export interface ParamErrorProps {
   error?: ValidationError;
   translator: Translator;
 }
+
+export interface OptionalParamsSelectDialogProps {
+  isOpened: boolean;
+  store: ObjectStore;
+  translator: Translator;
+  onClose: () => void;
+}

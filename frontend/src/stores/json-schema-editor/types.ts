@@ -10,6 +10,7 @@ export interface Translations {
 export interface WbOptions {
   // Show editor even if the property is not required and options.show_opt_in is not set
   // If the property is not set in original JSON, it will be set to default value
+  // So the resulting value can't be undefined
   show_editor?: boolean;
 }
 
@@ -19,7 +20,11 @@ export interface InputAttributes {
 
 export interface JsonEditorOptions {
   hidden?: boolean;
+
+  // If true, the property will be shown in the editor even if it is not required
+  // The resulting value can be undefined, the editor will show empty line without error
   show_opt_in?: boolean;
+
   grid_columns?: number;
   inputAttributes?: InputAttributes;
   patternmessage?: string; // Message for pattern validation error

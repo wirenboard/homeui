@@ -44,7 +44,8 @@ export default class BooleanStore {
       this.error = { key: 'json-editor.errors.not-a-boolean' };
       return;
     }
-    if (this.required && this.value === undefined) {
+    const forbidUndefined = this.schema.options?.wb?.show_editor || this.required;
+    if (forbidUndefined && this.value === undefined) {
       this.error = { key: 'json-editor.errors.required' };
       return;
     }
