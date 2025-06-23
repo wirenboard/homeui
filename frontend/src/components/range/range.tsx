@@ -41,6 +41,7 @@ export const Range = ({
         }}
         onTouchEnd={() => {
           input.current.focus();
+          onChange(proxyValue);
         }}
         onMouseUp={() => onChange(proxyValue)}
       />
