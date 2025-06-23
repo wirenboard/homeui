@@ -1,11 +1,17 @@
+wb-mqtt-homeui (2.117.7) stable; urgency=medium
+
+  * Fix range value update on mobile
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 23 Jun 2025 10:29:31 +0300
+
 wb-mqtt-homeui (2.117.6) stable; urgency=medium
 
   * Add contributing guide
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 16 Jun 2025 16:28:11 +0300
- 
+
 wb-mqtt-homeui (2.117.5) stable; urgency=medium
- 
+
   * Fix dropdown width and overflow
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 16 Jun 2025 14:03:10 +0300
