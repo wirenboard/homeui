@@ -23,7 +23,11 @@ export const StringParamEditor = observer(({
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
       minWidth="30px"
       onChange={(option) => {
-        store.setValue(typeof option.value === 'string' ? option.value : undefined);
+        if (typeof option.value === 'string') {
+          store.setValue(option.value);
+        } else {
+          store.setUndefined();
+        }
       }}
     />
   ) : (

@@ -20,7 +20,11 @@ export const NumberParamEditor = observer(({
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
       minWidth="30px"
       onChange={(option) => {
-        store.setValue(typeof option.value === 'number' ? option.value : undefined);
+        if (typeof option.value === 'number' || typeof option.value === 'string') {
+          store.setValue(option.value);
+        } else {
+          store.setUndefined();
+        }
       }}
     />
   ) : (

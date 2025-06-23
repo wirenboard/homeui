@@ -7,7 +7,7 @@ const isObject = (value: unknown): boolean => {
 };
 
 const expandAllOf = (schema: JsonSchema, definitions: Definitions, refCache: Definitions): JsonSchema | undefined => {
-  const allOfSchemas = schema.allOf.reduce((acc, s) => {
+  const allOfSchemas: JsonSchema[] = schema.allOf.reduce((acc, s) => {
     if (!isObject(s)) {
       return acc;
     }

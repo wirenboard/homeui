@@ -8,7 +8,7 @@ export default class MistypedValue {
   readonly type: string;
   readonly value: string;
 
-  constructor(value: any) {
+  constructor(value: unknown) {
     this.type = typeof value;
     this.value = String(value);
   }
