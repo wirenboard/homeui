@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { getI18n } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import type { NumberParamEditorProps } from './types';
@@ -11,13 +11,14 @@ export const NumberParamEditor = observer(({
   errorId,
   translator,
 }: NumberParamEditorProps) => {
-  const lang = getI18n().language;
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   return store.schema.enum ? (
     <Dropdown
       id={inputId}
       options={store.enumOptions}
       value={typeof store.value === 'number' ? store.value : undefined}
-      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
+      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
       onChange={(option) => {
         if (typeof option.value === 'number' || typeof option.value === 'string') {
@@ -31,7 +32,7 @@ export const NumberParamEditor = observer(({
     <Input
       id={inputId}
       value={store.editString}
-      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
+      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}
       ariaErrorMessage={errorId}

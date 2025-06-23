@@ -59,15 +59,15 @@ function getDeviceSetupErrorMessage(device, error) {
 }
 
 function getSerialPortSchema(schema) {
-  return loadJsonSchema(schema.definitions['serialPort'], schema.definitions);
+  return loadJsonSchema(schema.definitions.serialPort, schema.definitions);
 }
 
 function getTcpPortSchema(schema) {
-  return loadJsonSchema(schema.definitions['tcpPort'], schema.definitions);
+  return loadJsonSchema(schema.definitions.tcpPort, schema.definitions);
 }
 
 function getModbusTcpPortSchema(schema) {
-  return loadJsonSchema(schema.definitions['modbusTcpPort'], schema.definitions);
+  return loadJsonSchema(schema.definitions.modbusTcpPort, schema.definitions);
 }
 
 function getGeneralSettingsSchema(schema) {

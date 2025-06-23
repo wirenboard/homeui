@@ -41,7 +41,7 @@ export interface JsonSchema {
 
   enum?: (string | number)[];
 
-  default?: 'number' | 'string' | 'boolean';
+  default?: number | string | boolean;
 
   $ref?: string;
 

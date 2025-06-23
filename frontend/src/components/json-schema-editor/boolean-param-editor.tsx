@@ -1,13 +1,14 @@
 import { observer } from 'mobx-react-lite';
 import { CSSProperties } from 'react';
-import { getI18n } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
 import { MistypedValue } from '@/stores/json-schema-editor';
 import { ParamError } from './param-error';
 import type { BooleanParamEditorProps } from './types';
 
 export const BooleanParamEditor = observer(({ key, store, translator } : BooleanParamEditorProps) => {
-  const lang = getI18n().language;
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   const title = store.schema.title || key;
   let style: CSSProperties = {};
   if (store.schema.options?.grid_columns === 12) {
@@ -19,7 +20,7 @@ export const BooleanParamEditor = observer(({ key, store, translator } : Boolean
   return (
     <div style={style}>
       <Checkbox
-        title={translator.find(title, lang)}
+        title={translator.find(title, currentLanguage)}
         checked={checked}
         indeterminate={indeterminate}
         onChange={(checked: boolean) => store.setValue(checked)}

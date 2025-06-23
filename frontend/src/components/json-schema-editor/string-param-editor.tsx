@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { getI18n } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import type { StringParamEditorProps } from './types';
@@ -11,7 +11,8 @@ export const StringParamEditor = observer(({
   errorId,
   translator,
 }: StringParamEditorProps) => {
-  const lang = getI18n().language;
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   const value = store.value;
   const valueToDisplay = typeof value !== 'string' ? '' : value;
   const isOptInEditor = store.schema.options?.wb?.show_editor || store.schema.options?.show_opt_in;
@@ -20,7 +21,7 @@ export const StringParamEditor = observer(({
       id={inputId}
       options={store.enumOptions}
       value={valueToDisplay}
-      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
+      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
       onChange={(option) => {
         if (typeof option.value === 'string') {
@@ -34,7 +35,7 @@ export const StringParamEditor = observer(({
     <Input
       id={inputId}
       value={valueToDisplay}
-      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, lang)}
+      placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}
       ariaErrorMessage={errorId}

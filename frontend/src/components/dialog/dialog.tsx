@@ -1,0 +1,61 @@
+import { useRef, useEffect, PropsWithChildren, useState } from 'react';
+import { DialogProps } from './types';
+import './styles.css';
+
+export const DialogTitle = ({ text }: { text: string }) => {
+  return <h3 className="dialog-title">{text}</h3>;
+};
+
+export const Dialog = ({
+  isOpened,
+  onClose,
+  closedby,
+  children,
+}: PropsWithChildren<DialogProps>) => {
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  const [allowClose, setAllowClose] = useState(false);
+
+  useEffect(() => {
+    if (dialogRef.current) {
+      if (isOpened) {
+        dialogRef.current.showModal();
+        setAllowClose(true);
+      } else {
+        setAllowClose(false);
+        dialogRef.current.close();
+      }
+    }
+
+    return () => {
+      if (dialogRef.current) {
+        setAllowClose(false);
+        dialogRef.current.close();
+      }
+    };
+  }, [dialogRef, isOpened]);
+
+  if (closedby === 'any') {
+    const handleClick = (event: MouseEvent) => {
+      if (allowClose && contentRef.current && !contentRef.current.contains(event.target as HTMLElement)) {
+        event.stopPropagation();
+        event.preventDefault();
+        dialogRef.current?.close();
+      }
+    };
+    useEffect(() => {
+      document.addEventListener('click', handleClick);
+
+      return () => {
+        document.removeEventListener('click', handleClick);
+      };
+    });
+  }
+
+  return (
+    <dialog className="dialog" ref={dialogRef} onClose={onClose}>
+      {isOpened && (<div className="dialog-content" ref={contentRef}>{children}</div>)}
+    </dialog>
+  );
+};

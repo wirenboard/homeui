@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { CSSProperties, PropsWithChildren, useId } from 'react';
-import { getI18n } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { ObjectStore, BooleanStore, StringStore, NumberStore, Translator } from '@/stores/json-schema-editor';
 import { ObjectStoreParam } from '@/stores/json-schema-editor/object-store';
 import { BooleanParamEditor } from './boolean-param-editor';
@@ -27,7 +27,8 @@ const EditorWrapper = observer(({
   param,
   translator,
 }: PropsWithChildren<EditorWrapperProps>) => {
-  const lang = getI18n().language;
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   let style: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -43,7 +44,7 @@ const EditorWrapper = observer(({
   }
   const showDefaultText = param.store.schema.options?.show_opt_in;
   const defaultText = showDefaultText ? param.store.defaultText : '';
-  const title = translator.find(param.store.schema.title || param.key, lang);
+  const title = translator.find(param.store.schema.title || param.key, currentLanguage);
   const showError = !!param.store.error;
   const showDescription = !!param.store.schema.description || showDefaultText;
   return (
@@ -57,7 +58,7 @@ const EditorWrapper = observer(({
       {showDescription && (
         <ParamDescription
           id={descriptionId}
-          description={translator.find(param.store.schema.description, lang)}
+          description={translator.find(param.store.schema.description, currentLanguage)}
           defaultText={defaultText}
         />
       )}
