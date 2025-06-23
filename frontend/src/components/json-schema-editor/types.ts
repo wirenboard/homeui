@@ -14,7 +14,7 @@ export interface JsonSchemaEditorProps {
 }
 
 export interface BooleanParamEditorProps {
-  key: string;
+  title: string;
   store: BooleanStore;
   translator: Translator;
 }

@@ -127,16 +127,23 @@ const shouldRenderObjectParamEditor = (param: ObjectStoreParam) => {
 const MakeObjectParamEditor = (param: ObjectStoreParam, translator: Translator) => {
   if (shouldRenderObjectParamEditor(param)) {
     if (param.store instanceof ObjectStore) {
-      return <ObjectParamEditor store={param.store} translator={translator}/>;
+      return <ObjectParamEditor key={param.key} store={param.store} translator={translator}/>;
     }
     if (param.store instanceof StringStore) {
-      return <StringEditor param={param} translator={translator}/>;
+      return <StringEditor key={param.key} param={param} translator={translator}/>;
     }
     if (param.store instanceof NumberStore) {
-      return <NumberEditor param={param} translator={translator}/>;
+      return <NumberEditor key={param.key} param={param} translator={translator}/>;
     }
     if (param.store instanceof BooleanStore) {
-      return <BooleanParamEditor key={param.key} store={param.store} translator={translator}/>;
+      return (
+        <BooleanParamEditor
+          key={param.key}
+          title={param.store.schema.title || param.key}
+          store={param.store}
+          translator={translator}
+        />
+      );
     }
   }
   return null;

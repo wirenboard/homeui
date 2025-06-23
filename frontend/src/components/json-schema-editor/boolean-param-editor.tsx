@@ -6,10 +6,9 @@ import { MistypedValue } from '@/stores/json-schema-editor';
 import { ParamError } from './param-error';
 import type { BooleanParamEditorProps } from './types';
 
-export const BooleanParamEditor = observer(({ key, store, translator } : BooleanParamEditorProps) => {
+export const BooleanParamEditor = observer(({ title, store, translator } : BooleanParamEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
-  const title = store.schema.title || key;
   let style: CSSProperties = {};
   if (store.schema.options?.grid_columns === 12) {
     style.flexBasis = '100%';
