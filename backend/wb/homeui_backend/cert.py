@@ -13,6 +13,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
 
+CERT_REQUEST_URL = "https://acme.wirenboard.com/api/v1/issue"
 SSL_CERT_PATH = "/etc/ssl/sslip.pem"
 SSL_CERT_KEY_PATH = "/etc/ssl/sslip.key"
 KEYSPEC_WB7_WB8 = "ATECCx08:00:02:C0:00"
@@ -158,7 +159,7 @@ def request_certificate(cert_pem_file_name: str, keyspec: str, csr_file_name: st
             "POST",
             "-F",
             f"csr=@{csr_file_name}",
-            "https://sslip-cert.wirenboard.com/api/v1/issue",
+            CERT_REQUEST_URL,
             "-m",
             str(CURL_TIMEOUT_S),
         ]
