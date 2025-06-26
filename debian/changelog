@@ -1,3 +1,10 @@
+<<<<<<< bugfix/svg-dashboard-memory-leaks
+wb-mqtt-homeui (2.117.4) stable; urgency=medium
+
+  * Fix memory leaks
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 03 Jun 2025 16:42:11 +0300
+=======
 wb-mqtt-homeui (2.117.7) stable; urgency=medium
 
   * Fix range value update on mobile
@@ -21,6 +28,7 @@ wb-mqtt-homeui (2.117.4) stable; urgency=medium
   * Fix explicit value change with mouse click
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Jun 2025 16:06:20 +0300
+>>>>>>> master
 
 wb-mqtt-homeui (2.117.3) stable; urgency=medium
 

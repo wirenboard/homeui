@@ -911,6 +911,11 @@ function deviceDataService(mqttClient, $window) {
 
     onValue(handler) {
       onValueHandler = handler;
+      return () => {
+        if (onValueHandler === handler) {
+          onValueHandler = null;
+        }
+      };
     },
   };
 }

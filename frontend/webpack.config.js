@@ -46,6 +46,9 @@ module.exports = (function makeWebpackConfig() {
       'window.jQuery': 'jquery',
       'window.DOMPurify': 'dompurify',
     }),
+    new webpack.DefinePlugin({
+      __IS_PROD__: JSON.stringify(isProd),
+    })
   ];
 
   /**
