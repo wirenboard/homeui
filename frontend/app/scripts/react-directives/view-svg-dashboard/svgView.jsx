@@ -1,6 +1,6 @@
-import { observer } from 'mobx-react-lite';
-import React, { useRef, useLayoutEffect } from 'react';
 import { get, reaction } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useRef, useLayoutEffect } from 'react';
 import i18n from '../../i18n/react/config';
 
 const getSvgElement = (svg, id) => {
@@ -15,9 +15,9 @@ const setReadHandler = (element, param, values) => {
   } catch (e) {
     // Syntax error in rule
   }
-  const disposer = reaction(
+  return reaction(
     () => get(values, param.channel),
-    value => {
+    (value) => {
       if (fn) {
         try {
           el.innerHTML = fn(value);
@@ -28,7 +28,6 @@ const setReadHandler = (element, param, values) => {
     },
     { fireImmediately: true }
   );
-  return disposer;
 };
 
 const setStyleHandler = (element, param, values) => {
@@ -39,9 +38,9 @@ const setStyleHandler = (element, param, values) => {
     // Syntax error in rule
   }
   const oldStyle = element.style.cssText;
-  const disposer = reaction(
+  return reaction(
     () => get(values, param.channel),
-    value => {
+    (value) => {
       if (fn) {
         try {
           element.style.cssText = oldStyle + fn(value);
@@ -52,7 +51,6 @@ const setStyleHandler = (element, param, values) => {
     },
     { fireImmediately: true }
   );
-  return disposer;
 };
 
 const setVisibleHandler = (element, param, values) => {
@@ -62,9 +60,9 @@ const setVisibleHandler = (element, param, values) => {
   } catch (e) {
     // Syntax error in rule
   }
-  const disposer = reaction(
+  return reaction(
     () => get(values, param.channel),
-    value => {
+    (value) => {
       if (fn) {
         try {
           element.style.display = fn(value) ? '' : 'none';
@@ -75,7 +73,6 @@ const setVisibleHandler = (element, param, values) => {
     },
     { fireImmediately: true }
   );
-  return disposer;
 };
 
 const setClickHandler = (element, onClick) => {
@@ -88,18 +85,18 @@ const setClickHandler = (element, onClick) => {
 
 const setLongPressHandler = (element, onLongPress) => {
   let timerId = null;
-  const onDown = ev => {
+  const onDown = (ev) => {
     ev.stopPropagation();
     timerId = setTimeout(onLongPress, 500);
     element.setPointerCapture(ev.pointerId);
   };
 
-  const onCancel = ev => {
+  const onCancel = (ev) => {
     clearTimeout(timerId);
     element.releasePointerCapture(ev.pointerId);
   };
 
-  const dummyHandler = ev => {
+  const dummyHandler = (ev) => {
     ev.preventDefault();
   };
 
@@ -114,42 +111,51 @@ const setLongPressHandler = (element, onLongPress) => {
   };
 };
 
-const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMoveToDashboard }) => {
+const SvgView = observer(({
+  svg,
+  params,
+  id,
+  currentDashboard,
+  values,
+  className,
+  onSwitchValue,
+  onMoveToDashboard,
+}) => {
   const svgWrapperRef = useRef();
+
   useLayoutEffect(() => {
     svgWrapperRef.current.innerHTML = svg;
     let disposers = [];
-    params.forEach(param => {
-      let el = getSvgElement(svgWrapperRef.current, param.id);
-      if (el) {
-        if (param?.read?.enable) {
-          disposers.push(setReadHandler(el, param.read, values));
-        }
-        if (param?.style?.enable) {
-          disposers.push(setStyleHandler(el, param.style, values));
-        }
-        if (param?.visible?.enable) {
-          disposers.push(setVisibleHandler(el, param.visible, values));
-        }
-        if (param?.write?.enable) {
-          disposers.push(
-            setClickHandler(el, () => {
-              if (!param?.write?.check || confirm(i18n.t('edit-svg-dashboard.labels.confirm-question'))) {
-                onSwitchValue(param.write.channel, param.write.value);
-              }
-            })
-          );
-        } else {
-          if (param?.click?.enable) {
+
+    if (id === currentDashboard) {
+      params.forEach((param) => {
+        let el = getSvgElement(svgWrapperRef.current, param.id);
+        if (el) {
+          if (param?.read?.enable) {
+            disposers.push(setReadHandler(el, param.read, values));
+          }
+          if (param?.style?.enable) {
+            disposers.push(setStyleHandler(el, param.style, values));
+          }
+          if (param?.visible?.enable) {
+            disposers.push(setVisibleHandler(el, param.visible, values));
+          }
+          if (param?.write?.enable) {
+            disposers.push(
+              setClickHandler(el, () => {
+                if (!param?.write?.check || confirm(i18n.t('edit-svg-dashboard.labels.confirm-question'))) {
+                  onSwitchValue(param.write.channel, param.write.value);
+                }
+              })
+            );
+          } else if (param?.click?.enable) {
             disposers.push(setClickHandler(el, () => onMoveToDashboard(param.click.dashboard)));
           }
-        }
-        if (param['long-press']?.enable) {
-          disposers.push(
-            setLongPressHandler(el, () => onMoveToDashboard(param['long-press'].dashboard))
-          );
-        } else {
-          if (param['long-press-write']?.enable) {
+          if (param['long-press']?.enable) {
+            disposers.push(
+              setLongPressHandler(el, () => onMoveToDashboard(param['long-press'].dashboard))
+            );
+          } else if (param['long-press-write']?.enable) {
             disposers.push(
               setLongPressHandler(el, () => {
                 onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
@@ -157,13 +163,15 @@ const SvgView = observer(({ svg, params, values, className, onSwitchValue, onMov
             );
           }
         }
-      }
-    });
+      });
+    }
 
     return () => {
-      disposers.forEach(disposer => disposer());
+      disposers.forEach((disposer) => disposer());
+      disposers = null;
+      svgWrapperRef.current.innerHTML = '';
     };
-  }, [svg]);
+  }, [svg, id, currentDashboard]);
 
   return <div className={className} ref={svgWrapperRef}></div>;
 });

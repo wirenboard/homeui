@@ -1,15 +1,15 @@
-import React from 'react';
-import { BootstrapRow } from '../common';
 import { observer } from 'mobx-react-lite';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../common';
-import SvgView from './svgView';
-import { MakeFormFields, FormCheckbox, FormSelect } from '../forms/forms';
-import JsonBindingsEditor from './jsonBindingsEditor';
-import VisualBindingsEditor from './visualBindingsEditor';
 import { useFilePicker } from 'use-file-picker';
+import { BootstrapRow, Button } from '../common';
 import ConfirmModal from '../components/modals/confirmModal';
 import { PageWrapper, PageBody } from '../components/page-wrapper/pageWrapper';
+import { MakeFormFields, FormCheckbox, FormSelect } from '../forms/forms';
+import SvgView from './svgView';
+import VisualBindingsEditor from './visualBindingsEditor';
+
+const JsonBindingsEditor = lazy(() => import('./jsonBindingsEditor'));
 
 const EditSvgDashboardHeader = observer(
   ({ onToDashboardsList, onPreview, onRemove, onSave, onCancel, isValidDashboard, isNew }) => {
@@ -35,9 +35,9 @@ const EditSvgDashboardHeader = observer(
               <Button
                 type="success"
                 label={t('edit-svg-dashboard.buttons.save')}
-                onClick={onSave}
                 disabled={!isValidDashboard}
-              ></Button>
+                onClick={onSave}
+              />
               {isNew ? (
                 <Button label={t('edit-svg-dashboard.buttons.cancel')} onClick={onCancel} />
               ) : (
@@ -67,8 +67,8 @@ const SvgFileSelector = observer(({ setSvg, buttonType }) => {
   return (
     <Button
       label={t('edit-svg-dashboard.buttons.load-svg')}
-      onClick={() => openFileSelector()}
       type={buttonType}
+      onClick={() => openFileSelector()}
     />
   );
 });
@@ -77,9 +77,9 @@ const LeftPanel = observer(({ svgStore, onSelectElement }) => {
   return (
     <div className="col-md-8 svg-edit-left-panel">
       {svgStore.hasSvg ? (
-        <SvgView svg={svgStore.svg} onSelectElement={onSelectElement} className="svg-view" />
+        <SvgView svg={svgStore.svg} className="svg-view" onSelectElement={onSelectElement} />
       ) : (
-        <SvgFileSelector setSvg={content => svgStore.setSvg(content)} buttonType="success" />
+        <SvgFileSelector setSvg={(content) => svgStore.setSvg(content)} buttonType="success" />
       )}
     </div>
   );
@@ -93,12 +93,12 @@ const CommonParametersForm = observer(({ commonParametersStore, svgStore, childr
         <span className="flex-max-grow">{t(commonParametersStore.title)}</span>
         {svgStore.hasSvg && (
           <div className="pull-right button-group">
-            <SvgFileSelector setSvg={content => svgStore.setSvg(content)} />
+            <SvgFileSelector setSvg={(content) => svgStore.setSvg(content)} />
             <Button
               title={t('edit-svg-dashboard.buttons.download-svg')}
-              onClick={() => svgStore.exportSvg(commonParametersStore.params['name'].value)}
               icon="glyphicon glyphicon-download-alt"
-            ></Button>
+              onClick={() => svgStore.exportSvg(commonParametersStore.params['name'].value)}
+            />
           </div>
         )}
       </legend>
@@ -156,12 +156,12 @@ const VisualEditMode = ({ pageStore }) => {
     <BootstrapRow additionalStyles="visual-editor">
       <LeftPanel
         svgStore={pageStore.svgStore}
-        onSelectElement={el => pageStore.bindingsStore.onSelectSvgElement(el)}
-      ></LeftPanel>
+        onSelectElement={(el) => pageStore.bindingsStore.onSelectSvgElement(el)}
+      />
       <RightPanel
         pageStore={pageStore}
         toJsonEditMode={() => pageStore.bindingsStore.startJsonEditing()}
-      ></RightPanel>
+      />
     </BootstrapRow>
   );
 };
@@ -170,22 +170,24 @@ const EditSvgDashboardPage = observer(({ pageStore }) => {
   return (
     <PageWrapper
       error={pageStore.pageWrapperStore.error}
-      className={'svg-edit-page'}
+      className="svg-edit-page"
       accessLevelStore={pageStore.accessLevelStore}
     >
       <PageBody loading={pageStore.pageWrapperStore.loading}>
         <ConfirmModal {...pageStore.confirmModalState} />
         <EditSvgDashboardHeader
+          isNew={pageStore.isNew}
+          isValidDashboard={pageStore.isValid}
           onToDashboardsList={() => pageStore.onShowDashboardsList()}
           onPreview={() => pageStore.onPreview()}
           onRemove={() => pageStore.onRemoveDashboard()}
           onSave={() => pageStore.onSaveDashboard()}
           onCancel={() => pageStore.onRemoveDashboard()}
-          isValidDashboard={pageStore.isValid}
-          isNew={pageStore.isNew}
         />
         {pageStore.bindingsStore.jsonEditMode ? (
-          <JsonBindingsEditor bindingsStore={pageStore.bindingsStore} />
+          <Suspense>
+            <JsonBindingsEditor bindingsStore={pageStore.bindingsStore} />
+          </Suspense>
         ) : (
           <VisualEditMode pageStore={pageStore} />
         )}
@@ -195,7 +197,7 @@ const EditSvgDashboardPage = observer(({ pageStore }) => {
 });
 
 function CreateEditSvgDashboardPage({ pageStore }) {
-  return <EditSvgDashboardPage pageStore={pageStore}></EditSvgDashboardPage>;
+  return <EditSvgDashboardPage pageStore={pageStore} />;
 }
 
 export default CreateEditSvgDashboardPage;
