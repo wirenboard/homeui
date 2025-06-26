@@ -11,6 +11,11 @@
     }
 }
 
+.alice-bindingContainer {
+    display: flex;
+    gap: 6px;
+}
+
 .alice-binding {
     font-size: 14px;
 }

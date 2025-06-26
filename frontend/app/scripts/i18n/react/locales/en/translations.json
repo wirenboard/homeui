@@ -514,6 +514,7 @@
    "alice": {
       "title": "Setting up integration with Yandex Alice",
       "labels": {
+         "is-binded": "This controller is bound.",
          "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
          "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
          "room": "Room",
@@ -543,7 +544,8 @@
       "buttons": {
          "add-room": "Add room",
          "add-device": "Add device",
-         "binding": "Bind controller via Yandex ID",
+         "bind": "Bind controller via Yandex ID",
+         "check-binding-status": "Check status",
          "save": "Save",
          "add-capability": "Add capability",
          "add-property": "Add property",
