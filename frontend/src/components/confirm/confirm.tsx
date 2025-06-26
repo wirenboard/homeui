@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
-import { Dialog, DialogTitle } from '@/components/dialog';
+import { Dialog } from '@/components/dialog';
 import { ConfirmationProps } from './types';
 import './styles.css';
 
@@ -11,8 +11,7 @@ export const Confirm = ({
   const { t } = useTranslation();
 
   return (
-    <Dialog isOpened={isOpened} onClose={closeCallback}>
-      <DialogTitle text={heading} />
+    <Dialog isOpened={isOpened} heading={heading} onClose={closeCallback}>
       <form method="dialog">
         {!!children && <div className="dialog-description">{children}</div>}
 

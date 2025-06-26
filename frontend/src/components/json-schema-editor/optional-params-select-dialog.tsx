@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
-import { Dialog, DialogTitle } from '@/components/dialog';
+import { Dialog } from '@/components/dialog';
 import { OptionalParamsSelectDialogProps } from './types';
 import './styles.css';
 
@@ -11,8 +11,7 @@ export const OptionalParamsSelectDialog = observer(
     const currentLanguage = i18n.language;
 
     return (
-      <Dialog isOpened={isOpened} closedby="any" onClose={onClose}>
-        <DialogTitle text={t('json-editor.labels.select-params')} />
+      <Dialog isOpened={isOpened} heading={t('json-editor.labels.select-params')} closedby="any" onClose={onClose}>
         <div className="wb-jsonEditor-optionalParamsList">
           {store.params.map((param) => (
             param.hasPermanentEditor ?

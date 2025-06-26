@@ -2,12 +2,9 @@ import { useRef, useEffect, PropsWithChildren, useState } from 'react';
 import { DialogProps } from './types';
 import './styles.css';
 
-export const DialogTitle = ({ text }: { text: string }) => {
-  return <h3 className="dialog-title">{text}</h3>;
-};
-
 export const Dialog = ({
   isOpened,
+  heading,
   onClose,
   closedby,
   children,
@@ -55,6 +52,7 @@ export const Dialog = ({
 
   return (
     <dialog className="dialog" ref={dialogRef} onClose={onClose}>
+      {heading && <h3 className="dialog-title">{heading}</h3>}
       {isOpened && (<div className="dialog-content" ref={contentRef}>{children}</div>)}
     </dialog>
   );
