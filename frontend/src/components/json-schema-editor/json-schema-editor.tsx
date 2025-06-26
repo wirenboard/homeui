@@ -5,7 +5,7 @@ import './styles.css';
 export const JsonSchemaEditor = ({ store, translator }: JsonSchemaEditorProps) => {
   return (
     <div className="wb-jsonEditor">
-      <ObjectParamEditor store={store} translator={translator}/>
+      {store && <ObjectParamEditor store={store} translator={translator}/>}
     </div>
   );
 };

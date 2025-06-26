@@ -16,7 +16,7 @@ export const ParamDescription = ({ id, description, defaultText }: ParamDescript
   return (
     <p id={id} className="wb-jsonEditor-propertyDescription">
       {description && <span>{description} </span>}
-      <ParamDefaultText defaultText={defaultText} />
+      {defaultText && <ParamDefaultText defaultText={defaultText} />}
     </p>
   );
 };

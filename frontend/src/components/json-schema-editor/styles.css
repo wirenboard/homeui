@@ -30,3 +30,7 @@
     margin-top: 5px;
     margin-bottom: 0px;
 }
+
+.wb-jsonEditor-optionalParamsList {
+    padding: 0px 16px 16px 16px;
+}

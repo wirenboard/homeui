@@ -1,5 +1,7 @@
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { JsonSchemaEditor, OptionalParamsSelectDialog } from '@/components/json-schema-editor';
 import {
   Button,
   ErrorBar,
@@ -10,7 +12,6 @@ import {
   ErrorPanel,
   ErrorHeader
 } from '../../common';
-import JsonEditor from '../../components/json-editor/jsonEditor';
 import BootstrapLikeSelect from '../../components/select/select';
 
 const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }) => {
@@ -358,6 +359,7 @@ export const DeviceTabContent = observer(
     onUpdateFirmware,
     onUpdateBootloader,
   }) => {
+    const [optionalParamsSelectDialogIsOpen, openOptionalParamsSelectDialog] = useState(false);
     const { t } = useTranslation();
     if (tab.loading) {
       return <Spinner />;
@@ -368,6 +370,12 @@ export const DeviceTabContent = observer(
     const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
     return (
       <div>
+        <OptionalParamsSelectDialog
+          isOpened={optionalParamsSelectDialogIsOpen}
+          store={tab.schemaStore}
+          translator={tab.schemaTranslator}
+          onClose={() => openOptionalParamsSelectDialog(false)}
+        />
         {tab.error && <ErrorBar msg={tab.error} />}
         <DeprecatedWarning isDeprecated={tab.isDeprecated} />
         <EmbeddedSoftwarePanel
@@ -385,23 +393,23 @@ export const DeviceTabContent = observer(
           devicesWithTheSameId={tab.devicesWithTheSameId}
           onSetUniqueMqttTopic={onSetUniqueMqttTopic}
         />
-        <BootstrapLikeSelect
-          options={deviceTypeSelectOptions}
-          selectedOption={selectedDeviceType}
-          className="pull-left device-type-select"
-          onChange={(option) => onDeviceTypeChange(tab, option.value)}
-        />
-        <div className="pull-right button-group">
-          <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
-          <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <BootstrapLikeSelect
+            options={deviceTypeSelectOptions}
+            selectedOption={selectedDeviceType}
+            className="device-type-select"
+            onChange={(option) => onDeviceTypeChange(tab, option.value)}
+          />
+          <div className="button-group">
+            <Button
+              label={t('device-manager.buttons.parameters')}
+              onClick={() => openOptionalParamsSelectDialog(!optionalParamsSelectDialogIsOpen)}
+            />
+            <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
+            <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+          </div>
         </div>
-        <JsonEditor
-          schema={tab.schema}
-          data={tab.editedData}
-          root={'dev' + index}
-          className="device-tab-properties"
-          onChange={tab.setData}
-        />
+        {tab.schemaStore && <JsonSchemaEditor store={tab.schemaStore} translator={tab.schemaTranslator} />}
       </div>
     );
   }

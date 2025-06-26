@@ -128,10 +128,6 @@
     flex-grow: 1;
 }
 
-.device-manager-page .device-type-select {
-    width: 45%;
-}
-
 .device-manager-page .device-tab-properties > div > .je-header > label {
     display: none;
 }
@@ -141,11 +137,6 @@
 }
 
 @media (max-width: 991px) {
-    .device-manager-page .device-type-select {
-        width: 100%;
-        padding-bottom: 10px;
-    }
-
     .device-manager-page .device-list-panel {
         width: 100%;
         max-width: unset;
@@ -302,6 +293,12 @@
 
 @media (max-width: 500px) {
     .device-manager-page .port-tab-content-header .button-panel {
+        flex-grow: 1;
+    }
+}
+
+@media (max-width: 1150px) {
+    .device-manager-page .device-type-select {
         flex-grow: 1;
     }
 }

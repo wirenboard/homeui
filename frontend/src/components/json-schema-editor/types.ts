@@ -14,7 +14,7 @@ export interface JsonSchemaEditorProps {
 }
 
 export interface BooleanParamEditorProps {
-  key: string;
+  title: string;
   store: BooleanStore;
   translator: Translator;
 }
@@ -58,4 +58,11 @@ export interface ParamErrorProps {
   id?: string;
   error?: ValidationError;
   translator: Translator;
+}
+
+export interface OptionalParamsSelectDialogProps {
+  isOpened: boolean;
+  store: ObjectStore;
+  translator: Translator;
+  onClose: () => void;
 }

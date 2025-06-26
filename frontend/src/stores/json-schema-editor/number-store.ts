@@ -33,7 +33,7 @@ export default class NumberStore {
     this.enumOptions = this.schema.enum?.map((value, index) => ({
       label: this.schema.options?.enum_titles?.[index] ?? String(value),
       value: value as number,
-    })) || [];
+    })) ?? [];
 
     this._checkConstraints();
 
@@ -58,10 +58,11 @@ export default class NumberStore {
       return;
     }
     if (this.value === undefined) {
-      this.error = this.required ? { key: 'json-editor.errors.required' } : undefined;
+      const forbidUndefined = this.schema.options?.wb?.show_editor || this.required;
+      this.error = forbidUndefined ? { key: 'json-editor.errors.required' } : undefined;
       return;
     }
-    if (this.schema.enum && !this.schema.enum?.includes(this.value)) {
+    if (this.schema.enum && !this.schema.enum.includes(this.value)) {
       this.error = { key: 'json-editor.errors.not-in-enum' };
       return;
     }

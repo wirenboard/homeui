@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { CSSProperties, PropsWithChildren, useId } from 'react';
-import { getI18n } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { ObjectStore, BooleanStore, StringStore, NumberStore, Translator } from '@/stores/json-schema-editor';
 import { ObjectStoreParam } from '@/stores/json-schema-editor/object-store';
 import { BooleanParamEditor } from './boolean-param-editor';
@@ -27,7 +27,8 @@ const EditorWrapper = observer(({
   param,
   translator,
 }: PropsWithChildren<EditorWrapperProps>) => {
-  const lang = getI18n().language;
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   let style: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -41,10 +42,11 @@ const EditorWrapper = observer(({
       style.flexBasis = `${(gridColumns / 12) * 100 - 7}%`;
     }
   }
-  const defaultText = param.store.schema.options?.wb?.show_editor ? '' : param.store.defaultText;
-  const title = translator.find(param.store.schema.title || param.key, lang);
-  const showError = param.store.error;
-  const showDescription = param.store.schema.description || defaultText;
+  const showDefaultText = param.store.schema.options?.show_opt_in;
+  const defaultText = showDefaultText ? param.store.defaultText : '';
+  const title = translator.find(param.store.schema.title || param.key, currentLanguage);
+  const showError = !!param.store.error;
+  const showDescription = !!param.store.schema.description || showDefaultText;
   return (
     <div
       className={classNames({ 'wb-jsonEditor-propertyError': param.store.hasErrors })}
@@ -56,7 +58,7 @@ const EditorWrapper = observer(({
       {showDescription && (
         <ParamDescription
           id={descriptionId}
-          description={translator.find(param.store.schema.description, lang)}
+          description={translator.find(param.store.schema.description, currentLanguage)}
           defaultText={defaultText}
         />
       )}
@@ -116,22 +118,32 @@ const shouldRenderObjectParamEditor = (param: ObjectStoreParam) => {
   if (param.store.schema.options?.hidden) {
     return false;
   }
-  return param.store.required || param.store.schema.options?.wb?.show_editor || param.store.schema.options?.show_opt_in;
+  return param.store.required ||
+         param.store.schema.options?.wb?.show_editor ||
+         param.store.schema.options?.show_opt_in ||
+         !param.disabled;
 };
 
 const MakeObjectParamEditor = (param: ObjectStoreParam, translator: Translator) => {
   if (shouldRenderObjectParamEditor(param)) {
     if (param.store instanceof ObjectStore) {
-      return <ObjectParamEditor store={param.store} translator={translator}/>;
+      return <ObjectParamEditor key={param.key} store={param.store} translator={translator}/>;
     }
     if (param.store instanceof StringStore) {
-      return <StringEditor param={param} translator={translator}/>;
+      return <StringEditor key={param.key} param={param} translator={translator}/>;
     }
     if (param.store instanceof NumberStore) {
-      return <NumberEditor param={param} translator={translator}/>;
+      return <NumberEditor key={param.key} param={param} translator={translator}/>;
     }
     if (param.store instanceof BooleanStore) {
-      return <BooleanParamEditor key={param.key} store={param.store} translator={translator}/>;
+      return (
+        <BooleanParamEditor
+          key={param.key}
+          title={param.store.schema.title || param.key}
+          store={param.store}
+          translator={translator}
+        />
+      );
     }
   }
   return null;

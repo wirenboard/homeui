@@ -7,7 +7,7 @@ const isObject = (value: unknown): boolean => {
 };
 
 const expandAllOf = (schema: JsonSchema, definitions: Definitions, refCache: Definitions): JsonSchema | undefined => {
-  const allOfSchemas = schema.allOf.reduce((acc, s) => {
+  const allOfSchemas: JsonSchema[] = schema.allOf.reduce((acc, s) => {
     if (!isObject(s)) {
       return acc;
     }
@@ -24,6 +24,10 @@ const expandAllOf = (schema: JsonSchema, definitions: Definitions, refCache: Def
     }
     return acc;
   }, new Set<string>());
+
+  if (schema.required) {
+    schema.required.forEach((r: string) => required.add(r));
+  }
 
   let res: JsonSchema = {
     type: 'object',
@@ -46,6 +50,15 @@ const expandAllOf = (schema: JsonSchema, definitions: Definitions, refCache: Def
       });
     }
   });
+
+  if (schema.properties) {
+    Object.entries(schema.properties).forEach(([key, value]) => {
+      const propSchema = expandSchema(value, definitions, refCache);
+      if (propSchema) {
+        res.properties[key] = propSchema;
+      }
+    });
+  }
 
   return res;
 };
