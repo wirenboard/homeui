@@ -2,7 +2,14 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { DefaultRoom } from '@/stores/alice';
 import { generateNextId } from '@/utils/id';
 import { addDevice, addRoom, deleteRoom, getAliceInfo, updateRoom, deleteDevice, updateDevice } from './api';
-import type { AddDeviceParams, AliceRoomUpdateParams, Room, SmartDevice, SuccessMessageFetch } from './types';
+import type {
+  AddDeviceParams,
+  AliceFetchData,
+  AliceRoomUpdateParams,
+  Room,
+  SmartDevice,
+  SuccessMessageFetch
+} from './types';
 
 export default class AliceStore {
   public rooms = new Map<string, Room>();
@@ -12,12 +19,13 @@ export default class AliceStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  async fetchData(): Promise<void> {
+  async fetchData(): Promise<AliceFetchData> {
     const data = await getAliceInfo();
 
-    runInAction(() => {
+    return runInAction(() => {
       this.rooms = new Map(Object.entries(data.rooms).map(([id, room]) => [id, room]));
       this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
+      return data;
     });
   }
 

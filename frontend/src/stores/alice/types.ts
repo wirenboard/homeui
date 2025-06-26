@@ -47,6 +47,8 @@ export interface SmartDevice {
 export interface AliceFetchData {
   rooms: Record<string, Room>;
   devices: Record<string, SmartDevice>;
+  link_url?: string;
+  unlink_url?: string;
 }
 
 export interface AddDeviceParams {

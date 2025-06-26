@@ -14,11 +14,18 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
   const { rooms, fetchData } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
+  const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
 
   useEffect(() => {
     fetchData()
-      .then(() => setPageState('isConnected'))
+      .then((res) => {
+        setBindingInfo({
+          isBinded: !!res.unlink_url,
+          url: res.link_url || res.unlink_url,
+        });
+        setPageState('isConnected');
+      })
       .catch(() => setPageState('isNotConnected'));
   }, []);
 
@@ -37,7 +44,21 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
       {pageState === 'isConnected'
         ? (
           <>
-            <a href="" className="alice-binding" target="_blank">{t('alice.buttons.binding')}</a>
+            {bindingInfo.isBinded
+              ? (
+                <div className="alice-bindingContainer">
+                  <span>{t('alice.labels.is-binded')}</span>
+                  <a href={bindingInfo.url} className="alice-binding" target="_blank">
+                    {t('alice.buttons.check-binding-status')}
+                  </a>
+                </div>
+              )
+              : (
+                <a href={bindingInfo.url} className="alice-binding" target="_blank">
+                  {t('alice.buttons.bind')}
+                </a>
+              )
+            }
 
             <div className="alice-container">
               <aside className="alice-sidebar">
