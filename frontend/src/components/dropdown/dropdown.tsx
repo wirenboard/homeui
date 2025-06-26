@@ -3,6 +3,14 @@ import Select, { components } from 'react-select';
 import { DropdownProps } from './types';
 import './styles.css';
 
+const DropdownIndicator = (props: any) => {
+  return (
+    <components.DropdownIndicator {...props}>
+      <components.DownChevron size={18} />
+    </components.DropdownIndicator>
+  );
+};
+
 export const Dropdown = ({
   id,
   options,
@@ -13,6 +21,7 @@ export const Dropdown = ({
   ariaLabel,
   isDisabled,
   isSearchable = false,
+  minWidth = '150px',
   onChange,
 }: DropdownProps) => {
   const getClassNames = (className: string) => classNames(className, {
@@ -39,8 +48,15 @@ export const Dropdown = ({
       menuPlacement="auto"
       components={{
         MenuPortal,
+        DropdownIndicator,
       }}
       aria-label={ariaLabel}
+      styles={{
+        control: (baseStyles, _state) => ({
+          ...baseStyles,
+          minWidth,
+        }),
+      }}
       unstyled
       onChange={onChange}
     />

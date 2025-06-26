@@ -1,0 +1,19 @@
+.wb-checkbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.wb-checkbox input:focus {
+    transition: border-color 200ms linear, var(--input-active-shadow-transition);
+    box-shadow: var(--input-active-shadow);
+    z-index: 10;
+}
+
+.wb-checkbox input {
+    margin: 0;
+    cursor: pointer;
+}
