@@ -11,12 +11,22 @@ export const Confirm = ({
   const { t } = useTranslation();
 
   return (
-    <Dialog isOpened={isOpened} heading={heading} onClose={closeCallback}>
+    <Dialog
+      isOpened={isOpened}
+      heading={heading}
+      withPadding={false}
+      onClose={closeCallback}
+    >
       <form method="dialog">
-        {!!children && <div className="dialog-description">{children}</div>}
-
+        {!!children && <div className="dialog-content">{children}</div>}
         <div className="dialog-actions">
-          <Button type="submit" className="dialog-action" label={t('modal.labels.cancel')} variant="secondary" />
+          <Button
+            type="button"
+            className="dialog-action"
+            label={t('modal.labels.cancel')}
+            variant="secondary"
+            onClick={closeCallback}
+          />
           <Button
             type="submit"
             className="dialog-action"

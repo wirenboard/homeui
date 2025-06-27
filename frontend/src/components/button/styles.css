@@ -2,7 +2,7 @@
     border: 0;
     color: var(--button-color);
     border-radius: var(--input-border-radius);
-    transition: background 200ms linear, var(--input-active-shadow-transition);
+    transition: background 200ms linear, color 200ms linear, var(--input-active-shadow-transition);
     display: block;
 }
 
@@ -16,6 +16,7 @@
 
 .button:focus {
     box-shadow: var(--input-active-shadow);
+    z-index: 10;
 }
 
 .button-l {
@@ -62,7 +63,7 @@
     background: var(--danger-color);
 }
 
-.button-danger:hover {
+.button-danger:not(:disabled):hover {
     background: var(--danger-color-hover);
 }
 
@@ -79,6 +80,15 @@
 
 .button-icon {
     display: block;
+    line-height: 0;
+}
+
+.button-icon:has( + .button-text) {
+    display: inline-flex;
+}
+
+.button-icon + .button-text {
+    margin-left: 6px;
 }
 
 .button-l .button-icon {

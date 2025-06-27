@@ -83,7 +83,8 @@
   color: var(--button-color);
 }
 
-.dropdown__menu {
+.dropdown__menu,
+.dropdown__menu-portal {
   border: 1px solid var(--input-border-color);
   background: var(--input-background);
   color: var(--input-color);

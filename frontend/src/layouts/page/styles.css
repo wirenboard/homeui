@@ -42,6 +42,7 @@
 .page-actions {
     flex-shrink: 0;
     display: flex;
+    gap: 12px;
 }
 
 .page-loader {
