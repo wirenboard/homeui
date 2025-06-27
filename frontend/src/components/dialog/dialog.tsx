@@ -1,13 +1,17 @@
+import classNames from 'classnames';
 import { useRef, useEffect, PropsWithChildren, useState } from 'react';
+import CloseIcon from '@/assets/icons/close.svg';
 import { DialogProps } from './types';
 import './styles.css';
 
 export const Dialog = ({
-  isOpened,
-  heading,
-  onClose,
-  closedby,
   children,
+  className,
+  heading,
+  withPadding = true,
+  isOpened,
+  closedby,
+  onClose,
 }: PropsWithChildren<DialogProps>) => {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -51,9 +55,29 @@ export const Dialog = ({
   }
 
   return (
-    <dialog className="dialog" ref={dialogRef} onClose={onClose}>
-      {heading && <h3 className="dialog-title">{heading}</h3>}
-      {isOpened && (<div className="dialog-content" ref={contentRef}>{children}</div>)}
+    <dialog
+      ref={dialogRef}
+      className={classNames('dialog', className)}
+      onClose={onClose}
+    >
+      {isOpened && (
+        <>
+          <header className="dialog-header">
+            <h3 className="dialog-title">{heading}</h3>
+            <button className="dialog-close" onClick={() => dialogRef.current.close()}>
+              <CloseIcon />
+            </button>
+          </header>
+          <div
+            ref={contentRef}
+            className={classNames({
+              'dialog-content': withPadding,
+            })}
+          >
+            {children}
+          </div>
+        </>
+      )}
     </dialog>
   );
 };

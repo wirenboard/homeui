@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.10) stable; urgency=medium
+
+  * Update React common components. No functional changes
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 27 Jun 2025 13:15:17 +0300
+
 wb-mqtt-homeui (2.117.9) stable; urgency=medium
 
   * Add React components. No functional changes
