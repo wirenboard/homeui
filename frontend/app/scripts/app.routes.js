@@ -207,6 +207,34 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       },
     })
     //...........................................................................
+    .state('events', {
+      url: '/events?{fullscreen:boolean}',
+      controller: 'EventsCtrl as $ctrl',
+      template: require('../views/events.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import( /* webpackChunkName: 'events' */ './controllers/eventsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
+    })
+    //...........................................................................
+    .state('events-edit', {
+      url: '/events/edit',
+      controller: 'EventsEditCtrl as $ctrl',
+      template: require('../views/events-edit.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import( /* webpackChunkName: 'eventsEdit' */ './controllers/eventsEditController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
+    })
+    //...........................................................................
     .state('history', {
       url: '/history?{fullscreen:boolean}',
       controller: 'HistoryCtrl as $ctrl',
