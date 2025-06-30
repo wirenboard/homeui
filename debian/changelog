@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.118.0) stable; urgency=medium
+
+  * Use React based editor for wb-mqtt-serial port configs
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 30 Jun 2025 18:18:07 +0500
+
 wb-mqtt-homeui (2.117.10) stable; urgency=medium
 
   * Update React common components. No functional changes
