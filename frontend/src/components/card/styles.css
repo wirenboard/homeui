@@ -6,6 +6,7 @@
     max-width: 450px;
     width: 100%;
     transition: background ease 300ms, border ease 300ms;
+    display: inline-block;
 }
 
 .card-header {
