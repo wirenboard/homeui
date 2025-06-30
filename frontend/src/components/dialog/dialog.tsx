@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useRef, useEffect, PropsWithChildren, useState } from 'react';
+import { useRef, useEffect, PropsWithChildren, MouseEvent } from 'react';
 import CloseIcon from '@/assets/icons/close.svg';
 import { DialogProps } from './types';
 import './styles.css';
@@ -10,55 +10,42 @@ export const Dialog = ({
   heading,
   withPadding = true,
   isOpened,
-  closedby,
   onClose,
 }: PropsWithChildren<DialogProps>) => {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-
-  const [allowClose, setAllowClose] = useState(false);
 
   useEffect(() => {
     if (dialogRef.current) {
       if (isOpened) {
         dialogRef.current.showModal();
-        setAllowClose(true);
       } else {
-        setAllowClose(false);
         dialogRef.current.close();
       }
     }
 
     return () => {
       if (dialogRef.current) {
-        setAllowClose(false);
         dialogRef.current.close();
       }
     };
   }, [dialogRef, isOpened]);
 
-  if (closedby === 'any') {
-    const handleClick = (event: MouseEvent) => {
-      if (allowClose && contentRef.current && !contentRef.current.contains(event.target as HTMLElement)) {
-        event.stopPropagation();
-        event.preventDefault();
-        dialogRef.current?.close();
-      }
-    };
-    useEffect(() => {
-      document.addEventListener('click', handleClick);
+  const onClick = (ev: MouseEvent<HTMLDialogElement>) => {
+    const { left, right, top, bottom } = ev.currentTarget.getBoundingClientRect();
+    const clickX = ev.clientX;
+    const clickY = ev.clientY;
 
-      return () => {
-        document.removeEventListener('click', handleClick);
-      };
-    });
-  }
+    if (clickX < left || clickX > right || clickY < top || clickY > bottom) {
+      dialogRef.current.close();
+    }
+  };
 
   return (
     <dialog
       ref={dialogRef}
       className={classNames('dialog', className)}
       onClose={onClose}
+      onClick={onClick}
     >
       {isOpened && (
         <>
@@ -69,7 +56,6 @@ export const Dialog = ({
             </button>
           </header>
           <div
-            ref={contentRef}
             className={classNames({
               'dialog-content': withPadding,
             })}
