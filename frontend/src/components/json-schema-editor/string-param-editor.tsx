@@ -1,25 +1,34 @@
 import { observer } from 'mobx-react-lite';
+import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
 import { Input } from '@/components/input';
-import type { StringParamEditorProps } from './types';
+import { EditorWrapper, EditorWrapperLabel } from './editor-wrapper';
+import type { StringEditorProps, StringParamEditorProps } from './types';
 
-export const StringParamEditor = observer(({
+const StringEditor = observer(({
   store,
   inputId,
   descriptionId,
   errorId,
   translator,
-}: StringParamEditorProps) => {
+}: StringEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   const value = store.value;
-  const valueToDisplay = typeof value !== 'string' ? '' : value;
+  const valueToDisplay = typeof value === 'string' ? value : '';
   const isOptInEditor = store.schema.options?.wb?.show_editor || store.schema.options?.show_opt_in;
+  const enumOptions = useMemo(() => {
+    if (!store.schema.enum) return [];
+    return store.enumOptions.map((option) => ({
+      value: option.value,
+      label: translator.find(option.label, currentLanguage),
+    }));
+  }, [store.enumOptions, translator, currentLanguage]);
   return store.schema.enum ? (
     <Dropdown
       id={inputId}
-      options={store.enumOptions}
+      options={enumOptions}
       value={valueToDisplay}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
@@ -47,5 +56,31 @@ export const StringParamEditor = observer(({
         }
       }}
     />
+  );
+});
+
+export const StringParamEditor = observer(({ store, paramId, translator }: StringParamEditorProps) => {
+  const inputId = useId();
+  const descriptionId = useId();
+  const errorId = useId();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
+  const title = translator.find(store.schema.title || paramId, currentLanguage);
+  return (
+    <EditorWrapper
+      descriptionId={descriptionId}
+      errorId={errorId}
+      store={store}
+      translator={translator}
+    >
+      {!store.schema.options?.compact && <EditorWrapperLabel title={title} inputId={inputId} />}
+      <StringEditor
+        store={store}
+        inputId={inputId}
+        descriptionId={descriptionId}
+        errorId={errorId}
+        translator={translator}
+      />
+    </EditorWrapper>
   );
 });

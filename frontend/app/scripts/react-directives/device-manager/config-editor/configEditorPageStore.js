@@ -438,6 +438,7 @@ class ConfigEditorPageStore {
       });
       config.ports.push(portConfig);
     });
+    console.log(config);
     return config;
   }
 

@@ -169,7 +169,7 @@ const PageTabs = observer(
   }
 );
 
-const SaveSettingsButton = ({ onClick, disabled }) => {
+const SaveSettingsButton = observer(({ onClick, disabled }) => {
   const { t } = useTranslation();
   return (
     <Button
@@ -179,7 +179,7 @@ const SaveSettingsButton = ({ onClick, disabled }) => {
       onClick={onClick}
     />
   );
-};
+});
 
 const AddDevicesButtonsPanel = ({ allowAddDevice, onAddDevice, onAddWbDevice }) => {
   const { t } = useTranslation();

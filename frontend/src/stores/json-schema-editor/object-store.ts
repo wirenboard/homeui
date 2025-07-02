@@ -5,15 +5,13 @@ import NumberStore from './number-store';
 import StringStore from './string-store';
 import type { JsonSchema } from './types';
 
-type ParamStore = ObjectStore | NumberStore | BooleanStore | StringStore;
-
 export class ObjectStoreParam {
   public key: string;
-  public store: ParamStore;
+  public store: ObjectStore | NumberStore | BooleanStore | StringStore;
   public disabled: boolean;
   public hasPermanentEditor: boolean;
 
-  constructor(key: string, store: ParamStore) {
+  constructor(key: string, store: ObjectStore | NumberStore | BooleanStore | StringStore) {
     this.key = key;
     this.store = store;
     this.hasPermanentEditor = this.store.required ||
@@ -44,28 +42,69 @@ export class ObjectStoreParam {
   }
 }
 
+function comparePropertyOrder([key1, schema1], [key2, schema2]) {
+  const order1 = schema1.propertyOrder ?? 10000;
+  const order2 = schema2.propertyOrder ?? 10000;
+  if (order1 === order2) {
+    return key1.localeCompare(key2);
+  }
+  return order1 - order2;
+}
+
+const createStore = (
+  schema: JsonSchema,
+  initialValue: unknown,
+  required: boolean
+) : ObjectStore | NumberStore | StringStore | BooleanStore => {
+  switch (schema.type){
+    case 'boolean': return new BooleanStore(schema, initialValue, required);
+    case 'string': return new StringStore(schema, initialValue, required);
+    case 'integer':
+    case 'number': return new NumberStore(schema, initialValue, required);
+    case 'object': return new ObjectStore(schema, initialValue, required);
+  }
+};
+
 export class ObjectStore {
   public schema: JsonSchema;
-  public params: ObjectStoreParam[];
+  public params: ObjectStoreParam[] = [];
   public required: boolean;
+  public isUndefined: boolean = false;
   readonly error = undefined;
   readonly defaultText = '';
 
   private _paramByKey: Record<string, ObjectStoreParam> = {};
 
-  constructor(schema: JsonSchema, params: ObjectStoreParam[]) {
+  constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     this.schema = schema;
-    this.params = params;
-    params.forEach((param) => {
-      this._paramByKey[param.key] = param;
-    });
+    this.required = required;
+
+    if (schema?.properties) {
+      Object.entries(schema.properties)
+        .sort(comparePropertyOrder)
+        .forEach(([key, value]) => {
+          const param = new ObjectStoreParam(
+            key,
+            createStore(value, initialValue?.[key], !!schema.required?.includes(key))
+          );
+          this.params.push(param);
+          this._paramByKey[key] = param;
+        });
+    }
+
+    if (initialValue === undefined) {
+      this.isUndefined = true;
+    }
 
     makeObservable(this, {
+      isUndefined: observable,
       value: computed,
       hasErrors: computed,
       isDirty: computed,
-      submit: action,
+      commit: action,
       reset: action,
+      setUndefined: action,
+      setDefault: action,
     });
   }
 
@@ -81,7 +120,10 @@ export class ObjectStore {
     return !!this.params.length;
   }
 
-  get value(): Record<string, number | string | boolean> {
+  get value(): Record<string, number | string | boolean> | undefined {
+    if (this.isUndefined) {
+      return undefined;
+    }
     return this.params.reduce((acc, param) => {
       if (param.store.value === undefined || param.store.value instanceof MistypedValue) {
         return acc;
@@ -91,7 +133,9 @@ export class ObjectStore {
     }, {});
   }
 
-  setUndefined() {}
+  setUndefined() {
+    this.isUndefined = true;
+  }
 
   setDefault() {
     this.params.forEach((param) => {
@@ -103,9 +147,9 @@ export class ObjectStore {
     });
   }
 
-  submit() {
+  commit() {
     this.params.forEach((param) => {
-      param.store.submit();
+      param.store.commit();
     });
   }
 
