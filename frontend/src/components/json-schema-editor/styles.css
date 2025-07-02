@@ -47,7 +47,7 @@
     flex-direction: row;
 }
 
-.device-settings__tabs div[role="tabpanel"] {
+.device-settings__tabpanel {
     flex-grow: 1;
 }
 

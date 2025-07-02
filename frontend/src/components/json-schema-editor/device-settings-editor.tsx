@@ -134,7 +134,7 @@ const DeviceSettingsTabs = ({ groups, translator }: { groups: WbDeviceParameterE
     <div className="device-settings__tabs">
       <Tabs activeTab={activeTab} items={tabs} onTabChange={onTabChange}/>
       {groups.map((group: WbDeviceParameterEditorsGroup) => (
-        <TabContent activeTab={activeTab} tabId={group.properties.id}>
+        <TabContent activeTab={activeTab} tabId={group.properties.id} className="device-settings__tabpanel">
           <DeviceSettingsTabContent group={group} isTopLevel={true} translator={translator} />
         </TabContent>
       ))}

@@ -277,7 +277,6 @@ export class DeviceTab {
     this.loading = true;
     const oldSlaveId = this.slaveId;
     try {
-      console.log(type);
       const schema = await this.deviceTypesStore.getSchema(type);
       const jsonSchema = loadJsonSchema(schema);
       runInAction(() => {
@@ -286,7 +285,6 @@ export class DeviceTab {
       this.schemaTranslator = makeTranslator(schema);
       this.schemaStore.setDefault();
     } catch (err) {
-      console.log(err);
       const errorMsg = i18n.t('device-manager.errors.change-device-type', {
         error: err.message,
         interpolation: { escapeValue: false },
@@ -345,7 +343,6 @@ export class DeviceTab {
     this.loading = true;
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-      console.log(schema);
       const jsonSchema = loadJsonSchema(schema);
       runInAction(() => {
         this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, this.data);

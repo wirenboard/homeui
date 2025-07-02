@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite';
 import { useId, forwardRef } from 'react';
 
 export const WarningTag = ({ text }) => {
@@ -103,7 +102,7 @@ export const WarningBar = ({ children }) => {
   );
 };
 
-export const Button = observer(({ label, type, onClick, disabled, additionalStyles, icon, title, submit }) => {
+export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title, submit }) => {
   const classes =
     'btn btn-' + (type ? type : 'default') + (additionalStyles ? ' ' + additionalStyles : '');
   return (
@@ -122,7 +121,7 @@ export const Button = observer(({ label, type, onClick, disabled, additionalStyl
       <span> {label}</span>
     </button>
   );
-});
+};
 
 export const Checkbox = ({ label, value, onChange, disabled }) => {
   const id = useId();
