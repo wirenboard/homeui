@@ -8,11 +8,16 @@ export const Checkbox = ({
   title,
   indeterminate,
   className,
+  ariaDescribedby,
+  ariaInvalid,
+  ariaErrorMessage,
   onChange,
 }: CheckboxProps) => {
   const checkboxRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    checkboxRef.current.indeterminate = !!indeterminate;
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = !!indeterminate;
+    }
   }, [indeterminate]);
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>): void => {
     onChange(ev.target.checked);
@@ -23,6 +28,9 @@ export const Checkbox = ({
         type="checkbox"
         checked={checked}
         ref={checkboxRef}
+        aria-describedby={ariaDescribedby}
+        aria-invalid={ariaInvalid}
+        aria-errormessage={ariaErrorMessage}
         onChange={handleOnChange}
       />
       {title}

@@ -370,12 +370,14 @@ export const DeviceTabContent = observer(
     const selectedDeviceType = findDeviceTypeSelectOption(deviceTypeSelectOptions, tab.deviceType);
     return (
       <div>
-        <OptionalParamsSelectDialog
-          isOpened={optionalParamsSelectDialogIsOpen}
-          store={tab.schemaStore}
-          translator={tab.schemaTranslator}
-          onClose={() => openOptionalParamsSelectDialog(false)}
-        />
+        {tab.schemaStore && (
+          <OptionalParamsSelectDialog
+            isOpened={optionalParamsSelectDialogIsOpen}
+            store={tab.schemaStore.commonParams}
+            translator={tab.schemaTranslator}
+            onClose={() => openOptionalParamsSelectDialog(false)}
+          />
+        )}
         {tab.error && <ErrorBar msg={tab.error} />}
         <DeprecatedWarning isDeprecated={tab.isDeprecated} />
         <EmbeddedSoftwarePanel

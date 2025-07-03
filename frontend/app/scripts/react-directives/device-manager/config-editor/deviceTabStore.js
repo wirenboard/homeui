@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
-import { makeStoreFromJsonSchema, loadJsonSchema, makeTranslator } from '@/stores/json-schema-editor';
+import { DeviceSettingsObjectStore, loadJsonSchema, makeTranslator } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
@@ -277,9 +277,11 @@ export class DeviceTab {
     this.loading = true;
     const oldSlaveId = this.slaveId;
     try {
-      const schema = await this.deviceTypesStore.getSchema(this.deviceType);
+      const schema = await this.deviceTypesStore.getSchema(type);
       const jsonSchema = loadJsonSchema(schema);
-      this.schemaStore = makeStoreFromJsonSchema(jsonSchema, this.data);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, {});
+      });
       this.schemaTranslator = makeTranslator(schema);
       this.schemaStore.setDefault();
     } catch (err) {
@@ -295,7 +297,7 @@ export class DeviceTab {
       this.deviceType = type;
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
       this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);
-      this.schemaStore.getParamByKey('slave_id')?.store?.setValue(oldSlaveId);
+      this.schemaStore.setSlaveId(oldSlaveId);
       this.clearError();
       this.loading = false;
     });
@@ -324,7 +326,9 @@ export class DeviceTab {
     try {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       const jsonSchema = loadJsonSchema(schema);
-      this.schemaStore = makeStoreFromJsonSchema(jsonSchema, this.data);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, this.data);
+      });
       this.schemaTranslator = makeTranslator(schema);
     } catch (err) {
       this.setError(err.message);
@@ -340,7 +344,9 @@ export class DeviceTab {
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       const jsonSchema = loadJsonSchema(schema);
-      this.schemaStore = makeStoreFromJsonSchema(jsonSchema, this.data);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, this.data);
+      });
       this.schemaTranslator = makeTranslator(schema);
     }
     if (this.schemaStore) {

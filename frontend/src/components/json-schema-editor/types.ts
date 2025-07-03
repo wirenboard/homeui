@@ -1,29 +1,35 @@
 import {
   StringStore,
   ObjectStore,
-  ObjectStoreParam,
   NumberStore,
   BooleanStore,
+  DeviceSettingsObjectStore,
   Translator,
   type ValidationError
 } from '@/stores/json-schema-editor';
 
 export interface JsonSchemaEditorProps {
-  store: ObjectStore;
+  store: ObjectStore | DeviceSettingsObjectStore;
   translator: Translator;
 }
 
 export interface BooleanParamEditorProps {
-  title: string;
   store: BooleanStore;
+  paramId: string;
+  translator: Translator;
+}
+
+export interface NumberEditorProps {
+  store: NumberStore;
+  inputId: string;
+  descriptionId: string;
+  errorId: string;
   translator: Translator;
 }
 
 export interface NumberParamEditorProps {
   store: NumberStore;
-  inputId: string;
-  descriptionId: string;
-  errorId: string;
+  paramId: string;
   translator: Translator;
 }
 
@@ -32,7 +38,7 @@ export interface ObjectParamEditorProps {
   translator: Translator;
 }
 
-export interface StringParamEditorProps {
+export interface StringEditorProps {
   store: StringStore;
   inputId?: string;
   descriptionId?: string;
@@ -40,16 +46,21 @@ export interface StringParamEditorProps {
   translator: Translator;
 }
 
+export interface StringParamEditorProps {
+  store: StringStore;
+  paramId: string;
+  translator: Translator;
+}
+
 export interface EditorWrapperProps {
-  inputId: string;
   descriptionId: string;
   errorId: string;
-  param: ObjectStoreParam;
+  store: NumberStore | StringStore | BooleanStore;
   translator: Translator;
 }
 
 export interface ParamDescriptionProps {
-  id: string;
+  id?: string;
   description?: string;
   defaultText?: string;
 }
@@ -65,4 +76,9 @@ export interface OptionalParamsSelectDialogProps {
   store: ObjectStore;
   translator: Translator;
   onClose: () => void;
+}
+
+export interface DeviceSettingsEditorProps {
+  store: DeviceSettingsObjectStore;
+  translator: Translator;
 }

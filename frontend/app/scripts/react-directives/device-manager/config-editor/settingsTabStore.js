@@ -1,5 +1,5 @@
 import { makeObservable, computed } from 'mobx';
-import { makeStoreFromJsonSchema } from '@/stores/json-schema-editor';
+import { ObjectStore } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
 import { TabType } from './tabsStore';
 
@@ -8,7 +8,7 @@ export class SettingsTab {
     this.name = i18n.t('device-manager.labels.settings');
     this.type = TabType.SETTINGS;
     this.data = data;
-    this.schemaStore = makeStoreFromJsonSchema(schema, data);
+    this.schemaStore = new ObjectStore(schema, data);
     this.schemaTranslator = schemaTranslator;
 
     makeObservable(this, {

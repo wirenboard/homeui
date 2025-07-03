@@ -297,6 +297,10 @@
     }
 }
 
+.device-manager-page .device-type-select {
+    flex-basis: 45%;
+}
+
 @media (max-width: 1150px) {
     .device-manager-page .device-type-select {
         flex-grow: 1;

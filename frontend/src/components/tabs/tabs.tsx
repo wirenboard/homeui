@@ -43,6 +43,6 @@ export const Tabs = ({ className, items, activeTab, onTabChange }: TabsProps) =>
   </ul>
 );
 
-export const TabContent = ({ tabId, activeTab, children }: PropsWithChildren<TabContentProps>) => {
-  return activeTab === tabId ? <div role="tabpanel">{children}</div> : null;
+export const TabContent = ({ tabId, activeTab, className, children }: PropsWithChildren<TabContentProps>) => {
+  return activeTab === tabId ? <div role="tabpanel" className={className}>{children}</div> : null;
 };

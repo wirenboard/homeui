@@ -274,7 +274,10 @@
          "new-firmware-item-link": "firmware {{available_firmware}}, current {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "manual-update": "<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
          "update-firmware-notice": "Do not disconnect the device during the update",
-         "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost"
+         "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost",
+         "channel": "Channel",
+         "mode": "Mode",
+         "period": "Period (ms)"
       },
       "buttons": {
          "save": "Save config",
