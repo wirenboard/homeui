@@ -212,10 +212,6 @@ function mqttClient(
     console.log('Connected to ' + client.host + " as '" + client.clientId + "'");
     if (globalPrefix !== '') console.log('With globalPrefix: ' + globalPrefix);
 
-    client.subscribe(globalPrefix + '/config/widgets/#');
-    client.subscribe(globalPrefix + '/config/dashboards/#');
-
-    client.subscribe(globalPrefix + '/devices/#');
     stickySubscriptions.forEach(item => this.subscribe(item.topic, item.callback));
 
     // prepare retain hack
@@ -247,17 +243,6 @@ function mqttClient(
     ngToast.dismiss();
     $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
     reconnectAfterTimeout();
-  };
-
-  //...........................................................................
-  service.publish = function (topic, payload) {
-    if (!connected) {
-      // FIXME: should fail hard here
-      console.error("can't publish(): disconnected");
-      return;
-    }
-    client.publish(topic, payload, { retain: true });
-    console.log('publish-Event sent ' + payload + ' with topic: ' + topic + ' ' + client);
   };
 
   //...........................................................................

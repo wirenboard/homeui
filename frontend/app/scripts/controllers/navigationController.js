@@ -8,11 +8,13 @@ class NavigationCtrl {
     whenMqttReady,
     errors,
     uiConfig,
-    rolesFactory
+    rolesFactory,
+    $rootScope
   ) {
     'ngInject';
 
     $scope.roles = rolesFactory;
+    $rootScope.roles = rolesFactory;
 
     $scope.isActive = function (viewLocation) {
       return viewLocation === $location.path();
@@ -34,10 +36,12 @@ class NavigationCtrl {
       needToLoadConfigs = false;
 
     whenMqttReady().then(function () {
-      needToLoadScripts = needToLoadConfigs = true;
-      mqttClient.subscribe('/wbrules/updates/+', function () {
-        needToLoadScripts = true;
-      });
+      if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
+        needToLoadScripts = needToLoadConfigs = true;
+        mqttClient.subscribe('/wbrules/updates/+', function () {
+          needToLoadScripts = true;
+        });
+      }
     });
 
     $scope.getScripts = function () {
@@ -83,6 +87,22 @@ class NavigationCtrl {
       pageWrapperClassList.contains(overlayClass)
         ? pageWrapperClassList.remove(overlayClass)
         : pageWrapperClassList.add(overlayClass);
+    };
+
+    $scope.showAccessControl = function () {
+      return rolesFactory.current?.roles?.isAdmin || rolesFactory.notConfiguredAdmin;
+    };
+
+    $scope.showUserMenu = function () {
+      return !rolesFactory.notConfiguredAdmin && rolesFactory.isAuthenticated();
+    };
+
+    $scope.logout = function () {
+      fetch('/auth/logout', {
+        method: 'POST',
+      }).then(() => {
+        location.reload();
+      });
     };
   }
 

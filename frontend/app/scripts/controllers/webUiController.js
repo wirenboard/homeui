@@ -4,7 +4,6 @@ class WebUICtrl {
   constructor(uiConfig, errors, rolesFactory, $window, $translate, tmhDynamicLocale) {
     'ngInject';
 
-    this.rolesFactory = rolesFactory;
     this.uiConfig = uiConfig;
     this.language = $window.localStorage['language'];
     this.showSystemDevices = $window.localStorage['show-system-devices'] || 'no';
@@ -28,6 +27,10 @@ class WebUICtrl {
     this.setShowSystemDevices = () => {
       $window.localStorage.setItem('show-system-devices', this.showSystemDevices);
     };
+
+    this.showMqttConfig = () => {
+      return rolesFactory.notConfiguredAdmin;
+    }
   }
 
   changeDefaultDashboard() {
