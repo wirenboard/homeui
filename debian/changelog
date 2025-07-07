@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.115.12-e1d931d2-001) stable; urgency=medium
+
+  * Add keaz theme
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 07 Jul 2025 13:45:32 +0300
+
 wb-mqtt-homeui (2.115.12-wb105) stable; urgency=medium
 
   * Fix range value update on mobile

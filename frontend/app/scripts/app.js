@@ -3,6 +3,7 @@
 // Import slylesheets
 import '@/assets/styles/variables.css';
 import '@/assets/styles/animations.css';
+import '../styles/css/keaz-theme.css';
 import '../styles/css/bootstrap.min.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';
