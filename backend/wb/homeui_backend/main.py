@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 from http import cookies
 from http.server import BaseHTTPRequestHandler
 from sys import argv
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 from urllib.parse import urlparse
 
 import bcrypt
@@ -133,10 +133,10 @@ def validate_add_user_request(request: dict) -> None:
 @dataclass
 class WebRequestHandlerContext:
     sn: str
-    user: Optional[User]
     users_storage: UsersStorage
     keys_storage: KeysStorage
     certificate_thread: CertificateCheckingThread
+    user: Optional[User] = None
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
@@ -249,7 +249,7 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
 
     user = context.users_storage.get_user_by_id(user_id)
     if user is None:
-        return response_400("User not found")
+        return response_404()
 
     try:
         length = int(request.headers.get("Content-Length", 0))
@@ -334,7 +334,9 @@ def https_setup_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     return response_200()
 
 
-def find_handler(url: str, handlers: dict) -> Optional[callable]:
+def find_handler(
+    url: str, handlers: dict
+) -> Optional[Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]]:
     url_components = urlparse(url).path.split("/")
     for pattern, handler in handlers.items():
         pattern_components = pattern.split("/")
@@ -379,10 +381,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                     self,
                     WebRequestHandlerContext(
                         self.sn,
-                        current_user,
                         self.users_storage,
                         self.keys_storage,
                         self.certificate_thread,
+                        current_user,
                     ),
                 )
         except Exception as e:

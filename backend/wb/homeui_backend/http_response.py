@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
 class HttpResponse:
     status: int
-    headers: list[list[str]] = field(default_factory=list)
-    body: str = None
+    headers: Optional[list[list[str]]] = None
+    body: Optional[str] = None
 
 
-def response_200(headers: list = None, body: str = None) -> HttpResponse:
+def response_200(headers: Optional[list[list[str]]] = None, body: Optional[str] = None) -> HttpResponse:
     return HttpResponse(200, headers, body)
 
 
-def response_201(headers: list = None, body: str = None) -> HttpResponse:
+def response_201(headers: Optional[list[list[str]]] = None, body: Optional[str] = None) -> HttpResponse:
     return HttpResponse(201, headers, body)
 
 
