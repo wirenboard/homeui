@@ -25,7 +25,7 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 # proper way must be
-	dh_auto_install --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=pybuild
+	dh_auto_install -Dbackend --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=pybuild
 # but dh_auto_install does not set pybuild's --dest-dir
 # pybuild --install --dir backend --dest-dir $(CURDIR)/debian/wb-homeui-backend
 # rm -r $(CURDIR)/debian/wb-homeui-backend/usr/lib/python3.9/dist-packages/.pytest_cache
