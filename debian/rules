@@ -6,8 +6,8 @@ export DH_VERBOSE=1
 	dh $@ --with python3 --with config-package
 
 override_dh_builddeb:
-	dh_builddeb -- -Zgzip
-
+	dh_builddeb -Dbackend -O--buildsystem=pybuild -- -Zgzip
+	dh_builddeb -Dfrontend -O--buildsystem=makefile -- -Zgzip
 
 override_dh_installinit:
 	dh_installinit --noscripts
