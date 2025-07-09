@@ -52,7 +52,11 @@ Depends: ${shlibs:Depends},
          curl,
          wb-configs (>= 3.38.0~~),
          nginx-extras,
-         wb-utils (>= 4.24.0~~)
+         wb-utils (>= 4.24.0~~),
+         python3-bcrypt,
+         python3-jwt,
+         python3-requests-unixsocket,
+         python3-cryptography
 Breaks: wb-configs (<< 3.38.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Description: Wiren Board Web UI web interface
