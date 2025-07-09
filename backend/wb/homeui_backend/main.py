@@ -9,6 +9,7 @@ import sqlite3
 import subprocess
 import traceback
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from http import cookies
 from http.server import BaseHTTPRequestHandler
 from sys import argv
@@ -38,12 +39,17 @@ DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 DB_SCHEMA_VERSION = 0
 
 
-def make_cookie_value(user_id: str, keys_storage: KeysStorage) -> str:
-    return jwt.encode({"id": user_id}, keys_storage.get_key(), algorithm="HS256").decode("utf-8")
+def make_cookie_value(user_id: str, keys_storage: KeysStorage, expires: Optional[datetime] = None) -> str:
+    data: dict[str, str] = {
+        "id": user_id,
+    }
+    if expires is not None:
+        data["exp"] = str(int(expires.timestamp()))
+    return jwt.encode(data, keys_storage.get_key(), algorithm="HS256").decode("utf-8")
 
 
-def decode_cookie_value(cookie: str, keys_storage: KeysStorage) -> Optional[str]:
-    return jwt.decode(cookie, keys_storage.get_key(), algorithms=["HS256"]).get("id")
+def decode_cookie_data(cookie: str, keys_storage: KeysStorage) -> dict[str, str]:
+    return jwt.decode(cookie, keys_storage.get_key(), algorithms=["HS256"])
 
 
 def make_password_hash(password: str) -> str:
@@ -54,14 +60,16 @@ def check_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 
-def make_id_cookie(user_id: str, secure: bool) -> cookies.SimpleCookie:
+def make_id_cookie(cookie_data: str, secure: bool, expires: Optional[datetime]) -> cookies.SimpleCookie:
     cookie = cookies.SimpleCookie()
-    cookie["id"] = user_id
+    cookie["id"] = cookie_data
     cookie["id"]["path"] = "/"
     cookie["id"]["httponly"] = True
     cookie["id"]["samesite"] = "Lax"
     if secure:
         cookie["id"]["secure"] = True
+    if expires:
+        cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return cookie
 
 
@@ -75,10 +83,16 @@ def get_current_user(
     try:
         request_cookie = cookies.SimpleCookie()
         request_cookie.load(request.headers.get("Cookie", ""))
-        if "id" in request_cookie:
-            return users_storage.get_user_by_id(
-                decode_cookie_value(request_cookie.get("id").value, keys_storage)
-            )
+        cookie_id = request_cookie.get("id")
+        if cookie_id is not None:
+            cookie_data = decode_cookie_data(cookie_id.value, keys_storage)
+            exp = cookie_data.get("exp", None)
+            if exp is not None:
+                exp = datetime.fromtimestamp(int(exp), tz=timezone.utc)
+            if exp is None or exp < datetime.now(timezone.utc):
+                request.log_error("Cookie expired")
+                return None
+            return users_storage.get_user_by_id(cookie_data.get("id", ""))
         request.log_error("Cookie not found")
     except Exception as e:
         request.log_error("Failed to get user from cookie: %s", str(e))
@@ -118,11 +132,11 @@ def validate_add_user_request(request: dict) -> None:
 
 @dataclass
 class WebRequestHandlerContext:
-    sn: str = ""
-    user: User = None
-    users_storage: UsersStorage = None
-    keys_storage: KeysStorage = None
-    certificate_thread: CertificateCheckingThread = None
+    sn: str
+    user: Optional[User]
+    users_storage: UsersStorage
+    keys_storage: KeysStorage
+    certificate_thread: CertificateCheckingThread
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
@@ -151,7 +165,7 @@ def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
 def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     try:
-        length = int(request.headers.get("Content-Length"))
+        length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
         validate_login_request(form)
     except Exception as e:
@@ -164,11 +178,17 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     x_forwarded_scheme = request.headers.get("X-Forwarded-Scheme", "http")
     res = {"user_type": user.type.value}
+    expires = None
+    if user.type == UserType.ADMIN:
+        # Set cookie expiration to 1 hour for admin users
+        expires = datetime.now(timezone.utc) + timedelta(hours=1)
     return response_200(
         headers=[
             make_set_cookie_header(
                 make_id_cookie(
-                    make_cookie_value(user.user_id, context.keys_storage), x_forwarded_scheme == "https"
+                    make_cookie_value(user.user_id, context.keys_storage, expires),
+                    x_forwarded_scheme == "https",
+                    expires,
                 )
             ),
             ["Content-type", "application/json"],
@@ -196,7 +216,7 @@ def auth_who_am_i_handler(request: BaseHTTPRequestHandler, context: WebRequestHa
 
 def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     try:
-        length = int(request.headers.get("Content-Length"))
+        length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
         validate_add_user_request(form)
     except Exception as e:
@@ -232,28 +252,41 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
         return response_400("User not found")
 
     try:
-        length = int(request.headers.get("Content-Length"))
+        length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
     except Exception as e:
         return response_400(str(e))
 
-    if form.get("login") is not None:
-        user_with_the_same_login = context.users_storage.get_user_by_login(form.get("login"))
+    invalidate_user = False
+    new_login = form.get("login")
+    if new_login is not None:
+        user_with_the_same_login = context.users_storage.get_user_by_login(new_login)
+
         if user_with_the_same_login is not None and user_with_the_same_login.user_id != user_id:
             return response_400("Login already exists")
-        user.login = form.get("login")
+        if user.login != new_login:
+            user.login = new_login
+            invalidate_user = True
 
-    if form.get("password") is not None:
-        user.pwd_hash = make_password_hash(form.get("password"))
+    new_password = form.get("password")
+    if new_password is not None:
+        if not check_password(new_password, user.pwd_hash):
+            user.pwd_hash = make_password_hash(new_password)
+            invalidate_user = True
 
-    if form.get("type") is not None:
-        if user.type == UserType.ADMIN and UserType(form.get("type")) != UserType.ADMIN:
+    new_type = form.get("type")
+    if new_type is not None:
+        if user.type == UserType.ADMIN and UserType(new_type) != UserType.ADMIN:
             admin_count = context.users_storage.count_users_by_type(UserType.ADMIN)
             if admin_count == 1:
                 return response_400("Can't change the last admin's type")
-        user.type = UserType(form.get("type"))
+        user.type = UserType(new_type)
 
-    context.users_storage.update_user(user)
+    if invalidate_user:
+        context.users_storage.delete_user(user.user_id)
+        context.users_storage.add_user(user)
+    else:
+        context.users_storage.update_user(user)
     return response_200()
 
 
@@ -315,11 +348,11 @@ def find_handler(url: str, handlers: dict) -> Optional[callable]:
 
 
 class WebRequestHandler(BaseHTTPRequestHandler):
-    users_storage: UsersStorage = None
-    keys_storage: KeysStorage = None
+    users_storage: UsersStorage
+    keys_storage: KeysStorage
     enable_debug: bool = False
     sn: str = ""
-    certificate_thread: CertificateCheckingThread = None
+    certificate_thread: CertificateCheckingThread
 
     def process_response(self, response: HttpResponse) -> None:
         if response.status == 200:
@@ -345,7 +378,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 response = handler(
                     self,
                     WebRequestHandlerContext(
-                        self.sn, current_user, self.users_storage, self.keys_storage, self.certificate_thread
+                        self.sn,
+                        current_user,
+                        self.users_storage,
+                        self.keys_storage,
+                        self.certificate_thread,
                     ),
                 )
         except Exception as e:
