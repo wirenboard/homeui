@@ -43,6 +43,7 @@ Description: Wiren Board Web UI web interface
 Package: wb-homeui-backend
 Architecture: all
 Depends: ${shlibs:Depends},
+         ${python3:Depends},
          ${misc:Depends},
          python3,
          fcgiwrap,
@@ -51,11 +52,7 @@ Depends: ${shlibs:Depends},
          curl,
          wb-configs (>= 3.38.0~~),
          nginx-extras,
-         wb-utils (>= 4.24.0~~),
-         python3-bcrypt,
-         python3-jwt,
-         python3-requests-unixsocket,
-         python3-cryptography
+         wb-utils (>= 4.24.0~~)
 Breaks: wb-configs (<< 3.38.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Description: Wiren Board Web UI web interface
