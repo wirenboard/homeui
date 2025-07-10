@@ -40,11 +40,11 @@ DB_SCHEMA_VERSION = 0
 
 
 def make_cookie_value(user_id: str, keys_storage: KeysStorage, expires: Optional[datetime] = None) -> str:
-    data: dict[str, str] = {
+    data: dict[str, Any] = {
         "id": user_id,
     }
     if expires is not None:
-        data["exp"] = str(int(expires.timestamp()))
+        data["exp"] = int(expires.timestamp())
     return jwt.encode(data, keys_storage.get_key(), algorithm="HS256").decode("utf-8")
 
 
@@ -86,10 +86,9 @@ def get_current_user(
         cookie_id = request_cookie.get("id")
         if cookie_id is not None:
             cookie_data = decode_cookie_data(cookie_id.value, keys_storage)
-            exp = cookie_data.get("exp", None)
-            if exp is not None:
-                exp = datetime.fromtimestamp(int(exp), tz=timezone.utc)
-            if exp is None or exp < datetime.now(timezone.utc):
+            now = datetime.now(timezone.utc)
+            exp = datetime.fromtimestamp(int(cookie_data.get("exp", int(now.timestamp()))), tz=timezone.utc)
+            if exp < now:
                 request.log_error("Cookie expired")
                 return None
             return users_storage.get_user_by_id(cookie_data.get("id", ""))
