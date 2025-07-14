@@ -25,7 +25,7 @@ const LoginPage = observer(({ store }) => {
       <PageTitle title={t('login.title')}/>
       <PageBody loading={store.loading}>
         <FocusLock>
-          <div style={{ display: 'flex', alignItems: 'center', maxWidth: '512px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', maxWidth: '300px', margin: '0 auto' }}>
             <form style={{ width: '100%' }} onSubmit={onSubmit}>
               {MakeFormFields(Object.entries(store.formStore.params || {}), ref)}
               <Button

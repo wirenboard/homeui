@@ -281,6 +281,12 @@ a[ng-click]:hover {
   white-space: break-spaces;
 }
 
+@media screen and (max-width: 767px) {
+  .user-menu {
+    display: none;
+  }
+}
+
 .user-menu span {
   font-size: var(--bar-font-size);
   padding: 3px 20px;
@@ -300,4 +306,10 @@ a[ng-click]:hover {
 
 .user-menu .glyphicon-user:hover {
   color: gray;
+}
+
+@media screen and (min-width: 768px) {
+  .nav > li.logout-menu {
+    display: none;
+  }
 }

@@ -174,12 +174,19 @@ ul.alert-dropdown {
   float: right;
   padding-right: 22px;
   display: none;
+  padding-right: 10px;
   margin-right: 0px;
-  margin-top: 13px;
   margin-bottom: 0px;
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+@media(min-width:768px) {
+  .connection-status {
+    padding-right: 22px;
+    margin-top: 13px;
+  }
 }
 
 .connection-status .glyphicon-user {
@@ -318,6 +325,10 @@ ul.alert-dropdown {
 }
 
 .navbar-nav > li .glyphicon {
+  margin-right: 4px;
+}
+
+.navbar-nav > li .fas {
   margin-right: 4px;
 }
 
@@ -1138,11 +1149,6 @@ body.fullscreen #no-https-alert {
 
   body.fullscreen .navbar-text {
     margin-top: 5px;
-  }
-
-  body.fullscreen .connection-status {
-    padding: 0px;
-    margin: 5px 10px;
   }
 
   body.fullscreen .side-nav {

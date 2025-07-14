@@ -128,6 +128,9 @@
                   <li ui-sref-active="active" ng-if="!checkFullscreen()">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help" draggable="false"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
                   </li>
+                  <li class="logout-menu" ng-if="showUserMenu() && !checkFullscreen()">
+                    <a href="#" ng-click="logout()" draggable="false"><i class="fas fa-sign-out-alt"></i> {{'app.buttons.logout' | translate}}</a>
+                  </li>
               </ul>
           </div>
           <!-- /.navbar-collapse -->
