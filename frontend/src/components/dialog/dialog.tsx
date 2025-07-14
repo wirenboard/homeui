@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useRef, useEffect, PropsWithChildren, MouseEvent } from 'react';
+import { useRef, useEffect, PropsWithChildren } from 'react';
 import CloseIcon from '@/assets/icons/close.svg';
 import { DialogProps } from './types';
 import './styles.css';
@@ -30,22 +30,11 @@ export const Dialog = ({
     };
   }, [dialogRef, isOpened]);
 
-  const onClick = (ev: MouseEvent<HTMLDialogElement>) => {
-    const { left, right, top, bottom } = ev.currentTarget.getBoundingClientRect();
-    const clickX = ev.clientX;
-    const clickY = ev.clientY;
-
-    if (clickX < left || clickX > right || clickY < top || clickY > bottom) {
-      dialogRef.current.close();
-    }
-  };
-
   return (
     <dialog
       ref={dialogRef}
       className={classNames('dialog', className)}
       onClose={onClose}
-      onClick={onClick}
     >
       {isOpened && (
         <>

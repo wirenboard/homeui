@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.11) stable; urgency=medium
+
+  * Source code refactoring. No functional changes
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 14 Jul 2025 12:03:21 +0500
+
 wb-mqtt-homeui (2.117.10) stable; urgency=medium
 
   * Update React common components. No functional changes
