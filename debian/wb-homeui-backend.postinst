@@ -2,7 +2,17 @@
 
 #DEBHELPER#
 
+chmod 0700 /usr/share/wb-mqtt-homeui/mosquitto/acl/user.conf
+chmod 0700 /usr/share/wb-mqtt-homeui/mosquitto/acl/operator.conf
+
+chgrp mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/user.conf
+chgrp mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/operator.conf
+
+chown mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/user.conf
+chown mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/operator.conf
+
 systemctl --system daemon-reload >/dev/null || true
 
+deb-systemd-invoke restart mosquitto || true
 deb-systemd-invoke restart fcgiwrap || true
 deb-systemd-invoke restart nginx || true

@@ -171,23 +171,32 @@ ul.alert-dropdown {
 /* connection status */
 
 .connection-status{
-	float: right;
-	padding-right: 20px;
-    display: none;
+  float: right;
+  padding-right: 22px;
+  display: none;
+  padding-right: 10px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-@media(min-width:360px) {
-	.connection-status{
-	  display: inherit;
-	}
+
+@media(min-width:768px) {
+  .connection-status {
+    padding-right: 22px;
+    margin-top: 13px;
+  }
+}
+
+.connection-status .glyphicon-user {
+  font-size: 20px;
+  cursor: pointer;
 }
 
 @media(min-width:768px) {
 	.navbar-header {
 		float: none;
-	}
-
-	.connection-status{
-	  padding-right: 40px;
 	}
 }
 
@@ -316,6 +325,10 @@ ul.alert-dropdown {
 }
 
 .navbar-nav > li .glyphicon {
+  margin-right: 4px;
+}
+
+.navbar-nav > li .fas {
   margin-right: 4px;
 }
 
@@ -940,19 +953,6 @@ body > double-bounce-spinner .double-bounce-spinner .double-bounce2 {
   background: #5cb300;
 }
 
-@media (max-width: 500px) {
-  .big-screen-access-level {
-    display: none;
-  }
-}
-
-@media (min-width: 501px) {
-  .mobile-screen-access-level {
-    display: none;
-  }
-}
-
-
 /* Для совместимости с wb-mqtt-serial >= 2.9.0 */
 h3.je-header {
   margin-top: 0px;
@@ -1109,11 +1109,18 @@ body.hmi #widgets-list {
   padding: 5px 7px;
 }
 
+body.hmi #not-configured-admin-alert,
+body.hmi #no-https-alert,
 body.hmi #wrapper .navbar,
 body.hmi .page-header,
 body.hmi .show-console-button,
 body.hmi .console {
   display: none
+}
+
+body.fullscreen #not-configured-admin-alert,
+body.fullscreen #no-https-alert {
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -1142,11 +1149,6 @@ body.hmi .console {
 
   body.fullscreen .navbar-text {
     margin-top: 5px;
-  }
-
-  body.fullscreen .connection-status {
-    padding: 0px;
-    margin: 5px 10px;
   }
 
   body.fullscreen .side-nav {
@@ -1266,4 +1268,29 @@ body.no-console .console {
 
 body.no-console .show-console #page-wrapper {
   padding-bottom: 10px;
+}
+
+.navbar-right .dropdown-menu {
+  left:auto;
+  right:0;
+}
+
+nav.disabled a {
+  pointer-events: none;
+}
+
+nav.disabled .navbar-toggle {
+  display: none;
+}
+
+body #https-setup-label {
+  color: white;
+  font-size: 14px;
+  display: none;
+  justify-content: center;
+  position: absolute;
+  top: 55%;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }

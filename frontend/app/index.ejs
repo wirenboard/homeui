@@ -21,12 +21,21 @@
   <toast></toast>
 
   <double-bounce-spinner></double-bounce-spinner>
+  <span id="https-setup-label" translate>{{'app.labels.setting-up-https'}}</span>
 
   <div id="wrapper" class="fade" ng-class="{ 'show-console': consoleVisible }">
       <exp-check-widget></exp-check-widget>
+      <div class="alert alert-danger" role="alert" id="no-https-alert" ng-cloak ng-if="noHttps">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span translate>{{'app.errors.no-https'}}</span>
+      </div>
+      <div class="alert alert-danger" role="alert" id="not-configured-admin-alert" ng-cloak ng-if="roles.notConfiguredAdmin">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span translate>{{'app.errors.not-configured-admin'}}</span>
+      </div>
 
       <!-- Navigation -->
-      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl'>
+      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl' ng-class="{ 'disabled': disableNavigation() }">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse" ng-click="toggleNavigation()">
@@ -38,16 +47,22 @@
               <a class="navbar-brand wb-navbar-brand" ui-sref="home" draggable="false">
                 <img src="images/logo.svg" alt="Wiren Board Web UI" draggable="false">
               </a>
-              <p class="navbar-text navbar-right connection-status">
-                <span class="label label-custom access-level-label" ng-class="roles.current.roles.isAdmin ? 'label label-custom label-danger' : 'label label-custom label-warning'"
-                      ng-show="roles.current.roles.shortName"
-                      title="{{'navigation.access.title' | translate}} {{roles.current.roles.name | translate}}">
-                      <span class="mobile-screen-access-level">{{roles.current.roles.shortName | translate}}</span>
-                      <span class="big-screen-access-level">{{'navigation.access.title' | translate}} {{roles.current.roles.name | translate}}</span>
-                    </span>
+              <div class="navbar-text navbar-right connection-status">
                 <span class="connected-status label label-success" ng-show="isConnected()" translate>{{'navigation.connection.active'}}</span>
                 <span class="connected-status label label-danger" ng-show="!isConnected()" translate>{{'navigation.connection.inactive'}}</span>
-              </p>
+                <div class="dropdown user-menu navbar-right" ng-if="showUserMenu()">
+                    <i class="glyphicon glyphicon-user" id="userMenu" type="button" data-toggle="dropdown" aria-label="User menu" aria-haspopup="true" aria-expanded="false"></i>
+                    <ul class="dropdown-menu" aria-labelledby="userMenu">
+                        <li>
+                            <span class='user-name' translate>{{roles.current.roles.name}}</span>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a href="#" ng-click="logout()" draggable="false" translate>{{'app.buttons.logout'}}</a>
+                        </li>
+                    </ul>
+                </div>
+              </div>
           </div>
 
           <div class="nav navbar-nav navbar-right ma-0"></div>
@@ -102,7 +117,7 @@
                           <li>
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="MQTTChannels" ui-sref-active="active" draggable="false">{{'navigation.menu.channels' | translate}}</a>
                           </li>
-                          <li>
+                          <li ng-if="showAccessControl()">
                               <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="accessLevel" ui-sref-active="active" draggable="false">{{'navigation.menu.access' | translate}}</a>
                           </li>
                           <li user-role="mto" current-role="roles.current.role">
@@ -112,6 +127,9 @@
                   </li>
                   <li ui-sref-active="active" ng-if="!checkFullscreen()">
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help" draggable="false"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
+                  </li>
+                  <li class="logout-menu" ng-if="showUserMenu() && !checkFullscreen()">
+                    <a href="#" ng-click="logout()" draggable="false"><i class="fas fa-sign-out-alt"></i> {{'app.buttons.logout' | translate}}</a>
                   </li>
               </ul>
           </div>
@@ -146,18 +164,21 @@
 
   </div>
 
-  <div class="console ng-hide" ng-show="consoleVisible">
-      <console></console>
-      <button type="button" name="close" class="close"
-              ng-click="consoleVisible = false">
-          <span class="glyphicon glyphicon-remove"></span>
-      </button>
-  </div>
+    <div ng-if="allowWbRulesDebug()">
+        <div class="console ng-hide" ng-show="consoleVisible">
+            <console></console>
+            <button type="button" name="close" class="close"
+                    ng-click="consoleVisible = false">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+        </div>
 
-  <button type="button" class="btn-default btn-lg show-console-button"
-          ng-hide="consoleVisible"
-          ng-click="consoleVisible = true">
-      <span class="glyphicon glyphicon-wrench"></span>
-  </button>
+        <button type="button" class="btn-default btn-lg show-console-button"
+                ng-hide="consoleVisible"
+                ng-click="consoleVisible = true">
+            <span class="glyphicon glyphicon-wrench"></span>
+        </button>
+    </div>
+
   </body>
 </html>

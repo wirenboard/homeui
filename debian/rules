@@ -1,6 +1,32 @@
 #!/usr/bin/make -f
+
+export DH_VERBOSE=1
+
 %:
-	dh $@ --parallel --with config-package
+	dh $@ --with python3 --with config-package
 
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip
+
+override_dh_installinit:
+	dh_installinit --noscripts
+
+override_dh_auto_configure:
+	dh_auto_configure -Dbackend -O--buildsystem=pybuild
+	dh_auto_configure -Dfrontend -O--buildsystem=makefile
+
+override_dh_auto_build:
+	dh_auto_build -Dbackend -O--buildsystem=pybuild
+	dh_auto_build -Dfrontend -O--buildsystem=makefile
+
+override_dh_auto_test:
+	dh_auto_test -Dbackend -O--buildsystem=pybuild
+	dh_auto_test -Dfrontend -O--buildsystem=makefile
+
+override_dh_auto_install:
+	dh_auto_install -Dbackend --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=pybuild
+	dh_auto_install -Dfrontend -O--buildsystem=makefile
+
+override_dh_auto_clean:
+	dh_auto_clean -Dbackend -O--buildsystem=pybuild
+	dh_auto_clean -Dfrontend -O--buildsystem=makefile

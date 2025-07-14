@@ -280,3 +280,36 @@ a[ng-click]:hover {
   word-wrap: break-word;
   white-space: break-spaces;
 }
+
+@media screen and (max-width: 767px) {
+  .user-menu {
+    display: none;
+  }
+}
+
+.user-menu span {
+  font-size: var(--bar-font-size);
+  padding: 3px 20px;
+  display: block;
+  color: black;
+}
+
+.user-menu .divider {
+  margin: 4px 0;
+}
+
+.user-menu .glyphicon-user {
+  font-size: 20px;
+  color: lightgray;
+  transition: color 0.2s ease;
+}
+
+.user-menu .glyphicon-user:hover {
+  color: gray;
+}
+
+@media screen and (min-width: 768px) {
+  .nav > li.logout-menu {
+    display: none;
+  }
+}
