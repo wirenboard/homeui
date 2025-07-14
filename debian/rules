@@ -8,7 +8,6 @@ export DH_VERBOSE=1
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip
 
-
 override_dh_installinit:
 	dh_installinit --noscripts
 
@@ -25,7 +24,7 @@ override_dh_auto_test:
 	dh_auto_test -Dfrontend -O--buildsystem=makefile
 
 override_dh_auto_install:
-	pybuild --install --dir backend --dest-dir $(CURDIR)/debian/wb-homeui-backend
+	dh_auto_install -Dbackend --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=pybuild
 	dh_auto_install -Dfrontend -O--buildsystem=makefile
 
 override_dh_auto_clean:

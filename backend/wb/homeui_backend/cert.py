@@ -218,11 +218,6 @@ def update_nginx_config(sn: str) -> None:
     with open(https_conf_path, "w", encoding="utf-8") as https_conf_file:
         https_conf_file.write(updated_content)
 
-    # Copy listen config
-    source_path = os.path.join(NGINX_TEMPLATES_DIR, "listen-https.conf")
-    destination_path = os.path.join(WB_NGINX_INCLUDES_DIR, "listen-https.conf")
-    shutil.copy2(source_path, destination_path)
-
     logging.info("Nginx HTTPS config updated successfully")
 
     subprocess.run(["systemctl", "reload", "nginx"], check=True)
@@ -272,6 +267,7 @@ class CertificateCheckingThread:
                 cert = load_certificate(SSL_CERT_PATH)
                 if has_enough_lifetime(cert):
                     self._set_state(CertificateState.VALID)
+                    update_nginx_config(self.sn)
                     logging.debug("Certificate is valid")
                     continue
                 state_on_update_fail = CertificateState.VALID
