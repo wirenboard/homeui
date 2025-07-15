@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.119.0) stable; urgency=medium
+
+  * Use React based editor for wb-mqtt-serial port configs
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 15 Jul 2025 17:32:55 +0500
+
 wb-mqtt-homeui (2.118.0) stable; urgency=medium
 
   * Add authentication and HTTPS support

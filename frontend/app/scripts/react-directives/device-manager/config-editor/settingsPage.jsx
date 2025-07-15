@@ -1,5 +1,4 @@
-import React from 'react';
-import JsonEditor from '../../components/json-editor/jsonEditor';
+import { JsonSchemaEditor } from '@/components/json-schema-editor';
 
 export const SettingsTab = ({ tab }) => {
   return (
@@ -10,13 +9,8 @@ export const SettingsTab = ({ tab }) => {
   );
 };
 
-export const SettingsTabContent = ({ tab, index }) => {
+export const SettingsTabContent = ({ tab }) => {
   return (
-    <JsonEditor
-      schema={tab.schema}
-      data={tab.editedData}
-      root={'set' + index}
-      onChange={tab.setData}
-    />
+    <JsonSchemaEditor store={tab.schemaStore} translator={tab.schemaTranslator}/>
   );
 };

@@ -289,7 +289,8 @@
          "resolve-duplicate-mqtt-topic": "Set unique id",
          "apply": "Apply",
          "search-disconnected-device": "Search for the device",
-         "update": "Update"
+         "update": "Update",
+         "parameters": "Parameters"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -509,6 +510,25 @@
       "labels": {
          "login": "Login",
          "password": "Password"
+      }
+   },
+   "json-editor": {
+      "errors": {
+         "not-a-number": "Value must be a number",
+         "not-an-integer": "Value must be an integer",
+         "not-a-string": "Value must be a string",
+         "not-a-boolean": "Set value",
+         "not-in-enum": "Select one of the available options",
+         "min-length": "Value must be at least {{limit}} characters long",
+         "max-length": "Value must be no more than {{limit}} characters long",
+         "invalid-format": "Invalid format",
+         "min": "Value must be greater than or equal to {{min}}",
+         "max": "Value must be less than or equal to {{max}}",
+         "minmax": "Value must be between {{min}} and {{max}}",
+         "required": "This field is required"
+      },
+      "labels": {
+         "select-params": "Add or remove parameters"
       }
    }
 }
