@@ -11,7 +11,7 @@ export const OptionalParamsSelectDialog = observer(
     const currentLanguage = i18n.language;
 
     return (
-      <Dialog isOpened={isOpened} heading={t('json-editor.labels.select-params')} closedby="any" onClose={onClose}>
+      <Dialog isOpened={isOpened} heading={t('json-editor.labels.select-params')} onClose={onClose}>
         <div className="wb-jsonEditor-optionalParamsList">
           {store.params.map((param) => (
             param.hasPermanentEditor ?

@@ -6,6 +6,7 @@ import type { JsonSchema, ValidationError } from './types';
 export default class BooleanStore {
   public value: MistypedValue | boolean | undefined;
   public schema: JsonSchema;
+  public isDirty: boolean = false;
   public error: ValidationError | undefined;
   public required: boolean;
 
@@ -30,11 +31,11 @@ export default class BooleanStore {
     makeObservable(this, {
       value: observable.ref,
       error: observable.ref,
+      isDirty: observable,
       setValue: action,
       setUndefined: action,
       _checkConstraints: action,
-      isDirty: computed,
-      submit: action,
+      commit: action,
       reset: action,
     });
   }
@@ -54,11 +55,13 @@ export default class BooleanStore {
 
   setValue(value: boolean): void {
     this.value = value;
+    this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }
 
   setUndefined(): void {
     this.value = undefined;
+    this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }
 
@@ -70,16 +73,14 @@ export default class BooleanStore {
     return !!this.error;
   }
 
-  get isDirty(): boolean {
-    return this.value !== this._initialValue;
-  }
-
-  submit(): void {
+  commit(): void {
     this._initialValue = this.value;
+    this.isDirty = false;
   }
 
   reset(): void {
     this.value = this._initialValue;
+    this.isDirty = false;
     this._checkConstraints();
   }
 }

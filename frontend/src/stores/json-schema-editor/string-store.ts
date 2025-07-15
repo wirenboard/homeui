@@ -7,6 +7,7 @@ import type { JsonSchema, ValidationError } from './types';
 export default class StringStore {
   public value: MistypedValue | string | undefined;
   public schema: JsonSchema;
+  public isDirty: boolean = false;
   public error: ValidationError | undefined;
   public required: boolean;
   public enumOptions: Option<string>[] = [];
@@ -35,12 +36,12 @@ export default class StringStore {
     makeObservable(this, {
       value: observable,
       error: observable,
+      isDirty: observable,
       setValue: action,
       setUndefined: action,
       _checkConstraints: action,
       hasErrors: computed,
-      isDirty: computed,
-      submit: action,
+      commit: action,
       reset: action,
     });
   }
@@ -81,11 +82,13 @@ export default class StringStore {
 
   setValue(value: string): void {
     this.value = value;
+    this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }
 
   setUndefined(): void {
     this.value = undefined;
+    this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }
 
@@ -97,20 +100,18 @@ export default class StringStore {
     return !!this.error;
   }
 
-  get isDirty(): boolean {
-    return this.value !== this._initialValue;
-  }
-
   get defaultText(): string {
     return this.schema.default !== undefined ? String(this.schema.default) : '';
   }
 
-  submit(): void {
+  commit(): void {
     this._initialValue = this.value;
+    this.isDirty = false;
   }
 
   reset(): void {
     this.value = this._initialValue;
+    this.isDirty = false;
     this._checkConstraints();
   }
 }
