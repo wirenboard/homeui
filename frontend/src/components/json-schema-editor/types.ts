@@ -1,16 +1,24 @@
+import { ReactElement } from 'react';
 import {
   StringStore,
   ObjectStore,
   NumberStore,
   BooleanStore,
-  DeviceSettingsObjectStore,
+  PropertyStore,
   Translator,
   type ValidationError
 } from '@/stores/json-schema-editor';
 
+export type EditorBuilderFunction = (
+  store: PropertyStore,
+  paramId: string,
+  translator: Translator
+) => ReactElement | null;
+
 export interface JsonSchemaEditorProps {
-  store: ObjectStore | DeviceSettingsObjectStore;
+  store: PropertyStore;
   translator: Translator;
+  customEditorBuilder?: EditorBuilderFunction;
 }
 
 export interface BooleanParamEditorProps {
@@ -35,7 +43,9 @@ export interface NumberParamEditorProps {
 
 export interface ObjectParamEditorProps {
   store: ObjectStore;
+  paramId: string;
   translator: Translator;
+  editorBuilder?: EditorBuilderFunction;
 }
 
 export interface StringEditorProps {
@@ -76,9 +86,4 @@ export interface OptionalParamsSelectDialogProps {
   store: ObjectStore;
   translator: Translator;
   onClose: () => void;
-}
-
-export interface DeviceSettingsEditorProps {
-  store: DeviceSettingsObjectStore;
-  translator: Translator;
 }

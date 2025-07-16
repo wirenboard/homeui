@@ -1,28 +1,25 @@
 import BooleanStore from './boolean-store';
-import { WbDeviceChannelEditor } from './device-settings/channel-editor-store';
-import { DeviceSettingsObjectStore, WbDeviceParameterEditorsGroup } from './device-settings/device-settings-store';
-import { WbDeviceParameterEditor } from './device-settings/parameter-editor-store';
 import { loadJsonSchema } from './json-schema-loader';
 import MistypedValue from './mistyped-value';
 import NumberStore from './number-store';
 import { ObjectStore, ObjectStoreParam } from './object-store';
+import { StoreBuilder } from './store-builder';
 import StringStore from './string-store';
-import { Translator, makeTranslator } from './translator';
-import type { ValidationError } from './types';
+import { Translator } from './translator';
+import type { ValidationError, PropertyStore, JsonObject, JsonSchema } from './types';
 
 export {
+  JsonObject,
+  JsonSchema,
   loadJsonSchema,
   Translator,
-  makeTranslator,
   ObjectStore,
   BooleanStore,
   StringStore,
   NumberStore,
+  PropertyStore,
   MistypedValue,
   ObjectStoreParam,
-  DeviceSettingsObjectStore,
-  WbDeviceParameterEditorsGroup,
-  WbDeviceParameterEditor,
-  WbDeviceChannelEditor,
+  StoreBuilder,
   type ValidationError
 };

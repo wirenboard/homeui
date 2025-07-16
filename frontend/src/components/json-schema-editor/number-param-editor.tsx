@@ -50,7 +50,7 @@ const NumberEditor = observer(({
   );
 });
 
-export const NumberParamEditor = observer(({ store, paramId, translator }: NumberParamEditorProps) => {
+const NumberParamEditor = observer(({ store, paramId, translator }: NumberParamEditorProps) => {
   const inputId = useId();
   const descriptionId = useId();
   const errorId = useId();
@@ -75,3 +75,5 @@ export const NumberParamEditor = observer(({ store, paramId, translator }: Numbe
     </EditorWrapper>
   );
 });
+
+export default NumberParamEditor;

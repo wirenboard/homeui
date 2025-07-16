@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
-import { loadJsonSchema, Translator, makeTranslator } from '@/stores/json-schema-editor';
+import { loadJsonSchema, Translator } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
 import AccessLevelStore from '../../components/access-level/accessLevelStore';
 import ConfirmModalState from '../../components/modals/confirmModalState';
@@ -302,7 +302,8 @@ class ConfigEditorPageStore {
       this.loaded = false;
       this.pageWrapperStore.clearError();
       const { config, schema, deviceTypeGroups } = await this.loadConfigFn();
-      this.schemaTranslator = makeTranslator(schema);
+      this.schemaTranslator = new Translator();
+      this.schemaTranslator.addTranslations(schema.translations);
       this.deviceTypesStore.setDeviceTypeGroups(deviceTypeGroups);
       this.portSchemaMap = makePortSchemaMap(schema);
       config?.ports?.forEach((port) => {

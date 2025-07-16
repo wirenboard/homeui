@@ -2,17 +2,18 @@ import { action, makeObservable, observable, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
 import MistypedValue from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
-import type { JsonSchema, ValidationError } from './types';
+import type { JsonSchema, ValidationError, PropertyStore } from './types';
 
-export default class NumberStore {
+export default class NumberStore implements PropertyStore {
   public value: MistypedValue | number | undefined;
   public schema: JsonSchema;
   public isDirty: boolean = false;
   public error: ValidationError | undefined;
-  public required: boolean;
   public enumOptions: Option<number>[] = [];
-
   public editString: string;
+
+  readonly storeType = 'number';
+  readonly required: boolean;
 
   private _initialValue: MistypedValue | number | undefined;
 

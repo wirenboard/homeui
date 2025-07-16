@@ -1,12 +1,8 @@
 import { makeObservable, computed } from 'mobx';
-import NumberStore from '../number-store';
-import StringStore from '../string-store';
-import type {
-  WbDeviceTemplateChannel,
-  WbDeviceTemplateChannelSettings
-} from '../types';
+import { NumberStore, StringStore } from '@/stores/json-schema-editor';
 import { Conditions } from './conditions';
 import { WbDeviceParameterEditor } from './parameter-editor-store';
+import type { WbDeviceTemplateChannel, WbDeviceTemplateChannelSettings } from './types';
 
 enum WbDeviceChannelModes {
   DISABLED = 'do not read',
@@ -106,7 +102,7 @@ export class WbDeviceChannelEditor {
       hasErrors: computed,
       isDirty: computed,
       hasCustomPeriod: computed,
-      value: computed,
+      customProperties: computed,
     });
   }
 
@@ -129,8 +125,10 @@ export class WbDeviceChannelEditor {
     return this.mode.value === WbDeviceChannelModes.CUSTOM_PERIOD;
   }
 
-  get value() : WbDeviceTemplateChannelSettings {
-    let res = {};
+  get customProperties() : WbDeviceTemplateChannelSettings | undefined {
+    let res: WbDeviceTemplateChannelSettings = {
+      name: this.channel.name,
+    };
     switch (this.mode.value) {
       case WbDeviceChannelModes.DISABLED: {
         if (this.channel.enabled !== false) {
@@ -171,6 +169,9 @@ export class WbDeviceChannelEditor {
         }
         break;
       }
+    }
+    if (Object.keys(res).length === 1) {
+      return undefined;
     }
     return res;
   }

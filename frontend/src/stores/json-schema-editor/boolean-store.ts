@@ -1,15 +1,16 @@
-import { observable, action, computed, makeObservable } from 'mobx';
+import { observable, action, makeObservable } from 'mobx';
 import MistypedValue from './mistyped-value';
 import { getDefaultBooleanValue } from './schema-helpers';
-import type { JsonSchema, ValidationError } from './types';
+import type { JsonSchema, ValidationError, PropertyStore } from './types';
 
-export default class BooleanStore {
+export default class BooleanStore implements PropertyStore {
   public value: MistypedValue | boolean | undefined;
   public schema: JsonSchema;
   public isDirty: boolean = false;
   public error: ValidationError | undefined;
-  public required: boolean;
 
+  readonly storeType = 'boolean';
+  readonly required: boolean;
   readonly defaultText = '';
 
   private _initialValue: MistypedValue | boolean | undefined;
