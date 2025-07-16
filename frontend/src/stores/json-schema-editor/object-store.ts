@@ -1,17 +1,15 @@
 import { makeObservable, action, computed, observable } from 'mobx';
-import BooleanStore from './boolean-store';
 import MistypedValue from './mistyped-value';
-import NumberStore from './number-store';
-import StringStore from './string-store';
-import type { JsonSchema } from './types';
+import { StoreBuilder } from './store-builder';
+import type { JsonSchema, PropertyStore, JsonObject } from './types';
 
 export class ObjectStoreParam {
   public key: string;
-  public store: ObjectStore | NumberStore | BooleanStore | StringStore;
+  public store: PropertyStore;
   public disabled: boolean;
   public hasPermanentEditor: boolean;
 
-  constructor(key: string, store: ObjectStore | NumberStore | BooleanStore | StringStore) {
+  constructor(key: string, store: PropertyStore) {
     this.key = key;
     this.store = store;
     this.hasPermanentEditor = this.store.required ||
@@ -51,31 +49,19 @@ function comparePropertyOrder([key1, schema1], [key2, schema2]) {
   return order1 - order2;
 }
 
-const createStore = (
-  schema: JsonSchema,
-  initialValue: unknown,
-  required: boolean
-) : ObjectStore | NumberStore | StringStore | BooleanStore => {
-  switch (schema.type){
-    case 'boolean': return new BooleanStore(schema, initialValue, required);
-    case 'string': return new StringStore(schema, initialValue, required);
-    case 'integer':
-    case 'number': return new NumberStore(schema, initialValue, required);
-    case 'object': return new ObjectStore(schema, initialValue, required);
-  }
-};
-
-export class ObjectStore {
+export class ObjectStore implements PropertyStore {
   public schema: JsonSchema;
   public params: ObjectStoreParam[] = [];
   public required: boolean;
   public isUndefined: boolean = false;
+
+  readonly storeType = 'object';
   readonly error = undefined;
   readonly defaultText = '';
 
   private _paramByKey: Record<string, ObjectStoreParam> = {};
 
-  constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
+  constructor(schema: JsonSchema, initialValue: unknown, required: boolean, builder: StoreBuilder) {
     this.schema = schema;
     this.required = required;
 
@@ -85,7 +71,7 @@ export class ObjectStore {
         .forEach(([key, value]) => {
           const param = new ObjectStoreParam(
             key,
-            createStore(value, initialValue?.[key], !!schema.required?.includes(key))
+            builder.createStore(value, initialValue?.[key], !!schema.required?.includes(key))
           );
           this.params.push(param);
           this._paramByKey[key] = param;
@@ -120,7 +106,7 @@ export class ObjectStore {
     return !!this.params.length;
   }
 
-  get value(): Record<string, number | string | boolean> | undefined {
+  get value(): JsonObject | undefined {
     if (this.isUndefined) {
       return undefined;
     }

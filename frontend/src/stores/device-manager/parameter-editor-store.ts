@@ -1,6 +1,6 @@
 import { makeObservable, computed } from 'mobx';
-import NumberStore from '../number-store';
-import type { JsonSchema, WbDeviceTemplateParameter } from '../types';
+import { type JsonSchema, NumberStore } from '@/stores/json-schema-editor';
+import { WbDeviceTemplateParameter } from './types';
 
 export class WbDeviceParameterEditorVariant {
   public store: NumberStore;

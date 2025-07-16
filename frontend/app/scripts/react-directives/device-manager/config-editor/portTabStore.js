@@ -1,5 +1,5 @@
 import { makeObservable, observable, computed, action, autorun } from 'mobx';
-import { ObjectStore } from '@/stores/json-schema-editor';
+import { ObjectStore, StoreBuilder } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
 import CollapseButtonState from '../../components/buttons/collapseButtonState';
 import { TabType } from './tabsStore';
@@ -38,7 +38,7 @@ export class PortTab {
     this.title = schemaTranslator.find(schema.title, i18n.language);
     this.type = TabType.PORT;
     this.data = data;
-    this.schemaStore = new ObjectStore(schema, data);
+    this.schemaStore = new ObjectStore(schema, data, false, new StoreBuilder());
     this.schemaTranslator = schemaTranslator;
     this.collapseButtonState = new CollapseButtonState(
       false,

@@ -1,17 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { CSSProperties } from 'react';
-import {
-  ObjectStore,
-  BooleanStore,
-  StringStore,
-  NumberStore,
-  Translator,
-  ObjectStoreParam
-} from '@/stores/json-schema-editor';
-import { BooleanParamEditor } from './boolean-param-editor';
-import { NumberParamEditor } from './number-param-editor';
-import { StringParamEditor } from './string-param-editor';
-import type { ObjectParamEditorProps } from './types';
+import { Translator, ObjectStoreParam } from '@/stores/json-schema-editor';
+import type { ObjectParamEditorProps, EditorBuilderFunction } from './types';
 
 const shouldRenderObjectParamEditor = (param: ObjectStoreParam) => {
   if (param.store.schema.options?.hidden) {
@@ -23,29 +13,18 @@ const shouldRenderObjectParamEditor = (param: ObjectStoreParam) => {
          !param.disabled;
 };
 
-const MakeObjectParamEditor = (param: ObjectStoreParam, translator: Translator) => {
-  if (shouldRenderObjectParamEditor(param)) {
-    if (param.store instanceof ObjectStore) {
-      return <ObjectParamEditor key={param.key} store={param.store} translator={translator}/>;
-    }
-    if (param.store instanceof StringStore) {
-      return <StringParamEditor store={param.store} paramId={param.key} translator={translator}/>;
-    }
-    if (param.store instanceof NumberStore) {
-      return <NumberParamEditor store={param.store} paramId={param.key} translator={translator}/>;
-    }
-    if (param.store instanceof BooleanStore) {
-      return <BooleanParamEditor store={param.store} paramId={param.key} translator={translator}/>;
-    }
+const MakeObjectParamEditor = (
+  param: ObjectStoreParam,
+  translator: Translator,
+  editorBuilder: EditorBuilderFunction
+) => {
+  if (editorBuilder && shouldRenderObjectParamEditor(param)) {
+    return editorBuilder(param.store, param.key, translator);
   }
   return null;
 };
 
-const MakeObjectParamsEditors = (params: ObjectStoreParam[], translator: Translator) => {
-  return params.map((param) => MakeObjectParamEditor(param, translator));
-};
-
-export const ObjectParamEditor = observer(({ store, translator } : ObjectParamEditorProps) => {
+export const ObjectParamEditor = observer(({ store, translator, editorBuilder } : ObjectParamEditorProps) => {
   const style: CSSProperties = {
     display: 'flex',
     flexDirection: store.schema.format === 'grid' ? 'row' : 'column',
@@ -54,7 +33,7 @@ export const ObjectParamEditor = observer(({ store, translator } : ObjectParamEd
   };
   return (
     <div style={style}>
-      {MakeObjectParamsEditors(store.params, translator)}
+      {store.params.map((param) => MakeObjectParamEditor(param, translator, editorBuilder))}
     </div>
   );
 });

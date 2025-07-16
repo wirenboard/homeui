@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
-import { DeviceSettingsObjectStore, loadJsonSchema, makeTranslator } from '@/stores/json-schema-editor';
+import { DeviceSettingsObjectStore, loadDeviceTemplate } from '@/stores/device-manager';
+import { loadJsonSchema, Translator } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
@@ -279,10 +280,13 @@ export class DeviceTab {
     try {
       const schema = await this.deviceTypesStore.getSchema(type);
       const jsonSchema = loadJsonSchema(schema);
+      const deviceTemplate = loadDeviceTemplate(schema);
       runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, {});
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, {});
       });
-      this.schemaTranslator = makeTranslator(schema);
+      this.schemaTranslator = new Translator();
+      this.schemaTranslator.addTranslations(jsonSchema.translations);
+      this.schemaTranslator.addTranslations(deviceTemplate.translations);
       this.schemaStore.setDefault();
     } catch (err) {
       const errorMsg = i18n.t('device-manager.errors.change-device-type', {
@@ -326,10 +330,13 @@ export class DeviceTab {
     try {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       const jsonSchema = loadJsonSchema(schema);
+      const deviceTemplate = loadDeviceTemplate(schema);
       runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, this.data);
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
       });
-      this.schemaTranslator = makeTranslator(schema);
+      this.schemaTranslator = new Translator();
+      this.schemaTranslator.addTranslations(jsonSchema.translations);
+      this.schemaTranslator.addTranslations(deviceTemplate.translations);
     } catch (err) {
       this.setError(err.message);
     }
@@ -344,10 +351,13 @@ export class DeviceTab {
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       const jsonSchema = loadJsonSchema(schema);
+      const deviceTemplate = loadDeviceTemplate(schema);
       runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, this.data);
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
       });
-      this.schemaTranslator = makeTranslator(schema);
+      this.schemaTranslator = new Translator();
+      this.schemaTranslator.addTranslations(jsonSchema.translations);
+      this.schemaTranslator.addTranslations(deviceTemplate.translations);
     }
     if (this.schemaStore) {
       this.schemaStore.setDefault();

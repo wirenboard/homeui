@@ -1,13 +1,12 @@
 import { makeObservable, computed } from 'mobx';
-import NumberStore from '../number-store';
-import { ObjectStore } from '../object-store';
-import StringStore from '../string-store';
-import type {
+import {
   JsonSchema,
-  WbDeviceParametersGroup,
-  WbDeviceTemplateChannel,
-  WbDeviceTemplateParameter
-} from '../types';
+  JsonObject,
+  NumberStore,
+  ObjectStore,
+  StringStore,
+  StoreBuilder
+} from '@/stores/json-schema-editor';
 import { WbDeviceChannelEditor } from './channel-editor-store';
 import { Conditions } from './conditions';
 import {
@@ -15,6 +14,13 @@ import {
   WbDeviceParameterEditorVariant,
   makeJsonSchemaForParameter
 } from './parameter-editor-store';
+import type {
+  WbDeviceParametersGroup,
+  WbDeviceTemplateChannel,
+  WbDeviceTemplateParameter,
+  WbDeviceTemplate,
+  WbDeviceTemplateChannelSettings
+} from './types';
 
 export class WbDeviceParameterEditorsGroup {
   public properties: WbDeviceParametersGroup;
@@ -64,7 +70,6 @@ export class WbDeviceParameterEditorsGroup {
 }
 
 export class DeviceSettingsObjectStore {
-  public schema: JsonSchema;
   public commonParams: ObjectStore;
   public groups: WbDeviceParameterEditorsGroup[] = [];
   public topLevelParameters: WbDeviceParameterEditor[] = [];
@@ -73,12 +78,11 @@ export class DeviceSettingsObjectStore {
   private _groupsByName: Record<string, WbDeviceParameterEditorsGroup> = {};
   private _conditions: Conditions = new Conditions();
 
-  constructor(schema: JsonSchema, initialValue: unknown) {
-    this.schema = schema;
-    this.commonParams = new ObjectStore(schema, initialValue, false);
-    this._buildGroups(schema);
-    this._buildParameters(schema, initialValue);
-    this._buildChannels(schema, initialValue);
+  constructor(schema: JsonSchema, deviceTemplate: WbDeviceTemplate, initialValue: unknown) {
+    this.commonParams = new ObjectStore(schema, initialValue, false, new StoreBuilder());
+    this._buildGroups(deviceTemplate);
+    this._buildParameters(deviceTemplate, initialValue);
+    this._buildChannels(deviceTemplate, initialValue);
 
     makeObservable(this, {
       value: computed,
@@ -87,8 +91,8 @@ export class DeviceSettingsObjectStore {
     });
   }
 
-  _buildGroups(schema: JsonSchema) {
-    schema.device?.groups?.forEach((groupProps) => {
+  _buildGroups(deviceTemplate: WbDeviceTemplate) {
+    deviceTemplate.groups?.forEach((groupProps) => {
       const group = new WbDeviceParameterEditorsGroup(groupProps);
       this._groupsByName[groupProps.id] = group;
     });
@@ -118,7 +122,7 @@ export class DeviceSettingsObjectStore {
   _addParameter(parameter: WbDeviceTemplateParameter, initialValue: unknown) {
     let initialValueToSet = undefined;
     if (typeof initialValue === 'object') {
-      initialValueToSet = (initialValue as Record<string, unknown>)[parameter.id];
+      initialValueToSet = (initialValue as Record<string, any>)[parameter.id];
     }
     const store = new NumberStore(
       makeJsonSchemaForParameter(parameter),
@@ -143,11 +147,11 @@ export class DeviceSettingsObjectStore {
     }
   }
 
-  _buildParameters(schema: JsonSchema, initialValue: unknown) {
-    if (!schema.device?.parameters) {
+  _buildParameters(deviceTemplate: WbDeviceTemplate, initialValue: unknown) {
+    if (!deviceTemplate.parameters) {
       return;
     }
-    schema.device.parameters.forEach((parameter) => {
+    deviceTemplate.parameters.forEach((parameter) => {
       this._addParameter(parameter, initialValue);
     });
 
@@ -164,8 +168,8 @@ export class DeviceSettingsObjectStore {
     });
   }
 
-  _buildChannels(schema: JsonSchema, initialValue: unknown) {
-    if (!schema.device?.channels) {
+  _buildChannels(deviceTemplate: WbDeviceTemplate, initialValue: unknown) {
+    if (!deviceTemplate.channels) {
       return;
     }
     const initialChannelsByName: Record<string, WbDeviceTemplateChannel> = {};
@@ -179,12 +183,12 @@ export class DeviceSettingsObjectStore {
         });
       }
     }
-    schema.device.channels.forEach((channel) => {
+    deviceTemplate.channels.forEach((channel) => {
       const channelEditor = new WbDeviceChannelEditor(
         channel,
         initialChannelsByName[channel.name],
         this._parametersByName);
-      this._groupsByName[channel.group]?.addChannel(channelEditor);
+      this._groupsByName[channel.group ?? 'default']?.addChannel(channelEditor);
     });
   }
 
@@ -200,7 +204,7 @@ export class DeviceSettingsObjectStore {
       this.groups.some((group) => group.isDirty);
   }
 
-  get value() {
+  get value() : JsonObject | undefined {
     let res : Record<string, any> = this.commonParams.value;
     Object.values(this._parametersByName).forEach((param) => {
       if (param.isEnabled && !param.hasErrors) {
@@ -210,16 +214,13 @@ export class DeviceSettingsObjectStore {
         }
       }
     });
-    let channels = [];
+    let channels: Array<WbDeviceTemplateChannelSettings> = [];
     Object.values(this._groupsByName).forEach((group) => {
       group.channels.forEach((channel) => {
         if (channel.isEnabled && !channel.hasErrors) {
-          const channelValue = channel.value;
-          if (Object.keys(channelValue).length > 0) {
-            channels.push({
-              name: channel.channel.name,
-              ...channelValue,
-            });
+          const channelValue = channel.customProperties;
+          if (channelValue !== undefined) {
+            channels.push(channelValue);
           }
         }
       });
@@ -246,6 +247,9 @@ export class DeviceSettingsObjectStore {
     });
   }
 
+  setUndefined() {
+  }
+
   commit() {
     this.commonParams.commit();
     this.topLevelParameters.forEach((param) => param.commit());
@@ -264,3 +268,24 @@ export class DeviceSettingsObjectStore {
     });
   }
 }
+
+export const loadDeviceTemplate = (schema: unknown): WbDeviceTemplate => {
+  if (!schema || typeof schema !== 'object') {
+    return {};
+  }
+
+  const deviceTemplate = (schema as Record<string, any>)?.device;
+  if (!deviceTemplate || typeof deviceTemplate !== 'object') {
+    return {};
+  }
+
+  // Convert legacy parameter definition as object to array
+  const parameters = deviceTemplate.parameters;
+  if (parameters && typeof parameters === 'object' && !Array.isArray(parameters)) {
+    deviceTemplate.parameters = Object.entries(parameters).map(([id, param]) => {
+      (param as Record<string, any>).id = id;
+      return param;
+    });
+  }
+  return deviceTemplate as WbDeviceTemplate;
+};

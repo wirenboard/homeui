@@ -1,3 +1,5 @@
+import MistypedValue from './mistyped-value';
+
 export type TranslationsByLocale = {
   en?: Record<string, string>;
   ru?: Record<string, string>;
@@ -65,7 +67,6 @@ export interface JsonSchema {
   options?: JsonEditorOptions;
 
   // wb specific properties
-  device?: WbDeviceTemplate;
   translations?: TranslationsByLocale;
 }
 
@@ -81,47 +82,24 @@ export interface ValidationError {
   data?: Record<string, unknown>;
 }
 
-export interface WbDeviceTemplateParameter {
-  title: string;
-  id?: string;
-  enum?: number[];
-  enum_titles?: string[];
-  default?: number;
-  min?: number;
-  max?: number;
-  order?: number;
-  required?: boolean;
-  description?: string;
-  group?: string;
-  condition?: string;
-  dependencies?: string[];
+type JsonValue = string | number | boolean;
+type JsonArray = Array<JsonValue | JsonObject>;
+export interface JsonObject {
+  [key: string]: JsonValue | JsonObject | JsonArray;
 }
 
-export interface WbDeviceTemplateChannelSettings {
-  enabled?: boolean;
-  read_period_ms?: number;
-}
+export interface PropertyStore {
+  value: MistypedValue | JsonObject | JsonValue | JsonArray | undefined;
+  schema: JsonSchema;
+  isDirty: boolean;
+  hasErrors: boolean;
+  error: ValidationError | undefined;
 
-export interface WbDeviceTemplateChannel extends WbDeviceTemplateChannelSettings {
-  name: string;
-  description?: string;
-  group?: string;
-  condition?: string;
-  dependencies?: string[];
-}
+  readonly required: boolean;
+  readonly storeType: string;
 
-export interface WbDeviceParametersGroup {
-  title: string;
-  id: string;
-  order?: number;
-  description?: string;
-  group?: string;
-  ui_options?: JsonEditorOptions;
-}
-
-export interface WbDeviceTemplate {
-  groups?: WbDeviceParametersGroup[];
-  parameters?: WbDeviceTemplateParameter[];
-  channels?: WbDeviceTemplateChannel[];
-  translations?: TranslationsByLocale;
+  setUndefined(): void;
+  setDefault(): void;
+  commit(): void;
+  reset(): void;
 }
