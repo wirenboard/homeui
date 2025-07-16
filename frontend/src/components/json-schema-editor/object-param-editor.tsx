@@ -24,7 +24,7 @@ const MakeObjectParamEditor = (
   return null;
 };
 
-export const ObjectParamEditor = observer(({ store, translator, editorBuilder } : ObjectParamEditorProps) => {
+const ObjectParamEditor = observer(({ store, translator, editorBuilder } : ObjectParamEditorProps) => {
   const style: CSSProperties = {
     display: 'flex',
     flexDirection: store.schema.format === 'grid' ? 'row' : 'column',
@@ -37,3 +37,5 @@ export const ObjectParamEditor = observer(({ store, translator, editorBuilder } 
     </div>
   );
 });
+
+export default ObjectParamEditor;

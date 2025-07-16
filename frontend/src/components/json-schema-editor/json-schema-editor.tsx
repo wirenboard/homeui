@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import {
   PropertyStore,
   ObjectStore,
@@ -6,25 +7,42 @@ import {
   BooleanStore,
   Translator
 } from '@/stores/json-schema-editor';
-import { BooleanParamEditor } from './boolean-param-editor';
-import { NumberParamEditor } from './number-param-editor';
-import { ObjectParamEditor } from './object-param-editor';
-import { StringParamEditor } from './string-param-editor';
 import type { JsonSchemaEditorProps } from './types';
 import './styles.css';
 
+const BooleanParamEditor = lazy(() => import('./boolean-param-editor'));
+const NumberParamEditor = lazy(() => import('./number-param-editor'));
+const ObjectParamEditor = lazy(() => import('./object-param-editor'));
+const StringParamEditor = lazy(() => import('./string-param-editor'));
+
 const DefaultEditorBuilder = (store: PropertyStore, paramId: string, translator: Translator) => {
   if (store.storeType === 'object') {
-    return <ObjectParamEditor store={store as ObjectStore} paramId={paramId} translator={translator}/>;
+    return (
+      <Suspense>
+        <ObjectParamEditor store={store as ObjectStore} paramId={paramId} translator={translator}/>
+      </Suspense>
+    );
   }
   if (store.storeType === 'string') {
-    return <StringParamEditor store={store as StringStore} paramId={paramId} translator={translator}/>;
+    return (
+      <Suspense>
+        <StringParamEditor store={store as StringStore} paramId={paramId} translator={translator}/>
+      </Suspense>
+    );
   }
   if (store.storeType === 'number') {
-    return <NumberParamEditor store={store as NumberStore} paramId={paramId} translator={translator}/>;
+    return (
+      <Suspense>
+        <NumberParamEditor store={store as NumberStore} paramId={paramId} translator={translator}/>
+      </Suspense>
+    );
   }
   if (store.storeType === 'boolean') {
-    return <BooleanParamEditor store={store as BooleanStore} paramId={paramId} translator={translator}/>;
+    return (
+      <Suspense>
+        <BooleanParamEditor store={store as BooleanStore} paramId={paramId} translator={translator}/>
+      </Suspense>
+    );
   }
   return null;
 };

@@ -59,7 +59,7 @@ const StringEditor = observer(({
   );
 });
 
-export const StringParamEditor = observer(({ store, paramId, translator }: StringParamEditorProps) => {
+const StringParamEditor = observer(({ store, paramId, translator }: StringParamEditorProps) => {
   const inputId = useId();
   const descriptionId = useId();
   const errorId = useId();
@@ -84,3 +84,5 @@ export const StringParamEditor = observer(({ store, paramId, translator }: Strin
     </EditorWrapper>
   );
 });
+
+export default StringParamEditor;

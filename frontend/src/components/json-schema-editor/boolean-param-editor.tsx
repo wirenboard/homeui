@@ -6,7 +6,7 @@ import { MistypedValue } from '@/stores/json-schema-editor';
 import { EditorWrapper } from './editor-wrapper';
 import type { BooleanParamEditorProps } from './types';
 
-export const BooleanParamEditor = observer(({ store, paramId, translator } : BooleanParamEditorProps) => {
+const BooleanParamEditor = observer(({ store, paramId, translator } : BooleanParamEditorProps) => {
   const descriptionId = useId();
   const errorId = useId();
   const { i18n } = useTranslation();
@@ -38,3 +38,5 @@ export const BooleanParamEditor = observer(({ store, paramId, translator } : Boo
     </EditorWrapper>
   );
 });
+
+export default BooleanParamEditor;
