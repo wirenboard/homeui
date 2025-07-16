@@ -38,7 +38,6 @@ const expandAllOf = (schema: JsonSchema, definitions: Definitions, refCache: Def
     properties: {},
     required: Array.from(required),
     format: schema.format,
-    device: schema.device,
   };
 
   allOfSchemas.forEach((s) => {
@@ -177,7 +176,6 @@ const sanitizeObjectSchema = (schema: JsonSchema, definitions: Definitions, refC
     type: 'object',
     title: schema.title,
     description: schema.description,
-    device: schema.device,
     properties: {},
   };
   if (Array.isArray(schema.required)) {
@@ -233,14 +231,7 @@ export const loadJsonSchema = (schema: unknown, externalDefinitions: unknown): J
   } else {
     definitions = schemaAsRecord?.definitions || {};
   }
-
-  // Convert legacy parameter definition as object to array
-  const deviceParameters = schemaAsRecord?.device?.parameters;
-  if (isObject(deviceParameters) && !Array.isArray(deviceParameters)) {
-    schemaAsRecord.device.parameters = Object.entries(deviceParameters).map(([id, param]) => {
-      (param as Record<string, any>).id = id;
-      return param;
-    });
-  }
-  return expandSchema(schema as JsonSchema, definitions, {});
+  let res = expandSchema(schema as JsonSchema, definitions, {});
+  res.translations = schemaAsRecord?.translations;
+  return res;
 };

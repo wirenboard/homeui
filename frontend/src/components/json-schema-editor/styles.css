@@ -36,54 +36,6 @@
     padding: 0px 16px 16px 16px;
 }
 
-.device-settings__editor {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.device-settings__tabs {
-    display: flex;
-    flex-direction: row;
-}
-
-.device-settings__tabpanel {
-    flex-grow: 1;
-}
-
-.device-settings__top-group-content {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 0px 19px 9px 19px;
-    /* width: 100%; */
-}
-
-.device-settings__sub-group-content {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 15px;
-    flex-grow: 1;
-}
-
-.device-settings__sub-group--border {
-    padding: 9px;
-    border: 1px solid var(--input-border-color);
-    border-radius: var(--card-border-radius);
-}
-
-.device-settings__sub-group {
-    flex-grow: 1;
-    flex-basis: 100%;
-}
-
-.device-settings__channels-table {
-    flex-grow: 1;
-    flex-basis: 100%;
-}
-
-.tabs-button .has-error {
-    color: var(--danger-color);
+.wb-jsonEditor-descriptionText {
+    white-space: pre-wrap;
 }

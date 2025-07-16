@@ -281,12 +281,12 @@ export class DeviceTab {
       const schema = await this.deviceTypesStore.getSchema(type);
       const jsonSchema = loadJsonSchema(schema);
       const deviceTemplate = loadDeviceTemplate(schema);
-      runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, {});
-      });
       this.schemaTranslator = new Translator();
       this.schemaTranslator.addTranslations(jsonSchema.translations);
       this.schemaTranslator.addTranslations(deviceTemplate.translations);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, {});
+      });
       this.schemaStore.setDefault();
     } catch (err) {
       const errorMsg = i18n.t('device-manager.errors.change-device-type', {
@@ -331,12 +331,12 @@ export class DeviceTab {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       const jsonSchema = loadJsonSchema(schema);
       const deviceTemplate = loadDeviceTemplate(schema);
-      runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
-      });
       this.schemaTranslator = new Translator();
       this.schemaTranslator.addTranslations(jsonSchema.translations);
       this.schemaTranslator.addTranslations(deviceTemplate.translations);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
+      });
     } catch (err) {
       this.setError(err.message);
     }
@@ -352,12 +352,12 @@ export class DeviceTab {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       const jsonSchema = loadJsonSchema(schema);
       const deviceTemplate = loadDeviceTemplate(schema);
-      runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
-      });
       this.schemaTranslator = new Translator();
       this.schemaTranslator.addTranslations(jsonSchema.translations);
       this.schemaTranslator.addTranslations(deviceTemplate.translations);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
+      });
     }
     if (this.schemaStore) {
       this.schemaStore.setDefault();

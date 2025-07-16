@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { JsonSchemaEditor, OptionalParamsSelectDialog } from '@/components/json-schema-editor';
+import { DeviceSettingsEditor } from '@/pages/settings/device-manager';
 import {
   Button,
   ErrorBar,
@@ -411,7 +412,7 @@ export const DeviceTabContent = observer(
             <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
           </div>
         </div>
-        {tab.schemaStore && <JsonSchemaEditor store={tab.schemaStore} translator={tab.schemaTranslator} />}
+        {tab.schemaStore && <DeviceSettingsEditor store={tab.schemaStore} translator={tab.schemaTranslator} />}
       </div>
     );
   }

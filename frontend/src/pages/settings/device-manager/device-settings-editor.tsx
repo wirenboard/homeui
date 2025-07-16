@@ -1,18 +1,20 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import {
+  JsonSchemaEditor,
+  NumberParamEditor,
+  ParamDescription,
+  StringParamEditor
+} from '@/components/json-schema-editor';
 import { Table, TableRow, TableCell } from '@/components/table';
 import { Tabs, TabContent, useTabs } from '@/components/tabs';
 import {
   WbDeviceParameterEditorsGroup,
   WbDeviceParameterEditor,
-  WbDeviceChannelEditor,
-  Translator
+  WbDeviceChannelEditor
 } from '@/stores/device-manager';
-import { NumberParamEditor } from './number-param-editor';
-import { ParamDescription } from './param-description';
-import { StringParamEditor } from './string-param-editor';
+import { Translator } from '@/stores/json-schema-editor';
 import type { DeviceSettingsEditorProps } from './types';
 
 import './styles.css';
@@ -116,7 +118,7 @@ const DeviceSettingsTabContent = observer(({ group, isTopLevel, translator }: { 
   );
 });
 
-const DeviceSettingsTabs = ({ groups, translator }: { groups: WbDeviceParameterEditorsGroup[]; translator: Translator }) => {
+const DeviceSettingsTabs = observer(({ groups, translator }: { groups: WbDeviceParameterEditorsGroup[]; translator: Translator }) => {
   const { i18n } = useTranslation();
   const tabs = groups.map((group: WbDeviceParameterEditorsGroup) => ({
     id: group.properties.id,
@@ -140,7 +142,7 @@ const DeviceSettingsTabs = ({ groups, translator }: { groups: WbDeviceParameterE
       ))}
     </div>
   );
-};
+});
 
 export const DeviceSettingsEditor = observer(({ store, translator } : DeviceSettingsEditorProps) => {
   return (
