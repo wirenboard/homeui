@@ -94,6 +94,7 @@ export class MobileModeTabsStore {
       showContentPanel: action.bound,
       setMobileMode: action.bound,
       movedToTabsPanel: action,
+      movedToContentPanel: action,
     });
   }
 

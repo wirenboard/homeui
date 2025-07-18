@@ -60,7 +60,7 @@ export default class NumberStore implements PropertyStore {
       return;
     }
     if (this.value === undefined) {
-      const forbidUndefined = this.schema.options?.wb?.show_editor || this.required;
+      const forbidUndefined = this.schema.options?.wb?.show_editor || this.required || this.schema.options?.show_opt_in;
       this.error = forbidUndefined ? { key: 'json-editor.errors.required' } : undefined;
       return;
     }

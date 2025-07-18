@@ -1,4 +1,4 @@
-import { makeObservable, computed } from 'mobx';
+import { makeObservable, computed, observable, action } from 'mobx';
 import { type JsonSchema, NumberStore } from '@/stores/json-schema-editor';
 import { WbDeviceTemplateParameter } from './types';
 
@@ -21,11 +21,11 @@ export class WbDeviceParameterEditorVariant {
     this._otherParameters = otherParameters;
 
     makeObservable(this, {
-      isEnabled: computed,
+      isEnabledByCondition: computed,
     });
   }
 
-  get isEnabled() {
+  get isEnabledByCondition() {
     if (!this._conditionFn) {
       return true;
     }
@@ -39,29 +39,38 @@ export class WbDeviceParameterEditorVariant {
 
 export class WbDeviceParameterEditor {
   public id: string;
-  public order: number = 0;
+  public order: number;
+  public required: boolean;
   public variants: WbDeviceParameterEditorVariant[] = [];
+  /**
+   * A user has enabled this parameter in the UI.
+   */
+  public isEnabledByUser: boolean = true;
 
   constructor(id: string, variant: WbDeviceParameterEditorVariant, order: number) {
     this.id = id;
     this.order = order;
+    this.required = variant.store.required;
     this.variants.push(variant);
 
     makeObservable(this, {
+      isEnabledByUser: observable,
       activeVariantIndex: computed,
       value: computed,
-      isEnabled: computed,
+      isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
       hasSeveralVariants: computed,
+      enableByUser: action,
+      disableByUser: action,
     });
   }
 
-  get isEnabled() {
+  get isEnabledByCondition() {
     if (this.variants[0].store.schema.options?.hidden) {
       return false;
     }
-    return this.variants.some((variant) => variant.isEnabled);
+    return this.variants.some((variant) => variant.isEnabledByCondition);
   }
 
   get hasErrors() {
@@ -80,11 +89,11 @@ export class WbDeviceParameterEditor {
   }
 
   get activeVariantIndex() {
-    return this.variants.findIndex((variant) => variant.isEnabled);
+    return this.variants.findIndex((variant) => variant.isEnabledByCondition);
   }
 
   get hasSeveralVariants() {
-    return this.variants.filter((variant) => variant.isEnabled).length > 1;
+    return this.variants.filter((variant) => variant.isEnabledByCondition).length > 1;
   }
 
   addVariant(variant: WbDeviceParameterEditorVariant) {
@@ -95,6 +104,26 @@ export class WbDeviceParameterEditor {
     this.variants.forEach((variant) => {
       variant.store.setDefault();
     });
+  }
+
+  setUndefined() {
+    this.variants.forEach((variant) => {
+      variant.store.setUndefined();
+    });
+  }
+
+  enableByUser() {
+    if (!this.isEnabledByUser) {
+      this.setDefault();
+      this.isEnabledByUser = true;
+    }
+  }
+
+  disableByUser() {
+    if (this.isEnabledByUser) {
+      this.isEnabledByUser = false;
+      this.setUndefined();
+    }
   }
 
   commit() {
@@ -121,11 +150,8 @@ export function makeJsonSchemaForParameter(parameter: WbDeviceTemplateParameter)
     maximum: parameter.max,
     propertyOrder: parameter.order,
     options: {
-      grid_columns: 6,
       enum_titles: parameter.enum_titles,
-      wb: {
-        show_editor: true,
-      },
+      show_opt_in: !parameter.required,
     },
   };
 }

@@ -276,7 +276,8 @@
          "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost",
          "channel": "Channel",
          "mode": "Mode",
-         "period": "Period (ms)"
+         "period": "Period (ms)",
+         "unknown": "Unknown"
       },
       "buttons": {
          "save": "Save config",

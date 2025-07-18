@@ -39,3 +39,17 @@
 .wb-jsonEditor-descriptionText {
     white-space: pre-wrap;
 }
+
+.wb-jsonEditor-objectProperty {
+    display: flex;
+    flex-direction: column;
+}
+
+.wb-jsonEditor-propertyCheckbox {
+    margin-bottom: 5px !important;
+    white-space: nowrap;
+}
+
+.wb-jsonEditor-propertyLabel {
+    white-space: nowrap;
+}

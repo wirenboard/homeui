@@ -16,6 +16,7 @@
 
 .device-settings__tabpanel {
     flex-grow: 1;
+    margin-left: 15px;
 }
 
 .device-settings__top-group-content {
@@ -23,6 +24,9 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: 15px;
+}
+
+.desktop .device-settings__top-group-content {
     padding: 0px 19px 9px 19px;
 }
 
@@ -32,6 +36,7 @@
     flex-wrap: wrap;
     gap: 15px;
     flex-grow: 1;
+    width: 100%;
 }
 
 .device-settings__sub-group--border {
@@ -43,6 +48,7 @@
 .device-settings__sub-group {
     flex-grow: 1;
     flex-basis: 100%;
+    width: 100%;
 }
 
 .device-settings__channels-table {
@@ -52,4 +58,54 @@
 
 .tabs-button .has-error {
     color: var(--danger-color);
+}
+
+.device-settings__parameter {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.device-settings__editor .card {
+    max-width: initial;
+    margin-bottom: 0px;
+    border: 1px solid var(--input-border-color);
+}
+
+
+.device-settings__editor .card-header,
+.device-settings__editor .card-headerContainer {
+    background: var(--border-color);
+    color: var(--text-color);
+}
+
+.device-settings__editor .card.group-has-error .card-header {
+    color: var(--danger-color);
+}
+
+.device-settings__editor .card:not(.group-has-error) .card-header {
+    color: var(--text-color);
+}
+
+.mobile .device-settings__parameter {
+    flex-basis: 100%;
+    width: 100%;
+}
+
+.desktop .device-settings__parameter {
+    flex-basis: 43%;
+}
+
+.mobile .device-settings__parameter .wb-jsonEditor-propertyLabel,
+.mobile .device-settings__parameter .wb-jsonEditor-propertyCheckbox {
+    white-space: wrap;
+}
+
+.mobile .device-settings__channel {
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile .device-settings__channel-period-label {
+    margin-top: 15px;
 }

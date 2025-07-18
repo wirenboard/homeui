@@ -32,22 +32,22 @@ export class WbDeviceParameterEditorsGroup {
     this.properties = properties;
 
     makeObservable(this, {
-      isEnabled: computed,
+      isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
     });
   }
 
-  get isEnabled() {
-    return this.parameters.some((param) => param.isEnabled)
-      || this.subgroups.some((group) => group.isEnabled)
-      || this.channels.some((channel) => channel.isEnabled);
+  get isEnabledByCondition() {
+    return this.parameters.some((param) => param.isEnabledByCondition)
+      || this.subgroups.some((group) => group.isEnabledByCondition)
+      || this.channels.some((channel) => channel.isEnabledByCondition);
   }
 
   get hasErrors() {
-    return this.parameters.some((param) => param.hasErrors)
-      || this.subgroups.some((group) => group.hasErrors)
-      || this.channels.some((channel) => channel.hasErrors);
+    return this.parameters.some((param) => param.isEnabledByCondition && param.isEnabledByUser && param.hasErrors)
+      || this.subgroups.some((group) => group.isEnabledByCondition && group.hasErrors)
+      || this.channels.some((channel) => channel.isEnabledByCondition && channel.hasErrors);
   }
 
   get isDirty() {
@@ -139,6 +139,9 @@ export class DeviceSettingsObjectStore {
       return;
     }
     const setting = new WbDeviceParameterEditor(parameter.id, variant, parameter.order ?? 0);
+    if (initialValueToSet === undefined) {
+      setting.disableByUser();
+    }
     this._parametersByName[parameter.id] = setting;
     if (parameter.group) {
       this._groupsByName[parameter.group]?.addParameter(setting);
@@ -163,7 +166,7 @@ export class DeviceSettingsObjectStore {
 
     Object.values(this._parametersByName).forEach((param) => {
       param.variants.forEach((variant) => {
-        const _t = variant.isEnabled; // Trigger computed properties
+        const _t = variant.isEnabledByCondition; // Trigger computed properties
       });
     });
   }
@@ -194,7 +197,7 @@ export class DeviceSettingsObjectStore {
 
   get hasErrors() {
     return this.commonParams.hasErrors ||
-      this.topLevelParameters.some((param) => param.hasErrors) ||
+      this.topLevelParameters.some((param) => param.isEnabledByCondition && param.isEnabledByUser && param.hasErrors) ||
       this.groups.some((group) => group.hasErrors);
   }
 
@@ -207,7 +210,7 @@ export class DeviceSettingsObjectStore {
   get value() : JsonObject | undefined {
     let res : Record<string, any> = this.commonParams.value;
     Object.values(this._parametersByName).forEach((param) => {
-      if (param.isEnabled && !param.hasErrors) {
+      if (param.isEnabledByCondition && param.isEnabledByUser && !param.hasErrors) {
         const value = param.value;
         if (typeof value === 'number') {
           res[param.id] = value;
@@ -217,7 +220,7 @@ export class DeviceSettingsObjectStore {
     let channels: Array<WbDeviceTemplateChannelSettings> = [];
     Object.values(this._groupsByName).forEach((group) => {
       group.channels.forEach((channel) => {
-        if (channel.isEnabled && !channel.hasErrors) {
+        if (channel.isEnabledByCondition && !channel.hasErrors) {
           const channelValue = channel.customProperties;
           if (channelValue !== undefined) {
             channels.push(channelValue);

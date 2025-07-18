@@ -18,44 +18,42 @@ const CardHeader = ({
     <>
       <h4 className="card-title">{heading}</h4>
 
-      {!!actions.length && (
-        <div className="card-actions">
-          {actions.map((action, i) => (
-            action.url ? (
-              <Tooltip
-                text={action.title}
-                placement="top"
-                key={i}
+      <div className="card-actions">
+        {actions.map((action, i) => (
+          action.url ? (
+            <Tooltip
+              text={action.title}
+              placement="top"
+              key={i}
+            >
+              <a
+                href={action.url(id)}
+                className="card-action"
+                onClick={(ev) => ev.stopPropagation()}
               >
-                <a
-                  href={action.url(id)}
-                  className="card-action"
-                  onClick={(ev) => ev.stopPropagation()}
-                >
-                  <action.icon />
-                </a>
-              </Tooltip>
-            ) : (
-              <Tooltip
-                text={action.title}
-                placement="top"
-                key={i}
+                <action.icon />
+              </a>
+            </Tooltip>
+          ) : (
+            <Tooltip
+              text={action.title}
+              placement="top"
+              key={i}
+            >
+              <button
+                type="button"
+                className="card-action"
+                onClick={(ev) => actionCall(ev, action)}
               >
-                <button
-                  type="button"
-                  className="card-action"
-                  onClick={(ev) => actionCall(ev, action)}
-                >
-                  <action.icon />
-                </button>
-              </Tooltip>
-            )
-          ))}
-          {!!toggleBody && (
-            isBodyVisible ? <ChevronDownIcon className="card-toggle" /> : <ChevronRightIcon className="card-toggle" />
-          )}
-        </div>
-      )}
+                <action.icon />
+              </button>
+            </Tooltip>
+          )
+        ))}
+        {!!toggleBody && (
+          isBodyVisible ? <ChevronDownIcon className="card-toggle" /> : <ChevronRightIcon className="card-toggle" />
+        )}
+      </div>
     </>
   );
 };

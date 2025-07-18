@@ -2,7 +2,7 @@ import BooleanStore from './boolean-store';
 import { loadJsonSchema } from './json-schema-loader';
 import MistypedValue from './mistyped-value';
 import NumberStore from './number-store';
-import { ObjectStore, ObjectStoreParam } from './object-store';
+import { ObjectStore, ObjectParamStore } from './object-store';
 import { StoreBuilder } from './store-builder';
 import StringStore from './string-store';
 import { Translator } from './translator';
@@ -28,7 +28,7 @@ export {
   NumberStore,
   type PropertyStore,
   MistypedValue,
-  ObjectStoreParam,
+  ObjectParamStore,
   StoreBuilder,
   type ValidationError
 };
