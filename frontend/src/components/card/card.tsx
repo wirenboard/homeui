@@ -16,7 +16,7 @@ const CardHeader = ({
 
   return (
     <>
-      <h4 className={classNames('card-title', { 'with-error': withError })}>{heading}</h4>
+      <h4 className={classNames('card-title', { 'card-titleWithError': withError })}>{heading}</h4>
 
       <div className="card-actions">
         {actions.map((action, i) => (
@@ -59,7 +59,7 @@ const CardHeader = ({
 };
 
 export const Card = ({
-  children, id, className, heading, actions, toggleBody, isBodyVisible = true, variant = 'primary', withError = false,
+  children, id, className, heading, actions, toggleBody, isBodyVisible = true, variant = 'primary',
 }: PropsWithChildren<CardProps>) => {
   const onKeyHeaderClick = (ev: KeyboardEvent<HTMLDivElement>) => {
     const target = ev.target as HTMLElement;
