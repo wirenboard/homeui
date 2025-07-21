@@ -46,7 +46,7 @@ export default class BooleanStore implements PropertyStore {
       this.error = { key: 'json-editor.errors.not-a-boolean' };
       return;
     }
-    const forbidUndefined = this.schema.options?.wb?.show_editor || this.required;
+    const forbidUndefined = this.schema.options?.wb?.show_editor || this.required || this.schema.options?.show_opt_in;
     if (forbidUndefined && this.value === undefined) {
       this.error = { key: 'json-editor.errors.required' };
       return;

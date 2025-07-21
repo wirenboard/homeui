@@ -3,7 +3,7 @@ import MistypedValue from './mistyped-value';
 import { StoreBuilder } from './store-builder';
 import type { JsonSchema, PropertyStore, JsonObject } from './types';
 
-export class ObjectStoreParam {
+export class ObjectParamStore {
   public key: string;
   public store: PropertyStore;
   public disabled: boolean;
@@ -26,14 +26,14 @@ export class ObjectStoreParam {
   }
 
   enable() {
-    if (!this.hasPermanentEditor && this.disabled) {
+    if (this.disabled) {
       this.store.setDefault();
       this.disabled = false;
     }
   }
 
   disable() {
-    if (!this.hasPermanentEditor && !this.disabled) {
+    if (!this.disabled) {
       this.disabled = true;
       this.store.setUndefined();
     }
@@ -51,7 +51,7 @@ function comparePropertyOrder([key1, schema1], [key2, schema2]) {
 
 export class ObjectStore implements PropertyStore {
   public schema: JsonSchema;
-  public params: ObjectStoreParam[] = [];
+  public params: ObjectParamStore[] = [];
   public required: boolean;
   public isUndefined: boolean = false;
 
@@ -59,7 +59,7 @@ export class ObjectStore implements PropertyStore {
   readonly error = undefined;
   readonly defaultText = '';
 
-  private _paramByKey: Record<string, ObjectStoreParam> = {};
+  private _paramByKey: Record<string, ObjectParamStore> = {};
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean, builder: StoreBuilder) {
     this.schema = schema;
@@ -69,10 +69,14 @@ export class ObjectStore implements PropertyStore {
       Object.entries(schema.properties)
         .sort(comparePropertyOrder)
         .forEach(([key, value]) => {
-          const param = new ObjectStoreParam(
+          const initialValueToSet = initialValue?.[key];
+          const param = new ObjectParamStore(
             key,
-            builder.createStore(value, initialValue?.[key], !!schema.required?.includes(key))
+            builder.createStore(value, initialValueToSet, !!schema.required?.includes(key))
           );
+          if (initialValueToSet === undefined) {
+            param.disable();
+          }
           this.params.push(param);
           this._paramByKey[key] = param;
         });
@@ -145,7 +149,7 @@ export class ObjectStore implements PropertyStore {
     });
   }
 
-  getParamByKey(key: string): ObjectStoreParam | undefined {
+  getParamByKey(key: string): ObjectParamStore | undefined {
     return this._paramByKey[key];
   }
 }

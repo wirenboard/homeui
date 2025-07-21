@@ -123,6 +123,14 @@
     flex-grow: 1;
 }
 
+.device-manager-page.mobile .settings-panel {
+    padding: 3px;
+    border: none;
+    background: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
 .device-manager-page .device-list {
     overflow-y: auto;
     flex-grow: 1;
@@ -304,5 +312,6 @@
 @media (max-width: 1150px) {
     .device-manager-page .device-type-select {
         flex-grow: 1;
+        min-width: 10px;
     }
 }

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../common';
@@ -270,7 +271,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
   return (
     <PageWrapper
       error={pageStore.pageWrapperStore.error}
-      className="device-manager-page"
+      className={classNames('device-manager-page', { mobile: pageStore.tabs.mobileModeStore.inMobileMode })}
       accessLevelStore={pageStore.accessLevelStore}
     >
       <SelectModal {...pageStore.selectModalState} />

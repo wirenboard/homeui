@@ -5,15 +5,21 @@ import {
   NumberStore,
   BooleanStore,
   PropertyStore,
+  ObjectParamStore,
   Translator,
   type ValidationError
 } from '@/stores/json-schema-editor';
 
-export type EditorBuilderFunction = (
-  store: PropertyStore,
-  paramId: string,
-  translator: Translator
-) => ReactElement | null;
+export interface EditorBuilderFunctionProps {
+  store: PropertyStore;
+  paramId: string;
+  translator: Translator;
+  inputId?: string;
+  descriptionId?: string;
+  errorId?: string;
+}
+
+export type EditorBuilderFunction = (props: EditorBuilderFunctionProps) => ReactElement | null;
 
 export interface JsonSchemaEditorProps {
   store: PropertyStore;
@@ -21,31 +27,20 @@ export interface JsonSchemaEditorProps {
   customEditorBuilder?: EditorBuilderFunction;
 }
 
-export interface BooleanParamEditorProps {
+export interface BooleanEditorProps {
   store: BooleanStore;
   paramId: string;
+  errorId?: string;
+  descriptionId?: string;
   translator: Translator;
 }
 
 export interface NumberEditorProps {
   store: NumberStore;
-  inputId: string;
-  descriptionId: string;
-  errorId: string;
+  inputId?: string;
+  descriptionId?: string;
+  errorId?: string;
   translator: Translator;
-}
-
-export interface NumberParamEditorProps {
-  store: NumberStore;
-  paramId: string;
-  translator: Translator;
-}
-
-export interface ObjectParamEditorProps {
-  store: ObjectStore;
-  paramId: string;
-  translator: Translator;
-  editorBuilder?: EditorBuilderFunction;
 }
 
 export interface StringEditorProps {
@@ -56,17 +51,24 @@ export interface StringEditorProps {
   translator: Translator;
 }
 
-export interface StringParamEditorProps {
-  store: StringStore;
-  paramId: string;
+export interface ObjectEditorProps {
+  store: ObjectStore;
   translator: Translator;
+  editorBuilder?: EditorBuilderFunction;
 }
 
 export interface EditorWrapperProps {
-  descriptionId: string;
-  errorId: string;
-  store: NumberStore | StringStore | BooleanStore;
+  param: ObjectParamStore;
+  inputId?: string;
+  descriptionId?: string;
+  errorId?: string;
   translator: Translator;
+}
+
+export interface EditorWrapperLabelProps {
+  param: ObjectParamStore;
+  title: string;
+  inputId: string;
 }
 
 export interface ParamDescriptionProps {

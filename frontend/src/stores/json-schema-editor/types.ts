@@ -97,6 +97,7 @@ export interface PropertyStore {
 
   readonly required: boolean;
   readonly storeType: string;
+  readonly defaultText: string;
 
   setUndefined(): void;
   setDefault(): void;

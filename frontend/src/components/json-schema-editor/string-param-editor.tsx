@@ -1,10 +1,9 @@
 import { observer } from 'mobx-react-lite';
-import { useId, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/components/dropdown';
 import { Input } from '@/components/input';
-import { EditorWrapper, EditorWrapperLabel } from './editor-wrapper';
-import type { StringEditorProps, StringParamEditorProps } from './types';
+import type { StringEditorProps } from './types';
 
 const StringEditor = observer(({
   store,
@@ -59,30 +58,4 @@ const StringEditor = observer(({
   );
 });
 
-const StringParamEditor = observer(({ store, paramId, translator }: StringParamEditorProps) => {
-  const inputId = useId();
-  const descriptionId = useId();
-  const errorId = useId();
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language;
-  const title = translator.find(store.schema.title || paramId, currentLanguage);
-  return (
-    <EditorWrapper
-      descriptionId={descriptionId}
-      errorId={errorId}
-      store={store}
-      translator={translator}
-    >
-      {!store.schema.options?.compact && <EditorWrapperLabel title={title} inputId={inputId} />}
-      <StringEditor
-        store={store}
-        inputId={inputId}
-        descriptionId={descriptionId}
-        errorId={errorId}
-        translator={translator}
-      />
-    </EditorWrapper>
-  );
-});
-
-export default StringParamEditor;
+export default StringEditor;

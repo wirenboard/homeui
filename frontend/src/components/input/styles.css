@@ -27,3 +27,7 @@
 .input-fullWidth {
     width: 100%;
 }
+
+.input:disabled {
+    background: var(--border-color);
+}

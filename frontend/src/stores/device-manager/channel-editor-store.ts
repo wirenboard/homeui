@@ -98,7 +98,7 @@ export class WbDeviceChannelEditor {
     this._dependencies = channel.dependencies;
 
     makeObservable(this, {
-      isEnabled: computed,
+      isEnabledByCondition: computed,
       hasErrors: computed,
       isDirty: computed,
       hasCustomPeriod: computed,
@@ -106,7 +106,7 @@ export class WbDeviceChannelEditor {
     });
   }
 
-  get isEnabled() {
+  get isEnabledByCondition() {
     if (!this._conditionFn) {
       return true;
     }
@@ -164,8 +164,9 @@ export class WbDeviceChannelEditor {
         if (this.channel.enabled === false) {
           res['enabled'] = true;
         }
-        if (this.channel.read_period_ms !== this.period.value) {
-          res['read_period_ms'] = this.period.value;
+        const periodValue = this.period.value;
+        if (this.channel.read_period_ms !== periodValue && typeof periodValue === 'number') {
+          res['read_period_ms'] = periodValue;
         }
         break;
       }
