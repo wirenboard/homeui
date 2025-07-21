@@ -69,22 +69,10 @@
 .device-settings__editor .card {
     max-width: initial;
     margin-bottom: 0px;
-    border: 1px solid var(--input-border-color);
 }
 
-
-.device-settings__editor .card-header,
-.device-settings__editor .card-headerContainer {
-    background: var(--border-color);
-    color: var(--text-color);
-}
-
-.device-settings__editor .card.group-has-error .card-header {
-    color: var(--danger-color);
-}
-
-.device-settings__editor .card:not(.group-has-error) .card-header {
-    color: var(--text-color);
+.desktop .device-settings__parameter {
+    flex-basis: 43%;
 }
 
 .mobile .device-settings__parameter {
@@ -92,9 +80,6 @@
     width: 100%;
 }
 
-.desktop .device-settings__parameter {
-    flex-basis: 43%;
-}
 
 .mobile .device-settings__parameter .wb-jsonEditor-propertyLabel,
 .mobile .device-settings__parameter .wb-jsonEditor-propertyCheckbox {

@@ -65,7 +65,8 @@ const ChannelCard = observer((
       key={channel.channel.name}
       heading={translator.find(channel.channel.name, currentLanguage)}
       id={channel.channel.name}
-      className={classNames({ 'group-has-error': channel.hasErrors })}
+      variant="secondary"
+      withError={channel.hasErrors}
     >
       <div className="device-settings__channel">
         {channel.channel.description && (
@@ -126,7 +127,8 @@ const DeviceSettingsCard = observer((
       key={group.properties.id}
       heading={translator.find(group.properties.title, currentLanguage)}
       id={group.properties.id}
-      className={classNames({ 'group-has-error': group.hasErrors })}
+      variant="secondary"
+      withError={group.hasErrors}
       isBodyVisible={isBodyVisible}
       toggleBody={() => setIsBodyVisible(!isBodyVisible)}
     >

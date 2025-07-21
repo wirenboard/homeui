@@ -14,4 +14,6 @@ export interface CardProps {
   actions?: CardAction[];
   toggleBody?: () => void;
   isBodyVisible?: boolean;
+  variant?: 'primary' | 'secondary';
+  withError?: boolean;
 }

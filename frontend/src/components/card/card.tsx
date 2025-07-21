@@ -7,7 +7,7 @@ import { CardAction, CardProps } from './types';
 import './styles.css';
 
 const CardHeader = ({
-  id, heading, actions = [], toggleBody, isBodyVisible,
+  id, heading, actions = [], toggleBody, isBodyVisible, withError,
 }: CardProps) => {
   const actionCall = (ev: MouseEvent<HTMLButtonElement>, action: CardAction) => {
     ev.stopPropagation();
@@ -16,7 +16,7 @@ const CardHeader = ({
 
   return (
     <>
-      <h4 className="card-title">{heading}</h4>
+      <h4 className={classNames('card-title', { 'with-error': withError })}>{heading}</h4>
 
       <div className="card-actions">
         {actions.map((action, i) => (
@@ -59,7 +59,7 @@ const CardHeader = ({
 };
 
 export const Card = ({
-  children, id, className, heading, actions, toggleBody, isBodyVisible = true,
+  children, id, className, heading, actions, toggleBody, isBodyVisible = true, variant = 'primary', withError = false,
 }: PropsWithChildren<CardProps>) => {
   const onKeyHeaderClick = (ev: KeyboardEvent<HTMLDivElement>) => {
     const target = ev.target as HTMLElement;
@@ -76,7 +76,13 @@ export const Card = ({
   };
 
   return (
-    <div className={classNames('card', className)} id={id}>
+    <div
+      className={classNames('card', className, {
+        'card-primary': variant === 'primary',
+        'card-secondary': variant === 'secondary',
+      })}
+      id={id}
+    >
       {toggleBody ? (
         <div className="card-headerContainer">
           <div
@@ -92,12 +98,13 @@ export const Card = ({
               actions={actions}
               isBodyVisible={isBodyVisible}
               toggleBody={toggleBody}
+              withError={withError}
             />
           </div>
         </div>
       ) : (
         <div className="card-header">
-          <CardHeader heading={heading} id={id} actions={actions} />
+          <CardHeader heading={heading} id={id} actions={actions} withError={withError} />
         </div>
       )}
 
