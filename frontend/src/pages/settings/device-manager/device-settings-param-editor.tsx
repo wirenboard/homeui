@@ -10,7 +10,7 @@ import { Translator } from '@/stores/json-schema-editor';
 
 const DisabledParamPlaceholder = () => {
   const { t } = useTranslation();
-  return <Input isDisabled={true} value="" onChange={() => {}} placeholder={t('device-manager.labels.unknown')} />;
+  return <Input isDisabled={true} value="" placeholder={t('device-manager.labels.unknown')} onChange={() => {}} />;
 };
 
 export const ParamSimpleLabel = (

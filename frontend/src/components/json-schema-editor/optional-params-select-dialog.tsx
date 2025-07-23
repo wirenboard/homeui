@@ -14,7 +14,7 @@ export const OptionalParamsSelectDialog = observer(
       <Dialog isOpened={isOpened} heading={t('json-editor.labels.select-params')} onClose={onClose}>
         <div className="wb-jsonEditor-optionalParamsList">
           {store.params.map((param) => (
-            param.hasPermanentEditor ?
+            param.hasPermanentEditor || param.hidden ?
               null :
               <Checkbox
                 checked={!param.disabled}

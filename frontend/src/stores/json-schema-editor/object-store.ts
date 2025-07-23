@@ -6,7 +6,16 @@ import type { JsonSchema, PropertyStore, JsonObject } from './types';
 export class ObjectParamStore {
   public key: string;
   public store: PropertyStore;
+  /**
+   * Indicates if the parameter is not included in resulting value.
+   * The parameter's editor can be rendered or not depending on other settings.
+   */
   public disabled: boolean;
+
+  /**
+   * Indicates if the parameter has a permanent editor rendered in UI.
+   * The parameter can be disabled depending on other settings.
+   */
   public hasPermanentEditor: boolean;
 
   constructor(key: string, store: PropertyStore) {
@@ -14,15 +23,18 @@ export class ObjectParamStore {
     this.store = store;
     this.hasPermanentEditor = this.store.required ||
       this.store.schema.options?.wb?.show_editor ||
-      this.store.schema.options?.show_opt_in ||
-      this.store.schema.options?.hidden;
-    this.disabled = !this.hasPermanentEditor;
+      this.store.schema.options?.show_opt_in;
+    this.disabled = !store.required && !store.schema.options?.wb?.show_editor;
 
     makeObservable(this, {
       disabled: observable,
       enable: action,
       disable: action,
     });
+  }
+
+  get hidden() {
+    return this.store.schema.options?.hidden;
   }
 
   enable() {
@@ -33,7 +45,7 @@ export class ObjectParamStore {
   }
 
   disable() {
-    if (!this.disabled) {
+    if (!this.disabled && !this.store.required && !this.store.schema.options?.wb?.show_editor) {
       this.disabled = true;
       this.store.setUndefined();
     }
