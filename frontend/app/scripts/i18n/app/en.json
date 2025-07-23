@@ -40,6 +40,8 @@
             "widgets": "Widgets",
             "history": "History",
             "rules": "Rules",
+            "ruleEditor": "Rule Editor",
+            "scenario": "Scenarios",
             "settings": "Settings",
             "help": "Help",
             "configs": "Configs",
