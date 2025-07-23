@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.119.0) stable; urgency=medium
+
+  * Transfer scenario into side menu
+
+ -- Andrey Ksenofontov <andrey.ksenofontov@wirenboard.com>  Wed, 23 Jul 2025 16:09:00 +0300
+
 wb-mqtt-homeui (2.118.0) stable; urgency=medium
 
   * Add authentication and HTTPS support
