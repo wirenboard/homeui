@@ -96,9 +96,19 @@
                       <a ng-if="forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history({fullscreen: true})" draggable="false"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
                       <a ng-if="!forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats" draggable="false"></i> {{'navigation.menu.history' | translate}}</a>
                   </li>
-                  <li ng-if="!checkFullscreen() && isConnected()" ui-sref-active="active"
-                      user-role="mtt" current-role="roles.current.role">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="rules" draggable="false"><i class="glyphicon glyphicon-file"></i> {{'navigation.menu.rules' | translate}}</a>
+                   <li ui-sref-active="active" ng-if="!checkFullscreen()"
+                   ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
+                      <a href="javascript:" data-toggle="collapse" data-target="#rules-menu" draggable="false">
+                          <i class="glyphicon glyphicon-file"></i> {{'navigation.menu.rules' | translate}}
+                      </a>
+                      <ul id="rules-menu" class="collapse">
+                          <li>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="rules" ui-sref-active="active" draggable="false">{{'navigation.menu.ruleEditor' | translate}}</a>
+                          </li>
+                          <li>
+                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="configEdit({path: '/usr/share/wb-mqtt-confed/schemas/wb-scenarios.schema.json'})" ui-sref-active="active" draggable="false">{{'navigation.menu.scenario' | translate}}</a>
+                          </li>
+                      </ul>
                   </li>
                   <li ui-sref-active="active" ng-if="!checkFullscreen()">
                       <a href="javascript:" data-toggle="collapse" data-target="#settings-menu" draggable="false">
