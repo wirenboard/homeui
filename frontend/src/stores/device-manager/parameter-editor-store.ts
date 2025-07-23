@@ -31,7 +31,11 @@ export class WbDeviceParameterEditorVariant {
     }
     const res = this._conditionFn.apply(null, this._dependencies?.map((dep) => {
       const param = this._otherParameters[dep];
-      return (param !== undefined && typeof param.value === 'number') ? param.value : undefined;
+      if (param !== undefined && param.isEnabledByCondition && param.isEnabledByUser) {
+        const value = param.value;
+        return (typeof value === 'number') ? value : undefined;
+      }
+      return undefined;
     }));
     return res;
   }
@@ -43,7 +47,7 @@ export class WbDeviceParameterEditor {
   public required: boolean;
   public variants: WbDeviceParameterEditorVariant[] = [];
   /**
-   * A user has enabled this parameter in the UI.
+   * A user has enabled this parameter in the UI or the parameter is required.
    */
   public isEnabledByUser: boolean = true;
 
@@ -67,9 +71,6 @@ export class WbDeviceParameterEditor {
   }
 
   get isEnabledByCondition() {
-    if (this.variants[0].store.schema.options?.hidden) {
-      return false;
-    }
     return this.variants.some((variant) => variant.isEnabledByCondition);
   }
 
@@ -120,7 +121,7 @@ export class WbDeviceParameterEditor {
   }
 
   disableByUser() {
-    if (this.isEnabledByUser) {
+    if (this.isEnabledByUser && !this.required) {
       this.isEnabledByUser = false;
       this.setUndefined();
     }

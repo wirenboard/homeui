@@ -5,13 +5,7 @@ import { EditorWrapper } from './editor-wrapper';
 import type { ObjectEditorProps, EditorBuilderFunction } from './types';
 
 const shouldRenderObjectParamEditor = (param: ObjectParamStore) => {
-  if (param.store.schema.options?.hidden) {
-    return false;
-  }
-  return param.store.required ||
-         param.store.schema.options?.wb?.show_editor ||
-         param.store.schema.options?.show_opt_in ||
-         !param.disabled;
+  return param.hidden ? false : !param.disabled || param.hasPermanentEditor;
 };
 
 const ObjectParamEditor = ({

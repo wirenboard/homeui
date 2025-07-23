@@ -64,6 +64,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    flex-basis: 43%;
 }
 
 .device-settings__editor .card {
@@ -71,15 +72,10 @@
     margin-bottom: 0px;
 }
 
-.desktop .device-settings__parameter {
-    flex-basis: 43%;
-}
-
 .mobile .device-settings__parameter {
     flex-basis: 100%;
     width: 100%;
 }
-
 
 .mobile .device-settings__parameter .wb-jsonEditor-propertyLabel,
 .mobile .device-settings__parameter .wb-jsonEditor-propertyCheckbox {
