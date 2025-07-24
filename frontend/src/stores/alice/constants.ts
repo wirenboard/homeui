@@ -73,10 +73,10 @@ export const deviceTypes = {
 
 export enum Capability {
   'On/Off' = 'devices.capabilities.on_off',
-  'Color setting' = 'devices.capabilities.color_setting',
-  Mode = 'devices.capabilities.mode',
-  Range = 'devices.capabilities.range',
-  Toggle = 'devices.capabilities.toggle',
+  // 'Color setting' = 'devices.capabilities.color_setting',
+  // Mode = 'devices.capabilities.mode',
+  // Range = 'devices.capabilities.range',
+  // Toggle = 'devices.capabilities.toggle',
 }
 
 export enum Color {
@@ -170,7 +170,7 @@ export const toggles = ['backlight', 'controls_locked', 'ionization', 'keep_warm
 
 export enum Property {
   Float = 'devices.properties.float',
-  Event = 'devices.properties.event',
+  // Event = 'devices.properties.event',
 }
 
 export const floats = [

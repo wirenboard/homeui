@@ -10,6 +10,10 @@ import type {
   SuccessMessageFetch
 } from './types';
 
+export const checkIsAliceAvailable = async () => request<AliceFetchData>(
+  '/api/integrations/alice/available'
+);
+
 export const getAliceInfo = async () => request<AliceFetchData>(
   '/api/integrations/alice'
 );
