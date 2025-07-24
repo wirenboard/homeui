@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.119.3) stable; urgency=medium
+
+  * Change the title translation for scenarios
+
+ -- Andrey Ksenofontov <andrey.ksenofontov@wirenboard.com>  Thu, 24 Jul 2025 17:02:00 +0300
+
 wb-mqtt-homeui (2.119.2) stable; urgency=medium
 
   * Backup users db in /mnt/data
