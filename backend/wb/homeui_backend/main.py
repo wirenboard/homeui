@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import glob
 import json
 import logging
 import os
@@ -37,6 +38,7 @@ from .users_storage import User, UsersStorage, UserType
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 DB_SCHEMA_VERSION = 0
+CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
 
 
 def make_cookie_value(user_id: str, keys_storage: KeysStorage, expires: Optional[datetime] = None) -> str:
@@ -333,6 +335,48 @@ def https_setup_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     return response_200()
 
 
+def load_json_file(json_file: str) -> Optional[dict]:
+    try:
+        with open(json_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        logging.error(f"Failed to load JSON file {json_file}: {e}")
+        return None
+
+
+def load_subfolder_items(folder_path: str) -> Optional[dict]:
+    folder_json_path = os.path.join(folder_path, "folder.json")
+    if not os.path.isfile(folder_json_path):
+        return None
+    folder_data = load_json_file(folder_json_path)
+    if folder_data is None:
+        return None
+    menu_items = []
+    for file in sorted(os.listdir(folder_path)):
+        if file.endswith(".json") and file != "folder.json":
+            file_path = os.path.join(folder_path, file)
+            item_data = load_json_file(file_path)
+            if item_data is not None:
+                menu_items.append(item_data)
+    if menu_items:
+        folder_data["items"] = menu_items
+    return folder_data
+
+
+def custom_menu_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    menu_items = []
+    with os.scandir(CUSTOM_MENU_FOLDER) as entries:
+        for entry in sorted(entries, key=lambda e: e.name):
+            data = None
+            if entry.is_file() and entry.name.endswith(".json"):
+                data = load_json_file(entry.path)
+            elif entry.is_dir():
+                data = load_subfolder_items(entry.path)
+            if data is not None:
+                menu_items.append(data)
+    return response_200([["Content-type", "application/json"]], json.dumps(menu_items))
+
+
 def find_handler(
     url: str, handlers: dict
 ) -> Optional[Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]]:
@@ -397,6 +441,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/who_am_i": auth_who_am_i_handler,
                 "/users": get_users_handler,
                 "/device/info": device_info_handler,
+                "/ui/menu": custom_menu_handler,
             }
         )
 
