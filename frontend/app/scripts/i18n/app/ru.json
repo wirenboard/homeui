@@ -37,6 +37,8 @@
             "dashboards": "Панели",
             "list": "Список",
             "devices": "Устройства",
+            "integrations": "Интеграции",
+            "alice": "Яндекс Алиса",
             "widgets": "Виджеты",
             "history": "История",
             "rules": "Правила",

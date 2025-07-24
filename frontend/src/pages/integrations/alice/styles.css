@@ -1,0 +1,105 @@
+.alice-container {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 16px;
+    margin-top: 18px;
+    color: var(--text-color);
+
+    @media (max-width: 990px) {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.alice-bindingContainer {
+    display: flex;
+    gap: 6px;
+}
+
+.alice-binding {
+    font-size: 14px;
+}
+
+.alice-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.alice-separator {
+    color: var(--text-color);
+    width: 100%;
+    margin: 0;
+
+    @media (max-width: 990px) {
+        display: none;
+    }
+}
+
+.alice-mainButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    @media (max-width: 990px) {
+        display: flex;
+        flex-direction: row;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+}
+
+.alice-rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    @media (max-width: 990px) {
+        display: flex;
+        flex-direction: row;
+    }
+}
+
+.alice-roomSelected {
+    background: var(--light-gray-color);
+    font-weight: bold;
+}
+
+.alice-roomSelectedIcon {
+    max-width: 12px;
+}
+
+.alice-headerContainer {
+    margin: 0 0 8px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    min-height: 38px;
+}
+
+.alice-headerTitleWrapper {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.alice-title {
+    font-size: 15px;
+    margin-left: 8px;
+}
+
+.alice-roomName {
+    text-align: left;
+}
+
+.alice-onboarding {
+    font-size: 14px;
+    line-height: 160%;
+    padding-left: 18px;
+}
