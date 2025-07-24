@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.119.1) stable; urgency=medium
+
+  * Fix admin cookie expiration time. Set it to 14 days
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 24 Jul 2025 09:56:51 +0500
+
 wb-mqtt-homeui (2.119.0) stable; urgency=medium
 
   * Transfer scenario into side menu

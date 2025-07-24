@@ -179,8 +179,8 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     res = {"user_type": user.type.value}
     expires = None
     if user.type == UserType.ADMIN:
-        # Set cookie expiration to 1 hour for admin users
-        expires = datetime.now(timezone.utc) + timedelta(hours=1)
+        # Set cookie expiration to 14 days for admin users
+        expires = datetime.now(timezone.utc) + timedelta(days=14)
     return response_200(
         headers=[
             make_set_cookie_header(
