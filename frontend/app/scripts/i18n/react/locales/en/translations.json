@@ -514,6 +514,7 @@
    "alice": {
       "title": "Setting up integration with Yandex Alice",
       "labels": {
+         "unavailable": "Yandex Alisa module is not installed",
          "is-binded": "This controller is bound.",
          "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
          "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",

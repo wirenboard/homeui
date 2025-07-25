@@ -108,7 +108,7 @@ import { checkHttps } from './utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
-import { checkIsAliceAvailable } from '@/stores/alice/api';
+import { aliceStore } from '@/stores/alice';
 
 //-----------------------------------------------------------------------------
 /**
@@ -532,9 +532,10 @@ const realApp = angular
 
       // check if the integrations are available to display the menu item
       $rootScope.integrations = [];
+      const { checkIsAvailable } = aliceStore;
       function checkAvailableIntegrations(lang = language) {
         $rootScope.integrations = [];
-        checkIsAliceAvailable()
+        checkIsAvailable()
           .then(() => {
             // it was decided to show Alice only for the Russian localization
             if (lang === 'ru') {
