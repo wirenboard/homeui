@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.120.0) stable; urgency=medium
+
+  * Add /usr/share/wb-mqtt-homeui/nginx/includes directory to nginx config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 25 Jul 2025 15:42:50 +0500
+
 wb-mqtt-homeui (2.119.3) stable; urgency=medium
 
   * Change the title translation for scenarios
