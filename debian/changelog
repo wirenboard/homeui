@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.119.4) stable; urgency=medium
+wb-mqtt-homeui (2.120.1) stable; urgency=medium
 
   * Fix login expiration
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 28 Jul 2025 15:33:48 +0500
+
+wb-mqtt-homeui (2.120.0) stable; urgency=medium
+
+  * Add /usr/share/wb-mqtt-homeui/nginx/includes directory to nginx config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 25 Jul 2025 15:42:50 +0500
 
 wb-mqtt-homeui (2.119.3) stable; urgency=medium
 
