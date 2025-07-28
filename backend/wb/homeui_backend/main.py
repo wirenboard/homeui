@@ -86,8 +86,8 @@ def get_current_user(
         cookie_id = request_cookie.get("id")
         if cookie_id is not None:
             cookie_data = decode_cookie_data(cookie_id.value, keys_storage)
-            now = datetime.now(timezone.utc)
-            exp = datetime.fromtimestamp(int(cookie_data.get("exp", int(now.timestamp()))), tz=timezone.utc)
+            now = int(datetime.now(timezone.utc).timestamp())
+            exp = int(cookie_data.get("exp", now))
             if exp < now:
                 request.log_error("Cookie expired")
                 return None
