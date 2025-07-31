@@ -75,7 +75,7 @@ function makeWordRegisterBinding(topic, format) {
     unitId: 1,
     address: 1,
     format: format,
-    size: format == 'varchar' ? 0 : 2,
+    size: format == 'varchar' ? 1 : 2,
     max: 0,
     scale: 1,
     byteswap: false,
