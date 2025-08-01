@@ -9,7 +9,8 @@ class NavigationCtrl {
     errors,
     uiConfig,
     rolesFactory,
-    $rootScope
+    $rootScope,
+    $state
   ) {
     'ngInject';
 
@@ -97,12 +98,22 @@ class NavigationCtrl {
       return !rolesFactory.notConfiguredAdmin && rolesFactory.isAuthenticated();
     };
 
+    $scope.userMenuLabel = function () {
+      return rolesFactory.currentUserIsAutologinUser ? 'app.buttons.switch-user' : 'app.buttons.logout';
+    };
+
     $scope.logout = function () {
-      fetch('/auth/logout', {
-        method: 'POST',
-      }).then(() => {
-        location.reload();
-      });
+      if (rolesFactory.currentUserIsAutologinUser) {
+        // If the user is an autologin user, just show login page to select another user.
+        // No need to log out
+        $state.go('login');
+      } else {
+        fetch('/auth/logout', {
+          method: 'POST',
+        }).then(() => {
+          location.reload();
+        });
+      }
     };
   }
 

@@ -4,11 +4,12 @@ import { FormStore } from '../forms/formStore';
 import { StringStore } from '../forms/stringStore';
 
 class LoginPageStore {
-  constructor(rolesFactory, successCallback) {
+  constructor(rolesFactory, successCallback, cancelCallback) {
     this.error = false;
     this.rolesFactory = rolesFactory;
     this.loading = false;
     this.successCallback = successCallback;
+    this.cancelCallback = cancelCallback;
 
     this.formStore = new FormStore('login.title', {
       login: new StringStore({
@@ -59,6 +60,8 @@ class LoginPageStore {
       if (response.ok) {
         const data = await response.json();
         this.rolesFactory.setRole(data.user_type);
+        this.rolesFactory.setAdminIsConfigured(true);
+        this.rolesFactory.setCurrentUserIsAutologinUser(false);
         this.successCallback();
         return;
       }

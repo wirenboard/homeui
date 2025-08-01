@@ -16,11 +16,24 @@ function loginPageDirective(rolesFactory, $state) {
         scope.root.unmount();
       }
 
+      const autologin = rolesFactory.currentUserIsAutologinUser;
+
       const onSuccess = () => {
+        $state.go('home');
+        if (autologin) {
+          location.reload();
+        }
+      };
+
+      const onCancel = () => {
         $state.go('home');
       };
 
-      scope.store = new LoginPageStore(rolesFactory, onSuccess);
+      scope.store = new LoginPageStore(
+        rolesFactory,
+        onSuccess,
+        rolesFactory.currentUserIsAutologinUser ? onCancel : null
+      );
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(CreateLoginPage({ store: scope.store }));
 

@@ -490,7 +490,9 @@
          "admin": "Admin",
          "user": "User",
          "operator": "Operator",
-         "confirm-delete":"Do you really want to delete user \"{{name}}\"?"
+         "confirm-delete":"Do you really want to delete user \"{{name}}\"?",
+         "autologin": "Automatically log in as user:",
+         "no-autologin": "Do not use autologin"
       },
       "buttons": {
          "save": "Save",

@@ -28,6 +28,7 @@ export default function rolesFactoryService() {
   roles.ROLES = [roles._ROLE_ONE, roles._ROLE_TWO, roles._ROLE_THREE];
 
   roles.notConfiguredAdmin = false;
+  roles.currentUserIsAutologinUser = false;
 
   roles.current = {
     role: undefined,
@@ -40,10 +41,17 @@ export default function rolesFactoryService() {
     user: roles.ROLE_ONE,
   };
 
-  roles.setRole = (userType, notConfiguredAdmin) => {
+  roles.setRole = (userType) => {
     const n = typeToRoleId[String(userType)] || DEFAULT_ROLE;
     roles.current = { role: n, roles: roles.ROLES[n - 1] };
-    roles.notConfiguredAdmin = !!notConfiguredAdmin;
+  };
+
+  roles.setAdminIsConfigured = (value) => {
+    roles.notConfiguredAdmin = !value;
+  };
+
+  roles.setCurrentUserIsAutologinUser = (value) => {
+    roles.currentUserIsAutologinUser = value;
   };
 
   roles.isAuthenticated = () => {

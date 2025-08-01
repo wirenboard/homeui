@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.121.0) stable; urgency=medium
+
+  * Add autologin support for users
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 01 Aug 2025 12:16:27 +0500
+
 wb-mqtt-homeui (2.120.2) stable; urgency=medium
 
   * Change mbgate default varchar register size to 1

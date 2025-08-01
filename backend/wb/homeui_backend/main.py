@@ -5,7 +5,6 @@ import json
 import logging
 import os
 import socketserver
-import sqlite3
 import subprocess
 import traceback
 from dataclasses import dataclass
@@ -20,6 +19,7 @@ import bcrypt
 import jwt
 
 from .cert import CertificateCheckingThread
+from .db import open_db
 from .http_response import (
     HttpResponse,
     response_200,
@@ -36,7 +36,6 @@ from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
-DB_SCHEMA_VERSION = 0
 
 
 def make_cookie_value(user_id: str, keys_storage: KeysStorage, expires: Optional[datetime] = None) -> str:
@@ -100,33 +99,45 @@ def get_current_user(
 
 def validate_login_request(form: dict) -> None:
     if "password" not in form.keys():
-        raise TypeError("No password field in POST arguments")
+        raise TypeError("No password field")
 
-    if not isinstance(form.get("password"), str) or not form.get("password"):
-        raise TypeError("Invalid password field in POST arguments")
+    new_password = form.get("password")
+    if not new_password or not isinstance(new_password, str):
+        raise TypeError("Invalid password field")
 
     if "login" not in form.keys():
-        raise TypeError("No login field in POST arguments")
+        raise TypeError("No login field")
 
-    if not isinstance(form.get("login"), str) or not form.get("login"):
-        raise TypeError("Invalid login field in POST arguments")
+    new_login = form.get("login")
+    if not new_login or not isinstance(new_login, str):
+        raise TypeError("Invalid login field")
 
 
 def validate_add_user_request(request: dict) -> None:
+    validate_login_request(request)
+
     if request.get("type") not in [e.value for e in UserType]:
-        raise TypeError("Invalid type field in POST arguments")
+        raise TypeError("Invalid type field")
 
-    if "password" not in request.keys():
-        raise TypeError("No password field in POST arguments")
+    if not isinstance(request.get("autologin", False), bool):
+        raise TypeError("Invalid autologin field")
 
-    if not isinstance(request.get("password"), str) or not request.get("password"):
-        raise TypeError("Invalid password field in POST arguments")
 
-    if "login" not in request.keys():
-        raise TypeError("No login field in POST arguments")
+def validate_update_user_request(request: dict) -> None:
+    if request.get("type") not in [e.value for e in UserType]:
+        raise TypeError("Invalid type field")
 
-    if not isinstance(request.get("login"), str) or not request.get("login"):
-        raise TypeError("Invalid login field in POST arguments")
+    new_password = request.get("password")
+    if new_password and not isinstance(new_password, str):
+        raise TypeError("Invalid password field")
+
+    new_login = request.get("login")
+    if new_login and not isinstance(new_login, str):
+        raise TypeError("Invalid login field")
+
+    new_autologin = request.get("autologin", False)
+    if not isinstance(new_autologin, bool):
+        raise TypeError("Invalid autologin field")
 
 
 @dataclass
@@ -153,10 +164,14 @@ def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     if allow_if_no_users and not context.users_storage.has_users():
         return response_200()
 
+    required_user_type = get_required_user_type(request)
+
     if context.user is None:
+        autologin_user = context.users_storage.get_autologin_user()
+        if autologin_user is not None and autologin_user.has_access_to(required_user_type):
+            return response_200(headers=[["Wb-User-Type", autologin_user.type.value]])
         return response_401()
 
-    required_user_type = get_required_user_type(request)
     if context.user.has_access_to(required_user_type):
         return response_200(headers=[["Wb-User-Type", context.user.type.value]])
     return response_403()
@@ -205,12 +220,22 @@ def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
 
 
 def auth_who_am_i_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
-    if context.users_storage.has_users():
-        if context.user is None:
-            return response_401()
+    if not context.users_storage.has_users():
+        return response_404()
+
+    if context.user is not None:
         res = {"user_type": context.user.type.value}
         return response_200([["Content-type", "application/json"]], json.dumps(res))
-    return response_404()
+
+    autologin_user = context.users_storage.get_autologin_user()
+    if autologin_user is not None:
+        res = {
+            "user_type": autologin_user.type.value,
+            "autologin": True,
+        }
+        return response_200([["Content-type", "application/json"]], json.dumps(res))
+
+    return response_401()
 
 
 def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
@@ -222,7 +247,11 @@ def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandler
         return response_400(str(e))
 
     user_to_add = User(
-        "", form.get("login"), make_password_hash(form.get("password")), UserType(form.get("type"))
+        "",
+        form.get("login"),
+        make_password_hash(form.get("password")),
+        UserType(form.get("type")),
+        form.get("autologin", False),
     )
 
     if not context.users_storage.has_users() and user_to_add.type != UserType.ADMIN:
@@ -281,6 +310,8 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
                 return response_400("Can't change the last admin's type")
         user.type = UserType(new_type)
 
+    user.autologin = form.get("autologin", False)
+
     if invalidate_user:
         context.users_storage.delete_user(user.user_id)
         context.users_storage.add_user(user)
@@ -306,7 +337,12 @@ def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
 
 def get_users_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     users = map(
-        lambda user: {"id": user.user_id, "login": user.login, "type": user.type.value},
+        lambda user: {
+            "id": user.user_id,
+            "login": user.login,
+            "type": user.type.value,
+            "autologin": user.autologin,
+        },
         context.users_storage.get_users(),
     )
     return response_200([["Content-type", "application/json"]], json.dumps(list(users)))
@@ -445,22 +481,6 @@ def get_sn() -> str:
     return sn
 
 
-def open_db(db_file: str, schema_version: int) -> sqlite3.Connection:
-    if os.path.exists(db_file):
-        con = sqlite3.connect(db_file)
-        cur = con.cursor()
-        cur.execute("PRAGMA user_version")
-        version = cur.fetchone()[0]
-        if version != schema_version:
-            raise RuntimeError(f"Database schema version mismatch. Need {schema_version}, got {version}")
-        return con
-    os.makedirs(os.path.dirname(db_file), exist_ok=True)
-    con = sqlite3.connect(db_file)
-    cur = con.cursor()
-    cur.execute(f"PRAGMA user_version = {schema_version}")
-    return con
-
-
 def main():
     parser = argparse.ArgumentParser(prog=argv[0], description="Home UI authentication service")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
@@ -473,7 +493,7 @@ def main():
         format="%(levelname)s:%(message)s",
     )
 
-    con = open_db(args.db_file, DB_SCHEMA_VERSION)
+    con = open_db(args.db_file)
 
     sn = get_sn()
 
