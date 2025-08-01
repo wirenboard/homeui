@@ -15,7 +15,9 @@ export async function fillUserType(rolesFactory) {
     const response = await fetch('/auth/who_am_i');
     if (response.status === 200) {
       const user = await response.json();
-      rolesFactory.setRole(user.user_type, false);
+      rolesFactory.setRole(user.user_type);
+      rolesFactory.setAdminIsConfigured(true);
+      rolesFactory.setCurrentUserIsAutologinUser(user.autologin);
       return 'ok';
     }
     if (response.status === 401) {
@@ -24,6 +26,7 @@ export async function fillUserType(rolesFactory) {
   } catch (e) {
     /* empty */
   }
-  rolesFactory.setRole('user', true);
+  rolesFactory.setRole('user');
+  rolesFactory.setAdminIsConfigured(false);
   return 'ok';
 }
