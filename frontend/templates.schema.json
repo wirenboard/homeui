@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Templates Configuration",
+  "description": "For internal use, edit with caution",
+  "properties": {
+    "templates": { "type": "array" }
+  },
+  "configFile": {
+    "path": "/etc/wb-templates.conf",
+    "hide": true
+  },
+  "options": {
+    "collapsed": true,
+    "disable_collapse": true,
+    "disable_properties": true
+  },
+
+  "translations": {
+    "ru": {
+      "Templates Configuration": "Конфигурация шаблонов",
+      "For internal use, edit with caution": "Для внутреннего использования, не редактировать"
+    }
+  }
+}

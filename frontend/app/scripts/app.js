@@ -49,6 +49,7 @@ import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
 import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
+import templatesConfigService from './services/templatesConfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
 import rolesFactoryService from './services/roles.factory';
@@ -141,7 +142,8 @@ const module = angular
   .value('historyMaxPoints', 1000)
   .value('logsMaxRows', 50)
   .value('webuiConfigPath', '/etc/wb-webui.conf')
-  .value('configSaveDebounceMs', 300);
+  .value('configSaveDebounceMs', 300)
+  .value('templatesConfigPath', '/etc/wb-templates.conf');
 
 // Register services
 module
@@ -174,6 +176,7 @@ module
     // make sure DeviceData is loaded at the startup so no MQTT messages are missed
   })
   .factory('uiConfig', uiConfigService)
+  .factory('templatesConfig', templatesConfigService)
   .filter('hilite', hiliteService);
 
 // Register controllers
@@ -381,9 +384,11 @@ const realApp = angular
       mqttClient,
       ConfigEditorProxy,
       webuiConfigPath,
+      templatesConfigPath,
       errors,
       whenMqttReady,
       uiConfig,
+      templatesConfig,
       $timeout,
       configSaveDebounceMs,
       ngToast,
@@ -417,9 +422,11 @@ const realApp = angular
         mqttClient,
         ConfigEditorProxy,
         webuiConfigPath,
+        templatesConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
+        uiConfig,
+        templatesConfig
       ) {
         return function (loginData) {
           if (loginData.url) {
@@ -443,6 +450,17 @@ const realApp = angular
             })
             .catch(errors.catch('app.errors.load'));
 
+          // Try to obtain Templates configs
+          whenMqttReady()
+            .then(() => {
+              return ConfigEditorProxy.Load({ path: templatesConfigPath });
+            })
+            .then(result => {
+              console.log('LOAD TEMPLATES CONF: %o', result.content);
+              templatesConfig.ready(result.content);
+            })
+            .catch(errors.catch('app.errors.load'));
+
           return true;
 
           //.....................................................................
@@ -461,9 +479,11 @@ const realApp = angular
         mqttClient,
         ConfigEditorProxy,
         webuiConfigPath,
+        templatesConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
+        uiConfig,
+        templatesConfig
       );
 
       //.........................................................................
@@ -492,6 +512,7 @@ const realApp = angular
 
       // TBD: the following should be handled by config sync service
       var configSaveDebounce = null;
+      var templatesConfigSaveDebounce = null;
       var firstBootstrap = true;
 
       // Watch for WebUI config changes
@@ -514,6 +535,39 @@ const realApp = angular
             ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
               .then(() => {
                 console.log('config saved');
+              })
+              .catch(err => {
+                if (err.name === 'QuotaExceededError') {
+                  errors.showError('app.errors.overflow');
+                } else {
+                  errors.showError('app.errors.save', err);
+                }
+              });
+          }, configSaveDebounceMs);
+        },
+        true
+      );
+
+      // Watch for templates config changes
+      $rootScope.$watch(
+        () => templatesConfig.data,
+        (newData, oldData) => {
+          if (angular.equals(newData, oldData)) {
+            return;
+          }
+          if (firstBootstrap) {
+            firstBootstrap = false;
+            return;
+          }
+          console.log('new templates data: %o', newData);
+          if (templatesConfigSaveDebounce) {
+            $timeout.cancel(templatesConfigSaveDebounce);
+          }
+          templatesConfigSaveDebounce = $timeout(() => {
+            errors.hideError();
+            ConfigEditorProxy.Save({ path: templatesConfigPath, content: newData })
+              .then(() => {
+                console.log('templates config saved');
               })
               .catch(err => {
                 if (err.name === 'QuotaExceededError') {

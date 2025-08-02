@@ -115,6 +115,7 @@ class HistoryCtrl {
     var errors = $injector.get('errors');
     var historyMaxPoints = $injector.get('historyMaxPoints');
     var uiConfig = $injector.get('uiConfig');
+    this.templatesConfig = $injector.get('templatesConfig');
     this.orderByFilter = $injector.get('orderByFilter');
     this.$timeout = $injector.get('$timeout');
     this.$state = $injector.get('$state');
@@ -184,12 +185,24 @@ class HistoryCtrl {
 
     this.dataPointsMultiple = [];
 
+    // Templates props
+    this.templates = [];
+    this.selectedTemplate = null;
+    this.newTemplateName = "";
+
     // 4. Setup
     this.updateTranslations()
       .then(() => uiConfig.whenReady())
       .then(data => {
         this.updateControls(data.widgets, DeviceData);
         this.setSelectedControlsAndStartLoading(stateFromUrl.c);
+      });
+
+    this.updateTranslations()
+      .then(() => this.templatesConfig.whenReady())
+      .then(data => {
+        this.templates = data.templates;
+        console.log("[LOG]: Templates are set up: %o", this.templates);
       });
 
     this.plotlyEvents = graph => {
@@ -977,6 +990,84 @@ class HistoryCtrl {
     document.body.appendChild(downloadLink);
 
     downloadLink.click();
+  }
+
+  saveTemplate() {
+    if (!this.newTemplateName || !this.selectedControls.length) return;
+    if (this.templates.find(elem => elem.name === this.newTemplateName)) {
+      alert(this.$translate.instant('history.errors.template_exists'))
+      return;
+    }
+
+    // NOTE: Probably should add more fields of the control
+    // because (deviceId, controlId) can duplicate?
+    const newTemplate = {
+      name: this.newTemplateName,
+      data: this.selectedControls.map(control => ({
+        deviceId: control.deviceId,
+        controlId: control.controlId
+      }))
+    };
+    console.log(`[LOG]: New template was created: ${newTemplate.name}`);
+    console.log('[LOG]: New template data: %o', newTemplate.data);
+
+    // Save the template locally and globally
+    // (because this.templates are linked to data from templatesConfig)
+    this.templates.push(newTemplate);
+    this.newTemplateName = "";
+    console.log("[LOG]: New template was saved");
+  }
+
+  applyTemplate() {
+    if (!this.selectedTemplate) return;
+    console.log("[LOG]: selectedTemplate: %o", this.selectedTemplate);
+    const template = this.templates.find((element) => element.name === this.selectedTemplate.name);
+    this.selectedControls = template.data.map(
+      data => {
+        const control = this.controls.find(
+          c =>
+            c.deviceId === data.deviceId &&
+            c.controlId === data.controlId
+        );
+        return control || null;
+      }
+    )
+      .filter(c => c)
+
+    console.log("[LOG]: Template was successfully applied");
+  }
+
+  updateTemplate() {
+    if (!this.selectedTemplate || !this.selectedControls.length) return;
+    const updatedTemplate = {
+      name: this.selectedTemplate.name,
+      data: this.selectedControls.map(control => ({
+        deviceId: control.deviceId,
+        controlId: control.controlId,
+      })),
+    };
+
+    console.log("[LOG]: Obtained updated template");
+    console.log(`[LOG]: New template name: ${updatedTemplate.name}`);
+
+    // Updating the template by index
+    const index = this.templates.findIndex(t => t.name === this.selectedTemplate.name);
+    console.log(`[LOG]: Existing template found with index ${index}`);
+    if (index !== -1) {
+      this.templates[index] = updatedTemplate;
+      console.log("[LOG]: Template was updated");
+    }
+  }
+
+  deleteTemplate() {
+    if (!this.selectedTemplate) return;
+
+    const index = this.templates.findIndex((element) => element.name === this.selectedTemplate.name);
+    this.templates.splice(index, 1);
+    this.selectedTemplate = null;
+    this.selectedControls = [null];
+
+    console.log("[LOG]: Template was deleted");
   }
 } // class HistoryCtrl
 

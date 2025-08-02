@@ -1294,3 +1294,9 @@ body #https-setup-label {
   left: 0;
   right: 0;
 }
+
+/* Templates styling */
+.form-group {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
