@@ -63,7 +63,7 @@ class ConfigCtrl {
         .catch(function (e) {
           PageState.setDirty(true);
           errors.showError(
-            { msg: 'configuration.errors.save', data: { name: $scope.file.configPath } },
+            { msg: 'configurations.errors.save', data: { name: $scope.file.configPath } },
             e
           );
         });
