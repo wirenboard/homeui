@@ -86,11 +86,15 @@ export class EmbeddedSoftwareComponent {
     this.updateProgress = 0;
     this.errorData = {};
     try {
-      await this.fwUpdateProxy.Update({
+      let params = {
         slave_id: getIntAddress(address),
         port: toRpcPortConfig(portConfig),
         type: this.type,
-      });
+      };
+      if (portConfig.modbusTcp) {
+        params.protocol = 'modbus-tcp';
+      }
+      await this.fwUpdateProxy.Update(params);
     } catch (err) {
       this.updateProgress = null;
       throw err;
@@ -140,10 +144,14 @@ export class EmbeddedSoftware {
   async updateVersion(address, portConfig) {
     try {
       if (await this.fwUpdateProxy.hasMethod('GetFirmwareInfo')) {
-        let res = await this.fwUpdateProxy.GetFirmwareInfo({
+        let params = {
           slave_id: getIntAddress(address),
           port: toRpcPortConfig(portConfig),
-        });
+        };
+        if (portConfig.modbusTcp) {
+          params.protocol = 'modbus-tcp';
+        }
+        let res = await this.fwUpdateProxy.GetFirmwareInfo(params);
         runInAction(() => {
           this.canUpdate = res.can_update;
           this.deviceModel = res?.model || '';
@@ -219,6 +227,7 @@ export class DeviceTab {
     this.acceptJsonEditorInitial = true;
     this.slaveIdIsDuplicate = false;
     this.isModbusDevice = deviceTypesStore.isModbusDevice(deviceType);
+    this.isWbDevice = deviceTypesStore.isWbDevice(deviceType);
     this.devicesWithTheSameId = [];
     this.isDisconnected = false;
     this.embeddedSoftware = new EmbeddedSoftware(fwUpdateProxy);
@@ -296,6 +305,7 @@ export class DeviceTab {
       this.deviceType = type;
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
       this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);
+      this.isWbDevice = this.deviceTypesStore.isWbDevice(this.deviceType);
       const currentSlaveId = this.editedData.slave_id;
       this.editedData = getDefaultObject(this.schema);
       this.editedData.slave_id = currentSlaveId;
@@ -412,7 +422,9 @@ export class DeviceTab {
   }
 
   updateEmbeddedSoftwareVersion(portConfig) {
-    this.embeddedSoftware.updateVersion(this.slaveId, portConfig);
+    if (this.isWbDevice) {
+      this.embeddedSoftware.updateVersion(this.slaveId, portConfig);
+    }
   }
 
   async startFirmwareUpdate(portConfig) {

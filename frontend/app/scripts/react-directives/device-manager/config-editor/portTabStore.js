@@ -1,12 +1,10 @@
-'use strict';
-
-import { makeObservable, observable, computed, action, autorun } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import { makeObservable, observable, computed, action, autorun } from 'mobx';
 import i18n from '../../../i18n/react/config';
+import CollapseButtonState from '../../components/buttons/collapseButtonState';
 import { getTranslation } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
-import CollapseButtonState from '../../components/buttons/collapseButtonState';
 
 function checkDuplicateSlaveIds(deviceTabs) {
   const tabsBySlaveId = deviceTabs.reduce((acc, tab) => {
@@ -16,11 +14,11 @@ function checkDuplicateSlaveIds(deviceTabs) {
     }
     return acc;
   }, {});
-  Object.values(tabsBySlaveId).forEach(tabs => {
-    if (tabs.length == 1) {
+  Object.values(tabsBySlaveId).forEach((tabs) => {
+    if (tabs.length === 1) {
       tabs[0].setSlaveIdIsDuplicate(false);
     } else {
-      tabs.forEach(tab => tab.setSlaveIdIsDuplicate(true));
+      tabs.forEach((tab) => tab.setSlaveIdIsDuplicate(true));
     }
   });
 }
@@ -83,7 +81,7 @@ export class PortTab {
   setData(data, errors) {
     this.isDirty = !isEqual(this.data, data);
     this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = errors.length != 0;
+    this.hasJsonValidationErrors = errors.length !== 0;
     this.updateName();
   }
 
@@ -94,13 +92,13 @@ export class PortTab {
   }
 
   collapse() {
-    this.children.forEach(child => {
+    this.children.forEach((child) => {
       child.hidden = true;
     });
   }
 
   restore() {
-    this.children.forEach(child => {
+    this.children.forEach((child) => {
       child.hidden = false;
     });
   }
@@ -122,11 +120,11 @@ export class PortTab {
   }
 
   get hasChildren() {
-    return this.children.length != 0;
+    return this.children.length !== 0;
   }
 
   get childrenHasInvalidConfig() {
-    return this.children.some(child => child.hasInvalidConfig);
+    return this.children.some((child) => child.hasInvalidConfig);
   }
 
   get hasInvalidConfig() {
@@ -161,6 +159,7 @@ export class PortTab {
       return {
         address: this.editedData.address,
         port: this.editedData.port,
+        modbusTcp: this.portType === 'modbus tcp',
       };
     }
     return undefined;
