@@ -50,18 +50,6 @@
               <div class="navbar-text navbar-right connection-status">
                 <span class="connected-status label label-success" ng-show="isConnected()" translate>{{'navigation.connection.active'}}</span>
                 <span class="connected-status label label-danger" ng-show="!isConnected()" translate>{{'navigation.connection.inactive'}}</span>
-                <div class="dropdown user-menu navbar-right" ng-if="showUserMenu()">
-                    <i class="glyphicon glyphicon-user" id="userMenu" type="button" data-toggle="dropdown" aria-label="User menu" aria-haspopup="true" aria-expanded="false"></i>
-                    <ul class="dropdown-menu" aria-labelledby="userMenu">
-                        <li>
-                            <span class='user-name' translate>{{roles.current.roles.name}}</span>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li>
-                            <a href="#" ng-click="logout()" draggable="false" translate>{{'app.buttons.logout'}}</a>
-                        </li>
-                    </ul>
-                </div>
               </div>
           </div>
 
@@ -139,7 +127,7 @@
                       <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help" draggable="false"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
                   </li>
                   <li class="logout-menu" ng-if="showUserMenu() && !checkFullscreen()">
-                    <a href="#" ng-click="logout()" draggable="false"><i class="fas fa-sign-out-alt"></i> {{'app.buttons.logout' | translate}}</a>
+                    <a href="javascript:" ng-click="logout()" draggable="false"><i class="fas fa-sign-out-alt"></i> {{ userMenuLabel() | translate}}</a>
                   </li>
               </ul>
           </div>

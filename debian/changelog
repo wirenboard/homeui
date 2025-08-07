@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.121.0) stable; urgency=medium
+
+  * Add autologin support for users
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 07 Aug 2025 16:27:13 +0500
+
 wb-mqtt-homeui (2.120.3) stable; urgency=medium
 
   * Fix saving configuration error message
