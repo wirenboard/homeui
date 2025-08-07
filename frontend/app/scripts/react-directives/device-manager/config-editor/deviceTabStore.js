@@ -227,7 +227,6 @@ export class DeviceTab {
     this.acceptJsonEditorInitial = true;
     this.slaveIdIsDuplicate = false;
     this.isModbusDevice = deviceTypesStore.isModbusDevice(deviceType);
-    this.isWbDevice = deviceTypesStore.isWbDevice(deviceType);
     this.devicesWithTheSameId = [];
     this.isDisconnected = false;
     this.embeddedSoftware = new EmbeddedSoftware(fwUpdateProxy);
@@ -305,7 +304,6 @@ export class DeviceTab {
       this.deviceType = type;
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
       this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);
-      this.isWbDevice = this.deviceTypesStore.isWbDevice(this.deviceType);
       const currentSlaveId = this.editedData.slave_id;
       this.editedData = getDefaultObject(this.schema);
       this.editedData.slave_id = currentSlaveId;
