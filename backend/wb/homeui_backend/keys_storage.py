@@ -7,9 +7,6 @@ import string
 class KeysStorage:
     def __init__(self, db_connection) -> None:
         self.db_connection = db_connection
-        cursor = db_connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS keys (key TEXT NOT NULL)")
-        db_connection.commit()
 
     def make_key(self) -> str:
         alphabet = string.ascii_letters + string.digits + string.punctuation

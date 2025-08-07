@@ -4,6 +4,7 @@ import { Button } from '../common';
 import ConfirmModal from '../components/modals/confirmModal';
 import FormModal from '../components/modals/formModal';
 import { PageWrapper, PageTitle, PageBody } from '../components/page-wrapper/pageWrapper';
+import BootstrapLikeSelect from '../components/select/select';
 
 const UsersPage = observer(({ store }) => {
   const { t } = useTranslation();
@@ -60,6 +61,13 @@ const UsersPage = observer(({ store }) => {
             ))}
           </tbody>
         </table>
+        <label className="control-label">{t('users.labels.autologin')}</label>
+        <BootstrapLikeSelect
+          options={store.autologinUserStore.options}
+          selectedOption={store.autologinUserStore.selectedOption}
+          setSelectedOption={store.autologinUserStore.setSelectedOption}
+          onChange={(value) => store.setAutologinUser(value)}
+        />
       </PageBody>
     </PageWrapper>
   );

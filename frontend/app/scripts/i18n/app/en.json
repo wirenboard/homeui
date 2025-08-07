@@ -13,7 +13,8 @@
             "serial-config-leave": "Scanning will be canceled. Do you really want to leave the page?"
         },
         "buttons": {
-            "logout": "Logout"
+            "logout": "Logout",
+            "switch-user": "Switch user"
         },
         "roles": {
             "user": "User",

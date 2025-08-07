@@ -3,7 +3,13 @@ wb-mqtt-homeui (2.122.0) stable; urgency=medium
   * Add firmware update for Wiren Board devices using Modbus TCP
   * Fix firmware information requests for non Wiren Board devices
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 07 Aug 2025 09:42:11 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 07 Aug 2025 18:03:59 +0500
+
+wb-mqtt-homeui (2.121.0) stable; urgency=medium
+
+  * Add autologin support for users
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 07 Aug 2025 16:27:13 +0500
 
 wb-mqtt-homeui (2.120.3) stable; urgency=medium
 
