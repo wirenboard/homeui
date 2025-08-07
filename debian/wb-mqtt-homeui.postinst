@@ -22,10 +22,17 @@ else
 fi
 BOARD_CONF="/usr/share/wb-mqtt-homeui/config.${CONF_SUFFIX}.json"
 CONFFILE="/etc/wb-webui.conf"
+TEMPLATES_CONF="/usr/share/wb-mqtt-homeui/templatesConfig.default.json"
+TEMPLATES_CONFFILE="/etc/wb-templates.conf"
 
 function install_default_config()
 {
     ucf --debconf-ok $BOARD_CONF $CONFFILE
+}
+
+function install_default_templates_config()
+{
+    ucf --debconf-ok $TEMPLATES_CONF $TEMPLATES_CONFFILE
 }
 
 function is_config_untouched()
@@ -52,6 +59,10 @@ case "$1" in
             else
                 install_default_config
             fi
+        fi
+
+        if [ ! -e "$TEMPLATES_CONFFILE" ]; then
+            install_default_templates_config
         fi
     ;;
 esac
