@@ -317,7 +317,9 @@ class ConfigEditorPageStore {
           port.devices.forEach((device) => {
             let tab = this.createDeviceTab(device);
             portTab.addChildren(tab);
-            tab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
+            if (portTab.isEnabled) {
+              tab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
+            }
           });
         }
         this.tabs.addPortTab(portTab, true);

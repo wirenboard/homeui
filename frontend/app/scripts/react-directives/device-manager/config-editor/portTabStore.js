@@ -172,4 +172,8 @@ export class PortTab {
   get canDelete() {
     return !this.path.startsWith('/dev/ttyRS485');
   }
+
+  get isEnabled() {
+    return !!this.editedData?.enabled;
+  }
 }
