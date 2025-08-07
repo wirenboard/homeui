@@ -60,6 +60,15 @@ class UsersPageStore {
     });
     this.formModalState = new FormModalState();
     this.confirmModalState = new ConfirmModalState();
+    this.autologinUserStore = new OptionsStore({
+      options: [
+        {
+          value: null,
+          label: i18n.t('users.labels.no-autologin'),
+        },
+      ],
+      value: null,
+    }),
     this.users = [];
 
     makeAutoObservable(this);
@@ -121,9 +130,73 @@ class UsersPageStore {
     }
   }
 
+  refreshAutologinUserOptions() {
+    let autoLoginOptions = [
+      {
+        value: null,
+        label: i18n.t('users.labels.no-autologin'),
+      },
+    ];
+    let autologinUser = null;
+    this.users.forEach((user) => {
+      if (user.type === 'user') {
+        autoLoginOptions.push({
+          value: user.id,
+          label: user.login,
+        });
+        if (user.autologin) {
+          autologinUser = user.id;
+        }
+      }
+    });
+    this.autologinUserStore.setOptions(autoLoginOptions);
+    if (autologinUser) {
+      this.autologinUserStore.setValue(autologinUser);
+    } else {
+      this.autologinUserStore.setValue(null);
+    }
+  }
+
   setUsers(users) {
     sortUsers(users);
     this.users = users;
+    this.refreshAutologinUserOptions();
+  }
+
+  setAutologinUser(autologinUserOption) {
+    let oldAutologinUser = this.users.find((u) => u.autologin);
+    if (oldAutologinUser?.id === autologinUserOption.value) {
+      return;
+    }
+
+    if (oldAutologinUser) {
+      this.fetchWrapper(() =>
+        fetch(`/auth/users/${oldAutologinUser.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ autologin: false }),
+        })
+      );
+      oldAutologinUser.autologin = false;
+    }
+
+    this.autologinUserStore.setValue(autologinUserOption.value);
+
+    const newAutologinUser = this.users.find((u) => u.id === autologinUserOption.value);
+    if (newAutologinUser) {
+      this.fetchWrapper(() =>
+        fetch(`/auth/users/${autologinUserOption.value}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ autologin: true }),
+        })
+      );
+      newAutologinUser.autologin = true;
+    }
   }
 
   async fetchWrapper(fetchFn) {
@@ -174,6 +247,7 @@ class UsersPageStore {
         user.id = text;
         this.users.push(user);
         sortUsers(this.users);
+        this.refreshAutologinUserOptions();
       });
     });
   }
@@ -202,7 +276,11 @@ class UsersPageStore {
     }
     user.name = modifiedUser.name;
     user.type = modifiedUser.type;
+    if (modifiedUser.type !== 'user') {
+      user.autologin = false;
+    }
     sortUsers(this.users);
+    this.refreshAutologinUserOptions();
   }
 
   async showDeleteConfirmModal(user) {
@@ -230,6 +308,7 @@ class UsersPageStore {
       runInAction(() => {
         this.users = this.users.filter((u) => u.id !== user.id);
       });
+      this.refreshAutologinUserOptions();
     }
   }
 

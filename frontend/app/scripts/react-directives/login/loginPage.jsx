@@ -28,12 +28,19 @@ const LoginPage = observer(({ store }) => {
           <div style={{ display: 'flex', alignItems: 'center', maxWidth: '300px', margin: '0 auto' }}>
             <form style={{ width: '100%' }} onSubmit={onSubmit}>
               {MakeFormFields(Object.entries(store.formStore.params || {}), ref)}
-              <Button
-                label={t('login.buttons.login')}
-                type="success"
-                submit={true}
-                additionalStyles="pull-right"
-              />
+              <div className="pull-right" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Button
+                  label={t('login.buttons.login')}
+                  type="success"
+                  submit={true}
+                />
+                {store.cancelCallback && (
+                  <Button
+                    label={t('modal.labels.cancel')}
+                    type="secondary"
+                    onClick={store.cancelCallback}
+                  />)}
+              </div>
             </form>
           </div>
         </FocusLock>

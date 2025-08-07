@@ -1,8 +1,44 @@
-wb-mqtt-homeui (2.120.0) stable; urgency=medium
+wb-mqtt-homeui (2.122.0) stable; urgency=medium
 
   * Add Alice integration
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 24 Jul 2025 15:06:07 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 07 Aug 2025 17:30:00 +0300
+
+wb-mqtt-homeui (2.121.0) stable; urgency=medium
+
+  * Add autologin support for users
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 07 Aug 2025 16:27:13 +0500
+
+wb-mqtt-homeui (2.120.3) stable; urgency=medium
+
+  * Fix saving configuration error message
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 05 Aug 2025 09:37:32 +0500
+
+wb-mqtt-homeui (2.120.2) stable; urgency=medium
+
+  * Change mbgate default varchar register size to 1
+
+ -- Ilya Titov <ilya.titov@wirenboard.com>  Thu, 31 Jul 2025 13:47:28 +0300
+
+wb-mqtt-homeui (2.120.1) stable; urgency=medium
+
+  * Fix login expiration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 28 Jul 2025 15:33:48 +0500
+
+wb-mqtt-homeui (2.120.0) stable; urgency=medium
+
+  * Add /usr/share/wb-mqtt-homeui/nginx/includes directory to nginx config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 25 Jul 2025 15:42:50 +0500
+
+wb-mqtt-homeui (2.119.3) stable; urgency=medium
+
+  * Change the title translation for scenarios
+
+ -- Andrey Ksenofontov <andrey.ksenofontov@wirenboard.com>  Thu, 24 Jul 2025 17:02:00 +0300
 
 wb-mqtt-homeui (2.119.2) stable; urgency=medium
 

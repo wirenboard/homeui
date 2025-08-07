@@ -606,7 +606,7 @@ const realApp = angular
             $rootScope.requestConfig(loginData);
             connectToMqtt = false;
           }
-          if (transition.to().name === 'login') {
+          if (transition.to().name === 'login' && !rolesFactory.currentUserIsAutologinUser) {
             return $state.target('home');
           }
         });

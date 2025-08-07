@@ -27,53 +27,57 @@ from wb.homeui_backend.users_storage import User, UsersStorage, UserType
 class DeleteUserHandlerTest(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
         self.context = WebRequestHandlerContext(
-            sn="", users_storage=MagicMock(), keys_storage=MagicMock(), certificate_thread=MagicMock()
+            sn="",
+            users_storage=self.users_storage_mock,
+            keys_storage=MagicMock(),
+            certificate_thread=MagicMock(),
         )
 
     def test_bad_url(self):
         self.request.path = "/users/aaaa/bbbb"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
         response = delete_user_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
     def test_not_found(self):
         self.request.path = "/users/aaaa"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = None
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = None
         response = delete_user_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
     def test_delete_self(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
         response = delete_user_handler(self.request, self.context)
 
-        self.context.users_storage.get_user_by_id.assert_called_once_with(self.context.user.user_id)
+        self.users_storage_mock.get_user_by_id.assert_called_once_with(self.context.user.user_id)
         self.assertEqual(response, response_400("Can't delete yourself"))
 
     def test_success(self):
         self.request.path = "/users/123"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
         user_id = "123"
         user = MagicMock()
         user.user_id = user_id
-        self.context.users_storage.get_user_by_id.return_value = user
+        self.users_storage_mock.get_user_by_id.return_value = user
         response = delete_user_handler(self.request, self.context)
 
-        self.context.users_storage.get_user_by_id.assert_called_once_with(user_id)
-        self.context.users_storage.delete_user.assert_called_once_with(user_id)
+        self.users_storage_mock.get_user_by_id.assert_called_once_with(user_id)
+        self.users_storage_mock.delete_user.assert_called_once_with(user_id)
         self.assertEqual(response, response_204())
 
 
 class GetUsersHandlerTests(unittest.TestCase):
     def test_admin(self):
         users_storage = MagicMock(spec=UsersStorage)
-        user = User("1", "user1", "password1", UserType.ADMIN)
+        user = User("1", "user1", "password1", UserType.ADMIN, False)
         users = [
-            User("1", "user1", "password1", UserType.USER),
-            User("2", "user2", "password2", UserType.ADMIN),
+            User("1", "user1", "password1", UserType.USER, False),
+            User("2", "user2", "password2", UserType.ADMIN, False),
         ]
         users_storage.get_users.return_value = users
 
@@ -85,11 +89,12 @@ class GetUsersHandlerTests(unittest.TestCase):
             user=user,
         )
 
-        response = get_users_handler(None, context)
+        request_mock = MagicMock(spec=BaseHTTPRequestHandler)
+        response = get_users_handler(request_mock, context)
 
         expected_body = [
-            {"id": "1", "login": "user1", "type": UserType.USER.value},
-            {"id": "2", "login": "user2", "type": UserType.ADMIN.value},
+            {"id": "1", "login": "user1", "type": UserType.USER.value, "autologin": False},
+            {"id": "2", "login": "user2", "type": UserType.ADMIN.value, "autologin": False},
         ]
         self.assertEqual(
             response, response_200([["Content-type", "application/json"]], json.dumps(expected_body))
@@ -99,57 +104,65 @@ class GetUsersHandlerTests(unittest.TestCase):
 class CheckAuthHandlerTests(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock(spec=BaseHTTPRequestHandler)
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
         self.context = WebRequestHandlerContext(
-            sn="", users_storage=MagicMock(), keys_storage=MagicMock(), certificate_thread=MagicMock()
+            sn="",
+            users_storage=self.users_storage_mock,
+            keys_storage=MagicMock(),
+            certificate_thread=MagicMock(),
         )
 
     def test_no_required_user_type_no_user_without_users(self):
-        self.context.users_storage.has_users.return_value = False
+        self.users_storage_mock.has_users.return_value = False
+        self.users_storage_mock.get_autologin_user.return_value = None
         self.request.headers = {}
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_401())
 
     def test_no_required_user_type_no_user_with_users(self):
-        self.context.users_storage.has_users.return_value = True
+        self.users_storage_mock.has_users.return_value = True
+        self.users_storage_mock.get_autologin_user.return_value = None
         self.request.headers = {}
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_401())
 
     def test_required_user_no_user_without_users(self):
-        self.context.users_storage.has_users.return_value = False
+        self.users_storage_mock.has_users.return_value = False
+        self.users_storage_mock.get_autologin_user.return_value = None
         self.request.headers = {"Required-User-Type": "user"}
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_401())
 
     def test_required_user_no_user_with_users(self):
-        self.context.users_storage.has_users.return_value = True
+        self.users_storage_mock.has_users.return_value = True
+        self.users_storage_mock.get_autologin_user.return_value = None
         self.request.headers = {"Required-User-Type": "user"}
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_401())
 
     def test_required_user_user_with_users(self):
-        self.context.users_storage.has_users.return_value = True
+        self.users_storage_mock.has_users.return_value = True
         self.request.headers = {"Required-User-Type": "user"}
-        self.context.user = User("1", "user", "password", UserType.USER)
+        self.context.user = User("1", "user", "password", UserType.USER, False)
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_200(headers=[["Wb-User-Type", "user"]]))
 
     def test_required_admin_user_with_users(self):
-        self.context.users_storage.has_users.return_value = True
+        self.users_storage_mock.has_users.return_value = True
         self.request.headers = {"Required-User-Type": "admin"}
-        self.context.user = User("1", "user", "password", UserType.USER)
+        self.context.user = User("1", "user", "password", UserType.USER, False)
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_403())
 
     def test_required_user_admin_with_users(self):
-        self.context.users_storage.has_users.return_value = True
+        self.users_storage_mock.has_users.return_value = True
         self.request.headers = {"Required-User-Type": "user"}
-        self.context.user = User("1", "user", "password", UserType.ADMIN)
+        self.context.user = User("1", "user", "password", UserType.ADMIN, False)
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_200(headers=[["Wb-User-Type", "admin"]]))
 
     def test_allow_if_no_users(self):
-        self.context.users_storage.has_users.return_value = False
+        self.users_storage_mock.has_users.return_value = False
         self.request.headers = {"Allow-If-No-Users": "true"}
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_200())
@@ -158,32 +171,38 @@ class CheckAuthHandlerTests(unittest.TestCase):
 class WhoAmIHandlerTests(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock(spec=BaseHTTPRequestHandler)
+        self.request.headers = {}
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
         self.context = WebRequestHandlerContext(
-            sn="", users_storage=MagicMock(), keys_storage=MagicMock(), certificate_thread=MagicMock()
+            sn="",
+            users_storage=self.users_storage_mock,
+            keys_storage=MagicMock(),
+            certificate_thread=MagicMock(),
         )
 
     def test_with_authenticated_user(self):
-        self.context.users_storage.has_users.return_value = True
-        self.context.user = User("1", "user", "password", UserType.USER)
+        self.users_storage_mock.has_users.return_value = True
+        self.context.user = User("1", "user", "password", UserType.USER, False)
         response = auth_who_am_i_handler(self.request, self.context)
         expected_response = response_200(
             headers=[["Content-type", "application/json"]], body='{"user_type": "user"}'
         )
         self.assertEqual(response, expected_response)
 
-    def test_with_unauthenticated_user(self):
-        self.context.users_storage.has_users.return_value = True
+    def test_with_unauthenticated_user_no_autologin(self):
+        self.users_storage_mock.has_users.return_value = True
+        self.users_storage_mock.get_autologin_user.return_value = None
         self.context.user = None
         response = auth_who_am_i_handler(self.request, self.context)
         self.assertEqual(response, response_401())
 
     def test_with_no_users_configured(self):
-        self.context.users_storage.has_users.return_value = False
+        self.users_storage_mock.has_users.return_value = False
         self.context.user = None
         response = auth_who_am_i_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
-        self.context.user = User("1", "user", "password", UserType.USER)
+        self.context.user = User("1", "user", "password", UserType.USER, False)
         response = auth_who_am_i_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
@@ -216,27 +235,31 @@ class DeviceInfoHandlerTests(unittest.TestCase):
 class UpdateUserHandlerTest(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
+        self.users_storage_mock = MagicMock(spec=UsersStorage)
         self.context = WebRequestHandlerContext(
-            sn="", users_storage=MagicMock(), keys_storage=MagicMock(), certificate_thread=MagicMock()
+            sn="",
+            users_storage=self.users_storage_mock,
+            keys_storage=MagicMock(),
+            certificate_thread=MagicMock(),
         )
 
     def test_bad_url(self):
         self.request.path = "/users/aaaa/bbbb"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
         response = update_user_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
     def test_not_found(self):
         self.request.path = "/users/aaaa"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = None
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = None
         response = update_user_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
     def test_no_content(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
         self.request.headers = {}
         self.request.rfile.read.return_value = b'{"invalid_json": '  # malformed JSON
         response = update_user_handler(self.request, self.context)
@@ -244,8 +267,8 @@ class UpdateUserHandlerTest(unittest.TestCase):
 
     def test_bad_json(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
         self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
         self.request.rfile.read.return_value = b'{"invalid_json": '  # malformed JSON
         response = update_user_handler(self.request, self.context)
@@ -253,21 +276,21 @@ class UpdateUserHandlerTest(unittest.TestCase):
 
     def test_update_type(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
         self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
         self.request.rfile.read.return_value = b'{"type": "user"}'
         response = update_user_handler(self.request, self.context)
-        self.context.users_storage.update_user.assert_called_once_with(
-            User("1", "user1", "password1", UserType.USER)
+        self.users_storage_mock.update_user.assert_called_once_with(
+            User("1", "user1", "password1", UserType.USER, False)
         )
         self.assertEqual(response, response_200())
 
     def test_update_last_admin_type(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
-        self.context.users_storage.count_users_by_type.return_value = 1
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
+        self.users_storage_mock.count_users_by_type.return_value = 1
         self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
         self.request.rfile.read.return_value = b'{"type": "user"}'
         response = update_user_handler(self.request, self.context)
@@ -275,24 +298,24 @@ class UpdateUserHandlerTest(unittest.TestCase):
 
     def test_update_login(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
-        self.context.users_storage.get_user_by_login.return_value = None
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
+        self.users_storage_mock.get_user_by_login.return_value = None
         self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
         self.request.rfile.read.return_value = b'{"login": "user2"}'
         response = update_user_handler(self.request, self.context)
-        self.context.users_storage.delete_user.assert_called_once_with("1")
-        self.context.users_storage.add_user.assert_called_once_with(
-            User("1", "user2", "password1", UserType.ADMIN)
+        self.users_storage_mock.delete_user.assert_called_once_with("1")
+        self.users_storage_mock.add_user.assert_called_once_with(
+            User("1", "user2", "password1", UserType.ADMIN, False)
         )
         self.assertEqual(response, response_200())
 
     def test_update_duplicate_login(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
-        self.context.users_storage.get_user_by_login.return_value = User(
-            "2", "user2", "password2", UserType.USER
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
+        self.users_storage_mock.get_user_by_login.return_value = User(
+            "2", "user2", "password2", UserType.USER, False
         )
         self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
         self.request.rfile.read.return_value = b'{"login": "user2"}'
@@ -301,25 +324,25 @@ class UpdateUserHandlerTest(unittest.TestCase):
 
     def test_update_same_password(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
-        self.context.users_storage.get_user_by_login.return_value = None
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
+        self.users_storage_mock.get_user_by_login.return_value = None
         self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
         self.request.rfile.read.return_value = b'{"password": "password1"}'
         with patch("wb.homeui_backend.main.check_password") as check_password_mock:
             check_password_mock.return_value = True
             response = update_user_handler(self.request, self.context)
             check_password_mock.assert_called_once_with("password1", "password1")
-            self.context.users_storage.update_user.assert_called_once_with(
-                User("1", "user1", "password1", UserType.ADMIN)
+            self.users_storage_mock.update_user.assert_called_once_with(
+                User("1", "user1", "password1", UserType.ADMIN, False)
             )
             self.assertEqual(response, response_200())
 
     def test_update_password(self):
         self.request.path = "/users/1"
-        self.context.user = User("1", "user1", "password1", UserType.ADMIN)
-        self.context.users_storage.get_user_by_id.return_value = self.context.user
-        self.context.users_storage.get_user_by_login.return_value = None
+        self.context.user = User("1", "user1", "password1", UserType.ADMIN, False)
+        self.users_storage_mock.get_user_by_id.return_value = self.context.user
+        self.users_storage_mock.get_user_by_login.return_value = None
         self.request.headers = {"Content-Type": "application/json", "Content-Length": "18"}
         self.request.rfile.read.return_value = b'{"password": "password2"}'
         with patch("wb.homeui_backend.main.check_password") as check_password_mock, patch(
@@ -330,8 +353,8 @@ class UpdateUserHandlerTest(unittest.TestCase):
             response = update_user_handler(self.request, self.context)
             check_password_mock.assert_called_once_with("password2", "password1")
             make_password_hash_mock.assert_called_once_with("password2")
-            self.context.users_storage.delete_user.assert_called_once_with("1")
-            self.context.users_storage.add_user.assert_called_once_with(
-                User("1", "user1", "hashed_password", UserType.ADMIN)
+            self.users_storage_mock.delete_user.assert_called_once_with("1")
+            self.users_storage_mock.add_user.assert_called_once_with(
+                User("1", "user1", "hashed_password", UserType.ADMIN, False)
             )
             self.assertEqual(response, response_200())
