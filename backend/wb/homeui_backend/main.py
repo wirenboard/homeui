@@ -29,9 +29,11 @@ from .http_response import (
     response_401,
     response_403,
     response_404,
+    response_429,
     response_500,
 )
 from .keys_storage import KeysStorage
+from .rate_limiter import RateLimiter
 from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
@@ -369,9 +371,13 @@ def https_setup_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     return response_200()
 
 
-def find_handler(
-    url: str, handlers: dict
-) -> Optional[Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]]:
+@dataclass
+class RequestHandler:
+    fn: Callable[[BaseHTTPRequestHandler, WebRequestHandlerContext], HttpResponse]
+    rate_per_minute_limit: Optional[int] = None
+
+
+def find_handler(url: str, handlers: dict[str, RequestHandler]) -> Optional[RequestHandler]:
     url_components = urlparse(url).path.split("/")
     for pattern, handler in handlers.items():
         pattern_components = pattern.split("/")
@@ -390,6 +396,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     enable_debug: bool = False
     sn: str = ""
     certificate_thread: CertificateCheckingThread
+    rate_limiter: RateLimiter
 
     def process_response(self, response: HttpResponse) -> None:
         if response.status == 200:
@@ -405,23 +412,32 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             if response.body is not None:
                 self.log_error(response.body)
 
-    def process_request(self, handlers: dict) -> None:
+    def _request_handler(self, handlers: dict[str, RequestHandler]) -> HttpResponse:
+        handler = find_handler(self.path, handlers)
+
+        if handler is None:
+            return response_404()
+
+        if not self.rate_limiter.check_call(
+            self.path, datetime.now(timezone.utc), handler.rate_per_minute_limit
+        ):
+            return response_429()
+
+        current_user = get_current_user(self, self.users_storage, self.keys_storage)
+        return handler.fn(
+            self,
+            WebRequestHandlerContext(
+                self.sn,
+                self.users_storage,
+                self.keys_storage,
+                self.certificate_thread,
+                current_user,
+            ),
+        )
+
+    def process_request(self, handlers: dict[str, RequestHandler]) -> None:
         try:
-            handler = find_handler(self.path, handlers)
-            if handler is None:
-                response = response_404()
-            else:
-                current_user = get_current_user(self, self.users_storage, self.keys_storage)
-                response = handler(
-                    self,
-                    WebRequestHandlerContext(
-                        self.sn,
-                        self.users_storage,
-                        self.keys_storage,
-                        self.certificate_thread,
-                        current_user,
-                    ),
-                )
+            response = self._request_handler(handlers)
         except Exception as e:
             response = response_500("%s\n%s" % (str(e), traceback.format_exc()))
         self.process_response(response)
@@ -429,28 +445,28 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         self.process_request(
             {
-                "/auth/check": auth_check_handler,
-                "/auth/who_am_i": auth_who_am_i_handler,
-                "/users": get_users_handler,
-                "/device/info": device_info_handler,
+                "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
+                "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
+                "/users": RequestHandler(fn=get_users_handler),
+                "/device/info": RequestHandler(fn=device_info_handler),
             }
         )
 
     def do_POST(self) -> None:
         self.process_request(
             {
-                "/users": add_user_handler,
-                "/auth/login": auth_login_handler,
-                "/auth/logout": auth_logout_handler,
-                "/api/https/setup": https_setup_handler,
+                "/users": RequestHandler(fn=add_user_handler),
+                "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
+                "/auth/logout": RequestHandler(fn=auth_logout_handler),
+                "/api/https/setup": RequestHandler(fn=https_setup_handler),
             }
         )
 
     def do_PATCH(self) -> None:
-        self.process_request({"/users/*": update_user_handler})
+        self.process_request({"/users/*": RequestHandler(fn=update_user_handler)})
 
     def do_DELETE(self) -> None:
-        self.process_request({"/users/*": delete_user_handler})
+        self.process_request({"/users/*": RequestHandler(fn=delete_user_handler)})
 
     def log_message(self, format: str, *args: Any) -> None:
         if self.enable_debug:
@@ -502,6 +518,7 @@ def main():
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.certificate_thread = CertificateCheckingThread(sn)
+    WebRequestHandler.rate_limiter = RateLimiter()
 
     try:
         os.remove(args.socket_file)

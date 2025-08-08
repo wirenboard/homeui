@@ -39,5 +39,9 @@ def response_404() -> HttpResponse:
     return HttpResponse(404)
 
 
+def response_429() -> HttpResponse:
+    return HttpResponse(429)
+
+
 def response_500(error: str) -> HttpResponse:
     return HttpResponse(500, body=error)
