@@ -159,7 +159,7 @@ export class PortTab {
       return {
         address: this.editedData.address,
         port: this.editedData.port,
-        modbusTcp: this.portType === 'modbus tcp',
+        modbusTcp: this.isModbusTcp,
       };
     }
     return undefined;
@@ -175,5 +175,9 @@ export class PortTab {
 
   get isEnabled() {
     return !!this.editedData?.enabled;
+  }
+
+  get isModbusTcp() {
+    return this.portType === 'modbus tcp';
   }
 }
