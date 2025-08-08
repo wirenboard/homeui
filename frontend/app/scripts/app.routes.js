@@ -342,6 +342,19 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
+    })
+    //...........................................................................
+    .state('integrations-alice', {
+      url: '/integrations/alice',
+      template: '<alice-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'alice' */ './controllers/aliceController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     });
 }
 

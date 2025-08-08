@@ -1,9 +1,15 @@
-wb-mqtt-homeui (2.122.0) stable; urgency=medium
+wb-mqtt-homeui (2.123.0) stable; urgency=medium
 
   * Add firmware update for Wiren Board devices using Modbus TCP
   * Fix firmware information requests for non Wiren Board devices
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 07 Aug 2025 18:03:59 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 08 Aug 2025 13:20:28 +0500
+
+wb-mqtt-homeui (2.122.0) stable; urgency=medium
+
+  * Add Alice integration
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 07 Aug 2025 17:30:00 +0300
 
 wb-mqtt-homeui (2.121.0) stable; urgency=medium
 
