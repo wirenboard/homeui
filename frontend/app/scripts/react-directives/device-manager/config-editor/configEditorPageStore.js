@@ -513,7 +513,7 @@ class ConfigEditorPageStore {
     } else {
       topics.add(deviceId);
     }
-    let portTab = this.tabs.portTabs.find((p) => p.path === device.port);
+    let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     let deviceTab = this.createDeviceTab(deviceConfig);
     deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
     this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
@@ -542,7 +542,7 @@ class ConfigEditorPageStore {
       return false;
     }
 
-    let portTab = this.tabs.portTabs.find((p) => p.path === device.port);
+    let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     if (!portTab) {
       return false;
     }
