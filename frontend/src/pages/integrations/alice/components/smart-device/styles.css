@@ -1,0 +1,13 @@
+.aliceSmartDevice-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+    max-width: 310px;
+    width: 100%;
+}
+
+.aliceSmartDevice-inlineLabel {
+    display: flex;
+    gap: 12px;
+}

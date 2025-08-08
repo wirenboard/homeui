@@ -107,6 +107,9 @@ import LoginFormModule from './components/loginForm/index';
 import { checkHttps } from './utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
+
+import { aliceStore } from '@/stores/alice';
+
 //-----------------------------------------------------------------------------
 /**
  * @ngdoc overview
@@ -526,6 +529,26 @@ const realApp = angular
         },
         true
       );
+
+      // check if the integrations are available to display the menu item
+      $rootScope.integrations = [];
+      const { checkIsAvailable } = aliceStore;
+      function checkAvailableIntegrations(lang = language) {
+        $rootScope.integrations = [];
+        checkIsAvailable()
+          .then(() => {
+            // it was decided to show Alice only for the Russian localization
+            if (lang === 'ru') {
+              $rootScope.integrations.push('alice');
+            }
+          })
+          .catch(() => {});
+      }
+      checkAvailableIntegrations();
+
+      $rootScope.$on('$translateChangeSuccess', function(event, data) {
+        checkAvailableIntegrations(data.language);
+      });
 
       whenMqttReady()
         .then(() => {

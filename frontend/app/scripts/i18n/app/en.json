@@ -38,6 +38,8 @@
             "dashboards": "Dashboards",
             "list": "List",
             "devices": "Devices",
+            "integrations": "Integrations",
+            "alice": "Yandex Alice",
             "widgets": "Widgets",
             "history": "History",
             "rules": "Rules",

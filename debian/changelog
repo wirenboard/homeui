@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.122.0) stable; urgency=medium
+
+  * Add Alice integration
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 07 Aug 2025 17:30:00 +0300
+
 wb-mqtt-homeui (2.121.0) stable; urgency=medium
 
   * Add autologin support for users

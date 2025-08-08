@@ -356,6 +356,11 @@ module.exports = (function makeWebpackConfig() {
         target: 'http://10.200.200.1',
         ws: true,
       },
+      {
+        context: ['/api/integrations'],
+        target: 'http://10.200.200.1:8000',
+        pathRewrite: { '^/api': '' },
+      },
     ],
   };
 
