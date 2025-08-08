@@ -7,7 +7,7 @@ import { getIntAddress } from '../common/modbusAddressesSet';
 import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
 
-function toRpcPortConfig(portConfig) {
+export function toRpcPortConfig(portConfig) {
   if (Object.hasOwn(portConfig, 'address')) {
     return {
       address: portConfig.address,
