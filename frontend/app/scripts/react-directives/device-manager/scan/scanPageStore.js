@@ -329,6 +329,7 @@ class CommonScanStore {
     this.globalError = new GlobalErrorStore();
     this.acceptUpdates = false;
     this.portPath = null;
+    this.useModbusTcp = false;
     this.outOfOrderSlaveIds = null;
     this.alreadyConfiguredDevicesCollapseButtonState = new CollapseButtonState(true);
 
@@ -368,7 +369,7 @@ class CommonScanStore {
           preserve_old_results: preserveOldResults,
         };
         if (this.portPath) {
-          params.port = { path: this.portPath };
+          params.port = { path: this.portPath, protocol: this.useModbusTcp ? 'modbus-tcp' : 'modbus' };
         }
         if (this.outOfOrderSlaveIds) {
           params.out_of_order_slave_ids = this.outOfOrderSlaveIds;
@@ -429,6 +430,7 @@ class CommonScanStore {
    * @param {SelectionPolicy} selectionPolicy - The selection policy for scanning.
    * @param {Array} configuredDevices - The list of configured devices.
    * @param {string} portPath - The path of the port.
+   * @param {boolean} useModbusTcp - Whether to use Modbus TCP protocol.
    * @param {Array} outOfOrderSlaveIds - The list of out-of-order slave IDs.
    * @param {boolean} allowToSelectDevicesInBootloader - The flag to allow to select devices in bootloader.
    * @returns {void}
@@ -437,11 +439,13 @@ class CommonScanStore {
     selectionPolicy,
     configuredDevices,
     portPath,
+    useModbusTcp,
     outOfOrderSlaveIds,
     allowToSelectDevicesInBootloader
   ) {
     this.devicesStore.init(selectionPolicy, configuredDevices, allowToSelectDevicesInBootloader);
     this.portPath = portPath;
+    this.useModbusTcp = useModbusTcp;
     this.outOfOrderSlaveIds = outOfOrderSlaveIds;
     this.startExtendedScanning();
   }

@@ -98,6 +98,7 @@ class DeviceManagerPageStore {
     this.searchDisconnectedScanPageStore.select(
       selectedDeviceTab.deviceType,
       selectedPortTab.path,
+      selectedPortTab.isModbusTcp,
       new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore),
       selectedDeviceTab.slaveId
     );
