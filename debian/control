@@ -5,7 +5,6 @@ Priority: optional
 Standards-Version: 4.5.1
 X-Python3-Version: >= 3.9
 Build-Depends: debhelper (>= 10),
-               pkg-config,
                nodejs (>= 18),
                j2cli,
                minify,
@@ -28,7 +27,9 @@ Depends: ${shlibs:Depends},
          wb-homeui-backend (= ${binary:Version}),
          diffutils,
          ucf
-Recommends: wb-mqtt-logs, wb-device-manager
+Recommends: wb-mqtt-logs,
+            wb-device-manager,
+            wb-rules (>= 2.35.0~~)
 Suggests: wb-mqtt-confed (>= 1.4.0),
 Breaks: wb-mqtt-confed (<< 1.0.3),
         wb-mqtt-db (<< 1.5),

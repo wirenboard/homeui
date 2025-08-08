@@ -51,7 +51,7 @@ export default class RulesStore {
   }
 
   async save(rule: Rule): Promise<string> {
-    const path = rule.name.endsWith('.js') ? rule.name : `/${rule.name}.js`;
+    const path = rule.name.endsWith('.js') ? rule.name : `${rule.name}.js`;
     // check that file is not exists
     if (rule.initName !== path) {
       const list = await this.getList();
