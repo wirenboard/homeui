@@ -73,15 +73,15 @@ export const deviceTypes = {
 
 export enum Capability {
   'On/Off' = 'devices.capabilities.on_off',
-  // 'Color setting' = 'devices.capabilities.color_setting',
+  'Color setting' = 'devices.capabilities.color_setting',
   // Mode = 'devices.capabilities.mode',
-  // Range = 'devices.capabilities.range',
+  Range = 'devices.capabilities.range',
   // Toggle = 'devices.capabilities.toggle',
 }
 
 export enum Color {
   RGB = 'rgb',
-  HSV = 'hsv',
+  // HSV = 'hsv',
 }
 
 export const modes = [
