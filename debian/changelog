@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.122.1) stable; urgency=medium
+
+  * Fix rule rename logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 14 Aug 2025 15:56:00 +0300
+
 wb-mqtt-homeui (2.122.0) stable; urgency=medium
 
   * Add Alice integration

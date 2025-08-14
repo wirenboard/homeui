@@ -51,13 +51,9 @@ export default class RulesStore {
   }
 
   async save(rule: Rule): Promise<string> {
-    const path = rule.name.endsWith('.js') ? rule.name : `/${rule.name}.js`;
-    // check that file is not exists
-    if (rule.initName !== path) {
-      const list = await this.getList();
-      if (list.some((rule) => rule.virtualPath === path)) {
-        throw new Error('file-exists');
-      }
+    let path = rule.initName;
+    if (!path) {
+      path = this.getValidRuleName(rule.name);
     }
 
     return this.#editorProxy.Save({ path, content: rule.content })
@@ -74,6 +70,27 @@ export default class RulesStore {
         });
         return res.path;
       });
+  }
+
+  async rename(oldName: string, newName: string): Promise<boolean> {
+    return this.#editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
+      .then(async () => {
+        return new Promise((resolve) => setTimeout(resolve, 1500));
+      });
+  }
+
+  async checkIsNameUnique(name: string): Promise<boolean> {
+    const path = this.getValidRuleName(name);
+    const list = await this.getList();
+    if (list.some((rule) => rule.virtualPath === path)) {
+      throw new Error('file-exists');
+    }
+
+    return true;
+  }
+
+  getValidRuleName(path: string): string {
+    return path.endsWith('.js') ? path : `${path}.js`;
   }
 
   async changeState(path: string, state: boolean): Promise<void> {

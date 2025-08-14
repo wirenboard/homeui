@@ -47,31 +47,33 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
   }, []);
 
   const save = async () => {
-    if (rule.name) {
-      try {
-        const savedRuleName = await rulesStore.save(rule);
-        const isWithErrors = !!rule.error?.message;
-        notificationsStore.showNotification({
-          variant: isWithErrors ? 'warn' : 'success',
-          text: isWithErrors ? t('rules.labels.success-errors') : t('rules.labels.success'),
-        });
-        setIsEditingTitle(false);
-
-        if (pathName === 'new') {
-          return location.replace(`/#!/rules/edit/${savedRuleName}`);
-        } else if (rule.initName !== savedRuleName) {
-          await rulesStore.deleteRule(rule.initName);
-          return location.replace(`/#!/rules/edit/${savedRuleName}`);
-        }
-      } catch (err) {
-        let message = err.message;
-        if (err.data === 'MqttConnectionError') {
-          message = t('rules.errors.mqtt-connection');
-        } else if (err.message === 'file-exists') {
-          message = t('rules.errors.exists');
-        }
-        notificationsStore.showNotification({ variant: 'danger', text: message });
+    try {
+      const initRuleName = rule.initName;
+      if (rule.initName !== rule.name) {
+        await rulesStore.checkIsNameUnique(rule.name);
       }
+      const savedRuleName = await rulesStore.save(rule);
+      const isWithErrors = !!rule.error?.message;
+      notificationsStore.showNotification({
+        variant: isWithErrors ? 'warn' : 'success',
+        text: isWithErrors ? t('rules.labels.success-errors') : t('rules.labels.success'),
+      });
+
+      if (pathName === 'new') {
+        return location.replace(`/#!/rules/edit/${savedRuleName}`);
+      } else if (initRuleName !== rule.name) {
+        await rulesStore.rename(initRuleName, rule.name);
+        return location.replace(`/#!/rules/edit/${rule.name}`);
+      }
+      setIsEditingTitle(false);
+    } catch (err) {
+      let message = err.message;
+      if (err.data === 'MqttConnectionError') {
+        message = t('rules.errors.mqtt-connection');
+      } else if (err.message === 'file-exists') {
+        message = t('rules.errors.exists');
+      }
+      notificationsStore.showNotification({ variant: 'danger', text: message });
     }
   };
 
