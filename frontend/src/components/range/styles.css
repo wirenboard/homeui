@@ -14,6 +14,7 @@
     padding: 0;
     margin: 0;
     transition: background ease 300ms, var(--input-active-shadow-transition);
+    touch-action: none;
 }
 
 .range:not(:disabled):hover {
