@@ -117,7 +117,7 @@ export default class RulesStore {
       this.rules.map((rule) => rule.virtualPath.replace(/\.js$/, '')),
       copiedRule.name.replace(/\.js$/, '')
     );
-    const copiedRuleName = await this.save(copiedRule);
+    const copiedRuleName = await this.save({ ...copiedRule, initName: this.getValidRuleName(copiedRule.name) });
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.changeState(copiedRuleName, false);
   }
