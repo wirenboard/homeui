@@ -72,10 +72,11 @@ export default class RulesStore {
       });
   }
 
-  async rename(oldName: string, newName: string): Promise<boolean> {
+  async rename(oldName: string, newName: string): Promise<string> {
     return this.#editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
       .then(async () => {
-        return new Promise((resolve) => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        return this.getValidRuleName(newName);
       });
   }
 
