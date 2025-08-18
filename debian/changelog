@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.122.2) stable; urgency=medium
+
+  * Fix range change value on touch scroll
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 18 Aug 2025 14:55:00 +0300
+
 wb-mqtt-homeui (2.122.1) stable; urgency=medium
 
   * Fix rule rename logic

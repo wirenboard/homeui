@@ -16,6 +16,21 @@
     transition: background ease 300ms, var(--input-active-shadow-transition);
 }
 
+/* Have to lock input slide to avoid value change on scroll */
+@media (max-width: 768px) {
+    .range {
+        pointer-events: none;
+    }
+
+    .range::-webkit-slider-thumb {
+        pointer-events: auto;
+    }
+
+    .range::-moz-range-thumb {
+        pointer-events: auto;
+    }
+}
+
 .range:not(:disabled):hover {
     cursor: pointer;
 }
