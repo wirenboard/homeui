@@ -27,6 +27,7 @@ export class EmbeddedSoftwareComponent {
   available = '';
   fwUpdateProxy;
   updateProgress = null;
+  model = '';
   errorData = {};
 
   constructor(fwUpdateProxy, type) {
@@ -57,6 +58,7 @@ export class EmbeddedSoftwareComponent {
   }
 
   get hasUpdate() {
+    return true;
     if (this.current === '' || this.available === '') {
       return false;
     }
@@ -123,6 +125,7 @@ export class EmbeddedSoftware {
     this.fwUpdateProxy = fwUpdateProxy;
     this.firmware = new EmbeddedSoftwareComponent(fwUpdateProxy, 'firmware');
     this.bootloader = new EmbeddedSoftwareComponent(fwUpdateProxy, 'bootloader');
+    this.components = new Map();
     this.canUpdate = false;
     this.deviceModel = '';
 
@@ -150,6 +153,15 @@ export class EmbeddedSoftware {
         });
         this.firmware.setVersion(res.fw, res.available_fw);
         this.bootloader.setVersion(res.bootloader, res.available_bootloader);
+        
+        this.components.clear();
+        for (const [componentKey, componentData] of Object.entries(res.components)) {
+          let component = new EmbeddedSoftwareComponent(this.fwUpdateProxy, 'component');
+          component.setVersion(componentData.fw, componentData.available_fw);
+          component.model = componentData.model;
+          this.components.set(componentKey, component);            
+        }
+        console.log('EmbeddedSoftware components', this.components);
       }
     } catch (err) {
       this.clearVersion();
@@ -176,23 +188,53 @@ export class EmbeddedSoftware {
   clearVersion() {
     this.firmware.clearVersion();
     this.bootloader.clearVersion();
+    for (const component of this.components.values()) {
+      component.clearVersion();
+    }
   }
 
   clearError() {
     this.firmware.clearError();
     this.bootloader.clearError();
+    for (const component of this.components.values()) {
+      component.clearError();
+    }
   }
 
   get isUpdating() {
-    return this.firmware.isUpdating || this.bootloader.isUpdating;
+    if (this.firmware.isUpdating || this.bootloader.isUpdating) {
+      return true;
+    }
+    for (const component of this.components.values()) {
+      if (component.isUpdating) {
+        return true;
+      }
+    }
+    return false;
   }
 
   get hasUpdate() {
-    return this.firmware.hasUpdate;
+    if (this.firmware.hasUpdate) {
+      return true;
+    }
+    for (const component of this.components.values()) {
+      if (component.hasUpdate) {
+        return true;
+      }
+    }
+    return false;
   }
 
   get hasError() {
-    return this.firmware.hasError || this.bootloader.hasError;
+    if (this.firmware.hasError || this.bootloader.hasError) {
+      return true;
+    }
+    for (const component of this.components.values()) {
+      if (component.hasError) {
+        return true;
+      }
+    }
+    return false;
   }
 
   get bootloaderCanSaveSettings() {

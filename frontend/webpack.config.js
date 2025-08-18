@@ -353,7 +353,7 @@ module.exports = (function makeWebpackConfig() {
           '/device/info',
           '/api/https/setup'
         ],
-        target: 'http://10.200.200.1',
+        target: 'http://10.100.2.252',
         ws: true,
       },
       {

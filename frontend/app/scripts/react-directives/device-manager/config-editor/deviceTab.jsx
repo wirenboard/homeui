@@ -1,3 +1,4 @@
+import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation, Trans } from 'react-i18next';
 import {
@@ -12,6 +13,7 @@ import {
 } from '../../common';
 import JsonEditor from '../../components/json-editor/jsonEditor';
 import BootstrapLikeSelect from '../../components/select/select';
+import { has } from 'mobx';
 
 const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }) => {
   if (embeddedSoftware.isUpdating) {
@@ -136,30 +138,68 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
     available_bootloader: embeddedSoftware.bootloader?.available,
     device_model: embeddedSoftware.deviceModel,
   };
-  if (embeddedSoftware.bootloader.hasUpdate && embeddedSoftware.firmware.hasUpdate) {
+  const hasComponentsUpdates = false; //Array.from(embeddedSoftware.components.values()).some((component) => component.hasUpdate);
+  const hasBootloaderUpdate = false; //embeddedSoftware.bootloader.hasUpdate;
+  const hasFirmwareUpdate = true; //embeddedSoftware.firmware.hasUpdate;
+  const updatesCount = [hasBootloaderUpdate, hasFirmwareUpdate, hasComponentsUpdates].filter(Boolean).length;
+
+  if (updatesCount > 1) {
     const firmwareTransKey = !embeddedSoftware.deviceModel
       ? 'device-manager.labels.new-firmware-item'
       : 'device-manager.labels.new-firmware-item-link';
+    
     return (
       <>
         <span>{t('device-manager.labels.new-software-components')}</span>
         <br />
-        <span>
-          &emsp;&nbsp;-&nbsp;
-          {t('device-manager.labels.new-bootloader-item', values)}
-        </span>
-        <br />
-        <span>
-          &emsp;&nbsp;-&nbsp;
-          <Trans i18nKey={firmwareTransKey} values={values} components={[<a></a>]} />
-        </span>
+        {hasBootloaderUpdate && (
+          <React.Fragment key={'bootloader'}>
+            <span>
+              &emsp;&nbsp;-&nbsp;
+              {t('device-manager.labels.new-bootloader-item', values)}
+            </span>
+            <br />
+          </React.Fragment>
+        )}
+        {hasFirmwareUpdate && (
+          <React.Fragment key={'firmware'}>
+            <span>
+              &emsp;&nbsp;-&nbsp;
+              <Trans i18nKey={firmwareTransKey} values={values} components={[<a></a>]} />
+            </span>
+            <br />
+          </React.Fragment>
+        )}
+        {hasComponentsUpdates && 
+          Array.from(embeddedSoftware.components.values())
+            .filter((component) => component.hasUpdate)
+            .map((component) => {
+              const componentTransKey = !component.model
+                ? 'device-manager.labels.new-component-item'
+                : 'device-manager.labels.new-component-item-link';
+              return (
+                <React.Fragment key={'component' + component.model}>
+                  <span>
+                    &emsp;&nbsp;-&nbsp;
+                    <Trans i18nKey={componentTransKey} values={{
+                      ['device_model']: component.model,
+                      [`current_firmware`]: component.current,
+                      [`available_firmware`]: component.available
+                    }} components={[<a></a>]} />
+                  </span>
+                  <br />
+                </React.Fragment>
+              );  
+            })
+        }
       </>
     );
   }
-  if (embeddedSoftware.bootloader.hasUpdate) {
+
+  if (hasBootloaderUpdate) {
     return <span>{t('device-manager.labels.new-bootloader', values)}</span>;
   }
-  if (embeddedSoftware.firmware.hasUpdate) {
+  if (hasFirmwareUpdate) {
     const transKey = !embeddedSoftware.deviceModel
       ? 'device-manager.labels.new-firmware'
       : 'device-manager.labels.new-firmware-link';
@@ -169,8 +209,38 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
       </span>
     );
   }
+  if (hasComponentsUpdates) {
+    return (
+      <>
+        <span>{t('device-manager.labels.new-components')}</span>
+        <br />
+        {Array.from(embeddedSoftware.components.values())
+          .filter((component) => component.hasUpdate)
+          .map((component) => {
+            const componentTransKey = !component.model
+                    ? 'device-manager.labels.new-component'
+                    : 'device-manager.labels.new-component-link';
+            return (
+              <React.Fragment key={'component' + component.model}>
+                <span>
+                  &emsp;&nbsp;-&nbsp;
+                  <Trans i18nKey={componentTransKey} values={{
+                    ['device_model']: component.model,
+                    [`current_firmware`]: component.current,
+                    [`available_firmware`]: component.available
+                  }} components={[<a></a>]} />
+                </span>
+                <br />
+              </React.Fragment>
+            );
+          })
+        }
+      </>
+    );
+  }
   return null;
 });
+
 
 const NewEmbeddedSoftwareErasesSettingsText = observer(({ embeddedSoftware }) => {
   const { t } = useTranslation();
