@@ -90,6 +90,7 @@
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "^6.7.2",
     "css-minimizer-webpack-plugin": "^4.2.2",
+    "dotenv": "^17.2.1",
     "esbuild-loader": "^4.2.2",
     "eslint": "9.19.0",
     "eslint-import-resolver-alias": "1.1.2",
