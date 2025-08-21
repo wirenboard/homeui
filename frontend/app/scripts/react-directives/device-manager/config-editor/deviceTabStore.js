@@ -27,7 +27,6 @@ export class EmbeddedSoftwareComponent {
   available = '';
   fwUpdateProxy;
   updateProgress = null;
-  model = '';
   errorData = {};
 
   constructor(fwUpdateProxy, type) {
@@ -58,7 +57,6 @@ export class EmbeddedSoftwareComponent {
   }
 
   get hasUpdate() {
-    return true;
     if (this.current === '' || this.available === '') {
       return false;
     }
@@ -84,19 +82,22 @@ export class EmbeddedSoftwareComponent {
     return this.updateProgress !== null;
   }
 
-  async startUpdate(address, portConfig) {
+  async startUpdate(address, portConfig, components) {
+    await this.fwUpdateProxy.Update({
+      slave_id: getIntAddress(address),
+      port: toRpcPortConfig(portConfig),
+      type: this.type,
+      components_numbers: [...components.keys()]
+    });
+  }
+
+  setupUpdate() {
     this.updateProgress = 0;
     this.errorData = {};
-    try {
-      await this.fwUpdateProxy.Update({
-        slave_id: getIntAddress(address),
-        port: toRpcPortConfig(portConfig),
-        type: this.type,
-      });
-    } catch (err) {
-      this.updateProgress = null;
-      throw err;
-    }
+  }
+
+  resetUpdate() {
+    this.updateProgress = null;
   }
 
   get hasError() {
@@ -113,10 +114,28 @@ export class EmbeddedSoftwareComponent {
         port: this.errorData.port,
         type: this.type,
       });
-    } catch (err) {}
+    } catch (err) { }
     runInAction(() => {
       this.errorData = {};
     });
+  }
+}
+
+class ComponentFirmware extends EmbeddedSoftwareComponent {
+  constructor(fwUpdateProxy, model) {
+    super(fwUpdateProxy, 'component');
+    this.model = model;
+    makeObservable(this, {
+      setupUpdate: action,
+    });
+  }
+
+  get hasUpdate() {
+    
+    if (this.current === '' || this.available === '') {
+      return false;
+    }
+    return this.available !== this.current;
   }
 }
 
@@ -132,11 +151,14 @@ export class EmbeddedSoftware {
     makeObservable(this, {
       canUpdate: observable,
       deviceModel: observable,
+      components: observable,
       setUpdateProgress: action,
       startFirmwareUpdate: action,
       isUpdating: computed,
       hasUpdate: computed,
       hasError: computed,
+      hasComponentsUpdates: computed,
+      componentsCanBeUpdated: computed
     });
   }
 
@@ -147,21 +169,22 @@ export class EmbeddedSoftware {
           slave_id: getIntAddress(address),
           port: toRpcPortConfig(portConfig),
         });
+
+        const newComponents = new Map();
+        for (const [componentKey, componentData] of Object.entries(res.components || {})) {
+          let component = new ComponentFirmware(this.fwUpdateProxy, componentData.model);
+          component.setVersion(componentData.fw, componentData.available_fw);
+          newComponents.set(parseInt(componentKey, 10), component);
+        }
+
         runInAction(() => {
           this.canUpdate = res.can_update;
           this.deviceModel = res?.model || '';
+          this.components = newComponents;
         });
+
         this.firmware.setVersion(res.fw, res.available_fw);
         this.bootloader.setVersion(res.bootloader, res.available_bootloader);
-        
-        this.components.clear();
-        for (const [componentKey, componentData] of Object.entries(res.components)) {
-          let component = new EmbeddedSoftwareComponent(this.fwUpdateProxy, 'component');
-          component.setVersion(componentData.fw, componentData.available_fw);
-          component.model = componentData.model;
-          this.components.set(componentKey, component);            
-        }
-        console.log('EmbeddedSoftware components', this.components);
       }
     } catch (err) {
       this.clearVersion();
@@ -171,34 +194,99 @@ export class EmbeddedSoftware {
   setUpdateProgress(data) {
     if (data.type === 'bootloader') {
       this.bootloader.setUpdateProgress(data);
-    } else {
+    } else if (data.type === 'firmware') {
       this.firmware.setUpdateProgress(data);
+    } else if (data.type === 'component') {
+      if (!this.components.has(data.component_number)) {
+        runInAction(() => {
+          this.components.set(data.component_number, new ComponentFirmware(this.fwUpdateProxy, data.component_model));
+        });
+      }
+      this.components.get(data.component_number).setUpdateProgress(data);
     }
   }
 
-  async startFirmwareUpdate(address, portConfig) {
-    await this.firmware.startUpdate(address, portConfig);
-  }
-
-  async startBootloaderUpdate(address, portConfig) {
-    await this.bootloader.startUpdate(address, portConfig);
-    this.firmware.clearVersion();
-  }
-
-  clearVersion() {
-    this.firmware.clearVersion();
-    this.bootloader.clearVersion();
+  clearComponentsVersion() {
     for (const component of this.components.values()) {
       component.clearVersion();
     }
   }
 
-  clearError() {
-    this.firmware.clearError();
-    this.bootloader.clearError();
+  clearComponentsError() {
     for (const component of this.components.values()) {
       component.clearError();
     }
+  }
+
+  setupComponentsUpdate(components) {
+    for (const component of components.values()) {
+      component.setupUpdate();
+    }
+  }
+
+  resetComponentsUpdate(components) {
+    for (const component of components.values()) {
+      component.resetUpdate();
+    }
+  }
+
+  async startFirmwareUpdate(address, portConfig) {
+    const componentsCanBeUpdated = this.componentsCanBeUpdated;
+
+    try {
+      this.firmware.setupUpdate();
+      this.setupComponentsUpdate(componentsCanBeUpdated);
+      await this.firmware.startUpdate(address, portConfig, componentsCanBeUpdated);
+    } catch (err) {
+      this.firmware.resetUpdate();
+      this.resetComponentsUpdate(componentsCanBeUpdated);
+      throw err;
+    }
+    this.clearComponentsVersion();
+  }
+
+  async startBootloaderUpdate(address, portConfig) {
+    const componentsCanBeUpdated = this.componentsCanBeUpdated;
+
+    try{
+      this.bootloader.setupUpdate();
+      this.firmware.setupUpdate();
+      this.setupComponentsUpdate(componentsCanBeUpdated);
+      await this.bootloader.startUpdate(address, portConfig, componentsCanBeUpdated);
+    } catch (err) {
+      this.bootloader.resetUpdate();
+      this.firmware.resetUpdate();
+      this.resetComponentsUpdate(componentsCanBeUpdated);
+      throw err;
+    }
+    this.firmware.clearVersion();
+    this.clearComponentsVersion();
+  }
+
+  async startComponentsUpdate(address, portConfig) {
+    const componentsCanBeUpdated = this.componentsCanBeUpdated
+
+    try{
+      this.setupComponentsUpdate(componentsCanBeUpdated);
+      const firstComponent = componentsCanBeUpdated.get(0);
+      // Triggering update for the first component with components list causes all components update
+      await firstComponent.startUpdate(address, portConfig, componentsCanBeUpdated);
+    } catch (err) {
+      this.resetComponentsUpdate(componentsCanBeUpdated);
+      throw err;
+    }
+  }
+
+  clearVersion() {
+    this.firmware.clearVersion();
+    this.bootloader.clearVersion();
+    this.clearComponentsVersion();
+  }
+
+  clearError() {
+    this.firmware.clearError();
+    this.bootloader.clearError();
+    this.clearComponentsError();
   }
 
   get isUpdating() {
@@ -217,12 +305,15 @@ export class EmbeddedSoftware {
     if (this.firmware.hasUpdate) {
       return true;
     }
-    for (const component of this.components.values()) {
-      if (component.hasUpdate) {
-        return true;
-      }
-    }
-    return false;
+    return this.hasComponentsUpdates;
+  }
+
+  get hasComponentsUpdates() {
+    return this.componentsCanBeUpdated.size > 0;
+  }
+
+  get componentsCanBeUpdated() {
+    return new Map([...this.components].filter(([_, component]) => component.hasUpdate));
   }
 
   get hasError() {
@@ -473,6 +564,14 @@ export class DeviceTab {
     }
   }
 
+  async startComponentsUpdate(portConfig) {
+    try {
+      await this.embeddedSoftware.startComponentsUpdate(this.slaveId, portConfig);
+    } catch (err) {
+      this.setError(err.message);
+    }
+  }
+
   setError(err) {
     this.error = err;
   }
@@ -494,6 +593,9 @@ export class DeviceTab {
   }
 
   get showDisconnectedError() {
+    console.log("this.isDisconnected", this.isDisconnected);
+    console.log("this.embeddedSoftware.isUpdating", this.embeddedSoftware.isUpdating);
+    console.log("this.waitingForDeviceReconnect", this.waitingForDeviceReconnect);
     return (
       this.isDisconnected && !this.embeddedSoftware.isUpdating && !this.waitingForDeviceReconnect
     );

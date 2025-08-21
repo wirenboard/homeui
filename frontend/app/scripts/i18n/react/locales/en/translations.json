@@ -278,7 +278,8 @@
          "new-component-item-link": "component {{device_model}}: {{available_firmware}}, current {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "new-components": "New component firmware versions are available:",
          "new-component": "{{device_model}}: {{available_firmware}}, current {{current_firmware}}.",
-         "new-component-link": "{{device_model}}: {{available_firmware}}, current {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>."
+         "new-component-link": "{{device_model}}: {{available_firmware}}, current {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "updating-component": "Updating component firmware {{model}}: {{current}} to {{available}}"
       },
       "buttons": {
          "save": "Save config",

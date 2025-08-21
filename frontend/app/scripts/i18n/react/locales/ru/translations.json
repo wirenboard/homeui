@@ -275,7 +275,8 @@
          "new-component-item-link": "компонент {{device_model}}: {{available_firmware}}, текущая {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
          "new-components": "Доступны новые версии прошивок компонентов:",
          "new-component": "{{device_model}}: {{available_firmware}}, текущая {{current_firmware}}.",
-         "new-component-link": "{{device_model}}: {{available_firmware}}, текущая {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>."
+         "new-component-link": "{{device_model}}: {{available_firmware}}, текущая {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
+         "updating-component": "Обновление прошивки компонента {{model}}: {{current}} на {{available}}"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -304,6 +305,7 @@
          "setup": "Не удалось настроить {{device}}: {{error}}",
          "update-error-firmware": "Не удалось обновить прошивку {{from_version}} до версии {{to_version}}.",
          "update-error-bootloader": "Не удалось обновить загрузчик {{from_version}} до версии {{to_version}}.",
+         "update-error-component": "Не удалось обновить прошивку компонент {{model}} c {{from_version}} до версии {{to_version}}.",
          "update-error-generic": "Ошибка: {{error}}. Если устройство не отвечает, возможно, оно находится в режиме загрузчика, для восстановления воспользуйтесь кнопкой \"Найти устройство\" и поиском устройств в режиме загрузчика. Если восстановить работу не получается, обратитесь в техническую поддержку.",
          "update-error-recoverable": "Если устройство не отвечает, возможно, оно находится в режиме загрузчика, для восстановления воспользуйтесь кнопкой \"Найти устройство\" и поиском устройств в режиме загрузчика.",
          "update-error-rpc-timeout": "Убедитесь, что сервис wb-mqtt-serial запущен и работает корректно.",
