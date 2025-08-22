@@ -169,6 +169,7 @@ export class EmbeddedSoftware {
           slave_id: getIntAddress(address),
           port: toRpcPortConfig(portConfig),
         });
+        debugger
 
         const newComponents = new Map();
         for (const [componentKey, componentData] of Object.entries(res.components || {})) {
@@ -593,9 +594,6 @@ export class DeviceTab {
   }
 
   get showDisconnectedError() {
-    console.log("this.isDisconnected", this.isDisconnected);
-    console.log("this.embeddedSoftware.isUpdating", this.embeddedSoftware.isUpdating);
-    console.log("this.waitingForDeviceReconnect", this.waitingForDeviceReconnect);
     return (
       this.isDisconnected && !this.embeddedSoftware.isUpdating && !this.waitingForDeviceReconnect
     );

@@ -218,7 +218,6 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
         <br />
         {Array.from(embeddedSoftware.componentsCanBeUpdated)
           .map(([key,component]) => {
-            console.log("component", key, component);
             const componentTransKey = !component.model
               ? 'device-manager.labels.new-component'
               : 'device-manager.labels.new-component-link';
