@@ -13,7 +13,6 @@ import {
 } from '../../common';
 import JsonEditor from '../../components/json-editor/jsonEditor';
 import BootstrapLikeSelect from '../../components/select/select';
-import { has } from 'mobx';
 
 const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }) => {
   if (embeddedSoftware.isUpdating) {

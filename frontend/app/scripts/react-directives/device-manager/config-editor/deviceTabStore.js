@@ -169,7 +169,6 @@ export class EmbeddedSoftware {
           slave_id: getIntAddress(address),
           port: toRpcPortConfig(portConfig),
         });
-        debugger
 
         const newComponents = new Map();
         for (const [componentKey, componentData] of Object.entries(res.components || {})) {
@@ -314,7 +313,7 @@ export class EmbeddedSoftware {
   }
 
   get componentsCanBeUpdated() {
-    return new Map([...this.components].filter(([_, component]) => component.hasUpdate));
+    return new Map([...this.components].filter(([, component]) => component.hasUpdate));
   }
 
   get hasError() {
