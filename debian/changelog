@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.123.0) stable; urgency=medium
+
+  * Add components updating feature
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Fri, 22 Aug 2025 14:16:30 +0300
+
 wb-mqtt-homeui (2.122.1) stable; urgency=medium
 
   * Fix rule rename logic
