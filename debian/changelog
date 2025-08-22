@@ -1,8 +1,22 @@
-wb-mqtt-homeui (2.123.0) stable; urgency=medium
+wb-mqtt-homeui (2.124.0) stable; urgency=medium
 
   * Add components updating feature
 
  -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Fri, 22 Aug 2025 14:16:30 +0300
+
+wb-mqtt-homeui (2.123.1) stable; urgency=medium
+
+  * Update README
+  * Add option to run local dev server on different IP
+  * Add flag to disable no https warn
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 19 Aug 2025 14:33:09 +0300
+
+wb-mqtt-homeui (2.123.0) stable; urgency=medium
+
+  * Toggle devices button
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 18 Aug 2025 18:35:00 +0300
 
 wb-mqtt-homeui (2.122.1) stable; urgency=medium
 

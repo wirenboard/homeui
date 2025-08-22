@@ -439,7 +439,9 @@
       "title": "Devices",
       "labels": {
          "nothing": "No devices available for this moment.",
-         "delete": "Delete device"
+         "delete": "Delete device",
+         "collapse": "Collapse devices",
+         "expand": "Expand devices"
       },
       "prompt": {
          "delete-title": "Delete device",
