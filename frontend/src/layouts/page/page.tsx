@@ -20,6 +20,7 @@ export const PageLayout = ({
   isEditingTitle,
   editingTitlePlaceholder,
   isLoading = false,
+  isHideHeader = false,
   actions,
   onTitleChange,
   onTitleEditEnable,
@@ -46,7 +47,7 @@ export const PageLayout = ({
 
   return (
     <main className="page">
-      {(titleValue || isEditingTitle) && (
+      {!isHideHeader && (titleValue || isEditingTitle) && (
         <header className="page-headerContainer">
           <div className="page-headerTitleWrapper">
             {isEditingTitle ? (
