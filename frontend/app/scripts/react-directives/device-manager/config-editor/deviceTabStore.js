@@ -84,7 +84,7 @@ export class EmbeddedSoftwareComponent {
     return this.updateProgress !== null;
   }
 
-  async startUpdate(address, portConfig, components) {
+  async startUpdate(address, portConfig) {
     await this.fwUpdateProxy.Update({
       slave_id: getIntAddress(address),
       port: toRpcPortConfig(portConfig),
