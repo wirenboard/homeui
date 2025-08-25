@@ -13,6 +13,10 @@ export const useTabs = ({
       : items[0]?.id
   );
 
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
+
   const onTabChange = useCallback(
     async (next: string) => {
       if (next === activeTab) return;

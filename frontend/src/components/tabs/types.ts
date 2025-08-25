@@ -14,6 +14,7 @@ export interface TabsProps {
 
 export interface TabContentProps {
   tabId: string;
+  className?: string;
   activeTab: string;
 }
 

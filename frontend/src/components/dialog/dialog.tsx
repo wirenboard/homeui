@@ -1,5 +1,14 @@
+import {
+  FloatingPortal,
+  FloatingOverlay,
+  FloatingFocusManager,
+  useFloating,
+  useDismiss,
+  useRole,
+  useInteractions
+} from '@floating-ui/react';
 import classNames from 'classnames';
-import { useRef, useEffect, PropsWithChildren } from 'react';
+import { PropsWithChildren, useId } from 'react';
 import CloseIcon from '@/assets/icons/close.svg';
 import { DialogProps } from './types';
 import './styles.css';
@@ -8,51 +17,65 @@ export const Dialog = ({
   children,
   className,
   heading,
+  headerActions,
+  showCloseButton = true,
   withPadding = true,
   isOpened,
   onClose,
 }: PropsWithChildren<DialogProps>) => {
-  const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const headingId = useId();
 
-  useEffect(() => {
-    if (dialogRef.current) {
-      if (isOpened) {
-        dialogRef.current.showModal();
-      } else {
-        dialogRef.current.close();
-      }
-    }
+  const { context, refs } = useFloating({
+    open: isOpened,
+    onOpenChange: (open) => {
+      if (!open) onClose?.();
+    },
+  });
 
-    return () => {
-      if (dialogRef.current) {
-        dialogRef.current.close();
-      }
-    };
-  }, [dialogRef, isOpened]);
+  const dismiss = useDismiss(context);
+  const role = useRole(context, { role: 'dialog' });
+  const { getFloatingProps } = useInteractions([dismiss, role]);
+
+  if (!isOpened) return null;
 
   return (
-    <dialog
-      ref={dialogRef}
-      className={classNames('dialog', className)}
-      onClose={onClose}
-    >
-      {isOpened && (
-        <>
-          <header className="dialog-header">
-            <h3 className="dialog-title">{heading}</h3>
-            <button className="dialog-close" onClick={() => dialogRef.current.close()}>
-              <CloseIcon />
-            </button>
-          </header>
+    <FloatingPortal>
+      <FloatingOverlay
+        className="dialog-overlay"
+        lockScroll
+        onClick={() => onClose?.()}
+      >
+        <FloatingFocusManager context={context} modal>
           <div
-            className={classNames({
-              'dialog-content': withPadding,
+            role="dialog"
+            {...getFloatingProps({
+              ref: refs.setFloating,
+              className: classNames('dialog', className),
+              'aria-labelledby': headingId,
+              'aria-modal': true,
+              onClick: (e) => e.stopPropagation(),
             })}
           >
-            {children}
+            <header className="dialog-header">
+              <h3 id={headingId} className="dialog-title">
+                {heading}
+              </h3>
+              <div>
+                {headerActions}
+                {showCloseButton && (
+                  <button className="dialog-close" onClick={() => onClose?.()}>
+                    <CloseIcon />
+                  </button>
+                )}
+              </div>
+            </header>
+
+            <div className={classNames({ 'dialog-content': withPadding })}>
+              {children}
+            </div>
           </div>
-        </>
-      )}
-    </dialog>
+        </FloatingFocusManager>
+      </FloatingOverlay>
+    </FloatingPortal>
   );
 };

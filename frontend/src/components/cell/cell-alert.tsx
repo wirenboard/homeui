@@ -13,7 +13,7 @@ export const CellAlert = observer(({ cell }: { cell: Cell }) => {
   return (
     <>
       <Tooltip
-        text={<span><b>'{cell.id}'</b> {t('widgets.labels.copy')}</span>}
+        text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
         placement="top-start"
         trigger="click"
       >

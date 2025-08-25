@@ -14,9 +14,11 @@
     animation: appear 200ms forwards;
 }
 
-.dialog::backdrop {
+.dialog-overlay {
+    display: flex;
     background: rgba(7, 7, 7, 0.8);
     animation: appear-overlay 200ms forwards;
+    z-index: 9999;
 }
 
 .dialog-header {
@@ -58,7 +60,7 @@
 
 .dialog-content {
     font-size: 16px;
-    padding: 16px;
+    padding: 4px 16px 16px;
     max-height: calc(100dvh - (62px + 80px)); /* header height + Y offset */
     overflow: auto;
 }

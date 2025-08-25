@@ -101,9 +101,8 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('dashboard', {
-      url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}',
-      controller: 'DashboardCtrl as $ctrl',
-      template: require('../views/dashboard.html'),
+      url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{sourceDashboardId}',
+      template: '<dashboard-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
