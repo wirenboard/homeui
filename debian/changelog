@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.123.2) stable; urgency=medium
+
+  * Fix range change value on touch scroll
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 25 Aug 2025 11:00:11 +0300
+
 wb-mqtt-homeui (2.123.1) stable; urgency=medium
 
   * Update README
@@ -11,6 +17,7 @@ wb-mqtt-homeui (2.123.0) stable; urgency=medium
   * Toggle devices button
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 18 Aug 2025 18:35:00 +0300
+
 
 wb-mqtt-homeui (2.122.1) stable; urgency=medium
 
