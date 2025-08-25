@@ -43,6 +43,8 @@ export class EmbeddedSoftwareComponent {
       setUpdateProgress: action,
       startUpdate: action,
       setVersion: action,
+      setupUpdate: action,
+      resetUpdate: action,
     });
   }
 
@@ -87,7 +89,6 @@ export class EmbeddedSoftwareComponent {
       slave_id: getIntAddress(address),
       port: toRpcPortConfig(portConfig),
       type: this.type,
-      components_numbers: [...components.keys()]
     });
   }
 
@@ -125,17 +126,10 @@ class ComponentFirmware extends EmbeddedSoftwareComponent {
   constructor(fwUpdateProxy, model) {
     super(fwUpdateProxy, 'component');
     this.model = model;
-    makeObservable(this, {
-      setupUpdate: action,
-    });
   }
 
   get hasUpdate() {
-    
-    if (this.current === '' || this.available === '') {
-      return false;
-    }
-    return this.available !== this.current;
+    return this.available !== '' && this.available !== this.current;
   }
 }
 
@@ -290,22 +284,11 @@ export class EmbeddedSoftware {
   }
 
   get isUpdating() {
-    if (this.firmware.isUpdating || this.bootloader.isUpdating) {
-      return true;
-    }
-    for (const component of this.components.values()) {
-      if (component.isUpdating) {
-        return true;
-      }
-    }
-    return false;
+    return this.firmware.isUpdating || this.bootloader.isUpdating || [...this.components.values()].some(c => c.isUpdating);
   }
 
   get hasUpdate() {
-    if (this.firmware.hasUpdate) {
-      return true;
-    }
-    return this.hasComponentsUpdates;
+    return this.firmware.hasUpdate || this.hasComponentsUpdates;
   }
 
   get hasComponentsUpdates() {
@@ -317,15 +300,7 @@ export class EmbeddedSoftware {
   }
 
   get hasError() {
-    if (this.firmware.hasError || this.bootloader.hasError) {
-      return true;
-    }
-    for (const component of this.components.values()) {
-      if (component.hasError) {
-        return true;
-      }
-    }
-    return false;
+    return this.firmware.hasError || this.bootloader.hasError || [...this.components.values()].some(c => c.hasError);
   }
 
   get bootloaderCanSaveSettings() {
