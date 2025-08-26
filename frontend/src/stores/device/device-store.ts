@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { MqttClient } from '@/common/types';
+import type { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
@@ -288,5 +288,11 @@ export default class DeviceStore {
 
   get hasOpenedDivices() {
     return Array.from(this.filteredDevices.values()).some((device) => device.isVisible);
+  }
+
+  get controls() {
+    return Array.from(this.cells.values())
+      .filter((cell) => !cell.id.startsWith('system__'))
+      .map((cell) => ({ id: cell.id, name: `${this.devices.get(cell.deviceId)?.name} / ${cell.name}` }));
   }
 }

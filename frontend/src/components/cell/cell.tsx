@@ -19,17 +19,17 @@ import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
-export const CellContent = observer(({ cell, name }: CellProps) => {
+export const CellContent = observer(({ cell, name, isCompact, extra }: CellProps) => {
   const { t } = useTranslation();
 
   const renderCellContent = () => {
     switch (cell.displayType) {
       case CellComponent.Text:
-        return <CellText cell={cell} />;
+        return <CellText cell={cell} isCompact={isCompact} />;
       case CellComponent.Alert:
         return <CellAlert cell={cell} />;
       case CellComponent.Switch:
-        return <CellSwitch cell={cell} />;
+        return <CellSwitch cell={cell} inverted={extra?.invert} />;
       case CellComponent.Button:
         return <CellButton cell={cell} />;
       case CellComponent.Range:
@@ -51,12 +51,13 @@ export const CellContent = observer(({ cell, name }: CellProps) => {
           'deviceCell-columns': cell.displayType === CellComponent.Range,
           'deviceCell-error': cell.error?.some((error) => [CellError.Read, CellError.Write].includes(error)),
           'deviceCell-errorPeriod': cell.error && cell.error.includes(CellError.Period),
+          'deviceCell-reversed': isCompact && ![CellComponent.Alert, CellComponent.Button].includes(cell.displayType),
         }
       )}
     >
-      {![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (
+      {!isCompact && ![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (
         <Tooltip
-          text={<span><b>'{cell.id}'</b> {t('widgets.labels.copy')}</span>}
+          text={<span><b>'{cell.id}'</b> {t('widget.labels.copy')}</span>}
           placement="top-start"
           trigger="click"
         >
@@ -67,7 +68,7 @@ export const CellContent = observer(({ cell, name }: CellProps) => {
             {cell.error?.includes(CellError.Period) && (
               <Suspense>
                 <Tooltip
-                  text={t('widgets.errors.poll')}
+                  text={t('widget.errors.poll')}
                   placement="top-start"
                 >
                   <DangerIcon className="deviceCell-periodErrorIcon" />
@@ -81,6 +82,9 @@ export const CellContent = observer(({ cell, name }: CellProps) => {
             )}
           </div>
         </Tooltip>
+      )}
+      {isCompact && cell.displayType === CellComponent.Range && (
+        <CellHistory cell={cell} />
       )}
       {renderCellContent()}
     </div>

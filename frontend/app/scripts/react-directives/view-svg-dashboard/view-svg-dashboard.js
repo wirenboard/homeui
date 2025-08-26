@@ -68,11 +68,8 @@ function viewSvgDashboardDirective(
             });
             $rootScope.$apply();
           } else {
-            $state.go('dashboard', newParams, {
-              custom: {
-                source: sourceDashboardId,
-              },
-            });
+            newParams.sourceDashboardId = sourceDashboardId;
+            $state.go('dashboard', newParams);
           }
         }
       });
