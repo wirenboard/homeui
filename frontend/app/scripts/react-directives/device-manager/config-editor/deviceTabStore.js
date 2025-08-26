@@ -27,6 +27,7 @@ export class EmbeddedSoftwareComponent {
   available = '';
   fwUpdateProxy;
   updateProgress = null;
+  hasUpdate = false;
   errorData = {};
 
   constructor(fwUpdateProxy, type) {
@@ -37,7 +38,7 @@ export class EmbeddedSoftwareComponent {
       available: observable,
       updateProgress: observable,
       errorData: observable.ref,
-      hasUpdate: computed,
+      hasUpdate: observable,
       isActual: computed,
       clearVersion: action,
       setUpdateProgress: action,
@@ -48,21 +49,16 @@ export class EmbeddedSoftwareComponent {
     });
   }
 
-  setVersion(current, available) {
+  setVersion(current, available, hasUpdate) {
     this.current = current;
     this.available = available;
+    this.hasUpdate = hasUpdate;
   }
 
   clearVersion() {
     this.current = '';
     this.available = '';
-  }
-
-  get hasUpdate() {
-    if (this.current === '' || this.available === '') {
-      return false;
-    }
-    return firmwareIsNewer(this.current, this.available);
+    this.hasUpdate = false;
   }
 
   get isActual() {
@@ -127,10 +123,6 @@ class ComponentFirmware extends EmbeddedSoftwareComponent {
     super(fwUpdateProxy, 'component');
     this.model = model;
   }
-
-  get hasUpdate() {
-    return this.available !== '' && this.available !== this.current;
-  }
 }
 
 export class EmbeddedSoftware {
@@ -167,7 +159,7 @@ export class EmbeddedSoftware {
         const newComponents = new Map();
         for (const [componentKey, componentData] of Object.entries(res.components || {})) {
           let component = new ComponentFirmware(this.fwUpdateProxy, componentData.model);
-          component.setVersion(componentData.fw, componentData.available_fw);
+          component.setVersion(componentData.fw, componentData.available_fw, componentData.has_update);
           newComponents.set(parseInt(componentKey, 10), component);
         }
 
@@ -177,8 +169,8 @@ export class EmbeddedSoftware {
           this.components = newComponents;
         });
 
-        this.firmware.setVersion(res.fw, res.available_fw);
-        this.bootloader.setVersion(res.bootloader, res.available_bootloader);
+        this.firmware.setVersion(res.fw, res.available_fw, res.fw_has_update);
+        this.bootloader.setVersion(res.bootloader, res.available_bootloader, res.bootloader_has_update);
       }
     } catch (err) {
       this.clearVersion();
