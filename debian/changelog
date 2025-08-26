@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.123.3) stable; urgency=medium
 
-  * Fix range change value on touch scroll
+  * Disable change range value on touch by clicking on slide (only thumb enabled)
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 25 Aug 2025 11:00:11 +0300
 
