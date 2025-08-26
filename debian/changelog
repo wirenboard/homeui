@@ -7,6 +7,13 @@ wb-mqtt-homeui (2.124.0) stable; urgency=medium
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 25 Aug 2025 17:12:31 +0300
 
+wb-mqtt-homeui (2.123.2) stable; urgency=medium
+
+  * Fix loading of Alice integration page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 25 Aug 2025 18:57:50 +0500
+
+
 wb-mqtt-homeui (2.123.1) stable; urgency=medium
 
   * Update README
