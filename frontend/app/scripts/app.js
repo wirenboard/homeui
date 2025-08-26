@@ -564,7 +564,7 @@ const realApp = angular
         });
 
       $transitions.onBefore({}, function (transition) {
-        if ($rootScope.noHttps !== undefined) {
+        if ($rootScope.noHttps !== undefined || __DISABLE_HTTPS_CHECK__) {
           return true;
         }
         return checkHttps().then(res => {

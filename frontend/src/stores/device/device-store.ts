@@ -271,4 +271,22 @@ export default class DeviceStore {
       }, []),
     }));
   }
+
+  toggleDevices() {
+    if (this.hasOpenedDivices) {
+      this.devices.forEach((device) => {
+        if (device.isVisible) {
+          device.toggleDeviceVisibility();
+        }
+      });
+    } else {
+      this.devices.forEach((device) => {
+        device.toggleDeviceVisibility();
+      });
+    }
+  }
+
+  get hasOpenedDivices() {
+    return Array.from(this.filteredDevices.values()).some((device) => device.isVisible);
+  }
 }
