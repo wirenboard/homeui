@@ -30,6 +30,9 @@ export const DeviceSkills = observer(({
     switch (type) {
       case Capability['Color setting']: {
         parameters.color_model = Color.RGB;
+        // Add parameters for different types:
+        // - For RGB - no additional params needed
+        // - For temperature_k - params added when user changes color_model
         break;
       }
       case Capability.Mode: {
@@ -124,19 +127,96 @@ export const DeviceSkills = observer(({
               )}
 
               {capability.type === Capability['Color setting'] && (
-                <div className="aliceDeviceSkills-colspan2">
-                  <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
-                  <Dropdown
-                    value={capability.parameters?.color_model}
-                    options={Object.keys(Color).map((color) => ({ label: color, value: Color[color] }))}
-                    onChange={({ value }: Option<Color>) => {
-                      const val = capabilities.map((item, i) => i === key
-                        ? { ...item, parameters: { color_model: value } }
-                        : item);
-                      onCapabilityChange(val);
-                    }}
-                  />
-                </div>
+                // <div className="aliceDeviceSkills-colspan2">
+                //   <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
+                //   <Dropdown
+                //     value={capability.parameters?.color_model}
+                //     options={Object.keys(Color).map((color) => ({ label: color, value: Color[color] }))}
+                //     onChange={({ value }: Option<Color>) => {
+                //       const val = capabilities.map((item, i) => i === key
+                //         ? { ...item, parameters: { color_model: value } }
+                //         : item);
+                //       onCapabilityChange(val);
+                //     }}
+                //   />
+                // </div>
+                <>
+                  <div>
+                    <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
+                    <Dropdown
+                      value={capability.parameters?.color_model}
+                      options={Object.keys(Color).map((color) => ({ 
+                        label: color === 'RGB' ? 'RGB' : 'Цветовая температура', 
+                        value: Color[color] 
+                      }))}
+                      onChange={({ value }: Option<Color>) => {
+                        let newParameters: CapabilityParameters = { color_model: value };
+                        
+                        // Если выбрана цветовая температура, добавляем поля temperature_k
+                        if (value === Color.TEMPERATURE_K) {
+                          newParameters.temperature_k = { min: 2700, max: 6500 };
+                        }
+                        
+                        const val = capabilities.map((item, i) => i === key
+                          ? { ...item, parameters: newParameters }
+                          : item);
+                        onCapabilityChange(val);
+                      }}
+                    />
+                  </div>
+                     
+                  {/* Для RGB показываем пустую ячейку */}
+                  {capability.parameters?.color_model === Color.RGB && (
+                    <div></div>
+                  )}
+                  
+                  {/* Для temperature_k показываем поля мин/макс */}
+                  {capability.parameters?.color_model === Color.TEMPERATURE_K && (
+                    <div className="aliceDeviceSkills-gridRange">
+                      <div>
+                        <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
+                        <Input
+                          value={capability.parameters?.temperature_k?.min}
+                          type="number"
+                          isFullWidth
+                          onChange={(min: number) => {
+                            const val = capabilities.map((item, i) => i === key
+                              ? { 
+                                  ...item, 
+                                  parameters: { 
+                                    ...item.parameters, 
+                                    temperature_k: { ...item.parameters.temperature_k, min } 
+                                  } 
+                                }
+                              : item);
+                            onCapabilityChange(val);
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
+                        <Input
+                          value={capability.parameters?.temperature_k?.max}
+                          type="number"
+                          isFullWidth
+                          onChange={(max: number) => {
+                            const val = capabilities.map((item, i) => i === key
+                              ? { 
+                                  ...item, 
+                                  parameters: { 
+                                    ...item.parameters, 
+                                    temperature_k: { ...item.parameters.temperature_k, max } 
+                                  } 
+                                }
+                              : item);
+                            onCapabilityChange(val);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+
               )}
 
               {capability.type === Capability.Mode && (

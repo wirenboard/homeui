@@ -26,6 +26,10 @@ export interface CapabilityParameters {
     max: number;
     precision: number;
   };
+  temperature_k?: {
+    min: number;
+    max: number;
+  };
 }
 
 export interface SmartDeviceCapability {
