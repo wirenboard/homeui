@@ -2,6 +2,16 @@ import { makeAutoObservable } from 'mobx';
 import i18n from '~/i18n/react/config';
 import { DeviceMeta, NameTranslations } from './types';
 
+function getFoldedDevices(): string[] {
+  try {
+    const stored = localStorage.getItem('foldedDevices');
+    if (stored !== null){
+      return JSON.parse(stored);
+    }
+  } catch (error) {}
+  return [];
+}
+
 export default class Device {
   public id: string;
   public cellIds: string[] = [];
@@ -12,7 +22,7 @@ export default class Device {
 
   constructor(id: string) {
     this.id = id;
-    this.isVisible = !JSON.parse(localStorage.getItem('foldedDevices')).includes(this.id);
+    this.isVisible = !getFoldedDevices().includes(this.id);
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
@@ -38,7 +48,7 @@ export default class Device {
   }
 
   toggleDeviceVisibility() {
-    const foldedDevices = JSON.parse(localStorage.getItem('foldedDevices'));
+    const foldedDevices = getFoldedDevices();
     const updatedFoldedDevices = foldedDevices.includes(this.id)
       ? foldedDevices.filter((deviceId: string) => deviceId !== this.id)
       : [...foldedDevices, this.id];
