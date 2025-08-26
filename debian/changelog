@@ -3,7 +3,7 @@ wb-mqtt-homeui (2.124.0) stable; urgency=medium
   * Update dashboard page
   * Add controls sort
   * Add separator inside widget
-  * Add JSON editor insise widget edit
+  * Add JSON editor inside widget edit
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 25 Aug 2025 17:12:31 +0300
 
