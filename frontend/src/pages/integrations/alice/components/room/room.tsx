@@ -21,48 +21,6 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
   const [roomName, setRoomName] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
 
-  const save = useCallback(async (ev: FormEvent) => {
-    ev.preventDefault();
-    try {
-      if (!id) {
-        const room = await addRoom(roomName);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.room-added', { name: roomName }),
-        });
-        onSave(room);
-      } else {
-        await updateRoom(id, { name: roomName });
-        setIsEditingTitle(false);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.room-updated', { name: roomName }),
-        });
-      }
-    } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.message });
-    }
-  }, [id, roomName]);
-
-  useEffect(() => {
-    setIsEditingTitle(!id);
-    if (id === 'all') {
-      setRoomName(t('alice.buttons.all-devices'));
-    } else {
-      setRoomName(id ? rooms.get(id).name : '');
-    }
-  }, [id]);
-
-  const onConfirmDelete = async () => {
-    await deleteRoom(id);
-    await fetchData();
-    notificationsStore.showNotification({
-      variant: 'success',
-      text: t('alice.notifications.room-deleted', { name: roomName }),
-    });
-    onDelete();
-  };
-
   const deviceList = useMemo(() => {
     const formatRoomDevices = (keys: string[]) => keys
       .map((id) => {
@@ -99,6 +57,48 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
       return [];
     }
   }, [devices, rooms, id, sortDirection]);
+
+  const save = useCallback(async (ev: FormEvent) => {
+    ev.preventDefault();
+    try {
+      if (!id) {
+        const room = await addRoom(roomName);
+        notificationsStore.showNotification({
+          variant: 'success',
+          text: t('alice.notifications.room-added', { name: roomName }),
+        });
+        onSave(room);
+      } else {
+        await updateRoom(id, { name: roomName, devices: deviceList.map((device) => device.id) });
+        setIsEditingTitle(false);
+        notificationsStore.showNotification({
+          variant: 'success',
+          text: t('alice.notifications.room-updated', { name: roomName }),
+        });
+      }
+    } catch (err) {
+      notificationsStore.showNotification({ variant: 'danger', text: err.message });
+    }
+  }, [id, roomName, deviceList]);
+
+  useEffect(() => {
+    setIsEditingTitle(!id);
+    if (id === 'all') {
+      setRoomName(t('alice.buttons.all-devices'));
+    } else {
+      setRoomName(id ? rooms.get(id).name : '');
+    }
+  }, [id]);
+
+  const onConfirmDelete = async () => {
+    await deleteRoom(id);
+    await fetchData();
+    notificationsStore.showNotification({
+      variant: 'success',
+      text: t('alice.notifications.room-deleted', { name: roomName }),
+    });
+    onDelete();
+  };
 
   return (
     <>
