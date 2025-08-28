@@ -314,7 +314,7 @@ function deviceDataService(mqttClient, $window) {
       switch (this.valueType) {
         case 'number':
           const maxSafeBigInt = BigInt(Number.MAX_SAFE_INTEGER);
-          const isBigInt = Number(value) && Number.isInteger(Number(value)) && BigInt(value) >= maxSafeBigInt;
+          const isBigInt = Number(value) && Number.isInteger(Number(value)) && BigInt(Number(value)) >= maxSafeBigInt;
           // to avoid rounding we will set value as string if value is greater than max safe integer
           this._value = isBigInt ? value : value - 0;
           break;
