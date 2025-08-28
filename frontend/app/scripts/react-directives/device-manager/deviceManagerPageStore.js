@@ -73,6 +73,10 @@ class DeviceManagerPageStore {
   }
 
   setEmbeddedSoftwareUpdateProgress(stringData) {
+    // wb-device-manager could be stopped, so it will clear state topic and send empty string
+    if (stringData === '') {
+      return;
+    }
     this.configEditorPageStore.setEmbeddedSoftwareUpdateProgress(JSON.parse(stringData));
   }
 
