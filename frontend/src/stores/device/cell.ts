@@ -247,7 +247,7 @@ export default class Cell {
       case 'number':
         if (isNaN(value as number | null)) {
           this._value = 0;
-        } else if (Number(value) && Number.isInteger(Number(value)) && BigInt(value) >= maxSafeBigInt) {
+        } else if (Number(value) && Number.isInteger(Number(value)) && BigInt(Number(value)) >= maxSafeBigInt) {
           // to avoid rounding we will set value as string if value is greater than max safe integer
           this._value = value;
         } else {
