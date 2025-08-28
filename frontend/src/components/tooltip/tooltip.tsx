@@ -65,7 +65,7 @@ export const Tooltip = ({ children, text, trigger = 'hover', placement = 'top' }
   return (
     <>
       <div className="wb-tooltip-container" ref={refs.setReference} {...getReferenceProps()}>{children}</div>
-      <FloatingPortal root={document.getElementById('floating-container')}>
+      <FloatingPortal>
         {isOpen && (
           <div
             className="wb-tooltip"

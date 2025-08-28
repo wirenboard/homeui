@@ -11,9 +11,10 @@ import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Cell } from '@/components/cell';
 import { Confirm } from '@/components/confirm';
+import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { useToggleFullscreen } from '@/utils/fullScreen';
-import { parseHash } from '@/utils/url';
+import { useParseHash } from '@/utils/url';
 import { WidgetAdd } from './components/widget-add';
 import { WidgetEdit } from './components/widget-edit';
 import type { DashboardPageProps } from './types';
@@ -23,11 +24,11 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
   const { t } = useTranslation();
   const { cells } = devicesStore;
   const { dashboards, widgets } = dashboardStore;
-  const { page: dashboardId, params } = parseHash();
+  const { page: dashboardId, params } = useParseHash();
+  const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
-  const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
 
   const actions = [
     {
@@ -58,7 +59,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
       {dashboards.has(dashboardId) ? (
         <PageLayout
           title={dashboards.get(dashboardId).name}
-          actions={(
+          actions={!params.has('fullscreen') && (
             <>
               {params.get('sourceDashboardId') && (
                 <Button
@@ -74,11 +75,16 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
                   onClick={() => setIsAddWidgetModalOpened(true)}
                 />
               )}
-              <Button
-                icon={isFullscreen ? <FullScreenExitIcon/> : <FullScreenIcon/>}
-                variant="secondary"
-                onClick={() => toggleFullscreen()}
-              />
+              <Tooltip
+                text={isFullscreen ? t('dashboard.buttons.fullscreen-exit') : t('dashboard.buttons.fullscreen')}
+                placement="bottom-start"
+              >
+                <Button
+                  icon={isFullscreen ? <FullScreenExitIcon/> : <FullScreenIcon/>}
+                  variant="secondary"
+                  onClick={() => toggleFullscreen()}
+                />
+              </Tooltip>
             </>
           )}
           isHideHeader={!!params.has('hmi')}

@@ -15,6 +15,7 @@ export const Confirm = ({
   closeCallback,
   variant = 'default',
   isOpened = false,
+  isOverlayCloseDisabled = false,
   isPreventSubmit = false,
   isDisabled = false,
 }: PropsWithChildren<ConfirmationProps>) => {
@@ -28,6 +29,7 @@ export const Confirm = ({
       headerActions={headerActions}
       withPadding={false}
       showCloseButton={false}
+      isOverlayCloseDisabled={isOverlayCloseDisabled}
       onClose={closeCallback}
     >
       <form

@@ -106,8 +106,6 @@ export const PageLayout = ({
           )
       )}
 
-      <div id="floating-container" />
-
       <Notifications />
     </main>
   );

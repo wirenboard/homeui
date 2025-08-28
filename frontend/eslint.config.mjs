@@ -37,7 +37,11 @@ export default [
       'no-param-reassign': 2,
       'no-restricted-globals': 0,
       'no-unused-vars': [2, {
-        args: 'after-used', caughtErrors: 'none', argsIgnorePattern: '^_', varsIgnorePattern: '^(_|[A-Z])[a-zA-Z0-9]*$',
+        args: 'after-used',
+        caughtErrors: 'none',
+        ignoreRestSiblings: true,
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^(_|[A-Z])[a-zA-Z0-9]*$',
       }],
       'no-return-assign': 0,
       'no-console': 0,

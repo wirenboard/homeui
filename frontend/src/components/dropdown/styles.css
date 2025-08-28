@@ -102,8 +102,14 @@
 
 .dropdown-button .dropdown__control {
   background: var(--primary-color);
-  color: var(--button-color);
   border: 1px solid var(--primary-color);
+  color: var(--button-color);
+}
+
+.dropdown-button:hover .dropdown__control {
+  background: var(--primary-color-hover);
+  border: 1px solid var(--primary-color-hover);
+  cursor: pointer;
 }
 
 .dropdown-icon {

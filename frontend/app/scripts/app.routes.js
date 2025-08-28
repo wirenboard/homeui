@@ -101,7 +101,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('dashboard', {
-      url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{sourceDashboardId}',
+      url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}&{sourceDashboardId}',
       template: '<dashboard-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {

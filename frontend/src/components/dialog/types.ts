@@ -6,6 +6,7 @@ export interface DialogProps {
   heading?: string;
   headerActions?: ReactElement;
   showCloseButton?: boolean;
+  isOverlayCloseDisabled?: boolean;
   withPadding?: boolean;
   onClose?: () => void;
 }

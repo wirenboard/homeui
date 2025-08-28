@@ -9,8 +9,8 @@
 }
 
 .widgetEdit-editedHeading {
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 6px;
+    font-size: 12px;
     margin-bottom: 6px !important;
     border: 0 !important;
     font-weight: bold;
@@ -28,10 +28,10 @@
     grid-gap: 12px 12px;
     align-self: center;
     display: grid;
-    grid-template-columns: 20px 160px 1fr 120px 20px;
+    grid-template-columns: 20px 160px 1fr 70px 20px;
     border: 1px solid var(--border-color);
     border-radius: var(--input-border-radius);
-    padding: 6px 12px;
+    padding: 6px;
     grid-template-areas: "sort id control type remove";
 
     @media(max-width: 640px) {
@@ -42,12 +42,24 @@
 }
 
 .widgetEdit-editedCellWithInverted {
-    grid-template-columns: 20px 160px 1fr 90px 60px 20px;
+    grid-template-columns: 20px 160px 1fr 70px 60px 20px;
     grid-template-areas: "sort id control type invert remove";
 
     @media(max-width: 640px) {
-        grid-template-columns: 20px 1fr 80px 60px 20px;
+        grid-template-columns: 20px 1fr 70px 60px 20px;
         grid-template-areas: "sort control type invert remove";
+    }
+
+    @media(max-width: 460px) {
+        grid-template-columns: 20px 1fr 60px 60px 20px;
+        grid-template-areas: "sort control type invert remove";
+    }
+
+    @media(max-width: 420px) {
+        grid-template-columns: 20px 1fr 40px;
+        grid-template-areas:
+                "sort control remove"
+                ". type invert";
     }
 }
 
@@ -61,8 +73,6 @@
 
 .widgetEdit-id {
     grid-area: id;
-    color: var(--gray-color);
-    font-size: 13px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -105,6 +115,7 @@
 
 .widgetEdit-controls {
     overflow-x: auto;
+    font-size: 13px;
 }
 
 .widgetEdit-input {
@@ -148,6 +159,7 @@
     flex-grow: 1;
     height: 1px;
     width: 100%;
+    font-size: 13px;
 }
 
 .widgetEdit-dropdown {

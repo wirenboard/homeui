@@ -32,6 +32,8 @@
     margin: 0;
     font-size: 20px;
     font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dialog-close {

@@ -416,6 +416,8 @@
          "add": "Add to dashboard",
          "save": "Save",
          "delete": "Delete widget",
+         "copy": "Copy widget",
+         "edit": "Edit widget",
          "edit-json": "Edit as JSON",
          "editor": "Visual editor",
          "exists-on-dashboard": "Already added"
@@ -429,7 +431,9 @@
          "back-to-dashboard": "Back",
          "add-widget": "Add widget",
          "edit-widget": "Edit widget",
-         "remove-widget": "Remove from this dashboard"
+         "remove-widget": "Remove from this dashboard",
+         "fullscreen": "Enter fullscreen mode",
+         "fullscreen-exit": "Exit fullscreen mode"
       },
       "prompt": {
          "remove-title": "Remove widget from dashboard",

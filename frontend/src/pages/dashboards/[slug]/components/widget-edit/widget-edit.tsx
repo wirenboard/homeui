@@ -72,10 +72,10 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
     }
     try {
       const data = JSON.parse(code);
-      setName(data.name);
-      setWidgetCells(data.cells);
-      setDescription(data.description);
-      setIsCompactView(data.compact);
+      setName(data.name || '');
+      setWidgetCells(data.cells || []);
+      setDescription(data.description || '');
+      setIsCompactView(data.compact || false);
     } catch (err) {
     }
   }, [code, isJsonView]);
@@ -120,6 +120,7 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
           compact: isCompactView,
         });
       }}
+      isOverlayCloseDisabled
       isPreventSubmit
     >
       <div className="widgetEdit-content">
@@ -185,7 +186,10 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
                 list={widgetCells}
                 setList={(val) => {
                   if (val.length) {
-                    setWidgetCells(val);
+                    setWidgetCells(val.map((cell: any) => {
+                      const { chosen, ...value } = cell;
+                      return value;
+                    }));
                   }
                 }}
                 handle=".widgetEdit-sortHandle"

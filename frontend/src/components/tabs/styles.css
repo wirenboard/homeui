@@ -15,21 +15,19 @@
     border: 0;
     background: none;
     padding: 6px 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.tabs-button:hover:not(:focus) {
+.tabs-button:hover,
+.tabs-button:focus {
     background: var(--border-color);
+    transition: background 200ms linear, var(--input-active-shadow-transition);
 }
 
 .tabs-buttonSelected {
     border-right: 6px solid var(--primary-color) !important;
-}
-
-.tabs-button:focus {
-    box-shadow: var(--input-active-shadow);
-    z-index: 10;
-    border-radius: var(--input-border-radius);
-    transition: border-color 200ms linear, var(--input-active-shadow-transition);
 }
 
 .tabs li:not(:last-of-type) .tabs-button:not(:focus) {

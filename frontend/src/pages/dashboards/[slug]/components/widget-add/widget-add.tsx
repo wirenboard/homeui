@@ -12,6 +12,7 @@ import { Confirm } from '@/components/confirm';
 import { Dialog } from '@/components/dialog';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { TabContent, Tabs, useTabs } from '@/components/tabs';
+import { Tooltip } from '@/components/tooltip';
 import { WidgetEdit } from '../widget-edit';
 import type { WidgetAddProps } from './types';
 import './styles.css';
@@ -97,24 +98,30 @@ export const WidgetAdd = observer(({ widgets, dashboard, cells, controls, isOpen
                 <div className="widgetAdd-previewHeader">
                   <h4 className="widgetAdd-headingPreview">{t('widget.labels.preview')}</h4>
                   <div className="widgetAdd-actions">
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      icon={<TrashIcon />}
-                      onClick={() => setIsConfirmDelete(true)}
-                    />
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      icon={<CopyIcon />}
-                      onClick={copyWidget}
-                    />
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      icon={<EditIcon />}
-                      onClick={() => setIsEditing(!isEditing)}
-                    />
+                    <Tooltip text={t('widget.buttons.delete')} placement="bottom">
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        icon={<TrashIcon />}
+                        onClick={() => setIsConfirmDelete(true)}
+                      />
+                    </Tooltip>
+                    <Tooltip text={t('widget.buttons.copy')} placement="bottom">
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        icon={<CopyIcon />}
+                        onClick={copyWidget}
+                      />
+                    </Tooltip>
+                    <Tooltip text={t('widget.buttons.edit')} placement="bottom">
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        icon={<EditIcon />}
+                        onClick={() => setIsEditing(!isEditing)}
+                      />
+                    </Tooltip>
                     <Button
                       label={dashboard.hasWidget(widget.id)
                         ? t('widget.buttons.exists-on-dashboard')

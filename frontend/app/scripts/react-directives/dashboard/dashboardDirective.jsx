@@ -18,6 +18,7 @@ export default function dashboardDirective($rootScope, $stateParams, uiConfig, m
       }
 
       $rootScope.isHMI = $stateParams.hmi;
+      $rootScope.forceFullscreen = $stateParams.fullscreen === true;
 
       scope.dashboardStore = new DashboardsStore(uiConfig, ConfigEditorProxy);
       scope.devicesStore = new DeviceStore(mqttClient);

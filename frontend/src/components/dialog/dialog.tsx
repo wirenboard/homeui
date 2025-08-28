@@ -20,6 +20,7 @@ export const Dialog = ({
   headerActions,
   showCloseButton = true,
   withPadding = true,
+  isOverlayCloseDisabled,
   isOpened,
   onClose,
 }: PropsWithChildren<DialogProps>) => {
@@ -32,7 +33,7 @@ export const Dialog = ({
     },
   });
 
-  const dismiss = useDismiss(context);
+  const dismiss = useDismiss(context, { outsidePress: !isOverlayCloseDisabled });
   const role = useRole(context, { role: 'dialog' });
   const { getFloatingProps } = useInteractions([dismiss, role]);
 
@@ -40,11 +41,7 @@ export const Dialog = ({
 
   return (
     <FloatingPortal>
-      <FloatingOverlay
-        className="dialog-overlay"
-        lockScroll
-        onClick={() => onClose?.()}
-      >
+      <FloatingOverlay className="dialog-overlay" lockScroll>
         <FloatingFocusManager context={context} modal>
           <div
             role="dialog"

@@ -9,6 +9,7 @@ export interface ConfirmationProps {
   closeCallback: () => void;
   isDisabled?: boolean;
   isPreventSubmit?: boolean;
+  isOverlayCloseDisabled?: boolean;
   variant?: 'default' | 'danger';
   acceptLabel?: string;
 }
