@@ -590,7 +590,18 @@ const realApp = angular
             hideGlobalSpinner = false;
           }
           if (fillUserTypeResult === 'login') {
-            return transition.to().name === 'login' ? true : $state.target('login');
+            // transition.params() contains all possible parameters by default - let's delete them
+            const cleanParams = (params) => {
+              return Object.fromEntries(
+                Object.entries(params).filter(([_, v]) => v !== undefined && v !== null)
+              );
+            }
+
+            const params = transition.to().name === 'home' ? {} : {
+              returnState: transition.to().name,
+              returnParams: new URLSearchParams(cleanParams(transition.params())).toString(),
+            };
+            return transition.to().name === 'login' || $state.target('login', params);
           }
           if (connectToMqtt) {
             const loginUrl = new URL('/mqtt', $window.location.origin);

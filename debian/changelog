@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.126.0) stable; urgency=medium
+
+  * Save url on logout and restore it on auth
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 29 Aug 2025 13:49:37 +0300
+
 wb-mqtt-homeui (2.125.1) stable; urgency=medium
 
   * Fix https connection in old browsers
