@@ -1,9 +1,33 @@
-wb-mqtt-homeui (2.124.0) stable; urgency=medium
+wb-mqtt-homeui (2.125.0) stable; urgency=medium
 
   * Add firmware update for Wiren Board devices using Modbus TCP
   * Fix firmware information requests for non Wiren Board devices
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 26 Aug 2025 17:03:35 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 29 Aug 2025 12:00:17 +0500
+
+wb-mqtt-homeui (2.124.1) stable; urgency=medium
+
+  * Fix bigint interface blocker
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 28 Aug 2025 16:02:22 +0300
+
+wb-mqtt-homeui (2.124.0) stable; urgency=medium
+
+  * Change favicon color to distinct from corporate website in browser tabs
+
+ -- Aleksandr Kazadaev <aleksandr.kazadaev@wirenboard.com>  Thu, 28 Aug 2025 11:16:22 +0500
+
+wb-mqtt-homeui (2.123.5) stable; urgency=medium
+
+  * Fix big integer display value
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 27 Aug 2025 14:40:22 +0300
+
+wb-mqtt-homeui (2.123.4) stable; urgency=medium
+
+  * Fix Alice rename room logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 27 Aug 2025 10:41:21 +0300
 
 wb-mqtt-homeui (2.123.3) stable; urgency=medium
 

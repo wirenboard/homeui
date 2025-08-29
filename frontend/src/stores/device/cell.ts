@@ -242,9 +242,17 @@ export default class Cell {
   }
 
   private _setCellValue(value: ValueType) {
+    const maxSafeBigInt = BigInt(Number.MAX_SAFE_INTEGER);
     switch (this.valueType) {
       case 'number':
-        this._value = isNaN(value as number | null) ? 0 : Number(value);
+        if (isNaN(value as number | null)) {
+          this._value = 0;
+        } else if (Number(value) && Number.isInteger(Number(value)) && BigInt(Number(value)) >= maxSafeBigInt) {
+          // to avoid rounding we will set value as string if value is greater than max safe integer
+          this._value = value;
+        } else {
+          this._value = Number(value);
+        }
         break;
       case 'boolean':
         // it could be boolean or string '0' | '1'
