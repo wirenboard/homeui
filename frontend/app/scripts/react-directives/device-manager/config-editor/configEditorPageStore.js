@@ -620,6 +620,14 @@ class ConfigEditorPageStore {
       tab.startBootloaderUpdate(portTab.baseConfig);
     }
   }
+
+  updateComponents(){
+    const tab = this.tabs.selectedTab;
+    if (tab) {
+      const portTab = this.tabs.selectedPortTab;
+      tab.startComponentsUpdate(portTab.baseConfig);
+    }
+  }
 }
 
 export default ConfigEditorPageStore;
