@@ -9,7 +9,7 @@ import PageWrapperStore from '../../components/page-wrapper/pageWrapperStore';
 import { getIntAddress } from '../common/modbusAddressesSet';
 import showAddDeviceModal from './addDeviceModal';
 import showCopyDeviceModal from './copyDeviceModal';
-import { DeviceTab } from './deviceTabStore';
+import { DeviceTab, toRpcPortConfig } from './deviceTabStore';
 import { getTranslation, getDefaultObject } from './jsonSchemaUtils';
 import {
   PortTab,
@@ -317,7 +317,7 @@ class ConfigEditorPageStore {
           port.devices.forEach((device) => {
             let tab = this.createDeviceTab(device);
             portTab.addChildren(tab);
-            if (['tcp', 'serial'].includes(portTab.portType)) {
+            if (portTab.isEnabled) {
               tab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
             }
           });
@@ -513,7 +513,7 @@ class ConfigEditorPageStore {
     } else {
       topics.add(deviceId);
     }
-    let portTab = this.tabs.portTabs.find((p) => p.path === device.port);
+    let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     let deviceTab = this.createDeviceTab(deviceConfig);
     deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
     this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
@@ -525,16 +525,10 @@ class ConfigEditorPageStore {
       return;
     }
 
-    let params = { slave_id: device.address };
-    if (portTab.isTcpGateway) {
-      params.port = portTab.baseConfig;
-    } else {
-      params.port = {
-        path: device.port,
-        baud_rate: device.baudRate,
-        parity: device.parity,
-        stop_bits: device.stopBits,
-      };
+    const portConfig = portTab.baseConfig;
+    let params = { slave_id: getIntAddress(device.address), port: toRpcPortConfig(portConfig) };
+    if (portConfig.modbusTcp) {
+      params.protocol = 'modbus-tcp';
     }
     await this.fwUpdateProxy.Restore(params);
   }
@@ -548,7 +542,7 @@ class ConfigEditorPageStore {
       return false;
     }
 
-    let portTab = this.tabs.portTabs.find((p) => p.path === device.port);
+    let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     if (!portTab) {
       return false;
     }
@@ -576,7 +570,7 @@ class ConfigEditorPageStore {
     deviceTab.setDisconnected(isDisconnected);
     if (!isDisconnected) {
       const portTab = this.tabs.findPortTabByDevice(deviceTab);
-      if (portTab && ['tcp', 'serial'].includes(portTab.portType)) {
+      if (portTab) {
         deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
       }
     }

@@ -32,13 +32,11 @@ function makeConfiguredDevicesList(portTabChildren, deviceTypesStore) {
 
 function getConfiguredModbusDevices(portTabs, deviceTypesStore) {
   return portTabs.reduce((acc, portTab) => {
-    if (portTab.portType === 'serial' || portTab.portType === 'tcp') {
-      acc[portTab.path] = {
-        type: portTab.portType,
-        config: portTab.baseConfig,
-        devices: makeConfiguredDevicesList(portTab.children, deviceTypesStore),
-      };
-    }
+    acc[portTab.path] = {
+      type: portTab.portType,
+      config: portTab.baseConfig,
+      devices: makeConfiguredDevicesList(portTab.children, deviceTypesStore),
+    };
     return acc;
   }, {});
 }

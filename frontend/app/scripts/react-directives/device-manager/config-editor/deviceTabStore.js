@@ -7,7 +7,7 @@ import { getIntAddress } from '../common/modbusAddressesSet';
 import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
 
-function toRpcPortConfig(portConfig) {
+export function toRpcPortConfig(portConfig) {
   if (Object.hasOwn(portConfig, 'address')) {
     return {
       address: portConfig.address,
@@ -81,11 +81,15 @@ export class EmbeddedSoftwareComponent {
   }
 
   async startUpdate(address, portConfig) {
-    await this.fwUpdateProxy.Update({
-      slave_id: getIntAddress(address),
-      port: toRpcPortConfig(portConfig),
-      type: this.type,
-    });
+    let params = {
+        slave_id: getIntAddress(address),
+        port: toRpcPortConfig(portConfig),
+        type: this.type,
+    };
+    if (portConfig.modbusTcp) {
+        params.protocol = 'modbus-tcp';
+    }
+    await this.fwUpdateProxy.Update(params);
   }
 
   setupUpdate() {
@@ -151,10 +155,14 @@ export class EmbeddedSoftware {
   async updateVersion(address, portConfig) {
     try {
       if (await this.fwUpdateProxy.hasMethod('GetFirmwareInfo')) {
-        let res = await this.fwUpdateProxy.GetFirmwareInfo({
+        let params = {
           slave_id: getIntAddress(address),
           port: toRpcPortConfig(portConfig),
-        });
+        };
+        if (portConfig.modbusTcp) {
+          params.protocol = 'modbus-tcp';
+        }
+        let res = await this.fwUpdateProxy.GetFirmwareInfo(params);
 
         const newComponents = new Map();
         for (const [componentKey, componentData] of Object.entries(res.components || {})) {
@@ -512,7 +520,9 @@ export class DeviceTab {
   }
 
   updateEmbeddedSoftwareVersion(portConfig) {
-    this.embeddedSoftware.updateVersion(this.slaveId, portConfig);
+    if (this.isWbDevice) {
+      this.embeddedSoftware.updateVersion(this.slaveId, portConfig);
+    }
   }
 
   async startFirmwareUpdate(portConfig) {
