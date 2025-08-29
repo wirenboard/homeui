@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.125.0) stable; urgency=medium
+
+  * Add firmware update for Wiren Board devices using Modbus TCP
+  * Fix firmware information requests for non Wiren Board devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 29 Aug 2025 12:00:17 +0500
+
 wb-mqtt-homeui (2.124.1) stable; urgency=medium
 
   * Fix bigint interface blocker
