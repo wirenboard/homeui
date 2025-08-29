@@ -594,6 +594,7 @@ const realApp = angular
           }
           if (connectToMqtt) {
             const loginUrl = new URL('/mqtt', $window.location.origin);
+            loginUrl.protocol = loginUrl.protocol.replace('http', 'ws');
             let loginData = {
               url: loginUrl.href,
             };
