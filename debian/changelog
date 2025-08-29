@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.126.0) stable; urgency=medium
 
   * Add components updating feature
 
- -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Fri, 22 Aug 2025 14:16:30 +0300
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Fri, 29 Aug 2025 14:16:30 +0300
+
+wb-mqtt-homeui (2.125.1) stable; urgency=medium
+
+  * Fix https connection in old browsers
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 29 Aug 2025 12:29:22 +0300
 
 wb-mqtt-homeui (2.125.0) stable; urgency=medium
 
