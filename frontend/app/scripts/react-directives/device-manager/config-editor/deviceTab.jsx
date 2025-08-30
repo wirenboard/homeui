@@ -307,13 +307,14 @@ const NewEmbeddedSoftwareWarning = observer(
   }
 );
 
-function getErrorDescriptionKey(errorId) {
+function getErrorDescriptionKey(type, errorId) {
   const idToKey = new Map([
     ['com.wb.device_manager.download_error', 'download'],
     ['com.wb.device_manager.rpc_call_timeout_error', 'rpc-timeout'],
     ['com.wb.device_manager.device.response_timeout_error', 'recoverable'],
   ]);
-  const key = idToKey.get(errorId) || 'generic';
+  const genericException = type === 'component' ? 'generic' : 'generic-component';
+  const key = idToKey.get(errorId) || genericException;
   return 'device-manager.errors.update-error-' + key;
 }
 

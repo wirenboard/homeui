@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.126.1) stable; urgency=medium
+
+  * Handle components update error more accuracy
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Sat, 30 Aug 2025 12:49:37 +0300
+
 wb-mqtt-homeui (2.126.0) stable; urgency=medium
 
   * Add components updating feature
