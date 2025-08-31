@@ -15,24 +15,66 @@ import {
   ranges,
   toggles,
   type CapabilityParameters,
-  type PropertyParameters
+  type PropertyParameters,
+  type SmartDeviceCapability
 } from '@/stores/alice';
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
+
+const getAvailableColorModelsForCapability = (capabilities: SmartDeviceCapability[], currentIndex: number) => {
+  const usedColorModels = capabilities
+    .filter((cap, index) => cap.type === Capability['Color setting'] && index !== currentIndex)
+    .map(cap => cap.parameters?.color_model)
+    .filter(Boolean);
+  
+  return Object.values(Color).filter(colorModel => !usedColorModels.includes(colorModel));
+};
+
+const getAvailableColorModels = (capabilities: SmartDeviceCapability[]) => {
+  const usedColorModels = capabilities
+    .filter(cap => cap.type === Capability['Color setting'])
+    .map(cap => cap.parameters?.color_model)
+    .filter(Boolean);
+  
+  return Object.values(Color).filter(colorModel => !usedColorModels.includes(colorModel));
+};
+
+const isCapabilityDisabled = (capabilityType: Capability, capabilities: SmartDeviceCapability[]) => {
+  if (capabilityType === Capability['Color setting']) {
+    // For color setting, disable only if all color models are used
+    return getAvailableColorModels(capabilities).length === 0;
+  }
+  
+  // For other capabilities, use existing logic
+  return capabilities.find((item) => item.type === capabilityType);
+};
+
 
 export const DeviceSkills = observer(({
   capabilities, properties, deviceStore, onCapabilityChange, onPropertyChange,
 }: DeviceSkillsParams) => {
   const { t } = useTranslation();
 
+  const getAvailableCapabilities = () => {
+    const availableCapabilities = Object.values(Capability).filter(capType => {
+      return !isCapabilityDisabled(capType, capabilities);
+    });
+    return availableCapabilities;
+  };
+
   const getCapabilityParameters = (type: Capability) => {
     const parameters: CapabilityParameters = {};
     switch (type) {
       case Capability['Color setting']: {
-        parameters.color_model = Color.RGB;
-        // Add parameters for different types:
-        // - For RGB - no additional params needed
-        // - For temperature_k - params added when user changes color_model
+        // Choose the first available color model
+        const availableColorModels = getAvailableColorModels(capabilities);
+        parameters.color_model = availableColorModels[0] || Color.RGB;
+        
+        // Add default parameters for temperature_k
+        if (parameters.color_model === Color.TEMPERATURE_K) {
+          parameters.temperature_k = { min: 2700, max: 6500 };
+        }
+
         break;
       }
       case Capability.Mode: {
@@ -101,7 +143,7 @@ export const DeviceSkills = observer(({
                   options={Object.keys(Capability).map((cap) => ({
                     label: cap,
                     value: Capability[cap],
-                    isDisabled: capabilities.find((item) => item.type === Capability[cap]),
+                    isDisabled: isCapabilityDisabled(Capability[cap], capabilities),
                   }))}
                   onChange={(option: Option<Capability>) => onCapabilityTypeChange(option.value, key)}
                 />
@@ -145,10 +187,18 @@ export const DeviceSkills = observer(({
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
                     <Dropdown
                       value={capability.parameters?.color_model}
-                      options={Object.keys(Color).map((color) => ({ 
-                        label: color === 'RGB' ? 'RGB' : 'Цветовая температура', 
-                        value: Color[color] 
-                      }))}
+                      options={Object.keys(Color).map((color) => {
+                        const availableModels = getAvailableColorModelsForCapability(capabilities, key);
+                        const isCurrentModel = capability.parameters?.color_model === Color[color];
+                        const isAvailable = availableModels.includes(Color[color]);
+                        
+                        return {
+                          label: color === 'RGB' ? 'RGB' : 'Цветовая температура', 
+                          value: Color[color],
+                          isDisabled: !isCurrentModel && !isAvailable
+                        };
+                      })}
+
                       onChange={({ value }: Option<Color>) => {
                         let newParameters: CapabilityParameters = { color_model: value };
                         
@@ -348,10 +398,9 @@ export const DeviceSkills = observer(({
         <Button
           className="aliceDeviceSkills-addButton"
           label={t('alice.buttons.add-capability')}
-          disabled={capabilities.length === Object.keys(Capability).length}
+          disabled={getAvailableCapabilities().length === 0}
           onClick={() => {
-            const type = Object.values(Capability)
-              .filter((item) => !capabilities.map((cap) => cap.type).includes(item)).at(0);
+            const type = getAvailableCapabilities().at(0);
             onCapabilityChange([...capabilities, { type, mqtt: '', parameters: getCapabilityParameters(type) }]);
           }}
         />
