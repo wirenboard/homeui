@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.127.0) stable; urgency=medium
+
+  * Add login rate limit
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Sep 2025 09:53:27 +0500
+
 wb-mqtt-homeui (2.126.0) stable; urgency=medium
 
   * Add components updating feature
