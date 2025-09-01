@@ -212,6 +212,10 @@ export class EmbeddedSoftware {
     }
   }
 
+  hasComponentsError() {
+    return [...this.components.values()].some(c => c.hasError);
+  }
+
   setupComponentsUpdate(components) {
     for (const component of components.values()) {
       component.setupUpdate();
@@ -559,7 +563,7 @@ export class DeviceTab {
 
   setEmbeddedSoftwareUpdateProgress(data) {
     this.embeddedSoftware.setUpdateProgress(data);
-    if (data?.progress === 100) {
+    if (data?.progress === 100 || this.embeddedSoftware.hasComponentsError()) {
       this.waitingForDeviceReconnect = true;
       setTimeout(() => {
         runInAction(() => {
