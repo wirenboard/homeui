@@ -564,7 +564,7 @@ const realApp = angular
         });
 
       $transitions.onBefore({}, function (transition) {
-        if ($rootScope.noHttps !== undefined) {
+        if ($rootScope.noHttps !== undefined || __DISABLE_HTTPS_CHECK__) {
           return true;
         }
         return checkHttps().then(res => {
@@ -594,6 +594,7 @@ const realApp = angular
           }
           if (connectToMqtt) {
             const loginUrl = new URL('/mqtt', $window.location.origin);
+            loginUrl.protocol = loginUrl.protocol.replace('http', 'ws');
             let loginData = {
               url: loginUrl.href,
             };
