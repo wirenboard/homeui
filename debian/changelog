@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.126.1) stable; urgency=medium
+wb-mqtt-homeui (2.127.1) stable; urgency=medium
 
   * Handle components update error more accuracy
 
- -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Sat, 30 Aug 2025 12:49:37 +0300
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Mon, 01 Aug 2025 10:49:37 +0300
+
+wb-mqtt-homeui (2.127.0) stable; urgency=medium
+
+  * Add login rate limit
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Sep 2025 09:53:27 +0500
 
 wb-mqtt-homeui (2.126.0) stable; urgency=medium
 
