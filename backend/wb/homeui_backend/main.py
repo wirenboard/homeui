@@ -16,7 +16,6 @@ from typing import Any, Callable, Optional
 from urllib.parse import urlparse
 
 import bcrypt
-import jwt
 
 from .cert import CertificateCheckingThread
 from .db import open_db
@@ -32,25 +31,14 @@ from .http_response import (
     response_429,
     response_500,
 )
-from .keys_storage import KeysStorage
 from .rate_limiter import RateLimiter
+from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 
-
-def make_cookie_value(user_id: str, keys_storage: KeysStorage, expires: Optional[datetime] = None) -> str:
-    data: dict[str, Any] = {
-        "id": user_id,
-    }
-    if expires is not None:
-        data["exp"] = int(expires.timestamp())
-    return jwt.encode(data, keys_storage.get_key(), algorithm="HS256").decode("utf-8")
-
-
-def decode_cookie_data(cookie: str, keys_storage: KeysStorage) -> dict[str, str]:
-    return jwt.decode(cookie, keys_storage.get_key(), algorithms=["HS256"])
+ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
 
 def make_password_hash(password: str) -> str:
@@ -61,15 +49,16 @@ def check_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 
-def make_id_cookie(cookie_data: str, secure: bool, expires: Optional[datetime]) -> cookies.SimpleCookie:
+def make_id_cookie(session: Session, secure: bool) -> cookies.SimpleCookie:
     cookie = cookies.SimpleCookie()
-    cookie["id"] = cookie_data
+    cookie["id"] = session.id
     cookie["id"]["path"] = "/"
     cookie["id"]["httponly"] = True
     cookie["id"]["samesite"] = "Lax"
     if secure:
         cookie["id"]["secure"] = True
-    if expires:
+    if session.user.type == UserType.ADMIN:
+        expires = session.start_date + ADMIN_COOKIE_LIFETIME
         cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return cookie
 
@@ -78,22 +67,25 @@ def make_set_cookie_header(cookie: cookies.SimpleCookie) -> list[str]:
     return ["Set-Cookie", cookie.output(header="")]
 
 
-def get_current_user(
-    request: BaseHTTPRequestHandler, users_storage: UsersStorage, keys_storage: KeysStorage
-) -> Optional[User]:
+def get_session(
+    request: BaseHTTPRequestHandler, users_storage: UsersStorage, sessions_storage: SessionsStorage
+) -> Optional[Session]:
     try:
         request_cookie = cookies.SimpleCookie()
         request_cookie.load(request.headers.get("Cookie", ""))
         cookie_id = request_cookie.get("id")
-        if cookie_id is not None:
-            cookie_data = decode_cookie_data(cookie_id.value, keys_storage)
-            now = int(datetime.now(timezone.utc).timestamp())
-            exp = int(cookie_data.get("exp", now))
-            if exp < now:
-                request.log_error("Cookie expired")
-                return None
-            return users_storage.get_user_by_id(cookie_data.get("id", ""))
-        request.log_error("Cookie not found")
+        if cookie_id is None:
+            request.log_error("Cookie not found")
+            return None
+        session = sessions_storage.get_session_by_id(cookie_id.value, users_storage)
+        if session is None:
+            request.log_error("Session not found")
+            return None
+        now = datetime.now(timezone.utc)
+        if session.user.type == UserType.ADMIN and session.start_date + ADMIN_COOKIE_LIFETIME < now:
+            request.log_error("Cookie expired")
+            return None
+        return session
     except Exception as e:
         request.log_error("Failed to get user from cookie: %s", str(e))
     return None
@@ -146,9 +138,9 @@ def validate_update_user_request(request: dict) -> None:
 class WebRequestHandlerContext:
     sn: str
     users_storage: UsersStorage
-    keys_storage: KeysStorage
+    sessions_storage: SessionsStorage
     certificate_thread: CertificateCheckingThread
-    user: Optional[User] = None
+    session: Optional[Session] = None
 
 
 def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
@@ -168,14 +160,18 @@ def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     required_user_type = get_required_user_type(request)
 
-    if context.user is None:
+    if context.session is None:
         autologin_user = context.users_storage.get_autologin_user()
         if autologin_user is not None and autologin_user.has_access_to(required_user_type):
             return response_200(headers=[["Wb-User-Type", autologin_user.type.value]])
         return response_401()
 
-    if context.user.has_access_to(required_user_type):
-        return response_200(headers=[["Wb-User-Type", context.user.type.value]])
+    if context.session.user.has_access_to(required_user_type):
+        context.sessions_storage.update_session_start_date(context.session)
+        request.log_message(
+            "Session %s start_date updated to %s", context.session.id, context.session.start_date
+        )
+        return response_200(headers=[["Wb-User-Type", context.session.user.type.value]])
     return response_403()
 
 
@@ -194,19 +190,10 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     x_forwarded_scheme = request.headers.get("X-Forwarded-Scheme", "http")
     res = {"user_type": user.type.value}
-    expires = None
-    if user.type == UserType.ADMIN:
-        # Set cookie expiration to 14 days for admin users
-        expires = datetime.now(timezone.utc) + timedelta(days=14)
+    session = context.sessions_storage.add_session(user)
     return response_200(
         headers=[
-            make_set_cookie_header(
-                make_id_cookie(
-                    make_cookie_value(user.user_id, context.keys_storage, expires),
-                    x_forwarded_scheme == "https",
-                    expires,
-                )
-            ),
+            make_set_cookie_header(make_id_cookie(session, x_forwarded_scheme == "https")),
             ["Content-type", "application/json"],
         ],
         body=json.dumps(res),
@@ -214,6 +201,8 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
 
 def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    if context.session is not None:
+        context.sessions_storage.delete_session_by_id(context.session.id)
     cookie = cookies.SimpleCookie()
     cookie["id"] = ""
     cookie["id"]["path"] = "/"
@@ -225,8 +214,8 @@ def auth_who_am_i_handler(request: BaseHTTPRequestHandler, context: WebRequestHa
     if not context.users_storage.has_users():
         return response_404()
 
-    if context.user is not None:
-        res = {"user_type": context.user.type.value}
+    if context.session is not None:
+        res = {"user_type": context.session.user.type.value}
         return response_200([["Content-type", "application/json"]], json.dumps(res))
 
     autologin_user = context.users_storage.get_autologin_user()
@@ -287,7 +276,7 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     except Exception as e:
         return response_400(str(e))
 
-    invalidate_user = False
+    delete_user_sessions = False
     new_login = form.get("login")
     if new_login is not None:
         user_with_the_same_login = context.users_storage.get_user_by_login(new_login)
@@ -296,13 +285,13 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
             return response_400("Login already exists")
         if user.login != new_login:
             user.login = new_login
-            invalidate_user = True
+            delete_user_sessions = True
 
     new_password = form.get("password")
     if new_password is not None:
         if not check_password(new_password, user.pwd_hash):
             user.pwd_hash = make_password_hash(new_password)
-            invalidate_user = True
+            delete_user_sessions = True
 
     new_type = form.get("type")
     if new_type is not None:
@@ -314,11 +303,9 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
 
     user.autologin = form.get("autologin", False)
 
-    if invalidate_user:
-        context.users_storage.delete_user(user.user_id)
-        context.users_storage.add_user(user)
-    else:
-        context.users_storage.update_user(user)
+    if delete_user_sessions:
+        context.sessions_storage.delete_sessions_by_user(user)
+    context.users_storage.update_user(user)
     return response_200()
 
 
@@ -329,10 +316,11 @@ def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     user = context.users_storage.get_user_by_id(user_id)
     if user is None:
         return response_404()
-    if context.user is not None and user.user_id == context.user.user_id:
+    if context.session is not None and user.user_id == context.session.user.user_id:
         return response_400("Can't delete yourself")
     if user.type == UserType.ADMIN and context.users_storage.count_users_by_type(UserType.ADMIN) == 1:
         return response_400("Can't delete the last admin")
+    context.sessions_storage.delete_sessions_by_user(user)
     context.users_storage.delete_user(user_id)
     return response_204()
 
@@ -392,7 +380,7 @@ def find_handler(url: str, handlers: dict[str, RequestHandler]) -> Optional[Requ
 
 class WebRequestHandler(BaseHTTPRequestHandler):
     users_storage: UsersStorage
-    keys_storage: KeysStorage
+    sessions_storage: SessionsStorage
     enable_debug: bool = False
     sn: str = ""
     certificate_thread: CertificateCheckingThread
@@ -423,15 +411,15 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         ):
             return response_429()
 
-        current_user = get_current_user(self, self.users_storage, self.keys_storage)
+        session = get_session(self, self.users_storage, self.sessions_storage)
         return handler.fn(
             self,
             WebRequestHandlerContext(
                 self.sn,
                 self.users_storage,
-                self.keys_storage,
+                self.sessions_storage,
                 self.certificate_thread,
-                current_user,
+                session,
             ),
         )
 
@@ -514,7 +502,7 @@ def main():
     sn = get_sn()
 
     WebRequestHandler.users_storage = UsersStorage(con)
-    WebRequestHandler.keys_storage = KeysStorage(con)
+    WebRequestHandler.sessions_storage = SessionsStorage(con)
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.certificate_thread = CertificateCheckingThread(sn)

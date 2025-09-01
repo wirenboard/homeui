@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-DB_SCHEMA_VERSION = 1
+DB_SCHEMA_VERSION = 2
 
 
 def create_tables(con: sqlite3.Connection):
@@ -18,9 +18,34 @@ def create_tables(con: sqlite3.Connection):
     )
     con.commit()
 
-    cursor = con.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS keys (key TEXT NOT NULL)")
+    cursor.execute(
+        (
+            "CREATE TABLE IF NOT EXISTS sessions ("
+            "session_id TEXT PRIMARY KEY NOT NULL, "
+            "user_id TEXT NOT NULL, "
+            "start_date INTEGER NOT NULL)"
+        )
+    )
     con.commit()
+
+
+def migration_2(con: sqlite3.Connection) -> None:
+    cursor = con.cursor()
+    cursor.execute(
+        (
+            "CREATE TABLE IF NOT EXISTS sessions ("
+            "session_id TEXT PRIMARY KEY NOT NULL, "
+            "user_id TEXT NOT NULL, "
+            "start_date INTEGER NOT NULL)"
+        )
+    )
+    con.commit()
+
+    cursor.execute("DROP TABLE IF EXISTS keys")
+    con.commit()
+
+    cursor = con.cursor()
+    cursor.execute("PRAGMA user_version = 2")
 
 
 def migration_1(con: sqlite3.Connection) -> None:
@@ -32,7 +57,7 @@ def migration_1(con: sqlite3.Connection) -> None:
 
 
 def update_db(con: sqlite3.Connection, version: int) -> None:
-    migrations = [migration_1]
+    migrations = [migration_1, migration_2]
     for migration_fn in migrations[version:]:
         migration_fn(con)
 
@@ -42,7 +67,7 @@ def create_db(db_file: str) -> sqlite3.Connection:
     con = sqlite3.connect(db_file)
     create_tables(con)
     cur = con.cursor()
-    cur.execute("PRAGMA user_version = 1")
+    cur.execute(f"PRAGMA user_version = {DB_SCHEMA_VERSION}")
     return con
 
 

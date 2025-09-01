@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.128.0) stable; urgency=medium
+
+  * Count admin cookie lifetime from the last request
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Sep 2025 11:57:48 +0500
+
 wb-mqtt-homeui (2.127.0) stable; urgency=medium
 
   * Add login rate limit
