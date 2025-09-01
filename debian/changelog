@@ -1,8 +1,20 @@
-wb-mqtt-homeui (2.126.0) stable; urgency=medium
+wb-mqtt-homeui (2.128.0) stable; urgency=medium
 
   * Save url on logout and restore it on auth
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 29 Aug 2025 13:49:37 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Sep 2025 11:02:03 +0300
+
+wb-mqtt-homeui (2.127.0) stable; urgency=medium
+
+  * Add login rate limit
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Sep 2025 09:53:27 +0500
+
+wb-mqtt-homeui (2.126.0) stable; urgency=medium
+
+  * Add components updating feature
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Fri, 29 Aug 2025 14:16:30 +0300
 
 wb-mqtt-homeui (2.125.1) stable; urgency=medium
 
