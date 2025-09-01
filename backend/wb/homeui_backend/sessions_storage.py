@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import random
+import secrets
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
@@ -20,7 +20,7 @@ class SessionsStorage:
         self.db_connection = db_connection
 
     def add_session(self, user: User) -> Session:
-        session = Session(id=str(random.getrandbits(128)), user=user, start_date=datetime.now(timezone.utc))
+        session = Session(id=secrets.token_hex(), user=user, start_date=datetime.now(timezone.utc))
         cursor = self.db_connection.cursor()
         cursor.execute(
             "INSERT INTO sessions (session_id, user_id, start_date) VALUES (?, ?, ?)",
