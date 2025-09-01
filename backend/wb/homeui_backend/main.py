@@ -57,9 +57,6 @@ def make_id_cookie(session: Session, secure: bool) -> cookies.SimpleCookie:
     cookie["id"]["samesite"] = "Lax"
     if secure:
         cookie["id"]["secure"] = True
-    if session.user.type == UserType.ADMIN:
-        expires = session.start_date + ADMIN_COOKIE_LIFETIME
-        cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return cookie
 
 
