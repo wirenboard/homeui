@@ -45,7 +45,8 @@ function getTabPaneContent(
   onDeviceTypeChange,
   onSearchDisconnectedDevice,
   onUpdateFirmware,
-  onUpdateBootloader
+  onUpdateBootloader,
+  onUpdateComponents
 ) {
   if (tab.type == TabType.PORT) {
     return (
@@ -70,6 +71,7 @@ function getTabPaneContent(
         onSearchDisconnectedDevice={onSearchDisconnectedDevice}
         onUpdateFirmware={onUpdateFirmware}
         onUpdateBootloader={onUpdateBootloader}
+        onUpdateComponents={onUpdateComponents}
         onDeletePortDevices={onDeletePortDevices}
       />
     );
@@ -89,7 +91,8 @@ function makeTabPanes(
   onDeviceTypeChange,
   onSearchDisconnectedDevice,
   onUpdateFirmware,
-  onUpdateBootloader
+  onUpdateBootloader,
+  onUpdateComponents
 ) {
   return tabs.map((tab, index) => {
     return (
@@ -104,7 +107,8 @@ function makeTabPanes(
           onDeviceTypeChange,
           onSearchDisconnectedDevice,
           onUpdateFirmware,
-          onUpdateBootloader
+          onUpdateBootloader,
+          onUpdateComponents
         )}
       </TabPane>
     );
@@ -127,6 +131,7 @@ const PageTabs = observer(
     onSearchDisconnectedDevice,
     onUpdateFirmware,
     onUpdateBootloader,
+    onUpdateComponents
   }) => {
     const { t } = useTranslation();
     return (
@@ -163,7 +168,8 @@ const PageTabs = observer(
             onDeviceTypeChange,
             onSearchDisconnectedDevice,
             onUpdateFirmware,
-            onUpdateBootloader
+            onUpdateBootloader,
+            onUpdateComponents
           )}
         </TabContent>
       </VerticalTabs>
@@ -304,6 +310,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             onSearchDisconnectedDevice={onSearchDisconnectedDevice}
             onUpdateFirmware={() => pageStore.updateFirmware()}
             onUpdateBootloader={() => pageStore.updateBootloader()}
+            onUpdateComponents={() => pageStore.updateComponents()}
           />
         )}
       </PageBody>

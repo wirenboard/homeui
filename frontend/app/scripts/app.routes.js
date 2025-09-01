@@ -161,7 +161,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('login', {
-      url: '/login',
+      url: '/login?{returnState}&{returnParams}',
       template: '<login-page />'
     })
     //...........................................................................

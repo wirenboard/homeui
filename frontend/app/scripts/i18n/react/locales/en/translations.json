@@ -273,7 +273,16 @@
          "new-firmware-item-link": "firmware {{available_firmware}}, current {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "manual-update": "<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
          "update-firmware-notice": "Do not disconnect the device during the update",
-         "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost"
+         "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost",
+         "new-component-item": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
+         "new-component-item-link": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "new-components": "New component firmware versions are available:",
+         "new-component": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}.",
+         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "updating-component": "Updating component firmware {{model}}:{{maybe_current_firmware}}{{available}}",
+         "component_current_version": ", current {{current_firmware}}.",
+         "component_update_current_version": " {{current}} на "
+
       },
       "buttons": {
          "save": "Save config",
@@ -303,6 +312,7 @@
          "update-error-firmware": "Updating firmware {{from_version}} to {{to_version}} failed.",
          "update-error-bootloader": "Updating bootloader {{from_version}} to {{to_version}} failed.",
          "update-error-generic": "Error: {{error}}. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
+         "update-error-generic-component": "Error: {{error}}. If the device works, but is not responding to component firmware updates, try to update again. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
          "update-error-recoverable": "If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode.",
          "update-error-rpc-timeout": "Check wb-mqtt-serial is up and running.",
          "update-error-download": "File download error. Check the network connection.",
