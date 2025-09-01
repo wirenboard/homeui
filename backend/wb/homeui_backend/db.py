@@ -67,7 +67,7 @@ def create_db(db_file: str) -> sqlite3.Connection:
     con = sqlite3.connect(db_file)
     create_tables(con)
     cur = con.cursor()
-    cur.execute(f"PRAGMA user_version = {DB_SCHEMA_VERSION}")
+    cur.execute("PRAGMA user_version = 2")
     return con
 
 
