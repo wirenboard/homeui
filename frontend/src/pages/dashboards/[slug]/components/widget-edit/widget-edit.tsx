@@ -40,7 +40,7 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
     setWidgetCells(widget.cells.map((cell) => {
       let data = cell;
       if (cells.get(cell.id)) {
-        data = { ...data, name: cells.get(cell.id).name, type: cells.get(cell.id).type };
+        data = { ...data, name: cell.name || cells.get(cell.id).name, type: cell.type || cells.get(cell.id).type };
       }
       return { ...data };
     }));

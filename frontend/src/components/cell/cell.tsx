@@ -31,7 +31,7 @@ export const CellContent = observer(({ cell, name, isCompact, extra }: CellProps
       case CellComponent.Switch:
         return <CellSwitch cell={cell} inverted={extra?.invert} />;
       case CellComponent.Button:
-        return <CellButton cell={cell} />;
+        return <CellButton cell={cell} name={name} />;
       case CellComponent.Range:
         return <CellRange cell={cell} />;
       case CellComponent.Colorpicker:

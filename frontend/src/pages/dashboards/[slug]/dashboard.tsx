@@ -113,11 +113,13 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
                           isCompact={widgets.get(widgetId).compact}
                           extra={cell.extra}
                         />
-                      ) : cell.id?.startsWith('separator') && (
+                      ) : cell.id?.startsWith('separator') ? (
                         <div className="dashboard-separator">
                           {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
                         </div>
-                      )}
+                      )
+                        : cell.name || 'nosuchcell'
+                      }
                     </Fragment>
                   ))}
                 </Card>
