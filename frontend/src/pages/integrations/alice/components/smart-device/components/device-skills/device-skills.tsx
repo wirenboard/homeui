@@ -8,6 +8,7 @@ import { Input } from '@/components/input';
 import {
   Capability,
   Color,
+  ColorModel,
   events,
   floats,
   modes,
@@ -21,13 +22,40 @@ import {
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
 
+const getColorModelType = (capability: SmartDeviceCapability): ColorModel | null => {
+  if (capability.parameters?.color_model?.instance === 'rgb') return ColorModel.RGB;
+  if (capability.parameters?.color_model?.instance === 'hsv') return ColorModel.HSV; // <!-- HSV_SCENES_SUPPORT -->
+  return null;
+};
+
+const createColorModelParameters = (model: ColorModel, mqtt: string = '') => ({
+  color_model: { 
+    instance: model, 
+    mqtt 
+  }
+});
+
+const createTemperatureParameters = (mqtt: string = '') => ({
+  temperature_k: { 
+    min: 2700, 
+    max: 6500, 
+    mqtt 
+  }
+});
+
+const createColorSceneParameters = (mqtt: string = '') => ({ // <!-- HSV_SCENES_SUPPORT -->
+  color_scene: { // <!-- HSV_SCENES_SUPPORT -->
+    scenes: [], // <!-- HSV_SCENES_SUPPORT -->
+    mqtt // <!-- HSV_SCENES_SUPPORT -->
+  } // <!-- HSV_SCENES_SUPPORT -->
+}); // <!-- HSV_SCENES_SUPPORT -->
+
 const getAvailableColorModelsForCapability = (capabilities: SmartDeviceCapability[], currentIndex: number) => {
   const usedColorModels = capabilities
     .filter((cap, index) => cap.type === Capability['Color setting'] && index !== currentIndex)
     .map(cap => {
-      // Think what type colour model by parameters structure
-      if (cap.parameters?.color_model?.instance === 'rgb') return Color.RGB;
-      if (cap.parameters?.color_model?.instance === 'hsv') return Color.HSV; // <!-- HSV_SCENES_SUPPORT -->
+      // Select type of color parameter
+      if (cap.parameters?.color_model) return Color.COLOR_MODEL;
       if (cap.parameters?.temperature_k) return Color.TEMPERATURE_K;
       if (cap.parameters?.color_scene) return Color.COLOR_SCENE; // <!-- HSV_SCENES_SUPPORT -->
       return null;
@@ -41,9 +69,8 @@ const getAvailableColorModels = (capabilities: SmartDeviceCapability[]) => {
   const usedColorModels = capabilities
     .filter(cap => cap.type === Capability['Color setting'])
     .map(cap => {
-      // Think what type colour model by parameters structure
-      if (cap.parameters?.color_model?.instance === 'rgb') return Color.RGB;
-      if (cap.parameters?.color_model?.instance === 'hsv') return Color.HSV; // <!-- HSV_SCENES_SUPPORT -->
+      // Select type of color parameter
+      if (cap.parameters?.color_model) return Color.COLOR_MODEL;
       if (cap.parameters?.temperature_k) return Color.TEMPERATURE_K;
       if (cap.parameters?.color_scene) return Color.COLOR_SCENE; // <!-- HSV_SCENES_SUPPORT -->
       return null;
@@ -54,20 +81,26 @@ const getAvailableColorModels = (capabilities: SmartDeviceCapability[]) => {
 };
 
 const getCurrentColorModel = (capability: SmartDeviceCapability) => {
-  if (capability.parameters?.color_model?.instance === 'rgb') return Color.RGB;
-  if (capability.parameters?.color_model?.instance === 'hsv') return Color.HSV; // <!-- HSV_SCENES_SUPPORT -->
+  if (capability.parameters?.color_model) return Color.COLOR_MODEL;
   if (capability.parameters?.temperature_k) return Color.TEMPERATURE_K;
   if (capability.parameters?.color_scene) return Color.COLOR_SCENE; // <!-- HSV_SCENES_SUPPORT -->
-  return Color.RGB; // Default value
+  return Color.COLOR_MODEL; // Default value
 };
 
 const getColorModelLabel = (colorKey: string) => {
   switch (colorKey) {
-    case 'RGB': return 'RGB';
-    case 'HSV': return 'HSV'; // <!-- HSV_SCENES_SUPPORT -->
+    case 'COLOR_MODEL': return 'Цветовая модель';
     case 'TEMPERATURE_K': return 'Цветовая температура';
     case 'COLOR_SCENE': return 'Цветовые сцены'; // <!-- HSV_SCENES_SUPPORT -->
     default: return colorKey;
+  }
+};
+
+const getColorModelInstanceLabel = (instance: ColorModel) => {
+  switch (instance) {
+    case ColorModel.RGB: return 'RGB';
+    case ColorModel.HSV: return 'HSV'; // <!-- HSV_SCENES_SUPPORT -->
+    default: return instance;
   }
 };
 
@@ -78,6 +111,52 @@ const getMqttFromColorCapability = (capability: SmartDeviceCapability) => {
   return '';
 };
 
+const handleTemperatureParameterChange = (
+  paramType: 'min' | 'max',
+  value: number,
+  capabilities: SmartDeviceCapability[],
+  key: number,
+  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+) => {
+  const val = capabilities.map((item, i) => i === key
+    ? {
+        ...item,
+        parameters: {
+          ...item.parameters,
+          temperature_k: {
+            ...item.parameters.temperature_k,
+            [paramType]: value,
+            mqtt: item.parameters.temperature_k?.mqtt || ''
+          }
+        }
+      }
+    : item);
+  onCapabilityChange(val);
+};
+
+const handleColorScenesChange = (
+  scenes: string,
+  capabilities: SmartDeviceCapability[],
+  key: number,
+  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+) => {
+  const sceneList = scenes.split(',').map(s => s.trim()).filter(Boolean);
+  const val = capabilities.map((item, i) => i === key
+    ? {
+        ...item,
+        parameters: {
+          ...item.parameters,
+          color_scene: {
+            ...item.parameters.color_scene,
+            scenes: sceneList
+          }
+        }
+      }
+    : item);
+  onCapabilityChange(val);
+};
+
+
 const isCapabilityDisabled = (capabilityType: Capability, capabilities: SmartDeviceCapability[]) => {
   if (capabilityType === Capability['Color setting']) {
     // For color setting, disable only if all color models are used
@@ -86,6 +165,46 @@ const isCapabilityDisabled = (capabilityType: Capability, capabilities: SmartDev
   
   // For other capabilities, use existing logic
   return capabilities.find((item) => item.type === capabilityType);
+};
+
+const handleColorSettingTypeChange = (
+  value: Color,
+  capability: SmartDeviceCapability,
+  capabilities: SmartDeviceCapability[],
+  key: number,
+  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+) => {
+  let newParameters: CapabilityParameters = {};
+  const currentMqtt = getMqttFromColorCapability(capability);
+  
+  if (value === Color.COLOR_MODEL) {
+    Object.assign(newParameters, createColorModelParameters(ColorModel.RGB, currentMqtt));
+  } else if (value === Color.TEMPERATURE_K) {
+    Object.assign(newParameters, createTemperatureParameters(currentMqtt));
+  } else if (value === Color.COLOR_SCENE) { // <!-- HSV_SCENES_SUPPORT -->
+    Object.assign(newParameters, createColorSceneParameters(currentMqtt)); // <!-- HSV_SCENES_SUPPORT -->
+  }
+  
+  const val = capabilities.map((item, i) => i === key
+    ? { ...item, parameters: newParameters }
+    : item);
+  onCapabilityChange(val);
+};
+
+const handleColorModelInstanceChange = (
+  value: ColorModel,
+  capability: SmartDeviceCapability,
+  capabilities: SmartDeviceCapability[],
+  key: number,
+  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+) => {
+  const currentMqtt = getMqttFromColorCapability(capability);
+  const newParameters = createColorModelParameters(value, currentMqtt);
+  
+  const val = capabilities.map((item, i) => i === key
+    ? { ...item, parameters: newParameters }
+    : item);
+  onCapabilityChange(val);
 };
 
 
@@ -107,17 +226,15 @@ export const DeviceSkills = observer(({
       case Capability['Color setting']: {
         // Choose the first available color model
         const availableColorModels = getAvailableColorModels(capabilities);
-        const selectedModel = availableColorModels[0] || Color.RGB;
+        const selectedModel = availableColorModels[0] || Color.COLOR_MODEL;
         
         // Generate correct structure for current model
-        if (selectedModel === Color.RGB) {
-          parameters.color_model = { instance: 'rgb', mqtt: '' };
-        } else if (selectedModel === Color.HSV) { // <!-- HSV_SCENES_SUPPORT -->
-          parameters.color_model = { instance: 'hsv', mqtt: '' }; // <!-- HSV_SCENES_SUPPORT -->
+        if (selectedModel === Color.COLOR_MODEL) {
+          Object.assign(parameters, createColorModelParameters(ColorModel.RGB));
         } else if (selectedModel === Color.TEMPERATURE_K) {
-          parameters.temperature_k = { min: 2700, max: 6500, mqtt: '' };
+          Object.assign(parameters, createTemperatureParameters());
         } else if (selectedModel === Color.COLOR_SCENE) { // <!-- HSV_SCENES_SUPPORT -->
-          parameters.color_scene = { scenes: [], mqtt: '' }; // <!-- HSV_SCENES_SUPPORT -->
+          Object.assign(parameters, createColorSceneParameters()); // <!-- HSV_SCENES_SUPPORT -->
         }
 
         break;
@@ -243,19 +360,6 @@ export const DeviceSkills = observer(({
               )}
 
               {capability.type === Capability['Color setting'] && (
-                // <div className="aliceDeviceSkills-colspan2">
-                //   <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
-                //   <Dropdown
-                //     value={capability.parameters?.color_model}
-                //     options={Object.keys(Color).map((color) => ({ label: color, value: Color[color] }))}
-                //     onChange={({ value }: Option<Color>) => {
-                //       const val = capabilities.map((item, i) => i === key
-                //         ? { ...item, parameters: { color_model: value } }
-                //         : item);
-                //       onCapabilityChange(val);
-                //     }}
-                //   />
-                // </div>
                 <>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
@@ -275,35 +379,29 @@ export const DeviceSkills = observer(({
                       })}
 
                       onChange={({ value }: Option<Color>) => {
-                        let newParameters: CapabilityParameters = {};
-                        const currentMqtt = getMqttFromColorCapability(capability);
-                        
-                        // Generate correct parameters structure
-                        if (value === Color.RGB) {
-                          newParameters.color_model = { instance: 'rgb', mqtt: currentMqtt };
-                        } else if (value === Color.HSV) { // <!-- HSV_SCENES_SUPPORT -->
-                          newParameters.color_model = { instance: 'hsv', mqtt: currentMqtt }; // <!-- HSV_SCENES_SUPPORT -->
-                        } else if (value === Color.TEMPERATURE_K) {
-                          newParameters.temperature_k = { min: 2700, max: 6500, mqtt: currentMqtt };
-                        } else if (value === Color.COLOR_SCENE) { // <!-- HSV_SCENES_SUPPORT -->
-                          newParameters.color_scene = { scenes: [], mqtt: currentMqtt }; // <!-- HSV_SCENES_SUPPORT -->
-                        }
-                        
-                        const val = capabilities.map((item, i) => i === key
-                          ? { ...item, parameters: newParameters }
-                          : item);
-                        onCapabilityChange(val);
+                        handleColorSettingTypeChange(value, capability, capabilities, key, onCapabilityChange);
                       }}
                     />
                   </div>
-                     
-                  {/* For RGB and HSV show empty cell */}
-                  {(getCurrentColorModel(capability) === Color.RGB || 
-                    getCurrentColorModel(capability) === Color.HSV) && ( // <!-- HSV_SCENES_SUPPORT -->
-                    <div></div>
+
+                  {/* For colour model - show select RGB/HSV */}
+                  {getCurrentColorModel(capability) === Color.COLOR_MODEL && (
+                    <div>
+                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.color-model')}</div>
+                      <Dropdown
+                        value={getColorModelType(capability)}
+                        options={Object.keys(ColorModel).map((model) => ({
+                          label: getColorModelInstanceLabel(ColorModel[model]),
+                          value: ColorModel[model],
+                        }))}
+                        onChange={({ value }: Option<ColorModel>) => {
+                          handleColorModelInstanceChange(value, capability, capabilities, key, onCapabilityChange);
+                        }}
+                      />
+                    </div>
                   )}
                   
-                  {/* For temperature_k show fields min/max */}
+                  {/* For temperature_k - show fields min/max */}
                   {capability.parameters?.temperature_k && (
                     <div className="aliceDeviceSkills-gridRange">
                       <div>
@@ -313,20 +411,7 @@ export const DeviceSkills = observer(({
                           type="number"
                           isFullWidth
                           onChange={(min: number) => {
-                            const val = capabilities.map((item, i) => i === key
-                              ? { 
-                                  ...item, 
-                                  parameters: { 
-                                    ...item.parameters, 
-                                    temperature_k: { 
-                                      ...item.parameters.temperature_k, 
-                                      min,
-                                      mqtt: item.parameters.temperature_k?.mqtt || ''
-                                    }
-                                  } 
-                                }
-                              : item);
-                            onCapabilityChange(val);
+                            handleTemperatureParameterChange('min', min, capabilities, key, onCapabilityChange);
                           }}
                         />
                       </div>
@@ -337,63 +422,31 @@ export const DeviceSkills = observer(({
                           type="number"
                           isFullWidth
                           onChange={(max: number) => {
-                            const val = capabilities.map((item, i) => i === key
-                              ? { 
-                                  ...item, 
-                                  parameters: { 
-                                    ...item.parameters, 
-                                    temperature_k: { 
-                                      ...item.parameters.temperature_k, 
-                                      max,
-                                      mqtt: item.parameters.temperature_k?.mqtt || ''
-                                    }
-                                  } 
-                                }
-                              : item);
-                            onCapabilityChange(val);
+                            handleTemperatureParameterChange('max', max, capabilities, key, onCapabilityChange);
                           }}
                         />
                       </div>
                     </div>
                   )}
 
-                  {/* For color scenes show empty cell or scene input */}
+                  {/* <!-- HSV_SCENES_SUPPORT --> */}
+                  {/* For colour scenes show field for input scenes */}
                   {getCurrentColorModel(capability) === Color.COLOR_SCENE && ( // <!-- HSV_SCENES_SUPPORT -->
-                    <div></div> // <!-- HSV_SCENES_SUPPORT -->
+                    <div>
+                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.scenes-input')}</div>
+                      <Input // <!-- HSV_SCENES_SUPPORT -->
+                        value={capability.parameters?.color_scene?.scenes?.join(', ') || ''} // <!-- HSV_SCENES_SUPPORT -->
+                        isFullWidth // <!-- HSV_SCENES_SUPPORT -->
+                        placeholder="ocean, sunset, party" // <!-- HSV_SCENES_SUPPORT -->
+                        onChange={(scenes: string) => { // <!-- HSV_SCENES_SUPPORT -->
+                          handleColorScenesChange(scenes, capabilities, key, onCapabilityChange); // <!-- HSV_SCENES_SUPPORT -->
+                        }} // <!-- HSV_SCENES_SUPPORT -->
+                      />
+                    </div> // <!-- HSV_SCENES_SUPPORT -->
                   )}
                 </>
 
               )}
-
-              {/* <!-- HSV_SCENES_SUPPORT --> */}
-              {/* For colour scenes show field for input scenes */}
-              {/* {capability.parameters?.color_scene && (
-                <div>
-                  <div className="aliceDeviceSkills-gridLabel">Сцены (через запятую)</div>
-                  <Input
-                    value={capability.parameters?.color_scene?.scenes?.join(', ') || ''}
-                    isFullWidth
-                    placeholder="ocean, sunset, party"
-                    onChange={(scenes: string) => {
-                      const sceneList = scenes.split(',').map(s => s.trim()).filter(Boolean);
-                      const val = capabilities.map((item, i) => i === key
-                        ? { 
-                            ...item, 
-                            parameters: { 
-                              ...item.parameters, 
-                              color_scene: { 
-                                ...item.parameters.color_scene, 
-                                scenes: sceneList 
-                              } 
-                            } 
-                          }
-                        : item);
-                      onCapabilityChange(val);
-                    }}
-                  />
-                </div>
-              )} */}
-              {/* <!-- HSV_SCENES_SUPPORT --> */}
 
               {capability.type === Capability.Mode && (
                 <>
