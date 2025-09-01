@@ -81,8 +81,9 @@ export enum Capability {
 
 export enum Color {
   RGB = 'rgb',
-  // HSV = 'hsv',
- TEMPERATURE_K = 'temperature_k'
+  HSV = 'hsv',  // <!-- HSV_SCENES_SUPPORT -->
+  TEMPERATURE_K = 'temperature_k',
+  COLOR_SCENE = 'color_scene'  // <!-- HSV_SCENES_SUPPORT -->
 }
 
 export const modes = [
