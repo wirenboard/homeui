@@ -82,7 +82,7 @@ export enum Capability {
 export enum Color {
   COLOR_MODEL = 'color_model',
   TEMPERATURE_K = 'temperature_k',
-  COLOR_SCENE = 'color_scene'  // <!-- HSV_SCENES_SUPPORT -->
+  COLOR_SCENE = 'scene'  // <!-- HSV_SCENES_SUPPORT -->
 }
 
 export enum ColorModel {

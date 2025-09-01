@@ -23,31 +23,25 @@ import type { DeviceSkillsParams } from './types';
 import './styles.css';
 
 const getColorModelType = (capability: SmartDeviceCapability): ColorModel | null => {
-  if (capability.parameters?.color_model?.instance === 'rgb') return ColorModel.RGB;
-  if (capability.parameters?.color_model?.instance === 'hsv') return ColorModel.HSV; // <!-- HSV_SCENES_SUPPORT -->
+  const cm = capability.parameters?.color_model as any;
+  if (cm === 'rgb') return ColorModel.RGB;
+  if (cm === 'hsv') return ColorModel.HSV; // <!-- HSV_SCENES_SUPPORT -->
   return null;
 };
 
-const createColorModelParameters = (model: ColorModel, mqtt: string = '') => ({
-  color_model: { 
-    instance: model, 
-    mqtt 
-  }
+const createColorModelParameters = (model: ColorModel) => ({
+  color_model: model,
+  // "instance" incert backend in validation time
 });
 
-const createTemperatureParameters = (mqtt: string = '') => ({
-  temperature_k: { 
-    min: 2700, 
-    max: 6500, 
-    mqtt 
-  }
+const createTemperatureParameters = () => ({
+  temperature_k: { min: 2700, max: 6500 },
+  // "instance" incert backend in validation time
 });
 
-const createColorSceneParameters = (mqtt: string = '') => ({ // <!-- HSV_SCENES_SUPPORT -->
-  color_scene: { // <!-- HSV_SCENES_SUPPORT -->
-    scenes: [], // <!-- HSV_SCENES_SUPPORT -->
-    mqtt // <!-- HSV_SCENES_SUPPORT -->
-  } // <!-- HSV_SCENES_SUPPORT -->
+const createColorSceneParameters = () => ({ // <!-- HSV_SCENES_SUPPORT -->
+  color_scene: { scenes: [] },
+  // "instance" incert backend in validation time
 }); // <!-- HSV_SCENES_SUPPORT -->
 
 const getAvailableColorModelsForCapability = (capabilities: SmartDeviceCapability[], currentIndex: number) => {
@@ -104,12 +98,7 @@ const getColorModelInstanceLabel = (instance: ColorModel) => {
   }
 };
 
-const getMqttFromColorCapability = (capability: SmartDeviceCapability) => {
-  if (capability.parameters?.color_model?.mqtt) return capability.parameters.color_model.mqtt;
-  if (capability.parameters?.temperature_k?.mqtt) return capability.parameters.temperature_k.mqtt;
-  if (capability.parameters?.color_scene?.mqtt) return capability.parameters.color_scene.mqtt; // <!-- HSV_SCENES_SUPPORT -->
-  return '';
-};
+const getMqttFromColorCapability = (capability: SmartDeviceCapability) => capability.mqtt || '';
 
 const handleTemperatureParameterChange = (
   paramType: 'min' | 'max',
@@ -125,9 +114,8 @@ const handleTemperatureParameterChange = (
           ...item.parameters,
           temperature_k: {
             ...item.parameters.temperature_k,
-            [paramType]: value,
-            mqtt: item.parameters.temperature_k?.mqtt || ''
-          }
+            [paramType]: value
+          },
         }
       }
     : item);
@@ -149,7 +137,7 @@ const handleColorScenesChange = (
           color_scene: {
             ...item.parameters.color_scene,
             scenes: sceneList
-          }
+          },
         }
       }
     : item);
@@ -175,14 +163,13 @@ const handleColorSettingTypeChange = (
   onCapabilityChange: (caps: SmartDeviceCapability[]) => void
 ) => {
   let newParameters: CapabilityParameters = {};
-  const currentMqtt = getMqttFromColorCapability(capability);
   
   if (value === Color.COLOR_MODEL) {
-    Object.assign(newParameters, createColorModelParameters(ColorModel.RGB, currentMqtt));
+    Object.assign(newParameters, createColorModelParameters(ColorModel.RGB));
   } else if (value === Color.TEMPERATURE_K) {
-    Object.assign(newParameters, createTemperatureParameters(currentMqtt));
+    Object.assign(newParameters, createTemperatureParameters());
   } else if (value === Color.COLOR_SCENE) { // <!-- HSV_SCENES_SUPPORT -->
-    Object.assign(newParameters, createColorSceneParameters(currentMqtt)); // <!-- HSV_SCENES_SUPPORT -->
+    Object.assign(newParameters, createColorSceneParameters()); // <!-- HSV_SCENES_SUPPORT -->
   }
   
   const val = capabilities.map((item, i) => i === key
@@ -198,8 +185,7 @@ const handleColorModelInstanceChange = (
   key: number,
   onCapabilityChange: (caps: SmartDeviceCapability[]) => void
 ) => {
-  const currentMqtt = getMqttFromColorCapability(capability);
-  const newParameters = createColorModelParameters(value, currentMqtt);
+  const newParameters = createColorModelParameters(value);
   
   const val = capabilities.map((item, i) => i === key
     ? { ...item, parameters: newParameters }
@@ -322,23 +308,9 @@ export const DeviceSkills = observer(({
                     options={deviceStore.topics as any[]}
                     isSearchable
                     onChange={({ value }: Option<string>) => {
-                      const val = capabilities.map((item, i) => {
-                        if (i !== key) return item;
-                        
-                        let newParameters = { ...item.parameters };
-                        if (newParameters.color_model) {
-                          newParameters.color_model = { ...newParameters.color_model, mqtt: value };
-                        }
-                        if (newParameters.temperature_k) {
-                          newParameters.temperature_k = { ...newParameters.temperature_k, mqtt: value };
-                        }
-                        if (newParameters.color_scene) { // <!-- HSV_SCENES_SUPPORT -->
-                          newParameters.color_scene = { ...newParameters.color_scene, mqtt: value }; // <!-- HSV_SCENES_SUPPORT -->
-                        }
-                        
-                        return { ...item, mqtt: '', parameters: newParameters };
-                      });
-                      onCapabilityChange(val);
+                      onCapabilityChange(capabilities.map((item, i) => (
+                        i === key ? { ...item, mqtt: value } : item
+                      )));
                     }}
                   />
                 ) : (
