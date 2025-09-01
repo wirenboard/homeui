@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditIcon from '@/assets/icons/edit.svg';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
@@ -104,20 +104,21 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
                   actions={actions}
                   isBodyVisible
                 >
-                  {widgets.get(widgetId).cells.map((cell) => (
-                    cells.has(cell.id) ? (
-                      <Cell
-                        cell={cells.get(cell.id)}
-                        name={cell.name}
-                        key={cell.id}
-                        isCompact={widgets.get(widgetId).compact}
-                        extra={cell.extra}
-                      />
-                    ) : cell.id.startsWith('separator') && (
-                      <div className="dashboard-separator">
-                        {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
-                      </div>
-                    )
+                  {widgets.get(widgetId).cells.map((cell, i) => (
+                    <Fragment key={cell.id || i}>
+                      {cells.has(cell.id) ? (
+                        <Cell
+                          cell={cells.get(cell.id)}
+                          name={cell.name}
+                          isCompact={widgets.get(widgetId).compact}
+                          extra={cell.extra}
+                        />
+                      ) : cell.id?.startsWith('separator') && (
+                        <div className="dashboard-separator">
+                          {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
+                        </div>
+                      )}
+                    </Fragment>
                   ))}
                 </Card>
               ) : null)}

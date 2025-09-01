@@ -13,7 +13,6 @@ wb-mqtt-homeui (2.123.2) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 25 Aug 2025 18:57:50 +0500
 
-
 wb-mqtt-homeui (2.123.1) stable; urgency=medium
 
   * Update README

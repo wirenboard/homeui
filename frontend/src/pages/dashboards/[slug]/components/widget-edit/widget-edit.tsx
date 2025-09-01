@@ -37,7 +37,13 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
   }, [code]);
 
   useEffect(() => {
-    setWidgetCells(widget.cells.map((cell) => ({ ...cell })));
+    setWidgetCells(widget.cells.map((cell) => {
+      let data = cell;
+      if (cells.get(cell.id)) {
+        data = { ...data, name: cells.get(cell.id).name, type: cells.get(cell.id).type };
+      }
+      return { ...data };
+    }));
     setName(widget.name);
     setIsCompactView(widget.compact);
   }, [widget.id]);
@@ -81,9 +87,9 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
   }, [code, isJsonView]);
 
   const controlsOptions = useMemo(() => {
-    const uniqueSeparatorId = generateNextId(widgetCells.map((item) => item.id), 'separator');
+    const uniqueSeparatorId = generateNextId(widgetCells.map((item, i) => item.id || String(i)), 'separator');
     return [{ name: t('widget.labels.separator'), id:uniqueSeparatorId }, ...controls]
-      .filter(({ id }) => !widgetCells.find((cell) => cell.id === id && !id.startsWith('separator')))
+      .filter(({ id }) => !widgetCells.find((cell) => cell.id === id && !id?.startsWith('separator')))
       .map(({ name, id }) => ({ label: name, value: id }));
   }, [widgetCells]);
 
@@ -196,9 +202,9 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
                 animation={150}
                 className="widgetEdit-cellsContainer"
               >
-                {widgetCells.map((cell) => (
+                {widgetCells.map((cell, i) => (
                   <div
-                    key={cell.id}
+                    key={cell.id || i}
                     className={classNames('widgetEdit-editedCell', {
                       'widgetEdit-editedCellWithInverted': hasInvertedColumn,
                     })}
@@ -212,13 +218,12 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
                     <Input
                       className="widgetEdit-controlName"
                       value={cell.name}
-                      placeholder={cells.get(cell.id)?.name}
                       onChange={(name: string) => updateCell(cell.id, { name })}
                     />
                     <div className="widgetEdit-type">
                       {cells.has(cell.id)
-                        ? (cell.type || cells.get(cell.id)?.type)
-                        : cell.id.startsWith('separator') ? 'separator' : 'incomplete'}
+                        ? cell.type
+                        : cell.id?.startsWith('separator') ? 'separator' : 'incomplete'}
                     </div>
                     {hasInvertedColumn && (
                       <div className="widgetEdit-invert">
