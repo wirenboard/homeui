@@ -22,6 +22,35 @@ import {
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
 
+/**
+ * Normalize any value coming from <Input type="number"> to a number
+ * - If it's already a finite number: return as is
+ * - If it's a string → trim, parse; empty/NaN/Infinity: fallback to 0
+ * - Any other type (null/undefined/boolean/object): fallback to 0
+ */
+function toNumber(inputValue: unknown): number {
+  // Already a number (but ensure it's finite)
+  if (typeof inputValue === 'number') {
+    return Number.isFinite(inputValue) ? inputValue : 0;
+  }
+
+  // Typical case for <Input type="number"> — value is a string
+  if (typeof inputValue === 'string') {
+    const trimmed = inputValue.trim();
+
+    // Treat empty string as 0 to keep JSON numeric
+    if (trimmed === '') {
+      return 0;
+    }
+
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  // Fallback for null/undefined/boolean/object/symbol/etc
+  return 0;
+}
+
 const getColorModelType = (capability: SmartDeviceCapability): ColorModel | null => {
   const cm = capability.parameters?.color_model as any;
   if (cm === 'rgb') return ColorModel.RGB;
@@ -383,7 +412,7 @@ export const DeviceSkills = observer(({
                           type="number"
                           isFullWidth
                           onChange={(min: number) => {
-                            handleTemperatureParameterChange('min', min, capabilities, key, onCapabilityChange);
+                            handleTemperatureParameterChange('min', toNumber(min), capabilities, key, onCapabilityChange);
                           }}
                         />
                       </div>
@@ -394,7 +423,7 @@ export const DeviceSkills = observer(({
                           type="number"
                           isFullWidth
                           onChange={(max: number) => {
-                            handleTemperatureParameterChange('max', max, capabilities, key, onCapabilityChange);
+                            handleTemperatureParameterChange('max', toNumber(max), capabilities, key, onCapabilityChange);
                           }}
                         />
                       </div>
@@ -474,8 +503,9 @@ export const DeviceSkills = observer(({
                         type="number"
                         isFullWidth
                         onChange={(min: number) => {
+                          const n = toNumber(min);
                           const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min } } }
+                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min: n } } }
                             : item);
                           onCapabilityChange(val);
                         }}
@@ -488,8 +518,9 @@ export const DeviceSkills = observer(({
                         type="number"
                         isFullWidth
                         onChange={(max: number) => {
+                          const n = toNumber(max);
                           const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max } } }
+                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max: n } } }
                             : item);
                           onCapabilityChange(val);
                         }}
@@ -502,10 +533,11 @@ export const DeviceSkills = observer(({
                         type="number"
                         isFullWidth
                         onChange={(precision: number) => {
+                          const n = toNumber(precision);
                           const val = capabilities.map((item, i) => i === key
                             ? {
                               ...item,
-                              parameters: { ...item.parameters, range: { ...item.parameters.range, precision } },
+                              parameters: { ...item.parameters, range: { ...item.parameters.range, precision: n } },
                             }
                             : item);
                           onCapabilityChange(val);
