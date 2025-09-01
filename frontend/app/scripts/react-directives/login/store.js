@@ -15,11 +15,13 @@ class LoginPageStore {
       login: new StringStore({
         name: i18n.t('login.labels.login'),
         required: true,
+        autocomplete: 'username',
       }),
       password: new StringStore({
         name: i18n.t('login.labels.password'),
         required: true,
         editType: 'password',
+        autocomplete: 'current-password',
       }),
     });
 
