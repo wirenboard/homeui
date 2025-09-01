@@ -22,6 +22,26 @@ import {
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
 
+// Predefined color scenes per Yandex Smart Home docs
+const COLOR_SCENE_OPTIONS: Option<string>[] = [
+  { label: 'Alarm', value: 'alarm' },
+  { label: 'Alice', value: 'alice' },
+  { label: 'Candle', value: 'candle' },
+  { label: 'Dinner', value: 'dinner' },
+  { label: 'Fantasy', value: 'fantasy' },
+  { label: 'Garland', value: 'garland' },
+  { label: 'Jungle', value: 'jungle' },
+  { label: 'Movie', value: 'movie' },
+  { label: 'Neon', value: 'neon' },
+  { label: 'Night', value: 'night' },
+  { label: 'Ocean', value: 'ocean' },
+  { label: 'Party', value: 'party' },
+  { label: 'Reading', value: 'reading' },
+  { label: 'Rest', value: 'rest' },
+  { label: 'Romance', value: 'romance' },
+  { label: 'Siren', value: 'siren' },
+];
+
 /**
  * Normalize any value coming from <Input type="number"> to a number
  * - If it's already a finite number: return as is
