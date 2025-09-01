@@ -5,7 +5,7 @@ wb-mqtt-homeui (2.129.0) stable; urgency=medium
   * Add separator inside widget
   * Add JSON editor inside widget edit
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Se[ 2025 16:58:10 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Sep 2025 16:58:10 +0300
 
 wb-mqtt-homeui (2.128.1) stable; urgency=medium
 

@@ -90,6 +90,11 @@ export default [
           leadingUnderscore: 'allow',
         },
         {
+          selector: 'variable',
+          modifiers: ['destructured'],
+          format: null,
+        },
+        {
           selector: 'interface',
           format: ['PascalCase'],
         },
