@@ -99,7 +99,7 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
       isOpened={isOpened}
       heading={widget.id ? `${t('widget.labels.edit')} ${widget.name}` : t('widget.labels.create')}
       closeCallback={onClose}
-      isDisabled={!isCodeValid || !name}
+      isDisabled={!isCodeValid || !name || !widgetCells.length}
       acceptLabel={t('widget.buttons.save')}
       headerActions={isJsonView
         ? (

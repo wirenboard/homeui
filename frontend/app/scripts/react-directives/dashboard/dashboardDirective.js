@@ -7,7 +7,6 @@ import { setReactLocale } from '~/react-directives/locale';
 export default function dashboardDirective(
   $rootScope,
   $stateParams,
-  uiConfig,
   mqttClient,
   ConfigEditorProxy,
   rolesFactory
@@ -27,7 +26,7 @@ export default function dashboardDirective(
       const hasEditRights = rolesFactory.current.role !== rolesFactory.ROLE_ONE;
       $rootScope.isHMI = $stateParams.hmi;
       $rootScope.forceFullscreen = $stateParams.fullscreen === true;
-      scope.dashboardStore = new DashboardsStore(uiConfig, ConfigEditorProxy);
+      scope.dashboardStore = new DashboardsStore(ConfigEditorProxy);
       scope.devicesStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(

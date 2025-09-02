@@ -23,8 +23,4 @@ export class Dashboard {
   addWidget(widgetId: string) {
     this.#dashboardStore.addWidgetToDashboard(this.id, widgetId);
   }
-
-  removeWidget(widgetId: string) {
-    this.#dashboardStore.removeWidgetFromDashboard(this.id, widgetId);
-  }
 }

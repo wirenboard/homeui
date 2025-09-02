@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { uiConfigPath } from '@/common/paths';
-import { DashboardBase, WidgetBase } from '@/stores/dashboards/types';
+import type { DashboardBase, UIConfigResponse, WidgetBase } from '@/stores/dashboards/types';
 import { generateNextId } from '@/utils/id';
 import { Dashboard } from './dashboard';
 import { Widget } from './widget';
@@ -8,23 +8,34 @@ import { Widget } from './widget';
 export default class DashboardsStore {
   public dashboards: Map<string, Dashboard> = new Map();
   public widgets: Map<string, Widget> = new Map();
+  public isLoading = true;
   declare defaultDashboardId: string;
   #configEditorProxy: any;
 
-  constructor(uiConfig: any, configEditorProxy: any) {
+  constructor(configEditorProxy: any) {
     this.#configEditorProxy = configEditorProxy;
 
-    uiConfig.whenReady().then(({ dashboards, widgets, defaultDashboardId }) => {
-      dashboards.forEach((dashboard: DashboardBase) => {
-        this.dashboards.set(dashboard.id, new Dashboard(dashboard, this));
-      });
-      widgets.forEach((widget: WidgetBase) => {
-        this.widgets.set(widget.id, new Widget(widget, this));
-      });
-      this.defaultDashboardId = defaultDashboardId;
-    });
-
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  loadData() {
+    return this.#configEditorProxy.Load({ path: uiConfigPath })
+      .then(({ content }: UIConfigResponse) => {
+        const { dashboards, widgets, defaultDashboardId } = content;
+
+        return runInAction(() => {
+          dashboards.forEach((dashboard: DashboardBase) => {
+            this.dashboards.set(dashboard.id, new Dashboard(dashboard, this));
+          });
+          widgets.forEach((widget: WidgetBase) => {
+            this.widgets.set(widget.id, new Widget(widget, this));
+          });
+          this.defaultDashboardId = defaultDashboardId;
+        });
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
   }
 
   addWidgetToDashboard(dashboardId: string, widgetId: string) {
@@ -36,12 +47,14 @@ export default class DashboardsStore {
     });
   }
 
-  removeWidgetFromDashboard(dashboardId: string, widgetId: string) {
+  removeWidgetFromDashboard(dashboardId: string, widgetId: string, withSave = true) {
     runInAction(() => {
       const dashboard = this.dashboards.get(dashboardId);
       dashboard.widgets = dashboard.widgets.filter((widget) => widget !== widgetId);
       this.dashboards.set(dashboardId, new Dashboard(dashboard, this));
-      this._saveData();
+      if (withSave) {
+        this._saveData();
+      }
     });
   }
 
@@ -63,7 +76,9 @@ export default class DashboardsStore {
   deleteWidget(widgetId: string) {
     runInAction(() => {
       this.dashboards.forEach((dashboard) => {
-        dashboard.removeWidget(widgetId);
+        if (dashboard.hasWidget(widgetId)) {
+          this.removeWidgetFromDashboard(dashboard.id, widgetId, false);
+        }
       });
       this.widgets.delete(widgetId);
       this._saveData();

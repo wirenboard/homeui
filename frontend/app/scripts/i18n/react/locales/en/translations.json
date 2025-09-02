@@ -448,6 +448,9 @@
       "prompt": {
          "remove-title": "Remove widget from dashboard",
          "remove-description": "Really remove widget <0>{{name}}</0> from dashboard?"
+      },
+      "errors": {
+         "mqtt-connection": "MQTT client is not connected"
       }
    },
    "devices": {

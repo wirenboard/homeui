@@ -473,6 +473,9 @@
       "prompt": {
          "remove-title": "Подтверждение удаления с панели",
          "remove-description": "Вы действительно хотите убрать виджет <0>{{name}}</0> с панели?"
+      },
+      "errors": {
+         "mqtt-connection": "Клиент MQTT не подключен"
       }
    },
    "devices": {

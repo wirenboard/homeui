@@ -1,3 +1,11 @@
+export interface UIConfigResponse {
+  content: {
+    dashboards: DashboardBase[];
+    defaultDashboardId: string;
+    widgets: WidgetBase[];
+  };
+}
+
 export interface DashboardBase {
   id: string;
   name: string;
