@@ -32,10 +32,11 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
   const [errors, setErrors] = useState([]);
 
   useEffect(() => {
+    // have to add timeout to avoid often MqttConnectionError.
+    // should be removed after rewrite widgets page and navigation
     setTimeout(() => {
       loadData().catch((error) => {
         if (error.data === 'MqttConnectionError') {
-          console.log(22222, error);
           setErrors([{ variant: 'danger', text: t('dashboard.errors.mqtt-connection') }]);
         }
       });
