@@ -240,9 +240,19 @@ function mqttClient(
         context.errorCode +
         ')'
     );
-    ngToast.dismiss();
-    $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
-    reconnectAfterTimeout();
+    fetch('/auth/who_am_i').then(response => {
+      if (response.status === 401) {
+        location.reload();
+        return;
+      }
+      ngToast.dismiss();
+      $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
+      reconnectAfterTimeout();
+    }).catch(() => {
+      ngToast.dismiss();
+      $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
+      reconnectAfterTimeout();
+    });
   };
 
   //...........................................................................
