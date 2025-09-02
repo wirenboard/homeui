@@ -80,17 +80,17 @@ const getColorModelType = (capability: SmartDeviceCapability): ColorModel | null
 
 const createColorModelParameters = (model: ColorModel) => ({
   color_model: model,
-  // "instance" incert backend in validation time
+  instance: model,
 });
 
 const createTemperatureParameters = () => ({
   temperature_k: { min: 2700, max: 6500 },
-  // "instance" incert backend in validation time
+  instance: 'temperature_k',
 });
 
 const createColorSceneParameters = () => ({ // <!-- HSV_SCENES_SUPPORT -->
   color_scene: { scenes: [] },
-  // "instance" incert backend in validation time
+  instance: 'scene',
 }); // <!-- HSV_SCENES_SUPPORT -->
 
 const getAvailableColorModelsForCapability = (capabilities: SmartDeviceCapability[], currentIndex: number) => {
@@ -290,6 +290,10 @@ export const DeviceSkills = observer(({
       }
       case Capability.Toggle: {
         parameters.instance = 'backlight';
+        break;
+      }
+      case Capability['On/Off']: {
+        parameters.instance = 'on';
         break;
       }
     }
