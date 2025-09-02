@@ -143,7 +143,10 @@ const getAvailableColorModelsForCapability = (capabilities: SmartDeviceCapabilit
     })
     .filter(Boolean);
   
-  return Object.values(Color).filter(colorModel => !usedColorModels.includes(colorModel));
+  return Object.values(Color)
+    .filter(m => m !== Color.COLOR_SCENE) // This line disable Color scene, need remove for enable <ZACKLADKA>
+    .filter(colorModel => !usedColorModels.includes(colorModel));
+
 };
 
 const getAvailableColorModels = (capabilities: SmartDeviceCapability[]) => {
@@ -158,7 +161,10 @@ const getAvailableColorModels = (capabilities: SmartDeviceCapability[]) => {
     })
     .filter(Boolean);
   
-  return Object.values(Color).filter(colorModel => !usedColorModels.includes(colorModel));
+  return Object.values(Color)
+    .filter(m => m !== Color.COLOR_SCENE) // This line disable Color scene, need remove for enable <ZACKLADKA>
+    .filter(colorModel => !usedColorModels.includes(colorModel));
+
 };
 
 const getCurrentColorModel = (capability: SmartDeviceCapability) => {
@@ -448,7 +454,9 @@ export const DeviceSkills = observer(({
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
                     <Dropdown
                       value={getCurrentColorModel(capability)}
-                      options={Object.keys(Color).map((color) => {
+                      options={Object.keys(Color)
+                        .filter(c => c !== 'COLOR_SCENE') // This line disable Color scene, need remove for enable <ZACKLADKA>
+                        .map((color) => {
                         const availableModels = getAvailableColorModelsForCapability(capabilities, key);
                         const currentModel = getCurrentColorModel(capability);
                         const isCurrentModel = currentModel === Color[color];
@@ -473,7 +481,9 @@ export const DeviceSkills = observer(({
                       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.color-model')}</div>
                       <Dropdown
                         value={getColorModelType(capability)}
-                        options={Object.keys(ColorModel).map((model) => ({
+                        options={Object.keys(ColorModel)
+                          .filter(m => m !== 'HSV' || getColorModelType(capability) === ColorModel.HSV) // This line disable HSV, need remove for enable <ZACKLADKA>
+                          .map((model) => ({
                           label: getColorModelInstanceLabel(ColorModel[model]),
                           value: ColorModel[model],
                         }))}
