@@ -26,6 +26,10 @@
     --bar-inside-text-color: #999;
     --bar-text-color: #999;
     --online-color: var(--success-color);
+    --font-size-small: 13px;
+    --font-size-medium: 14px;
+    --font-size-large: 16px;
+    /* TODO remove */
     --bar-font-size: 14px;
 
     --font: "Open Sans", Arial, Helvetica, Sans-Serif;

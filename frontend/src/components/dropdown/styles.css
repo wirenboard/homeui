@@ -90,10 +90,28 @@
   color: var(--input-color);
   border-radius: var(--input-border-radius);
   width: 100%;
+  z-index: 9999 !important;
+  font-family: var(--font);
 }
 
 .dropdown__option--is-disabled:not(.dropdown__option--is-selected) {
   background: var(--light-gray-color);
   cursor: not-allowed !important;
   color: var(--text-color);
+}
+
+.dropdown-button .dropdown__control {
+  background: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  color: var(--button-color);
+}
+
+.dropdown-button:hover .dropdown__control {
+  background: var(--primary-color-hover);
+  border: 1px solid var(--primary-color-hover);
+  cursor: pointer;
+}
+
+.dropdown-icon {
+  width: 12px;
 }

@@ -6,6 +6,7 @@ export interface PageProps {
   editingTitlePlaceholder?: string;
   hasRights: boolean;
   isLoading?: boolean;
+  isHideHeader?: boolean;
   stickyHeader?: boolean;
   actions?: ReactElement;
   errors?: { variant?: string; text?: string; code?: number }[];

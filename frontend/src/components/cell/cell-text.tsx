@@ -9,20 +9,22 @@ import { copyToClipboard } from '@/utils/clipboard';
 import { CellHistory } from './cell-history';
 import './styles.css';
 
-export const CellText = observer(({ cell }: { cell: Cell }) => {
+export const CellText = observer(({ cell, isCompact }: { cell: Cell; isCompact: boolean }) => {
   const { t } = useTranslation();
 
   return (
     <div
       className={classNames('deviceCell-textWrapper', {
         'deviceCell-withSelect': (!cell.readOnly && cell.isEnum),
+        'deviceCell-isCompact': isCompact,
+        'deviceCell-isEmpty': isCompact && !cell.value,
       })}
     >
-      <CellHistory cell={cell} />
+      {!isCompact && <CellHistory cell={cell} />}
 
       {cell.value && cell.readOnly && (
         <Tooltip
-          text={<span><b>'{cell.value}'</b> {t('widgets.labels.copy')}</span>}
+          text={<span><b>'{cell.value}'</b> {t('widget.labels.copy')}</span>}
           placement="top-end"
           trigger="click"
         >
@@ -50,6 +52,8 @@ export const CellText = observer(({ cell }: { cell: Cell }) => {
           onChange={(value) => cell.value = value}
         />
       )}
+
+      {isCompact && <CellHistory cell={cell} />}
     </div>
   );
 });

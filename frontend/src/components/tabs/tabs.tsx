@@ -19,13 +19,15 @@ export const TabList = ({ className, children, activeTab, onTabChange }: PropsWi
 );
 
 export const Tab = ({ children, id, activeTab, onTabChange }: PropsWithChildren<TabProps>) => (
-  <li>
+  <li
+    className={classNames({
+      'tabs-buttonSelected': activeTab === id,
+    })}
+  >
     <button
       type="button"
       role="tab"
-      className={classNames('tabs-button', {
-        'tabs-buttonSelected': activeTab === id,
-      })}
+      className="tabs-button"
       onClick={() => onTabChange(id)}
     >
       {children}
@@ -43,6 +45,6 @@ export const Tabs = ({ className, items, activeTab, onTabChange }: TabsProps) =>
   </ul>
 );
 
-export const TabContent = ({ tabId, activeTab, children }: PropsWithChildren<TabContentProps>) => {
-  return activeTab === tabId ? <div role="tabpanel">{children}</div> : null;
+export const TabContent = ({ tabId, activeTab, children, className }: PropsWithChildren<TabContentProps>) => {
+  return activeTab === tabId ? <div role="tabpanel" className={classNames(className)}>{children}</div> : null;
 };
