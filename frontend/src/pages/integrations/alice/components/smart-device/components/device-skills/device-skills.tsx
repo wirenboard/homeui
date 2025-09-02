@@ -71,6 +71,18 @@ function toNumber(inputValue: unknown): number {
   return 0;
 }
 
+// Range units on this moment hardcoded
+// NOTE: any units have only one selection,
+//       only temperature have alternative - kelvin, but this is not useful
+const RANGE_UNIT_BY_INSTANCE: Record<string, string> = {
+  brightness: 'unit.percent',
+  humidity: 'unit.percent',
+  open: 'unit.percent',
+  volume: 'unit.percent',
+  temperature: 'unit.temperature.celsius',
+  channel: 'unit.channel',
+};
+
 const getColorModelType = (capability: SmartDeviceCapability): ColorModel | null => {
   const cm = capability.parameters?.color_model as any;
   if (cm === 'rgb') return ColorModel.RGB;
@@ -286,6 +298,7 @@ export const DeviceSkills = observer(({
           max: 100,
           precision: 1,
         };
+        parameters.unit = RANGE_UNIT_BY_INSTANCE['brightness'];
         break;
       }
       case Capability.Toggle: {
@@ -512,8 +525,9 @@ export const DeviceSkills = observer(({
                       value={capability.parameters?.instance}
                       options={ranges.map((range) => ({ label: range, value: range }))}
                       onChange={({ value: instance }: Option<string>) => {
+                        const unit = RANGE_UNIT_BY_INSTANCE[instance];
                         const val = capabilities.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, instance } }
+                          ? { ...item, parameters: { ...item.parameters, instance, unit } }
                           : item);
                         onCapabilityChange(val);
                       }}
