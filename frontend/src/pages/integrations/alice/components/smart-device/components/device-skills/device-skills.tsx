@@ -231,6 +231,20 @@ const handleColorScenesChange = (
   onCapabilityChange(val);
 };
 
+const getUsedFloatInstances = (props: any[]) =>
+  props
+    .filter(p => p.type === Property.Float)
+    .map(p => p?.parameters?.instance)
+    .filter(Boolean) as string[];
+
+const getAvailableFloatInstances = (props: any[], currentIndex?: number) => {
+  const used = new Set(getUsedFloatInstances(props));
+  const keep = (inst: string) =>
+    !used.has(inst) ||
+    (typeof currentIndex === 'number' &&
+      props[currentIndex]?.parameters?.instance === inst);
+  return floats.filter(keep);
+};
 
 const isCapabilityDisabled = (capabilityType: Capability, capabilities: SmartDeviceCapability[]) => {
   if (capabilityType === Capability['Color setting']) {
@@ -696,7 +710,17 @@ export const DeviceSkills = observer(({
                     </div>
                     <Dropdown
                       value={property.parameters?.instance}
-                      options={floats.map((float) => ({ label: float, value: float }))}
+                      options={floats.map((inst) => ({
+                        label: inst,
+                        value: inst,
+                        // запрещаем инстанс, если он уже занят другим свойством
+                        isDisabled: properties.some((p, i) =>
+                          i !== key &&
+                          p.type === Property.Float &&
+                          p?.parameters?.instance === inst
+                        ),
+                      }))}
+
                       onChange={({ value: instance }: Option<string>) => {
                         const availableUnits = unitOptionsForInstance(instance).map(o => o.value);
                         const prevUnit = properties[key]?.parameters?.unit;
@@ -780,15 +804,27 @@ export const DeviceSkills = observer(({
               </div>
             </Fragment>
           ))}
-        </div>
-        <Button
-          className="aliceDeviceSkills-addButton"
-          label={t('alice.buttons.add-property')}
-          onClick={() => {
-            const parameters = getPropertyParameters(Property.Float);
-            onPropertyChange([...properties, { type: Property.Float, mqtt: '', parameters }]);
-          }}
-        />
+          {(() => {
+            const free = getAvailableFloatInstances(properties);
+            return (
+              <Button
+                className="aliceDeviceSkills-addButton"
+                label={t('alice.buttons.add-property')}
+                disabled={free.length === 0}
+                onClick={() => {
+                  const inst = free[0];
+                  const units = unitOptionsForInstance(inst).map(o => o.value);
+                  const params: PropertyParameters = { instance: inst };
+                  if (units.length) params.unit = units[0];
+                  onPropertyChange([
+                    ...properties,
+                    { type: Property.Float, mqtt: '', parameters: params },
+                  ]);
+                }}
+              />
+            );
+          })()}
+        </div> 
       </div>
     </>
   );
