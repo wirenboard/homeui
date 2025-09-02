@@ -15,6 +15,7 @@ import {
   Property,
   ranges,
   toggles,
+  floatUnitsByInstance,
   type CapabilityParameters,
   type PropertyParameters,
   type SmartDeviceCapability
@@ -82,6 +83,31 @@ const RANGE_UNIT_BY_INSTANCE: Record<string, string> = {
   temperature: 'unit.temperature.celsius',
   channel: 'unit.channel',
 };
+
+const UNIT_LABELS: Record<string, string> = {
+  'unit.ampere': 'A',
+  'unit.percent': '%',
+  'unit.ppm': 'ppm',
+  'unit.kilowatt_hour': 'kWh',
+  'unit.cubic_meter': 'm³',
+  'unit.gigacalorie': 'Gcal',
+  'unit.illumination.lux': 'lx',
+  'unit.density.mcg_m3': 'µg/m³',
+  'unit.watt': 'W',
+  'unit.pressure.atm': 'Atm',
+  'unit.pressure.pascal': 'Pa',
+  'unit.pressure.bar': 'bar',
+  'unit.pressure.mmhg': 'mmHg',
+  'unit.temperature.celsius': '°C',
+  'unit.temperature.kelvin': 'K',
+  'unit.volt': 'V',
+};
+
+const unitOptionsForInstance = (instance?: string): Option<string>[] => {
+  const list = (instance && floatUnitsByInstance[instance]) || [];
+  return list.map(u => ({ label: UNIT_LABELS[u] ?? u, value: u }));
+};
+
 
 const getColorModelType = (capability: SmartDeviceCapability): ColorModel | null => {
   const cm = capability.parameters?.color_model as any;
@@ -317,8 +343,13 @@ export const DeviceSkills = observer(({
     const parameters: PropertyParameters = {};
     switch (type) {
       case Property.Float: {
-        parameters.instance = floats.at(0);
-        parameters.unit = '%';
+        const inst = floats.at(0);
+        parameters.instance = inst;
+        const units = unitOptionsForInstance(inst).map(o => o.value);
+        // Add default unit for first instance only if float type units present
+        if (units.length > 0) {
+          parameters.unit = units[0];
+        }
         break;
       }
       case Property.Event: {
@@ -667,8 +698,18 @@ export const DeviceSkills = observer(({
                       value={property.parameters?.instance}
                       options={floats.map((float) => ({ label: float, value: float }))}
                       onChange={({ value: instance }: Option<string>) => {
+                        const availableUnits = unitOptionsForInstance(instance).map(o => o.value);
+                        const prevUnit = properties[key]?.parameters?.unit;
+                        const updatedParams: PropertyParameters = { ...properties[key].parameters, instance };
+                        if (availableUnits.length > 0) {
+                          const nextUnit = availableUnits.includes(prevUnit) ? prevUnit : availableUnits[0];
+                          updatedParams.unit = nextUnit;
+                        } else {
+                          // If units not present - remove unit fields
+                          delete (updatedParams as any).unit;
+                        }
                         const val = properties.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, instance } }
+                          ? { ...item, parameters: updatedParams }
                           : item);
                         onPropertyChange(val);
                       }}
@@ -676,16 +717,20 @@ export const DeviceSkills = observer(({
                   </div>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                    <Input
-                      value={property.parameters?.unit}
-                      isFullWidth
-                      onChange={(unit: string) => {
-                        const val = properties.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, unit } }
-                          : item);
-                        onPropertyChange(val);
-                      }}
-                    />
+                      {unitOptionsForInstance(property.parameters?.instance).length > 0 ? (
+                        <Dropdown
+                          value={property.parameters?.unit}
+                          options={unitOptionsForInstance(property.parameters?.instance)}
+                          onChange={({ value: unit }: Option<string>) => {
+                            const val = properties.map((item, i) => i === key
+                              ? { ...item, parameters: { ...item.parameters, unit } }
+                              : item);
+                            onPropertyChange(val);
+                          }}
+                        />
+                      ) : (
+                        <div style={{ opacity: .6 }}>{t('alice.labels.no-units')}</div>
+                      )}
                   </div>
                 </>
               )}
