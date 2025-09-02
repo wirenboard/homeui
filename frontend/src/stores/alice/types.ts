@@ -1,4 +1,4 @@
-import { Capability, Color, Property } from '@/stores/alice';
+import { Capability, Color, ColorModel, Property } from '@/stores/alice';
 
 export interface Room {
   name: string;
@@ -18,7 +18,8 @@ export interface SmartDeviceProperty {
 }
 
 export interface CapabilityParameters {
-  color_model?: Color;
+  color_model?: ColorModel;
+  color_scene?: { scenes: string[] };
   instance?: string;
   modes?: string;
   range?: {
