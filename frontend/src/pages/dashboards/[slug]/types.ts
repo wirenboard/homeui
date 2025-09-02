@@ -4,4 +4,5 @@ import { DeviceStore } from '@/stores/device';
 export interface DashboardPageProps {
   dashboardStore: DashboardsStore;
   devicesStore: DeviceStore;
+  hasEditRights: boolean;
 }

@@ -4,7 +4,14 @@ import { DashboardsStore } from '@/stores/dashboards';
 import { DeviceStore } from '@/stores/device';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function dashboardDirective($rootScope, $stateParams, uiConfig, mqttClient, ConfigEditorProxy) {
+export default function dashboardDirective(
+  $rootScope,
+  $stateParams,
+  uiConfig,
+  mqttClient,
+  ConfigEditorProxy,
+  rolesFactory
+) {
   'ngInject';
 
   setReactLocale();
@@ -17,9 +24,9 @@ export default function dashboardDirective($rootScope, $stateParams, uiConfig, m
         scope.root.unmount();
       }
 
+      const hasEditRights = rolesFactory.current.role !== rolesFactory.ROLE_ONE;
       $rootScope.isHMI = $stateParams.hmi;
       $rootScope.forceFullscreen = $stateParams.fullscreen === true;
-
       scope.dashboardStore = new DashboardsStore(uiConfig, ConfigEditorProxy);
       scope.devicesStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);
@@ -27,6 +34,7 @@ export default function dashboardDirective($rootScope, $stateParams, uiConfig, m
         <DashboardPage
           dashboardStore={scope.dashboardStore}
           devicesStore={scope.devicesStore}
+          hasEditRights={hasEditRights}
         />
       );
 

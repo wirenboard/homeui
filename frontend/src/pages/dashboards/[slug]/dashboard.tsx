@@ -20,7 +20,7 @@ import { WidgetEdit } from './components/widget-edit';
 import type { DashboardPageProps } from './types';
 import './styles.css';
 
-const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageProps) => {
+const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }: DashboardPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
   const { dashboards, widgets } = dashboardStore;
@@ -30,7 +30,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
 
-  const actions = [
+  const actions = hasEditRights ? [
     {
       title: t('dashboard.buttons.remove-widget'), action: (id: string) => {
         setRemovedWidgetId(id);
@@ -39,7 +39,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
     {
       title: t('dashboard.buttons.edit-widget'), action: (id: string) => setEditingWidgetId(id), icon: EditIcon,
     },
-  ];
+  ] : [];
 
   const returnToPreviousPage = () => {
     let url = `/#!/dashboards/svg/view/${params.get('sourceDashboardId')}`;
@@ -68,7 +68,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore }: DashboardPageP
                   onClick={returnToPreviousPage}
                 />
               )}
-              {!isFullscreen && (
+              {hasEditRights && !isFullscreen && (
                 <Button
                   label={t('dashboard.buttons.add-widget')}
                   variant="success"
