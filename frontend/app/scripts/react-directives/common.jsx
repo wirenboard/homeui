@@ -136,7 +136,7 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
 };
 
 export const LineEdit = forwardRef(
-  ({ placeholder, value, onChange, disabled, type, name, required }, ref) => {
+  ({ placeholder, value, onChange, disabled, type, name, required, autocomplete }, ref) => {
     return (
       <input
         ref={ref}
@@ -147,6 +147,7 @@ export const LineEdit = forwardRef(
         disabled={disabled}
         name={name}
         required={required}
+        autoComplete={autocomplete}
         onChange={onChange}
       />
     );

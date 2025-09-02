@@ -11,6 +11,7 @@ export class StringStore {
     readOnly,
     editType = 'text',
     required,
+    autocomplete,
   }) {
     this.type = 'string';
     this.name = name;
@@ -25,6 +26,7 @@ export class StringStore {
     this.initialValue = this.value;
     this.editType = editType;
     this.required = required;
+    this.autocomplete = autocomplete;
 
     makeObservable(this, {
       value: observable,
