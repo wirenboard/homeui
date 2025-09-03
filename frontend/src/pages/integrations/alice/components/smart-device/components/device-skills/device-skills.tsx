@@ -45,10 +45,8 @@ const COLOR_SCENE_OPTIONS: Option<string>[] = [
 ];
 
 /**
- * Normalize any value coming from <Input type="number"> to a number
- * - If it's already a finite number: return as is
- * - If it's a string → trim, parse; empty/NaN/Infinity: fallback to 0
- * - Any other type (null/undefined/boolean/object): fallback to 0
+ * Normalize <Input type="number"> values to a number
+ * This need for fix case, when number field renew as string after user change
  */
 function toNumber(inputValue: unknown): number {
   // Already a number (but ensure it's finite)
@@ -109,14 +107,6 @@ const unitOptionsForInstance = (instance?: string): Option<string>[] => {
   return list.map(u => ({ label: UNIT_LABELS[u] ?? u, value: u }));
 };
 
-
-const getColorModelType = (capability: SmartDeviceCapability): ColorModel | null => {
-  const cm = capability.parameters?.color_model as any;
-  if (cm === 'rgb') return ColorModel.RGB;
-  if (cm === 'hsv') return ColorModel.HSV;
-  return null;
-};
-
 const createColorModelParameters = (model: ColorModel) => ({
   color_model: model,
   instance: model,
@@ -133,7 +123,11 @@ const createColorSceneParameters = () => ({
 });
 
 
-const getAvailableColorModels = (capabilities: SmartDeviceCapability[], excludeIndex?: number) => {
+const getAvailableColorModels = (
+  capabilities: SmartDeviceCapability[],
+  excludeIndex?: number
+): Color[] => {
+  // Collect already used Color categories among color-setting capabilities
   const usedColorModels = capabilities
     .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
     .map(cap => {
@@ -149,7 +143,6 @@ const getAvailableColorModels = (capabilities: SmartDeviceCapability[], excludeI
     .filter(colorModel => !usedColorModels.includes(colorModel));
 };
 
-
 const getCurrentColorModel = (capability: SmartDeviceCapability) => {
   if (capability.parameters?.color_model) return Color.COLOR_MODEL;
   if (capability.parameters?.temperature_k) return Color.TEMPERATURE_K;
@@ -157,24 +150,14 @@ const getCurrentColorModel = (capability: SmartDeviceCapability) => {
   return Color.COLOR_MODEL; // Default value
 };
 
-const getColorModelLabel = (colorKey: string) => {
+const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
   switch (colorKey) {
-    case 'COLOR_MODEL': return 'Цветовая модель';
-    case 'TEMPERATURE_K': return 'Цветовая температура';
-    case 'COLOR_SCENE': return 'Цветовые сцены';
+    case 'COLOR_MODEL': return t('alice.labels.color-model');
+    case 'TEMPERATURE_K': return t('alice.labels.color-temperature');
+    case 'COLOR_SCENE': return t('alice.labels.color-scenes');
     default: return colorKey;
   }
 };
-
-const getColorModelInstanceLabel = (instance: ColorModel) => {
-  switch (instance) {
-    case ColorModel.RGB: return 'RGB';
-    case ColorModel.HSV: return 'HSV';
-    default: return instance;
-  }
-};
-
-const getMqttFromColorCapability = (capability: SmartDeviceCapability) => capability.mqtt || '';
 
 const handleTemperatureParameterChange = (
   paramType: 'min' | 'max',
@@ -220,14 +203,13 @@ const handleColorScenesChange = (
   onCapabilityChange(val);
 };
 
-const getUsedFloatInstances = (props: any[]) =>
-  props
-    .filter(p => p.type === Property.Float)
-    .map(p => p?.parameters?.instance)
-    .filter(Boolean) as string[];
-
 const getAvailableFloatInstances = (props: any[], currentIndex?: number) => {
-  const used = new Set(getUsedFloatInstances(props));
+  const used = new Set(
+    props
+      .filter((p: any) => p.type === Property.Float)
+      .map((p: any) => p?.parameters?.instance)
+      .filter(Boolean) as string[]
+  );
   const keep = (inst: string) =>
     !used.has(inst) ||
     (typeof currentIndex === 'number' &&
@@ -235,7 +217,10 @@ const getAvailableFloatInstances = (props: any[], currentIndex?: number) => {
   return floats.filter(keep);
 };
 
-const isCapabilityDisabled = (capabilityType: Capability, capabilities: SmartDeviceCapability[]) => {
+const isCapabilityDisabled = (
+  capabilityType: Capability,
+  capabilities: SmartDeviceCapability[]
+) => {
   if (capabilityType === Capability['Color setting']) {
     // For color setting, disable only if all color models are used
     return getAvailableColorModels(capabilities).length === 0;
@@ -402,9 +387,9 @@ export const DeviceSkills = observer(({
                 </div>
                 {capability.type === Capability['Color setting'] ? (
                   <Dropdown
-                    value={getMqttFromColorCapability(capability)}
+                    value={capability.mqtt || ''}
                     placeholder={deviceStore.topics.flatMap((g) => g.options)
-                      .find((o) => o.value === getMqttFromColorCapability(capability))?.label}
+                      .find((o) => o.value === (capability.mqtt || ''))?.label}
                     options={deviceStore.topics as any[]}
                     isSearchable
                     onChange={({ value }: Option<string>) => {
@@ -446,7 +431,7 @@ export const DeviceSkills = observer(({
                         const isAvailable = availableModels.includes(Color[color]);
                         
                         return {
-                          label: getColorModelLabel(color),
+                          label: getColorModelLabel(color, t),
                           value: Color[color],
                           isDisabled: !isCurrentModel && !isAvailable
                         };
@@ -463,12 +448,12 @@ export const DeviceSkills = observer(({
                     <div>
                       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.color-model')}</div>
                       <Dropdown
-                        value={getColorModelType(capability)}
+                        value={capability.parameters?.color_model ?? null}
                         options={Object.keys(ColorModel)
-                          .filter(m => m !== 'HSV' || getColorModelType(capability) === ColorModel.HSV) // This line disable HSV, need remove for enable <COLOR_SKILL>
+                          .filter(m => m !== 'HSV' || capability.parameters?.color_model === ColorModel.HSV) // This line disable HSV, need remove for enable <COLOR_SKILL>
                           .map((model) => ({
-                          label: getColorModelInstanceLabel(ColorModel[model]),
-                          value: ColorModel[model],
+                          label: model,
+                          value: ColorModel[model as keyof typeof ColorModel],
                         }))}
                         onChange={({ value }: Option<ColorModel>) => {
                           handleColorModelInstanceChange(value, capability, capabilities, key, onCapabilityChange);
@@ -705,7 +690,7 @@ export const DeviceSkills = observer(({
                       options={floats.map((inst) => ({
                         label: inst,
                         value: inst,
-                        // запрещаем инстанс, если он уже занят другим свойством
+                        // Disable instance, if already used by other property
                         isDisabled: properties.some((p, i) =>
                           i !== key &&
                           p.type === Property.Float &&
