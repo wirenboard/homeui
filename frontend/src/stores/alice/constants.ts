@@ -73,13 +73,19 @@ export const deviceTypes = {
 
 export enum Capability {
   'On/Off' = 'devices.capabilities.on_off',
-  // 'Color setting' = 'devices.capabilities.color_setting',
+  'Color setting' = 'devices.capabilities.color_setting',
   // Mode = 'devices.capabilities.mode',
-  // Range = 'devices.capabilities.range',
+  Range = 'devices.capabilities.range',
   // Toggle = 'devices.capabilities.toggle',
 }
 
 export enum Color {
+  COLOR_MODEL = 'color_model',
+  TEMPERATURE_K = 'temperature_k',
+  COLOR_SCENE = 'scene',
+}
+
+export enum ColorModel {
   RGB = 'rgb',
   HSV = 'hsv',
 }
@@ -208,3 +214,26 @@ export const events = [
   'water_level',
   'water_leak',
 ];
+
+export const floatUnitsByInstance: Record<string, string[]> = {
+  'amperage': ['unit.ampere'],
+  'battery_level': ['unit.percent'],
+  'co2_level': ['unit.ppm'],
+  'electricity_meter': ['unit.kilowatt_hour'],
+  'food_level': ['unit.percent'],
+  'gas_meter': ['unit.cubic_meter'],
+  'heat_meter': ['unit.gigacalorie'],
+  'humidity': ['unit.percent'],
+  'illumination': ['unit.illumination.lux'],
+  'meter': [], // Universal meter not have units
+  'pm1_density': ['unit.density.mcg_m3'],
+  'pm2.5_density': ['unit.density.mcg_m3'],
+  'pm10_density': ['unit.density.mcg_m3'],
+  'power': ['unit.watt'],
+  'pressure': ['unit.pressure.atm', 'unit.pressure.pascal', 'unit.pressure.bar', 'unit.pressure.mmhg'],
+  'temperature': ['unit.temperature.celsius', 'unit.temperature.kelvin'],
+  'tvoc': ['unit.density.mcg_m3'],
+  'voltage': ['unit.volt'],
+  'water_level': ['unit.percent'],
+  'water_meter': ['unit.cubic_meter'],
+};
