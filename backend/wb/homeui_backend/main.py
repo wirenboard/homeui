@@ -199,7 +199,7 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
 def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     if context.session is not None:
-        context.sessions_storage.delete_session_by_id(context.session.id)
+        context.sessions_storage.delete_session(context.session)
     cookie = cookies.SimpleCookie()
     cookie["id"] = ""
     cookie["id"]["path"] = "/"

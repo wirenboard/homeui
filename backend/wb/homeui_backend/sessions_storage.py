@@ -42,9 +42,9 @@ class SessionsStorage:
             return None
         return Session(id=session_id, user=user, start_date=start_date)
 
-    def delete_session_by_id(self, session_id: str) -> None:
+    def delete_session(self, session: Session) -> None:
         cursor = self.db_connection.cursor()
-        cursor.execute("DELETE FROM sessions WHERE session_id = ?", (session_id,))
+        cursor.execute("DELETE FROM sessions WHERE session_id = ?", (session.id,))
         self.db_connection.commit()
 
     def delete_sessions_by_user(self, user: User) -> None:
