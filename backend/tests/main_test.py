@@ -35,30 +35,24 @@ class DeleteUserHandlerTest(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            session=Session(
+                "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
+            ),
         )
 
     def test_bad_url(self):
         self.request.path = "/users/aaaa/bbbb"
-        self.context.session = Session(
-            "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
-        )
         response = delete_user_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
     def test_not_found(self):
         self.request.path = "/users/aaaa"
-        self.context.session = Session(
-            "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
-        )
         self.users_storage_mock.get_user_by_id.return_value = None
         response = delete_user_handler(self.request, self.context)
         self.assertEqual(response, response_404())
 
     def test_delete_self(self):
         self.request.path = "/users/1"
-        self.context.session = Session(
-            "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
-        )
         self.users_storage_mock.get_user_by_id.return_value = self.context.session.user
         response = delete_user_handler(self.request, self.context)
 
@@ -67,9 +61,6 @@ class DeleteUserHandlerTest(unittest.TestCase):
 
     def test_success(self):
         self.request.path = "/users/123"
-        self.context.session = Session(
-            "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
-        )
         user_id = "123"
         user = MagicMock()
         user.user_id = user_id
