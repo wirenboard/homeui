@@ -24,6 +24,7 @@ import type { DeviceSkillsParams } from './types';
 import './styles.css';
 
 // Predefined color scenes per Yandex Smart Home docs
+// <COLOR_SKILL>: This scene options needed when do multiselect
 const COLOR_SCENE_OPTIONS: Option<string>[] = [
   { label: 'Alarm', value: 'alarm' },
   { label: 'Alice', value: 'alice' },
@@ -131,11 +132,11 @@ const createColorSceneParameters = () => ({
   instance: 'scene',
 });
 
-const getAvailableColorModelsForCapability = (capabilities: SmartDeviceCapability[], currentIndex: number) => {
+
+const getAvailableColorModels = (capabilities: SmartDeviceCapability[], excludeIndex?: number) => {
   const usedColorModels = capabilities
-    .filter((cap, index) => cap.type === Capability['Color setting'] && index !== currentIndex)
+    .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
     .map(cap => {
-      // Select type of color parameter
       if (cap.parameters?.color_model) return Color.COLOR_MODEL;
       if (cap.parameters?.temperature_k) return Color.TEMPERATURE_K;
       if (cap.parameters?.color_scene) return Color.COLOR_SCENE;
@@ -144,28 +145,10 @@ const getAvailableColorModelsForCapability = (capabilities: SmartDeviceCapabilit
     .filter(Boolean);
   
   return Object.values(Color)
-    .filter(m => m !== Color.COLOR_SCENE) // This line disable Color scene, need remove for enable <ZACKLADKA>
+    .filter(m => m !== Color.COLOR_SCENE) // This line disable Color scene, need remove for enable <COLOR_SKILL>
     .filter(colorModel => !usedColorModels.includes(colorModel));
-
 };
 
-const getAvailableColorModels = (capabilities: SmartDeviceCapability[]) => {
-  const usedColorModels = capabilities
-    .filter(cap => cap.type === Capability['Color setting'])
-    .map(cap => {
-      // Select type of color parameter
-      if (cap.parameters?.color_model) return Color.COLOR_MODEL;
-      if (cap.parameters?.temperature_k) return Color.TEMPERATURE_K;
-      if (cap.parameters?.color_scene) return Color.COLOR_SCENE;
-      return null;
-    })
-    .filter(Boolean);
-  
-  return Object.values(Color)
-    .filter(m => m !== Color.COLOR_SCENE) // This line disable Color scene, need remove for enable <ZACKLADKA>
-    .filter(colorModel => !usedColorModels.includes(colorModel));
-
-};
 
 const getCurrentColorModel = (capability: SmartDeviceCapability) => {
   if (capability.parameters?.color_model) return Color.COLOR_MODEL;
@@ -455,9 +438,9 @@ export const DeviceSkills = observer(({
                     <Dropdown
                       value={getCurrentColorModel(capability)}
                       options={Object.keys(Color)
-                        .filter(c => c !== 'COLOR_SCENE') // This line disable Color scene, need remove for enable <ZACKLADKA>
+                        .filter(c => c !== 'COLOR_SCENE') // This line disable Color scene, need remove for enable <COLOR_SKILL>
                         .map((color) => {
-                        const availableModels = getAvailableColorModelsForCapability(capabilities, key);
+                        const availableModels = getAvailableColorModels(capabilities, key);
                         const currentModel = getCurrentColorModel(capability);
                         const isCurrentModel = currentModel === Color[color];
                         const isAvailable = availableModels.includes(Color[color]);
@@ -482,7 +465,7 @@ export const DeviceSkills = observer(({
                       <Dropdown
                         value={getColorModelType(capability)}
                         options={Object.keys(ColorModel)
-                          .filter(m => m !== 'HSV' || getColorModelType(capability) === ColorModel.HSV) // This line disable HSV, need remove for enable <ZACKLADKA>
+                          .filter(m => m !== 'HSV' || getColorModelType(capability) === ColorModel.HSV) // This line disable HSV, need remove for enable <COLOR_SKILL>
                           .map((model) => ({
                           label: getColorModelInstanceLabel(ColorModel[model]),
                           value: ColorModel[model],
@@ -522,7 +505,6 @@ export const DeviceSkills = observer(({
                     </div>
                   )}
 
-                  {/* <!-- HSV_SCENES_SUPPORT --> */}
                   {/* For colour scenes show field for input scenes */}
                   {getCurrentColorModel(capability) === Color.COLOR_SCENE && (
                     <div>
