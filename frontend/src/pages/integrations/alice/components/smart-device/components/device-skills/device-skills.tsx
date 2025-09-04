@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
@@ -203,18 +203,27 @@ const handleColorScenesChange = (
   onCapabilityChange(val);
 };
 
-const getAvailableFloatInstances = (props: any[], currentIndex?: number) => {
-  const used = new Set(
-    props
-      .filter((p: any) => p.type === Property.Float)
-      .map((p: any) => p?.parameters?.instance)
+// Returns float instances that are unused or belong to current property
+const getAvailableFloatInstances = (
+  properties: any[],
+  currentPropertyIndex?: number
+) => {
+  const usedInstances = new Set(
+    properties
+      .filter((property) => property.type === Property.Float)
+      .map((property) => property?.parameters?.instance)
       .filter(Boolean) as string[]
   );
-  const keep = (inst: string) =>
-    !used.has(inst) ||
-    (typeof currentIndex === 'number' &&
-      props[currentIndex]?.parameters?.instance === inst);
-  return floats.filter(keep);
+  const currentInstance = typeof currentPropertyIndex === 'number' 
+    ? properties[currentPropertyIndex]?.parameters?.instance 
+    : undefined;
+
+  return floats.filter((instance) => {
+    const isUnused = !usedInstances.has(instance);
+    const isCurrentSelection = instance === currentInstance;
+    
+    return isUnused || isCurrentSelection;
+  });
 };
 
 const isCapabilityDisabled = (
@@ -273,6 +282,77 @@ export const DeviceSkills = observer(({
   capabilities, properties, deviceStore, onCapabilityChange, onPropertyChange,
 }: DeviceSkillsParams) => {
   const { t } = useTranslation();
+
+  // Creates color model dropdown with used models disabled
+  const createColorModelOptions = useMemo(() => {
+    return (currentCapability: SmartDeviceCapability, currentCapabilityIndex: number) => {
+      const availableModels = getAvailableColorModels(capabilities, currentCapabilityIndex);
+      const currentlySelectedModel = getCurrentColorModel(currentCapability);
+      
+      return Object.keys(Color)
+        .filter(colorKey => colorKey !== 'COLOR_SCENE') // This line disable Color scene, need remove for enable <COLOR_SKILL>
+        .map((colorKey) => {
+          const modelValue = Color[colorKey];
+          const isCurrentlySelected = currentlySelectedModel === modelValue;
+          const isAvailableForUse = availableModels.includes(modelValue);
+          
+          return {
+            label: getColorModelLabel(colorKey, t),
+            value: modelValue,
+            isDisabled: !isCurrentlySelected && !isAvailableForUse
+          };
+        });
+    };
+  }, [capabilities, t]);
+
+  // Creates float instance dropdown with used instances disabled
+  const createFloatInstanceOptions = useMemo(() => {
+    return (currentProperty: any, currentPropertyIndex: number) => {
+      const availableInstances = getAvailableFloatInstances(properties, currentPropertyIndex);
+      const currentlySelectedInstance = currentProperty?.parameters?.instance;
+      
+      return floats.map((instanceKey) => {
+        const isCurrentlySelected = currentlySelectedInstance === instanceKey;
+        const isAvailableForUse = availableInstances.includes(instanceKey);
+        
+        return {
+          label: instanceKey,
+          value: instanceKey,
+          isDisabled: !isCurrentlySelected && !isAvailableForUse
+        };
+      });
+    };
+  }, [properties]);
+
+  // Handles Float property instance change and automatically compatible units
+  const handleFloatInstanceChange = useMemo(() => {
+    return (newInstance: string, currentPropertyIndex: number) => {
+      const currentProperty = properties[currentPropertyIndex];
+      const availableUnits = unitOptionsForInstance(newInstance).map(o => o.value);
+      const currentlySelectedUnit = currentProperty?.parameters?.unit;
+      
+      const updatedParams: PropertyParameters = { 
+        ...currentProperty.parameters, 
+        instance: newInstance 
+      };
+      
+      if (availableUnits.length) {
+        const nextUnit = availableUnits.includes(currentlySelectedUnit) 
+          ? currentlySelectedUnit 
+          : availableUnits[0];
+        updatedParams.unit = nextUnit;
+      } else {
+        // If units not present - remove unit fields
+        delete (updatedParams as any).unit;
+      }
+      
+      const updatedProperties = properties.map((item, i) => 
+        i === currentPropertyIndex ? { ...item, parameters: updatedParams } : item
+      );
+      
+      onPropertyChange(updatedProperties);
+    };
+  }, [properties, onPropertyChange]);
 
   const getAvailableCapabilities = () => {
     const availableCapabilities = Object.values(Capability).filter(capType => {
@@ -335,7 +415,7 @@ export const DeviceSkills = observer(({
         parameters.instance = inst;
         const units = unitOptionsForInstance(inst).map(o => o.value);
         // Add default unit for first instance only if float type units present
-        if (units.length > 0) {
+        if (units.length) {
           parameters.unit = units[0];
         }
         break;
@@ -385,31 +465,18 @@ export const DeviceSkills = observer(({
                 <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
                   {t('alice.labels.topic')}
                 </div>
-                {capability.type === Capability['Color setting'] ? (
-                  <Dropdown
-                    value={capability.mqtt || ''}
-                    placeholder={deviceStore.topics.flatMap((g) => g.options)
-                      .find((o) => o.value === (capability.mqtt || ''))?.label}
-                    options={deviceStore.topics as any[]}
-                    isSearchable
-                    onChange={({ value }: Option<string>) => {
-                      onCapabilityChange(capabilities.map((item, i) => (
-                        i === key ? { ...item, mqtt: value } : item
-                      )));
-                    }}
-                  />
-                ) : (
-                  <Dropdown
-                    value={capability.mqtt}
-                    placeholder={deviceStore.topics.flatMap((g) => g.options)
-                      .find((o) => o.value === capability.mqtt)?.label}
-                    options={deviceStore.topics as any[]}
-                    isSearchable
-                    onChange={({ value }: Option<string>) => {
-                      onCapabilityChange(capabilities.map((item, i) => i === key ? { ...item, mqtt: value } : item));
-                    }}
-                  />
-                )}
+                <Dropdown
+                  value={capability.mqtt || ''}
+                  placeholder={deviceStore.topics.flatMap((g) => g.options)
+                    .find((o) => o.value === (capability.mqtt || ''))?.label}
+                  options={deviceStore.topics as any[]}
+                  isSearchable
+                  onChange={({ value }: Option<string>) => {
+                    onCapabilityChange(capabilities.map((item, i) => (
+                      i === key ? { ...item, mqtt: value } : item
+                    )));
+                  }}
+                />
               </div>
 
               {capability.type === Capability['On/Off'] && (
@@ -422,21 +489,7 @@ export const DeviceSkills = observer(({
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
                     <Dropdown
                       value={getCurrentColorModel(capability)}
-                      options={Object.keys(Color)
-                        .filter(c => c !== 'COLOR_SCENE') // This line disable Color scene, need remove for enable <COLOR_SKILL>
-                        .map((color) => {
-                        const availableModels = getAvailableColorModels(capabilities, key);
-                        const currentModel = getCurrentColorModel(capability);
-                        const isCurrentModel = currentModel === Color[color];
-                        const isAvailable = availableModels.includes(Color[color]);
-                        
-                        return {
-                          label: getColorModelLabel(color, t),
-                          value: Color[color],
-                          isDisabled: !isCurrentModel && !isAvailable
-                        };
-                      })}
-
+                      options={createColorModelOptions(capability, key)}
                       onChange={({ value }: Option<Color>) => {
                         handleColorSettingTypeChange(value, capability, capabilities, key, onCapabilityChange);
                       }}
@@ -687,38 +740,15 @@ export const DeviceSkills = observer(({
                     </div>
                     <Dropdown
                       value={property.parameters?.instance}
-                      options={floats.map((inst) => ({
-                        label: inst,
-                        value: inst,
-                        // Disable instance, if already used by other property
-                        isDisabled: properties.some((p, i) =>
-                          i !== key &&
-                          p.type === Property.Float &&
-                          p?.parameters?.instance === inst
-                        ),
-                      }))}
-
-                      onChange={({ value: instance }: Option<string>) => {
-                        const availableUnits = unitOptionsForInstance(instance).map(o => o.value);
-                        const prevUnit = properties[key]?.parameters?.unit;
-                        const updatedParams: PropertyParameters = { ...properties[key].parameters, instance };
-                        if (availableUnits.length > 0) {
-                          const nextUnit = availableUnits.includes(prevUnit) ? prevUnit : availableUnits[0];
-                          updatedParams.unit = nextUnit;
-                        } else {
-                          // If units not present - remove unit fields
-                          delete (updatedParams as any).unit;
-                        }
-                        const val = properties.map((item, i) => i === key
-                          ? { ...item, parameters: updatedParams }
-                          : item);
-                        onPropertyChange(val);
-                      }}
+                      options={createFloatInstanceOptions(property, key)}
+                      onChange={({ value: instance }: Option<string>) => 
+                        handleFloatInstanceChange(instance, key)
+                      }
                     />
                   </div>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                      {unitOptionsForInstance(property.parameters?.instance).length > 0 ? (
+                      {unitOptionsForInstance(property.parameters?.instance).length ? (
                         <Dropdown
                           value={property.parameters?.unit}
                           options={unitOptionsForInstance(property.parameters?.instance)}
@@ -730,7 +760,9 @@ export const DeviceSkills = observer(({
                           }}
                         />
                       ) : (
-                        <div style={{ opacity: .6 }}>{t('alice.labels.no-units')}</div>
+                        <div className="aliceDeviceSkills-noUnits">
+                          {t('alice.labels.no-units')}
+                        </div>
                       )}
                   </div>
                 </>
