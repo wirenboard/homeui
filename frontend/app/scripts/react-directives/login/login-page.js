@@ -19,7 +19,15 @@ function loginPageDirective(rolesFactory, $state) {
       const autologin = rolesFactory.currentUserIsAutologinUser;
 
       const onSuccess = () => {
-        $state.go('home');
+        const search = new URLSearchParams($state.params.returnParams);
+
+        const returnParams = {};
+        for (const [key, value] of search.entries()) {
+          returnParams[key] = value;
+        }
+
+        $state.go($state.params.returnState || 'home', returnParams, { location: 'replace' });
+
         if (autologin) {
           location.reload();
         }

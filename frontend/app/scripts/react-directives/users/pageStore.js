@@ -43,10 +43,13 @@ class UsersPageStore {
       login: new StringStore({
         name: i18n.t('users.labels.login'),
         validator: makeNotEmptyValidator(),
+        autocomplete: 'username',
       }),
       password: new StringStore({
         name: i18n.t('users.labels.password'),
         validator: makeNotEmptyValidator(),
+        editType: 'password',
+        autocomplete: 'new-password',
       }),
       type: new OptionsStore({
         name: i18n.t('users.labels.type'),

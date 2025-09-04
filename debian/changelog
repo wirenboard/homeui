@@ -1,8 +1,38 @@
-wb-mqtt-homeui (2.128.0) stable; urgency=medium
+wb-mqtt-homeui (2.129.0) stable; urgency=medium
 
   * Count admin cookie lifetime from the last request
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Sep 2025 11:57:48 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 Sep 2025 12:36:07 +0500
+
+wb-mqtt-homeui (2.128.4) stable; urgency=medium
+
+  * Fix login url history
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 02 Sep 2025 17:28:16 +0300
+
+wb-mqtt-homeui (2.128.3) stable; urgency=medium
+
+  * Fix browser autocomplete
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 02 Sep 2025 16:51:12 +0300
+
+wb-mqtt-homeui (2.128.2) stable; urgency=medium
+
+  * Better handle admin cookie expiration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 02 Sep 2025 17:50:38 +0500
+
+wb-mqtt-homeui (2.128.1) stable; urgency=medium
+
+  * Handle components update error more accuracy
+
+ -- Ekaterina Volkova <ekaterina.volkova@wirenboard.com>  Mon, 01 Aug 2025 10:49:37 +0300
+
+wb-mqtt-homeui (2.128.0) stable; urgency=medium
+
+  * Save url on logout and restore it on auth
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Sep 2025 11:02:03 +0300
 
 wb-mqtt-homeui (2.127.0) stable; urgency=medium
 

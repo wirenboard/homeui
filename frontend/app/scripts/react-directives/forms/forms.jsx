@@ -60,6 +60,7 @@ export const FormStringEdit = observer(
           ref={ref}
           type={store.editType}
           required={store.required}
+          autocomplete={store.autocomplete}
           onChange={(e) => store.setValue(e.target.value)}
         />
       </FormEdit>
