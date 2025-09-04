@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.129.0) stable; urgency=medium
+
+  * Count admin cookie lifetime from the last request
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 Sep 2025 12:36:07 +0500
+
 wb-mqtt-homeui (2.128.4) stable; urgency=medium
 
   * Fix login url history
