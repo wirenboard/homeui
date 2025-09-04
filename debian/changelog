@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.128.5) stable; urgency=medium
+wb-mqtt-homeui (2.129.0) stable; urgency=medium
 
   * Add colour capability in alice
   * Fix float units in alice
