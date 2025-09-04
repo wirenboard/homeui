@@ -466,9 +466,9 @@ export const DeviceSkills = observer(({
                   {t('alice.labels.topic')}
                 </div>
                 <Dropdown
-                  value={capability.mqtt || ''}
+                  value={capability.mqtt}
                   placeholder={deviceStore.topics.flatMap((g) => g.options)
-                    .find((o) => o.value === (capability.mqtt || ''))?.label}
+                    .find((o) => o.value === capability.mqtt)?.label}
                   options={deviceStore.topics as any[]}
                   isSearchable
                   onChange={({ value }: Option<string>) => {
