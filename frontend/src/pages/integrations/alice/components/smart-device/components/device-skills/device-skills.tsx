@@ -18,31 +18,13 @@ import {
   floatUnitsByInstance,
   type CapabilityParameters,
   type PropertyParameters,
-  type SmartDeviceCapability
+  type SmartDeviceCapability,
+  colorSceneOptions,
+  unitLabels,
+  rangeUnitByInstance
 } from '@/stores/alice';
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
-
-// Predefined color scenes per Yandex Smart Home docs
-// <COLOR_SKILL>: This scene options needed when do multiselect
-const COLOR_SCENE_OPTIONS: Option<string>[] = [
-  { label: 'Alarm', value: 'alarm' },
-  { label: 'Alice', value: 'alice' },
-  { label: 'Candle', value: 'candle' },
-  { label: 'Dinner', value: 'dinner' },
-  { label: 'Fantasy', value: 'fantasy' },
-  { label: 'Garland', value: 'garland' },
-  { label: 'Jungle', value: 'jungle' },
-  { label: 'Movie', value: 'movie' },
-  { label: 'Neon', value: 'neon' },
-  { label: 'Night', value: 'night' },
-  { label: 'Ocean', value: 'ocean' },
-  { label: 'Party', value: 'party' },
-  { label: 'Reading', value: 'reading' },
-  { label: 'Rest', value: 'rest' },
-  { label: 'Romance', value: 'romance' },
-  { label: 'Siren', value: 'siren' },
-];
 
 /**
  * Normalize <Input type="number"> values to a number
@@ -71,40 +53,9 @@ function toNumber(inputValue: unknown): number {
   return 0;
 }
 
-// Range units on this moment hardcoded
-// NOTE: any units have only one selection,
-//       only temperature have alternative - kelvin, but this is not useful
-const RANGE_UNIT_BY_INSTANCE: Record<string, string> = {
-  brightness: 'unit.percent',
-  humidity: 'unit.percent',
-  open: 'unit.percent',
-  volume: 'unit.percent',
-  temperature: 'unit.temperature.celsius',
-  channel: 'unit.channel',
-};
-
-const UNIT_LABELS: Record<string, string> = {
-  'unit.ampere': 'A',
-  'unit.percent': '%',
-  'unit.ppm': 'ppm',
-  'unit.kilowatt_hour': 'kWh',
-  'unit.cubic_meter': 'm³',
-  'unit.gigacalorie': 'Gcal',
-  'unit.illumination.lux': 'lx',
-  'unit.density.mcg_m3': 'µg/m³',
-  'unit.watt': 'W',
-  'unit.pressure.atm': 'Atm',
-  'unit.pressure.pascal': 'Pa',
-  'unit.pressure.bar': 'bar',
-  'unit.pressure.mmhg': 'mmHg',
-  'unit.temperature.celsius': '°C',
-  'unit.temperature.kelvin': 'K',
-  'unit.volt': 'V',
-};
-
 const unitOptionsForInstance = (instance?: string): Option<string>[] => {
   const list = (instance && floatUnitsByInstance[instance]) || [];
-  return list.map(u => ({ label: UNIT_LABELS[u] ?? u, value: u }));
+  return list.map(u => ({ label: unitLabels[u] ?? u, value: u }));
 };
 
 const createColorModelParameters = (model: ColorModel) => ({
@@ -131,30 +82,30 @@ const getAvailableColorModels = (
   const usedColorModels = capabilities
     .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
     .map(cap => {
-      if (cap.parameters?.color_model) return Color.COLOR_MODEL;
-      if (cap.parameters?.temperature_k) return Color.TEMPERATURE_K;
-      if (cap.parameters?.color_scene) return Color.COLOR_SCENE;
+      if (cap.parameters?.color_model) return Color.ColorModel;
+      if (cap.parameters?.temperature_k) return Color.TemperatureK;
+      if (cap.parameters?.color_scene) return Color.ColorScene;
       return null;
     })
     .filter(Boolean);
   
   return Object.values(Color)
-    .filter(m => m !== Color.COLOR_SCENE) // This line disable Color scene, need remove for enable <COLOR_SKILL>
+    .filter(m => m !== Color.ColorScene) // This line disable Color scene, need remove for enable <COLOR_SKILL>
     .filter(colorModel => !usedColorModels.includes(colorModel));
 };
 
 const getCurrentColorModel = (capability: SmartDeviceCapability) => {
-  if (capability.parameters?.color_model) return Color.COLOR_MODEL;
-  if (capability.parameters?.temperature_k) return Color.TEMPERATURE_K;
-  if (capability.parameters?.color_scene) return Color.COLOR_SCENE;
-  return Color.COLOR_MODEL; // Default value
+  if (capability.parameters?.color_model) return Color.ColorModel;
+  if (capability.parameters?.temperature_k) return Color.TemperatureK;
+  if (capability.parameters?.color_scene) return Color.ColorScene;
+  return Color.ColorModel; // Default value
 };
 
 const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
   switch (colorKey) {
-    case 'COLOR_MODEL': return t('alice.labels.color-model');
-    case 'TEMPERATURE_K': return t('alice.labels.color-temperature');
-    case 'COLOR_SCENE': return t('alice.labels.color-scenes');
+    case 'ColorModel': return t('alice.labels.color-model');
+    case 'TemperatureK': return t('alice.labels.color-temperature');
+    case 'ColorScene': return t('alice.labels.color-scenes');
     default: return colorKey;
   }
 };
@@ -248,11 +199,11 @@ const handleColorSettingTypeChange = (
 ) => {
   let newParameters: CapabilityParameters = {};
   
-  if (value === Color.COLOR_MODEL) {
+  if (value === Color.ColorModel) {
     Object.assign(newParameters, createColorModelParameters(ColorModel.RGB));
-  } else if (value === Color.TEMPERATURE_K) {
+  } else if (value === Color.TemperatureK) {
     Object.assign(newParameters, createTemperatureParameters());
-  } else if (value === Color.COLOR_SCENE) {
+  } else if (value === Color.ColorScene) {
     Object.assign(newParameters, createColorSceneParameters());
   }
   
@@ -290,7 +241,7 @@ export const DeviceSkills = observer(({
       const currentlySelectedModel = getCurrentColorModel(currentCapability);
       
       return Object.keys(Color)
-        .filter(colorKey => colorKey !== 'COLOR_SCENE') // This line disable Color scene, need remove for enable <COLOR_SKILL>
+        .filter(colorKey => colorKey !== 'ColorScene') // This line disable Color scene, need remove for enable <COLOR_SKILL>
         .map((colorKey) => {
           const modelValue = Color[colorKey];
           const isCurrentlySelected = currentlySelectedModel === modelValue;
@@ -367,14 +318,14 @@ export const DeviceSkills = observer(({
       case Capability['Color setting']: {
         // Choose the first available color model
         const availableColorModels = getAvailableColorModels(capabilities);
-        const selectedModel = availableColorModels[0] || Color.COLOR_MODEL;
+        const selectedModel = availableColorModels[0] || Color.ColorModel;
         
         // Generate correct structure for current model
-        if (selectedModel === Color.COLOR_MODEL) {
+        if (selectedModel === Color.ColorModel) {
           Object.assign(parameters, createColorModelParameters(ColorModel.RGB));
-        } else if (selectedModel === Color.TEMPERATURE_K) {
+        } else if (selectedModel === Color.TemperatureK) {
           Object.assign(parameters, createTemperatureParameters());
-        } else if (selectedModel === Color.COLOR_SCENE) {
+        } else if (selectedModel === Color.ColorScene) {
           Object.assign(parameters, createColorSceneParameters());
         }
 
@@ -392,7 +343,7 @@ export const DeviceSkills = observer(({
           max: 100,
           precision: 1,
         };
-        parameters.unit = RANGE_UNIT_BY_INSTANCE['brightness'];
+        parameters.unit = rangeUnitByInstance['brightness'];
         break;
       }
       case Capability.Toggle: {
@@ -431,12 +382,16 @@ export const DeviceSkills = observer(({
 
   const onCapabilityTypeChange = (type: Capability, key: number) => {
     const parameters = getCapabilityParameters(type);
-    onCapabilityChange(capabilities.map((item, i) => i === key ? { ...item, type, parameters } : item));
+    onCapabilityChange(capabilities.map((item, i) => (
+      i === key ? { ...item, type, parameters } : item
+    )));
   };
 
   const onPropertyTypeChange = (type: Property, key: number) => {
     const parameters = getPropertyParameters(type);
-    onPropertyChange(properties.map((item, i) => i === key ? { ...item, type, parameters } : item));
+    onPropertyChange(properties.map((item, i) => (
+      i === key ? { ...item, type, parameters } : item
+    )));
   };
 
   return (
@@ -497,7 +452,7 @@ export const DeviceSkills = observer(({
                   </div>
 
                   {/* For colour model - show select RGB/HSV */}
-                  {getCurrentColorModel(capability) === Color.COLOR_MODEL && (
+                  {getCurrentColorModel(capability) === Color.ColorModel && (
                     <div>
                       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.color-model')}</div>
                       <Dropdown
@@ -544,7 +499,7 @@ export const DeviceSkills = observer(({
                   )}
 
                   {/* For colour scenes show field for input scenes */}
-                  {getCurrentColorModel(capability) === Color.COLOR_SCENE && (
+                  {getCurrentColorModel(capability) === Color.ColorScene && (
                     <div>
                       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.scenes-input')}</div>
                       <Input
@@ -600,7 +555,7 @@ export const DeviceSkills = observer(({
                       value={capability.parameters?.instance}
                       options={ranges.map((range) => ({ label: range, value: range }))}
                       onChange={({ value: instance }: Option<string>) => {
-                        const unit = RANGE_UNIT_BY_INSTANCE[instance];
+                        const unit = rangeUnitByInstance[instance];
                         const val = capabilities.map((item, i) => i === key
                           ? { ...item, parameters: { ...item.parameters, instance, unit } }
                           : item);
