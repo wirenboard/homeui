@@ -1,0 +1,43 @@
+.password-indicatorWrapper {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    position: relative;
+}
+
+.password-indicator {
+    display: flex;
+    flex-grow: 1;
+    height: 3px;
+    width: 100%;
+}
+
+.password-indicatorInvalid {
+    background: var(--gray-color);
+}
+
+.password-indicatorDanger {
+    background: var(--danger-color);
+}
+
+.password-indicatorWeak {
+    background: var(--orange-color);
+}
+
+.password-indicatorNormal {
+    background: var(--warn-color);
+}
+
+.password-indicatorStrong {
+    background: var(--success-color);
+}
+
+.password-score {
+    display: flex;
+    justify-self: flex-end;
+    margin-top: 4px;
+}
+
+.password-scoreDanger {
+    color: var(--danger-color);
+}

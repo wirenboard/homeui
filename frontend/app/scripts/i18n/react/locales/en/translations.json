@@ -1,4 +1,13 @@
 {
+   "common":{
+      "labels": {
+         "password-strength-0": "Short password",
+         "password-strength-1": "Very weak password",
+         "password-strength-2": "Weak password",
+         "password-strength-3": "Good password",
+         "password-strength-4": "Strong password"
+      }
+   },
    "scan": {
       "title": "New devices",
       "search-disconnected-title": "Search for disconnected device",

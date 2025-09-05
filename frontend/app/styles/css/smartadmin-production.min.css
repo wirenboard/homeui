@@ -176,7 +176,7 @@
 .ui-state-error,
 .ui-widget-content .ui-state-error,
 .ui-widget-header .ui-state-error {
-  color: #b94a48;
+  color: var(--danger-color);
   background-color: #f2dede;
   border-color: #eed3d7
 }
@@ -986,19 +986,19 @@ input[type=text]:focus+.input-group-addon {
 }
 
 .has-error .input-group-addon {
-  border-color: #b94a48;
+  border-color: var(--danger-color);
   background: #f2dede;
-  color: #b94a48
+  color: var(--danger-color)
 }
 
 .has-error input[type=text],
 .has-error input[type=text]+.input-group-addon {
-  border-color: #b94a48
+  border-color: var(--danger-color)
 }
 
 .has-error input[type=text]+.input-group-addon {
   background-color: #f2dede;
-  color: #b94a48
+  color: var(--danger-color)
 }
 
 .has-error input[type=text]:focus,

@@ -9,6 +9,7 @@ export const Input = ({
   isDisabled,
   isWithExplicitChanges,
   onChange,
+  onChangeEvent,
   type = 'text',
   isFullWidth = false,
   size = 'default',
@@ -44,7 +45,12 @@ export const Input = ({
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>): void => {
     setInternalValue(ev.target.value);
     if (!isWithExplicitChanges || inputMethod.current === 'mouse') {
-      onChange(ev.target.value);
+      if (onChange) {
+        onChange(ev.target.value);
+      }
+      if (onChangeEvent) {
+        onChangeEvent(ev);
+      }
     }
   };
 
