@@ -91,11 +91,11 @@ class NavigationCtrl {
     };
 
     $scope.showAccessControl = function () {
-      return rolesFactory.current?.roles?.isAdmin || rolesFactory.notConfiguredAdmin;
+      return rolesFactory.current?.roles?.isAdmin;
     };
 
     $scope.showUserMenu = function () {
-      return !rolesFactory.notConfiguredAdmin && rolesFactory.isAuthenticated();
+      return rolesFactory.usersAreConfigured && rolesFactory.isAuthenticated();
     };
 
     $scope.userMenuLabel = function () {

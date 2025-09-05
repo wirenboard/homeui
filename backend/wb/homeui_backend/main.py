@@ -144,15 +144,9 @@ def get_required_user_type(request: BaseHTTPRequestHandler) -> UserType:
     return UserType(request.headers.get("Required-User-Type", UserType.ADMIN.value))
 
 
-def get_allow_if_no_users(request: BaseHTTPRequestHandler) -> bool:
-    return request.headers.get("Allow-If-No-Users", "false") == "true"
-
-
 def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
-    allow_if_no_users = get_allow_if_no_users(request)
-
-    # if no users are configured and allow_if_no_users is set to true allow all requests
-    if allow_if_no_users and not context.users_storage.has_users():
+    # if no users are configured allow all requests
+    if not context.users_storage.has_users():
         return response_200()
 
     required_user_type = get_required_user_type(request)

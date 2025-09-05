@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.130.0) stable; urgency=medium
+
+  * Open interface with admin privileges if there are no users
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 03 Sep 2025 12:35:16 +0500
+
 wb-mqtt-homeui (2.129.0) stable; urgency=medium
 
   * Count admin cookie lifetime from the last request

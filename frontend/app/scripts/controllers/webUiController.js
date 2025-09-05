@@ -29,7 +29,7 @@ class WebUICtrl {
     };
 
     this.showMqttConfig = () => {
-      return rolesFactory.notConfiguredAdmin;
+      return rolesFactory.checkRights(rolesFactory.ROLE_TWO);
     }
   }
 

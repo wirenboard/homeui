@@ -27,7 +27,7 @@ export default function rolesFactoryService() {
   roles.ROLE_THREE = roles._ROLE_THREE.id;
   roles.ROLES = [roles._ROLE_ONE, roles._ROLE_TWO, roles._ROLE_THREE];
 
-  roles.notConfiguredAdmin = false;
+  roles.usersAreConfigured = true;
   roles.currentUserIsAutologinUser = false;
 
   roles.current = {
@@ -46,8 +46,8 @@ export default function rolesFactoryService() {
     roles.current = { role: n, roles: roles.ROLES[n - 1] };
   };
 
-  roles.setAdminIsConfigured = (value) => {
-    roles.notConfiguredAdmin = !value;
+  roles.setUsersAreConfigured = (value) => {
+    roles.usersAreConfigured = value;
   };
 
   roles.setCurrentUserIsAutologinUser = (value) => {
