@@ -1,4 +1,13 @@
 {
+   "common":{
+      "labels": {
+         "password-strength-0": "Короткий пароль",
+         "password-strength-1": "Очень слабый пароль",
+         "password-strength-2": "Слабый пароль",
+         "password-strength-3": "Хороший пароль",
+         "password-strength-4": "Надежный пароль"
+      }
+   },
    "scan": {
       "title": "Новые устройства",
       "search-disconnected-title": "Поиск неотвечающего устройства",
