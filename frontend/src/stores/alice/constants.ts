@@ -1,3 +1,5 @@
+import type { Option } from '@/components/dropdown';
+
 export const DefaultRoom = 'without_rooms';
 
 export const deviceTypes = {
@@ -80,9 +82,9 @@ export enum Capability {
 }
 
 export enum Color {
-  COLOR_MODEL = 'color_model',
-  TEMPERATURE_K = 'temperature_k',
-  COLOR_SCENE = 'scene',
+  ColorModel = 'color_model',
+  TemperatureK = 'temperature_k',
+  ColorScene = 'scene',
 }
 
 export enum ColorModel {
@@ -236,4 +238,56 @@ export const floatUnitsByInstance: Record<string, string[]> = {
   'voltage': ['unit.volt'],
   'water_level': ['unit.percent'],
   'water_meter': ['unit.cubic_meter'],
+};
+
+// Predefined color scenes per Yandex Smart Home docs
+// <COLOR_SKILL>: This scene options needed when do multiselect
+export const colorSceneOptions: Option<string>[] = [
+  { label: 'Alarm', value: 'alarm' },
+  { label: 'Alice', value: 'alice' },
+  { label: 'Candle', value: 'candle' },
+  { label: 'Dinner', value: 'dinner' },
+  { label: 'Fantasy', value: 'fantasy' },
+  { label: 'Garland', value: 'garland' },
+  { label: 'Jungle', value: 'jungle' },
+  { label: 'Movie', value: 'movie' },
+  { label: 'Neon', value: 'neon' },
+  { label: 'Night', value: 'night' },
+  { label: 'Ocean', value: 'ocean' },
+  { label: 'Party', value: 'party' },
+  { label: 'Reading', value: 'reading' },
+  { label: 'Rest', value: 'rest' },
+  { label: 'Romance', value: 'romance' },
+  { label: 'Siren', value: 'siren' },
+];
+
+// Range units on this moment hardcoded
+// NOTE: any units have only one selection,
+//       only temperature have alternative - kelvin, but this is not useful
+export const rangeUnitByInstance: Record<string, string> = {
+  brightness: 'unit.percent',
+  humidity: 'unit.percent',
+  open: 'unit.percent',
+  volume: 'unit.percent',
+  temperature: 'unit.temperature.celsius',
+  channel: 'unit.channel',
+};
+
+export const unitLabels: Record<string, string> = {
+  'unit.ampere': 'A',
+  'unit.percent': '%',
+  'unit.ppm': 'ppm',
+  'unit.kilowatt_hour': 'kWh',
+  'unit.cubic_meter': 'm³',
+  'unit.gigacalorie': 'Gcal',
+  'unit.illumination.lux': 'lx',
+  'unit.density.mcg_m3': 'µg/m³',
+  'unit.watt': 'W',
+  'unit.pressure.atm': 'Atm',
+  'unit.pressure.pascal': 'Pa',
+  'unit.pressure.bar': 'bar',
+  'unit.pressure.mmhg': 'mmHg',
+  'unit.temperature.celsius': '°C',
+  'unit.temperature.kelvin': 'K',
+  'unit.volt': 'V',
 };
