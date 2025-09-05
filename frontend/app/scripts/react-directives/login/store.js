@@ -62,7 +62,7 @@ class LoginPageStore {
       if (response.ok) {
         const data = await response.json();
         this.rolesFactory.setRole(data.user_type);
-        this.rolesFactory.setAdminIsConfigured(true);
+        this.rolesFactory.setUsersAreConfigured(true);
         this.rolesFactory.setCurrentUserIsAutologinUser(false);
         this.successCallback();
         return;
