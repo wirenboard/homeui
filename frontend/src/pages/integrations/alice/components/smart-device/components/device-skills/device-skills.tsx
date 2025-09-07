@@ -192,10 +192,8 @@ const isCapabilityDisabled = (
 
 const handleColorSettingTypeChange = (
   value: Color,
-  capability: SmartDeviceCapability,
   capabilities: SmartDeviceCapability[],
-  key: number,
-  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+  key: number
 ) => {
   let newParameters: CapabilityParameters = {};
   
@@ -210,22 +208,20 @@ const handleColorSettingTypeChange = (
   const val = capabilities.map((item, i) => i === key
     ? { ...item, parameters: newParameters }
     : item);
-  onCapabilityChange(val);
+  return val;
 };
 
 const handleColorModelInstanceChange = (
   value: ColorModel,
-  capability: SmartDeviceCapability,
   capabilities: SmartDeviceCapability[],
-  key: number,
-  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+  key: number
 ) => {
   const newParameters = createColorModelParameters(value);
   
   const val = capabilities.map((item, i) => i === key
     ? { ...item, parameters: newParameters }
     : item);
-  onCapabilityChange(val);
+  return val;
 };
 
 
@@ -446,7 +442,7 @@ export const DeviceSkills = observer(({
                       value={getCurrentColorModel(capability)}
                       options={createColorModelOptions(capability, key)}
                       onChange={({ value }: Option<Color>) => {
-                        handleColorSettingTypeChange(value, capability, capabilities, key, onCapabilityChange);
+                        onCapabilityChange(handleColorSettingTypeChange(value, capabilities, key));
                       }}
                     />
                   </div>
@@ -464,7 +460,7 @@ export const DeviceSkills = observer(({
                           value: ColorModel[model as keyof typeof ColorModel],
                         }))}
                         onChange={({ value }: Option<ColorModel>) => {
-                          handleColorModelInstanceChange(value, capability, capabilities, key, onCapabilityChange);
+                          onCapabilityChange(handleColorModelInstanceChange(value, capabilities, key));
                         }}
                       />
                     </div>
