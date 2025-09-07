@@ -291,3 +291,24 @@ export const unitLabels: Record<string, string> = {
   'unit.temperature.kelvin': 'K',
   'unit.volt': 'V',
 };
+
+export const defaultColorModelParameters = {
+  [ColorModel.RGB]: {
+    color_model: ColorModel.RGB,
+    instance: ColorModel.RGB,
+  },
+  [ColorModel.HSV]: {
+    color_model: ColorModel.HSV,
+    instance: ColorModel.HSV,
+  },
+};
+
+export const defaultTemperatureParameters = {
+  temperature_k: { min: 2700, max: 6500 },
+  instance: 'temperature_k',
+};
+
+export const defaultColorSceneParameters = {
+  color_scene: { scenes: [] },
+  instance: 'scene',
+};

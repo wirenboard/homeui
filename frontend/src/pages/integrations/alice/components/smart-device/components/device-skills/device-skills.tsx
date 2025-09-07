@@ -21,7 +21,10 @@ import {
   type SmartDeviceCapability,
   colorSceneOptions,
   unitLabels,
-  rangeUnitByInstance
+  rangeUnitByInstance,
+  defaultColorModelParameters,
+  defaultTemperatureParameters,
+  defaultColorSceneParameters,
 } from '@/stores/alice';
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
@@ -57,22 +60,6 @@ const unitOptionsForInstance = (instance?: string): Option<string>[] => {
   const list = (instance && floatUnitsByInstance[instance]) || [];
   return list.map(u => ({ label: unitLabels[u] ?? u, value: u }));
 };
-
-const createColorModelParameters = (model: ColorModel) => ({
-  color_model: model,
-  instance: model,
-});
-
-const createTemperatureParameters = () => ({
-  temperature_k: { min: 2700, max: 6500 },
-  instance: 'temperature_k',
-});
-
-const createColorSceneParameters = () => ({
-  color_scene: { scenes: [] },
-  instance: 'scene',
-});
-
 
 const getAvailableColorModels = (
   capabilities: SmartDeviceCapability[],
@@ -196,11 +183,11 @@ const handleColorSettingTypeChange = (
   let newParameters: CapabilityParameters = {};
   
   if (value === Color.ColorModel) {
-    Object.assign(newParameters, createColorModelParameters(ColorModel.RGB));
+    Object.assign(newParameters, defaultColorModelParameters[ColorModel.RGB]);
   } else if (value === Color.TemperatureK) {
-    Object.assign(newParameters, createTemperatureParameters());
+    Object.assign(newParameters, defaultTemperatureParameters);
   } else if (value === Color.ColorScene) {
-    Object.assign(newParameters, createColorSceneParameters());
+    Object.assign(newParameters, defaultColorSceneParameters);
   }
   
   const val = capabilities.map((item, i) => i === key
@@ -214,7 +201,7 @@ const handleColorModelInstanceChange = (
   capabilities: SmartDeviceCapability[],
   key: number
 ) => {
-  const newParameters = createColorModelParameters(value);
+  const newParameters = defaultColorModelParameters[value];
   
   const val = capabilities.map((item, i) => i === key
     ? { ...item, parameters: newParameters }
@@ -317,11 +304,11 @@ export const DeviceSkills = observer(({
         
         // Generate correct structure for current model
         if (selectedModel === Color.ColorModel) {
-          Object.assign(parameters, createColorModelParameters(ColorModel.RGB));
+          Object.assign(parameters, defaultColorModelParameters[ColorModel.RGB]);
         } else if (selectedModel === Color.TemperatureK) {
-          Object.assign(parameters, createTemperatureParameters());
+          Object.assign(parameters, defaultTemperatureParameters);
         } else if (selectedModel === Color.ColorScene) {
-          Object.assign(parameters, createColorSceneParameters());
+          Object.assign(parameters, defaultColorSceneParameters);
         }
 
         break;
