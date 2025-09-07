@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
@@ -270,33 +270,34 @@ export const DeviceSkills = observer(({
   }, [properties]);
 
   // Handles Float property instance change and automatically compatible units
-  const handleFloatInstanceChange = useMemo(() => {
-    return (newInstance: string, currentPropertyIndex: number) => {
-      const currentProperty = properties[currentPropertyIndex];
-      const availableUnits = unitOptionsForInstance(newInstance).map(o => o.value);
-      const currentlySelectedUnit = currentProperty?.parameters?.unit;
-      
-      const updatedParams: PropertyParameters = { 
-        ...currentProperty.parameters, 
-        instance: newInstance 
-      };
-      
-      if (availableUnits.length) {
-        const nextUnit = availableUnits.includes(currentlySelectedUnit) 
-          ? currentlySelectedUnit 
-          : availableUnits[0];
-        updatedParams.unit = nextUnit;
-      } else {
-        // If units not present - remove unit fields
-        delete (updatedParams as any).unit;
-      }
-      
-      const updatedProperties = properties.map((item, i) => 
-        i === currentPropertyIndex ? { ...item, parameters: updatedParams } : item
-      );
-      
-      onPropertyChange(updatedProperties);
+  const handleFloatInstanceChange = useCallback((
+  newInstance: string, 
+  currentPropertyIndex: number
+  ) => {
+    const currentProperty = properties[currentPropertyIndex];
+    const availableUnits = unitOptionsForInstance(newInstance).map(o => o.value);
+    const currentlySelectedUnit = currentProperty?.parameters?.unit;
+
+    const updatedParams: PropertyParameters = { 
+      ...currentProperty.parameters, 
+      instance: newInstance 
     };
+
+    if (availableUnits.length) {
+      const nextUnit = availableUnits.includes(currentlySelectedUnit) 
+        ? currentlySelectedUnit 
+        : availableUnits[0];
+      updatedParams.unit = nextUnit;
+    } else {
+      // If units not present - remove unit fields
+      delete (updatedParams as any).unit;
+    }
+
+    const updatedProperties = properties.map((item, i) =>
+      i === currentPropertyIndex ? { ...item, parameters: updatedParams } : item
+    );
+
+    onPropertyChange(updatedProperties);
   }, [properties, onPropertyChange]);
 
   const getAvailableCapabilities = () => {
