@@ -114,8 +114,7 @@ const handleTemperatureParameterChange = (
   paramType: 'min' | 'max',
   value: number,
   capabilities: SmartDeviceCapability[],
-  key: number,
-  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+  key: number
 ) => {
   const val = capabilities.map((item, i) => i === key
     ? {
@@ -129,14 +128,13 @@ const handleTemperatureParameterChange = (
         }
       }
     : item);
-  onCapabilityChange(val);
+  return val;
 };
 
 const handleColorScenesChange = (
   scenes: string,
   capabilities: SmartDeviceCapability[],
-  key: number,
-  onCapabilityChange: (caps: SmartDeviceCapability[]) => void
+  key: number
 ) => {
   const sceneList = scenes.split(',').map(s => s.trim()).filter(Boolean);
   const val = capabilities.map((item, i) => i === key
@@ -151,7 +149,7 @@ const handleColorScenesChange = (
         }
       }
     : item);
-  onCapabilityChange(val);
+  return val;
 };
 
 // Returns float instances that are unused or belong to current property
@@ -250,7 +248,7 @@ export const DeviceSkills = observer(({
           };
         });
     };
-  }, [capabilities, t]);
+  }, [capabilities]);
 
   // Creates float instance dropdown with used instances disabled
   const createFloatInstanceOptions = useMemo(() => {
@@ -476,7 +474,7 @@ export const DeviceSkills = observer(({
                           type="number"
                           isFullWidth
                           onChange={(min: number) => {
-                            handleTemperatureParameterChange('min', toNumber(min), capabilities, key, onCapabilityChange);
+                            onCapabilityChange(handleTemperatureParameterChange('min', toNumber(min), capabilities, key));
                           }}
                         />
                       </div>
@@ -487,7 +485,7 @@ export const DeviceSkills = observer(({
                           type="number"
                           isFullWidth
                           onChange={(max: number) => {
-                            handleTemperatureParameterChange('max', toNumber(max), capabilities, key, onCapabilityChange);
+                            onCapabilityChange(handleTemperatureParameterChange('max', toNumber(max), capabilities, key));
                           }}
                         />
                       </div>
@@ -503,7 +501,7 @@ export const DeviceSkills = observer(({
                         isFullWidth
                         placeholder="ocean, sunset, party"
                         onChange={(scenes: string) => {
-                          handleColorScenesChange(scenes, capabilities, key, onCapabilityChange);
+                          onCapabilityChange(handleColorScenesChange(scenes, capabilities, key));
                         }}
                       />
                     </div>
