@@ -181,7 +181,7 @@ const isCapabilityDisabled = (
 ) => {
   if (capabilityType === Capability['Color setting']) {
     // For color setting, disable only if all color models are used
-    return getAvailableColorModels(capabilities).length === 0;
+    return !getAvailableColorModels(capabilities).length;
   }
   
   // For other capabilities, use existing logic
@@ -229,7 +229,7 @@ export const DeviceSkills = observer(({
   const { t } = useTranslation();
 
   // Creates color model dropdown with used models disabled
-  const createColorModelOptions = useMemo(() => {
+  const getColorModelOptions = useMemo(() => {
     return (currentCapability: SmartDeviceCapability, currentCapabilityIndex: number) => {
       const availableModels = getAvailableColorModels(capabilities, currentCapabilityIndex);
       const currentlySelectedModel = getCurrentColorModel(currentCapability);
@@ -251,7 +251,7 @@ export const DeviceSkills = observer(({
   }, [capabilities]);
 
   // Creates float instance dropdown with used instances disabled
-  const createFloatInstanceOptions = useMemo(() => {
+  const getFloatInstanceOptions = useMemo(() => {
     return (currentProperty: any, currentPropertyIndex: number) => {
       const availableInstances = getAvailableFloatInstances(properties, currentPropertyIndex);
       const currentlySelectedInstance = currentProperty?.parameters?.instance;
@@ -438,7 +438,7 @@ export const DeviceSkills = observer(({
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
                     <Dropdown
                       value={getCurrentColorModel(capability)}
-                      options={createColorModelOptions(capability, key)}
+                      options={getColorModelOptions(capability, key)}
                       onChange={({ value }: Option<Color>) => {
                         onCapabilityChange(handleColorSettingTypeChange(value, capabilities, key));
                       }}
@@ -643,7 +643,7 @@ export const DeviceSkills = observer(({
         <Button
           className="aliceDeviceSkills-addButton"
           label={t('alice.buttons.add-capability')}
-          disabled={getAvailableCapabilities().length === 0}
+          disabled={!getAvailableCapabilities().length}
           onClick={() => {
             const type = getAvailableCapabilities().at(0);
             onCapabilityChange([...capabilities, { type, mqtt: '', parameters: getCapabilityParameters(type) }]);
@@ -689,7 +689,7 @@ export const DeviceSkills = observer(({
                     </div>
                     <Dropdown
                       value={property.parameters?.instance}
-                      options={createFloatInstanceOptions(property, key)}
+                      options={getFloatInstanceOptions(property, key)}
                       onChange={({ value: instance }: Option<string>) => 
                         handleFloatInstanceChange(instance, key)
                       }
@@ -768,7 +768,7 @@ export const DeviceSkills = observer(({
               <Button
                 className="aliceDeviceSkills-addButton"
                 label={t('alice.buttons.add-property')}
-                disabled={free.length === 0}
+                disabled={!free.length}
                 onClick={() => {
                   const inst = free[0];
                   const units = unitOptionsForInstance(inst).map(o => o.value);
