@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.131.0) stable; urgency=medium
+
+  * Add password strength bar
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Sep 2025 14:12:16 +0300
+
 wb-mqtt-homeui (2.130.1) stable; urgency=medium
 
   * Do not redirect to HTTPS on localhost or 127.0.0.1

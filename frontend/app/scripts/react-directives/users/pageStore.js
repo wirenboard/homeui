@@ -32,6 +32,8 @@ class UsersPageStore {
       password: new StringStore({
         name: i18n.t('users.labels.password'),
         validator: makeNotEmptyValidator(),
+        isHideErrorText: true,
+        showIndicator: true,
         editType: 'password',
         autocomplete: 'new-password',
       }),

@@ -1210,7 +1210,7 @@ button.dashboard-back:active {
 
 .has-error .wb-react-select .wb-react-select__control,
 .has-error .wb-react-select .wb-react-select__control:hover {
-  border-color: #b94a48;
+  border-color: var(--danger-color);
 }
 
 .wb-react-select .wb-react-select__indicator-separator {
