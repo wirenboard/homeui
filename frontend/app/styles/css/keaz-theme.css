@@ -1,0 +1,39 @@
+:root {
+  --primary-color: #0a08ef;
+  --primary-color-hover: #0046ff;
+  --secondary-color: #ff4700;
+  --secondary-color-hover: #ffa27f;
+  --success-color: var(--secondary-color);
+  --success-color-hover: var(--secondary-color-hover);
+  --success-color-border: var(--secondary-color);
+  --gray-color: #cfdae2;
+
+  --bar-color: #e7ecf0;
+  --bar-border: var(--gray-color);
+  --bar-hover-color: var(--secondary-color);
+  --bar-inside-color: var(--gray-color);
+  --bar-burger-color: var(--secondary-color);
+  --bar-burger-border-color: var(--bar-inside-color);
+  --bar-text-color: var(--primary-color);
+  --input-action-background: var(--primary-color);
+  --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgb(10 8 239 / 50%);
+  --bar-inside-text-color: var(--primary-color);
+  --online-color: #27ae60;
+  --bar-font-size: 15px;
+
+  --font: "Loos Normal Regular", Sans Serif;
+}
+
+@font-face {
+  font-family: "Loos Normal Regular";
+  src: url("../fonts/Loos-Normal-Regular-Web.woff") format("woff");
+}
+
+.navbar-nav li:last-of-type {
+  display: none;
+}
+
+.button-secondary {
+  color: #fff !important;
+  border-color: var(--secondary-color) !important;
+}
