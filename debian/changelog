@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.130.0) stable; urgency=medium
 
   * Open interface with admin privileges if there are no users
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 03 Sep 2025 12:35:16 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 08 Sep 2025 10:50:20 +0500
+
+wb-mqtt-homeui (2.129.1) stable; urgency=medium
+
+  * Fix "delete" button hiding on history page
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 05 Sep 2025 16:00:00 +0400
 
 wb-mqtt-homeui (2.129.0) stable; urgency=medium
 
