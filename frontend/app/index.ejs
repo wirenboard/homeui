@@ -2,7 +2,7 @@
 <html class="no-js">
   <head>
     <meta charset="utf-8">
-    <title>Wiren Board Web UI</title>
+    <title>KEAZ OptiSmart WEB</title>
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,7 +36,7 @@
                   <span class="icon-bar"></span>
               </button>
               <a class="navbar-brand wb-navbar-brand" ui-sref="home" draggable="false">
-                <img src="images/logo.svg" alt="Wiren Board Web UI" draggable="false">
+                <img src="images/logo.png" alt="Wiren Board Web UI" draggable="false">
               </a>
               <p class="navbar-text navbar-right connection-status">
                 <span class="label label-custom access-level-label" ng-class="roles.current.roles.isAdmin ? 'label label-custom label-danger' : 'label label-custom label-warning'"
@@ -119,9 +119,6 @@
                             <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="logs" draggable="false">{{'navigation.menu.logs' | translate}}</a>
                           </li>
                       </ul>
-                  </li>
-                  <li ui-sref-active="active" ng-if="!checkFullscreen()">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help" draggable="false"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
                   </li>
               </ul>
           </div>
