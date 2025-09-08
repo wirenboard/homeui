@@ -1,11 +1,11 @@
-wb-mqtt-homeui (2.131.0) stable; urgency=medium
+ wb-mqtt-homeui (2.131.0) stable; urgency=medium
 
   * Add password strength bar
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Sep 2025 11:07:07 +0300
- 
+
  wb-mqtt-homeui (2.130.0) stable; urgency=medium
- 
+
   * Open interface with admin privileges if there are no users
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 08 Sep 2025 10:50:20 +0500
