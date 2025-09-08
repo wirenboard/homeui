@@ -1,11 +1,10 @@
 import { LegacyRef } from 'react';
 
-export interface InputProps {
+export interface PasswordProps {
   id?: string;
   ref?: LegacyRef<HTMLInputElement>;
-  type?: 'text' | 'number' | 'password';
   size?: 'default' | 'small' | 'large';
-  value: string | number;
+  value: string;
   className?: string;
   min?: number;
   max?: number;
@@ -19,6 +18,7 @@ export interface InputProps {
   ariaErrorMessage?: string;
   isFullWidth?: boolean;
   isWithExplicitChanges?: boolean;
+  showIndicator?: boolean;
   onChange: (_val: string | number, _badInput?: boolean) => void;
-  onChangeEvent: (_ev: any) => void;
+  onChangeEvent: (_val: any) => void;
 }
