@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.130.1) stable; urgency=medium
+
+  * Check users database integrity on startup. Recreate it if corrupted
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 08 Sep 2025 10:59:15 +0500
+
 wb-mqtt-homeui (2.130.0) stable; urgency=medium
 
   * Open interface with admin privileges if there are no users

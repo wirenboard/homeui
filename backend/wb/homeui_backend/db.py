@@ -1,3 +1,4 @@
+import logging
 import os
 import sqlite3
 
@@ -72,8 +73,9 @@ def create_db(db_file: str) -> sqlite3.Connection:
 
 
 def open_db(db_file: str) -> sqlite3.Connection:
-    if not os.path.exists(db_file):
+    if not check_db(db_file):
         return create_db(db_file)
+
     con = sqlite3.connect(db_file)
     cur = con.cursor()
     cur.execute("PRAGMA user_version")
@@ -83,3 +85,22 @@ def open_db(db_file: str) -> sqlite3.Connection:
     if version < DB_SCHEMA_VERSION:
         update_db(con, version)
     return con
+
+
+def check_db(db_file: str) -> bool:
+    if not os.path.exists(db_file):
+        return False
+
+    con = sqlite3.connect(db_file)
+
+    cursor = con.cursor()
+    cursor.execute("PRAGMA quick_check")
+    if cursor.fetchone()[0] != "ok":
+        logging.error("Database is broken. Recreating")
+        return False
+
+    cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table'")
+    if cursor.fetchone()[0] < 1:
+        logging.error("Database has no tables. Recreating")
+        return False
+    return True
