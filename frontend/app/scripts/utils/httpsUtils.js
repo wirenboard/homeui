@@ -81,8 +81,8 @@ async function hasInvalidCertificate(certStatus) {
 
 /**
  * Checks the current protocol and attempts to redirect to an HTTPS version of the site if applicable.
- * 
- * If the current protocol is HTTPS, the function returns 'ok'.
+ *
+ * If the current protocol is HTTPS or the hostname is a localhost or 127.0.0.1, the function returns 'ok'.
  * If the hostname is an IP address or a local domain, it fetches device information using both HTTP and HTTPS.
  * If the device information matches, it redirects the browser to the HTTPS URL.
  * 
@@ -94,7 +94,9 @@ async function hasInvalidCertificate(certStatus) {
  * - 'redirected': If the browser is redirected to an HTTPS URL.
  */
 export async function checkHttps() {
-  if (window.location.protocol === 'https:') {
+  if (window.location.protocol === 'https:' ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1') {
     return 'ok';
   }
 
