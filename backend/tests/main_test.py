@@ -121,7 +121,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
         self.users_storage_mock.get_autologin_user.return_value = None
         self.request.headers = {}
         response = auth_check_handler(self.request, self.context)
-        self.assertEqual(response, response_401())
+        self.assertEqual(response, response_200())
 
     def test_no_required_user_type_no_user_with_users(self):
         self.users_storage_mock.has_users.return_value = True
@@ -135,7 +135,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
         self.users_storage_mock.get_autologin_user.return_value = None
         self.request.headers = {"Required-User-Type": "user"}
         response = auth_check_handler(self.request, self.context)
-        self.assertEqual(response, response_401())
+        self.assertEqual(response, response_200())
 
     def test_required_user_no_user_with_users(self):
         self.users_storage_mock.has_users.return_value = True
@@ -171,12 +171,6 @@ class CheckAuthHandlerTests(unittest.TestCase):
         response = auth_check_handler(self.request, self.context)
         self.assertEqual(response, response_200(headers=[["Wb-User-Type", "admin"]]))
         self.sessions_storage_mock.update_session_start_date.assert_called_once_with(self.context.session)
-
-    def test_allow_if_no_users(self):
-        self.users_storage_mock.has_users.return_value = False
-        self.request.headers = {"Allow-If-No-Users": "true"}
-        response = auth_check_handler(self.request, self.context)
-        self.assertEqual(response, response_200())
 
 
 class WhoAmIHandlerTests(unittest.TestCase):

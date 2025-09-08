@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
+import AccessLevelStore from '../components/access-level/accessLevelStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
 import FormModalState from '../components/modals/formModalState';
 import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
@@ -17,28 +18,11 @@ function sortUsers(users) {
   });
 }
 
-class UsersPageAccessLevelStore {
-  constructor() {
-    this.notConfiguredAdmin = false;
-    this.accessGranted = true;
-
-    makeAutoObservable(this);
-  }
-
-  setNotConfiguredAdmin() {
-    this.notConfiguredAdmin = true;
-    this.accessGranted = true;
-  }
-
-  setAccessNotGranted() {
-    this.accessGranted = false;
-  }
-}
-
 class UsersPageStore {
   constructor(rolesFactory) {
     this.pageWrapperStore = new PageWrapperStore(i18n.t('users.title'));
-    this.accessLevelStore = new UsersPageAccessLevelStore();
+    this.accessLevelStore = new AccessLevelStore(rolesFactory);
+    this.accessLevelStore.setRole(rolesFactory.ROLE_THREE);
     this.userParamsStore = new FormStore('userParams', {
       login: new StringStore({
         name: i18n.t('users.labels.login'),
@@ -78,16 +62,8 @@ class UsersPageStore {
 
     makeAutoObservable(this);
 
-    if (rolesFactory.notConfiguredAdmin) {
-      this.accessLevelStore.setNotConfiguredAdmin();
-      this.pageWrapperStore.setLoading(false);
-      return;
-    }
-    if (rolesFactory.current.roles.isAdmin) {
+    if (this.accessLevelStore.accessGranted) {
       this.loadUsers();
-    } else {
-      this.accessLevelStore.setAccessNotGranted();
-      this.pageWrapperStore.setLoading(false);
     }
   }
 
@@ -223,7 +199,7 @@ class UsersPageStore {
 
   async addUser() {
     this.userParamsStore.reset();
-    if (this.accessLevelStore.notConfiguredAdmin) {
+    if (!this.accessLevelStore.usersAreConfigured) {
       this.userParamsStore.params.type.setValue('admin');
       this.userParamsStore.params.type.setReadOnly(true);
     }
@@ -243,7 +219,7 @@ class UsersPageStore {
     if (res === null) {
       return;
     }
-    if (this.accessLevelStore.notConfiguredAdmin) {
+    if (!this.accessLevelStore.usersAreConfigured) {
       location.reload();
       return;
     }
