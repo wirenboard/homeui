@@ -70,48 +70,6 @@ const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
   }
 };
 
-const handleTemperatureParameterChange = (
-  paramType: 'min' | 'max',
-  value: number,
-  capabilities: SmartDeviceCapability[],
-  key: number
-) => {
-  const val = capabilities.map((item, i) => i === key
-    ? {
-        ...item,
-        parameters: {
-          ...item.parameters,
-          temperature_k: {
-            ...item.parameters.temperature_k,
-            [paramType]: value
-          },
-        }
-      }
-    : item);
-  return val;
-};
-
-const handleColorScenesChange = (
-  scenes: string,
-  capabilities: SmartDeviceCapability[],
-  key: number
-) => {
-  const sceneList = scenes.split(',').map(s => s.trim()).filter(Boolean);
-  const val = capabilities.map((item, i) => i === key
-    ? {
-        ...item,
-        parameters: {
-          ...item.parameters,
-          color_scene: {
-            ...item.parameters.color_scene,
-            scenes: sceneList
-          },
-        }
-      }
-    : item);
-  return val;
-};
-
 // Returns float instances that are unused or belong to current property
 const getAvailableFloatInstances = (
   properties: any[],
@@ -148,45 +106,87 @@ const isCapabilityDisabled = (
   return capabilities.find((item) => item.type === capabilityType);
 };
 
-const handleColorSettingTypeChange = (
-  value: Color,
-  capabilities: SmartDeviceCapability[],
-  key: number
-) => {
-  let newParameters: CapabilityParameters = {};
-  
-  if (value === Color.ColorModel) {
-    Object.assign(newParameters, defaultColorModelParameters[ColorModel.RGB]);
-  } else if (value === Color.TemperatureK) {
-    Object.assign(newParameters, defaultTemperatureParameters);
-  } else if (value === Color.ColorScene) {
-    Object.assign(newParameters, defaultColorSceneParameters);
-  }
-  
-  const val = capabilities.map((item, i) => i === key
-    ? { ...item, parameters: newParameters }
-    : item);
-  return val;
-};
-
-const handleColorModelInstanceChange = (
-  value: ColorModel,
-  capabilities: SmartDeviceCapability[],
-  key: number
-) => {
-  const newParameters = defaultColorModelParameters[value];
-  
-  const val = capabilities.map((item, i) => i === key
-    ? { ...item, parameters: newParameters }
-    : item);
-  return val;
-};
-
 
 export const DeviceSkills = observer(({
   capabilities, properties, deviceStore, onCapabilityChange, onPropertyChange,
 }: DeviceSkillsParams) => {
   const { t } = useTranslation();
+
+  const handleColorSettingTypeChange = useCallback((
+    value: Color,
+    capabilities: SmartDeviceCapability[],
+    key: number
+  ) => {
+    let newParameters: CapabilityParameters = {};
+    
+    if (value === Color.ColorModel) {
+      Object.assign(newParameters, defaultColorModelParameters[ColorModel.RGB]);
+    } else if (value === Color.TemperatureK) {
+      Object.assign(newParameters, defaultTemperatureParameters);
+    } else if (value === Color.ColorScene) {
+      Object.assign(newParameters, defaultColorSceneParameters);
+    }
+    
+    const updatedCapabilities = capabilities.map((item, i) => i === key
+      ? { ...item, parameters: newParameters }
+      : item);
+    onCapabilityChange(updatedCapabilities);
+  }, [capabilities]);
+
+  const handleColorModelInstanceChange = useCallback((
+    value: ColorModel,
+    capabilities: SmartDeviceCapability[],
+    key: number
+  ) => {
+    const newParameters = defaultColorModelParameters[value];
+    
+    const updatedCapabilities = capabilities.map((item, i) => i === key
+      ? { ...item, parameters: newParameters }
+      : item);
+    onCapabilityChange(updatedCapabilities);
+  }, [capabilities]);
+
+  const handleTemperatureParameterChange = useCallback((
+    paramType: 'min' | 'max',
+    value: number,
+    capabilities: SmartDeviceCapability[],
+    key: number
+  ) => {
+    const updatedCapabilities = capabilities.map((item, i) => i === key
+      ? {
+          ...item,
+          parameters: {
+            ...item.parameters,
+            temperature_k: {
+              ...item.parameters.temperature_k,
+              [paramType]: value
+            },
+          }
+        }
+      : item);
+    onCapabilityChange(updatedCapabilities);
+  }, [capabilities]);
+
+  const handleColorScenesChange = useCallback((
+    scenes: string,
+    capabilities: SmartDeviceCapability[],
+    key: number
+  ) => {
+    const sceneList = scenes.split(',').map(s => s.trim()).filter(Boolean);
+    const updatedCapabilities = capabilities.map((item, i) => i === key
+      ? {
+          ...item,
+          parameters: {
+            ...item.parameters,
+            color_scene: {
+              ...item.parameters.color_scene,
+              scenes: sceneList
+            },
+          }
+        }
+      : item);
+    onCapabilityChange(updatedCapabilities);
+  }, [capabilities]);
 
   // Creates color model dropdown with used models disabled
   const getColorModelOptions = useMemo(() => {
@@ -401,7 +401,7 @@ export const DeviceSkills = observer(({
                       value={getCurrentColorModel(capability)}
                       options={getColorModelOptions(capability, key)}
                       onChange={({ value }: Option<Color>) => {
-                        onCapabilityChange(handleColorSettingTypeChange(value, capabilities, key));
+                        handleColorSettingTypeChange(value, capabilities, key);
                       }}
                     />
                   </div>
@@ -419,7 +419,7 @@ export const DeviceSkills = observer(({
                           value: ColorModel[model as keyof typeof ColorModel],
                         }))}
                         onChange={({ value }: Option<ColorModel>) => {
-                          onCapabilityChange(handleColorModelInstanceChange(value, capabilities, key));
+                          handleColorModelInstanceChange(value, capabilities, key);
                         }}
                       />
                     </div>
@@ -436,7 +436,7 @@ export const DeviceSkills = observer(({
                           isFullWidth
                           onChangeEvent={(event) => {
                             const min = event.currentTarget.valueAsNumber || 0;
-                            onCapabilityChange(handleTemperatureParameterChange('min', min, capabilities, key));
+                            handleTemperatureParameterChange('min', min, capabilities, key);
                           }}
                         />
                       </div>
@@ -448,7 +448,7 @@ export const DeviceSkills = observer(({
                           isFullWidth
                           onChangeEvent={(event) => {
                             const max = event.currentTarget.valueAsNumber || 0;
-                            onCapabilityChange(handleTemperatureParameterChange('max', max, capabilities, key));
+                            handleTemperatureParameterChange('max', max, capabilities, key);
                           }}
                         />
                       </div>
@@ -464,7 +464,7 @@ export const DeviceSkills = observer(({
                         isFullWidth
                         placeholder="ocean, sunset, party"
                         onChange={(scenes: string) => {
-                          onCapabilityChange(handleColorScenesChange(scenes, capabilities, key));
+                          handleColorScenesChange(scenes, capabilities, key);
                         }}
                       />
                     </div>
