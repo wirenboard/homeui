@@ -1,3 +1,4 @@
+import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -155,7 +156,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
             <Dropdown
               value={data.room_id}
               options={Array.from(rooms.keys()).map((room) => ({ label: rooms.get(room).name, value: room }))}
-              onChange={({ value: room_id }: any) => setData({ ...data, room_id })}
+              onChange={({ value: roomId }: any) => setData({ ...data, room_id: roomId })}
             />
           </label>
 
