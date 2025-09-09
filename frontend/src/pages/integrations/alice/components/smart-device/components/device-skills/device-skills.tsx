@@ -24,14 +24,14 @@ import {
   rangeUnitByInstance,
   defaultColorModelParameters,
   defaultTemperatureParameters,
-  defaultColorSceneParameters,
+  defaultColorSceneParameters
 } from '@/stores/alice';
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
 
 const unitOptionsForInstance = (instance?: string): Option<string>[] => {
   const list = (instance && floatUnitsByInstance[instance]) || [];
-  return list.map(u => ({ label: unitLabels[u] ?? u, value: u }));
+  return list.map((u) => ({ label: unitLabels[u] ?? u, value: u }));
 };
 
 const getAvailableColorModels = (
@@ -41,17 +41,17 @@ const getAvailableColorModels = (
   // Collect already used Color categories among color-setting capabilities
   const usedColorModels = capabilities
     .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
-    .map(cap => {
+    .map((cap) => {
       if (cap.parameters?.color_model) return Color.ColorModel;
       if (cap.parameters?.temperature_k) return Color.TemperatureK;
       if (cap.parameters?.color_scene) return Color.ColorScene;
       return null;
     })
     .filter(Boolean);
-  
+
   return Object.values(Color)
-    .filter(m => m !== Color.ColorScene) // This line disable Color scene, need remove for enable <COLOR_SKILL>
-    .filter(colorModel => !usedColorModels.includes(colorModel));
+    .filter((m) => m !== Color.ColorScene) // This line disable Color scene, need remove for enable <COLOR_SKILL>
+    .filter((colorModel) => !usedColorModels.includes(colorModel));
 };
 
 const getCurrentColorModel = (capability: SmartDeviceCapability) => {
@@ -81,14 +81,14 @@ const getAvailableFloatInstances = (
       .map((property) => property?.parameters?.instance)
       .filter(Boolean) as string[]
   );
-  const currentInstance = typeof currentPropertyIndex === 'number' 
-    ? properties[currentPropertyIndex]?.parameters?.instance 
+  const currentInstance = typeof currentPropertyIndex === 'number'
+    ? properties[currentPropertyIndex]?.parameters?.instance
     : undefined;
 
   return floats.filter((instance) => {
     const isUnused = !usedInstances.has(instance);
     const isCurrentSelection = instance === currentInstance;
-    
+
     return isUnused || isCurrentSelection;
   });
 };
@@ -101,11 +101,10 @@ const isCapabilityDisabled = (
     // For color setting, disable only if all color models are used
     return !getAvailableColorModels(capabilities).length;
   }
-  
+
   // For other capabilities, use existing logic
   return capabilities.find((item) => item.type === capabilityType);
 };
-
 
 export const DeviceSkills = observer(({
   capabilities, properties, deviceStore, onCapabilityChange, onPropertyChange,
@@ -118,7 +117,7 @@ export const DeviceSkills = observer(({
     key: number
   ) => {
     let newParameters: CapabilityParameters = {};
-    
+
     if (value === Color.ColorModel) {
       Object.assign(newParameters, defaultColorModelParameters[ColorModel.RGB]);
     } else if (value === Color.TemperatureK) {
@@ -126,7 +125,7 @@ export const DeviceSkills = observer(({
     } else if (value === Color.ColorScene) {
       Object.assign(newParameters, defaultColorSceneParameters);
     }
-    
+
     const updatedCapabilities = capabilities.map((item, i) => i === key
       ? { ...item, parameters: newParameters }
       : item);
@@ -139,7 +138,7 @@ export const DeviceSkills = observer(({
     key: number
   ) => {
     const newParameters = defaultColorModelParameters[value];
-    
+
     const updatedCapabilities = capabilities.map((item, i) => i === key
       ? { ...item, parameters: newParameters }
       : item);
@@ -154,15 +153,15 @@ export const DeviceSkills = observer(({
   ) => {
     const updatedCapabilities = capabilities.map((item, i) => i === key
       ? {
-          ...item,
-          parameters: {
-            ...item.parameters,
-            temperature_k: {
-              ...item.parameters.temperature_k,
-              [paramType]: value
-            },
-          }
-        }
+        ...item,
+        parameters: {
+          ...item.parameters,
+          temperature_k: {
+            ...item.parameters.temperature_k,
+            [paramType]: value,
+          },
+        },
+      }
       : item);
     onCapabilityChange(updatedCapabilities);
   }, [capabilities]);
@@ -172,18 +171,18 @@ export const DeviceSkills = observer(({
     capabilities: SmartDeviceCapability[],
     key: number
   ) => {
-    const sceneList = scenes.split(',').map(s => s.trim()).filter(Boolean);
+    const sceneList = scenes.split(',').map((s) => s.trim()).filter(Boolean);
     const updatedCapabilities = capabilities.map((item, i) => i === key
       ? {
-          ...item,
-          parameters: {
-            ...item.parameters,
-            color_scene: {
-              ...item.parameters.color_scene,
-              scenes: sceneList
-            },
-          }
-        }
+        ...item,
+        parameters: {
+          ...item.parameters,
+          color_scene: {
+            ...item.parameters.color_scene,
+            scenes: sceneList,
+          },
+        },
+      }
       : item);
     onCapabilityChange(updatedCapabilities);
   }, [capabilities]);
@@ -193,18 +192,18 @@ export const DeviceSkills = observer(({
     return (currentCapability: SmartDeviceCapability, currentCapabilityIndex: number) => {
       const availableModels = getAvailableColorModels(capabilities, currentCapabilityIndex);
       const currentlySelectedModel = getCurrentColorModel(currentCapability);
-      
+
       return Object.keys(Color)
-        .filter(colorKey => colorKey !== 'ColorScene') // This line disable Color scene, need remove for enable <COLOR_SKILL>
+        .filter((colorKey) => colorKey !== 'ColorScene') // This line disable Color scene, need remove for enable <COLOR_SKILL>
         .map((colorKey) => {
           const modelValue = Color[colorKey];
           const isCurrentlySelected = currentlySelectedModel === modelValue;
           const isAvailableForUse = availableModels.includes(modelValue);
-          
+
           return {
             label: getColorModelLabel(colorKey, t),
             value: modelValue,
-            isDisabled: !isCurrentlySelected && !isAvailableForUse
+            isDisabled: !isCurrentlySelected && !isAvailableForUse,
           };
         });
     };
@@ -215,15 +214,15 @@ export const DeviceSkills = observer(({
     return (currentProperty: any, currentPropertyIndex: number) => {
       const availableInstances = getAvailableFloatInstances(properties, currentPropertyIndex);
       const currentlySelectedInstance = currentProperty?.parameters?.instance;
-      
+
       return floats.map((instanceKey) => {
         const isCurrentlySelected = currentlySelectedInstance === instanceKey;
         const isAvailableForUse = availableInstances.includes(instanceKey);
-        
+
         return {
           label: instanceKey,
           value: instanceKey,
-          isDisabled: !isCurrentlySelected && !isAvailableForUse
+          isDisabled: !isCurrentlySelected && !isAvailableForUse,
         };
       });
     };
@@ -231,21 +230,21 @@ export const DeviceSkills = observer(({
 
   // Handles Float property instance change and automatically compatible units
   const handleFloatInstanceChange = useCallback((
-  newInstance: string, 
-  currentPropertyIndex: number
+    newInstance: string,
+    currentPropertyIndex: number
   ) => {
     const currentProperty = properties[currentPropertyIndex];
-    const availableUnits = unitOptionsForInstance(newInstance).map(o => o.value);
+    const availableUnits = unitOptionsForInstance(newInstance).map((o) => o.value);
     const currentlySelectedUnit = currentProperty?.parameters?.unit;
 
-    const updatedParams: PropertyParameters = { 
-      ...currentProperty.parameters, 
-      instance: newInstance 
+    const updatedParams: PropertyParameters = {
+      ...currentProperty.parameters,
+      instance: newInstance,
     };
 
     if (availableUnits.length) {
-      const nextUnit = availableUnits.includes(currentlySelectedUnit) 
-        ? currentlySelectedUnit 
+      const nextUnit = availableUnits.includes(currentlySelectedUnit)
+        ? currentlySelectedUnit
         : availableUnits[0];
       updatedParams.unit = nextUnit;
     } else {
@@ -261,7 +260,7 @@ export const DeviceSkills = observer(({
   }, [properties, onPropertyChange]);
 
   const getAvailableCapabilities = () => {
-    const availableCapabilities = Object.values(Capability).filter(capType => {
+    const availableCapabilities = Object.values(Capability).filter((capType) => {
       return !isCapabilityDisabled(capType, capabilities);
     });
     return availableCapabilities;
@@ -274,7 +273,7 @@ export const DeviceSkills = observer(({
         // Choose the first available color model
         const availableColorModels = getAvailableColorModels(capabilities);
         const selectedModel = availableColorModels[0] || Color.ColorModel;
-        
+
         // Generate correct structure for current model
         if (selectedModel === Color.ColorModel) {
           Object.assign(parameters, defaultColorModelParameters[ColorModel.RGB]);
@@ -321,7 +320,7 @@ export const DeviceSkills = observer(({
       case Property.Float: {
         const inst = floats.at(0);
         parameters.instance = inst;
-        const units = unitOptionsForInstance(inst).map(o => o.value);
+        const units = unitOptionsForInstance(inst).map((o) => o.value);
         // Add default unit for first instance only if float type units present
         if (units.length) {
           parameters.unit = units[0];
@@ -399,18 +398,18 @@ export const DeviceSkills = observer(({
                       <Dropdown
                         value={capability.parameters?.color_model ?? null}
                         options={Object.keys(ColorModel)
-                          .filter(m => m !== 'HSV' || capability.parameters?.color_model === ColorModel.HSV) // This line disable HSV, need remove for enable <COLOR_SKILL>
+                          .filter((m) => m !== 'HSV' || capability.parameters?.color_model === ColorModel.HSV) // This line disable HSV, need remove for enable <COLOR_SKILL>
                           .map((model) => ({
-                          label: model,
-                          value: ColorModel[model as keyof typeof ColorModel],
-                        }))}
+                            label: model,
+                            value: ColorModel[model as keyof typeof ColorModel],
+                          }))}
                         onChange={({ value }: Option<ColorModel>) => {
                           handleColorModelInstanceChange(value, capabilities, key);
                         }}
                       />
                     </div>
                   )}
-                  
+
                   {/* For temperature_k - show fields min/max */}
                   {capability.parameters?.temperature_k && (
                     <div className="aliceDeviceSkills-gridRange">
@@ -447,8 +446,8 @@ export const DeviceSkills = observer(({
                       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.scenes-input')}</div>
                       <Input
                         value={capability.parameters?.color_scene?.scenes?.join(', ') || ''}
-                        isFullWidth
                         placeholder="ocean, sunset, party"
+                        isFullWidth
                         onChange={(scenes: string) => {
                           handleColorScenesChange(scenes, capabilities, key);
                         }}
@@ -644,29 +643,29 @@ export const DeviceSkills = observer(({
                     <Dropdown
                       value={property.parameters?.instance}
                       options={getFloatInstanceOptions(property, key)}
-                      onChange={({ value: instance }: Option<string>) => 
+                      onChange={({ value: instance }: Option<string>) =>
                         handleFloatInstanceChange(instance, key)
                       }
                     />
                   </div>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                      {unitOptionsForInstance(property.parameters?.instance).length ? (
-                        <Dropdown
-                          value={property.parameters?.unit}
-                          options={unitOptionsForInstance(property.parameters?.instance)}
-                          onChange={({ value: unit }: Option<string>) => {
-                            const val = properties.map((item, i) => i === key
-                              ? { ...item, parameters: { ...item.parameters, unit } }
-                              : item);
-                            onPropertyChange(val);
-                          }}
-                        />
-                      ) : (
-                        <div className="aliceDeviceSkills-noUnits">
-                          {t('alice.labels.no-units')}
-                        </div>
-                      )}
+                    {unitOptionsForInstance(property.parameters?.instance).length ? (
+                      <Dropdown
+                        value={property.parameters?.unit}
+                        options={unitOptionsForInstance(property.parameters?.instance)}
+                        onChange={({ value: unit }: Option<string>) => {
+                          const val = properties.map((item, i) => i === key
+                            ? { ...item, parameters: { ...item.parameters, unit } }
+                            : item);
+                          onPropertyChange(val);
+                        }}
+                      />
+                    ) : (
+                      <div className="aliceDeviceSkills-noUnits">
+                        {t('alice.labels.no-units')}
+                      </div>
+                    )}
                   </div>
                 </>
               )}
@@ -742,7 +741,7 @@ export const DeviceSkills = observer(({
                 disabled={!free.length}
                 onClick={() => {
                   const inst = free[0];
-                  const units = unitOptionsForInstance(inst).map(o => o.value);
+                  const units = unitOptionsForInstance(inst).map((o) => o.value);
                   const params: PropertyParameters = { instance: inst };
                   if (units.length) params.unit = units[0];
                   onPropertyChange([
@@ -753,7 +752,7 @@ export const DeviceSkills = observer(({
               />
             );
           })()}
-        </div> 
+        </div>
       </div>
     </>
   );
