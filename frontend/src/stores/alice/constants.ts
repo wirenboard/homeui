@@ -241,7 +241,7 @@ export const floatUnitsByInstance: Record<string, string[]> = {
 };
 
 // Predefined color scenes per Yandex Smart Home docs
-// <COLOR_SKILL>: This scene options needed when do multiselect
+// <DISABLED_COLOR>: This scene options needed when do multiselect
 export const colorSceneOptions: Option<string>[] = [
   { label: 'Alarm', value: 'alarm' },
   { label: 'Alice', value: 'alice' },

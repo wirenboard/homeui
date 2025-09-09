@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment, useMemo, useCallback } from 'react';
+import { Fragment, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
@@ -9,17 +9,17 @@ import {
   Capability,
   Color,
   ColorModel,
-  events,
+  // events, // <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
   floats,
-  modes,
+  // modes, // <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
   Property,
   ranges,
-  toggles,
+  // toggles, // <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
   floatUnitsByInstance,
   type CapabilityParameters,
   type PropertyParameters,
   type SmartDeviceCapability,
-  colorSceneOptions,
+  // colorSceneOptions, // <DISABLED_COLOR> - need uncomment for Color Scenes activation in WEBUI
   unitLabels,
   rangeUnitByInstance,
   defaultColorModelParameters,
@@ -50,7 +50,7 @@ const getAvailableColorModels = (
     .filter(Boolean);
 
   return Object.values(Color)
-    .filter((m) => m !== Color.ColorScene) // This line disable Color scene, need remove for enable <COLOR_SKILL>
+    .filter((m) => m !== Color.ColorScene) // <DISABLED_COLOR> This line disable Color scene, need remove for enable
     .filter((colorModel) => !usedColorModels.includes(colorModel));
 };
 
@@ -194,7 +194,8 @@ export const DeviceSkills = observer(({
       const currentlySelectedModel = getCurrentColorModel(currentCapability);
 
       return Object.keys(Color)
-        .filter((colorKey) => colorKey !== 'ColorScene') // This line disable Color scene, need remove for enable <COLOR_SKILL>
+        // <DISABLED_COLOR> This line disable Color scene, need remove for enable
+        .filter((colorKey) => colorKey !== 'ColorScene')
         .map((colorKey) => {
           const modelValue = Color[colorKey];
           const isCurrentlySelected = currentlySelectedModel === modelValue;
@@ -398,7 +399,8 @@ export const DeviceSkills = observer(({
                       <Dropdown
                         value={capability.parameters?.color_model ?? null}
                         options={Object.keys(ColorModel)
-                          .filter((m) => m !== 'HSV' || capability.parameters?.color_model === ColorModel.HSV) // This line disable HSV, need remove for enable <COLOR_SKILL>
+                          // <DISABLED_COLOR> This line disable Color HSV, need remove for enable
+                          .filter((m) => m !== 'HSV' || capability.parameters?.color_model === ColorModel.HSV)
                           .map((model) => ({
                             label: model,
                             value: ColorModel[model as keyof typeof ColorModel],
