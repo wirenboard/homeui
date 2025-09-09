@@ -1,6 +1,11 @@
 import { LegacyRef } from 'react';
 
-export interface InputProps {
+type RequireAtLeastOne<T, Keys extends keyof T = keyof T> =
+  Keys extends keyof T
+    ? Required<Pick<T, Keys>> & Omit<T, Keys>
+    : never;
+
+type BaseInputProps = {
   id?: string;
   ref?: LegacyRef<HTMLInputElement>;
   type?: 'text' | 'number' | 'password';
@@ -19,6 +24,8 @@ export interface InputProps {
   ariaErrorMessage?: string;
   isFullWidth?: boolean;
   isWithExplicitChanges?: boolean;
-  onChange: (_val: string | number, _badInput?: boolean) => void;
-  onChangeEvent: (_ev: any) => void;
-}
+  onChange?: (_val: string | number, _badInput?: boolean) => void;
+  onChangeEvent?: (_ev: any) => void;
+};
+
+export type InputProps = RequireAtLeastOne<BaseInputProps, 'onChange' | 'onChangeEvent'>;

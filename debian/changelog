@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.132.0) stable; urgency=medium
+
+  * Add info link
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Sep 2025 17:46:06 +0300
+
 wb-mqtt-homeui (2.131.1) stable; urgency=medium
 
   * Check users database integrity on startup. Recreate it if corrupted

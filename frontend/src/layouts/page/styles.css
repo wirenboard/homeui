@@ -39,6 +39,22 @@
     cursor: pointer;
 }
 
+.page-info {
+    display: flex;
+    color: var(--gray-color);
+}
+
+.page-info:hover {
+    color: var(--link-color);
+    cursor: pointer;
+    transition: color 200ms;
+}
+
+.page-info svg {
+    width: 20px;
+    height: 20px;
+}
+
 .page-actions {
     flex-shrink: 0;
     display: flex;
