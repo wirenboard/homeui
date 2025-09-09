@@ -29,33 +29,6 @@ import {
 import type { DeviceSkillsParams } from './types';
 import './styles.css';
 
-/**
- * Normalize <Input type="number"> values to a number
- * This need for fix case, when number field renew as string after user change
- */
-function toNumber(inputValue: unknown): number {
-  // Already a number (but ensure it's finite)
-  if (typeof inputValue === 'number') {
-    return Number.isFinite(inputValue) ? inputValue : 0;
-  }
-
-  // Typical case for <Input type="number"> — value is a string
-  if (typeof inputValue === 'string') {
-    const trimmed = inputValue.trim();
-
-    // Treat empty string as 0 to keep JSON numeric
-    if (trimmed === '') {
-      return 0;
-    }
-
-    const parsed = Number(trimmed);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-
-  // Fallback for null/undefined/boolean/object/symbol/etc
-  return 0;
-}
-
 const unitOptionsForInstance = (instance?: string): Option<string>[] => {
   const list = (instance && floatUnitsByInstance[instance]) || [];
   return list.map(u => ({ label: unitLabels[u] ?? u, value: u }));
@@ -461,8 +434,9 @@ export const DeviceSkills = observer(({
                           value={capability.parameters?.temperature_k?.min}
                           type="number"
                           isFullWidth
-                          onChange={(min: number) => {
-                            onCapabilityChange(handleTemperatureParameterChange('min', toNumber(min), capabilities, key));
+                          onChangeEvent={(event) => {
+                            const min = event.currentTarget.valueAsNumber || 0;
+                            onCapabilityChange(handleTemperatureParameterChange('min', min, capabilities, key));
                           }}
                         />
                       </div>
@@ -472,8 +446,9 @@ export const DeviceSkills = observer(({
                           value={capability.parameters?.temperature_k?.max}
                           type="number"
                           isFullWidth
-                          onChange={(max: number) => {
-                            onCapabilityChange(handleTemperatureParameterChange('max', toNumber(max), capabilities, key));
+                          onChangeEvent={(event) => {
+                            const max = event.currentTarget.valueAsNumber || 0;
+                            onCapabilityChange(handleTemperatureParameterChange('max', max, capabilities, key));
                           }}
                         />
                       </div>
@@ -552,10 +527,10 @@ export const DeviceSkills = observer(({
                         value={capability.parameters?.range.min}
                         type="number"
                         isFullWidth
-                        onChange={(min: number) => {
-                          const n = toNumber(min);
+                        onChangeEvent={(event) => {
+                          const min = event.currentTarget.valueAsNumber || 0;
                           const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min: n } } }
+                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min } } }
                             : item);
                           onCapabilityChange(val);
                         }}
@@ -567,10 +542,10 @@ export const DeviceSkills = observer(({
                         value={capability.parameters?.range.max}
                         type="number"
                         isFullWidth
-                        onChange={(max: number) => {
-                          const n = toNumber(max);
+                        onChangeEvent={(event) => {
+                          const max = event.currentTarget.valueAsNumber || 0;
                           const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max: n } } }
+                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max } } }
                             : item);
                           onCapabilityChange(val);
                         }}
@@ -582,12 +557,12 @@ export const DeviceSkills = observer(({
                         value={capability.parameters?.range.precision}
                         type="number"
                         isFullWidth
-                        onChange={(precision: number) => {
-                          const n = toNumber(precision);
+                        onChangeEvent={(event) => {
+                          const precision = event.currentTarget.valueAsNumber || 0;
                           const val = capabilities.map((item, i) => i === key
                             ? {
                               ...item,
-                              parameters: { ...item.parameters, range: { ...item.parameters.range, precision: n } },
+                              parameters: { ...item.parameters, range: { ...item.parameters.range, precision } },
                             }
                             : item);
                           onCapabilityChange(val);
