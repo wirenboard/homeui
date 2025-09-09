@@ -22,6 +22,7 @@ export interface CapabilityParameters {
   color_scene?: { scenes: string[] };
   instance?: string;
   modes?: string;
+  unit?: string;
   range?: {
     min: number;
     max: number;

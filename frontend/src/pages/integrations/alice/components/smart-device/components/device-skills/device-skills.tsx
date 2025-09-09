@@ -286,11 +286,12 @@ export const DeviceSkills = observer(({
 
         break;
       }
-      case Capability.Mode: {
-        parameters.instance = 'wet_cleaning';
-        parameters.modes = 'start=1, stop=0';
-        break;
-      }
+      // <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
+      // case Capability.Mode: {
+      //   parameters.instance = 'wet_cleaning';
+      //   parameters.modes = 'start=1, stop=0';
+      //   break;
+      // }
       case Capability.Range: {
         parameters.instance = 'brightness';
         parameters.range = {
@@ -301,10 +302,11 @@ export const DeviceSkills = observer(({
         parameters.unit = rangeUnitByInstance['brightness'];
         break;
       }
-      case Capability.Toggle: {
-        parameters.instance = 'backlight';
-        break;
-      }
+      // <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
+      // case Capability.Toggle: {
+      //   parameters.instance = 'backlight';
+      //   break;
+      // }
       case Capability['On/Off']: {
         parameters.instance = 'on';
         break;
@@ -326,11 +328,12 @@ export const DeviceSkills = observer(({
         }
         break;
       }
-      case Property.Event: {
-        parameters.instance = events.at(0);
-        parameters.value = 'открыто';
-        break;
-      }
+      // <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
+      // case Property.Event: {
+      //   parameters.instance = events.at(0);
+      //   parameters.value = 'открыто';
+      //   break;
+      // }
     }
     return parameters;
   };
@@ -456,7 +459,8 @@ export const DeviceSkills = observer(({
 
               )}
 
-              {capability.type === Capability.Mode && (
+              {/* <DISABLED_MODE> - need uncomment for Mode activation in WEBUI */}
+              {/* {capability.type === Capability.Mode && (
                 <>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode-type')}</div>
@@ -485,7 +489,7 @@ export const DeviceSkills = observer(({
                     />
                   </div>
                 </>
-              )}
+              )} */}
 
               {capability.type === Capability.Range && (
                 <>
@@ -556,7 +560,8 @@ export const DeviceSkills = observer(({
                 </>
               )}
 
-              {capability.type === Capability.Toggle && (
+              {/* <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI */}
+              {/* {capability.type === Capability.Toggle && (
                 <div className="aliceDeviceSkills-colspan2">
                   <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
                   <Dropdown
@@ -570,7 +575,7 @@ export const DeviceSkills = observer(({
                     }}
                   />
                 </div>
-              )}
+              )} */}
 
               <div>
                 <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
@@ -666,7 +671,8 @@ export const DeviceSkills = observer(({
                 </>
               )}
 
-              {property.type === Property.Event && (
+              {/* <DISABLED_EVENT> - need uncomment for Event activation in WEBUI */}
+              {/* {property.type === Property.Event && (
                 <>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
@@ -697,7 +703,7 @@ export const DeviceSkills = observer(({
                     />
                   </div>
                 </>
-              )}
+              )} */}
 
               <div>
                 <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
