@@ -374,6 +374,23 @@ export const DeviceSkills = observer(({
                   onChange={(option: Option<Capability>) => onCapabilityTypeChange(option.value, key)}
                 />
               </div>
+              <div>
+                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
+                  {t('alice.labels.topic')}
+                </div>
+                <Dropdown
+                  value={capability.mqtt}
+                  placeholder={deviceStore.topics.flatMap((g) => g.options)
+                    .find((o) => o.value === capability.mqtt)?.label}
+                  options={deviceStore.topics as any[]}
+                  isSearchable
+                  onChange={({ value }: Option<string>) => {
+                    onCapabilityChange(capabilities.map((item, i) => (
+                      i === key ? { ...item, mqtt: value } : item
+                    )));
+                  }}
+                />
+              </div>
 
               {capability.type === Capability['On/Off'] && (
                 <div className="aliceDeviceSkills-colspan2"></div>
@@ -578,24 +595,6 @@ export const DeviceSkills = observer(({
                 </div>
               )} */}
 
-              <div>
-                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                  {t('alice.labels.topic')}
-                </div>
-                <Dropdown
-                  value={capability.mqtt}
-                  placeholder={deviceStore.topics.flatMap((g) => g.options)
-                    .find((o) => o.value === capability.mqtt)?.label}
-                  options={deviceStore.topics as any[]}
-                  isSearchable
-                  onChange={({ value }: Option<string>) => {
-                    onCapabilityChange(capabilities.map((item, i) => (
-                      i === key ? { ...item, mqtt: value } : item
-                    )));
-                  }}
-                />
-              </div>
-
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
                   size="small"
@@ -633,6 +632,21 @@ export const DeviceSkills = observer(({
                   value={property.type}
                   options={Object.keys(Property).map((prop) => ({ label: prop, value: Property[prop] }))}
                   onChange={(option: Option<Property>) => onPropertyTypeChange(option.value, key)}
+                />
+              </div>
+              <div>
+                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
+                  {t('alice.labels.topic')}
+                </div>
+                <Dropdown
+                  value={property.mqtt}
+                  placeholder={deviceStore.topics.flatMap((g) => g.options)
+                    .find((o) => o.value === property.mqtt)?.label}
+                  options={deviceStore.topics as any[]}
+                  isSearchable
+                  onChange={({ value }: Option<string>) => {
+                    onPropertyChange(properties.map((item, i) => i === key ? { ...item, mqtt: value } : item));
+                  }}
                 />
               </div>
 
@@ -705,22 +719,6 @@ export const DeviceSkills = observer(({
                   </div>
                 </>
               )} */}
-
-              <div>
-                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                  {t('alice.labels.topic')}
-                </div>
-                <Dropdown
-                  value={property.mqtt}
-                  placeholder={deviceStore.topics.flatMap((g) => g.options)
-                    .find((o) => o.value === property.mqtt)?.label}
-                  options={deviceStore.topics as any[]}
-                  isSearchable
-                  onChange={({ value }: Option<string>) => {
-                    onPropertyChange(properties.map((item, i) => i === key ? { ...item, mqtt: value } : item));
-                  }}
-                />
-              </div>
 
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
