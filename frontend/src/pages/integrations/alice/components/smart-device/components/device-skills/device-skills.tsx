@@ -113,7 +113,6 @@ export const DeviceSkills = observer(({
 
   const handleColorSettingTypeChange = useCallback((
     value: Color,
-    capabilities: SmartDeviceCapability[],
     key: number
   ) => {
     let newParameters: CapabilityParameters = {};
@@ -134,7 +133,6 @@ export const DeviceSkills = observer(({
 
   const handleColorModelInstanceChange = useCallback((
     value: ColorModel,
-    capabilities: SmartDeviceCapability[],
     key: number
   ) => {
     const newParameters = defaultColorModelParameters[value];
@@ -148,7 +146,6 @@ export const DeviceSkills = observer(({
   const handleTemperatureParameterChange = useCallback((
     paramType: 'min' | 'max',
     value: number,
-    capabilities: SmartDeviceCapability[],
     key: number
   ) => {
     const updatedCapabilities = capabilities.map((item, i) => i === key
@@ -168,7 +165,6 @@ export const DeviceSkills = observer(({
 
   const handleColorScenesChange = useCallback((
     scenes: string,
-    capabilities: SmartDeviceCapability[],
     key: number
   ) => {
     const sceneList = scenes.split(',').map((s) => s.trim()).filter(Boolean);
@@ -404,7 +400,7 @@ export const DeviceSkills = observer(({
                       value={getCurrentColorModel(capability)}
                       options={getColorModelOptions(capability, key)}
                       onChange={({ value }: Option<Color>) => {
-                        handleColorSettingTypeChange(value, capabilities, key);
+                        handleColorSettingTypeChange(value, key);
                       }}
                     />
                   </div>
@@ -423,7 +419,7 @@ export const DeviceSkills = observer(({
                             value: ColorModel[model as keyof typeof ColorModel],
                           }))}
                         onChange={({ value }: Option<ColorModel>) => {
-                          handleColorModelInstanceChange(value, capabilities, key);
+                          handleColorModelInstanceChange(value, key);
                         }}
                       />
                     </div>
@@ -440,7 +436,7 @@ export const DeviceSkills = observer(({
                           isFullWidth
                           onChangeEvent={(event) => {
                             const min = event.currentTarget.valueAsNumber || 0;
-                            handleTemperatureParameterChange('min', min, capabilities, key);
+                            handleTemperatureParameterChange('min', min, key);
                           }}
                         />
                       </div>
@@ -452,7 +448,7 @@ export const DeviceSkills = observer(({
                           isFullWidth
                           onChangeEvent={(event) => {
                             const max = event.currentTarget.valueAsNumber || 0;
-                            handleTemperatureParameterChange('max', max, capabilities, key);
+                            handleTemperatureParameterChange('max', max, key);
                           }}
                         />
                       </div>
@@ -468,7 +464,7 @@ export const DeviceSkills = observer(({
                         placeholder="ocean, sunset, party"
                         isFullWidth
                         onChange={(scenes: string) => {
-                          handleColorScenesChange(scenes, capabilities, key);
+                          handleColorScenesChange(scenes, key);
                         }}
                       />
                     </div>
