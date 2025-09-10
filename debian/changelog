@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.117.11-e1d931dd-002) stable; urgency=medium
+
+  * Fix menu settings link
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Sep 2025 15:38:00 +0300
+
 wb-mqtt-homeui (2.117.11-e1d931dd-001) stable; urgency=medium
 
   * Add keaz theme

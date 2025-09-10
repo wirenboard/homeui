@@ -29,10 +29,6 @@
   src: url("../fonts/Loos-Normal-Regular-Web.woff") format("woff");
 }
 
-.navbar-nav li:last-of-type {
-  display: none;
-}
-
 .button-secondary {
   color: #fff !important;
   border-color: var(--secondary-color) !important;
