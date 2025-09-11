@@ -78,17 +78,17 @@ export default class AliceStore {
     return updateDevice(id, params);
   }
 
-  async deleteDevice(id: string): Promise<void> {
-    await deleteDevice(id);
+  async deleteDevice(deviceId: string): Promise<void> {
+    await deleteDevice(deviceId);
 
     runInAction(() => {
-      const { room_id } = this.devices.get(id);
-      if (room_id && room_id !== DefaultRoom) {
-        const room = this.rooms.get(room_id);
-        room.devices = room.devices.filter((id) => id !== id);
-        this.rooms.set(room_id, room);
+      const { room_id: roomId } = this.devices.get(deviceId);
+      if (roomId && roomId !== DefaultRoom) {
+        const room = this.rooms.get(roomId);
+        room.devices = room.devices.filter((id) => id !== deviceId);
+        this.rooms.set(roomId, room);
       }
-      this.devices.delete(id);
+      this.devices.delete(deviceId);
     });
   }
 
