@@ -9,12 +9,12 @@ import {
   Capability,
   Color,
   ColorModel,
-  // modes, // <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
+  // modes, // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
   ranges,
-  // toggles, // <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
+  // toggles, // TODO: <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
   type CapabilityParameters,
   type SmartDeviceCapability,
-  // colorSceneOptions, // <DISABLED_COLOR> - need uncomment for Color Scenes activation in WEBUI
+  // colorSceneOptions, // TODO: <DISABLED_COLOR> - need uncomment for Color Scenes activation in WEBUI
   rangeUnitByInstance,
   defaultColorModelParameters,
   defaultTemperatureParameters,
@@ -43,7 +43,7 @@ const getAvailableColorModels = (
     .filter(Boolean);
 
   return Object.values(Color)
-    .filter((m) => m !== Color.ColorScene) // <DISABLED_COLOR> This line disable Color scene, need remove for enable
+    .filter((m) => m !== Color.ColorScene) // TODO: <DISABLED_COLOR> This line disable Color scene, need remove for enable
     .filter((colorModel) => !usedColorModels.includes(colorModel));
 };
 
@@ -153,14 +153,13 @@ export const DeviceCapabilities = observer(({
     onCapabilityChange(updatedCapabilities);
   }, [capabilities]);
 
-  // Creates color model dropdown with used models disabled
   const getColorModelOptions = useMemo(() => {
     return (currentCapability: SmartDeviceCapability, currentCapabilityIndex: number) => {
       const availableModels = getAvailableColorModels(capabilities, currentCapabilityIndex);
       const currentlySelectedModel = getCurrentColorModel(currentCapability);
 
       return Object.keys(Color)
-        // <DISABLED_COLOR> This line disable Color scene, need remove for enable
+        // TODO: <DISABLED_COLOR> This line disable Color scene, need remove for enable
         .filter((colorKey) => colorKey !== 'ColorScene')
         .map((colorKey) => {
           const modelValue = Color[colorKey];
@@ -202,7 +201,7 @@ export const DeviceCapabilities = observer(({
 
         break;
       }
-      // <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
+      // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
       // case Capability.Mode: {
       //   parameters.instance = 'wet_cleaning';
       //   parameters.modes = 'start=1, stop=0';
@@ -295,14 +294,13 @@ export const DeviceCapabilities = observer(({
                     />
                   </div>
 
-                  {/* For colour model - show select RGB/HSV */}
                   {getCurrentColorModel(capability) === Color.ColorModel && (
                     <div>
                       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.color-model')}</div>
                       <Dropdown
                         value={capability.parameters?.color_model ?? null}
                         options={Object.keys(ColorModel)
-                          // <DISABLED_COLOR> This line disable Color HSV, need remove for enable
+                          // TODO: <DISABLED_COLOR> This line disable Color HSV, need remove for enable
                           .filter((m) => m !== 'HSV' || capability.parameters?.color_model === ColorModel.HSV)
                           .map((model) => ({
                             label: model,
@@ -315,7 +313,6 @@ export const DeviceCapabilities = observer(({
                     </div>
                   )}
 
-                  {/* For temperature_k - show fields min/max */}
                   {capability.parameters?.temperature_k && (
                     <div className="aliceDeviceSkills-gridRange">
                       <div>
@@ -345,7 +342,6 @@ export const DeviceCapabilities = observer(({
                     </div>
                   )}
 
-                  {/* For colour scenes show field for input scenes */}
                   {getCurrentColorModel(capability) === Color.ColorScene && (
                     <div>
                       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.scenes-input')}</div>
@@ -363,7 +359,7 @@ export const DeviceCapabilities = observer(({
 
               )}
 
-              {/* <DISABLED_MODE> - need uncomment for Mode activation in WEBUI */}
+              {/* TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI */}
               {/* {capability.type === Capability.Mode && (
                 <>
                   <div>

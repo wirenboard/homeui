@@ -5,7 +5,7 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import {
-  // events, // <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
+  // events, // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
   floats,
   Property,
   floatUnitsByInstance,
@@ -52,7 +52,6 @@ export const DeviceProperties = observer(({
 }: DevicePropertiesProps) => {
   const { t } = useTranslation();
 
-  // Creates float instance dropdown with used instances disabled
   const getFloatInstanceOptions = useMemo(() => {
     return (currentProperty: any, currentPropertyIndex: number) => {
       const availableInstances = getAvailableFloatInstances(properties, currentPropertyIndex);
@@ -71,7 +70,6 @@ export const DeviceProperties = observer(({
     };
   }, [properties]);
 
-  // Handles Float property instance change and automatically compatible units
   const handleFloatInstanceChange = useCallback((
     newInstance: string,
     currentPropertyIndex: number
@@ -115,7 +113,7 @@ export const DeviceProperties = observer(({
         }
         break;
       }
-      // <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
+      // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
       // case Property.Event: {
       //   parameters.instance = events.at(0);
       //   parameters.value = 'открыто';
@@ -202,7 +200,7 @@ export const DeviceProperties = observer(({
                 </>
               )}
 
-              {/* <DISABLED_EVENT> - need uncomment for Event activation in WEBUI */}
+              {/* TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI */}
               {/* {property.type === Property.Event && (
                 <>
                   <div>
