@@ -10,7 +10,7 @@ import {
   Property,
   floatUnitsByInstance,
   type PropertyParameters,
-  unitLabels,
+  unitLabels
 } from '@/stores/alice';
 
 interface DevicePropertiesProps {
