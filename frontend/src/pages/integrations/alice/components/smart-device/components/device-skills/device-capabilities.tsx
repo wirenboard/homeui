@@ -238,18 +238,6 @@ export const DeviceCapabilities = observer(({
     )));
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <>
       <h6>{t('alice.labels.device-capabilities')}</h6>
