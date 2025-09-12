@@ -23,7 +23,7 @@ import './styles.css';
 const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }: DashboardPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
-  const { dashboards, widgets, loadData, isLoading } = dashboardStore;
+  const { dashboards, widgets, loadData, isLoading, setLoading } = dashboardStore;
   const { page: dashboardId, params } = useParseHash();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
@@ -32,15 +32,38 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
   const [errors, setErrors] = useState([]);
 
   useEffect(() => {
-    // have to add timeout to avoid often MqttConnectionError.
-    // should be removed after rewrite widgets page and navigation
-    setTimeout(() => {
-      loadData().catch((error) => {
-        if (error.data === 'MqttConnectionError') {
-          setErrors([{ variant: 'danger', text: t('dashboard.errors.mqtt-connection') }]);
-        }
-      });
-    }, 500);
+    let interval = null;
+    let attempt = 0;
+
+    // Sometimes the request finishes before the MQTT connection is established.
+    // In that case we retry every 3 seconds until success.
+    // The error message is displayed starting from the second attempt.
+    const fetchData = () => {
+      attempt++;
+      loadData()
+        .then(() => {
+          if (interval) {
+            clearInterval(interval);
+            interval = null;
+          }
+          setErrors([]);
+        })
+        .catch((error: any) => {
+          if (attempt > 1 && error.data === 'MqttConnectionError') {
+            setLoading(false);
+            setErrors([{ variant: 'danger', text: t('dashboard.errors.mqtt-connection') }]);
+          }
+          if (!interval) {
+            interval = setInterval(fetchData, 3000);
+          }
+        });
+    };
+
+    fetchData();
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [dashboardId]);
 
   const actions = hasEditRights ? [

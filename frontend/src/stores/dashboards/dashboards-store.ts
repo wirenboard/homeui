@@ -19,11 +19,13 @@ export default class DashboardsStore {
   }
 
   loadData() {
+    this.isLoading = true;
     return this.#configEditorProxy.Load({ path: uiConfigPath })
       .then(({ content }: UIConfigResponse) => {
         const { dashboards, widgets, defaultDashboardId } = content;
 
         return runInAction(() => {
+          this.isLoading = false;
           dashboards.forEach((dashboard: DashboardBase) => {
             this.dashboards.set(dashboard.id, new Dashboard(dashboard, this));
           });
@@ -32,9 +34,6 @@ export default class DashboardsStore {
           });
           this.defaultDashboardId = defaultDashboardId;
         });
-      })
-      .finally(() => {
-        this.isLoading = false;
       });
   }
 
@@ -82,6 +81,12 @@ export default class DashboardsStore {
       });
       this.widgets.delete(widgetId);
       this._saveData();
+    });
+  }
+
+  setLoading(value: boolean) {
+    runInAction(() => {
+      this.isLoading = value;
     });
   }
 
