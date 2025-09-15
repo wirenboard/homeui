@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
+import InfoIcon from '@/assets/icons/info.svg';
 import { Alert } from '@/components/alert';
 import { AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
@@ -22,6 +23,7 @@ export const PageLayout = ({
   isLoading = false,
   isHideHeader = false,
   actions,
+  infoLink,
   onTitleChange,
   onTitleEditEnable,
 }: PropsWithChildren<PageProps>) => {
@@ -59,7 +61,16 @@ export const PageLayout = ({
                 isFullWidth
                 onChange={onTitleChange}
               />
-            ) : (<h1 className="page-title">{title}</h1>)}
+            ) : (
+              <>
+                <h1 className="page-title">{title}</h1>
+                {infoLink && (
+                  <a href={infoLink} target="_blank" className="page-info">
+                    <InfoIcon />
+                  </a>
+                )}
+              </>
+            )}
 
             {(!isEditingTitle && onTitleChange) && (
               <Button

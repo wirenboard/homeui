@@ -15,11 +15,13 @@ class LoginPageStore {
       login: new StringStore({
         name: i18n.t('login.labels.login'),
         required: true,
+        autocomplete: 'username',
       }),
       password: new StringStore({
         name: i18n.t('login.labels.password'),
         required: true,
         editType: 'password',
+        autocomplete: 'current-password',
       }),
     });
 
@@ -60,7 +62,7 @@ class LoginPageStore {
       if (response.ok) {
         const data = await response.json();
         this.rolesFactory.setRole(data.user_type);
-        this.rolesFactory.setAdminIsConfigured(true);
+        this.rolesFactory.setUsersAreConfigured(true);
         this.rolesFactory.setCurrentUserIsAutologinUser(false);
         this.successCallback();
         return;

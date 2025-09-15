@@ -1,4 +1,13 @@
 {
+   "common":{
+      "labels": {
+         "password-strength-0": "Короткий пароль",
+         "password-strength-1": "Очень слабый пароль",
+         "password-strength-2": "Слабый пароль",
+         "password-strength-3": "Хороший пароль",
+         "password-strength-4": "Надежный пароль"
+      }
+   },
    "scan": {
       "title": "Новые устройства",
       "search-disconnected-title": "Поиск неотвечающего устройства",
@@ -579,10 +588,14 @@
          "device-category": "Категория устройства",
          "device-type": "Тип устройства",
          "capability": "Умение",
+         "color-model": "Цветовая модель",
+         "color-temperature": "Цветовая температура",
+         "color-scenes": "Цветовые сцены",
          "property": "Свойство",
          "property-settings": "Настройки свойства",
          "property-capability": "Умение/свойство",
          "topic": "MQTT топик",
+         "scenes-input": "Сцены (через запятую)",
          "switch-on": "Команда вкл",
          "switch-off": "Команда выкл",
          "type": "Тип",
@@ -590,6 +603,7 @@
          "mode-type": "Тип режима",
          "min": "Минимум",
          "max": "Максимум",
+         "no-units": "Безразмерно",
          "precision": "Точность",
          "device-capabilities": "Умения и свойства",
          "device-capabilities-description": "Умения устройства (device) описывают его возможности. Устройство описывается как минимум одним умением, если у него при этом нет свойств.",

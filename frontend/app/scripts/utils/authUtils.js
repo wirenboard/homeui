@@ -16,7 +16,7 @@ export async function fillUserType(rolesFactory) {
     if (response.status === 200) {
       const user = await response.json();
       rolesFactory.setRole(user.user_type);
-      rolesFactory.setAdminIsConfigured(true);
+      rolesFactory.setUsersAreConfigured(true);
       rolesFactory.setCurrentUserIsAutologinUser(user.autologin);
       return 'ok';
     }
@@ -26,7 +26,8 @@ export async function fillUserType(rolesFactory) {
   } catch (e) {
     /* empty */
   }
-  rolesFactory.setRole('user');
-  rolesFactory.setAdminIsConfigured(false);
+  // No users are configured, so we have admin access
+  rolesFactory.setRole('admin');
+  rolesFactory.setUsersAreConfigured(false);
   return 'ok';
 }

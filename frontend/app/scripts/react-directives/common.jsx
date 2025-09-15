@@ -1,4 +1,5 @@
 import { useId, forwardRef } from 'react';
+import { Password } from '@/components/password';
 
 export const WarningTag = ({ text }) => {
   return <span className="tag bg-warning text-nowrap">{text}</span>;
@@ -136,20 +137,36 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
 };
 
 export const LineEdit = forwardRef(
-  ({ placeholder, value, onChange, disabled, type, name, required }, ref) => {
-    return (
-      <input
-        ref={ref}
-        className="form-control"
-        type={type || 'text'}
-        placeholder={placeholder}
-        value={value}
-        disabled={disabled}
-        name={name}
-        required={required}
-        onChange={onChange}
-      />
-    );
+  ({ placeholder, value, onChange, disabled, type, name, required, autocomplete, showIndicator }, ref) => {
+    return type === 'password' ?
+      (
+        <Password
+          ref={ref}
+          className="form-control"
+          placeholder={placeholder}
+          value={value}
+          disabled={disabled}
+          name={name}
+          required={required}
+          autoComplete={autocomplete}
+          showIndicator={showIndicator}
+          isFullWidth
+          onChangeEvent={onChange}
+        />
+      ) : (
+        <input
+          ref={ref}
+          className="form-control"
+          type={type || 'text'}
+          placeholder={placeholder}
+          value={value}
+          disabled={disabled}
+          name={name}
+          required={required}
+          autoComplete={autocomplete}
+          onChange={onChange}
+        />
+      );
   }
 );
 

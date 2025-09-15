@@ -1,4 +1,13 @@
 {
+   "common":{
+      "labels": {
+         "password-strength-0": "Short password",
+         "password-strength-1": "Very weak password",
+         "password-strength-2": "Weak password",
+         "password-strength-3": "Good password",
+         "password-strength-4": "Strong password"
+      }
+   },
    "scan": {
       "title": "New devices",
       "search-disconnected-title": "Search for disconnected device",
@@ -554,10 +563,14 @@
          "device-category": "Device category",
          "device-type": "Device type",
          "capability": "Capability",
+         "color-model": "Color model",
+         "color-temperature": "Color temperature",
+         "color-scenes": "Color scenes",
          "property": "Property",
          "property-settings": "Property settings",
          "property-capability": "Capability/Property",
          "topic": "MQTT topic",
+         "scenes-input": "Scenes (comma separated)",
          "switch-on": "Command on",
          "switch-off": "Command off",
          "type": "Type",
@@ -565,6 +578,7 @@
          "mode-type": "Mode type",
          "min": "Min",
          "max": "Max",
+         "no-units": "Unitless",
          "precision": "Precision",
          "device-capabilities": "Capabilities and properties",
          "device-capabilities-description": "The skills of a device describe its capabilities. A device is described by at least one skill if it has no properties.",

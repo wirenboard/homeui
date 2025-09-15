@@ -26,7 +26,7 @@ function loginPageDirective(rolesFactory, $state) {
           returnParams[key] = value;
         }
 
-        $state.go($state.params.returnState || 'home', returnParams);
+        $state.go($state.params.returnState || 'home', returnParams, { location: 'replace' });
 
         if (autologin) {
           location.reload();

@@ -1103,7 +1103,6 @@ body.hmi #widgets-list {
   padding: 5px 7px;
 }
 
-body.hmi #not-configured-admin-alert,
 body.hmi #no-https-alert,
 body.hmi #wrapper .navbar,
 body.hmi .page-header,
@@ -1112,7 +1111,6 @@ body.hmi .console {
   display: none
 }
 
-body.fullscreen #not-configured-admin-alert,
 body.fullscreen #no-https-alert {
   display: none;
 }
@@ -1212,7 +1210,7 @@ button.dashboard-back:active {
 
 .has-error .wb-react-select .wb-react-select__control,
 .has-error .wb-react-select .wb-react-select__control:hover {
-  border-color: #b94a48;
+  border-color: var(--danger-color);
 }
 
 .wb-react-select .wb-react-select__indicator-separator {

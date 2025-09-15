@@ -44,7 +44,7 @@ export const FormEdit = observer(({ store, children }) => {
       {showCaption && (
         <FormEditDescription description={store.description} defaultText={store.defaultText} />
       )}
-      {store.error && <div className="help-block">{store.error}</div>}
+      {store.error && !store?.isHideErrorText && <div className="help-block">{store.error}</div>}
     </div>
   );
 });
@@ -60,6 +60,8 @@ export const FormStringEdit = observer(
           ref={ref}
           type={store.editType}
           required={store.required}
+          autocomplete={store.autocomplete}
+          showIndicator={store.showIndicator}
           onChange={(e) => store.setValue(e.target.value)}
         />
       </FormEdit>

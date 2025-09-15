@@ -1,7 +1,8 @@
+import logging
 import os
 import sqlite3
 
-DB_SCHEMA_VERSION = 1
+DB_SCHEMA_VERSION = 2
 
 
 def create_tables(con: sqlite3.Connection):
@@ -18,9 +19,34 @@ def create_tables(con: sqlite3.Connection):
     )
     con.commit()
 
-    cursor = con.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS keys (key TEXT NOT NULL)")
+    cursor.execute(
+        (
+            "CREATE TABLE IF NOT EXISTS sessions ("
+            "session_id TEXT PRIMARY KEY NOT NULL, "
+            "user_id TEXT NOT NULL, "
+            "start_date INTEGER NOT NULL)"
+        )
+    )
     con.commit()
+
+
+def migration_2(con: sqlite3.Connection) -> None:
+    cursor = con.cursor()
+    cursor.execute(
+        (
+            "CREATE TABLE IF NOT EXISTS sessions ("
+            "session_id TEXT PRIMARY KEY NOT NULL, "
+            "user_id TEXT NOT NULL, "
+            "start_date INTEGER NOT NULL)"
+        )
+    )
+    con.commit()
+
+    cursor.execute("DROP TABLE IF EXISTS keys")
+    con.commit()
+
+    cursor = con.cursor()
+    cursor.execute("PRAGMA user_version = 2")
 
 
 def migration_1(con: sqlite3.Connection) -> None:
@@ -32,7 +58,7 @@ def migration_1(con: sqlite3.Connection) -> None:
 
 
 def update_db(con: sqlite3.Connection, version: int) -> None:
-    migrations = [migration_1]
+    migrations = [migration_1, migration_2]
     for migration_fn in migrations[version:]:
         migration_fn(con)
 
@@ -42,13 +68,14 @@ def create_db(db_file: str) -> sqlite3.Connection:
     con = sqlite3.connect(db_file)
     create_tables(con)
     cur = con.cursor()
-    cur.execute("PRAGMA user_version = 1")
+    cur.execute("PRAGMA user_version = 2")
     return con
 
 
 def open_db(db_file: str) -> sqlite3.Connection:
-    if not os.path.exists(db_file):
+    if not check_db(db_file):
         return create_db(db_file)
+
     con = sqlite3.connect(db_file)
     cur = con.cursor()
     cur.execute("PRAGMA user_version")
@@ -58,3 +85,22 @@ def open_db(db_file: str) -> sqlite3.Connection:
     if version < DB_SCHEMA_VERSION:
         update_db(con, version)
     return con
+
+
+def check_db(db_file: str) -> bool:
+    if not os.path.exists(db_file):
+        return False
+
+    con = sqlite3.connect(db_file)
+
+    cursor = con.cursor()
+    cursor.execute("PRAGMA quick_check")
+    if cursor.fetchone()[0] != "ok":
+        logging.error("Database is broken. Recreating")
+        return False
+
+    cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table'")
+    if cursor.fetchone()[0] < 1:
+        logging.error("Database has no tables. Recreating")
+        return False
+    return True

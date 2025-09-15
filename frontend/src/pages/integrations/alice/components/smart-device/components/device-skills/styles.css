@@ -36,4 +36,9 @@
 
 .aliceDeviceSkills-addButton {
     margin-top: 12px;
+    width: 150px;
+}
+
+.aliceDeviceSkills-noUnits {
+  opacity: .6;
 }

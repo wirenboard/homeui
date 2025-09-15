@@ -363,7 +363,7 @@ module.exports = (function makeWebpackConfig() {
       },
       {
         context: ['/api/integrations'],
-        target: `${process.env.MQTT_BROKER_URI}:8000`,
+        target: `${process.env.MQTT_BROKER_URI}:8011`,
         pathRewrite: { '^/api': '' },
       },
     ],

@@ -7,10 +7,13 @@ export class StringStore {
     value,
     placeholder,
     validator,
+    isHideErrorText,
+    showIndicator,
     defaultText,
     readOnly,
     editType = 'text',
     required,
+    autocomplete,
   }) {
     this.type = 'string';
     this.name = name;
@@ -20,11 +23,14 @@ export class StringStore {
     this.defaultText = defaultText;
     this.formColumns = null;
     this.error = '';
+    this.isHideErrorText = isHideErrorText;
     this.readOnly = readOnly;
+    this.showIndicator = showIndicator;
     this.setValue(value);
     this.initialValue = this.value;
     this.editType = editType;
     this.required = required;
+    this.autocomplete = autocomplete;
 
     makeObservable(this, {
       value: observable,
