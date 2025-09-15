@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.134.1) stable; urgency=medium
+
+  * Fix cell error display
+  * Fix page scroll on dropdown open
+  * Fix history cell accessibility
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Sep 2025 15:55:51 +0300
+
 wb-mqtt-homeui (2.134.0) stable; urgency=medium
 
   * Update dashboard page

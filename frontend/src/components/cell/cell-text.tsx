@@ -36,6 +36,7 @@ export const CellText = observer(({ cell, isCompact }: { cell: Cell; isCompact: 
       {(!cell.readOnly && cell.isEnum) && (
         <Dropdown
           size="small"
+          isInvalid={!!cell.error}
           options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
           value={cell.value as string | number}
           onChange={(option: Option<string>) => cell.value = option.value}
@@ -46,6 +47,7 @@ export const CellText = observer(({ cell, isCompact }: { cell: Cell; isCompact: 
           id={cell.id}
           value={cell.value as string}
           isDisabled={cell.readOnly}
+          isInvalid={!!cell.error}
           size="small"
           ariaLabel={cell.name}
           isWithExplicitChanges

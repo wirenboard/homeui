@@ -51,6 +51,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
             <CellHistory cell={cell} />
             <Dropdown
               size="small"
+              isInvalid={!!cell.error}
               options={cell.enumValues.map(({ name, value }) => ({ label: name, value }))}
               value={cell.value as string | number}
               ariaLabel={cell.name}
@@ -64,6 +65,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               id={cell.id}
               type="number"
               size="small"
+              isInvalid={!!cell.error}
               className="deviceCell-text"
               value={cell.value as number}
               isDisabled={cell.readOnly}

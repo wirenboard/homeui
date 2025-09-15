@@ -115,3 +115,8 @@
 .dropdown-icon {
   width: 12px;
 }
+
+.dropdown-invalid .dropdown__control {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}

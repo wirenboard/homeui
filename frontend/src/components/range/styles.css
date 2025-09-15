@@ -45,6 +45,14 @@
     transition: background .15s ease-in-out, var(--input-active-shadow-transition);
 }
 
+.range-invalid .range::-moz-range-thumb {
+    background: var(--danger-color);
+}
+
+.range-invalid .range::-webkit-slider-thumb {
+    background: var(--danger-color);
+}
+
 .range::-webkit-slider-thumb {
     appearance: none;
     width: 16px;

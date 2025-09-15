@@ -4,7 +4,7 @@ import { RangeProps } from './types';
 import './styles.css';
 
 export const Range = ({
-  value, id, isDisabled, min, max, step, units, onChange, ariaLabel,
+  value, id, isDisabled, min, max, step, units, isInvalid, onChange, ariaLabel,
 }: RangeProps) => {
   const [proxyValue, setProxyValue] = useState(0);
   const input = useRef<HTMLInputElement>(null);
@@ -23,7 +23,11 @@ export const Range = ({
   }, [value]);
 
   return (
-    <div className="range-container">
+    <div
+      className={classNames('range-container', {
+        'range-invalid': isInvalid,
+      })}
+    >
       <input
         ref={input}
         type="range"

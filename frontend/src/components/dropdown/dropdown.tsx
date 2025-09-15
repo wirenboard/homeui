@@ -29,6 +29,7 @@ export const Dropdown = ({
   size = 'default',
   ariaLabel,
   isDisabled,
+  isInvalid,
   isSearchable = false,
   isButton,
   minWidth = '150px',
@@ -51,6 +52,7 @@ export const Dropdown = ({
       inputId={id}
       className={classNames(getClassNames(className, size), {
         'dropdown-button': isButton,
+        'dropdown-invalid': isInvalid,
       })}
       classNamePrefix="dropdown"
       options={options}
@@ -62,6 +64,7 @@ export const Dropdown = ({
       menuPortalTarget={document.body}
       menuPlacement="auto"
       maxMenuHeight={240}
+      menuPosition="fixed"
       components={{
         MenuPortal: (props) => MenuPortal(props, size),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),

@@ -15,5 +15,6 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   isDisabled?: boolean;
   isButton?: boolean;
   isSearchable?: boolean;
+  isInvalid?: boolean;
   minWidth?: string;
 }

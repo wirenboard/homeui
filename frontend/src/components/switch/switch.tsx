@@ -1,12 +1,15 @@
+import classNames from 'classnames';
 import { SwitchProps } from './types';
 import './styles.css';
 
 export const Switch = ({
-  value, id, isDisabled, onChange = () => {}, ariaLabel,
+  value, id, isDisabled, isInvalid, onChange = () => {}, ariaLabel,
 }: SwitchProps) => (
   <label
     htmlFor={id}
-    className="toggle-switchy"
+    className={classNames('toggle-switchy', {
+      'toggle-switchy-invalid': isInvalid,
+    })}
     onClick={(ev) => {
       ev.stopPropagation();
     }}

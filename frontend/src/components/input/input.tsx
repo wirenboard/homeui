@@ -12,6 +12,7 @@ export const Input = ({
   onChangeEvent,
   type = 'text',
   isFullWidth = false,
+  isInvalid,
   size = 'default',
   ariaLabel,
   ariaDescribedby,
@@ -62,6 +63,7 @@ export const Input = ({
         'input-m': size === 'default',
         'input-s': size === 'small',
         'input-fullWidth': isFullWidth,
+        'input-invalid': isInvalid,
       })}
       disabled={isDisabled}
       value={internalValue}

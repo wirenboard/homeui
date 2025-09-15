@@ -9,6 +9,7 @@ export const CellButton = observer(({ cell, name }: { cell: Cell; name?: string 
     <Button
       label={name || cell.name}
       size="small"
+      variant={cell.error ? 'danger' : 'primary'}
       disabled={cell.readOnly}
       onClick={() => cell.value = true}
     />
