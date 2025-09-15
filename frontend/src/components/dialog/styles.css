@@ -6,7 +6,6 @@
     border-radius: var(--input-border-radius);
     border: 0;
     font-family: var(--font);
-    font-size: 16px;
     width: 100%;
     max-width: 550px;
     opacity: 0;
@@ -14,9 +13,11 @@
     animation: appear 200ms forwards;
 }
 
-.dialog::backdrop {
+.dialog-overlay {
+    display: flex;
     background: rgba(7, 7, 7, 0.8);
     animation: appear-overlay 200ms forwards;
+    z-index: 9999;
 }
 
 .dialog-header {
@@ -30,6 +31,8 @@
     margin: 0;
     font-size: 20px;
     font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dialog-close {
@@ -57,8 +60,8 @@
 }
 
 .dialog-content {
-    font-size: 16px;
-    padding: 16px;
+    font-size: var(--font-size-medium);
+    padding: 4px 16px 16px;
     max-height: calc(100dvh - (62px + 80px)); /* header height + Y offset */
     overflow: auto;
 }

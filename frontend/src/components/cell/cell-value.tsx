@@ -94,7 +94,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
             }
           >
             <Tooltip
-              text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widgets.labels.copy')}</span>}
+              text={<span><b>'{getCopiedText(capturedValue)}'</b> {t('widget.labels.copy')}</span>}
               placement="top"
               trigger="click"
             >

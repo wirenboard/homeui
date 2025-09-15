@@ -401,26 +401,26 @@
       "deg C": "°C",
       "deg": "°"
    },
-   "widgets": {
-      "title": "Widgets",
+   "widget": {
       "labels": {
          "name": "Name",
-         "cells": "Cells",
-         "types": "Types",
          "type": "Type",
-         "values": "Values",
          "graph": "Graph",
          "description": "Description",
-         "dashboards": "Dashboards",
          "widget_view": "Widget view",
          "table_view": "Table view",
-         "compact": "Compact mode",
-         "warning-popup": "You added this widget to several dashboards, so when applying changes, they will be applied on each.",
-         "warning": "Сhanges affect other dashboards",
+         "compact": "Hide labels",
+         "warning": "The changes will affect all panels that use this widget:",
          "invert": "Invert",
-         "find": "Find control",
-         "add": "Add control...",
-         "copy": "copied to clipboard"
+         "add": "Add widget",
+         "available": "Available widgets",
+         "add-control": "Add control",
+         "preview": "Preview",
+         "copy": "copied to clipboard",
+         "delete": "Widget deleting",
+         "create": "Widget creation",
+         "edit": "Edit widget",
+         "separator": "Separator"
       },
       "errors": {
          "nothing": "No widgets are currently defined",
@@ -428,24 +428,38 @@
          "poll": "Desired read period is missed"
       },
       "prompt": {
-         "delete": "Really delete the widget?",
-         "remove": "Really remove widget from dashboard?"
+         "delete": "Are you sure you want to delete widget"
       },
       "buttons": {
-         "add": "Add dashboard",
-         "edit": "Edit widget",
-         "delete": "Delete widget",
-         "remove": "Remove from this dashboard",
+         "create-widget": "Create new widget",
+         "add": "Add to dashboard",
          "save": "Save",
-         "cancel": "Cancel",
+         "delete": "Delete widget",
+         "copy": "Copy widget",
+         "edit": "Edit widget",
          "edit-json": "Edit as JSON",
-         "editor": "Visual editor"
+         "editor": "Visual editor",
+         "exists-on-dashboard": "Already added"
+      }
+   },
+   "dashboard": {
+      "labels": {
+         "no-widgets": "No widgets found"
       },
-      "cells": {
-         "on": "ON",
-         "off": "OFF",
-         "history": "History",
-         "size": "{width: '50px'}"
+      "buttons": {
+         "back-to-dashboard": "Back",
+         "add-widget": "Add widget",
+         "edit-widget": "Edit widget",
+         "remove-widget": "Remove from this dashboard",
+         "fullscreen": "Enter fullscreen mode",
+         "fullscreen-exit": "Exit fullscreen mode"
+      },
+      "prompt": {
+         "remove-title": "Remove widget from dashboard",
+         "remove-description": "Really remove widget <0>{{name}}</0> from dashboard?"
+      },
+      "errors": {
+         "mqtt-connection": "MQTT client is not connected"
       }
    },
    "devices": {

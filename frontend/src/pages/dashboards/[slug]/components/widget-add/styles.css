@@ -1,0 +1,122 @@
+.widgetAdd {
+    width: 100%;
+    max-width: 800px;
+}
+
+.widgetAdd-aside {
+    @media(max-width: 640px) {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+.widgetAdd-heading,
+.widgetAdd-headingPreview {
+    font-size: 15px;
+    font-weight: bold;
+    margin: 8px 0 12px 12px;
+}
+
+.widgetAdd-createButton {
+    margin-bottom: 20px;
+
+    @media(max-width: 640px) {
+        margin-bottom: 0;
+    }
+}
+
+.widgetAdd-heading {
+    @media(max-width: 640px) {
+        display: none;
+    }
+}
+
+.widgetAdd-container {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 220px 1fr;
+
+    @media(max-width: 640px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.widgetAdd-tabs {
+    max-height: 500px;
+    overflow: hidden;
+
+    @media(max-width: 640px) {
+        display: none;
+    }
+}
+
+.widgetAdd-dropdown {
+    display: none;
+    max-width: 200px !important;
+
+    @media(max-width: 640px) {
+        display: block;
+    }
+}
+
+.widgetAdd-tabs:hover {
+    overflow-y: auto;
+}
+
+.widgetAdd-preview {
+    width: 100%;
+    height: 100%;
+    background: var(--border-color);
+    border-radius: 4px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.widgetAdd-previewHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    @media(max-width: 448px) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.widgetAdd-actions {
+    gap: 6px;
+    display: flex;
+    align-self: flex-end;
+    flex-shrink: 0;
+    flex-grow: 0;
+    z-index: 10;
+    margin: 12px;
+
+    @media(max-width: 448px) {
+        align-self: flex-start;
+        margin: 0 12px;
+    }
+}
+
+.widgetAdd-content {
+    padding: 12px;
+    flex-grow: 1;
+    flex-shrink: 0;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.widgetAdd-description {
+    width: 100%;
+    color: var(--text-color);
+    backdrop-filter: brightness(0.9);
+    padding: 6px 12px;
+}

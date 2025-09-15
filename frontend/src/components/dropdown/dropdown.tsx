@@ -1,15 +1,24 @@
 import classNames from 'classnames';
-import Select, { components } from 'react-select';
-import { DropdownProps } from './types';
+import { useRef } from 'react';
+import Select, { components, type SelectInstance } from 'react-select';
+import PlusIcon from '@/assets/icons/plus.svg';
+import type { DropdownProps } from './types';
 import './styles.css';
 
-const DropdownIndicator = (props: any) => {
-  return (
-    <components.DropdownIndicator {...props}>
-      <components.DownChevron size={18} />
-    </components.DropdownIndicator>
-  );
-};
+const DropdownIndicator = (props: any, isButton: boolean) => (
+  <components.DropdownIndicator {...props}>
+    {isButton ? <PlusIcon className="dropdown-icon" /> : <components.DownChevron size={18} />}
+  </components.DropdownIndicator>
+);
+
+const getClassNames = (className: string, size: DropdownProps['size']) => classNames(className, {
+  'dropdown-m': size === 'default',
+  'dropdown-s': size === 'small',
+});
+
+const MenuPortal = (props: any, size: DropdownProps['size']) => (
+  <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
+);
 
 export const Dropdown = ({
   id,
@@ -21,22 +30,28 @@ export const Dropdown = ({
   ariaLabel,
   isDisabled,
   isSearchable = false,
+  isButton,
   minWidth = '150px',
   onChange,
 }: DropdownProps) => {
-  const getClassNames = (className: string) => classNames(className, {
-    'dropdown-m': size === 'default',
-    'dropdown-s': size === 'small',
-  });
+  const select = useRef<SelectInstance>();
 
-  const MenuPortal = (props: any) => (
-    <components.MenuPortal{...props} className={getClassNames(props.className)} />
-  );
+  const handleChange = (option) => {
+    if (isButton && option) {
+      setTimeout(() => {
+        select.current.clearValue();
+      });
+    }
+    onChange(option);
+  };
 
   return (
     <Select
+      ref={select}
       inputId={id}
-      className={getClassNames(className)}
+      className={classNames(getClassNames(className, size), {
+        'dropdown-button': isButton,
+      })}
       classNamePrefix="dropdown"
       options={options}
       value={options.find((option) => option.value === value)}
@@ -46,9 +61,10 @@ export const Dropdown = ({
       isClearable={false}
       menuPortalTarget={document.body}
       menuPlacement="auto"
+      maxMenuHeight={240}
       components={{
-        MenuPortal,
-        DropdownIndicator,
+        MenuPortal: (props) => MenuPortal(props, size),
+        DropdownIndicator: (props) => DropdownIndicator(props, isButton),
       }}
       aria-label={ariaLabel}
       styles={{
@@ -58,7 +74,7 @@ export const Dropdown = ({
         }),
       }}
       unstyled
-      onChange={onChange}
+      onChange={handleChange}
     />
   );
 };

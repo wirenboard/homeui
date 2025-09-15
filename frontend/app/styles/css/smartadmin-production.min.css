@@ -799,7 +799,7 @@ h6 {
 
 nav ul li a {
   line-height: normal;
-  font-size: var(--bar-font-size);
+  font-size: var(--font-size-medium);
   padding: 10px 10px 10px 11px;
   color: #c0bbb7;
   display: block;

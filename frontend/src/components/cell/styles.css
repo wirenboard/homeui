@@ -57,6 +57,20 @@
     cursor: pointer;
 }
 
+.deviceCell-reversed {
+    flex-direction: row-reverse;
+}
+
+.deviceCell-isCompact {
+    display: flex;
+    justify-content: space-between;
+}
+
+.deviceCell-isEmpty {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .deviceCell-withSelect {
     max-width: 50%;
     display: flex;
@@ -107,6 +121,10 @@
     justify-items: end;
     flex-shrink: 0;
     cursor: pointer;
+}
+
+.deviceCell-reversed .deviceCell-value {
+    justify-items: start;
 }
 
 .deviceCell-units {
