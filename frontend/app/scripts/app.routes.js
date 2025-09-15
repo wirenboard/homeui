@@ -21,12 +21,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('webUI', {
       url: '/web-ui',
-      template: require('../views/web-ui.html'),
-      controller: 'WebUICtrl as $ctrl',
-      resolve: {
+      template: '<web-ui-settings-page />',
+            resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'webUi' */ './controllers/webUiController').then(
+          return import(/* webpackChunkName: 'web-ui' */ './controllers/webUiController').then(
             module => $ocLazyLoad.load({ name: module.default.name })
           );
         },

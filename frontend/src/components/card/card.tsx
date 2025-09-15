@@ -61,7 +61,7 @@ const CardHeader = ({
 };
 
 export const Card = ({
-  children, id, className, heading, actions, toggleBody, isBodyVisible = true,
+  children, id, className, heading, actions, toggleBody, isBodyVisible = true, variant = 'primary',
 }: PropsWithChildren<CardProps>) => {
   const onKeyHeaderClick = (ev: KeyboardEvent<HTMLDivElement>) => {
     const target = ev.target as HTMLElement;
@@ -78,7 +78,13 @@ export const Card = ({
   };
 
   return (
-    <div className={classNames('card', className)} id={id}>
+    <div
+      className={classNames('card', className, {
+        'card-primary': variant === 'primary',
+        'card-secondary': variant === 'secondary',
+      })}
+      id={id}
+    >
       {toggleBody ? (
         <div className="card-headerContainer">
           <div

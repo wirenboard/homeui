@@ -229,15 +229,17 @@ class CertificateState(Enum):
 
 
 class CertificateCheckingThread:
-    def __init__(self, sn: str):
+    def __init__(self, sn: str, allow_certificate_update: bool):
         self.sn = sn
         self._state_lock = threading.Lock()
         self._state: CertificateState = CertificateState.REQUESTING
+        self._allow_certificate_update_lock = threading.Lock()
+        self._allow_certificate_update = allow_certificate_update
         self._request_condition = threading.Condition(self._state_lock)
         self._thread = threading.Thread(target=self.run, daemon=True)
         self._thread.start()
 
-    def get_state(self) -> CertificateState:
+    def get_certificate_state(self) -> CertificateState:
         with self._state_lock:
             return self._state
 
@@ -247,6 +249,18 @@ class CertificateCheckingThread:
                 return
             self._state = CertificateState.REQUESTING
             self._request_condition.notify_all()
+
+    def enable_certificate_update(self) -> None:
+        with self._allow_certificate_update_lock:
+            self._allow_certificate_update = True
+
+    def disable_certificate_update(self) -> None:
+        with self._allow_certificate_update_lock:
+            self._allow_certificate_update = False
+
+    def is_certificate_update_allowed(self) -> bool:
+        with self._allow_certificate_update_lock:
+            return self._allow_certificate_update
 
     def _set_state(self, state: CertificateState) -> None:
         with self._state_lock:
@@ -259,6 +273,10 @@ class CertificateCheckingThread:
                 self._request_condition.wait_for(
                     lambda: self._state == CertificateState.REQUESTING, timeout=CERT_CHECK_INTERVAL_S
                 )
+
+            with self._allow_certificate_update_lock:
+                if not self._allow_certificate_update:
+                    continue
 
             state_on_update_fail = CertificateState.UNAVAILABLE
             self._set_state(CertificateState.REQUESTING)

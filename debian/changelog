@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.134.0) stable; urgency=medium
+
+  * Allow disabling HTTPS automatic redirection
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Sep 2025 12:51:04 +0500
+
 wb-mqtt-homeui (2.133.0) stable; urgency=medium
 
   * Add colour capability in alice

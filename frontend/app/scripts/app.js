@@ -101,9 +101,6 @@ import loginPageDirective from './react-directives/login/login-page';
 // Angular routes
 import routingModule from './app.routes';
 
-// Internal components
-import LoginFormModule from './components/loginForm/index';
-
 import { checkHttps } from './utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
@@ -133,7 +130,6 @@ const module = angular
     'angular-spinkit',
     routingModule,
     dumbTemplateModule,
-    LoginFormModule,
 
     'ui-rangeSlider',
     'ngToast',

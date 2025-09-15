@@ -68,7 +68,7 @@ async function hasInvalidCertificate(certStatus) {
     return (certStatus !== CertificateStatus.VALID)
   }
   try {
-    const response = await fetch('/api/https/setup', { method: 'POST' });
+    const response = await fetch('/api/https/request_cert', { method: 'POST' });
     if (response.status === 200) {
       certStatus = await waitCertificate();
       return (certStatus !== CertificateStatus.VALID);
@@ -77,6 +77,19 @@ async function hasInvalidCertificate(certStatus) {
     // Ignore errors
   }
   return true;
+}
+
+async function isHttpsEnabled() {
+  try {
+    const response = await fetch('/api/https', { method: 'GET' });
+    if (response.status === 200) {
+        const status = await response.json();
+        return status.enabled === true;
+    }
+  } catch (e) {
+    // Ignore errors
+  }
+  return false;
 }
 
 /**
@@ -97,6 +110,10 @@ export async function checkHttps() {
   if (window.location.protocol === 'https:' ||
       window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1') {
+    return 'ok';
+  }
+
+  if (!await isHttpsEnabled()) {
     return 'ok';
   }
 

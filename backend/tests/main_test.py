@@ -230,7 +230,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         self.request.headers = {"X-Forwarded-Host-Ip": "1.2.3.4"}
         self.context.sn = "ABC123"
         self.context.certificate_thread = MagicMock()
-        self.context.certificate_thread.get_state.return_value = CertificateState.VALID
+        self.context.certificate_thread.get_certificate_state.return_value = CertificateState.VALID
         response = device_info_handler(self.request, self.context)
 
         self.assertEqual(response.status, 200)

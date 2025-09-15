@@ -6,6 +6,9 @@
          "password-strength-2": "Weak password",
          "password-strength-3": "Good password",
          "password-strength-4": "Strong password"
+      },
+      "buttons": {
+         "apply": "Apply"
       }
    },
    "scan": {
@@ -606,6 +609,19 @@
          "device-updated": "\"{{name}}\" device settings updated",
          "device-deleted": "Device \"{{name}}\" deleted",
          "device-copied": "Device copied"
+      }
+   },
+   "web-ui-settings":{
+      "title": "Web UI",
+      "labels": {
+         "mqtt-settings": "Login to MQTT broker",
+         "use-mqtt-password": "Use access credentials",
+         "mqtt-login": "User ID",
+         "mqtt-password": "Password",
+         "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
+         "common-settings": "Common settings",
+         "show-system-devices": "Show system devices",
+         "language": "UI locale"
       }
    }
 }

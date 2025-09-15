@@ -197,9 +197,42 @@ class UsersPageStore {
     return null;
   }
 
+  async confirmSetupHttps() {
+    if (window.location.protocol === 'https:') {
+      return true;
+    }
+    if ((await this.showEnableHttpsConfirmModal()) !== 'ok') {
+      return true;
+    }
+    this.pageWrapperStore.clearError();
+    this.pageWrapperStore.setLoading(true);
+    try {
+      const res = await fetch('/api/https', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ enabled: true }),
+      });
+      if (res.ok) {
+        this.pageWrapperStore.setLoading(false);
+        window.location.reload();
+        return false;
+      }
+      await this.processFetchError(res);
+    } catch (error) {
+      this.pageWrapperStore.setError(error);
+    }
+    this.pageWrapperStore.setLoading(false);
+    return false;
+  }
+
   async addUser() {
     this.userParamsStore.reset();
     if (!this.accessLevelStore.usersAreConfigured) {
+      if (!await this.confirmSetupHttps()) {
+        return;
+      }
       this.userParamsStore.params.type.setValue('admin');
       this.userParamsStore.params.type.setReadOnly(true);
     }
@@ -270,6 +303,18 @@ class UsersPageStore {
       [
         {
           label: i18n.t('users.buttons.delete'),
+          type: 'danger',
+        },
+      ]
+    );
+  }
+
+  async showEnableHttpsConfirmModal() {
+    return this.confirmModalState.show(
+      i18n.t('settings.labels.enable-https-warning'),
+      [
+        {
+          label: i18n.t('settings.buttons.enable-https'),
           type: 'danger',
         },
       ]

@@ -20,5 +20,5 @@ export interface PasswordProps {
   isWithExplicitChanges?: boolean;
   showIndicator?: boolean;
   onChange: (_val: string | number, _badInput?: boolean) => void;
-  onChangeEvent: (_val: any) => void;
+  onChangeEvent?: (_val: any) => void;
 }
