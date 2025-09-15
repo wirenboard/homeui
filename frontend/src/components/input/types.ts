@@ -23,6 +23,7 @@ type BaseInputProps = {
   ariaInvalid?: boolean;
   ariaErrorMessage?: string;
   isFullWidth?: boolean;
+  isInvalid?: boolean;
   isWithExplicitChanges?: boolean;
   onChange?: (_val: string | number, _badInput?: boolean) => void;
   onChangeEvent?: (_ev: any) => void;

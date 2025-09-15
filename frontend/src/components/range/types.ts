@@ -5,6 +5,7 @@ export interface RangeProps {
   max: number;
   step: number;
   units?: string;
+  isInvalid?: boolean;
   isDisabled: boolean;
   ariaLabel?: string;
   onChange: (_val: number) => void;

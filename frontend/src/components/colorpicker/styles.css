@@ -15,8 +15,13 @@
 
 .colorpicker:disabled {
     cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .colorpicker:focus {
     box-shadow: var(--input-active-shadow);
+}
+
+.colorpicker-invalid {
+    background: var(--danger-color);
 }

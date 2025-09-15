@@ -1,9 +1,10 @@
+import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { ColorpickerProps } from './types';
 import './styles.css';
 
 export const Colorpicker = ({
-  value, id, isDisabled, onChange, ariaLabel,
+  value, id, isDisabled, isInvalid, onChange, ariaLabel,
 }: ColorpickerProps) => {
   const [proxyValue, setProxyValue] = useState('#000000');
 
@@ -14,7 +15,9 @@ export const Colorpicker = ({
   return (
     <input
       type="color"
-      className="colorpicker"
+      className={classNames('colorpicker', {
+        'colorpicker-invalid': isInvalid,
+      })}
       id={id}
       disabled={isDisabled}
       aria-label={ariaLabel}

@@ -27,3 +27,12 @@
 .input-fullWidth {
     width: 100%;
 }
+
+.input-invalid {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+input[type=number]::-webkit-inner-spin-button {
+    margin-left: 6px;
+}

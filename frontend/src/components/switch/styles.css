@@ -47,3 +47,11 @@
 .toggle-switchy > input + .toggle:before {right:50%; font-size: 12px;}
 .toggle-switchy > input + .toggle:after {left:50%; font-size: 12px;}
 
+.toggle-switchy-invalid .toggle {
+    background: var(--danger-color) !important;
+}
+
+.toggle-switchy-invalid .switch {
+    border-color: var(--danger-color) !important;
+}
+

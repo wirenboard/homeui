@@ -13,6 +13,7 @@ export const CellSwitch = observer(({ cell, inverted }: { cell: Cell; inverted?:
       id={cell.id}
       isDisabled={cell.readOnly}
       ariaLabel={cell.name}
+      isInvalid={!!cell.error}
       onChange={(value) => cell.value = inverted ? !value : value}
     />
   </>

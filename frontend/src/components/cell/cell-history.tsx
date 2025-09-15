@@ -19,7 +19,9 @@ export const CellHistory = observer(({ cell }: { cell: Cell }) => {
   return (
     <a href={getChartUrl} aria-label={`${t('widget.labels.graph')} ${cell.name}`}>
       <Tooltip text={t('widget.labels.graph')} placement="top-end">
-        <StatsIcon className="deviceCell-historyLink" />
+        <span>
+          <StatsIcon className="deviceCell-historyLink" />
+        </span>
       </Tooltip>
     </a>
   );
