@@ -31,6 +31,7 @@ def create_tables(con: sqlite3.Connection):
 
 
 def migration_2(con: sqlite3.Connection) -> None:
+    logging.info("Migrating database to version 2")
     cursor = con.cursor()
     cursor.execute(
         (
@@ -50,6 +51,7 @@ def migration_2(con: sqlite3.Connection) -> None:
 
 
 def migration_1(con: sqlite3.Connection) -> None:
+    logging.info("Migrating database to version 1")
     cursor = con.cursor()
     cursor.execute("ALTER TABLE users ADD COLUMN autologin INTEGER NOT NULL DEFAULT 0")
     con.commit()

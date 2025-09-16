@@ -9,7 +9,7 @@ export default class DashboardsStore {
   public dashboards: Map<string, Dashboard> = new Map();
   public widgets: Map<string, Widget> = new Map();
   public isLoading = true;
-  declare defaultDashboardId: string;
+  public defaultDashboardId: string;
   #configEditorProxy: any;
 
   constructor(configEditorProxy: any) {
@@ -87,6 +87,13 @@ export default class DashboardsStore {
   setLoading(value: boolean) {
     runInAction(() => {
       this.isLoading = value;
+    });
+  }
+
+  setDefaultDashboardId(id: string) {
+    runInAction(() => {
+      this.defaultDashboardId = id;
+      this._saveData();
     });
   }
 

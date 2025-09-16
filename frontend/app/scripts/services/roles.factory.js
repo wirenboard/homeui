@@ -10,16 +10,19 @@ export default function rolesFactoryService() {
     id: 1,
     name: 'app.roles.user',
     isAdmin: false,
+    type: 'user'
   };
   roles._ROLE_TWO = {
     id: 2,
     name: 'app.roles.operator',
     isAdmin: false,
+    type: 'operator'
   };
   roles._ROLE_THREE = {
     id: 3,
     name: 'app.roles.admin',
     isAdmin: true,
+    type: 'admin'
   };
 
   roles.ROLE_ONE = roles._ROLE_ONE.id;

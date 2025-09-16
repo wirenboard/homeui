@@ -1,6 +1,11 @@
 interface FetchOptions {
   body?: Record<string, any> | string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  emptyResponse?: boolean;
+}
+
+interface ErrorResponse {
+  detail: string;
 }
 
 export const request = async <ResponseData>(url: string, options: FetchOptions = {}): Promise<ResponseData> => {
@@ -19,7 +24,16 @@ export const request = async <ResponseData>(url: string, options: FetchOptions =
 
   const res = await fetch(url, params);
   if (![200, 201].includes(res.status)) {
-    throw Error((await res.json()).detail);
+    let errorData: ErrorResponse;
+    try {
+      errorData = await res.json();
+    } catch (SyntaxError) {
+      throw Error(res.statusText);
+    }
+    throw Error(errorData.detail);
+  }
+  if (options.emptyResponse) {
+    return;
   }
   return await res.json();
 };
