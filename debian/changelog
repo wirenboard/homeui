@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.134.3) stable; urgency=medium
+
+  * Fix unexpected cookie expiration
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 17 Sep 2025 15:30:27 +0500
+
 wb-mqtt-homeui (2.134.2) stable; urgency=medium
 
   * Fixed synchronization of saves between text and svg dashboards (broken in 2.134.0)
