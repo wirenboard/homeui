@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.134.2) stable; urgency=medium
 
-  * Fixed synchronization of saves between text and svg dashboards
+  * Fixed synchronization of saves between text and svg dashboards (broken in 2.134.0)
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 17 Sep 2025 12:06:23 +0300
 
