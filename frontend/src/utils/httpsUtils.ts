@@ -20,7 +20,7 @@ export interface HttpsStatus {
 
 export type HttpsCheckResult = 'ok' | 'warn' | 'redirected';
 
-function isIp(host:string) {
+function isIp(host: string) {
   const ipComponents = host.split('.');
   if (ipComponents.length !== 4) {
     return false;
@@ -31,11 +31,11 @@ function isIp(host:string) {
   });
 }
 
-function isLocalDomain(host:string) {
+function isLocalDomain(host: string) {
   return host.endsWith('.local');
 }
 
-function isDeviceSn(sn:string) {
+function isDeviceSn(sn: string) {
   return /^[A-Z0-9]+$/.test(sn);
 }
 
@@ -48,7 +48,7 @@ export function makeHttpsUrlOrigin(deviceInfo: DeviceInfo) {
   return `https://${ipPrefix}.${deviceInfo.sn.toLowerCase()}.${WIRENBOARD_DNS_POSTFIX}`;
 }
 
-function getIpForHttpsDomainName(hostname:string, deviceIp:string): string | null {
+function getIpForHttpsDomainName(hostname: string, deviceIp: string): string | null {
   if (isIp(hostname)) {
     return hostname;
   }
@@ -61,7 +61,7 @@ const requestHttpsCert = async () =>
 export const getDeviceInfo = async () =>
   request<DeviceInfo>('/device/info');
 
-async function waitCertificate() : Promise<string> {
+async function waitCertificate(): Promise<string> {
   const MAX_WAIT_TIME = 120000; // 2 minutes
   const CHECK_INTERVAL = 1000; // 1 second
   const startTime = Date.now();
@@ -80,7 +80,7 @@ async function waitCertificate() : Promise<string> {
   return CertificateStatus.UNAVAILABLE;
 }
 
-async function hasInvalidCertificate(certStatus: string) : Promise<boolean> {
+async function hasInvalidCertificate(certStatus: string): Promise<boolean> {
   if (certStatus === CertificateStatus.VALID) {
     return false;
   }
@@ -98,14 +98,14 @@ async function hasInvalidCertificate(certStatus: string) : Promise<boolean> {
   return true;
 }
 
-export const isHttpsEnabled = async () : Promise<boolean> => {
+export const isHttpsEnabled = async (): Promise<boolean> => {
   return (await request<HttpsStatus>('/api/https')).enabled;
 };
 
 export const setupHttps = async (enable: boolean) =>
   request<undefined>('/api/https', { method: 'PATCH', body: { enabled: enable }, emptyResponse: true });
 
-export function urlIsSwitchableToHttps() : boolean {
+export function urlIsSwitchableToHttps(): boolean {
   const host = window.location.hostname;
   return isIp(host) || isLocalDomain(host);
 }

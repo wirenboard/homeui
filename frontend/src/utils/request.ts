@@ -27,7 +27,7 @@ export const request = async <ResponseData>(url: string, options: FetchOptions =
     let errorData: ErrorResponse;
     try {
       errorData = await res.json();
-    } catch (SyntaxError) {
+    } catch (e) {
       throw Error(res.statusText);
     }
     throw Error(errorData.detail);

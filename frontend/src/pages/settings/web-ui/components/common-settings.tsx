@@ -67,7 +67,7 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardStore }: CommonSet
         value={dashboardStore.defaultDashboardId}
         options={options}
         isDisabled={dashboardStore.isLoading}
-        onChange={(id:string) => dashboardStore.setDefaultDashboardId(id)}
+        onChange={(id: string) => dashboardStore.setDefaultDashboardId(id)}
       />
       <OptionsField
         title={t('web-ui-settings.labels.language')}
