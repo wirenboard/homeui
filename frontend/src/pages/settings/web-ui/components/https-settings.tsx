@@ -19,15 +19,12 @@ const HttpsSettings = ({ onError }: HttpsSettingsProps) => {
   }, []);
 
   const setSwitchStateHandler = (value: boolean) => {
-    if (value === switchState) {
-      return;
-    }
     setDisabled(true);
     setSwitchState(value);
     setupHttps(value).then(() => {
       onError('');
     }).catch((e) => {
-      setSwitchState(false);
+      setSwitchState(!value);
       onError(t('web-ui-settings.errors.setup-https', { error: e.message }));
     }).finally(() => {
       setDisabled(false);

@@ -15,7 +15,7 @@ export const MqttSettings = () => {
   const [mqttPassword, setMqttPassword] = useState(localStorage['password'] ?? '');
   const [useMqttPassword, setUseMqttPassword] = useState(!!mqttLogin || !!mqttPassword);
   const [addPrefixToTopic, setAddPrefixToTopic] = useState((localStorage['prefix'] ?? 'false') === 'true');
-  const [disableApply, setDisableApply] = useState(true);
+  const [isDirty, setIsDirty] = useState(false);
 
   const applyHandler = () => {
     if (useMqttPassword) {
@@ -29,14 +29,10 @@ export const MqttSettings = () => {
     window.location.reload();
   };
 
-  const checkAllowApply = () => {
-    setDisableApply(useMqttPassword && (!mqttLogin || !mqttPassword));
-  };
-
   const setAddPrefixToTopicHandler = (value: boolean) => {
     localStorage.setItem('prefix', value ? 'true' : 'false');
     setAddPrefixToTopic(value);
-    checkAllowApply();
+    setIsDirty(true);
   };
 
   const setUseMqttPasswordHandler = (value: boolean) => {
@@ -45,17 +41,17 @@ export const MqttSettings = () => {
       setMqttLogin('');
       setMqttPassword('');
     }
-    checkAllowApply();
+    setIsDirty(true);
   };
 
   const setMqttLoginHandler = (value: string) => {
     setMqttLogin(value);
-    checkAllowApply();
+    setIsDirty(true);
   };
 
   const setMqttPasswordHandler = (value: string) => {
     setMqttPassword(value);
-    checkAllowApply();
+    setIsDirty(true);
   };
 
   return (
@@ -90,7 +86,7 @@ export const MqttSettings = () => {
         <Button
           label={t('common.buttons.apply')}
           variant="secondary"
-          disabled={disableApply}
+          disabled={isDirty && useMqttPassword && (!mqttLogin || !mqttPassword)}
           onClick={applyHandler}
         />
       </FormButtonGroup>
