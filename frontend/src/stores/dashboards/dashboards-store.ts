@@ -11,9 +11,11 @@ export default class DashboardsStore {
   public isLoading = true;
   declare defaultDashboardId: string;
   #configEditorProxy: any;
+  #uiConfig: any;
 
-  constructor(configEditorProxy: any) {
+  constructor(configEditorProxy: any, uiConfig: any) {
     this.#configEditorProxy = configEditorProxy;
+    this.#uiConfig = uiConfig;
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -91,13 +93,19 @@ export default class DashboardsStore {
   }
 
   _saveData() {
-    this.#configEditorProxy.Save({
-      path: uiConfigPath,
-      content: {
-        defaultDashboardId: this.defaultDashboardId,
-        dashboards: Array.from(this.dashboards.values()),
-        widgets: Array.from(this.widgets.values()),
-      },
-    });
+    const content = {
+      defaultDashboardId: this.defaultDashboardId,
+      dashboards: Array.from(this.dashboards.values()),
+      widgets: Array.from(this.widgets.values()),
+    };
+
+    // hack to synchronize old save logic
+    // TODO delete when there is a common store for dashboards
+    this.#uiConfig.ready(content);
+
+    // await this.#configEditorProxy.Save({
+    //   path: uiConfigPath,
+    //   content,
+    // });
   }
 }
