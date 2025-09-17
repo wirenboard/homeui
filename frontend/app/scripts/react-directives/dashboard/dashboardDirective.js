@@ -9,6 +9,7 @@ export default function dashboardDirective(
   $stateParams,
   mqttClient,
   ConfigEditorProxy,
+  uiConfig,
   rolesFactory
 ) {
   'ngInject';
@@ -26,7 +27,7 @@ export default function dashboardDirective(
       const hasEditRights = rolesFactory.current.role !== rolesFactory.ROLE_ONE;
       $rootScope.isHMI = $stateParams.hmi;
       $rootScope.forceFullscreen = $stateParams.fullscreen === true;
-      scope.dashboardStore = new DashboardsStore(ConfigEditorProxy);
+      scope.dashboardStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
       scope.devicesStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(

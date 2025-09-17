@@ -6,12 +6,29 @@ export interface UIConfigResponse {
   };
 }
 
-export interface DashboardBase {
+export interface TextDashboard {
   id: string;
   name: string;
   isSvg: boolean;
   widgets: string[];
 }
+
+interface SvgDashboard {
+  svg: {
+    current: string;
+    original: {};
+    params: [];
+  };
+  svg_fullwidth: boolean;
+  svg_url: string;
+  swipe: {
+    enable: boolean;
+    left: string | null;
+    right: string | null;
+  };
+}
+
+export type DashboardBase = TextDashboard & Partial<SvgDashboard>;
 
 interface WidgetCell {
   id: string;
