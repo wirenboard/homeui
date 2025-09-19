@@ -101,7 +101,7 @@ import loginPageDirective from './react-directives/login/login-page';
 // Angular routes
 import routingModule from './app.routes';
 
-import { checkHttps } from '@/utils/httpsUtils';
+import { switchToHttps } from '@/utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
@@ -560,14 +560,7 @@ const realApp = angular
         });
 
       $transitions.onBefore({}, function (transition) {
-        if ($rootScope.noHttps !== undefined || __DISABLE_HTTPS_CHECK__) {
-          return true;
-        }
-        return checkHttps().then(res => {
-          if (res !== 'redirected') {
-            $rootScope.noHttps = res === 'warn';
-          }
-        });
+        return !switchToHttps();
       });
 
       let httpsSetupTimer = setTimeout(() => {

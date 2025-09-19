@@ -18,8 +18,6 @@ export interface HttpsStatus {
   enabled: boolean;
 }
 
-export type HttpsCheckResult = 'ok' | 'warn' | 'redirected';
-
 function isIp(host: string) {
   const ipComponents = host.split('.');
   if (ipComponents.length !== 4) {
@@ -113,35 +111,37 @@ export function urlIsSwitchableToHttps(): boolean {
 /**
  * Checks the current protocol and attempts to redirect to an HTTPS version of the site if applicable.
  *
- * If the current protocol is HTTPS or the hostname is a localhost or 127.0.0.1, the function returns 'ok'.
+ * If the current protocol is HTTPS or the hostname is a localhost or 127.0.0.1, the function returns false.
  * If the hostname is an IP address or a local domain, it fetches device information using both HTTP and HTTPS.
- * If the device information matches, it redirects the browser to the HTTPS URL.
+ * If the device information matches and certificate is valid, it redirects the browser to the HTTPS URL.
+ *
+ * @returns {Promise<boolean>} - A promise that resolves to true if a redirect to HTTPS was initiated, otherwise false.
  */
-export async function checkHttps(): Promise<HttpsCheckResult> {
+export async function switchToHttps() {
   if (window.location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-    return 'ok';
+    return false;
   }
 
   if (!await isHttpsEnabled()) {
-    return 'ok';
+    return false;
   }
 
   if (!urlIsSwitchableToHttps()) {
-    return 'warn';
+    return false;
   }
 
   let deviceInfo : DeviceInfo;
   try {
     deviceInfo = await getDeviceInfo();
     if (!isDeviceSn(deviceInfo.sn)) {
-      return 'warn';
+      return false;
     }
   } catch (e) {
-    return 'warn';
+    return false;
   }
 
   if (await hasInvalidCertificate(deviceInfo.https_cert)) {
-    return 'warn';
+    return false;
   }
 
   const httpsUrlOrigin = makeHttpsUrlOrigin(deviceInfo);
@@ -155,9 +155,9 @@ export async function checkHttps(): Promise<HttpsCheckResult> {
         const httpsDeviceInfo = await response.json();
         if (httpsDeviceInfo.sn === deviceInfo.sn) {
           window.location.href = httpsUrlOrigin;
-          return 'redirected';
+          return true;
         }
-        return 'warn';
+        return false;
       }
     } catch (e) {
     }
@@ -166,5 +166,5 @@ export async function checkHttps(): Promise<HttpsCheckResult> {
   // HTTPS certificate is valid, but the device is not reachable via special crafted URL
   // Redirect using original URL
   window.location.href = `https://${window.location.hostname}${window.location.pathname}`;
-  return 'redirected';
+  return true;
 }
