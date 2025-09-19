@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.134.4) stable; urgency=medium
+
+  * Fix widget creation
+  * Update common controls
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 19 Sep 2025 15:51:15 +0300
+
 wb-mqtt-homeui (2.134.3) stable; urgency=medium
 
   * Fix unexpected cookie expiration
