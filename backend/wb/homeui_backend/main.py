@@ -41,6 +41,10 @@ DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
+# A very long lifetime as we don't want cookies to expire by browser policy
+# We will check cookie validity internally
+DEFAULT_COOKIE_LIFETIME = timedelta(days=365 * 20)
+
 
 def make_password_hash(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -56,6 +60,8 @@ def make_id_cookie(session: Session, secure: bool) -> cookies.SimpleCookie:
     cookie["id"]["path"] = "/"
     cookie["id"]["httponly"] = True
     cookie["id"]["samesite"] = "Lax"
+    expires = session.start_date + DEFAULT_COOKIE_LIFETIME
+    cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
     if secure:
         cookie["id"]["secure"] = True
     return cookie
