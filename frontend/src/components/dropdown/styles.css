@@ -4,6 +4,8 @@
   color: var(--input-color);
   border-radius: var(--input-border-radius);
   min-height: initial !important;
+  min-width: 10px !important;
+  gap: 6px;
   transition: background ease 300ms;
 }
 

@@ -8,6 +8,7 @@ export interface TableProps extends HTMLAttributes<HTMLDivElement> {
 
 export interface TableRowProps extends HTMLAttributes<HTMLDivElement | HTMLAnchorElement> {
   url?: string;
+  gap?: number;
   isFullWidth?: boolean;
   isHeading?: boolean;
 }
