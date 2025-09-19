@@ -6,6 +6,9 @@
          "password-strength-2": "Weak password",
          "password-strength-3": "Good password",
          "password-strength-4": "Strong password"
+      },
+      "buttons": {
+         "apply": "Apply"
       }
    },
    "scan": {
@@ -305,7 +308,6 @@
          "copy": "Copy",
          "to-port-list": "To ports and devices list",
          "resolve-duplicate-mqtt-topic": "Set unique id",
-         "apply": "Apply",
          "search-disconnected-device": "Search for the device",
          "update": "Update"
       },
@@ -356,9 +358,6 @@
       "labels": {
          "active": "active",
          "confirm": "I take full responsibility for my actions"
-      },
-      "buttons": {
-         "apply": "Apply"
       },
       "user": {
          "name": "User",
@@ -527,12 +526,15 @@
          "operator": "Operator",
          "confirm-delete":"Do you really want to delete user \"{{name}}\"?",
          "autologin": "Automatically log in as user:",
-         "no-autologin": "Do not use autologin"
+         "no-autologin": "Do not use autologin",
+         "https": "HTTPS",
+         "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access."
       },
       "buttons": {
          "save": "Save",
          "add": "Add",
-         "delete": "Delete"
+         "delete": "Delete",
+         "enable-https": "Enable HTTPS"
       }
    },
    "login": {
@@ -620,6 +622,27 @@
          "device-updated": "\"{{name}}\" device settings updated",
          "device-deleted": "Device \"{{name}}\" deleted",
          "device-copied": "Device copied"
+      }
+   },
+   "web-ui-settings":{
+      "title": "Web UI",
+      "labels": {
+         "mqtt-settings": "Login to MQTT broker",
+         "use-mqtt-password": "Use access credentials",
+         "mqtt-login": "User ID",
+         "mqtt-password": "Password",
+         "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
+         "common-settings": "Common settings",
+         "show-system-devices": "Show system devices",
+         "language": "UI locale",
+         "default-dashboard": "Default dashboard",
+         "https-settings": "HTTPS settings",
+         "enable-https": "Auto configuration",
+         "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access."
+      },
+      "errors": {
+         "setup-https": "Failed to setting up HTTPS: {{error}}",
+         "get-https-status": "Failed to get HTTPS status: {{error}}"
       }
    }
 }

@@ -1,6 +1,7 @@
 import { LegacyRef } from 'react';
+import type { RequireAtLeastOne } from '@/utils/types';
 
-export interface PasswordProps {
+type BasePasswordInputProps = {
   id?: string;
   ref?: LegacyRef<HTMLInputElement>;
   size?: 'default' | 'small' | 'large';
@@ -19,6 +20,8 @@ export interface PasswordProps {
   isFullWidth?: boolean;
   isWithExplicitChanges?: boolean;
   showIndicator?: boolean;
-  onChange: (_val: string | number, _badInput?: boolean) => void;
-  onChangeEvent: (_val: any) => void;
-}
+  onChange?: (_val: string | number, _badInput?: boolean) => void;
+  onChangeEvent?: (_ev: any) => void;
+};
+
+export type PasswordProps = RequireAtLeastOne<BasePasswordInputProps, 'onChange' | 'onChangeEvent'>;

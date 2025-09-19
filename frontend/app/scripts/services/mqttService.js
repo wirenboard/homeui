@@ -10,7 +10,7 @@ const mqttServiceModule = angular
   .factory('whenMqttReady', whenMqttReady)
   .factory('topicMatches', topicMatches)
   .value('mqttConnectTimeout', 15000)
-  .value('mqttReconnectDelay', 1500)
+  .value('mqttReconnectDelay', 15000)
   .value('mqttDigestInterval', 250)
   .factory('mqttClient', mqttClient).name;
 

@@ -1,9 +1,5 @@
 import { LegacyRef } from 'react';
-
-type RequireAtLeastOne<T, Keys extends keyof T = keyof T> =
-  Keys extends keyof T
-    ? Required<Pick<T, Keys>> & Omit<T, Keys>
-    : never;
+import type { RequireAtLeastOne } from '@/utils/types';
 
 type BaseInputProps = {
   id?: string;

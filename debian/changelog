@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.135.0) stable; urgency=medium
+
+  * Allow to disable HTTPS configuration using Wiren Board infrastructure
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 19 Sep 2025 09:43:57 +0500
+
 wb-mqtt-homeui (2.134.3) stable; urgency=medium
 
   * Fix unexpected cookie expiration

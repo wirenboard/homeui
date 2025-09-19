@@ -120,3 +120,7 @@
   color: var(--danger-color);
   border-color: var(--danger-color);
 }
+
+.dropdown__control--is-disabled {
+  background-color: var(--border-color);
+}
