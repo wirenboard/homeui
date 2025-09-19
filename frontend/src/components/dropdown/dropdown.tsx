@@ -74,7 +74,6 @@ export const Dropdown = ({
         control: (baseStyles, _state) => ({
           ...baseStyles,
           minWidth,
-          backgroundColor: isDisabled ? 'var(--border-color)' : 'var(--background-color)',
         }),
       }}
       unstyled

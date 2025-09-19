@@ -560,7 +560,7 @@ const realApp = angular
         });
 
       $transitions.onBefore({}, function (transition) {
-        return !switchToHttps();
+        return switchToHttps().then((res) => !res);
       });
 
       let httpsSetupTimer = setTimeout(() => {

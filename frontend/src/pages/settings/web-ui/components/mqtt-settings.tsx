@@ -30,7 +30,6 @@ export const MqttSettings = () => {
   };
 
   const setAddPrefixToTopicHandler = (value: boolean) => {
-    localStorage.setItem('prefix', value ? 'true' : 'false');
     setAddPrefixToTopic(value);
     setIsDirty(true);
   };
@@ -86,7 +85,7 @@ export const MqttSettings = () => {
         <Button
           label={t('common.buttons.apply')}
           variant="secondary"
-          disabled={!isDirty || (useMqttPassword && (!mqttLogin || !mqttPassword))}
+          disabled={!isDirty || ((useMqttPassword || addPrefixToTopic) && (!mqttLogin || !mqttPassword))}
           onClick={applyHandler}
         />
       </FormButtonGroup>

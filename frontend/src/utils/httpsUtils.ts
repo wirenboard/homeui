@@ -144,6 +144,9 @@ export async function switchToHttps() {
     return false;
   }
 
+  const originalPathname = window.location.pathname;
+  const originalHash = window.location.hash;
+
   const httpsUrlOrigin = makeHttpsUrlOrigin(deviceInfo);
   if (httpsUrlOrigin) {
     try {
@@ -154,7 +157,7 @@ export async function switchToHttps() {
       if (response.status === 200) {
         const httpsDeviceInfo = await response.json();
         if (httpsDeviceInfo.sn === deviceInfo.sn) {
-          window.location.href = httpsUrlOrigin;
+          window.location.href = `${httpsUrlOrigin}${originalPathname}${originalHash}`;
           return true;
         }
         return false;
@@ -165,6 +168,6 @@ export async function switchToHttps() {
 
   // HTTPS certificate is valid, but the device is not reachable via special crafted URL
   // Redirect using original URL
-  window.location.href = `https://${window.location.hostname}${window.location.pathname}`;
+  window.location.href = `https://${window.location.hostname}${originalPathname}${originalHash}`;
   return true;
 }
