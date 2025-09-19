@@ -3,7 +3,12 @@ import WebUiSettingsPage from '@/pages/settings/web-ui';
 import { DashboardsStore } from '@/stores/dashboards';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function webUiSettingsDirective(ConfigEditorProxy, rolesFactory, $translate, tmhDynamicLocale) {
+export default function webUiSettingsDirective(
+  ConfigEditorProxy,
+  rolesFactory,
+  $translate,
+  tmhDynamicLocale,
+  uiConfig) {
   setReactLocale();
 
   return {
@@ -20,7 +25,7 @@ export default function webUiSettingsDirective(ConfigEditorProxy, rolesFactory, 
         setReactLocale();
       };
 
-      scope.dashboardStore = new DashboardsStore(ConfigEditorProxy);
+      scope.dashboardStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
 
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render((
