@@ -46,6 +46,8 @@
 
 .wb-tableCelAlignCenter {
     vertical-align: middle;
+    align-items: center;
+    display: flex;
 }
 
 .wb-tableCellWithoutPadding {

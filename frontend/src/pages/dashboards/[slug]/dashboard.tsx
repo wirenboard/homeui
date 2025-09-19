@@ -53,7 +53,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
             setLoading(false);
             setErrors([{ variant: 'danger', text: t('dashboard.errors.mqtt-connection') }]);
           }
-          if (!interval) {
+          if (!interval && error.data === 'MqttConnectionError') {
             interval = setInterval(fetchData, 3000);
           }
         });
@@ -180,6 +180,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
         {isAddWidgetModalOpened && (
           <WidgetAdd
             widgets={widgets}
+            dashboardStore={dashboardStore}
             dashboard={dashboards.get(dashboardId)}
             cells={cells}
             isOpened={isAddWidgetModalOpened}
