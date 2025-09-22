@@ -493,14 +493,12 @@ const realApp = angular
       $translate.use(language);
       tmhDynamicLocale.set(language);
 
-      // TBD: the following should be handled by config sync service
-      var configSaveDebounce = null;
       var firstBootstrap = true;
 
       // Watch for WebUI config changes
       $rootScope.$watch(
         () => uiConfig.filtered(),
-        (newData, oldData) => {
+        async (newData, oldData) => {
           if (angular.equals(newData, oldData)) {
             return;
           }
@@ -509,23 +507,18 @@ const realApp = angular
             return;
           }
           console.log('new data: %o', newData);
-          if (configSaveDebounce) {
-            $timeout.cancel(configSaveDebounce);
-          }
-          configSaveDebounce = $timeout(() => {
-            errors.hideError();
-            ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
-              .then(() => {
-                console.log('config saved');
-              })
-              .catch(err => {
-                if (err.name === 'QuotaExceededError') {
-                  errors.showError('app.errors.overflow');
-                } else {
-                  errors.showError('app.errors.save', err);
-                }
-              });
-          }, configSaveDebounceMs);
+          errors.hideError();
+          await ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
+            .then(() => {
+              console.log('config saved');
+            })
+            .catch(err => {
+              if (err.name === 'QuotaExceededError') {
+                errors.showError('app.errors.overflow');
+              } else {
+                errors.showError('app.errors.save', err);
+              }
+            });
         },
         true
       );

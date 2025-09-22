@@ -86,7 +86,9 @@ function uiConfigService($rootScope, $q, $timeout) {
         // для дашбордов
         // FIXME: test this
         if (toCopy.hasOwnProperty('widgets')) {
-          item.isSvg = !!item.svg_url;
+          if (!Object.hasOwn(item, 'isSvg')) {
+            item.isSvg = !!item.svg_url;
+          }
           var newWidgets = Object.create(null);
           data.widgets.forEach(widget => {
             if (widget.isNew) {

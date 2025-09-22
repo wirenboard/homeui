@@ -22,7 +22,7 @@ class NavigationCtrl {
     };
 
     $scope.dashboards = () => {
-      return uiConfig.data.dashboards.filter(dashboard => !dashboard.isNew);
+      return uiConfig.data.dashboards.filter(dashboard => !dashboard.isNew && !dashboard.options?.isHidden);
     };
 
     $scope.isConnected = function () {

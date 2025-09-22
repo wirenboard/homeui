@@ -8,6 +8,33 @@
          "password-strength-4": "Strong password"
       }
    },
+   "dashboards": {
+      "title": "Dashboards",
+      "labels": {
+         "id": "Panel id (used in url)",
+         "name": "Name",
+         "fullwidth": "Full width",
+         "empty-list": "No dashboards currently defined",
+         "edit": "Edit panel \"{{name}}\"",
+         "create": "Add panel",
+         "text-dashboard": "Text"
+      },
+      "buttons": {
+         "add": "Add",
+         "edit": "Edit",
+         "delete": "Delete",
+         "save": "Save",
+         "hide": "Hidden from menu",
+         "visible": "Shown in menu"
+      },
+      "prompt": {
+         "delete-title": "Dashboard deletion",
+         "delete-description": "Are you sure you want to delete \"{{name}}\" dashboard?"
+      },
+      "errors": {
+         "duplicate": "Duplicate dashboard ids are not allowed"
+      }
+   },
    "scan": {
       "title": "New devices",
       "search-disconnected-title": "Search for disconnected device",

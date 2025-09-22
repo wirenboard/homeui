@@ -1,0 +1,14 @@
+.dashboardEdit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dashboardEdit-input {
+    margin-top: 6px;
+}
+
+.dashboardEdit-error {
+    color: var(--danger-color);
+    margin-top: 8px;
+}
