@@ -11,6 +11,9 @@ export interface TextDashboard {
   name: string;
   isSvg: boolean;
   widgets: string[];
+  options?: {
+    isHidden?: boolean;
+  };
 }
 
 interface SvgDashboard {

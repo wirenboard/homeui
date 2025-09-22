@@ -87,8 +87,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('dashboards', {
       url: '/dashboards',
-      controller: 'DashboardsCtrl as $ctrl',
-      template: require('../views/dashboards.html'),
+      template: '<dashboards-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';

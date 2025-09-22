@@ -39,6 +39,33 @@ export default class DashboardsStore {
       });
   }
 
+  async addDashboard(data: Dashboard) {
+    this.dashboards.set(data.id, new Dashboard(data, this));
+
+    this._saveData();
+  }
+
+  async updateDashboard(id: string, data: Dashboard) {
+    if (id === data.id) {
+      this.dashboards.set(id, new Dashboard(data, this));
+    } else {
+      this.dashboards.set(data.id, new Dashboard(data, this));
+      this.dashboards.delete(id);
+    }
+
+    this._saveData();
+  }
+
+  async updateDashboards(data: Dashboard[]) {
+    this.dashboards = new Map(data.map((dashboard) => [dashboard.id, new Dashboard(dashboard, this)]));
+    this._saveData();
+  }
+
+  async deleteDashboard(id: string) {
+    this.dashboards.delete(id);
+    this._saveData();
+  }
+
   addWidgetToDashboard(dashboardId: string, widgetId: string) {
     runInAction(() => {
       const dashboard = this.dashboards.get(dashboardId);

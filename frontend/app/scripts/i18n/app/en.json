@@ -67,36 +67,6 @@
         "loading": "Loading...",
         "stableNotice": "If you want to be the first to get access to new features of our software, switch to "
     },
-    "dashboards": {
-        "title": {
-            "default": "Dashboards",
-            "svg": "SVG Dashboards"
-        },
-        "field": {
-            "id": "ID",
-            "name": "Name",
-            "fullwidth": "Stretch to full screen"
-        },
-        "button": {
-            "add": "Add",
-            "edit": "Edit",
-            "delete": "Delete",
-            "view": "View",
-            "cancel": "Cancel",
-            "save": "Save"
-        },
-        "prompt": {
-            "delete": "Are you sure you want to delete \"{{name}}\" dashboard?"
-        },
-        "message": {
-            "empty": "No dashboards currently defined."
-        },
-        "error": {
-            "duplicate": "Duplicate dashboard ids are not allowed",
-            "emptyId": "Empty dashboard id is not allowed",
-            "emptyName": "Empty dashboard name is not allowed"
-        }
-    },
     "dashboard": {
         "svg": {
             "edit": {
