@@ -1,16 +1,14 @@
-'use strict';
-
-import { makeAutoObservable, makeObservable, observable, action, reaction } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
-import { FormStore } from '../forms/formStore';
-import { BooleanStore } from '../forms/booleanStore';
-import { StringStore } from '../forms/stringStore';
-import { OptionsStore } from '../forms/optionsStore';
+import { makeAutoObservable, makeObservable, observable, action, reaction } from 'mobx';
 import i18n from '../../i18n/react/config';
-import { makeNotEmptyValidator } from '../forms/stringValidators';
 import DashboardSvgParam from '../../services/dashboardSvgParam';
+import { BooleanStore } from '../forms/booleanStore';
+import { FormStore } from '../forms/formStore';
+import { OptionsStore } from '../forms/optionsStore';
+import { StringStore } from '../forms/stringStore';
+import { makeNotEmptyValidator } from '../forms/stringValidators';
 
-const jsFunctionValidator = value => {
+const jsFunctionValidator = (value) => {
   if (!value) {
     return i18n.t('validator.errors.empty');
   }
@@ -33,13 +31,14 @@ const addChannelsStore = (formStore, devices) => {
   );
 };
 
-const addStringValueStore = (formStore, description, validator) => {
+const addStringValueStore = (formStore, description, validator, editType) => {
   formStore.add(
     'value',
     new StringStore({
       name: i18n.t('edit-svg-dashboard.labels.value'),
       validator: validator || makeNotEmptyValidator(),
-      description: description,
+      description,
+      editType,
     })
   );
 };
@@ -82,31 +81,33 @@ const makeWriteBindingStore = (devices, name) => {
   return res;
 };
 
-const makeReadBindingStore = devices => {
+const makeReadBindingStore = (devices) => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.read-enable');
   addChannelsStore(res, devices);
   addStringValueStore(
     res,
     i18n.t('edit-svg-dashboard.labels.read-value-desc'),
-    jsFunctionValidator
+    jsFunctionValidator,
+    'textarea'
   );
   return res;
 };
 
-const makeStyleBindingStore = devices => {
+const makeStyleBindingStore = (devices) => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.style-enable');
   addChannelsStore(res, devices);
   addStringValueStore(
     res,
     i18n.t('edit-svg-dashboard.labels.style-value-desc'),
-    jsFunctionValidator
+    jsFunctionValidator,
+    'textarea'
   );
   return res;
 };
 
-const makeVisibleBindingStore = devices => {
+const makeVisibleBindingStore = (devices) => {
   let res = new FormStore();
   addEnableStore(res, 'edit-svg-dashboard.labels.visible-enable');
   addChannelsStore(res, devices);
@@ -129,9 +130,9 @@ const makeVisibleBindingStore = devices => {
 const addEnableReaction = (binding, bindingsStore) => {
   return reaction(
     () => binding.params.enable.value,
-    value => {
+    (value) => {
       if (value && !binding.params.channel.value) {
-        Object.entries(bindingsStore.params).some(([key, store]) => {
+        Object.entries(bindingsStore.params).some(([_key, store]) => {
           if (store?.params?.enable?.value) {
             const channel = store?.params?.channel?.value;
             if (channel) {
@@ -187,7 +188,7 @@ class SvgElementBindingsStore {
   }
 
   makeNewParamsStore() {
-    this.paramsStoreDisposers.forEach(disposer => disposer());
+    this.paramsStoreDisposers.forEach((disposer) => disposer());
     this.paramsStoreDisposers = [];
     this.params = new FormStore();
   }
@@ -245,8 +246,8 @@ class SvgElementBindingsStore {
   }
 }
 
-const hasBindings = param => {
-  return Object.values(param).some(p => p?.enable);
+const hasBindings = (param) => {
+  return Object.values(param).some((p) => p?.enable);
 };
 
 class BindingsStore {
@@ -296,7 +297,7 @@ class BindingsStore {
   }
 
   setDevices(deviceData, localeId) {
-    this.devices = Object.entries(deviceData.devices).map(([deviceId, d]) => ({
+    this.devices = Object.entries(deviceData.devices).map(([_deviceId, d]) => ({
       label: d.getName(localeId),
       options: d.cellIds.reduce((cells, c) => {
         let cell = deviceData.cells[c];
@@ -322,7 +323,7 @@ class BindingsStore {
       if (id === null) {
         return;
       }
-      let data = this.params.find(param => param.id === id);
+      let data = this.params.find((param) => param.id === id);
       if (!data) {
         data = {
           id: id,
@@ -342,13 +343,13 @@ class BindingsStore {
 
   saveBinding() {
     if (this.editable.id) {
-      let oldData = this.params.find(param => param.id === this.editable.id);
+      let oldData = this.params.find((param) => param.id === this.editable.id);
       let res = this.editable.params.value;
       if (oldData) {
         if (hasBindings(res)) {
           Object.assign(oldData, this.editable.params.value);
         } else {
-          this.params = this.params.filter(param => param.id !== this.editable.id);
+          this.params = this.params.filter((param) => param.id !== this.editable.id);
         }
       } else {
         if (hasBindings(res)) {
