@@ -4,8 +4,7 @@
             "load": "Cannot load WebUI config.",
             "save": "Config saving failed",
             "overflow": "Config saving failed. Try to clear page's localStorage and restart the browser. If problem remains, try to reduce overall size of SVG images.",
-            "stop-scan": "The controller started searching for Modbus devices. This could lead to slow polling of already configured devices. The search process is forcibly stopped",
-            "no-https": "The Web UI is running over HTTP. It is recommended to use HTTPS to ensure the security of your credentials and data"
+            "stop-scan": "The controller started searching for Modbus devices. This could lead to slow polling of already configured devices. The search process is forcibly stopped"
         },
         "prompt": {
             "dirty": "The page has unsaved changes. Are you sure you want to leave?",

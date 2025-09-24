@@ -18,6 +18,7 @@ from urllib.parse import urlparse
 import bcrypt
 
 from .cert import CertificateCheckingThread
+from .config_file import Config
 from .db import open_db
 from .http_response import (
     HttpResponse,
@@ -154,6 +155,14 @@ def auth_check_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     # if no users are configured allow all requests
     if not context.users_storage.has_users():
         return response_200()
+
+    method = request.headers.get("X-Original-Method", "GET")
+    allow_unauthorized_get = request.headers.get("Allow-Unauthorized-Get", "false").lower() == "true"
+    if method == "GET" and allow_unauthorized_get:
+        headers = []
+        if context.session is not None:
+            headers.append(["Wb-User-Type", context.session.user.type.value])
+        return response_200(headers=headers)
 
     required_user_type = get_required_user_type(request)
 
@@ -340,7 +349,7 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     res = {
         "sn": context.sn,
         "ip": host_ip,
-        "https_cert": context.certificate_thread.get_state().value,
+        "https_cert": context.certificate_thread.get_certificate_state().value,
     }
     return response_200(
         [
@@ -351,8 +360,35 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     )
 
 
-def https_setup_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def https_request_cert_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
     context.certificate_thread.request_certificate()
+    return response_200()
+
+
+def get_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    return response_200(
+        [["Content-type", "application/json"]],
+        json.dumps({"enabled": context.certificate_thread.is_certificate_update_allowed()}),
+    )
+
+
+def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    try:
+        length = int(request.headers.get("Content-Length", 0))
+        form = json.loads(request.rfile.read(length).decode("utf-8"))
+    except Exception as e:
+        return response_400(str(e))
+    https_enabled = form.get("enabled")
+    if https_enabled is not None:
+        if not isinstance(https_enabled, bool):
+            raise TypeError("Invalid enabled field")
+        WebRequestHandler.config.set_https_enabled(https_enabled)
+        if https_enabled:
+            context.certificate_thread.enable_certificate_update()
+        else:
+            context.certificate_thread.disable_certificate_update()
     return response_200()
 
 
@@ -382,6 +418,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     sn: str = ""
     certificate_thread: CertificateCheckingThread
     rate_limiter: RateLimiter
+    config: Config
 
     def process_response(self, response: HttpResponse) -> None:
         if response.status == 200:
@@ -434,6 +471,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
+                "/api/https": RequestHandler(fn=get_https_handler),
             }
         )
 
@@ -443,12 +481,17 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/users": RequestHandler(fn=add_user_handler),
                 "/auth/login": RequestHandler(fn=auth_login_handler, rate_per_minute_limit=30),
                 "/auth/logout": RequestHandler(fn=auth_logout_handler),
-                "/api/https/setup": RequestHandler(fn=https_setup_handler),
+                "/api/https/request_cert": RequestHandler(fn=https_request_cert_handler),
             }
         )
 
     def do_PATCH(self) -> None:
-        self.process_request({"/users/*": RequestHandler(fn=update_user_handler)})
+        self.process_request(
+            {
+                "/users/*": RequestHandler(fn=update_user_handler),
+                "/api/https": RequestHandler(fn=update_https_handler),
+            }
+        )
 
     def do_DELETE(self) -> None:
         self.process_request({"/users/*": RequestHandler(fn=delete_user_handler)})
@@ -502,7 +545,10 @@ def main():
     WebRequestHandler.sessions_storage = SessionsStorage(con)
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
-    WebRequestHandler.certificate_thread = CertificateCheckingThread(sn)
+    WebRequestHandler.config = Config(WebRequestHandler.users_storage)
+    WebRequestHandler.certificate_thread = CertificateCheckingThread(
+        sn, WebRequestHandler.config.is_https_enabled()
+    )
     WebRequestHandler.rate_limiter = RateLimiter()
 
     try:
