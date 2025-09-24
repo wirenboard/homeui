@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.137.0) stable; urgency=medium
+
+  * Upgrade dashboard list page
+  * Add dashboard sorting
+  * Add possibility to hide dashboard from menu
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 24 Sep 2025 15:27:00 +0300
+
 wb-mqtt-homeui (2.136.0) stable; urgency=medium
 
   * Change input to textarea in svg edit conditions

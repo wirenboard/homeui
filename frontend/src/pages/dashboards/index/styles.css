@@ -1,0 +1,18 @@
+.dashboardList-sortHandle {
+    color: var(--text-color);
+    width: 18px;
+    cursor: grab;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.dashboardList-icon {
+    color: var(--text-color);
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    display: flex;
+}

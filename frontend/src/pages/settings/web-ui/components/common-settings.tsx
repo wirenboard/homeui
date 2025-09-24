@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Option } from '@/components/dropdown';
 import { BooleanField, FormFieldGroup, OptionsField } from '@/components/form';
@@ -9,7 +9,9 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardStore }: CommonSet
   const { t } = useTranslation();
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
-  const options = Array.from(dashboardStore.dashboards.values()).map((d) => ({ label: d.name, value: d.id }));
+  const options = Array.from(dashboardStore.dashboards.values())
+    .filter((dashboard) => !dashboard.options.isHidden)
+    .map((dashboard) => ({ label: dashboard.name, value: dashboard.id }));
 
   useEffect(() => {
     let interval = null;

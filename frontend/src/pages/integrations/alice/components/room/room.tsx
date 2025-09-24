@@ -176,11 +176,11 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
           </TableRow>
           {deviceList.map((device) => (
             <TableRow key={device.id} className="aliceRoom-item" onClick={() => onOpenDevice(device.id)}>
-              <TableCell align="top" ellipsis>
+              <TableCell verticalAlign="top" ellipsis>
                 {device.name}
               </TableCell>
 
-              <TableCell align="top">
+              <TableCell verticalAlign="top">
                 {device.room}
               </TableCell>
 

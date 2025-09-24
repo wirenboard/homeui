@@ -27,9 +27,14 @@
     background: var(--table-item-hover);
 }
 
-.wb-tableRow:focus-within .rules-icon,
-.wb-tableRow:hover .rules-icon {
+.wb-tableRow:focus-within .wb-tableCellInvisible,
+.wb-tableRow:hover .wb-tableCellInvisible {
     visibility: visible;
+}
+
+.wb-tableRow .wb-tableCellInvisible,
+.wb-table:hover .wb-tableRow:focus-within:not(:hover) .wb-tableCellInvisible {
+    visibility: hidden;
 }
 
 .wb-tableRowHeading {
@@ -44,10 +49,18 @@
     height: 100%;
 }
 
-.wb-tableCelAlignCenter {
+.wb-tableCellVerticalAlignCenter {
     vertical-align: middle;
     align-items: center;
     display: flex;
+}
+
+.wb-tableCellAlignCenter {
+    justify-content: center;
+}
+
+.wb-tableCellAlignRight {
+    justify-content: flex-end;
 }
 
 .wb-tableCellWithoutPadding {
