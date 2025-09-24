@@ -16,7 +16,7 @@
       "labels": {
          "id": "Panel id (used in url)",
          "name": "Name",
-         "fullwidth": "Full width",
+         "in-menu": "In nav",
          "empty-list": "No dashboards currently defined",
          "edit": "Edit panel \"{{name}}\"",
          "create": "Add panel",

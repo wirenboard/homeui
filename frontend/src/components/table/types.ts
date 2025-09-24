@@ -15,9 +15,11 @@ export interface TableRowProps extends HTMLAttributes<HTMLDivElement | HTMLAncho
 
 export interface TableCellProps extends HTMLAttributes<HTMLDivElement> {
   width?: number;
+  className?: string;
   visibleOnHover?: boolean;
   preventClick?: boolean;
   ellipsis?: boolean;
   isWithoutPadding?: boolean;
-  align?: 'top' | 'center';
+  verticalAlign?: 'top' | 'center';
+  align?: 'left' | 'center' | 'right';
 }

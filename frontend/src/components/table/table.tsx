@@ -46,14 +46,24 @@ export const TableRow = ({
 };
 
 export const TableCell = ({
-  children, preventClick, visibleOnHover, ellipsis, isWithoutPadding, align = 'center', ...rest
+  children,
+  className,
+  preventClick,
+  visibleOnHover,
+  ellipsis,
+  isWithoutPadding,
+  align,
+  verticalAlign = 'center',
+  ...rest
 }: PropsWithChildren<TableCellProps>) => (
   <div
     role="gridcell"
-    className={classNames('wb-tableCell', {
+    className={classNames('wb-tableCell', className, {
       'wb-tableCellEllipsis': ellipsis,
       'wb-tableCellWithoutPadding': isWithoutPadding,
-      'wb-tableCelAlignCenter': align === 'center',
+      'wb-tableCellVerticalAlignCenter': verticalAlign === 'center',
+      'wb-tableCellAlignCenter': align === 'center',
+      'wb-tableCellAlignRight': align === 'right',
     })}
     onClick={(ev) => {
       if (preventClick) {

@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactSortable } from 'react-sortablejs';
+import useResizeObserver from 'use-resize-observer';
 import CheckIcon from '@/assets/icons/check.svg';
 import EditIcon from '@/assets/icons/edit.svg';
 import MoveIcon from '@/assets/icons/move.svg';
@@ -20,6 +21,7 @@ import './styles.css';
 
 const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardListPageProps) => {
   const { t } = useTranslation();
+  const { ref, width } = useResizeObserver();
   const {
     dashboards,
     loadData,
@@ -79,7 +81,10 @@ const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardList
           hasEditRights && (
             <Dropdown
               value={null}
-              options={[{ label: t('dashboards.labels.text'), value: 'dashboard' }, { label: 'Svg', value: 'svg' }]}
+              options={[
+                { label: t('dashboards.labels.text-dashboard'), value: 'dashboard' },
+                { label: 'Svg', value: 'svg' },
+              ]}
               placeholder={t('dashboards.buttons.add')}
               isButton
               onChange={(option) => {
@@ -97,21 +102,20 @@ const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardList
         {dashboardsList.length ? (
           <Table>
             <TableRow isHeading>
-              {hasEditRights && dashboardsList.length > 1 && (
+              {hasEditRights && dashboardsList.length > 1 && width >= 480 && (
                 <TableCell width={24} />
               )}
-              <TableCell width={15}>#</TableCell>
               <TableCell>{t('dashboards.labels.name')}</TableCell>
-              {hasEditRights && (
-                <TableCell width={40} />
-              )}
-              {hasEditRights && (
-                <TableCell width={40} />
-              )}
               {dashboardsList.some((dashboard) => dashboard.isSvg) && (
-                <TableCell width={30}>SVG</TableCell>
+                <TableCell width={30} align="center">SVG</TableCell>
               )}
-              {hasEditRights && <TableCell width={55}>В меню</TableCell>}
+              {hasEditRights && <TableCell width={55} align="center">{t('dashboards.labels.in-menu')}</TableCell>}
+              {hasEditRights && (
+                <TableCell width={40} />
+              )}
+              {hasEditRights && (
+                <TableCell width={40} />
+              )}
             </TableRow>
 
             <ReactSortable
@@ -128,31 +132,50 @@ const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardList
               handle=".dashboardList-sortHandle"
               animation={150}
             >
-              {dashboardsList.map((dashboard, i) => (
+              {dashboardsList.map((dashboard) => (
                 <TableRow
                   url={dashboard.isSvg
                     ? `/#!/dashboards/svg/view/${dashboard.id}`
                     : `/#!/dashboards/${dashboard.id}`}
                   key={dashboard.id}
                 >
-                  {hasEditRights && dashboardsList.length > 1 && (
+                  {hasEditRights && dashboardsList.length > 1 && width >= 480 && (
                     <TableCell width={24}>
                       <MoveIcon className="dashboardList-sortHandle" />
                     </TableCell>
                   )}
-                  <TableCell width={15}>
-                    {i + 1}
-                  </TableCell>
 
                   <TableCell ellipsis>
                     {dashboard.name}
                   </TableCell>
 
+                  {dashboardsList.some((dashboard) => dashboard.isSvg) && (
+                    <TableCell width={30} align="center">
+                      {dashboard.isSvg && <CheckIcon className="dashboardList-icon" />}
+                    </TableCell>
+                  )}
+
                   {hasEditRights && (
-                    <TableCell width={40} visibleOnHover preventClick>
+                    <TableCell width={55} align="center" preventClick>
+                      <Tooltip
+                        text={t(dashboard.options?.isHidden
+                          ? 'dashboards.buttons.hidden'
+                          : 'dashboards.buttons.visible')}
+                        placement="left"
+                      >
+                        <Switch
+                          id={`visibility-${dashboard.id}`}
+                          value={dashboard.options?.isHidden ? !dashboard.options?.isHidden : true}
+                          onChange={() => dashboard.toggleVisibility()}
+                        />
+                      </Tooltip>
+                    </TableCell>
+                  )}
+
+                  {hasEditRights && (
+                    <TableCell width={40} align="center" preventClick>
                       <Tooltip text={t('dashboards.buttons.edit')} placement="top">
                         <Button
-                          className="rules-icon"
                           size="small"
                           variant="secondary"
                           icon={<EditIcon />}
@@ -170,38 +193,14 @@ const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardList
                   )}
 
                   {hasEditRights && (
-                    <TableCell width={40} visibleOnHover preventClick>
+                    <TableCell width={40} align="center" preventClick>
                       <Tooltip text={t('dashboards.buttons.delete')} placement="top">
                         <Button
-                          className="rules-icon"
                           size="small"
                           variant="secondary"
                           icon={<TrashIcon />}
                           aria-label={`${t('dashboards.buttons.delete')}`}
                           onClick={() => setDeletedDashboardId(dashboard.id)}
-                        />
-                      </Tooltip>
-                    </TableCell>
-                  )}
-
-                  {dashboardsList.some((dashboard) => dashboard.isSvg) && (
-                    <TableCell width={30} className="dashboardList-iconWrapper">
-                      {dashboard.isSvg && <CheckIcon className="dashboardList-icon" />}
-                    </TableCell>
-                  )}
-
-                  {hasEditRights && (
-                    <TableCell width={55} className="dashboardList-cellContainer" preventClick>
-                      <Tooltip
-                        text={t(dashboard.options?.isHidden
-                          ? 'dashboards.buttons.hidden'
-                          : 'dashboards.buttons.visible')}
-                        placement="left"
-                      >
-                        <Switch
-                          id={`visibility-${dashboard.id}`}
-                          value={dashboard.options?.isHidden ? !dashboard.options?.isHidden : true}
-                          onChange={() => dashboard.toggleVisibility()}
                         />
                       </Tooltip>
                     </TableCell>
@@ -216,6 +215,8 @@ const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardList
           </Alert>
         )}
       </PageLayout>
+
+      <div ref={ref}></div>
 
       {!!deletedDashboardId && (
         <Confirm
