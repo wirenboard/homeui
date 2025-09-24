@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../common';
 import ConfirmModal from '../components/modals/confirmModal';
 import FormModal from '../components/modals/formModal';
+import SimpleModal from '../components/modals/simpleModal';
 import { PageWrapper, PageTitle, PageBody } from '../components/page-wrapper/pageWrapper';
 import BootstrapLikeSelect from '../components/select/select';
 
@@ -16,6 +17,12 @@ const UsersPage = observer(({ store }) => {
     >
       <FormModal {...store.formModalState} />
       <ConfirmModal {...store.confirmModalState} />
+      <SimpleModal {...store.simpleModalState}>
+        {t('users.labels.enable-https-warning', {
+          domain: store.httpsDomainName,
+          interpolation: { escapeValue: false },
+        })}
+      </SimpleModal>
       <PageTitle title={t('users.title')}>
         <div className="pull-right">
           <Button

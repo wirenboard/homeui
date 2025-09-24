@@ -1,8 +1,10 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/httpsUtils';
 import i18n from '../../i18n/react/config';
 import AccessLevelStore from '../components/access-level/accessLevelStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
 import FormModalState from '../components/modals/formModalState';
+import SimpleModalState from '../components/modals/simpleModalState';
 import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
 import { FormStore } from '../forms/formStore';
 import { OptionsStore } from '../forms/optionsStore';
@@ -49,6 +51,7 @@ class UsersPageStore {
     });
     this.formModalState = new FormModalState();
     this.confirmModalState = new ConfirmModalState();
+    this.simpleModalState = new SimpleModalState();
     this.autologinUserStore = new OptionsStore({
       options: [
         {
@@ -59,6 +62,7 @@ class UsersPageStore {
       value: null,
     }),
     this.users = [];
+    this.httpsDomainName = '';
 
     makeAutoObservable(this);
 
@@ -100,6 +104,10 @@ class UsersPageStore {
       const res = await fetch('/auth/users');
       if (res.ok) {
         this.setUsers(await res.json());
+        if (!this.users.length) {
+          const deviceInfo = await getDeviceInfo();
+          this.httpsDomainName = makeHttpsUrlOrigin(deviceInfo);
+        }
       } else {
         await this.processFetchError(res);
       }
@@ -197,9 +205,42 @@ class UsersPageStore {
     return null;
   }
 
+  async confirmSetupHttps() {
+    if (window.location.protocol === 'https:') {
+      return true;
+    }
+    if (!await this.showEnableHttpsConfirmModal()) {
+      return true;
+    }
+    this.pageWrapperStore.clearError();
+    this.pageWrapperStore.setLoading(true);
+    try {
+      const res = await fetch('/api/https', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ enabled: true }),
+      });
+      if (res.ok) {
+        this.pageWrapperStore.setLoading(false);
+        window.location.reload();
+        return false;
+      }
+      await this.processFetchError(res);
+    } catch (error) {
+      this.pageWrapperStore.setError(error);
+    }
+    this.pageWrapperStore.setLoading(false);
+    return false;
+  }
+
   async addUser() {
     this.userParamsStore.reset();
-    if (!this.accessLevelStore.usersAreConfigured) {
+    if (!this.accessLevelStore.rolesFactory.usersAreConfigured) {
+      if (!await this.confirmSetupHttps()) {
+        return;
+      }
       this.userParamsStore.params.type.setValue('admin');
       this.userParamsStore.params.type.setReadOnly(true);
     }
@@ -219,7 +260,7 @@ class UsersPageStore {
     if (res === null) {
       return;
     }
-    if (!this.accessLevelStore.usersAreConfigured) {
+    if (!this.accessLevelStore.rolesFactory.usersAreConfigured) {
       location.reload();
       return;
     }
@@ -273,6 +314,13 @@ class UsersPageStore {
           type: 'danger',
         },
       ]
+    );
+  }
+
+  async showEnableHttpsConfirmModal() {
+    return this.simpleModalState.show(
+      i18n.t('users.labels.https'),
+      i18n.t('users.buttons.enable-https')
     );
   }
 
