@@ -145,7 +145,7 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
               <Alert className="widgetEdit-warn" variant="warn" withIcon={false}>
                 {t('widget.labels.warning')}
                 {widget.associatedDashboards
-                  .filter((board) => board.id !== dashboard.id)
+                  .filter((board) => board.id !== dashboard?.id)
                   .map((dashboard) => (<li key={dashboard.id}>{dashboard.name}</li>))}
               </Alert>
             )}

@@ -71,6 +71,10 @@
     grid-area: sort;
 }
 
+.widgetEdit-sortHandle {
+    cursor: grab !important;
+}
+
 .widgetEdit-id {
     grid-area: id;
     overflow: hidden;

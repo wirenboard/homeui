@@ -1,7 +1,7 @@
 .dashboardList-sortHandle {
     color: var(--text-color);
     width: 18px;
-    cursor: pointer;
+    cursor: grab;
     height: 100%;
     align-items: center;
     display: flex;
@@ -9,21 +9,10 @@
     justify-content: center;
 }
 
-.dashboardList-cellContainer {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.dashboardList-iconWrapper {
-    width: 100%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-}
-
 .dashboardList-icon {
     color: var(--text-color);
     width: 18px;
+    height: 18px;
     text-align: center;
     display: flex;
 }
