@@ -13,11 +13,20 @@ import { Dialog } from '@/components/dialog';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { TabContent, Tabs, useTabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
+import { Widget } from '@/stores/dashboards';
 import { WidgetEdit } from '../widget-edit';
 import type { WidgetAddProps } from './types';
 import './styles.css';
 
-export const WidgetAdd = observer(({ widgets, dashboard, cells, controls, isOpened, onClose }: WidgetAddProps) => {
+export const WidgetAdd = observer(({
+  dashboardStore,
+  widgets,
+  dashboard,
+  cells,
+  controls,
+  isOpened,
+  onClose,
+}: WidgetAddProps) => {
   const { t } = useTranslation();
   const [widgetId, setWidgetId] = useState(Array.from(widgets.keys()).at(0));
   const [isEditing, setIsEditing] = useState<boolean | 'new'>(false);
@@ -176,7 +185,7 @@ export const WidgetAdd = observer(({ widgets, dashboard, cells, controls, isOpen
             setIsEditing(false);
           }}
           onSave={(data) => {
-            widgets.get(widgetId).save(data);
+            (widgets.get(widgetId) ?? new Widget(data, dashboardStore)).save(data);
             setIsEditing(false);
             setWidgetId(data.id);
           }}
