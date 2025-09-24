@@ -101,10 +101,7 @@ import loginPageDirective from './react-directives/login/login-page';
 // Angular routes
 import routingModule from './app.routes';
 
-// Internal components
-import LoginFormModule from './components/loginForm/index';
-
-import { checkHttps } from './utils/httpsUtils';
+import { switchToHttps } from '@/utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
@@ -133,7 +130,6 @@ const module = angular
     'angular-spinkit',
     routingModule,
     dumbTemplateModule,
-    LoginFormModule,
 
     'ui-rangeSlider',
     'ngToast',
@@ -557,14 +553,7 @@ const realApp = angular
         });
 
       $transitions.onBefore({}, function (transition) {
-        if ($rootScope.noHttps !== undefined || __DISABLE_HTTPS_CHECK__) {
-          return true;
-        }
-        return checkHttps().then(res => {
-          if (res !== 'redirected') {
-            $rootScope.noHttps = res === 'warn';
-          }
-        });
+        return switchToHttps().then((res) => !res);
       });
 
       let httpsSetupTimer = setTimeout(() => {
