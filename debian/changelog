@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.136.0) stable; urgency=medium
+
+  * Change input to textarea in svg edit conditions
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 24 Sep 2025 11:04:00 +0300
+
 wb-mqtt-homeui (2.135.0) stable; urgency=medium
 
   * Allow to disable HTTPS configuration using Wiren Board infrastructure

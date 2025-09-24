@@ -138,8 +138,22 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
 
 export const LineEdit = forwardRef(
   ({ placeholder, value, onChange, disabled, type, name, required, autocomplete, showIndicator }, ref) => {
-    return type === 'password' ?
-      (
+    if (type === 'textarea') {
+      return (
+        <textarea
+          ref={ref}
+          className="form-control"
+          placeholder={placeholder}
+          value={value}
+          disabled={disabled}
+          name={name}
+          required={required}
+          autoComplete={autocomplete}
+          onChange={onChange}
+        />
+      );
+    } else if (type === 'password') {
+      return (
         <Password
           ref={ref}
           className="form-control"
@@ -153,7 +167,9 @@ export const LineEdit = forwardRef(
           isFullWidth
           onChangeEvent={onChange}
         />
-      ) : (
+      );
+    } else {
+      return (
         <input
           ref={ref}
           className="form-control"
@@ -167,6 +183,7 @@ export const LineEdit = forwardRef(
           onChange={onChange}
         />
       );
+    }
   }
 );
 
