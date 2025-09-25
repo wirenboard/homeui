@@ -1,5 +1,5 @@
-import { Fragment } from 'react';
 import { observer } from 'mobx-react-lite';
+import { Fragment } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import {
   Button,
@@ -27,7 +27,7 @@ const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }) => {
 export const DeviceTab = observer(({ tab }) => {
   const isError =
     tab.hasInvalidConfig || tab.showDisconnectedError || tab.embeddedSoftware.hasError;
-  const isWarning = tab.isDeprecated;
+  const isWarning = tab.isDeprecated || tab.withSubdevices;
   const className = `device-tab${isError ? ' error' : isWarning ? ' warning' : ''}`;
   const showSign = isError || isWarning;
 
@@ -91,7 +91,7 @@ const EmbeddedSoftwareUpdatePanel = observer(({ component }) => {
   const vars = {
     current: component.current,
     available: component.available,
-  }
+  };
   if (component.type === 'firmware') {
     label = 'device-manager.labels.updating-firmware';
   } else if (component.type === 'bootloader') {
@@ -99,7 +99,7 @@ const EmbeddedSoftwareUpdatePanel = observer(({ component }) => {
   } else {
     label = 'device-manager.labels.updating-component';
     vars.model = component.model;
-    vars.maybe_current_firmware  = component.current ? 
+    vars.maybe_current_firmware = component.current ?
       t('device-manager.labels.component_update_current_version', vars) : '';
   }
   return (
@@ -138,22 +138,26 @@ const NewComponentSoftwareText = observer(({ components, label, link_label }) =>
     .map(([key, component]) => {
       const { t } = useTranslation();
       const componentTransKey = !component.model ? label : link_label;
-      const maybe_current_firmware = component.current ? 
+      const maybe_current_firmware = component.current ?
         t('device-manager.labels.component_current_version', { current_firmware: component.current }) : '';
       return (
         <Fragment key={'component' + key}>
           <span>
             &emsp;&nbsp;-&nbsp;
-            <Trans i18nKey={componentTransKey} values={{
-              ['device_model']: component.model,
-              [`maybe_current_firmware`]: maybe_current_firmware,
-              [`available_firmware`]: component.available
-            }} components={[<a></a>]} />
+            <Trans
+              i18nKey={componentTransKey}
+              values={{
+                ['device_model']: component.model,
+                ['maybe_current_firmware']: maybe_current_firmware,
+                ['available_firmware']: component.available,
+              }}
+              components={[<a></a>]}
+            />
           </span>
           <br />
         </Fragment>
       );
-    })
+    });
 
 });
 
@@ -181,7 +185,7 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
         <span>{t('device-manager.labels.new-software-components')}</span>
         <br />
         {hasBootloaderUpdate && (
-          <Fragment key={'bootloader'}>
+          <Fragment key="bootloader">
             <span>
               &emsp;&nbsp;-&nbsp;
               {t('device-manager.labels.new-bootloader-item', values)}
@@ -190,7 +194,7 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
           </Fragment>
         )}
         {hasFirmwareUpdate && (
-          <Fragment key={'firmware'}>
+          <Fragment key="firmware">
             <span>
               &emsp;&nbsp;-&nbsp;
               <Trans i18nKey={firmwareTransKey} values={values} components={[<a></a>]} />
@@ -201,8 +205,8 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
         {hasComponentsUpdates && (
           <NewComponentSoftwareText
             components={embeddedSoftware.componentsCanBeUpdated}
-            label='device-manager.labels.new-component-item'
-            link_label='device-manager.labels.new-component-item-link'
+            label="device-manager.labels.new-component-item"
+            link_label="device-manager.labels.new-component-item-link"
           />
         )}
       </>
@@ -229,15 +233,14 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware }) => {
         <br />
         <NewComponentSoftwareText
           components={embeddedSoftware.componentsCanBeUpdated}
-          label='device-manager.labels.new-component'
-          link_label='device-manager.labels.new-component-link'
+          label="device-manager.labels.new-component"
+          link_label="device-manager.labels.new-component-link"
         />
       </>
     );
   }
   return null;
 });
-
 
 const NewEmbeddedSoftwareErasesSettingsText = observer(({ embeddedSoftware }) => {
   const { t } = useTranslation();
@@ -364,9 +367,9 @@ const EmbeddedSoftwarePanel = observer(
     }
     return (
       <>
-        <EmbeddedSoftwareComponentUpdateError key={'bootloader'} component={embeddedSoftware.bootloader} />
-        <EmbeddedSoftwareComponentUpdateError key={'firmware'} component={embeddedSoftware.firmware} />
-        {Array.from(embeddedSoftware.components).map(([key,component]) => (
+        <EmbeddedSoftwareComponentUpdateError key="bootloader" component={embeddedSoftware.bootloader} />
+        <EmbeddedSoftwareComponentUpdateError key="firmware" component={embeddedSoftware.firmware} />
+        {Array.from(embeddedSoftware.components).map(([key, component]) => (
           <EmbeddedSoftwareComponentUpdateError key={'component ' + key} component={component} />
         ))}
         <NewEmbeddedSoftwareWarning
@@ -381,16 +384,22 @@ const EmbeddedSoftwarePanel = observer(
   }
 );
 
-const DeprecatedWarning = ({ isDeprecated }) => {
+const DeprecatedWarning = () => {
   const { t } = useTranslation();
-  if (isDeprecated) {
-    return (
-      <WarningBar>
-        <span>{t('device-manager.errors.deprecated')}</span>
-      </WarningBar>
-    );
-  }
-  return null;
+  return (
+    <WarningBar>
+      <span>{t('device-manager.errors.deprecated')}</span>
+    </WarningBar>
+  );
+};
+
+const SubdevicesWarning = () => {
+  const { t } = useTranslation();
+  return (
+    <WarningBar>
+      <span>{t('device-manager.errors.with-subdevices')}</span>
+    </WarningBar>
+  );
 };
 
 const DuplicateSlaveIdError = ({ isDuplicate }) => {
@@ -452,7 +461,7 @@ export const DeviceTabContent = observer(
     onSearchDisconnectedDevice,
     onUpdateFirmware,
     onUpdateBootloader,
-    onUpdateComponents
+    onUpdateComponents,
   }) => {
     const { t } = useTranslation();
     if (tab.loading) {
@@ -465,7 +474,8 @@ export const DeviceTabContent = observer(
     return (
       <div>
         {tab.error && <ErrorBar msg={tab.error} />}
-        <DeprecatedWarning isDeprecated={tab.isDeprecated} />
+        {(tab.isDeprecated && !tab.withSubdevices) && <DeprecatedWarning />}
+        {tab.withSubdevices && <SubdevicesWarning />}
         <EmbeddedSoftwarePanel
           embeddedSoftware={tab.embeddedSoftware}
           onUpdateFirmware={onUpdateFirmware}
@@ -490,15 +500,17 @@ export const DeviceTabContent = observer(
         />
         <div className="pull-right button-group">
           <Button label={t('device-manager.buttons.delete')} type="danger" onClick={onDeleteTab} />
-          <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />
+          {!tab.withSubdevices && <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />}
         </div>
-        <JsonEditor
-          schema={tab.schema}
-          data={tab.editedData}
-          root={'dev' + index}
-          className="device-tab-properties"
-          onChange={tab.setData}
-        />
+        {!tab.withSubdevices && (
+          <JsonEditor
+            schema={tab.schema}
+            data={tab.editedData}
+            root={'dev' + index}
+            className="device-tab-properties"
+            onChange={tab.setData}
+          />
+        )}
       </div>
     );
   }

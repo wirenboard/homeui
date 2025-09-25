@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.138.0) stable; urgency=medium
+
+  * Drop support of device templates with subdevices syntax
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Sep 2025 17:18:27 +0500
+
 wb-mqtt-homeui (2.137.0) stable; urgency=medium
 
   * Upgrade dashboard list page

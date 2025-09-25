@@ -342,6 +342,7 @@
          "write":"Error writing config. See wb-mqtt-confed logs for details",
          "device-config": "Error in the settings of one or more devices",
          "deprecated": "Device template is deprecated, use newer version",
+         "with-subdevices": "Device template is deprecated. Editing settings is no longer supported. It is recommended to use the new version of the template",
          "unknown-device-type": "Unknown device type: {{type}}",
          "duplicate-slave-id": "Duplicate slave id",
          "duplicate-mqtt-topic": "MQTT id is the same as for {{device}}",
