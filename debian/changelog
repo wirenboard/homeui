@@ -1,9 +1,15 @@
-wb-mqtt-homeui (2.137.1) stable; urgency=medium
+wb-mqtt-homeui (2.138.1) stable; urgency=medium
 
   * Fix invalid device templates loading. An error message is shown if
     a device template is invalid.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Sep 2025 11:57:30 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Sep 2025 09:15:15 +0500
+
+wb-mqtt-homeui (2.138.0) stable; urgency=medium
+
+  * Drop support of device templates with subdevices syntax
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 25 Sep 2025 17:18:27 +0500
 
 wb-mqtt-homeui (2.137.0) stable; urgency=medium
 
