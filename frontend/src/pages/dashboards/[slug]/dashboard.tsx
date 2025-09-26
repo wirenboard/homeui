@@ -217,7 +217,6 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
         <WidgetEdit
           widget={widgets.get(editingWidgetId)}
           cells={cells}
-          dashboard={dashboards.get(dashboardId)}
           controls={devicesStore.controls}
           isOpened={!!editingWidgetId}
           onClose={() => setEditingWidgetId(null)}

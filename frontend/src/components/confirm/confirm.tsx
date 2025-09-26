@@ -13,6 +13,7 @@ export const Confirm = ({
   children,
   confirmCallback,
   closeCallback,
+  width,
   variant = 'default',
   isOpened = false,
   isOverlayCloseDisabled = false,
@@ -27,6 +28,7 @@ export const Confirm = ({
       isOpened={isOpened}
       heading={heading}
       headerActions={headerActions}
+      width={width}
       withPadding={false}
       showCloseButton={false}
       isOverlayCloseDisabled={isOverlayCloseDisabled}
