@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.138.2) stable; urgency=medium
+
+  * Fix firmware update progress display when updating via Modbus TCP
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Sep 2025 11:51:24 +0500
+
 wb-mqtt-homeui (2.138.1) stable; urgency=medium
 
   * Fix invalid device templates loading. An error message is shown if
