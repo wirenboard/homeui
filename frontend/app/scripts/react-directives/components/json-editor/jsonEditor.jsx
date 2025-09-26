@@ -16,7 +16,7 @@ const JsonEditor = observer((props) => {
     if (props.schema === undefined) {
       return undefined;
     }
-    let editor = createJSONEditor(
+    const editor = createJSONEditor(
       container.current,
       props.schema,
       props.data,
