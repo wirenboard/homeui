@@ -13,14 +13,17 @@
 }
 
 .input-l {
+    height: 38px;
     padding: 8px 12px;
 }
 
 .input-m {
+    height: 34px;
     padding: 6px 12px;
 }
 
 .input-s {
+    height: 28px;
     padding: 3px 8px;
 }
 

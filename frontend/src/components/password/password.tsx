@@ -1,8 +1,11 @@
 import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
 import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
 import classNames from 'classnames';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import VisibilityOffIcon from '@/assets/icons/visibility-off.svg';
+import VisibilityIcon from '@/assets/icons/visibility.svg';
+import { Button } from '@/components/button';
 import { Input } from '../input';
 import { PasswordProps } from './types';
 import './styles.css';
@@ -25,6 +28,9 @@ export const Password = ({
   ...rest
 }: PasswordProps) => {
   const { t } = useTranslation();
+  const [isHidden, setIsHidden] = useState(true);
+
+  const toggleIsHidden = () => setIsHidden((prev) => !prev);
 
   const options = {
     dictionary: {
@@ -38,23 +44,46 @@ export const Password = ({
 
   return (
     <>
-      <Input
-        ref={ref}
-        type="password"
-        className={className}
-        size={size}
-        isDisabled={isDisabled}
-        value={value}
-        isWithExplicitChanges={isWithExplicitChanges}
-        isFullWidth={isFullWidth}
-        aria-label={ariaLabel}
-        aria-describedby={ariaDescribedby}
-        aria-invalid={ariaInvalid}
-        aria-errormessage={ariaErrorMessage}
-        onChange={onChange}
-        onChangeEvent={onChangeEvent}
-        {...rest}
-      />
+      <div
+        className={classNames('password-inputContainer', {
+          'password-inputContainerFullWidth': isFullWidth,
+        })}
+      >
+        <Input
+          ref={ref}
+          type={isHidden ? 'password' : 'text'}
+          className={classNames('password-input', className, {
+            'password-inputLargeDots': isHidden,
+          })}
+          size={size}
+          isDisabled={isDisabled}
+          value={value}
+          isWithExplicitChanges={isWithExplicitChanges}
+          isFullWidth={isFullWidth}
+          aria-label={ariaLabel}
+          aria-describedby={ariaDescribedby}
+          aria-invalid={ariaInvalid}
+          aria-errormessage={ariaErrorMessage}
+          onChange={onChange}
+          onChangeEvent={onChangeEvent}
+          {...rest}
+        />
+
+        {!isDisabled && (
+          <Button
+            size={size}
+            className={classNames('password-toggle', {
+              'password-toggleS': size === 'small',
+              'password-toggleL': size === 'large',
+            })}
+            type="button"
+            icon={isHidden ? <VisibilityIcon /> : <VisibilityOffIcon />}
+            variant="secondary"
+            isOutlined
+            onClick={toggleIsHidden}
+          />
+        )}
+      </div>
       {showIndicator && (
         <div>
           <div className="password-indicatorWrapper">

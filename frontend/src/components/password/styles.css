@@ -1,3 +1,45 @@
+.password-inputContainer {
+    position: relative;
+}
+
+.password-inputContainerFullWidth {
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    box-shadow: none !important;
+    top: 14%;
+    right: 6px;
+    padding: 4px;
+    color: var(--gray-color);
+}
+
+.password-toggle:hover {
+    color: var(--text-color);
+}
+
+.password-toggleS {
+    top: 14%;
+    right: 4px;
+    padding: 3px;
+}
+
+.password-toggleL {
+    top: 10%;
+    right: 4px;
+    padding: 5px;
+}
+
+.password-input {
+    width: 100%;
+    padding-right: 36px;
+}
+
+.password-inputLargeDots {
+    font-size: 18px;
+}
+
 .password-indicatorWrapper {
     display: flex;
     gap: 6px;
