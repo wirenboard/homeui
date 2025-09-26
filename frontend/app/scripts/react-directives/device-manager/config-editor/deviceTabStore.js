@@ -82,12 +82,12 @@ export class EmbeddedSoftwareComponent {
 
   async startUpdate(address, portConfig) {
     let params = {
-        slave_id: getIntAddress(address),
-        port: toRpcPortConfig(portConfig),
-        type: this.type,
+      slave_id: getIntAddress(address),
+      port: toRpcPortConfig(portConfig),
+      type: this.type,
     };
     if (portConfig.modbusTcp) {
-        params.protocol = 'modbus-tcp';
+      params.protocol = 'modbus-tcp';
     }
     await this.fwUpdateProxy.Update(params);
   }
@@ -148,7 +148,7 @@ export class EmbeddedSoftware {
       hasUpdate: computed,
       hasError: computed,
       hasComponentsUpdates: computed,
-      componentsCanBeUpdated: computed
+      componentsCanBeUpdated: computed,
     });
   }
 
@@ -213,7 +213,7 @@ export class EmbeddedSoftware {
   }
 
   hasComponentsError() {
-    return [...this.components.values()].some(c => c.hasError);
+    return [...this.components.values()].some((c) => c.hasError);
   }
 
   setupComponentsUpdate(components) {
@@ -246,7 +246,7 @@ export class EmbeddedSoftware {
   async startBootloaderUpdate(address, portConfig) {
     const componentsCanBeUpdated = this.componentsCanBeUpdated;
 
-    try{
+    try {
       this.bootloader.setupUpdate();
       this.firmware.setupUpdate();
       this.setupComponentsUpdate(componentsCanBeUpdated);
@@ -262,9 +262,9 @@ export class EmbeddedSoftware {
   }
 
   async startComponentsUpdate(address, portConfig) {
-    const componentsCanBeUpdated = this.componentsCanBeUpdated
+    const componentsCanBeUpdated = this.componentsCanBeUpdated;
 
-    try{
+    try {
       this.setupComponentsUpdate(componentsCanBeUpdated);
       const firstComponent = componentsCanBeUpdated.get(0);
       // Triggering update for the first component with components list causes all components update
@@ -288,7 +288,7 @@ export class EmbeddedSoftware {
   }
 
   get isUpdating() {
-    return this.firmware.isUpdating || this.bootloader.isUpdating || [...this.components.values()].some(c => c.isUpdating);
+    return this.firmware.isUpdating || this.bootloader.isUpdating || [...this.components.values()].some((c) => c.isUpdating);
   }
 
   get hasUpdate() {
@@ -304,7 +304,7 @@ export class EmbeddedSoftware {
   }
 
   get hasError() {
-    return this.firmware.hasError || this.bootloader.hasError || [...this.components.values()].some(c => c.hasError);
+    return this.firmware.hasError || this.bootloader.hasError || [...this.components.values()].some((c) => c.hasError);
   }
 
   get bootloaderCanSaveSettings() {
@@ -325,6 +325,7 @@ export class DeviceTab {
     this.hidden = false;
     this.loading = true;
     this.isDeprecated = deviceTypesStore.isDeprecated(deviceType);
+    this.withSubdevices = deviceTypesStore.withSubdevices(deviceType);
     this.schema = undefined;
     this.isUnknownType = deviceTypesStore.isUnknown(deviceType);
     this.error = '';
@@ -344,6 +345,7 @@ export class DeviceTab {
       hasJsonValidationErrors: observable,
       hidden: observable,
       isDeprecated: observable,
+      withSubdevices: observable,
       deviceType: observable,
       loading: observable,
       error: observable,
@@ -407,6 +409,7 @@ export class DeviceTab {
     runInAction(() => {
       this.deviceType = type;
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
+      this.withSubdevices = this.deviceTypesStore.withSubdevices(this.deviceType);
       this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);
       const currentSlaveId = this.editedData.slave_id;
       this.editedData = getDefaultObject(this.schema);
@@ -448,7 +451,6 @@ export class DeviceTab {
       this.setError(err.message);
     }
     runInAction(() => {
-      this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
       this.loading = false;
     });
   }
