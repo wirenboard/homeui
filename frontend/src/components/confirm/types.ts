@@ -4,6 +4,7 @@ export interface ConfirmationProps {
   className?: string;
   isOpened: boolean;
   heading?: string;
+  width?: number;
   headerActions?: ReactElement;
   confirmCallback: () => Promise<void> | void;
   closeCallback: () => void;
