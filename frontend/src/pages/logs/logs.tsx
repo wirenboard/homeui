@@ -110,7 +110,6 @@ const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: 
         <Tooltip text={t('logs.buttons.save')} placement="bottom">
           <Button
             variant="secondary"
-            size="small"
             icon={<DownloadIcon />}
             disabled={!store.logs.length}
             onClick={downloadLogs}
@@ -153,14 +152,14 @@ const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: 
           }}
         >
           <div className="logs-grid">
-            {store.logs.map((log) => (
+            {store.logs.map((log, i) => (
               <div
                 className={classNames('logs-item', {
                   'logs-itemWarn': log.level === LogLevel.Warning,
                   'logs-itemError': log.level === LogLevel.Error,
                   'logs-itemDebug': log.level === LogLevel.Debug,
                 })}
-                key={crypto.randomUUID()}
+                key={log.time.toString() + i}
               >
                 <div className="logs-itemInfo logs-cell">
                   <div className="logs-itemDate">{format(log.time, 'dd-MM-yyyy HH:mm:ss.SSS')}</div>

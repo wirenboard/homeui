@@ -5,8 +5,8 @@ input.react-datepicker-time__input {
     color: var(--input-color);
     border-radius: var(--input-border-radius);
     transition: background ease 300ms;
-    padding: 8px 12px;
-    line-height: normal;
+    padding: 6px 12px;
+    height: 34px;
 }
 
 .datePicker-input:focus {
@@ -15,7 +15,6 @@ input.react-datepicker-time__input {
     position: relative;
     z-index: 100;
 }
-
 
 .react-datepicker {
     border: 1px solid var(--input-border-color);
@@ -27,9 +26,13 @@ input.react-datepicker-time__input {
 }
 
 .react-datepicker__close-icon:after {
+    position: absolute;
     background: transparent;
     color: currentColor;
-    font-weight: bold;
+    font-size: var(--font-size-large);
+    z-index: 1000 !important;
+    right: 4px;
+    top: 8px;
 }
 
 .react-datepicker,

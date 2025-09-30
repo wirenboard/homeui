@@ -1,5 +1,5 @@
 .toggleButton {
-    padding: 7px 12px;
+    padding: 6px 12px;
     border: 1px solid var(--input-border-color);
     border-radius: var(--input-border-radius);
     background: var(--secondary-color);

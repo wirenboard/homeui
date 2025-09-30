@@ -9,7 +9,6 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   options: Option<T>[];
   value: T;
   placeholder?: string;
-  onChange: (_val: Option<T>) => void;
   multiselect?: boolean;
   isLoading?: boolean;
   isSearchable?: boolean;
@@ -18,7 +17,7 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   isButton?: boolean;
   isInvalid?: boolean;
   minWidth?: string;
-  onChange: (_val: Option | Option[]) => void;
+  onChange: (_val: Option<T> | Option<T>[]) => void;
   size?: 'default' | 'small';
   ariaLabel?: string;
 }
