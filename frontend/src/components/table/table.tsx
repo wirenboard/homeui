@@ -1,33 +1,42 @@
 import classNames from 'classnames';
-import { Children, cloneElement, isValidElement, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { Children, cloneElement, isValidElement, PropsWithChildren, useMemo } from 'react';
 import { Loader } from '@/components/loader';
 import { TableProps, TableCellProps, TableRowProps } from './types';
 import './styles.css';
 
-export const TableRow = ({ children, url, isFullWidth, ...rest }: PropsWithChildren<TableRowProps>) => {
+export const TableRow = ({
+  children,
+  className,
+  gap,
+  url,
+  isFullWidth,
+  isHeading,
+  ...rest
+}: PropsWithChildren<TableRowProps>) => {
   const Component = url ? 'a' : 'div';
-  const [columns, setColumns] = useState([]);
-
-  useEffect(() => {
-    Children.forEach(children, (child) => {
-      if (isValidElement(child)) {
-        setColumns((prev) => {
-          const val = child.props.width ? child.props.width + 'px' : (isFullWidth ? '1fr' : 'minmax(100px, 1fr)');
-          return [...prev, val];
-        });
-      }
-    });
-  }, []);
 
   const gridTemplateColumns = useMemo(() => {
-    return columns.join(' ');
-  }, [columns]);
+    const cols: string[] = [];
+    Children.forEach(children, (child) => {
+      if (isValidElement(child)) {
+        const val = child.props.width
+          ? `${child.props.width}px`
+          : isFullWidth
+            ? '1fr'
+            : 'minmax(100px, 1fr)';
+        cols.push(val);
+      }
+    });
+    return cols.join(' ');
+  }, [children, isFullWidth]);
 
   return (
     <Component
       role="row"
-      className="wb-tableRow"
-      style={{ gridTemplateColumns }}
+      className={classNames('wb-tableRow', className, {
+        'wb-tableRowHeading': isHeading,
+      })}
+      style={{ gridTemplateColumns, gap: gap ? `${gap}px` : undefined }}
       {...(url ? { href: url } : {})}
       {...rest}
     >
@@ -37,12 +46,24 @@ export const TableRow = ({ children, url, isFullWidth, ...rest }: PropsWithChild
 };
 
 export const TableCell = ({
-  children, preventClick, visibleOnHover, ellipsis, ...rest
+  children,
+  className,
+  preventClick,
+  visibleOnHover,
+  ellipsis,
+  isWithoutPadding,
+  align,
+  verticalAlign = 'center',
+  ...rest
 }: PropsWithChildren<TableCellProps>) => (
   <div
     role="gridcell"
-    className={classNames('wb-tableCell', {
+    className={classNames('wb-tableCell', className, {
       'wb-tableCellEllipsis': ellipsis,
+      'wb-tableCellWithoutPadding': isWithoutPadding,
+      'wb-tableCellVerticalAlignCenter': verticalAlign === 'center',
+      'wb-tableCellAlignCenter': align === 'center',
+      'wb-tableCellAlignRight': align === 'right',
     })}
     onClick={(ev) => {
       if (preventClick) {
@@ -62,7 +83,7 @@ export const TableCell = ({
 );
 
 export const Table = ({
-  children, isLoading, isFullWidth, ...rest
+  children, isLoading, isFullWidth, isWithoutGap, ...rest
 }: PropsWithChildren<TableProps>) => {
 
   const enhancedChildren = Children.map(children, (child) => {
@@ -79,6 +100,7 @@ export const Table = ({
           role="grid"
           className={classNames('wb-table', {
             'wb-tableFullWidth': isFullWidth,
+            'wb-tableWithoutGap': isWithoutGap,
           })}
         >
           {enhancedChildren}

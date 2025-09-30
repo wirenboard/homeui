@@ -23,3 +23,11 @@ coverage
 .vscode
 .idea
 *.env
+
+.coveragerc
+.prettierrc
+.config
+.coverage
+coverage.xml
+__pycache__
+*.pyc

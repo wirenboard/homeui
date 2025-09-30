@@ -15,6 +15,7 @@ export const CellRange = observer(({ cell }: { cell: Cell }) => {
       max={cell.max}
       step={cell.step}
       isDisabled={cell.readOnly}
+      isInvalid={!!cell.error}
       ariaLabel={cell.name}
       units={t(`units.${cell.units}`, cell.units)}
       onChange={(value) => cell.value = value}

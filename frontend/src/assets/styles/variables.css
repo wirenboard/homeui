@@ -10,12 +10,14 @@
     --success-color-hover: #5b835b;
     --success-color-border: #659265;
     --warn-color: #eebc40;
+    --orange-color: #ea8623;
     --danger-color: #dc3545;
     --danger-color-hover: #f73b3b;
     --gray-color: #888;
     --light-gray-color: #d7dcdf;
     --border-color: #eee;
     --content-background: #fff;
+    --link-color: #5393c8;
 
     --bar-color: #222;
     --bar-border: #080808;
@@ -26,7 +28,9 @@
     --bar-inside-text-color: #999;
     --bar-text-color: #999;
     --online-color: var(--success-color);
-    --bar-font-size: 14px;
+    --font-size-small: 13px;
+    --font-size-medium: 14px;
+    --font-size-large: 16px;
 
     --font: "Open Sans", Arial, Helvetica, Sans-Serif;
 
@@ -90,6 +94,7 @@
     --light-gray-color: #616991;
     --content-background: #232436;
     --border-color: #2a2d41;
+    --link-color: #00b7f3ff;
 
     --input-action-background: var(--primary-color);
     --input-active-shadow: 0 0 0 2px #1d1e2e, 0 0 0 4px var(--primary-color);

@@ -1,6 +1,8 @@
 'use strict';
 
 // Modules
+const fs = require('fs');
+const dotenv  = require('dotenv');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -8,6 +10,12 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const path = require('path');
+
+dotenv.config({ path: '.env.default' });
+
+if (fs.existsSync('.env')) {
+  dotenv.config({ path: '.env', override: true });
+}
 
 process.traceDeprecation = true;
 
@@ -45,6 +53,25 @@ module.exports = (function makeWebpackConfig() {
       $: 'jquery',
       'window.jQuery': 'jquery',
       'window.DOMPurify': 'dompurify',
+    }),
+    new webpack.DefinePlugin({
+      __IS_PROD__: JSON.stringify(isProd),
+      __DISABLE_HTTPS_CHECK__: process.env.DISABLE_HTTPS_CHECK === 'true',
+    }),
+    new HtmlWebpackPlugin({
+      filename: './index.html',
+      template: './index.ejs',
+      chunksSortMode: function (a, b) {
+        var order = ['polyfills', 'commons', 'libs', 'js', 'vendor', 'main'];
+        return order.indexOf(a) - order.indexOf(b);
+      },
+      inject: 'body',
+      minify: false,
+
+      // Options passed to template
+
+      // Set to true when building for stable release
+      stableRelease: false,
     }),
   ];
 
@@ -205,26 +232,6 @@ module.exports = (function makeWebpackConfig() {
     },
   };
 
-  config.plugins.push(
-    // Reference: https://github.com/ampedandwired/html-webpack-plugin
-    // Render index.html
-    new HtmlWebpackPlugin({
-      filename: './index.html',
-      template: './index.ejs',
-      chunksSortMode: function (a, b) {
-        var order = ['polyfills', 'commons', 'libs', 'js', 'vendor', 'main'];
-        return order.indexOf(a) - order.indexOf(b);
-      },
-      inject: 'body',
-      minify: false,
-
-      // Options passed to template
-
-      // Set to true when building for stable release
-      stableRelease: false,
-    })
-  );
-
   // Production specific settings
   if (isProd) {
     console.log('Production build');
@@ -338,6 +345,29 @@ module.exports = (function makeWebpackConfig() {
       progress: true,
       reconnect: true,
     },
+    proxy: [
+      {
+        context: [
+          '/auth/check_config',
+          '/auth/users',
+          '/auth/login',
+          '/auth/who_am_i',
+          '/auth/logout',
+          '/mqtt',
+          '/device/info',
+          '/api/https/request_cert',
+          '/api/https',
+          '/api/integrations/alice'
+        ],
+        target: process.env.MQTT_BROKER_URI,
+        ws: true,
+      },
+      {
+        context: ['/api/integrations'],
+        target: `${process.env.MQTT_BROKER_URI}:8011`,
+        pathRewrite: { '^/api': '' },
+      },
+    ],
   };
 
   return config;

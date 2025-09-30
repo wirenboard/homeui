@@ -1,52 +1,66 @@
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import { PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Dialog } from '@/components/dialog';
 import { ConfirmationProps } from './types';
 import './styles.css';
 
 export const Confirm = ({
-  heading, children, confirmCallback, closeCallback, variant = 'default', isOpened = false,
+  className,
+  acceptLabel,
+  heading,
+  headerActions,
+  children,
+  confirmCallback,
+  closeCallback,
+  width,
+  variant = 'default',
+  isOpened = false,
+  isOverlayCloseDisabled = false,
+  isPreventSubmit = false,
+  isDisabled = false,
 }: PropsWithChildren<ConfirmationProps>) => {
   const { t } = useTranslation();
-  const confirm = useRef<HTMLDialogElement | null>();
-
-  useEffect(() => {
-    if (confirm.current) {
-      if (isOpened) {
-        confirm.current.showModal();
-      } else {
-        confirm.current.close();
-      }
-    }
-
-    return () => {
-      if (confirm.current) {
-        confirm.current.close();
-      }
-    };
-  }, [confirm, isOpened]);
 
   return (
-    <dialog className="dialog" ref={confirm} onClose={closeCallback}>
-      {isOpened && (
-        <>
-          <h3 className="dialog-title">{heading}</h3>
-          <form method="dialog">
-            {!!children && <div className="dialog-description">{children}</div>}
-
-            <div className="dialog-actions">
-              <Button type="submit" className="dialog-action" label={t('modal.labels.cancel')} variant="secondary" />
-              <Button
-                type="submit"
-                className="dialog-action"
-                label={t('modal.labels.yes')}
-                variant={variant === 'danger' ? 'danger' : 'primary'}
-                onClick={confirmCallback}
-              />
-            </div>
-          </form>
-        </>
-      )}
-    </dialog>
+    <Dialog
+      className={className}
+      isOpened={isOpened}
+      heading={heading}
+      headerActions={headerActions}
+      width={width}
+      withPadding={false}
+      showCloseButton={false}
+      isOverlayCloseDisabled={isOverlayCloseDisabled}
+      onClose={closeCallback}
+    >
+      <form
+        method="dialog"
+        onKeyDown={(ev) => {
+          if (isPreventSubmit && ev.key === 'Enter') {
+            ev.preventDefault();
+          }
+        }}
+      >
+        {!!children && <div className="dialog-content">{children}</div>}
+        <div className="dialog-actions">
+          <Button
+            type="button"
+            className="dialog-action"
+            label={t('modal.labels.cancel')}
+            variant="secondary"
+            onClick={closeCallback}
+          />
+          <Button
+            type="submit"
+            disabled={isDisabled}
+            className="dialog-action"
+            label={acceptLabel || t('modal.labels.yes')}
+            variant={variant === 'danger' ? 'danger' : 'primary'}
+            onClick={confirmCallback}
+          />
+        </div>
+      </form>
+    </Dialog>
   );
 };

@@ -3,7 +3,19 @@ Maintainer: Wiren Board team <info@wirenboard.com>
 Section: misc
 Priority: optional
 Standards-Version: 4.5.1
-Build-Depends: debhelper (>= 10), pkg-config, nodejs (>= 18), j2cli, minify, config-package-dev
+X-Python3-Version: >= 3.9
+Build-Depends: debhelper (>= 10),
+               nodejs (>= 18),
+               j2cli,
+               minify,
+               config-package-dev,
+               dh-python,
+               python3-all,
+               python3-setuptools,
+               python3-pytest,
+               python3-bcrypt,
+               python3-requests-unixsocket,
+               python3-cryptography
 Homepage: https://github.com/wirenboard/homeui
 
 Package: wb-mqtt-homeui
@@ -14,7 +26,9 @@ Depends: ${shlibs:Depends},
          wb-homeui-backend (= ${binary:Version}),
          diffutils,
          ucf
-Recommends: wb-mqtt-logs, wb-device-manager
+Recommends: wb-mqtt-logs,
+            wb-device-manager,
+            wb-rules (>= 2.35.0~~)
 Suggests: wb-mqtt-confed (>= 1.4.0),
 Breaks: wb-mqtt-confed (<< 1.0.3),
         wb-mqtt-db (<< 1.5),
@@ -29,15 +43,19 @@ Description: Wiren Board Web UI web interface
 Package: wb-homeui-backend
 Architecture: all
 Depends: ${shlibs:Depends},
+         ${python3:Depends},
          ${misc:Depends},
          python3,
          fcgiwrap,
          pigz,
          jq,
          curl,
-         wb-configs (>= 3.38.0~~),
+         wb-configs (>= 3.40.0),
          nginx-extras,
-         wb-utils (>= 4.24.0~~)
+         wb-utils (>= 4.24.0~~),
+         python3-bcrypt,
+         python3-requests-unixsocket,
+         python3-cryptography
 Breaks: wb-configs (<< 3.38.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Description: Wiren Board Web UI web interface

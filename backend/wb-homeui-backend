@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+import sys
+
+from wb.homeui_backend import main
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main.main())
+    except KeyboardInterrupt:
+        pass

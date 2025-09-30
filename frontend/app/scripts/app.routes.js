@@ -21,12 +21,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('webUI', {
       url: '/web-ui',
-      template: require('../views/web-ui.html'),
-      controller: 'WebUICtrl as $ctrl',
-      resolve: {
+      template: '<web-ui-settings-page />',
+            resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(/* webpackChunkName: 'webUi' */ './controllers/webUiController').then(
+          return import(/* webpackChunkName: 'web-ui' */ './controllers/webUiController').then(
             module => $ocLazyLoad.load({ name: module.default.name })
           );
         },
@@ -52,8 +51,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('accessLevel', {
       url: '/access-level',
-      template: require('../views/access-level.html'),
-      controller: 'AccessLevelCtrl as $ctrl',
+      template: '<users-page />',
     })
     .state('scan', {
       url: '/scan',
@@ -89,8 +87,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('dashboards', {
       url: '/dashboards',
-      controller: 'DashboardsCtrl as $ctrl',
-      template: require('../views/dashboards.html'),
+      template: '<dashboards-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -102,9 +99,8 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('dashboard', {
-      url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}',
-      controller: 'DashboardCtrl as $ctrl',
-      template: require('../views/dashboard.html'),
+      url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}&{sourceDashboardId}',
+      template: '<dashboard-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -163,9 +159,8 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('login', {
-      url: '/login/{id}',
-      template: require('../views/login.html'),
-      controller: 'LoginCtrl as $ctrl',
+      url: '/login?{returnState}&{returnParams}',
+      template: '<login-page />'
     })
     //...........................................................................
     .state('rules', {
@@ -341,6 +336,19 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           return import(
             /* webpackChunkName: 'serial-metrics' */ './controllers/serialMetricsController'
           ).then(module => $ocLazyLoad.load({ name: module.default.name }));
+        },
+      },
+    })
+    //...........................................................................
+    .state('integrations-alice', {
+      url: '/integrations/alice',
+      template: '<alice-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'alice' */ './controllers/aliceController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     });

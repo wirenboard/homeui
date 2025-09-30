@@ -14,7 +14,7 @@
         </div>
         <div class="col-xs-4 col-md-2">
             <div>
-                <div ng-hide="($index==0 && $ctrl.selectedControls.length==1) || !$ctrl.selectedControls[1]"
+                <div ng-hide="$index==0 && $ctrl.selectedControls.length==1"
                      ng-disabled="$ctrl.disableUi"
                      class="btn btn-danger" ng-click="$ctrl.deleteTopic($index)" translate>{{'history.buttons.delete'}}
                 </div>

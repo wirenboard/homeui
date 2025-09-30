@@ -1,3 +1,5 @@
+/* global angular */
+
 'use strict';
 
 // Import slylesheets
@@ -49,7 +51,7 @@ import deviceDataService from './services/devicedata';
 import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
 import userAgentFactory from './services/userAgent.factory';
-import rolesFactory from './services/roles.factory';
+import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import serialMetricsProxyService from './services/serialMetricsProxy';
@@ -65,9 +67,8 @@ import handleDataService from './services/handle-data';
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
-import LoginCtrl from './controllers/loginController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
-import AccessLevelCtrl from './controllers/accessLevelController';
+import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
 
@@ -94,12 +95,17 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
+import usersPageDirective from './react-directives/users/users';
+import loginPageDirective from './react-directives/login/login-page';
 
 // Angular routes
 import routingModule from './app.routes';
 
-// Internal components
-import LoginFormModule from './components/loginForm/index';
+import { switchToHttps } from '@/utils/httpsUtils';
+import { fillUserType}  from './utils/authUtils';
+import angular from 'angular';
+
+import { aliceStore } from '@/stores/alice';
 
 //-----------------------------------------------------------------------------
 /**
@@ -124,7 +130,6 @@ const module = angular
     'angular-spinkit',
     routingModule,
     dumbTemplateModule,
-    LoginFormModule,
 
     'ui-rangeSlider',
     'ngToast',
@@ -159,7 +164,7 @@ module
 
   .service('handleData', handleDataService)
   .service('userAgentFactory', userAgentFactory)
-  .service('rolesFactory', rolesFactory)
+  .service('rolesFactory', rolesFactoryService)
   .service('historyUrlService', historyUrlService)
 
   .run(DeviceData => {
@@ -174,9 +179,8 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('LoginCtrl', LoginCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
-  .controller('AccessLevelCtrl', AccessLevelCtrl)
+  .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
   .controller('NavigationCtrl', NavigationCtrl);
@@ -263,7 +267,9 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
-  .directive('expCheckWidget', expCheckMetaDirective);
+  .directive('expCheckWidget', expCheckMetaDirective)
+  .directive('usersPage', usersPageDirective)
+  .directive('loginPage', loginPageDirective);
 
 module
   .config([
@@ -274,7 +280,6 @@ module
         'app',
         'console',
         'help',
-        'access',
         'mqtt',
         'system',
         'ui',
@@ -299,7 +304,7 @@ module
     },
   ]);
 
-module.run(($rootScope, $state, $transitions) => {
+module.run(($rootScope, $state, $transitions, rolesFactory) => {
   'ngInject';
 
   $rootScope.$state = $state;
@@ -330,13 +335,24 @@ module.run(($rootScope, $state, $transitions) => {
 
   $rootScope.forceFullscreen = false;
 
-  $rootScope.theme = localStorage.getItem('theme') || 'bootstrap';
-  window.toggleTheme = () => {
-    const themes = ['bootstrap', 'wirenboard', 'dark'];
-    const themeIndex = themes.indexOf($rootScope.theme || 'bootstrap');
-    localStorage.setItem('theme', themes[themeIndex + 1] || themes[0]);
-    $rootScope.theme = localStorage.getItem('theme');
-  };
+  if (!__IS_PROD__) {
+    $rootScope.theme = localStorage.getItem('theme') || 'bootstrap';
+    window.toggleTheme = () => {
+      const themes = ['bootstrap', 'wirenboard', 'dark'];
+      const themeIndex = themes.indexOf($rootScope.theme || 'bootstrap');
+      localStorage.setItem('theme', themes[themeIndex + 1] || themes[0]);
+      $rootScope.theme = localStorage.getItem('theme');
+    };
+  }
+
+  $rootScope.allowWbRulesDebug = () => {
+    return rolesFactory.checkRights(rolesFactory.ROLE_THREE);
+  }
+
+  $rootScope.disableNavigation = () => {
+    return !rolesFactory.isAuthenticated();
+  }
+
 });
 
 //-----------------------------------------------------------------------------
@@ -372,7 +388,10 @@ const realApp = angular
       $translate,
       uibDatepickerPopupConfig,
       tmhDynamicLocale,
-      DeviceManagerProxy
+      DeviceManagerProxy,
+      $transitions,
+      rolesFactory,
+      $state
     ) => {
       'ngInject';
 
@@ -453,23 +472,8 @@ const realApp = angular
         prefix: $window.localStorage['prefix'],
       };
 
-      // detect auto url
-      var autoURL = new URL('/mqtt', $window.location.href);
-      autoURL.protocol = autoURL.protocol.replace('http', 'ws');
-
-      // FIXME: I know it's ugly, let's find more elegant way later
-      var isDev = $window.location.host === 'localhost:8080';
-
-      if (isDev) {
-        // local debug detected, enable MQTT url override via settings
-        if (!$window.localStorage.url) {
-          $window.localStorage.setItem('url', autoURL.href);
-        }
-        loginData['url'] = $window.localStorage['url'];
-      } else {
-        // no local debug detected, full auto
-        loginData['url'] = autoURL.href;
-      }
+      const loginUrl = new URL('/mqtt', $window.location.origin);
+      loginData.url = loginUrl.href;
 
       let language = localStorage.getItem('language');
       const supportedLanguages = ['en', 'ru'];
@@ -483,16 +487,12 @@ const realApp = angular
       $translate.use(language);
       tmhDynamicLocale.set(language);
 
-      $rootScope.requestConfig(loginData);
-
-      // TBD: the following should be handled by config sync service
-      var configSaveDebounce = null;
       var firstBootstrap = true;
 
       // Watch for WebUI config changes
       $rootScope.$watch(
         () => uiConfig.filtered(),
-        (newData, oldData) => {
+        async (newData, oldData) => {
           if (angular.equals(newData, oldData)) {
             return;
           }
@@ -501,39 +501,108 @@ const realApp = angular
             return;
           }
           console.log('new data: %o', newData);
-          if (configSaveDebounce) {
-            $timeout.cancel(configSaveDebounce);
-          }
-          configSaveDebounce = $timeout(() => {
-            errors.hideError();
-            ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
-              .then(() => {
-                console.log('config saved');
-              })
-              .catch(err => {
-                if (err.name === 'QuotaExceededError') {
-                  errors.showError('app.errors.overflow');
-                } else {
-                  errors.showError('app.errors.save', err);
-                }
-              });
-          }, configSaveDebounceMs);
+          errors.hideError();
+          await ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
+            .then(() => {
+              console.log('config saved');
+            })
+            .catch(err => {
+              if (err.name === 'QuotaExceededError') {
+                errors.showError('app.errors.overflow');
+              } else {
+                errors.showError('app.errors.save', err);
+              }
+            });
         },
         true
       );
 
+      // check if the integrations are available to display the menu item
+      $rootScope.integrations = [];
+      const { checkIsAvailable } = aliceStore;
+      function checkAvailableIntegrations(lang = language) {
+        $rootScope.integrations = [];
+        checkIsAvailable()
+          .then(() => {
+            // it was decided to show Alice only for the Russian localization
+            if (lang === 'ru') {
+              $rootScope.integrations.push('alice');
+            }
+          })
+          .catch(() => {});
+      }
+      checkAvailableIntegrations();
+
+      $rootScope.$on('$translateChangeSuccess', function(event, data) {
+        checkAvailableIntegrations(data.language);
+      });
+
       whenMqttReady()
-        .then(() => DeviceManagerProxy.Stop())
+        .then(() => {
+          if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
+            return DeviceManagerProxy.Stop();
+          }
+          return false;
+        })
         .then(result => {
           if (result == 'Ok') {
             $translate('app.errors.stop-scan').then(m => ngToast.danger(m));
           }
         });
 
-      setTimeout(() => {
-        $('double-bounce-spinner').remove();
-        $('#wrapper').removeClass('fade');
-      }, 500);
+      $transitions.onBefore({}, function (transition) {
+        return switchToHttps().then((res) => !res);
+      });
+
+      let httpsSetupTimer = setTimeout(() => {
+        angular.element('#https-setup-label')[0].style.display = 'flex';
+      }, 1000);
+
+      let hideGlobalSpinner = true;
+      let connectToMqtt = true;
+      $transitions.onBefore({}, function (transition) {
+        return fillUserType(rolesFactory).then(fillUserTypeResult => {
+          if (hideGlobalSpinner) {
+            clearTimeout(httpsSetupTimer);
+            angular.element('#https-setup-label').remove();
+            angular.element('double-bounce-spinner').remove();
+            angular.element('#wrapper').removeClass('fade');
+            hideGlobalSpinner = false;
+          }
+          if (fillUserTypeResult === 'login') {
+            // transition.params() contains all possible parameters by default - let's delete them
+            const cleanParams = (params) => {
+              return Object.fromEntries(
+                Object.entries(params).filter(([_, v]) => v !== undefined && v !== null)
+              );
+            }
+
+            const params = transition.to().name === 'home' ? {} : {
+              returnState: transition.to().name,
+              returnParams: new URLSearchParams(cleanParams(transition.params())).toString(),
+            };
+            return transition.to().name === 'login' || $state.target('login', params);
+          }
+          if (connectToMqtt) {
+            const loginUrl = new URL('/mqtt', $window.location.origin);
+            loginUrl.protocol = loginUrl.protocol.replace('http', 'ws');
+            let loginData = {
+              url: loginUrl.href,
+            };
+            // Use old credentials if authentication is not configured
+            if (!rolesFactory.hasConfiguredAdmin) {
+              loginData.user = $window.localStorage['user'];
+              loginData.password = $window.localStorage['password'];
+              loginData.prefix = $window.localStorage['prefix'];
+            }
+            $rootScope.requestConfig(loginData);
+            connectToMqtt = false;
+          }
+          if (transition.to().name === 'login' && !rolesFactory.currentUserIsAutologinUser) {
+            return $state.target('home');
+          }
+        });
+      });
     }
   );
 

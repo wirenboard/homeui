@@ -1,31 +1,28 @@
-/**
- * Created by ozknemoy on 21.06.2017.
- */
-
-export default function rolesFactory() {
+export default function rolesFactoryService() {
   'ngInject';
+
+  const DEFAULT_ROLE = 1;
+  const WB_ROLE_KEY = 'wb_role';
+
   var roles = {};
 
   roles._ROLE_ONE = {
     id: 1,
-    name: 'access.user.name',
-    shortName: 'access.user.short',
-    description: 'access.user.description',
+    name: 'app.roles.user',
     isAdmin: false,
+    type: 'user'
   };
   roles._ROLE_TWO = {
     id: 2,
-    name: 'access.operator.name',
-    shortName: 'access.operator.short',
-    description: 'access.operator.description',
+    name: 'app.roles.operator',
     isAdmin: false,
+    type: 'operator'
   };
   roles._ROLE_THREE = {
     id: 3,
-    name: 'access.admin.name',
-    shortName: 'access.admin.short',
-    description: 'access.admin.description',
+    name: 'app.roles.admin',
     isAdmin: true,
+    type: 'admin'
   };
 
   roles.ROLE_ONE = roles._ROLE_ONE.id;
@@ -33,35 +30,41 @@ export default function rolesFactory() {
   roles.ROLE_THREE = roles._ROLE_THREE.id;
   roles.ROLES = [roles._ROLE_ONE, roles._ROLE_TWO, roles._ROLE_THREE];
 
-  const setDefaultRole = (defaultRole = 1) => {
-    localStorage.setItem('role', defaultRole);
-    return defaultRole;
-  };
+  roles.usersAreConfigured = true;
+  roles.currentUserIsAutologinUser = false;
 
   roles.current = {
-    role: localStorage.getItem('role') || setDefaultRole(),
-    roles: roles.ROLES[(localStorage.getItem('role') || 1) - 1],
+    role: undefined,
+    roles: undefined,
   };
 
-  roles.getRole = () => {
-    roles.current.role = localStorage.getItem('role');
-    roles.current.roles = roles.ROLES[roles.current.role - 1];
-    return roles.current.role;
+  const typeToRoleId = {
+    admin: roles.ROLE_THREE,
+    operator: roles.ROLE_TWO,
+    user: roles.ROLE_ONE,
   };
 
-  roles.setRole = n => {
+  roles.setRole = (userType) => {
+    const n = typeToRoleId[String(userType)] || DEFAULT_ROLE;
     roles.current = { role: n, roles: roles.ROLES[n - 1] };
-    localStorage.setItem('role', n);
   };
 
-  roles.resetRole = n => {
-    localStorage.setItem('role', n);
+  roles.setUsersAreConfigured = (value) => {
+    roles.usersAreConfigured = value;
   };
+
+  roles.setCurrentUserIsAutologinUser = (value) => {
+    roles.currentUserIsAutologinUser = value;
+  };
+
+  roles.isAuthenticated = () => {
+    return roles.current.role !== undefined;
+  }
 
   // проверяет есть ли права доступа/просмотра
   // принимает значение минимально возможного статуса для доступа/просмотра
   roles.checkRights = onlyRoleGreatThanOrEqual => {
-    return roles.getRole() >= onlyRoleGreatThanOrEqual;
+    return roles.isAuthenticated() && roles.current.role >= onlyRoleGreatThanOrEqual;
   };
 
   return roles;

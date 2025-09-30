@@ -51,13 +51,9 @@ export default class RulesStore {
   }
 
   async save(rule: Rule): Promise<string> {
-    const path = rule.name.endsWith('.js') ? rule.name : `/${rule.name}.js`;
-    // check that file is not exists
-    if (rule.initName !== path) {
-      const list = await this.getList();
-      if (list.some((rule) => rule.virtualPath === path)) {
-        throw new Error('file-exists');
-      }
+    let path = rule.initName;
+    if (!path) {
+      path = this.getValidRuleName(rule.name);
     }
 
     return this.#editorProxy.Save({ path, content: rule.content })
@@ -76,6 +72,28 @@ export default class RulesStore {
       });
   }
 
+  async rename(oldName: string, newName: string): Promise<string> {
+    return this.#editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
+      .then(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        return this.getValidRuleName(newName);
+      });
+  }
+
+  async checkIsNameUnique(name: string): Promise<boolean> {
+    const path = this.getValidRuleName(name);
+    const list = await this.getList();
+    if (list.some((rule) => rule.virtualPath === path)) {
+      throw new Error('file-exists');
+    }
+
+    return true;
+  }
+
+  getValidRuleName(path: string): string {
+    return path.endsWith('.js') ? path : `${path}.js`;
+  }
+
   async changeState(path: string, state: boolean): Promise<void> {
     await this.#editorProxy.ChangeState({ path, state });
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -83,11 +101,14 @@ export default class RulesStore {
   }
 
   async getList(): Promise<RuleListItem[]> {
-    const rules = await this.#editorProxy.List();
-    runInAction(() => {
-      this.rules = rules;
-    });
-    return this.rules;
+    return this.#whenMqttReady()
+      .then(() => this.#editorProxy.List())
+      .then((rules: RuleListItem[]) => {
+        return runInAction(() => {
+          this.rules = rules;
+          return this.rules;
+        });
+      });
   }
 
   async copyRule(path: string) {
@@ -96,7 +117,7 @@ export default class RulesStore {
       this.rules.map((rule) => rule.virtualPath.replace(/\.js$/, '')),
       copiedRule.name.replace(/\.js$/, '')
     );
-    const copiedRuleName = await this.save(copiedRule);
+    const copiedRuleName = await this.save({ ...copiedRule, initName: this.getValidRuleName(copiedRule.name) });
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.changeState(copiedRuleName, false);
   }

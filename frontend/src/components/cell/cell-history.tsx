@@ -17,9 +17,11 @@ export const CellHistory = observer(({ cell }: { cell: Cell }) => {
   }, [cell]);
 
   return (
-    <a href={getChartUrl} aria-label={`${t('widgets.labels.graph')} ${cell.name}`}>
-      <Tooltip text={t('widgets.labels.graph')} placement="top-end">
-        <StatsIcon className="deviceCell-historyLink" />
+    <a href={getChartUrl} aria-label={`${t('widget.labels.graph')} ${cell.name}`}>
+      <Tooltip text={t('widget.labels.graph')} placement="top-end">
+        <span>
+          <StatsIcon className="deviceCell-historyLink" />
+        </span>
       </Tooltip>
     </a>
   );

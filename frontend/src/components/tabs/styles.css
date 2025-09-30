@@ -1,0 +1,39 @@
+.tabs {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    max-width: 220px;
+    width: 100%;
+    scrollbar-width: thin;
+    border: 1px solid var(--border-color);
+    border-radius: var(--input-border-radius);
+}
+
+.tabs-button {
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: none;
+    padding: 6px 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tabs-button:hover,
+.tabs-button:focus {
+    background: var(--border-color);
+    transition: background 200ms linear, var(--input-active-shadow-transition);
+}
+
+.tabs-buttonSelected {
+    border-right: 6px solid var(--primary-color) !important;
+}
+
+.tabs li:not(:last-of-type) .tabs-button:not(:focus) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tabs li:not(:last-of-type) .tabs-button:focus {
+    border-bottom: 1px solid transparent;
+}

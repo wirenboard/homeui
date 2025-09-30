@@ -1,5 +1,3 @@
-'use strict';
-
 import { action, makeAutoObservable, makeObservable, observable, reaction, computed } from 'mobx';
 import i18n from '../../../i18n/react/config';
 import CollapseButtonState from '../../components/buttons/collapseButtonState';
@@ -35,7 +33,7 @@ class GlobalErrorStore {
       return;
     }
 
-    if (!error.hasOwnProperty('id')) {
+    if (!Object.hasOwn(error, 'id')) {
       this.error = error.message;
       return;
     }
@@ -85,14 +83,14 @@ class ScanningProgressStore {
     this.scanningPorts = scanningPorts;
     this.isExtendedScanning = isExtendedScanning;
 
-    if (this.actualState == this.requiredState) {
+    if (this.actualState === this.requiredState) {
       this.requiredState = ScanState.NotSpecified;
     }
   }
 
   startScan() {
     this.requiredState = ScanState.Started;
-    if (this.actualState == ScanState.Started) {
+    if (this.actualState === ScanState.Started) {
       return;
     }
     this.progress = 0;
@@ -105,7 +103,7 @@ class ScanningProgressStore {
 }
 
 class SingleDeviceStore {
-  constructor(scannedDevice, gotByFastScan, names, deviceTypes, selectable) {
+  constructor(scannedDevice, names, deviceTypes, selectable) {
     this.scannedDevice = scannedDevice;
     this.deviceTypes = deviceTypes;
     this.selectable = selectable;
@@ -114,7 +112,6 @@ class SingleDeviceStore {
     this.misconfiguredPort = false;
     this.duplicateMqttTopic = false;
     this.names = names;
-    this.gotByFastScan = gotByFastScan;
     this.disposer = undefined;
 
     makeObservable(this, {
@@ -171,6 +168,10 @@ class SingleDeviceStore {
     return undefined;
   }
 
+  get gotByFastScan() {
+    return this.scannedDevice?.fw?.ext_support;
+  }
+
   setSelected(value) {
     this.selected = this.selectable && value;
   }
@@ -205,7 +206,6 @@ class DevicesStore {
     this.newDevices = [];
     this.alreadyConfiguredDevices = [];
     this.configuredDevices = {};
-    this.devicesByUuid = new Set();
     this.deviceTypesStore = deviceTypesStore;
     this.selectionPolicy = SelectionPolicy.Multiple;
     this.allowToSelectDevicesInBootloader = false;
@@ -217,25 +217,16 @@ class DevicesStore {
     });
   }
 
-  addConfiguredDevice(scannedDevice, configuredDevice, gotByFastScan) {
-    const deviceStore = new SingleDeviceStore(
+  makeConfiguredDeviceStore(scannedDevice) {
+    return new SingleDeviceStore(
       scannedDevice,
-      gotByFastScan,
-      [this.deviceTypesStore.getName(configuredDevice.deviceType)],
-      [configuredDevice.deviceType],
+      [this.deviceTypesStore.getName(scannedDevice.configured_device_type)],
+      [scannedDevice.configured_device_type],
       false
     );
-    this.alreadyConfiguredDevices.push(deviceStore);
-    this.alreadyConfiguredDevices.sort((d1, d2) => {
-      if (d1.port == d2.port) {
-        return d1.address - d2.address;
-      }
-      return d1.port.localeCompare(d2.port);
-    });
-    this.devicesByUuid.add(scannedDevice.uuid);
   }
 
-  addNewDevice(scannedDevice, gotByFastScan) {
+  makeNewDeviceStore(scannedDevice) {
     const deviceTypes = this.deviceTypesStore.findNotDeprecatedDeviceTypes(
       scannedDevice.device_signature,
       scannedDevice.fw?.version
@@ -245,8 +236,7 @@ class DevicesStore {
 
     let deviceStore = new SingleDeviceStore(
       scannedDevice,
-      gotByFastScan,
-      deviceTypes.map(dt => this.deviceTypesStore.getName(dt)),
+      deviceTypes.map((dt) => this.deviceTypesStore.getName(dt)),
       deviceTypes,
       isSelectable
     );
@@ -259,46 +249,49 @@ class DevicesStore {
       deviceStore.disposer = disposer;
       deviceStore.setSelected(false);
     }
-    this.newDevices.push(deviceStore);
-    this.devicesByUuid.add(scannedDevice.uuid);
+    return deviceStore;
   }
 
-  addDevice(scannedDevice, gotByFastScan) {
-    if (this.devicesByUuid.has(scannedDevice.uuid)) {
-      return;
-    }
-
-    const configuredDevice = this.configuredDevices.findMatch(scannedDevice);
-    if (configuredDevice) {
-      this.addConfiguredDevice(scannedDevice, configuredDevice, gotByFastScan);
-    } else {
-      this.addNewDevice(scannedDevice, gotByFastScan);
-    }
-  }
-
-  setDevices(scannedDevicesList, gotByFastScan) {
+  setDevices(scannedDevicesList) {
     if (!Array.isArray(scannedDevicesList)) {
       return;
     }
-    scannedDevicesList.forEach(device => this.addDevice(device, gotByFastScan));
+
+    this.alreadyConfiguredDevices = [];
+    this.newDevices.forEach((device) => device.disposer?.());
+    this.newDevices = [];
+    scannedDevicesList.forEach((scannedDevice) => {
+      if (scannedDevice.configured_device_type) {
+        this.alreadyConfiguredDevices.push(this.makeConfiguredDeviceStore(scannedDevice));
+      } else {
+        this.newDevices.push(this.makeNewDeviceStore(scannedDevice));
+      }
+    });
+
+    this.alreadyConfiguredDevices.sort((d1, d2) => {
+      if (d1.port === d2.port) {
+        return d1.address - d2.address;
+      }
+      return d1.port.localeCompare(d2.port);
+    });
+
   }
 
   init(selectionPolicy, configuredDevices, allowToSelectDevicesInBootloader) {
     this.configuredDevices = configuredDevices;
     this.allowToSelectDevicesInBootloader = !!allowToSelectDevicesInBootloader;
-    this.newDevices.forEach(device => device.disposer?.());
+    this.newDevices.forEach((device) => device.disposer?.());
     this.selectionPolicy = selectionPolicy ?? SelectionPolicy.Multiple;
     this.newDevices = [];
     this.alreadyConfiguredDevices = [];
-    this.devicesByUuid.clear();
   }
 
   checkSingleSelection(selectedDevice) {
     if (!selectedDevice.selected) {
       return;
     }
-    this.newDevices.forEach(device => {
-      if (device != selectedDevice && device.selected) {
+    this.newDevices.forEach((device) => {
+      if (device !== selectedDevice && device.selected) {
         device.setSelected(false);
       }
     });
@@ -336,6 +329,7 @@ class CommonScanStore {
     this.globalError = new GlobalErrorStore();
     this.acceptUpdates = false;
     this.portPath = null;
+    this.useModbusTcp = false;
     this.outOfOrderSlaveIds = null;
     this.alreadyConfiguredDevicesCollapseButtonState = new CollapseButtonState(true);
 
@@ -355,7 +349,7 @@ class CommonScanStore {
   setScanFailed(err) {
     this.acceptUpdates = false;
     this.scanStore.scanStopped();
-    if ('MqttTimeoutError'.localeCompare(err.data) == 0) {
+    if ('MqttTimeoutError'.localeCompare(err.data) === 0) {
       this.setDeviceManagerUnavailable();
     } else {
       this.globalError.setError(err.message);
@@ -364,18 +358,18 @@ class CommonScanStore {
 
   async startScanningCommon(type) {
     this.scanStore.startScan();
-    const preserve_old_results = type != 'extended';
-    if (!preserve_old_results) {
+    const preserveOldResults = type !== 'extended';
+    if (!preserveOldResults) {
       this.globalError.clearError();
     }
     try {
       if (await this.deviceManagerProxy.hasMethod('Start')) {
         let params = {
           scan_type: type,
-          preserve_old_results: preserve_old_results,
+          preserve_old_results: preserveOldResults,
         };
         if (this.portPath) {
-          params.port = { path: this.portPath };
+          params.port = { path: this.portPath, protocol: this.useModbusTcp ? 'modbus-tcp' : 'modbus' };
         }
         if (this.outOfOrderSlaveIds) {
           params.out_of_order_slave_ids = this.outOfOrderSlaveIds;
@@ -423,9 +417,9 @@ class CommonScanStore {
       data.scanning_ports,
       data.is_ext_scan
     );
-    this.devicesStore.setDevices(data.devices, data.is_ext_scan);
+    this.devicesStore.setDevices(data.devices);
     this.mqttStore.setStartupComplete();
-    if (this.scanStore.actualState == ScanState.Stopped) {
+    if (this.scanStore.actualState === ScanState.Stopped) {
       this.acceptUpdates = false;
     }
   }
@@ -436,6 +430,7 @@ class CommonScanStore {
    * @param {SelectionPolicy} selectionPolicy - The selection policy for scanning.
    * @param {Array} configuredDevices - The list of configured devices.
    * @param {string} portPath - The path of the port.
+   * @param {boolean} useModbusTcp - Whether to use Modbus TCP protocol.
    * @param {Array} outOfOrderSlaveIds - The list of out-of-order slave IDs.
    * @param {boolean} allowToSelectDevicesInBootloader - The flag to allow to select devices in bootloader.
    * @returns {void}
@@ -444,19 +439,21 @@ class CommonScanStore {
     selectionPolicy,
     configuredDevices,
     portPath,
+    useModbusTcp,
     outOfOrderSlaveIds,
     allowToSelectDevicesInBootloader
   ) {
     this.devicesStore.init(selectionPolicy, configuredDevices, allowToSelectDevicesInBootloader);
     this.portPath = portPath;
+    this.useModbusTcp = useModbusTcp;
     this.outOfOrderSlaveIds = outOfOrderSlaveIds;
     this.startExtendedScanning();
   }
 
   getSelectedDevices() {
     return this.devicesStore.newDevices
-      .filter(d => d.selected)
-      .map(d => {
+      .filter((d) => d.selected)
+      .map((d) => {
         return {
           title: d.title,
           port: d.port,
@@ -474,15 +471,15 @@ class CommonScanStore {
 
   get hasSelectedItems() {
     return (
-      this.devicesStore.newDevices.some(d => d.selected) &&
+      this.devicesStore.newDevices.some((d) => d.selected) &&
       this.scanStore.actualState !== ScanState.Started
     );
   }
 
   get isScanning() {
     return (
-      this.scanStore.requiredState == ScanState.Started ||
-      this.scanStore.actualState == ScanState.Started
+      this.scanStore.requiredState === ScanState.Started ||
+      this.scanStore.actualState === ScanState.Started
     );
   }
 }

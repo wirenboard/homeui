@@ -4,11 +4,12 @@ import { Cell } from '@/stores/device';
 import { CellHistory } from './cell-history';
 import './styles.css';
 
-export const CellButton = observer(({ cell }: { cell: Cell }) => (
+export const CellButton = observer(({ cell, name }: { cell: Cell; name?: string }) => (
   <>
     <Button
-      label={cell.name}
+      label={name || cell.name}
       size="small"
+      variant={cell.error ? 'danger' : 'primary'}
       disabled={cell.readOnly}
       onClick={() => cell.value = true}
     />

@@ -1,0 +1,85 @@
+.password-inputContainer {
+    position: relative;
+}
+
+.password-inputContainerFullWidth {
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    box-shadow: none !important;
+    top: 14%;
+    right: 6px;
+    padding: 4px;
+    color: var(--gray-color);
+}
+
+.password-toggle:hover {
+    color: var(--text-color);
+}
+
+.password-toggleS {
+    top: 14%;
+    right: 4px;
+    padding: 3px;
+}
+
+.password-toggleL {
+    top: 10%;
+    right: 4px;
+    padding: 5px;
+}
+
+.password-input {
+    width: 100%;
+    padding-right: 36px;
+}
+
+.password-inputLargeDots {
+    font-size: 18px;
+}
+
+.password-indicatorWrapper {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    position: relative;
+}
+
+.password-indicator {
+    display: flex;
+    flex-grow: 1;
+    height: 3px;
+    width: 100%;
+}
+
+.password-indicatorInvalid {
+    background: var(--gray-color);
+}
+
+.password-indicatorDanger {
+    background: var(--danger-color);
+}
+
+.password-indicatorWeak {
+    background: var(--orange-color);
+}
+
+.password-indicatorNormal {
+    background: var(--warn-color);
+}
+
+.password-indicatorStrong {
+    background: var(--success-color);
+}
+
+.password-score {
+    display: flex;
+    justify-self: flex-end;
+    margin-top: 4px;
+}
+
+.password-scoreDanger {
+    color: var(--danger-color);
+}

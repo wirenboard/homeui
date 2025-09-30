@@ -1,9 +1,11 @@
 import classNames from 'classnames';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import EditIcon from '@/assets/icons/edit.svg';
+import EditSquareIcon from '@/assets/icons/edit-square.svg';
+import InfoIcon from '@/assets/icons/info.svg';
 import { Alert } from '@/components/alert';
 import { AlertProps } from '@/components/alert/types';
+import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Loader } from '@/components/loader';
 import { Notifications } from '@/components/notifications';
@@ -19,12 +21,14 @@ export const PageLayout = ({
   isEditingTitle,
   editingTitlePlaceholder,
   isLoading = false,
+  isHideHeader = false,
   actions,
+  infoLink,
   onTitleChange,
+  onTitleEditEnable,
 }: PropsWithChildren<PageProps>) => {
   const { t } = useTranslation();
   const [titleValue, setTitleValue] = useState('');
-  const [isEditingTitleState, setIsEditingTitleState] = useState(isEditingTitle);
 
   useEffect(() => {
     setTitleValue(title);
@@ -45,10 +49,10 @@ export const PageLayout = ({
 
   return (
     <main className="page">
-      {(titleValue || isEditingTitle) && (
+      {!isHideHeader && (titleValue || isEditingTitle) && (
         <header className="page-headerContainer">
           <div className="page-headerTitleWrapper">
-            {isEditingTitleState ? (
+            {isEditingTitle ? (
               <Input
                 className="editRule-nameInput"
                 value={titleValue}
@@ -57,12 +61,26 @@ export const PageLayout = ({
                 isFullWidth
                 onChange={onTitleChange}
               />
-            ) : (<h1 className="page-title">{title}</h1>)}
+            ) : (
+              <>
+                <h1 className="page-title">{title}</h1>
+                {infoLink && (
+                  <a href={infoLink} target="_blank" className="page-info">
+                    <InfoIcon />
+                  </a>
+                )}
+              </>
+            )}
 
-            {(!isEditingTitleState && onTitleChange) && (
-              <sup>
-                <EditIcon className="page-editTitleIcon" onClick={() => setIsEditingTitleState(true)} />
-              </sup>
+            {(!isEditingTitle && onTitleChange) && (
+              <Button
+                size="small"
+                type="button"
+                icon={<EditSquareIcon />}
+                variant="secondary"
+                isOutlined
+                onClick={() => onTitleEditEnable()}
+              />
             )}
           </div>
 
@@ -98,8 +116,6 @@ export const PageLayout = ({
             </div>
           )
       )}
-
-      <div id="floating-container" />
 
       <Notifications />
     </main>

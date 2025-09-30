@@ -313,7 +313,10 @@ function deviceDataService(mqttClient, $window) {
     _setCellValue(value) {
       switch (this.valueType) {
         case 'number':
-          this._value = value - 0;
+          const maxSafeBigInt = BigInt(Number.MAX_SAFE_INTEGER);
+          const isBigInt = Number(value) && Number.isInteger(Number(value)) && BigInt(Number(value)) >= maxSafeBigInt;
+          // to avoid rounding we will set value as string if value is greater than max safe integer
+          this._value = isBigInt ? value : value - 0;
           break;
         case 'boolean':
           this._value = typeof value == 'bool' ? value : value == '1';
@@ -911,6 +914,11 @@ function deviceDataService(mqttClient, $window) {
 
     onValue(handler) {
       onValueHandler = handler;
+      return () => {
+        if (onValueHandler === handler) {
+          onValueHandler = null;
+        }
+      };
     },
   };
 }

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { InputProps } from './types';
 import './styles.css';
 
@@ -9,13 +9,19 @@ export const Input = ({
   isDisabled,
   isWithExplicitChanges,
   onChange,
+  onChangeEvent,
   type = 'text',
   isFullWidth = false,
+  isInvalid,
   size = 'default',
   ariaLabel,
+  ariaDescribedby,
+  ariaInvalid,
+  ariaErrorMessage,
   ...rest
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
+  const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
 
   useEffect(() => {
     setInternalValue(value);
@@ -28,6 +34,7 @@ export const Input = ({
   };
 
   const handleKeyDown = (ev: KeyboardEvent<HTMLInputElement>): void => {
+    inputMethod.current = 'keyboard';
     if (ev.key === 'Enter') {
       handleBlurOrChange();
     } else if (ev.key === 'Escape') {
@@ -38,8 +45,13 @@ export const Input = ({
 
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>): void => {
     setInternalValue(ev.target.value);
-    if (!isWithExplicitChanges) {
-      onChange(ev.target.value);
+    if (!isWithExplicitChanges || inputMethod.current === 'mouse') {
+      if (onChange) {
+        onChange(ev.target.value);
+      }
+      if (onChangeEvent) {
+        onChangeEvent(ev);
+      }
     }
   };
 
@@ -47,16 +59,30 @@ export const Input = ({
     <input
       type={type}
       className={classNames('input', className, {
+        'input-l': size === 'large',
         'input-m': size === 'default',
         'input-s': size === 'small',
         'input-fullWidth': isFullWidth,
+        'input-invalid': isInvalid,
       })}
       disabled={isDisabled}
       value={internalValue}
       aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
+      aria-invalid={ariaInvalid}
+      aria-errormessage={ariaErrorMessage}
       onChange={handleOnChange}
       onBlur={handleBlurOrChange}
       onKeyDown={handleKeyDown}
+      onKeyUp={() => {
+        inputMethod.current = 'unknown';
+      }}
+      onMouseDown={() => {
+        inputMethod.current = 'mouse';
+      }}
+      onMouseUp={() => {
+        inputMethod.current = 'unknown';
+      }}
       {...rest}
     />
   );

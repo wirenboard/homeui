@@ -1,18 +1,16 @@
 .card {
-    border: 1px solid var(--card-header-background);
     border-radius: var(--card-border-radius);
     box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
     margin-bottom: 18px;
     max-width: 450px;
     width: 100%;
     transition: background ease 300ms, border ease 300ms;
+    display: inline-block;
 }
 
 .card-header {
-    background-color: var(--card-header-background);
     border-radius: var(--card-border-radius);
     width: 100%;
-    color: var(--card-header-text);
     padding: var(--card-header-padding);
     display: flex;
     align-items: center;
@@ -27,7 +25,6 @@
 
 .card-headerContainer {
     position: relative;
-    background-color: var(--card-header-background);
     transition: background-color ease 300ms;
 }
 
@@ -45,6 +42,9 @@
 .card-title {
     font-size: 13px;
     width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .card-actions {
@@ -99,4 +99,30 @@
     color: var(--text-color);
     border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
     transition: background ease 300ms, color ease 300ms;
+}
+
+.card-primary {
+    border: 1px solid var(--card-header-background);
+}
+
+.card-primary .card-header {
+    background-color: var(--card-header-background);
+    color: var(--card-header-text);
+}
+
+.card-primary  .card-headerContainer {
+    background-color: var(--card-header-background);
+}
+
+.card-secondary {
+    border: 1px solid var(--input-border-color);
+}
+
+.card-secondary .card-header {
+    background-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.card-secondary .card-headerContainer {
+    background-color: var(--border-color);
 }

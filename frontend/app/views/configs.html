@@ -1,8 +1,7 @@
 <h1 class="page-header" translate>{{'configurations.title'}}</h1>
 
 <div class="alert alert-danger alert-dismissible" role="alert"
-     ng-hide="$ctrl.haveRights">{{'configurations.labels.notice' | translate}}
-        <a ui-sref="accessLevel">{{'configurations.labels.access' | translate}}</a>.
+     ng-hide="$ctrl.haveRights">{{'configurations.labels.access-notice' | translate}}
 </div>
 <section ng-if="$ctrl.haveRights">
     <div class="spinner" ng-show="spinnerActive('configEditorProxy')" ng-cloak>

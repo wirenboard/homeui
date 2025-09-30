@@ -1,9 +1,9 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { Spinner } from '../common';
 import { observer } from 'mobx-react-lite';
-import ViewSvgDashboard from './viewSvgDashboard';
-import { FullscreenContext } from '../components/fullscreen/fullscreenContext';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
+import { Spinner } from '../common';
+import { FullscreenContext } from '../components/fullscreen/fullscreenContext';
+import ViewSvgDashboard from './viewSvgDashboard';
 
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
@@ -31,16 +31,16 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
           <Spinner />
         ) : (
           <>
-            {store.dashboards.length == 1 ? (
+            {store.dashboards.length === 1 ? (
               <ViewSvgDashboard
                 key={store.dashboards[0].id}
+                currentDashboard={store.dashboardId}
                 store={store.dashboards[0]}
                 canEdit={store.editAccessLevelStore.accessGranted}
               />
             ) : (
               <Carousel
                 withoutControls={true}
-                onChange={index => store.slideChanged(index)}
                 selectedItem={store.dashboardIndex}
                 showThumbs={false}
                 emulateTouch={true}
@@ -51,10 +51,12 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
                 infiniteLoop={false}
                 key={store.key}
                 swipeScrollTolerance={width / 3}
+                onChange={(index) => store.slideChanged(index)}
               >
                 {store.dashboards.map((d, index) => (
                   <ViewSvgDashboard
                     key={d.dashboard.id || index}
+                    currentDashboard={store.dashboardId}
                     store={d}
                     canEdit={store.editAccessLevelStore.accessGranted}
                   />
@@ -69,7 +71,7 @@ export const ViewSvgDashboardPage = observer(({ store }) => {
 });
 
 function CreateViewSvgDashboardPage({ pageStore }) {
-  return <ViewSvgDashboardPage store={pageStore}></ViewSvgDashboardPage>;
+  return <ViewSvgDashboardPage store={pageStore} />;
 }
 
 export default CreateViewSvgDashboardPage;

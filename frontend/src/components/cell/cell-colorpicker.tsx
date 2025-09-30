@@ -12,6 +12,7 @@ export const CellColorpicker = observer(({ cell }: { cell: Cell }) => (
       value={cell.value as string}
       id={cell.id}
       isDisabled={cell.readOnly}
+      isInvalid={!!cell.error}
       ariaLabel={cell.name}
       onChange={(value) => cell.value = value}
     />

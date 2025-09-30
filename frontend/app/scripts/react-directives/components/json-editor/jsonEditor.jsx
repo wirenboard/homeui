@@ -1,19 +1,22 @@
-import { observer } from 'mobx-react-lite';
-import React, { useLayoutEffect, useRef, useState } from 'react';
 import isEqual from 'lodash/isEqual';
+import { observer } from 'mobx-react-lite';
+import { useLayoutEffect, useRef, useState } from 'react';
 import i18n from '../../../i18n/react/config';
 import { createJSONEditor } from '../../../json-editor/wb-json-editor';
 
-const JsonEditor = observer(props => {
+const JsonEditor = observer((props) => {
   const container = useRef();
-  var jse = useRef(null);
+  let jse = useRef(null);
   const stateRef = useRef();
   const [schema, setSchema] = useState(undefined);
   const [firstStart, setFirstStart] = useState(true);
   stateRef.current = firstStart;
 
-  const constructEditor = props => {
-    var editor = createJSONEditor(
+  const constructEditor = (props) => {
+    if (props.schema === undefined) {
+      return undefined;
+    }
+    const editor = createJSONEditor(
       container.current,
       props.schema,
       props.data,

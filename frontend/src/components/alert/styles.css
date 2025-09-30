@@ -22,12 +22,13 @@
 
 .alertMessage-m {
     padding: 12px 20px 12px 12px;
-    font-size: 16px;
+    font-size: var(--font-size-medium);
     gap: 12px;
 }
 
 .alertMessage-s {
     padding: 6px 12px 6px 10px;
+    font-size: var(--font-size-small);
     gap: 6px;
 }
 

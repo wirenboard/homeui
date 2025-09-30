@@ -1,4 +1,43 @@
 {
+   "common":{
+      "labels": {
+         "password-strength-0": "Short password",
+         "password-strength-1": "Very weak password",
+         "password-strength-2": "Weak password",
+         "password-strength-3": "Good password",
+         "password-strength-4": "Strong password"
+      },
+      "buttons": {
+         "apply": "Apply"
+      }
+   },
+   "dashboards": {
+      "title": "Dashboards",
+      "labels": {
+         "id": "Panel id (used in url)",
+         "name": "Name",
+         "in-menu": "In nav",
+         "empty-list": "No dashboards currently defined",
+         "edit": "Edit panel \"{{name}}\"",
+         "create": "Add panel",
+         "text-dashboard": "Text"
+      },
+      "buttons": {
+         "add": "Add",
+         "edit": "Edit",
+         "delete": "Delete",
+         "save": "Save",
+         "hide": "Hidden from menu",
+         "visible": "Shown in menu"
+      },
+      "prompt": {
+         "delete-title": "Dashboard deletion",
+         "delete-description": "Are you sure you want to delete \"{{name}}\" dashboard?"
+      },
+      "errors": {
+         "duplicate": "Duplicate dashboard ids are not allowed"
+      }
+   },
    "scan": {
       "title": "New devices",
       "search-disconnected-title": "Search for disconnected device",
@@ -237,8 +276,7 @@
       }
    },
    "errors": {
-      "access-failed": "You cannot view this page. You can change ",
-      "access-failed-link-text": "access level"
+      "access-failed": "To view this page, you must have the appropriate access rights"
    },
    "forms": {
       "default-text-prefix": "If the value is not set, ",
@@ -274,7 +312,16 @@
          "new-firmware-item-link": "firmware {{available_firmware}}, current {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "manual-update": "<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
          "update-firmware-notice": "Do not disconnect the device during the update",
-         "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost"
+         "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost",
+         "new-component-item": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
+         "new-component-item-link": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "new-components": "New component firmware versions are available:",
+         "new-component": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}.",
+         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "updating-component": "Updating component firmware {{model}}:{{maybe_current_firmware}}{{available}}",
+         "component_current_version": ", current {{current_firmware}}.",
+         "component_update_current_version": " {{current}} на "
+
       },
       "buttons": {
          "save": "Save config",
@@ -288,7 +335,6 @@
          "copy": "Copy",
          "to-port-list": "To ports and devices list",
          "resolve-duplicate-mqtt-topic": "Set unique id",
-         "apply": "Apply",
          "search-disconnected-device": "Search for the device",
          "update": "Update"
       },
@@ -296,6 +342,7 @@
          "write":"Error writing config. See wb-mqtt-confed logs for details",
          "device-config": "Error in the settings of one or more devices",
          "deprecated": "Device template is deprecated, use newer version",
+         "with-subdevices": "Device template is deprecated. Editing settings is no longer supported. It is recommended to use the new version of the template",
          "unknown-device-type": "Unknown device type: {{type}}",
          "duplicate-slave-id": "Duplicate slave id",
          "duplicate-mqtt-topic": "MQTT id is the same as for {{device}}",
@@ -304,9 +351,12 @@
          "update-error-firmware": "Updating firmware {{from_version}} to {{to_version}} failed.",
          "update-error-bootloader": "Updating bootloader {{from_version}} to {{to_version}} failed.",
          "update-error-generic": "Error: {{error}}. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
+         "update-error-generic-component": "Error: {{error}}. If the device works, but is not responding to component firmware updates, try to update again. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
          "update-error-recoverable": "If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode.",
          "update-error-rpc-timeout": "Check wb-mqtt-serial is up and running.",
-         "update-error-download": "File download error. Check the network connection."
+         "update-error-download": "File download error. Check the network connection.",
+         "add-device": "Add device error: {{error}}. See the wb-mqtt-serial system log for detailed information",
+         "change-device-type": "Changing device type error: {{error}}. See the wb-mqtt-serial system log for detailed information"
       }
    },
    "exp-check": {
@@ -336,9 +386,6 @@
       "labels": {
          "active": "active",
          "confirm": "I take full responsibility for my actions"
-      },
-      "buttons": {
-         "apply": "Apply"
       },
       "user": {
          "name": "User",
@@ -381,26 +428,26 @@
       "deg C": "°C",
       "deg": "°"
    },
-   "widgets": {
-      "title": "Widgets",
+   "widget": {
       "labels": {
          "name": "Name",
-         "cells": "Cells",
-         "types": "Types",
          "type": "Type",
-         "values": "Values",
          "graph": "Graph",
          "description": "Description",
-         "dashboards": "Dashboards",
          "widget_view": "Widget view",
          "table_view": "Table view",
-         "compact": "Compact mode",
-         "warning-popup": "You added this widget to several dashboards, so when applying changes, they will be applied on each.",
-         "warning": "Сhanges affect other dashboards",
+         "compact": "Hide labels",
+         "warning": "The changes will affect all panels that use this widget:",
          "invert": "Invert",
-         "find": "Find control",
-         "add": "Add control...",
-         "copy": "copied to clipboard"
+         "add": "Add widget",
+         "available": "Available widgets",
+         "add-control": "Add control",
+         "preview": "Preview",
+         "copy": "copied to clipboard",
+         "delete": "Widget deleting",
+         "create": "Widget creation",
+         "edit": "Edit widget",
+         "separator": "Separator"
       },
       "errors": {
          "nothing": "No widgets are currently defined",
@@ -408,31 +455,47 @@
          "poll": "Desired read period is missed"
       },
       "prompt": {
-         "delete": "Really delete the widget?",
-         "remove": "Really remove widget from dashboard?"
+         "delete": "Are you sure you want to delete widget"
       },
       "buttons": {
-         "add": "Add dashboard",
-         "edit": "Edit widget",
-         "delete": "Delete widget",
-         "remove": "Remove from this dashboard",
+         "create-widget": "Create new widget",
+         "add": "Add to dashboard",
          "save": "Save",
-         "cancel": "Cancel",
+         "delete": "Delete widget",
+         "copy": "Copy widget",
+         "edit": "Edit widget",
          "edit-json": "Edit as JSON",
-         "editor": "Visual editor"
+         "editor": "Visual editor",
+         "exists-on-dashboard": "Already added"
+      }
+   },
+   "dashboard": {
+      "labels": {
+         "no-widgets": "No widgets found"
       },
-      "cells": {
-         "on": "ON",
-         "off": "OFF",
-         "history": "History",
-         "size": "{width: '50px'}"
+      "buttons": {
+         "back-to-dashboard": "Back",
+         "add-widget": "Add widget",
+         "edit-widget": "Edit widget",
+         "remove-widget": "Remove from this dashboard",
+         "fullscreen": "Enter fullscreen mode",
+         "fullscreen-exit": "Exit fullscreen mode"
+      },
+      "prompt": {
+         "remove-title": "Remove widget from dashboard",
+         "remove-description": "Really remove widget <0>{{name}}</0> from dashboard?"
+      },
+      "errors": {
+         "mqtt-connection": "MQTT client is not connected"
       }
    },
    "devices": {
       "title": "Devices",
       "labels": {
          "nothing": "No devices available for this moment.",
-         "delete": "Delete device"
+         "delete": "Delete device",
+         "collapse": "Collapse devices",
+         "expand": "Expand devices"
       },
       "prompt": {
          "delete-title": "Delete device",
@@ -499,6 +562,141 @@
       "labels": {
          "yes": "Confirm",
          "cancel": "Cancel"
+      }
+   },
+   "users": {
+      "title": "Users",
+      "errors": {
+         "forbidden": "You don't have permission to view this page",
+         "old-backend": "The software is out of date. Please update it",
+         "unknown": "Error: {{msg}}"
+      },
+      "labels":{
+         "login": "Login",
+         "password": "Password",
+         "type": "Type",
+         "admin": "Admin",
+         "user": "User",
+         "operator": "Operator",
+         "confirm-delete":"Do you really want to delete user \"{{name}}\"?",
+         "autologin": "Automatically log in as user:",
+         "no-autologin": "Do not use autologin",
+         "https": "HTTPS",
+         "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access."
+      },
+      "buttons": {
+         "save": "Save",
+         "add": "Add",
+         "delete": "Delete",
+         "enable-https": "Enable HTTPS"
+      }
+   },
+   "login": {
+      "title": "Login",
+      "errors": {
+         "failed": "Login failed"
+      },
+      "buttons": {
+         "login": "Log in"
+      },
+      "labels": {
+         "login": "Login",
+         "password": "Password"
+      }
+   },
+   "alice": {
+      "title": "Setting up integration with Yandex Alice",
+      "labels": {
+         "unavailable": "Yandex Alisa module is not installed",
+         "is-binded": "This controller is bound.",
+         "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
+         "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
+         "room": "Room",
+         "room-name": "Room name",
+         "empty-list": "No devices added",
+         "device-name": "Device name",
+         "device": "Device",
+         "device-category": "Device category",
+         "device-type": "Device type",
+         "capability": "Capability",
+         "color-model": "Color model",
+         "color-temperature": "Color temperature",
+         "color-scenes": "Color scenes",
+         "property": "Property",
+         "property-settings": "Property settings",
+         "property-capability": "Capability/Property",
+         "topic": "MQTT topic",
+         "scenes-input": "Scenes (comma separated)",
+         "switch-on": "Command on",
+         "switch-off": "Command off",
+         "type": "Type",
+         "mode": "Mode",
+         "mode-type": "Mode type",
+         "min": "Min",
+         "max": "Max",
+         "no-units": "Unitless",
+         "precision": "Precision",
+         "device-capabilities": "Capabilities and properties",
+         "device-capabilities-description": "The skills of a device describe its capabilities. A device is described by at least one skill if it has no properties.",
+         "device-properties-description": "The properties of a device are usually used to control the environment. A device may not have any properties."
+      },
+      "buttons": {
+         "add-room": "Add room",
+         "add-device": "Add device",
+         "bind": "Bind controller via Yandex ID",
+         "check-binding-status": "Check status",
+         "save": "Save",
+         "add-capability": "Add capability",
+         "add-property": "Add property",
+         "all-devices": "All devices"
+      },
+      "prompt": {
+         "delete-room-title": "Removing the room",
+         "delete-room": "Do you really want to delete \"{{name}}\" room?",
+         "delete-device-title": "Removing the device",
+         "delete-device": "Do you really want to delete device \"{{name}}\"?"
+      },
+      "device-types": {
+         "sensor": "Sensors",
+         "smart_meter": "Smart meters",
+         "media": "Media device",
+         "cooking": "Kitchen appliances",
+         "appliances": "Home appliances",
+         "pet": "For pets",
+         "climate": "Climate technology",
+         "electrics": "Electrics",
+         "openable": "Opening/closing control",
+         "other": "Other devices"
+      },
+      "notifications": {
+         "room-added": "Room \"{{name}}\" saved",
+         "room-updated": "\"{{name}}\" room settings updated",
+         "room-deleted": "Room \"{{name}}\" deleted",
+         "device-added": "\"{{name}}\" device saved",
+         "device-updated": "\"{{name}}\" device settings updated",
+         "device-deleted": "Device \"{{name}}\" deleted",
+         "device-copied": "Device copied"
+      }
+   },
+   "web-ui-settings":{
+      "title": "Web UI",
+      "labels": {
+         "mqtt-settings": "Login to MQTT broker",
+         "use-mqtt-password": "Use access credentials",
+         "mqtt-login": "User ID",
+         "mqtt-password": "Password",
+         "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
+         "common-settings": "Common settings",
+         "show-system-devices": "Show system devices",
+         "language": "UI locale",
+         "default-dashboard": "Default dashboard",
+         "https-settings": "HTTPS settings",
+         "enable-https": "Auto configuration",
+         "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access."
+      },
+      "errors": {
+         "setup-https": "Failed to setting up HTTPS: {{error}}",
+         "get-https-status": "Failed to get HTTPS status: {{error}}"
       }
    }
 }

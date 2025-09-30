@@ -9,18 +9,37 @@
 .input:focus {
     transition: border-color 200ms linear, var(--input-active-shadow-transition);
     box-shadow: var(--input-active-shadow);
-    position: relative;
-    z-index: 100;
+    z-index: 10;
+}
+
+.input-l {
+    height: 38px;
+    padding: 8px 12px;
 }
 
 .input-m {
-    padding: 7px 12px;
+    height: 34px;
+    padding: 6px 12px;
 }
 
 .input-s {
+    height: 28px;
     padding: 3px 8px;
 }
 
 .input-fullWidth {
     width: 100%;
+}
+
+.input-invalid {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+input[type=number]::-webkit-inner-spin-button {
+    margin-left: 6px;
+}
+
+.input:disabled {
+    background: var(--border-color);
 }

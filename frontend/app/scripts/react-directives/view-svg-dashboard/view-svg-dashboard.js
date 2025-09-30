@@ -1,11 +1,9 @@
-'use strict';
-
 import { reaction } from 'mobx';
 import ReactDOM from 'react-dom/client';
-import CreateViewSvgDashboardPage from './viewSvgDashboardPage';
-import ViewSvgDashboardPageStore from './pageStore';
 import { checkFullscreen } from '../components/fullscreen/fullscreenStore';
 import { setReactLocale } from '../locale';
+import ViewSvgDashboardPageStore from './pageStore';
+import CreateViewSvgDashboardPage from './viewSvgDashboardPage';
 
 function viewSvgDashboardDirective(
   mqttClient,
@@ -36,14 +34,14 @@ function viewSvgDashboardDirective(
       scope.store = new ViewSvgDashboardPageStore(rolesFactory);
       scope.store.setForceFullscreen($rootScope.forceFullscreen);
       // Faster set styles in AngularJs code
-      reaction(
+      const disposeFullScreenReaction = reaction(
         () => scope.store.fullscreen.isFullscreen,
         () => {
           $rootScope.$apply();
         }
       );
 
-      scope.store.setEditDashboardFn(dashboardId =>
+      scope.store.setEditDashboardFn((dashboardId) =>
         $state.go('dashboard-svg-edit', { id: dashboardId })
       );
 
@@ -70,11 +68,8 @@ function viewSvgDashboardDirective(
             });
             $rootScope.$apply();
           } else {
-            $state.go('dashboard', newParams, {
-              custom: {
-                source: sourceDashboardId,
-              },
-            });
+            newParams.sourceDashboardId = sourceDashboardId;
+            $state.go('dashboard', newParams);
           }
         }
       });
@@ -92,6 +87,8 @@ function viewSvgDashboardDirective(
         });
 
       element.on('$destroy', function () {
+        disposeFullScreenReaction();
+        scope.store.dispose();
         scope.root.unmount();
       });
     },

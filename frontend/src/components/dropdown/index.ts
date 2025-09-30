@@ -1,2 +1,2 @@
 export { Dropdown } from './dropdown';
-export { Option } from './types';
+export * from './types';

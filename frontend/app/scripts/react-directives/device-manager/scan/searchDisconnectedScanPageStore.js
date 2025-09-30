@@ -1,5 +1,3 @@
-'use strict';
-
 import { makeObservable, observable, action } from 'mobx';
 import CommonScanStore, { SelectionPolicy } from './scanPageStore';
 
@@ -34,7 +32,6 @@ class SearchDisconnectedScanPageStore {
   constructor(deviceManagerProxy, deviceTypesStore, onLeave) {
     this.commonScanStore = new CommonScanStore(deviceManagerProxy, deviceTypesStore);
     this.active = false;
-    this.portPath = undefined;
     this.deviceTypesStore = deviceTypesStore;
     this.onLeave = onLeave;
 
@@ -50,7 +47,7 @@ class SearchDisconnectedScanPageStore {
   // https://github.com/wirenboard/wb-device-manager/blob/main/README.md
   update(stringDataToRender) {
     // wb-device-manager could be stopped, so it will clear state topic and send empty string
-    if (stringDataToRender == '') {
+    if (stringDataToRender === '') {
       this.commonScanStore.setDeviceManagerUnavailable();
       return;
     }
@@ -60,14 +57,13 @@ class SearchDisconnectedScanPageStore {
       return;
     }
     data.devices = data.devices.filter(
-      device => device.bootloader_mode || this.signatures.includes(device.device_signature)
+      (device) => device.bootloader_mode || this.signatures.includes(device.device_signature)
     );
     this.commonScanStore.update(data);
   }
 
-  select(deviceType, portPath, configuredDevices, slaveId) {
+  select(deviceType, portPath, useModbusTcp, configuredDevices, slaveId) {
     this.signatures = this.deviceTypesStore.getDeviceSignatures(deviceType);
-    this.portPath = portPath;
     this.active = true;
     const slaveIdInt = parseInt(slaveId);
     let outOfOrderSlaveIds = [];
@@ -77,7 +73,8 @@ class SearchDisconnectedScanPageStore {
     this.commonScanStore.startScanning(
       SelectionPolicy.Single,
       configuredDevices,
-      this.portPath,
+      portPath,
+      useModbusTcp,
       outOfOrderSlaveIds,
       true
     );

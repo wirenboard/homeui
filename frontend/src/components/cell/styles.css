@@ -57,6 +57,29 @@
     cursor: pointer;
 }
 
+.deviceCell-reversed {
+    flex-direction: row-reverse;
+}
+
+.deviceCell-isCompact {
+    display: flex;
+    justify-content: space-between;
+}
+
+.deviceCell-isEmpty {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.deviceCell-withSelect {
+    max-width: 50%;
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    gap: 6px;
+    align-items: center;
+}
+
 .deviceCell-textWrapper {
     display: flex;
     flex-grow: 1;
@@ -100,13 +123,13 @@
     cursor: pointer;
 }
 
+.deviceCell-reversed .deviceCell-value {
+    justify-items: start;
+}
+
 .deviceCell-units {
     font-size: 12px;
     color: var(--gray-color);
-}
-
-.deviceCell-select {
-    max-width: 50%;
 }
 
 .deviceCell-space {

@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { MqttClient } from '@/common/types';
+import type { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
@@ -254,5 +254,45 @@ export default class DeviceStore {
         this._mqttClient.send(topic, '', true, 2);
       });
     });
+  }
+
+  get topics() {
+    return Array.from(this.devices).map(([_deviceId, device]) => ({
+      label: device.name,
+      options: device.cellIds.reduce((cells, c) => {
+        let cell = this.cells.get(c);
+        if (cell) {
+          cells.push({
+            value: cell.id,
+            label: `${cell.name} [${cell.id}]`,
+          });
+        }
+        return cells;
+      }, []),
+    }));
+  }
+
+  toggleDevices() {
+    if (this.hasOpenedDivices) {
+      this.devices.forEach((device) => {
+        if (device.isVisible) {
+          device.toggleDeviceVisibility();
+        }
+      });
+    } else {
+      this.devices.forEach((device) => {
+        device.toggleDeviceVisibility();
+      });
+    }
+  }
+
+  get hasOpenedDivices() {
+    return Array.from(this.filteredDevices.values()).some((device) => device.isVisible);
+  }
+
+  get controls() {
+    return Array.from(this.cells.values())
+      .filter((cell) => !cell.id.startsWith('system__'))
+      .map((cell) => ({ id: cell.id, name: `${this.devices.get(cell.deviceId)?.name} / ${cell.name}` }));
   }
 }

@@ -1,11 +1,9 @@
-'use strict';
-
-import ReactDOM from 'react-dom/client';
 import { autorun } from 'mobx';
-import CreateDeviceManagerPage from './deviceManagerPage';
-import DeviceManagerPageStore from './deviceManagerPageStore';
+import ReactDOM from 'react-dom/client';
 import i18n from '../../i18n/react/config';
 import { setReactLocale } from '../locale';
+import CreateDeviceManagerPage from './deviceManagerPage';
+import DeviceManagerPageStore from './deviceManagerPageStore';
 
 function deviceManagerDirective(
   whenMqttReady,
@@ -46,7 +44,7 @@ function deviceManagerDirective(
       }
 
       const path = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-serial-dummy.schema.json';
-      const saveConfig = async data => {
+      const saveConfig = async (data) => {
         await ConfigEditorProxy.Save({ path: path, content: data });
       };
 
@@ -59,7 +57,7 @@ function deviceManagerDirective(
         };
       };
 
-      const setupPort = deviceCfg => {
+      const setupPort = (deviceCfg) => {
         return SerialPortProxy.Setup(deviceCfg);
       };
 
@@ -75,19 +73,19 @@ function deviceManagerDirective(
             $state.go('serial-config', {}, { location: 'replace' });
           }
         },
-        onLeaveScan: selectedDevices => {
+        onLeaveScan: (selectedDevices) => {
           $state.go('serial-config', {}, { location: 'replace' });
           if (selectedDevices) {
             scope.store.addScannedDevices(selectedDevices);
           }
         },
-        onLeaveSearchDisconnectedDevice: selectedDevice => {
+        onLeaveSearchDisconnectedDevice: (selectedDevice) => {
           $state.go('serial-config.properties', { hint: true }, { location: 'replace' });
           scope.store.restoreDisconnectedDevice(selectedDevice);
         },
       };
 
-      const loadDeviceTypeSchema = async deviceType => {
+      const loadDeviceTypeSchema = async (deviceType) => {
         try {
           return await SerialProxy.GetSchema({ type: deviceType });
         } catch (err) {
@@ -109,12 +107,12 @@ function deviceManagerDirective(
       let CONFIRMATION_MSG;
 
       const updateTranslations = () => {
-        $translate('app.prompt.serial-config-leave').then(translation => {
+        $translate('app.prompt.serial-config-leave').then((translation) => {
           CONFIRMATION_MSG = translation;
         });
       };
       updateTranslations();
-      $rootScope.$on('$translateChangeSuccess', () => updateTranslations());
+      const disposeTranslations = $rootScope.$on('$translateChangeSuccess', () => updateTranslations());
 
       scope.deleteTransitionHook = $transitions.onBefore({}, function (transition) {
         const from = transition.from().name;
@@ -173,13 +171,13 @@ function deviceManagerDirective(
           return scope.store.loadConfig();
         })
         .then(() => {
-          mqttClient.addStickySubscription('/devices/+/meta/error', msg => {
+          mqttClient.addStickySubscription('/devices/+/meta/error', (msg) => {
             scope.store.setDeviceDisconnected(msg.topic, msg.payload);
           });
-          mqttClient.addStickySubscription('/wb-device-manager/state', msg =>
+          mqttClient.addStickySubscription('/wb-device-manager/state', (msg) =>
             scope.store.updateScanState(msg.payload)
           );
-          mqttClient.addStickySubscription('/wb-device-manager/firmware_update/state', msg =>
+          mqttClient.addStickySubscription('/wb-device-manager/firmware_update/state', (msg) =>
             scope.store.setEmbeddedSoftwareUpdateProgress(msg.payload)
           );
         });
@@ -188,6 +186,7 @@ function deviceManagerDirective(
         scope.root.unmount();
         scope.deleteTransitionHook();
         $rootScope.noConsole = false;
+        disposeTranslations();
       });
     },
   };

@@ -1,27 +1,24 @@
-'use strict';
-
-import { makeObservable, observable, computed, action } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
+import { makeObservable, observable, computed, action } from 'mobx';
 import i18n from '../../../i18n/react/config';
-import SelectModalState from '../../components/modals/selectModalState';
-import { getDefaultObject } from './jsonSchemaUtils';
 import AccessLevelStore from '../../components/access-level/accessLevelStore';
-import PageWrapperStore from '../../components/page-wrapper/pageWrapperStore';
 import ConfirmModalState from '../../components/modals/confirmModalState';
+import FormModalState from '../../components/modals/formModalState';
+import SelectModalState from '../../components/modals/selectModalState';
+import PageWrapperStore from '../../components/page-wrapper/pageWrapperStore';
+import { getIntAddress } from '../common/modbusAddressesSet';
 import showAddDeviceModal from './addDeviceModal';
-import { TabsStore } from './tabsStore';
-import { DeviceTab } from './deviceTabStore';
+import showCopyDeviceModal from './copyDeviceModal';
+import { DeviceTab, toRpcPortConfig } from './deviceTabStore';
+import { getTranslation, getDefaultObject } from './jsonSchemaUtils';
 import {
   PortTab,
   makeModbusTcpPortTabName,
   makeSerialPortTabName,
-  makeTcpPortTabName,
+  makeTcpPortTabName
 } from './portTabStore';
 import { SettingsTab } from './settingsTabStore';
-import { getTranslation } from './jsonSchemaUtils';
-import FormModalState from '../../components/modals/formModalState';
-import showCopyDeviceModal from './copyDeviceModal';
-import { getIntAddress } from '../common/modbusAddressesSet';
+import { TabsStore } from './tabsStore';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
@@ -44,7 +41,7 @@ function getErrorMessage(error) {
     if (error.data === 'EditorError' && error.code === CONFED_WRITE_FILE_ERROR) {
       return i18n.t('device-manager.errors.write');
     }
-    if (error.hasOwnProperty('code')) {
+    if (Object.hasOwn(error, 'code')) {
       return `${error.message}: ${error.data}(${error.code})`;
     }
     return error.message;
@@ -64,7 +61,7 @@ function getPortSchemaCommon(schema, subSchemaName) {
   let res = cloneDeep(schema.definitions[subSchemaName]);
   res.definitions = {};
   Object.entries(schema.definitions).forEach(([key, value]) => {
-    if (key != subSchemaName) {
+    if (key !== subSchemaName) {
       res.definitions[key] = value;
     }
   });
@@ -115,7 +112,7 @@ function makePortTypeSelectOptions(portSchemaMap) {
 }
 
 function makePortSelectOptions(portTabs) {
-  return portTabs.map(tab => {
+  return portTabs.map((tab) => {
     return { label: tab.name, value: tab };
   });
 }
@@ -176,14 +173,14 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     commonCfg.slave_id = item.cfg.slave_id;
   }
 
-  if (portBaudRate !== undefined && device.baudRate != portBaudRate) {
+  if (portBaudRate !== undefined && device.baudRate !== portBaudRate) {
     let item = Object.assign({}, commonCfg);
     item.cfg = { baud_rate: portBaudRate };
     params.items.push(item);
     commonCfg.baud_rate = item.cfg.baud_rate;
   }
 
-  if (portStopBits !== undefined && device.stopBits != portStopBits) {
+  if (portStopBits !== undefined && device.stopBits !== portStopBits) {
     // Devices with fast modbus support accept both 1 and 2 stop bits
     // So it is not a misconfiguration if the setting differs from port's one
     if (!device.gotByFastScan) {
@@ -194,7 +191,7 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
     }
   }
 
-  if (portParity !== undefined && device.parity != portParity) {
+  if (portParity !== undefined && device.parity !== portParity) {
     const mapping = {
       O: 1,
       E: 2,
@@ -209,8 +206,8 @@ function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
 
 function getTopics(portTabs, deviceTypesStore) {
   let topics = new Set();
-  portTabs.forEach(portTab => {
-    portTab.children.forEach(deviceTab => {
+  portTabs.forEach((portTab) => {
+    portTab.children.forEach((deviceTab) => {
       topics.add(
         deviceTab.editedData.id ||
           deviceTypesStore.getDefaultId(deviceTab.deviceType, deviceTab.slaveId)
@@ -270,17 +267,17 @@ class ConfigEditorPageStore {
   }
 
   createPortTab(portConfig) {
-    if (portConfig.port_type == 'serial' || portConfig.port_type === undefined) {
+    if (portConfig.port_type === 'serial' || portConfig.port_type === undefined) {
       return new PortTab(
         getPortData(portConfig),
         this.portSchemaMap['serial'],
         makeSerialPortTabName
       );
     }
-    if (portConfig.port_type == 'tcp') {
+    if (portConfig.port_type === 'tcp') {
       return new PortTab(getPortData(portConfig), this.portSchemaMap['tcp'], makeTcpPortTabName);
     }
-    if (portConfig.port_type == 'modbus tcp') {
+    if (portConfig.port_type === 'modbus tcp') {
       return new PortTab(
         getPortData(portConfig),
         this.portSchemaMap['modbus tcp'],
@@ -311,16 +308,16 @@ class ConfigEditorPageStore {
       const { config, schema, deviceTypeGroups } = await this.loadConfigFn();
       this.deviceTypesStore.setDeviceTypeGroups(deviceTypeGroups);
       this.portSchemaMap = makePortSchemaMap(schema);
-      config?.ports?.forEach(port => {
+      config?.ports?.forEach((port) => {
         const portTab = this.createPortTab(port);
         if (portTab === undefined) {
           return;
         }
         if (port?.devices) {
-          port.devices.forEach(device => {
+          port.devices.forEach((device) => {
             let tab = this.createDeviceTab(device);
             portTab.addChildren(tab);
-            if (['tcp', 'serial'].includes(portTab.portType)) {
+            if (portTab.isEnabled) {
               tab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
             }
           });
@@ -339,7 +336,7 @@ class ConfigEditorPageStore {
 
   setError(error) {
     if (typeof error === 'object') {
-      if (error.hasOwnProperty('code')) {
+      if (Object.hasOwn(error, 'code')) {
         this.pageWrapperStore.setError(`${error.message}: ${error.data}(${error.code})`);
       } else {
         this.pageWrapperStore.setError(error.message);
@@ -358,7 +355,7 @@ class ConfigEditorPageStore {
         makePortTypeSelectOptions(this.portSchemaMap)
       );
     } catch (err) {
-      if (err == 'cancel') {
+      if (err === 'cancel') {
         return;
       }
     }
@@ -396,13 +393,13 @@ class ConfigEditorPageStore {
   }
 
   async deleteTab() {
-    if ((await this.showDeleteTabConfirmModal()) == 'ok') {
+    if ((await this.showDeleteTabConfirmModal()) === 'ok') {
       this.tabs.deleteSelectedTab();
     }
   }
 
   async deletePortDevices(portTab) {
-    if ((await this.showDeletePortDevicesConfirmModal(portTab)) == 'ok') {
+    if ((await this.showDeletePortDevicesConfirmModal(portTab)) === 'ok') {
       this.tabs.deletePortDevices(portTab);
     }
   }
@@ -417,18 +414,29 @@ class ConfigEditorPageStore {
     if (res === undefined) {
       return;
     }
+    const oldSelectedTab = this.tabs.selectedTab;
     let deviceTab = new DeviceTab({}, res.deviceType, this.deviceTypesStore);
     this.tabs.addDeviceTab(res.port, deviceTab, true);
-    deviceTab.setDefaultData();
+    try {
+      await deviceTab.setDefaultData();
+    } catch (err) {
+      const errorMsg = i18n.t('device-manager.errors.add-device', {
+        error: getErrorMessage(err),
+        interpolation: { escapeValue: false },
+      });
+      this.setError(errorMsg);
+      this.tabs.selectTab(oldSelectedTab);
+      this.tabs.deleteTab(deviceTab);
+    }
   }
 
   makeConfigJson() {
     let config = cloneDeep(this.tabs.items[this.tabs.items.length - 1].editedData);
-    this.tabs.portTabs.forEach(portTab => {
+    this.tabs.portTabs.forEach((portTab) => {
       config.ports ??= [];
       let portConfig = cloneDeep(portTab.editedData);
       portConfig.devices ??= [];
-      portTab.children.forEach(deviceTab => {
+      portTab.children.forEach((deviceTab) => {
         portConfig.devices.push(cloneDeep(deviceTab.editedData));
       });
       config.ports.push(portConfig);
@@ -465,7 +473,7 @@ class ConfigEditorPageStore {
       this.pageWrapperStore.clearError();
       let errors = [];
       const setupResults = await Promise.all(
-        devices.map(async device => {
+        devices.map(async (device) => {
           try {
             return await this.setupDevice(device);
           } catch (err) {
@@ -474,13 +482,13 @@ class ConfigEditorPageStore {
           return false;
         })
       );
-      devices = devices.filter((_, i) => setupResults[i]);
+      let changedDevices = devices.filter((_, i) => setupResults[i]);
       const selectedTab = this.tabs.selectedTab;
-      const selectAddedTab = devices.length == 1;
-      if (devices.length) {
+      const selectAddedTab = changedDevices.length === 1;
+      if (changedDevices.length) {
         const topics = getTopics(this.tabs.portTabs, this.deviceTypesStore);
         await Promise.all(
-          devices.map(device => this.addScannedDeviceToConfig(device, topics, selectAddedTab))
+          changedDevices.map((device) => this.addScannedDeviceToConfig(device, topics, selectAddedTab))
         );
         this.tabs.setModifiedStructure();
         if (!selectAddedTab) {
@@ -505,7 +513,7 @@ class ConfigEditorPageStore {
     } else {
       topics.add(deviceId);
     }
-    let portTab = this.tabs.portTabs.find(p => p.path == device.port);
+    let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     let deviceTab = this.createDeviceTab(deviceConfig);
     deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
     this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
@@ -517,16 +525,10 @@ class ConfigEditorPageStore {
       return;
     }
 
-    let params = { slave_id: device.address };
-    if (portTab.isTcpGateway) {
-      params.port = portTab.baseConfig;
-    } else {
-      params.port = {
-        path: device.port,
-        baud_rate: device.baudRate,
-        parity: device.parity,
-        stop_bits: device.stopBits,
-      };
+    const portConfig = portTab.baseConfig;
+    let params = { slave_id: getIntAddress(device.address), port: toRpcPortConfig(portConfig) };
+    if (portConfig.modbusTcp) {
+      params.protocol = 'modbus-tcp';
     }
     await this.fwUpdateProxy.Restore(params);
   }
@@ -540,7 +542,7 @@ class ConfigEditorPageStore {
       return false;
     }
 
-    let portTab = this.tabs.portTabs.find(p => p.path == device.port);
+    let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     if (!portTab) {
       return false;
     }
@@ -564,11 +566,11 @@ class ConfigEditorPageStore {
     if (!deviceTab) {
       return;
     }
-    const isDisconnected = error == 'r';
+    const isDisconnected = error === 'r';
     deviceTab.setDisconnected(isDisconnected);
     if (!isDisconnected) {
       const portTab = this.tabs.findPortTabByDevice(deviceTab);
-      if (portTab && ['tcp', 'serial'].includes(portTab.portType)) {
+      if (portTab) {
         deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
       }
     }
@@ -584,19 +586,19 @@ class ConfigEditorPageStore {
     );
     if (res) {
       for (let i = 0; i < res.count; ++i) {
-        this.tabs.addDeviceTab(res.port, deviceTab.getCopy(), i == 0);
+        this.tabs.addDeviceTab(res.port, deviceTab.getCopy(), i === 0);
       }
     }
   }
 
   setEmbeddedSoftwareUpdateProgress(data) {
-    data.devices.forEach(device => {
+    data.devices.forEach((device) => {
       this.tabs
         .findPortTabByPath(device.port.path)
         ?.children?.filter(
-          deviceTab => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id)
+          (deviceTab) => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id)
         )
-        .forEach(deviceTab => {
+        .forEach((deviceTab) => {
           deviceTab.clearError();
           deviceTab.setEmbeddedSoftwareUpdateProgress(device);
         });
@@ -616,6 +618,14 @@ class ConfigEditorPageStore {
     if (tab) {
       const portTab = this.tabs.selectedPortTab;
       tab.startBootloaderUpdate(portTab.baseConfig);
+    }
+  }
+
+  updateComponents(){
+    const tab = this.tabs.selectedTab;
+    if (tab) {
+      const portTab = this.tabs.selectedPortTab;
+      tab.startComponentsUpdate(portTab.baseConfig);
     }
   }
 }

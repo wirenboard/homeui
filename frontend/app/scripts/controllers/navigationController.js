@@ -8,18 +8,21 @@ class NavigationCtrl {
     whenMqttReady,
     errors,
     uiConfig,
-    rolesFactory
+    rolesFactory,
+    $rootScope,
+    $state
   ) {
     'ngInject';
 
     $scope.roles = rolesFactory;
+    $rootScope.roles = rolesFactory;
 
     $scope.isActive = function (viewLocation) {
       return viewLocation === $location.path();
     };
 
     $scope.dashboards = () => {
-      return uiConfig.data.dashboards.filter(dashboard => !dashboard.isNew);
+      return uiConfig.data.dashboards.filter(dashboard => !dashboard.isNew && !dashboard.options?.isHidden);
     };
 
     $scope.isConnected = function () {
@@ -34,10 +37,12 @@ class NavigationCtrl {
       needToLoadConfigs = false;
 
     whenMqttReady().then(function () {
-      needToLoadScripts = needToLoadConfigs = true;
-      mqttClient.subscribe('/wbrules/updates/+', function () {
-        needToLoadScripts = true;
-      });
+      if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
+        needToLoadScripts = needToLoadConfigs = true;
+        mqttClient.subscribe('/wbrules/updates/+', function () {
+          needToLoadScripts = true;
+        });
+      }
     });
 
     $scope.getScripts = function () {
@@ -83,6 +88,32 @@ class NavigationCtrl {
       pageWrapperClassList.contains(overlayClass)
         ? pageWrapperClassList.remove(overlayClass)
         : pageWrapperClassList.add(overlayClass);
+    };
+
+    $scope.showAccessControl = function () {
+      return rolesFactory.current?.roles?.isAdmin;
+    };
+
+    $scope.showUserMenu = function () {
+      return rolesFactory.usersAreConfigured && rolesFactory.isAuthenticated();
+    };
+
+    $scope.userMenuLabel = function () {
+      return rolesFactory.currentUserIsAutologinUser ? 'app.buttons.switch-user' : 'app.buttons.logout';
+    };
+
+    $scope.logout = function () {
+      if (rolesFactory.currentUserIsAutologinUser) {
+        // If the user is an autologin user, just show login page to select another user.
+        // No need to log out
+        $state.go('login');
+      } else {
+        fetch('/auth/logout', {
+          method: 'POST',
+        }).then(() => {
+          location.reload();
+        });
+      }
     };
   }
 

@@ -1,7 +1,11 @@
-export interface InputProps {
+import { LegacyRef } from 'react';
+import type { RequireAtLeastOne } from '@/utils/types';
+
+type BaseInputProps = {
   id?: string;
-  type?: 'text' | 'number';
-  size?: 'default' | 'small';
+  ref?: LegacyRef<HTMLInputElement>;
+  type?: 'text' | 'number' | 'password';
+  size?: 'default' | 'small' | 'large';
   value: string | number;
   className?: string;
   min?: number;
@@ -11,7 +15,14 @@ export interface InputProps {
   isDisabled?: boolean;
   placeholder?: string;
   ariaLabel?: string;
+  ariaDescribedby?: string;
+  ariaInvalid?: boolean;
+  ariaErrorMessage?: string;
   isFullWidth?: boolean;
+  isInvalid?: boolean;
   isWithExplicitChanges?: boolean;
-  onChange: (_val: string | number) => void;
-}
+  onChange?: (_val: string | number, _badInput?: boolean) => void;
+  onChangeEvent?: (_ev: any) => void;
+};
+
+export type InputProps = RequireAtLeastOne<BaseInputProps, 'onChange' | 'onChangeEvent'>;

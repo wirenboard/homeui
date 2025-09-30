@@ -10,7 +10,7 @@ const mqttServiceModule = angular
   .factory('whenMqttReady', whenMqttReady)
   .factory('topicMatches', topicMatches)
   .value('mqttConnectTimeout', 15000)
-  .value('mqttReconnectDelay', 1500)
+  .value('mqttReconnectDelay', 15000)
   .value('mqttDigestInterval', 250)
   .factory('mqttClient', mqttClient).name;
 
@@ -212,10 +212,6 @@ function mqttClient(
     console.log('Connected to ' + client.host + " as '" + client.clientId + "'");
     if (globalPrefix !== '') console.log('With globalPrefix: ' + globalPrefix);
 
-    client.subscribe(globalPrefix + '/config/widgets/#');
-    client.subscribe(globalPrefix + '/config/dashboards/#');
-
-    client.subscribe(globalPrefix + '/devices/#');
     stickySubscriptions.forEach(item => this.subscribe(item.topic, item.callback));
 
     // prepare retain hack
@@ -244,20 +240,19 @@ function mqttClient(
         context.errorCode +
         ')'
     );
-    ngToast.dismiss();
-    $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
-    reconnectAfterTimeout();
-  };
-
-  //...........................................................................
-  service.publish = function (topic, payload) {
-    if (!connected) {
-      // FIXME: should fail hard here
-      console.error("can't publish(): disconnected");
-      return;
-    }
-    client.publish(topic, payload, { retain: true });
-    console.log('publish-Event sent ' + payload + ' with topic: ' + topic + ' ' + client);
+    fetch('/auth/who_am_i').then(response => {
+      if (response.status === 401) {
+        location.reload();
+        return;
+      }
+      ngToast.dismiss();
+      $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
+      reconnectAfterTimeout();
+    }).catch(() => {
+      ngToast.dismiss();
+      $translate('mqtt.errors.connect', params).then(m => ngToast.danger(m));
+      reconnectAfterTimeout();
+    });
   };
 
   //...........................................................................

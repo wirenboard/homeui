@@ -12,6 +12,10 @@
     display: grid;
 }
 
+.wb-tableWithoutGap .wb-tableRow {
+    gap: 0;
+}
+
 .wb-tableRow {
     display: grid;
     gap: 12px;
@@ -19,20 +23,48 @@
     padding: 0 12px;
 }
 
-.wb-tableRow:hover {
+.wb-tableRow:not(.wb-tableRowHeading):hover {
     background: var(--table-item-hover);
 }
 
-.wb-tableRow:focus-within .rules-icon,
-.wb-tableRow:hover .rules-icon {
+.wb-tableRow:focus-within .wb-tableCellInvisible,
+.wb-tableRow:hover .wb-tableCellInvisible {
     visibility: visible;
+}
+
+.wb-tableRow .wb-tableCellInvisible,
+.wb-table:hover .wb-tableRow:focus-within:not(:hover) .wb-tableCellInvisible {
+    visibility: hidden;
+}
+
+.wb-tableRowHeading {
+    background: var(--border-color);
+    font-weight: bold;
 }
 
 .wb-tableCell {
     display: table-cell;
     padding: 8px 0;
     font-size: 14px;
+    height: 100%;
+}
+
+.wb-tableCellVerticalAlignCenter {
     vertical-align: middle;
+    align-items: center;
+    display: flex;
+}
+
+.wb-tableCellAlignCenter {
+    justify-content: center;
+}
+
+.wb-tableCellAlignRight {
+    justify-content: flex-end;
+}
+
+.wb-tableCellWithoutPadding {
+    padding: 0;
 }
 
 .wb-table:not(.wb-tableFullWidth) .wb-tableCellEllipsis,

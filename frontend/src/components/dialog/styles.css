@@ -1,0 +1,65 @@
+.dialog {
+    background: var(--content-background);
+    padding: 0;
+    margin: auto;
+    color: var(--text-color);
+    border-radius: var(--input-border-radius);
+    border: 0;
+    width: 100%;
+    opacity: 0;
+    box-shadow: 0 0 20px 4px rgba(0, 0, 0, 0.4);
+    animation: appear 200ms forwards;
+}
+
+.dialog-overlay {
+    display: flex;
+    background: rgba(7, 7, 7, 0.8);
+    animation: appear-overlay 200ms forwards;
+    z-index: 9999;
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    align-items: center;
+}
+
+.dialog-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dialog-close {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.dialog-close:hover {
+    color: var(--primary-color-hover);
+}
+
+.dialog-close:focus {
+    box-shadow: var(--input-active-shadow);
+    z-index: 10;
+}
+
+.dialog-close svg {
+    width: 30px;
+    height: 30px;
+}
+
+.dialog-content {
+    font-size: var(--font-size-medium);
+    padding: 4px 16px 16px;
+    max-height: calc(100dvh - (62px + 80px)); /* header height + Y offset */
+    overflow: auto;
+}
