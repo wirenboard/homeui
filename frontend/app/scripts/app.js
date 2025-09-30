@@ -68,7 +68,6 @@ import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import NavigationCtrl from './controllers/navigationController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
-import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
 
@@ -180,7 +179,6 @@ module
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
-  .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
   .controller('NavigationCtrl', NavigationCtrl);
