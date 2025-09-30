@@ -32,49 +32,43 @@ export const LogsFilters = observer((
   ];
 
   return (
-    <>
-      <Tooltip text={t('logs.labels.choose-service')}>
-        <Dropdown
-          className="logs-filtersInput"
-          ariaLabel={t('logs.labels.choose-service')}
-          value={filter.service}
-          placeholder={t('logs.labels.all-services')}
-          isLoading={!store.services.length}
-          isDisabled={!store.services.length}
-          options={store.services.map((service) => ({ label: service, value: service }))}
-          isClearable
-          isSearchable
-          onChange={(option: Option) => onFilterChange({ ...filter, service: option?.value })}
-        />
-      </Tooltip>
+    <div className="logsFilters">
+      <Dropdown
+        className="logsFilters-input"
+        ariaLabel={t('logs.labels.choose-service')}
+        value={filter.service}
+        placeholder={t('logs.labels.all-services')}
+        isLoading={!store.services.length}
+        isDisabled={!store.services.length}
+        options={store.services.map((service) => ({ label: service, value: service }))}
+        isClearable
+        isSearchable
+        onChange={(option: Option) => onFilterChange({ ...filter, service: option?.value })}
+      />
 
-      <Tooltip text={t('logs.labels.choose-boot')}>
-        <Dropdown
-          className="logs-filtersInput"
-          ariaLabel={t('logs.labels.choose-boot')}
-          value={filter.boot}
-          options={boots}
-          isLoading={!store.boots.length}
-          isDisabled={!store.boots.length}
-          isSearchable
-          onChange={(option: Option) => onFilterChange({ ...filter, boot: option.value })}
-        />
-      </Tooltip>
+      <Dropdown
+        className="logsFilters-input"
+        ariaLabel={t('logs.labels.choose-boot')}
+        value={filter.boot}
+        options={boots}
+        isLoading={!store.boots.length}
+        isDisabled={!store.boots.length}
+        isSearchable
+        onChange={(option: Option) => onFilterChange({ ...filter, boot: option.value })}
+      />
 
-      <Tooltip text={t('logs.labels.choose-level')}>
-        <Dropdown
-          className="logs-filtersInput"
-          ariaLabel={t('logs.labels.choose-level')}
-          value={filter.levels}
-          options={levels}
-          placeholder={t('logs.labels.levels')}
-          multiselect
-          onChange={(options: Option[]) => onFilterChange({ ...filter, levels: options.map((opt) => opt.value) })}
-        />
-      </Tooltip>
+      <Dropdown
+        className="logsFilters-input"
+        ariaLabel={t('logs.labels.choose-level')}
+        value={filter.levels}
+        options={levels}
+        placeholder={t('logs.labels.levels')}
+        multiselect
+        onChange={(options: Option[]) => onFilterChange({ ...filter, levels: options.map((opt) => opt.value) })}
+      />
 
       <DatePicker
-        className="logs-filtersInput"
+        className="logsFilters-input"
         placeholder={t('logs.labels.latest')}
         heading={t('logs.labels.set-date')}
         value={filter.time ? new Date(filter.time * 1000) : null}
@@ -83,7 +77,7 @@ export const LogsFilters = observer((
 
       <FormGroup>
         <Input
-          className="logs-filtersPattern"
+          className="logsFilters-pattern"
           value={filter.pattern}
           aria-label={t('logs.labels.pattern')}
           placeholder={t('logs.labels.pattern')}
@@ -114,11 +108,11 @@ export const LogsFilters = observer((
         <a
           href="https://unicode-org.github.io/icu/userguide/strings/regexp.html"
           target="_blank"
-          className="logs-info"
+          className="logsFilters-info"
         >
-          <InfoIcon className="logs-info" />
+          <InfoIcon className="logsFilters-info" />
         </a>
       </Tooltip>
-    </>
+    </div>
   );
 });

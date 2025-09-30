@@ -8,9 +8,9 @@ import DownloadIcon from '@/assets/icons/download.svg';
 import { Button } from '@/components/button';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
-import { LogsFilters } from '@/pages/logs/filters';
 import { LogsStore, LogLevel, Log } from '@/stores/logs';
 import { downloadFile } from '@/utils/download';
+import { LogsFilters } from './components/filters';
 import './styles.css';
 
 const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: boolean }) => {
@@ -119,16 +119,14 @@ const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: 
       stickyHeader
     >
       {!errors.length && (
-        <div className="logs-filters">
-          <LogsFilters
-            store={store}
-            filter={filter}
-            onFilterChange={(value) => {
-              setHasMore(true);
-              setFilter(value);
-            }}
-          />
-        </div>
+        <LogsFilters
+          store={store}
+          filter={filter}
+          onFilterChange={(value) => {
+            setHasMore(true);
+            setFilter(value);
+          }}
+        />
       )}
 
       <div

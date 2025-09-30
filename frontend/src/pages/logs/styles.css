@@ -1,26 +1,3 @@
-.logs-filters {
-    display: flex;
-    gap: 6px;
-    padding: 4px;
-    margin-bottom: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.logs-filtersPattern {
-    width: 200px;
-
-    @media (max-width: 1024px) {
-        width: calc(100% - 90px);
-    }
-}
-
-.logs-info {
-    width: 18px;
-    height: 18px;
-    color: var(--text-color);
-}
-
 .logs-container {
     overflow: auto;
     display: flex;
@@ -71,19 +48,5 @@
 .logs-itemDate {
     @media (max-width: 500px) {
         width: 85px;
-    }
-}
-
-@media (max-width: 500px) {
-    .logs-filters .formFields-group {
-        width: calc(100% - 30px);
-    }
-}
-
-@media (max-width: 400px) {
-    .react-datepicker-wrapper,
-    .wb-tooltip-container:has(.logs-filtersInput),
-    .logs-filtersInput {
-        width: 100%;
     }
 }
