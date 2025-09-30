@@ -5,9 +5,7 @@
     color: var(--text-color);
     border-radius: var(--input-border-radius);
     border: 0;
-    font-family: var(--font);
     width: 100%;
-    max-width: 550px;
     opacity: 0;
     box-shadow: 0 0 20px 4px rgba(0, 0, 0, 0.4);
     animation: appear 200ms forwards;

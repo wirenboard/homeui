@@ -70,6 +70,7 @@ export const WidgetAdd = observer(({
       <Dialog
         className="widgetAdd"
         isOpened={isOpened}
+        width={800}
         heading={t('widget.labels.add')}
         onClose={onClose}
       >
@@ -178,7 +179,6 @@ export const WidgetAdd = observer(({
             ? { id: '', name: '', description: '', cells: [], compact: false } as any
             : widgets.get(widgetId)}
           cells={cells}
-          dashboard={dashboard}
           controls={controls}
           isOpened={!!isEditing}
           onClose={() => {
@@ -202,9 +202,11 @@ export const WidgetAdd = observer(({
         >
           {!!widgets.get(widgetId).associatedDashboards?.length && (
             <>
-              {t('widget.labels.warning')}
-              {widgets.get(widgetId).associatedDashboards
-                .map((dashboard) => (<li key={dashboard.id}>{dashboard.name}</li>))}
+              <p>{t('widget.labels.warning')}</p>
+              <ul className="widgetAdd-list">
+                {widgets.get(widgetId).associatedDashboards
+                  .map((dashboard) => (<li key={dashboard.id}>{dashboard.name}</li>))}
+              </ul>
             </>
           )}
           <p>{t('widget.prompt.delete')} <b>{widgets.get(widgetId).name}</b>?</p>

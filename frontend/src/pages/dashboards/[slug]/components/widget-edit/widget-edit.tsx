@@ -18,7 +18,7 @@ import { generateNextId } from '@/utils/id';
 import type { CellSimple, WidgetEditProps } from './types';
 import './styles.css';
 
-export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSave, onClose }: WidgetEditProps) => {
+export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose }: WidgetEditProps) => {
   const { t } = useTranslation();
   const [widgetCells, setWidgetCells] = useState<(CellSimple)[]>([]);
   const [isJsonView, setIsJsonView] = useState(false);
@@ -99,6 +99,7 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
       isOpened={isOpened}
       heading={widget.id ? `${t('widget.labels.edit')} ${widget.name}` : t('widget.labels.create')}
       closeCallback={onClose}
+      width={650}
       isDisabled={!isCodeValid || !name || !widgetCells.length}
       acceptLabel={t('widget.buttons.save')}
       headerActions={isJsonView
@@ -143,10 +144,10 @@ export const WidgetEdit = ({ widget, cells, dashboard, controls, isOpened, onSav
           <>
             {widget.associatedDashboards?.length > 1 && (
               <Alert className="widgetEdit-warn" variant="warn" withIcon={false}>
-                {t('widget.labels.warning')}
-                {widget.associatedDashboards
-                  .filter((board) => board.id !== dashboard?.id)
-                  .map((dashboard) => (<li key={dashboard.id}>{dashboard.name}</li>))}
+                <p>{t('widget.labels.warning')}</p>
+                <ul className="widgetEdit-list">
+                  {widget.associatedDashboards.map((dashboard) => (<li key={dashboard.id}>{dashboard.name}</li>))}
+                </ul>
               </Alert>
             )}
 

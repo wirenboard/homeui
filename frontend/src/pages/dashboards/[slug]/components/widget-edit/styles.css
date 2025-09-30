@@ -113,6 +113,11 @@
     margin-bottom: 12px;
 }
 
+.widgetEdit-list {
+    padding-left: 16px;
+    margin-bottom: 0;
+}
+
 .widgetEdit-name {
     margin-bottom: 12px;
 }

@@ -17,6 +17,7 @@ export const Dialog = ({
   children,
   className,
   heading,
+  width = 550,
   headerActions,
   showCloseButton = true,
   withPadding = true,
@@ -52,6 +53,7 @@ export const Dialog = ({
               'aria-modal': true,
               onClick: (e) => e.stopPropagation(),
             })}
+            style={{ maxWidth: `${width}px` }}
           >
             <header className="dialog-header">
               <h3 id={headingId} className="dialog-title">
