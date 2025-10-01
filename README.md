@@ -8,7 +8,7 @@ See into [conventions](https://github.com/wirenboard/conventions/blob/main/READM
 
 ## NGINX configuration
 
-The config is stored in `/etc/wb-webui.conf`.
+The config is stored in `/usr/share/wb-mqtt-homeui/nginx/default.conf`.
 Add your custom configuration to `/etc/nginx/includes/default.wb.d/*.conf`.
 Change listen settings in `/etc/nginx/includes/default.wb.d/listen.conf`.
 
