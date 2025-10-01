@@ -8,6 +8,7 @@ Build-Depends: debhelper (>= 10),
                nodejs (>= 18),
                j2cli,
                minify,
+               rsync,
                config-package-dev,
                dh-python,
                python3-all,
@@ -23,9 +24,7 @@ Architecture: all
 Conflicts: wb-homa-webinterface
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         wb-homeui-backend (= ${binary:Version}),
-         diffutils,
-         ucf
+         wb-homeui-backend (= ${binary:Version})
 Recommends: wb-mqtt-logs,
             wb-device-manager,
             wb-rules (>= 2.35.0~~)

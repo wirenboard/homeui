@@ -3,9 +3,6 @@
 CONFFILE=/etc/wb-webui.conf
 
 if [ "$1" = "purge" ]; then
-    if [ -x /usr/bin/ucf ]; then
-        ucf  --purge $CONFFILE
-    fi
     rm $CONFFILE
 fi
 

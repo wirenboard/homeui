@@ -17,5 +17,5 @@ build:
 	npm run build
 
 install:
-	install -d -m 0777 $(DESTDIR)/var/www
-	cp -a -R dist/* $(DESTDIR)/var/www
+	install -d -m 0777 $(DESTDIR)$(WWW_ROOT)/uploads
+	rsync -av --exclude='*.map' dist/ $(DESTDIR)$(WWW_ROOT)
