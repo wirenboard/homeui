@@ -17,6 +17,7 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	dh_auto_build -Dbackend -O--buildsystem=pybuild
+	dh_auto_build -Dbackend -O--buildsystem=makefile
 	dh_auto_build -Dfrontend -O--buildsystem=makefile
 
 override_dh_auto_test:
@@ -25,6 +26,7 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	dh_auto_install -Dbackend --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=pybuild
+	dh_auto_install -Dbackend --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=makefile
 	dh_auto_install -Dfrontend -O--buildsystem=makefile
 
 override_dh_auto_clean:

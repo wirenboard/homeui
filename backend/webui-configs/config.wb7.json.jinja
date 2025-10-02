@@ -1,5 +1,5 @@
 {% set svg_content -%}
-    {% include 'dist/configs/wb85.svg' -%}
+    {% include 'wb7.min.svg' -%}
 {% endset -%}
 {
     "dashboards": [
@@ -564,7 +564,7 @@
                         },
                         "style": {
                             "enable": true,
-                            "channel": "wb-gpio/A4_IN",
+                            "channel": "wb-gpio/D1_IN",
                             "value": "((val + 0) > 0) ? ';fill: green' : ';fill: red'"
                         }
                     },
@@ -658,7 +658,7 @@
                         },
                         "write": {
                             "enable": true,
-                            "channel": "wb-gpio/A4_OUT",
+                            "channel": "wb-gpio/D1_OUT",
                             "value": {
                                 "on": 1,
                                 "off": 0
@@ -1395,13 +1395,13 @@
                         },
                         "visible": {
                             "enable": false,
-                            "channel": null,
+                            "channel": "wb-gpio/D1_OUT",
                             "condition": "==",
-                            "value": null
+                            "value": "1"
                         },
                         "style": {
                             "enable": false,
-                            "channel": "wb-gpio/A4_OUT",
+                            "channel": "wb-gpio/D1_OUT",
                             "value": "(val) ? 'fill-opacity: 0.5' : 'fill-opacity: 1.0'"
                         }
                     },
@@ -1711,7 +1711,7 @@
                         },
                         "write": {
                             "enable": true,
-                            "channel": "wb-gpio/A4_OUT",
+                            "channel": "wb-gpio/D1_OUT",
                             "value": {
                                 "on": 1,
                                 "off": 0
@@ -1725,7 +1725,7 @@
                         },
                         "style": {
                             "enable": true,
-                            "channel": "wb-gpio/A4_OUT",
+                            "channel": "wb-gpio/D1_OUT",
                             "value": "(val) ? ';fill: #FFaB69' : ';fill: #CCCCCC'"
                         }
                     },
@@ -2300,8 +2300,8 @@
                         "id": "f17d2eab7591",
                         "read": {
                             "enable": true,
-                            "channel": "wb-adc/A4",
-                            "value": "'A4: ' + val.toFixed(2) + ' V'"
+                            "channel": "wb-gpio/D1_IN",
+                            "value": "(val) ? 'D1: ON' : 'D1: OFF'"
                         },
                         "write": {
                             "enable": false,
@@ -2413,38 +2413,22 @@
                         },
                         "write": {
                             "enable": true,
-                            "channel": "wb-gpio/A4_OUT",
+                            "channel": "wb-gpio/D1_OUT",
                             "value": {
-                                "off": "0",
-                                "on": "1"
+                                "on": 1,
+                                "off": 0
                             }
                         },
                         "visible": {
                             "enable": false,
                             "channel": null,
                             "condition": "==",
-                            "value": ""
+                            "value": null
                         },
                         "style": {
                             "enable": true,
-                            "channel": "wb-gpio/A4_OUT",
+                            "channel": "wb-gpio/D1_OUT",
                             "value": "(val) ? ';fill: #00a3d3' : ';fill: #CCCCCC'"
-                        },
-                        "click": {
-                            "enable": false,
-                            "dashboard": null
-                        },
-                        "long-press": {
-                            "enable": false,
-                            "dashboard": null
-                        },
-                        "long-press-write": {
-                            "enable": false,
-                            "channel": null,
-                            "value": {
-                                "off": "0",
-                                "on": "1"
-                            }
                         }
                     },
                     {
@@ -2781,24 +2765,18 @@
             "id": "widget7"
         },
         {
-            "name": "A4 Terminal",
+            "name": "D1 Terminal",
             "description": "",
             "compact": false,
             "cells": [
                 {
-                    "id": "wb-adc/A4",
-                    "name": "Input Voltage",
-                    "extra": {},
-                    "type": "voltage"
-                },
-                {
-                    "id": "wb-gpio/A4_IN",
+                    "id": "wb-gpio/D1_IN",
                     "name": "Input State",
                     "extra": {},
                     "type": "switch"
                 },
                 {
-                    "id": "wb-gpio/A4_OUT",
+                    "id": "wb-gpio/D1_OUT",
                     "name": "Output Switch",
                     "extra": {},
                     "type": "switch"

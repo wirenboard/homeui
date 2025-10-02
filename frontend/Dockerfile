@@ -1,6 +1,6 @@
 FROM node:alpine as npm-cache
 WORKDIR /app
-COPY package.json ./
+COPY package*.json ./
 RUN apk add --update --no-cache build-base python3
 RUN npm install
 

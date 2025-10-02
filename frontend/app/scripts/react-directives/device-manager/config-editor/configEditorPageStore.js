@@ -594,7 +594,7 @@ class ConfigEditorPageStore {
   setEmbeddedSoftwareUpdateProgress(data) {
     data.devices.forEach((device) => {
       this.tabs
-        .findPortTabByPath(device.port.path)
+        .findPortTabByPath(device.port.path, device.protocol)
         ?.children?.filter(
           (deviceTab) => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id)
         )
