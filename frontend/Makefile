@@ -18,4 +18,4 @@ build:
 
 install:
 	install -d -m 0777 $(DESTDIR)$(WWW_ROOT)/uploads
-	rsync -av --exclude='*.map' dist/ $(DESTDIR)$(WWW_ROOT)
+	rsync -av --exclude='*.eot' --exclude='*.map' dist/ $(DESTDIR)$(WWW_ROOT)
