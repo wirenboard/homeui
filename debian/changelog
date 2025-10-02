@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.141.0) stable; urgency=medium
+
+  * Add rules autocomplete
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 02 Oct 2025 15:14:00 +0300
+
 wb-mqtt-homeui (2.140.1) stable; urgency=medium
 
   * Fix firmware update progress display when updating via Modbus TCP

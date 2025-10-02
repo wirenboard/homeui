@@ -17,7 +17,7 @@ export interface CellTypeEntry {
   units?: string;
 }
 
-export const cellType = new Map<string, CellTypeEntry>([
+export const commonCellTypes = new Map<string, CellTypeEntry>([
   ['text', {
     valueType: 'string',
     displayType: CellComponent.Text,
@@ -28,9 +28,19 @@ export const cellType = new Map<string, CellTypeEntry>([
     displayType: CellComponent.Switch,
     readOnly: false,
   }],
-  ['wo-switch', {
-    valueType: 'boolean',
-    displayType: CellComponent.Switch,
+  ['range', {
+    valueType: 'number',
+    displayType: CellComponent.Range,
+    readOnly: false,
+  }],
+  ['value', {
+    valueType: 'number',
+    displayType: CellComponent.Value,
+    readOnly: true,
+  }],
+  ['rgb', {
+    valueType: 'rgb',
+    displayType: CellComponent.Colorpicker,
     readOnly: false,
   }],
   ['alarm', {
@@ -41,6 +51,14 @@ export const cellType = new Map<string, CellTypeEntry>([
   ['pushbutton', {
     valueType: 'pushbutton',
     displayType: CellComponent.Button,
+    readOnly: false,
+  }],
+]);
+
+const deprecatedCellTypes = new Map<string, CellTypeEntry>([
+  ['wo-switch', {
+    valueType: 'boolean',
+    displayType: CellComponent.Switch,
     readOnly: false,
   }],
   ['temperature', {
@@ -145,27 +163,17 @@ export const cellType = new Map<string, CellTypeEntry>([
     units: 'dB',
     readOnly: true,
   }],
-  ['range', {
-    valueType: 'number',
-    displayType: CellComponent.Range,
-    readOnly: false,
-  }],
-  ['value', {
-    valueType: 'number',
-    displayType: CellComponent.Value,
-    readOnly: true,
-  }],
-  ['rgb', {
-    valueType: 'rgb',
-    displayType: CellComponent.Colorpicker,
-    readOnly: false,
-  }],
   ['current', {
     valueType: 'number',
     displayType: CellComponent.Value,
     units: 'A',
     readOnly: true,
   }],
+]);
+
+export const cellType = new Map<string, CellTypeEntry>([
+  ...commonCellTypes,
+  ...deprecatedCellTypes,
 ]);
 
 export enum CellError {
