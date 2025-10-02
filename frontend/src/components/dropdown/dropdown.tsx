@@ -28,7 +28,10 @@ export const Dropdown = ({
   placeholder,
   size = 'default',
   ariaLabel,
+  multiselect,
   isDisabled,
+  isLoading,
+  isClearable,
   isInvalid,
   isSearchable = false,
   isButton,
@@ -53,6 +56,8 @@ export const Dropdown = ({
       className={classNames(getClassNames(className, size), {
         'dropdown-button': isButton,
         'dropdown-invalid': isInvalid,
+        'dropdown-m': size === 'default',
+        'dropdown-s': size === 'small',
       })}
       classNamePrefix="dropdown"
       options={options}
@@ -60,7 +65,9 @@ export const Dropdown = ({
       placeholder={placeholder || ''}
       isDisabled={isDisabled}
       isSearchable={isSearchable}
-      isClearable={false}
+      isMulti={multiselect}
+      isLoading={isLoading}
+      isClearable={isClearable}
       menuPortalTarget={document.body}
       menuPlacement="auto"
       maxMenuHeight={240}
