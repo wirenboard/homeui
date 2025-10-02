@@ -6,6 +6,7 @@ After=network.target
 Type=simple
 User=root
 ExecStart=/usr/bin/wb-homeui-backend
+ExecStartPre=/usr/lib/wb-homeui-backend/generate-system-config.sh
 Restart=on-failure
 RestartSec=2
 RestartPreventExitStatus=2 3 4 5 6 7

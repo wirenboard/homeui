@@ -4,8 +4,6 @@ dist
 *.tar.*
 .tmp
 .sass-cache
-/bower_components
-app/bower_components
 npm-debug.log
 .tern-port
 
