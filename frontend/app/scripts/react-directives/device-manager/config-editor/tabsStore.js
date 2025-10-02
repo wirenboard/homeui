@@ -300,10 +300,11 @@ export class TabsStore {
     });
   }
 
-  findPortTabByPath(portPath) {
+  findPortTabByPath(portPath, protocol) {
+    const isModbusTcp = protocol === 'modbus-tcp';
     return this.items.find((item) => {
       if (item.type === TabType.PORT) {
-        return item.path === portPath;
+        return item.path === portPath && item.isModbusTcp === isModbusTcp;
       }
       return false;
     });
