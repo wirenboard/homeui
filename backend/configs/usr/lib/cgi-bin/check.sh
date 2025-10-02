@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CHECK_SERVER="http://probe.wirenboard.com"
 

@@ -100,7 +100,7 @@ module.exports = (function makeWebpackConfig() {
         // Compiles ES6 and ES7 into supported by target browsers code
         test: /\.(js|jsx)$/,
         include: [path.resolve(__dirname, 'app', 'scripts'), path.resolve(__dirname, 'app', 'lib')],
-        exclude: /(node_modules|bower_components)/,
+        exclude: /node_modules/,
         use: [
           {
             loader: 'thread-loader',

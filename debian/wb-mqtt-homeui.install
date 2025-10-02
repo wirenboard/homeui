@@ -1,4 +1,1 @@
 var/www
-usr/share/wb-mqtt-homeui
-usr/share/wb-mqtt-confed/schemas
-etc/wb-configs.d/20wb-mqtt-homeui
