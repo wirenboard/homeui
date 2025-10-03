@@ -55,4 +55,8 @@ export default class Device {
     localStorage.setItem('foldedDevices', JSON.stringify(updatedFoldedDevices));
     this.isVisible = foldedDevices.includes(this.id);
   }
+
+  getControls(): string[] {
+    return this.cellIds.map((item) => item.replace(`${this.id}/`, ''));
+  }
 }
