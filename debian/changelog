@@ -1,8 +1,20 @@
-wb-mqtt-homeui (2.141.0) stable; urgency=medium
+wb-mqtt-homeui (2.142.0) stable; urgency=medium
 
   * Add rules autocomplete
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 02 Oct 2025 15:14:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Oct 2025 12:15:00 +0300
+
+wb-mqtt-homeui (2.141.1) stable; urgency=medium
+
+  * Use the same cookie for HTTP and HTTPS
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 03 Oct 2025 11:27:08 +0500
+
+wb-mqtt-homeui (2.141.0) stable; urgency=medium
+
+  * Change switch's off color
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 04 Oct 2025 13:05:00 +0300
 
 wb-mqtt-homeui (2.140.1) stable; urgency=medium
 
