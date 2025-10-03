@@ -54,7 +54,7 @@ def check_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 
-def make_id_cookie(session: Session, secure: bool) -> cookies.SimpleCookie:
+def make_id_cookie(session: Session) -> cookies.SimpleCookie:
     cookie = cookies.SimpleCookie()
     cookie["id"] = session.id
     cookie["id"]["path"] = "/"
@@ -62,8 +62,6 @@ def make_id_cookie(session: Session, secure: bool) -> cookies.SimpleCookie:
     cookie["id"]["samesite"] = "Lax"
     expires = session.start_date + DEFAULT_COOKIE_LIFETIME
     cookie["id"]["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
-    if secure:
-        cookie["id"]["secure"] = True
     return cookie
 
 
@@ -194,12 +192,11 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     if user is None or not check_password(form.get("password"), user.pwd_hash):
         return response_401()
 
-    x_forwarded_scheme = request.headers.get("X-Forwarded-Scheme", "http")
     res = {"user_type": user.type.value}
     session = context.sessions_storage.add_session(user)
     return response_200(
         headers=[
-            make_set_cookie_header(make_id_cookie(session, x_forwarded_scheme == "https")),
+            make_set_cookie_header(make_id_cookie(session)),
             ["Content-type", "application/json"],
         ],
         body=json.dumps(res),
