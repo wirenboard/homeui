@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CollapseIcon from '@/assets/icons/collapse.svg';
 import ExpandIcon from '@/assets/icons/expand.svg';
@@ -8,18 +8,16 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Cell } from '@/components/cell';
+import { ColumnsWrapper } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
-import { DeviceStore, Device } from '@/stores/device';
+import { DeviceStore } from '@/stores/device';
 import './styles.css';
 
 const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRights: boolean }) => {
   const { t } = useTranslation();
-  const pageWrapper = useRef<HTMLElement>(null);
-  const [pageWidth, setPageWidth] = useState(0);
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
-  const [devicesInColumns, setDevicesInColumns] = useState<Device[][]>([]);
 
   if (!localStorage.getItem('foldedDevices')) {
     localStorage.setItem('foldedDevices', JSON.stringify([]));
@@ -30,49 +28,6 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
       title: t('devices.labels.delete'), action: (id: string) => setDeletedDeviceId(id), icon: TrashIcon,
     },
   ];
-
-  const getDevicesColumnsCount = () => {
-    const devicePanelWidth = 376;
-    const columnCount = Math.floor(pageWidth as number / devicePanelWidth);
-    return columnCount || 1;
-  };
-
-  const splitDevicesIntoColumns = () => {
-    const columnCount = getDevicesColumnsCount();
-    const devicesArray = Array.from({ length: columnCount }, () => []);
-
-    let index = 0;
-    store.filteredDevices.forEach((device) => {
-      devicesArray[index].push(device);
-      index = (index + 1) % columnCount;
-    });
-    setDevicesInColumns(devicesArray);
-  };
-
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.contentBoxSize?.length) {
-          setPageWidth(entry.contentBoxSize[0].inlineSize);
-          splitDevicesIntoColumns();
-        }
-      });
-    });
-
-    if (pageWrapper.current) {
-      resizeObserver.observe(pageWrapper.current);
-    }
-
-    return () => {
-      if (pageWrapper.current) {
-        resizeObserver.unobserve(pageWrapper.current);
-      }
-    };
-  }, [pageWrapper, pageWidth]);
-
-  useEffect(() => {
-    splitDevicesIntoColumns();
-  }, [store.filteredDevices.size]);
 
   return (
     <PageLayout
@@ -90,29 +45,30 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
         </Tooltip>
       }
     >
-      <section className="devices-container" ref={pageWrapper}>
+      <section className="devices">
         {store.filteredDevices.size ? (
-          devicesInColumns.map((column, i) => (
-            <div className="devices-column" key={i}>
-              {column.map((device: Device) => (
-                <Card
-                  heading={device.name}
-                  id={device.id}
-                  actions={actions}
-                  toggleBody={device.toggleDeviceVisibility}
-                  isBodyVisible={device.isVisible}
-                  key={device.id}
-                >
-                  {store.getDeviceCells(device.id).map((cell) => (
-                    <Cell
-                      cell={cell}
-                      key={cell.id}
-                    />
-                  ))}
-                </Card>
-              ))}
-            </div>
-          ))
+          <ColumnsWrapper
+            items={Array.from(store.filteredDevices)}
+            columnClassName="devices-column"
+            renderItem={([_deviceId, device]) => (
+              <Card
+                heading={device.name}
+                id={device.id}
+                actions={actions}
+                toggleBody={device.toggleDeviceVisibility}
+                isBodyVisible={device.isVisible}
+                key={device.id}
+              >
+                {store.getDeviceCells(device.id).map((cell) => (
+                  <Cell
+                    cell={cell}
+                    key={cell.id}
+                  />
+                ))}
+              </Card>
+            )}
+            panelWidth={376}
+          />
         ) : (
           <Alert variant="info">
             {t('devices.labels.nothing')}
