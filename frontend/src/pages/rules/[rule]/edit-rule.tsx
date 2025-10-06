@@ -1,4 +1,3 @@
-import { javascript } from '@codemirror/lang-javascript';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,11 +5,12 @@ import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
 import { PageLayout } from '@/layouts/page';
 import { notificationsStore } from '@/stores/notifications';
-import { RulesStore } from '@/stores/rules';
+import { getExtensions } from '@/stores/rules/autocomplete';
 import { getPathname } from '@/utils/url';
+import type { RulePageProps } from './types';
 import './styles.css';
 
-const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore; hasRights: boolean }) => {
+const EditRulePage = observer(({ rulesStore, devicesStore, hasRights }: RulePageProps) => {
   const { t } = useTranslation();
   const { rule } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
@@ -102,7 +102,7 @@ const EditRulePage = observer(({ rulesStore, hasRights }: { rulesStore: RulesSto
           text={rule.content}
           errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
           autoFocus={pathName !== 'new'}
-          extensions={[javascript({ jsx: false })]}
+          extensions={getExtensions(devicesStore)}
           onChange={(value) => rulesStore.setRule(value)}
           onSave={save}
         />
