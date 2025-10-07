@@ -48,12 +48,13 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
       <section className="devices">
         {store.filteredDevices.size ? (
           <ColumnsWrapper
-            items={Array.from(store.filteredDevices)}
             columnClassName="devices-column"
-            renderItem={([_deviceId, device]) => (
+            baseColumnWidth={376}
+          >
+            {Array.from(store.filteredDevices).map(([deviceId, device]) => (
               <Card
                 heading={device.name}
-                id={device.id}
+                id={deviceId}
                 actions={actions}
                 toggleBody={device.toggleDeviceVisibility}
                 isBodyVisible={device.isVisible}
@@ -66,9 +67,8 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
                   />
                 ))}
               </Card>
-            )}
-            baseColumnWidth={376}
-          />
+            ))}
+          </ColumnsWrapper>
         ) : (
           <Alert variant="info">
             {t('devices.labels.nothing')}

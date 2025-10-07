@@ -134,40 +134,36 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
               'dashboard-fullScreen': params.has('hmi'),
             })}
           >
-            <ColumnsWrapper
-              items={dashboards.get(dashboardId).widgets}
-              renderItem={(widgetId) => (
-                widgets.get(widgetId) ? (
-                  <Card
-                    id={widgetId}
-                    heading={widgets.get(widgetId)?.name}
-                    key={widgetId}
-                    actions={actions}
-                    isBodyVisible
-                  >
-                    {widgets.get(widgetId).cells.map((cell, i) => (
-                      <Fragment key={cell.id || i}>
-                        {cells.has(cell.id) ? (
-                          <Cell
-                            cell={cells.get(cell.id)}
-                            name={cell.name}
-                            isCompact={widgets.get(widgetId).compact}
-                            extra={cell.extra}
-                          />
-                        ) : cell.id?.startsWith('separator') ? (
-                          <div className="dashboard-separator">
-                            {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
-                          </div>
-                        )
-                          : cell.name || 'nosuchcell'
-                        }
-                      </Fragment>
-                    ))}
-                  </Card>
-                ) : null
-              )}
-              baseColumnWidth={376}
-            />
+            <ColumnsWrapper baseColumnWidth={376}>
+              {dashboards.get(dashboardId).widgets.map((widgetId) => widgets.get(widgetId) ? (
+                <Card
+                  id={widgetId}
+                  heading={widgets.get(widgetId)?.name}
+                  key={widgetId}
+                  actions={actions}
+                  isBodyVisible
+                >
+                  {widgets.get(widgetId).cells.map((cell, i) => (
+                    <Fragment key={cell.id || i}>
+                      {cells.has(cell.id) ? (
+                        <Cell
+                          cell={cells.get(cell.id)}
+                          name={cell.name}
+                          isCompact={widgets.get(widgetId).compact}
+                          extra={cell.extra}
+                        />
+                      ) : cell.id?.startsWith('separator') ? (
+                        <div className="dashboard-separator">
+                          {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
+                        </div>
+                      )
+                        : cell.name || 'nosuchcell'
+                      }
+                    </Fragment>
+                  ))}
+                </Card>
+              ) : null)}
+            </ColumnsWrapper>
           </div>
         ) : !errors.length && (
           <Alert variant="info" style={{ width: '100%' }}>
