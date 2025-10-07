@@ -67,7 +67,7 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
                 ))}
               </Card>
             )}
-            panelWidth={376}
+            baseColumnWidth={376}
           />
         ) : (
           <Alert variant="info">

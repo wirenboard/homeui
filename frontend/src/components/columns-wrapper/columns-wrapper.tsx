@@ -6,7 +6,7 @@ import './styles.css';
 export function ColumnsWrapper<T>({
   items,
   renderItem,
-  panelWidth,
+  baseColumnWidth,
   columnClassName,
 }: ColumnsWrapperProps<T>) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -14,12 +14,12 @@ export function ColumnsWrapper<T>({
 
   const splitIntoColumns = useCallback(
     (containerWidth: number, list: T[]) => {
-      const count = Math.max(1, Math.floor(containerWidth / panelWidth));
+      const count = Math.max(1, Math.floor(containerWidth / baseColumnWidth));
       const result = Array.from({ length: count }, () => [] as T[]);
       list.forEach((item, i) => result[i % count].push(item));
       setColumns(result);
     },
-    [panelWidth]
+    [baseColumnWidth]
   );
 
   const recalc = useCallback(() => {

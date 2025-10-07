@@ -166,9 +166,8 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
                   </Card>
                 ) : null
               )}
-              panelWidth={376}
+              baseColumnWidth={376}
             />
-            {/* {dashboards.get(dashboardId).widgets.map((widgetId) =>)}*/}
           </div>
         ) : !errors.length && (
           <Alert variant="info" style={{ width: '100%' }}>
