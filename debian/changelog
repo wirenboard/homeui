@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.143.0) stable; urgency=medium
+
+  * Add auth store and move all logic there
+  * Change request util logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 07 Oct 2025 14:50:00 +0300
+
 wb-mqtt-homeui (2.142.0) stable; urgency=medium
 
   * Add rules autocomplete

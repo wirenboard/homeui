@@ -54,10 +54,10 @@ function getIpForHttpsDomainName(hostname: string, deviceIp: string): string | n
 }
 
 const requestHttpsCert = async () =>
-  request<undefined>('/api/https/request_cert', { method: 'POST', emptyResponse: true });
+  request.post<undefined>('/api/https/request_cert');
 
 export const getDeviceInfo = async () =>
-  request<DeviceInfo>('/device/info');
+  request.get<DeviceInfo>('/device/info');
 
 async function waitCertificate(): Promise<string> {
   const MAX_WAIT_TIME = 120000; // 2 minutes
@@ -66,8 +66,8 @@ async function waitCertificate(): Promise<string> {
   while (Date.now() - startTime < MAX_WAIT_TIME) {
     await new Promise((resolve) => setTimeout(resolve, CHECK_INTERVAL));
     try {
-      const deviceInfo = await getDeviceInfo();
-      const certStatus = deviceInfo.https_cert || CertificateStatus.UNAVAILABLE;
+      const { data } = await getDeviceInfo();
+      const certStatus = data.https_cert || CertificateStatus.UNAVAILABLE;
       if (certStatus !== CertificateStatus.REQUESTING) {
         return certStatus;
       }
@@ -97,11 +97,12 @@ async function hasInvalidCertificate(certStatus: string): Promise<boolean> {
 }
 
 export const isHttpsEnabled = async (): Promise<boolean> => {
-  return (await request<HttpsStatus>('/api/https')).enabled;
+  const { data } = await request.get<HttpsStatus>('/api/https');
+  return data.enabled;
 };
 
 export const setupHttps = async (enable: boolean) =>
-  request<undefined>('/api/https', { method: 'PATCH', body: { enabled: enable }, emptyResponse: true });
+  request.patch<undefined>('/api/https', { enabled: enable });
 
 export function urlIsSwitchableToHttps(): boolean {
   const host = window.location.hostname;
@@ -132,7 +133,8 @@ export async function switchToHttps() {
 
   let deviceInfo : DeviceInfo;
   try {
-    deviceInfo = await getDeviceInfo();
+    const { data } = await getDeviceInfo();
+    deviceInfo = data;
     if (!isDeviceSn(deviceInfo.sn)) {
       return false;
     }
