@@ -21,6 +21,16 @@ import {
   defaultColorSceneParameters
 } from '@/stores/alice';
 
+// Инстансы с жёстким диапазоном, который нельзя менять в UI
+const RANGE_LOCKS: Record<string, { min: number; max: number; precision?: number }> = {
+  brightness: { min: 0, max: 100, precision: 1 },
+  // channel: Not blocked
+  humidity:   { min: 0, max: 100, precision: 1 },
+  open:       { min: 0, max: 100, precision: 1 },
+  // temperature: Not blocked
+  // volume: Not blocked
+};
+
 interface DeviceCapabilitiesProps {
   capabilities: SmartDeviceCapability[];
   deviceStore: any;
@@ -400,62 +410,97 @@ export const DeviceCapabilities = observer(({
                       options={ranges.map((range) => ({ label: range, value: range }))}
                       onChange={({ value: instance }: Option<string>) => {
                         const unit = rangeUnitByInstance[instance];
-                        const val = capabilities.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, instance, unit } }
-                          : item);
+                        // const val = capabilities.map((item, i) => i === key
+                        //   ? { ...item, parameters: { ...item.parameters, instance, unit } }
+                        //   : item);
+                        // Если для инстанса есть фиксированный диапазон — проставляем его
+                        const lock = RANGE_LOCKS[instance];
+                        const nextParams = lock
+                          ? {
+                              ...capability.parameters,
+                              instance,
+                              unit,
+                              range: {
+                                min: lock.min,
+                                max: lock.max,
+                                precision: lock.precision ?? capability.parameters?.range?.precision ?? 1,
+                              },
+                            }
+                          : {
+                              ...capability.parameters,
+                              instance,
+                              unit,
+                              // если диапазон уже есть — оставляем как был
+                              range: capability.parameters?.range ?? { min: 0, max: 100, precision: 1 },
+                            };
+                        const val = capabilities.map((item, i) =>
+                          i === key ? { ...item, parameters: nextParams } : item
+                        );
                         onCapabilityChange(val);
                       }}
                     />
                   </div>
                   <div className="aliceDeviceSkills-gridRange">
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
-                      <Input
-                        value={capability.parameters?.range.min}
-                        type="number"
-                        isFullWidth
-                        onChangeEvent={(event) => {
-                          const min = event.currentTarget.valueAsNumber || 0;
-                          const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min } } }
-                            : item);
-                          onCapabilityChange(val);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
-                      <Input
-                        value={capability.parameters?.range.max}
-                        type="number"
-                        isFullWidth
-                        onChangeEvent={(event) => {
-                          const max = event.currentTarget.valueAsNumber || 0;
-                          const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max } } }
-                            : item);
-                          onCapabilityChange(val);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.precision')}</div>
-                      <Input
-                        value={capability.parameters?.range.precision}
-                        type="number"
-                        isFullWidth
-                        onChangeEvent={(event) => {
-                          const precision = event.currentTarget.valueAsNumber || 0;
-                          const val = capabilities.map((item, i) => i === key
-                            ? {
-                              ...item,
-                              parameters: { ...item.parameters, range: { ...item.parameters.range, precision } },
-                            }
-                            : item);
-                          onCapabilityChange(val);
-                        }}
-                      />
-                    </div>
+                    {(() => {
+                      const curInstance = capability.parameters?.instance as string;
+                      const lock = RANGE_LOCKS[curInstance];
+                      const lockedMin = lock?.min ?? capability.parameters?.range.min;
+                      const lockedMax = lock?.max ?? capability.parameters?.range.max;
+                      return (
+                        <>
+                        <div>
+                          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
+                          <Input
+                            value={lockedMin}
+                            type="number"
+                            isFullWidth
+                            isDisabled={!!lock}
+                            onChangeEvent={(event) => {
+                              const min = event.currentTarget.valueAsNumber || 0;
+                              const val = capabilities.map((item, i) => i === key
+                                ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min } } }
+                                : item);
+                              onCapabilityChange(val);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
+                          <Input
+                            value={capability.parameters?.range.max}
+                            type="number"
+                            isFullWidth
+                            isDisabled={!!lock}
+                            onChangeEvent={(event) => {
+                              const max = event.currentTarget.valueAsNumber || 0;
+                              const val = capabilities.map((item, i) => i === key
+                                ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max } } }
+                                : item);
+                              onCapabilityChange(val);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.precision')}</div>
+                          <Input
+                            value={capability.parameters?.range.precision}
+                            type="number"
+                            isFullWidth
+                            onChangeEvent={(event) => {
+                              const precision = event.currentTarget.valueAsNumber || 0;
+                              const val = capabilities.map((item, i) => i === key
+                                ? {
+                                  ...item,
+                                  parameters: { ...item.parameters, range: { ...item.parameters.range, precision } },
+                                }
+                                : item);
+                              onCapabilityChange(val);
+                            }}
+                          />
+                        </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </>
               )}
