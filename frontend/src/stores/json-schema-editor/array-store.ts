@@ -18,7 +18,6 @@ export class ArrayStore implements PropertyStore {
   private _hasStructureChanges: boolean = false;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean, builder: StoreBuilder) {
-    console.log(initialValue);
     this.schema = schema;
     this.required = required;
     this._builder = builder;

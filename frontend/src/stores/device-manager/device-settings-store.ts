@@ -120,8 +120,6 @@ export class DeviceSettingsObjectStore {
       });
     }
 
-    console.log('DeviceSettingsObjectStore initialValue:', initialValueAsObject);
-
     delete initialValueAsObject.channels;
     initialValueAsObject.channels = customChannels;
     this.commonParams = new ObjectStore(schema, initialValueAsObject, false, new StoreBuilder());

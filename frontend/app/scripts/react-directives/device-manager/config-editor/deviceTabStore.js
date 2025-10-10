@@ -464,9 +464,7 @@ export class DeviceTab {
     this.loading = true;
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-      console.log(schema);
       const jsonSchema = loadJsonSchema(schema);
-      console.log(jsonSchema);
       const deviceTemplate = loadDeviceTemplate(schema);
       this.schemaTranslator = new Translator();
       this.schemaTranslator.addTranslations(jsonSchema.translations);
