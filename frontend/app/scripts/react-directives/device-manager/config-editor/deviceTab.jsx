@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Fragment, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { JsonSchemaEditor, OptionalParamsSelectDialog } from '@/components/json-schema-editor';
+import { OptionalParamsSelectDialog } from '@/components/json-schema-editor';
 import { DeviceSettingsEditor } from '@/pages/settings/device-manager';
 import {
   Button,
