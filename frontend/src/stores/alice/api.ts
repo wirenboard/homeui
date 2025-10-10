@@ -10,40 +10,38 @@ import type {
   SuccessMessageFetch
 } from './types';
 
-export const checkIsAliceAvailable = async () => request<boolean>(
+export const checkIsAliceAvailable = async () => request.get<boolean>(
   '/api/integrations/alice/available'
 );
 
-export const getAliceInfo = async () => request<AliceFetchData>(
+export const getAliceInfo = async () => request.get<AliceFetchData>(
   '/api/integrations/alice'
 );
 
-export const addRoom = async (name: string) => request<AddRoomFetchData>(
+export const addRoom = async (name: string) => request.post<AddRoomFetchData>(
   '/api/integrations/alice/room',
-  { method: 'POST', body: { name } }
+  { name }
 );
 
-export const updateRoom = async (id: string, body: AliceRoomUpdateParams) => request<Room>(
+export const updateRoom = async (id: string, body: AliceRoomUpdateParams) => request.put<Room>(
   `/api/integrations/alice/room/${id}`,
-  { method: 'PUT', body }
+  body
 );
 
-export const deleteRoom = async (id: string) => request<SuccessMessageFetch>(
-  `/api/integrations/alice/room/${id}`,
-  { method: 'DELETE' }
+export const deleteRoom = async (id: string) => request.delete<SuccessMessageFetch>(
+  `/api/integrations/alice/room/${id}`
 );
 
-export const addDevice = async (body: AddDeviceParams) => request<AddDeviceFetchData>(
+export const addDevice = async (body: AddDeviceParams) => request.post<AddDeviceFetchData>(
   '/api/integrations/alice/device',
-  { method: 'POST', body }
+  body
 );
 
-export const updateDevice = async (id: string, body: Partial<SmartDevice>) => request<SmartDevice>(
+export const updateDevice = async (id: string, body: Partial<SmartDevice>) => request.put<SmartDevice>(
   `/api/integrations/alice/device/${id}`,
-  { method: 'PUT', body }
+  body
 );
 
-export const deleteDevice = async (id: string) => request<SuccessMessageFetch>(
-  `/api/integrations/alice/device/${id}`,
-  { method: 'DELETE' }
+export const deleteDevice = async (id: string) => request.delete<SuccessMessageFetch>(
+  `/api/integrations/alice/device/${id}`
 );

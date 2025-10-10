@@ -48,6 +48,7 @@
     "angular-ui-scroll": "^1.8.2",
     "angular-xeditable": "^0.10.2",
     "angularjs-dropdown-multiselect": "^2.0.0-beta.10",
+    "axios": "1.12.2",
     "bootstrap": "^3.3.7",
     "classnames": "2.5.1",
     "dompurify": "^3.0.1",

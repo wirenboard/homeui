@@ -1,3 +1,5 @@
+import { authStore } from '@/stores/auth';
+
 class NavigationCtrl {
   constructor(
     $scope,
@@ -103,17 +105,7 @@ class NavigationCtrl {
     };
 
     $scope.logout = function () {
-      if (rolesFactory.currentUserIsAutologinUser) {
-        // If the user is an autologin user, just show login page to select another user.
-        // No need to log out
-        $state.go('login');
-      } else {
-        fetch('/auth/logout', {
-          method: 'POST',
-        }).then(() => {
-          location.reload();
-        });
-      }
+      authStore.logout()
     };
   }
 
