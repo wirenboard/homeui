@@ -94,6 +94,7 @@ export class MobileModeTabsStore {
       showContentPanel: action.bound,
       setMobileMode: action.bound,
       movedToTabsPanel: action,
+      movedToContentPanel: action,
     });
   }
 
@@ -170,7 +171,10 @@ export class TabsStore {
     this.items.splice(i, 0, deviceTab);
     this.hasModifiedStructure = true;
     if (selectTab) {
-      this.onSelectTab(i);
+      this.selectedTabIndex = i;
+      if (this.mobileModeStore.inMobileMode) {
+        this.mobileModeStore.showContentPanel();
+      }
     }
   }
 

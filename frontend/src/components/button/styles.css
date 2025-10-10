@@ -3,7 +3,9 @@
     color: var(--button-color);
     border-radius: var(--input-border-radius);
     transition: background 200ms linear, color 200ms linear, var(--input-active-shadow-transition);
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .button:not(:disabled) {
