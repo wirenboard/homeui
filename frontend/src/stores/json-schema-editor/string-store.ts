@@ -81,7 +81,7 @@ export class StringStore implements PropertyStore {
       this.error = { key: 'json-editor.errors.max-length', data: { limit: this.schema.maxLength } };
       return;
     }
-    if (this.value.length < this.schema.minLength) {
+    if (this.schema.minLength !== undefined && this.value.length < this.schema.minLength) {
       this.error = { key: 'json-editor.errors.min-length', data: { limit: this.schema.minLength } };
       return;
     }
