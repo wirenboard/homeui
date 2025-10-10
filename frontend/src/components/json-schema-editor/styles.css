@@ -1,0 +1,75 @@
+.wb-jsonEditor-propertyDescription {
+    display: block;
+    color: var(--gray-color);
+    margin-top: 5px;
+    margin-bottom: 0px;
+    flex-basis: 100%;
+}
+
+.wb-jsonEditor-defaultText {
+    padding: .1em .3em;
+    white-space: break-spaces;
+    background-color: var(--light-gray-color);
+    border-radius: 6px;
+}
+
+.wb-jsonEditor-propertyError {
+    color: var(--danger-color);
+}
+
+.wb-jsonEditor-propertyError > input[type="text"],
+.wb-jsonEditor-propertyError > input[type="number"] {
+    border-color: var(--danger-color);
+}
+
+.wb-jsonEditor-errorText {
+    color: var(--danger-color);
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
+.wb-jsonEditor-optionalParamsList {
+    padding: 0px 16px 16px 16px;
+}
+
+.wb-jsonEditor-descriptionText {
+    white-space: pre-wrap;
+}
+
+.wb-jsonEditor-objectEditor {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.wb-jsonEditor-objectEditorRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.wb-jsonEditor-objectProperty {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.wb-jsonEditor-propertyCheckbox {
+    margin-bottom: 5px !important;
+    white-space: nowrap;
+}
+
+.wb-jsonEditor-propertyLabel {
+    white-space: nowrap;
+}
+
+.wb-jsonEditor-arrayEditor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wb-jsonEditor-addButton {
+    max-width: 100px;
+}

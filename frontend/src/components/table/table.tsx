@@ -83,7 +83,7 @@ export const TableCell = ({
 );
 
 export const Table = ({
-  children, isLoading, isFullWidth, isWithoutGap, ...rest
+  children, className, isLoading, isFullWidth, isWithoutGap, ...rest
 }: PropsWithChildren<TableProps>) => {
 
   const enhancedChildren = Children.map(children, (child) => {
@@ -95,7 +95,7 @@ export const Table = ({
 
   return (
     (
-      <div className="wb-tableWrapper" {...rest}>
+      <div className={classNames('wb-tableWrapper', className)} {...rest}>
         <div
           role="grid"
           className={classNames('wb-table', {

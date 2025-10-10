@@ -1,12 +1,14 @@
 import { HTMLAttributes } from 'react';
 
 export interface TableProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
   isLoading?: boolean;
   isFullWidth?: boolean;
   isWithoutGap?: boolean;
 }
 
 export interface TableRowProps extends HTMLAttributes<HTMLDivElement | HTMLAnchorElement> {
+  className?: string;
   url?: string;
   gap?: number;
   isFullWidth?: boolean;

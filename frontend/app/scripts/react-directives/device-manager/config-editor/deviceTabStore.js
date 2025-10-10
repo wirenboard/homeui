@@ -1,10 +1,10 @@
 import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
+import { DeviceSettingsObjectStore, loadDeviceTemplate } from '@/stores/device-manager';
+import { loadJsonSchema, Translator } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
-import { firmwareIsNewer, firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
+import { firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
-import { getDefaultObject } from './jsonSchemaUtils';
 import { TabType } from './tabsStore';
 
 export function toRpcPortConfig(portConfig) {
@@ -314,35 +314,29 @@ export class EmbeddedSoftware {
 
 export class DeviceTab {
   constructor(data, deviceType, deviceTypesStore, fwUpdateProxy) {
-    this.name = '';
     this.type = TabType.DEVICE;
     this.data = data;
-    this.editedData = cloneDeep(data);
     this.deviceTypesStore = deviceTypesStore;
     this.deviceType = deviceType;
-    this.hasJsonValidationErrors = false;
-    this.isDirty = false;
     this.hidden = false;
     this.loading = true;
     this.isDeprecated = deviceTypesStore.isDeprecated(deviceType);
     this.withSubdevices = deviceTypesStore.withSubdevices(deviceType);
-    this.schema = undefined;
     this.isUnknownType = deviceTypesStore.isUnknown(deviceType);
     this.error = '';
-    this.acceptJsonEditorInitial = true;
     this.slaveIdIsDuplicate = false;
     this.isModbusDevice = deviceTypesStore.isModbusDevice(deviceType);
     this.devicesWithTheSameId = [];
     this.isDisconnected = false;
     this.embeddedSoftware = new EmbeddedSoftware(fwUpdateProxy);
     this.waitingForDeviceReconnect = false;
-
-    this.updateName();
+    this.schemaStore = undefined;
+    this.schemaTranslator = undefined;
 
     makeObservable(this, {
-      name: observable,
-      isDirty: observable,
-      hasJsonValidationErrors: observable,
+      name: computed,
+      isDirty: computed,
+      hasJsonValidationErrors: computed,
       hidden: observable,
       isDeprecated: observable,
       withSubdevices: observable,
@@ -353,9 +347,8 @@ export class DeviceTab {
       devicesWithTheSameId: observable,
       isDisconnected: observable,
       waitingForDeviceReconnect: observable,
-      editedData: observable.ref,
-      setData: action.bound,
-      updateName: action,
+      editedData: computed,
+      schemaStore: observable.ref,
       commitData: action,
       setDeviceType: action,
       loadSchema: action,
@@ -372,31 +365,43 @@ export class DeviceTab {
     });
   }
 
-  updateName() {
-    let name = this.deviceTypesStore.getName(this.deviceType);
-    if (!name) {
-      name = i18n.t('device-manager.labels.unknown-device-type');
-    }
-    this.name = `${this.editedData?.slave_id || ''} ` + name;
+  get editedData() {
+    return this.schemaStore !== undefined ? this.schemaStore.value : this.data;
   }
 
-  setData(data, errors, initial) {
-    // On first start json-editor modifies json according to defaults.
-    // It is not a config change, so use resulting object as initial device config
-    if (initial && this.acceptJsonEditorInitial) {
-      this.data = cloneDeep(data);
-      this.acceptJsonEditorInitial = false;
+  get isDirty() {
+    return this.schemaStore !== undefined ? this.schemaStore.isDirty : false;
+  }
+
+  get hasJsonValidationErrors() {
+    return this.schemaStore !== undefined ? this.schemaStore.hasErrors : false;
+  }
+
+  get name() {
+    let deviceName = this.deviceTypesStore.getName(this.deviceType);
+    if (!deviceName) {
+      deviceName = i18n.t('device-manager.labels.unknown-device-type');
     }
-    this.isDirty = !isEqual(this.data, data);
-    this.editedData = cloneDeep(data);
-    this.hasJsonValidationErrors = errors.length !== 0;
-    this.updateName();
+    return `${this.slaveId || ''} ` + deviceName;
   }
 
   async setDeviceType(type) {
+    if (this.deviceType === type) {
+      return;
+    }
     this.loading = true;
+    const oldSlaveId = this.slaveId;
     try {
-      this.schema = await this.deviceTypesStore.getSchema(type);
+      const schema = await this.deviceTypesStore.getSchema(type);
+      const jsonSchema = loadJsonSchema(schema);
+      const deviceTemplate = loadDeviceTemplate(schema);
+      this.schemaTranslator = new Translator();
+      this.schemaTranslator.addTranslations(jsonSchema.translations);
+      this.schemaTranslator.addTranslations(deviceTemplate.translations);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, {});
+      });
+      this.schemaStore.setDefault();
     } catch (err) {
       const errorMsg = i18n.t('device-manager.errors.change-device-type', {
         error: err.message,
@@ -411,21 +416,16 @@ export class DeviceTab {
       this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
       this.withSubdevices = this.deviceTypesStore.withSubdevices(this.deviceType);
       this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);
-      const currentSlaveId = this.editedData.slave_id;
-      this.editedData = getDefaultObject(this.schema);
-      this.editedData.slave_id = currentSlaveId;
-      this.isDirty = false;
-      this.hasJsonValidationErrors = false;
-      this.updateName();
+      this.schemaStore.setSlaveId(oldSlaveId);
       this.clearError();
       this.loading = false;
     });
   }
 
   commitData() {
-    this.data = cloneDeep(this.editedData);
-    this.hasJsonValidationErrors = false;
-    this.isDirty = false;
+    if (this.schemaStore) {
+      this.schemaStore.commit();
+    }
   }
 
   getCopy() {
@@ -433,20 +433,25 @@ export class DeviceTab {
     dataCopy.slave_id = '';
     let tab = new DeviceTab(dataCopy, this.deviceType, this.deviceTypesStore);
     tab.loadSchema();
-    runInAction(() => {
-      tab.hasJsonValidationErrors = true;
-    });
     return tab;
   }
 
   async loadSchema() {
-    if (this.isUnknownType || this.schema !== undefined) {
+    if (this.isUnknownType || this.withSubdevices || this.schemaStore !== undefined) {
       this.loading = false;
       return;
     }
     this.loading = true;
     try {
-      this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
+      const schema = await this.deviceTypesStore.getSchema(this.deviceType);
+      const jsonSchema = loadJsonSchema(schema);
+      const deviceTemplate = loadDeviceTemplate(schema);
+      this.schemaTranslator = new Translator();
+      this.schemaTranslator.addTranslations(jsonSchema.translations);
+      this.schemaTranslator.addTranslations(deviceTemplate.translations);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
+      });
     } catch (err) {
       this.setError(err.message);
     }
@@ -457,13 +462,23 @@ export class DeviceTab {
 
   async setDefaultData() {
     this.loading = true;
-    this.schema = await this.deviceTypesStore.getSchema(this.deviceType);
+    if (this.schemaStore === undefined) {
+      const schema = await this.deviceTypesStore.getSchema(this.deviceType);
+      console.log(schema);
+      const jsonSchema = loadJsonSchema(schema);
+      console.log(jsonSchema);
+      const deviceTemplate = loadDeviceTemplate(schema);
+      this.schemaTranslator = new Translator();
+      this.schemaTranslator.addTranslations(jsonSchema.translations);
+      this.schemaTranslator.addTranslations(deviceTemplate.translations);
+      runInAction(() => {
+        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
+      });
+    }
+    if (this.schemaStore) {
+      this.schemaStore.setDefault();
+    }
     runInAction(() => {
-      this.acceptJsonEditorInitial = true;
-      this.editedData = getDefaultObject(this.schema);
-      this.data = cloneDeep(this.editedData);
-      this.isDirty = false;
-      this.updateName();
       this.loading = false;
     });
   }
@@ -477,7 +492,7 @@ export class DeviceTab {
   get mqttId() {
     return (
       this.editedData.id ||
-      this.deviceTypesStore.getDefaultId(this.deviceType, this.editedData.slave_id)
+      this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId)
     );
   }
 
@@ -496,14 +511,13 @@ export class DeviceTab {
   }
 
   setUniqueMqttTopic() {
-    if (this.editedData.id) {
-      this.editedData.id = this.editedData.id + '_2';
-    } else {
-      this.editedData.id =
-        this.deviceTypesStore.getDefaultId(this.deviceType, this.editedData.slave_id) + '_2';
+    const idParam = this.schemaStore?.params?.['id'];
+    if (idParam) {
+      const oldId = idParam.value.hasError ?
+        this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId) :
+        idParam.value;
+      idParam.setValue(oldId + '_2');
     }
-    // To trigger mobx update
-    this.editedData = cloneDeep(this.editedData);
   }
 
   setDevicesWithTheSameId(devices) {
