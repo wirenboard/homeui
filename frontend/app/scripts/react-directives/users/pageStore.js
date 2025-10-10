@@ -62,7 +62,7 @@ class UsersPageStore {
         },
       ],
       value: null,
-    }),
+    });
     this.users = [];
     this.httpsDomainName = '';
 
@@ -103,7 +103,7 @@ class UsersPageStore {
     this.pageWrapperStore.setLoading(true);
     try {
       const res = await authStore.getUsers();
-      if (res.statusText === 'OK') {
+      if (res.status === 200) {
         this.setUsers(res.data);
         if (!this.users.length) {
           const deviceInfo = await getDeviceInfo();
@@ -160,7 +160,6 @@ class UsersPageStore {
     }
 
     if (oldAutologinUser) {
-      authStore.updateUser(oldAutologinUser.id, { autologin: false });
       this.fetchWrapper(() => authStore.updateUser(oldAutologinUser.id, { autologin: false }));
       oldAutologinUser.autologin = false;
     }
@@ -179,7 +178,7 @@ class UsersPageStore {
       this.pageWrapperStore.clearError();
       this.pageWrapperStore.setLoading(true);
       const res = await fetchFn();
-      if (res.status.toString().startsWith('2')) {
+      if (res.status === 200) {
         this.pageWrapperStore.setLoading(false);
         return res;
       }

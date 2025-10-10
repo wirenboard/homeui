@@ -19,8 +19,10 @@ export async function fillUserType(rolesFactory) {
     rolesFactory.setUsersAreConfigured(true);
     rolesFactory.setCurrentUserIsAutologinUser(user.autologin);
     return 'ok';
-  } catch (e) {
-    return 'login';
+  } catch (err) {
+    if (err.status === 401) {
+      return 'login';
+    }
   }
   // No users are configured, so we have admin access
   rolesFactory.setRole('admin');

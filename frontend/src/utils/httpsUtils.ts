@@ -66,8 +66,8 @@ async function waitCertificate(): Promise<string> {
   while (Date.now() - startTime < MAX_WAIT_TIME) {
     await new Promise((resolve) => setTimeout(resolve, CHECK_INTERVAL));
     try {
-      const { data } = await getDeviceInfo();
-      const certStatus = data.https_cert || CertificateStatus.UNAVAILABLE;
+      const { https_cert } = await getDeviceInfo().then(({ data }) => data);
+      const certStatus = https_cert || CertificateStatus.UNAVAILABLE;
       if (certStatus !== CertificateStatus.REQUESTING) {
         return certStatus;
       }
@@ -97,8 +97,7 @@ async function hasInvalidCertificate(certStatus: string): Promise<boolean> {
 }
 
 export const isHttpsEnabled = async (): Promise<boolean> => {
-  const { data } = await request.get<HttpsStatus>('/api/https');
-  return data.enabled;
+  return request.get<HttpsStatus>('/api/https').then(({ data }) => data.enabled);
 };
 
 export const setupHttps = async (enable: boolean) =>
@@ -133,8 +132,7 @@ export async function switchToHttps() {
 
   let deviceInfo : DeviceInfo;
   try {
-    const { data } = await getDeviceInfo();
-    deviceInfo = data;
+    deviceInfo = await getDeviceInfo().then(({ data }) => data);
     if (!isDeviceSn(deviceInfo.sn)) {
       return false;
     }

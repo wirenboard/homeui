@@ -6,7 +6,7 @@ import type { AuthResponse, User, UserBody } from './types';
 export default class AuthStore {
   public userRole: UserRole;
   public isAutologin: boolean;
-  public isUsersConfigured: boolean;
+  public areUsersConfigured: boolean;
   public users: User[];
 
   constructor() {
@@ -31,7 +31,7 @@ export default class AuthStore {
     const { data } = await request.post<AuthResponse>('/auth/login', body);
     this.userRole = data.user_type;
     this.isAutologin = false;
-    this.isUsersConfigured = true;
+    this.areUsersConfigured = true;
     return data;
   }
 
