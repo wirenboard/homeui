@@ -73,7 +73,7 @@ class UsersPageStore {
     }
   }
 
-  async processFetchError(fetchResponse) {
+  processFetchError(fetchResponse) {
     switch (fetchResponse.status) {
       case 403: {
         this.pageWrapperStore.setError(i18n.t('users.errors.forbidden'));
@@ -85,7 +85,7 @@ class UsersPageStore {
       }
       default: {
         this.pageWrapperStore.setError(
-          i18n.t('users.errors.unknown', { msg: fetchResponse.data, interpolation: { escapeValue: false } })
+          i18n.t('users.errors.unknown', { msg: fetchResponse.message, interpolation: { escapeValue: false } })
         );
       }
     }
@@ -102,18 +102,14 @@ class UsersPageStore {
   async loadUsers() {
     this.pageWrapperStore.setLoading(true);
     try {
-      const res = await authStore.getUsers();
-      if (res.status === 200) {
-        this.setUsers(res.data);
-        if (!this.users.length) {
-          const deviceInfo = await getDeviceInfo();
-          this.httpsDomainName = makeHttpsUrlOrigin(deviceInfo);
-        }
-      } else {
-        await this.processFetchError(res);
+      const users = await authStore.getUsers().then(({ data }) => data);
+      this.setUsers(users);
+      if (!this.users.length) {
+        const deviceInfo = await getDeviceInfo();
+        this.httpsDomainName = makeHttpsUrlOrigin(deviceInfo);
       }
     } catch (error) {
-      this.pageWrapperStore.setError(error);
+      this.processFetchError(error);
       this.setUsers([]);
     } finally {
       this.pageWrapperStore.setLoading(false);
@@ -177,16 +173,12 @@ class UsersPageStore {
     try {
       this.pageWrapperStore.clearError();
       this.pageWrapperStore.setLoading(true);
-      const res = await fetchFn();
-      if (res.status === 200) {
-        this.pageWrapperStore.setLoading(false);
-        return res;
-      }
-      await this.processFetchError(res);
+      return await fetchFn();
     } catch (error) {
-      this.pageWrapperStore.setError(error);
+      this.processFetchError(error);
+    } finally {
+      this.pageWrapperStore.setLoading(false);
     }
-    this.pageWrapperStore.setLoading(false);
     return null;
   }
 
@@ -200,17 +192,14 @@ class UsersPageStore {
     this.pageWrapperStore.clearError();
     this.pageWrapperStore.setLoading(true);
     try {
-      const res = await request.patch('/api/https', { enabled: true });
-      if (res.status === 200) {
-        this.pageWrapperStore.setLoading(false);
-        window.location.reload();
-        return false;
-      }
-      await this.processFetchError(res);
+      await request.patch('/api/https', { enabled: true });
+      window.location.reload();
+      return false;
     } catch (error) {
-      this.pageWrapperStore.setError(error);
+      this.processFetchError(error);
+    } finally {
+      this.pageWrapperStore.setLoading(false);
     }
-    this.pageWrapperStore.setLoading(false);
     return false;
   }
 
