@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.143.0) stable; urgency=medium
+
+  * Add auth store and move all logic there
+  * Change request util logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Oct 2025 13:18:00 +0300
+
 wb-mqtt-homeui (2.142.2) stable; urgency=medium
 
   * Save HTTPS settings during upgrade with fit-image
