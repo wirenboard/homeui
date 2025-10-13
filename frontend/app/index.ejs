@@ -2,7 +2,7 @@
 <html class="no-js">
   <head>
     <meta charset="utf-8">
-    <title>Wiren Board Web UI</title>
+    <title><%= APP_NAME %></title>
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,168 +17,50 @@
     </style>
   </head>
 
-  <body ng-app="realHomeuiApp" ng-class="{ 'fullscreen': checkFullscreen(), 'hmi': isHMI, 'no-console': noConsole }">
+  <body ng-app="realHomeuiApp" class="{{theme}}" ng-class="{ 'fullscreen': checkFullscreen(), 'hmi': isHMI, 'no-console': noConsole }">
   <toast></toast>
 
   <double-bounce-spinner></double-bounce-spinner>
   <span id="https-setup-label" translate>{{'app.labels.setting-up-https'}}</span>
 
+  <div id="overlay"></div>
   <div id="wrapper" class="fade" ng-class="{ 'show-console': consoleVisible }">
-      <exp-check-widget></exp-check-widget>
+      <navigation></navigation>
 
-      <!-- Navigation -->
-      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller='NavigationCtrl' ng-class="{ 'disabled': disableNavigation() }">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse" ng-click="toggleNavigation()">
-                  <span class="sr-only" translate>{{'navigation.menu.toggle'}}</span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand wb-navbar-brand" ui-sref="home" draggable="false">
-                <img src="images/logo.svg" alt="Wiren Board Web UI" draggable="false">
-              </a>
-              <div class="navbar-text navbar-right connection-status">
-                <span class="connected-status label label-success" ng-show="isConnected()" translate>{{'navigation.connection.active'}}</span>
-                <span class="connected-status label label-danger" ng-show="!isConnected()" translate>{{'navigation.connection.inactive'}}</span>
-              </div>
+      <div id="page-wrapper">
+          <exp-check-widget></exp-check-widget>
+
+          <div class="alert alert-danger" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="visible">
+              <button type="button" class="close" ng-click="visible = false;"
+                      aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span ng-bind-html="messageHtml"></span>
           </div>
-
-          <div class="nav navbar-nav navbar-right ma-0"></div>
-
-          <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-          <div class="collapse navbar-collapse navbar-ex1-collapse">
-              <ul class="nav navbar-nav side-nav">
-                  <li>
-                      <a href="javascript:" data-toggle="collapse" data-target="#dashboards-menu" draggable="false">
-                          <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.dashboards' | translate}}
-                      </a>
-                      <ul id="dashboards-menu" class="collapse in">
-                          <li ng-if="!checkFullscreen()">
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref-active="active" ui-sref="dashboards" draggable="false" translate>{{'navigation.menu.list'}}</a>
-                          </li>
-                          <li ng-repeat="d in dashboards()" dashboard-menu-item>
-                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
-                            <a ng-if="!forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
-                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="!d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard({ id: d.id, fullscreen: true })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
-                            <a ng-if="forceFullscreen" data-toggle="collapse" ng-show="d.svg.current.length" data-target=".navbar-ex1-collapse" ui-sref="dashboard-svg({ id: d.id, fullscreen: true })" ui-sref-active="active" draggable="false">{{ d.name }}</a>
-                          </li>
-                      </ul>
-                  </li>
-                  <li ui-sref-active="active" user-role="mto" current-role="roles.current.role" ng-if="!checkFullscreen()">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="devices" draggable="false"><i class="glyphicon glyphicon-cog"></i> {{'navigation.menu.devices' | translate}}</a>
-                  </li>
-                  <li ui-sref-active="active" ng-if="!checkFullscreen() && integrations.length" user-role="mtt" current-role="roles.current.role">
-                      <a href="javascript:" data-toggle="collapse" data-target="#integrations-menu" draggable="false">
-                          <i class="glyphicon glyphicon-transfer"></i> {{'navigation.menu.integrations' | translate}}
-                      </a>
-                      <ul id="integrations-menu" class="collapse" ng-class="{ in: isActive('/integrations/alice') }">
-                          <li>
-                              <a data-toggle="collapse" ng-if="integrations.includes('alice')" data-target=".navbar-ex1-collapse" ui-sref="integrations-alice" ui-sref-active="active" draggable="false">{{'navigation.menu.alice' | translate}}</a>
-                          </li>
-                      </ul>
-                  </li>
-                  <li ui-sref-active="active" ng-if="!checkFullscreen()">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="widgets" draggable="false"><i class="glyphicon glyphicon-list-alt"></i> {{'navigation.menu.widgets' | translate}}</a>
-                  </li>
-                  <li ui-sref-active="active">
-                      <a ng-if="forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history({fullscreen: true})" draggable="false"><i class="glyphicon glyphicon-stats"></i> {{'navigation.menu.history' | translate}}</a>
-                      <a ng-if="!forceFullscreen" data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="history"><i class="glyphicon glyphicon-stats" draggable="false"></i> {{'navigation.menu.history' | translate}}</a>
-                  </li>
-                   <li ui-sref-active="active" ng-if="!checkFullscreen()"
-                   ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
-                      <a href="javascript:" data-toggle="collapse" data-target="#rules-menu" draggable="false">
-                          <i class="glyphicon glyphicon-file"></i> {{'navigation.menu.rules' | translate}}
-                      </a>
-                      <ul id="rules-menu" class="collapse">
-                          <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="rules" ui-sref-active="active" draggable="false">{{'navigation.menu.rule-editor' | translate}}</a>
-                          </li>
-                          <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="configEdit({path: '/usr/share/wb-mqtt-confed/schemas/wb-scenarios.schema.json'})" ui-sref-active="active" draggable="false">{{'navigation.menu.scenario' | translate}}</a>
-                          </li>
-                      </ul>
-                  </li>
-                  <li ui-sref-active="active" ng-if="!checkFullscreen()">
-                      <a href="javascript:" data-toggle="collapse" data-target="#settings-menu" draggable="false">
-                          <i class="glyphicon glyphicon-wrench"></i> {{'navigation.menu.settings' | translate}}
-                      </a>
-                      <ul id="settings-menu" class="collapse">
-                          <li ng-show="isConnected()" user-role="mtt" current-role="roles.current.role">
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="configs" ui-sref-active="active" draggable="false">{{'navigation.menu.configs' | translate}}</a>
-                          </li>
-                          <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="webUI" ui-sref-active="active" draggable="false">{{'navigation.menu.ui' | translate}}</a>
-                          </li>
-                          <li user-role="mtt" current-role="roles.current.role">
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="system" ui-sref-active="active" draggable="false">{{'navigation.menu.system' | translate}}</a>
-                          </li>
-                          <li>
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="MQTTChannels" ui-sref-active="active" draggable="false">{{'navigation.menu.channels' | translate}}</a>
-                          </li>
-                          <li ng-if="showAccessControl()">
-                              <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="accessLevel" ui-sref-active="active" draggable="false">{{'navigation.menu.access' | translate}}</a>
-                          </li>
-                          <li user-role="mto" current-role="roles.current.role">
-                            <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="logs" draggable="false">{{'navigation.menu.logs' | translate}}</a>
-                          </li>
-                      </ul>
-                  </li>
-                  <li ui-sref-active="active" ng-if="!checkFullscreen()">
-                      <a data-toggle="collapse" data-target=".navbar-ex1-collapse" ui-sref="help" draggable="false"><i class="glyphicon glyphicon-question-sign"></i> {{'navigation.menu.help' | translate}}</a>
-                  </li>
-                  <li class="logout-menu" ng-if="showUserMenu() && !checkFullscreen()">
-                    <a href="javascript:" ng-click="logout()" draggable="false"><i class="fas fa-sign-out-alt"></i> {{ userMenuLabel() | translate}}</a>
-                  </li>
-              </ul>
+          <% if (htmlWebpackPlugin.options.stableRelease) { %>
+          <div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="stableNotice">
+            <button type="button" class="close" ng-click="closeStableNotice()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" draggable="false">testing</a>
           </div>
-          <!-- /.navbar-collapse -->
-      </nav>
-
-      <div id="overlay"></div>
-
-      <div id="page-wrapper" class="{{theme}}">
-
-                      <div class="alert alert-danger" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="visible">
-                          <button type="button" class="close" ng-click="visible = false;"
-                                  aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                          <span ng-bind-html="messageHtml"></span>
-                      </div>
-                      <% if (htmlWebpackPlugin.options.stableRelease) { %>
-                      <div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="stableNotice">
-                        <button type="button" class="close" ng-click="closeStableNotice()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" draggable="false">testing</a>
-                      </div>
-                      <% } %>
-                      <!-- viewport for child view -->
-                      <div ng-show='stateIsLoading'>
-                          <strong translate>{{'heading.loading'}}</strong>
-                      </div>
-                      <ui-view ng-hide='stateIsLoading'></ui-view>
-
+          <% } %>
+          <!-- viewport for child view -->
+          <div ng-show='stateIsLoading'>
+              <strong translate>{{'heading.loading'}}</strong>
+          </div>
+          <ui-view ng-hide='stateIsLoading'></ui-view>
       </div>
       <!-- /#page-wrapper -->
-
   </div>
 
-    <div ng-if="allowWbRulesDebug()">
-        <div class="console ng-hide" ng-show="consoleVisible">
-            <console></console>
-            <button type="button" name="close" class="close"
-                    ng-click="consoleVisible = false">
-                <span class="glyphicon glyphicon-remove"></span>
-            </button>
-        </div>
-
-        <button type="button" class="btn-default btn-lg show-console-button"
-                ng-hide="consoleVisible"
-                ng-click="consoleVisible = true">
-            <span class="glyphicon glyphicon-wrench"></span>
-        </button>
-    </div>
+  <div ng-if="allowWbRulesDebug()">
+      <div class="console ng-hide" ng-show="consoleVisible">
+          <console></console>
+          <button type="button" name="close" class="close"
+                  ng-click="toggleConsole()">
+              <span class="glyphicon glyphicon-remove"></span>
+          </button>
+      </div>
+  </div>
 
   </body>
 </html>

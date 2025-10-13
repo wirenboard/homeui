@@ -2,7 +2,7 @@ import { DashboardsStore } from '@/stores/dashboards';
 import { DeviceStore } from '@/stores/device';
 
 export interface DashboardPageProps {
-  dashboardStore: DashboardsStore;
+  dashboardsStore: DashboardsStore;
   devicesStore: DeviceStore;
   hasEditRights: boolean;
 }

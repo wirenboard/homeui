@@ -19,7 +19,7 @@ import type { WidgetAddProps } from './types';
 import './styles.css';
 
 export const WidgetAdd = observer(({
-  dashboardStore,
+  dashboardsStore,
   widgets,
   dashboard,
   cells,
@@ -185,7 +185,7 @@ export const WidgetAdd = observer(({
             setIsEditing(false);
           }}
           onSave={(data) => {
-            (widgets.get(widgetId) ?? new Widget(data, dashboardStore)).save(data);
+            (widgets.get(widgetId) ?? new Widget(data, dashboardsStore)).save(data);
             setIsEditing(false);
             setWidgetId(data.id);
           }}

@@ -1,15 +1,16 @@
+import debounce from 'lodash/debounce';
 import { observer } from 'mobx-react-lite';
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Option } from '@/components/dropdown';
-import { BooleanField, FormFieldGroup, OptionsField } from '@/components/form';
+import { BooleanField, FormFieldGroup, OptionsField, StringField } from '@/components/form';
 import { CommonSettingsProps } from '../types';
 
-const CommonSettings = observer(({ onChangeLanguage, dashboardStore }: CommonSettingsProps) => {
+const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSettingsProps) => {
   const { t } = useTranslation();
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
-  const options = Array.from(dashboardStore.dashboards.values())
+  const options = dashboardsStore.dashboardsList
     .filter((dashboard) => !dashboard.options.isHidden)
     .map((dashboard) => ({ label: dashboard.name, value: dashboard.id }));
 
@@ -22,7 +23,7 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardStore }: CommonSet
     // The error message is displayed starting from the second attempt.
     const fetchData = () => {
       attempt++;
-      dashboardStore.loadData()
+      dashboardsStore.loadData(false)
         .then(() => {
           if (interval) {
             clearInterval(interval);
@@ -31,7 +32,7 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardStore }: CommonSet
         })
         .catch((error: any) => {
           if (attempt > 1 && error.data === 'MqttConnectionError') {
-            dashboardStore.setLoading(false);
+            dashboardsStore.setLoading(false);
           }
           if (!interval) {
             interval = setInterval(fetchData, 3000);
@@ -62,20 +63,31 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardStore }: CommonSet
     { label: 'Русский', value: 'ru' },
   ];
 
+  const debouncedNameChange = useMemo(
+    () => debounce((value: string) => dashboardsStore.setDescription(value), 1000),
+    []
+  );
+
   return (
     <FormFieldGroup heading={t('web-ui-settings.labels.common-settings')}>
       <OptionsField
         title={t('web-ui-settings.labels.default-dashboard')}
-        value={dashboardStore.defaultDashboardId}
+        value={dashboardsStore.defaultDashboardId}
         options={options}
-        isDisabled={dashboardStore.isLoading}
-        onChange={(id: string) => dashboardStore.setDefaultDashboardId(id)}
+        isDisabled={dashboardsStore.isLoading}
+        onChange={(id: string) => dashboardsStore.setDefaultDashboardId(id)}
       />
       <OptionsField
         title={t('web-ui-settings.labels.language')}
         value={language}
         options={languageOptions}
         onChange={onChangeLanguageHandler}
+      />
+      <StringField
+        title={t('web-ui-settings.labels.name')}
+        description={t('web-ui-settings.labels.name-description')}
+        value={dashboardsStore.description}
+        onChange={debouncedNameChange}
       />
       <BooleanField
         title={t('web-ui-settings.labels.show-system-devices')}

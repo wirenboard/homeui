@@ -21,11 +21,11 @@ import { WidgetEdit } from './components/widget-edit';
 import type { DashboardPageProps } from './types';
 import './styles.css';
 
-const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }: DashboardPageProps) => {
+const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }: DashboardPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
-  const { dashboards, widgets, loadData, isLoading, setLoading } = dashboardStore;
-  const { page: dashboardId, params } = useParseHash();
+  const { dashboards, widgets, loadData, isLoading, setLoading } = dashboardsStore;
+  const { id: dashboardId, params } = useParseHash();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
@@ -41,7 +41,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
     // The error message is displayed starting from the second attempt.
     const fetchData = () => {
       attempt++;
-      loadData()
+      loadData(false)
         .then(() => {
           if (interval) {
             clearInterval(interval);
@@ -183,7 +183,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
         {isAddWidgetModalOpened && (
           <WidgetAdd
             widgets={widgets}
-            dashboardStore={dashboardStore}
+            dashboardsStore={dashboardsStore}
             dashboard={dashboards.get(dashboardId)}
             cells={cells}
             isOpened={isAddWidgetModalOpened}
@@ -199,7 +199,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
             variant="danger"
             closeCallback={() => setRemovedWidgetId(null)}
             confirmCallback={() => {
-              dashboardStore.removeWidgetFromDashboard(dashboardId, removedWidgetId);
+              dashboardsStore.removeWidgetFromDashboard(dashboardId, removedWidgetId);
               setRemovedWidgetId(null);
             }}
           >

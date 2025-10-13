@@ -21,7 +21,7 @@ import type {
 } from './types';
 
 export default class AliceStore {
-  public isAvailable = undefined;
+  public integrations: string[] = [];
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
 
@@ -30,10 +30,12 @@ export default class AliceStore {
   }
 
   async checkIsAvailable(): Promise<void> {
-    const data = await checkIsAliceAvailable();
+    const isAvailable = await checkIsAliceAvailable();
 
     runInAction(() => {
-      this.isAvailable = data;
+      if (isAvailable) {
+        this.integrations = ['alice'];
+      }
     });
   }
 

@@ -9,6 +9,7 @@ export default class DashboardsStore {
   public dashboards: Map<string, Dashboard> = new Map();
   public widgets: Map<string, Widget> = new Map();
   public isLoading = true;
+  public description = '';
   public defaultDashboardId: string;
   #configEditorProxy: any;
   #uiConfig: any;
@@ -20,12 +21,13 @@ export default class DashboardsStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  loadData() {
-    this.isLoading = true;
+  loadData(isWithLoader: boolean) {
+    if (isWithLoader) {
+      this.isLoading = true;
+    }
     return this.#configEditorProxy.Load({ path: uiConfigPath })
       .then(({ content }: UIConfigResponse) => {
-        const { dashboards, widgets, defaultDashboardId } = content;
-
+        const { dashboards, widgets, defaultDashboardId, description } = content;
         return runInAction(() => {
           this.isLoading = false;
           dashboards.forEach((dashboard: DashboardBase) => {
@@ -35,6 +37,9 @@ export default class DashboardsStore {
             this.widgets.set(widget.id, new Widget(widget, this));
           });
           this.defaultDashboardId = defaultDashboardId;
+          this.description = description || '';
+
+          return content;
         });
       });
   }
@@ -126,11 +131,23 @@ export default class DashboardsStore {
     });
   }
 
+  setDescription(description: string) {
+    runInAction(() => {
+      this.description = description;
+      this._saveData();
+    });
+  }
+
+  get dashboardsList() {
+    return Array.from(this.dashboards.values());
+  }
+
   _saveData() {
     const content = {
       defaultDashboardId: this.defaultDashboardId,
       dashboards: Array.from(this.dashboards.values()),
       widgets: Array.from(this.widgets.values()),
+      description: this.description,
     };
 
     // hack to synchronize old save logic

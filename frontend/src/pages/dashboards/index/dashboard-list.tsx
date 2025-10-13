@@ -19,7 +19,7 @@ import { DashboardEdit } from './components/dashboard-edit';
 import type { DashboardListPageProps } from './types';
 import './styles.css';
 
-const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardListPageProps) => {
+const DashboardList = observer(({ dashboardsStore, hasEditRights }: DashboardListPageProps) => {
   const { t } = useTranslation();
   const { ref, width } = useResizeObserver();
   const {
@@ -30,7 +30,7 @@ const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardList
     addDashboard,
     updateDashboards,
     updateDashboard,
-  } = dashboardStore;
+  } = dashboardsStore;
   const [deletedDashboardId, setDeletedDashboardId] = useState(null);
   const [editedDashboardId, setEditedDashboardId] = useState(null);
   const [errors, setErrors] = useState([]);
@@ -45,7 +45,7 @@ const DashboardList = observer(({ dashboardStore, hasEditRights }: DashboardList
     // The error message is displayed starting from the second attempt.
     const fetchData = () => {
       attempt++;
-      loadData()
+      loadData(false)
         .then(() => {
           if (interval) {
             clearInterval(interval);

@@ -57,10 +57,17 @@ module.exports = (function makeWebpackConfig() {
     new webpack.DefinePlugin({
       __IS_PROD__: JSON.stringify(isProd),
       __DISABLE_HTTPS_CHECK__: process.env.DISABLE_HTTPS_CHECK === 'true',
+      __APP_NAME__: JSON.stringify(process.env.APP_NAME),
+      __LOGO__: JSON.stringify(process.env.LOGO),
+      __LOGO_COMPACT__: JSON.stringify(process.env.LOGO_COMPACT),
+      __HIDE_COMPACT_MENU__: process.env.HIDE_COMPACT_MENU === 'true',
     }),
     new HtmlWebpackPlugin({
       filename: './index.html',
       template: './index.ejs',
+      templateParameters: {
+        APP_NAME: process.env.APP_NAME,
+      },
       chunksSortMode: function (a, b) {
         var order = ['polyfills', 'commons', 'libs', 'js', 'vendor', 'main'];
         return order.indexOf(a) - order.indexOf(b);

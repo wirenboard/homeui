@@ -19,18 +19,25 @@
     --content-background: #fff;
     --link-color: #5393c8;
 
-    --bar-color: #222;
-    --bar-border: #080808;
-    --bar-hover-color: #000;
-    --bar-inside-color: rgba(69, 69, 69, .6);
-    --bar-burger-color: #333;
-    --bar-burger-border-color: #333;
-    --bar-inside-text-color: #999;
-    --bar-text-color: #999;
-    --online-color: var(--success-color);
+    --nav-bg: oklch(0.252 0 0);
+    --nav-sublist-bg: oklch(from var(--nav-bg) calc(l + 0.09) c h);
+    --nav-border: oklch(from var(--nav-bg) l c h / 0.5);
+    --nav-item-hover: oklch(from var(--nav-bg) calc(l - 0.05) c h);
+    --nav-item-active: var(--nav-item-hover);
+    --nav-text-color: oklch(from var(--nav-bg) calc(l + 0.4) c h);
+    --nav-font-size: var(--font-size-medium);
+    --nav-status-online-color: #5cb300;
+    --nav-toggle-bg: oklch(from var(--nav-bg) calc(l + 0.6) c h);
+    --nav-toggle-text-color: var(--nav-text-color);
+    --nav-status-color: #fff;
+    --nav-debug-enabled-color: var(--orange-color);
+
     --font-size-small: 13px;
     --font-size-medium: 14px;
     --font-size-large: 16px;
+
+    --scrollbar-color: var(--gray-color);
+    --scrollbar-background: #0000;
 
     --font: "Open Sans", Arial, Helvetica, Sans-Serif;
 
@@ -81,6 +88,16 @@
     --card-header-background: #e2e5e8;
     --card-header-text: black;
     --card-border-radius: 6px;
+
+    --nav-bg: oklch(0.95 0 0);
+    --nav-sublist-bg: oklch(from var(--nav-bg) calc(l - 0.04) c h);
+    --nav-border: oklch(from var(--nav-bg) l c h / 0.5);
+    --nav-item-active: var(--primary-color);
+    --nav-item-hover: oklch(from var(--nav-bg) calc(l - 0.05) c h);
+    --nav-text-color: var(--text-color);
+    --nav-toggle-bg: oklch(from var(--nav-bg) calc(l - 0.1) c h);
+    --nav-status-color: var(--nav-text-color);
+    --nav-debug-enabled-color: #e06400;
 }
 
 .dark {
@@ -122,4 +139,12 @@
 
     --tooltip-background: #7676ff;
     --tooltip-color: #fff;
+
+    --nav-bg: #171727;
+    --nav-sublist-bg: oklch(from var(--nav-bg) calc(l + 0.09) c h);
+    --nav-border: oklch(from var(--nav-bg) l c h / 0.5);
+    --nav-item-hover: oklch(from var(--nav-bg) calc(l - 0.03) c h);
+    --nav-item-active: var(--nav-item-hover);
+    --nav-text-color: oklch(from var(--nav-bg) calc(l + 0.4) c h);
+    --nav-toggle-bg: oklch(from var(--nav-bg) calc(l + 0.102) c h);
 }

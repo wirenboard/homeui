@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 8px;
-    margin: 30px 0 18px;
+    margin: 12px 0 18px;
     border-bottom: 1px solid var(--border-color);
     gap: 12px;
 }
