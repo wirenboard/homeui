@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.142.2) stable; urgency=medium
+
+  * Save HTTPS settings during upgrade with fit-image
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 13 Oct 2025 13:28:13 +0500
+
 wb-mqtt-homeui (2.142.1) stable; urgency=medium
 
   * Fixing column display in panels for older devices
