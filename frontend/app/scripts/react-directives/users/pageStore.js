@@ -85,7 +85,7 @@ class UsersPageStore {
       }
       default: {
         this.pageWrapperStore.setError(
-          i18n.t('users.errors.unknown', { msg: fetchResponse.statusText, interpolation: { escapeValue: false } })
+          i18n.t('users.errors.unknown', { msg: fetchResponse.data, interpolation: { escapeValue: false } })
         );
       }
     }

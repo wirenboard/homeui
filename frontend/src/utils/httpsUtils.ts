@@ -57,7 +57,7 @@ const requestHttpsCert = async () =>
   request.post<undefined>('/api/https/request_cert');
 
 export const getDeviceInfo = async () =>
-  request.get<DeviceInfo>('/device/info');
+  request.get<DeviceInfo>('/device/info').then(({ data }) => data);
 
 async function waitCertificate(): Promise<string> {
   const MAX_WAIT_TIME = 120000; // 2 minutes
@@ -66,7 +66,7 @@ async function waitCertificate(): Promise<string> {
   while (Date.now() - startTime < MAX_WAIT_TIME) {
     await new Promise((resolve) => setTimeout(resolve, CHECK_INTERVAL));
     try {
-      const { https_cert } = await getDeviceInfo().then(({ data }) => data);
+      const { https_cert } = await getDeviceInfo();
       const certStatus = https_cert || CertificateStatus.UNAVAILABLE;
       if (certStatus !== CertificateStatus.REQUESTING) {
         return certStatus;
@@ -132,7 +132,7 @@ export async function switchToHttps() {
 
   let deviceInfo : DeviceInfo;
   try {
-    deviceInfo = await getDeviceInfo().then(({ data }) => data);
+    deviceInfo = await getDeviceInfo();
     if (!isDeviceSn(deviceInfo.sn)) {
       return false;
     }
