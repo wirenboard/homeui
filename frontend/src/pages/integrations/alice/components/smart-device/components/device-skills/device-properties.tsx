@@ -132,9 +132,9 @@ export const DeviceProperties = observer(({
 
   return (
     <>
-      <br/>
-      <p>{t('alice.labels.device-properties-description')}</p>
+      <h6>{t('alice.labels.device-properties')}</h6>
       <div className="aliceDeviceSkills">
+        <p>{t('alice.labels.device-properties-description')}</p>
         <div className="aliceDeviceSkills-grid">
           {properties.map((property, key) => (
             <Fragment key={key}>
