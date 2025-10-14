@@ -245,27 +245,27 @@ export const DeviceProperties = observer(({
               </div>
             </Fragment>
           ))}
-          {(() => {
-            const freeInstances = getAvailableFloatInstances(properties);
-            return (
-              <Button
-                className="aliceDeviceSkills-addButton"
-                label={t('alice.buttons.add-property')}
-                disabled={!freeInstances.length}
-                onClick={() => {
-                  const inst = freeInstances[0];
-                  const units = unitOptionsForInstance(inst).map((o) => o.value);
-                  const params: PropertyParameters = { instance: inst };
-                  if (units.length) params.unit = units[0];
-                  onPropertyChange([
-                    ...properties,
-                    { type: Property.Float, mqtt: '', parameters: params },
-                  ]);
-                }}
-              />
-            );
-          })()}
         </div>
+        {(() => {
+          const freeInstances = getAvailableFloatInstances(properties);
+          return (
+            <Button
+              className="aliceDeviceSkills-addButton"
+              label={t('alice.buttons.add-property')}
+              disabled={!freeInstances.length}
+              onClick={() => {
+                const inst = freeInstances[0];
+                const units = unitOptionsForInstance(inst).map((o) => o.value);
+                const params: PropertyParameters = { instance: inst };
+                if (units.length) params.unit = units[0];
+                onPropertyChange([
+                  ...properties,
+                  { type: Property.Float, mqtt: '', parameters: params },
+                ]);
+              }}
+            />
+          );
+        })()}
       </div>
     </>
   );
