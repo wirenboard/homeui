@@ -530,12 +530,10 @@ const realApp = angular
       );
 
       const { checkIsAvailable } = aliceStore;
-      $rootScope.$on('$translateChangeSuccess', function() {
-        checkIsAvailable().catch(() => {});
-      });
 
       whenMqttReady()
         .then(() => {
+          checkIsAvailable();
           if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
             return DeviceManagerProxy.Stop();
           }

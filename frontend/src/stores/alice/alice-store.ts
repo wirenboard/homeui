@@ -30,13 +30,17 @@ export default class AliceStore {
   }
 
   async checkIsAvailable(): Promise<void> {
-    const isAvailable = await checkIsAliceAvailable();
+    try {
+      const isAvailable = await checkIsAliceAvailable();
 
-    runInAction(() => {
-      if (isAvailable) {
-        this.integrations = ['alice'];
-      }
-    });
+      runInAction(() => {
+        if (isAvailable) {
+          this.integrations = ['alice'];
+        }
+      });
+    } catch {
+    //
+    }
   }
 
   async fetchData(): Promise<AliceFetchData> {
