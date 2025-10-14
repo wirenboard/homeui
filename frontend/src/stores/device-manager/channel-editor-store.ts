@@ -5,49 +5,49 @@ import { WbDeviceParameterEditor } from './parameter-editor-store';
 import type { WbDeviceTemplateChannel, WbDeviceTemplateChannelSettings } from './types';
 
 enum WbDeviceChannelModes {
-  DISABLED = 'do not read',
-  QUEUE_ORDER = 'in queue order',
-  PERIOD_200_MS = '200 ms',
-  PERIOD_100_MS = '100 ms',
-  CUSTOM_PERIOD = 'custom period',
+  Disabled = 'do not read',
+  QueueOrder = 'in queue order',
+  Period200Ms = '200 ms',
+  Period100Ms = '100 ms',
+  CustomPeriod = 'custom period',
 }
 
-const DEFAULT_PERIOD = 1000;
+const DefaultPeriod = 1000;
 
 function getEditorValuesFromChannelData(data: unknown): { mode: WbDeviceChannelModes; period?: number } {
   if (data === undefined) {
     return {
-      mode: WbDeviceChannelModes.QUEUE_ORDER,
-      period: DEFAULT_PERIOD,
+      mode: WbDeviceChannelModes.QueueOrder,
+      period: DefaultPeriod,
     };
   }
   const dataAsChannel = data as WbDeviceTemplateChannel;
   if (dataAsChannel.enabled === false) {
     return {
-      mode: WbDeviceChannelModes.DISABLED,
-      period: DEFAULT_PERIOD,
+      mode: WbDeviceChannelModes.Disabled,
+      period: DefaultPeriod,
     };
   }
   if (typeof dataAsChannel.read_period_ms !== 'number') {
     return {
-      mode: WbDeviceChannelModes.QUEUE_ORDER,
-      period: DEFAULT_PERIOD,
+      mode: WbDeviceChannelModes.QueueOrder,
+      period: DefaultPeriod,
     };
   }
   if (dataAsChannel.read_period_ms === 200) {
     return {
-      mode: WbDeviceChannelModes.PERIOD_200_MS,
-      period: DEFAULT_PERIOD,
+      mode: WbDeviceChannelModes.Period200Ms,
+      period: DefaultPeriod,
     };
   }
   if (dataAsChannel.read_period_ms === 100) {
     return {
-      mode: WbDeviceChannelModes.PERIOD_100_MS,
-      period: DEFAULT_PERIOD,
+      mode: WbDeviceChannelModes.Period100Ms,
+      period: DefaultPeriod,
     };
   }
   return {
-    mode: WbDeviceChannelModes.CUSTOM_PERIOD,
+    mode: WbDeviceChannelModes.CustomPeriod,
     period: dataAsChannel.read_period_ms,
   };
 }
@@ -72,13 +72,13 @@ export class WbDeviceChannelEditor {
     this.mode = new StringStore({
       type: 'string',
       enum: [
-        WbDeviceChannelModes.DISABLED,
-        WbDeviceChannelModes.QUEUE_ORDER,
-        WbDeviceChannelModes.PERIOD_200_MS,
-        WbDeviceChannelModes.PERIOD_100_MS,
-        WbDeviceChannelModes.CUSTOM_PERIOD,
+        WbDeviceChannelModes.Disabled,
+        WbDeviceChannelModes.QueueOrder,
+        WbDeviceChannelModes.Period200Ms,
+        WbDeviceChannelModes.Period100Ms,
+        WbDeviceChannelModes.CustomPeriod,
       ],
-      default:  WbDeviceChannelModes.QUEUE_ORDER,
+      default:  WbDeviceChannelModes.QueueOrder,
       options: {
         compact: true,
       },
@@ -88,7 +88,7 @@ export class WbDeviceChannelEditor {
       type: 'integer',
       minimum: 0,
       maximum: 172800000,
-      default: DEFAULT_PERIOD,
+      default: DefaultPeriod,
       options: {
         compact: true,
       },
@@ -122,7 +122,7 @@ export class WbDeviceChannelEditor {
   }
 
   get hasCustomPeriod() {
-    return this.mode.value === WbDeviceChannelModes.CUSTOM_PERIOD;
+    return this.mode.value === WbDeviceChannelModes.CustomPeriod;
   }
 
   get customProperties() : WbDeviceTemplateChannelSettings | undefined {
@@ -130,19 +130,19 @@ export class WbDeviceChannelEditor {
       name: this.channel.name,
     };
     switch (this.mode.value) {
-      case WbDeviceChannelModes.DISABLED: {
+      case WbDeviceChannelModes.Disabled: {
         if (this.channel.enabled !== false) {
           res['enabled'] = false;
         }
         break;
       }
-      case WbDeviceChannelModes.QUEUE_ORDER: {
+      case WbDeviceChannelModes.QueueOrder: {
         if (this.channel.enabled === false) {
           res['enabled'] = true;
         }
         break;
       }
-      case WbDeviceChannelModes.PERIOD_200_MS: {
+      case WbDeviceChannelModes.Period200Ms: {
         if (this.channel.enabled === false) {
           res['enabled'] = true;
         }
@@ -151,7 +151,7 @@ export class WbDeviceChannelEditor {
         }
         break;
       }
-      case WbDeviceChannelModes.PERIOD_100_MS: {
+      case WbDeviceChannelModes.Period100Ms: {
         if (this.channel.enabled === false) {
           res['enabled'] = true;
         }
@@ -160,7 +160,7 @@ export class WbDeviceChannelEditor {
         }
         break;
       }
-      case WbDeviceChannelModes.CUSTOM_PERIOD: {
+      case WbDeviceChannelModes.CustomPeriod: {
         if (this.channel.enabled === false) {
           res['enabled'] = true;
         }
@@ -181,7 +181,7 @@ export class WbDeviceChannelEditor {
     if (this.mode.isDirty) {
       return true;
     }
-    if (this.mode.value === WbDeviceChannelModes.CUSTOM_PERIOD && this.period.isDirty) {
+    if (this.mode.value === WbDeviceChannelModes.CustomPeriod && this.period.isDirty) {
       return true;
     }
     return false;

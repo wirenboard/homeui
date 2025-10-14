@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
-import { OptionalParamsSelectDialogProps } from './types';
+import type { OptionalParamsSelectDialogProps } from './types';
 import './styles.css';
 
 export const OptionalParamsSelectDialog = observer(

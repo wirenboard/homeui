@@ -315,3 +315,10 @@
         min-width: 10px;
     }
 }
+
+.device-manager-page .device-tab-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}

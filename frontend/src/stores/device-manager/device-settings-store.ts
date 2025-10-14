@@ -209,12 +209,6 @@ export class DeviceSettingsObjectStore {
     this._groupsByName.forEach((group, _name) => {
       group.parameters.sort((a, b) => a.order - b.order);
     });
-
-    this._parametersByName.forEach((param, _name) => {
-      param.variants.forEach((variant) => {
-        const _t = variant.isEnabledByCondition; // Trigger computed properties
-      });
-    });
   }
 
   _buildChannels(deviceTemplate: WbDeviceTemplate, initialValue: unknown) {

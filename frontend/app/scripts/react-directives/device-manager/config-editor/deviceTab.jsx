@@ -501,7 +501,7 @@ export const DeviceTabContent = observer(
           devicesWithTheSameId={tab.devicesWithTheSameId}
           onSetUniqueMqttTopic={onSetUniqueMqttTopic}
         />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div className="device-tab-content">
           <BootstrapLikeSelect
             options={deviceTypeSelectOptions}
             selectedOption={selectedDeviceType}
