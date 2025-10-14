@@ -81,10 +81,6 @@ div[uib-datepicker-popup-wrap] {
   border-top-right-radius: 2px;
 }
 
-.stretch-height {
-  min-height: calc(100vh - 200px)
-}
-
 .relative {
   position: relative;
 }
@@ -224,4 +220,8 @@ a[ng-click]:hover {
   word-break: break-all;
   word-wrap: break-word;
   white-space: break-spaces;
+}
+
+.page-header {
+  margin-top: 14px;
 }

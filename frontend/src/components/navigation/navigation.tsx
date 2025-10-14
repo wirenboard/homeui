@@ -186,7 +186,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, rulesStore
           )}
         </div>
       </nav>
-      {isMobileMenuOpened && <div className="navigation-overlay"></div>}
+      {isMobileMenuOpened && <div className="navigation-overlay" onClick={() => setIsMobileMenuOpened(false)}></div>}
     </>
   );
 });

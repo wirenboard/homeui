@@ -318,7 +318,7 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
   };
 
   $rootScope.toggleConsole = function () {
-    $rootScope.consoleVisible = $rootScope.consoleVisible ? !$rootScope.consoleVisible : true;
+    $rootScope.consoleVisible = !$rootScope.consoleVisible;
   };
 
   $transitions.onStart({}, function (trans) {

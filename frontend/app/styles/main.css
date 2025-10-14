@@ -21,72 +21,31 @@ html, body {
 
 #page-wrapper {
     width: 100%;
-    padding: 10px 2px 12px 12px;
+    height: 100%;
+    padding: 12px 4px 12px 18px;
     background-color: var(--background-color);
     transition: background-color ease 300ms;
     overflow: auto;
     position: relative;
     scrollbar-gutter: stable;
+
+    /* firefox: scroll-gutter computes scroll width in another way */
+    @-moz-document url-prefix() {
+        padding-right: 18px;
+    }
+
+    @media(max-width: 1200px) {
+        padding: 12px 2px 12px 12px;
+
+        @-moz-document url-prefix() {
+            padding-right: 14px;
+        }
+    }
 }
 
 .huge {
     font-size: 50px;
     line-height: normal;
-}
-
-@media(min-width: 768px) {
-    #page-wrapper {
-        padding: 10px 2px 12px 12px;
-    }
-}
-
-@media(min-width:1200px) {
-  #page-wrapper {
-      padding: 10px 6px 10px 23px;
-  }
-}
-
-/* Top Navigation */
-
-.top-nav {
-    padding: 0 15px;
-}
-
-.top-nav>li {
-    display: inline-block;
-    float: left;
-}
-
-.top-nav>li>a {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    line-height: 20px;
-    color: #999;
-}
-
-.top-nav>li>a:hover,
-.top-nav>li>a:focus,
-.top-nav>.open>a,
-.top-nav>.open>a:hover,
-.top-nav>.open>a:focus {
-    color: #fff;
-    background-color: #000;
-}
-
-.top-nav>.open>.dropdown-menu {
-    float: left;
-    position: absolute;
-    margin-top: 0;
-    border: 1px solid rgba(0,0,0,.15);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    background-color: #fff;
-    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    box-shadow: 0 6px 12px rgba(0,0,0,.175);
-}
-
-.top-nav>.open>.dropdown-menu>li>a {
-    white-space: normal;
 }
 
 ul.message-dropdown {
@@ -1097,17 +1056,6 @@ button.dashboard-back:active {
 .wb-react-select .wb-react-select__option.with-groups {
   padding-left: 20px;
 }
-
-body.no-console .show-console-button,
-body.no-console .console {
-  display: none
-}
-
-body.no-console .show-console #page-wrapper {
-  padding-bottom: 10px;
-}
-
-
 
 body #https-setup-label {
   color: white;

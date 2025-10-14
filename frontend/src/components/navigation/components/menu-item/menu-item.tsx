@@ -72,7 +72,7 @@ export const MenuItem = ({
     </ul>
   );
 
-  return (
+  return (item.isShow === undefined || item.isShow) && (
     <li>
       <Tooltip
         trigger={isMenuCompact && !activePopup ? 'hover' : null}

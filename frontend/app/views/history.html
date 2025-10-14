@@ -1,5 +1,5 @@
 
-<div class="stretch-height history-page">
+<div class="history-page">
     <h1 class="page-header" translate>{{'history.title'}}</h1>
 
     <div class="row" ng-repeat="sel in $ctrl.selectedControls track by $index">
@@ -147,8 +147,8 @@
             </div>
         </div>
     </div>
- 
-    <button 
+
+    <button
       class="btn btn-success"
       ng-disabled="!$ctrl.chartConfig.length || $ctrl.loadPending"
       ng-click="$ctrl.downloadHistoryTable()"
