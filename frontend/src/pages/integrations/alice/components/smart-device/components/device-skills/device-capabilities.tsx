@@ -21,14 +21,14 @@ import {
   defaultColorSceneParameters
 } from '@/stores/alice';
 
-// Инстансы с жёстким диапазоном, который нельзя менять в UI
+// Instances with fixed ranges that cannot be changed in UI
 const RANGE_LOCKS: Record<string, { min: number; max: number; precision?: number }> = {
   brightness: { min: 0, max: 100, precision: 1 },
-  // channel: Not blocked
+  // channel: No lock applied
   humidity:   { min: 0, max: 100, precision: 1 },
   open:       { min: 0, max: 100, precision: 1 },
-  // temperature: Not blocked
-  // volume: Not blocked
+  // temperature: No lock applied
+  // volume: No lock applied
 };
 
 interface DeviceCapabilitiesProps {
@@ -41,7 +41,7 @@ const getAvailableColorModels = (
   capabilities: SmartDeviceCapability[],
   excludeIndex?: number
 ): Color[] => {
-  // Collect already used Color categories among color-setting capabilities
+  // Collect already used Color models among color-setting capabilities
   const usedColorModels = capabilities
     .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
     .map((cap) => {
@@ -64,6 +64,22 @@ const getCurrentColorModel = (capability: SmartDeviceCapability) => {
   return Color.ColorModel; // Default value
 };
 
+const getAvailableRangeInstances = (
+  capabilities: SmartDeviceCapability[],
+  excludeIndex?: number
+): string[] => {
+  const usedInstances = capabilities
+    .filter((cap, index) => cap.type === Capability.Range && index !== excludeIndex)
+    .map((cap) => cap.parameters?.instance)
+    .filter(Boolean);
+
+  const availableInstances = ranges.filter(
+    (rangeInstance) => !usedInstances.includes(rangeInstance)
+  );
+
+  return availableInstances;
+};
+
 const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
   switch (colorKey) {
     case 'ColorModel': return t('alice.labels.color-model');
@@ -80,6 +96,11 @@ const isCapabilityDisabled = (
   if (capabilityType === Capability['Color setting']) {
     // For color setting, disable only if all color models are used
     return !getAvailableColorModels(capabilities).length;
+  }
+
+  if (capabilityType === Capability.Range) {
+    // For range, disable only if all range instances are used
+    return !getAvailableRangeInstances(capabilities).length;
   }
 
   // For other capabilities, use existing logic
@@ -185,6 +206,25 @@ export const DeviceCapabilities = observer(({
     };
   }, [capabilities]);
 
+  const getRangeInstanceOptions = useCallback((
+    currentCapability: SmartDeviceCapability,
+    currentCapabilityIndex: number
+  ) => {
+    const availableInstances = getAvailableRangeInstances(capabilities, currentCapabilityIndex);
+    const currentlySelectedInstance = currentCapability.parameters?.instance;
+
+    return ranges.map((rangeInstance) => {
+      const isCurrentlySelected = currentlySelectedInstance === rangeInstance;
+      const isAvailableForUse = availableInstances.includes(rangeInstance);
+
+      return {
+        label: rangeInstance,
+        value: rangeInstance,
+        isDisabled: !isCurrentlySelected && !isAvailableForUse,
+      };
+    });
+  }, [capabilities]);
+
   const getAvailableCapabilities = () => {
     const availableCapabilities = Object.values(Capability).filter((capType) => {
       return !isCapabilityDisabled(capType, capabilities);
@@ -218,13 +258,22 @@ export const DeviceCapabilities = observer(({
       //   break;
       // }
       case Capability.Range: {
-        parameters.instance = 'brightness';
-        parameters.range = {
+        // Select first available instance
+        const availableInstances = getAvailableRangeInstances(capabilities);
+        const selectedInstance = availableInstances[0] || 'brightness'; // fallback to brightness
+        const lock = RANGE_LOCKS[selectedInstance];
+
+        parameters.instance = selectedInstance;
+        parameters.range = lock ? {
+          min: lock.min,
+          max: lock.max,
+          precision: lock.precision ?? 1,
+        } : {
           min: 0,
           max: 100,
           precision: 1,
         };
-        parameters.unit = rangeUnitByInstance['brightness'];
+        parameters.unit = rangeUnitByInstance[selectedInstance];
         break;
       }
       // <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
@@ -407,13 +456,11 @@ export const DeviceCapabilities = observer(({
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
                     <Dropdown
                       value={capability.parameters?.instance}
-                      options={ranges.map((range) => ({ label: range, value: range }))}
+                      options={getRangeInstanceOptions(capability, key)}
                       onChange={({ value: instance }: Option<string>) => {
                         const unit = rangeUnitByInstance[instance];
-                        // const val = capabilities.map((item, i) => i === key
-                        //   ? { ...item, parameters: { ...item.parameters, instance, unit } }
-                        //   : item);
-                        // Если для инстанса есть фиксированный диапазон — проставляем его
+
+                        // If instance has a fixed range - apply it
                         const lock = RANGE_LOCKS[instance];
                         const nextParams = lock
                           ? {
@@ -430,7 +477,7 @@ export const DeviceCapabilities = observer(({
                               ...capability.parameters,
                               instance,
                               unit,
-                              // если диапазон уже есть — оставляем как был
+                              // if range already exists - keep it as is
                               range: capability.parameters?.range ?? { min: 0, max: 100, precision: 1 },
                             };
                         const val = capabilities.map((item, i) =>
@@ -444,8 +491,8 @@ export const DeviceCapabilities = observer(({
                     {(() => {
                       const curInstance = capability.parameters?.instance as string;
                       const lock = RANGE_LOCKS[curInstance];
-                      const lockedMin = lock?.min ?? capability.parameters?.range.min;
-                      const lockedMax = lock?.max ?? capability.parameters?.range.max;
+                      const lockedMin = lock?.min ?? capability.parameters?.range?.min ?? 0;
+                      const lockedMax = lock?.max ?? capability.parameters?.range?.max ?? 100;
                       return (
                         <>
                         <div>
@@ -467,7 +514,7 @@ export const DeviceCapabilities = observer(({
                         <div>
                           <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
                           <Input
-                            value={capability.parameters?.range.max}
+                            value={lockedMax}
                             type="number"
                             isFullWidth
                             isDisabled={!!lock}
