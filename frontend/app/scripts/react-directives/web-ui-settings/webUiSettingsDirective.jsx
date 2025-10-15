@@ -1,14 +1,13 @@
 import ReactDOM from 'react-dom/client';
 import WebUiSettingsPage from '@/pages/settings/web-ui';
-import { DashboardsStore } from '@/stores/dashboards';
 import { setReactLocale } from '~/react-directives/locale';
 
 export default function webUiSettingsDirective(
-  ConfigEditorProxy,
+  $rootScope,
   rolesFactory,
   $translate,
-  tmhDynamicLocale,
-  uiConfig) {
+  tmhDynamicLocale
+) {
   setReactLocale();
 
   return {
@@ -25,12 +24,10 @@ export default function webUiSettingsDirective(
         setReactLocale();
       };
 
-      scope.dashboardStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
-
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render((
         <WebUiSettingsPage
-          dashboardStore={scope.dashboardStore}
+          dashboardsStore={$rootScope.dashboardsStore}
           userType={rolesFactory.current.roles.type}
           onChangeLanguage={onChangeLang}
         />

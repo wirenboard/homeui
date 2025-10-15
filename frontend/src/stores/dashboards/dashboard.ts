@@ -12,9 +12,9 @@ export class Dashboard {
   declare svg_url: string;
   declare swipe: DashboardBase['swipe'];
   declare options: DashboardBase['options'];
-  #dashboardStore: DashboardsStore;
+  #dashboardsStore: DashboardsStore;
 
-  constructor(dashboard: DashboardBase, dashboardStore: DashboardsStore) {
+  constructor(dashboard: DashboardBase, dashboardsStore: DashboardsStore) {
     this.id = dashboard.id;
     this.name = dashboard.name;
     this.widgets = dashboard.widgets || [];
@@ -27,7 +27,7 @@ export class Dashboard {
       this.svg_url = dashboard.svg_url;
       this.swipe = dashboard.swipe;
     }
-    this.#dashboardStore = dashboardStore;
+    this.#dashboardsStore = dashboardsStore;
 
     makeAutoObservable(this, {
       svg: false,
@@ -42,15 +42,15 @@ export class Dashboard {
   }
 
   addWidget(widgetId: string) {
-    this.#dashboardStore.addWidgetToDashboard(this.id, widgetId);
+    this.#dashboardsStore.addWidgetToDashboard(this.id, widgetId);
   }
 
   async delete() {
-    return this.#dashboardStore.deleteDashboard(this.id);
+    return this.#dashboardsStore.deleteDashboard(this.id);
   }
 
   async toggleVisibility() {
     this.options.isHidden = Object.hasOwn(this.options, 'isHidden') ? !this.options.isHidden : true;
-    return this.#dashboardStore.updateDashboard(this.id, this);
+    return this.#dashboardsStore.updateDashboard(this.id, this);
   }
 }

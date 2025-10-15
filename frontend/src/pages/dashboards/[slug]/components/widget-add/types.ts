@@ -4,7 +4,7 @@ import { Cell } from '@/stores/device';
 
 export interface WidgetAddProps {
   dashboard: Dashboard;
-  dashboardStore: DashboardsStore;
+  dashboardsStore: DashboardsStore;
   widgets: Map<string, Widget>;
   cells: Map<string, Cell>;
   isOpened: boolean;

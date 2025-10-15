@@ -29,7 +29,6 @@ function deviceManagerDirective(
     restrict: 'E',
     scope: {},
     link: function (scope, element) {
-      $rootScope.noConsole = true;
 
       if (scope.root) {
         scope.root.unmount();
@@ -185,7 +184,6 @@ function deviceManagerDirective(
       element.on('$destroy', function () {
         scope.root.unmount();
         scope.deleteTransitionHook();
-        $rootScope.noConsole = false;
         disposeTranslations();
       });
     },

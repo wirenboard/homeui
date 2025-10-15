@@ -6,7 +6,8 @@
     text-align: center;
     padding: 4px 8px;
     border-radius: var(--input-border-radius);
-    z-index: 9999;
+    z-index: 9998;
+    font-size: 12px;
 }
 
 .wb-tooltip-container {
@@ -17,5 +18,4 @@
 .wb-tooltip-text {
     color: var(--tooltip-color);
     text-align: center;
-    font-size: 12px;
 }

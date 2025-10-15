@@ -16,6 +16,7 @@ export default [
       '**/*.tsx',
     ],
     ignores: [
+      'src/custom.d.ts',
       '.git/**',
       'dist/**',
       'test/**',

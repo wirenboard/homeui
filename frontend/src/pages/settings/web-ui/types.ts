@@ -2,13 +2,13 @@ import { DashboardsStore } from '@/stores/dashboards';
 
 export interface WebUiSettingsPageProps {
   onChangeLanguage: (lang: string) => void;
-  dashboardStore: DashboardsStore;
+  dashboardsStore: DashboardsStore;
   userType: 'admin' | 'operator' | 'user';
 }
 
 export interface CommonSettingsProps {
   onChangeLanguage: (lang: string) => void;
-  dashboardStore: DashboardsStore;
+  dashboardsStore: DashboardsStore;
 }
 
 export interface HttpsSettingsProps {

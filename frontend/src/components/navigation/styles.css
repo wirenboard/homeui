@@ -1,0 +1,223 @@
+.navigation {
+    display: flex;
+    flex-direction: column;
+    background: var(--nav-bg);
+    height: 100%;
+    width: 225px;
+    position: relative;
+    border-right: 1px solid var(--nav-border);
+    z-index: 1000;
+
+    @media(max-width: 768px) {
+        flex-direction: row;
+        height: 50px;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+        border-right: 0;
+        gap: 12px;
+        border-bottom: 1px solid var(--nav-border);
+    }
+}
+
+.navigation-disabled * {
+    pointer-events: none;
+}
+
+.navigation-compact {
+    width: 60px;
+}
+
+.navigation-header {
+    @media(max-width: 768px) {
+        display: flex;
+        flex-shrink: 0;
+        gap: 12px;
+    }
+}
+
+.navigation-mobileButton {
+    all: unset;
+    align-items: center;
+    color: var(--nav-text-color);
+    border: 1px solid var(--nav-text-color);
+    opacity: 0.6;
+    cursor: pointer;
+    height: 36px;
+    border-radius: var(--input-border-radius);
+    display: none;
+
+    @media(max-width: 768px) {
+        display: block;
+    }
+}
+
+.navigation-mobileButton:hover {
+    background-color: var(--nav-sublist-bg);
+}
+
+.navigation-mobileButton svg {
+    width: 36px;
+    height: 36px;
+    padding: 4px;
+}
+
+.navigation-logo {
+    padding: 12px 18px;
+    height: 60px;
+    margin: 12px 0 12px;
+    width: 100%;
+
+    @media(max-width: 768px) {
+        margin: 0;
+        padding: 0;
+        height: 36px;
+    }
+}
+
+.navigation-logoCompact {
+    padding: 8px;
+    width: unset;
+}
+
+.navigation-toggle {
+    all: unset;
+    visibility: hidden;
+    position: absolute;
+    right: -15px;
+    top: 28px;
+    background: var(--nav-toggle-bg);
+    color: var(--nav-toggle-text-color);
+    z-index: 100;
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.9;
+
+    @media(max-width: 768px) {
+        display: none;
+    }
+}
+
+.navigation:hover .navigation-toggle {
+    visibility: visible;
+}
+
+.navigation-toggle:hover {
+    opacity: 1;
+}
+
+.navigation-toggleIcon {
+    width: 16px;
+    height: 16px;
+}
+
+.navigation-toggleIconRotated {
+    rotate: 180deg;
+}
+
+.navigation-tooltip {
+    font-size: var(--font-size-medium) !important;
+    background: var(--nav-sublist-bg) !important;
+    border: 1px solid var(--nav-border);
+    color: var(--nav-sublist-bg) !important;
+    padding: 8px 12px !important;
+}
+
+.navigation-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--nav-bg);
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    @media(max-width: 768px) {
+        display: none;
+    }
+}
+
+.navigation-containerMobile {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 50px;
+    z-index: 1000;
+    width: 100%;
+    max-width: 225px;
+    height: calc(100dvh - 50px);
+}
+
+
+.navigation-container::-webkit-scrollbar {
+    -webkit-appearance: none;
+    background-color: var(--scrollbar-background);
+    width: 12px;
+    display: none;
+}
+
+.navigation-container:hover::-webkit-scrollbar,
+.navigation-container:focus::-webkit-scrollbar {
+    display: block;
+}
+
+.navigation-container::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    background-color: var(--scrollbar-color);
+    border: 3px solid var(--scrollbar-background);
+    border-radius: 8px;
+}
+
+.navigation-container::-webkit-scrollbar-thumb:hover {
+    border-width: 2px;
+}
+
+.navigation-list {
+    padding-left: 0;
+    margin: 0;
+}
+
+.navigation-actionsMultimple {
+    display: flex;
+}
+
+.navigation-container:not(.navigation-containerMobile) .navigation-actionsMultimple .menuItem-link {
+    gap: 6px;
+}
+
+.navigation-compact .navigation-actions,
+.navigation-containerMobile .navigation-actions {
+    flex-direction: column-reverse;
+}
+
+.navigation-logout {
+    display: flex;
+    flex-grow: 1;
+}
+
+.navigation-logout:hover {
+    color: var(--danger-color);
+}
+
+.navigation-ruleDebugEnabled,
+.navigation-ruleDebugEnabled:hover,
+.navigation-ruleDebugEnabled:focus {
+    color: var(--nav-debug-enabled-color);
+}
+
+.navigation-overlay {
+    background: var(--nav-bg);
+    opacity: 0.4;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 500;
+}

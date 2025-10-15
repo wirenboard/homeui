@@ -8,12 +8,15 @@ export default class RulesStore {
     initName: '',
   };
   public rules: RuleListItem[] = [];
+  public isRuleDebugEnabled = false;
 
+  #mqttClient: any;
   #editorProxy: any;
   #whenMqttReady: () => Promise<void>;
 
   // eslint-disable-next-line typescript/naming-convention
-  constructor(whenMqttReady: () => Promise<void>, EditorProxy: any) {
+  constructor(mqttClient, whenMqttReady: () => Promise<void>, EditorProxy: any) {
+    this.#mqttClient = mqttClient;
     this.#editorProxy = EditorProxy;
     this.#whenMqttReady = whenMqttReady;
 
@@ -138,5 +141,13 @@ export default class RulesStore {
     };
 
     this.rule.error.errorLine = error?.traceback?.length ? error?.traceback[0].line : null;
+  }
+
+  subscribeRuleDebugging() {
+    this.#mqttClient.addStickySubscription('/devices/wbrules/controls/Rule debugging', ({ payload }) => {
+      runInAction(() => {
+        this.isRuleDebugEnabled = payload === '1';
+      });
+    });
   }
 }
