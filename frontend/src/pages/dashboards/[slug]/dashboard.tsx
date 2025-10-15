@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditIcon from '@/assets/icons/edit.svg';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
@@ -24,48 +24,12 @@ import './styles.css';
 const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }: DashboardPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
-  const { dashboards, widgets, loadData, isLoading, setLoading } = dashboardsStore;
+  const { dashboards, widgets, isLoading } = dashboardsStore;
   const { id: dashboardId, params } = useParseHash();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
-  const [errors, setErrors] = useState([]);
-
-  useEffect(() => {
-    let interval = null;
-    let attempt = 0;
-
-    // Sometimes the request finishes before the MQTT connection is established.
-    // In that case we retry every 3 seconds until success.
-    // The error message is displayed starting from the second attempt.
-    const fetchData = () => {
-      attempt++;
-      loadData(false)
-        .then(() => {
-          if (interval) {
-            clearInterval(interval);
-            interval = null;
-          }
-          setErrors([]);
-        })
-        .catch((error: any) => {
-          if (attempt > 1 && error.data === 'MqttConnectionError') {
-            setLoading(false);
-            setErrors([{ variant: 'danger', text: t('dashboard.errors.mqtt-connection') }]);
-          }
-          if (!interval && error.data === 'MqttConnectionError') {
-            interval = setInterval(fetchData, 3000);
-          }
-        });
-    };
-
-    fetchData();
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [dashboardId]);
 
   const actions = hasEditRights ? [
     {
@@ -125,7 +89,6 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
         )}
         isHideHeader={!!params.has('hmi')}
         isLoading={isLoading}
-        errors={errors}
         hasRights
       >
         {dashboards.get(dashboardId)?.widgets.length ? (
@@ -165,7 +128,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
               ) : null)}
             </ColumnsWrapper>
           </div>
-        ) : !errors.length && (
+        ) : (
           <Alert variant="info" style={{ width: '100%' }}>
             {t('dashboard.labels.no-widgets')}
           </Alert>

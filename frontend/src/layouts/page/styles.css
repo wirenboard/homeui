@@ -3,6 +3,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    padding-top: 12px;
 }
 
 .page-headerContainer {
@@ -10,7 +11,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 8px;
-    margin: 12px 0 18px;
+    margin: 0 0 18px;
     border-bottom: 1px solid var(--border-color);
     gap: 12px;
 }

@@ -1,6 +1,6 @@
 import debounce from 'lodash/debounce';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Option } from '@/components/dropdown';
 import { BooleanField, FormFieldGroup, OptionsField, StringField } from '@/components/form';
@@ -13,39 +13,6 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSe
   const options = dashboardsStore.dashboardsList
     .filter((dashboard) => !dashboard.options.isHidden)
     .map((dashboard) => ({ label: dashboard.name, value: dashboard.id }));
-
-  useEffect(() => {
-    let interval = null;
-    let attempt = 0;
-
-    // Sometimes the request finishes before the MQTT connection is established.
-    // In that case we retry every 3 seconds until success.
-    // The error message is displayed starting from the second attempt.
-    const fetchData = () => {
-      attempt++;
-      dashboardsStore.loadData(false)
-        .then(() => {
-          if (interval) {
-            clearInterval(interval);
-            interval = null;
-          }
-        })
-        .catch((error: any) => {
-          if (attempt > 1 && error.data === 'MqttConnectionError') {
-            dashboardsStore.setLoading(false);
-          }
-          if (!interval) {
-            interval = setInterval(fetchData, 3000);
-          }
-        });
-    };
-
-    fetchData();
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, []);
 
   const setShowSystemDevicesHandler = (value: boolean) => {
     localStorage.setItem('show-system-devices', value ? 'yes' : 'no');

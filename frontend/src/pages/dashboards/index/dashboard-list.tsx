@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactSortable } from 'react-sortablejs';
 import useResizeObserver from 'use-resize-observer';
@@ -24,59 +24,20 @@ const DashboardList = observer(({ dashboardsStore, hasEditRights }: DashboardLis
   const { ref, width } = useResizeObserver();
   const {
     dashboards,
-    loadData,
     isLoading,
-    setLoading,
     addDashboard,
     updateDashboards,
     updateDashboard,
   } = dashboardsStore;
   const [deletedDashboardId, setDeletedDashboardId] = useState(null);
   const [editedDashboardId, setEditedDashboardId] = useState(null);
-  const [errors, setErrors] = useState([]);
   const dashboardsList = useMemo(() => Array.from(dashboards.values()), [dashboards.values()]);
-
-  useEffect(() => {
-    let interval = null;
-    let attempt = 0;
-
-    // Sometimes the request finishes before the MQTT connection is established.
-    // In that case we retry every 3 seconds until success.
-    // The error message is displayed starting from the second attempt.
-    const fetchData = () => {
-      attempt++;
-      loadData(false)
-        .then(() => {
-          if (interval) {
-            clearInterval(interval);
-            interval = null;
-          }
-          setErrors([]);
-        })
-        .catch((error: any) => {
-          if (attempt > 1 && error.data === 'MqttConnectionError') {
-            setLoading(false);
-            setErrors([{ variant: 'danger', text: t('dashboard.errors.mqtt-connection') }]);
-          }
-          if (!interval && error.data === 'MqttConnectionError') {
-            interval = setInterval(fetchData, 3000);
-          }
-        });
-    };
-
-    fetchData();
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, []);
 
   return (
     <>
       <PageLayout
         title={t('dashboards.title')}
         isLoading={isLoading}
-        errors={errors}
         actions={
           hasEditRights && (
             <Dropdown

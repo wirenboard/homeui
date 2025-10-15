@@ -21,10 +21,8 @@ export default class DashboardsStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  loadData(isWithLoader: boolean) {
-    if (isWithLoader) {
-      this.isLoading = true;
-    }
+  loadData() {
+    this.isLoading = true;
     return this.#configEditorProxy.Load({ path: uiConfigPath })
       .then(({ content }: UIConfigResponse) => {
         const { dashboards, widgets, defaultDashboardId, description } = content;

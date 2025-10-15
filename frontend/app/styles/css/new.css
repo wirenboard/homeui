@@ -197,7 +197,7 @@ a[ng-click]:hover {
 }
 
 .mqtt-table-wrapper {
-  height: calc(100% - 150px);
+  height: calc(100% - 120px);
   overflow-y: auto !important;
   border-top: 1px solid #ddd;
 }
