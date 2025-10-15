@@ -648,9 +648,9 @@
          "no-units": "Unitless",
          "precision": "Precision",
          "device-capabilities": "Capabilities",
-         "device-capabilities-description": "A list of what the device can do.",
+         "device-capabilities-description": "A list of what the device can do",
          "device-properties": "Properties",
-         "device-properties-description": "A list of the device's characteristics."
+         "device-properties-description": "A list of the device's characteristics"
       },
       "buttons": {
          "add-room": "Add room",

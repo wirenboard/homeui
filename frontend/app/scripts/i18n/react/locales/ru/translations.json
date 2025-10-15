@@ -673,9 +673,9 @@
          "no-units": "Безразмерно",
          "precision": "Точность",
          "device-capabilities": "Умения",
-         "device-capabilities-description": "Список того, что может делать устройство.",
+         "device-capabilities-description": "Список того, что может делать устройство",
          "device-properties": "Свойства",
-         "device-properties-description": "Список характеристик устройства."
+         "device-properties-description": "Список характеристик устройства"
       },
       "buttons": {
          "add-room": "Добавить комнату",
