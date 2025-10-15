@@ -627,16 +627,17 @@
       }
    },
    "login": {
-      "title": "Вход",
       "errors": {
          "failed": "Неверное имя пользователя или пароль"
       },
       "buttons": {
-         "login": "Войти"
+         "login": "Войти",
+         "auto-login": "Войти без пароля"
       },
       "labels": {
          "login": "Имя",
-         "password": "Пароль"
+         "password": "Пароль",
+         "documentation": "Документация"
       }
    },
    "alice": {

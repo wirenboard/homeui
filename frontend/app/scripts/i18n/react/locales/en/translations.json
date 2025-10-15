@@ -602,16 +602,17 @@
       }
    },
    "login": {
-      "title": "Login",
       "errors": {
-         "failed": "Login failed"
+         "failed": "Incorrect credentials"
       },
       "buttons": {
-         "login": "Log in"
+         "login": "Sign in",
+         "auto-login": "Sign in without password"
       },
       "labels": {
          "login": "Login",
-         "password": "Password"
+         "password": "Password",
+         "documentation": "Documentation"
       }
    },
    "alice": {

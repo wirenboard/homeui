@@ -18,6 +18,8 @@
     --border-color: #eee;
     --content-background: #fff;
     --link-color: #5393c8;
+    --brand-color: #5cb300;
+    --brand-color-hover: #68ca00;
 
     --nav-bg: oklch(0.252 0 0);
     --nav-sublist-bg: oklch(from var(--nav-bg) calc(l + 0.09) c h);
