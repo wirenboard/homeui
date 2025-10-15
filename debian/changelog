@@ -7,6 +7,12 @@ wb-mqtt-homeui (2.144.0) stable; urgency=medium
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Oct 2025 13:45:00 +0300
 
+wb-mqtt-homeui (2.143.1) stable; urgency=medium
+
+  * Add separator to widget preview
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 11:06:00 +0300
+
 wb-mqtt-homeui (2.143.0) stable; urgency=medium
 
   * Add auth store and move all logic there

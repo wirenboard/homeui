@@ -115,7 +115,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
                           isCompact={widgets.get(widgetId).compact}
                           extra={cell.extra}
                         />
-                      ) : cell.id?.startsWith('separator') ? (
+                      ) : cell.type === 'separator' ? (
                         <div className="dashboard-separator">
                           {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
                         </div>
