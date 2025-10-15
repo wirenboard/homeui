@@ -24,7 +24,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, rulesStore
   const { id, page, params } = useParseHash();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const { integrations } = aliceStore;
-  const { isAuthenticated, isAutologin, hasRights, logout } = authStore;
+  const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
   const { isRuleDebugEnabled } = rulesStore;
   const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true' || false);
   const [openedSubmenus, setOpenedSubmenus] = useState([]);
@@ -140,10 +140,10 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, rulesStore
           {!params.has('fullscreen') && (
             <div
               className={classNames('navigation-actions', {
-                'navigation-actionsMultimple': hasRights(UserRole.Admin),
+                'navigation-actionsMultimple': hasRights(UserRole.Admin) && areUsersConfigured,
               })}
             >
-              {isAuthenticated && (
+              {isAuthenticated && areUsersConfigured && (
                 <Tooltip
                   text={isMenuCompact
                     ? t(isAutologin

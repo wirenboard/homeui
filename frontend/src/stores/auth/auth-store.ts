@@ -22,7 +22,16 @@ export default class AuthStore {
         return data;
       });
     } catch (err) {
-      this.userRole = undefined;
+      runInAction(() => {
+        // if backend is outdated and there are no users at all
+        if (err.status === 404) {
+          this.userRole = UserRole.Admin;
+          this.areUsersConfigured = false;
+        } else {
+          this.userRole = undefined;
+        }
+      });
+
       throw err;
     }
   }
