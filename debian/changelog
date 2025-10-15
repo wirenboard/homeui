@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.145.0) stable; urgency=medium
+
+  * Update login page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 15:26:00 +0300
+
 wb-mqtt-homeui (2.144.1) stable; urgency=medium
 
   * Fix navigation without users

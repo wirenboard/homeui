@@ -21,10 +21,6 @@
     }
 }
 
-.navigation-disabled * {
-    pointer-events: none;
-}
-
 .navigation-compact {
     width: 60px;
 }

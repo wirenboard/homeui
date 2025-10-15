@@ -96,7 +96,7 @@ import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
 import usersPageDirective from './react-directives/users/users';
-import loginPageDirective from './react-directives/login/login-page';
+import loginPageDirective from './react-directives/login/login';
 
 // Angular routes
 import routingModule from './app.routes';

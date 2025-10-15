@@ -72,13 +72,11 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, rulesStore
     setIsMenuCompact(isMobile ? false : localStorage.getItem('isMenuCompact') === 'true');
   }, [isMobile]);
 
-  return isAuthenticated && params.has('hmi') ? null : (
+  return !isAuthenticated || params.has('hmi') || location.hash === '#!/login' ? null : (
     <>
       <nav
         className={classNames('navigation', {
           'navigation-compact': isMenuCompact,
-          // TODO remove https://wirenboard.youtrack.cloud/issue/SOFT-6083
-          'navigation-disabled': !isAuthenticated,
         })}
       >
         <div className="navigation-header">

@@ -1058,7 +1058,7 @@ button.dashboard-back:active {
 }
 
 body #https-setup-label {
-  color: white;
+  color: var(--text-color);
   font-size: 14px;
   display: none;
   justify-content: center;
