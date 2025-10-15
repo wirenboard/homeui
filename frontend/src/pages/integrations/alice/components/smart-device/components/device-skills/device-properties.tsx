@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
+import { Input } from '@/components/input';
 import {
-  // events, // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
+  events, // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
   floats,
   Property,
   floatUnitsByInstance,
@@ -114,11 +115,11 @@ export const DeviceProperties = observer(({
         break;
       }
       // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
-      // case Property.Event: {
-      //   parameters.instance = events.at(0);
-      //   parameters.value = 'открыто';
-      //   break;
-      // }
+      case Property.Event: {
+        parameters.instance = events.at(0);
+        parameters.value = 'открыто';
+        break;
+      }
     }
     return parameters;
   };
@@ -201,7 +202,7 @@ export const DeviceProperties = observer(({
               )}
 
               {/* TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI */}
-              {/* {property.type === Property.Event && (
+              {property.type === Property.Event && (
                 <>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
@@ -232,7 +233,7 @@ export const DeviceProperties = observer(({
                     />
                   </div>
                 </>
-              )} */}
+              )} 
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
                   size="small"

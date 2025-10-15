@@ -178,7 +178,7 @@ export const toggles = ['backlight', 'controls_locked', 'ionization', 'keep_warm
 
 export enum Property {
   Float = 'devices.properties.float',
-  // Event = 'devices.properties.event',
+  Event = 'devices.properties.event',
 }
 
 export const floats = [
