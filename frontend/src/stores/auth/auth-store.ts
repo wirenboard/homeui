@@ -6,7 +6,7 @@ import type { AuthResponse, User, UserBody } from './types';
 export default class AuthStore {
   public userRole: UserRole;
   public isAutologin: boolean;
-  public areUsersConfigured: boolean;
+  public areUsersConfigured: boolean = true;
   public users: User[];
 
   constructor() {
