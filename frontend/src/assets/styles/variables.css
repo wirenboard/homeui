@@ -21,15 +21,15 @@
     --brand-color: #5cb300;
     --brand-color-hover: #68ca00;
 
-    --nav-bg: oklch(0.252 0 0);
-    --nav-sublist-bg: oklch(from var(--nav-bg) calc(l + 0.09) c h);
-    --nav-border: oklch(from var(--nav-bg) l c h / 0.5);
-    --nav-item-hover: oklch(from var(--nav-bg) calc(l - 0.05) c h);
-    --nav-item-active: var(--nav-item-hover);
-    --nav-text-color: oklch(from var(--nav-bg) calc(l + 0.4) c h);
+    --nav-bg: rgb(34, 34, 34);
+    --nav-sublist-bg: rgb(56, 56, 56);
+    --nav-border: rgba(34, 34, 34, 0.5);
+    --nav-item-active: rgb(22, 22, 22);
+    --nav-item-hover: var(--nav-item-active);
+    --nav-text-color: rgb(144, 144, 144);
     --nav-font-size: var(--font-size-medium);
-    --nav-status-online-color: #5cb300;
-    --nav-toggle-bg: oklch(from var(--nav-bg) calc(l + 0.6) c h);
+    --nav-status-online-color: rgb(92, 179, 0);
+    --nav-toggle-bg: rgb(206, 206, 206);
     --nav-toggle-text-color: var(--nav-text-color);
     --nav-status-color: #fff;
     --nav-debug-enabled-color: var(--orange-color);
@@ -44,7 +44,7 @@
     --font: "Open Sans", Arial, Helvetica, Sans-Serif;
 
     --input-action-background: #3498db;
-    --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgb(38 167 255 / 50%);
+    --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(38, 167, 255, 0.5);
     --input-active-shadow-transition: box-shadow 200ms linear;
     --input-background: #fff;
     --input-color: #495057;
@@ -91,13 +91,14 @@
     --card-header-text: black;
     --card-border-radius: 6px;
 
-    --nav-bg: oklch(0.95 0 0);
-    --nav-sublist-bg: oklch(from var(--nav-bg) calc(l - 0.04) c h);
-    --nav-border: oklch(from var(--nav-bg) l c h / 0.5);
+    --nav-bg: rgb(238, 238, 238);
+    --nav-sublist-bg: rgb(225, 225, 225);
+    --nav-border: rgba(238, 238, 238, 0.5);
     --nav-item-active: var(--primary-color);
-    --nav-item-hover: oklch(from var(--nav-bg) calc(l - 0.05) c h);
+    --nav-item-hover: var(--nav-item-active);
     --nav-text-color: var(--text-color);
-    --nav-toggle-bg: oklch(from var(--nav-bg) calc(l - 0.1) c h);
+    --nav-toggle-bg: rgb(205, 205, 205);
+    --nav-toggle-text-color: rgb(128, 128, 128);
     --nav-status-color: var(--nav-text-color);
     --nav-debug-enabled-color: #e06400;
 }
@@ -142,11 +143,11 @@
     --tooltip-background: #7676ff;
     --tooltip-color: #fff;
 
-    --nav-bg: #171727;
-    --nav-sublist-bg: oklch(from var(--nav-bg) calc(l + 0.09) c h);
-    --nav-border: oklch(from var(--nav-bg) l c h / 0.5);
-    --nav-item-hover: oklch(from var(--nav-bg) calc(l - 0.03) c h);
-    --nav-item-active: var(--nav-item-hover);
-    --nav-text-color: oklch(from var(--nav-bg) calc(l + 0.4) c h);
-    --nav-toggle-bg: oklch(from var(--nav-bg) calc(l + 0.102) c h);
+    --nav-bg: rgb(23, 23, 39);
+    --nav-sublist-bg: rgb(44, 45, 62);
+    --nav-border: rgba(23, 23, 39, 0.5);
+    --nav-item-active: rgb(16 16 32);
+    --nav-item-hover: var(--nav-item-active);
+    --nav-text-color: rgb(129, 130, 151);
+    --nav-toggle-bg: rgb(47, 48, 65);
 }
