@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.144.0) stable; urgency=medium
+
+  * Add events for devices
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Fri, 17 Oct 2025 13:18:00 +0300
+
 wb-mqtt-homeui (2.143.0) stable; urgency=medium
 
   * Add auth store and move all logic there
