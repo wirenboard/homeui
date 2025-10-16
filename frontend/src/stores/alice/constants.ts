@@ -211,10 +211,10 @@ export const events = [
   'motion',
   'smoke',
   'gas',
-  'battery_level_event', //event
-  'food_level_event',//event
-  'water_level',//event
-  'water_leak',//event
+  'battery_level_event', //event same floats
+  'food_level_event',//event same floats
+  'water_level',
+  'water_leak',
 ];
 
 export const floatUnitsByInstance: Record<string, string[]> = {
