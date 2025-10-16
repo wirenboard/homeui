@@ -211,10 +211,10 @@ export const events = [
   'motion',
   'smoke',
   'gas',
-  'battery_level',
-  'food_level',
-  'water_level',
-  'water_leak',
+  'battery_level_event', //event
+  'food_level_event',//event
+  'water_level',//event
+  'water_leak',//event
 ];
 
 export const floatUnitsByInstance: Record<string, string[]> = {
@@ -238,6 +238,16 @@ export const floatUnitsByInstance: Record<string, string[]> = {
   voltage: ['unit.volt'],
   water_level: ['unit.percent'],
   water_meter: ['unit.cubic_meter'],
+  vibration: ['unit.tilt', 'unit.fall','unit.vibration'],
+  open: ['unit.opened', 'unit.closed' ],
+  button: ['unit.click', 'unit.double_click', 'unit.long_press'],
+  motion: ['unit.detected', 'unit.not_detected'],
+  smoke: ['unit.detected', 'unit.not_detected', 'unit.high'],
+  gas: ['unit.detected', 'unit.not_detected', 'unit.high'],
+  battery_level_event: ['unit.low', 'unit.normal', 'unit.full'],
+  food_level_event: ['unit.empty', 'unit.low', 'unit.normal'],
+  water_level_event: ['unit.empty', 'unit.low', 'unit.normal'],
+  water_leak: ['unit.dry', 'unit.leak'],
 };
 
 // Predefined color scenes per Yandex Smart Home docs
@@ -290,6 +300,23 @@ export const unitLabels: Record<string, string> = {
   'unit.temperature.celsius': '°C',
   'unit.temperature.kelvin': 'K',
   'unit.volt': 'V',
+  'unit.tilt': 'tilt',
+  'unit.fall': 'fall',
+  'unit.vibration': 'vibration',
+  'unit.opened': 'opened',
+  'unit.closed': 'closed',
+  'unit.click': 'click',
+  'unit.double_click': 'double click',
+  'unit.long_press': 'long press',
+  'unit.detected': 'detected',
+  'unit.not_detected': 'not detected',
+  'unit.high': 'high',
+  'unit.low': 'low',
+  'unit.normal': 'normal',
+  'unit.full': 'full',
+  'unit.empty': 'empty',
+  'unit.leak': 'leak',
+  'unit.dry': 'dry',
 };
 
 export const defaultColorModelParameters = {

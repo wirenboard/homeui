@@ -103,6 +103,7 @@ export const DeviceProperties = observer(({
 
   const getPropertyParameters = (type: Property) => {
     const parameters: PropertyParameters = {};
+    console.log('getPropertyParameters type=', type);
     switch (type) {
       case Property.Float: {
         const inst = floats.at(0);
@@ -116,8 +117,12 @@ export const DeviceProperties = observer(({
       }
       // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
       case Property.Event: {
-        parameters.instance = events.at(0);
-        parameters.value = 'открыто';
+        const inst = events.at(0);
+        parameters.instance = inst;
+        const units = unitOptionsForInstance(inst).map((o) => o.value);
+        if (units.length) {
+          parameters.unit = units[0];
+        }
         break;
       }
     }
@@ -212,28 +217,45 @@ export const DeviceProperties = observer(({
                       value={property.parameters?.instance}
                       options={events.map((event) => ({ label: event, value: event }))}
                       onChange={({ value: instance }: Option<string>) => {
+                        const availableUnits = unitOptionsForInstance(instance).map((o) => o.value);
+                        const currentUnit = property.parameters?.unit;
+                        const updatedParams = {
+                          ...property.parameters,
+                          instance,
+                          // Set the first available unit if current unit is not available for new instance
+                          unit: availableUnits.includes(currentUnit) ? currentUnit : availableUnits[0] || null
+                        };
+
                         const val = properties.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, instance } }
+                          ? { ...item, parameters: updatedParams }
                           : item);
                         onPropertyChange(val);
                       }}
                     />
                   </div>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                    <Input
-                      value={property.parameters?.value}
-                      isFullWidth
-                      onChange={(value: string) => {
-                        const val = properties.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, value } }
-                          : item);
-                        onPropertyChange(val);
-                      }}
-                    />
+                    <div>
+                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
+                      {t('alice.labels.event-value')}
+                    </div>
+                    {unitOptionsForInstance(property.parameters?.instance).length ? (
+                      <Dropdown
+                        value={property.parameters?.unit}
+                        options={unitOptionsForInstance(property.parameters?.instance)}
+                        onChange={({ value: unit }: Option<string>) => {
+                          const val = properties.map((item, i) => i === key
+                            ? { ...item, parameters: { ...item.parameters, unit } }
+                            : item);
+                          onPropertyChange(val);
+                        }}
+                      />
+                    ) : (
+                      <div className="aliceDeviceSkills-noUnits">
+                        {t('alice.labels.no-units')}
+                      </div>
+                    )}
                   </div>
                 </>
-              )} 
+              )}
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
                   size="small"
