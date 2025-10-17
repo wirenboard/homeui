@@ -52,6 +52,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
     if (id === 'all') {
       return formatRoomDevices(Array.from(devices.keys()));
     } else if (id) {
+      // After create new room - can return undefined, fix it by []
       return formatRoomDevices(rooms.get(id)?.devices || []);
     } else {
       return [];
