@@ -76,11 +76,9 @@ const getAvailableRangeInstances = (
     )
     .map((cap) => cap.parameters.instance);
 
-  const availableInstances = ranges.filter(
+  return ranges.filter(
     (rangeInstance) => !usedInstances.includes(rangeInstance)
   );
-
-  return availableInstances;
 };
 
 const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
