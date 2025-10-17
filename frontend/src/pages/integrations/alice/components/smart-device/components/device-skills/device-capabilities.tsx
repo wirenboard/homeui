@@ -21,6 +21,9 @@ import {
   defaultColorSceneParameters
 } from '@/stores/alice';
 
+// Default range values for unlocked instances
+const DEFAULT_RANGE = { min: 0, max: 100, precision: 1 };
+
 // Instances with fixed ranges that cannot be changed in UI
 const RANGE_LOCKS: Record<string, { min: number; max: number; precision?: number }> = {
   brightness: { min: 0, max: 100, precision: 1 },
@@ -262,17 +265,13 @@ export const DeviceCapabilities = observer(({
         // Select first available instance
         const availableInstances = getAvailableRangeInstances(capabilities);
         const selectedInstance = availableInstances[0] || 'brightness'; // fallback to brightness
-        const lock = RANGE_LOCKS[selectedInstance];
+        const rangeConfig = RANGE_LOCKS[selectedInstance] ?? DEFAULT_RANGE;
 
         parameters.instance = selectedInstance;
-        parameters.range = lock ? {
-          min: lock.min,
-          max: lock.max,
-          precision: lock.precision ?? 1,
-        } : {
-          min: 0,
-          max: 100,
-          precision: 1,
+        parameters.range = {
+          min: rangeConfig.min,
+          max: rangeConfig.max,
+          precision: rangeConfig.precision ?? 1,
         };
         parameters.unit = rangeUnitByInstance[selectedInstance];
         break;
@@ -462,25 +461,18 @@ export const DeviceCapabilities = observer(({
                         const unit = rangeUnitByInstance[instance];
 
                         // If instance has a fixed range - apply it
-                        const lock = RANGE_LOCKS[instance];
-                        const nextParams = lock
-                          ? {
-                              ...capability.parameters,
-                              instance,
-                              unit,
-                              range: {
-                                min: lock.min,
-                                max: lock.max,
-                                precision: lock.precision ?? capability.parameters?.range?.precision ?? 1,
-                              },
-                            }
-                          : {
-                              ...capability.parameters,
-                              instance,
-                              unit,
-                              // if range already exists - keep it as is
-                              range: capability.parameters?.range ?? { min: 0, max: 100, precision: 1 },
-                            };
+                        const rangeConfig = RANGE_LOCKS[instance] ?? DEFAULT_RANGE;
+                        const nextParams = {
+                          ...capability.parameters,
+                          instance,
+                          unit,
+                          range: {
+                            min: rangeConfig.min,
+                            max: rangeConfig.max,
+                            precision: rangeConfig.precision ?? capability.parameters?.range?.precision ?? 1,
+                          },
+                        };
+
                         const val = capabilities.map((item, i) =>
                           i === key ? { ...item, parameters: nextParams } : item
                         );
@@ -491,9 +483,10 @@ export const DeviceCapabilities = observer(({
                   <div className="aliceDeviceSkills-gridRange">
                     {(() => {
                       const curInstance = capability.parameters?.instance as string;
-                      const lock = RANGE_LOCKS[curInstance];
-                      const lockedMin = lock?.min ?? capability.parameters?.range?.min ?? 0;
-                      const lockedMax = lock?.max ?? capability.parameters?.range?.max ?? 100;
+                      const fixedRange = RANGE_LOCKS[curInstance];
+                      const isRangeLocked = !!fixedRange;
+                      const lockedMin = fixedRange?.min ?? capability.parameters?.range?.min ?? 0;
+                      const lockedMax = fixedRange?.max ?? capability.parameters?.range?.max ?? 100;
                       return (
                         <>
                         <div>
@@ -502,7 +495,7 @@ export const DeviceCapabilities = observer(({
                             value={lockedMin}
                             type="number"
                             isFullWidth
-                            isDisabled={!!lock}
+                            isDisabled={isRangeLocked}
                             onChangeEvent={(event) => {
                               const min = event.currentTarget.valueAsNumber || 0;
                               const val = capabilities.map((item, i) => i === key
@@ -518,7 +511,7 @@ export const DeviceCapabilities = observer(({
                             value={lockedMax}
                             type="number"
                             isFullWidth
-                            isDisabled={!!lock}
+                            isDisabled={isRangeLocked}
                             onChangeEvent={(event) => {
                               const max = event.currentTarget.valueAsNumber || 0;
                               const val = capabilities.map((item, i) => i === key
