@@ -24,43 +24,35 @@
   <span id="https-setup-label" translate ng-cloak>{{'app.labels.setting-up-https'}}</span>
 
   <div id="overlay"></div>
-  <div id="wrapper" class="fade" ng-class="{ 'show-console': consoleVisible }">
-      <navigation></navigation>
+  <div id="wrapper" class="fade" ng-class="{ 'wrapper-content-consoleRight': consoleView == 'right' }">
+      <div class="wrapper-content">
+          <navigation></navigation>
 
-      <div id="page-wrapper">
-          <exp-check-widget></exp-check-widget>
+          <div id="page-wrapper">
+              <exp-check-widget></exp-check-widget>
 
-          <div class="alert alert-danger" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="visible">
-              <button type="button" class="close" ng-click="visible = false;"
-                      aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-              <span ng-bind-html="messageHtml"></span>
+              <div class="alert alert-danger" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="visible">
+                  <button type="button" class="close" ng-click="visible = false;"
+                          aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                  <span ng-bind-html="messageHtml"></span>
+              </div>
+              <% if (htmlWebpackPlugin.options.stableRelease) { %>
+              <div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="stableNotice">
+                <button type="button" class="close" ng-click="closeStableNotice()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" draggable="false">testing</a>
+              </div>
+              <% } %>
+              <!-- viewport for child view -->
+              <div ng-show='stateIsLoading' ng-cloak>
+                  <strong translate>{{'heading.loading'}}</strong>
+              </div>
+              <ui-view ng-hide='stateIsLoading'></ui-view>
           </div>
-          <% if (htmlWebpackPlugin.options.stableRelease) { %>
-          <div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="stableNotice">
-            <button type="button" class="close" ng-click="closeStableNotice()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" draggable="false">testing</a>
-          </div>
-          <% } %>
-          <!-- viewport for child view -->
-          <div ng-show='stateIsLoading' ng-cloak>
-              <strong translate>{{'heading.loading'}}</strong>
-          </div>
-          <ui-view ng-hide='stateIsLoading'></ui-view>
-      </div>
       <!-- /#page-wrapper -->
-  </div>
-
-  <div ng-if="allowWbRulesDebug()">
-      <div class="console ng-hide" ng-show="consoleVisible">
-          <console></console>
-          <button type="button" name="close" class="close"
-                  ng-click="toggleConsole()">
-              <span class="glyphicon glyphicon-remove"></span>
-          </button>
       </div>
+      <rules-console></rules-console>
   </div>
-
   </body>
 </html>

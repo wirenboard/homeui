@@ -8,9 +8,9 @@ import {
   useInteractions
 } from '@floating-ui/react';
 import classNames from 'classnames';
-import { PropsWithChildren, useId } from 'react';
-import CloseIcon from '@/assets/icons/close.svg';
-import { DialogProps } from './types';
+import { type PropsWithChildren, useId } from 'react';
+import CloseIcon from '@/assets/icons/close-circle.svg';
+import type { DialogProps } from './types';
 import './styles.css';
 
 export const Dialog = ({

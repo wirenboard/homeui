@@ -11,12 +11,25 @@ html, body {
 }
 
 #wrapper {
-    display: flex;
     height: 100vh;
 
-    @media(max-width:768px) {
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper-content {
+    display: flex;
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+
+    @media(max-width: 768px) {
         flex-direction: column;
     }
+}
+
+.wrapper-content-consoleRight {
+    flex-direction: row !important;
 }
 
 #page-wrapper {
@@ -271,83 +284,6 @@ footer{
 
 .script-menu .error .glyphicon-alert {
   font-size: 12px;
-}
-
-.console {
-  position: fixed;
-  border-top: 1px solid #ccc;
-  background-color: #fff;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 220px;
-  z-index: 100000;
-}
-
-.console button.close {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  font-size: 16px;
-}
-
-.show-console #page-wrapper {
-  padding-bottom: 180px;
-}
-
-.console .console-view {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 2px;
-  bottom: 4px;
-}
-
-.console .console-view > label {
-  font-weight: normal;
-  float: right;
-  margin-right: 30px;
-}
-
-.console .console-view > label > input {
-  vertical-align: -1px;
-}
-
-.console .console-view .console-messages {
-  position: absolute;
-  top: 18px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow-y: auto;
-}
-
-.console .console-view .console-message-ts {
-  display: inline-block;
-  width: 145px;
-  vertical-align: middle;
-}
-
-.console-message-level-error {
-  font-weight: bold;
-  color: #b00;
-}
-
-.console-message-level-warning {
-  font-weight: bold;
-  color: #c90;
-}
-
-.console-message-level-debug {
-  color: #090;
-}
-
-.console-message-level-info {
-  color: #009;
-}
-
-.console .console-view .console-message-text {
-  white-space: pre;
 }
 
 .spinner {
@@ -940,9 +876,7 @@ body.hmi #widgets-list {
   padding: 5px 7px;
 }
 
-body.hmi .page-header,
-body.hmi .show-console-button,
-body.hmi .console {
+body.hmi .page-header {
   display: none
 }
 
@@ -952,7 +886,6 @@ body.hmi .console {
   }
 
   body.fullscreen .access-level-label,
-  body.fullscreen .show-console-button,
   body.fullscreen .console {
     display: none;
   }

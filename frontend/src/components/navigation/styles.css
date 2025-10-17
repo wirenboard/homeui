@@ -181,6 +181,7 @@
 
 .navigation-actionsMultimple {
     display: flex;
+    width: 100%;
 }
 
 .navigation-container:not(.navigation-containerMobile) .navigation-actionsMultimple .menuItem-link {
@@ -199,12 +200,6 @@
 
 .navigation-logout:hover {
     color: var(--danger-color);
-}
-
-.navigation-ruleDebugEnabled,
-.navigation-ruleDebugEnabled:hover,
-.navigation-ruleDebugEnabled:focus {
-    color: var(--nav-debug-enabled-color);
 }
 
 .navigation-overlay {
