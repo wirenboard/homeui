@@ -69,9 +69,12 @@ const getAvailableRangeInstances = (
   excludeIndex?: number
 ): string[] => {
   const usedInstances = capabilities
-    .filter((cap, index) => cap.type === Capability.Range && index !== excludeIndex)
-    .map((cap) => cap.parameters?.instance)
-    .filter(Boolean);
+    .filter((cap, index) => 
+      cap.type === Capability.Range && 
+      index !== excludeIndex && 
+      cap.parameters?.instance
+    )
+    .map((cap) => cap.parameters.instance);
 
   const availableInstances = ranges.filter(
     (rangeInstance) => !usedInstances.includes(rangeInstance)
