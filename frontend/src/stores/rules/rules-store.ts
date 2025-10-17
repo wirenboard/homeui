@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { generateNextId } from '@/utils/id';
-import { Rule, RuleError, RuleFetchData, RuleListItem, RuleSaveData } from './types';
+import type { Rule, RuleError, RuleFetchData, RuleListItem, RuleLog, RuleSaveData } from './types';
 
 export default class RulesStore {
   public rule?: Rule = {
@@ -9,6 +9,7 @@ export default class RulesStore {
   };
   public rules: RuleListItem[] = [];
   public isRuleDebugEnabled = false;
+  public logs: RuleLog[] = [];
 
   #mqttClient: any;
   #editorProxy: any;
@@ -149,5 +150,29 @@ export default class RulesStore {
         this.isRuleDebugEnabled = payload === '1';
       });
     });
+  }
+
+  toggleRuleDebugging() {
+    runInAction(() => {
+      const value = !this.isRuleDebugEnabled;
+      this.#mqttClient.send('/devices/wbrules/controls/Rule debugging/on', String(Number(value)), false, 1);
+      this.isRuleDebugEnabled = value;
+    });
+  }
+
+  subscribeRulesLogs() {
+    const MAX_MESSAGES = 200;
+    this.#mqttClient.addStickySubscription('/wbrules/log/+', ({ topic, payload }) => {
+      runInAction(() => {
+        if (this.logs.length === MAX_MESSAGES) {
+          this.logs.shift();
+        }
+        this.logs.push({ level: topic.replace(/^.*\//, ''), payload: payload.trim(), time: new Date().getTime() });
+      });
+    });
+  }
+
+  clearLogs() {
+    this.logs = [];
   }
 }

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.146.0) stable; urgency=medium
+
+  * Rules console rework
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Oct 2025 14:54:53 +0500
+
 wb-mqtt-homeui (2.145.2) stable; urgency=medium
 
   * Fix autologin label message

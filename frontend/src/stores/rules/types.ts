@@ -36,3 +36,9 @@ export interface Rule extends RuleFetchData {
     errorLine?: number | null;
   };
 }
+
+export interface RuleLog {
+  level: 'info' | 'warning' | 'error' | 'debug';
+  payload: string;
+  time: number;
+}
