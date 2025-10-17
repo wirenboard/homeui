@@ -3,6 +3,7 @@ export interface UIConfigResponse {
     dashboards: DashboardBase[];
     defaultDashboardId: string;
     widgets: WidgetBase[];
+    description?: string;
   };
 }
 

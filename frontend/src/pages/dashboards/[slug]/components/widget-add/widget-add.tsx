@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CheckIcon from '@/assets/icons/check.svg';
 import CopyIcon from '@/assets/icons/copy.svg';
@@ -19,7 +19,7 @@ import type { WidgetAddProps } from './types';
 import './styles.css';
 
 export const WidgetAdd = observer(({
-  dashboardStore,
+  dashboardsStore,
   widgets,
   dashboard,
   cells,
@@ -151,15 +151,23 @@ export const WidgetAdd = observer(({
                     key={widget.id}
                     isBodyVisible
                   >
-                    {widget.cells.map((cell) => (
-                      cells.has(cell.id) && (
-                        <Cell
-                          cell={cells.get(cell.id)}
-                          name={cell.name}
-                          key={cell.id}
-                          extra={cell.extra}
-                        />
-                      )
+                    {widget.cells.map((cell, i) => (
+                      <Fragment key={cell.id || i}>
+                        {cells.has(cell.id) ? (
+                          <Cell
+                            cell={cells.get(cell.id)}
+                            name={cell.name}
+                            isCompact={widgets.get(widgetId).compact}
+                            extra={cell.extra}
+                          />
+                        ) : cell.type === 'separator' ? (
+                          <div className="dashboard-separator">
+                            {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
+                          </div>
+                        )
+                          : cell.name || 'nosuchcell'
+                        }
+                      </Fragment>
                     ))}
                   </Card>
                 </div>
@@ -185,7 +193,7 @@ export const WidgetAdd = observer(({
             setIsEditing(false);
           }}
           onSave={(data) => {
-            (widgets.get(widgetId) ?? new Widget(data, dashboardStore)).save(data);
+            (widgets.get(widgetId) ?? new Widget(data, dashboardsStore)).save(data);
             setIsEditing(false);
             setWidgetId(data.id);
           }}

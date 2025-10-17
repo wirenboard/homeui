@@ -1,0 +1,78 @@
+.menuItem-subList {
+    background: var(--nav-sublist-bg);
+}
+
+.menuItem-subList .menuItem-link {
+    padding: 12px 12px 12px 20px;
+}
+
+/* to avoid jumping on scroll appear */
+.navigation-container:not(:hover) .menuItem-subList .menuItem-link,
+.navigation-container:not(:focus) .menuItem-subList .menuItem-link {
+    padding-right: 32px;
+}
+
+.navigation-container:not(:focus) .menuItem-link {
+    padding-right: 20px;
+}
+
+.menuItem-icon {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+}
+
+.menuItem-link {
+    all: unset;
+    line-height: normal;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 16px 8px 16px 20px;
+    gap: 16px;
+    font-size: var(--nav-font-size);
+    color: var(--nav-text-color);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 100ms ease, color 100ms ease;
+}
+
+.navigation-containerMobile .menuItem-link {
+    padding: 10px 10px 10px 20px;
+}
+
+.navigation-compact .menuItem-link {
+    display: flex;
+    width: 100%;
+}
+
+.menuItem-link:hover,
+.menuItem-link:focus {
+    background: var(--nav-item-hover);
+    color: #fff;
+}
+
+.menuItem-linkActive {
+    background: var(--nav-item-active);
+    color: #fff;
+}
+
+.menuItem-item {
+    list-style: none;
+}
+
+.menuItem-popup {
+    z-index: 9999;
+}
+
+.menuItem-popupList {
+    background: var(--nav-sublist-bg);
+    color: var(--nav-sublist-bg);
+    padding-left: 0;
+    z-index: 1000;
+    width: 200px;
+    border-radius: 8px;
+    overflow-y: hidden;
+}
+

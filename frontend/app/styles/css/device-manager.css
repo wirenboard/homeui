@@ -10,7 +10,7 @@
     flex-wrap: wrap;
     gap: 5px;
     align-items: center;
-    margin-top: 33px;
+    margin-top: 11px;
     padding-bottom: 5px;
     justify-content: flex-end;
 }
@@ -235,7 +235,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
 .device-manager-page div.alert .alert-header {

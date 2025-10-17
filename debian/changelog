@@ -1,8 +1,41 @@
-wb-mqtt-homeui (2.143.1) stable; urgency=medium
+wb-mqtt-homeui (2.145.2) stable; urgency=medium
 
   * Fix autologin label message
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 15 Oct 2025 12:21:17 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Oct 2025 14:54:53 +0500
+
+wb-mqtt-homeui (2.145.1) stable; urgency=medium
+
+  * Fix nav colors for old browsers
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 16 Oct 2025 11:45:00 +0300
+
+wb-mqtt-homeui (2.145.0) stable; urgency=medium
+
+  * Update login page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 15:26:00 +0300
+
+wb-mqtt-homeui (2.144.1) stable; urgency=medium
+
+  * Fix navigation without users
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 14:42:00 +0300
+
+wb-mqtt-homeui (2.144.0) stable; urgency=medium
+
+  * Update navigation component: add posibility to toggle
+  * Add controller name to nav menu
+  * Move debug button to nav menu
+  * Move online status to nav menu
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 13:45:00 +0300
+
+wb-mqtt-homeui (2.143.1) stable; urgency=medium
+
+  * Add separator to widget preview
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 11:06:00 +0300
 
 wb-mqtt-homeui (2.143.0) stable; urgency=medium
 

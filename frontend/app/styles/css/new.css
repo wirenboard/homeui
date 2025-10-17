@@ -81,10 +81,6 @@ div[uib-datepicker-popup-wrap] {
   border-top-right-radius: 2px;
 }
 
-.stretch-height {
-  min-height: calc(100vh - 200px)
-}
-
 .relative {
   position: relative;
 }
@@ -157,14 +153,6 @@ div[uib-datepicker-popup-wrap] {
   margin: 0px;
 }
 
-.wb-navbar-brand {
-  padding: 7px 10px;
-}
-
-.navbar-brand img {
-  max-height: 42px;
-}
-
 @media (max-width: 410px) {
   .panel-group > div {
     width: 100%;
@@ -173,53 +161,6 @@ div[uib-datepicker-popup-wrap] {
 
 .panel-group {
   display: flex;
-}
-
-.side-nav a.active::before {
-  content: "\F0D9";
-  font-family: FontAwesome;
-  display: block;
-  height: 27px;
-  line-height: normal;
-  width: 27px;
-  position: absolute;
-  right: -21px;
-  font-size: 20px;
-  color: #eee;
-}
-
-@media screen and (max-width: 767px) {
-  .navbar-toggle {
-    float: left;
-    margin-right: 0;
-    margin-left: 13px;
-  }
-
-  .navbar-inverse {
-    background-color: transparent;
-    border-color: transparent;
-  }
-
-  .navbar-inverse > * {
-    background-color: var(--bar-color);
-  }
-
-  .navbar-collapse {
-    min-height: 100vh;
-    width: 250px;
-    max-width: 250px;
-    margin-left: -250px;
-    transition: margin 0.35s;
-    overflow-x: hidden;
-  }
-
-  .navbar-collapse.in {
-    margin-left: 0px;
-  }
-
-  .nav.navbar-nav.side-nav {
-    padding-bottom: 50px;
-  }
 }
 
 .overlay {
@@ -256,7 +197,7 @@ a[ng-click]:hover {
 }
 
 .mqtt-table-wrapper {
-  height: calc(100% - 150px);
+  height: calc(100% - 120px);
   overflow-y: auto !important;
   border-top: 1px solid #ddd;
 }
@@ -279,4 +220,8 @@ a[ng-click]:hover {
   word-break: break-all;
   word-wrap: break-word;
   white-space: break-spaces;
+}
+
+.page-header {
+  margin-top: 14px;
 }

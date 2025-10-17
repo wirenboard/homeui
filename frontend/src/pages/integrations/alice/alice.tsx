@@ -12,7 +12,7 @@ import './styles.css';
 
 const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
-  const { rooms, isAvailable, fetchData } = aliceStore;
+  const { rooms, integrations, fetchData } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
@@ -31,8 +31,8 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    setErrors(isAvailable === false ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
-  }, [isAvailable]);
+    setErrors(!integrations.length ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+  }, [integrations]);
 
   const sortedRooms = Array.from(rooms).sort(([keyA], [keyB]) => {
     if (keyA === DefaultRoom) return -1;
@@ -41,8 +41,8 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   });
 
   const isLoading = useMemo(
-    () => isAvailable === undefined || (isAvailable && pageState === 'isLoading'),
-    [isAvailable, pageState]
+    () => !integrations.length || (integrations.length && pageState === 'isLoading'),
+    [integrations, pageState]
   );
 
   return (
@@ -52,7 +52,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
       hasRights={hasRights}
       errors={errors}
     >
-      {isAvailable && (
+      {!!integrations.length && (
         pageState === 'isConnected'
           ? (
             <>

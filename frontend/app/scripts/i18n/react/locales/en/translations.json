@@ -38,6 +38,42 @@
          "duplicate": "Duplicate dashboard ids are not allowed"
       }
    },
+   "navigation": {
+      "labels": {
+         "toggle": "Toggle navigation",
+         "home": "Home",
+         "dashboards": "Dashboards",
+         "list": "List",
+         "devices": "Devices",
+         "integrations": "Integrations",
+         "alice": "Yandex Alice",
+         "widgets": "Widgets",
+         "history": "History",
+         "rules": "Rules",
+         "rule-editor": "Rule Editor",
+         "scenario": "Scenarios",
+         "settings": "Settings",
+         "help": "Help",
+         "configs": "Configs",
+         "ui": "Web UI",
+         "system": "System",
+         "channels": "MQTT Channels",
+         "access": "Users",
+         "logs": "Logs",
+         "serial-metrics": "wb-mqtt-serial metrics",
+         "scan": "Scan",
+         "device-manager": "Device manager"
+      },
+      "buttons": {
+         "logout": "Logout",
+         "switch-user": "Switch user",
+         "debug": "Debug"
+      },
+      "connection": {
+         "active": "Connected",
+         "inactive": "Disconnected"
+      }
+   },
    "scan": {
       "title": "New devices",
       "search-disconnected-title": "Search for disconnected device",
@@ -566,16 +602,17 @@
       }
    },
    "login": {
-      "title": "Login",
       "errors": {
-         "failed": "Login failed"
+         "failed": "Incorrect credentials"
       },
       "buttons": {
-         "login": "Log in"
+         "login": "Sign in",
+         "auto-login": "Sign in without password"
       },
       "labels": {
          "login": "Login",
-         "password": "Password"
+         "password": "Password",
+         "documentation": "Documentation"
       }
    },
    "alice": {
@@ -666,7 +703,9 @@
          "default-dashboard": "Default dashboard",
          "https-settings": "HTTPS settings",
          "enable-https": "Auto configuration",
-         "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access."
+         "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access.",
+         "name": "Controller name",
+         "name-description": "Shown in the menu"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
