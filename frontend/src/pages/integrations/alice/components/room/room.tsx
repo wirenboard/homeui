@@ -52,7 +52,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
     if (id === 'all') {
       return formatRoomDevices(Array.from(devices.keys()));
     } else if (id) {
-      return formatRoomDevices(rooms.get(id)?.devices);
+      return formatRoomDevices(rooms.get(id)?.devices || []);
     } else {
       return [];
     }
