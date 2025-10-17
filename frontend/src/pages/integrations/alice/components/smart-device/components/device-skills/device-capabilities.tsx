@@ -22,10 +22,10 @@ import {
 } from '@/stores/alice';
 
 // Default range values for unlocked instances
-const DEFAULT_RANGE = { min: 0, max: 100, precision: 1 };
+const RANGE_LIMITS_DEFAULT = { min: 0, max: 100, precision: 1 };
 
 // Instances with fixed ranges that cannot be changed in UI
-const RANGE_LOCKS: Record<string, { min: number; max: number; precision?: number }> = {
+const RANGE_LIMITS_LOCKED: Record<string, { min: number; max: number; precision?: number }> = {
   brightness: { min: 0, max: 100, precision: 1 },
   // channel: No lock applied
   humidity:   { min: 0, max: 100, precision: 1 },
@@ -265,7 +265,7 @@ export const DeviceCapabilities = observer(({
         // Select first available instance
         const availableInstances = getAvailableRangeInstances(capabilities);
         const selectedInstance = availableInstances[0] || 'brightness'; // fallback to brightness
-        const rangeConfig = RANGE_LOCKS[selectedInstance] ?? DEFAULT_RANGE;
+        const rangeConfig = RANGE_LIMITS_LOCKED[selectedInstance] ?? RANGE_LIMITS_DEFAULT;
 
         parameters.instance = selectedInstance;
         parameters.range = {
@@ -461,7 +461,7 @@ export const DeviceCapabilities = observer(({
                         const unit = rangeUnitByInstance[instance];
 
                         // If instance has a fixed range - apply it
-                        const rangeConfig = RANGE_LOCKS[instance] ?? DEFAULT_RANGE;
+                        const rangeConfig = RANGE_LIMITS_LOCKED[instance] ?? RANGE_LIMITS_DEFAULT;
                         const nextParams = {
                           ...capability.parameters,
                           instance,
@@ -483,7 +483,7 @@ export const DeviceCapabilities = observer(({
                   <div className="aliceDeviceSkills-gridRange">
                     {(() => {
                       const curInstance = capability.parameters?.instance as string;
-                      const fixedRange = RANGE_LOCKS[curInstance];
+                      const fixedRange = RANGE_LIMITS_LOCKED[curInstance];
                       const isRangeLocked = !!fixedRange;
                       const lockedMin = fixedRange?.min ?? capability.parameters?.range?.min ?? 0;
                       const lockedMax = fixedRange?.max ?? capability.parameters?.range?.max ?? 100;
