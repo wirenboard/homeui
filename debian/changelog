@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.145.3) stable; urgency=medium
+
+  * Fix safari navigation layout
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Oct 2025 17:33:12 +0300
+
 wb-mqtt-homeui (2.145.2) stable; urgency=medium
 
   * Fix autologin label message
