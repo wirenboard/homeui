@@ -90,7 +90,7 @@ const makeLayout = (params:ObjectParamStore[], translator, editorBuilder) => {
       }
     }
   }
-  if (!elements.length) {
+  if (elements.length) {
     res.push(
       <ObjectParamEditorRow
         key={elements.map((e) => e.key).join('-')}

@@ -14,7 +14,7 @@ import {
   WbDeviceParameterEditorsGroup,
   WbDeviceChannelEditor
 } from '@/stores/device-manager';
-import { NumberStore, Translator } from '@/stores/json-schema-editor';
+import { NumberStore, ArrayStore, Translator } from '@/stores/json-schema-editor';
 import { MakeEditors, ParamSimpleLabel } from './device-settings-param-editor';
 import type { DeviceSettingsEditorProps } from './types';
 
@@ -148,6 +148,27 @@ const DeviceSettingsCard = observer((
   );
 });
 
+const CustomChannelsCard = observer((
+  { customChannels, translator }:
+  { customChannels: ArrayStore; translator: Translator }
+) => {
+  const { t } = useTranslation();
+  const [isBodyVisible, setIsBodyVisible] = useState(false);
+  return (
+    <Card
+      key="customChannels"
+      heading={t('device-manager.labels.custom-channels')}
+      id="customChannels"
+      variant="secondary"
+      withError={customChannels.hasErrors}
+      isBodyVisible={isBodyVisible}
+      toggleBody={() => setIsBodyVisible(!isBodyVisible)}
+    >
+      <JsonSchemaEditor store={customChannels} translator={translator} />
+    </Card>
+  );
+});
+
 export const DeviceSettingsEditorMobile = observer(({ store, translator } : DeviceSettingsEditorProps) => {
   const { t } = useTranslation();
   return (
@@ -158,6 +179,9 @@ export const DeviceSettingsEditorMobile = observer(({ store, translator } : Devi
       {store.topLevelGroup.subgroups.map((group: WbDeviceParameterEditorsGroup) => (
         <DeviceSettingsCard key={group.properties.id} group={group} translator={translator} />
       ))}
+      {store.customChannels && (
+        <CustomChannelsCard customChannels={store.customChannels} translator={translator} />
+      )}
       {store.topLevelGroup.subgroups.length === 0 && store.customChannels && (
         <div>
           <label>
