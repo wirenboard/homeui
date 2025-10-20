@@ -2,7 +2,7 @@ import { request } from '@/utils/request';
 
 const WIRENBOARD_DNS_POSTFIX = 'ip.wirenboard.com';
 
-enum CertificateStatus {
+export enum CertificateStatus {
   VALID = 'valid',
   REQUESTING = 'requesting',
   UNAVAILABLE = 'unavailable',
@@ -171,3 +171,8 @@ export async function switchToHttps() {
   window.location.href = `https://${window.location.hostname}${originalPathname}${originalHash}`;
   return true;
 }
+
+export const getHttpsCertificateStatus = async (): Promise<CertificateStatus> => {
+  const { https_cert } = await getDeviceInfo();
+  return https_cert as CertificateStatus;
+};

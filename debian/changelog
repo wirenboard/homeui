@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.146.0) stable; urgency=medium
+
+  * Add HTTPS certificate status display in Web UI settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 20 Oct 2025 12:45:12 +0500
+
 wb-mqtt-homeui (2.145.4) stable; urgency=medium
 
   * Disable min/max fields on range in Alice configurator
