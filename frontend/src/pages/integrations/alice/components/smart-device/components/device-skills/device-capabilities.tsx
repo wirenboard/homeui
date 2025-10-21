@@ -21,6 +21,19 @@ import {
   defaultColorSceneParameters
 } from '@/stores/alice';
 
+// Default range values for unlocked instances
+const RANGE_LIMITS_DEFAULT = { min: 0, max: 100, precision: 1 };
+
+// Instances with fixed ranges that cannot be changed in UI
+const RANGE_LIMITS_LOCKED: Record<string, { min: number; max: number; precision?: number }> = {
+  brightness: { min: 0, max: 100, precision: 1 },
+  // channel: No lock applied
+  humidity:   { min: 0, max: 100, precision: 1 },
+  open:       { min: 0, max: 100, precision: 1 },
+  // temperature: No lock applied
+  // volume: No lock applied
+};
+
 interface DeviceCapabilitiesProps {
   capabilities: SmartDeviceCapability[];
   deviceStore: any;
@@ -31,7 +44,7 @@ const getAvailableColorModels = (
   capabilities: SmartDeviceCapability[],
   excludeIndex?: number
 ): Color[] => {
-  // Collect already used Color categories among color-setting capabilities
+  // Collect already used Color models among color-setting capabilities
   const usedColorModels = capabilities
     .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
     .map((cap) => {
@@ -54,6 +67,23 @@ const getCurrentColorModel = (capability: SmartDeviceCapability) => {
   return Color.ColorModel; // Default value
 };
 
+const getAvailableRangeInstances = (
+  capabilities: SmartDeviceCapability[],
+  excludeIndex?: number
+): string[] => {
+  const usedInstances = capabilities
+    .filter((cap, index) => 
+      cap.type === Capability.Range && 
+      index !== excludeIndex && 
+      cap.parameters?.instance
+    )
+    .map((cap) => cap.parameters.instance);
+
+  return ranges.filter(
+    (rangeInstance) => !usedInstances.includes(rangeInstance)
+  );
+};
+
 const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
   switch (colorKey) {
     case 'ColorModel': return t('alice.labels.color-model');
@@ -70,6 +100,11 @@ const isCapabilityDisabled = (
   if (capabilityType === Capability['Color setting']) {
     // For color setting, disable only if all color models are used
     return !getAvailableColorModels(capabilities).length;
+  }
+
+  if (capabilityType === Capability.Range) {
+    // For range, disable only if all range instances are used
+    return !getAvailableRangeInstances(capabilities).length;
   }
 
   // For other capabilities, use existing logic
@@ -175,6 +210,25 @@ export const DeviceCapabilities = observer(({
     };
   }, [capabilities]);
 
+  const getRangeInstanceOptions = useCallback((
+    currentCapability: SmartDeviceCapability,
+    currentCapabilityIndex: number
+  ) => {
+    const availableInstances = getAvailableRangeInstances(capabilities, currentCapabilityIndex);
+    const currentlySelectedInstance = currentCapability.parameters?.instance;
+
+    return ranges.map((rangeInstance) => {
+      const isCurrentlySelected = currentlySelectedInstance === rangeInstance;
+      const isAvailableForUse = availableInstances.includes(rangeInstance);
+
+      return {
+        label: rangeInstance,
+        value: rangeInstance,
+        isDisabled: !isCurrentlySelected && !isAvailableForUse,
+      };
+    });
+  }, [capabilities]);
+
   const getAvailableCapabilities = () => {
     const availableCapabilities = Object.values(Capability).filter((capType) => {
       return !isCapabilityDisabled(capType, capabilities);
@@ -208,13 +262,18 @@ export const DeviceCapabilities = observer(({
       //   break;
       // }
       case Capability.Range: {
-        parameters.instance = 'brightness';
+        // Select first available instance
+        const availableInstances = getAvailableRangeInstances(capabilities);
+        const selectedInstance = availableInstances[0] || 'brightness'; // fallback to brightness
+        const rangeConfig = RANGE_LIMITS_LOCKED[selectedInstance] ?? RANGE_LIMITS_DEFAULT;
+
+        parameters.instance = selectedInstance;
         parameters.range = {
-          min: 0,
-          max: 100,
-          precision: 1,
+          min: rangeConfig.min,
+          max: rangeConfig.max,
+          precision: rangeConfig.precision ?? 1,
         };
-        parameters.unit = rangeUnitByInstance['brightness'];
+        parameters.unit = rangeUnitByInstance[selectedInstance];
         break;
       }
       // <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
@@ -397,65 +456,92 @@ export const DeviceCapabilities = observer(({
                     <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
                     <Dropdown
                       value={capability.parameters?.instance}
-                      options={ranges.map((range) => ({ label: range, value: range }))}
+                      options={getRangeInstanceOptions(capability, key)}
                       onChange={({ value: instance }: Option<string>) => {
                         const unit = rangeUnitByInstance[instance];
-                        const val = capabilities.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, instance, unit } }
-                          : item);
+
+                        // If instance has a fixed range - apply it
+                        const rangeConfig = RANGE_LIMITS_LOCKED[instance] ?? RANGE_LIMITS_DEFAULT;
+                        const nextParams = {
+                          ...capability.parameters,
+                          instance,
+                          unit,
+                          range: {
+                            min: rangeConfig.min,
+                            max: rangeConfig.max,
+                            precision: rangeConfig.precision ?? capability.parameters?.range?.precision ?? 1,
+                          },
+                        };
+
+                        const val = capabilities.map((item, i) =>
+                          i === key ? { ...item, parameters: nextParams } : item
+                        );
                         onCapabilityChange(val);
                       }}
                     />
                   </div>
                   <div className="aliceDeviceSkills-gridRange">
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
-                      <Input
-                        value={capability.parameters?.range.min}
-                        type="number"
-                        isFullWidth
-                        onChangeEvent={(event) => {
-                          const min = event.currentTarget.valueAsNumber || 0;
-                          const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min } } }
-                            : item);
-                          onCapabilityChange(val);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
-                      <Input
-                        value={capability.parameters?.range.max}
-                        type="number"
-                        isFullWidth
-                        onChangeEvent={(event) => {
-                          const max = event.currentTarget.valueAsNumber || 0;
-                          const val = capabilities.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max } } }
-                            : item);
-                          onCapabilityChange(val);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.precision')}</div>
-                      <Input
-                        value={capability.parameters?.range.precision}
-                        type="number"
-                        isFullWidth
-                        onChangeEvent={(event) => {
-                          const precision = event.currentTarget.valueAsNumber || 0;
-                          const val = capabilities.map((item, i) => i === key
-                            ? {
-                              ...item,
-                              parameters: { ...item.parameters, range: { ...item.parameters.range, precision } },
-                            }
-                            : item);
-                          onCapabilityChange(val);
-                        }}
-                      />
-                    </div>
+                    {(() => {
+                      const curInstance = capability.parameters?.instance as string;
+                      const fixedRange = RANGE_LIMITS_LOCKED[curInstance];
+                      const isRangeLocked = !!fixedRange;
+                      const lockedMin = fixedRange?.min ?? capability.parameters?.range?.min ?? 0;
+                      const lockedMax = fixedRange?.max ?? capability.parameters?.range?.max ?? 100;
+                      return (
+                        <>
+                        <div>
+                          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
+                          <Input
+                            value={lockedMin}
+                            type="number"
+                            isFullWidth
+                            isDisabled={isRangeLocked}
+                            onChangeEvent={(event) => {
+                              const min = event.currentTarget.valueAsNumber || 0;
+                              const val = capabilities.map((item, i) => i === key
+                                ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min } } }
+                                : item);
+                              onCapabilityChange(val);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
+                          <Input
+                            value={lockedMax}
+                            type="number"
+                            isFullWidth
+                            isDisabled={isRangeLocked}
+                            onChangeEvent={(event) => {
+                              const max = event.currentTarget.valueAsNumber || 0;
+                              const val = capabilities.map((item, i) => i === key
+                                ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max } } }
+                                : item);
+                              onCapabilityChange(val);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.precision')}</div>
+                          <Input
+                            value={capability.parameters?.range.precision}
+                            type="number"
+                            isFullWidth
+                            onChangeEvent={(event) => {
+                              const precision = event.currentTarget.valueAsNumber || 0;
+                              const val = capabilities.map((item, i) => i === key
+                                ? {
+                                  ...item,
+                                  parameters: { ...item.parameters, range: { ...item.parameters.range, precision } },
+                                }
+                                : item);
+                              onCapabilityChange(val);
+                            }}
+                          />
+                        </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </>
               )}

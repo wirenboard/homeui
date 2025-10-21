@@ -77,13 +77,11 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                   <div className="alice-mainButtons">
                     <Button
                       label={t('alice.buttons.add-device')}
-                      size="large"
                       onClick={() => setView({ isNewDevice: true })}
                     />
 
                     <Button
                       label={t('alice.buttons.add-room')}
-                      size="large"
                       variant="secondary"
                       onClick={() => setView({ isNewRoom: true })}
                     />
@@ -93,7 +91,6 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                         'alice-roomSelected': view.roomId === 'all',
                       })}
                       label={t('alice.buttons.all-devices')}
-                      size="large"
                       variant="unaccented"
                       onClick={() => setView({ roomId: 'all' })}
                     />
@@ -107,7 +104,6 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                             'alice-roomSelected': key === view.roomId,
                           })}
                           label={rooms.get(key).name}
-                          size="large"
                           variant="unaccented"
                           onClick={() => setView({ roomId: key })}
                         />

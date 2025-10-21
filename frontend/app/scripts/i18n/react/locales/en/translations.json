@@ -659,9 +659,10 @@
          "max": "Max",
          "no-units": "Unitless",
          "precision": "Precision",
-         "device-capabilities": "Capabilities and properties",
-         "device-capabilities-description": "The skills of a device describe its capabilities. A device is described by at least one skill if it has no properties.",
-         "device-properties-description": "The properties of a device are usually used to control the environment. A device may not have any properties."
+         "device-capabilities": "Capabilities",
+         "device-capabilities-description": "A list of what the device can do",
+         "device-properties": "Properties",
+         "device-properties-description": "A list of the device's characteristics"
       },
       "buttons": {
          "add-room": "Add room",
