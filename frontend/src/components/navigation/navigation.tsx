@@ -39,6 +39,11 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
     localStorage.setItem('isMenuCompact', value.toString());
   };
 
+  const handleDebugClick = () => {
+    toggleConsole();
+    setIsMobileMenuOpened(false);
+  };
+
   const menuItems = useMemo(
     () => getMenuItems(
       dashboardsStore.dashboardsList,
@@ -170,7 +175,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
                   <button
                     className={classNames('menuItem-link')}
                     draggable={false}
-                    onClick={toggleConsole}
+                    onClick={handleDebugClick}
                   >
                     <ConsoleIcon className="menuItem-icon" />
                     {!isMenuCompact && t('navigation.buttons.debug')}
