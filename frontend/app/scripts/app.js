@@ -440,6 +440,7 @@ const realApp = angular
           // Try to obtain WebUI configs
           whenMqttReady()
             .then(() => {
+              $rootScope.rulesStore.subscribeRulesLogs();
               $rootScope.rulesStore.subscribeRuleDebugging();
               return $rootScope.dashboardsStore.loadData(true);
             })
