@@ -17,6 +17,12 @@
     }
 }
 
+.login-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 16px;
+}
+
 .login-wrapper {
     margin-top: 24px;
     padding: 0;

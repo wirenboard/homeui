@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.147.0) stable; urgency=medium
+
+  * Add login page title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Oct 2025 14:45:02 +0300
+
 wb-mqtt-homeui (2.146.0) stable; urgency=medium
 
   * Rules console rework
