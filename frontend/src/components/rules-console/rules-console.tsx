@@ -76,6 +76,12 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
     setIsStopAutoScroll(!atBottom);
   }, [content.current]);
 
+  const formatDate = (time: number) => {
+    return new Date(time).toLocaleString('sv-SE', {
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
+  };
+
   useEffect(() => {
     addEventListener('pointerdown', handleResizerDown);
     addEventListener('pointermove', handleResizerMove);
@@ -188,7 +194,7 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
               key={i + log.time}
             >
               <div className="rulesConsole-logDate">
-                {new Date(log.time).toISOString().slice(0, 19).replace('T', ' ')}
+                {formatDate(log.time)}
               </div>
               <div>{log.payload}</div>
             </div>
