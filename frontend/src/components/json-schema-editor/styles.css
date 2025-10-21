@@ -18,7 +18,8 @@
 }
 
 .wb-jsonEditor-propertyError > input[type="text"],
-.wb-jsonEditor-propertyError > input[type="number"] {
+.wb-jsonEditor-propertyError > input[type="number"],
+.wb-jsonEditor-propertyError > div > div.dropdown__control {
     border-color: var(--danger-color);
 }
 

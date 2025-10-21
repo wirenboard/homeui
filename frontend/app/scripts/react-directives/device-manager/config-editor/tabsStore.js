@@ -187,15 +187,16 @@ export class TabsStore {
     if (this.mobileModeStore.inMobileMode) {
       this.mobileModeStore.showContentPanel();
     }
-    let tab = this.items[index];
+    const tab = this.items[index];
     if (tab.type === TabType.DEVICE) {
-      tab.loadSchema();
+      const portTab = this.selectedPortTab;
+      tab.loadContent(portTab.baseConfig);
     }
     return true;
   }
 
   selectTab(tab) {
-    let index = this.items.indexOf(tab);
+    const index = this.items.indexOf(tab);
     if (index !== -1) {
       this.onSelectTab(index);
     }

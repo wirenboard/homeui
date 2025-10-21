@@ -1,6 +1,18 @@
 import { makeObservable, computed, observable, action } from 'mobx';
 import { type JsonSchema, NumberStore } from '@/stores/json-schema-editor';
+import { firmwareIsNewer } from '@/utils/fwUtils';
+import { Conditions } from './conditions';
 import { WbDeviceTemplateParameter } from './types';
+
+const getDefaultValue = (schema: JsonSchema): number => {
+  if (typeof schema.default === 'number') {
+    return schema.default;
+  }
+  if (schema.enum && schema.enum.length > 0 && typeof schema.enum[0] === 'number') {
+    return schema.enum[0] as number;
+  }
+  return undefined;
+};
 
 export class WbDeviceParameterEditorVariant {
   public store: NumberStore;
@@ -10,14 +22,16 @@ export class WbDeviceParameterEditorVariant {
   private _otherParameters: Map<string, WbDeviceParameterEditor>;
 
   constructor(
-    store: NumberStore,
+    parameter: WbDeviceTemplateParameter,
+    valueFromUserDefinedConfig: number | undefined,
     otherParameters: Map<string, WbDeviceParameterEditor>,
-    conditionFn?: Function,
-    dependencies?: string[]) {
+    conditions: Conditions) {
 
-    this.store = store;
-    this._conditionFn = conditionFn;
-    this._dependencies = dependencies;
+    const jsonSchema = makeJsonSchemaForParameter(parameter);
+    const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema);
+    this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
+    this._conditionFn = conditions.getFunction(parameter.condition, parameter.dependencies);
+    this._dependencies = parameter.dependencies;
     this._otherParameters = otherParameters;
 
     makeObservable(this, {
@@ -31,7 +45,7 @@ export class WbDeviceParameterEditorVariant {
     }
     const res = this._conditionFn.apply(null, this._dependencies?.map((dep) => {
       const param = this._otherParameters.get(dep);
-      if (param !== undefined && param.isEnabledByCondition && param.isEnabledByUser) {
+      if (param !== undefined && param.isEnabledByCondition) {
         const value = param.value;
         return (typeof value === 'number') ? value : undefined;
       }
@@ -46,27 +60,38 @@ export class WbDeviceParameterEditor {
   public order: number;
   public required: boolean;
   public variants: WbDeviceParameterEditorVariant[] = [];
-  /**
-   * A user has enabled this parameter in the UI or the parameter is required.
-   */
-  public isEnabledByUser: boolean = true;
+  public isSetInDeviceRegisters: boolean = false;
+  public isSetInUserDefinedConfig: boolean = false;
+  public isSupportedByFirmware: boolean = true;
+  public supportedFirmware: string | undefined;
 
-  constructor(id: string, variant: WbDeviceParameterEditorVariant, order: number) {
-    this.id = id;
-    this.order = order;
-    this.required = variant.store.required;
-    this.variants.push(variant);
+  constructor(
+    parameter: WbDeviceTemplateParameter,
+    userDefinedConfig: unknown,
+    parametersByName: Map<string, WbDeviceParameterEditor>,
+    conditions: Conditions
+  ) {
+    this.addVariant(parameter, userDefinedConfig, parametersByName, conditions);
+    this.id = parameter.id;
+    this.order = parameter.order ?? 0;
+    this.required = this.variants[0].store.required;
+    this.supportedFirmware = parameter.fw;
 
     makeObservable(this, {
-      isEnabledByUser: observable,
+      isSupportedByFirmware: observable,
+      isSetInDeviceRegisters: observable,
+      isChangedByUser: computed,
       activeVariantIndex: computed,
       value: computed,
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
       hasSeveralVariants: computed,
-      enableByUser: action,
-      disableByUser: action,
+      shouldStoreInConfig: computed,
+      addVariant: action,
+      setFromDeviceRegister: action,
+      setFirmwareInDevice: action,
+      commit: action,
     });
   }
 
@@ -85,6 +110,9 @@ export class WbDeviceParameterEditor {
   }
 
   get isDirty() {
+    if (this.isSetInDeviceRegisters) {
+      return true;
+    }
     const activeVariantIndex = this.activeVariantIndex;
     return activeVariantIndex !== -1 ? this.variants[activeVariantIndex].store.isDirty : false;
   }
@@ -97,8 +125,36 @@ export class WbDeviceParameterEditor {
     return this.variants.filter((variant) => variant.isEnabledByCondition).length > 1;
   }
 
-  addVariant(variant: WbDeviceParameterEditorVariant) {
-    this.variants.push(variant);
+  get isChangedByUser() {
+    return this.isSetInUserDefinedConfig || this.isSetInDeviceRegisters || this.isDirty;
+  }
+
+  get shouldStoreInConfig() {
+    return this.isSupportedByFirmware &&
+      this.isEnabledByCondition &&
+      (this.required || this.isChangedByUser) &&
+      !this.hasErrors;
+  }
+
+  addVariant(
+    parameter: WbDeviceTemplateParameter,
+    userDefinedConfig: unknown,
+    parametersByName: Map<string, WbDeviceParameterEditor>,
+    conditions: Conditions
+  ) {
+
+    let valueFromUserDefinedConfig = undefined;
+    if (typeof userDefinedConfig === 'object') {
+      valueFromUserDefinedConfig = (userDefinedConfig as Record<string, any>)[parameter.id];
+    }
+    this.isSetInUserDefinedConfig = valueFromUserDefinedConfig !== undefined;
+
+    this.variants.push(new WbDeviceParameterEditorVariant(
+      parameter,
+      valueFromUserDefinedConfig,
+      parametersByName,
+      conditions
+    ));
   }
 
   setDefault() {
@@ -113,21 +169,29 @@ export class WbDeviceParameterEditor {
     });
   }
 
-  enableByUser() {
-    if (!this.isEnabledByUser) {
-      this.setDefault();
-      this.isEnabledByUser = true;
+  setFromDeviceRegister(value: unknown) {
+    if (!this.isSetInUserDefinedConfig && this.isSupportedByFirmware && typeof value === 'number') {
+      this.variants.forEach((variant) => {
+        if (value !== 0xFFFE || variant.store.isAcceptableValue(value)) {
+          variant.store.setValue(value);
+          variant.store.commit();
+          if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
+            this.isSetInDeviceRegisters = true;
+          }
+        }
+      });
     }
   }
 
-  disableByUser() {
-    if (this.isEnabledByUser && !this.required) {
-      this.isEnabledByUser = false;
-      this.setUndefined();
-    }
+  setFirmwareInDevice(fw: string) {
+    this.isSupportedByFirmware = firmwareIsNewer(this.supportedFirmware, fw);
   }
 
   commit() {
+    if (this.isDirty) {
+      this.isSetInUserDefinedConfig = true;
+      this.isSetInDeviceRegisters = false;
+    }
     this.variants.forEach((variant) => {
       variant.store.commit();
     });

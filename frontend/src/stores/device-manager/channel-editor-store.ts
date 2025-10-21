@@ -1,5 +1,6 @@
-import { makeObservable, computed } from 'mobx';
+import { makeObservable, computed, observable, action } from 'mobx';
 import { NumberStore, StringStore } from '@/stores/json-schema-editor';
+import { firmwareIsNewer } from '@/utils/fwUtils';
 import { Conditions } from './conditions';
 import { WbDeviceParameterEditor } from './parameter-editor-store';
 import type { WbDeviceTemplateChannel, WbDeviceTemplateChannelSettings } from './types';
@@ -56,6 +57,7 @@ export class WbDeviceChannelEditor {
   public channel: WbDeviceTemplateChannel;
   public mode: StringStore;
   public period: NumberStore;
+  public isSupportedByFirmware: boolean = true;
 
   private _conditionFn?: Function;
   private _dependencies?: string[];
@@ -98,11 +100,14 @@ export class WbDeviceChannelEditor {
     this._dependencies = channel.dependencies;
 
     makeObservable(this, {
+      isSupportedByFirmware: observable,
       isEnabledByCondition: computed,
       hasErrors: computed,
       isDirty: computed,
       hasCustomPeriod: computed,
       customProperties: computed,
+      shouldStoreInConfig: computed,
+      setFirmwareInDevice: action,
     });
   }
 
@@ -187,10 +192,18 @@ export class WbDeviceChannelEditor {
     return false;
   }
 
+  get shouldStoreInConfig() {
+    return this.isSupportedByFirmware && this.isEnabledByCondition && !this.hasErrors;
+  }
+
   setDefault() {
     const { mode, period } = getEditorValuesFromChannelData(this.channel);
     this.mode.setValue(mode);
     this.period.setValue(period);
+  }
+
+  setFirmwareInDevice(fw: string) {
+    this.isSupportedByFirmware = firmwareIsNewer(this.channel.fw, fw);
   }
 
   commit() {

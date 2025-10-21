@@ -14,6 +14,7 @@ export interface WbDeviceTemplateParameter {
   group?: string;
   condition?: string;
   dependencies?: string[];
+  fw?: string;
 }
 
 export interface WbDeviceTemplateChannelSettings {
@@ -28,6 +29,7 @@ export interface WbDeviceTemplateChannel extends WbDeviceTemplateChannelSettings
   group?: string;
   condition?: string;
   dependencies?: string[];
+  fw?: string;
 }
 
 export interface WbDeviceParametersGroup {

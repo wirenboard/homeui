@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
-import { loadJsonSchema, Translator } from '@/stores/json-schema-editor';
+import { loadJsonSchema, Translator, getDefaultValue } from '@/stores/json-schema-editor';
+import { formatError } from '@/utils/formatError';
 import i18n from '../../../i18n/react/config';
 import AccessLevelStore from '../../components/access-level/accessLevelStore';
 import ConfirmModalState from '../../components/modals/confirmModalState';
@@ -11,7 +12,7 @@ import { getIntAddress } from '../common/modbusAddressesSet';
 import showAddDeviceModal from './addDeviceModal';
 import showCopyDeviceModal from './copyDeviceModal';
 import { DeviceTab, toRpcPortConfig } from './deviceTabStore';
-import { getTranslation, getDefaultObject } from './jsonSchemaUtils';
+import { getTranslation } from './jsonSchemaUtils';
 import {
   PortTab,
   makeModbusTcpPortTabName,
@@ -38,16 +39,10 @@ const CONFED_WRITE_FILE_ERROR = 1002;
  **/
 
 function getErrorMessage(error) {
-  if (typeof error === 'object') {
-    if (error.data === 'EditorError' && error.code === CONFED_WRITE_FILE_ERROR) {
-      return i18n.t('device-manager.errors.write');
-    }
-    if (Object.hasOwn(error, 'code')) {
-      return `${error.message}: ${error.data}(${error.code})`;
-    }
-    return error.message;
+  if (typeof error === 'object' && error.data === 'EditorError' && error.code === CONFED_WRITE_FILE_ERROR) {
+    return i18n.t('device-manager.errors.write');
   }
-  return String(error);
+  return formatError(error);
 }
 
 function getDeviceSetupErrorMessage(device, error) {
@@ -222,7 +217,8 @@ class ConfigEditorPageStore {
     deviceTypesStore,
     rolesFactory,
     setupDeviceFn,
-    fwUpdateProxy
+    fwUpdateProxy,
+    serialDeviceProxy
   ) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
@@ -239,6 +235,7 @@ class ConfigEditorPageStore {
     this.setupDeviceFn = setupDeviceFn;
     this.formModalState = new FormModalState();
     this.fwUpdateProxy = fwUpdateProxy;
+    this.serialDeviceProxy = serialDeviceProxy;
 
     makeObservable(this, {
       allowSave: computed,
@@ -288,7 +285,8 @@ class ConfigEditorPageStore {
       deviceConfig,
       getDeviceTypeFromConfig(deviceConfig),
       this.deviceTypesStore,
-      this.fwUpdateProxy
+      this.fwUpdateProxy,
+      this.serialDeviceProxy
     );
   }
 
@@ -333,15 +331,7 @@ class ConfigEditorPageStore {
   }
 
   setError(error) {
-    if (typeof error === 'object') {
-      if (Object.hasOwn(error, 'code')) {
-        this.pageWrapperStore.setError(`${error.message}: ${error.data}(${error.code})`);
-      } else {
-        this.pageWrapperStore.setError(error.message);
-      }
-      return;
-    }
-    this.pageWrapperStore.setError(error);
+    this.pageWrapperStore.setError(formatError(error));
   }
 
   async addPort() {
@@ -357,7 +347,7 @@ class ConfigEditorPageStore {
         return;
       }
     }
-    let tab = this.createPortTab(getDefaultObject(this.portSchemaMap[newPortType]));
+    let tab = this.createPortTab(getDefaultValue(this.portSchemaMap[newPortType]));
     this.tabs.addPortTab(tab);
   }
 
@@ -413,7 +403,13 @@ class ConfigEditorPageStore {
       return;
     }
     const oldSelectedTab = this.tabs.selectedTab;
-    let deviceTab = new DeviceTab({}, res.deviceType, this.deviceTypesStore);
+    let deviceTab = new DeviceTab(
+      {},
+      res.deviceType,
+      this.deviceTypesStore,
+      this.fwUpdateProxy,
+      this.serialDeviceProxy
+    );
     this.tabs.addDeviceTab(res.port, deviceTab, true);
     try {
       await deviceTab.setDefaultData();
@@ -455,7 +451,7 @@ class ConfigEditorPageStore {
   }
 
   changeDeviceType(tab, type) {
-    tab.setDeviceType(type);
+    tab.setDeviceType(type, this.tabs.selectedPortTab?.baseConfig);
   }
 
   /**
@@ -502,7 +498,8 @@ class ConfigEditorPageStore {
   }
 
   async addScannedDeviceToConfig(device, topics, selectTab) {
-    let deviceConfig = getDefaultObject(await this.deviceTypesStore.getSchema(device.type));
+    const jsonSchema = loadJsonSchema(await this.deviceTypesStore.getSchema(device.type));
+    let deviceConfig = getDefaultValue(jsonSchema);
     deviceConfig.slave_id = String(device.address);
     const deviceId =
       deviceConfig?.id || this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
@@ -514,6 +511,7 @@ class ConfigEditorPageStore {
     let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     let deviceTab = this.createDeviceTab(deviceConfig);
     deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
+    deviceTab.loadContent(portTab.baseConfig);
     this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
   }
 
