@@ -87,14 +87,6 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
   }, []);
 
   useEffect(() => {
-    rulesStore.subscribeRulesLogs();
-
-    return () => {
-      rulesStore.unSubscribeRulesLogs();
-    };
-  }, []);
-
-  useEffect(() => {
     if (content.current && !isStopAutoScroll) {
       content.current.scrollTo({ top: content.current.scrollHeight });
     }
