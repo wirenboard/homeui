@@ -416,6 +416,10 @@ const realApp = angular
       $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
 
+      $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {
+        document.title = name ? `${name} | ${__APP_NAME__}` : __APP_NAME__;
+      });
+
       //.........................................................................
       function configRequestMaker(
         $rootScope,
