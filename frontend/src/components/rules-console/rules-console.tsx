@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
 import BugIcon from '@/assets/icons/bug.svg';
 import ClearIcon from '@/assets/icons/clear.svg';
 import CloseIcon from '@/assets/icons/close.svg';
@@ -14,11 +15,13 @@ import './styles.css';
 
 export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesStore }: RulesConsoleProps) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const { isRuleDebugEnabled, logs } = rulesStore;
   const container = useRef<HTMLDivElement>(null);
   const resizer = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(localStorage.getItem('rules-console-position') || 'bottom');
+  const positionRef = useRef(position);
   const [height, setHeight] = useState(localStorage.getItem('rules-console-height') || '220px');
   const [width, setWidth] = useState(localStorage.getItem('rules-console-width') || '300px');
   const [isStopAutoScroll, setIsStopAutoScroll] = useState(false);
@@ -43,7 +46,7 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
       return;
     }
 
-    if (position === 'bottom') {
+    if (positionRef.current === 'bottom') {
       const maxHeight = window.innerHeight * 0.7;
       const newHeight = container.current.getBoundingClientRect().height - ev.movementY;
       const clampedHeight = Math.min(Math.max(newHeight, 50), maxHeight);
@@ -56,7 +59,22 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
       setWidth(`${clampedWidth}px`);
       localStorage.setItem('rules-console-width', `${clampedWidth}px`);
     }
-  }, [resizer, container, position]);
+  }, [resizer, container]);
+
+  const changePosition = (pos: 'bottom' | 'right', isWithSave = true) => {
+    changeConsoleView(pos);
+    setPosition(pos);
+    if (isWithSave) {
+      localStorage.setItem('rules-console-position', pos);
+    }
+  };
+
+  const handleScroll = useCallback(() => {
+    const { scrollHeight, scrollTop, clientHeight } = content.current;
+
+    const atBottom = scrollHeight - scrollTop - clientHeight < 5;
+    setIsStopAutoScroll(!atBottom);
+  }, [content.current]);
 
   useEffect(() => {
     addEventListener('pointerdown', handleResizerDown);
@@ -66,16 +84,14 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
       document.removeEventListener('pointerdown', handleResizerDown, true);
       document.removeEventListener('pointermove', handleResizerMove, true);
     };
-  }, [position]);
-
-  const changePosition = (pos: 'bottom' | 'right') => {
-    changeConsoleView(pos);
-    setPosition(pos);
-    localStorage.setItem('rules-console-position', pos);
-  };
+  }, []);
 
   useEffect(() => {
     rulesStore.subscribeRulesLogs();
+
+    return () => {
+      rulesStore.unSubscribeRulesLogs();
+    };
   }, []);
 
   useEffect(() => {
@@ -84,12 +100,17 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
     }
   }, [isStopAutoScroll, logs.length, content.current]);
 
-  const handleScroll = useCallback(() => {
-    const { scrollHeight, scrollTop, clientHeight } = content.current;
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
 
-    const atBottom = scrollHeight - scrollTop - clientHeight < 5;
-    setIsStopAutoScroll(!atBottom);
-  }, [content.current]);
+  useEffect(() => {
+    if (isMobile && position === 'right') {
+      changePosition('bottom', false);
+    } else if (!isMobile && localStorage.getItem('rules-console-position') === 'right') {
+      changePosition('right', false);
+    }
+  }, [isMobile]);
 
   return (
     <div
@@ -142,7 +163,7 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
           </Tooltip>
 
           <Tooltip text={t('rules-console.buttons.dock-right')}>
-            <button className="rulesConsole-button" onClick={() => changePosition('right')}>
+            <button className="rulesConsole-button" disabled={isMobile} onClick={() => changePosition('right')}>
               <LayoutRightIcon
                 className={classNames('rulesConsole-icon', {
                   'rulesConsole-iconActive': position === 'right',

@@ -161,7 +161,7 @@ export default class RulesStore {
   }
 
   subscribeRulesLogs() {
-    const MAX_MESSAGES = 200;
+    const MAX_MESSAGES = 500;
     this.#mqttClient.addStickySubscription('/wbrules/log/+', ({ topic, payload }) => {
       runInAction(() => {
         if (this.logs.length === MAX_MESSAGES) {
@@ -170,6 +170,10 @@ export default class RulesStore {
         this.logs.push({ level: topic.replace(/^.*\//, ''), payload: payload.trim(), time: new Date().getTime() });
       });
     });
+  }
+
+  unSubscribeRulesLogs() {
+    this.#mqttClient.unsubscribe('/wbrules/log/+');
   }
 
   clearLogs() {

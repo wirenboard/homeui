@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    min-width: 300px;
+    min-width: 345px;
     max-height: 100dvh;
     box-shadow: 2px 0 6px rgb(136, 136, 136, 1);
     background: var(--background-color);
@@ -66,13 +66,17 @@
     border-radius: var(--input-border-radius)
 }
 
-.rulesConsole-button:hover {
-    color: var(--primary-color-hover)
+.rulesConsole-button:hover:not(:disabled) {
+    color: var(--primary-color-hover);
 }
 
-.rulesConsole-button:hover,
 .rulesConsole-button:focus {
     box-shadow: var(--input-active-shadow);
+}
+
+.rulesConsole-button:disabled {
+    color: var(--gray-color);
+    cursor: not-allowed;
 }
 
 .rulesConsole-filter {
