@@ -15,7 +15,6 @@ export default function navigationDirective($rootScope, mqttClient) {
           mqttClient={mqttClient}
           toggleConsole={$rootScope.toggleConsole}
           dashboardsStore={$rootScope.dashboardsStore}
-          rulesStore={$rootScope.rulesStore}
         />
       );
 
