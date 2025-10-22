@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.147.0) stable; urgency=medium
 
   * Add controller name to page title
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Oct 2025 13:44:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Oct 2025 14:57:00 +0300
+
+wb-mqtt-homeui (2.146.1) stable; urgency=medium
+
+  * Fix rules logs subscribe logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Oct 2025 14:50:40 +0300
 
 wb-mqtt-homeui (2.146.0) stable; urgency=medium
 
