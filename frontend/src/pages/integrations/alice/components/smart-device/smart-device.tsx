@@ -64,7 +64,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
       }
       setIsEditingTitle(false);
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.message });
+      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
     }
   }, [id, data]);
 
@@ -78,7 +78,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
       });
       onDelete();
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.message });
+      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
     }
   };
 
@@ -91,7 +91,6 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
               <Input
                 value={data.name}
                 placeholder={t('alice.labels.device-name')}
-                size="large"
                 autoFocus
                 isFullWidth
                 onChange={(name: string) => setData({ ...data, name })}
@@ -142,7 +141,6 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
             }}
           />
           <Button
-            size="large"
             type="submit"
             disabled={!data.name}
             label={t('alice.buttons.save')}

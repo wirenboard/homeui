@@ -31,7 +31,9 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    setErrors(!integrations.length ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+    if (integrations) {
+      setErrors(!integrations.includes('alice') ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+    }
   }, [integrations]);
 
   const sortedRooms = Array.from(rooms).sort(([keyA], [keyB]) => {
@@ -41,7 +43,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   });
 
   const isLoading = useMemo(
-    () => !integrations.length || (integrations.length && pageState === 'isLoading'),
+    () => !integrations || (integrations?.length && pageState === 'isLoading'),
     [integrations, pageState]
   );
 
@@ -52,7 +54,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
       hasRights={hasRights}
       errors={errors}
     >
-      {!!integrations.length && (
+      {!!integrations?.length && (
         pageState === 'isConnected'
           ? (
             <>
