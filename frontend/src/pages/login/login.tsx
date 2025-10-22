@@ -51,6 +51,8 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
     <section className="login">
       <img src={LOGO} className="login-logo" alt={APP_NAME}/>
 
+      <div className="login-title">{t('login.title')}</div>
+
       <fieldset className="login-wrapper">
         <form className="login-form" onSubmit={onSubmit}>
           <div className="login-fields">

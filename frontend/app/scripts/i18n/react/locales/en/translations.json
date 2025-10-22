@@ -614,6 +614,7 @@
       }
    },
    "login": {
+      "title": "Controller interface",
       "errors": {
          "failed": "Incorrect credentials"
       },

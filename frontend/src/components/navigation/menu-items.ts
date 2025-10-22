@@ -18,7 +18,7 @@ export const getMenuItems = (
   integrations: string[],
   language: string
 ): MenuItemInstance[] => {
-  let availableIntegrations = integrations;
+  let availableIntegrations = integrations || [];
   if (language === 'en') {
     availableIntegrations = availableIntegrations.filter((item) => item !== 'alice');
   }

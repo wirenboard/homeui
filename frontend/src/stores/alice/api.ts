@@ -21,7 +21,7 @@ export const getAliceInfo = async () => request.get<AliceFetchData>(
 export const addRoom = async (name: string) => request.post<AddRoomFetchData>(
   '/api/integrations/alice/room',
   { name }
-);
+).then(({ data }) => data);
 
 export const updateRoom = async (id: string, body: AliceRoomUpdateParams) => request.put<Room>(
   `/api/integrations/alice/room/${id}`,
