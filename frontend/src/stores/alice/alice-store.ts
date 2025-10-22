@@ -21,7 +21,7 @@ import type {
 } from './types';
 
 export default class AliceStore {
-  public integrations: string[] = [];
+  public integrations: string[];
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
 
@@ -34,9 +34,7 @@ export default class AliceStore {
       const isAvailable = await checkIsAliceAvailable();
 
       runInAction(() => {
-        if (isAvailable) {
-          this.integrations = ['alice'];
-        }
+        this.integrations = isAvailable ? ['alice'] : [];
       });
     } catch {
     //

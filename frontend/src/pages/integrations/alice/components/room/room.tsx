@@ -78,7 +78,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
         });
       }
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.message });
+      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
     }
   }, [id, roomName, deviceList]);
 
@@ -93,6 +93,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
 
   const onConfirmDelete = async () => {
     await deleteRoom(id);
+    setIsDeleteRoom(false);
     await fetchData();
     notificationsStore.showNotification({
       variant: 'success',
@@ -110,7 +111,6 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
               <Input
                 value={roomName}
                 placeholder={t('alice.labels.room-name')}
-                size="large"
                 autoFocus
                 isFullWidth
                 onChange={(val: string) => setRoomName(val)}
@@ -145,7 +145,6 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
                 }}
               />
               <Button
-                size="large"
                 type="submit"
                 disabled={!roomName}
                 label={t('alice.buttons.save')}
