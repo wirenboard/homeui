@@ -1,7 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import { DeviceSettingsObjectStore } from '@/stores/device-manager';
-import { Translator } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '../../../i18n/react/config';
 import { firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
