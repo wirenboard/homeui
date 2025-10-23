@@ -58,8 +58,16 @@ const ChannelCard = observer((
   { channel, translator }:
   { channel: WbDeviceChannelEditor; translator: Translator }
 ) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
+  let descriptionLines = [];
+  if (channel.channel.description) {
+    descriptionLines.push(translator.find(channel.channel.description, currentLanguage));
+  }
+  if (!channel.isSupportedByFirmware) {
+    descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
+  }
+  const description = descriptionLines.join('<br/>');
   return (
     <Card
       key={channel.channel.name}
@@ -69,10 +77,8 @@ const ChannelCard = observer((
       withError={channel.hasErrors}
     >
       <div className="device-settings__channel">
-        {channel.channel.description && (
-          <ParamDescription description={translator.find(channel.channel.description, currentLanguage)} />
-        )}
-        <StringEditor store={channel.mode} translator={translator} />
+        {description && <ParamDescription description={description} />}
+        {channel.isSupportedByFirmware && <StringEditor store={channel.mode} translator={translator} />}
         {channel.hasCustomPeriod && <CustomPeriodEditor store={channel.period} translator={translator} />}
       </div>
     </Card>

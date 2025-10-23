@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
-import { DeviceSettingsObjectStore, loadDeviceTemplate } from '@/stores/device-manager';
-import { loadJsonSchema, Translator } from '@/stores/json-schema-editor';
+import { DeviceSettingsObjectStore } from '@/stores/device-manager';
+import { formatError } from '@/utils/formatError';
 import i18n from '../../../i18n/react/config';
 import { firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
@@ -19,6 +19,7 @@ export function toRpcPortConfig(portConfig) {
     baud_rate: portConfig.baudRate,
     parity: portConfig.parity,
     stop_bits: portConfig.stopBits,
+    data_bits: portConfig.dataBits,
   };
 }
 
@@ -313,7 +314,7 @@ export class EmbeddedSoftware {
 }
 
 export class DeviceTab {
-  constructor(data, deviceType, deviceTypesStore, fwUpdateProxy) {
+  constructor(data, deviceType, deviceTypesStore, fwUpdateProxy, serialDeviceProxy) {
     this.type = TabType.DEVICE;
     this.data = data;
     this.deviceTypesStore = deviceTypesStore;
@@ -331,7 +332,7 @@ export class DeviceTab {
     this.embeddedSoftware = new EmbeddedSoftware(fwUpdateProxy);
     this.waitingForDeviceReconnect = false;
     this.schemaStore = undefined;
-    this.schemaTranslator = undefined;
+    this.serialDeviceProxy = serialDeviceProxy;
 
     makeObservable(this, {
       name: computed,
@@ -351,7 +352,7 @@ export class DeviceTab {
       schemaStore: observable.ref,
       commitData: action,
       setDeviceType: action,
-      loadSchema: action,
+      loadContent: action,
       setSlaveIdIsDuplicate: action,
       setDevicesWithTheSameId: action,
       setDisconnected: action,
@@ -385,7 +386,27 @@ export class DeviceTab {
     return `${this.slaveId || ''} ` + deviceName;
   }
 
-  async setDeviceType(type) {
+  async loadConfigFromDevice(portConfig) {
+    try {
+      if (portConfig) {
+        let params = {
+          slave_id: getIntAddress(this.slaveId),
+          device_type: this.deviceType,
+          modbus_mode: portConfig.modbusTcp ? 'TCP' : 'RTU',
+        };
+        Object.assign(params, toRpcPortConfig(portConfig));
+        const configFromDevice = await this.serialDeviceProxy.LoadConfig(params);
+        this.schemaStore.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw);
+      }
+    } catch (err) {
+      this.setError(i18n.t('device-manager.errors.load-registers', {
+        error: formatError(err),
+        interpolation: { escapeValue: false },
+      }));
+    }
+  }
+
+  async setDeviceType(type, portConfig) {
     if (this.deviceType === type) {
       return;
     }
@@ -393,18 +414,13 @@ export class DeviceTab {
     const oldSlaveId = this.slaveId;
     try {
       const schema = await this.deviceTypesStore.getSchema(type);
-      const jsonSchema = loadJsonSchema(schema);
-      const deviceTemplate = loadDeviceTemplate(schema);
-      this.schemaTranslator = new Translator();
-      this.schemaTranslator.addTranslations(jsonSchema.translations);
-      this.schemaTranslator.addTranslations(deviceTemplate.translations);
       runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, {});
+        this.schemaStore = new DeviceSettingsObjectStore(schema, {});
       });
       this.schemaStore.setDefault();
     } catch (err) {
       const errorMsg = i18n.t('device-manager.errors.change-device-type', {
-        error: err.message,
+        error: formatError(err),
         interpolation: { escapeValue: false },
       });
       this.setError(errorMsg);
@@ -418,6 +434,9 @@ export class DeviceTab {
       this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);
       this.schemaStore.setSlaveId(oldSlaveId);
       this.clearError();
+    });
+    await this.loadConfigFromDevice(portConfig);
+    runInAction(() => {
       this.loading = false;
     });
   }
@@ -431,12 +450,12 @@ export class DeviceTab {
   getCopy() {
     let dataCopy = cloneDeep(this.editedData);
     dataCopy.slave_id = '';
-    let tab = new DeviceTab(dataCopy, this.deviceType, this.deviceTypesStore);
-    tab.loadSchema();
+    let tab = new DeviceTab(dataCopy, this.deviceType, this.deviceTypesStore, this.serialDeviceProxy);
+    tab.loadContent();
     return tab;
   }
 
-  async loadSchema() {
+  async loadContent(portConfig) {
     if (this.isUnknownType || this.withSubdevices || this.schemaStore !== undefined) {
       this.loading = false;
       return;
@@ -444,16 +463,12 @@ export class DeviceTab {
     this.loading = true;
     try {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-      const jsonSchema = loadJsonSchema(schema);
-      const deviceTemplate = loadDeviceTemplate(schema);
-      this.schemaTranslator = new Translator();
-      this.schemaTranslator.addTranslations(jsonSchema.translations);
-      this.schemaTranslator.addTranslations(deviceTemplate.translations);
       runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
+        this.schemaStore = new DeviceSettingsObjectStore(schema, this.data);
       });
+      await this.loadConfigFromDevice(portConfig);
     } catch (err) {
-      this.setError(err.message);
+      this.setError(err);
     }
     runInAction(() => {
       this.loading = false;
@@ -464,13 +479,8 @@ export class DeviceTab {
     this.loading = true;
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-      const jsonSchema = loadJsonSchema(schema);
-      const deviceTemplate = loadDeviceTemplate(schema);
-      this.schemaTranslator = new Translator();
-      this.schemaTranslator.addTranslations(jsonSchema.translations);
-      this.schemaTranslator.addTranslations(deviceTemplate.translations);
       runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(jsonSchema, deviceTemplate, this.data);
+        this.schemaStore = new DeviceSettingsObjectStore(schema, this.data);
       });
     }
     if (this.schemaStore) {
@@ -547,7 +557,7 @@ export class DeviceTab {
     try {
       await this.embeddedSoftware.startFirmwareUpdate(this.slaveId, portConfig);
     } catch (err) {
-      this.setError(err.message);
+      this.setError(err);
     }
   }
 
@@ -555,7 +565,7 @@ export class DeviceTab {
     try {
       await this.embeddedSoftware.startBootloaderUpdate(this.slaveId, portConfig);
     } catch (err) {
-      this.setError(err.message);
+      this.setError(err);
     }
   }
 
@@ -563,12 +573,12 @@ export class DeviceTab {
     try {
       await this.embeddedSoftware.startComponentsUpdate(this.slaveId, portConfig);
     } catch (err) {
-      this.setError(err.message);
+      this.setError(err);
     }
   }
 
   setError(err) {
-    this.error = err;
+    this.error = formatError(err);
   }
 
   clearError() {

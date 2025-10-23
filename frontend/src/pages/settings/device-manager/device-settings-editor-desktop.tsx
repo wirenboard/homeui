@@ -48,12 +48,48 @@ const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore
   );
 });
 
+const ChannelsTableRow = ({ channel, translator }: { channel: WbDeviceChannelEditor; translator: Translator }) => {
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.language;
+  let descriptionLines = [];
+  if (channel.channel.description) {
+    descriptionLines.push(translator.find(channel.channel.description, currentLanguage));
+  }
+  if (!channel.isSupportedByFirmware) {
+    descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
+  }
+  const description = descriptionLines.join('<br/>');
+  return (
+    <TableRow key={channel.channel.name}>
+      <TableCell>
+        {translator.find(channel.channel.name, currentLanguage)}
+        {description && <ParamDescription description={description} />}
+      </TableCell>
+      <TableCell>
+        {channel.isSupportedByFirmware && (
+          <StringEditor
+            store={channel.mode}
+            translator={translator}
+          />
+        )}
+      </TableCell>
+      <TableCell>
+        {channel.isSupportedByFirmware && channel.hasCustomPeriod && (
+          <CustomPeriodEditor
+            store={channel.period}
+            translator={translator}
+          />
+        )}
+      </TableCell>
+    </TableRow>
+  );
+};
+
 const ChannelsTable = observer((
   { channels, translator }:
   { channels: WbDeviceChannelEditor[]; translator: Translator }
 ) => {
-  const { t, i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const { t } = useTranslation();
   if (!channels || channels.length === 0) {
     return null;
   }
@@ -68,28 +104,7 @@ const ChannelsTable = observer((
         if (!channel.isEnabledByCondition) {
           return null;
         }
-        return (
-          <TableRow key={channel.channel.name}>
-            <TableCell>
-              {translator.find(channel.channel.name, currentLanguage)}
-              <ParamDescription description={translator.find(channel.channel.description, currentLanguage)} />
-            </TableCell>
-            <TableCell>
-              <StringEditor
-                store={channel.mode}
-                translator={translator}
-              />
-            </TableCell>
-            <TableCell>
-              {channel.hasCustomPeriod && (
-                <CustomPeriodEditor
-                  store={channel.period}
-                  translator={translator}
-                />
-              )}
-            </TableCell>
-          </TableRow>
-        );
+        return <ChannelsTableRow key={channel.channel.name} channel={channel} translator={translator} />;
       })}
     </Table>
   );

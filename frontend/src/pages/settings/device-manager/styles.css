@@ -67,6 +67,11 @@
     flex-basis: 43%;
 }
 
+.device-settings__parameterChangedByUser .dropdown__control,
+.device-settings__parameterChangedByUser input {
+    border-left: 4px solid var(--gray-color);
+}
+
 .device-settings__editor .card {
     max-width: initial;
     margin-bottom: 0px;

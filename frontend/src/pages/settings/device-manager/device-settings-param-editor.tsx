@@ -2,16 +2,9 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox } from '@/components/checkbox';
-import { Input } from '@/components/input';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
 import { WbDeviceParameterEditor } from '@/stores/device-manager';
 import { Translator } from '@/stores/json-schema-editor';
-
-const DisabledParamPlaceholder = () => {
-  const { t } = useTranslation();
-  return <Input isDisabled={true} value="" placeholder={t('device-manager.labels.unknown')} onChange={() => {}} />;
-};
 
 export const ParamSimpleLabel = (
   { title, inputId, className }:
@@ -24,27 +17,6 @@ export const ParamSimpleLabel = (
   );
 };
 
-const ParamLabel = ({ param, title, inputId }: { param: WbDeviceParameterEditor; title: string; inputId: string }) => {
-  if (param.required) {
-    return <ParamSimpleLabel title={title} inputId={inputId} />;
-  }
-  const checkHandler = (checked: boolean) => {
-    if (checked) {
-      param.enableByUser();
-    } else {
-      param.disableByUser();
-    }
-  };
-  return (
-    <Checkbox
-      title={title}
-      checked={param.isEnabledByUser}
-      className="wb-jsonEditor-propertyCheckbox"
-      onChange={checkHandler}
-    />
-  );
-};
-
 export const ParamEditor = observer((
   { param, translator }:
   { param: WbDeviceParameterEditor; translator: Translator }
@@ -52,27 +24,35 @@ export const ParamEditor = observer((
   const descriptionId = useId();
   const errorId = useId();
   const inputId = useId();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
-  const showError = param.hasErrors && param.isEnabledByUser;
+  const showError = param.hasErrors;
   const activeVariant = param.variants[param.activeVariantIndex];
-  const showDescription = !!activeVariant.store.schema.description;
+  let descriptionLines = [];
+  if (activeVariant.store.schema.description) {
+    descriptionLines.push(translator.find(activeVariant.store.schema.description, currentLanguage));
+  }
+  if (!param.isSupportedByFirmware) {
+    descriptionLines.push(t('device-manager.errors.supported-since', { fw: param.supportedFirmware }));
+  }
+  const description = descriptionLines.join('<br/>');
   const title = translator.find(activeVariant.store.schema.title || param.id, currentLanguage);
   return (
-    <div className={classNames('device-settings__parameter', { 'wb-jsonEditor-propertyError': showError })} >
-      <ParamLabel param={param} title={title} inputId={inputId} />
-      {param.isEnabledByUser ? (
-        <NumberEditor key={param.id} store={activeVariant.store} translator={translator} />
-      ) : (
-        <DisabledParamPlaceholder />
-      )}
+    <div
+      className={classNames('device-settings__parameter', {
+        'wb-jsonEditor-propertyError': showError,
+        'device-settings__parameterChangedByUser': param.isChangedByUser,
+      })}
+    >
+      <ParamSimpleLabel title={title} inputId={inputId} />
+      <NumberEditor
+        key={param.id}
+        store={activeVariant.store}
+        translator={translator}
+        isDisabled={!param.isSupportedByFirmware}
+      />
       {showError && <ParamError id={errorId} error={activeVariant.store.error} translator={translator} />}
-      {showDescription && (
-        <ParamDescription
-          id={descriptionId}
-          description={translator.find(activeVariant.store.schema.description, currentLanguage)}
-        />
-      )}
+      {description && <ParamDescription id={descriptionId} description={description} />}
     </div>
   );
 });

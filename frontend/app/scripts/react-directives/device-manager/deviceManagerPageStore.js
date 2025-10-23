@@ -14,7 +14,8 @@ class DeviceManagerPageStore {
     rolesFactory,
     deviceManagerProxy,
     fwUpdateProxy,
-    setupDeviceFn
+    setupDeviceFn,
+    serialDeviceProxy
   ) {
     this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
     this.configEditorPageStore = new ConfigEditorPageStore(
@@ -25,7 +26,8 @@ class DeviceManagerPageStore {
       this.deviceTypesStore,
       rolesFactory,
       setupDeviceFn,
-      fwUpdateProxy
+      fwUpdateProxy,
+      serialDeviceProxy
     );
     this.newDevicesScanPageStore = new NewDevicesScanPageStore(
       deviceManagerProxy,

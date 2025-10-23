@@ -478,7 +478,7 @@ export const DeviceTabContent = observer(
           <OptionalParamsSelectDialog
             isOpened={optionalParamsSelectDialogIsOpen}
             store={tab.schemaStore.commonParams}
-            translator={tab.schemaTranslator}
+            translator={tab.schemaStore.schemaTranslator}
             onClose={() => openOptionalParamsSelectDialog(false)}
           />
         )}
@@ -519,7 +519,7 @@ export const DeviceTabContent = observer(
             {!tab.withSubdevices && <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />}
           </div>
         </div>
-        {tab.schemaStore && <DeviceSettingsEditor store={tab.schemaStore} translator={tab.schemaTranslator} />}
+        {tab.schemaStore && <DeviceSettingsEditor store={tab.schemaStore} translator={tab.schemaStore.schemaTranslator} />}
       </div>
     );
   }
