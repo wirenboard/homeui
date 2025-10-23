@@ -1,6 +1,6 @@
 import { makeObservable, computed, observable, action } from 'mobx';
 import { type JsonSchema, NumberStore } from '@/stores/json-schema-editor';
-import { firmwareIsNewer } from '@/utils/fwUtils';
+import { firmwareIsNewer } from '~/utils/fwUtils';
 import { Conditions } from './conditions';
 import { WbDeviceTemplateParameter } from './types';
 

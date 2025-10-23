@@ -1,4 +1,4 @@
-import { firmwareIsNewer } from '../../../src/utils/fwUtils';
+import { firmwareIsNewer } from '../../../app/scripts/utils/fwUtils';
 
 describe.each(
 [

@@ -1,4 +1,4 @@
-import { firmwareIsNewer } from '@/utils/fwUtils';
+import { firmwareIsNewer } from '../../../utils/fwUtils';
 
 class DeviceTypesStore {
   constructor(loadDeviceSchemaFn) {

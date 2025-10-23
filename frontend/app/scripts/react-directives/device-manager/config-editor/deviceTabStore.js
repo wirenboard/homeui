@@ -3,8 +3,8 @@ import { makeObservable, observable, action, runInAction, computed } from 'mobx'
 import { DeviceSettingsObjectStore } from '@/stores/device-manager';
 import { Translator } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
-import { firmwareIsNewerOrEqual } from '../../../../../src/utils/fwUtils';
 import i18n from '../../../i18n/react/config';
+import { firmwareIsNewerOrEqual } from '../../../utils/fwUtils';
 import { getIntAddress } from '../common/modbusAddressesSet';
 import { TabType } from './tabsStore';
 
