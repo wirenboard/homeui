@@ -84,8 +84,9 @@ class UsersPageStore {
         break;
       }
       default: {
+        const message = fetchResponse.response?.data || fetchResponse.message || '';
         this.pageWrapperStore.setError(
-          i18n.t('users.errors.unknown', { msg: fetchResponse.message, interpolation: { escapeValue: false } })
+          i18n.t('users.errors.unknown', { msg: message, interpolation: { escapeValue: false } })
         );
       }
     }
