@@ -719,7 +719,11 @@
          "enable-https": "Auto configuration",
          "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access.",
          "name": "Controller name",
-         "name-description": "Shown in the menu"
+         "name-description": "Shown in the menu",
+         "getting-https-cert-status": "Getting HTTPS certificate status...",
+         "https-cert-valid": "HTTPS certificate is valid",
+         "https-cert-requesting": "Requesting HTTPS certificate",
+         "https-cert-unavailable": "Failed to obtain HTTPS certificate. Please check that the controller is connected to the Internet"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.149.0) stable; urgency=medium
+
+  * Add HTTPS certificate status display in Web UI settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Oct 2025 09:22:42 +0500
+
 wb-mqtt-homeui (2.148.0) stable; urgency=medium
 
   * Add controller name to page title
