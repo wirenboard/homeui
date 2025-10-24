@@ -5,7 +5,7 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import {
-  // events, // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
+  events, // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
   floats,
   Property,
   floatUnitsByInstance,
@@ -70,6 +70,26 @@ export const DeviceProperties = observer(({
     };
   }, [properties]);
 
+  // Options for Event "event-value" dropdown: keep all values but disable already used ones
+  const getEventValueOptions = useCallback((instance?: string, currentPropertyIndex?: number) => {
+    const allOptions = unitOptionsForInstance(instance);
+    if (!instance) return allOptions;
+
+    const usedValues = new Set(
+      properties
+        .map((p, i) => ({ p, i }))
+        .filter(({ p }) => p.type === Property.Event && p.parameters?.instance === instance)
+        .filter(({ i }) => i !== currentPropertyIndex) // exclude current property
+        .map(({ p }) => p.parameters?.unit)
+        .filter(Boolean) as string[]
+    );
+
+    return allOptions.map((opt) => ({
+      ...opt,
+      isDisabled: usedValues.has(opt.value),
+    }));
+  }, [properties]);
+
   const handleFloatInstanceChange = useCallback((
     newInstance: string,
     currentPropertyIndex: number
@@ -100,7 +120,7 @@ export const DeviceProperties = observer(({
     onPropertyChange(updatedProperties);
   }, [properties, onPropertyChange]);
 
-  const getPropertyParameters = (type: Property) => {
+  const getPropertyParameters = (type: Property, currentPropertyIndex?: number) => {
     const parameters: PropertyParameters = {};
     switch (type) {
       case Property.Float: {
@@ -114,17 +134,35 @@ export const DeviceProperties = observer(({
         break;
       }
       // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
-      // case Property.Event: {
-      //   parameters.instance = events.at(0);
-      //   parameters.value = 'открыто';
-      //   break;
-      // }
+      case Property.Event: {
+        const inst = events.at(0);
+        parameters.instance = inst;
+        const units = unitOptionsForInstance(inst).map((o) => o.value);
+        if (units.length) {
+          // compute used event-values for this instance excluding current property index
+          const usedValues = new Set(
+            properties
+              .map((p, i) => ({ p, i }))
+              .filter(({ p }) => p.type === Property.Event && p.parameters?.instance === inst)
+              .filter(({ i }) => i !== currentPropertyIndex)
+              .map(({ p }) => p.parameters?.unit)
+              .filter(Boolean) as string[]
+          );
+
+          // pick first unit that is not used yet
+          const firstAvailable = units.find((u) => !usedValues.has(u));
+          if (firstAvailable) {
+            parameters.unit = firstAvailable;
+          }
+        }
+        break;
+      }
     }
     return parameters;
   };
 
   const onPropertyTypeChange = (type: Property, key: number) => {
-    const parameters = getPropertyParameters(type);
+    const parameters = getPropertyParameters(type, key);
     onPropertyChange(properties.map((item, i) => (
       i === key ? { ...item, type, parameters } : item
     )));
@@ -201,7 +239,7 @@ export const DeviceProperties = observer(({
               )}
 
               {/* TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI */}
-              {/* {property.type === Property.Event && (
+              {property.type === Property.Event && (
                 <>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
@@ -211,28 +249,46 @@ export const DeviceProperties = observer(({
                       value={property.parameters?.instance}
                       options={events.map((event) => ({ label: event, value: event }))}
                       onChange={({ value: instance }: Option<string>) => {
-                        const val = properties.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, instance } }
-                          : item);
-                        onPropertyChange(val);
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                    <Input
-                      value={property.parameters?.value}
-                      isFullWidth
-                      onChange={(value: string) => {
-                        const val = properties.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, value } }
-                          : item);
-                        onPropertyChange(val);
-                      }}
-                    />
-                  </div>
-                </>
-              )} */}
+                        const options = getEventValueOptions(instance, key);
+                        const enabledValues = options.filter((o) => !o.isDisabled).map((o) => o.value);
+                        const currentUnit = property.parameters?.unit;
+                        const nextUnit = enabledValues.includes(currentUnit) ? currentUnit : (enabledValues[0] ?? null);
+
+                        const updatedParams = {
+                          ...property.parameters,
+                          instance,
+                          unit: nextUnit,
+                        };
+
+                        onPropertyChange(properties.map((item, i) => i === key
+                          ? { ...item, parameters: updatedParams }
+                          : item));
+                       }}
+                     />
+                   </div>
+                     <div>
+                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
+                       {t('alice.labels.event-value')}
+                     </div>
+                    {getEventValueOptions(property.parameters?.instance, key).length ? (
+                      <Dropdown
+                        value={property.parameters?.unit}
+                        options={getEventValueOptions(property.parameters?.instance, key)}
+                        onChange={({ value: unit }: Option<string>) => {
+                          const val = properties.map((item, i) => i === key
+                            ? { ...item, parameters: { ...item.parameters, unit } }
+                            : item);
+                          onPropertyChange(val);
+                        }}
+                      />
+                    ) : (
+                      <div className="aliceDeviceSkills-noUnits">
+                        {t('alice.labels.no-units')}
+                      </div>
+                    )}
+                   </div>
+                 </>
+               )}
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
                   size="small"
