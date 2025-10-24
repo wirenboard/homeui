@@ -38,10 +38,12 @@ export default class AuthStore {
 
   async login(body: { login: string; password: string }) {
     const { data } = await request.post<AuthResponse>('/auth/login', body);
-    this.userRole = data.user_type;
-    this.isAutologin = false;
-    this.areUsersConfigured = true;
-    return data;
+    return runInAction(() => {
+      this.userRole = data.user_type;
+      this.isAutologin = false;
+      this.areUsersConfigured = true;
+      return data;
+    });
   }
 
   async logout() {

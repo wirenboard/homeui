@@ -73,8 +73,8 @@ import BackupCtrl from './controllers/backupController';
 
 // homeui modules: directives
 import navigationDirective from '~/react-directives/navigation/navigation';
+import rulesConsoleDirective from '~/react-directives/rules-console/rules-console';
 import cellDirective from './directives/cell';
-import consoleDirective from './directives/console';
 import widgetDirective from './directives/widget';
 import transformRgbDirective from './directives/transformrgb';
 import alarmCellDirective from './directives/alarmcell';
@@ -204,7 +204,6 @@ module.directive('scriptForm', function (PageState) {
 module
   .directive('cell', cellDirective)
   .value('scrollTimeoutMs', 100)
-  .directive('console', consoleDirective)
   .directive('widget', widgetDirective)
   .directive('transformRgb', transformRgbDirective)
   .provider('displayCellConfig', displayCellConfig)
@@ -271,6 +270,7 @@ module
   .directive('fullscreenToggle', fullscreenToggleDirective)
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
+  .directive('rulesConsole', rulesConsoleDirective)
   .directive('usersPage', usersPageDirective)
   .directive('loginPage', loginPageDirective);
 
@@ -281,7 +281,6 @@ module
     function ($translateProvider, $translatePartialLoaderProvider) {
       [
         'app',
-        'console',
         'help',
         'mqtt',
         'system',
@@ -321,6 +320,11 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
     $rootScope.consoleVisible = !$rootScope.consoleVisible;
   };
 
+  $rootScope.consoleView = localStorage.getItem('rules-console-position') || 'bottom'
+  $rootScope.changeConsoleView = function (view) {
+    $rootScope.consoleView = view;
+  };
+
   $transitions.onStart({}, function (trans) {
     document.getElementById('overlay').classList.remove('overlay');
     $rootScope.stateIsLoading = true;
@@ -352,15 +356,6 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
       $rootScope.theme = localStorage.getItem('theme');
     };
   }
-
-  $rootScope.allowWbRulesDebug = () => {
-    return rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-  }
-
-  $rootScope.disableNavigation = () => {
-    return !rolesFactory.isAuthenticated();
-  }
-
 });
 
 //-----------------------------------------------------------------------------
@@ -421,6 +416,10 @@ const realApp = angular
       $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
 
+      $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {
+        document.title = name ? `${name} | ${__APP_NAME__}` : __APP_NAME__;
+      });
+
       //.........................................................................
       function configRequestMaker(
         $rootScope,
@@ -445,6 +444,7 @@ const realApp = angular
           // Try to obtain WebUI configs
           whenMqttReady()
             .then(() => {
+              $rootScope.rulesStore.subscribeRulesLogs();
               $rootScope.rulesStore.subscribeRuleDebugging();
               return $rootScope.dashboardsStore.loadData(true);
             })

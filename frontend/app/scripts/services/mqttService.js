@@ -277,7 +277,18 @@ function mqttClient(
     if (connected) this.subscribe(topic, callback);
   };
 
-  // TBD: unsubcribe
+  service.unsubscribe = function(topic) {
+    stickySubscriptions = stickySubscriptions.filter(item => item.topic !== topic);
+    delete callbackMap[topic];
+
+    if (connected) {
+      try {
+        client.unsubscribe(globalPrefix + topic);
+      } catch (err) {
+        console.warn(`Unsubscribe failed for ${topic}:`, err);
+      }
+    }
+  };
 
   //...........................................................................
   service.onConnectionLost = function (responseObject) {

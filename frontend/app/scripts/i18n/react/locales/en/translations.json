@@ -563,6 +563,18 @@
          "mqtt-connection": "MQTT client is not connected"
       }
    },
+   "rules-console": {
+      "labels": {
+         "filter-all": "All levels"
+      },
+      "buttons": {
+         "clear": "Clear console",
+         "debug": "Rules debug",
+         "dock-bottom": "Dock to bottom",
+         "dock-right": "Dock to right",
+         "close": "Close"
+      }
+   },
    "page": {
       "access-denied": "You cannot view this page. You can change <0>access level</0>",
       "not-found": "Page not found: 404",
@@ -602,6 +614,7 @@
       }
    },
    "login": {
+      "title": "Controller interface",
       "errors": {
          "failed": "Incorrect credentials"
       },
