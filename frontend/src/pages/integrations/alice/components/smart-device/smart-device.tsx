@@ -12,6 +12,7 @@ import {
   aliceStore,
   DefaultRoom,
   deviceTypes,
+  floatUnitsByInstance,
   type AddDeviceParams,
   type SmartDevice as SmartDeviceData
 } from '@/stores/alice';
@@ -46,8 +47,22 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
   const save = useCallback(async (ev: FormEvent) => {
     ev.preventDefault();
     try {
+      // Normalize properties: map "<name>_event" instances to "<name>" when base instance exists
+      const normalizedProperties = (data?.properties || []).map((p: any) => {
+        const params = { ...(p.parameters || {}) };
+        if (typeof params.instance === 'string' && params.instance.endsWith('_event')) {
+          const base = params.instance.replace(/_event$/, '');
+          if (base && Object.prototype.hasOwnProperty.call(floatUnitsByInstance, base)) {
+            params.instance = base;
+          }
+        }
+        return { ...p, parameters: params };
+      });
+
+      const payload = { ...data, properties: normalizedProperties } as AddDeviceParams;
+
       if (!id) {
-        const device = await addDevice(data as AddDeviceParams);
+        const device = await addDevice(payload);
         notificationsStore.showNotification({
           variant: 'success',
           text: t('alice.notifications.device-added', { name: data.name }),
@@ -55,7 +70,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
         await fetchData();
         onSave(device);
       } else {
-        await updateDevice(id, data);
+        await updateDevice(id, payload);
         notificationsStore.showNotification({
           variant: 'success',
           text: t('alice.notifications.device-updated', { name: data.name }),

@@ -247,7 +247,7 @@ export const floatUnitsByInstance: Record<string, string[]> = {
   battery_level_event: ['unit.low', 'unit.normal', 'unit.full'],
   food_level_event: ['unit.empty', 'unit.low', 'unit.normal'],
   water_level_event: ['unit.empty', 'unit.low', 'unit.normal'],
-  water_leak: ['unit.dry', 'unit.leak'],
+  water_leak: ['unit.dry', 'unit.leak']
 };
 
 // Predefined color scenes per Yandex Smart Home docs
