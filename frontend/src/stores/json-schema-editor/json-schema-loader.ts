@@ -273,7 +273,7 @@ const expandSchema = (schema: JsonSchema, definitions: Definitions, refCache: De
   return sanitizeObjectSchema(schema, definitions, refCache);
 };
 
-export const loadJsonSchema = (schema: unknown, externalDefinitions: unknown): JsonSchema | undefined => {
+export const loadJsonSchema = (schema: unknown, externalDefinitions?: unknown): JsonSchema | undefined => {
   if (!isObject(schema)) {
     return undefined;
   }

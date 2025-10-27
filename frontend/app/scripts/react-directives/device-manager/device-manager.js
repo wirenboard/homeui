@@ -16,6 +16,7 @@ function deviceManagerDirective(
   $transitions,
   SerialProxy,
   SerialPortProxy,
+  SerialDeviceProxy,
   mqttClient,
   $rootScope,
   $window,
@@ -100,7 +101,8 @@ function deviceManagerDirective(
         rolesFactory,
         DeviceManagerProxy,
         FwUpdateProxy,
-        setupPort
+        setupPort,
+        SerialDeviceProxy
       );
 
       let CONFIRMATION_MSG;

@@ -2,19 +2,16 @@ import { makeObservable, computed } from 'mobx';
 import {
   JsonSchema,
   JsonObject,
-  NumberStore,
   ObjectStore,
   StringStore,
   ArrayStore,
-  StoreBuilder
+  StoreBuilder,
+  Translator,
+  loadJsonSchema
 } from '@/stores/json-schema-editor';
 import { WbDeviceChannelEditor } from './channel-editor-store';
 import { Conditions } from './conditions';
-import {
-  WbDeviceParameterEditor,
-  WbDeviceParameterEditorVariant,
-  makeJsonSchemaForParameter
-} from './parameter-editor-store';
+import { WbDeviceParameterEditor } from './parameter-editor-store';
 import type {
   WbDeviceParametersGroup,
   WbDeviceTemplateChannel,
@@ -46,7 +43,7 @@ export class WbDeviceParameterEditorsGroup {
   }
 
   get hasErrors() {
-    return this.parameters.some((param) => param.isEnabledByCondition && param.isEnabledByUser && param.hasErrors)
+    return this.parameters.some((param) => param.isEnabledByCondition && param.hasErrors)
       || this.subgroups.some((group) => group.isEnabledByCondition && group.hasErrors)
       || this.channels.some((channel) => channel.isEnabledByCondition && channel.hasErrors);
   }
@@ -92,21 +89,27 @@ export class DeviceSettingsObjectStore {
   public commonParams: ObjectStore;
   public customChannels?: ArrayStore;
   public topLevelGroup: WbDeviceParameterEditorsGroup;
+  public schemaTranslator: Translator;
 
   private _parametersByName = new Map<string, WbDeviceParameterEditor>();
   private _groupsByName = new Map<string, WbDeviceParameterEditorsGroup>();
   private _conditions: Conditions = new Conditions();
 
-  constructor(schema: JsonSchema, deviceTemplate: WbDeviceTemplate, initialValue: unknown) {
-    let initialValueAsObject = initialValue as Record<string, any>;
+  constructor(schema: unknown, userDefinedConfig: unknown) {
+    const jsonSchema = loadJsonSchema(schema);
+    const deviceTemplate = loadDeviceTemplate(schema);
+    this.schemaTranslator = new Translator();
+    this.schemaTranslator.addTranslations(jsonSchema.translations);
+    this.schemaTranslator.addTranslations(deviceTemplate.translations);
+    let userDefinedConfigAsObject = userDefinedConfig as Record<string, any>;
     let customChannels: unknown[] = [];
     let templateChannels: unknown[] = [];
     if (
-      typeof initialValueAsObject === 'object' &&
-      initialValueAsObject !== null &&
-      Array.isArray(initialValueAsObject.channels)
+      typeof userDefinedConfigAsObject === 'object' &&
+      userDefinedConfigAsObject !== null &&
+      Array.isArray(userDefinedConfigAsObject.channels)
     ) {
-      const channels = initialValueAsObject.channels as unknown[];
+      const channels = userDefinedConfigAsObject.channels as unknown[];
       channels.forEach((ch) => {
         const channelAsObject = ch as Record<string, any>;
         if (typeof channelAsObject !== 'object' || channelAsObject === null) {
@@ -120,17 +123,17 @@ export class DeviceSettingsObjectStore {
       });
     }
 
-    delete initialValueAsObject.channels;
-    initialValueAsObject.channels = customChannels;
-    this.commonParams = new ObjectStore(schema, initialValueAsObject, false, new StoreBuilder());
+    delete userDefinedConfigAsObject.channels;
+    userDefinedConfigAsObject.channels = customChannels;
+    this.commonParams = new ObjectStore(jsonSchema, userDefinedConfigAsObject, false, new StoreBuilder());
     this.customChannels = this.commonParams.getParamByKey('channels')?.store as ArrayStore;
     this.commonParams.removeParamByKey('channels');
 
-    delete initialValueAsObject.channels;
-    initialValueAsObject.channels = templateChannels;
+    delete userDefinedConfigAsObject.channels;
+    userDefinedConfigAsObject.channels = templateChannels;
     this._buildGroups(deviceTemplate);
-    this._buildParameters(deviceTemplate, initialValueAsObject);
-    this._buildChannels(deviceTemplate, initialValueAsObject);
+    this._buildParameters(deviceTemplate, userDefinedConfigAsObject);
+    this._buildChannels(deviceTemplate, userDefinedConfigAsObject);
 
     makeObservable(this, {
       value: computed,
@@ -167,43 +170,31 @@ export class DeviceSettingsObjectStore {
     });
   }
 
-  _addParameter(parameter: WbDeviceTemplateParameter, initialValue: unknown) {
-    let initialValueToSet = undefined;
-    if (typeof initialValue === 'object') {
-      initialValueToSet = (initialValue as Record<string, any>)[parameter.id];
-    }
-    const store = new NumberStore(
-      makeJsonSchemaForParameter(parameter),
-      initialValueToSet,
-      parameter.required);
-    const variant = new WbDeviceParameterEditorVariant(
-      store,
-      this._parametersByName,
-      this._conditions.getFunction(parameter.condition, parameter.dependencies),
-      parameter.dependencies
-    );
-    if (this._parametersByName.has(parameter.id)) {
-      this._parametersByName.get(parameter.id).addVariant(variant);
+  _addParameter(parameter: WbDeviceTemplateParameter, userDefinedConfig: unknown) {
+    let parameterEditor = this._parametersByName.get(parameter.id);
+    if (parameterEditor) {
+      parameterEditor.addVariant(parameter, userDefinedConfig, this._parametersByName, this._conditions);
       return;
     }
-    const setting = new WbDeviceParameterEditor(parameter.id, variant, parameter.order ?? 0);
-    if (initialValueToSet === undefined) {
-      setting.disableByUser();
-    }
-    this._parametersByName.set(parameter.id, setting);
+    parameterEditor = new WbDeviceParameterEditor(
+      parameter, userDefinedConfig,
+      this._parametersByName,
+      this._conditions
+    );
+    this._parametersByName.set(parameter.id, parameterEditor);
     if (this._groupsByName.has(parameter.group)) {
-      this._groupsByName.get(parameter.group).addParameter(setting);
+      this._groupsByName.get(parameter.group).addParameter(parameterEditor);
     } else {
-      this.topLevelGroup.addParameter(setting);
+      this.topLevelGroup.addParameter(parameterEditor);
     }
   }
 
-  _buildParameters(deviceTemplate: WbDeviceTemplate, initialValue: unknown) {
+  _buildParameters(deviceTemplate: WbDeviceTemplate, userDefinedConfig: unknown) {
     if (!deviceTemplate.parameters) {
       return;
     }
     deviceTemplate.parameters.forEach((parameter) => {
-      this._addParameter(parameter, initialValue);
+      this._addParameter(parameter, userDefinedConfig);
     });
 
     this._groupsByName.forEach((group, _name) => {
@@ -211,15 +202,15 @@ export class DeviceSettingsObjectStore {
     });
   }
 
-  _buildChannels(deviceTemplate: WbDeviceTemplate, initialValue: unknown) {
+  _buildChannels(deviceTemplate: WbDeviceTemplate, userDefinedConfig: unknown) {
     if (!deviceTemplate.channels) {
       return;
     }
     const initialChannelsByName: Record<string, WbDeviceTemplateChannel> = {};
-    if (typeof initialValue === 'object') {
-      const initialValueAsObject = initialValue as Record<string, unknown>;
-      if (Array.isArray(initialValueAsObject.channels)) {
-        initialValueAsObject.channels.forEach((channel) => {
+    if (typeof userDefinedConfig === 'object') {
+      const userDefinedConfigAsObject = userDefinedConfig as Record<string, unknown>;
+      if (Array.isArray(userDefinedConfigAsObject.channels)) {
+        userDefinedConfigAsObject.channels.forEach((channel) => {
           if (typeof channel === 'object' && channel.name) {
             initialChannelsByName[channel.name] = channel as WbDeviceTemplateChannel;
           }
@@ -250,7 +241,7 @@ export class DeviceSettingsObjectStore {
   get value() : JsonObject | undefined {
     let res : Record<string, any> = this.commonParams.value;
     this._parametersByName.forEach((param, _name) => {
-      if (param.isEnabledByCondition && param.isEnabledByUser && !param.hasErrors) {
+      if (param.shouldStoreInConfig) {
         const value = param.value;
         if (typeof value === 'number') {
           res[param.id] = value;
@@ -300,9 +291,27 @@ export class DeviceSettingsObjectStore {
     this.topLevelGroup.reset();
     this.customChannels?.reset();
   }
+
+  setFromDeviceRegisters(value: unknown, fw: string){
+    const valueAsObject = value as Record<string, any>;
+    if (!valueAsObject) {
+      return;
+    }
+    this._parametersByName.forEach((param, _name) => {
+      param.setFirmwareInDevice(fw);
+      if (Object.hasOwn(valueAsObject, param.id)) {
+        param.setFromDeviceRegister(valueAsObject[param.id]);
+      }
+    });
+    this._groupsByName.forEach((group, _name) => {
+      group.channels.forEach((channel) => {
+        channel.setFirmwareInDevice(fw);
+      });
+    });
+  }
 }
 
-export const loadDeviceTemplate = (schema: unknown): WbDeviceTemplate => {
+const loadDeviceTemplate = (schema: unknown): WbDeviceTemplate => {
   if (!schema || typeof schema !== 'object') {
     return {};
   }

@@ -29,3 +29,39 @@ export const getDefaultStringValue = (schema: JsonSchema) : string => {
   }
   return '';
 };
+
+export const getDefaultObjectValue = (schema: JsonSchema) : object => {
+  let res = {};
+  Object.entries(schema?.properties || {}).forEach(([key, value]) => {
+    if (schema.required?.includes(key)) {
+      const defaultValue = getDefaultValue(value);
+      if (defaultValue !== undefined) {
+        res[key] = defaultValue;
+      }
+    }
+  });
+  return res;
+};
+
+export const getDefaultValue = (schema: JsonSchema) => {
+  switch (schema.type) {
+    case 'boolean':
+      return getDefaultBooleanValue(schema);
+    case 'number':
+    case 'integer':
+      return getDefaultNumberValue(schema);
+    case 'string':
+      return getDefaultStringValue(schema);
+    case 'object':
+      return getDefaultObjectValue(schema);
+    case 'array':
+      return [];
+    case 'oneOf':
+      if (schema.oneOf.length > 0) {
+        return getDefaultValue(schema.oneOf[0]);
+      }
+      return undefined;
+    default:
+      return undefined;
+  }
+};
