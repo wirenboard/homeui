@@ -29,7 +29,7 @@ const DeviceSettingsSubGroup = (
     return <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} />;
   }
   return (
-    <div className="device-settings__sub-group">
+    <div className="deviceSettingsSubGroup">
       <label>
         {translator.find(group.properties.title, currentLanguage)}
       </label>
@@ -41,7 +41,7 @@ const DeviceSettingsSubGroup = (
 const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
   const errorId = useId();
   return (
-    <div className={classNames('device-settings__parameter', { 'wb-jsonEditor-propertyError': store.hasErrors })} >
+    <div className={classNames('deviceSettingsParameter', { 'wb-jsonEditor-propertyError': store.hasErrors })} >
       <NumberEditor store={store} translator={translator} />
       {store.hasErrors && <ParamError id={errorId} error={store.error} translator={translator} />}
     </div>
@@ -94,7 +94,7 @@ const ChannelsTable = observer((
     return null;
   }
   return (
-    <Table className="device-settings__channels-table">
+    <Table className="deviceSettingsChannelsTable">
       <TableRow isHeading={true}>
         <TableCell>{t('device-manager.labels.channel')}</TableCell>
         <TableCell>{t('device-manager.labels.mode')}</TableCell>
@@ -120,9 +120,9 @@ const DeviceSettingsTabContent = observer((
   return (
     <div
       className={classNames({
-        'device-settings__top-group-content': isTopLevel,
-        'device-settings__sub-group-content': !isTopLevel,
-        'device-settings__sub-group--border': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
+        deviceSettingsTopGroupContent: isTopLevel,
+        deviceSettingsSubGroupContent: !isTopLevel,
+        'deviceSettingsSubGroupContent-withBorder': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
       })}
     >
       {showDescription && (
@@ -146,7 +146,7 @@ const DeviceSettingsTabs = observer((
   const tabs = groups.map((group: WbDeviceParameterEditorsGroup) => ({
     id: group.properties.id,
     label: (
-      <span className={classNames({ 'has-error': group.hasErrors })}>
+      <span className={classNames({ 'deviceSettingsTabs-tabWithError': group.hasErrors })}>
         {translator.find(group.properties.title, i18n.language)}
       </span>
     ),
@@ -155,7 +155,7 @@ const DeviceSettingsTabs = observer((
     tabs.push({
       id: 'customChannels',
       label: (
-        <span className={classNames({ 'has-error': customChannelsStore.hasErrors })}>
+        <span className={classNames({ 'deviceSettingsTabs-tabWithError': customChannelsStore.hasErrors })}>
           {t('device-manager.labels.custom-channels')}
         </span>
       ),
@@ -166,15 +166,25 @@ const DeviceSettingsTabs = observer((
     items: tabs,
   });
   return (
-    <div className="device-settings__tabs">
+    <div className="deviceSettingsTabs">
       <Tabs activeTab={activeTab} items={tabs} onTabChange={onTabChange}/>
       {groups.map((group: WbDeviceParameterEditorsGroup) => (
-        <TabContent activeTab={activeTab} tabId={group.properties.id} className="device-settings__tabpanel">
+        <TabContent
+          key={group.properties.id}
+          activeTab={activeTab}
+          tabId={group.properties.id}
+          className="deviceSettingsTabs-tabContent"
+        >
           <DeviceSettingsTabContent group={group} isTopLevel={true} translator={translator} />
         </TabContent>
       ))}
       {customChannelsStore && (
-        <TabContent activeTab={activeTab} tabId="customChannels" className="device-settings__tabpanel">
+        <TabContent
+          key="customChannels"
+          activeTab={activeTab}
+          tabId="customChannels"
+          className="deviceSettingsTabs-tabContent"
+        >
           <JsonSchemaEditor store={customChannelsStore} translator={translator} />
         </TabContent>
       )}
@@ -185,7 +195,7 @@ const DeviceSettingsTabs = observer((
 export const DeviceSettingsEditorDesktop = observer(({ store, translator } : DeviceSettingsEditorProps) => {
   const { t } = useTranslation();
   return (
-    <div className="device-settings__editor">
+    <div className="deviceSettingsEditor deviceSettingsEditor-desktop">
       <JsonSchemaEditor store={store.commonParams} translator={translator} />
       {MakeEditors(store.topLevelGroup.parameters, translator)}
       <ChannelsTable channels={store.topLevelGroup.channels} translator={translator} />

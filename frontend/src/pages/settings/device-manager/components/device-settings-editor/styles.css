@@ -1,0 +1,97 @@
+.deviceSettingsEditor {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.deviceSettingsEditor > .wb-jsonEditor {
+    margin-top: 10px;
+}
+
+.deviceSettingsEditor .card {
+    max-width: initial;
+    margin-bottom: 0px;
+}
+
+.deviceSettingsTabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.deviceSettingsTabs .tabs {
+    flex-shrink: 0;
+    width: 20%;
+}
+
+.deviceSettingsTabs-tabContent {
+    flex-grow: 1;
+    margin-left: 15px;
+}
+
+.deviceSettingsTabs-tabWithError {
+    color: var(--danger-color);
+}
+
+.deviceSettingsTopGroupContent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.deviceSettingsSubGroupContent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.deviceSettingsSubGroupContent-withBorder {
+    padding: 9px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--card-border-radius);
+}
+
+.deviceSettingsSubGroup {
+    flex-grow: 1;
+    flex-basis: 100%;
+    width: 100%;
+}
+
+.deviceSettingsChannelsTable {
+    flex-grow: 1;
+    flex-basis: 100%;
+}
+
+.deviceSettingsParameter {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 43%;
+}
+
+.deviceSettingsParameter-changedByUser .dropdown__control,
+.deviceSettingsParameter-changedByUser input {
+    border-left: 4px solid var(--gray-color);
+}
+
+.deviceSettingsEditor-desktop .deviceSettingsTopGroupContent {
+    padding: 0px 19px 9px 19px;
+}
+
+.deviceSettingsEditor-mobile .deviceSettingsParameter {
+    flex-basis: 100%;
+    width: 100%;
+}
+
+.deviceSettingsEditor-mobile .deviceSettingsParameter .wb-jsonEditor-propertyLabel,
+.deviceSettingsEditor-mobile .deviceSettingsParameter .wb-jsonEditor-propertyCheckbox {
+    white-space: wrap;
+}
+
+.deviceSettingsEditor-mobile .deviceSettingsChannel {
+    display: flex;
+    flex-direction: column;
+}

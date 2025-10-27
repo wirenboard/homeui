@@ -39,9 +39,9 @@ export const ParamEditor = observer((
   const title = translator.find(activeVariant.store.schema.title || param.id, currentLanguage);
   return (
     <div
-      className={classNames('device-settings__parameter', {
+      className={classNames('deviceSettingsParameter', {
         'wb-jsonEditor-propertyError': showError,
-        'device-settings__parameterChangedByUser': param.isChangedByUser,
+        'deviceSettingsParameter-changedByUser': param.isChangedByUser,
       })}
     >
       <ParamSimpleLabel title={title} inputId={inputId} />

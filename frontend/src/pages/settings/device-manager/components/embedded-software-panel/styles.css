@@ -1,0 +1,44 @@
+.firmwareVersionPanel {
+    margin-bottom: 10px;
+}
+
+.firmwareUpdatePanel {
+    flex-wrap: wrap;
+}
+
+.firmwareUpdatePanel .progress {
+    margin-bottom: 0px;
+    flex-grow: 1;
+    min-width: '200px';
+}
+
+.firmwareUpdatePanel span:last-of-type{
+    flex-basis: 100%;
+}
+
+.embeddedSoftwareUpdateErrorAlert .alertMessage-content {
+    display: flex;
+    gap: 5px;
+    align-items: baseline;
+}
+
+.newEmbeddedSoftwareAlert .alertMessage-content {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.newEmbeddedSoftwareAlert .alertMessage-content > div {
+    flex-grow: 1;
+}
+
+@media (max-width: 991px) {
+    .newEmbeddedSoftwareAlert .alertMessage-content {
+        flex-wrap: wrap;
+    }
+
+    .newEmbeddedSoftwareAlert .button {
+        flex-grow: 1;
+    }
+}

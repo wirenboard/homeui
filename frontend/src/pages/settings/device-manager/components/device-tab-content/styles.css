@@ -1,0 +1,65 @@
+.deviceTabContent {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.deviceTabLoader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+}
+
+.deviceTabContentHeader {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.deviceTabContentHeader-select {
+    flex-basis: 45%;
+}
+
+.deviceTabContentHeader-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+@media (max-width: 1280px) {
+    .deviceTabContentHeader-select {
+        flex-grow: 1;
+        min-width: 10px;
+    }
+}
+
+.disconnectedDeviceAlert .alertMessage-content,
+.sameMqttIdAlert .alertMessage-content {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.disconnectedDeviceAlert .button,
+.sameMqttIdAlert .button {
+    white-space: nowrap;
+}
+
+@media (max-width: 991px) {
+    .disconnectedDeviceAlert .alertMessage-content,
+    .sameMqttIdAlert .alertMessage-content {
+        flex-wrap: wrap;
+    }
+
+    .disconnectedDeviceAlert .button,
+    .sameMqttIdAlert .button {
+        flex-grow: 1;
+    }
+}
+
+.disconnectedDeviceAlert .alertMessage-content > span,
+.sameMqttIdAlert .alertMessage-content > span {
+    flex-grow: 1;
+}

@@ -1,13 +1,13 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { DeviceTab, DeviceTabContent } from '@/pages/settings/device-manager';
 import { Button } from '../../common';
 import ConfirmModal from '../../components/modals/confirmModal';
 import FormModal from '../../components/modals/formModal';
 import { SelectModal } from '../../components/modals/selectModal';
 import { PageWrapper, PageBody, PageTitle } from '../../components/page-wrapper/pageWrapper';
 import { VerticalTabs, TabContent, TabItem, TabPane, TabsList } from '../../components/tabs/tabs';
-import { DeviceTab, DeviceTabContent } from './deviceTab';
 import { PortTab, PortTabContent } from './portTab';
 import { SettingsTab, SettingsTabContent } from './settingsPage';
 import { TabType } from './tabsStore';
@@ -130,7 +130,7 @@ const PageTabs = observer(
     onSearchDisconnectedDevice,
     onUpdateFirmware,
     onUpdateBootloader,
-    onUpdateComponents
+    onUpdateComponents,
   }) => {
     const { t } = useTranslation();
     return (
