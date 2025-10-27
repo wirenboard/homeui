@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.151.0) stable; urgency=medium
+
+  * Read settings from serial devices during configuration editing
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 23 Oct 2025 16:06:20 +0500
+
 wb-mqtt-homeui (2.150.0) stable; urgency=medium
 
   * Add React based editor for wb-mqtt-serial config
