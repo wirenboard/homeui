@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
+import { notificationsStore } from '@/stores/notifications';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
 import type { AlicePageParams, AlicePageState, View } from './types';
@@ -47,6 +48,24 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
     [integrations, pageState]
   );
 
+  const handleUnlinkController = async (ev?: React.MouseEvent) => {
+    if (ev) ev.preventDefault();
+    const confirmed = window.confirm(t('alice.binding.confirm-unlink'));
+    if (!confirmed) return;
+    try {
+      const url = `${window.location.origin}/integrations/alice/controller`;
+      const resp = await fetch(url, { method: 'DELETE', credentials: 'same-origin' });
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(text || resp.statusText);
+      }
+      notificationsStore.showNotification({ variant: 'success', text: t('alice.binding.unlinked') });
+      await fetchData();
+    } catch (err: any) {
+      notificationsStore.showNotification({ variant: 'danger', text: err?.message || String(err) });
+    }
+  };
+
   return (
     <PageLayout
       title={t('alice.title')}
@@ -64,6 +83,14 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                     <span>{t('alice.labels.is-binded')}</span>
                     <a href={bindingInfo.url} className="alice-binding" target="_blank">
                       {t('alice.buttons.check-binding-status')}
+                    </a>
+                    <a
+                      href="/integrations/alice/controller"
+                      className="alice-binding alice-unlink"
+                      onClick={handleUnlinkController}
+                      title={t('alice.binding.unlink-controller')}
+                    >
+                      {t('alice.binding.unlink-controller')}
                     </a>
                   </div>
                 )
