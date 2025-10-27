@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.149.0) stable; urgency=medium
+
+  * Add Alice event support
+  * Add Alice controller unlink
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Mon, 27 Oct 2025 14:26:00 +0300
+
+
 wb-mqtt-homeui (2.148.0) stable; urgency=medium
 
   * Add controller name to page title
