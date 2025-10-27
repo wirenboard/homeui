@@ -1,8 +1,6 @@
-import { RpcError } from './types';
-
 export const formatError = (error: unknown) => {
   if (typeof error === 'object') {
-    const rpcError = error as RpcError;
+    const rpcError = error as Record<string, unknown>;
     if (rpcError.code) {
       return `${rpcError.message}: ${rpcError.data}(${rpcError.code})`;
     }
