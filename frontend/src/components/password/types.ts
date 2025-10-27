@@ -7,11 +7,14 @@ type BasePasswordInputProps = {
   size?: 'default' | 'small' | 'large';
   value: string;
   className?: string;
+  name?: string;
+  autoComplete?: string;
   min?: number;
   max?: number;
   step?: number;
   autoFocus?: boolean;
   isDisabled?: boolean;
+  required?: boolean;
   placeholder?: string;
   ariaLabel?: string;
   ariaDescribedby?: string;

@@ -1,5 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { authStore } from '@/stores/auth';
 import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/httpsUtils';
+import { request } from '@/utils/request';
 import i18n from '../../i18n/react/config';
 import AccessLevelStore from '../components/access-level/accessLevelStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
@@ -60,7 +62,7 @@ class UsersPageStore {
         },
       ],
       value: null,
-    }),
+    });
     this.users = [];
     this.httpsDomainName = '';
 
@@ -71,7 +73,7 @@ class UsersPageStore {
     }
   }
 
-  async processFetchError(fetchResponse) {
+  processFetchError(fetchResponse) {
     switch (fetchResponse.status) {
       case 403: {
         this.pageWrapperStore.setError(i18n.t('users.errors.forbidden'));
@@ -82,9 +84,9 @@ class UsersPageStore {
         break;
       }
       default: {
-        const text = await fetchResponse.text();
+        const message = fetchResponse.response?.data || fetchResponse.message || '';
         this.pageWrapperStore.setError(
-          i18n.t('users.errors.unknown', { msg: text, interpolation: { escapeValue: false } })
+          i18n.t('users.errors.unknown', { msg: message, interpolation: { escapeValue: false } })
         );
       }
     }
@@ -101,18 +103,14 @@ class UsersPageStore {
   async loadUsers() {
     this.pageWrapperStore.setLoading(true);
     try {
-      const res = await fetch('/auth/users');
-      if (res.ok) {
-        this.setUsers(await res.json());
-        if (!this.users.length) {
-          const deviceInfo = await getDeviceInfo();
-          this.httpsDomainName = makeHttpsUrlOrigin(deviceInfo);
-        }
-      } else {
-        await this.processFetchError(res);
+      const users = await authStore.getUsers().then(({ data }) => data);
+      this.setUsers(users);
+      if (!this.users.length) {
+        const deviceInfo = await getDeviceInfo();
+        this.httpsDomainName = makeHttpsUrlOrigin(deviceInfo);
       }
     } catch (error) {
-      this.pageWrapperStore.setError(error);
+      this.processFetchError(error);
       this.setUsers([]);
     } finally {
       this.pageWrapperStore.setLoading(false);
@@ -159,15 +157,7 @@ class UsersPageStore {
     }
 
     if (oldAutologinUser) {
-      this.fetchWrapper(() =>
-        fetch(`/auth/users/${oldAutologinUser.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ autologin: false }),
-        })
-      );
+      this.fetchWrapper(() => authStore.updateUser(oldAutologinUser.id, { autologin: false }));
       oldAutologinUser.autologin = false;
     }
 
@@ -175,15 +165,7 @@ class UsersPageStore {
 
     const newAutologinUser = this.users.find((u) => u.id === autologinUserOption.value);
     if (newAutologinUser) {
-      this.fetchWrapper(() =>
-        fetch(`/auth/users/${autologinUserOption.value}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ autologin: true }),
-        })
-      );
+      this.fetchWrapper(() => authStore.updateUser(autologinUserOption.value, { autologin: true }));
       newAutologinUser.autologin = true;
     }
   }
@@ -192,16 +174,12 @@ class UsersPageStore {
     try {
       this.pageWrapperStore.clearError();
       this.pageWrapperStore.setLoading(true);
-      const res = await fetchFn();
-      if (res.ok) {
-        this.pageWrapperStore.setLoading(false);
-        return res;
-      }
-      await this.processFetchError(res);
+      return await fetchFn();
     } catch (error) {
-      this.pageWrapperStore.setError(error);
+      this.processFetchError(error);
+    } finally {
+      this.pageWrapperStore.setLoading(false);
     }
-    this.pageWrapperStore.setLoading(false);
     return null;
   }
 
@@ -215,23 +193,14 @@ class UsersPageStore {
     this.pageWrapperStore.clearError();
     this.pageWrapperStore.setLoading(true);
     try {
-      const res = await fetch('/api/https', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ enabled: true }),
-      });
-      if (res.ok) {
-        this.pageWrapperStore.setLoading(false);
-        window.location.reload();
-        return false;
-      }
-      await this.processFetchError(res);
+      await request.patch('/api/https', { enabled: true });
+      window.location.reload();
+      return false;
     } catch (error) {
-      this.pageWrapperStore.setError(error);
+      this.processFetchError(error);
+    } finally {
+      this.pageWrapperStore.setLoading(false);
     }
-    this.pageWrapperStore.setLoading(false);
     return false;
   }
 
@@ -248,15 +217,7 @@ class UsersPageStore {
     if (!user) {
       return;
     }
-    const res = await this.fetchWrapper(() =>
-      fetch('/auth/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user),
-      })
-    );
+    const res = await this.fetchWrapper(() => authStore.addUser(user));
     if (res === null) {
       return;
     }
@@ -264,13 +225,11 @@ class UsersPageStore {
       location.reload();
       return;
     }
-    res.text().then((text) => {
-      runInAction(() => {
-        user.id = text;
-        this.users.push(user);
-        sortUsers(this.users);
-        this.refreshAutologinUserOptions();
-      });
+    runInAction(() => {
+      user.id = res.data;
+      this.users.push(user);
+      sortUsers(this.users);
+      this.refreshAutologinUserOptions();
     });
   }
 
@@ -284,15 +243,7 @@ class UsersPageStore {
     if (!modifiedUser) {
       return;
     }
-    const res = await this.fetchWrapper(() =>
-      fetch(`/auth/users/${user.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(modifiedUser),
-      })
-    );
+    const res = await this.fetchWrapper(() => authStore.updateUser(user.id, modifiedUser));
     if (res === null) {
       return;
     }
@@ -326,11 +277,7 @@ class UsersPageStore {
 
   async deleteUser(user) {
     if ((await this.showDeleteConfirmModal(user)) === 'ok') {
-      const res = await this.fetchWrapper(() =>
-        fetch(`/auth/users/${user.id}`, {
-          method: 'DELETE',
-        })
-      );
+      const res = await this.fetchWrapper(() => authStore.deleteUser(user.id));
       if (res === null) {
         return;
       }

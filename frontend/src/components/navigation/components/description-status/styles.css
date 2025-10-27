@@ -1,0 +1,74 @@
+.descriptionStatus {
+    position: relative;
+    margin: 0 12px 10px 12px;
+    width: fit-content;
+    align-self: center;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+
+    @media(max-width: 768px) {
+        margin: 0;
+    }
+}
+
+.descriptionStatus-description {
+    display: block;
+    color: var(--nav-text-color);
+    padding: 6px 10px;
+    border: 1px solid var(--nav-text-color);
+    border-radius: 8px;
+    width: fit-content;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 190px;
+}
+
+.descriptionStatus-descriptionStatus {
+    position: absolute;
+    display: block;
+    top: -2px;
+    right: -6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+.descriptionStatus-descriptionStatusCompact {
+    position: relative;
+    top: 0;
+    right: 0;
+}
+
+.descriptionStatus-status {
+    padding: 2px 6px;
+    color: var(--nav-status-color);
+    width: 96px;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 8px;
+}
+
+.descriptionStatus-statusConnected {
+    border-color: var(--nav-status-online-color);
+}
+
+.descriptionStatus-statusConnectedBadge {
+    background: var(--nav-status-online-color);
+}
+
+.descriptionStatus-statusDisconnected {
+    border-color: var(--danger-color);
+}
+
+.descriptionStatus-statusDisconnectedBadge {
+    background: var(--danger-color);
+}
+
+.descriptionStatus-tooltip {
+    font-size: var(--font-size-medium) !important;
+    padding: 8px 12px !important;
+    margin-left: 24px;
+}

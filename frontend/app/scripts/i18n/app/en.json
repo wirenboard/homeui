@@ -29,40 +29,6 @@
             "settings": "settings"
         }
     },
-    "navigation": {
-        "menu": {
-            "toggle": "Toggle navigation",
-            "home": "Home",
-            "dashboards": "Dashboards",
-            "list": "List",
-            "devices": "Devices",
-            "integrations": "Integrations",
-            "alice": "Yandex Alice",
-            "widgets": "Widgets",
-            "history": "History",
-            "rules": "Rules",
-            "rule-editor": "Rule Editor",
-            "scenario": "Scenarios",
-            "settings": "Settings",
-            "help": "Help",
-            "configs": "Configs",
-            "ui": "Web UI",
-            "system": "System",
-            "channels": "MQTT Channels",
-            "access": "Users",
-            "logs": "Logs",
-            "serial-metrics": "wb-mqtt-serial metrics",
-            "scan": "Scan",
-            "device-manager": "Device manager"
-        },
-        "access": {
-            "title": "Access level:"
-        },
-        "connection": {
-            "active": "Connected",
-            "inactive": "Disconnected"
-        }
-    },
     "heading": {
         "loading": "Loading...",
         "stableNotice": "If you want to be the first to get access to new features of our software, switch to "

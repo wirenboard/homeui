@@ -12,7 +12,7 @@ import './styles.css';
 
 const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
-  const { rooms, isAvailable, fetchData } = aliceStore;
+  const { rooms, integrations, fetchData } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
@@ -31,8 +31,10 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    setErrors(isAvailable === false ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
-  }, [isAvailable]);
+    if (integrations) {
+      setErrors(!integrations.includes('alice') ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+    }
+  }, [integrations]);
 
   const sortedRooms = Array.from(rooms).sort(([keyA], [keyB]) => {
     if (keyA === DefaultRoom) return -1;
@@ -41,8 +43,8 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   });
 
   const isLoading = useMemo(
-    () => isAvailable === undefined || (isAvailable && pageState === 'isLoading'),
-    [isAvailable, pageState]
+    () => !integrations || (integrations?.length && pageState === 'isLoading'),
+    [integrations, pageState]
   );
 
   return (
@@ -52,7 +54,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
       hasRights={hasRights}
       errors={errors}
     >
-      {isAvailable && (
+      {!!integrations?.length && (
         pageState === 'isConnected'
           ? (
             <>
@@ -77,13 +79,11 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                   <div className="alice-mainButtons">
                     <Button
                       label={t('alice.buttons.add-device')}
-                      size="large"
                       onClick={() => setView({ isNewDevice: true })}
                     />
 
                     <Button
                       label={t('alice.buttons.add-room')}
-                      size="large"
                       variant="secondary"
                       onClick={() => setView({ isNewRoom: true })}
                     />
@@ -93,7 +93,6 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                         'alice-roomSelected': view.roomId === 'all',
                       })}
                       label={t('alice.buttons.all-devices')}
-                      size="large"
                       variant="unaccented"
                       onClick={() => setView({ roomId: 'all' })}
                     />
@@ -107,7 +106,6 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                             'alice-roomSelected': key === view.roomId,
                           })}
                           label={rooms.get(key).name}
-                          size="large"
                           variant="unaccented"
                           onClick={() => setView({ roomId: key })}
                         />

@@ -8,8 +8,11 @@ export const getPathname = () => {
 const parseHash = () => {
   const hash = location.href.split('#!')[1] || '';
   const [path = '', queryString = ''] = hash.split('?');
+  const arr = path.split('/').filter((item) => item);
+
   return {
-    page: path.split('/').at(-1) || '',
+    page: arr.length > 1 ? arr.slice(0, -1).join('/') || '' : arr.at(0),
+    id: arr.length > 1 ? arr.at(-1) || '' : null,
     params: new URLSearchParams(queryString),
   };
 };

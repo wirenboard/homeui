@@ -8,37 +8,37 @@ export class Widget {
   declare description: string;
   declare compact: boolean;
   declare cells: any[];
-  #dashboardStore: DashboardsStore;
+  #dashboardsStore: DashboardsStore;
 
-  constructor(widget: WidgetBase, dashboardStore: DashboardsStore) {
+  constructor(widget: WidgetBase, dashboardsStore: DashboardsStore) {
     this.id = widget.id;
     this.name = widget.name;
     this.description = widget.description;
     this.compact = widget.compact;
     this.cells = widget.cells;
-    this.#dashboardStore = dashboardStore;
+    this.#dashboardsStore = dashboardsStore;
   }
 
   save(data: WidgetBase) {
     if (!data.id) {
       data.id = generateNextId(
-        Array.from(this.#dashboardStore.widgets.values()).map((item) => item.id),
+        Array.from(this.#dashboardsStore.widgets.values()).map((item) => item.id),
         'widget'
       );
     }
-    this.#dashboardStore.updateWidget(data);
+    this.#dashboardsStore.updateWidget(data);
   }
 
   copy() {
-    return this.#dashboardStore.copyWidget(this.id);
+    return this.#dashboardsStore.copyWidget(this.id);
   }
 
   delete(id: string) {
-    this.#dashboardStore.deleteWidget(id);
+    this.#dashboardsStore.deleteWidget(id);
   }
 
   get associatedDashboards() {
-    return Array.from(this.#dashboardStore.dashboards.values())
+    return Array.from(this.#dashboardsStore.dashboards.values())
       .filter((dashboard) => dashboard.widgets.includes(this.id));
   }
 }
