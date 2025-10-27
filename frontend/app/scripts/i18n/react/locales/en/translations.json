@@ -8,7 +8,11 @@
          "password-strength-4": "Strong password"
       },
       "buttons": {
-         "apply": "Apply"
+         "apply": "Apply",
+         "add": "Add",
+         "remove": "Remove",
+         "move-up": "Move up",
+         "move-down": "Move down"
       }
    },
    "dashboards": {
@@ -356,8 +360,12 @@
          "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "updating-component": "Updating component firmware {{model}}:{{maybe_current_firmware}}{{available}}",
          "component_current_version": ", current {{current_firmware}}.",
-         "component_update_current_version": " {{current}} на "
-
+         "component_update_current_version": " {{current}} на ",
+         "channel": "Channel",
+         "mode": "Mode",
+         "period": "Period (ms)",
+         "unknown": "Unknown",
+         "custom-channels": "Custom channels"
       },
       "buttons": {
          "save": "Save config",
@@ -372,7 +380,8 @@
          "to-port-list": "To ports and devices list",
          "resolve-duplicate-mqtt-topic": "Set unique id",
          "search-disconnected-device": "Search for the device",
-         "update": "Update"
+         "update": "Update",
+         "parameters": "Parameters"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -728,6 +737,26 @@
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
          "get-https-status": "Failed to get HTTPS status: {{error}}"
+      }
+   },
+   "json-editor": {
+      "errors": {
+         "not-a-number": "Value must be a number",
+         "not-an-integer": "Value must be an integer",
+         "not-a-string": "Value must be a string",
+         "not-a-boolean": "Set value",
+         "not-a-byte-array": "Enter an array of numbers from 0 to 255 in decimal or hexadecimal format (0-255 or 0x00-0xFF) separated by commas",
+         "not-in-enum": "Select one of the available options",
+         "min-length": "Value must be at least {{limit}} characters long",
+         "max-length": "Value must be no more than {{limit}} characters long",
+         "invalid-format": "Invalid format",
+         "min": "Value must be greater than or equal to {{min}}",
+         "max": "Value must be less than or equal to {{max}}",
+         "minmax": "Value must be between {{min}} and {{max}}",
+         "required": "This field is required"
+      },
+      "labels": {
+         "select-params": "Add or remove parameters"
       }
    }
 }

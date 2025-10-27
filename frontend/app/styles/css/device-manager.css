@@ -123,13 +123,17 @@
     flex-grow: 1;
 }
 
+.device-manager-page.mobile .settings-panel {
+    padding: 3px;
+    border: none;
+    background: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
 .device-manager-page .device-list {
     overflow-y: auto;
     flex-grow: 1;
-}
-
-.device-manager-page .device-type-select {
-    width: 45%;
 }
 
 .device-manager-page .device-tab-properties > div > .je-header > label {
@@ -141,11 +145,6 @@
 }
 
 @media (max-width: 991px) {
-    .device-manager-page .device-type-select {
-        width: 100%;
-        padding-bottom: 10px;
-    }
-
     .device-manager-page .device-list-panel {
         width: 100%;
         max-width: unset;
@@ -304,4 +303,22 @@
     .device-manager-page .port-tab-content-header .button-panel {
         flex-grow: 1;
     }
+}
+
+.device-manager-page .device-type-select {
+    flex-basis: 45%;
+}
+
+@media (max-width: 1150px) {
+    .device-manager-page .device-type-select {
+        flex-grow: 1;
+        min-width: 10px;
+    }
+}
+
+.device-manager-page .device-tab-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }

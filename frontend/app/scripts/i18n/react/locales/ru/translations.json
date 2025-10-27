@@ -8,7 +8,11 @@
          "password-strength-4": "Надежный пароль"
       },
       "buttons": {
-         "apply": "Применить"
+         "apply": "Применить",
+         "add": "Добавить",
+         "remove": "Удалить",
+         "move-up": "Переместить вверх",
+         "move-down": "Переместить вниз"
       }
    },
    "dashboards": {
@@ -353,7 +357,12 @@
          "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
          "updating-component": "Обновление прошивки компонента {{model}}:{{maybe_current_firmware}}{{available}}",
          "component_current_version": ", текущая {{current_firmware}}.",
-         "component_update_current_version": " {{current}} на "
+         "component_update_current_version": " {{current}} на ",
+         "channel": "Канал",
+         "mode": "Опрос",
+         "period": "Период (мс)",
+         "unknown": "Неизвестно",
+         "custom-channels": "Пользовательские каналы"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -368,7 +377,8 @@
          "to-port-list": "К списку портов и устройств",
          "resolve-duplicate-mqtt-topic": "Задать уникальный идентификатор",
          "search-disconnected-device": "Найти устройство",
-         "update": "Обновить"
+         "update": "Обновить",
+         "parameters": "Параметры"
       },
       "errors": {
          "write": "Ошибка при сохранении настроек. Более детальная информация находится в журнале работы сервиса wb-mqtt-confed",
@@ -753,6 +763,26 @@
       "errors": {
          "setup-https": "Не удалось настроить HTTPS: {{error}}",
          "get-https-status": "Не удалось получить статус поддержки HTTPS: {{error}}"
+      }
+   },
+   "json-editor": {
+      "errors": {
+         "not-a-number": "Введите число",
+         "not-an-integer": "Введите целое число",
+         "not-a-string": "Введите строку",
+         "not-a-boolean": "Выберите значение",
+         "not-in-enum": "Выберите значение из списка",
+         "not-a-byte-array": "Введите массив чисел от 0 до 255 в десятичном или шестнадцатеричном формате (0-255 или 0x00-0xFF), разделенных запятыми",
+         "min-length": "Минимальное число символов: {{limit}}",
+         "max-length": "Максимальное число символов: {{limit}}",
+         "invalid-format": "Неверный формат",
+         "min": "Число должно быть больше или равно {{min}}",
+         "max": "Число должно быть меньше или равно {{max}}",
+         "minmax": "Число должно быть в диапазоне от {{min}} до {{max}}",
+         "required": "Задайте значение"
+      },
+      "labels": {
+         "select-params": "Добавьте или удалите параметры"
       }
    }
 }

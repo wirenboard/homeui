@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.150.0) stable; urgency=medium
+
+  * Add React based editor for wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 27 Oct 2025 10:31:07 +0500
+
 wb-mqtt-homeui (2.149.1) stable; urgency=medium
 
   * Fix user manipulation error display. Show response body if available.
