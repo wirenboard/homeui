@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Confirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { notificationsStore } from '@/stores/notifications';
@@ -18,6 +19,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     fetchData()
@@ -50,8 +52,11 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
 
   const handleUnlinkController = async (ev?: React.MouseEvent) => {
     if (ev) ev.preventDefault();
-    const confirmed = window.confirm(t('alice.binding.confirm-unlink'));
-    if (!confirmed) return;
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmUnlink = async () => {
+    setIsConfirmModalOpen(false);
     try {
       const url = `${window.location.origin}/integrations/alice/controller`;
       const resp = await fetch(url, { method: 'DELETE', credentials: 'same-origin' });
@@ -165,6 +170,17 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
             </ol>
           )
       )}
+
+      <Confirm
+        isOpened={isConfirmModalOpen}
+        heading={t('alice.binding.confirm-unlink')}
+        confirmCallback={confirmUnlink}
+        closeCallback={() => setIsConfirmModalOpen(false)}
+        variant="danger"
+        acceptLabel={t('alice.binding.confirm-unlink-button')}
+      >
+        {t('alice.binding.confirm-unlink-message')}
+      </Confirm>
     </PageLayout>
   );
 });

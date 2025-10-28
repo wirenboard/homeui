@@ -730,7 +730,9 @@
       },
       "binding":{
          "unlink-controller": "Отвязать контроллер",
-         "confirm-unlink": "Вы действительно хотите отвязать контроллер от аккаунта Яндекс?"
+         "confirm-unlink": "Отвязать контроллер?",
+         "confirm-unlink-message": "Вы действительно хотите отвязать контроллер от аккаунта Яндекс?",
+         "confirm-unlink-button":"Отвязать"
       }
    },
    "web-ui-settings": {
