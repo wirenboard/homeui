@@ -60,6 +60,7 @@ import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
 import serialPortProxyService from './services/serialPortProxy';
 import fwUpdateProxyService from './services/fwUpdateProxy';
+import daliProxyService from './services/daliProxy';
 
 import handleDataService from './services/handle-data';
 
@@ -164,6 +165,7 @@ module
   .factory('SerialProxy', serialProxyService)
   .factory('SerialPortProxy', serialPortProxyService)
   .factory('FwUpdateProxy', fwUpdateProxyService)
+  .factory('DaliProxy', daliProxyService)
 
   .service('handleData', handleDataService)
   .service('userAgentFactory', userAgentFactory)

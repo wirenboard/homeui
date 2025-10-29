@@ -758,5 +758,16 @@
       "labels": {
          "select-params": "Add or remove parameters"
       }
+   },
+   "dali": {
+      "title": "DALI devices",
+      "labels": {
+         "group": "Group #{{name}}"
+      },
+      "buttons": {
+         "save": "Save",
+         "rescan": "Rescan",
+         "return": "To devices list"
+      }
    }
 }

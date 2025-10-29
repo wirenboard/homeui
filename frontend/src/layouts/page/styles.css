@@ -14,6 +14,7 @@
     margin: 0 0 18px;
     border-bottom: 1px solid var(--border-color);
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .fullscreen .page-headerContainer {
@@ -25,7 +26,7 @@
     gap: 12px;
     align-items: center;
     flex-grow: 1;
-    width: 100%;
+    width: auto;
     min-width: 0;
     height: 30px;
 }
