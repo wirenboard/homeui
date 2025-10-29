@@ -16,4 +16,5 @@ export interface UserBody {
   login: string;
   password: string;
   type: UserRole;
+  autologin?: boolean;
 }
