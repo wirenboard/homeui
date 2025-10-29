@@ -8,12 +8,13 @@ import DownloadIcon from '@/assets/icons/download.svg';
 import { Button } from '@/components/button';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
-import { LogsStore, LogLevel, Log } from '@/stores/logs';
+import { authStore, UserRole } from '@/stores/auth';
+import { LogLevel, LogsStore, type Log } from '@/stores/logs';
 import { downloadFile } from '@/utils/download';
 import { LogsFilters } from './components/filters';
 import './styles.css';
 
-const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: boolean }) => {
+const LogsPage = observer(({ store }: { store: LogsStore }) => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState({
     levels: null,
@@ -104,7 +105,7 @@ const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: 
   return (
     <PageLayout
       title={t('logs.title')}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Operator)}
       errors={errors}
       actions={
         <Tooltip text={t('logs.buttons.save')} placement="bottom">

@@ -3,7 +3,7 @@ import LogsPage from '@/pages/logs';
 import { LogsStore } from '@/stores/logs';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function logsDirective(whenMqttReady, rolesFactory, LogsProxy) {
+export default function logsDirective(whenMqttReady, LogsProxy) {
   'ngInject';
 
   setReactLocale();
@@ -15,11 +15,10 @@ export default function logsDirective(whenMqttReady, rolesFactory, LogsProxy) {
       if (scope.root) {
         scope.root.unmount();
       }
-      const hasRights = rolesFactory.checkRights(rolesFactory.ROLE_TWO);
 
       scope.store = new LogsStore(whenMqttReady, LogsProxy);
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<LogsPage store={scope.store} hasRights={hasRights} />);
+      scope.root.render(<LogsPage store={scope.store} />);
 
       element.on('$destroy', () => {
         scope.root.unmount();
