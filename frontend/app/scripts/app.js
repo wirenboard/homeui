@@ -66,14 +66,14 @@ import handleDataService from './services/handle-data';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import NavigationCtrl from './controllers/navigationController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
 
 // homeui modules: directives
+import navigationDirective from '~/react-directives/navigation/navigation';
+import rulesConsoleDirective from '~/react-directives/rules-console/rules-console';
 import cellDirective from './directives/cell';
-import consoleDirective from './directives/console';
 import widgetDirective from './directives/widget';
 import transformRgbDirective from './directives/transformrgb';
 import alarmCellDirective from './directives/alarmcell';
@@ -95,7 +95,7 @@ import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
 import usersPageDirective from './react-directives/users/users';
-import loginPageDirective from './react-directives/login/login-page';
+import loginPageDirective from './react-directives/login/login';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -105,6 +105,8 @@ import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
 import { aliceStore } from '@/stores/alice';
+import { DashboardsStore } from '@/stores/dashboards';
+import { RulesStore } from '@/stores/rules';
 
 //-----------------------------------------------------------------------------
 /**
@@ -181,7 +183,6 @@ module
   .controller('MQTTCtrl', MQTTCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
-  .controller('NavigationCtrl', NavigationCtrl);
 
 module.directive('scriptForm', function (PageState) {
   'ngInject';
@@ -200,7 +201,6 @@ module.directive('scriptForm', function (PageState) {
 module
   .directive('cell', cellDirective)
   .value('scrollTimeoutMs', 100)
-  .directive('console', consoleDirective)
   .directive('widget', widgetDirective)
   .directive('transformRgb', transformRgbDirective)
   .provider('displayCellConfig', displayCellConfig)
@@ -266,6 +266,8 @@ module
   .directive('ngConfirm', confirmDirective)
   .directive('fullscreenToggle', fullscreenToggleDirective)
   .directive('expCheckWidget', expCheckMetaDirective)
+  .directive('navigation', navigationDirective)
+  .directive('rulesConsole', rulesConsoleDirective)
   .directive('usersPage', usersPageDirective)
   .directive('loginPage', loginPageDirective);
 
@@ -276,7 +278,6 @@ module
     function ($translateProvider, $translatePartialLoaderProvider) {
       [
         'app',
-        'console',
         'help',
         'mqtt',
         'system',
@@ -311,6 +312,15 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
     return Object.keys(collection);
   };
 
+  $rootScope.toggleConsole = function () {
+    $rootScope.consoleVisible = !$rootScope.consoleVisible;
+  };
+
+  $rootScope.consoleView = localStorage.getItem('rules-console-position') || 'bottom'
+  $rootScope.changeConsoleView = function (view) {
+    $rootScope.consoleView = view;
+  };
+
   $transitions.onStart({}, function (trans) {
     document.getElementById('overlay').classList.remove('overlay');
     $rootScope.stateIsLoading = true;
@@ -342,15 +352,6 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
       $rootScope.theme = localStorage.getItem('theme');
     };
   }
-
-  $rootScope.allowWbRulesDebug = () => {
-    return rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-  }
-
-  $rootScope.disableNavigation = () => {
-    return !rolesFactory.isAuthenticated();
-  }
-
 });
 
 //-----------------------------------------------------------------------------
@@ -375,6 +376,7 @@ const realApp = angular
       $window,
       mqttClient,
       ConfigEditorProxy,
+      EditorProxy,
       webuiConfigPath,
       errors,
       whenMqttReady,
@@ -407,8 +409,16 @@ const realApp = angular
         });
       });
 
+      $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
+      $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
+
+      $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {
+        document.title = name ? `${name} | ${__APP_NAME__}` : __APP_NAME__;
+      });
+
       //.........................................................................
       function configRequestMaker(
+        $rootScope,
         mqttClient,
         ConfigEditorProxy,
         webuiConfigPath,
@@ -430,12 +440,11 @@ const realApp = angular
           // Try to obtain WebUI configs
           whenMqttReady()
             .then(() => {
-              return ConfigEditorProxy.Load({ path: webuiConfigPath });
+              $rootScope.rulesStore.subscribeRulesLogs();
+              $rootScope.rulesStore.subscribeRuleDebugging();
+              return $rootScope.dashboardsStore.loadData(true);
             })
-            .then(result => {
-              console.log('LOAD CONF: %o', result.content);
-              uiConfig.ready(result.content);
-            })
+            .then(result => uiConfig.ready(result))
             .catch(errors.catch('app.errors.load'));
 
           return true;
@@ -453,6 +462,7 @@ const realApp = angular
       }
 
       $rootScope.requestConfig = configRequestMaker(
+        $rootScope,
         mqttClient,
         ConfigEditorProxy,
         webuiConfigPath,
@@ -515,28 +525,11 @@ const realApp = angular
         true
       );
 
-      // check if the integrations are available to display the menu item
-      $rootScope.integrations = [];
       const { checkIsAvailable } = aliceStore;
-      function checkAvailableIntegrations(lang = language) {
-        $rootScope.integrations = [];
-        checkIsAvailable()
-          .then(() => {
-            // it was decided to show Alice only for the Russian localization
-            if (lang === 'ru') {
-              $rootScope.integrations.push('alice');
-            }
-          })
-          .catch(() => {});
-      }
-      checkAvailableIntegrations();
-
-      $rootScope.$on('$translateChangeSuccess', function(event, data) {
-        checkAvailableIntegrations(data.language);
-      });
 
       whenMqttReady()
         .then(() => {
+          checkIsAvailable();
           if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
             return DeviceManagerProxy.Stop();
           }

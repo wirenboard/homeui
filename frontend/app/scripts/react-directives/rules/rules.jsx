@@ -1,10 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import RulesPage from '@/pages/rules/index';
-import { RulesStore } from '@/stores/rules';
 import { setReactLocale } from '~/react-directives/locale';
 
-// eslint-disable-next-line typescript/naming-convention
-export default function rulesDirective(whenMqttReady, EditorProxy, rolesFactory) {
+export default function rulesDirective($rootScope, rolesFactory) {
   'ngInject';
 
   setReactLocale();
@@ -17,9 +15,8 @@ export default function rulesDirective(whenMqttReady, EditorProxy, rolesFactory)
     },
     link: function (scope, element) {
       const hasRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-      scope.store = new RulesStore(whenMqttReady, EditorProxy);
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<RulesPage rulesStore={scope.store} hasRights={hasRights} />);
+      scope.root.render(<RulesPage rulesStore={$rootScope.rulesStore} hasRights={hasRights} />);
 
       element.on('$destroy', ()=> {
         scope.root.unmount();

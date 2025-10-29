@@ -14,11 +14,19 @@ import {
   useFloating,
   useFocus
 } from '@floating-ui/react';
-import { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { TooltipProps } from './types';
+import classNames from 'classnames';
+import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
+import type { TooltipProps } from './types';
 import './styles.css';
 
-export const Tooltip = ({ children, text, trigger = 'hover', placement = 'top' }: PropsWithChildren<TooltipProps>) => {
+export const Tooltip = ({
+  children,
+  className,
+  text,
+  closeOnClick = false,
+  trigger = 'hover',
+  placement = 'top',
+}: PropsWithChildren<TooltipProps>) => {
   const [isOpen, setIsOpen] = useState(false);
   const arrowRef = useRef(null);
 
@@ -44,7 +52,7 @@ export const Tooltip = ({ children, text, trigger = 'hover', placement = 'top' }
   const hover = useHover(context, { move: false, enabled: trigger === 'hover', delay: 400 });
   const focus = useFocus(context, { enabled: trigger === 'hover' });
   const click = useClick(context, { enabled: trigger === 'click' });
-  const dismiss = useDismiss(context);
+  const dismiss = useDismiss(context, { referencePress: closeOnClick });
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     role,
@@ -66,9 +74,9 @@ export const Tooltip = ({ children, text, trigger = 'hover', placement = 'top' }
     <>
       <div className="wb-tooltip-container" ref={refs.setReference} {...getReferenceProps()}>{children}</div>
       <FloatingPortal>
-        {isOpen && (
+        {isOpen && !!text && (
           <div
-            className="wb-tooltip"
+            className={classNames('wb-tooltip', className)}
             ref={refs.setFloating}
             style={floatingStyles}
             {...getFloatingProps()}

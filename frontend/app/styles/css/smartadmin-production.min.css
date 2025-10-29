@@ -797,37 +797,6 @@ h6 {
   border: 1px solid rgba(0, 0, 0, .4)
 }
 
-nav ul li a {
-  line-height: normal;
-  font-size: var(--font-size-medium);
-  padding: 10px 10px 10px 11px;
-  color: #c0bbb7;
-  display: block;
-  font-weight: 400;
-  text-decoration: none !important;
-  position: relative
-}
-
-nav ul ul {
-  margin: 0;
-  display: none;
-  background: var(--bar-inside-color);
-  padding: 7px 0
-}
-
-nav ul li.active>a:before {
-  color: #eee;
-  content: "\f0d9";
-  display: block;
-  font-family: FontAwesome;
-  font-size: 20px;
-  height: 27px;
-  line-height: normal;
-  position: absolute;
-  right: -21px;
-  width: 27px;
-}
-
 .panel-group .panel {
   border-radius: 0;
   -webkit-border-radius: 0;

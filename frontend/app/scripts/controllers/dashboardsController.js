@@ -2,4 +2,4 @@ import dashboardListDirective from '~/react-directives/dashboard-list/dashboardL
 
 export default angular
   .module('homeuiApp.dashboard', [])
-  .directive('dashboardsPage', ['ConfigEditorProxy', 'uiConfig', 'rolesFactory', dashboardListDirective]);
+  .directive('dashboardsPage', ['$rootScope', 'rolesFactory', dashboardListDirective]);

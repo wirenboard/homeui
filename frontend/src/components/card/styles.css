@@ -47,6 +47,10 @@
     white-space: nowrap;
 }
 
+.card-titleWithError {
+    color: var(--danger-color);
+}
+
 .card-actions {
     display: flex;
     gap: 12px;
@@ -62,7 +66,6 @@
     border: 0;
     padding: 0;
     opacity: 0;
-    color: var(--card-header-text);
     transition: opacity ease 150ms, text-shadow ease 150ms;
     border-radius: 4px;
     width: 16px;
@@ -78,11 +81,10 @@
 .card:focus-within .card-action,
 .card-action:focus {
     opacity: 1;
-    color: var(--card-header-text);
 }
 
-.card-action:hover,
-.card-action:focus {
+button:not(:disabled).card-action:hover,
+button:not(:disabled).card-action:focus {
     box-shadow: var(--input-active-shadow);
     transition: var(--input-active-shadow-transition);
 }
@@ -110,8 +112,18 @@
     color: var(--card-header-text);
 }
 
-.card-primary  .card-headerContainer {
+.card-primary .card-headerContainer {
     background-color: var(--card-header-background);
+}
+
+.card-primary .card-action {
+    color: var(--card-header-text);
+}
+
+.card-primary .card:hover .card-action,
+.card-primary .card:focus-within .card-action,
+.card-primary .card-action:focus {
+    color: var(--card-header-text);
 }
 
 .card-secondary {
@@ -125,4 +137,8 @@
 
 .card-secondary .card-headerContainer {
     background-color: var(--border-color);
+}
+
+button:disabled.card-action svg {
+    color: var(--light-gray-color);
 }

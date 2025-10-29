@@ -264,13 +264,14 @@ export const colorSceneOptions: Option<string>[] = [
 // Range units on this moment hardcoded
 // NOTE: any units have only one selection,
 //       only temperature have alternative - kelvin, but this is not useful
+//       and this is reason why this select not implemented in UI
 export const rangeUnitByInstance: Record<string, string> = {
   brightness: 'unit.percent',
+  channel: '', // Not have unit instance
   humidity: 'unit.percent',
   open: 'unit.percent',
-  volume: 'unit.percent',
   temperature: 'unit.temperature.celsius',
-  channel: 'unit.channel',
+  volume: 'unit.percent',
 };
 
 export const unitLabels: Record<string, string> = {

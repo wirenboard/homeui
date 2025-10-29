@@ -7,13 +7,16 @@ type BaseInputProps = {
   type?: 'text' | 'number' | 'password';
   size?: 'default' | 'small' | 'large';
   value: string | number;
+  name?: string;
   className?: string;
   min?: number;
   max?: number;
   step?: number;
   autoFocus?: boolean;
   isDisabled?: boolean;
+  required?: boolean;
   placeholder?: string;
+  autoComplete?: string;
   ariaLabel?: string;
   ariaDescribedby?: string;
   ariaInvalid?: boolean;

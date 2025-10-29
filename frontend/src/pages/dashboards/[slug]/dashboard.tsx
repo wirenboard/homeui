@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditIcon from '@/assets/icons/edit.svg';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
@@ -10,6 +10,7 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Cell } from '@/components/cell';
+import { ColumnsWrapper } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
@@ -20,51 +21,15 @@ import { WidgetEdit } from './components/widget-edit';
 import type { DashboardPageProps } from './types';
 import './styles.css';
 
-const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }: DashboardPageProps) => {
+const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }: DashboardPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
-  const { dashboards, widgets, loadData, isLoading, setLoading } = dashboardStore;
-  const { page: dashboardId, params } = useParseHash();
+  const { dashboards, widgets, isLoading } = dashboardsStore;
+  const { id: dashboardId, params } = useParseHash();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
-  const [errors, setErrors] = useState([]);
-
-  useEffect(() => {
-    let interval = null;
-    let attempt = 0;
-
-    // Sometimes the request finishes before the MQTT connection is established.
-    // In that case we retry every 3 seconds until success.
-    // The error message is displayed starting from the second attempt.
-    const fetchData = () => {
-      attempt++;
-      loadData()
-        .then(() => {
-          if (interval) {
-            clearInterval(interval);
-            interval = null;
-          }
-          setErrors([]);
-        })
-        .catch((error: any) => {
-          if (attempt > 1 && error.data === 'MqttConnectionError') {
-            setLoading(false);
-            setErrors([{ variant: 'danger', text: t('dashboard.errors.mqtt-connection') }]);
-          }
-          if (!interval && error.data === 'MqttConnectionError') {
-            interval = setInterval(fetchData, 3000);
-          }
-        });
-    };
-
-    fetchData();
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [dashboardId]);
 
   const actions = hasEditRights ? [
     {
@@ -124,7 +89,6 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
         )}
         isHideHeader={!!params.has('hmi')}
         isLoading={isLoading}
-        errors={errors}
         hasRights
       >
         {dashboards.get(dashboardId)?.widgets.length ? (
@@ -133,36 +97,38 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
               'dashboard-fullScreen': params.has('hmi'),
             })}
           >
-            {dashboards.get(dashboardId).widgets.map((widgetId) => widgets.get(widgetId) ? (
-              <Card
-                id={widgetId}
-                heading={widgets.get(widgetId)?.name}
-                key={widgetId}
-                actions={actions}
-                isBodyVisible
-              >
-                {widgets.get(widgetId).cells.map((cell, i) => (
-                  <Fragment key={cell.id || i}>
-                    {cells.has(cell.id) ? (
-                      <Cell
-                        cell={cells.get(cell.id)}
-                        name={cell.name}
-                        isCompact={widgets.get(widgetId).compact}
-                        extra={cell.extra}
-                      />
-                    ) : cell.id?.startsWith('separator') ? (
-                      <div className="dashboard-separator">
-                        {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
-                      </div>
-                    )
-                      : cell.name || 'nosuchcell'
-                    }
-                  </Fragment>
-                ))}
-              </Card>
-            ) : null)}
+            <ColumnsWrapper baseColumnWidth={376}>
+              {dashboards.get(dashboardId).widgets.map((widgetId) => widgets.get(widgetId) ? (
+                <Card
+                  id={widgetId}
+                  heading={widgets.get(widgetId)?.name}
+                  key={widgetId}
+                  actions={actions}
+                  isBodyVisible
+                >
+                  {widgets.get(widgetId).cells.map((cell, i) => (
+                    <Fragment key={cell.id || i}>
+                      {cells.has(cell.id) ? (
+                        <Cell
+                          cell={cells.get(cell.id)}
+                          name={cell.name}
+                          isCompact={widgets.get(widgetId).compact}
+                          extra={cell.extra}
+                        />
+                      ) : cell.type === 'separator' ? (
+                        <div className="dashboard-separator">
+                          {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
+                        </div>
+                      )
+                        : cell.name || 'nosuchcell'
+                      }
+                    </Fragment>
+                  ))}
+                </Card>
+              ) : null)}
+            </ColumnsWrapper>
           </div>
-        ) : !errors.length && (
+        ) : (
           <Alert variant="info" style={{ width: '100%' }}>
             {t('dashboard.labels.no-widgets')}
           </Alert>
@@ -180,7 +146,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
         {isAddWidgetModalOpened && (
           <WidgetAdd
             widgets={widgets}
-            dashboardStore={dashboardStore}
+            dashboardsStore={dashboardsStore}
             dashboard={dashboards.get(dashboardId)}
             cells={cells}
             isOpened={isAddWidgetModalOpened}
@@ -196,7 +162,7 @@ const DashboardPage = observer(({ dashboardStore, devicesStore, hasEditRights }:
             variant="danger"
             closeCallback={() => setRemovedWidgetId(null)}
             confirmCallback={() => {
-              dashboardStore.removeWidgetFromDashboard(dashboardId, removedWidgetId);
+              dashboardsStore.removeWidgetFromDashboard(dashboardId, removedWidgetId);
               setRemovedWidgetId(null);
             }}
           >

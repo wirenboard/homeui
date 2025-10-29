@@ -5,6 +5,7 @@ export interface CardAction {
   action?: (_args: unknown | unknown[]) => void;
   url?: (_id?: string) => string;
   icon: FC<SVGProps<SVGSVGElement>>;
+  disabled?: boolean;
 }
 
 export interface CardProps {
@@ -15,4 +16,5 @@ export interface CardProps {
   toggleBody?: () => void;
   isBodyVisible?: boolean;
   variant?: 'primary' | 'secondary';
+  withError?: boolean;
 }

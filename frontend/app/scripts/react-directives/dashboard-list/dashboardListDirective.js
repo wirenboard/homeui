@@ -1,13 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import DashboardListPage from '@/pages/dashboards/index';
-import { DashboardsStore } from '@/stores/dashboards';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function dashboardListDirective(
-  ConfigEditorProxy,
-  uiConfig,
-  rolesFactory
-) {
+export default function dashboardListDirective($rootScope, rolesFactory) {
   'ngInject';
   setReactLocale();
 
@@ -20,11 +15,10 @@ export default function dashboardListDirective(
       }
 
       const hasEditRights = rolesFactory.current.role !== rolesFactory.ROLE_ONE;
-      scope.dashboardStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
         <DashboardListPage
-          dashboardStore={scope.dashboardStore}
+          dashboardsStore={$rootScope.dashboardsStore}
           hasEditRights={hasEditRights}
         />
       );

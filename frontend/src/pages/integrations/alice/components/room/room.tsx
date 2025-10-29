@@ -52,7 +52,8 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
     if (id === 'all') {
       return formatRoomDevices(Array.from(devices.keys()));
     } else if (id) {
-      return formatRoomDevices(rooms.get(id)?.devices);
+      // After create new room - can return undefined, fix it by []
+      return formatRoomDevices(rooms.get(id)?.devices || []);
     } else {
       return [];
     }
@@ -77,7 +78,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
         });
       }
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.message });
+      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
     }
   }, [id, roomName, deviceList]);
 
@@ -92,6 +93,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
 
   const onConfirmDelete = async () => {
     await deleteRoom(id);
+    setIsDeleteRoom(false);
     await fetchData();
     notificationsStore.showNotification({
       variant: 'success',
@@ -109,7 +111,6 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
               <Input
                 value={roomName}
                 placeholder={t('alice.labels.room-name')}
-                size="large"
                 autoFocus
                 isFullWidth
                 onChange={(val: string) => setRoomName(val)}
@@ -144,7 +145,6 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
                 }}
               />
               <Button
-                size="large"
                 type="submit"
                 disabled={!roomName}
                 label={t('alice.buttons.save')}

@@ -7,7 +7,7 @@ import MqttSettings from './components/mqtt-settings';
 import type { WebUiSettingsPageProps } from './types';
 import './styles.css';
 
-const WebUiSettingsPage = ({ onChangeLanguage, dashboardStore, userType }: WebUiSettingsPageProps) => {
+const WebUiSettingsPage = ({ onChangeLanguage, dashboardsStore, userType }: WebUiSettingsPageProps) => {
   const { t } = useTranslation();
   const [errors, setErrors] = useState([]);
 
@@ -23,7 +23,7 @@ const WebUiSettingsPage = ({ onChangeLanguage, dashboardStore, userType }: WebUi
     <PageLayout title={t('web-ui-settings.title')} hasRights={true} errors={errors}>
       <div className="web-ui-settings-pageContent">
         {userType !== 'user' && <MqttSettings />}
-        <CommonSettings dashboardStore={dashboardStore} onChangeLanguage={onChangeLanguage} />
+        <CommonSettings dashboardsStore={dashboardsStore} onChangeLanguage={onChangeLanguage} />
         {userType === 'admin' && <HttpsSettings onError={httpsErrorHandler} />}
       </div>
     </PageLayout>

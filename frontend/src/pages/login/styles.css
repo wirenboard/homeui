@@ -1,0 +1,118 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: var(--font-size-medium);
+}
+
+.login-logo {
+    width: 142px;
+    margin-top: -60px;
+
+    @media(max-height: 600px ) {
+        margin-top: 0;
+    }
+}
+
+.login-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 16px;
+}
+
+.login-wrapper {
+    margin-top: 24px;
+    padding: 0;
+    max-width: 350px;
+    width: 100%;
+    border: 1px solid var(--light-gray-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.login-fields {
+    padding: 24px;
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.login-actions {
+    padding: 16px 24px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    background: var(--border-color);
+}
+
+.login-button {
+    display: flex;
+    align-items: center;
+    background: var(--brand-color);
+    border-color: var(--brand-color);
+}
+
+.login-button:hover,
+.login-button:focus {
+    background: var(--brand-color-hover) !important;
+    border-color: var(--brand-color-hover) !important;
+}
+
+.login-loader {
+    width: 12px;
+    height: 12px;
+    animation: spin 1s linear infinite;
+}
+
+.login-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 350px;
+    box-sizing: border-box;
+    padding: 0 12px 0 24px;
+    margin-top: 12px;
+}
+
+.login-links a {
+    font-size: var(--font-size-medium);
+    color: #00b7f4;
+}
+
+.login-links a:hover {
+    text-decoration: underline;
+}
+
+.login-languageWrapper {
+    display: flex;
+}
+
+.login-languageIcon {
+    width: 14px;
+    color: #00b7f4;
+}
+
+.login-language .dropdown__control {
+    border: 0;
+    box-shadow: none;
+    color: #00b7f4;
+    cursor: pointer;
+    gap: 0;
+    background: transparent;
+}
+
+.login-language .dropdown__indicator  {
+    display: none;
+}

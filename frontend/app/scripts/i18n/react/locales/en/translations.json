@@ -8,7 +8,11 @@
          "password-strength-4": "Strong password"
       },
       "buttons": {
-         "apply": "Apply"
+         "apply": "Apply",
+         "add": "Add",
+         "remove": "Remove",
+         "move-up": "Move up",
+         "move-down": "Move down"
       }
    },
    "dashboards": {
@@ -36,6 +40,42 @@
       },
       "errors": {
          "duplicate": "Duplicate dashboard ids are not allowed"
+      }
+   },
+   "navigation": {
+      "labels": {
+         "toggle": "Toggle navigation",
+         "home": "Home",
+         "dashboards": "Dashboards",
+         "list": "List",
+         "devices": "Devices",
+         "integrations": "Integrations",
+         "alice": "Yandex Alice",
+         "widgets": "Widgets",
+         "history": "History",
+         "rules": "Rules",
+         "rule-editor": "Rule Editor",
+         "scenario": "Scenarios",
+         "settings": "Settings",
+         "help": "Help",
+         "configs": "Configs",
+         "ui": "Web UI",
+         "system": "System",
+         "channels": "MQTT Channels",
+         "access": "Users",
+         "logs": "Logs",
+         "serial-metrics": "wb-mqtt-serial metrics",
+         "scan": "Scan",
+         "device-manager": "Device manager"
+      },
+      "buttons": {
+         "logout": "Logout",
+         "switch-user": "Switch user",
+         "debug": "Debug"
+      },
+      "connection": {
+         "active": "Connected",
+         "inactive": "Disconnected"
       }
    },
    "scan": {
@@ -320,8 +360,12 @@
          "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "updating-component": "Updating component firmware {{model}}:{{maybe_current_firmware}}{{available}}",
          "component_current_version": ", current {{current_firmware}}.",
-         "component_update_current_version": " {{current}} на "
-
+         "component_update_current_version": " {{current}} на ",
+         "channel": "Channel",
+         "mode": "Mode",
+         "period": "Period (ms)",
+         "unknown": "Unknown",
+         "custom-channels": "Custom channels"
       },
       "buttons": {
          "save": "Save config",
@@ -336,7 +380,8 @@
          "to-port-list": "To ports and devices list",
          "resolve-duplicate-mqtt-topic": "Set unique id",
          "search-disconnected-device": "Search for the device",
-         "update": "Update"
+         "update": "Update",
+         "parameters": "Parameters"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -527,6 +572,18 @@
          "mqtt-connection": "MQTT client is not connected"
       }
    },
+   "rules-console": {
+      "labels": {
+         "filter-all": "All levels"
+      },
+      "buttons": {
+         "clear": "Clear console",
+         "debug": "Rules debug",
+         "dock-bottom": "Dock to bottom",
+         "dock-right": "Dock to right",
+         "close": "Close"
+      }
+   },
    "logs":{
       "title": "Logs",
       "labels": {
@@ -592,16 +649,18 @@
       }
    },
    "login": {
-      "title": "Login",
+      "title": "Controller interface",
       "errors": {
-         "failed": "Login failed"
+         "failed": "Incorrect credentials"
       },
       "buttons": {
-         "login": "Log in"
+         "login": "Sign in",
+         "auto-login": "Sign in without password"
       },
       "labels": {
          "login": "Login",
-         "password": "Password"
+         "password": "Password",
+         "documentation": "Documentation"
       }
    },
    "alice": {
@@ -636,9 +695,10 @@
          "max": "Max",
          "no-units": "Unitless",
          "precision": "Precision",
-         "device-capabilities": "Capabilities and properties",
-         "device-capabilities-description": "The skills of a device describe its capabilities. A device is described by at least one skill if it has no properties.",
-         "device-properties-description": "The properties of a device are usually used to control the environment. A device may not have any properties."
+         "device-capabilities": "Capabilities",
+         "device-capabilities-description": "A list of what the device can do",
+         "device-properties": "Properties",
+         "device-properties-description": "A list of the device's characteristics"
       },
       "buttons": {
          "add-room": "Add room",
@@ -692,11 +752,37 @@
          "default-dashboard": "Default dashboard",
          "https-settings": "HTTPS settings",
          "enable-https": "Auto configuration",
-         "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access."
+         "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access.",
+         "name": "Controller name",
+         "name-description": "Shown in the menu",
+         "getting-https-cert-status": "Getting HTTPS certificate status...",
+         "https-cert-valid": "HTTPS certificate is valid",
+         "https-cert-requesting": "Requesting HTTPS certificate",
+         "https-cert-unavailable": "Failed to obtain HTTPS certificate. Please check that the controller is connected to the Internet"
       },
       "errors": {
          "setup-https": "Failed to setting up HTTPS: {{error}}",
          "get-https-status": "Failed to get HTTPS status: {{error}}"
+      }
+   },
+   "json-editor": {
+      "errors": {
+         "not-a-number": "Value must be a number",
+         "not-an-integer": "Value must be an integer",
+         "not-a-string": "Value must be a string",
+         "not-a-boolean": "Set value",
+         "not-a-byte-array": "Enter an array of numbers from 0 to 255 in decimal or hexadecimal format (0-255 or 0x00-0xFF) separated by commas",
+         "not-in-enum": "Select one of the available options",
+         "min-length": "Value must be at least {{limit}} characters long",
+         "max-length": "Value must be no more than {{limit}} characters long",
+         "invalid-format": "Invalid format",
+         "min": "Value must be greater than or equal to {{min}}",
+         "max": "Value must be less than or equal to {{max}}",
+         "minmax": "Value must be between {{min}} and {{max}}",
+         "required": "This field is required"
+      },
+      "labels": {
+         "select-params": "Add or remove parameters"
       }
    }
 }

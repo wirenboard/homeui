@@ -2,7 +2,7 @@ import { request } from '@/utils/request';
 
 const WIRENBOARD_DNS_POSTFIX = 'ip.wirenboard.com';
 
-enum CertificateStatus {
+export enum CertificateStatus {
   VALID = 'valid',
   REQUESTING = 'requesting',
   UNAVAILABLE = 'unavailable',
@@ -54,10 +54,10 @@ function getIpForHttpsDomainName(hostname: string, deviceIp: string): string | n
 }
 
 const requestHttpsCert = async () =>
-  request<undefined>('/api/https/request_cert', { method: 'POST', emptyResponse: true });
+  request.post<undefined>('/api/https/request_cert');
 
 export const getDeviceInfo = async () =>
-  request<DeviceInfo>('/device/info');
+  request.get<DeviceInfo>('/device/info').then(({ data }) => data);
 
 async function waitCertificate(): Promise<string> {
   const MAX_WAIT_TIME = 120000; // 2 minutes
@@ -66,8 +66,8 @@ async function waitCertificate(): Promise<string> {
   while (Date.now() - startTime < MAX_WAIT_TIME) {
     await new Promise((resolve) => setTimeout(resolve, CHECK_INTERVAL));
     try {
-      const deviceInfo = await getDeviceInfo();
-      const certStatus = deviceInfo.https_cert || CertificateStatus.UNAVAILABLE;
+      const { https_cert } = await getDeviceInfo();
+      const certStatus = https_cert || CertificateStatus.UNAVAILABLE;
       if (certStatus !== CertificateStatus.REQUESTING) {
         return certStatus;
       }
@@ -97,11 +97,11 @@ async function hasInvalidCertificate(certStatus: string): Promise<boolean> {
 }
 
 export const isHttpsEnabled = async (): Promise<boolean> => {
-  return (await request<HttpsStatus>('/api/https')).enabled;
+  return request.get<HttpsStatus>('/api/https').then(({ data }) => data.enabled);
 };
 
 export const setupHttps = async (enable: boolean) =>
-  request<undefined>('/api/https', { method: 'PATCH', body: { enabled: enable }, emptyResponse: true });
+  request.patch<undefined>('/api/https', { enabled: enable });
 
 export function urlIsSwitchableToHttps(): boolean {
   const host = window.location.hostname;
@@ -171,3 +171,8 @@ export async function switchToHttps() {
   window.location.href = `https://${window.location.hostname}${originalPathname}${originalHash}`;
   return true;
 }
+
+export const getHttpsCertificateStatus = async (): Promise<CertificateStatus> => {
+  const { https_cert } = await getDeviceInfo();
+  return https_cert as CertificateStatus;
+};

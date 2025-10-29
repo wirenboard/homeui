@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { generateNextId } from '@/utils/id';
-import { Rule, RuleError, RuleFetchData, RuleListItem, RuleSaveData } from './types';
+import type { Rule, RuleError, RuleFetchData, RuleListItem, RuleLog, RuleSaveData } from './types';
 
 export default class RulesStore {
   public rule?: Rule = {
@@ -8,12 +8,16 @@ export default class RulesStore {
     initName: '',
   };
   public rules: RuleListItem[] = [];
+  public isRuleDebugEnabled = false;
+  public logs: RuleLog[] = [];
 
+  #mqttClient: any;
   #editorProxy: any;
   #whenMqttReady: () => Promise<void>;
 
   // eslint-disable-next-line typescript/naming-convention
-  constructor(whenMqttReady: () => Promise<void>, EditorProxy: any) {
+  constructor(mqttClient, whenMqttReady: () => Promise<void>, EditorProxy: any) {
+    this.#mqttClient = mqttClient;
     this.#editorProxy = EditorProxy;
     this.#whenMqttReady = whenMqttReady;
 
@@ -138,5 +142,41 @@ export default class RulesStore {
     };
 
     this.rule.error.errorLine = error?.traceback?.length ? error?.traceback[0].line : null;
+  }
+
+  subscribeRuleDebugging() {
+    this.#mqttClient.addStickySubscription('/devices/wbrules/controls/Rule debugging', ({ payload }) => {
+      runInAction(() => {
+        this.isRuleDebugEnabled = payload === '1';
+      });
+    });
+  }
+
+  toggleRuleDebugging() {
+    runInAction(() => {
+      const value = !this.isRuleDebugEnabled;
+      this.#mqttClient.send('/devices/wbrules/controls/Rule debugging/on', String(Number(value)), false, 1);
+      this.isRuleDebugEnabled = value;
+    });
+  }
+
+  subscribeRulesLogs() {
+    const MAX_MESSAGES = 500;
+    this.#mqttClient.addStickySubscription('/wbrules/log/+', ({ topic, payload }) => {
+      runInAction(() => {
+        if (this.logs.length === MAX_MESSAGES) {
+          this.logs.shift();
+        }
+        this.logs.push({ level: topic.replace(/^.*\//, ''), payload: payload.trim(), time: new Date().getTime() });
+      });
+    });
+  }
+
+  unSubscribeRulesLogs() {
+    this.#mqttClient.unsubscribe('/wbrules/log/+');
+  }
+
+  clearLogs() {
+    this.logs = [];
   }
 }

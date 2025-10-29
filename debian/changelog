@@ -1,8 +1,146 @@
-wb-mqtt-homeui (2.141.0) stable; urgency=medium
+wb-mqtt-homeui (2.151.0) stable; urgency=medium
 
   * Upgrade logs page
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 04 Oct 2025 13:06:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 29 Oct 2025 12:03:00 +0300
+
+wb-mqtt-homeui (2.150.0) stable; urgency=medium
+
+  * Add React based editor for wb-mqtt-serial config
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 27 Oct 2025 10:31:07 +0500
+
+wb-mqtt-homeui (2.149.1) stable; urgency=medium
+
+  * Fix user manipulation error display. Show response body if available.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Oct 2025 09:39:46 +0500
+
+wb-mqtt-homeui (2.149.0) stable; urgency=medium
+
+  * Add HTTPS certificate status display in Web UI settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Oct 2025 09:22:42 +0500
+
+wb-mqtt-homeui (2.148.0) stable; urgency=medium
+
+  * Add controller name to page title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 22 Oct 2025 15:37:00 +0300
+
+wb-mqtt-homeui (2.147.1) stable; urgency=medium
+
+  * Fix Alice error handling
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 22 Oct 2025 14:33:11 +0300
+
+wb-mqtt-homeui (2.147.0) stable; urgency=medium
+
+  * Add login page title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Oct 2025 14:51:02 +0300
+
+wb-mqtt-homeui (2.146.1) stable; urgency=medium
+
+  * Fix rules logs subscribe logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Oct 2025 14:50:40 +0300
+
+wb-mqtt-homeui (2.146.0) stable; urgency=medium
+
+  * Rules console rework
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 21 Oct 2025 13:11:53 +0300
+
+wb-mqtt-homeui (2.145.4) stable; urgency=medium
+
+  * Disable min/max fields on range in Alice configurator
+  * Fix frontend button sizes in Alice configurator and headers
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Fri, 17 Oct 2025 21:00:00 +0300
+
+wb-mqtt-homeui (2.145.3) stable; urgency=medium
+
+  * Fix safari navigation layout
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Oct 2025 17:33:12 +0300
+
+wb-mqtt-homeui (2.145.2) stable; urgency=medium
+
+  * Fix autologin label message
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Oct 2025 14:54:53 +0500
+
+wb-mqtt-homeui (2.145.1) stable; urgency=medium
+
+  * Fix nav colors for old browsers
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 16 Oct 2025 11:45:00 +0300
+
+wb-mqtt-homeui (2.145.0) stable; urgency=medium
+
+  * Update login page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 15:26:00 +0300
+
+wb-mqtt-homeui (2.144.1) stable; urgency=medium
+
+  * Fix navigation without users
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 14:42:00 +0300
+
+wb-mqtt-homeui (2.144.0) stable; urgency=medium
+
+  * Update navigation component: add posibility to toggle
+  * Add controller name to nav menu
+  * Move debug button to nav menu
+  * Move online status to nav menu
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 13:45:00 +0300
+
+wb-mqtt-homeui (2.143.1) stable; urgency=medium
+
+  * Add separator to widget preview
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Oct 2025 11:06:00 +0300
+
+wb-mqtt-homeui (2.143.0) stable; urgency=medium
+
+  * Add auth store and move all logic there
+  * Change request util logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Oct 2025 13:18:00 +0300
+
+wb-mqtt-homeui (2.142.2) stable; urgency=medium
+
+  * Save HTTPS settings during upgrade with fit-image
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 13 Oct 2025 13:28:13 +0500
+
+wb-mqtt-homeui (2.142.1) stable; urgency=medium
+
+  * Fixing column display in panels for older devices
+  * Separate column split logic from dashboards to component
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 06 Oct 2025 11:22:00 +0300
+
+wb-mqtt-homeui (2.142.0) stable; urgency=medium
+
+  * Add rules autocomplete
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Oct 2025 12:15:00 +0300
+
+wb-mqtt-homeui (2.141.1) stable; urgency=medium
+
+  * Use the same cookie for HTTP and HTTPS
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 03 Oct 2025 11:27:08 +0500
+
+wb-mqtt-homeui (2.141.0) stable; urgency=medium
+
+  * Change switch's off color
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 04 Oct 2025 13:05:00 +0300
 
 wb-mqtt-homeui (2.140.1) stable; urgency=medium
 
