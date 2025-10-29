@@ -14,6 +14,7 @@ import { ColumnsWrapper } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import { useToggleFullscreen } from '@/utils/fullScreen';
 import { useParseHash } from '@/utils/url';
 import { WidgetAdd } from './components/widget-add';
@@ -21,10 +22,11 @@ import { WidgetEdit } from './components/widget-edit';
 import type { DashboardPageProps } from './types';
 import './styles.css';
 
-const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }: DashboardPageProps) => {
+const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
   const { dashboards, widgets, isLoading } = dashboardsStore;
+  const hasEditRights = authStore.hasRights(UserRole.Operator);
   const { id: dashboardId, params } = useParseHash();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);

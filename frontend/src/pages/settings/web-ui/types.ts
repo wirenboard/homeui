@@ -3,7 +3,6 @@ import { DashboardsStore } from '@/stores/dashboards';
 export interface WebUiSettingsPageProps {
   onChangeLanguage: (lang: string) => void;
   dashboardsStore: DashboardsStore;
-  userType: 'admin' | 'operator' | 'user';
 }
 
 export interface CommonSettingsProps {

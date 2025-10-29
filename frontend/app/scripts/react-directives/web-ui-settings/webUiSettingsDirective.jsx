@@ -2,17 +2,13 @@ import ReactDOM from 'react-dom/client';
 import WebUiSettingsPage from '@/pages/settings/web-ui';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function webUiSettingsDirective(
-  $rootScope,
-  rolesFactory,
-  $translate,
-  tmhDynamicLocale
-) {
+export default function webUiSettingsDirective($rootScope, $translate, tmhDynamicLocale) {
+  'ngInject';
+
   setReactLocale();
 
   return {
     restrict: 'E',
-    scope: {},
     link(scope, element) {
       if (scope.root) {
         scope.root.unmount();
@@ -28,7 +24,6 @@ export default function webUiSettingsDirective(
       scope.root.render((
         <WebUiSettingsPage
           dashboardsStore={$rootScope.dashboardsStore}
-          userType={rolesFactory.current.roles.type}
           onChangeLanguage={onChangeLang}
         />
       ));

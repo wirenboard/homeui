@@ -12,10 +12,11 @@ import { ColumnsWrapper } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import { DeviceStore } from '@/stores/device';
 import './styles.css';
 
-const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRights: boolean }) => {
+const DevicesPage = observer(({ store }: { store: DeviceStore }) => {
   const { t } = useTranslation();
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
 
@@ -32,7 +33,7 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
   return (
     <PageLayout
       title={t('devices.title')}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Operator)}
       actions={
         <Tooltip
           text={store.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}

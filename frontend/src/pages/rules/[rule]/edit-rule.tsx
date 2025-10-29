@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
 import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import { notificationsStore } from '@/stores/notifications';
 import { getExtensions } from '@/stores/rules/autocomplete';
 import { getPathname } from '@/utils/url';
 import type { RulePageProps } from './types';
 import './styles.css';
 
-const EditRulePage = observer(({ rulesStore, devicesStore, hasRights }: RulePageProps) => {
+const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
   const { t } = useTranslation();
   const { rule } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
@@ -80,7 +81,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore, hasRights }: RulePage
   return (
     <PageLayout
       title={rule.name}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={isLoading}
       isEditingTitle={isEditingTitle}
       editingTitlePlaceholder={t('rules.labels.title-placeholder')}

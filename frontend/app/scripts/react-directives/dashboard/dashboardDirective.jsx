@@ -1,25 +1,28 @@
 import ReactDOM from 'react-dom/client';
-import DashboardListPage from '@/pages/dashboards/index';
+import DashboardPage from '@/pages/dashboards/[slug]';
+import { DeviceStore } from '@/stores/device';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function dashboardListDirective($rootScope, rolesFactory) {
+export default function dashboardDirective($rootScope, $stateParams, mqttClient) {
   'ngInject';
+
   setReactLocale();
 
   return {
     restrict: 'E',
-    scope: {},
     link(scope, element) {
       if (scope.root) {
         scope.root.unmount();
       }
 
-      const hasEditRights = rolesFactory.current.role !== rolesFactory.ROLE_ONE;
+      $rootScope.isHMI = $stateParams.hmi;
+      $rootScope.forceFullscreen = $stateParams.fullscreen === true;
+      scope.devicesStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
-        <DashboardListPage
+        <DashboardPage
           dashboardsStore={$rootScope.dashboardsStore}
-          hasEditRights={hasEditRights}
+          devicesStore={scope.devicesStore}
         />
       );
 

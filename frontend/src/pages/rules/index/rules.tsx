@@ -10,10 +10,11 @@ import { Switch } from '@/components/switch';
 import { Table, TableRow, TableCell } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import { RulesStore } from '@/stores/rules';
 import './styles.css';
 
-const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore; hasRights: boolean }) => {
+const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
   const { t } = useTranslation();
   const { rules } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +51,7 @@ const RulesPage = observer(({ rulesStore, hasRights }: { rulesStore: RulesStore;
   return (
     <PageLayout
       title={t('rules.title')}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={isLoading}
       errors={errors}
       actions={
