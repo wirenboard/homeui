@@ -8,6 +8,7 @@ export default function navigationDirective($rootScope, mqttClient) {
 
   return {
     restrict: 'E',
+    scope: {},
     link: function (scope, element) {
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(

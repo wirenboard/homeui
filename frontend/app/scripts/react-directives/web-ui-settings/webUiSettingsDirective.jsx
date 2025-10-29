@@ -9,6 +9,7 @@ export default function webUiSettingsDirective($rootScope, $translate, tmhDynami
 
   return {
     restrict: 'E',
+    scope: {},
     link(scope, element) {
       if (scope.root) {
         scope.root.unmount();

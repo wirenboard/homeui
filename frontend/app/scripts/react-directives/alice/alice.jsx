@@ -10,6 +10,7 @@ export default function aliceDirective(mqttClient) {
 
   return {
     restrict: 'E',
+    scope: {},
     link: function(scope, element) {
       scope.deviceStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);

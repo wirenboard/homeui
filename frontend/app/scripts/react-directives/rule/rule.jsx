@@ -10,6 +10,7 @@ export default function ruleDirective($rootScope, mqttClient) {
 
   return {
     restrict: 'E',
+    scope: {},
     link: function(scope, element) {
       scope.devicesStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);

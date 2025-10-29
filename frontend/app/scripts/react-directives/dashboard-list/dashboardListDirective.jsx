@@ -8,6 +8,7 @@ export default function dashboardListDirective($rootScope) {
 
   return {
     restrict: 'E',
+    scope: {},
     link(scope, element) {
       if (scope.root) {
         scope.root.unmount();

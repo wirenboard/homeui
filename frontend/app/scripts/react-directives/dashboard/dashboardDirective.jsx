@@ -10,6 +10,7 @@ export default function dashboardDirective($rootScope, $stateParams, mqttClient)
 
   return {
     restrict: 'E',
+    scope: {},
     link(scope, element) {
       if (scope.root) {
         scope.root.unmount();

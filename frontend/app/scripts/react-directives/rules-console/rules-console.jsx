@@ -8,6 +8,7 @@ export default function rulesConsoleDirective($rootScope) {
 
   return {
     restrict: 'E',
+    scope: {},
     link: function (scope, element) {
       scope.root = ReactDOM.createRoot(element[0]);
 

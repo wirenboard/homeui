@@ -9,6 +9,7 @@ export default function rulesDirective($rootScope) {
 
   return {
     restrict: 'E',
+    scope: {},
     link: function(scope, element) {
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(<RulesPage rulesStore={$rootScope.rulesStore} />);
