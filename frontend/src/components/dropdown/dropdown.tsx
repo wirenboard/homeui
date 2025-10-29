@@ -20,6 +20,14 @@ const MenuPortal = (props: any, size: DropdownProps['size']) => (
   <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
 );
 
+const NoOptionsMessage = (props: any, message: string = '') => {
+  return (
+    <components.NoOptionsMessage {...props}>
+      <span className="custom-css-class">{message}</span>
+    </components.NoOptionsMessage>
+  );
+};
+
 export const Dropdown = ({
   id,
   options,
@@ -34,6 +42,7 @@ export const Dropdown = ({
   isClearable,
   isInvalid,
   isSearchable = false,
+  noOptionsMessage,
   isButton,
   minWidth = '150px',
   onChange,
@@ -74,6 +83,7 @@ export const Dropdown = ({
       menuPosition="fixed"
       components={{
         MenuPortal: (props) => MenuPortal(props, size),
+        NoOptionsMessage: (props) => NoOptionsMessage(props, noOptionsMessage),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),
       }}
       aria-label={ariaLabel}

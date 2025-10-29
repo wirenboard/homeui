@@ -1,10 +1,11 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Boot, Cursor, Log, LogLevel, LogsListFetch } from './types';
+import type { Boot, LoadLogsParams, Log, LogsListFetch } from './types';
 
 export default class LogsStore {
   public logs: Log[] = [];
   public services: string[] = [];
   public boots: Boot[] = [];
+  public isLoading = false;
 
   #logsProxy: any;
   #whenMqttReady: () => Promise<void>;
@@ -28,10 +29,14 @@ export default class LogsStore {
       });
   }
 
-  async loadLogs(
-    params: { boot?: Boot; service?: string; cursor?: Cursor; levels?: LogLevel[] },
-    isFilterChanged?: boolean) {
-
+  async loadLogs(params: LoadLogsParams, isFilterChanged?: boolean) {
+    // to avoid multiple loadings on filter change
+    if (this.isLoading) {
+      await this.cancelLoadLogs();
+    }
+    runInAction(() => {
+      this.isLoading = true;
+    });
     return this.#whenMqttReady()
       .then(() => this.#logsProxy.Load({ ...params, limit: 50 }))
       .then((logs: Log[]) => {
@@ -53,6 +58,16 @@ export default class LogsStore {
             return !!reversedLogs.length;
           }
         });
+      })
+      .finally(() => {
+        runInAction(() => {
+          this.isLoading = false;
+        });
       });
+  }
+
+  async cancelLoadLogs() {
+    await this.#logsProxy.CancelLoad();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 }

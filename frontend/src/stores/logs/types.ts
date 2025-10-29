@@ -32,3 +32,11 @@ export interface Log {
   service: string;
   cursor?: string;
 }
+
+export interface LoadLogsParams {
+  boot?: Boot;
+  service?: string;
+  cursor?: Cursor;
+  pattern?: string;
+  levels?: LogLevel[];
+}

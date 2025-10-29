@@ -1,4 +1,6 @@
+import { debounce } from 'lodash';
 import { observer } from 'mobx-react-lite';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import InfoIcon from '@/assets/icons/info.svg';
 import { DatePicker } from '@/components/date-picker';
@@ -31,6 +33,11 @@ export const LogsFilters = observer((
     { label: t('logs.labels.last-boot'), value: store.boots[0]?.hash },
   ];
 
+  const debouncedPatternChange = useMemo(
+    () => debounce((value) => onFilterChange({ ...filter, pattern: value }), 1000),
+    [filter, onFilterChange]
+  );
+
   return (
     <div className="logsFilters">
       <Dropdown
@@ -53,7 +60,6 @@ export const LogsFilters = observer((
         options={boots}
         isLoading={!store.boots.length}
         isDisabled={!store.boots.length}
-        isSearchable
         onChange={(option: Option) => onFilterChange({ ...filter, boot: option.value })}
       />
 
@@ -75,44 +81,45 @@ export const LogsFilters = observer((
         onChange={(time) => onFilterChange({ ...filter, time: time ? time.getTime() / 1000 : null })}
       />
 
-      <FormGroup>
-        <Input
-          className="logsFilters-pattern"
-          value={filter.pattern}
-          aria-label={t('logs.labels.pattern')}
-          placeholder={t('logs.labels.pattern')}
-          onChange={(pattern) => onFilterChange({ ...filter, pattern })}
-        />
-
-        <Tooltip text={t('logs.buttons.case')}>
-          <ToggleButton
-            enabled={filter['case-sensitive']}
-            aria-label={t('logs.buttons.case')}
-            label="Aa"
-            onClick={() => onFilterChange({ ...filter, 'case-sensitive': !filter['case-sensitive'] })}
+      <div className="logsFilters-patternWrapper">
+        <FormGroup>
+          <Input
+            className="logsFilters-pattern"
+            value={filter.pattern}
+            aria-label={t('logs.labels.pattern')}
+            placeholder={t('logs.labels.pattern')}
+            onChange={debouncedPatternChange}
           />
+
+          <Tooltip text={t('logs.buttons.case')}>
+            <ToggleButton
+              enabled={filter['case-sensitive']}
+              aria-label={t('logs.buttons.case')}
+              label="Aa"
+              onClick={() => onFilterChange({ ...filter, 'case-sensitive': !filter['case-sensitive'] })}
+            />
+          </Tooltip>
+
+          <Tooltip text={t('logs.buttons.regex')}>
+            <ToggleButton
+              enabled={filter.regex}
+              aria-label={t('logs.buttons.regex')}
+              label="Re"
+              onClick={() => onFilterChange({ ...filter, regex: !filter.regex })}
+            />
+          </Tooltip>
+        </FormGroup>
+
+        <Tooltip text={t('logs.labels.help')} placement="bottom">
+          <a
+            href="https://unicode-org.github.io/icu/userguide/strings/regexp.html"
+            target="_blank"
+            className="logsFilters-info"
+          >
+            <InfoIcon className="logsFilters-info" />
+          </a>
         </Tooltip>
-
-        <Tooltip text={t('logs.buttons.regex')}>
-          <ToggleButton
-            enabled={filter.regex}
-            aria-label={t('logs.buttons.regex')}
-            label="Re"
-            onClick={() => onFilterChange({ ...filter, regex: !filter.regex })}
-          />
-        </Tooltip>
-
-      </FormGroup>
-
-      <Tooltip text={t('logs.labels.help')} placement="bottom">
-        <a
-          href="https://unicode-org.github.io/icu/userguide/strings/regexp.html"
-          target="_blank"
-          className="logsFilters-info"
-        >
-          <InfoIcon className="logsFilters-info" />
-        </a>
-      </Tooltip>
+      </div>
     </div>
   );
 });

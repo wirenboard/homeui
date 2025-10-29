@@ -128,9 +128,10 @@ const LogsPage = observer(({ store, hasRights }: { store: LogsStore; hasRights: 
           }}
         />
       )}
-
       <div
-        className="logs-container"
+        className={classNames('logs-container', {
+          'logs-loading': store.isLoading,
+        })}
         id="logs-container"
       >
         <InfiniteScroll

@@ -15,10 +15,21 @@
     }
 }
 
+.logsFilters-patternWrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .logsFilters-info {
     width: 18px;
     height: 18px;
     color: var(--text-color);
+}
+
+.logsFilters-input {
+    min-width: 200px;
+    white-space: nowrap;
 }
 
 @media (max-width: 500px) {
