@@ -1,19 +1,17 @@
 import ReactDOM from 'react-dom/client';
+import UsersPage from '@/pages/settings/users/usersPage';
 import { setReactLocale } from '../locale';
-import UsersStore from './pageStore';
-import CreateUsersPage from './usersPage';
 
-function usersDirective(rolesFactory) {
+function usersDirective() {
   'ngInject';
 
   setReactLocale();
   return {
     restrict: 'E',
     scope: {},
-    link: function (scope, element) {
-      scope.store = new UsersStore(rolesFactory);
+    link: function(scope, element) {
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(CreateUsersPage({ store: scope.store }));
+      scope.root.render(<UsersPage />);
 
       element.on('$destroy', function () {
         scope.root.unmount();
