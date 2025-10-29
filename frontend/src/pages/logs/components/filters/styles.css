@@ -1,0 +1,47 @@
+.logsFilters {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    margin-bottom: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logsFilters-pattern {
+    width: 200px;
+
+    @media (max-width: 1024px) {
+        width: calc(100% - 90px);
+    }
+}
+
+.logsFilters-patternWrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.logsFilters-info {
+    width: 18px;
+    height: 18px;
+    color: var(--text-color);
+}
+
+.logsFilters-input {
+    min-width: 200px;
+    white-space: nowrap;
+}
+
+@media (max-width: 500px) {
+    .logsFilters .formFields-group {
+        width: calc(100% - 30px);
+    }
+}
+
+@media (max-width: 400px) {
+    .react-datepicker-wrapper,
+    .wb-tooltip-container:has(.logsFilters-input),
+    .logsFilters-input {
+        width: 100%;
+    }
+}

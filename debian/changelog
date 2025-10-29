@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.151.0) stable; urgency=medium
+
+  * Upgrade logs page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 29 Oct 2025 12:03:00 +0300
+
 wb-mqtt-homeui (2.150.0) stable; urgency=medium
 
   * Add React based editor for wb-mqtt-serial config

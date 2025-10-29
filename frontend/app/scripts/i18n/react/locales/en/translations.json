@@ -584,6 +584,32 @@
          "close": "Close"
       }
    },
+   "logs":{
+      "title": "Logs",
+      "labels": {
+         "latest": "Latest",
+         "set-date": "Set start date",
+         "choose-boot": "Choose a boot",
+         "all-boots": "All boots",
+         "last-boot": "Last boot",
+         "choose-service": "Choose a service",
+         "all-services": "All services",
+         "choose-level": "Choose a log level",
+         "levels": "All log levels",
+         "pattern": "String or regex to find",
+         "help": "Regular expressions user guide",
+         "no-logs-with-filter": "There are no logs with current filters"
+      },
+      "buttons": {
+         "save": "Save loaded log to file",
+         "case": "Match case",
+         "regex": "Regular expression"
+      },
+      "errors": {
+         "unavailable": "wb-mqtt-logs service is unavailable",
+         "services": "Error getting boots and services"
+      }
+   },
    "page": {
       "access-denied": "You cannot view this page. You can change <0>access level</0>",
       "not-found": "Page not found: 404",

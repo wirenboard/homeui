@@ -67,7 +67,6 @@ import handleDataService from './services/handle-data';
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import MQTTCtrl from './controllers/MQTTChannelsController';
-import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
 
@@ -140,7 +139,6 @@ const module = angular
     'angularjs-dropdown-multiselect',
   ])
   .value('historyMaxPoints', 1000)
-  .value('logsMaxRows', 50)
   .value('webuiConfigPath', '/etc/wb-webui.conf')
   .value('configSaveDebounceMs', 300);
 
@@ -183,7 +181,6 @@ module
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('MQTTCtrl', MQTTCtrl)
-  .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
 
@@ -285,7 +282,6 @@ module
         'mqtt',
         'system',
         'ui',
-        'logs',
         'configurations',
         'history',
         'widgets',

@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,12 +76,6 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
     const atBottom = scrollHeight - scrollTop - clientHeight < 5;
     setIsStopAutoScroll(!atBottom);
   }, [content.current]);
-
-  const formatDate = (time: number) => {
-    return new Date(time).toLocaleString('sv-SE', {
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
-  };
 
   useEffect(() => {
     addEventListener('pointerdown', handleResizerDown);
@@ -194,7 +189,7 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
               key={i + log.time}
             >
               <div className="rulesConsole-logDate">
-                {formatDate(log.time)}
+                {format(log.time, 'dd-MM-yyyy HH:mm:ss')}
               </div>
               <div>{log.payload}</div>
             </div>

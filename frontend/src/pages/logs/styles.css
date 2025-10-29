@@ -1,0 +1,66 @@
+.logs-container {
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    position: relative;
+}
+
+.logs-container.logs-loading {
+    overflow: hidden;
+}
+
+.logs-loading::before {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.15);
+    content: '';
+}
+
+.logs-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+
+    @media (max-width: 500px) {
+        grid-template-columns: auto 1fr;
+    }
+}
+
+.logs-item {
+    display: contents;
+}
+
+.logs-cell {
+    padding: 2px 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logs-itemInfo {
+    display: flex;
+    gap: 16px;
+
+    @media (max-width: 1024px) {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.logs-itemWarn * {
+    background: var(--alert-warn-background);
+}
+
+.logs-itemError * {
+    background: var(--alert-danger-background);
+}
+
+.logs-itemDebug .logs-itemText {
+    font-weight: bold;
+    white-space: pre;
+}
+
+.logs-itemDate {
+    @media (max-width: 500px) {
+        width: 85px;
+    }
+}

@@ -1,0 +1,17 @@
+.toggleButton {
+    padding: 6px 12px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--input-border-radius);
+    background: var(--secondary-color);
+    position: relative;
+}
+
+.toggleButton-active {
+    background: var(--secondary-color-hover);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+
+.toggleButton:focus {
+    box-shadow: var(--input-active-shadow);
+    z-index: 100;
+}
