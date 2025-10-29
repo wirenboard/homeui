@@ -15,11 +15,12 @@ import { Switch } from '@/components/switch';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import { DashboardEdit } from './components/dashboard-edit';
 import type { DashboardListPageProps } from './types';
 import './styles.css';
 
-const DashboardList = observer(({ dashboardsStore, hasEditRights }: DashboardListPageProps) => {
+const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => {
   const { t } = useTranslation();
   const { ref, width } = useResizeObserver();
   const {
@@ -29,6 +30,7 @@ const DashboardList = observer(({ dashboardsStore, hasEditRights }: DashboardLis
     updateDashboards,
     updateDashboard,
   } = dashboardsStore;
+  const hasEditRights = authStore.hasRights(UserRole.Operator);
   const [deletedDashboardId, setDeletedDashboardId] = useState(null);
   const [editedDashboardId, setEditedDashboardId] = useState(null);
   const dashboardsList = useMemo(() => Array.from(dashboards.values()), [dashboards.values()]);

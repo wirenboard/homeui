@@ -1,11 +1,9 @@
 import ReactDOM from 'react-dom/client';
-import DevicesPage from '@/pages/devices';
-import { DeviceStore } from '@/stores/device';
+import DashboardListPage from '@/pages/dashboards/index';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function devicesDirective(mqttClient) {
+export default function dashboardListDirective($rootScope) {
   'ngInject';
-
   setReactLocale();
 
   return {
@@ -16,9 +14,8 @@ export default function devicesDirective(mqttClient) {
         scope.root.unmount();
       }
 
-      scope.store = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<DevicesPage store={scope.store} />);
+      scope.root.render(<DashboardListPage dashboardsStore={$rootScope.dashboardsStore} />);
 
       element.on('$destroy', () => {
         scope.root.unmount();

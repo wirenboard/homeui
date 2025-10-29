@@ -5,12 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
+import { authStore, UserRole } from '@/stores/auth';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
 import type { AlicePageParams, AlicePageState, View } from './types';
 import './styles.css';
 
-const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
+const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
   const { rooms, integrations, fetchData } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
@@ -51,7 +52,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
     <PageLayout
       title={t('alice.title')}
       isLoading={isLoading}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
     >
       {!!integrations?.length && (

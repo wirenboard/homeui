@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Option } from '@/components/dropdown';
 import { BooleanField, FormFieldGroup, OptionsField, StringField } from '@/components/form';
+import { authStore, UserRole } from '@/stores/auth';
 import { CommonSettingsProps } from '../types';
 
 const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSettingsProps) => {
@@ -50,12 +51,14 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSe
         options={languageOptions}
         onChange={onChangeLanguageHandler}
       />
-      <StringField
-        title={t('web-ui-settings.labels.name')}
-        description={t('web-ui-settings.labels.name-description')}
-        value={dashboardsStore.description}
-        onChange={debouncedNameChange}
-      />
+      {authStore.hasRights(UserRole.Operator) && (
+        <StringField
+          title={t('web-ui-settings.labels.name')}
+          description={t('web-ui-settings.labels.name-description')}
+          value={dashboardsStore.description}
+          onChange={debouncedNameChange}
+        />
+      )}
       <BooleanField
         title={t('web-ui-settings.labels.show-system-devices')}
         value={showSystemDevices}
