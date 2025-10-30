@@ -95,3 +95,9 @@
     display: flex;
     flex-direction: column;
 }
+
+.deviceSettingsEditor-customChannelsNoTabs .wb-jsonEditor{
+    padding: 9px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--card-border-radius);
+}

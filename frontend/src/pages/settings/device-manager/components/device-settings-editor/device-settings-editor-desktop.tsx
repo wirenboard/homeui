@@ -207,11 +207,14 @@ export const DeviceSettingsEditorDesktop = observer(({ store, translator } : Dev
         />
       )}
       {store.topLevelGroup.subgroups.length === 0 && store.customChannels && (
-        <div>
+        <div className="deviceSettingsEditor-customChannelsNoTabs">
           <label>
             {t('device-manager.labels.custom-channels')}
           </label>
-          <JsonSchemaEditor store={store.customChannels} translator={translator} />
+          <JsonSchemaEditor
+            store={store.customChannels}
+            translator={translator}
+          />
         </div>
       )}
     </div>
