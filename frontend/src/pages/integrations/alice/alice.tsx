@@ -66,6 +66,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
       }
       notificationsStore.showNotification({ variant: 'success', text: t('alice.binding.unlinked') });
       await fetchData();
+      window.location.reload();
     } catch (err: any) {
       notificationsStore.showNotification({ variant: 'danger', text: err?.message || String(err) });
     }
@@ -85,10 +86,10 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
               {bindingInfo.isBinded
                 ? (
                   <div className="alice-bindingContainer">
-                    <span>{t('alice.labels.is-binded')}</span>
                     <a href={bindingInfo.url} className="alice-binding" target="_blank">
                       {t('alice.buttons.check-binding-status')}
                     </a>
+                    <span>{t('alice.labels.is-binded')}</span>
                     <a
                       href="/integrations/alice/controller"
                       className="alice-binding alice-unlink"
