@@ -58,7 +58,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   const confirmUnlink = async () => {
     setIsConfirmModalOpen(false);
     try {
-      const url = `${window.location.origin}/integrations/alice/controller`;
+      const url = `/integrations/alice/controller`;
       const resp = await fetch(url, { method: 'DELETE', credentials: 'same-origin' });
       if (!resp.ok) {
         const text = await resp.text();
