@@ -100,9 +100,9 @@ const NewComponentSoftwareText = observer(
               <Trans
                 i18nKey={componentTransKey}
                 values={{
-                  ['device_model']: component.model,
-                  ['maybe_current_firmware']: maybeCurrentFirmware,
-                  ['available_firmware']: component.available,
+                  device_model: component.model,
+                  maybe_current_firmware: maybeCurrentFirmware,
+                  available_firmware: component.available,
                 }}
                 components={[<a></a>]}
               />

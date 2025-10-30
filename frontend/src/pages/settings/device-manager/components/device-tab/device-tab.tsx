@@ -5,7 +5,7 @@ import './styles.css';
 
 const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }: { embeddedSoftware: EmbeddedSoftware }) => {
   if (embeddedSoftware.isUpdating) {
-    return <i className="glyphicon glyphicon-refresh .deviceTab-updateIconAnimationRotate"></i>;
+    return <i className="glyphicon glyphicon-refresh deviceTab-updateIconAnimationRotate"></i>;
   }
   if (embeddedSoftware.hasUpdate) {
     return <i className="glyphicon glyphicon-refresh"></i>;
