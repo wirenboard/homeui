@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
+import { DeviceTabStore, toRpcPortConfig } from '@/stores/device-manager';
 import { loadJsonSchema, Translator, getDefaultValue } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '../../../i18n/react/config';
@@ -11,7 +12,6 @@ import PageWrapperStore from '../../components/page-wrapper/pageWrapperStore';
 import { getIntAddress } from '../common/modbusAddressesSet';
 import showAddDeviceModal from './addDeviceModal';
 import showCopyDeviceModal from './copyDeviceModal';
-import { DeviceTab, toRpcPortConfig } from './deviceTabStore';
 import { getTranslation } from './jsonSchemaUtils';
 import {
   PortTab,
@@ -281,7 +281,7 @@ class ConfigEditorPageStore {
   }
 
   createDeviceTab(deviceConfig) {
-    return new DeviceTab(
+    return new DeviceTabStore(
       deviceConfig,
       getDeviceTypeFromConfig(deviceConfig),
       this.deviceTypesStore,
@@ -403,7 +403,7 @@ class ConfigEditorPageStore {
       return;
     }
     const oldSelectedTab = this.tabs.selectedTab;
-    let deviceTab = new DeviceTab(
+    let deviceTab = new DeviceTabStore(
       {},
       res.deviceType,
       this.deviceTypesStore,

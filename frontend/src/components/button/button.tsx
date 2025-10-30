@@ -16,6 +16,7 @@ export const Button = ({
       'button-secondary': variant === 'secondary',
       'button-danger': variant === 'danger',
       'button-unaccented': variant === 'unaccented',
+      'button-warn': variant === 'warn',
       'button-outlined': isOutlined,
     })}
     {...rest}
