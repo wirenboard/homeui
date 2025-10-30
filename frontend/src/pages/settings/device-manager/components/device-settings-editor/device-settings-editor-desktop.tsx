@@ -29,7 +29,7 @@ const DeviceSettingsSubGroup = (
     return <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} />;
   }
   return (
-    <div className="deviceSettingsSubGroup">
+    <div className="deviceSettingsEditor-subGroup">
       <label>
         {translator.find(group.properties.title, currentLanguage)}
       </label>
@@ -41,7 +41,7 @@ const DeviceSettingsSubGroup = (
 const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
   const errorId = useId();
   return (
-    <div className={classNames('deviceSettingsParameter', { 'wb-jsonEditor-propertyError': store.hasErrors })} >
+    <div className={classNames('deviceSettingsEditor-parameter', { 'wb-jsonEditor-propertyError': store.hasErrors })} >
       <NumberEditor store={store} translator={translator} />
       {store.hasErrors && <ParamError id={errorId} error={store.error} translator={translator} />}
     </div>
@@ -94,7 +94,7 @@ const ChannelsTable = observer((
     return null;
   }
   return (
-    <Table className="deviceSettingsChannelsTable">
+    <Table className="deviceSettingsEditor-channelsTable">
       <TableRow isHeading={true}>
         <TableCell>{t('device-manager.labels.channel')}</TableCell>
         <TableCell>{t('device-manager.labels.mode')}</TableCell>
@@ -120,9 +120,9 @@ const DeviceSettingsTabContent = observer((
   return (
     <div
       className={classNames({
-        deviceSettingsTopGroupContent: isTopLevel,
-        deviceSettingsSubGroupContent: !isTopLevel,
-        'deviceSettingsSubGroupContent-withBorder': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
+        'deviceSettingsEditor-topGroupContent': isTopLevel,
+        'deviceSettingsEditor-subGroupContent': !isTopLevel,
+        'deviceSettingsEditor-subGroupContentWithBorder': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
       })}
     >
       {showDescription && (
@@ -146,7 +146,7 @@ const DeviceSettingsTabs = observer((
   const tabs = groups.map((group: WbDeviceParameterEditorsGroup) => ({
     id: group.properties.id,
     label: (
-      <span className={classNames({ 'deviceSettingsTabs-tabWithError': group.hasErrors })}>
+      <span className={classNames({ 'deviceSettingsEditor-tabWithError': group.hasErrors })}>
         {translator.find(group.properties.title, i18n.language)}
       </span>
     ),
@@ -155,7 +155,7 @@ const DeviceSettingsTabs = observer((
     tabs.push({
       id: 'customChannels',
       label: (
-        <span className={classNames({ 'deviceSettingsTabs-tabWithError': customChannelsStore.hasErrors })}>
+        <span className={classNames({ 'deviceSettingsEditor-tabWithError': customChannelsStore.hasErrors })}>
           {t('device-manager.labels.custom-channels')}
         </span>
       ),
@@ -166,14 +166,14 @@ const DeviceSettingsTabs = observer((
     items: tabs,
   });
   return (
-    <div className="deviceSettingsTabs">
+    <div className="deviceSettingsEditor-tabs">
       <Tabs activeTab={activeTab} items={tabs} onTabChange={onTabChange}/>
       {groups.map((group: WbDeviceParameterEditorsGroup) => (
         <TabContent
           key={group.properties.id}
           activeTab={activeTab}
           tabId={group.properties.id}
-          className="deviceSettingsTabs-tabContent"
+          className="deviceSettingsEditor-tabContent"
         >
           <DeviceSettingsTabContent group={group} isTopLevel={true} translator={translator} />
         </TabContent>
@@ -183,7 +183,7 @@ const DeviceSettingsTabs = observer((
           key="customChannels"
           activeTab={activeTab}
           tabId="customChannels"
-          className="deviceSettingsTabs-tabContent"
+          className="deviceSettingsEditor-tabContent"
         >
           <JsonSchemaEditor store={customChannelsStore} translator={translator} />
         </TabContent>

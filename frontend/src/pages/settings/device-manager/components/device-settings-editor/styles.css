@@ -13,33 +13,33 @@
     margin-bottom: 0px;
 }
 
-.deviceSettingsTabs {
+.deviceSettingsEditor-tabs {
     display: flex;
     flex-direction: row;
 }
 
-.deviceSettingsTabs .tabs {
+.deviceSettingsEditor-tabs .tabs {
     flex-shrink: 0;
     width: 20%;
 }
 
-.deviceSettingsTabs-tabContent {
+.deviceSettingsEditor-tabContent {
     flex-grow: 1;
     margin-left: 15px;
 }
 
-.deviceSettingsTabs-tabWithError {
+.deviceSettingsEditor-tabWithError {
     color: var(--danger-color);
 }
 
-.deviceSettingsTopGroupContent {
+.deviceSettingsEditor-topGroupContent {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 15px;
 }
 
-.deviceSettingsSubGroupContent {
+.deviceSettingsEditor-subGroupContent {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -48,50 +48,50 @@
     width: 100%;
 }
 
-.deviceSettingsSubGroupContent-withBorder {
+.deviceSettingsEditor-subGroupContentWithBorder {
     padding: 9px;
     border: 1px solid var(--input-border-color);
     border-radius: var(--card-border-radius);
 }
 
-.deviceSettingsSubGroup {
+.deviceSettingsEditor-subGroup {
     flex-grow: 1;
     flex-basis: 100%;
     width: 100%;
 }
 
-.deviceSettingsChannelsTable {
+.deviceSettingsEditor-channelsTable {
     flex-grow: 1;
     flex-basis: 100%;
 }
 
-.deviceSettingsParameter {
+.deviceSettingsEditor-parameter {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     flex-basis: 43%;
 }
 
-.deviceSettingsParameter-changedByUser .dropdown__control,
-.deviceSettingsParameter-changedByUser input {
+.deviceSettingsEditor-parameterChangedByUser .dropdown__control,
+.deviceSettingsEditor-parameterChangedByUser input {
     border-left: 4px solid var(--gray-color);
 }
 
-.deviceSettingsEditor-desktop .deviceSettingsTopGroupContent {
+.deviceSettingsEditor-desktop .deviceSettingsEditor-topGroupContent {
     padding: 0px 19px 9px 19px;
 }
 
-.deviceSettingsEditor-mobile .deviceSettingsParameter {
+.deviceSettingsEditor-mobile .deviceSettingsEditor-parameter {
     flex-basis: 100%;
     width: 100%;
 }
 
-.deviceSettingsEditor-mobile .deviceSettingsParameter .wb-jsonEditor-propertyLabel,
-.deviceSettingsEditor-mobile .deviceSettingsParameter .wb-jsonEditor-propertyCheckbox {
+.deviceSettingsEditor-mobile .deviceSettingsEditor-parameter .wb-jsonEditor-propertyLabel,
+.deviceSettingsEditor-mobile .deviceSettingsEditor-parameter .wb-jsonEditor-propertyCheckbox {
     white-space: wrap;
 }
 
-.deviceSettingsEditor-mobile .deviceSettingsChannel {
+.deviceSettingsEditor-mobile .deviceSettingsEditor-channel {
     display: flex;
     flex-direction: column;
 }

@@ -1,34 +1,34 @@
-.deviceTabContent {
+.deviceTab-content {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.deviceTabLoader {
+.deviceTab-loader {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 200px;
 }
 
-.deviceTabContentHeader {
+.deviceTab-contentHeader {
     display: flex;
     gap: 10px;
     align-items: center;
     flex-wrap: wrap;
 }
 
-.deviceTabContentHeader-select {
+.deviceTab-contentHeaderSelect {
     flex-basis: 45%;
 }
 
-.deviceTabContentHeader-buttons {
+.deviceTab-contentHeaderButtons {
     display: flex;
     gap: 5px;
 }
 
 @media (max-width: 1280px) {
-    .deviceTabContentHeader-select {
+    .deviceTab-contentHeaderSelect {
         flex-grow: 1;
         min-width: 10px;
     }

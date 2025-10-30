@@ -8,7 +8,7 @@ import {
   EmbeddedSoftwareComponent,
   ComponentFirmware
 } from '@/stores/device-manager';
-import type { EmbeddedSoftwarePanelProps } from './types';
+import type { EmbeddedSoftwarePanelProps, HasUpdateAlertProps } from './types';
 
 import './styles.css';
 
@@ -29,7 +29,7 @@ const UpdateProgressBar = observer(({ progress } : { progress: number }) => {
   );
 });
 
-const EmbeddedSoftwareUpdatePanel = observer(
+const UpdateProgressPanel = observer(
   ({ component } : { component: EmbeddedSoftwareComponent | ComponentFirmware }) => {
     const { t } = useTranslation();
     let label: string;
@@ -48,7 +48,7 @@ const EmbeddedSoftwareUpdatePanel = observer(
         t('device-manager.labels.component_update_current_version', vars) : '';
     }
     return (
-      <Alert variant="warn" className="firmwareUpdatePanel">
+      <Alert variant="warn" className="updateProgressPanel">
         <span>{t(label, vars)}</span>
         <UpdateProgressBar progress={component.updateProgress} />
         <span>
@@ -77,7 +77,7 @@ const FirmwareVersionPanel = observer(
     );
   });
 
-const NewComponentSoftwareText = observer(
+const AvailableComponentUpdatesText = observer(
   ({
     components,
     label,
@@ -113,7 +113,7 @@ const NewComponentSoftwareText = observer(
       });
   });
 
-const NewEmbeddedSoftwareText = observer(({ embeddedSoftware } : { embeddedSoftware: EmbeddedSoftware }) => {
+const AvailableUpdatesText = observer(({ embeddedSoftware } : { embeddedSoftware: EmbeddedSoftware }) => {
   const { t } = useTranslation();
   const values = {
     current_firmware: embeddedSoftware.firmware?.current,
@@ -155,7 +155,7 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware } : { embeddedSoftw
           </Fragment>
         )}
         {hasComponentsUpdates && (
-          <NewComponentSoftwareText
+          <AvailableComponentUpdatesText
             components={embeddedSoftware.componentsCanBeUpdated}
             label="device-manager.labels.new-component-item"
             linkLabel="device-manager.labels.new-component-item-link"
@@ -183,7 +183,7 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware } : { embeddedSoftw
       <>
         <span>{t('device-manager.labels.new-components')}</span>
         <br />
-        <NewComponentSoftwareText
+        <AvailableComponentUpdatesText
           components={embeddedSoftware.componentsCanBeUpdated}
           label="device-manager.labels.new-component"
           linkLabel="device-manager.labels.new-component-link"
@@ -194,7 +194,7 @@ const NewEmbeddedSoftwareText = observer(({ embeddedSoftware } : { embeddedSoftw
   return null;
 });
 
-const NewEmbeddedSoftwareErasesSettingsText = observer(
+const UpdateErasesSettingsText = observer(
   ({ embeddedSoftware } : { embeddedSoftware: EmbeddedSoftware }) => {
     const { t } = useTranslation();
     // if only components has updates not show erase settings warning
@@ -214,7 +214,7 @@ const NewEmbeddedSoftwareErasesSettingsText = observer(
     );
   });
 
-const NewEmbeddedSoftwareManualUpdateText = observer(
+const ManualUpdateText = observer(
   ({ embeddedSoftware } : { embeddedSoftware: EmbeddedSoftware }) => {
   // if only components has updates not show manual update instruction
     if (embeddedSoftware.hasComponentsUpdates &&
@@ -233,18 +233,13 @@ const NewEmbeddedSoftwareManualUpdateText = observer(
     );
   });
 
-const NewEmbeddedSoftwareWarning = observer(
+const HasUpdateAlert = observer(
   ({
     embeddedSoftware,
     onUpdateFirmware,
     onUpdateBootloader,
     onUpdateComponents,
-  } : {
-    embeddedSoftware: EmbeddedSoftware;
-    onUpdateFirmware: () => void;
-    onUpdateBootloader: () => void;
-    onUpdateComponents: () => void;
-  }) => {
+  } : HasUpdateAlertProps) => {
     const { t } = useTranslation();
 
     let onClickFunction = onUpdateComponents;
@@ -255,11 +250,11 @@ const NewEmbeddedSoftwareWarning = observer(
     }
 
     return (
-      <Alert variant="warn" className="newEmbeddedSoftwareAlert">
+      <Alert variant="warn" className="hasUpdateAlert">
         <div>
-          <NewEmbeddedSoftwareText embeddedSoftware={embeddedSoftware} />
-          <NewEmbeddedSoftwareManualUpdateText embeddedSoftware={embeddedSoftware} />
-          <NewEmbeddedSoftwareErasesSettingsText embeddedSoftware={embeddedSoftware} />
+          <AvailableUpdatesText embeddedSoftware={embeddedSoftware} />
+          <ManualUpdateText embeddedSoftware={embeddedSoftware} />
+          <UpdateErasesSettingsText embeddedSoftware={embeddedSoftware} />
         </div>
         {embeddedSoftware.canUpdate && (
           <Button
@@ -284,7 +279,7 @@ function getErrorDescriptionKey(type: string, errorId: string) {
   return 'device-manager.errors.update-error-' + key;
 }
 
-const EmbeddedSoftwareComponentUpdateError = observer(({ component } : { component: EmbeddedSoftwareComponent }) => {
+const UpdateErrorAlert = observer(({ component } : { component: EmbeddedSoftwareComponent }) => {
   const { t } = useTranslation();
   if (!component.hasError) {
     return null;
@@ -299,7 +294,7 @@ const EmbeddedSoftwareComponentUpdateError = observer(({ component } : { compone
   });
 
   return (
-    <Alert variant="danger" className="embeddedSoftwareUpdateErrorAlert">
+    <Alert variant="danger" className="updateErrorAlert">
       <span>{`${errorPrefix} ${errorDescription}`}</span>
       <button type="button" className="close" onClick={() => component.clearError()}>
         <span aria-hidden="true">&times;</span>
@@ -311,25 +306,25 @@ const EmbeddedSoftwareComponentUpdateError = observer(({ component } : { compone
 export const EmbeddedSoftwarePanel = observer(
   ({ embeddedSoftware, onUpdateFirmware, onUpdateBootloader, onUpdateComponents } : EmbeddedSoftwarePanelProps) => {
     if (embeddedSoftware.bootloader.isUpdating) {
-      return <EmbeddedSoftwareUpdatePanel component={embeddedSoftware.bootloader} />;
+      return <UpdateProgressPanel component={embeddedSoftware.bootloader} />;
     }
     if (embeddedSoftware.firmware.isUpdating) {
-      return <EmbeddedSoftwareUpdatePanel component={embeddedSoftware.firmware} />;
+      return <UpdateProgressPanel component={embeddedSoftware.firmware} />;
     }
     for (const component of embeddedSoftware.components.values()) {
       if (component.isUpdating) {
-        return <EmbeddedSoftwareUpdatePanel component={component} />;
+        return <UpdateProgressPanel component={component} />;
       }
     }
     return (
       <>
-        <EmbeddedSoftwareComponentUpdateError key="bootloader" component={embeddedSoftware.bootloader} />
-        <EmbeddedSoftwareComponentUpdateError key="firmware" component={embeddedSoftware.firmware} />
+        <UpdateErrorAlert key="bootloader" component={embeddedSoftware.bootloader} />
+        <UpdateErrorAlert key="firmware" component={embeddedSoftware.firmware} />
         {Array.from(embeddedSoftware.components.entries()).map(([key, component]) => (
-          <EmbeddedSoftwareComponentUpdateError key={'component ' + key} component={component} />
+          <UpdateErrorAlert key={'component ' + key} component={component} />
         ))}
         {embeddedSoftware.hasUpdate && (
-          <NewEmbeddedSoftwareWarning
+          <HasUpdateAlert
             embeddedSoftware={embeddedSoftware}
             onUpdateBootloader={onUpdateBootloader}
             onUpdateFirmware={onUpdateFirmware}

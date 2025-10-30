@@ -15,13 +15,13 @@
 }
 
 .deviceTab .glyphicon-refresh {
-    color: #bd882b;
+    color: var(--warn-color);
 }
 
 .deviceTab-withError .glyphicon-exclamation-sign {
-    color: #a90329;
+    color: var(--danger-color);
 }
 
 .deviceTab-withWarning .glyphicon-exclamation-sign {
-    color: #826430;
+    color: var(--warn-color);
 }

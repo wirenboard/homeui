@@ -81,7 +81,7 @@ export const DeviceTabContent = observer(
     const { t } = useTranslation();
     if (tab.loading) {
       return (
-        <div className="deviceTabLoader">
+        <div className="deviceTab-loader">
           <Loader />
         </div>
       );
@@ -90,7 +90,7 @@ export const DeviceTabContent = observer(
       return <UnknownDeviceTabContent tab={tab} onDeleteTab={onDeleteTab} />;
     }
     return (
-      <div className="deviceTabContent">
+      <div className="deviceTab-content">
         {tab.schemaStore && (
           <OptionalParamsSelectDialog
             isOpened={optionalParamsSelectDialogIsOpen}
@@ -129,14 +129,14 @@ export const DeviceTabContent = observer(
             onSetUniqueMqttTopic={onSetUniqueMqttTopic}
           />
         )}
-        <div className="deviceTabContentHeader">
+        <div className="deviceTab-contentHeader">
           <Dropdown
             options={deviceTypeSelectOptions}
             value={tab.deviceType}
-            className="deviceTabContentHeader-select"
+            className="deviceTab-contentHeaderSelect"
             onChange={(option: Option<string>) => onDeviceTypeChange(tab, option.value)}
           />
-          <div className="deviceTabContentHeader-buttons">
+          <div className="deviceTab-contentHeaderButtons">
             {!tab.withSubdevices && (
               <Button
                 label={t('device-manager.buttons.parameters')}

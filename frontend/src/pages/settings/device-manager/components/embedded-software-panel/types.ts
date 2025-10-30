@@ -6,3 +6,10 @@ export interface EmbeddedSoftwarePanelProps {
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
 }
+
+export interface HasUpdateAlertProps {
+  embeddedSoftware: EmbeddedSoftware;
+  onUpdateFirmware: () => void;
+  onUpdateBootloader: () => void;
+  onUpdateComponents: () => void;
+}
