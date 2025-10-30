@@ -64,6 +64,15 @@ const DisconnectedError = ({ isWbDevice, onSearchDisconnectedDevice }) => {
   );
 };
 
+const LoaderPanel = ({ message }: { message: string }) => {
+  return (
+    <div className="deviceTab-loader">
+      <Loader />
+      <span>{message}</span>
+    </div>
+  );
+};
+
 export const DeviceTabContent = observer(
   ({
     tab,
@@ -79,12 +88,8 @@ export const DeviceTabContent = observer(
   }: DeviceTabContentProps) => {
     const [optionalParamsSelectDialogIsOpen, openOptionalParamsSelectDialog] = useState(false);
     const { t } = useTranslation();
-    if (tab.loading) {
-      return (
-        <div className="deviceTab-loader">
-          <Loader />
-        </div>
-      );
+    if (tab.isLoading) {
+      return <LoaderPanel message={tab.loadingMessage} />;
     }
     if (tab.isUnknownType) {
       return <UnknownDeviceTabContent tab={tab} onDeleteTab={onDeleteTab} />;

@@ -364,7 +364,9 @@
          "channel": "Channel",
          "mode": "Mode",
          "period": "Period (ms)",
-         "custom-channels": "Custom channels"
+         "custom-channels": "Custom channels",
+         "loading-template": "Loading device template...",
+         "reading-parameters": "Reading parameters from device..."
       },
       "buttons": {
          "save": "Save config",
