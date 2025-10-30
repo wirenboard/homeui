@@ -4,7 +4,7 @@ import { JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '~/i18n/react/config';
 import { PortTabConfig, PortTabTcpConfig } from '../port-tab/types';
-import { FwUpdateProxy, UpdateItem, SerialDeviceProxy } from '../types';
+import { FwUpdateProxy, UpdateItem, SerialDeviceProxy, LoadConfigParams } from '../types';
 import { getIntAddress, toRpcPortConfig } from '../utils';
 import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';
 import { EmbeddedSoftware } from './embedded-software/embedded-software-store';
@@ -15,7 +15,8 @@ export class DeviceTabStore {
   public deviceTypesStore: any;
   public deviceType: string;
   public hidden: boolean = false;
-  public loading: boolean = true;
+  public isLoading: boolean = true;
+  public loadingMessage: string = '';
   public isDeprecated: boolean;
   public withSubdevices: boolean;
   public isUnknownType: boolean;
@@ -58,7 +59,8 @@ export class DeviceTabStore {
       isDeprecated: observable,
       withSubdevices: observable,
       deviceType: observable,
-      loading: observable,
+      isLoading: observable,
+      loadingMessage: observable,
       error: observable,
       slaveIdIsDuplicate: observable,
       devicesWithTheSameId: observable,
@@ -105,7 +107,8 @@ export class DeviceTabStore {
   async loadConfigFromDevice(portConfig?: PortTabConfig) {
     try {
       if (portConfig) {
-        const params = {
+        this.setLoading(true, i18n.t('device-manager.labels.reading-parameters'));
+        const params: LoadConfigParams = {
           slave_id: getIntAddress(this.slaveId),
           device_type: this.deviceType,
           modbus_mode: (portConfig as PortTabTcpConfig).modbusTcp ? 'TCP' : 'RTU',
@@ -126,7 +129,7 @@ export class DeviceTabStore {
     if (this.deviceType === type) {
       return;
     }
-    this.setLoading(true);
+    this.setLoading(true, i18n.t('device-manager.labels.loading-template'));
     const oldSlaveId = this.slaveId;
     try {
       const schema = await this.deviceTypesStore.getSchema(type);
@@ -180,7 +183,7 @@ export class DeviceTabStore {
       this.setLoading(false);
       return;
     }
-    this.setLoading(true);
+    this.setLoading(true, i18n.t('device-manager.labels.loading-template'));
     try {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       runInAction(() => {
@@ -194,7 +197,7 @@ export class DeviceTabStore {
   }
 
   async setDefaultData() {
-    this.setLoading(true);
+    this.setLoading(true, i18n.t('device-manager.labels.loading-template'));
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
       runInAction(() => {
@@ -259,8 +262,9 @@ export class DeviceTabStore {
     this.isDisconnected = value;
   }
 
-  setLoading(value: boolean) {
-    this.loading = value;
+  setLoading(value: boolean, message?: string) {
+    this.isLoading = value;
+    this.loadingMessage = message || '';
   }
 
   updateEmbeddedSoftwareVersion(portConfig: PortTabConfig) {
