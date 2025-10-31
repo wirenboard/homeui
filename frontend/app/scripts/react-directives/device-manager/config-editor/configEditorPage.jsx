@@ -130,7 +130,7 @@ const PageTabs = observer(
     onSearchDisconnectedDevice,
     onUpdateFirmware,
     onUpdateBootloader,
-    onUpdateComponents
+    onUpdateComponents,
   }) => {
     const { t } = useTranslation();
     return (
@@ -286,7 +286,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
       <PageHeader
         showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
         allowSave={pageStore.allowSave}
-        allowAddDevice={pageStore.tabs.hasPortTabs}
+        allowAddDevice={pageStore.hideButtons || pageStore.tabs.hasPortTabs}
         mobileModeStore={pageStore.tabs.mobileModeStore}
         onSave={() => pageStore.save()}
         onAddDevice={() => pageStore.addDevice()}
@@ -297,7 +297,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
           <PageTabs
             tabs={pageStore.tabs.items}
             selectedIndex={pageStore.tabs.selectedTabIndex}
-            showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
+            showButtons={!pageStore.hideButtons && (!pageStore.pageWrapperStore.loading && pageStore.loaded)}
             deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeSelectOptions}
             mobileModeStore={pageStore.tabs.mobileModeStore}
             onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}

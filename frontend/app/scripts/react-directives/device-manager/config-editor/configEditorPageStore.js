@@ -239,12 +239,14 @@ class ConfigEditorPageStore {
     this.setupDeviceFn = setupDeviceFn;
     this.formModalState = new FormModalState();
     this.fwUpdateProxy = fwUpdateProxy;
+    this.hideButtons = false;
 
     makeObservable(this, {
       allowSave: computed,
       isDirty: computed,
       loaded: observable,
       addDevices: action,
+      hideButtons: observable,
     });
   }
 
