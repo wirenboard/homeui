@@ -59,7 +59,10 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
     setIsConfirmModalOpen(false);
     try {
       const url = `/integrations/alice/controller`;
-      const resp = await fetch(url, { method: 'DELETE', credentials: 'same-origin' });
+      const resp = await fetch(url, { 
+        method: 'DELETE',
+        mode: 'cors',
+        credentials: 'include',});
       if (!resp.ok) {
         const text = await resp.text();
         throw new Error(text || resp.statusText);
