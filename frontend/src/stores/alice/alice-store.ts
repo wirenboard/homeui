@@ -9,7 +9,8 @@ import {
   updateRoom,
   deleteDevice,
   updateDevice,
-  checkIsAliceAvailable
+  checkIsAliceAvailable,
+  unlinkController
 } from './api';
 import type {
   AddDeviceParams,
@@ -110,5 +111,9 @@ export default class AliceStore {
       this.rooms.set(device[key].room_id, { name: room.name, devices: [...room.devices, key] });
       return key;
     });
+  }
+
+  async unlinkController(): Promise<SuccessMessageFetch> {
+    return unlinkController();
   }
 }

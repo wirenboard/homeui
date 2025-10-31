@@ -45,3 +45,7 @@ export const updateDevice = async (id: string, body: Partial<SmartDevice>) => re
 export const deleteDevice = async (id: string) => request.delete<SuccessMessageFetch>(
   `/api/integrations/alice/device/${id}`
 ).then(({ data }) => data);
+
+export const unlinkController = async () => request.delete<SuccessMessageFetch>(
+  `/api/integrations/alice/controller`
+).then(({ data }) => data);

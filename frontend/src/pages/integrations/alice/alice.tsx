@@ -58,18 +58,8 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
   const confirmUnlink = async () => {
     setIsConfirmModalOpen(false);
     try {
-      const url = `/integrations/alice/controller`;
-      const resp = await fetch(url, { 
-        method: 'DELETE',
-        mode: 'cors',
-        credentials: 'include',});
-      if (!resp.ok) {
-        const text = await resp.text();
-        throw new Error(text || resp.statusText);
-      }
-      notificationsStore.showNotification({ variant: 'success', text: t('alice.binding.unlinked') });
-      await fetchData();
-      window.location.reload();
+      await aliceStore.unlinkController();
+          window.location.reload();
     } catch (err: any) {
       notificationsStore.showNotification({ variant: 'danger', text: err?.message || String(err) });
     }
