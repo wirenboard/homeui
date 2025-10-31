@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.150.2) stable; urgency=medium
+
+  * Fix page scroll on small resolutions
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 31 Oct 2025 16:05:50 +0300
+
 wb-mqtt-homeui (2.150.1) stable; urgency=medium
 
   * Restrict change controller name for non admin users
