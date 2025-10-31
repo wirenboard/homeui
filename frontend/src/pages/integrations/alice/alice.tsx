@@ -59,7 +59,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
     setIsConfirmModalOpen(false);
     try {
       await aliceStore.unlinkController();
-          window.location.reload();
+          //window.location.reload();
     } catch (err: any) {
       notificationsStore.showNotification({ variant: 'danger', text: err?.message || String(err) });
     }
