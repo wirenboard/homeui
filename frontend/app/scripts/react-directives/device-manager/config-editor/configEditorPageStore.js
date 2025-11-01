@@ -396,7 +396,7 @@ class ConfigEditorPageStore {
     const res = await showAddDeviceModal(
       this.formModalState,
       makePortSelectOptions(this.tabs.portTabs),
-      this.deviceTypesStore.deviceTypeSelectOptions,
+      this.deviceTypesStore.deviceTypeDropdownOptions,
       this.tabs.selectedPortTab
     );
     if (res === undefined) {

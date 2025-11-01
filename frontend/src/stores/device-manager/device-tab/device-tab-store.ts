@@ -3,16 +3,18 @@ import { makeObservable, observable, action, runInAction, computed } from 'mobx'
 import { JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '~/i18n/react/config';
+import { DeviceTypesStore } from '../device-types-store';
 import { PortTabConfig, PortTabTcpConfig } from '../port-tab/types';
-import { FwUpdateProxy, UpdateItem, SerialDeviceProxy, LoadConfigParams } from '../types';
+import { FwUpdateProxy, UpdateItem, SerialDeviceProxy, LoadConfigParams, LoadConfigResult } from '../types';
 import { getIntAddress, toRpcPortConfig } from '../utils';
 import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';
 import { EmbeddedSoftware } from './embedded-software/embedded-software-store';
+import { MatchingTemplatesStore } from './matching-templates/matching-templates-store';
 
 export class DeviceTabStore {
   public type: string = 'device';
   public data: JsonObject;
-  public deviceTypesStore: any;
+  public deviceTypesStore: DeviceTypesStore;
   public deviceType: string;
   public hidden: boolean = false;
   public isLoading: boolean = true;
@@ -28,6 +30,7 @@ export class DeviceTabStore {
   public embeddedSoftware: EmbeddedSoftware;
   public waitingForDeviceReconnect: boolean = false;
   public schemaStore?: DeviceSettingsObjectStore;
+  public matchingTemplatesStore: MatchingTemplatesStore;
 
   private _serialDeviceProxy: SerialDeviceProxy;
   private _fwUpdateProxy: FwUpdateProxy;
@@ -35,7 +38,7 @@ export class DeviceTabStore {
   constructor(
     data: JsonObject,
     deviceType: string,
-    deviceTypesStore: any,
+    deviceTypesStore: DeviceTypesStore,
     fwUpdateProxy: FwUpdateProxy,
     serialDeviceProxy: SerialDeviceProxy
   ) {
@@ -50,6 +53,7 @@ export class DeviceTabStore {
     this.embeddedSoftware = new EmbeddedSoftware(fwUpdateProxy);
     this._serialDeviceProxy = serialDeviceProxy;
     this._fwUpdateProxy = fwUpdateProxy;
+    this.matchingTemplatesStore = new MatchingTemplatesStore(deviceTypesStore);
 
     makeObservable(this, {
       name: computed,
@@ -105,23 +109,33 @@ export class DeviceTabStore {
   }
 
   async loadConfigFromDevice(portConfig?: PortTabConfig) {
-    try {
-      if (portConfig) {
-        this.setLoading(true, i18n.t('device-manager.labels.reading-parameters'));
-        const params: LoadConfigParams = {
-          slave_id: getIntAddress(this.slaveId),
-          device_type: this.deviceType,
-          modbus_mode: (portConfig as PortTabTcpConfig).modbusTcp ? 'TCP' : 'RTU',
-          ...toRpcPortConfig(portConfig),
-        };
-        const configFromDevice = await this._serialDeviceProxy.LoadConfig(params);
-        this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw);
+    if (portConfig) {
+      this.setLoading(true, i18n.t('device-manager.labels.reading-parameters'));
+      const params: LoadConfigParams = {
+        slave_id: getIntAddress(this.slaveId),
+        device_type: this.deviceType,
+        modbus_mode: (portConfig as PortTabTcpConfig).modbusTcp ? 'TCP' : 'RTU',
+        ...toRpcPortConfig(portConfig),
+      };
+      let configFromDevice: LoadConfigResult;
+      try {
+        configFromDevice = await this._serialDeviceProxy.LoadConfig(params);
+      } catch (err) {
+        if (!this.matchingTemplatesStore.findMatchingTemplatesFromException(err.data ?? '')) {
+          this.setError(i18n.t('device-manager.errors.load-registers', {
+            error: formatError(err),
+            interpolation: { escapeValue: false },
+          }));
+        }
+        return;
       }
-    } catch (err) {
-      this.setError(i18n.t('device-manager.errors.load-registers', {
-        error: formatError(err),
-        interpolation: { escapeValue: false },
-      }));
+      console.log('Config from device:', configFromDevice);
+      this.matchingTemplatesStore.findMatchingTemplates(
+        this.deviceType,
+        configFromDevice.model,
+        configFromDevice.fw
+      );
+      this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw);
     }
   }
 

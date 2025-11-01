@@ -36,32 +36,28 @@
     }
 }
 
-.disconnectedDeviceAlert .alertMessage-content,
-.sameMqttIdAlert .alertMessage-content {
+.alert-withButton .alertMessage-content {
     display: flex;
     gap: 5px;
     align-items: center;
     flex-grow: 1;
+    overflow: visible;
 }
 
-.disconnectedDeviceAlert .button,
-.sameMqttIdAlert .button {
+.alert-withButton .alertMessage-content > span {
+    flex-grow: 1;
+}
+
+.alert-withButton .button {
     white-space: nowrap;
 }
 
 @media (max-width: 991px) {
-    .disconnectedDeviceAlert .alertMessage-content,
-    .sameMqttIdAlert .alertMessage-content {
+    .alert-withButton .alertMessage-content {
         flex-wrap: wrap;
     }
 
-    .disconnectedDeviceAlert .button,
-    .sameMqttIdAlert .button {
+    .alert-withButton .button {
         flex-grow: 1;
     }
-}
-
-.disconnectedDeviceAlert .alertMessage-content > span,
-.sameMqttIdAlert .alertMessage-content > span {
-    flex-grow: 1;
 }

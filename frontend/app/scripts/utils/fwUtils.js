@@ -28,7 +28,7 @@ function splitVersion(version) {
  * Uses simplified algorithm for WB devices.
  * https://wirenboard.com/wiki/Modbus-hardware-version
  *
- * 1.2.3-rc1 < 1.2.3-rc10 < 1.2.3 < 1.2.3+wb1 < 1.2.3+wb10.
+ * undefined < 1.2.3-rc1 < 1.2.3-rc10 < 1.2.3 < 1.2.3+wb1 < 1.2.3+wb10.
  *
  * @param {string|undefined} fw1
  * @param {string|undefined} fw2

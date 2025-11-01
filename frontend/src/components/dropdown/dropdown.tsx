@@ -91,6 +91,12 @@ export const Dropdown = ({
           ...baseStyles,
           minWidth,
         }),
+        option: (provided, { data }) => {
+          if (data?.hidden) {
+            provided.display = 'none';
+          }
+          return provided;
+        },
       }}
       unstyled
       onChange={handleChange}

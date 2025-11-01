@@ -87,8 +87,41 @@ export type LoadConfigParams = LoadConfigBaseParams & (RpcTcpPortConfig | RpcSer
 export interface LoadConfigResult {
   parameters: Record<string, number>;
   fw: string;
+  model: string;
 }
 
 export interface SerialDeviceProxy {
   LoadConfig(params: LoadConfigParams): Promise<LoadConfigResult>;
+}
+
+export interface DeviceTypeHardware {
+  signature: string;
+  fw?: string;
+}
+
+export interface DeviceTypeDescription {
+  name: string;
+  deprecated: boolean;
+  type: string;
+  protocol: string;
+  'mqtt-id': string;
+  'with-subdevices'?: boolean;
+  hw?: DeviceTypeHardware[];
+  schema?: Record<string, any>;
+}
+
+export interface DeviceTypeDescriptionGroup {
+  name: string;
+  types: DeviceTypeDescription[];
+}
+
+export interface DeviceTypeDropdownOption {
+  label: string;
+  value: string;
+  hidden?: boolean;
+}
+
+export interface DeviceTypeDropdownOptionGroup {
+  label: string;
+  options: DeviceTypeDropdownOption[];
 }

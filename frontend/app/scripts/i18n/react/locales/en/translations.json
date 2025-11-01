@@ -12,7 +12,8 @@
          "add": "Add",
          "remove": "Remove",
          "move-up": "Move up",
-         "move-down": "Move down"
+         "move-down": "Move down",
+         "select": "Select"
       }
    },
    "dashboards": {
@@ -366,7 +367,9 @@
          "period": "Period (ms)",
          "custom-channels": "Custom channels",
          "loading-template": "Loading device template...",
-         "reading-parameters": "Reading parameters from device..."
+         "reading-parameters": "Reading parameters from device...",
+         "better-template": "A new template is available for the device",
+         "select-template": "Select template"
       },
       "buttons": {
          "save": "Save config",
@@ -382,7 +385,8 @@
          "resolve-duplicate-mqtt-topic": "Set unique id",
          "search-disconnected-device": "Search for the device",
          "update": "Update",
-         "parameters": "Parameters"
+         "parameters": "Parameters",
+         "switch-template": "Switch template"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -404,7 +408,9 @@
          "add-device": "Add device error: {{error}}. See the wb-mqtt-serial system log for detailed information",
          "change-device-type": "Changing device type error: {{error}}. See the wb-mqtt-serial system log for detailed information",
          "load-registers": "Error loading current settings from device: {{error}}. Default values are displayed for parameters not present in the configuration file",
-         "supported-since": "Supported since firmware {{fw}}"
+         "supported-since": "Supported since firmware {{fw}}",
+         "fw-mismatch": "Current firmware {{currentFw}} is not supported by this template. Minimum required version: {{requiredFw}}. Please update the firmware or switch to another template.",
+         "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template."
       }
    },
    "exp-check": {
