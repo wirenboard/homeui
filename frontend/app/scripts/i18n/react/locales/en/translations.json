@@ -701,7 +701,8 @@
          "device-added": "\"{{name}}\" device saved",
          "device-updated": "\"{{name}}\" device settings updated",
          "device-deleted": "Device \"{{name}}\" deleted",
-         "device-copied": "Device copied"
+         "device-copied": "Device copied",
+         "controller-unlinked": "Controller has been unlinked from Yandex Alice"
       }
    },
    "web-ui-settings":{

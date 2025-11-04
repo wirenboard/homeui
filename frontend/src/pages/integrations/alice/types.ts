@@ -1,7 +1,6 @@
 import { DeviceStore } from '@/stores/device';
 
 export interface AlicePageParams {
-  hasRights: boolean;
   deviceStore: DeviceStore;
 }
 

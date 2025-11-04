@@ -6,13 +6,14 @@ import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
+import { authStore, UserRole } from '@/stores/auth';
 import { notificationsStore } from '@/stores/notifications';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
 import type { AlicePageParams, AlicePageState, View } from './types';
 import './styles.css';
 
-const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
+const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
   const { rooms, integrations, fetchData } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
@@ -50,8 +51,9 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
     [integrations, pageState]
   );
 
-  const handleUnlinkController = async (ev?: React.MouseEvent) => {
-    if (ev) ev.preventDefault();
+  const handleUnlinkController = async (ev: React.MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
     setIsConfirmModalOpen(true);
   };
 
@@ -59,9 +61,22 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
     setIsConfirmModalOpen(false);
     try {
       await aliceStore.unlinkController();
-          //window.location.reload();
+      notificationsStore.showNotification({ 
+        variant: 'success', 
+        text: t('alice.notifications.controller-unlinked') 
+      });
+      
+      // После отвязки контроллера обычно интеграция становится недоступной
+      // Поэтому переводим в состояние "не подключено" и очищаем данные
+      setBindingInfo({ url: '', isBinded: false });
+      setPageState('isNotConnected');
+      setView({ roomId: 'all' }); // Сбрасываем вид
+      
     } catch (err: any) {
-      notificationsStore.showNotification({ variant: 'danger', text: err?.message || String(err) });
+      notificationsStore.showNotification({ 
+        variant: 'danger', 
+        text: err?.response?.data?.detail || err?.message || String(err) 
+      });
     }
   };
 
@@ -69,7 +84,7 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
     <PageLayout
       title={t('alice.title')}
       isLoading={isLoading}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
     >
       {!!integrations?.length && (
@@ -83,14 +98,14 @@ const AlicePage = observer(({ hasRights, deviceStore }: AlicePageParams) => {
                       {t('alice.buttons.check-binding-status')}
                     </a>
                     <span>{t('alice.labels.is-binded')}</span>
-                    <a
-                      href="/integrations/alice/controller"
+                    <button
+                      type="button"
                       className="alice-binding alice-unlink"
                       onClick={handleUnlinkController}
                       title={t('alice.binding.unlink-controller')}
                     >
                       {t('alice.binding.unlink-controller')}
-                    </a>
+                    </button>
                   </div>
                 )
                 : (

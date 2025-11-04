@@ -36,6 +36,10 @@ export const Confirm = ({
     >
       <form
         method="dialog"
+        onSubmit={(ev) => {
+          ev.preventDefault();
+          confirmCallback();
+        }}
         onKeyDown={(ev) => {
           if (isPreventSubmit && ev.key === 'Enter') {
             ev.preventDefault();
@@ -57,7 +61,6 @@ export const Confirm = ({
             className="dialog-action"
             label={acceptLabel || t('modal.labels.yes')}
             variant={variant === 'danger' ? 'danger' : 'primary'}
-            onClick={confirmCallback}
           />
         </div>
       </form>

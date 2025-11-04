@@ -726,7 +726,8 @@
          "device-added": "Устройство \"{{name}}\" сохранено",
          "device-updated": "Настройки устройства \"{{name}}\" обновлены",
          "device-deleted": "Устройство \"{{name}}\" удалено",
-         "device-copied": "Устройство скопировано"
+         "device-copied": "Устройство скопировано",
+         "controller-unlinked": "Контроллер отвязан от Яндекс.Алисы"
       },
       "binding":{
          "unlink-controller": "(отвязать контроллер)",
