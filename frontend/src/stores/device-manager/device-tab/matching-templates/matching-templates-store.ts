@@ -17,7 +17,6 @@ export class MatchingTemplatesStore {
   }
 
   findMatchingTemplatesFromException(errorMessage: string) {
-    console.log('Finding matching templates from error message:', errorMessage);
     const errors: Array<[RegExp, string]> = [
       [
         /Device "(.+?)" firmware version (.+?) is lower than selected template minimal supported version (.+?)$/,
@@ -48,12 +47,10 @@ export class MatchingTemplatesStore {
   }
 
   findMatchingTemplates(selectedDeviceType: string, deviceModel: string, deviceFw: string) {
-    console.log(selectedDeviceType, deviceModel, deviceFw);
     const matchingTemplates = this._deviceTypesStore.findNotDeprecatedDeviceTypes(
       deviceModel,
       deviceFw
     );
-    console.log('Matching templates found:', matchingTemplates);
     if (matchingTemplates.length && !matchingTemplates.includes(selectedDeviceType)) {
       // selectedDeviceType is old and a better new template is available
       this.message = 'device-manager.labels.better-template';

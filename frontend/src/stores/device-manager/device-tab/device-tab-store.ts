@@ -129,7 +129,6 @@ export class DeviceTabStore {
         }
         return;
       }
-      console.log('Config from device:', configFromDevice);
       this.matchingTemplatesStore.findMatchingTemplates(
         this.deviceType,
         configFromDevice.model,
