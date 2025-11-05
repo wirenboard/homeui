@@ -3,9 +3,11 @@ import { observer } from 'mobx-react-lite';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Checkbox } from '@/components/checkbox';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
+import { notificationsStore } from '@/stores/notifications';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
 import type { AlicePageParams, AlicePageState, View } from './types';
@@ -13,11 +15,28 @@ import './styles.css';
 
 const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
-  const { rooms, integrations, fetchData } = aliceStore;
+  const { rooms, integrations, fetchData, isIntegrationEnabled, setIntegrationEnabled } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
+
+  const handleIntegrationToggle = async (enabled: boolean) => {
+    try {
+      await setIntegrationEnabled(enabled);
+      notificationsStore.showNotification({
+        variant: 'success',
+        text: enabled 
+          ? t('alice.notifications.integration-enabled') 
+          : t('alice.notifications.integration-disabled'),
+      });
+    } catch (err) {
+      notificationsStore.showNotification({ 
+        variant: 'danger', 
+        text: err.response?.data?.detail || t('alice.notifications.integration-error')
+      });
+    }
+  };
 
   useEffect(() => {
     fetchData()
@@ -59,6 +78,11 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         pageState === 'isConnected'
           ? (
             <>
+              <Checkbox
+                checked={isIntegrationEnabled}
+                title={t('alice.labels.enable-integration')}
+                onChange={handleIntegrationToggle}
+              />
               {bindingInfo.isBinded
                 ? (
                   <div className="alice-bindingContainer">

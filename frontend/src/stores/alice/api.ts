@@ -45,3 +45,8 @@ export const updateDevice = async (id: string, body: Partial<SmartDevice>) => re
 export const deleteDevice = async (id: string) => request.delete<SuccessMessageFetch>(
   `/api/integrations/alice/device/${id}`
 ).then(({ data }) => data);
+
+export const enableAliceIntegration = async (enabled: boolean) => request.post<SuccessMessageFetch>(
+  '/api/integrations/alice/enable',
+  { enabled }
+).then(({ data }) => data);
