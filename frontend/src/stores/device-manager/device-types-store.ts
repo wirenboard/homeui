@@ -1,4 +1,4 @@
-import { firmwareIsNewer } from '~/utils/fwUtils';
+import { firmwareIsNewer, firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type { DeviceTypeDescription, DeviceTypeDropdownOptionGroup, DeviceTypeDescriptionGroup } from './types';
 
 export class DeviceTypesStore {
@@ -46,7 +46,7 @@ export class DeviceTypesStore {
     let deviceTypes = Array.from(this._deviceTypesMap.entries()).filter(([_typeName, desc]) => {
       return (
         !desc.deprecated &&
-        desc.hw?.some((hw) => hw.signature === deviceSignature && !firmwareIsNewer(fw, hw.fw))
+        desc.hw?.some((hw) => hw.signature === deviceSignature && firmwareIsNewerOrEqual(hw.fw, fw))
       );
     });
 
