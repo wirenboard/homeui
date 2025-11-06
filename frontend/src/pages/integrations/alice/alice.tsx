@@ -26,13 +26,13 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       await setIntegrationEnabled(enabled);
       notificationsStore.showNotification({
         variant: 'success',
-        text: enabled 
-          ? t('alice.notifications.integration-enabled') 
+        text: enabled
+          ? t('alice.notifications.integration-enabled')
           : t('alice.notifications.integration-disabled'),
       });
     } catch (err) {
-      notificationsStore.showNotification({ 
-        variant: 'danger', 
+      notificationsStore.showNotification({
+        variant: 'danger',
         text: err.response?.data?.detail || t('alice.notifications.integration-error')
       });
     }
