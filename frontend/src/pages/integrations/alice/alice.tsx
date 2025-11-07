@@ -33,7 +33,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     } catch (err) {
       notificationsStore.showNotification({
         variant: 'danger',
-        text: err.response?.data?.detail || t('alice.notifications.integration-error')
+        text: err.response?.data?.detail || t('alice.notifications.integration-error'),
       });
     }
   };
