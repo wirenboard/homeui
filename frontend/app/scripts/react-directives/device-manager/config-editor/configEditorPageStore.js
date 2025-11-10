@@ -433,7 +433,9 @@ class ConfigEditorPageStore {
     }
     let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     let deviceTab = this.createDeviceTab(deviceConfig);
-    deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
+    const portConfig = portTab.baseConfig;
+    deviceTab.updateEmbeddedSoftwareVersion(portConfig);
+    await deviceTab.loadContent(portConfig);
     this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
   }
 
