@@ -7,7 +7,7 @@ import { ReadRegistersState } from './types';
 
 export class ReadRegistersStateStore {
   public errorMessage: string = '';
-  public matchingTemplates: string[] = [];
+  public otherMatchingTemplates: string[] = [];
   public allowEditSettings: boolean = true;
   public state: ReadRegistersState = ReadRegistersState.Unsupported;
 
@@ -48,7 +48,7 @@ export class ReadRegistersStateStore {
           requiredFw: templateFw,
           deviceModel: deviceModel,
         });
-        this.matchingTemplates = this._deviceTypesStore.findNotDeprecatedDeviceTypes(deviceModel, deviceFw);
+        this.otherMatchingTemplates = this._deviceTypesStore.findNotDeprecatedDeviceTypes(deviceModel, deviceFw);
         this.allowEditSettings = false;
         return;
       }
@@ -57,7 +57,7 @@ export class ReadRegistersStateStore {
       error: formatError(error),
       interpolation: { escapeValue: false },
     });
-    this.matchingTemplates = [];
+    this.otherMatchingTemplates = [];
     this.allowEditSettings = true;
   }
 
@@ -68,8 +68,8 @@ export class ReadRegistersStateStore {
       deviceFw
     );
     this.allowEditSettings = true;
-    this.matchingTemplates = matchingTemplates;
-    if (matchingTemplates.length && !matchingTemplates.includes(deviceType)) {
+    this.otherMatchingTemplates = matchingTemplates.filter((dt) => dt !== deviceType);
+    if (this.otherMatchingTemplates.length) {
       // selectedDeviceType is old and a better new template is available
       this.errorMessage = i18n.t('device-manager.labels.better-template');
     } else {
@@ -84,7 +84,7 @@ export class ReadRegistersStateStore {
       this.state = ReadRegistersState.Unsupported;
     }
     this.errorMessage = '';
-    this.matchingTemplates = [];
+    this.otherMatchingTemplates = [];
     this.allowEditSettings = true;
   }
 
@@ -92,7 +92,7 @@ export class ReadRegistersStateStore {
     if ([ReadRegistersState.Error, ReadRegistersState.Disabled].includes(this.state)) {
       this.state = ReadRegistersState.Manual;
       this.errorMessage = '';
-      this.matchingTemplates = [];
+      this.otherMatchingTemplates = [];
       this.allowEditSettings = true;
     }
   }

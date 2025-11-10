@@ -22,8 +22,8 @@ const UpdatedTemplateAlert = ({
 }) => {
   const { t } = useTranslation();
   const [isOpened, setIsOpened] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(tab.readRegistersState.matchingTemplates[0]);
-  const templatesOptions = tab.readRegistersState.matchingTemplates.map((deviceType) => ({
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(tab.readRegistersState.otherMatchingTemplates[0]);
+  const templatesOptions = tab.readRegistersState.otherMatchingTemplates.map((deviceType) => ({
     label: tab.deviceTypesStore.getName(deviceType),
     value: deviceType,
   }));
@@ -104,7 +104,7 @@ export const ReadRegistersResultAlert = observer(({
       );
     }
     case ReadRegistersState.Error: {
-      if (tab.readRegistersState.matchingTemplates.length) {
+      if (tab.readRegistersState.otherMatchingTemplates.length) {
         return <UpdatedTemplateAlert tab={tab} onDeviceTypeChange={onDeviceTypeChange} />;
       }
       return (
@@ -123,7 +123,7 @@ export const ReadRegistersResultAlert = observer(({
       );
     }
     case ReadRegistersState.Complete: {
-      if (tab.readRegistersState.matchingTemplates.length) {
+      if (tab.readRegistersState.otherMatchingTemplates.length) {
         return <UpdatedTemplateAlert tab={tab} onDeviceTypeChange={onDeviceTypeChange} />;
       }
       if (tab.isDeprecated) {
