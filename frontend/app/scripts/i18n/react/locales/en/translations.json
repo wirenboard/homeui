@@ -644,7 +644,7 @@
          "is-binded": "This controller is bound.",
          "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
          "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
-         "enable-integration": "Enable integration",
+         "enable-integration": "Enable",
          "room": "Room",
          "room-name": "Room name",
          "empty-list": "No devices added",
