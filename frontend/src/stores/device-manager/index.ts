@@ -10,9 +10,9 @@ import {
   EmbeddedSoftwareComponent,
   ComponentFirmware
 } from './device-tab/embedded-software/embedded-software-store';
-import { MatchingTemplatesStore } from './device-tab/matching-templates/matching-templates-store';
+import { ReadRegistersState } from './device-tab/types';
 import { DeviceTypesStore } from './device-types-store';
-import { toRpcPortConfig } from './utils';
+import { toRpcPortConfig, setupDevice } from './utils';
 
 export {
   DeviceSettingsObjectStore,
@@ -25,5 +25,6 @@ export {
   DeviceTabStore,
   toRpcPortConfig,
   DeviceTypesStore,
-  MatchingTemplatesStore
+  ReadRegistersState,
+  setupDevice
 };

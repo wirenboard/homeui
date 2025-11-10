@@ -3,9 +3,9 @@ import { firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type { PortTabTcpConfig, PortTabConfig } from '../../port-tab/types';
 import type {
   FwUpdateProxy,
-  GetFirmwareInfoParams,
+  FwUpdateProxyGetFirmwareInfoParams,
   EmbeddedSoftwareType,
-  UpdateParams,
+  FwUpdateProxyUpdateParams,
   UpdateItem
 } from '../../types';
 import { toRpcPortConfig, getIntAddress } from '../../utils';
@@ -72,7 +72,7 @@ export class EmbeddedSoftwareComponent {
   }
 
   async startUpdate(address: string | number, portConfig: PortTabConfig) {
-    let params: UpdateParams = {
+    let params: FwUpdateProxyUpdateParams = {
       slave_id: getIntAddress(address),
       port: toRpcPortConfig(portConfig),
       type: this.type,
@@ -155,7 +155,7 @@ export class EmbeddedSoftware {
   async updateVersion(address: string | number, portConfig: PortTabConfig) {
     try {
       if (await this._fwUpdateProxy.hasMethod('GetFirmwareInfo')) {
-        const params: GetFirmwareInfoParams = {
+        const params: FwUpdateProxyGetFirmwareInfoParams = {
           slave_id: getIntAddress(address),
           port: toRpcPortConfig(portConfig),
           protocol: (portConfig as PortTabTcpConfig).modbusTcp ? 'modbus-tcp' : 'modbus',

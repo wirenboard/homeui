@@ -13,7 +13,8 @@
          "remove": "Remove",
          "move-up": "Move up",
          "move-down": "Move down",
-         "select": "Select"
+         "select": "Select",
+         "read": "Read"
       }
    },
    "dashboards": {
@@ -368,8 +369,10 @@
          "custom-channels": "Custom channels",
          "loading-template": "Loading device template...",
          "reading-parameters": "Reading parameters from device...",
-         "better-template": "A new template is available for the device",
-         "select-template": "Select template"
+         "better-template": "A new template is available for the device. This device will continue to work correctly with the current template. Switch if you need support for new features or bug fixes.",
+         "select-template": "Select template",
+         "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
+         "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made"
       },
       "buttons": {
          "save": "Save config",

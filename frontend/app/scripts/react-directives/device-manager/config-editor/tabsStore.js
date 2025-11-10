@@ -171,10 +171,7 @@ export class TabsStore {
     this.items.splice(i, 0, deviceTab);
     this.hasModifiedStructure = true;
     if (selectTab) {
-      this.selectedTabIndex = i;
-      if (this.mobileModeStore.inMobileMode) {
-        this.mobileModeStore.showContentPanel();
-      }
+      this.onSelectTab(i);
     }
   }
 

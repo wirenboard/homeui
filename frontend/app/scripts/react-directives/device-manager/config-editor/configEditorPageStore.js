@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
-import { DeviceTabStore, toRpcPortConfig } from '@/stores/device-manager';
+import { DeviceTabStore, setupDevice } from '@/stores/device-manager';
 import { loadJsonSchema, Translator, getDefaultValue } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '../../../i18n/react/config';
@@ -101,93 +101,6 @@ function makePortSelectOptions(portTabs) {
   });
 }
 
-function setSerialNumberForDeviceSetupRPCCall(device, params) {
-  if (!device?.gotByFastScan) {
-    return;
-  }
-  let numberSn;
-  try {
-    numberSn = BigInt(device.sn);
-  } catch {
-    return;
-  }
-  // In a fast modbus call we must use in sn parameter the same value as in 270, 271 registers
-  // For MAP devices sn occupies 25 bits in 270, 271 registers and the rest most significant bits are set to 1
-  const re = new RegExp('\\S*MAP\\d+\\S*');
-  if (re.test(device.type)) {
-    numberSn = numberSn + 4261412864n; // 0xFE000000
-  }
-  // Specifying SN will result fast modbus request
-  params.sn = Number(numberSn);
-}
-
-/**
- * Makes parameters for wb-mqtt-serial's port/Setup RPC call
- *
- * @param {ScannedDevice} device - The object containing the device information.
- * @param {number} portBaudRate - The baud rate of the port.
- * @param {string} portParity - The parity setting of the port.
- * @param {number} portStopBits - The stop bits setting of the port.
- * @returns {object|undefined} - The parameters object containing the device setup parameters, or undefined if no parameters are found.
- */
-function getDeviceSetupParams(device, portBaudRate, portParity, portStopBits) {
-  if (device === undefined) {
-    return undefined;
-  }
-
-  let params = {
-    path: device.port,
-    items: [],
-  };
-
-  let commonCfg = {
-    slave_id: device.address,
-    baud_rate: device.baudRate,
-    stop_bits: device.stopBits,
-    parity: device.parity,
-  };
-
-  if (device.newAddress) {
-    let item = Object.assign({}, commonCfg);
-    setSerialNumberForDeviceSetupRPCCall(device, item);
-    item.cfg = {
-      slave_id: getIntAddress(device.newAddress),
-    };
-    params.items.push(item);
-    commonCfg.slave_id = item.cfg.slave_id;
-  }
-
-  if (portBaudRate !== undefined && device.baudRate !== portBaudRate) {
-    let item = Object.assign({}, commonCfg);
-    item.cfg = { baud_rate: portBaudRate };
-    params.items.push(item);
-    commonCfg.baud_rate = item.cfg.baud_rate;
-  }
-
-  if (portStopBits !== undefined && device.stopBits !== portStopBits) {
-    // Devices with fast modbus support accept both 1 and 2 stop bits
-    // So it is not a misconfiguration if the setting differs from port's one
-    if (!device.gotByFastScan) {
-      let item = Object.assign({}, commonCfg);
-      item.cfg = { stop_bits: portStopBits };
-      params.items.push(item);
-      commonCfg.stop_bits = item.cfg.stop_bits;
-    }
-  }
-
-  if (portParity !== undefined && device.parity !== portParity) {
-    const mapping = {
-      O: 1,
-      E: 2,
-    };
-    let item = Object.assign({}, commonCfg);
-    item.cfg = { parity: mapping[portParity] || 0 };
-    params.items.push(item);
-  }
-
-  return params.items.length !== 0 ? params : undefined;
-}
-
 function getTopics(portTabs, deviceTypesStore) {
   let topics = new Set();
   portTabs.forEach((portTab) => {
@@ -216,9 +129,9 @@ class ConfigEditorPageStore {
     toTabs,
     deviceTypesStore,
     rolesFactory,
-    setupDeviceFn,
     fwUpdateProxy,
-    serialDeviceProxy
+    serialDeviceProxy,
+    serialPortProxy
   ) {
     this.accessLevelStore = new AccessLevelStore(rolesFactory);
     this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
@@ -232,10 +145,10 @@ class ConfigEditorPageStore {
     this.saveConfigFn = saveConfigFn;
     this.loadConfigFn = loadConfigFn;
     this.loaded = false;
-    this.setupDeviceFn = setupDeviceFn;
     this.formModalState = new FormModalState();
     this.fwUpdateProxy = fwUpdateProxy;
     this.serialDeviceProxy = serialDeviceProxy;
+    this.serialPortProxy = serialPortProxy;
 
     makeObservable(this, {
       allowSave: computed,
@@ -469,7 +382,17 @@ class ConfigEditorPageStore {
       const setupResults = await Promise.all(
         devices.map(async (device) => {
           try {
-            return await this.setupDevice(device);
+            let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
+            if (!portTab) {
+              return false;
+            }
+            const portConfig = portTab.baseConfig;
+            const newParams = {
+              baud_rate: portConfig?.baudRate,
+              parity: portConfig?.parity,
+              stop_bits: portConfig?.stopBits,
+            };
+            return await setupDevice(this.serialPortProxy, device, newParams);
           } catch (err) {
             errors.push(getDeviceSetupErrorMessage(device, err));
           }
@@ -511,50 +434,7 @@ class ConfigEditorPageStore {
     let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
     let deviceTab = this.createDeviceTab(deviceConfig);
     deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
-    deviceTab.loadContent(portTab.baseConfig);
     this.tabs.addDeviceTab(portTab, deviceTab, selectTab);
-  }
-
-  async restoreDevice(device, portTab) {
-    if (!device.bootloaderMode) {
-      await this.setupDevice(device);
-      return;
-    }
-
-    const portConfig = portTab.baseConfig;
-    let params = { slave_id: getIntAddress(device.address), port: toRpcPortConfig(portConfig) };
-    if (portConfig.modbusTcp) {
-      params.protocol = 'modbus-tcp';
-    }
-    await this.fwUpdateProxy.Restore(params);
-  }
-
-  /**
-   * @param {ScannedDevice} device - The device to be set up.
-   * @returns {boolean} - Returns true if the device was set up successfully, otherwise false.
-   */
-  async setupDevice(device) {
-    if (!device.type) {
-      return false;
-    }
-
-    let portTab = this.tabs.portTabs.find((p) => p.isEnabled && p.path === device.port);
-    if (!portTab) {
-      return false;
-    }
-
-    const params = getDeviceSetupParams(
-      device,
-      portTab.baseConfig?.baudRate,
-      portTab.baseConfig?.parity,
-      portTab.baseConfig?.stopBits
-    );
-    if (params) {
-      await this.setupDeviceFn(params);
-      device.address = device?.newAddress ?? device.address;
-    }
-
-    return true;
   }
 
   setDeviceDisconnected(topic, error) {
@@ -563,13 +443,8 @@ class ConfigEditorPageStore {
       return;
     }
     const isDisconnected = error === 'r';
-    deviceTab.setDisconnected(isDisconnected);
-    if (!isDisconnected) {
-      const portTab = this.tabs.findPortTabByDevice(deviceTab);
-      if (portTab) {
-        deviceTab.updateEmbeddedSoftwareVersion(portTab.baseConfig);
-      }
-    }
+    const portTab = this.tabs.findPortTabByDevice(deviceTab);
+    deviceTab.setDisconnected(isDisconnected, portTab.baseConfig);
   }
 
   async copyTab() {
@@ -622,6 +497,13 @@ class ConfigEditorPageStore {
     if (tab) {
       const portTab = this.tabs.selectedPortTab;
       tab.startComponentsUpdate(portTab.baseConfig);
+    }
+  }
+
+  readRegisters(tab) {
+    const portTab = this.tabs.selectedPortTab;
+    if (tab && portTab) {
+      tab.loadContent(portTab.baseConfig);
     }
   }
 }
