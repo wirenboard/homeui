@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,14 @@ import './styles.css';
 
 const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
-  const { rooms, integrations, fetchData, isIntegrationEnabled, setIntegrationEnabled } = aliceStore;
+  const {
+    rooms,
+    integrations,
+    fetchData,
+    fetchIntegrationStatus,
+    isIntegrationEnabled,
+    setIntegrationEnabled,
+  } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
@@ -31,6 +39,12 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
           : t('alice.notifications.integration-disabled'),
       });
     } catch (err) {
+      if (err.response?.status === 412) {
+        runInAction(() => {
+          aliceStore.isIntegrationEnabled = true;
+        });
+      }
+
       notificationsStore.showNotification({
         variant: 'danger',
         text: err.response?.data?.detail || t('alice.notifications.integration-error'),
@@ -39,6 +53,10 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   };
 
   useEffect(() => {
+    // Load integration status
+    fetchIntegrationStatus();
+
+    // Load main data
     fetchData()
       .then((res) => {
         setBindingInfo({
@@ -49,6 +67,24 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       })
       .catch(() => setPageState('isNotConnected'));
   }, []);
+
+  useEffect(() => {
+    // Handle visibility change event
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // When tab becomes visible, load actual status
+        fetchIntegrationStatus();
+      }
+    };
+
+    // Subscribe to visibility change event
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Unsubscribe on component unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchIntegrationStatus]);
 
   useEffect(() => {
     if (integrations) {
@@ -67,7 +103,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     [integrations, pageState]
   );
 
-  const headerActions = useMemo(() => (
+  const headerActions = (
     <div className="alice-integrationToggle">
       <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
       <Switch
@@ -76,7 +112,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         onChange={handleIntegrationToggle}
       />
     </div>
-  ), [isIntegrationEnabled, handleIntegrationToggle, t]);
+  );
 
   return (
     <PageLayout
@@ -90,21 +126,22 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         pageState === 'isConnected'
           ? (
             <>
-              {bindingInfo.isBinded
-                ? (
-                  <div className="alice-bindingContainer">
-                    <span>{t('alice.labels.is-binded')}</span>
+              {isIntegrationEnabled && (
+                bindingInfo.isBinded
+                  ? (
+                    <div className="alice-bindingContainer">
+                      <span>{t('alice.labels.is-binded')}</span>
+                      <a href={bindingInfo.url} className="alice-binding" target="_blank">
+                        {t('alice.buttons.check-binding-status')}
+                      </a>
+                    </div>
+                  )
+                  : (
                     <a href={bindingInfo.url} className="alice-binding" target="_blank">
-                      {t('alice.buttons.check-binding-status')}
+                      {t('alice.buttons.bind')}
                     </a>
-                  </div>
-                )
-                : (
-                  <a href={bindingInfo.url} className="alice-binding" target="_blank">
-                    {t('alice.buttons.bind')}
-                  </a>
-                )
-              }
+                  )
+              )}
 
               <div className="alice-container">
                 <aside className="alice-sidebar">

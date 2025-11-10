@@ -10,7 +10,8 @@ import {
   deleteDevice,
   updateDevice,
   checkIsAliceAvailable,
-  enableAliceIntegration
+  enableAliceIntegration,
+  getAliceIntegrationStatus
 } from './api';
 import type {
   AddDeviceParams,
@@ -43,13 +44,19 @@ export default class AliceStore {
     }
   }
 
+  async fetchIntegrationStatus(): Promise<void> {
+    const { enabled } = await getAliceIntegrationStatus();
+    runInAction(() => {
+      this.isIntegrationEnabled = enabled;
+    });
+  }
+
   async fetchData(): Promise<AliceFetchData> {
     const data = await getAliceInfo();
 
     return runInAction(() => {
       this.rooms = new Map(Object.entries(data.rooms).map(([id, room]) => [id, room]));
       this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
-      this.isIntegrationEnabled = data.enabled ?? false;
       return data;
     });
   }

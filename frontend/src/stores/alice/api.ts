@@ -46,6 +46,10 @@ export const deleteDevice = async (id: string) => request.delete<SuccessMessageF
   `/api/integrations/alice/device/${id}`
 ).then(({ data }) => data);
 
+export const getAliceIntegrationStatus = async () => request.get<{ enabled: boolean }>(
+  '/api/integrations/alice/enable'
+).then(({ data }) => data);
+
 export const enableAliceIntegration = async (enabled: boolean) => request.post<SuccessMessageFetch>(
   '/api/integrations/alice/enable',
   { enabled }
