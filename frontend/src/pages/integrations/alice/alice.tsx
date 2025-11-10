@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
-import { Checkbox } from '@/components/checkbox';
+import { Switch } from '@/components/switch';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
@@ -67,22 +67,29 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     [integrations, pageState]
   );
 
+  const headerActions = useMemo(() => (
+    <div className="alice-integrationToggle">
+      <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
+      <Switch
+        id="alice-integration-enabled"
+        value={isIntegrationEnabled}
+        onChange={handleIntegrationToggle}
+      />
+    </div>
+  ), [isIntegrationEnabled, handleIntegrationToggle, t]);
+
   return (
     <PageLayout
       title={t('alice.title')}
       isLoading={isLoading}
       hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
+      actions={headerActions}
     >
       {!!integrations?.length && (
         pageState === 'isConnected'
           ? (
             <>
-              <Checkbox
-                checked={isIntegrationEnabled}
-                title={t('alice.labels.enable-integration')}
-                onChange={handleIntegrationToggle}
-              />
               {bindingInfo.isBinded
                 ? (
                   <div className="alice-bindingContainer">
