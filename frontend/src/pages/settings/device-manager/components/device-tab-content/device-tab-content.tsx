@@ -9,13 +9,9 @@ import { Loader } from '@/components/loader';
 import { DeviceSettingsEditor } from '../../components/device-settings-editor/device-settings-editor';
 import { EmbeddedSoftwarePanel } from '../../components/embedded-software-panel/embedded-software-panel';
 import { UnknownDeviceTabContent } from '../../components/unknown-device-tab/unknown-device-tab';
+import { BetterTemplatesAlert } from './better-template-alert';
 import type { DeviceTabContentProps } from './types';
 import './styles.css';
-
-const DeprecatedWarning = () => {
-  const { t } = useTranslation();
-  return <Alert variant="warn">{t('device-manager.errors.deprecated')}</Alert>;
-};
 
 const SubdevicesWarning = () => {
   const { t } = useTranslation();
@@ -30,7 +26,7 @@ const DuplicateSlaveIdError = () => {
 const SameMqttIdError = ({ devicesWithTheSameId, onSetUniqueMqttTopic }) => {
   const { t } = useTranslation();
   return (
-    <Alert variant="danger" className="sameMqttIdAlert">
+    <Alert variant="danger" className="alert-withButton">
       <span>
         {t('device-manager.errors.duplicate-mqtt-topic', {
           device: devicesWithTheSameId.join(', '),
@@ -49,7 +45,7 @@ const SameMqttIdError = ({ devicesWithTheSameId, onSetUniqueMqttTopic }) => {
 const DisconnectedError = ({ isWbDevice, onSearchDisconnectedDevice }) => {
   const { t } = useTranslation();
   return (
-    <Alert variant="danger" className="disconnectedDeviceAlert">
+    <Alert variant="danger" className="alert-withButton">
       <span>
         {t('device-manager.errors.is-disconnected')}
       </span>
@@ -107,9 +103,6 @@ export const DeviceTabContent = observer(
         {tab.error && (
           <Alert variant="danger">{tab.error}</Alert>
         )}
-        {(tab.isDeprecated && !tab.withSubdevices) && (
-          <DeprecatedWarning />
-        )}
         {tab.withSubdevices && (
           <SubdevicesWarning />
         )}
@@ -134,25 +127,37 @@ export const DeviceTabContent = observer(
             onSetUniqueMqttTopic={onSetUniqueMqttTopic}
           />
         )}
+        {!tab.withSubdevices && (
+          <BetterTemplatesAlert
+            tab={tab}
+            onDeviceTypeChange={onDeviceTypeChange}
+          />
+        )}
         <div className="deviceTab-contentHeader">
           <Dropdown
             options={deviceTypeSelectOptions}
             value={tab.deviceType}
             className="deviceTab-contentHeaderSelect"
+            isSearchable={true}
             onChange={(option: Option<string>) => onDeviceTypeChange(tab, option.value)}
           />
           <div className="deviceTab-contentHeaderButtons">
-            {!tab.withSubdevices && (
+            {!tab.withSubdevices && tab.matchingTemplatesStore.allowEditSettings && (
               <Button
                 label={t('device-manager.buttons.parameters')}
                 onClick={() => openOptionalParamsSelectDialog(!optionalParamsSelectDialogIsOpen)}
               />
             )}
             <Button label={t('device-manager.buttons.delete')} variant="danger" onClick={onDeleteTab} />
-            {!tab.withSubdevices && <Button label={t('device-manager.buttons.copy')} onClick={onCopyTab} />}
+            {!tab.withSubdevices && tab.matchingTemplatesStore.allowEditSettings && (
+              <Button
+                label={t('device-manager.buttons.copy')}
+                onClick={onCopyTab}
+              />
+            )}
           </div>
         </div>
-        {tab.schemaStore && (
+        {tab.schemaStore && tab.matchingTemplatesStore.allowEditSettings && (
           <DeviceSettingsEditor store={tab.schemaStore} translator={tab.schemaStore.schemaTranslator} />
         )}
       </div>

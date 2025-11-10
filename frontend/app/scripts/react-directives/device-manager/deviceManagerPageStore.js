@@ -1,5 +1,5 @@
 import { makeObservable, computed } from 'mobx';
-import DeviceTypesStore from './common/deviceTypesStore';
+import { DeviceTypesStore } from '@/stores/device-manager';
 import ConfigEditorPageStore from './config-editor/configEditorPageStore';
 import ConfiguredDevices from './config-editor/configuredDevices';
 import NewDevicesScanPageStore from './scan/newDevicesScanPageStore';

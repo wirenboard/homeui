@@ -12,3 +12,8 @@ export interface DeviceTabContentProps {
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
 }
+
+export interface BetterTemplatesAlertProps {
+  tab: DeviceTabStore;
+  onDeviceTypeChange: (tab: DeviceTabStore, newType: string) => void;
+}

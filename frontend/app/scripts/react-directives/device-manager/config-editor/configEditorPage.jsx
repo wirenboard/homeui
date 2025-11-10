@@ -298,7 +298,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             tabs={pageStore.tabs.items}
             selectedIndex={pageStore.tabs.selectedTabIndex}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
-            deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeSelectOptions}
+            deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeDropdownOptions}
             mobileModeStore={pageStore.tabs.mobileModeStore}
             onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}

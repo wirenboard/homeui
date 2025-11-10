@@ -1,6 +1,7 @@
 export interface Option<T = string | boolean | number | null | unknown> {
   label: string;
   value: T;
+  hidden?: boolean;
   options?: Option<T>[];
 }
 

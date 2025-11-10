@@ -4,12 +4,14 @@ import {
   WbDeviceParameterEditorsGroup
 } from './device-tab/device-settings-editor/device-settings-store';
 import { WbDeviceParameterEditor } from './device-tab/device-settings-editor/parameter-editor-store';
-import { DeviceTabStore } from './device-tab/deviceTabStore';
+import { DeviceTabStore } from './device-tab/device-tab-store';
 import {
   EmbeddedSoftware,
   EmbeddedSoftwareComponent,
   ComponentFirmware
 } from './device-tab/embedded-software/embedded-software-store';
+import { MatchingTemplatesStore } from './device-tab/matching-templates/matching-templates-store';
+import { DeviceTypesStore } from './device-types-store';
 import { toRpcPortConfig } from './utils';
 
 export {
@@ -21,5 +23,7 @@ export {
   EmbeddedSoftwareComponent,
   ComponentFirmware,
   DeviceTabStore,
-  toRpcPortConfig
+  toRpcPortConfig,
+  DeviceTypesStore,
+  MatchingTemplatesStore
 };

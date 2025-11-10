@@ -91,6 +91,10 @@ export const Dropdown = ({
           ...baseStyles,
           minWidth,
         }),
+        option: (baseStyles, { data }) => ({
+          ...baseStyles,
+          display: data?.hidden ? 'none' : baseStyles.display,
+        }),
       }}
       unstyled
       onChange={handleChange}
