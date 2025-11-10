@@ -1,11 +1,14 @@
 import classNames from 'classnames';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Switch } from '@/components/switch';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
+import { notificationsStore } from '@/stores/notifications';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
 import type { AlicePageParams, AlicePageState, View } from './types';
@@ -13,13 +16,47 @@ import './styles.css';
 
 const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
-  const { rooms, integrations, fetchData } = aliceStore;
+  const {
+    rooms,
+    integrations,
+    fetchData,
+    fetchIntegrationStatus,
+    isIntegrationEnabled,
+    setIntegrationEnabled,
+  } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
 
+  const handleIntegrationToggle = async (enabled: boolean) => {
+    try {
+      await setIntegrationEnabled(enabled);
+      notificationsStore.showNotification({
+        variant: 'success',
+        text: enabled
+          ? t('alice.notifications.integration-enabled')
+          : t('alice.notifications.integration-disabled'),
+      });
+    } catch (err) {
+      if (err.response?.status === 412) {
+        runInAction(() => {
+          aliceStore.isIntegrationEnabled = true;
+        });
+      }
+
+      notificationsStore.showNotification({
+        variant: 'danger',
+        text: err.response?.data?.detail || t('alice.notifications.integration-error'),
+      });
+    }
+  };
+
   useEffect(() => {
+    // Load integration status
+    fetchIntegrationStatus();
+
+    // Load main data
     fetchData()
       .then((res) => {
         setBindingInfo({
@@ -30,6 +67,24 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       })
       .catch(() => setPageState('isNotConnected'));
   }, []);
+
+  useEffect(() => {
+    // Handle visibility change event
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // When tab becomes visible, load actual status
+        fetchIntegrationStatus();
+      }
+    };
+
+    // Subscribe to visibility change event
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Unsubscribe on component unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchIntegrationStatus]);
 
   useEffect(() => {
     if (integrations) {
@@ -48,32 +103,45 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     [integrations, pageState]
   );
 
+  const headerActions = (
+    <div className="alice-integrationToggle">
+      <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
+      <Switch
+        id="alice-integration-enabled"
+        value={isIntegrationEnabled}
+        onChange={handleIntegrationToggle}
+      />
+    </div>
+  );
+
   return (
     <PageLayout
       title={t('alice.title')}
       isLoading={isLoading}
       hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
+      actions={headerActions}
     >
       {!!integrations?.length && (
         pageState === 'isConnected'
           ? (
             <>
-              {bindingInfo.isBinded
-                ? (
-                  <div className="alice-bindingContainer">
-                    <span>{t('alice.labels.is-binded')}</span>
+              {isIntegrationEnabled && (
+                bindingInfo.isBinded
+                  ? (
+                    <div className="alice-bindingContainer">
+                      <span>{t('alice.labels.is-binded')}</span>
+                      <a href={bindingInfo.url} className="alice-binding" target="_blank">
+                        {t('alice.buttons.check-binding-status')}
+                      </a>
+                    </div>
+                  )
+                  : (
                     <a href={bindingInfo.url} className="alice-binding" target="_blank">
-                      {t('alice.buttons.check-binding-status')}
+                      {t('alice.buttons.bind')}
                     </a>
-                  </div>
-                )
-                : (
-                  <a href={bindingInfo.url} className="alice-binding" target="_blank">
-                    {t('alice.buttons.bind')}
-                  </a>
-                )
-              }
+                  )
+              )}
 
               <div className="alice-container">
                 <aside className="alice-sidebar">

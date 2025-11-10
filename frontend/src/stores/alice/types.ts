@@ -55,6 +55,7 @@ export interface AliceFetchData {
   devices: Record<string, SmartDevice>;
   link_url?: string;
   unlink_url?: string;
+  enabled?: boolean;
 }
 
 export interface AddDeviceParams {

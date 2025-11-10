@@ -9,7 +9,9 @@ import {
   updateRoom,
   deleteDevice,
   updateDevice,
-  checkIsAliceAvailable
+  checkIsAliceAvailable,
+  enableAliceIntegration,
+  getAliceIntegrationStatus
 } from './api';
 import type {
   AddDeviceParams,
@@ -24,6 +26,7 @@ export default class AliceStore {
   public integrations: string[];
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
+  public isIntegrationEnabled = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -39,6 +42,13 @@ export default class AliceStore {
     } catch {
     //
     }
+  }
+
+  async fetchIntegrationStatus(): Promise<void> {
+    const { enabled } = await getAliceIntegrationStatus();
+    runInAction(() => {
+      this.isIntegrationEnabled = enabled;
+    });
   }
 
   async fetchData(): Promise<AliceFetchData> {
@@ -109,6 +119,14 @@ export default class AliceStore {
       this.devices.set(key, device[key]);
       this.rooms.set(device[key].room_id, { name: room.name, devices: [...room.devices, key] });
       return key;
+    });
+  }
+
+  async setIntegrationEnabled(enabled: boolean): Promise<void> {
+    await enableAliceIntegration(enabled);
+
+    runInAction(() => {
+      this.isIntegrationEnabled = enabled;
     });
   }
 }
