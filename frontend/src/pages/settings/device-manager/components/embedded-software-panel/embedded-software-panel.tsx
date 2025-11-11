@@ -166,7 +166,11 @@ const AvailableUpdatesText = observer(({ embeddedSoftware } : { embeddedSoftware
   }
 
   if (hasBootloaderUpdate) {
-    return <span>{t('device-manager.labels.new-bootloader', values)}</span>;
+    return (
+      <span>
+        <Trans i18nKey="device-manager.labels.new-bootloader" values={values} components={[<a></a>]} />
+      </span>
+    );
   }
   if (hasFirmwareUpdate) {
     const transKey = !embeddedSoftware.deviceModel
