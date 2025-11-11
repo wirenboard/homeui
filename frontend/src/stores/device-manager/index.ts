@@ -12,7 +12,7 @@ import {
 } from './device-tab/embedded-software/embedded-software-store';
 import { ReadRegistersState } from './device-tab/types';
 import { DeviceTypesStore } from './device-types-store';
-import { toRpcPortConfig, setupDevice } from './utils';
+import { toDmRpcPortConfig, toSerialRpcPortConfig, setupDevice } from './utils';
 
 export {
   DeviceSettingsObjectStore,
@@ -23,7 +23,8 @@ export {
   EmbeddedSoftwareComponent,
   ComponentFirmware,
   DeviceTabStore,
-  toRpcPortConfig,
+  toDmRpcPortConfig,
+  toSerialRpcPortConfig,
   DeviceTypesStore,
   ReadRegistersState,
   setupDevice

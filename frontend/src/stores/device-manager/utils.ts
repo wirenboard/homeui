@@ -1,6 +1,7 @@
 import type { PortTabSerialConfig, PortTabTcpConfig, PortTabConfig } from './port-tab/types';
 import type {
-  RpcTcpPortConfig,
+  DmRpcTcpPortConfig,
+  SerialRpcTcpPortConfig,
   RpcSerialPortConfig,
   SerialPortProxy,
   SerialPortProxySetupParams,
@@ -9,22 +10,24 @@ import type {
   ScannedDevice
 } from './types';
 
-export function toRpcPortConfig(portConfig: PortTabConfig): RpcTcpPortConfig | RpcSerialPortConfig {
+export function toDmRpcPortConfig(portConfig: PortTabConfig): DmRpcTcpPortConfig | RpcSerialPortConfig {
   if (Object.hasOwn(portConfig, 'address')) {
-    const res: RpcTcpPortConfig = {
+    return {
       address: (portConfig as PortTabTcpConfig).address,
       port: (portConfig as PortTabTcpConfig).port,
     };
-    return res;
   }
-  const res: RpcSerialPortConfig = {
-    path: (portConfig as PortTabSerialConfig).path,
-    baud_rate: (portConfig as PortTabSerialConfig).baudRate,
-    parity: (portConfig as PortTabSerialConfig).parity,
-    stop_bits: (portConfig as PortTabSerialConfig).stopBits,
-    data_bits: (portConfig as PortTabSerialConfig).dataBits,
-  };
-  return res;
+  return toRpcSerialPortConfig(portConfig);
+}
+
+export function toSerialRpcPortConfig(portConfig: PortTabConfig): SerialRpcTcpPortConfig | RpcSerialPortConfig {
+  if (Object.hasOwn(portConfig, 'address')) {
+    return {
+      ip: (portConfig as PortTabTcpConfig).address,
+      port: (portConfig as PortTabTcpConfig).port,
+    };
+  }
+  return toRpcSerialPortConfig(portConfig);
 }
 
 export function getIntAddress(address: string | number): number {
@@ -128,3 +131,13 @@ const getDeviceSetupParams = (
 
   return params.items.length !== 0 ? params : undefined;
 };
+
+function toRpcSerialPortConfig(portConfig: PortTabConfig): RpcSerialPortConfig {
+  return {
+    path: (portConfig as PortTabSerialConfig).path,
+    baud_rate: (portConfig as PortTabSerialConfig).baudRate,
+    parity: (portConfig as PortTabSerialConfig).parity,
+    stop_bits: (portConfig as PortTabSerialConfig).stopBits,
+    data_bits: (portConfig as PortTabSerialConfig).dataBits,
+  };
+}

@@ -8,7 +8,7 @@ import type {
   FwUpdateProxyUpdateParams,
   UpdateItem
 } from '../../types';
-import { toRpcPortConfig, getIntAddress } from '../../utils';
+import { toDmRpcPortConfig, getIntAddress } from '../../utils';
 
 export class EmbeddedSoftwareComponent {
   public current: string = '';
@@ -74,7 +74,7 @@ export class EmbeddedSoftwareComponent {
   async startUpdate(address: string | number, portConfig: PortTabConfig) {
     let params: FwUpdateProxyUpdateParams = {
       slave_id: getIntAddress(address),
-      port: toRpcPortConfig(portConfig),
+      port: toDmRpcPortConfig(portConfig),
       type: this.type,
     };
     if ((portConfig as PortTabTcpConfig).modbusTcp) {
@@ -157,7 +157,7 @@ export class EmbeddedSoftware {
       if (await this._fwUpdateProxy.hasMethod('GetFirmwareInfo')) {
         const params: FwUpdateProxyGetFirmwareInfoParams = {
           slave_id: getIntAddress(address),
-          port: toRpcPortConfig(portConfig),
+          port: toDmRpcPortConfig(portConfig),
           protocol: (portConfig as PortTabTcpConfig).modbusTcp ? 'modbus-tcp' : 'modbus',
         };
         const res = await this._fwUpdateProxy.GetFirmwareInfo(params);

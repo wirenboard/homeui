@@ -1,4 +1,4 @@
-export interface RpcTcpPortConfig {
+export interface DmRpcTcpPortConfig {
   address: string;
   port: number;
 }
@@ -15,7 +15,7 @@ export type EmbeddedSoftwareType = 'firmware' | 'bootloader' | 'component';
 
 export interface FwUpdateProxyGetFirmwareInfoParams {
   slave_id: number;
-  port: RpcTcpPortConfig | RpcSerialPortConfig;
+  port: DmRpcTcpPortConfig | RpcSerialPortConfig;
   protocol?: 'modbus' | 'modbus-tcp';
 }
 
@@ -38,7 +38,7 @@ export interface FwUpdateProxyGetFirmwareInfoResult {
 
 export interface FwUpdateProxyUpdateParams {
   slave_id: number;
-  port: RpcTcpPortConfig | RpcSerialPortConfig;
+  port: DmRpcTcpPortConfig | RpcSerialPortConfig;
   protocol?: 'modbus' | 'modbus-tcp';
   type?: EmbeddedSoftwareType;
 }
@@ -52,7 +52,7 @@ export interface FwUpdateProxyClearErrorParams {
 export interface FwUpdateProxyRestoreParams {
   slave_id: number;
   protocol?: 'modbus' | 'modbus-tcp';
-  port: RpcTcpPortConfig | RpcSerialPortConfig;
+  port: DmRpcTcpPortConfig | RpcSerialPortConfig;
 }
 
 export interface UpdateItem {
@@ -89,7 +89,12 @@ interface LoadConfigBaseParams {
   modbus_mode: 'TCP' | 'RTU';
 }
 
-export type LoadConfigParams = LoadConfigBaseParams & (RpcTcpPortConfig | RpcSerialPortConfig);
+export interface SerialRpcTcpPortConfig {
+  ip: string;
+  port: number;
+}
+
+export type LoadConfigParams = LoadConfigBaseParams & (SerialRpcTcpPortConfig | RpcSerialPortConfig);
 
 export interface LoadConfigResult {
   parameters: Record<string, number>;

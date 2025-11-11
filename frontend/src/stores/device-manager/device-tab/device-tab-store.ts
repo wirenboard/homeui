@@ -15,7 +15,7 @@ import {
   ScannedDevice,
   FwUpdateProxyRestoreParams
 } from '../types';
-import { getIntAddress, toRpcPortConfig, setupDevice } from '../utils';
+import { getIntAddress, toSerialRpcPortConfig, toDmRpcPortConfig, setupDevice } from '../utils';
 import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';
 import { EmbeddedSoftware } from './embedded-software/embedded-software-store';
 import { ReadRegistersStateStore } from './read-registers-state';
@@ -132,7 +132,7 @@ export class DeviceTabStore {
       slave_id: getIntAddress(this.slaveId),
       device_type: this.deviceType,
       modbus_mode: (portConfig as PortTabTcpConfig).modbusTcp ? 'TCP' : 'RTU',
-      ...toRpcPortConfig(portConfig),
+      ...toSerialRpcPortConfig(portConfig),
     };
     let configFromDevice: LoadConfigResult;
     try {
@@ -374,7 +374,7 @@ export class DeviceTabStore {
 
       let params: FwUpdateProxyRestoreParams = {
         slave_id: getIntAddress(device.address),
-        port: toRpcPortConfig(portConfig),
+        port: toDmRpcPortConfig(portConfig),
       };
       if (portConfig.modbusTcp) {
         params.protocol = 'modbus-tcp';
