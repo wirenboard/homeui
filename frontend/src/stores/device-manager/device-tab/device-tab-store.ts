@@ -304,6 +304,7 @@ export class DeviceTabStore {
 
   async startFirmwareUpdate(portConfig: PortTabConfig) {
     try {
+      this._clearError();
       await this.embeddedSoftware.startFirmwareUpdate(this.slaveId, portConfig);
     } catch (err) {
       this._setError(err);
@@ -312,6 +313,7 @@ export class DeviceTabStore {
 
   async startBootloaderUpdate(portConfig: PortTabConfig) {
     try {
+      this._clearError();
       await this.embeddedSoftware.startBootloaderUpdate(this.slaveId, portConfig);
     } catch (err) {
       this._setError(err);
@@ -320,6 +322,7 @@ export class DeviceTabStore {
 
   async startComponentsUpdate(portConfig: PortTabConfig) {
     try {
+      this._clearError();
       await this.embeddedSoftware.startComponentsUpdate(this.slaveId, portConfig);
     } catch (err) {
       this._setError(err);

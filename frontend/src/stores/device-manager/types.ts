@@ -68,6 +68,9 @@ export interface UpdateItem {
   error?: {
     id:string;
     message: string;
+    metadata?: {
+      exception?: string;
+    };
   };
 }
 

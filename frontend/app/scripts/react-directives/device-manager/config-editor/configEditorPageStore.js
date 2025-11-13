@@ -472,7 +472,6 @@ class ConfigEditorPageStore {
           (deviceTab) => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id)
         )
         .forEach((deviceTab) => {
-          deviceTab.clearError();
           deviceTab.setEmbeddedSoftwareUpdateProgress(device);
         });
     });

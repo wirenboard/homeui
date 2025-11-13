@@ -60,7 +60,7 @@ export class EmbeddedSoftwareComponent {
     this.updateProgress = data.progress;
     this.current = data.from_version;
     this.available = data.to_version;
-    this.errorData = this.errorData?.error?.message ? data : null;
+    this.errorData = data.error?.message ? data : null;
     if ((this.hasError && this.isUpdating) || this.updateProgress === 100) {
       this.updateProgress = null;
       this.clearVersion();
@@ -186,15 +186,30 @@ export class EmbeddedSoftware {
   setUpdateProgress(data: UpdateItem) {
     if (data.type === 'bootloader') {
       this.bootloader.setUpdateProgress(data);
-    } else if (data.type === 'firmware') {
+      if (this.bootloader.hasError) {
+        this.firmware.resetUpdate();
+        this.resetComponentsUpdate(this.componentsCanBeUpdated);
+      }
+      return;
+    }
+    if (data.type === 'firmware') {
       this.firmware.setUpdateProgress(data);
-    } else if (data.type === 'component') {
+      if (this.bootloader.hasError) {
+        this.resetComponentsUpdate(this.componentsCanBeUpdated);
+      }
+      return;
+    }
+    if (data.type === 'component') {
       if (!this.components.has(data.component_number)) {
         runInAction(() => {
           this.components.set(data.component_number, new ComponentFirmware(this._fwUpdateProxy, data.component_model));
         });
       }
-      this.components.get(data.component_number)?.setUpdateProgress(data);
+      const component = this.components.get(data.component_number);
+      component?.setUpdateProgress(data);
+      if (component?.hasError) {
+        this.resetComponentsUpdate(this.componentsCanBeUpdated);
+      }
     }
   }
 
