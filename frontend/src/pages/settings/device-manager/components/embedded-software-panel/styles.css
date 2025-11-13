@@ -2,18 +2,20 @@
     margin-bottom: 10px;
 }
 
-.updateProgressPanel {
-    flex-wrap: wrap;
-}
-
-.updateProgressPanel .progress {
-    margin-bottom: 0px;
+.updateProgressAlert .alertMessage-content {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
     flex-grow: 1;
-    min-width: '200px';
 }
 
-.updateProgressPanel span:last-of-type{
-    flex-basis: 100%;
+.updateProgressAlert .progress {
+    margin-bottom: 0px;
+}
+
+/* Fix bootstrap style */
+.updateProgressAlert .progress-bar-striped.active {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
 
 .updateErrorAlert .alertMessage-content {

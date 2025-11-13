@@ -9,7 +9,7 @@ import { Loader } from '@/components/loader';
 import { DeviceSettingsEditor } from '../../components/device-settings-editor/device-settings-editor';
 import { EmbeddedSoftwarePanel } from '../../components/embedded-software-panel/embedded-software-panel';
 import { UnknownDeviceTabContent } from '../../components/unknown-device-tab/unknown-device-tab';
-import { BetterTemplatesAlert } from './better-template-alert';
+import { ReadRegistersResultAlert } from './read-registers-result-alert';
 import type { DeviceTabContentProps } from './types';
 import './styles.css';
 
@@ -81,6 +81,7 @@ export const DeviceTabContent = observer(
     onUpdateFirmware,
     onUpdateBootloader,
     onUpdateComponents,
+    onReadRegisters,
   }: DeviceTabContentProps) => {
     const [optionalParamsSelectDialogIsOpen, openOptionalParamsSelectDialog] = useState(false);
     const { t } = useTranslation();
@@ -127,12 +128,7 @@ export const DeviceTabContent = observer(
             onSetUniqueMqttTopic={onSetUniqueMqttTopic}
           />
         )}
-        {!tab.withSubdevices && (
-          <BetterTemplatesAlert
-            tab={tab}
-            onDeviceTypeChange={onDeviceTypeChange}
-          />
-        )}
+        <ReadRegistersResultAlert tab={tab} onDeviceTypeChange={onDeviceTypeChange} onReadRegisters={onReadRegisters} />
         <div className="deviceTab-contentHeader">
           <Dropdown
             options={deviceTypeSelectOptions}
@@ -142,14 +138,14 @@ export const DeviceTabContent = observer(
             onChange={(option: Option<string>) => onDeviceTypeChange(tab, option.value)}
           />
           <div className="deviceTab-contentHeaderButtons">
-            {!tab.withSubdevices && tab.matchingTemplatesStore.allowEditSettings && (
+            {!tab.withSubdevices && tab.readRegistersState.allowEditSettings && (
               <Button
                 label={t('device-manager.buttons.parameters')}
                 onClick={() => openOptionalParamsSelectDialog(!optionalParamsSelectDialogIsOpen)}
               />
             )}
             <Button label={t('device-manager.buttons.delete')} variant="danger" onClick={onDeleteTab} />
-            {!tab.withSubdevices && tab.matchingTemplatesStore.allowEditSettings && (
+            {!tab.withSubdevices && tab.readRegistersState.allowEditSettings && (
               <Button
                 label={t('device-manager.buttons.copy')}
                 onClick={onCopyTab}
@@ -157,7 +153,7 @@ export const DeviceTabContent = observer(
             )}
           </div>
         </div>
-        {tab.schemaStore && tab.matchingTemplatesStore.allowEditSettings && (
+        {tab.schemaStore && tab.readRegistersState.allowEditSettings && (
           <DeviceSettingsEditor store={tab.schemaStore} translator={tab.schemaStore.schemaTranslator} />
         )}
       </div>

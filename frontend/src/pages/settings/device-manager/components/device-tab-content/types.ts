@@ -11,9 +11,11 @@ export interface DeviceTabContentProps {
   onUpdateFirmware: () => void;
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
+  onReadRegisters: (tab: DeviceTabStore) => void;
 }
 
-export interface BetterTemplatesAlertProps {
+export interface ReadRegistersResultAlertProps {
   tab: DeviceTabStore;
   onDeviceTypeChange: (tab: DeviceTabStore, newType: string) => void;
+  onReadRegisters: (tab: DeviceTabStore) => void;
 }
