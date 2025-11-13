@@ -53,10 +53,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   };
 
   useEffect(() => {
-    // Load integration status
     fetchIntegrationStatus();
 
-    // Load main data
     fetchData()
       .then((res) => {
         setBindingInfo({
@@ -69,18 +67,14 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    // Handle visibility change event
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        // When tab becomes visible, load actual status
         fetchIntegrationStatus();
       }
     };
 
-    // Subscribe to visibility change event
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Unsubscribe on component unmount
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
