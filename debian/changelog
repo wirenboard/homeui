@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.150.3) stable; urgency=medium
 
   * SVG dashboards: fix A4_OUT fill color
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 01 Oct 2025 15:00:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 13 Nov 2025 11:10:00 +0400
 
 wb-mqtt-homeui (2.150.2) stable; urgency=medium
 
