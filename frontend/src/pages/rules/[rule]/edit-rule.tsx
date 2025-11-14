@@ -31,6 +31,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
 
   useEffect(() => {
     if (pathName === 'new') {
+      rulesStore.resetRule();
       setIsLoading(false);
       return;
     }
