@@ -713,7 +713,8 @@
          "device-copied": "Device copied",
          "integration-enabled": "Integration enabled",
          "integration-disabled": "Integration disabled",
-         "integration-error": "Error changing integration status"
+         "integration-error": "Error changing integration status",
+         "integration-enabled-binding-required": "The integration is enabled, but the controller is not linked. Click the link to link the controller."
       }
    },
    "web-ui-settings":{

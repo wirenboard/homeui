@@ -31,9 +31,12 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const [isIntegrationLoading, setIntegrationLoading] = useState(true);
 
   const handleIntegrationToggle = async (enabled: boolean) => {
+    const prevEnabled = aliceStore.isIntegrationEnabled;
     setIntegrationLoading(true);
+
     try {
       await setIntegrationEnabled(enabled);
+
       notificationsStore.showNotification({
         variant: 'success',
         text: enabled
@@ -41,16 +44,33 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
           : t('alice.notifications.integration-disabled'),
       });
     } catch (err) {
-      if (err.response?.status === 412) {
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.detail || err?.response?.data?.message || null;
+
+      // 412 - controller not bound: keep switch ON so user can bind and see binding link
+      if (status === 412) {
         runInAction(() => {
           aliceStore.isIntegrationEnabled = true;
         });
+
+        notificationsStore.showNotification({
+          variant: 'danger',
+          text: serverMessage || t('alice.notifications.integration-enabled-binding-required'),
+        });
+        return;
       }
 
-      notificationsStore.showNotification({
-        variant: 'danger',
-        text: err.response?.data?.detail || t('alice.notifications.integration-error'),
+      runInAction(() => {
+        aliceStore.isIntegrationEnabled = prevEnabled;
       });
+
+      if (serverMessage) {
+        notificationsStore.showNotification({ variant: 'danger', text: serverMessage });
+      } else if (status) {
+        notificationsStore.showNotification({ variant: 'danger', text: `${t('alice.notifications.integration-error')} (${status})` });
+      } else {
+        notificationsStore.showNotification({ variant: 'danger', text: t('alice.notifications.integration-error') });
+      }
     } finally {
       setIntegrationLoading(false);
     }
