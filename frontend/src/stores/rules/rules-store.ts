@@ -54,6 +54,15 @@ export default class RulesStore {
     this.rule.name = value;
   }
 
+  resetRule() {
+    this.rule = {
+      name: '',
+      initName: '',
+      content: '',
+      error: null,
+    };
+  }
+
   async save(rule: Rule): Promise<string> {
     let path = rule.initName;
     if (!path) {
