@@ -28,8 +28,10 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
+  const [isIntegrationLoading, setIntegrationLoading] = useState(true);
 
   const handleIntegrationToggle = async (enabled: boolean) => {
+    setIntegrationLoading(true);
     try {
       await setIntegrationEnabled(enabled);
       notificationsStore.showNotification({
@@ -49,11 +51,14 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         variant: 'danger',
         text: err.response?.data?.detail || t('alice.notifications.integration-error'),
       });
+    } finally {
+      setIntegrationLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchIntegrationStatus();
+    setIntegrationLoading(true);
+    fetchIntegrationStatus().finally(() => setIntegrationLoading(false));
 
     fetchData()
       .then((res) => {
@@ -69,7 +74,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        fetchIntegrationStatus();
+        setIntegrationLoading(true);
+        fetchIntegrationStatus().finally(() => setIntegrationLoading(false));
       }
     };
 
@@ -104,6 +110,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         id="alice-integration-enabled"
         value={isIntegrationEnabled}
         onChange={handleIntegrationToggle}
+        isDisabled={isIntegrationLoading}
       />
     </div>
   );
