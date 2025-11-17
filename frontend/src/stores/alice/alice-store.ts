@@ -45,10 +45,19 @@ export default class AliceStore {
   }
 
   async fetchIntegrationStatus(): Promise<void> {
-    const { enabled } = await getAliceIntegrationStatus();
-    runInAction(() => {
-      this.isIntegrationEnabled = enabled;
-    });
+    try {
+      const { enabled } = await getAliceIntegrationStatus();
+
+      runInAction(() => {
+        this.isIntegrationEnabled = enabled;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.isIntegrationEnabled = false;
+      });
+
+      throw err;
+    }
   }
 
   async fetchData(): Promise<AliceFetchData> {

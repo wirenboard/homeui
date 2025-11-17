@@ -78,7 +78,16 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
 
   useEffect(() => {
     setIntegrationLoading(true);
-    fetchIntegrationStatus().finally(() => setIntegrationLoading(false));
+    (async () => {
+      try {
+        await fetchIntegrationStatus();
+      } catch (err) {
+        const msg = err?.response?.data?.detail || err?.response?.data?.message || t('alice.notifications.integration-error');
+        notificationsStore.showNotification({ variant: 'danger', text: msg });
+      } finally {
+        setIntegrationLoading(false);
+      }
+    })();
 
     fetchData()
       .then((res) => {
@@ -95,7 +104,13 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         setIntegrationLoading(true);
-        fetchIntegrationStatus().finally(() => setIntegrationLoading(false));
+
+        fetchIntegrationStatus()
+          .catch((err) => {
+            const msg = err?.response?.data?.detail || err?.response?.data?.message || t('alice.notifications.integration-error');
+            notificationsStore.showNotification({ variant: 'danger', text: msg });
+          })
+          .finally(() => setIntegrationLoading(false));
       }
     };
 
