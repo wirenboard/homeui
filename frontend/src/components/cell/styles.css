@@ -57,6 +57,12 @@
     cursor: pointer;
 }
 
+.deviceCell-alert.alertMessage-danger {
+    background: var(--danger-color);
+    border-color: var(--danger-color-hover);
+    color: #fff;
+}
+
 .deviceCell-reversed {
     flex-direction: row-reverse;
 }
