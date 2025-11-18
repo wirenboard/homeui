@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.151.0) stable; urgency=medium
 
   * Add alice integration enabled by checkbox
 
- -- Victor Fedorov <victor.fedorov@wirenboard.com>  Thu, 06 Nov 2025 00:05:50 +0300
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 18 Nov 2025 18:10:00 +0300
 
 wb-mqtt-homeui (2.150.7) stable; urgency=medium
 
