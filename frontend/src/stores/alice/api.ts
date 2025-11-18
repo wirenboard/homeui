@@ -47,10 +47,10 @@ export const deleteDevice = async (id: string) => request.delete<SuccessMessageF
 ).then(({ data }) => data);
 
 export const getAliceIntegrationStatus = async () => request.get<{ enabled: boolean }>(
-  '/api/integrations/alice/enable'
+  '/api/integrations/alice/enable_client'
 ).then(({ data }) => data);
 
 export const toggleAliceIntegration = async (enabled: boolean) => request.post<SuccessMessageFetch>(
-  '/api/integrations/alice/enable',
+  '/api/integrations/alice/enable_client',
   { enabled }
 ).then(({ data }) => data);
