@@ -10,8 +10,8 @@ import {
   deleteDevice,
   updateDevice,
   checkIsAliceAvailable,
-  enableAliceIntegration,
-  getAliceIntegrationStatus
+  toggleAliceIntegration,
+  getAliceIntegrationStatus,
 } from './api';
 import type {
   AddDeviceParams,
@@ -132,7 +132,7 @@ export default class AliceStore {
   }
 
   async setIntegrationEnabled(enabled: boolean): Promise<void> {
-    await enableAliceIntegration(enabled);
+    await toggleAliceIntegration(enabled);
 
     runInAction(() => {
       this.isIntegrationEnabled = enabled;

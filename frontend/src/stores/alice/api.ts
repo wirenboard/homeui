@@ -50,7 +50,7 @@ export const getAliceIntegrationStatus = async () => request.get<{ enabled: bool
   '/api/integrations/alice/enable'
 ).then(({ data }) => data);
 
-export const enableAliceIntegration = async (enabled: boolean) => request.post<SuccessMessageFetch>(
+export const toggleAliceIntegration = async (enabled: boolean) => request.post<SuccessMessageFetch>(
   '/api/integrations/alice/enable',
   { enabled }
 ).then(({ data }) => data);
