@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.150.6) stable; urgency=medium
+
+  * Fix incomplete cells layout
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 18 Nov 2025 11:29:00 +0300
+
 wb-mqtt-homeui (2.150.5) stable; urgency=medium
 
   * Update cell alert colors
