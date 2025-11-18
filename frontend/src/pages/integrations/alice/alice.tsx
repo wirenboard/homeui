@@ -119,7 +119,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [fetchIntegrationStatus]);
+  }, []);
 
   useEffect(() => {
     if (integrations) {
