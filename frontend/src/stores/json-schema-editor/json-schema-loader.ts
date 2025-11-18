@@ -286,5 +286,6 @@ export const loadJsonSchema = (schema: unknown, externalDefinitions?: unknown): 
   }
   let res = expandSchema(schema as JsonSchema, definitions, {});
   res.translations = schemaAsRecord?.translations;
+  res.device = schemaAsRecord?.device;
   return res;
 };

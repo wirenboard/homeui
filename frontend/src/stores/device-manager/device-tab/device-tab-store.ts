@@ -183,6 +183,7 @@ export class DeviceTabStore {
       this.schemaStore.commit();
       this.initialData = cloneDeep(this.editedData);
     }
+    this.isDisconnected = false;
   }
 
   getCopy() {
@@ -282,7 +283,9 @@ export class DeviceTabStore {
       if (!this.waitingForDeviceReconnect) {
         this.updateEmbeddedSoftwareVersion(portConfig);
       }
-      this.readRegistersState.deviceConnected();
+      if (this.isDisconnected !== value) {
+        this.readRegistersState.deviceConnected();
+      }
       this.waitingForDeviceReconnect = false;
     }
     this.isDisconnected = value;

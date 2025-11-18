@@ -6,18 +6,18 @@ import {
   ArrayStore,
   StoreBuilder,
   Translator,
-  loadJsonSchema
+  JsonSchema
 } from '@/stores/json-schema-editor';
-import { WbDeviceChannelEditor } from './channel-editor-store';
-import { Conditions } from './conditions';
-import { WbDeviceParameterEditor } from './parameter-editor-store';
 import type {
   WbDeviceParametersGroup,
   WbDeviceTemplateChannel,
   WbDeviceTemplateParameter,
   WbDeviceTemplate,
   WbDeviceTemplateChannelSettings
-} from './types';
+} from '../../types';
+import { WbDeviceChannelEditor } from './channel-editor-store';
+import { Conditions } from './conditions';
+import { WbDeviceParameterEditor } from './parameter-editor-store';
 
 export class WbDeviceParameterEditorsGroup {
   public properties: WbDeviceParametersGroup;
@@ -94,9 +94,8 @@ export class DeviceSettingsObjectStore {
   private _groupsByName = new Map<string, WbDeviceParameterEditorsGroup>();
   private _conditions: Conditions = new Conditions();
 
-  constructor(schema: unknown, userDefinedConfig: JsonObject) {
-    const jsonSchema = loadJsonSchema(schema);
-    const deviceTemplate = loadDeviceTemplate(schema);
+  constructor(jsonSchema: JsonSchema, userDefinedConfig: JsonObject) {
+    const deviceTemplate = (jsonSchema.device as WbDeviceTemplate) ?? {};
     this.schemaTranslator = new Translator();
     this.schemaTranslator.addTranslations(jsonSchema.translations);
     this.schemaTranslator.addTranslations(deviceTemplate.translations);
@@ -302,24 +301,3 @@ export class DeviceSettingsObjectStore {
     });
   }
 }
-
-const loadDeviceTemplate = (schema: unknown): WbDeviceTemplate => {
-  if (!schema || typeof schema !== 'object') {
-    return {};
-  }
-
-  const deviceTemplate = (schema as Record<string, any>)?.device;
-  if (!deviceTemplate || typeof deviceTemplate !== 'object') {
-    return {};
-  }
-
-  // Convert legacy parameter definition as object to array
-  const parameters = deviceTemplate.parameters;
-  if (parameters && typeof parameters === 'object' && !Array.isArray(parameters)) {
-    deviceTemplate.parameters = Object.entries(parameters).map(([id, param]) => {
-      (param as Record<string, any>).id = id;
-      return param;
-    });
-  }
-  return deviceTemplate as WbDeviceTemplate;
-};

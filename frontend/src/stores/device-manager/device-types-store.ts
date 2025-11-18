@@ -1,5 +1,43 @@
+import { JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '~/utils/fwUtils';
-import type { DeviceTypeDescription, DeviceTypeDropdownOptionGroup, DeviceTypeDescriptionGroup } from './types';
+import type {
+  DeviceTypeDescription,
+  DeviceTypeDropdownOptionGroup,
+  DeviceTypeDescriptionGroup,
+  WbDeviceTemplate
+} from './types';
+
+const fixDeviceTemplate = (schema: JsonSchema) => {
+  const deviceNode = (schema as Record<string, any>)?.device;
+  if (!deviceNode) {
+    return;
+  }
+  // Parent parameters are used as arguments in conditions with isDefined(...)==0
+  // Their dependent parameters are not read from device, as parent parameters exist
+  // When saving a config the parent parameter can be omitted, if it has default value
+  // So nor parent nor dependent parameters will be saved
+  // This results to config validation error in wb-mqtt-serial
+  // Mark parent parameters as required to avoid this situation
+  const deviceTemplate = deviceNode as WbDeviceTemplate;
+  const re = /isDefined\((\w*)\)==0/;
+  if (deviceTemplate?.parameters) {
+    let forceRequired: string[] = [];
+    deviceTemplate.parameters.forEach((param: any) => {
+      const cond = param?.condition;
+      if (cond) {
+        const isDefinedArgMatch = cond.match(re);
+        if (isDefinedArgMatch) {
+          forceRequired.push(isDefinedArgMatch[1]);
+        }
+      }
+    });
+    deviceTemplate.parameters.forEach((param: any) => {
+      if (forceRequired.includes(param.id)) {
+        param.required = true;
+      }
+    });
+  }
+};
 
 export class DeviceTypesStore {
   public deviceTypeDropdownOptions: DeviceTypeDropdownOptionGroup[];
@@ -29,14 +67,19 @@ export class DeviceTypesStore {
     }, new Map<string, DeviceTypeDescription>());
   }
 
-  async getSchema(deviceType: string) {
+  async getSchema(deviceType: string) : Promise<JsonSchema | undefined> {
     const typeDesc = this._deviceTypesMap.get(deviceType);
     if (!typeDesc) {
       return undefined;
     }
     if (!typeDesc?.schema) {
       const schema = await this._loadDeviceSchemaFn(deviceType);
-      typeDesc.schema = schema;
+      const jsonSchema = loadJsonSchema(schema);
+      if (!jsonSchema) {
+        return undefined;
+      }
+      fixDeviceTemplate(jsonSchema);
+      typeDesc.schema = jsonSchema;
     }
     return typeDesc.schema;
   }
