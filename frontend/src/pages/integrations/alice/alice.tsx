@@ -101,27 +101,6 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        setIntegrationLoading(true);
-
-        fetchIntegrationStatus()
-          .catch((err) => {
-            const msg = err?.response?.data?.detail || err?.response?.data?.message || t('alice.notifications.integration-error');
-            notificationsStore.showNotification({ variant: 'danger', text: msg });
-          })
-          .finally(() => setIntegrationLoading(false));
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
-
-  useEffect(() => {
     if (integrations) {
       setErrors(!integrations.includes('alice') ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
     }
