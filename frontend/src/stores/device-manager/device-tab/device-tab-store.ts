@@ -38,7 +38,6 @@ export class DeviceTabStore {
   public devicesWithTheSameId: string[] = [];
   public isDisconnected: boolean = false;
   public embeddedSoftware: EmbeddedSoftware;
-  public waitingForDeviceReconnect: boolean = false;
   public schemaStore?: DeviceSettingsObjectStore;
   public readRegistersState: ReadRegistersStateStore;
 
@@ -77,7 +76,6 @@ export class DeviceTabStore {
       slaveIdIsDuplicate: observable,
       devicesWithTheSameId: observable,
       isDisconnected: observable,
-      waitingForDeviceReconnect: observable,
       readRegistersState: observable,
       isWbDevice: observable,
       editedData: computed,
@@ -280,13 +278,10 @@ export class DeviceTabStore {
         this.embeddedSoftware.clearVersion();
       }
     } else {
-      if (!this.waitingForDeviceReconnect) {
-        this.updateEmbeddedSoftwareVersion(portConfig);
-      }
+      this.updateEmbeddedSoftwareVersion(portConfig);
       if (this.isDisconnected !== value) {
         this.readRegistersState.deviceConnected();
       }
-      this.waitingForDeviceReconnect = false;
     }
     this.isDisconnected = value;
   }
@@ -340,22 +335,19 @@ export class DeviceTabStore {
     this._setError('');
   }
 
-  setEmbeddedSoftwareUpdateProgress(data: UpdateItem) {
+  setEmbeddedSoftwareUpdateProgress(data: UpdateItem, portConfig: PortTabConfig) {
     this.embeddedSoftware.setUpdateProgress(data);
-    if (data?.progress === 100 || this.embeddedSoftware.hasComponentsError()) {
-      this.waitingForDeviceReconnect = true;
+    if (data?.progress === 100 && data?.type === 'firmware') {
+      this._setLoading(i18n.t('device-manager.labels.reading-parameters'));
       setTimeout(() => {
-        runInAction(() => {
-          this.waitingForDeviceReconnect = false;
-        });
+        this.readRegistersState.firmwareUpdated();
+        this.loadContent(portConfig);
       }, 2000);
     }
   }
 
   get showDisconnectedError() {
-    return (
-      this.isDisconnected && !this.embeddedSoftware.isUpdating && !this.waitingForDeviceReconnect
-    );
+    return !this.isLoading && this.isDisconnected && !this.embeddedSoftware.isUpdating;
   }
 
   beforeDelete() {

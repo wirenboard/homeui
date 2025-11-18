@@ -466,14 +466,15 @@ class ConfigEditorPageStore {
 
   setEmbeddedSoftwareUpdateProgress(data) {
     data.devices.forEach((device) => {
-      this.tabs
-        .findPortTabByPath(device.port.path, device.protocol)
-        ?.children?.filter(
+      const portTab = this.tabs.findPortTabByPath(device.port.path, device.protocol);
+      if (portTab) {
+        const portConfig = portTab.baseConfig;
+        portTab.children?.filter(
           (deviceTab) => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id)
-        )
-        .forEach((deviceTab) => {
-          deviceTab.setEmbeddedSoftwareUpdateProgress(device);
+        ).forEach((deviceTab) => {
+          deviceTab.setEmbeddedSoftwareUpdateProgress(device, portConfig);
         });
+      }
     });
   }
 

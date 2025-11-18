@@ -61,9 +61,15 @@ export class EmbeddedSoftwareComponent {
     this.current = data.from_version;
     this.available = data.to_version;
     this.errorData = data.error?.message ? data : null;
-    if ((this.hasError && this.isUpdating) || this.updateProgress === 100) {
+    if (this.hasError && this.isUpdating) {
       this.updateProgress = null;
       this.clearVersion();
+      return;
+    }
+    if (this.updateProgress === 100) {
+      this.current = data.to_version;
+      this.updateProgress = null;
+      this.hasUpdate = false;
     }
   }
 

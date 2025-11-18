@@ -96,4 +96,11 @@ export class ReadRegistersStateStore {
       this.allowEditSettings = true;
     }
   }
+
+  firmwareUpdated() {
+    this.state = ReadRegistersState.WaitFirstRead;
+    this.errorMessage = '';
+    this.otherMatchingTemplates = [];
+    this.allowEditSettings = true;
+  }
 }
