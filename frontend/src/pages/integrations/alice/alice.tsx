@@ -64,13 +64,13 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         aliceStore.isIntegrationEnabled = prevEnabled;
       });
 
-      if (serverMessage) {
-        notificationsStore.showNotification({ variant: 'danger', text: serverMessage });
-      } else if (status) {
-        notificationsStore.showNotification({ variant: 'danger', text: `${t('alice.notifications.integration-error')} (${status})` });
-      } else {
-        notificationsStore.showNotification({ variant: 'danger', text: t('alice.notifications.integration-error') });
-      }
+      const msg = serverMessage
+        ? serverMessage
+        : status
+        ? `${t('alice.notifications.integration-error')} (${status})`
+        : t('alice.notifications.integration-error');
+
+      notificationsStore.showNotification({ variant: 'danger', text: msg });
     } finally {
       setIntegrationLoading(false);
     }
