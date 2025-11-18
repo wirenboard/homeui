@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.150.5) stable; urgency=medium
+
+  * Update cell alert colors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 18 Nov 2025 10:09:10 +0300
+
 wb-mqtt-homeui (2.150.4) stable; urgency=medium
 
   * Fix new rule page showing previous rule content
