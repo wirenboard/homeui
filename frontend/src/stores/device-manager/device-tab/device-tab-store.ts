@@ -19,7 +19,7 @@ import { getIntAddress, toSerialRpcPortConfig, toDmRpcPortConfig, setupDevice } 
 import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';
 import { EmbeddedSoftware } from './embedded-software/embedded-software-store';
 import { ReadRegistersStateStore } from './read-registers-state';
-import type { ReadRegistersState } from './types';
+import { ReadRegistersState } from './types';
 
 export class DeviceTabStore {
   public type: string = 'device';
