@@ -22,12 +22,9 @@ export class NumberStore implements PropertyStore {
       this.value = initialValue;
       this.editString = String(initialValue);
     } else if (initialValue === undefined) {
-      if (schema.options?.wb?.show_editor) {
-        if (schema.options?.wb?.allow_undefined) {
-          this.value = schema.default as number | undefined;
-        } else {
-          this.value = getDefaultNumberValue(schema);
-        }
+      this.value = undefined;
+      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
+        this.value = getDefaultNumberValue(schema);
       }
       this.editString = this.value === undefined ? '' : String(this.value);
     } else {
