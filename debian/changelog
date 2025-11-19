@@ -1,8 +1,56 @@
-wb-mqtt-homeui (2.151.0) stable; urgency=medium
+wb-mqtt-homeui (2.152.0) stable; urgency=medium
 
   * Update users page
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 29 Oct 2025 17:26:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 19 Nov 2025 14:57:00 +0300
+
+wb-mqtt-homeui (2.151.1) stable; urgency=medium
+
+  * Fix dashboard long transition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 19 Nov 2025 10:24:00 +0300
+
+wb-mqtt-homeui (2.151.0) stable; urgency=medium
+
+  * Add alice integration enabled by checkbox
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 18 Nov 2025 21:10:00 +0300
+
+wb-mqtt-homeui (2.150.7) stable; urgency=medium
+
+  * Fix control's /meta handling
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 18 Nov 2025 16:10:00 +0400
+
+wb-mqtt-homeui (2.150.6) stable; urgency=medium
+
+  * Fix incomplete cells layout
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 18 Nov 2025 11:29:00 +0300
+
+wb-mqtt-homeui (2.150.5) stable; urgency=medium
+
+  * Update cell alert colors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 18 Nov 2025 10:09:10 +0300
+
+wb-mqtt-homeui (2.150.4) stable; urgency=medium
+
+  * Fix new rule page showing previous rule content
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 14 Nov 2025 19:10:00 +0400
+
+wb-mqtt-homeui (2.150.3) stable; urgency=medium
+
+  * SVG dashboards: fix A4_OUT fill color
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 13 Nov 2025 11:10:00 +0400
+
+wb-mqtt-homeui (2.150.2) stable; urgency=medium
+
+  * Fix page scroll on small resolutions
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 31 Oct 2025 16:05:50 +0300
 
 wb-mqtt-homeui (2.150.1) stable; urgency=medium
 

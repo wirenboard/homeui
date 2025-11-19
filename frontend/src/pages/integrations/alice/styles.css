@@ -103,3 +103,14 @@
     line-height: 160%;
     padding-left: 18px;
 }
+
+.alice-integrationToggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.alice-integrationToggle-label {
+    font-size: 14px;
+    color: var(--text-color);
+}

@@ -324,6 +324,10 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
   };
 
   $transitions.onStart({}, function (trans) {
+    // to avoid blinking on id change
+    if (trans.from().name === 'dashboard' && trans.to().name === 'dashboard') {
+      return;
+    }
     document.getElementById('overlay').classList.remove('overlay');
     $rootScope.stateIsLoading = true;
   });

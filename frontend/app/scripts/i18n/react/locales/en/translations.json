@@ -646,6 +646,7 @@
          "is-binded": "This controller is bound.",
          "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
          "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
+         "enable-integration": "Enable",
          "room": "Room",
          "room-name": "Room name",
          "empty-list": "No devices added",
@@ -711,7 +712,11 @@
          "device-added": "\"{{name}}\" device saved",
          "device-updated": "\"{{name}}\" device settings updated",
          "device-deleted": "Device \"{{name}}\" deleted",
-         "device-copied": "Device copied"
+         "device-copied": "Device copied",
+         "integration-enabled": "Integration enabled",
+         "integration-disabled": "Integration disabled",
+         "integration-error": "Error changing integration status",
+         "integration-enabled-binding-required": "The integration is enabled, but the controller is not linked. Click the link to link the controller."
       }
    },
    "web-ui-settings":{
