@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.151.1) stable; urgency=medium
+
+  * Fix dashboard long transition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 19 Nov 2025 10:24:00 +0300
+
 wb-mqtt-homeui (2.151.0) stable; urgency=medium
 
   * Add alice integration enabled by checkbox

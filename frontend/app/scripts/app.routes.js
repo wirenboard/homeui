@@ -101,6 +101,13 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('dashboard', {
       url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}&{sourceDashboardId}',
       template: '<dashboard-page />',
+      params: {
+        id: { dynamic: true },
+        hmi: { dynamic: true },
+        hmicolor: { dynamic: true },
+        fullscreen: { dynamic: true },
+        sourceDashboardId: { dynamic: true },
+      },
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
