@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Confirm } from '@/components/confirm';
-import { Dropdown } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
+import { UserRole } from '@/stores/auth';
+import type { EditUserModalProps } from './types';
 import './styles.css';
 
-export const EditUserModal = ({ onSave, user, onCancel }) => {
+export const EditUserModal = ({ onSave, user, onCancel }: EditUserModalProps) => {
   const { t } = useTranslation();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [type, setType] = useState('user');
+  const [type, setType] = useState<UserRole>(UserRole.User);
   const [isReadOnlyAdmin, setIsReadOnlyAdmin] = useState(false);
 
   const options = [
@@ -22,7 +24,7 @@ export const EditUserModal = ({ onSave, user, onCancel }) => {
   useEffect(() => {
     if (user) {
       setLogin(user.login || '');
-      setType(user.readOnly ? 'admin' : user.type);
+      setType(user.readOnly ? UserRole.Admin : user.type);
 
       if (user.readOnly) {
         setIsReadOnlyAdmin(true);
@@ -61,7 +63,7 @@ export const EditUserModal = ({ onSave, user, onCancel }) => {
           options={options}
           value={type}
           isDisabled={isReadOnlyAdmin}
-          onChange={({ value }) => setType(value as string)}
+          onChange={({ value }: Option<UserRole>) => setType(value)}
         />
       </label>
     </Confirm>

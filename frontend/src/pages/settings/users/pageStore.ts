@@ -1,8 +1,10 @@
+import { AxiosError } from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { authStore, UserRole, type User } from '@/stores/auth';
 import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/httpsUtils';
 import { request } from '@/utils/request';
 import i18n from '~/i18n/react/config';
+import type { UserParams } from './components/edit-user/types';
 
 function sortUsers(users: User[]) {
   users.sort((a, b) => {
@@ -21,13 +23,13 @@ class UsersPageStore {
   public autologinUser = null;
   public autologinOptions = [];
   public showEnableHttpsConfirmModal: () => Promise<boolean>;
-  public showUserEditModal: () => Promise<any>;
+  public showUserEditModal: () => Promise<UserParams>;
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  processFetchError(fetchResponse) {
+  processFetchError(fetchResponse: AxiosError) {
     switch (fetchResponse.status) {
       case 403: {
         this.errors = [{ variant: 'danger', text: i18n.t('users.errors.forbidden') }];
@@ -117,7 +119,7 @@ class UsersPageStore {
     }
   }
 
-  async fetchWrapper(fetchFn) {
+  async fetchWrapper(fetchFn: () => Promise<any>) {
     try {
       this.errors = [];
       this.isLoading = true;
@@ -180,7 +182,7 @@ class UsersPageStore {
     });
   }
 
-  async editUser(user) {
+  async editUser(user: User) {
     const modifiedUser = await this.showUserEditModal();
 
     if (!modifiedUser) {
