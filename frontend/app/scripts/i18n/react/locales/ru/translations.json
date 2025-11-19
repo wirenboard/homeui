@@ -64,7 +64,6 @@
          "channels": "Каналы MQTT",
          "access": "Пользователи",
          "logs": "Системный журнал",
-         "serial-metrics": "Метрики wb-mqtt-serial",
          "scan": "Сканирование",
          "device-manager": "Устройства"
       },
