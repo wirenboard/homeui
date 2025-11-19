@@ -64,7 +64,6 @@
          "channels": "MQTT Channels",
          "access": "Users",
          "logs": "Logs",
-         "serial-metrics": "wb-mqtt-serial metrics",
          "scan": "Scan",
          "device-manager": "Device manager"
       },

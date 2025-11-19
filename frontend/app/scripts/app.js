@@ -54,7 +54,6 @@ import userAgentFactory from './services/userAgent.factory';
 import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
-import serialMetricsProxyService from './services/serialMetricsProxy';
 import translationService from './services/translationService';
 import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
@@ -150,7 +149,6 @@ module
   .factory('ConfigEditorProxy', configEditorProxyService)
   .factory('HistoryProxy', historyProxyService)
   .factory('LogsProxy', logsProxyService)
-  .factory('SerialMetricsProxy', serialMetricsProxyService)
   .factory('gotoDefStart', gotoDefStartService)
   .factory('getTime', getTimeService)
   .factory('Spinner', spinnerService)
@@ -288,7 +286,6 @@ module
         'history',
         'widgets',
         'units',
-        'serial-metrics',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {
