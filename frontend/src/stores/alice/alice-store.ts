@@ -66,7 +66,6 @@ export default class AliceStore {
     return runInAction(() => {
       this.rooms = new Map(Object.entries(data.rooms).map(([id, room]) => [id, room]));
       this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
-      this.isIntegrationEnabled = data.enabled ?? false;
       return data;
     });
   }
