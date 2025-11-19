@@ -86,6 +86,7 @@ export interface JsonSchema {
 
   // wb specific properties
   translations?: TranslationsByLocale;
+  device?: unknown; // Used in wb-mqtt-serial to store device template
 }
 
 export interface ValidationError {

@@ -14,8 +14,8 @@ class DeviceManagerPageStore {
     rolesFactory,
     deviceManagerProxy,
     fwUpdateProxy,
-    setupDeviceFn,
-    serialDeviceProxy
+    serialDeviceProxy,
+    seralPortProxy
   ) {
     this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
     this.configEditorPageStore = new ConfigEditorPageStore(
@@ -25,9 +25,9 @@ class DeviceManagerPageStore {
       stateTransitions.toTabs,
       this.deviceTypesStore,
       rolesFactory,
-      setupDeviceFn,
       fwUpdateProxy,
-      serialDeviceProxy
+      serialDeviceProxy,
+      seralPortProxy
     );
     this.newDevicesScanPageStore = new NewDevicesScanPageStore(
       deviceManagerProxy,
@@ -111,19 +111,10 @@ class DeviceManagerPageStore {
   }
 
   async restoreDisconnectedDevice(device) {
-    const selectedDeviceTab = this.configEditorPageStore.tabs.selectedTab;
-    const selectedPortTab = this.configEditorPageStore.tabs.selectedPortTab;
-    try {
-      if (device) {
-        device.newAddress = selectedDeviceTab.slaveId;
-        selectedDeviceTab.setLoading(true);
-        await this.configEditorPageStore.restoreDevice(device, selectedPortTab);
-        selectedDeviceTab.setDisconnected(false);
-      }
-    } catch (err) {
-      this.configEditorPageStore.setError(err);
+    if (device) {
+      const selectedPortTab = this.configEditorPageStore.tabs.selectedPortTab;
+      this.configEditorPageStore.tabs.selectedTab.restoreDisconnectedDevice(device, selectedPortTab.baseConfig);
     }
-    selectedDeviceTab.setLoading(false);
   }
 
   shouldConfirmLeavePage() {

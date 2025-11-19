@@ -13,7 +13,8 @@
          "remove": "Remove",
          "move-up": "Move up",
          "move-down": "Move down",
-         "select": "Select"
+         "select": "Select",
+         "read": "Read"
       }
    },
    "dashboards": {
@@ -345,20 +346,20 @@
          "current-firmware": "Current firmware version: {{firmware}}",
          "actual-firmware": "Current firmware version: {{firmware}} (actual)",
          "new-firmware": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}.",
-         "new-firmware-link": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>",
-         "new-bootloader": "There is a new bootloader: {{available_bootloader}}, current: {{current_bootloader}}.",
+         "new-firmware-link": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>",
+         "new-bootloader": "There is a new bootloader: {{available_bootloader}}, current: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Change log</0>",
          "new-software-components": "New versions are available:",
-         "new-bootloader-item": "bootloader {{available_bootloader}}, current {{current_bootloader}};",
+         "new-bootloader-item": "bootloader {{available_bootloader}}, current {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Change log</0>;",
          "new-firmware-item": "firmware {{available_firmware}}, current {{current_firmware}}.",
-         "new-firmware-item-link": "firmware {{available_firmware}}, current {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
-         "manual-update": "<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
+         "new-firmware-item-link": "firmware {{available_firmware}}, current {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "manual-update": "<0 target=\"_blank\" href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
          "update-firmware-notice": "Do not disconnect the device during the update",
          "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost",
          "new-component-item": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
-         "new-component-item-link": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "new-component-item-link": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "new-components": "New component firmware versions are available:",
          "new-component": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}.",
-         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
          "updating-component": "Updating component firmware {{model}}:{{maybe_current_firmware}}{{available}}",
          "component_current_version": ", current {{current_firmware}}.",
          "component_update_current_version": " {{current}} на ",
@@ -368,8 +369,10 @@
          "custom-channels": "Custom channels",
          "loading-template": "Loading device template...",
          "reading-parameters": "Reading parameters from device...",
-         "better-template": "A new template is available for the device",
-         "select-template": "Select template"
+         "better-template": "A new template is available for the device. This device will continue to work correctly with the current template. Switch if you need support for new features or bug fixes.",
+         "select-template": "Select template",
+         "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
+         "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made"
       },
       "buttons": {
          "save": "Save config",

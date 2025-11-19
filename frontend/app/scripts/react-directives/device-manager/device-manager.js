@@ -57,10 +57,6 @@ function deviceManagerDirective(
         };
       };
 
-      const setupPort = (deviceCfg) => {
-        return SerialPortProxy.Setup(deviceCfg);
-      };
-
       const stateTransitions = {
         toMobileContent: () => {
           $state.go('serial-config.properties', { hint: true });
@@ -101,8 +97,8 @@ function deviceManagerDirective(
         rolesFactory,
         DeviceManagerProxy,
         FwUpdateProxy,
-        setupPort,
-        SerialDeviceProxy
+        SerialDeviceProxy,
+        SerialPortProxy
       );
 
       let CONFIRMATION_MSG;
@@ -123,7 +119,7 @@ function deviceManagerDirective(
         // In this case, redirect to the main page
         // Button hint is used to distinguish between direct URL and button click
         if (
-          from == 'serial-config' &&
+          from === 'serial-config' &&
           ['serial-config.properties', 'serial-config.scan'].includes(to) &&
           !transition.params('to').hint
         ) {
@@ -131,18 +127,18 @@ function deviceManagerDirective(
         }
 
         // Mobile properties page, browser Back button
-        if (to == 'serial-config') {
+        if (to === 'serial-config') {
           scope.store.movedToTabsPanel();
         }
 
         // Scan page, browser Back button
-        if (from == 'serial-config.scan' && to.startsWith('serial-config')) {
+        if (from === 'serial-config.scan' && to.startsWith('serial-config')) {
           scope.store.stopScanning();
         }
 
         // Confirm moving from scanning page to any page not related to device-manager
         if (
-          from == 'serial-config.scan' &&
+          from === 'serial-config.scan' &&
           !to.startsWith('serial-config') &&
           scope.store.shouldConfirmLeavePage()
         ) {

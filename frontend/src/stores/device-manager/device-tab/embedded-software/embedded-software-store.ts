@@ -3,12 +3,12 @@ import { firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type { PortTabTcpConfig, PortTabConfig } from '../../port-tab/types';
 import type {
   FwUpdateProxy,
-  GetFirmwareInfoParams,
+  FwUpdateProxyGetFirmwareInfoParams,
   EmbeddedSoftwareType,
-  UpdateParams,
+  FwUpdateProxyUpdateParams,
   UpdateItem
 } from '../../types';
-import { toRpcPortConfig, getIntAddress } from '../../utils';
+import { toDmRpcPortConfig, getIntAddress } from '../../utils';
 
 export class EmbeddedSoftwareComponent {
   public current: string = '';
@@ -60,10 +60,16 @@ export class EmbeddedSoftwareComponent {
     this.updateProgress = data.progress;
     this.current = data.from_version;
     this.available = data.to_version;
-    this.errorData = this.errorData?.error?.message ? data : null;
-    if ((this.hasError && this.isUpdating) || this.updateProgress === 100) {
+    this.errorData = data.error?.message ? data : null;
+    if (this.hasError && this.isUpdating) {
       this.updateProgress = null;
       this.clearVersion();
+      return;
+    }
+    if (this.updateProgress === 100) {
+      this.current = data.to_version;
+      this.updateProgress = null;
+      this.hasUpdate = false;
     }
   }
 
@@ -72,9 +78,9 @@ export class EmbeddedSoftwareComponent {
   }
 
   async startUpdate(address: string | number, portConfig: PortTabConfig) {
-    let params: UpdateParams = {
+    let params: FwUpdateProxyUpdateParams = {
       slave_id: getIntAddress(address),
-      port: toRpcPortConfig(portConfig),
+      port: toDmRpcPortConfig(portConfig),
       type: this.type,
     };
     if ((portConfig as PortTabTcpConfig).modbusTcp) {
@@ -155,9 +161,9 @@ export class EmbeddedSoftware {
   async updateVersion(address: string | number, portConfig: PortTabConfig) {
     try {
       if (await this._fwUpdateProxy.hasMethod('GetFirmwareInfo')) {
-        const params: GetFirmwareInfoParams = {
+        const params: FwUpdateProxyGetFirmwareInfoParams = {
           slave_id: getIntAddress(address),
-          port: toRpcPortConfig(portConfig),
+          port: toDmRpcPortConfig(portConfig),
           protocol: (portConfig as PortTabTcpConfig).modbusTcp ? 'modbus-tcp' : 'modbus',
         };
         const res = await this._fwUpdateProxy.GetFirmwareInfo(params);
@@ -186,15 +192,30 @@ export class EmbeddedSoftware {
   setUpdateProgress(data: UpdateItem) {
     if (data.type === 'bootloader') {
       this.bootloader.setUpdateProgress(data);
-    } else if (data.type === 'firmware') {
+      if (this.bootloader.hasError) {
+        this.firmware.resetUpdate();
+        this.resetComponentsUpdate(this.componentsCanBeUpdated);
+      }
+      return;
+    }
+    if (data.type === 'firmware') {
       this.firmware.setUpdateProgress(data);
-    } else if (data.type === 'component') {
+      if (this.bootloader.hasError) {
+        this.resetComponentsUpdate(this.componentsCanBeUpdated);
+      }
+      return;
+    }
+    if (data.type === 'component') {
       if (!this.components.has(data.component_number)) {
         runInAction(() => {
           this.components.set(data.component_number, new ComponentFirmware(this._fwUpdateProxy, data.component_model));
         });
       }
-      this.components.get(data.component_number)?.setUpdateProgress(data);
+      const component = this.components.get(data.component_number);
+      component?.setUpdateProgress(data);
+      if (component?.hasError) {
+        this.resetComponentsUpdate(this.componentsCanBeUpdated);
+      }
     }
   }
 

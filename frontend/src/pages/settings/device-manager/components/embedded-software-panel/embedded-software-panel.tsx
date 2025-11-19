@@ -48,7 +48,7 @@ const UpdateProgressPanel = observer(
         t('device-manager.labels.component_update_current_version', vars) : '';
     }
     return (
-      <Alert variant="warn" className="updateProgressPanel">
+      <Alert variant="warn" className="updateProgressAlert">
         <span>{t(label, vars)}</span>
         <UpdateProgressBar progress={component.updateProgress} />
         <span>
@@ -140,7 +140,7 @@ const AvailableUpdatesText = observer(({ embeddedSoftware } : { embeddedSoftware
           <Fragment key="bootloader">
             <span>
               &emsp;&nbsp;-&nbsp;
-              {t('device-manager.labels.new-bootloader-item', values)}
+              <Trans i18nKey="device-manager.labels.new-bootloader-item" values={values} components={[<a></a>]} />
             </span>
             <br />
           </Fragment>
@@ -166,7 +166,11 @@ const AvailableUpdatesText = observer(({ embeddedSoftware } : { embeddedSoftware
   }
 
   if (hasBootloaderUpdate) {
-    return <span>{t('device-manager.labels.new-bootloader', values)}</span>;
+    return (
+      <span>
+        <Trans i18nKey="device-manager.labels.new-bootloader" values={values} components={[<a></a>]} />
+      </span>
+    );
   }
   if (hasFirmwareUpdate) {
     const transKey = !embeddedSoftware.deviceModel
@@ -274,7 +278,7 @@ function getErrorDescriptionKey(type: string, errorId: string) {
     ['com.wb.device_manager.rpc_call_timeout_error', 'rpc-timeout'],
     ['com.wb.device_manager.device.response_timeout_error', 'recoverable'],
   ]);
-  const genericException = type === 'component' ? 'generic' : 'generic-component';
+  const genericException = type === 'component' ? 'generic-component' : 'generic';
   const key = idToKey.get(errorId) || genericException;
   return 'device-manager.errors.update-error-' + key;
 }

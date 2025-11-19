@@ -1,4 +1,6 @@
-export interface RpcTcpPortConfig {
+import { JsonEditorOptions, TranslationsByLocale, JsonSchema } from '@/stores/json-schema-editor';
+
+export interface DmRpcTcpPortConfig {
   address: string;
   port: number;
 }
@@ -13,13 +15,13 @@ export interface RpcSerialPortConfig {
 
 export type EmbeddedSoftwareType = 'firmware' | 'bootloader' | 'component';
 
-export interface GetFirmwareInfoParams {
+export interface FwUpdateProxyGetFirmwareInfoParams {
   slave_id: number;
-  port: RpcTcpPortConfig | RpcSerialPortConfig;
+  port: DmRpcTcpPortConfig | RpcSerialPortConfig;
   protocol?: 'modbus' | 'modbus-tcp';
 }
 
-export interface GetFirmwareInfoResult {
+export interface FwUpdateProxyGetFirmwareInfoResult {
   fw: string;
   available_fw: string;
   bootloader: string;
@@ -36,17 +38,23 @@ export interface GetFirmwareInfoResult {
   }>;
 }
 
-export interface UpdateParams {
+export interface FwUpdateProxyUpdateParams {
   slave_id: number;
-  port: RpcTcpPortConfig | RpcSerialPortConfig;
+  port: DmRpcTcpPortConfig | RpcSerialPortConfig;
   protocol?: 'modbus' | 'modbus-tcp';
   type?: EmbeddedSoftwareType;
 }
 
-export interface ClearErrorParams {
+export interface FwUpdateProxyClearErrorParams {
   slave_id: number;
   port: string;
   type?: EmbeddedSoftwareType;
+}
+
+export interface FwUpdateProxyRestoreParams {
+  slave_id: number;
+  protocol?: 'modbus' | 'modbus-tcp';
+  port: DmRpcTcpPortConfig | RpcSerialPortConfig;
 }
 
 export interface UpdateItem {
@@ -62,6 +70,9 @@ export interface UpdateItem {
   error?: {
     id:string;
     message: string;
+    metadata?: {
+      exception?: string;
+    };
   };
 }
 
@@ -71,9 +82,10 @@ export interface UpdateStatus {
 
 export interface FwUpdateProxy {
   hasMethod(method: string): Promise<boolean>;
-  GetFirmwareInfo(params: GetFirmwareInfoParams): Promise<GetFirmwareInfoResult>;
-  Update(params: UpdateParams): Promise<void>;
-  ClearError(params: ClearErrorParams): Promise<void>;
+  GetFirmwareInfo(params: FwUpdateProxyGetFirmwareInfoParams): Promise<FwUpdateProxyGetFirmwareInfoResult>;
+  Update(params: FwUpdateProxyUpdateParams): Promise<void>;
+  ClearError(params: FwUpdateProxyClearErrorParams): Promise<void>;
+  Restore(params: FwUpdateProxyRestoreParams): Promise<void>;
 }
 
 interface LoadConfigBaseParams {
@@ -82,7 +94,12 @@ interface LoadConfigBaseParams {
   modbus_mode: 'TCP' | 'RTU';
 }
 
-export type LoadConfigParams = LoadConfigBaseParams & (RpcTcpPortConfig | RpcSerialPortConfig);
+export interface SerialRpcTcpPortConfig {
+  ip: string;
+  port: number;
+}
+
+export type LoadConfigParams = LoadConfigBaseParams & (SerialRpcTcpPortConfig | RpcSerialPortConfig);
 
 export interface LoadConfigResult {
   parameters: Record<string, number>;
@@ -107,7 +124,7 @@ export interface DeviceTypeDescription {
   'mqtt-id': string;
   'with-subdevices'?: boolean;
   hw?: DeviceTypeHardware[];
-  schema?: Record<string, any>;
+  schema?: JsonSchema;
 }
 
 export interface DeviceTypeDescriptionGroup {
@@ -124,4 +141,91 @@ export interface DeviceTypeDropdownOption {
 export interface DeviceTypeDropdownOptionGroup {
   label: string;
   options: DeviceTypeDropdownOption[];
+}
+
+export interface SerialPortProxySetupItemNewConfig {
+  slave_id?: number;
+  baud_rate?: number;
+  parity?: string;
+  stop_bits?: number;
+}
+
+export interface SerialPortProxySetupItem {
+  slave_id?: number;
+  baud_rate: number;
+  data_bits?: number;
+  parity: string;
+  stop_bits: number;
+  sn?: number;
+  cfg?: SerialPortProxySetupItemNewConfig;
+}
+
+export interface SerialPortProxySetupParams {
+  path: string;
+  items: SerialPortProxySetupItem[];
+}
+
+export interface SerialPortProxy {
+  Setup(params: SerialPortProxySetupParams): Promise<void>;
+}
+
+export interface ScannedDevice {
+  title: string;
+  sn: string;
+  address: number;
+  type: string;
+  port: string;
+  baudRate: number;
+  parity: string;
+  stopBits: number;
+  gotByFastScan: boolean;
+  bootloaderMode: boolean;
+}
+
+export interface WbDeviceTemplateParameter {
+  title: string;
+  id: string;
+  enum?: number[];
+  enum_titles?: string[];
+  default?: number;
+  min?: number;
+  max?: number;
+  order?: number;
+  required?: boolean;
+  description?: string;
+  group?: string;
+  condition?: string;
+  dependencies?: string[];
+  fw?: string;
+}
+
+export interface WbDeviceTemplateChannelSettings {
+  name: string;
+  enabled?: boolean;
+  read_period_ms?: number;
+}
+
+export interface WbDeviceTemplateChannel extends WbDeviceTemplateChannelSettings {
+  name: string;
+  description?: string;
+  group?: string;
+  condition?: string;
+  dependencies?: string[];
+  fw?: string;
+}
+
+export interface WbDeviceParametersGroup {
+  title?: string;
+  id: string;
+  order?: number;
+  description?: string;
+  group?: string;
+  ui_options?: JsonEditorOptions;
+}
+
+export interface WbDeviceTemplate {
+  groups?: WbDeviceParametersGroup[];
+  parameters?: WbDeviceTemplateParameter[];
+  channels?: WbDeviceTemplateChannel[];
+  translations?: TranslationsByLocale;
 }
