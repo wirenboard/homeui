@@ -52,6 +52,14 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('accessLevel', {
       url: '/access-level',
       template: '<users-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'users' */ './controllers/usersController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     .state('scan', {
       url: '/scan',
@@ -330,20 +338,6 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           return import(/* webpackChunkName: 'mbgate' */ './controllers/mbGateController').then(
             module => $ocLazyLoad.load({ name: module.default.name })
           );
-        },
-      },
-    })
-    //...........................................................................
-    .state('serial-metrics', {
-      url: '/serial-metrics',
-      controller: 'SerialMetricsCtrl as $ctrl',
-      template: require('../views/serial-metrics.html'),
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          return import(
-            /* webpackChunkName: 'serial-metrics' */ './controllers/serialMetricsController'
-          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
         },
       },
     })

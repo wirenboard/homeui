@@ -7,7 +7,7 @@ export default class AuthStore {
   public userRole: UserRole;
   public isAutologin: boolean;
   public areUsersConfigured: boolean = true;
-  public users: User[];
+  public users: User[] = [];
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -70,7 +70,7 @@ export default class AuthStore {
     });
   }
 
-  async updateUser(id: string, body: UserBody) {
+  async updateUser(id: string, body: Partial<UserBody>) {
     const res = await request.patch<string>(`/auth/users/${id}`, body);
     return runInAction(() => {
       this.users = this.users.map((user) =>

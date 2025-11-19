@@ -54,7 +54,6 @@ import userAgentFactory from './services/userAgent.factory';
 import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
-import serialMetricsProxyService from './services/serialMetricsProxy';
 import translationService from './services/translationService';
 import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
@@ -95,7 +94,6 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
-import usersPageDirective from './react-directives/users/users';
 import loginPageDirective from './react-directives/login/login';
 
 // Angular routes
@@ -151,7 +149,6 @@ module
   .factory('ConfigEditorProxy', configEditorProxyService)
   .factory('HistoryProxy', historyProxyService)
   .factory('LogsProxy', logsProxyService)
-  .factory('SerialMetricsProxy', serialMetricsProxyService)
   .factory('gotoDefStart', gotoDefStartService)
   .factory('getTime', getTimeService)
   .factory('Spinner', spinnerService)
@@ -271,7 +268,6 @@ module
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
   .directive('rulesConsole', rulesConsoleDirective)
-  .directive('usersPage', usersPageDirective)
   .directive('loginPage', loginPageDirective);
 
 module
@@ -290,7 +286,6 @@ module
         'history',
         'widgets',
         'units',
-        'serial-metrics',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {
