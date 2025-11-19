@@ -1,7 +1,7 @@
 import { makeObservable, computed, observable, action } from 'mobx';
 import { type JsonSchema, NumberStore } from '@/stores/json-schema-editor';
 import { firmwareIsNewer } from '~/utils/fwUtils';
-import { WbDeviceTemplateParameter } from '../../types';
+import type { WbDeviceTemplateParameter } from '../../types';
 import { Conditions } from './conditions';
 
 const getDefaultValue = (schema: JsonSchema): number => {

@@ -4,8 +4,8 @@ import { JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '~/i18n/react/config';
 import { DeviceTypesStore } from '../device-types-store';
-import { PortTabConfig, PortTabTcpConfig } from '../port-tab/types';
-import {
+import type { PortTabConfig, PortTabTcpConfig } from '../port-tab/types';
+import type {
   FwUpdateProxy,
   UpdateItem,
   SerialDeviceProxy,
@@ -19,7 +19,7 @@ import { getIntAddress, toSerialRpcPortConfig, toDmRpcPortConfig, setupDevice } 
 import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';
 import { EmbeddedSoftware } from './embedded-software/embedded-software-store';
 import { ReadRegistersStateStore } from './read-registers-state';
-import { ReadRegistersState } from './types';
+import type { ReadRegistersState } from './types';
 
 export class DeviceTabStore {
   public type: string = 'device';
