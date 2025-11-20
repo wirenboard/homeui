@@ -8,7 +8,7 @@ import ClearIcon from '@/assets/icons/clear.svg';
 import CloseIcon from '@/assets/icons/close.svg';
 import LayoutBottomIcon from '@/assets/icons/layout-bottom.svg';
 import LayoutRightIcon from '@/assets/icons/layout-right.svg';
-import { Dropdown, type Option } from '@/components/dropdown';
+import { Dropdown, Option } from '@/components/dropdown';
 import { Tooltip } from '@/components/tooltip';
 import type { RulesConsoleProps } from './types';
 import './styles.css';

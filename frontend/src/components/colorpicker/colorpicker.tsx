@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
-import { type ColorpickerProps } from './types';
+import { ColorpickerProps } from './types';
 import './styles.css';
 
 export const Colorpicker = ({

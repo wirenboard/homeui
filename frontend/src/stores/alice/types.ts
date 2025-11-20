@@ -1,4 +1,4 @@
-import { type Capability, type ColorModel, type Property } from '@/stores/alice';
+import { Capability, Color, ColorModel, Property } from '@/stores/alice';
 
 export interface Room {
   name: string;

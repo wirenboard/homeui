@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import i18n from '~/i18n/react/config';
-import type { DeviceMeta, NameTranslations } from './types';
+import { DeviceMeta, NameTranslations } from './types';
 
 function getFoldedDevices(): string[] {
   try {

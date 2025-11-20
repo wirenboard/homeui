@@ -1,4 +1,4 @@
-import { type AlertProps } from '@/components/alert/types';
+import { AlertProps } from '@/components/alert/types';
 
 export interface Notification {
   id?: Symbol;

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { type FormEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { type RangeProps } from './types';
+import { FormEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { RangeProps } from './types';
 import './styles.css';
 
 export const Range = ({

@@ -14,7 +14,7 @@ import { Tooltip } from '@/components/tooltip';
 import { CellComponent } from '@/stores/device';
 import { CellError } from '@/stores/device/cell-type';
 import { copyToClipboard } from '@/utils/clipboard';
-import { type CellProps } from './types';
+import { CellProps } from './types';
 import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));

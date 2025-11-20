@@ -6,7 +6,7 @@ import {
   StringField,
   PasswordField,
   FormButtonGroup,
-  FormFieldGroup,
+  FormFieldGroup
 } from '@/components/form';
 
 export const MqttSettings = () => {

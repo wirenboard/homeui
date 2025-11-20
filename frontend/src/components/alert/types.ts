@@ -1,4 +1,4 @@
-import { type HTMLAttributes } from 'react';
+import { HTMLAttributes } from 'react';
 
 export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;

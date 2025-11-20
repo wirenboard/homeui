@@ -1,4 +1,4 @@
-import { type DashboardsStore } from '@/stores/dashboards';
+import { DashboardsStore } from '@/stores/dashboards';
 
 export interface WebUiSettingsPageProps {
   onChangeLanguage: (lang: string) => void;

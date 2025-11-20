@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import SwapIcon from '@/assets/icons/swap.svg';

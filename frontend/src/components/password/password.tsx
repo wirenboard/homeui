@@ -7,7 +7,7 @@ import VisibilityOffIcon from '@/assets/icons/visibility-off.svg';
 import VisibilityIcon from '@/assets/icons/visibility.svg';
 import { Button } from '@/components/button';
 import { Input } from '../input';
-import { type PasswordProps } from './types';
+import { PasswordProps } from './types';
 import './styles.css';
 
 export const Password = ({

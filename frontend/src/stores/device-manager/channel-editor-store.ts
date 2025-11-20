@@ -1,7 +1,7 @@
 import { makeObservable, computed } from 'mobx';
 import { NumberStore, StringStore } from '@/stores/json-schema-editor';
 import { Conditions } from './conditions';
-import { type WbDeviceParameterEditor } from './parameter-editor-store';
+import { WbDeviceParameterEditor } from './parameter-editor-store';
 import type { WbDeviceTemplateChannel, WbDeviceTemplateChannelSettings } from './types';
 
 enum WbDeviceChannelModes {

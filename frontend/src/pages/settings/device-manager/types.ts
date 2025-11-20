@@ -1,5 +1,5 @@
-import { type DeviceSettingsObjectStore, type WbDeviceParameterEditorsGroup } from '@/stores/device-manager';
-import { type ArrayStore, type Translator } from '@/stores/json-schema-editor';
+import { DeviceSettingsObjectStore, WbDeviceParameterEditorsGroup } from '@/stores/device-manager';
+import { ArrayStore, Translator } from '@/stores/json-schema-editor';
 
 export interface DeviceSettingsEditorProps {
   store: DeviceSettingsObjectStore;

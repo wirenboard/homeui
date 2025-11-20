@@ -8,13 +8,13 @@ import {
   NumberEditor,
   ParamDescription,
   ParamError,
-  StringEditor,
+  StringEditor
 } from '@/components/json-schema-editor';
 import {
-  type WbDeviceParameterEditorsGroup,
-  type WbDeviceChannelEditor,
+  WbDeviceParameterEditorsGroup,
+  WbDeviceChannelEditor
 } from '@/stores/device-manager';
-import { type NumberStore, type ArrayStore, type Translator } from '@/stores/json-schema-editor';
+import { NumberStore, ArrayStore, Translator } from '@/stores/json-schema-editor';
 import { MakeEditors, ParamSimpleLabel } from './device-settings-param-editor';
 import type { DeviceSettingsEditorProps } from './types';
 

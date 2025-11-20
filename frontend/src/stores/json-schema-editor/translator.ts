@@ -1,4 +1,4 @@
-import type { TranslationsByLocale } from './types';
+import type { TranslationsByLocale, JsonSchema } from './types';
 
 export class Translator {
   private _translations: TranslationsByLocale[] = [];

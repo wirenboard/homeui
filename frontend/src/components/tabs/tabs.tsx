@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { type PropsWithChildren, cloneElement, Children, isValidElement, type ReactElement } from 'react';
-import type { TabContentProps, TabListProps, TabProps, TabsProps } from './types';
+import { PropsWithChildren, cloneElement, Children, isValidElement, ReactElement } from 'react';
+import { TabContentProps, TabListProps, TabProps, TabsProps } from './types';
 import './styles.css';
 
 export const TabList = ({ className, children, activeTab, onTabChange }: PropsWithChildren<TabListProps>) => (

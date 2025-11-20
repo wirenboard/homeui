@@ -1,4 +1,4 @@
-import type { JsonEditorOptions, TranslationsByLocale } from '@/stores/json-schema-editor';
+import { JsonEditorOptions, TranslationsByLocale } from '@/stores/json-schema-editor';
 
 export interface WbDeviceTemplateParameter {
   title: string;

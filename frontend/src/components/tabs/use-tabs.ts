@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { type UseTabsArgs } from './types';
+import { UseTabsArgs } from './types';
 
 export const useTabs = ({
   items,

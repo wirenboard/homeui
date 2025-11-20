@@ -7,7 +7,7 @@ import type {
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
-  SuccessMessageFetch,
+  SuccessMessageFetch
 } from './types';
 
 export const checkIsAliceAvailable = async () => request.get<boolean>(

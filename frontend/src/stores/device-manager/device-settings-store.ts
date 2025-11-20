@@ -1,26 +1,26 @@
 import { makeObservable, computed } from 'mobx';
 import {
-  type JsonSchema,
-  type JsonObject,
+  JsonSchema,
+  JsonObject,
   NumberStore,
   ObjectStore,
-  type StringStore,
-  type ArrayStore,
-  StoreBuilder,
+  StringStore,
+  ArrayStore,
+  StoreBuilder
 } from '@/stores/json-schema-editor';
 import { WbDeviceChannelEditor } from './channel-editor-store';
 import { Conditions } from './conditions';
 import {
   WbDeviceParameterEditor,
   WbDeviceParameterEditorVariant,
-  makeJsonSchemaForParameter,
+  makeJsonSchemaForParameter
 } from './parameter-editor-store';
 import type {
   WbDeviceParametersGroup,
   WbDeviceTemplateChannel,
   WbDeviceTemplateParameter,
   WbDeviceTemplate,
-  WbDeviceTemplateChannelSettings,
+  WbDeviceTemplateChannelSettings
 } from './types';
 
 export class WbDeviceParameterEditorsGroup {

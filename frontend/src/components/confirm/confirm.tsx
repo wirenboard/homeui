@@ -1,8 +1,8 @@
-import { type PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Dialog } from '@/components/dialog';
-import { type ConfirmationProps } from './types';
+import { ConfirmationProps } from './types';
 import './styles.css';
 
 export const Confirm = ({

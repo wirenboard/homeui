@@ -19,7 +19,7 @@ import type {
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
-  SuccessMessageFetch,
+  SuccessMessageFetch
 } from './types';
 
 export default class AliceStore {

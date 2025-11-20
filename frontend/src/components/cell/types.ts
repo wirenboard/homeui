@@ -1,4 +1,4 @@
-import { type Cell } from '@/stores/device';
+import { Cell } from '@/stores/device';
 
 export interface CellProps {
   cell: Cell;

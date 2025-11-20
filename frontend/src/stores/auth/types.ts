@@ -1,4 +1,4 @@
-import { type UserRole } from './constants';
+import { UserRole } from './constants';
 
 export interface AuthResponse {
   user_type: UserRole;

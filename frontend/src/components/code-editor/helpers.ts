@@ -1,5 +1,5 @@
-import { type EditorState, RangeSet, StateEffect, StateField } from '@codemirror/state';
-import { type EditorView, gutter, GutterMarker } from '@codemirror/view';
+import { EditorState, RangeSet, StateEffect, StateField } from '@codemirror/state';
+import { EditorView, gutter, GutterMarker } from '@codemirror/view';
 
 export const breakpointEffect = StateEffect.define<{ pos: number; on: boolean }>();
 

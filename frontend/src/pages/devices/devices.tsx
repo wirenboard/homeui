@@ -13,7 +13,7 @@ import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type DeviceStore } from '@/stores/device';
+import { DeviceStore } from '@/stores/device';
 import './styles.css';
 
 const DevicesPage = observer(({ store }: { store: DeviceStore }) => {

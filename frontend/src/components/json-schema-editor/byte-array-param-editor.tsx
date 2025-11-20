@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { Input } from '@/components/input';
 import type { ByteArrayEditorProps } from './types';
 
-const ByteArrayEditor = observer(({
+const ByteArrayEditor = observer(({  
   store,
   inputId,
   descriptionId,
@@ -21,3 +21,4 @@ const ByteArrayEditor = observer(({
 });
 
 export default ByteArrayEditor;
+

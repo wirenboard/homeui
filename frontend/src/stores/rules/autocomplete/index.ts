@@ -1,6 +1,6 @@
 import { autocompletion, type CompletionSource } from '@codemirror/autocomplete';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
-import { type DeviceStore } from '@/stores/device';
+import { DeviceStore } from '@/stores/device';
 import { getEnums } from './enums';
 import { methods } from './methods';
 import { snippetSource } from './snippets';

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { type ChangeEvent, type KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { type InputProps } from './types';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { InputProps } from './types';
 import './styles.css';
 
 export const Input = ({

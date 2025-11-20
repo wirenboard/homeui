@@ -1,6 +1,6 @@
 import { generateNextId } from '@/utils/id';
-import type DashboardsStore from './dashboards-store';
-import { type WidgetBase } from './types';
+import DashboardsStore from './dashboards-store';
+import { WidgetBase } from './types';
 
 export class Widget {
   declare id: string;

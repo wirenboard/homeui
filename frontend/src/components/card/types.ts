@@ -1,4 +1,4 @@
-import type { FC, ReactElement, SVGProps } from 'react';
+import { FC, ReactElement, SVGProps } from 'react';
 
 export interface CardAction {
   title: string;

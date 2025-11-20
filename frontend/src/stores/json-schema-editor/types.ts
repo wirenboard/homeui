@@ -1,9 +1,9 @@
-import { type MistypedValue } from './mistyped-value';
+import { MistypedValue } from './mistyped-value';
 
-export interface TranslationsByLocale {
+export type TranslationsByLocale = {
   en?: Record<string, string>;
   ru?: Record<string, string>;
-}
+};
 
 export interface WbOptions {
   // Show editor even if the property is not required and options.show_opt_in is not set

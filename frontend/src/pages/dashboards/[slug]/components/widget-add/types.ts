@@ -1,6 +1,6 @@
-import { type Dashboard, type Widget } from '@/stores/dashboards';
-import type DashboardsStore from '@/stores/dashboards/dashboards-store';
-import { type Cell } from '@/stores/device';
+import { Dashboard, Widget } from '@/stores/dashboards';
+import DashboardsStore from '@/stores/dashboards/dashboards-store';
+import { Cell } from '@/stores/device';
 
 export interface WidgetAddProps {
   dashboard: Dashboard;

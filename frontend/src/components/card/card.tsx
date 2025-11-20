@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import type { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
+import { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
 import { Tooltip } from '@/components/tooltip';
-import type { CardAction, CardProps } from './types';
+import { CardAction, CardProps } from './types';
 import './styles.css';
 
 const CardActionUrl = ({ action, id }: { action: CardAction; id?: string }) => {

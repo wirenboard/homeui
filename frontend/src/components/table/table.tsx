@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { Children, cloneElement, isValidElement, type PropsWithChildren, useMemo } from 'react';
+import { Children, cloneElement, isValidElement, PropsWithChildren, useMemo } from 'react';
 import { Loader } from '@/components/loader';
-import type { TableProps, TableCellProps, TableRowProps } from './types';
+import { TableProps, TableCellProps, TableRowProps } from './types';
 import './styles.css';
 
 export const TableRow = ({

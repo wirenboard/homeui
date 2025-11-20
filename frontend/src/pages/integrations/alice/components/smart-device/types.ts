@@ -1,4 +1,4 @@
-import { type DeviceStore } from '@/stores/device';
+import { DeviceStore } from '@/stores/device';
 
 export interface SmartDeviceParams {
   id?: string;

@@ -1,6 +1,6 @@
 import { makeObservable, action, computed, observable } from 'mobx';
 import { MistypedValue } from './mistyped-value';
-import { type StoreBuilder } from './store-builder';
+import { StoreBuilder } from './store-builder';
 import type { JsonSchema, PropertyStore, JsonObject } from './types';
 
 export class ObjectParamStore {

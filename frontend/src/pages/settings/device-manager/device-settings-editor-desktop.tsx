@@ -7,15 +7,15 @@ import {
   NumberEditor,
   ParamDescription,
   ParamError,
-  StringEditor,
+  StringEditor
 } from '@/components/json-schema-editor';
 import { Table, TableRow, TableCell } from '@/components/table';
 import { Tabs, TabContent, useTabs } from '@/components/tabs';
 import {
-  type WbDeviceParameterEditorsGroup,
-  type WbDeviceChannelEditor,
+  WbDeviceParameterEditorsGroup,
+  WbDeviceChannelEditor
 } from '@/stores/device-manager';
-import { type NumberStore, type Translator } from '@/stores/json-schema-editor';
+import { NumberStore, Translator } from '@/stores/json-schema-editor';
 import { MakeEditors } from './device-settings-param-editor';
 import type { DeviceSettingsEditorProps, DeviceSettingsTabsProps } from './types';
 

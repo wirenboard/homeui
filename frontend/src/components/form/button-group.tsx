@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 export const FormButtonGroup = ({ children }: { children: ReactNode }) => {
   return (

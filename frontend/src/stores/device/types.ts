@@ -8,9 +8,9 @@ export interface DeviceMeta {
   title?: NameTranslations;
 }
 
-export interface EnumTranslations {
+export type EnumTranslations = {
   [value: string]: NameTranslations;
-}
+};
 
 export interface CellMeta {
   title?: NameTranslations;

@@ -11,7 +11,7 @@ export enum CertificateStatus {
 interface DeviceInfo {
   sn: string;
   ip: string;
-  https_cert: CertificateStatus;
+  https_cert: string;
 }
 
 export interface HttpsStatus {
@@ -174,5 +174,5 @@ export async function switchToHttps() {
 
 export const getHttpsCertificateStatus = async (): Promise<CertificateStatus> => {
   const { https_cert } = await getDeviceInfo();
-  return https_cert;
+  return https_cert as CertificateStatus;
 };

@@ -5,7 +5,7 @@ import {
   useFloating,
   useDismiss,
   useRole,
-  useInteractions,
+  useInteractions
 } from '@floating-ui/react';
 import classNames from 'classnames';
 import { type PropsWithChildren, useId } from 'react';

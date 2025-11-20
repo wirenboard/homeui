@@ -1,5 +1,5 @@
 import type { SmartDeviceCapability, SmartDeviceProperty } from '@/stores/alice';
-import { type DeviceStore } from '@/stores/device';
+import { DeviceStore } from '@/stores/device';
 
 export interface DeviceSkillsParams {
   capabilities: SmartDeviceCapability[];

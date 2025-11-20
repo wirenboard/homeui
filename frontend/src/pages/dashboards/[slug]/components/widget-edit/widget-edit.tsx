@@ -10,7 +10,7 @@ import MoveIcon from '@/assets/icons/move.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Confirm } from '@/components/confirm';
-import { Dropdown, type Option } from '@/components/dropdown';
+import { Dropdown, Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Switch } from '@/components/switch';
 import { Textarea } from '@/components/textarea';

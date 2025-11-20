@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Range } from '@/components/range';
-import { type Cell } from '@/stores/device';
+import { Cell } from '@/stores/device';
 import './styles.css';
 
 export const CellRange = observer(({ cell }: { cell: Cell }) => {

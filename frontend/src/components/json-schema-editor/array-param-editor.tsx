@@ -6,7 +6,7 @@ import ArrowUpIcon from '@/assets/icons/arrow-up.svg';
 import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Card } from '@/components/card';
-import { type ArrayStore, type ObjectStore, type Translator } from '@/stores/json-schema-editor';
+import { ArrayStore, ObjectStore, Translator } from '@/stores/json-schema-editor';
 import { Button } from '../button';
 import type { ArrayEditorProps, EditorBuilderFunction } from './types';
 

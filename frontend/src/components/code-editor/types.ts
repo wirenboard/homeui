@@ -1,4 +1,4 @@
-import { type Extension } from '@codemirror/state';
+import { Extension } from '@codemirror/state';
 
 export interface CodeEditorProps {
   text: string;

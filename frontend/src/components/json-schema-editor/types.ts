@@ -1,15 +1,15 @@
-import { type ReactElement } from 'react';
+import { ReactElement } from 'react';
 import {
-  type StringStore,
-  type ObjectStore,
-  type NumberStore,
-  type BooleanStore,
-  type ArrayStore,
-  type PropertyStore,
-  type ObjectParamStore,
-  type ByteArrayStore,
-  type Translator,
-  type ValidationError,
+  StringStore,
+  ObjectStore,
+  NumberStore,
+  BooleanStore,
+  ArrayStore,
+  PropertyStore,
+  ObjectParamStore,
+  ByteArrayStore,
+  Translator,
+  type ValidationError
 } from '@/stores/json-schema-editor';
 
 export interface EditorBuilderFunctionProps {
