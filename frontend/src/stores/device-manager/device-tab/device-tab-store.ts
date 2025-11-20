@@ -186,7 +186,7 @@ export class DeviceTabStore {
 
   getCopy() {
     let dataCopy = cloneDeep(this.editedData);
-    dataCopy.slave_id = '';
+    delete dataCopy.slave_id;
     let tab = new DeviceTabStore(
       dataCopy,
       this.deviceType,
