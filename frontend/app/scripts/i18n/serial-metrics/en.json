@@ -1,0 +1,24 @@
+{
+    "serial-metrics":{
+        "title": "wb-mqtt-serial metrics",
+        "labels": {
+            "port": "Port",
+            "channel": "Channel",
+            "load": "Bus load, %",
+            "percent": "last minute",
+            "percent15": "last 15 minutes",
+            "interval": "Requests interval during last minute, ms",
+            "interval50": "50% less than",
+            "interval95": "95% less than",
+            "bus-load": "In the last 15 minutes the bus is used {{100 - bl15 | number : 2}}% of the time, in last minute - {{100 - bl | number : 2}}%",
+            "unavailable": "wb-mqtt-serial metrics service is unavailable",
+            "serial": "Device switching and publishing to MQTT"
+        },
+        "buttons": {
+            "reload": "Update"
+        },
+        "errors": {
+            "load": "Error getting metrics"
+        }
+    }
+}

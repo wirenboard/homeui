@@ -342,6 +342,20 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       },
     })
     //...........................................................................
+    .state('serial-metrics', {
+      url: '/serial-metrics',
+      controller: 'SerialMetricsCtrl as $ctrl',
+      template: require('../views/serial-metrics.html'),
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(
+            /* webpackChunkName: 'serial-metrics' */ './controllers/serialMetricsController'
+          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
+        },
+      },
+    })
+    //...........................................................................
     .state('integrations-alice', {
       url: '/integrations/alice',
       template: '<alice-page />',
