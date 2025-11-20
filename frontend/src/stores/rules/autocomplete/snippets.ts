@@ -1,6 +1,6 @@
 /* eslint-disable stylistic/max-len */
 
-import { CompletionSource, snippetCompletion } from '@codemirror/autocomplete';
+import { type CompletionSource, snippetCompletion } from '@codemirror/autocomplete';
 
 const snippets = [
   snippetCompletion(

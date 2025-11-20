@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { Alert } from '@/components/alert';
-import { notificationsStore, Notification } from '@/stores/notifications';
+import { notificationsStore, type Notification } from '@/stores/notifications';
 import './styles.css';
 
 export const Notifications = observer(() => {

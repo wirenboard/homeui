@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CopyIcon from '@/assets/icons/copy.svg';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
@@ -13,7 +13,7 @@ import {
   DefaultRoom,
   deviceTypes,
   type AddDeviceParams,
-  type SmartDevice as SmartDeviceData
+  type SmartDevice as SmartDeviceData,
 } from '@/stores/alice';
 import { notificationsStore } from '@/stores/notifications';
 import { DeviceSkills } from './components/device-skills';

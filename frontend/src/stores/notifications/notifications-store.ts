@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Notification } from './types';
+import { type Notification } from './types';
 
 export default class NotificationsStore {
   public notifications: Notification[] = [];

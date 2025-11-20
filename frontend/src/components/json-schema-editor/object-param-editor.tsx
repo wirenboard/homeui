@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
-import { useId, ReactElement } from 'react';
-import { Translator, ObjectParamStore } from '@/stores/json-schema-editor';
+import { useId } from 'react';
+import { type Translator, type ObjectParamStore } from '@/stores/json-schema-editor';
 import { EditorWrapper } from './editor-wrapper';
 import type { ObjectEditorProps, EditorBuilderFunction } from './types';
 
@@ -65,7 +65,7 @@ const ObjectParamEditorRow = ({
   );
 };
 
-const makeLayout = (params:ObjectParamStore[], translator, editorBuilder) => {
+const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
   let res = [];
   let elements = [];
   let slotsInRow = 0;

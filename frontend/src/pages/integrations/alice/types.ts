@@ -1,4 +1,4 @@
-import { DeviceStore } from '@/stores/device';
+import { type DeviceStore } from '@/stores/device';
 
 export interface AlicePageParams {
   deviceStore: DeviceStore;

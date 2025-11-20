@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
 import { Input } from '@/components/input';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
-import { WbDeviceParameterEditor } from '@/stores/device-manager';
-import { Translator } from '@/stores/json-schema-editor';
+import { type WbDeviceParameterEditor } from '@/stores/device-manager';
+import { type Translator } from '@/stores/json-schema-editor';
 
 const DisabledParamPlaceholder = () => {
   const { t } = useTranslation();

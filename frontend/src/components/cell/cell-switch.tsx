@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { Switch } from '@/components/switch';
-import { Cell } from '@/stores/device';
+import { type Cell } from '@/stores/device';
 import { CellHistory } from './cell-history';
 import './styles.css';
 

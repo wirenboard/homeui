@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { SwitchProps } from './types';
+import { type SwitchProps } from './types';
 import './styles.css';
 
 export const Switch = ({

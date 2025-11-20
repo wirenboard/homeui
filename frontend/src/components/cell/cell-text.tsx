@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
-import { Cell } from '@/stores/device';
+import { type Cell } from '@/stores/device';
 import { copyToClipboard } from '@/utils/clipboard';
 import { CellHistory } from './cell-history';
 import './styles.css';

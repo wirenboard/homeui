@@ -1,4 +1,4 @@
-import { Dashboard } from '@/stores/dashboards';
+import { type Dashboard } from '@/stores/dashboards';
 
 export interface DashboardEditProps {
   dashboard: Dashboard;

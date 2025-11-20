@@ -17,16 +17,16 @@ export class ByteArrayStore implements PropertyStore {
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (Array.isArray(initialValue)) {
-      this.value = initialValue.map(item => String(item));
+      this.value = initialValue.map((item) => String(item));
       this.editString = this.value.join(', ');
-    } else{
+    } else {
       if (initialValue === undefined) {
         this.value = schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined ? [] : undefined;
       } else {
         this.value = new MistypedValue(initialValue);
       }
       this.editString = '';
-    } 
+    }
     this._initialValue = this.value;
     this.schema = schema;
     this.required = required;
@@ -82,7 +82,7 @@ export class ByteArrayStore implements PropertyStore {
     if (value === '') {
       this.value = undefined;
     } else {
-      this.value = value.split(',').map(item => item.trim());
+      this.value = value.split(',').map((item) => item.trim());
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
