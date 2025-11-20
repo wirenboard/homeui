@@ -1,6 +1,6 @@
 import { makeObservable, action, computed, observable } from 'mobx';
 import { MistypedValue } from './mistyped-value';
-import { StoreBuilder } from './store-builder';
+import { type StoreBuilder } from './store-builder';
 import type { JsonSchema, PropertyStore, JsonArray } from './types';
 
 export class ArrayStore implements PropertyStore {

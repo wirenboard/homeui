@@ -1,10 +1,10 @@
 import { ArrayStore } from './array-store';
 import { BooleanStore } from './boolean-store';
+import { ByteArrayStore } from './byte-array-store';
 import { NumberStore } from './number-store';
 import { ObjectStore } from './object-store';
 import { StringStore } from './string-store';
-import { ByteArrayStore } from './byte-array-store';
-import { JsonSchema, PropertyStore } from './types';
+import { type JsonSchema, type PropertyStore } from './types';
 
 export class StoreBuilder {
 

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ButtonProps } from './types';
+import { type ButtonProps } from './types';
 import './styles.css';
 
 export const Button = ({

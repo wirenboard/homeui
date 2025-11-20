@@ -1,4 +1,4 @@
-import { HTMLAttributes } from 'react';
+import { type HTMLAttributes } from 'react';
 
 export interface TableProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;

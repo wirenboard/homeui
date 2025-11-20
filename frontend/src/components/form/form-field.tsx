@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 import { FieldDescription } from './field-description';
 import { FieldError } from './field-error';
 import type { FormFieldProps } from './types';

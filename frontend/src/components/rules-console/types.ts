@@ -1,4 +1,4 @@
-import { RulesStore } from '@/stores/rules';
+import { type RulesStore } from '@/stores/rules';
 
 export interface RulesConsoleProps {
   rulesStore: RulesStore;

@@ -67,8 +67,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       const msg = serverMessage
         ? serverMessage
         : status
-        ? `${t('alice.notifications.integration-error')} (${status})`
-        : t('alice.notifications.integration-error');
+          ? `${t('alice.notifications.integration-error')} (${status})`
+          : t('alice.notifications.integration-error');
 
       notificationsStore.showNotification({ variant: 'danger', text: msg });
     } finally {
@@ -82,7 +82,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       try {
         await fetchIntegrationStatus();
       } catch (err) {
-        const msg = err?.response?.data?.detail || err?.response?.data?.message || t('alice.notifications.integration-error');
+        const msg = err?.response?.data?.detail || err?.response?.data?.message
+          || t('alice.notifications.integration-error');
         notificationsStore.showNotification({ variant: 'danger', text: msg });
       } finally {
         setIntegrationLoading(false);
@@ -123,8 +124,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       <Switch
         id="alice-integration-enabled"
         value={isIntegrationEnabled}
-        onChange={handleIntegrationToggle}
         isDisabled={isIntegrationLoading}
+        onChange={handleIntegrationToggle}
       />
     </div>
   );

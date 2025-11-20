@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 import { Card } from '@/components/card';
 import type { FieldGroupProps } from './types';
 

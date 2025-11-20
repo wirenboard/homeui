@@ -1,15 +1,15 @@
 import classNames from 'classnames';
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import InfoIcon from '@/assets/icons/info.svg';
 import { Alert } from '@/components/alert';
-import { AlertProps } from '@/components/alert/types';
+import { type AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Loader } from '@/components/loader';
 import { Notifications } from '@/components/notifications';
-import { PageProps } from './types';
+import { type PageProps } from './types';
 import './styles.css';
 
 export const PageLayout = ({

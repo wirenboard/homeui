@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { CSSProperties, PropsWithChildren } from 'react';
+import { type CSSProperties, type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
 import { Input } from '@/components/input';

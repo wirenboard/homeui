@@ -1,9 +1,9 @@
-import { EditorState } from '@codemirror/state';
-import { EditorView, keymap, lineNumbers } from '@codemirror/view';
-import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { type EditorState } from '@codemirror/state';
+import { type EditorView, keymap, lineNumbers } from '@codemirror/view';
+import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { useEffect, useRef, useState } from 'react';
 import { breakpointState, customGutter, getGutterEffects } from './helpers';
-import { CodeEditorProps } from './types';
+import { type CodeEditorProps } from './types';
 import './styles.css';
 
 export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onChange, onSave }: CodeEditorProps) => {

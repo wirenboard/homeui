@@ -1,10 +1,10 @@
 import { ArrayStore } from './array-store';
 import { BooleanStore } from './boolean-store';
+import { ByteArrayStore } from './byte-array-store';
 import { loadJsonSchema } from './json-schema-loader';
 import { MistypedValue } from './mistyped-value';
 import { NumberStore } from './number-store';
 import { ObjectStore, ObjectParamStore } from './object-store';
-import { ByteArrayStore } from './byte-array-store';
 import { StoreBuilder } from './store-builder';
 import { StringStore } from './string-store';
 import { Translator } from './translator';
@@ -14,7 +14,7 @@ import type {
   JsonObject,
   JsonSchema,
   JsonEditorOptions,
-  TranslationsByLocale
+  TranslationsByLocale,
 } from './types';
 
 export {

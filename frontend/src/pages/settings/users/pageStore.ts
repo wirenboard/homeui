@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import { type AxiosError } from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { authStore, UserRole, type User } from '@/stores/auth';
 import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/httpsUtils';
