@@ -95,6 +95,7 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
+import usersPageDirective from './react-directives/users/users';
 import loginPageDirective from './react-directives/login/login';
 
 // Angular routes
@@ -270,6 +271,7 @@ module
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
   .directive('rulesConsole', rulesConsoleDirective)
+  .directive('usersPage', usersPageDirective)
   .directive('loginPage', loginPageDirective);
 
 module

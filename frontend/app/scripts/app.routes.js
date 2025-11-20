@@ -52,14 +52,6 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('accessLevel', {
       url: '/access-level',
       template: '<users-page />',
-      resolve: {
-        ctrl: ($q, $ocLazyLoad) => {
-          'ngInject';
-          return import(/* webpackChunkName: 'users' */ './controllers/usersController').then(
-            module => $ocLazyLoad.load({ name: module.default.name })
-          );
-        },
-      },
     })
     .state('scan', {
       url: '/scan',

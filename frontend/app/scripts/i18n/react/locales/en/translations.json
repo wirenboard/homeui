@@ -609,7 +609,6 @@
          "admin": "Admin",
          "user": "User",
          "operator": "Operator",
-         "confirm-delete-heading": "User delete",
          "confirm-delete":"Do you really want to delete user \"{{name}}\"?",
          "autologin": "Automatically log in as user:",
          "no-autologin": "Do not use autologin",
@@ -619,7 +618,6 @@
       "buttons": {
          "save": "Save",
          "add": "Add",
-         "edit": "Edit",
          "delete": "Delete",
          "enable-https": "Enable HTTPS"
       }

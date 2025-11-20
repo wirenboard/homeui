@@ -49,7 +49,7 @@ export const PageLayout = ({
 
   return (
     <main className="page">
-      {hasRights && !isHideHeader && (titleValue || isEditingTitle) && (
+      {!isHideHeader && (titleValue || isEditingTitle) && (
         <header className="page-headerContainer">
           <div className="page-headerTitleWrapper">
             {isEditingTitle ? (
