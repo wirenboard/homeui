@@ -170,7 +170,7 @@ export class DeviceTabStore {
     }
     this._initFromDeviceType(type);
     this.schemaStore?.setSlaveId(oldSlaveId);
-    this.readRegistersState.deviceTypeChanged(type, this.slaveId ?? '', !!this.editedData?.enabled);
+    this.readRegistersState.deviceTypeChanged(type, this.slaveId ?? '', !!(this.editedData?.enabled ?? true));
     this._clearError();
     await this._loadConfigFromDevice(portConfig);
     this._clearLoading();
