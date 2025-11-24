@@ -23,7 +23,7 @@ import type {
 } from './types';
 
 export default class AliceStore {
-  public integrations: string[];
+  public integrations: string[] = [];
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
   public isIntegrationEnabled = false;
@@ -40,7 +40,9 @@ export default class AliceStore {
         this.integrations = isAvailable ? ['alice'] : [];
       });
     } catch {
-    //
+      runInAction(() => {
+        this.integrations = [];
+      });
     }
   }
 

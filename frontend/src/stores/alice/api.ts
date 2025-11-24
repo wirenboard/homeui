@@ -12,7 +12,7 @@ import type {
 
 export const checkIsAliceAvailable = async () => request.get<boolean>(
   '/api/integrations/alice/available'
-).then(({ data }) => data);
+).then(({ data }) => data === true);
 
 export const getAliceInfo = async () => request.get<AliceFetchData>(
   '/api/integrations/alice'
