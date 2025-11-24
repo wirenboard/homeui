@@ -118,7 +118,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     [integrations, pageState]
   );
 
-  const headerActions = (
+  const headerActions = integrations?.includes('alice') ? (
     <div className="alice-integrationToggle">
       <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
       <Switch
@@ -128,7 +128,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         onChange={handleIntegrationToggle}
       />
     </div>
-  );
+  ) : undefined;
 
   return (
     <PageLayout
