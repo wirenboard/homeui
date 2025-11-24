@@ -49,18 +49,6 @@
     flex-grow: 1;
 }
 
-.device-manager-page .device-tab {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 10px 9px 10px 20px;
-    gap: 3px;
-}
-
-.device-manager-page .device-tab span {
-    flex-grow: 1;
-}
-
 .device-manager-page .settings-tab {
     display: flex;
     flex-direction: row;
@@ -84,21 +72,9 @@
     margin-bottom: 0px;
 }
 
-.device-manager-page li .error .glyphicon-exclamation-sign {
-    color: #a90329;
-}
-
-.device-manager-page li .warning .glyphicon-exclamation-sign {
-    color: #826430;
-}
-
 .device-manager-page .add-port-button {
     width: 100%;
     margin-top: 10px;
-}
-
-.device-manager-page .button-group button:not(:first-child) {
-    margin-left: 5px;
 }
 
 .device-manager-page .device-settings {
@@ -136,23 +112,10 @@
     flex-grow: 1;
 }
 
-.device-manager-page .device-tab-properties > div > .je-header > label {
-    display: none;
-}
-
-.device-manager-page .device-tab-properties > .je-object__container {
-    position: unset;
-}
-
 @media (max-width: 991px) {
     .device-manager-page .device-list-panel {
         width: 100%;
         max-width: unset;
-    }
-
-    .device-manager-page .device-tab-properties > div > .je-object__controls {
-        margin-left: unset;
-        margin-bottom: 15px;
     }
 
     .device-manager-page li:not(:hover):not(:focus) .port-tab {
@@ -176,10 +139,6 @@
 
     .device-manager-page li.active .settings-tab {
         border: 1px solid var(--primary-color);
-    }
-
-    .device-manager-page .group-editor {
-        margin-top: 15px;
     }
 }
 
@@ -241,52 +200,8 @@
     flex-basis: 100%;
 }
 
-.device-manager-page .device-tab .glyphicon-refresh {
-    color: #bd882b;
-}
-
-.device-manager-page .firmware-version-panel {
-    margin-bottom: 10px;
-}
-
-/* Fix bootstrap style */
-.device-manager-page .progress-bar-striped.active {
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-
-.device-manager-page .animation-rotate {
-    animation: rotate 2s linear infinite;
-}
-
 .device-manager-page .alert a {
     white-space: pre;
-}
-
-.device-manager-page .firmware-update-panel {
-    flex-wrap: wrap;
-}
-
-.device-manager-page div.firmware-update-panel .alert-header {
-    flex-basis: unset;
-}
-
-.device-manager-page div.firmware-update-error-panel {
-    align-items: baseline;
-    flex-wrap: nowrap;
-}
-
-.device-manager-page .firmware-update-panel .progress {
-    margin-bottom: 0px;
-    flex-grow: 1;
-    min-width: '200px';
-}
-
-.device-manager-page .firmware-update-panel span:last-of-type{
-    flex-basis: 100%;
-}
-
-.device-manager-page .new-embedded-software-warning .alert-header span::after {
-    content: ' ';
 }
 
 .device-manager-page .button-panel {
@@ -303,22 +218,4 @@
     .device-manager-page .port-tab-content-header .button-panel {
         flex-grow: 1;
     }
-}
-
-.device-manager-page .device-type-select {
-    flex-basis: 45%;
-}
-
-@media (max-width: 1150px) {
-    .device-manager-page .device-type-select {
-        flex-grow: 1;
-        min-width: 10px;
-    }
-}
-
-.device-manager-page .device-tab-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
 }

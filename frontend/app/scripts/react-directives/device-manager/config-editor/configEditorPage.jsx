@@ -1,13 +1,13 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { DeviceTab, DeviceTabContent } from '@/pages/settings/device-manager';
 import { Button } from '../../common';
 import ConfirmModal from '../../components/modals/confirmModal';
 import FormModal from '../../components/modals/formModal';
 import { SelectModal } from '../../components/modals/selectModal';
 import { PageWrapper, PageBody, PageTitle } from '../../components/page-wrapper/pageWrapper';
 import { VerticalTabs, TabContent, TabItem, TabPane, TabsList } from '../../components/tabs/tabs';
-import { DeviceTab, DeviceTabContent } from './deviceTab';
 import { PortTab, PortTabContent } from './portTab';
 import { SettingsTab, SettingsTabContent } from './settingsPage';
 import { TabType } from './tabsStore';
@@ -46,7 +46,8 @@ function getTabPaneContent(
   onSearchDisconnectedDevice,
   onUpdateFirmware,
   onUpdateBootloader,
-  onUpdateComponents
+  onUpdateComponents,
+  onReadRegisters
 ) {
   if (tab.type === TabType.PORT) {
     return (
@@ -72,6 +73,7 @@ function getTabPaneContent(
         onUpdateBootloader={onUpdateBootloader}
         onUpdateComponents={onUpdateComponents}
         onDeletePortDevices={onDeletePortDevices}
+        onReadRegisters={onReadRegisters}
       />
     );
   }
@@ -91,7 +93,8 @@ function makeTabPanes(
   onSearchDisconnectedDevice,
   onUpdateFirmware,
   onUpdateBootloader,
-  onUpdateComponents
+  onUpdateComponents,
+  onReadRegisters
 ) {
   return tabs.map((tab, index) => {
     return (
@@ -107,7 +110,8 @@ function makeTabPanes(
           onSearchDisconnectedDevice,
           onUpdateFirmware,
           onUpdateBootloader,
-          onUpdateComponents
+          onUpdateComponents,
+          onReadRegisters
         )}
       </TabPane>
     );
@@ -130,7 +134,8 @@ const PageTabs = observer(
     onSearchDisconnectedDevice,
     onUpdateFirmware,
     onUpdateBootloader,
-    onUpdateComponents
+    onUpdateComponents,
+    onReadRegisters,
   }) => {
     const { t } = useTranslation();
     return (
@@ -168,7 +173,8 @@ const PageTabs = observer(
             onSearchDisconnectedDevice,
             onUpdateFirmware,
             onUpdateBootloader,
-            onUpdateComponents
+            onUpdateComponents,
+            onReadRegisters
           )}
         </TabContent>
       </VerticalTabs>
@@ -298,7 +304,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             tabs={pageStore.tabs.items}
             selectedIndex={pageStore.tabs.selectedTabIndex}
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
-            deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeSelectOptions}
+            deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeDropdownOptions}
             mobileModeStore={pageStore.tabs.mobileModeStore}
             onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}
@@ -310,6 +316,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             onUpdateFirmware={() => pageStore.updateFirmware()}
             onUpdateBootloader={() => pageStore.updateBootloader()}
             onUpdateComponents={() => pageStore.updateComponents()}
+            onReadRegisters={(tab) => pageStore.readRegisters(tab)}
           />
         )}
       </PageBody>

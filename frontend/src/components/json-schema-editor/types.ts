@@ -43,6 +43,7 @@ export interface NumberEditorProps {
   descriptionId?: string;
   errorId?: string;
   translator: Translator;
+  isDisabled?: boolean;
 }
 
 export interface StringEditorProps {

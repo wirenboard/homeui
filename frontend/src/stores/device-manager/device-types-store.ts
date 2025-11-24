@@ -1,0 +1,152 @@
+import { JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
+import { firmwareIsNewer, firmwareIsNewerOrEqual } from '~/utils/fwUtils';
+import type {
+  DeviceTypeDescription,
+  DeviceTypeDropdownOptionGroup,
+  DeviceTypeDescriptionGroup,
+  WbDeviceTemplate
+} from './types';
+
+const fixDeviceTemplate = (schema: JsonSchema) => {
+  const deviceNode = (schema as Record<string, any>)?.device;
+  if (!deviceNode) {
+    return;
+  }
+  // Parent parameters are used as arguments in conditions with isDefined(...)==0
+  // Their dependent parameters are not read from device, as parent parameters exist
+  // When saving a config the parent parameter can be omitted, if it has default value
+  // So nor parent nor dependent parameters will be saved
+  // This results to config validation error in wb-mqtt-serial
+  // Mark parent parameters as required to avoid this situation
+  const deviceTemplate = deviceNode as WbDeviceTemplate;
+  const re = /isDefined\((\w*)\)==0/;
+  if (deviceTemplate?.parameters) {
+    let forceRequired: string[] = [];
+    deviceTemplate.parameters.forEach((param: any) => {
+      const cond = param?.condition;
+      if (cond) {
+        const isDefinedArgMatch = cond.match(re);
+        if (isDefinedArgMatch) {
+          forceRequired.push(isDefinedArgMatch[1]);
+        }
+      }
+    });
+    deviceTemplate.parameters.forEach((param: any) => {
+      if (forceRequired.includes(param.id)) {
+        param.required = true;
+      }
+    });
+  }
+};
+
+export class DeviceTypesStore {
+  public deviceTypeDropdownOptions: DeviceTypeDropdownOptionGroup[];
+  private _loadDeviceSchemaFn: (deviceType: string) => Promise<any>;
+  private _deviceTypesMap: Map<string, DeviceTypeDescription>;
+
+  constructor(loadDeviceSchemaFn: (deviceType: string) => Promise<any>) {
+    this._loadDeviceSchemaFn = loadDeviceSchemaFn;
+    this._deviceTypesMap = new Map<string, DeviceTypeDescription>();
+    this.deviceTypeDropdownOptions = [];
+  }
+
+  setDeviceTypeGroups(deviceTypeGroups: DeviceTypeDescriptionGroup[]) {
+    this.deviceTypeDropdownOptions = deviceTypeGroups.map((deviceTypeGroup) => {
+      return {
+        label: deviceTypeGroup.name,
+        options: deviceTypeGroup.types.map((deviceType) => {
+          return { label: deviceType.name, value: deviceType.type, hidden: deviceType.deprecated };
+        }),
+      };
+    });
+    this._deviceTypesMap = deviceTypeGroups.reduce((groupsAcc, deviceTypeGroup) => {
+      return deviceTypeGroup.types.reduce((typesAcc, deviceType) => {
+        typesAcc.set(deviceType.type, deviceType);
+        return typesAcc;
+      }, groupsAcc);
+    }, new Map<string, DeviceTypeDescription>());
+  }
+
+  async getSchema(deviceType: string) : Promise<JsonSchema | undefined> {
+    const typeDesc = this._deviceTypesMap.get(deviceType);
+    if (!typeDesc) {
+      return undefined;
+    }
+    if (!typeDesc?.schema) {
+      const schema = await this._loadDeviceSchemaFn(deviceType);
+      const jsonSchema = loadJsonSchema(schema);
+      if (!jsonSchema) {
+        return undefined;
+      }
+      fixDeviceTemplate(jsonSchema);
+      typeDesc.schema = jsonSchema;
+    }
+    return typeDesc.schema;
+  }
+
+  findNotDeprecatedDeviceTypes(deviceSignature: string, fw: string) {
+    // Filter only not deprecated types with the same signature and older or equal firmware
+    let deviceTypes = Array.from(this._deviceTypesMap.entries()).filter(([_typeName, desc]) => {
+      return (
+        !desc.deprecated &&
+        desc.hw?.some((hw) => hw.signature === deviceSignature && firmwareIsNewerOrEqual(hw.fw, fw))
+      );
+    });
+
+    // Find closest firmware
+    let closestFw: string | undefined;
+    deviceTypes.forEach(([_typeName, desc]) => {
+      desc.hw?.forEach((hw) => {
+        if (hw.signature === deviceSignature && firmwareIsNewer(closestFw, hw.fw)) {
+          closestFw = hw.fw;
+        }
+      });
+    });
+
+    // Return device types with the closest firmware
+    return deviceTypes
+      .filter(([_typeName, desc]) =>
+        desc.hw?.some((hw) => hw.signature === deviceSignature && closestFw === hw.fw)
+      )
+      .map(([typeName, _desc]) => typeName)
+      .sort();
+  }
+
+  getName(deviceType: string) {
+    return this._deviceTypesMap.get(deviceType)?.name;
+  }
+
+  isDeprecated(deviceType: string) {
+    const typeDesc = this._deviceTypesMap.get(deviceType);
+    return typeDesc === undefined ? false : typeDesc.deprecated;
+  }
+
+  isUnknown(deviceType: string) {
+    return !this._deviceTypesMap.has(deviceType);
+  }
+
+  isModbusDevice(deviceType: string) {
+    return this._deviceTypesMap.get(deviceType)?.protocol === 'modbus';
+  }
+
+  getDeviceSignatures(deviceType: string) {
+    const typeDesc = this._deviceTypesMap.get(deviceType);
+    if (typeDesc?.hw) {
+      return typeDesc.hw.map((hw) => hw.signature);
+    }
+    return [];
+  }
+
+  getDefaultId(deviceType: string, slaveId: string) {
+    const id = this._deviceTypesMap.get(deviceType)?.['mqtt-id'] || deviceType;
+    return `${id}_${slaveId}`;
+  }
+
+  isWbDevice(deviceType: string) {
+    return !!this._deviceTypesMap.get(deviceType)?.hw;
+  }
+
+  withSubdevices(deviceType: string) {
+    return !!this._deviceTypesMap.get(deviceType)?.['with-subdevices'];
+  }
+}
