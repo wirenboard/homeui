@@ -1,0 +1,27 @@
+.deviceTab-updateIconAnimationRotate {
+    animation: rotate 2s linear infinite;
+}
+
+.deviceTab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 9px 10px 20px;
+    gap: 3px;
+}
+
+.deviceTab-title {
+    flex-grow: 1;
+}
+
+.deviceTab .glyphicon-refresh {
+    color: var(--warn-color);
+}
+
+.deviceTab-withError .glyphicon-exclamation-sign {
+    color: var(--danger-color);
+}
+
+.deviceTab-withWarning .glyphicon-exclamation-sign {
+    color: var(--warn-color);
+}

@@ -10,6 +10,9 @@
 .alertMessage-icon {
     width: 24px;
     height: 24px;
+    fill: var(--alert-color);
+    stroke: var(--alert-color);
+    flex-shrink: 0;
 }
 
 .alertMessage a {

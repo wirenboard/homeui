@@ -11,6 +11,7 @@ const NumberEditor = observer(({
   descriptionId,
   errorId,
   translator,
+  isDisabled,
 }: NumberEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
@@ -28,6 +29,7 @@ const NumberEditor = observer(({
       value={typeof store.value === 'number' ? store.value : undefined}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
+      isDisabled={isDisabled}
       onChange={(option) => {
         if (typeof option.value === 'number' || typeof option.value === 'string') {
           store.setValue(option.value);
@@ -44,6 +46,7 @@ const NumberEditor = observer(({
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}
       ariaErrorMessage={errorId}
+      isDisabled={isDisabled}
       onChange={(value) => store.setEditString(String(value))}
     />
   );
