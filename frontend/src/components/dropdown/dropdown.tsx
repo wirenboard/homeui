@@ -82,7 +82,7 @@ export const Dropdown = ({
       maxMenuHeight={240}
       menuPosition="fixed"
       components={{
-        MenuPortal: (props) => MenuPortal(props, size),
+        MenuPortal: (props) => MenuPortal({...props, className}, size),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),
       }}
       aria-label={ariaLabel}
