@@ -18,7 +18,7 @@ export class WbDeviceParameterEditorVariant {
     conditions: Conditions) {
 
     const jsonSchema = makeJsonSchemaForParameter(parameter);
-    const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema);
+    const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
     this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
     this._conditionFn = conditions.getFunction(parameter.condition, parameter.dependencies);
     this._dependencies = parameter.dependencies;
@@ -159,7 +159,7 @@ export class WbDeviceParameterEditor {
         if (value !== 0xFFFE || variant.store.isAcceptableValue(value)) {
           variant.store.setValue(value);
           variant.store.commit();
-          if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema, true)) {
+          if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
             this.isSetInDeviceRegisters = true;
           }
         }
