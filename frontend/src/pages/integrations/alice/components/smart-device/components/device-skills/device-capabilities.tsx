@@ -323,6 +323,7 @@ export const DeviceCapabilities = observer(({
                   {t('alice.labels.topic')}
                 </div>
                 <Dropdown
+                  className="aliceDeviceSkills-dropdown"
                   value={capability.mqtt}
                   placeholder={deviceStore.topics.flatMap((g) => g.options)
                     .find((o) => o.value === capability.mqtt)?.label}

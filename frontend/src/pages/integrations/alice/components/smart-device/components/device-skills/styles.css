@@ -6,7 +6,7 @@
 
 .aliceDeviceSkills-grid {
     display: grid;
-    grid-template-columns: 150px minmax(auto, 1fr) 150px minmax(auto, 1fr) 22px;
+    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) 22px;
     gap: 3px 12px;
     margin-bottom: 6px;
 
@@ -73,4 +73,12 @@
 
 .aliceDeviceSkills-noUnits {
   opacity: .6;
+}
+
+.aliceDeviceSkills-dropdown .dropdown__menu {
+    min-width: 250px;
+
+    @media (max-width: 310px) {
+        min-width: unset;
+    }
 }
