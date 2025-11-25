@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.154.3) stable; urgency=medium
+
+  * Fix reading settings from WB-MAI6
+  * Fix displaying unknown device types in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 17:02:18 +0500
+
 wb-mqtt-homeui (2.154.2) stable; urgency=medium
 
   * Fix alice mobile resolution

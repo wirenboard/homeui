@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { Dropdown, Option } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { OptionalParamsSelectDialog } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { DeviceSettingsEditor } from '../../components/device-settings-editor/device-settings-editor';

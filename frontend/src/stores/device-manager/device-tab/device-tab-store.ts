@@ -387,6 +387,7 @@ export class DeviceTabStore {
 
   _initFromDeviceType(deviceType: string) {
     this.deviceType = deviceType;
+    this.isUnknownType = this.deviceTypesStore.isUnknown(deviceType);
     this.isDeprecated = this.deviceTypesStore.isDeprecated(this.deviceType);
     this.withSubdevices = this.deviceTypesStore.withSubdevices(this.deviceType);
     this.isModbusDevice = this.deviceTypesStore.isModbusDevice(this.deviceType);

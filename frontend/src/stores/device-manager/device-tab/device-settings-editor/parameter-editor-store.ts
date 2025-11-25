@@ -1,18 +1,8 @@
 import { makeObservable, computed, observable, action } from 'mobx';
-import { type JsonSchema, NumberStore } from '@/stores/json-schema-editor';
+import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
 import { firmwareIsNewer } from '~/utils/fwUtils';
 import type { WbDeviceTemplateParameter } from '../../types';
 import { type Conditions } from './conditions';
-
-const getDefaultValue = (schema: JsonSchema): number => {
-  if (typeof schema.default === 'number') {
-    return schema.default;
-  }
-  if (schema.enum && schema.enum.length > 0 && typeof schema.enum[0] === 'number') {
-    return schema.enum[0] as number;
-  }
-  return undefined;
-};
 
 export class WbDeviceParameterEditorVariant {
   public store: NumberStore;
@@ -163,19 +153,13 @@ export class WbDeviceParameterEditor {
     });
   }
 
-  setUndefined() {
-    this.variants.forEach((variant) => {
-      variant.store.setUndefined();
-    });
-  }
-
   setFromDeviceRegister(value: unknown) {
     if (!this.isSetInUserDefinedConfig && this.isSupportedByFirmware && typeof value === 'number') {
       this.variants.forEach((variant) => {
         if (value !== 0xFFFE || variant.store.isAcceptableValue(value)) {
           variant.store.setValue(value);
           variant.store.commit();
-          if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
+          if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema, true)) {
             this.isSetInDeviceRegisters = true;
           }
         }
