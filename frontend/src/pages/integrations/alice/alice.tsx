@@ -23,6 +23,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     fetchIntegrationStatus,
     isIntegrationEnabled,
     setIntegrationEnabled,
+    isAvailabilityChecked,
   } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
@@ -102,10 +103,10 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    if (integrations) {
+    if (isAvailabilityChecked) {
       setErrors(!integrations.includes('alice') ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
     }
-  }, [integrations]);
+  }, [integrations, isAvailabilityChecked]);
 
   const sortedRooms = Array.from(rooms).sort(([keyA], [keyB]) => {
     if (keyA === DefaultRoom) return -1;
@@ -114,8 +115,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   });
 
   const isLoading = useMemo(
-    () => !integrations || (integrations?.length && pageState === 'isLoading'),
-    [integrations, pageState]
+    () => !isAvailabilityChecked || (integrations?.length && pageState === 'isLoading'),
+    [isAvailabilityChecked, integrations, pageState]
   );
 
   const headerActions = integrations?.includes('alice') ? (
