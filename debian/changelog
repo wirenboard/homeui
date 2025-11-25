@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.154.4) stable; urgency=medium
+
+  * Fix custom poll period editor in wb-mqtt-serial settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 20:11:14 +0500
+
 wb-mqtt-homeui (2.154.3) stable; urgency=medium
 
   * Mark required parameters in wb-mqtt-serial device settings editor

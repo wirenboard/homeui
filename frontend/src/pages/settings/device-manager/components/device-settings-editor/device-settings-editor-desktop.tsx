@@ -48,7 +48,13 @@ const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore
   );
 });
 
-const ChannelsTableRow = ({ channel, translator }: { channel: WbDeviceChannelEditor; translator: Translator }) => {
+const ChannelsTableRow = observer(({
+  channel,
+  translator,
+}: {
+  channel: WbDeviceChannelEditor;
+  translator: Translator;
+}) => {
   const { t, i18n } = useTranslation();
   const currentLanguage = i18n.language;
   let descriptionLines = [];
@@ -83,7 +89,7 @@ const ChannelsTableRow = ({ channel, translator }: { channel: WbDeviceChannelEdi
       </TableCell>
     </TableRow>
   );
-};
+});
 
 const ChannelsTable = observer((
   { channels, translator }:
