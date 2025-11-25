@@ -7,7 +7,7 @@ import type {
   SerialPortProxySetupParams,
   SerialPortProxySetupItem,
   SerialPortProxySetupItemNewConfig,
-  ScannedDevice
+  ScannedDevice,
 } from './types';
 
 export function toDmRpcPortConfig(portConfig: PortTabConfig): DmRpcTcpPortConfig | RpcSerialPortConfig {

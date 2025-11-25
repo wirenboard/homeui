@@ -1,9 +1,9 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
-import { JsonObject } from '@/stores/json-schema-editor';
+import { type JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '~/i18n/react/config';
-import { DeviceTypesStore } from '../device-types-store';
+import { type DeviceTypesStore } from '../device-types-store';
 import type { PortTabConfig, PortTabTcpConfig } from '../port-tab/types';
 import type {
   FwUpdateProxy,
@@ -13,7 +13,7 @@ import type {
   LoadConfigResult,
   SerialPortProxy,
   ScannedDevice,
-  FwUpdateProxyRestoreParams
+  FwUpdateProxyRestoreParams,
 } from '../types';
 import { getIntAddress, toSerialRpcPortConfig, toDmRpcPortConfig, setupDevice } from '../utils';
 import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';

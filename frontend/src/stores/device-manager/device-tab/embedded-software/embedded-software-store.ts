@@ -6,7 +6,7 @@ import type {
   FwUpdateProxyGetFirmwareInfoParams,
   EmbeddedSoftwareType,
   FwUpdateProxyUpdateParams,
-  UpdateItem
+  UpdateItem,
 } from '../../types';
 import { toDmRpcPortConfig, getIntAddress } from '../../utils';
 
