@@ -6,6 +6,7 @@ import {
   type StringStore,
   type ArrayStore,
   StoreBuilder,
+  Translator,
 } from '@/stores/json-schema-editor';
 import type {
   WbDeviceParametersGroup,
