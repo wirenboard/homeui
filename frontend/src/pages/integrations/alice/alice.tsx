@@ -102,7 +102,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    if (integrations !== undefined) {
+    if (integrations) {
       setErrors(integrations.length === 0 ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
     }
   }, [integrations]);

@@ -23,7 +23,7 @@ import type {
 } from './types';
 
 export default class AliceStore {
-  public integrations: string[] | undefined = undefined;
+  public integrations: string[] ;
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
   public isIntegrationEnabled = false;
