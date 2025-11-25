@@ -12,7 +12,9 @@
          "add": "Добавить",
          "remove": "Удалить",
          "move-up": "Переместить вверх",
-         "move-down": "Переместить вниз"
+         "move-down": "Переместить вниз",
+         "select": "Выбрать",
+         "read": "Прочитать"
       }
    },
    "dashboards": {
@@ -340,28 +342,33 @@
          "current-firmware": "Текущая версия прошивки: {{firmware}}",
          "actual-firmware": "Текущая версия прошивки: {{firmware}} (актуальная)",
          "new-firmware": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}.",
-         "new-firmware-link": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>",
-         "new-bootloader": "Доступна новая версия загрузчика: {{available_bootloader}}, текущая: {{current_bootloader}}.",
+         "new-firmware-link": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>",
+         "new-bootloader": "Доступна новая версия загрузчика: {{available_bootloader}}, текущая: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Список изменений</0>.",
          "new-software-components": "Доступны новые версии:",
-         "new-bootloader-item": "загрузчик {{available_bootloader}}, текущая {{current_bootloader}};",
+         "new-bootloader-item": "загрузчик {{available_bootloader}}, текущая {{current_bootloader}}; <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Список изменений</0>;",
          "new-firmware-item": "прошивка {{available_firmware}}, текущая {{current_firmware}}.",
-         "new-firmware-item-link": "прошивка {{available_firmware}}, текущая {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
-         "manual-update": "<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update#%D0%9E%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D1%81%D0%BE_%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D1%8B%D0%BC%D0%B8_%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0%D0%BC%D0%B8_%D1%81%D0%BE%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F\">Инструкция по обновлению</0>",
+         "new-firmware-item-link": "прошивка {{available_firmware}}, текущая {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
+         "manual-update": "<0 target=\"_blank\" href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update#%D0%9E%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D1%81%D0%BE_%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D1%8B%D0%BC%D0%B8_%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0%D0%BC%D0%B8_%D1%81%D0%BE%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F\">Инструкция по обновлению</0>",
          "update-firmware-notice": "Не отключайте устройство во время обновления",
          "erase-settings-notice": "В устройстве старый загрузчик, поэтому при обновлении неуказанные в веб-интерфейсе настройки будут утеряны",
          "new-component-item": "компонент {{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
-         "new-component-item-link": "компонент {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
+         "new-component-item-link": "компонент {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
          "new-components": "Доступны новые версии прошивок компонентов:",
          "new-component": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
-         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
+         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
          "updating-component": "Обновление прошивки компонента {{model}}:{{maybe_current_firmware}}{{available}}",
          "component_current_version": ", текущая {{current_firmware}}.",
          "component_update_current_version": " {{current}} на ",
          "channel": "Канал",
          "mode": "Опрос",
          "period": "Период (мс)",
-         "unknown": "Неизвестно",
-         "custom-channels": "Пользовательские каналы"
+         "custom-channels": "Пользовательские каналы",
+         "loading-template": "Загрузка шаблона устройства...",
+         "reading-parameters": "Чтение параметров из устройства...",
+         "better-template": "Для этого устройства доступен новый шаблон. Устройство продолжит корректно работать с текущим шаблоном. Переключитесь, если нужна поддержка новых функций или исправление ошибок.",
+         "select-template": "Выберите шаблон",
+         "read-registers-disabled": "Параметры не прочитаны, показаны значения по умолчанию. Некоторые настройки зависят от версии прошивки и могут быть недоступны в устройстве",
+         "read-registers-manual": "Устройство доступно, можно прочитать параметры, но это удалит все сделанные вами изменения"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -377,7 +384,8 @@
          "resolve-duplicate-mqtt-topic": "Задать уникальный идентификатор",
          "search-disconnected-device": "Найти устройство",
          "update": "Обновить",
-         "parameters": "Параметры"
+         "parameters": "Параметры",
+         "switch-template": "Переключить шаблон"
       },
       "errors": {
          "write": "Ошибка при сохранении настроек. Более детальная информация находится в журнале работы сервиса wb-mqtt-confed",
@@ -398,7 +406,11 @@
          "update-error-rpc-timeout": "Убедитесь, что сервис wb-mqtt-serial запущен и работает корректно.",
          "update-error-download": "Не удалось загрузить файл с обновлением. Проверьте интернет-соединение.",
          "add-device": "Ошибка при добавлении устройства: {{error}}. Детальную информацию можно посмотреть в системном журнале wb-mqtt-serial",
-         "change-device-type": "Ошибка при изменении типа устройства: {{error}}. Детальную информацию можно посмотреть в системном журнале wb-mqtt-serial"
+         "change-device-type": "Ошибка при изменении типа устройства: {{error}}. Детальную информацию можно посмотреть в системном журнале wb-mqtt-serial",
+         "load-registers": "Ошибка при чтении текущих настроек из устройства: {{error}}. Для параметров, отсутствующих в конфигурационном файле, отображаются значения по умолчанию",
+         "supported-since": "Поддерживается с прошивки {{fw}}",
+         "fw-mismatch": "Текущая прошивка устройства {{currentFw}} не поддерживается этим шаблоном. Минимальная требуемая версия: {{requiredFw}}. Обновите прошивку или переключитесь на другой шаблон.",
+         "model-mismatch": "Выбранный шаблон не поддерживает устройство {{deviceModel}} с прошивкой {{currentFw}}. Пожалуйста, выберите другой шаблон."
       }
    },
    "exp-check": {

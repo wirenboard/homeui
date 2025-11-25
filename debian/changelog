@@ -1,8 +1,38 @@
-wb-mqtt-homeui (2.153.2) stable; urgency=medium
+wb-mqtt-homeui (2.154.5) stable; urgency=medium
 
   * Fix alice integration incorrect display of the menu item when the backend is unavailable
 
- -- Victor Fedorov <victor.fedorov@wirenboard.com>  Mon, 24 Nov 2025 11:00:00 +0300
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 25 Nov 2025 20:47:14 +0300
+ 
+wb-mqtt-homeui (2.154.4) stable; urgency=medium
+
+  * Fix custom poll period editor in wb-mqtt-serial settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 20:11:14 +0500
+
+wb-mqtt-homeui (2.154.3) stable; urgency=medium
+
+  * Mark required parameters in wb-mqtt-serial device settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 19:07:59 +0500
+
+wb-mqtt-homeui (2.154.2) stable; urgency=medium
+
+  * Fix alice mobile resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 25 Nov 2025 10:48:00 +0300
+
+wb-mqtt-homeui (2.154.1) stable; urgency=medium
+
+  * Fix reading settings from serial devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 09:15:20 +0500
+
+wb-mqtt-homeui (2.154.0) stable; urgency=medium
+
+  * Read settings from serial devices during configuration editing
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 24 Nov 2025 15:27:58 +0500
 
 wb-mqtt-homeui (2.153.1) stable; urgency=medium
 

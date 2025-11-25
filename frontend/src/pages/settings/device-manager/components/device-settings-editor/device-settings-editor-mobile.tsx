@@ -28,7 +28,7 @@ const DeviceSettingsSubGroup = (
     return <DeviceSettingsCardContent group={group} isTopLevel={false} translator={translator} />;
   }
   return (
-    <div className="device-settings__sub-group">
+    <div className="deviceSettingsEditor-subGroup">
       <label>
         {translator.find(group.properties.title, currentLanguage)}
       </label>
@@ -42,11 +42,10 @@ const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore
   const inputId = useId();
   const { t } = useTranslation();
   return (
-    <div className={classNames('device-settings__parameter', { 'wb-jsonEditor-propertyError': store.hasErrors })} >
+    <div className={classNames('deviceSettingsEditor-parameter', { 'wb-jsonEditor-propertyError': store.hasErrors })} >
       <ParamSimpleLabel
         title={t('device-manager.labels.period')}
         inputId={inputId}
-        className="device-settings__channel-period-label"
       />
       <NumberEditor store={store} translator={translator} />
       {store.hasErrors && <ParamError id={errorId} error={store.error} translator={translator} />}
@@ -58,8 +57,16 @@ const ChannelCard = observer((
   { channel, translator }:
   { channel: WbDeviceChannelEditor; translator: Translator }
 ) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
+  let descriptionLines = [];
+  if (channel.channel.description) {
+    descriptionLines.push(translator.find(channel.channel.description, currentLanguage));
+  }
+  if (!channel.isSupportedByFirmware) {
+    descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
+  }
+  const description = descriptionLines.join('<br/>');
   return (
     <Card
       key={channel.channel.name}
@@ -68,12 +75,14 @@ const ChannelCard = observer((
       variant="secondary"
       withError={channel.hasErrors}
     >
-      <div className="device-settings__channel">
-        {channel.channel.description && (
-          <ParamDescription description={translator.find(channel.channel.description, currentLanguage)} />
+      <div className="deviceSettingsEditor-channel">
+        {description && <ParamDescription description={description} />}
+        {channel.isSupportedByFirmware && (
+          <StringEditor store={channel.mode} translator={translator} />
         )}
-        <StringEditor store={channel.mode} translator={translator} />
-        {channel.hasCustomPeriod && <CustomPeriodEditor store={channel.period} translator={translator} />}
+        {channel.isSupportedByFirmware && channel.hasCustomPeriod && (
+          <CustomPeriodEditor store={channel.period} translator={translator} />
+        )}
       </div>
     </Card>
   );
@@ -107,9 +116,9 @@ const DeviceSettingsCardContent = observer((
   return (
     <div
       className={classNames({
-        'device-settings__top-group-content': isTopLevel,
-        'device-settings__sub-group-content': !isTopLevel,
-        'device-settings__sub-group--border': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
+        'deviceSettingsEditor-topGroupContent': isTopLevel,
+        'deviceSettingsEditor-subGroupContent': !isTopLevel,
+        'deviceSettingsEditor-subGroupContentWithBorder': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
       })}
     >
       {showDescription && (
@@ -172,7 +181,7 @@ const CustomChannelsCard = observer((
 export const DeviceSettingsEditorMobile = observer(({ store, translator } : DeviceSettingsEditorProps) => {
   const { t } = useTranslation();
   return (
-    <div className="device-settings__editor">
+    <div className="deviceSettingsEditor deviceSettingsEditor-mobile">
       <JsonSchemaEditor store={store.commonParams} translator={translator} />
       {MakeEditors(store.topLevelGroup.parameters, translator)}
       <ChannelsList channels={store.topLevelGroup.channels} translator={translator} />

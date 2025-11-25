@@ -5,6 +5,7 @@ import { loadJsonSchema } from './json-schema-loader';
 import { MistypedValue } from './mistyped-value';
 import { NumberStore } from './number-store';
 import { ObjectStore, ObjectParamStore } from './object-store';
+import { getDefaultValue } from './schema-helpers';
 import { StoreBuilder } from './store-builder';
 import { StringStore } from './string-store';
 import { Translator } from './translator';
@@ -34,5 +35,6 @@ export {
   MistypedValue,
   ObjectParamStore,
   StoreBuilder,
-  type ValidationError
+  type ValidationError,
+  getDefaultValue
 };

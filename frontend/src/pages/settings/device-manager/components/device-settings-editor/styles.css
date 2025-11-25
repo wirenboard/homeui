@@ -1,0 +1,103 @@
+.deviceSettingsEditor {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.deviceSettingsEditor > .wb-jsonEditor {
+    margin-top: 10px;
+}
+
+.deviceSettingsEditor .card {
+    max-width: initial;
+    margin-bottom: 0px;
+}
+
+.deviceSettingsEditor-tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.deviceSettingsEditor-tabs .tabs {
+    flex-shrink: 0;
+    width: 20%;
+}
+
+.deviceSettingsEditor-tabContent {
+    flex-grow: 1;
+    margin-left: 15px;
+}
+
+.deviceSettingsEditor-tabWithError {
+    color: var(--danger-color);
+}
+
+.deviceSettingsEditor-topGroupContent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.deviceSettingsEditor-subGroupContent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.deviceSettingsEditor-subGroupContentWithBorder {
+    padding: 9px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--card-border-radius);
+}
+
+.deviceSettingsEditor-subGroup {
+    flex-grow: 1;
+    flex-basis: 100%;
+    width: 100%;
+}
+
+.deviceSettingsEditor-channelsTable {
+    flex-grow: 1;
+    flex-basis: 100%;
+}
+
+.deviceSettingsEditor-parameter {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 43%;
+}
+
+.deviceSettingsEditor-parameterChangedByUser .dropdown__control,
+.deviceSettingsEditor-parameterChangedByUser input {
+    border-left: 4px solid var(--gray-color);
+}
+
+.deviceSettingsEditor-desktop .deviceSettingsEditor-topGroupContent {
+    padding: 0px 19px 9px 19px;
+}
+
+.deviceSettingsEditor-mobile .deviceSettingsEditor-parameter {
+    flex-basis: 100%;
+    width: 100%;
+}
+
+.deviceSettingsEditor-mobile .deviceSettingsEditor-parameter .wb-jsonEditor-propertyLabel,
+.deviceSettingsEditor-mobile .deviceSettingsEditor-parameter .wb-jsonEditor-propertyCheckbox {
+    white-space: wrap;
+}
+
+.deviceSettingsEditor-mobile .deviceSettingsEditor-channel {
+    display: flex;
+    flex-direction: column;
+}
+
+.deviceSettingsEditor-customChannelsNoTabs .wb-jsonEditor{
+    padding: 9px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--card-border-radius);
+}

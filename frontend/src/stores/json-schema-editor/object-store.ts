@@ -18,13 +18,13 @@ export class ObjectParamStore {
    */
   public hasPermanentEditor: boolean;
 
-  constructor(key: string, store: PropertyStore) {
+  constructor(key: string, store: PropertyStore, initialValue?: unknown) {
     this.key = key;
     this.store = store;
     this.hasPermanentEditor = this.store.required ||
       this.store.schema.options?.wb?.show_editor ||
       this.store.schema.options?.show_opt_in;
-    this.disabled = !store.required && !store.schema.options?.wb?.show_editor;
+    this.disabled = !store.required && !store.schema.options?.wb?.show_editor && initialValue === undefined;
 
     makeObservable(this, {
       disabled: observable,
@@ -86,10 +86,7 @@ export class ObjectStore implements PropertyStore {
           if (!store) {
             return;
           }
-          const param = new ObjectParamStore(key, store);
-          if (initialValueToSet === undefined) {
-            param.disable();
-          }
+          const param = new ObjectParamStore(key, store, initialValueToSet);
           this.params.push(param);
           this._paramByKey[key] = param;
         });

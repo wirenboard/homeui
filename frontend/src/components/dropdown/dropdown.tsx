@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { useRef } from 'react';
 import Select, { components, type SelectInstance } from 'react-select';
 import PlusIcon from '@/assets/icons/plus.svg';
-import type { DropdownProps } from './types';
+import type { DropdownProps, Option } from './types';
 import './styles.css';
 
 const DropdownIndicator = (props: any, isButton: boolean) => (
@@ -46,6 +46,22 @@ export const Dropdown = ({
     onChange(option);
   };
 
+  const findOption = (options: Option<unknown>[], value: unknown) => {
+    let res;
+    options.find((option) => {
+      if (option?.options) {
+        res = option.options.find((option) => option.value === value);
+        return !!res;
+      }
+      if (option.value === value) {
+        res = option;
+        return true;
+      }
+      return false;
+    });
+    return res;
+  };
+
   return (
     <Select
       ref={select}
@@ -56,7 +72,7 @@ export const Dropdown = ({
       })}
       classNamePrefix="dropdown"
       options={options}
-      value={options.find((option) => option.value === value)}
+      value={findOption(options, value)}
       placeholder={placeholder || ''}
       isDisabled={isDisabled}
       isSearchable={isSearchable}
@@ -66,7 +82,7 @@ export const Dropdown = ({
       maxMenuHeight={240}
       menuPosition="fixed"
       components={{
-        MenuPortal: (props) => MenuPortal(props, size),
+        MenuPortal: (props) => MenuPortal({...props, className}, size),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),
       }}
       aria-label={ariaLabel}
@@ -74,6 +90,10 @@ export const Dropdown = ({
         control: (baseStyles, _state) => ({
           ...baseStyles,
           minWidth,
+        }),
+        option: (baseStyles, { data }) => ({
+          ...baseStyles,
+          display: data?.hidden ? 'none' : baseStyles.display,
         }),
       }}
       unstyled

@@ -1,0 +1,46 @@
+.firmwareVersionPanel {
+    margin-bottom: 10px;
+}
+
+.updateProgressAlert .alertMessage-content {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.updateProgressAlert .progress {
+    margin-bottom: 0px;
+}
+
+/* Fix bootstrap style */
+.updateProgressAlert .progress-bar-striped.active {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.updateErrorAlert .alertMessage-content {
+    display: flex;
+    gap: 5px;
+    align-items: baseline;
+}
+
+.hasUpdateAlert .alertMessage-content {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.hasUpdateAlert .alertMessage-content > div {
+    flex-grow: 1;
+}
+
+@media (max-width: 991px) {
+    .hasUpdateAlert .alertMessage-content {
+        flex-wrap: wrap;
+    }
+
+    .hasUpdateAlert .button {
+        flex-grow: 1;
+    }
+}

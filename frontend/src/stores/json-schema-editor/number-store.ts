@@ -22,12 +22,9 @@ export class NumberStore implements PropertyStore {
       this.value = initialValue;
       this.editString = String(initialValue);
     } else if (initialValue === undefined) {
-      if (schema.options?.wb?.show_editor) {
-        if (schema.options?.wb?.allow_undefined) {
-          this.value = schema.default as number | undefined;
-        } else {
-          this.value = getDefaultNumberValue(schema);
-        }
+      this.value = undefined;
+      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
+        this.value = getDefaultNumberValue(schema);
       }
       this.editString = this.value === undefined ? '' : String(this.value);
     } else {
@@ -60,7 +57,7 @@ export class NumberStore implements PropertyStore {
     });
   }
 
-  _checkConstraints(): void {
+  _checkConstraints() {
     if (this.value instanceof MistypedValue) {
       this.error = { key: 'json-editor.errors.not-a-number' };
       return;
@@ -165,5 +162,21 @@ export class NumberStore implements PropertyStore {
     this.value = this._initialValue;
     this.isDirty = false;
     this._checkConstraints();
+  }
+
+  isAcceptableValue(value: number): boolean {
+    if (this.schema.enum && !this.schema.enum.includes(value)) {
+      return false;
+    }
+    if (this.schema.type === 'integer' && !Number.isSafeInteger(value)) {
+      return false;
+    }
+    if (
+      (this.schema.minimum !== undefined && this.schema.minimum > value) ||
+      (this.schema.maximum !== undefined && this.schema.maximum < value)
+    ) {
+      return false;
+    }
+    return true;
   }
 }
