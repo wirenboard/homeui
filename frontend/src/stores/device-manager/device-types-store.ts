@@ -1,10 +1,10 @@
-import { JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
+import { type JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
 import { firmwareIsNewer, firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type {
   DeviceTypeDescription,
   DeviceTypeDropdownOptionGroup,
   DeviceTypeDescriptionGroup,
-  WbDeviceTemplate
+  WbDeviceTemplate,
 } from './types';
 
 const fixDeviceTemplate = (schema: JsonSchema) => {

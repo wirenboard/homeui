@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.154.1) stable; urgency=medium
+wb-mqtt-homeui (2.154.2) stable; urgency=medium
 
   * Fix alice mobile resolution
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 24 Nov 2025 17:28:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 25 Nov 2025 10:48:00 +0300
+
+wb-mqtt-homeui (2.154.1) stable; urgency=medium
+
+  * Fix reading settings from serial devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 09:15:20 +0500
 
 wb-mqtt-homeui (2.154.0) stable; urgency=medium
 
