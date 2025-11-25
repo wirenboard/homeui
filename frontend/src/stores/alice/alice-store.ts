@@ -23,11 +23,10 @@ import type {
 } from './types';
 
 export default class AliceStore {
-  public integrations: string[] = [];
+  public integrations: string[] | undefined = undefined;
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
   public isIntegrationEnabled = false;
-  public isAvailabilityChecked = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -39,12 +38,10 @@ export default class AliceStore {
 
       runInAction(() => {
         this.integrations = isAvailable ? ['alice'] : [];
-        this.isAvailabilityChecked = true;
       });
     } catch {
       runInAction(() => {
         this.integrations = [];
-        this.isAvailabilityChecked = true;
       });
     }
   }

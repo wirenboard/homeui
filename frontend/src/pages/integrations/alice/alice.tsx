@@ -23,7 +23,6 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     fetchIntegrationStatus,
     isIntegrationEnabled,
     setIntegrationEnabled,
-    isAvailabilityChecked,
   } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
@@ -103,10 +102,10 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   }, []);
 
   useEffect(() => {
-    if (isAvailabilityChecked) {
-      setErrors(!integrations.includes('alice') ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+    if (integrations !== undefined) {
+      setErrors(integrations.length === 0 ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
     }
-  }, [integrations, isAvailabilityChecked]);
+  }, [integrations]);
 
   const sortedRooms = Array.from(rooms).sort(([keyA], [keyB]) => {
     if (keyA === DefaultRoom) return -1;
@@ -115,11 +114,11 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   });
 
   const isLoading = useMemo(
-    () => !isAvailabilityChecked || (integrations?.length && pageState === 'isLoading'),
-    [isAvailabilityChecked, integrations, pageState]
+    () => (!!integrations?.length && pageState === 'isLoading'),
+    [integrations, pageState]
   );
 
-  const headerActions = integrations?.includes('alice') ? (
+  const integrationToggle = integrations?.includes('alice') ? (
     <div className="alice-integrationToggle">
       <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
       <Switch
@@ -137,7 +136,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       isLoading={isLoading}
       hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
-      actions={headerActions}
+      actions={integrationToggle}
     >
       {!!integrations?.length && (
         pageState === 'isConnected'
