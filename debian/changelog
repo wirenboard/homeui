@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.155.0) stable; urgency=medium
+
+  * Fix translations in scenarios
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Nov 2025 15:03:34 +0500
+
 wb-mqtt-homeui (2.154.6) stable; urgency=medium
 
   * Fix alice integration incorrect display of the menu item when the backend is unavailable
