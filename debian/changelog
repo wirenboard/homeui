@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.154.6) stable; urgency=medium
 
-* Fix alice integration incorrect display of the menu item when the backend is unavailable
+  * Fix alice integration incorrect display of the menu item when the backend is unavailable
 
  -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 26 Nov 2025 09:52:14 +0300
 
