@@ -3,8 +3,8 @@ import { observer } from 'mobx-react-lite';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
-import { WbDeviceParameterEditor } from '@/stores/device-manager';
-import { Translator } from '@/stores/json-schema-editor';
+import { type WbDeviceParameterEditor } from '@/stores/device-manager';
+import { type Translator } from '@/stores/json-schema-editor';
 
 export const ParamSimpleLabel = (
   { title, inputId, className }:
@@ -41,7 +41,7 @@ export const ParamEditor = observer((
     <div
       className={classNames('deviceSettingsEditor-parameter', {
         'wb-jsonEditor-propertyError': showError,
-        'deviceSettingsEditor-parameterChangedByUser': param.isChangedByUser,
+        'deviceSettingsEditor-parameterChangedByUser': param.isChangedByUser || param.required,
       })}
     >
       <ParamSimpleLabel title={title} inputId={inputId} />
