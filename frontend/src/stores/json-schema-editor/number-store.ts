@@ -24,7 +24,7 @@ export class NumberStore implements PropertyStore {
     } else if (initialValue === undefined) {
       this.value = undefined;
       if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
-        this.value = getDefaultNumberValue(schema);
+        this.value = getDefaultNumberValue(schema) ?? 0;
       }
       this.editString = this.value === undefined ? '' : String(this.value);
     } else {
@@ -142,7 +142,7 @@ export class NumberStore implements PropertyStore {
       this.setUndefined();
       return;
     }
-    this.setValue(getDefaultNumberValue(this.schema));
+    this.setValue(getDefaultNumberValue(this.schema) ?? 0);
   }
 
   get hasErrors(): boolean {

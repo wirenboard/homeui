@@ -17,7 +17,7 @@ import {
   PortTab,
   makeModbusTcpPortTabName,
   makeSerialPortTabName,
-  makeTcpPortTabName
+  makeTcpPortTabName,
 } from './portTabStore';
 import { SettingsTab } from './settingsTabStore';
 import { TabsStore } from './tabsStore';
@@ -260,7 +260,7 @@ class ConfigEditorPageStore {
         return;
       }
     }
-    let tab = this.createPortTab(getDefaultValue(this.portSchemaMap[newPortType]));
+    let tab = this.createPortTab(getDefaultValue(this.portSchemaMap[newPortType]) ?? {});
     this.tabs.addPortTab(tab);
   }
 
@@ -422,7 +422,7 @@ class ConfigEditorPageStore {
 
   async addScannedDeviceToConfig(device, topics, selectTab) {
     const jsonSchema = loadJsonSchema(await this.deviceTypesStore.getSchema(device.type));
-    let deviceConfig = getDefaultValue(jsonSchema);
+    let deviceConfig = getDefaultValue(jsonSchema) ?? {};
     deviceConfig.slave_id = String(device.address);
     const deviceId =
       deviceConfig?.id || this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);

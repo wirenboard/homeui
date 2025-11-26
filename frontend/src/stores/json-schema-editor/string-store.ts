@@ -21,7 +21,7 @@ export class StringStore implements PropertyStore {
       this.value = initialValue;
     } else if (initialValue === undefined) {
       if (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined) {
-        this.value = getDefaultStringValue(schema);
+        this.value = getDefaultStringValue(schema) ?? '';
       } else {
         this.value = undefined;
       }
@@ -105,7 +105,7 @@ export class StringStore implements PropertyStore {
       this.setUndefined();
       return;
     }
-    this.setValue(getDefaultStringValue(this.schema));
+    this.setValue(getDefaultStringValue(this.schema) ?? '');
   }
 
   get hasErrors(): boolean {
