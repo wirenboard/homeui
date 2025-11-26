@@ -103,7 +103,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
 
   useEffect(() => {
     if (integrations) {
-      setErrors(!integrations.includes('alice') ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+      setErrors(integrations.length === 0 ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
     }
   }, [integrations]);
 
@@ -114,11 +114,11 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   });
 
   const isLoading = useMemo(
-    () => !integrations || (integrations?.length && pageState === 'isLoading'),
+    () => (!!integrations?.length && pageState === 'isLoading'),
     [integrations, pageState]
   );
 
-  const headerActions = (
+  const integrationToggle = integrations?.includes('alice') ? (
     <div className="alice-integrationToggle">
       <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
       <Switch
@@ -128,7 +128,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         onChange={handleIntegrationToggle}
       />
     </div>
-  );
+  ) : undefined;
 
   return (
     <PageLayout
@@ -136,7 +136,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       isLoading={isLoading}
       hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
-      actions={headerActions}
+      actions={integrationToggle}
     >
       {!!integrations?.length && (
         pageState === 'isConnected'
