@@ -171,7 +171,8 @@ export class DeviceSettingsObjectStore {
       return;
     }
     parameterEditor = new WbDeviceParameterEditor(
-      parameter, userDefinedConfig,
+      parameter,
+      userDefinedConfig,
       this._parametersByName,
       this._conditions
     );
@@ -266,9 +267,6 @@ export class DeviceSettingsObjectStore {
   setDefault() {
     this.commonParams.setDefault();
     this.topLevelGroup.setDefault();
-  }
-
-  setUndefined() {
   }
 
   commit() {

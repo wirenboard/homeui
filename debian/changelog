@@ -1,9 +1,16 @@
+wb-mqtt-homeui (2.154.6) stable; urgency=medium
+
+* Fix alice integration incorrect display of the menu item when the backend is unavailable
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 26 Nov 2025 09:52:14 +0300
+
 wb-mqtt-homeui (2.154.5) stable; urgency=medium
 
-  * Fix alice integration incorrect display of the menu item when the backend is unavailable
+  * Fix reading settings from WB-MAI6
+  * Fix displaying unknown device types in wb-mqtt-serial config editor
 
- -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 25 Nov 2025 20:47:14 +0300
- 
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Nov 2025 09:48:35 +0500
+
 wb-mqtt-homeui (2.154.4) stable; urgency=medium
 
   * Fix custom poll period editor in wb-mqtt-serial settings

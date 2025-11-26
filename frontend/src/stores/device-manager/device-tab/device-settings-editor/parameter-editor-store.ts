@@ -1,18 +1,8 @@
 import { makeObservable, computed, observable, action } from 'mobx';
-import { type JsonSchema, NumberStore } from '@/stores/json-schema-editor';
+import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
 import { firmwareIsNewer } from '~/utils/fwUtils';
 import type { WbDeviceTemplateParameter } from '../../types';
 import { type Conditions } from './conditions';
-
-const getDefaultValue = (schema: JsonSchema): number => {
-  if (typeof schema.default === 'number') {
-    return schema.default;
-  }
-  if (schema.enum && schema.enum.length > 0 && typeof schema.enum[0] === 'number') {
-    return schema.enum[0] as number;
-  }
-  return undefined;
-};
 
 export class WbDeviceParameterEditorVariant {
   public store: NumberStore;
@@ -28,7 +18,7 @@ export class WbDeviceParameterEditorVariant {
     conditions: Conditions) {
 
     const jsonSchema = makeJsonSchemaForParameter(parameter);
-    const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema);
+    const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
     this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
     this._conditionFn = conditions.getFunction(parameter.condition, parameter.dependencies);
     this._dependencies = parameter.dependencies;
@@ -160,12 +150,6 @@ export class WbDeviceParameterEditor {
   setDefault() {
     this.variants.forEach((variant) => {
       variant.store.setDefault();
-    });
-  }
-
-  setUndefined() {
-    this.variants.forEach((variant) => {
-      variant.store.setUndefined();
     });
   }
 
