@@ -1,5 +1,7 @@
 :root {
     --background-color: #fff;
+    --background-accent-color: #f5f5f5;
+    --background-accent-color-hover: #fafafa;
 
     --primary-color: #337ab7;
     --primary-color-hover: #5393c8;

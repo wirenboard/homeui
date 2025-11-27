@@ -1,0 +1,29 @@
+.dali {
+    display: flex;
+    gap: 12px;
+    height: 100%;
+}
+
+.dali-list {
+    width: 100%;
+    overflow-y: auto;
+
+    @media (min-width: 991px) {
+        width: 280px;
+    }
+}
+
+.dali-content {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    width: 100%;
+    border-radius: var(--card-border-radius);
+    background: var(--background-accent-color-hover);
+}
+
+.dali-contentLoader {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

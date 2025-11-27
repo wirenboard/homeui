@@ -1,0 +1,77 @@
+.tree {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    font-size: var(--font-size-medium);
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+}
+
+.tree-item {
+    display: flex;
+    flex-direction: column;
+    min-height: 30px;
+    position: relative;
+    tab-index: 1;
+    z-index: 1;
+    overflow: hidden;
+    border-radius: var(--input-border-radius);
+}
+
+.tree-itemActive {
+    background: var(--card-header-background);
+    color: var(--card-header-text);
+}
+
+.tree-itemActive .tree-children {
+    background: var(--background-accent-color);
+    color: var(--text-color);
+}
+
+.tree-children {
+    padding: 0;
+}
+
+.tree-collapseButton {
+    all: unset;
+    display: flex;
+    align-self: center;
+    width: 12px;
+    height: 12px;
+    padding: 4px;
+    border-radius: 12px;
+}
+
+.tree-collapseButton:hover,
+.tree-collapseButton:focus {
+    background: var(--background-accent-color);
+    color: var(--text-color);
+}
+
+.tree-itemActive > .tree-itemButton > .tree-collapseButton:hover,
+.tree-itemActive > .tree-itemButton > .tree-collapseButton:focus {
+    background: var(--primary-color-hover);
+    color: var(--button-color);
+}
+
+.tree-collapseIcon {
+    width: 12px;
+    height: 12px;
+}
+
+.tree-itemButton {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    padding: 8px;
+    flex-grow: 1;
+    align-items: baseline;
+    gap: 8px;
+    border-radius: var(--input-border-radius);
+}
+
+.tree-item:not(.tree-itemActive) > .tree-itemButton:hover,
+.tree-item:not(.tree-itemActive) > .tree-itemButton:focus {
+    background: var(--border-color);
+}

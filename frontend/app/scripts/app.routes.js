@@ -342,6 +342,19 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       },
     })
     //...........................................................................
+    .state('dali', {
+      url: '/dali',
+      template: '<dali-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'dali' */ './controllers/daliController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
+    })
+    //...........................................................................
     .state('integrations-alice', {
       url: '/integrations/alice',
       template: '<alice-page />',
