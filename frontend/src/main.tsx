@@ -99,15 +99,23 @@ const scan = async () => {
   });
 };
 
-// store.loadConfig();
-//
-// store.configEditorPageStore.hideButtons = true;
+const loadConfig = async (cfg = {}) => {
+  return Module.request('deviceLoadConfig', cfg);
+};
 
-// setTimeout(() => {
-//   store.configEditorPageStore.tabs.items = store.configEditorPageStore.tabs.items
-//     .filter((item) => item.type === TabType.DEVICE);
-// });
+const configGetDeviceTypes = async (cfg = {}) => {
+  return Module.request('configGetDeviceTypes', cfg);
+};
+
+const configGetSchema = async (cfg = {}) => {
+  return Module.request('configGetSchema', cfg);
+};
 
 createRoot(document.querySelector('#root')).render(
-  <DeviceSettingsWasm scan={scan} />
+  <DeviceSettingsWasm
+    scan={scan}
+    loadConfig={loadConfig}
+    configGetSchema={configGetSchema}
+    configGetDeviceTypes={configGetDeviceTypes}
+  />
 );
