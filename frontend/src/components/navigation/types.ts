@@ -1,5 +1,5 @@
-import { DashboardsStore } from '@/stores/dashboards';
-import { RulesStore } from '@/stores/rules';
+import { type DashboardsStore } from '@/stores/dashboards';
+import { type RulesStore } from '@/stores/rules';
 
 export interface NavigationProps {
   dashboardsStore: DashboardsStore;

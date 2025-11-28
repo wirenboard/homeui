@@ -17,6 +17,7 @@ export const OptionalParamsSelectDialog = observer(
             param.hasPermanentEditor || param.hidden ?
               null :
               <Checkbox
+                key={param.key}
                 checked={!param.disabled}
                 title={translator.find(param.store.schema.title || param.key, currentLanguage)}
                 onChange={(value) => {

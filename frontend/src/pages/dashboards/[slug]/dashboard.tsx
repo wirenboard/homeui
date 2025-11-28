@@ -122,7 +122,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
                           {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
                         </div>
                       )
-                        : cell.name || 'nosuchcell'
+                        : <div>{cell.name || 'nosuchcell'}</div>
                       }
                     </Fragment>
                   ))}

@@ -2,10 +2,10 @@ import debounce from 'lodash/debounce';
 import { observer } from 'mobx-react-lite';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Option } from '@/components/dropdown';
+import { type Option } from '@/components/dropdown';
 import { BooleanField, FormFieldGroup, OptionsField, StringField } from '@/components/form';
 import { authStore, UserRole } from '@/stores/auth';
-import { CommonSettingsProps } from '../types';
+import { type CommonSettingsProps } from '../types';
 
 const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSettingsProps) => {
   const { t } = useTranslation();

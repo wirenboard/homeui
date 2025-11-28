@@ -1,11 +1,14 @@
 import classNames from 'classnames';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Switch } from '@/components/switch';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
+import { notificationsStore } from '@/stores/notifications';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
 import type { AlicePageParams, AlicePageState, View } from './types';
@@ -13,13 +16,80 @@ import './styles.css';
 
 const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
-  const { rooms, integrations, fetchData } = aliceStore;
+  const {
+    rooms,
+    integrations,
+    fetchData,
+    fetchIntegrationStatus,
+    isIntegrationEnabled,
+    setIntegrationEnabled,
+  } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
   const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
+  const [isIntegrationLoading, setIntegrationLoading] = useState(true);
+
+  const handleIntegrationToggle = async (enabled: boolean) => {
+    const prevEnabled = aliceStore.isIntegrationEnabled;
+    setIntegrationLoading(true);
+
+    try {
+      await setIntegrationEnabled(enabled);
+
+      notificationsStore.showNotification({
+        variant: 'success',
+        text: enabled
+          ? t('alice.notifications.integration-enabled')
+          : t('alice.notifications.integration-disabled'),
+      });
+    } catch (err) {
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.detail || err?.response?.data?.message || null;
+
+      // 412 - controller not bound: keep switch ON so user can bind and see binding link
+      if (status === 412) {
+        runInAction(() => {
+          aliceStore.isIntegrationEnabled = true;
+        });
+
+        notificationsStore.showNotification({
+          variant: 'danger',
+          text: serverMessage || t('alice.notifications.integration-enabled-binding-required'),
+        });
+        return;
+      }
+
+      runInAction(() => {
+        aliceStore.isIntegrationEnabled = prevEnabled;
+      });
+
+      const msg = serverMessage
+        ? serverMessage
+        : status
+          ? `${t('alice.notifications.integration-error')} (${status})`
+          : t('alice.notifications.integration-error');
+
+      notificationsStore.showNotification({ variant: 'danger', text: msg });
+    } finally {
+      setIntegrationLoading(false);
+    }
+  };
 
   useEffect(() => {
+    setIntegrationLoading(true);
+    (async () => {
+      try {
+        await fetchIntegrationStatus();
+      } catch (err) {
+        const msg = err?.response?.data?.detail || err?.response?.data?.message
+          || t('alice.notifications.integration-error');
+        notificationsStore.showNotification({ variant: 'danger', text: msg });
+      } finally {
+        setIntegrationLoading(false);
+      }
+    })();
+
     fetchData()
       .then((res) => {
         setBindingInfo({
@@ -33,7 +103,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
 
   useEffect(() => {
     if (integrations) {
-      setErrors(!integrations.includes('alice') ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+      setErrors(integrations.length === 0 ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
     }
   }, [integrations]);
 
@@ -44,9 +114,21 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   });
 
   const isLoading = useMemo(
-    () => !integrations || (integrations?.length && pageState === 'isLoading'),
+    () => (!!integrations?.length && pageState === 'isLoading'),
     [integrations, pageState]
   );
+
+  const integrationToggle = integrations?.includes('alice') ? (
+    <div className="alice-integrationToggle">
+      <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
+      <Switch
+        id="alice-integration-enabled"
+        value={isIntegrationEnabled}
+        isDisabled={isIntegrationLoading}
+        onChange={handleIntegrationToggle}
+      />
+    </div>
+  ) : undefined;
 
   return (
     <PageLayout
@@ -54,26 +136,28 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       isLoading={isLoading}
       hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
+      actions={integrationToggle}
     >
       {!!integrations?.length && (
         pageState === 'isConnected'
           ? (
             <>
-              {bindingInfo.isBinded
-                ? (
-                  <div className="alice-bindingContainer">
-                    <span>{t('alice.labels.is-binded')}</span>
+              {isIntegrationEnabled && (
+                bindingInfo.isBinded
+                  ? (
+                    <div className="alice-bindingContainer">
+                      <span>{t('alice.labels.is-binded')}</span>
+                      <a href={bindingInfo.url} className="alice-binding" target="_blank">
+                        {t('alice.buttons.check-binding-status')}
+                      </a>
+                    </div>
+                  )
+                  : (
                     <a href={bindingInfo.url} className="alice-binding" target="_blank">
-                      {t('alice.buttons.check-binding-status')}
+                      {t('alice.buttons.bind')}
                     </a>
-                  </div>
-                )
-                : (
-                  <a href={bindingInfo.url} className="alice-binding" target="_blank">
-                    {t('alice.buttons.bind')}
-                  </a>
-                )
-              }
+                  )
+              )}
 
               <div className="alice-container">
                 <aside className="alice-sidebar">

@@ -11,7 +11,7 @@ import { Table, TableRow, TableCell } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { RulesStore } from '@/stores/rules';
+import { type RulesStore } from '@/stores/rules';
 import './styles.css';
 
 const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {

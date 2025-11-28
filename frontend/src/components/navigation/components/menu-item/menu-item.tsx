@@ -7,7 +7,7 @@ import {
   shift, useClick,
   useDismiss,
   useFloating, useInteractions,
-  useRole
+  useRole,
 } from '@floating-ui/react';
 import classNames from 'classnames';
 import { useRef } from 'react';

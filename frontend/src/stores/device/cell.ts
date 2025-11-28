@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { hexToRgb, isHex, rgbToHex } from '@/utils/color';
 import i18n from '~/i18n/react/config';
-import { CellError, cellType, type CellType, type CellTypeEntry } from './cell-type';
+import { type CellError, cellType, type CellType, type CellTypeEntry } from './cell-type';
 import type { CellMeta, EnumTranslations, NameTranslations, SendValueUpdate, ValueType } from './types';
 
 export default class Cell {

@@ -54,11 +54,11 @@ import userAgentFactory from './services/userAgent.factory';
 import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
-import serialMetricsProxyService from './services/serialMetricsProxy';
 import translationService from './services/translationService';
 import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
 import serialPortProxyService from './services/serialPortProxy';
+import serialDeviceProxyService from './services/serialDeviceProxy';
 import fwUpdateProxyService from './services/fwUpdateProxy';
 
 import handleDataService from './services/handle-data';
@@ -95,7 +95,6 @@ import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
 import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
-import usersPageDirective from './react-directives/users/users';
 import loginPageDirective from './react-directives/login/login';
 
 // Angular routes
@@ -151,7 +150,6 @@ module
   .factory('ConfigEditorProxy', configEditorProxyService)
   .factory('HistoryProxy', historyProxyService)
   .factory('LogsProxy', logsProxyService)
-  .factory('SerialMetricsProxy', serialMetricsProxyService)
   .factory('gotoDefStart', gotoDefStartService)
   .factory('getTime', getTimeService)
   .factory('Spinner', spinnerService)
@@ -163,6 +161,7 @@ module
   .factory('DeviceManagerProxy', deviceManagerProxyService)
   .factory('SerialProxy', serialProxyService)
   .factory('SerialPortProxy', serialPortProxyService)
+  .factory('SerialDeviceProxy', serialDeviceProxyService)
   .factory('FwUpdateProxy', fwUpdateProxyService)
 
   .service('handleData', handleDataService)
@@ -271,7 +270,6 @@ module
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
   .directive('rulesConsole', rulesConsoleDirective)
-  .directive('usersPage', usersPageDirective)
   .directive('loginPage', loginPageDirective);
 
 module
@@ -290,7 +288,6 @@ module
         'history',
         'widgets',
         'units',
-        'serial-metrics',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {
@@ -326,6 +323,10 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
   };
 
   $transitions.onStart({}, function (trans) {
+    // to avoid blinking on id change
+    if (trans.from().name === 'dashboard' && trans.to().name === 'dashboard') {
+      return;
+    }
     document.getElementById('overlay').classList.remove('overlay');
     $rootScope.stateIsLoading = true;
   });

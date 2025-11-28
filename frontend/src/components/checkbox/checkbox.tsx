@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { ChangeEvent, useEffect, useRef } from 'react';
-import { CheckboxProps } from './types';
+import { type ChangeEvent, useEffect, useRef } from 'react';
+import { type CheckboxProps } from './types';
 import './styles.css';
 
 export const Checkbox = ({

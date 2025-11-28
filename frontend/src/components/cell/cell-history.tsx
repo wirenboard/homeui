@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import StatsIcon from '@/assets/icons/stats.svg';
 import { Tooltip } from '@/components/tooltip';
-import { Cell } from '@/stores/device';
+import { type Cell } from '@/stores/device';
 import './styles.css';
 
 export const CellHistory = observer(({ cell }: { cell: Cell }) => {

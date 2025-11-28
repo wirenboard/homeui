@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { CSSProperties, PropsWithChildren } from 'react';
+import { type CSSProperties, type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
 import { Input } from '@/components/input';
@@ -57,7 +57,7 @@ export const EditorWrapper = observer(({
       style.flexBasis = `${(gridColumns / 12) * 100 - 7}%`;
     }
   }
-  const showDefaultText = param.store.schema.options?.show_opt_in;
+  const showDefaultText = param.store.schema.options?.show_opt_in || param.store.schema.options?.wb?.allow_undefined;
   const defaultText = showDefaultText ? param.store.defaultText : '';
   const showError = param.store.hasErrors && !param.disabled;
   const showDescription = !!param.store.schema.description || showDefaultText;

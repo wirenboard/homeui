@@ -72,6 +72,14 @@
     background: var(--danger-color-hover);
 }
 
+.button-warn {
+    background: var(--warn-color);
+}
+
+.button-warn:not(:disabled):hover {
+    background: var(--warn-color-hover);
+}
+
 .button-unaccented {
     background: var(--border-color);
     border: 1px solid var(--border-color);

@@ -12,7 +12,7 @@ import {
   useInteractions,
   useClick,
   useFloating,
-  useFocus
+  useFocus,
 } from '@floating-ui/react';
 import classNames from 'classnames';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { KeyboardEvent, useEffect, useState } from 'react';
-import { TextareaProps } from './types';
+import { type KeyboardEvent, useEffect, useState } from 'react';
+import { type TextareaProps } from './types';
 import './styles.css';
 
 export const Textarea = ({

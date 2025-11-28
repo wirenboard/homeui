@@ -1,4 +1,4 @@
-import { UserRole } from './constants';
+import { type UserRole } from './constants';
 
 export interface AuthResponse {
   user_type: UserRole;
@@ -16,4 +16,5 @@ export interface UserBody {
   login: string;
   password: string;
   type: UserRole;
+  autologin?: boolean;
 }

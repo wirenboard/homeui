@@ -6,9 +6,14 @@
 
 .aliceDeviceSkills-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(auto, 1fr)) 40px;
+    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) 22px;
     gap: 3px 12px;
     margin-bottom: 6px;
+
+    @media(max-width: 768px) {
+        display: flex;
+        flex-direction: column;
+    }
 }
 
 .aliceDeviceSkills-gridLabel {
@@ -21,6 +26,12 @@
     visibility: hidden;
 }
 
+.aliceDeviceSkills-grid div:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) .aliceDeviceSkills-gridHiddenLabel {
+    @media (max-width: 768px) {
+        visibility: visible;
+    }
+}
+
 .aliceDeviceSkills-colspan2 {
     grid-column: span 2;
 }
@@ -30,9 +41,29 @@
     gap: 12px;
 }
 
+.aliceDeviceSkills-gridRange div {
+    flex-grow: 1;
+}
+
 .aliceDeviceSkills-deleteButton {
     margin-top: 24px;
+
+    @media (max-width: 768px) {
+        margin-top: 4px;
+    }
 }
+
+.aliceDeviceSkills-deleteButton:not(:last-of-type)::after {
+    @media (max-width: 768px) {
+        content: '';
+        height: 1px;
+        background: var(--border-color);
+        width: 100%;
+        display: flex;
+        margin: 12px 0;
+    }
+}
+
 
 .aliceDeviceSkills-addButton {
     white-space: nowrap;
@@ -42,4 +73,12 @@
 
 .aliceDeviceSkills-noUnits {
   opacity: .6;
+}
+
+.aliceDeviceSkills-dropdown .dropdown__menu {
+    min-width: 250px;
+
+    @media (max-width: 310px) {
+        min-width: unset;
+    }
 }

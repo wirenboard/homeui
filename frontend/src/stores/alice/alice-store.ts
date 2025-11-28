@@ -9,7 +9,9 @@ import {
   updateRoom,
   deleteDevice,
   updateDevice,
-  checkIsAliceAvailable
+  checkIsAliceAvailable,
+  toggleAliceIntegration,
+  getAliceIntegrationStatus,
 } from './api';
 import type {
   AddDeviceParams,
@@ -17,13 +19,14 @@ import type {
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
-  SuccessMessageFetch
+  SuccessMessageFetch,
 } from './types';
 
 export default class AliceStore {
-  public integrations: string[];
+  public integrations: string[] ;
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
+  public isIntegrationEnabled = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -37,7 +40,25 @@ export default class AliceStore {
         this.integrations = isAvailable ? ['alice'] : [];
       });
     } catch {
-    //
+      runInAction(() => {
+        this.integrations = [];
+      });
+    }
+  }
+
+  async fetchIntegrationStatus(): Promise<void> {
+    try {
+      const { enabled } = await getAliceIntegrationStatus();
+
+      runInAction(() => {
+        this.isIntegrationEnabled = enabled;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.isIntegrationEnabled = false;
+      });
+
+      throw err;
     }
   }
 
@@ -109,6 +130,14 @@ export default class AliceStore {
       this.devices.set(key, device[key]);
       this.rooms.set(device[key].room_id, { name: room.name, devices: [...room.devices, key] });
       return key;
+    });
+  }
+
+  async setIntegrationEnabled(enabled: boolean): Promise<void> {
+    await toggleAliceIntegration(enabled);
+
+    runInAction(() => {
+      this.isIntegrationEnabled = enabled;
     });
   }
 }

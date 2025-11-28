@@ -138,7 +138,9 @@ export default class DeviceStore {
         {
           handledTopic: `${cellTopicBase}/meta`,
           handler: (message: string) => {
-            getCellFromTopic(topic).setMeta(message);
+            const cell = getCellFromTopic(topic);
+            cell.setMeta(message);
+            updateCellCompleteness(cell);
           },
         },
         {

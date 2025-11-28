@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
-import DashboardsStore from '@/stores/dashboards/dashboards-store';
-import { DashboardBase } from './types';
+import type DashboardsStore from '@/stores/dashboards/dashboards-store';
+import { type DashboardBase } from './types';
 
 export class Dashboard {
   declare id: string;

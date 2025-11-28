@@ -6,7 +6,7 @@ import LoaderIcon from '@/assets/icons/spinner.svg';
 import { APP_NAME, LOGO } from '@/common/constants';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { Dropdown, Option } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
 import type { LoginPageProps } from '@/pages/login/types';

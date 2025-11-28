@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 import {
-  ObjectStore,
-  StringStore,
-  NumberStore,
-  BooleanStore,
-  ByteArrayStore,
-  ArrayStore
+  type ObjectStore,
+  type StringStore,
+  type NumberStore,
+  type BooleanStore,
+  type ByteArrayStore,
+  type ArrayStore,
 } from '@/stores/json-schema-editor';
 import type { JsonSchemaEditorProps, EditorBuilderFunctionProps } from './types';
 import './styles.css';

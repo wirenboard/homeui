@@ -1,3 +1,136 @@
+wb-mqtt-homeui (2.155.1) stable; urgency=medium
+
+  * Fix history graph cases where the data dates do not include filter dates
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 26 Nov 2025 13:33:14 +0300
+
+wb-mqtt-homeui (2.155.0) stable; urgency=medium
+
+  * Fix translations in scenarios
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Nov 2025 15:03:34 +0500
+
+wb-mqtt-homeui (2.154.6) stable; urgency=medium
+
+  * Fix alice integration incorrect display of the menu item when the backend is unavailable
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 26 Nov 2025 09:52:14 +0300
+
+wb-mqtt-homeui (2.154.5) stable; urgency=medium
+
+  * Fix reading settings from WB-MAI6
+  * Fix displaying unknown device types in wb-mqtt-serial config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 26 Nov 2025 09:48:35 +0500
+
+wb-mqtt-homeui (2.154.4) stable; urgency=medium
+
+  * Fix custom poll period editor in wb-mqtt-serial settings
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 20:11:14 +0500
+
+wb-mqtt-homeui (2.154.3) stable; urgency=medium
+
+  * Mark required parameters in wb-mqtt-serial device settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 19:07:59 +0500
+
+wb-mqtt-homeui (2.154.2) stable; urgency=medium
+
+  * Fix alice mobile resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 25 Nov 2025 10:48:00 +0300
+
+wb-mqtt-homeui (2.154.1) stable; urgency=medium
+
+  * Fix reading settings from serial devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 25 Nov 2025 09:15:20 +0500
+
+wb-mqtt-homeui (2.154.0) stable; urgency=medium
+
+  * Read settings from serial devices during configuration editing
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 24 Nov 2025 15:27:58 +0500
+
+wb-mqtt-homeui (2.153.1) stable; urgency=medium
+
+  * Lock DOMPurify version to 3.0.1 due to compatibility issues with new versions
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 20 Nov 2025 15:58:29 +0500
+
+wb-mqtt-homeui (2.153.0) stable; urgency=medium
+
+  * Move from local eslint to lib package
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 20 Nov 2025 09:04:01 +0300
+
+wb-mqtt-homeui (2.152.3) stable; urgency=medium
+
+  * Fix alice integration on device saving
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Wed, 19 Nov 2025 16:54:00 +0300
+
+wb-mqtt-homeui (2.152.1) stable; urgency=medium
+
+  * Remove useless serial metrics page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 19 Nov 2025 15:29:00 +0300
+
+wb-mqtt-homeui (2.152.0) stable; urgency=medium
+
+  * Update users page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 19 Nov 2025 14:57:00 +0300
+
+wb-mqtt-homeui (2.151.1) stable; urgency=medium
+
+  * Fix dashboard long transition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 19 Nov 2025 10:24:00 +0300
+
+wb-mqtt-homeui (2.151.0) stable; urgency=medium
+
+  * Add alice integration enabled by checkbox
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 18 Nov 2025 21:10:00 +0300
+
+wb-mqtt-homeui (2.150.7) stable; urgency=medium
+
+  * Fix control's /meta handling
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 18 Nov 2025 16:10:00 +0400
+
+wb-mqtt-homeui (2.150.6) stable; urgency=medium
+
+  * Fix incomplete cells layout
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 18 Nov 2025 11:29:00 +0300
+
+wb-mqtt-homeui (2.150.5) stable; urgency=medium
+
+  * Update cell alert colors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 18 Nov 2025 10:09:10 +0300
+
+wb-mqtt-homeui (2.150.4) stable; urgency=medium
+
+  * Fix new rule page showing previous rule content
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 14 Nov 2025 19:10:00 +0400
+
+wb-mqtt-homeui (2.150.3) stable; urgency=medium
+
+  * SVG dashboards: fix A4_OUT fill color
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 13 Nov 2025 11:10:00 +0400
+
+wb-mqtt-homeui (2.150.2) stable; urgency=medium
+
+  * Fix page scroll on small resolutions
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 31 Oct 2025 16:05:50 +0300
+
 wb-mqtt-homeui (2.150.1) stable; urgency=medium
 
   * Restrict change controller name for non admin users

@@ -1,5 +1,5 @@
 import type { CompletionSource } from '@codemirror/autocomplete';
-import { Device, commonCellTypes, DeviceStore } from '@/stores/device';
+import { type Device, commonCellTypes, type DeviceStore } from '@/stores/device';
 
 const makeDevTopicsSource = (topics: string[]): CompletionSource => {
   return (context) => {

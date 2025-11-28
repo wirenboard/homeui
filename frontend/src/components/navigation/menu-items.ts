@@ -7,7 +7,7 @@ import SettingsIcon from '@/assets/icons/settings.svg';
 import SitemapIcon from '@/assets/icons/sitemap.svg';
 import StatsIcon from '@/assets/icons/stats.svg';
 import { UserRole } from '@/stores/auth';
-import { Dashboard } from '@/stores/dashboards';
+import { type Dashboard } from '@/stores/dashboards';
 import type { MenuItemInstance } from './components/menu-item';
 
 export const getMenuItems = (

@@ -1,4 +1,4 @@
-import { Capability, Color, ColorModel, Property } from '@/stores/alice';
+import { type Capability, type ColorModel, type Property } from '@/stores/alice';
 
 export interface Room {
   name: string;
@@ -55,6 +55,7 @@ export interface AliceFetchData {
   devices: Record<string, SmartDevice>;
   link_url?: string;
   unlink_url?: string;
+  enabled?: boolean;
 }
 
 export interface AddDeviceParams {

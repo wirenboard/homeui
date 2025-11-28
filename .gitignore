@@ -1,5 +1,6 @@
 node_modules
 dist
+.eslintcache
 dist-configurator
 *.tgz
 *.tar.*

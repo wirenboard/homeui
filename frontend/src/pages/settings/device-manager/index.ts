@@ -1,4 +1,4 @@
-import { DeviceSettingsEditor } from './device-settings-editor';
-import type { DeviceSettingsEditorProps } from './types';
+import { DeviceTab } from './components/device-tab/device-tab';
+import { DeviceTabContent } from './components/device-tab-content/device-tab-content';
 
-export { DeviceSettingsEditor, DeviceSettingsEditorProps };
+export { DeviceTab, DeviceTabContent };

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ButtonProps } from './types';
+import { type ButtonProps } from './types';
 import './styles.css';
 
 export const Button = ({
@@ -16,6 +16,7 @@ export const Button = ({
       'button-secondary': variant === 'secondary',
       'button-danger': variant === 'danger',
       'button-unaccented': variant === 'unaccented',
+      'button-warn': variant === 'warn',
       'button-outlined': isOutlined,
     })}
     {...rest}

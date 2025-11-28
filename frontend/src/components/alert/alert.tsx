@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { lazy, PropsWithChildren, Suspense } from 'react';
-import { AlertProps } from './types';
+import { lazy, type PropsWithChildren, Suspense } from 'react';
+import { type AlertProps } from './types';
 import './styles.css';
 
 const InfoIcon = lazy(() => import('@/assets/icons/info.svg'));

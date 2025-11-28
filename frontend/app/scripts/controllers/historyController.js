@@ -457,6 +457,7 @@ class HistoryCtrl {
         this.loadPending = false;
         this.createCharts();
         this.calculateTable();
+        this.fillMissingDatesByFilter();
         this.disableUi = false;
       }, 100);
       return;
@@ -822,6 +823,16 @@ class HistoryCtrl {
     // It can be bigger if font is bigger, but it is too difficult to calculate, so use minimal value
     // See computeTextDimensions in components/legend/draw.js in plotly.js sources
     this.layoutConfig.height = 450 + this.chartConfig.length * 19;
+  }
+
+  // For cases where the data dates do not include filter dates
+  fillMissingDatesByFilter() {
+    this.chartConfig.at(0).x.unshift(new Date(this.startDate));
+    this.chartConfig.at(0).y.unshift(null);
+    this.chartConfig.at(0).text.unshift(0);
+    this.chartConfig.at(0).y.push(null);
+    this.chartConfig.at(0).x.push(new Date(this.endDate));
+    this.chartConfig.at(0).text.push(0);
   }
 
   getMax(v1, v2) {
