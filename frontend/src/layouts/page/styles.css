@@ -30,6 +30,7 @@
     gap: 12px;
     align-items: center;
     flex-grow: 1;
+    width: auto;
     min-width: 0;
     height: 30px;
 }
