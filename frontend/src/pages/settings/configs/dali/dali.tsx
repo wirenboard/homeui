@@ -18,13 +18,22 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
   const [data, setData] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>();
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      await store.getGateways();
+      try {
+        await store.getGateways();
+      } catch (error) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          { variant:'danger', text: `Failed to fetch gateways: ${error.message}` },
+        ]);
+        return;
+      }
 
       if (!isMobile) {
-        loadData({ type: 'gateway', id: store.gatewayList.at(0).id });
+        loadData({ type: 'gateway', id: store.gatewayList.at(0)?.id });
       }
     };
 
@@ -33,15 +42,18 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
 
   const treeData = useMemo(() =>
     store.gatewayList
-      ?.map((gateway) => ({ label: gateway.name, id: gateway.id, type: 'gateway', children: gateway.buses
-        .map((bus) => ({ label: bus.name, id: bus.id, type: 'bus', children: bus.devices
-          .map((device) => ({ label: device.name, id: device.id, type: 'device', children: device?.groups
-            .map((groupId) => ({
-              label: t('dali.labels.group', { name: bus.groups.find((item) => item.id === groupId).name }),
-              id: groupId, type: 'group',
-            })),
+      ?.map((gateway) => ({
+        label: gateway.name, id: gateway.id, type: 'gateway', children: gateway.buses
+          .map((bus) => ({
+            label: bus.name, id: bus.id, type: 'bus', children: bus.devices
+              .map((device) => ({
+                label: device.name, id: device.id, type: 'device', children: device?.groups
+                  .map((groupId) => ({
+                    label: t('dali.labels.group', { name: bus.groups.find((item) => item.id === groupId).name }),
+                    id: groupId, type: 'group',
+                  })),
+              })),
           })),
-        })),
       }))
   , [store.gatewayList]);
 
@@ -51,14 +63,16 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
     setSelectedItem(item);
     try {
       setIsLoading(true);
-      const methods = {
-        gateway: 'getGateway',
-        bus: 'getBus',
-        device: 'getDevice',
-        group: 'getGroup',
-      };
-      const res = await store[methods[item.type]](item.id);
-      setData(res);
+      if (item) {
+        const methods = {
+          gateway: 'getGateway',
+          bus: 'getBus',
+          device: 'getDevice',
+          group: 'getGroup',
+        };
+        const res = await store[methods[item.type]](item.id);
+        setData(res);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -80,6 +94,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
       title={t('dali.title')}
       hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={store.isLoading}
+      errors={errors}
       actions={
         <>
           {isMobile && selectedItem && (
