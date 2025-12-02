@@ -3,7 +3,7 @@ import DaliPage from '@/pages/settings/configs/dali';
 import { DaliStore } from '@/stores/dali';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function daliDirective(DaliProxy) {
+export default function daliDirective(whenMqttReady, DaliProxy) {
   'ngInject';
 
   setReactLocale();
@@ -15,7 +15,7 @@ export default function daliDirective(DaliProxy) {
         scope.root.unmount();
       }
 
-      scope.store = new DaliStore(DaliProxy);
+      scope.store = new DaliStore(whenMqttReady, DaliProxy);
 
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
