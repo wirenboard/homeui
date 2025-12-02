@@ -1,5 +1,5 @@
 import NotificationsStore from './notifications-store';
-import { Notification } from './types';
+import type { Notification } from './types';
 
 const notificationsStore = new NotificationsStore();
 
