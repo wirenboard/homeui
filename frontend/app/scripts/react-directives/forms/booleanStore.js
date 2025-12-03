@@ -1,5 +1,3 @@
-'use strict';
-
 import { makeObservable, action, observable } from 'mobx';
 
 export class BooleanStore {
@@ -13,6 +11,7 @@ export class BooleanStore {
 
     makeObservable(this, {
       value: observable,
+      initialValue: observable,
       formColumns: observable,
       setValue: action,
       setFormColumns: action,

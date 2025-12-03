@@ -1,5 +1,3 @@
-'use strict';
-
 import { action, makeObservable, observable, computed } from 'mobx';
 import i18n from '../../i18n/react/config';
 
@@ -20,6 +18,7 @@ export class NumberStore {
 
     makeObservable(this, {
       value: observable,
+      initialValue: observable,
       formColumns: observable,
       defaultText: observable,
       setValue: action,
