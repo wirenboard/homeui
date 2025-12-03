@@ -18,14 +18,8 @@ const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
 
   const getUrl = (config: ConfigListItem) => {
     const encodePath = (path: string) => path.replace(/\//g, '~2F');
-    // this hack will be removed when react-router is used for navigation
-    if (['mbgate', 'serial-config'].includes(config.editor)) {
-      return `/#!/${config.editor}`;
-    }
 
-    return `/#!/${config.editor
-      ? `${config.editor}/${encodePath(config.schemaPath)}`
-      : `configs/edit/${encodePath(config.schemaPath)}`}`;
+    return config.editor ? `/#!/${config.editor}` : `/#!/configs/edit/${encodePath(config.schemaPath)}`;
   };
 
   const copyToClipboard = async (ev: MouseEvent<HTMLDivElement>, text: string) => {

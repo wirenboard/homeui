@@ -274,7 +274,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('network-connections', {
-      url: '/network-connections/{path:.*}',
+      url: '/network-connections',
       template: require('../views/network-connections.html'),
       controller: 'NetworkConnectionsCtrl as $ctrl',
       resolve: {
