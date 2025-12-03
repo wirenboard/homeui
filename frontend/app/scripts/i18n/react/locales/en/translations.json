@@ -467,7 +467,8 @@
          "title": "Title",
          "description": "Description",
          "notice": "You cannot view this page. You can change",
-         "access": "access level"
+         "access": "access level",
+         "copy": "Copied to clipboard"
       },
       "buttons": {
          "save": "Save"

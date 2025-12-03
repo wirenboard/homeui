@@ -247,8 +247,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('configs', {
       url: '/configs',
-      controller: 'ConfigsCtrl as $ctrl',
-      template: require('../views/configs.html'),
+      template: '<configs-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
