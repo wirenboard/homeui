@@ -34,6 +34,7 @@ export class StringStore {
 
     makeObservable(this, {
       value: observable,
+      initialValue: observable,
       formColumns: observable,
       readOnly: observable,
       setValue: action,
