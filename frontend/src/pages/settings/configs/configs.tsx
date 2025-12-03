@@ -11,10 +11,13 @@ import './styles.css';
 
 const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
   const { t, i18n } = useTranslation();
+  const hasRights = authStore.hasRights(UserRole.Admin);
 
   useEffect(() => {
-    store.getList();
-  }, []);
+    if (hasRights) {
+      store.getList();
+    }
+  }, [hasRights]);
 
   const getUrl = (config: ConfigListItem) => {
     const encodePath = (path: string) => path.replace(/\//g, '~2F');
@@ -30,7 +33,7 @@ const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
   return (
     <PageLayout
       title={t('configurations.title')}
-      hasRights={authStore.hasRights(UserRole.Admin)}
+      hasRights={hasRights}
       isLoading={!store.configs.length}
     >
       <Table>

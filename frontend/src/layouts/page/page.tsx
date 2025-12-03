@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { type PropsWithChildren, useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import InfoIcon from '@/assets/icons/info.svg';
 import { Alert } from '@/components/alert';
@@ -96,10 +96,7 @@ export const PageLayout = ({
 
       {!hasRights && (
         <Alert variant="danger">
-          <Trans
-            i18nKey="page.access-denied"
-            components={[<a href="/#!/access-level" key="access-level" />]}
-          />
+          {t('page.access-denied')}
         </Alert>
       )}
 
