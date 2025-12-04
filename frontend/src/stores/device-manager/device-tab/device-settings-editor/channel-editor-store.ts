@@ -11,37 +11,37 @@ enum WbDeviceChannelModes {
   Period200Ms = '200 ms',
   Period100Ms = '100 ms',
   CustomPeriod = 'custom period',
+  UsingFastModbus = 'using Fast Modbus',
 }
 
 const DefaultPeriod = 1000;
 
-function getEditorValuesFromChannelData(data: unknown): { mode: WbDeviceChannelModes; period?: number } {
+function getEditorValuesFromChannelData(data?: WbDeviceTemplateChannelSettings): { mode: WbDeviceChannelModes; period?: number } {
   if (data === undefined) {
     return {
       mode: WbDeviceChannelModes.QueueOrder,
       period: DefaultPeriod,
     };
   }
-  const dataAsChannel = data as WbDeviceTemplateChannel;
-  if (dataAsChannel.enabled === false) {
+  if (data.enabled === false) {
     return {
       mode: WbDeviceChannelModes.Disabled,
       period: DefaultPeriod,
     };
   }
-  if (typeof dataAsChannel.read_period_ms !== 'number') {
+  if (typeof data.read_period_ms !== 'number') {
     return {
       mode: WbDeviceChannelModes.QueueOrder,
       period: DefaultPeriod,
     };
   }
-  if (dataAsChannel.read_period_ms === 200) {
+  if (data.read_period_ms === 200) {
     return {
       mode: WbDeviceChannelModes.Period200Ms,
       period: DefaultPeriod,
     };
   }
-  if (dataAsChannel.read_period_ms === 100) {
+  if (data.read_period_ms === 100) {
     return {
       mode: WbDeviceChannelModes.Period100Ms,
       period: DefaultPeriod,
@@ -49,7 +49,7 @@ function getEditorValuesFromChannelData(data: unknown): { mode: WbDeviceChannelM
   }
   return {
     mode: WbDeviceChannelModes.CustomPeriod,
-    period: dataAsChannel.read_period_ms,
+    period: data.read_period_ms,
   };
 }
 
@@ -65,26 +65,44 @@ export class WbDeviceChannelEditor {
 
   constructor(
     channel: WbDeviceTemplateChannel,
-    initialValue: unknown,
+    initialValue: WbDeviceTemplateChannelSettings | undefined,
     parameters: Map<string, WbDeviceParameterEditor>
   ) {
     this.channel = channel;
     this._parameters = parameters;
     const { mode, period } = getEditorValuesFromChannelData(initialValue === undefined ? channel : initialValue);
-    this.mode = new StringStore({
-      type: 'string',
-      enum: [
-        WbDeviceChannelModes.Disabled,
-        WbDeviceChannelModes.QueueOrder,
-        WbDeviceChannelModes.Period200Ms,
-        WbDeviceChannelModes.Period100Ms,
-        WbDeviceChannelModes.CustomPeriod,
-      ],
-      default:  WbDeviceChannelModes.QueueOrder,
-      options: {
-        compact: true,
-      },
-    }, mode, true);
+    if (this.channel['semi-sporadic'] === true || this.channel.sporadic === true) {
+      this.mode = new StringStore({
+        type: 'string',
+        enum: [
+          WbDeviceChannelModes.Disabled,
+          WbDeviceChannelModes.UsingFastModbus,
+        ],
+        default: WbDeviceChannelModes.UsingFastModbus,
+        options: {
+          compact: true,
+        },
+      }, 
+      mode === WbDeviceChannelModes.Disabled ? mode : WbDeviceChannelModes.UsingFastModbus, 
+      true);
+    } else {
+      this.mode = new StringStore({
+        type: 'string',
+        enum: [
+          WbDeviceChannelModes.Disabled,
+          WbDeviceChannelModes.QueueOrder,
+          WbDeviceChannelModes.Period200Ms,
+          WbDeviceChannelModes.Period100Ms,
+          WbDeviceChannelModes.CustomPeriod,
+        ],
+        default:  WbDeviceChannelModes.QueueOrder,
+        options: {
+          compact: true,
+        },
+      }, 
+      mode, 
+      true);
+    }
 
     this.period = new NumberStore({
       type: 'integer',
@@ -141,7 +159,8 @@ export class WbDeviceChannelEditor {
         }
         break;
       }
-      case WbDeviceChannelModes.QueueOrder: {
+      case WbDeviceChannelModes.QueueOrder:
+      case WbDeviceChannelModes.UsingFastModbus: {
         if (this.channel.enabled === false) {
           res['enabled'] = true;
         }
@@ -198,7 +217,11 @@ export class WbDeviceChannelEditor {
 
   setDefault() {
     const { mode, period } = getEditorValuesFromChannelData(this.channel);
-    this.mode.setValue(mode);
+    if (this.channel['semi-sporadic'] === true || this.channel.sporadic === true) {
+      this.mode.setValue(mode === WbDeviceChannelModes.Disabled ? mode : WbDeviceChannelModes.UsingFastModbus);
+    } else {
+      this.mode.setValue(mode);
+    }
     this.period.setValue(period);
   }
 

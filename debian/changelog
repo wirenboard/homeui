@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.158.0) stable; urgency=medium
+
+  * Do not allow to set poll interval for sporadic and semi-sporadic channels in wb-mqtt-serial device settings editor
+  * Fix warning about invalid values in device registers in wb-mqtt-serial device settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 Dec 2025 20:57:43 +0500
+
 wb-mqtt-homeui (2.157.0) stable; urgency=medium
 
   * Add warning about invalid values in device registers in wb-mqtt-serial device settings editor
