@@ -412,7 +412,8 @@
          "load-registers": "Error loading current settings from device: {{error}}. Default values are displayed for parameters not present in the configuration file",
          "supported-since": "Supported since firmware {{fw}}",
          "fw-mismatch": "Current firmware {{currentFw}} is not supported by this template. Minimum required version: {{requiredFw}}. Please update the firmware or switch to another template.",
-         "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template."
+         "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template.",
+         "bad-value-from-registers": "Value \"{{value}}\" read from device is not suitable for this parameter. You can set your own — it will be written to the device. If it does not matter, you can leave it as is."
       }
    },
    "exp-check": {

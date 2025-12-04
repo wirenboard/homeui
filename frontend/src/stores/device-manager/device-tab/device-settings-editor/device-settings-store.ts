@@ -32,6 +32,7 @@ export class WbDeviceParameterEditorsGroup {
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
+      hasBadValuesFromRegisters: computed,
     });
   }
 
@@ -45,6 +46,11 @@ export class WbDeviceParameterEditorsGroup {
     return this.parameters.some((param) => param.isEnabledByCondition && param.hasErrors)
       || this.subgroups.some((group) => group.isEnabledByCondition && group.hasErrors)
       || this.channels.some((channel) => channel.isEnabledByCondition && channel.hasErrors);
+  }
+
+  get hasBadValuesFromRegisters() {
+    return this.parameters.some((param) => param.isEnabledByCondition && param.hasBadValueFromRegisters)
+      || this.subgroups.some((group) => group.isEnabledByCondition && group.hasBadValuesFromRegisters);
   }
 
   get isDirty() {
@@ -75,12 +81,6 @@ export class WbDeviceParameterEditorsGroup {
     this.parameters.forEach((param) => param.commit());
     this.channels.forEach((channel) => channel.commit());
     this.subgroups.forEach((group) => group.commit());
-  }
-
-  reset() {
-    this.parameters.forEach((param) => param.reset());
-    this.channels.forEach((channel) => channel.reset());
-    this.subgroups.forEach((group) => group.reset());
   }
 }
 
@@ -132,6 +132,7 @@ export class DeviceSettingsObjectStore {
     makeObservable(this, {
       value: computed,
       hasErrors: computed,
+      hasBadValuesFromRegisters: computed,
       isDirty: computed,
     });
   }
@@ -226,6 +227,10 @@ export class DeviceSettingsObjectStore {
     return this.commonParams.hasErrors || this.topLevelGroup.hasErrors || this.customChannels?.hasErrors;
   }
 
+  get hasBadValuesFromRegisters() {
+    return this.topLevelGroup.hasBadValuesFromRegisters;
+  }
+
   get isDirty() {
     return this.commonParams.isDirty || this.topLevelGroup.isDirty || this.customChannels?.isDirty;
   }
@@ -273,12 +278,6 @@ export class DeviceSettingsObjectStore {
     this.commonParams.commit();
     this.topLevelGroup.commit();
     this.customChannels?.commit();
-  }
-
-  reset() {
-    this.commonParams.reset();
-    this.topLevelGroup.reset();
-    this.customChannels?.reset();
   }
 
   setFromDeviceRegisters(value: unknown, fw: string){

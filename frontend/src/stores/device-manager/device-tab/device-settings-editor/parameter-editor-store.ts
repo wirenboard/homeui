@@ -1,4 +1,4 @@
-import { makeObservable, computed, observable, action } from 'mobx';
+import { makeObservable, computed, observable, action, runInAction } from 'mobx';
 import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
 import { firmwareIsNewer } from '~/utils/fwUtils';
 import type { WbDeviceTemplateParameter } from '../../types';
@@ -70,18 +70,19 @@ export class WbDeviceParameterEditor {
     makeObservable(this, {
       isSupportedByFirmware: observable,
       isSetInDeviceRegisters: observable,
-      isChangedByUser: computed,
       activeVariantIndex: computed,
       value: computed,
       isEnabledByCondition: computed,
       isDirty: computed,
       hasErrors: computed,
+      hasBadValueFromRegisters: computed,
       hasSeveralVariants: computed,
       shouldStoreInConfig: computed,
       addVariant: action,
       setFromDeviceRegister: action,
       setFirmwareInDevice: action,
       commit: action,
+      setDefault: action,
     });
   }
 
@@ -91,7 +92,26 @@ export class WbDeviceParameterEditor {
 
   get hasErrors() {
     const activeVariantIndex = this.activeVariantIndex;
-    return activeVariantIndex !== -1 ? this.variants[activeVariantIndex].store.hasErrors : false;
+    if (activeVariantIndex === -1) {
+      return false;
+    }
+    const activeVariantStore = this.variants[activeVariantIndex].store;
+    if (this.isSetInDeviceRegisters) {
+      return activeVariantStore.isDirty && activeVariantStore.hasErrors;
+    }
+    return activeVariantStore.hasErrors;
+  }
+
+  get hasBadValueFromRegisters() {
+    if (!this.isSetInDeviceRegisters) {
+      return false;
+    }
+    const activeVariantIndex = this.activeVariantIndex;
+    if (activeVariantIndex === -1) {
+      return false;
+    }
+    const activeVariantStore = this.variants[activeVariantIndex].store;
+    return !activeVariantStore.isDirty && activeVariantStore.hasErrors;
   }
 
   get value() {
@@ -100,9 +120,6 @@ export class WbDeviceParameterEditor {
   }
 
   get isDirty() {
-    if (this.isSetInDeviceRegisters) {
-      return true;
-    }
     const activeVariantIndex = this.activeVariantIndex;
     return activeVariantIndex !== -1 ? this.variants[activeVariantIndex].store.isDirty : false;
   }
@@ -115,15 +132,17 @@ export class WbDeviceParameterEditor {
     return this.variants.filter((variant) => variant.isEnabledByCondition).length > 1;
   }
 
-  get isChangedByUser() {
-    return this.isSetInUserDefinedConfig || this.isSetInDeviceRegisters || this.isDirty;
-  }
-
   get shouldStoreInConfig() {
-    return this.isSupportedByFirmware &&
-      this.isEnabledByCondition &&
-      (this.required || this.isChangedByUser) &&
-      !this.hasErrors;
+    if (!this.isEnabledByCondition || !this.isSupportedByFirmware) {
+      return false;
+    }
+    if (this.isSetInUserDefinedConfig) {
+      return !this.hasErrors;
+    }
+    if (this.isSetInDeviceRegisters) {
+      return !this.hasBadValueFromRegisters;
+    }
+    return (this.required || this.isDirty) && !this.hasErrors;
   }
 
   addVariant(
@@ -148,6 +167,8 @@ export class WbDeviceParameterEditor {
   }
 
   setDefault() {
+    this.isSetInUserDefinedConfig = false;
+    this.isSetInDeviceRegisters = false;
     this.variants.forEach((variant) => {
       variant.store.setDefault();
     });
@@ -156,12 +177,18 @@ export class WbDeviceParameterEditor {
   setFromDeviceRegister(value: unknown) {
     if (!this.isSetInUserDefinedConfig && this.isSupportedByFirmware && typeof value === 'number') {
       this.variants.forEach((variant) => {
-        if (value !== 0xFFFE || variant.store.isAcceptableValue(value)) {
-          variant.store.setValue(value);
-          variant.store.commit();
-          if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
+        variant.store.setValue(value);
+        variant.store.commit();
+        if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
+          runInAction(() => {
             this.isSetInDeviceRegisters = true;
-          }
+          });
+        }
+        if (this.isSetInDeviceRegisters && variant.store.hasErrors) {
+          variant.store.schema.options.wb = {
+            any_user_input_is_dirty: true,
+            do_not_show_invalid_value: true
+          };
         }
       });
     }
@@ -171,19 +198,35 @@ export class WbDeviceParameterEditor {
     this.isSupportedByFirmware = firmwareIsNewer(this.supportedFirmware, fw);
   }
 
+  /**
+   * Must be called after saving a config.
+   * Marks the parameter as set in user-defined config if it was changed by the user or in device registers
+   * Nothing changes if there are validation errors.
+   */
   commit() {
-    if (this.isDirty) {
-      this.isSetInUserDefinedConfig = true;
+    const activeVariantIndex = this.activeVariantIndex;
+    if (activeVariantIndex === -1) {
+      this.isSetInUserDefinedConfig = false;
       this.isSetInDeviceRegisters = false;
+      this.variants.forEach((variant) => {
+        variant.store.schema.options.wb = {};
+        variant.store.setDefault();
+        variant.store.commit();
+      });
+      return;
     }
+    if (this.hasErrors || this.hasBadValueFromRegisters) {
+      return;
+    }
+    if (this.isDirty || this.isSetInDeviceRegisters) {
+      this.isSetInUserDefinedConfig = true;
+    }
+    this.isSetInDeviceRegisters = false;
+    const value = this.variants[activeVariantIndex].store.value as number;
     this.variants.forEach((variant) => {
+      variant.store.schema.options.wb = {};
+      variant.store.setValue(value);
       variant.store.commit();
-    });
-  }
-
-  reset() {
-    this.variants.forEach((variant) => {
-      variant.store.reset();
     });
   }
 }

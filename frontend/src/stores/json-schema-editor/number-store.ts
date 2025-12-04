@@ -41,6 +41,9 @@ export class NumberStore implements PropertyStore {
     })) ?? [];
 
     this._checkConstraints();
+    if (this.schema.options?.wb?.do_not_show_invalid_value && this.hasErrors) {
+      this.editString = '';
+    }
 
     makeObservable(this, {
       value: observable.ref,
@@ -112,6 +115,9 @@ export class NumberStore implements PropertyStore {
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
+    if (this.schema.options?.wb?.do_not_show_invalid_value && this.hasErrors) {
+      this.editString = '';
+    }
   }
 
   setEditString(value: string) {
@@ -126,7 +132,11 @@ export class NumberStore implements PropertyStore {
         this.value = parsedValue;
       }
     }
-    this.isDirty = this.value !== this._initialValue;
+    if (this.schema.options?.wb?.any_user_input_is_dirty) {
+      this.isDirty = true;
+    } else {
+      this.isDirty = this.value !== this._initialValue;
+    }
     this._checkConstraints();
   }
 
@@ -162,21 +172,8 @@ export class NumberStore implements PropertyStore {
     this.value = this._initialValue;
     this.isDirty = false;
     this._checkConstraints();
-  }
-
-  isAcceptableValue(value: number): boolean {
-    if (this.schema.enum && !this.schema.enum.includes(value)) {
-      return false;
+    if (this.schema.options?.wb?.do_not_show_invalid_value && this.hasErrors) {
+      this.editString = '';
     }
-    if (this.schema.type === 'integer' && !Number.isSafeInteger(value)) {
-      return false;
-    }
-    if (
-      (this.schema.minimum !== undefined && this.schema.minimum > value) ||
-      (this.schema.maximum !== undefined && this.schema.maximum < value)
-    ) {
-      return false;
-    }
-    return true;
   }
 }

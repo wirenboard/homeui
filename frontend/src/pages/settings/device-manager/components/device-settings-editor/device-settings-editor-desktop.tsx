@@ -149,14 +149,20 @@ const DeviceSettingsTabs = observer((
   { groups, translator, customChannelsStore }: DeviceSettingsTabsProps
 ) => {
   const { i18n, t } = useTranslation();
-  const tabs = groups.map((group: WbDeviceParameterEditorsGroup) => ({
-    id: group.properties.id,
-    label: (
-      <span className={classNames({ 'deviceSettingsEditor-tabWithError': group.hasErrors })}>
-        {translator.find(group.properties.title, i18n.language)}
-      </span>
-    ),
-  }));
+  const tabs = groups.map((group: WbDeviceParameterEditorsGroup) => {
+    const classNamesObj = {
+      'deviceSettingsEditor-tabWithError': group.hasErrors,
+      'deviceSettingsEditor-tabWithWarning': group.hasBadValuesFromRegisters && !group.hasErrors,
+    };
+    return {
+      id: group.properties.id,
+      label: (
+        <span className={classNames(classNamesObj)}>
+          {translator.find(group.properties.title, i18n.language)}
+        </span>
+      ),
+    };
+  });
   if (customChannelsStore) {
     tabs.push({
       id: 'customChannels',

@@ -210,9 +210,4 @@ export class WbDeviceChannelEditor {
     this.mode.commit();
     this.period.commit();
   }
-
-  reset() {
-    this.mode.reset();
-    this.period.reset();
-  }
 }

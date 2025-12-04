@@ -32,6 +32,10 @@
     color: var(--danger-color);
 }
 
+.deviceSettingsEditor-tabWithWarning {
+    color: var(--orange-color);
+}
+
 .deviceSettingsEditor-topGroupContent {
     display: flex;
     flex-direction: row;
@@ -72,9 +76,14 @@
     flex-basis: 43%;
 }
 
-.deviceSettingsEditor-parameterChangedByUser .dropdown__control,
-.deviceSettingsEditor-parameterChangedByUser input {
+.deviceSettingsEditor-shouldStoreInConfig .dropdown__control,
+.deviceSettingsEditor-shouldStoreInConfig input {
     border-left: 4px solid var(--gray-color);
+}
+
+.deviceSettingsEditor-hasBadValueFromRegisters .dropdown__control,
+.deviceSettingsEditor-hasBadValueFromRegisters input {
+    border-color: var(--orange-color);
 }
 
 .deviceSettingsEditor-desktop .deviceSettingsEditor-topGroupContent {
@@ -100,4 +109,10 @@
     padding: 9px;
     border: 1px solid var(--input-border-color);
     border-radius: var(--card-border-radius);
+}
+
+.deviceSettingsEditor-parameterWithBadValueFromRegisters-warning {
+    color: var(--orange-color);
+    margin-top: 5px;
+    margin-bottom: 0px;
 }

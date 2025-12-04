@@ -49,6 +49,10 @@
     flex-grow: 1;
 }
 
+.device-manager-page li .error .glyphicon-exclamation-sign {
+    color: #a90329;
+}
+
 .device-manager-page .settings-tab {
     display: flex;
     flex-direction: row;
