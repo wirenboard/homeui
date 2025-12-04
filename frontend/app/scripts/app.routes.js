@@ -247,8 +247,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('configs', {
       url: '/configs',
-      controller: 'ConfigsCtrl as $ctrl',
-      template: require('../views/configs.html'),
+      template: '<configs-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -275,7 +274,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('network-connections', {
-      url: '/network-connections/{path:.*}',
+      url: '/network-connections',
       template: require('../views/network-connections.html'),
       controller: 'NetworkConnectionsCtrl as $ctrl',
       resolve: {

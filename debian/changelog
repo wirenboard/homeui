@@ -3,7 +3,21 @@ wb-mqtt-homeui (2.156.0) stable; urgency=medium
   * Add warning about invalid values in device registers in wb-mqtt-serial device settings editor
   * Invalid values in device registers do not forbid saving changes in wb-mqtt-serial device settings editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 Dec 2025 11:54:15 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 04 Dec 2025 15:19:00 +0500
+
+wb-mqtt-homeui (2.156.1) stable; urgency=medium
+
+  * Fix config enum description display
+  * Fix config list item path copy to clipboard
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 04 Dec 2025 12:29:00 +0300
+
+wb-mqtt-homeui (2.156.0) stable; urgency=medium
+
+  * Update configs page implemetation
+  * Add copy path by clicking
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 03 Dec 2025 15:44:56 +0300
 
 wb-mqtt-homeui (2.155.3) stable; urgency=medium
 

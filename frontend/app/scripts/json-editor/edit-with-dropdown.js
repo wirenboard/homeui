@@ -145,6 +145,13 @@ function makeEditWithDropdownEditor() {
       this.control.appendChild(this.dropdown);
       this.control.classList.add('editable-dropdown');
       this.container.appendChild(this.control);
+
+      if (this.schema.description) {
+        this.container.appendChild(
+          this.theme.getFormInputDescription(this.translateProperty(this.schema.description))
+        );
+      }
+
       if (this.options.compact) {
         this.container.classList.add('compact');
       }

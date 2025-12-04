@@ -1,0 +1,73 @@
+import { observer } from 'mobx-react-lite';
+import { useEffect, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Table, TableCell, TableRow } from '@/components/table';
+import { Tooltip } from '@/components/tooltip';
+import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
+import { type ConfigListItem } from '@/stores/configs';
+import { copyToClipboard } from '@/utils/clipboard';
+import { type ConfigsPageProps } from './types';
+import './styles.css';
+
+const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
+  const { t, i18n } = useTranslation();
+  const hasRights = authStore.hasRights(UserRole.Admin);
+
+  useEffect(() => {
+    if (hasRights) {
+      store.getList();
+    }
+  }, [hasRights]);
+
+  const getUrl = (config: ConfigListItem) => {
+    const encodePath = (path: string) => path.replace(/\//g, '~2F');
+
+    return config.editor ? `/#!/${config.editor}` : `/#!/configs/edit/${encodePath(config.schemaPath)}`;
+  };
+
+  return (
+    <PageLayout
+      title={t('configurations.title')}
+      hasRights={hasRights}
+      isLoading={!store.configs.length}
+    >
+      <Table>
+        <TableRow isHeading>
+          <TableCell>
+            {t('configurations.labels.title')}
+          </TableCell>
+          <TableCell>
+            {t('configurations.labels.file')}
+          </TableCell>
+        </TableRow>
+
+        {store.configs.map((config, i) => (
+          <TableRow key={config.configPath + i} url={getUrl(config)}>
+            <TableCell>
+              {config.titleTranslations?.[i18n.language] || config.title}
+            </TableCell>
+            <TableCell>
+              <div
+                className="configs-itemPath"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  copyToClipboard(config.configPath);
+                }}
+              >
+                <Tooltip
+                  text={t('configurations.labels.copy')}
+                  trigger="click"
+                >
+                  {config.configPath}
+                </Tooltip>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </Table>
+    </PageLayout>
+  );
+});
+
+export default ConfigsPage;

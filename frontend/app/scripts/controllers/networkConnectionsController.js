@@ -6,11 +6,6 @@ class NetworkConnectionsCtrl {
 
     this.haveRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
     if (!this.haveRights) return;
-    $scope.file = {
-      schemaPath: $stateParams.path,
-    };
-
-    if (!/^\//.test($scope.file.schemaPath)) $scope.file.schemaPath = '/' + $scope.file.schemaPath;
   }
 }
 
