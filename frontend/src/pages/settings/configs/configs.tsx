@@ -6,6 +6,7 @@ import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { type ConfigListItem } from '@/stores/configs';
+import { copyToClipboard } from '@/utils/clipboard';
 import { type ConfigsPageProps } from './types';
 import './styles.css';
 
@@ -25,11 +26,6 @@ const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
     return config.editor ? `/#!/${config.editor}` : `/#!/configs/edit/${encodePath(config.schemaPath)}`;
   };
 
-  const copyToClipboard = async (ev: MouseEvent<HTMLDivElement>, text: string) => {
-    ev.preventDefault();
-    await navigator.clipboard.writeText(text);
-  };
-
   return (
     <PageLayout
       title={t('configurations.title')}
@@ -46,15 +42,18 @@ const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
           </TableCell>
         </TableRow>
 
-        {store.configs.map((config) => (
-          <TableRow key={config.configPath} url={getUrl(config)}>
+        {store.configs.map((config, i) => (
+          <TableRow key={config.configPath + i} url={getUrl(config)}>
             <TableCell>
               {config.titleTranslations?.[i18n.language] || config.title}
             </TableCell>
             <TableCell>
               <div
                 className="configs-itemPath"
-                onClick={(ev) => copyToClipboard(ev, config.configPath)}
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  copyToClipboard(config.configPath);
+                }}
               >
                 <Tooltip
                   text={t('configurations.labels.copy')}
