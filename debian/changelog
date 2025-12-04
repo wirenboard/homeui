@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.156.0) stable; urgency=medium
+
+  * Update configs page implemetation
+  * Add copy path by clicking
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 03 Dec 2025 15:44:56 +0300
+
 wb-mqtt-homeui (2.155.3) stable; urgency=medium
 
   * Fix prevent warnings after networks settings save

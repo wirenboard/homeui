@@ -467,7 +467,8 @@
          "title": "Title",
          "description": "Description",
          "notice": "You cannot view this page. You can change",
-         "access": "access level"
+         "access": "access level",
+         "copy": "Copied to clipboard"
       },
       "buttons": {
          "save": "Save"
@@ -596,7 +597,7 @@
       }
    },
    "page": {
-      "access-denied": "You cannot view this page. You can change <0>access level</0>",
+      "access-denied": "You don't have enough permissions to view this page",
       "not-found": "Page not found: 404",
       "not-found-description": "You are requesting a page that doesn't exists"
    },
