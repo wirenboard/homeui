@@ -114,5 +114,5 @@
 .deviceSettingsEditor-parameterWithBadValueFromRegisters-warning {
     color: var(--orange-color);
     margin-top: 5px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }

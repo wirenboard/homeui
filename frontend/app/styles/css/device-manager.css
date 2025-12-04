@@ -50,7 +50,7 @@
 }
 
 .device-manager-page li .error .glyphicon-exclamation-sign {
-    color: #a90329;
+    color: var(--danger-color);
 }
 
 .device-manager-page .settings-tab {
