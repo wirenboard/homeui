@@ -186,12 +186,8 @@ export function switcherStoreToJson(store, connectionsToStore) {
   if (store.stickyConnectionPeriod.value !== '') {
     res.sticky_connection_period_s = store.stickyConnectionPeriod.value;
   }
-  if (!store.connectivityUrl.hasErrors) {
-    let value = store.connectivityUrl.value;
-    if (store.connectivityUrl.value == '') {
-      value = store.urlProperties.default;
-    }
-    res.connectivity_check_url = value;
+  if (!store.connectivityUrl.hasErrors && store.connectivityUrl.value !== '') {
+    res.connectivity_check_url = store.connectivityUrl.value;
   }
   if (store.connectivityPayload.value !== '') {
     res.connectivity_check_payload = store.connectivityPayload.value;
