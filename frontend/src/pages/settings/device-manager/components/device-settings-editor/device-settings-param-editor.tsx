@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
 import { type WbDeviceParameterEditor } from '@/stores/device-manager';
-import { type Translator } from '@/stores/json-schema-editor';
+import { type Translator, type NumberStore } from '@/stores/json-schema-editor';
 
 export const ParamSimpleLabel = (
   { title, inputId, className }:
@@ -17,6 +17,33 @@ export const ParamSimpleLabel = (
   );
 };
 
+const BadValueFromRegisterWarningText = ({ store, translator }: { store: NumberStore; translator: Translator }) => {
+  const { t, i18n } = useTranslation();
+  if (store.schema.enum) {
+    return t('device-manager.errors.bad-value-from-registers', { value: JSON.stringify(store.value) });
+  }
+  const currentLanguage = i18n.language;
+  const text = store.error.key ? t(store.error.key, store.error.data) : translator.find(store.error.msg, currentLanguage);
+  return (
+    <>
+      {t('device-manager.errors.bad-value-from-registers')}
+      <br/>
+      {text}
+    </>
+  );
+}
+
+export const BadValueFromRegisterWarning = ({ id, store, translator }: { id: string; store: NumberStore; translator: Translator }) => {
+  return (
+    <p 
+      id={id}
+      className='deviceSettingsEditor-parameterWithBadValueFromRegisters-warning'
+    >
+      <BadValueFromRegisterWarningText store={store} translator={translator} />
+    </p>
+  );
+};
+
 export const ParamEditor = observer((
   { param, translator }:
   { param: WbDeviceParameterEditor; translator: Translator }
@@ -26,7 +53,8 @@ export const ParamEditor = observer((
   const inputId = useId();
   const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
-  const showError = param.hasErrors;
+  const hasBadValueFromRegisters = param.hasBadValueFromRegisters;
+  const showError = param.hasErrors && !hasBadValueFromRegisters;
   const activeVariant = param.variants[param.activeVariantIndex];
   let descriptionLines = [];
   if (activeVariant.store.schema.description) {
@@ -41,7 +69,8 @@ export const ParamEditor = observer((
     <div
       className={classNames('deviceSettingsEditor-parameter', {
         'wb-jsonEditor-propertyError': showError,
-        'deviceSettingsEditor-parameterChangedByUser': param.isChangedByUser || param.required,
+        'deviceSettingsEditor-shouldStoreInConfig': param.shouldStoreInConfig,
+        'deviceSettingsEditor-hasBadValueFromRegisters': hasBadValueFromRegisters,
       })}
     >
       <ParamSimpleLabel title={title} inputId={inputId} />
@@ -51,8 +80,15 @@ export const ParamEditor = observer((
         translator={translator}
         isDisabled={!param.isSupportedByFirmware}
       />
-      {showError && <ParamError id={errorId} error={activeVariant.store.error} translator={translator} />}
-      {description && <ParamDescription id={descriptionId} description={description} />}
+      {showError && (
+        <ParamError id={errorId} error={activeVariant.store.error} translator={translator} />
+      )}
+      {hasBadValueFromRegisters && (
+         <BadValueFromRegisterWarning id={errorId} store={activeVariant.store} translator={translator} />
+      )}
+      {description && (
+        <ParamDescription id={descriptionId} description={description} />
+      )}
     </div>
   );
 });

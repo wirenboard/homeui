@@ -18,7 +18,7 @@ const NumberEditor = observer(({
   const enumOptions = useMemo(() => {
     if (!store.schema.enum) return [];
     return store.enumOptions.map((option) => ({
-      value: option.value,
+      value: String(option.value),
       label: translator.find(option.label, currentLanguage),
     }));
   }, [store.enumOptions, translator, currentLanguage]);
@@ -26,17 +26,11 @@ const NumberEditor = observer(({
     <Dropdown
       id={inputId}
       options={enumOptions}
-      value={typeof store.value === 'number' ? store.value : undefined}
+      value={store.editString}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
       isDisabled={isDisabled}
-      onChange={(option) => {
-        if (typeof option.value === 'number' || typeof option.value === 'string') {
-          store.setValue(option.value);
-        } else {
-          store.setUndefined();
-        }
-      }}
+      onChange={(option) => store.setEditString(option.value as string)}
     />
   ) : (
     <Input
