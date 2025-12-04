@@ -159,9 +159,11 @@ class SwitcherStore {
     this.connectionPriorities = new ConnectionPrioritiesStore(connectionsStore);
   }
 
-  setUrlProperties(urlProperties) {
-    this.urlProperties = urlProperties;
-    this.connectivityUrl.setDefaultText(this.urlProperties.default);
+  setSchemaProperties(schemaProperties) {
+    this.urlProperties = schemaProperties.connectivity_check_url;
+    this.stickyConnectionPeriod.setDefaultText(schemaProperties.sticky_connection_period_s.default);
+    this.connectivityUrl.setDefaultText(schemaProperties.connectivity_check_url.default);
+    this.connectivityPayload.setDefaultText(schemaProperties.connectivity_check_payload.default);
   }
 
   submit() {
@@ -207,14 +209,8 @@ export function switcherStoreToJson(store, connectionsToStore) {
 export function switcherStoreFromJson(store, json, connectionsStore) {
   store.stickyConnectionPeriod.setValue(json.sticky_connection_period_s);
   store.stickyConnectionPeriod.submit();
-
-  let value = json.connectivity_check_url;
-  if (json.connectivity_check_url == store.urlProperties.default) {
-    value = '';
-  }
-  store.connectivityUrl.setValue(value);
+  store.connectivityUrl.setValue(json.connectivity_check_url);
   store.connectivityUrl.submit();
-
   store.connectivityPayload.setValue(json.connectivity_check_payload);
   store.connectivityPayload.submit();
   store.debug.setValue(json.debug);
