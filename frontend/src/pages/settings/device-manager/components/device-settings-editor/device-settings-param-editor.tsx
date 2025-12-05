@@ -26,7 +26,7 @@ const BadValueFromRegisterWarningText = ({ store, translator }: { store: NumberS
   const text = store.error.key ? t(store.error.key, store.error.data) : translator.find(store.error.msg, currentLanguage);
   return (
     <>
-      {t('device-manager.errors.bad-value-from-registers')}
+      {t('device-manager.errors.bad-value-from-registers', { value: JSON.stringify(store.value) })}
       <br/>
       {text}
     </>

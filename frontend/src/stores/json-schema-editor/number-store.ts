@@ -16,6 +16,8 @@ export class NumberStore implements PropertyStore {
   readonly required: boolean;
 
   private _initialValue: MistypedValue | number | undefined;
+  private _anyUserInputIsDirty: boolean = false;
+  private _doNotShowInvalidValue: boolean = false;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
@@ -41,9 +43,6 @@ export class NumberStore implements PropertyStore {
     })) ?? [];
 
     this._checkConstraints();
-    if (this.schema.options?.wb?.do_not_show_invalid_value && this.hasErrors) {
-      this.editString = '';
-    }
 
     makeObservable(this, {
       value: observable.ref,
@@ -57,6 +56,7 @@ export class NumberStore implements PropertyStore {
       isDirty: observable,
       commit: action,
       reset: action,
+      setDoNotShowInvalidValue: action,
     });
   }
 
@@ -115,7 +115,7 @@ export class NumberStore implements PropertyStore {
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
-    if (this.schema.options?.wb?.do_not_show_invalid_value && this.hasErrors) {
+    if (this._doNotShowInvalidValue && this.hasErrors) {
       this.editString = '';
     }
   }
@@ -132,7 +132,7 @@ export class NumberStore implements PropertyStore {
         this.value = parsedValue;
       }
     }
-    if (this.schema.options?.wb?.any_user_input_is_dirty) {
+    if (this._anyUserInputIsDirty) {
       this.isDirty = true;
     } else {
       this.isDirty = this.value !== this._initialValue;
@@ -172,8 +172,27 @@ export class NumberStore implements PropertyStore {
     this.value = this._initialValue;
     this.isDirty = false;
     this._checkConstraints();
-    if (this.schema.options?.wb?.do_not_show_invalid_value && this.hasErrors) {
+    if (this._doNotShowInvalidValue && this.hasErrors) {
       this.editString = '';
     }
+  }
+
+  /**
+   * If true, invalid value, that was set with setValue method, 
+   * will not be shown in the editor
+   */
+  setDoNotShowInvalidValue(doNotShow: boolean) {
+    this._doNotShowInvalidValue = doNotShow;
+    if (doNotShow && this.hasErrors) {
+      this.editString = '';
+    }
+  }
+
+  /**
+   * If true, any user input will mark the property as dirty,
+   * even if the value is equal to the initial value
+   */
+  setAnyUserInputIsDirty(anyUserInputIsDirty: boolean) {
+    this._anyUserInputIsDirty = anyUserInputIsDirty;
   }
 }

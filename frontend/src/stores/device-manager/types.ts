@@ -212,6 +212,8 @@ export interface WbDeviceTemplateChannel extends WbDeviceTemplateChannelSettings
   condition?: string;
   dependencies?: string[];
   fw?: string;
+  sporadic?: boolean;
+  'semi-sporadic'?: boolean;
 }
 
 export interface WbDeviceParametersGroup {
