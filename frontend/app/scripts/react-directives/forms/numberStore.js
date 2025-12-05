@@ -66,7 +66,7 @@ export class NumberStore {
     if (this.customError) {
       return true;
     }
-    if ((!this.strict && this.value !== undefined) || this.strict) {
+    if ((!this.strict && this.value !== undefined && this.value !== '') || this.strict) {
       return (
         (this.type === 'integer' && !Number.isInteger(this.value)) ||
         (this.type === 'number' && typeof this.value !== 'number') ||
