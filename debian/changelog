@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.158.2) stable; urgency=medium
+
+  * Add warning about multiple parameter definitions in device templates
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 05 Dec 2025 16:51:49 +0500
+
 wb-mqtt-homeui (2.158.1) stable; urgency=medium
 
   * network-connections: fix applying default config values
