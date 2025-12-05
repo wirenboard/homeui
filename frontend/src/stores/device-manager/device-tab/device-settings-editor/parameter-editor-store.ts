@@ -185,10 +185,8 @@ export class WbDeviceParameterEditor {
           });
         }
         if (this.isSetInDeviceRegisters && variant.store.hasErrors) {
-          variant.store.schema.options.wb = {
-            any_user_input_is_dirty: true,
-            do_not_show_invalid_value: true
-          };
+          variant.store.setAnyUserInputIsDirty(true);
+          variant.store.setDoNotShowInvalidValue(true);
         }
       });
     }
@@ -209,7 +207,8 @@ export class WbDeviceParameterEditor {
       this.isSetInUserDefinedConfig = false;
       this.isSetInDeviceRegisters = false;
       this.variants.forEach((variant) => {
-        variant.store.schema.options.wb = {};
+        variant.store.setAnyUserInputIsDirty(false);
+        variant.store.setDoNotShowInvalidValue(false);
         variant.store.setDefault();
         variant.store.commit();
       });
@@ -224,7 +223,8 @@ export class WbDeviceParameterEditor {
     this.isSetInDeviceRegisters = false;
     const value = this.variants[activeVariantIndex].store.value as number;
     this.variants.forEach((variant) => {
-      variant.store.schema.options.wb = {};
+      variant.store.setAnyUserInputIsDirty(false);
+      variant.store.setDoNotShowInvalidValue(false);
       variant.store.setValue(value);
       variant.store.commit();
     });

@@ -23,14 +23,6 @@ export interface WbOptions {
   // and we want to allow user to not set the property at all.
   // This option has effect only if show_editor is true
   allow_undefined?: boolean;
-
-  // If true, invalid value, that was set with setValue method,
-  // will not be shown in the editor
-  do_not_show_invalid_value?: boolean;
-
-  // If true, any user input will mark the property as dirty,
-  // even if the value is equal to the initial value
-  any_user_input_is_dirty?: boolean;
 }
 
 export interface InputAttributes {
