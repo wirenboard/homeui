@@ -230,7 +230,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                       <div className="widgetEdit-invert">
                         {cell.type === 'switch' && (
                           <Switch
-                            id="inverted"
+                            id={`inverted_${cell.id}_${i}`}
                             value={cell.extra?.invert}
                             onChange={(invert) => updateCell(cell.id, { extra: { invert } })}
                           />
