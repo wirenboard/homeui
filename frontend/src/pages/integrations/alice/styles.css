@@ -20,6 +20,16 @@
     font-size: 14px;
 }
 
+.alice-unlink {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    font: inherit !important;
+    color: inherit !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+}
+
 .alice-sidebar {
     display: flex;
     flex-direction: column;
