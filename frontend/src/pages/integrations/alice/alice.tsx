@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Confirm } from '@/components/confirm';
 import { Switch } from '@/components/switch';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
@@ -75,6 +76,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       setIntegrationLoading(false);
     }
   };
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     setIntegrationLoading(true);
@@ -118,6 +120,29 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     [integrations, pageState]
   );
 
+  const handleUnlinkController = async (ev: React.MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmUnlink = async () => {
+    setIsConfirmModalOpen(false);
+    try {
+      await aliceStore.unlinkController();
+      notificationsStore.showNotification({ 
+        variant: 'success', 
+        text: t('alice.notifications.controller-unlinked') 
+      });
+      window.location.reload();
+    } catch (err: any) {
+      notificationsStore.showNotification({ 
+        variant: 'danger', 
+        text: err?.response?.data?.detail || err?.message || String(err) 
+      });
+    }
+  };
+
   const integrationToggle = integrations?.includes('alice') ? (
     <div className="alice-integrationToggle">
       <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
@@ -150,6 +175,15 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
                       <a href={bindingInfo.url} className="alice-binding" target="_blank">
                         {t('alice.buttons.check-binding-status')}
                       </a>
+                    <span>{t('alice.labels.is-binded')}</span>
+                    <button
+                        type="button"
+                        className="alice-binding alice-unlink"
+                        onClick={handleUnlinkController}
+                        title={t('alice.binding.unlink-controller')}
+                      >
+                        {t('alice.binding.unlink-controller')}
+                    </button>
                     </div>
                   )
                   : (
@@ -223,6 +257,17 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
             </ol>
           )
       )}
+
+      <Confirm
+        isOpened={isConfirmModalOpen}
+        heading={t('alice.binding.confirm-unlink')}
+        confirmCallback={confirmUnlink}
+        closeCallback={() => setIsConfirmModalOpen(false)}
+        variant="danger"
+        acceptLabel={t('alice.binding.confirm-unlink-button')}
+      >
+        {t('alice.binding.confirm-unlink-message')}
+      </Confirm>
     </PageLayout>
   );
 });
