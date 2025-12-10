@@ -1,5 +1,8 @@
-import DaliStore from './dali-store';
+import {DaliStore, GatewayStore, BusStore, DeviceStore} from './dali-store';
 
 export {
-  DaliStore
+  DaliStore,
+  GatewayStore,
+  BusStore,
+  DeviceStore,
 };
