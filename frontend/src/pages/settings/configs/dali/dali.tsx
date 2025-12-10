@@ -72,11 +72,9 @@ const DeviceItemContent = observer(({store} : {store: DeviceStore}) => {
 });
 
 const ItemContent = ({store}: {store: GatewayStore | BusStore | DeviceStore}) => {
-  console.log('Rendering item content for store:', store);
   if (!store) {
     return null;
   }
-  console.log('Rendering item content for store2:', store.type);
   switch (store.type) {
     case 'gateway':
       return <GatewayItemContent store={store as GatewayStore} />;
