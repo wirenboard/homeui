@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.158.2) stable; urgency=medium
+wb-mqtt-homeui (2.158.3) stable; urgency=medium
 
   * Add warning about multiple parameter definitions in device templates
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 05 Dec 2025 16:51:49 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 11 Dec 2025 19:18:42 +0500
+
+wb-mqtt-homeui (2.158.2) stable; urgency=medium
+
+  * fix widget inversion when multiple switches are present
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 09 Dec 2025 15:05:00 +0300
 
 wb-mqtt-homeui (2.158.1) stable; urgency=medium
 
