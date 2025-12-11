@@ -8,92 +8,29 @@ import { Tree } from '@/components/tree';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { Alert } from '@/components/alert';
+import { FormButtonGroup } from '@/components/form';
 import type { DaliPageProps } from './types';
 import './styles.css';
-import { GatewayStore, BusStore, DeviceStore } from '@/stores/dali';
-
-const GatewayItemContent = observer(({store} : {store: GatewayStore}) => {
-  return (
-    <section className="dali-content">
-      {store.isLoading
-        ? (
-          <div className="dali-contentLoader">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            {store.error && (
-              <Alert variant="danger">{store.error}</Alert>
-            )}
-          </>
-        )}
-    </section>
-  );
-});
-
-const BusItemContent = observer(({store} : {store: BusStore}) => {
-  const { t } = useTranslation();
-  return (
-    <section className="dali-content">
-      {store.isLoading
-        ? (
-          <div className="dali-contentLoader">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            {store.error && (
-              <Alert variant="danger">{store.error}</Alert>
-            )}
-            <Button label={t('dali.buttons.rescan')} variant="secondary" onClick={() => store.scan()} />
-          </>
-        )}
-    </section>
-  );
-});
-
-const DeviceItemContent = observer(({store} : {store: DeviceStore}) => {
-  return (
-    <section className="dali-content">
-      {store.isLoading
-        ? (
-          <div className="dali-contentLoader">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            {store.error && (
-              <Alert variant="danger">{store.error}</Alert>
-            )}
-          </>
-        )}
-    </section>
-  );
-});
-
-const ItemContent = ({store}: {store: GatewayStore | BusStore | DeviceStore}) => {
-  if (!store) {
-    return null;
-  }
-  switch (store.type) {
-    case 'gateway':
-      return <GatewayItemContent store={store as GatewayStore} />;
-    case 'bus':
-      return <BusItemContent store={store as BusStore} />;
-    case 'device':
-      return <DeviceItemContent store={store as DeviceStore} />;
-    default:
-      return null;
-  }
-}
 
 const DaliPage = observer(({ store }: DaliPageProps) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
+  const [data, setData] = useState<any>();
   const [selectedItem, setSelectedItem] = useState<any>();
 
   useEffect(() => {
-      store.load();
+      const fetchData = async () => {
+        await store.load();
+          setData(store.gateways);
+          if (!isMobile) {
+            const firstGateway = store.gateways.at(0);
+            if (firstGateway) {
+              setSelectedItem(firstGateway);
+              firstGateway.load();
+            }
+          }
+      };
+      fetchData();
   }, []);
 
   const onItemClick = async (item) => {
@@ -122,14 +59,40 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
         {(!isMobile || !selectedItem) && (
           <aside className="dali-list">
             <Tree
-              data={store.gateways}
+              data={data}
               isDisabled={store.isLoading}
               onItemClick={onItemClick}
             />
           </aside>
         )}
-        {(!isMobile || selectedItem) && ( 
-          <ItemContent store={selectedItem} />
+        {(!isMobile || selectedItem) && (
+          <section className="dali-content">
+            {selectedItem?.isLoading
+                ? (
+                <div className="dali-contentLoader">
+                  <Loader />
+                </div>
+              ) : (
+                <>
+                  {selectedItem?.error && (
+                    <Alert variant="danger">{selectedItem.error}</Alert>
+                  )}
+                  <FormButtonGroup>
+                    {selectedItem?.type === 'bus' && (
+                      <Button 
+                        label={t('dali.buttons.rescan')} 
+                        variant="success" 
+                        disabled={selectedItem?.scanInProgress}
+                        onClick={async () => {
+                          await selectedItem.scan();
+                          setData(store.gateways);
+                        }} 
+                      />
+                    )}
+                  </FormButtonGroup>
+                </>
+              )}
+          </section>
         )}
       </div>
     </PageLayout>

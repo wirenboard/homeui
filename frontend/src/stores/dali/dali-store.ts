@@ -1,74 +1,50 @@
-import { makeAutoObservable, runInAction } from 'mobx';
-import type { BusDetailed, DeviceDetailed, GatewayDetailed, DaliProxy } from './types';
+import { runInAction, makeObservable, observable } from 'mobx';
+import type { DaliProxy } from './types';
 import { formatError } from '@/utils/formatError';
 import { ErrorInfo } from '@/layouts/page';
+import { JsonSchema } from '../json-schema-editor';
 
-export class GatewayStore {
-  public data: GatewayDetailed | null = null;
+export class ItemStore {
+  public config: object | null = null;
+  public schema: JsonSchema | null = null;
   public isLoading = true;
+  public scanInProgress = false;
   public label: string = '';
   public error: string | null = null;
-  public children: BusStore[] = [];
-
+  public children: ItemStore[] = [];
+  
+  readonly type: string;
+  readonly id: string;
+  
   #daliProxy: any;
 
-  readonly type: string = 'gateway';
-  readonly id: string;
-
-  constructor(daliProxy: any, id: string, name: string) {
+  constructor(daliProxy: any, id: string, name: string, type: string) {
     this.#daliProxy = daliProxy;
     this.id = id;
+    this.type = type;
     this.label = name;
 
-    makeAutoObservable(this, {}, { autoBind: true });
+    makeObservable(this, {
+      isLoading: observable,
+      scanInProgress: observable,
+      error: observable,
+    });
   }
 
   async load() {
-    if (this.data) {
+    if (this.config) {
       return;
     }
     try {
-      this.data = await this.#daliProxy.GetGateway({ gatewayId: this.id });
-    } catch (error) {
-      this.setError(error);
-    } finally {
-      runInAction(() => {
-        this.isLoading = false;
-      });
-    }
-  }
-
-  setError(error: unknown) {
-    this.error = formatError(error);
-  }
-}
-
-export class BusStore {
-  public data: BusDetailed | null = null;
-  public label: string = '';
-  public isLoading = true;
-  public error: string | null = null;
-  public children: DeviceStore[] = [];
-
-  #daliProxy: any;
-
-  readonly type: string = 'bus';
-  readonly id: string;
-
-  constructor(daliProxy: any, id: string, name: string = '') {
-    this.#daliProxy = daliProxy;
-    this.id = id;
-    this.label = name;
-
-    makeAutoObservable(this, {}, { autoBind: true });
-  }
-
-  async load() {
-    if (this.data) {
-      return;
-    }
-    try {
-      this.data = await this.#daliProxy.GetBus({ busId: this.id });
+        const methods = {
+          gateway: 'GetGateway',
+          bus: 'GetBus',
+          device: 'GetDevice',
+          group: 'GetGroup',
+        };
+      const data = await this.#daliProxy[methods[this.type]]({ [this.type + 'Id']: this.id });
+      this.config = data.config;
+      this.schema = data.schema;
     } catch (error) {
       this.setError(error);
     } finally {
@@ -80,71 +56,35 @@ export class BusStore {
 
   async scan() {
     try {
-      this.isLoading = true;
+      this.scanInProgress = true;
       const res = await this.#daliProxy.ScanBus({ busId: this.id });
       let devices =  [];
       res.devices.forEach((device) => {
-        const deviceStore = new DeviceStore(this.#daliProxy, device.id, device.name);
+        const deviceStore = new ItemStore(this.#daliProxy, device.id, device.name, 'device');
         devices.push(deviceStore);
       });
-      runInAction(() => {
-        this.children = devices;
-      });
+      this.children = devices;
+      this.setError(null);
     } catch (error) {
       this.setError(error);
     } finally {
       runInAction(() => {
-        this.isLoading = false;
+        this.scanInProgress = false;
       });
     }
   }
 
   setError(error: unknown) {
-    this.error = formatError(error);
-  }
-}
-
-export class DeviceStore {
-  public data: DeviceDetailed | null = null;
-  public label: string = '';
-  public isLoading = true;
-  public error: string | null = null;
-
-  #daliProxy: any;
-
-  readonly type: string = 'device';
-  readonly id: string;
-
-  constructor(daliProxy: any, id: string, name: string = '') {
-    this.#daliProxy = daliProxy;
-    this.id = id;
-    this.label = name;
-
-    makeAutoObservable(this, {}, { autoBind: true });
-  }
-
-  async load() {
-    if (this.data) {
+    if (!error) {
+      this.error = null;
       return;
     }
-    try {
-      this.data = await this.#daliProxy.GetDevice({ deviceId: this.id });
-    } catch (error) {
-      this.setError(error);
-    } finally {
-      runInAction(() => {
-        this.isLoading = false;
-      });
-    }
-  }
-
-  setError(error: unknown) {
     this.error = formatError(error);
   }
 }
 
-export class DaliStore {
-  public gateways: GatewayStore[] = [];
+export default class DaliStore {
+  public gateways: ItemStore[] = [];
   public isLoading = true;
   public errors: ErrorInfo[];
   #daliProxy: DaliProxy;
@@ -154,7 +94,10 @@ export class DaliStore {
     this.#daliProxy = daliProxy;
     this.#whenMqttReady = whenMqttReady;
 
-    makeAutoObservable(this, {}, { autoBind: true });
+    makeObservable(this, {
+      isLoading: observable,
+      errors: observable,
+    });
   }
 
   async load() {
@@ -162,12 +105,12 @@ export class DaliStore {
       await this.#whenMqttReady();
       const gateways = await this.#daliProxy.GetList();
       gateways.forEach((gateway) => {
-        const gatewayStore = new GatewayStore(this.#daliProxy, gateway.id, gateway.name);
+        const gatewayStore = new ItemStore(this.#daliProxy, gateway.id, gateway.name, 'gateway');
         gateway.buses.forEach((bus) => {
-          const busStore = new BusStore(this.#daliProxy, bus.id, bus.name);
+          const busStore = new ItemStore(this.#daliProxy, bus.id, bus.name, 'bus');
           gatewayStore.children.push(busStore);
           bus.devices.forEach((device) => {
-            const deviceStore = new DeviceStore(this.#daliProxy, device.id, device.name);
+            const deviceStore = new ItemStore(this.#daliProxy, device.id, device.name, 'device');
             busStore.children.push(deviceStore);
           });
         });
