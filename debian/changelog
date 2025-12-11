@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.158.3) stable; urgency=medium
+
+  * Fix reading settings from serial devices using Modbus TCP 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 11 Dec 2025 21:25:23 +0500
+
 wb-mqtt-homeui (2.158.2) stable; urgency=medium
 
   * fix widget inversion when multiple switches are present
