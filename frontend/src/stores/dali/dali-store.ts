@@ -4,7 +4,7 @@ import { formatError } from '@/utils/formatError';
 import { ErrorInfo } from '@/layouts/page';
 import { JsonSchema } from '../json-schema-editor';
 
-export class ItemStore {
+class ItemStore {
   public config: object | null = null;
   public schema: JsonSchema | null = null;
   public isLoading = true;

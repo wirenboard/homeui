@@ -5,7 +5,6 @@ import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
 import type { TreeItem, TreeProps } from '@/components/tree/types';
 import './styles.css';
 
-
 export const Tree = ({ data, isDisabled, onItemClick }: TreeProps) => {
   const [active, setActive] = useState<string>();
 
