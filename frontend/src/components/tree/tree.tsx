@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
 import type { TreeItem, TreeProps } from '@/components/tree/types';
-import { observer } from 'mobx-react-lite';
 import './styles.css';
 
 
@@ -16,7 +15,7 @@ export const Tree = ({ data, isDisabled, onItemClick }: TreeProps) => {
     }
   }, [data]);
 
-  const TreeNode = observer(({ item, level = 0 }: { item: TreeItem; level?: number }) => {
+  const TreeNode = ({ item, level = 0 }: { item: TreeItem; level?: number }) => {
     const [collapsed, setCollapsed] = useState(false);
     const hasChildren = !!item.children?.length;
 
@@ -78,7 +77,7 @@ export const Tree = ({ data, isDisabled, onItemClick }: TreeProps) => {
         )}
       </li>
     );
-  });
+  };
 
   return (
     <ul className="tree" role="tree">
