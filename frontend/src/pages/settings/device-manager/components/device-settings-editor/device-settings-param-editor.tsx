@@ -89,6 +89,11 @@ export const ParamEditor = observer((
       {description && (
         <ParamDescription id={descriptionId} description={description} />
       )}
+      {param.hasSeveralVariants && (
+        <p className="wb-jsonEditor-errorText">
+          {t('device-manager.errors.several-param-variants')}
+        </p>
+      )}
     </div>
   );
 });
