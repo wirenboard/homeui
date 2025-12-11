@@ -9,6 +9,8 @@ import {
   floats,
   Property,
   floatUnitsByInstance,
+  valueEventsByInstance,
+  valueLabels,
   type PropertyParameters,
   unitLabels,
 } from '@/stores/alice';
@@ -20,8 +22,8 @@ interface DevicePropertiesProps {
 }
 
 const unitOptionsForInstance = (instance?: string): Option<string>[] => {
-  const list = (instance && floatUnitsByInstance[instance]) || [];
-  return list.map((u) => ({ label: unitLabels[u] ?? u, value: u }));
+  const list = (instance && (valueEventsByInstance[instance] ?? floatUnitsByInstance[instance])) || [];
+  return list.map((u) => ({ label: unitLabels[u] ?? valueLabels[u] ?? u, value: u }));
 };
 
 // Returns float instances that are unused or belong to current property
@@ -80,7 +82,7 @@ export const DeviceProperties = observer(({
         .map((p, i) => ({ p, i }))
         .filter(({ p }) => p.type === Property.Event && p.parameters?.instance === instance)
         .filter(({ i }) => i !== currentPropertyIndex) // exclude current property
-        .map(({ p }) => p.parameters?.unit)
+        .map(({ p }) => p.parameters?.value)
         .filter(Boolean) as string[]
     );
 
@@ -144,14 +146,14 @@ export const DeviceProperties = observer(({
               .map((p, i) => ({ p, i }))
               .filter(({ p }) => p.type === Property.Event && p.parameters?.instance === inst)
               .filter(({ i }) => i !== currentPropertyIndex)
-              .map(({ p }) => p.parameters?.unit)
+              .map(({ p }) => p.parameters?.value)
               .filter(Boolean) as string[]
           );
 
           // pick first unit that is not used yet
           const firstAvailable = units.find((u) => !usedValues.has(u));
           if (firstAvailable) {
-            parameters.unit = firstAvailable;
+            parameters.value = firstAvailable;
           }
         }
         break;
@@ -250,14 +252,15 @@ export const DeviceProperties = observer(({
                       onChange={({ value: instance }: Option<string>) => {
                         const options = getEventValueOptions(instance, key);
                         const enabledValues = options.filter((o) => !o.isDisabled).map((o) => o.value);
-                        const currentUnit = property.parameters?.unit;
-                        const nextUnit = enabledValues.includes(currentUnit) ? currentUnit : (enabledValues[0] ?? null);
+                        const currentValue = property.parameters?.value;
+                        const nextValue = enabledValues.includes(currentValue) ? currentValue : (enabledValues[0] ?? null);
 
                         const updatedParams = {
                           ...property.parameters,
                           instance,
-                          unit: nextUnit,
+                          value: nextValue,
                         };
+                        if ((updatedParams as any).unit) delete (updatedParams as any).unit;
 
                         onPropertyChange(properties.map((item, i) => i === key
                           ? { ...item, parameters: updatedParams }
@@ -271,11 +274,11 @@ export const DeviceProperties = observer(({
                      </div>
                     {getEventValueOptions(property.parameters?.instance, key).length ? (
                       <Dropdown
-                        value={property.parameters?.unit}
+                        value={property.parameters?.value}
                         options={getEventValueOptions(property.parameters?.instance, key)}
-                        onChange={({ value: unit }: Option<string>) => {
+                        onChange={({ value }: Option<string>) => {
                           const val = properties.map((item, i) => i === key
-                            ? { ...item, parameters: { ...item.parameters, unit } }
+                            ? { ...item, parameters: { ...item.parameters, value } }
                             : item);
                           onPropertyChange(val);
                         }}

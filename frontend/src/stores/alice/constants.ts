@@ -215,9 +215,6 @@ export const events = [
   'food_level',
   'water_level',
   'water_leak',
-  'battery_level_event',
-  'food_level_event',
-  'water_level_event',
 ];
 
 export const floatUnitsByInstance: Record<string, string[]> = {
@@ -241,16 +238,19 @@ export const floatUnitsByInstance: Record<string, string[]> = {
   voltage: ['unit.volt'],
   water_level: ['unit.percent'],
   water_meter: ['unit.cubic_meter'],
-  vibration: ['unit.tilt', 'unit.fall','unit.vibration'],
-  open: ['unit.opened', 'unit.closed' ],
-  button: ['unit.click', 'unit.double_click', 'unit.long_press'],
-  motion: ['unit.detected', 'unit.not_detected'],
-  smoke: ['unit.detected', 'unit.not_detected', 'unit.high'],
-  gas: ['unit.detected', 'unit.not_detected', 'unit.high'],
-  battery_level_event: ['unit.low', 'unit.normal', 'unit.full'],
-  food_level_event: ['unit.empty', 'unit.low', 'unit.normal'],
-  water_level_event: ['unit.empty', 'unit.low', 'unit.normal'],
-  water_leak: ['unit.dry', 'unit.leak']
+};
+
+export const valueEventsByInstance: Record<string, string[]> = {
+  vibration: ['value.tilt', 'value.fall', 'value.vibration'],
+  open: ['value.opened', 'value.closed'],
+  button: ['value.click', 'value.double_click', 'value.long_press'],
+  motion: ['value.detected', 'value.not_detected'],
+  smoke: ['value.detected', 'value.not_detected', 'value.high'],
+  gas: ['value.detected', 'value.not_detected', 'value.high'],
+  battery_level: ['value.low', 'value.normal', 'value.full'],
+  food_level: ['value.empty', 'value.low', 'value.normal'],
+  water_level: ['value.empty', 'value.low', 'value.normal'],
+  water_leak: ['value.dry', 'value.leak'],
 };
 
 // Predefined color scenes per Yandex Smart Home docs
@@ -321,6 +321,26 @@ export const unitLabels: Record<string, string> = {
   'unit.empty': 'empty',
   'unit.leak': 'leak',
   'unit.dry': 'dry',
+};
+
+export const valueLabels: Record<string, string> = {
+  'value.tilt': 'tilt',
+  'value.fall': 'fall',
+  'value.vibration': 'vibration',
+  'value.opened': 'opened',
+  'value.closed': 'closed',
+  'value.click': 'click',
+  'value.double_click': 'double click',
+  'value.long_press': 'long press',
+  'value.detected': 'detected',
+  'value.not_detected': 'not detected',
+  'value.high': 'high',
+  'value.low': 'low',
+  'value.normal': 'normal',
+  'value.full': 'full',
+  'value.empty': 'empty',
+  'value.leak': 'leak',
+  'value.dry': 'dry',
 };
 
 export const defaultColorModelParameters = {

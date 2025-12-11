@@ -12,7 +12,6 @@ import {
   aliceStore,
   DefaultRoom,
   deviceTypes,
-  floatUnitsByInstance,
   type AddDeviceParams,
   type SmartDevice as SmartDeviceData,
 } from '@/stores/alice';
@@ -35,6 +34,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
       ? Object.keys(deviceTypes).find((key) => deviceTypes[key].includes(devices.get(id).type))
       : Object.keys(deviceTypes).at(0);
     setCategory(cat);
+
     setData({
       name: id ? devices.get(id).name : '',
       room_id: id ? devices.get(id).room_id : DefaultRoom,
@@ -47,19 +47,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
   const save = useCallback(async (ev: FormEvent) => {
     ev.preventDefault();
     try {
-      // Normalize properties: map "<name>_event" instances to "<name>" when base instance exists
-      const normalizedProperties = (data?.properties || []).map((p: any) => {
-        const params = { ...(p.parameters || {}) };
-        if (typeof params.instance === 'string' && params.instance.endsWith('_event')) {
-          const base = params.instance.replace(/_event$/, '');
-          if (base && Object.prototype.hasOwnProperty.call(floatUnitsByInstance, base)) {
-            params.instance = base;
-          }
-        }
-        return { ...p, parameters: params };
-      });
-
-      const payload = { ...data, properties: normalizedProperties } as AddDeviceParams;
+      const payload = { ...data } as AddDeviceParams;
 
       if (!id) {
         const device = await addDevice(payload);
