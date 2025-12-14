@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.158.3) stable; urgency=medium
+
+  * Fix history graph cases where no data points fo display
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Sun, 14 Dec 2025 22:10:00 +0400
+
 wb-mqtt-homeui (2.158.2) stable; urgency=medium
 
   * fix widget inversion when multiple switches are present
