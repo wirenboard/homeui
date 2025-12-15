@@ -1,0 +1,38 @@
+.wb-progress {
+    width: 100%;
+    border-radius: var(--input-border-radius);
+    position: relative;
+    overflow: hidden;
+}
+
+.wb-progress-bar[value] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 22px;
+}
+
+.wb-progress-bar[value]::-webkit-progress-bar {
+    background-color: var(--light-gray-color);
+    border-radius: 3px;
+}
+
+.wb-progress-bar[value]::-webkit-progress-value {
+    background: var(--brand-color);
+    box-shadow: none;
+    border-color: transparent;
+    border-radius: var(--input-border-radius);
+}
+
+.wb-progress-caption {
+    position: absolute;
+    display: flex;
+    top: 1px;
+    left: 0;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    color: var(--text-color);
+    font-weight: bold;
+}
