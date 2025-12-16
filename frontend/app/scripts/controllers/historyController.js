@@ -827,6 +827,9 @@ class HistoryCtrl {
 
   // For cases where the data dates do not include filter dates
   fillMissingDatesByFilter() {
+    if (!this.chartConfig || this.chartConfig.length === 0) {
+      return;
+    }
     this.chartConfig.at(0).x.unshift(new Date(this.startDate));
     this.chartConfig.at(0).y.unshift(null);
     this.chartConfig.at(0).text.unshift(0);
