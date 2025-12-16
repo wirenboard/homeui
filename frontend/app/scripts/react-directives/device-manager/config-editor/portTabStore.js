@@ -158,7 +158,7 @@ export class PortTab {
       return {
         address: data.address,
         port: data.port,
-        modbusTcp: data.isModbusTcp,
+        modbusTcp: this.isModbusTcp,
       };
     }
     return undefined;

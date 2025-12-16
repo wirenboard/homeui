@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.159.2) stable; urgency=medium
+
+  * Fix reading settings from serial devices using Modbus TCP 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 16 Dec 2025 15:34:11 +0500
+
 wb-mqtt-homeui (2.159.1) stable; urgency=medium
 
   * Add warning about multiple parameter definitions in device templates
