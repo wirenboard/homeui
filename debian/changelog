@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.159.1) stable; urgency=medium
+
+  * Add warning about multiple parameter definitions in device templates
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 16 Dec 2025 10:10:54 +0500
+
 wb-mqtt-homeui (2.159.0) stable; urgency=medium
 
   * Add progress component
