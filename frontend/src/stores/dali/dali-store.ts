@@ -2,11 +2,11 @@ import { runInAction, makeObservable, observable } from 'mobx';
 import type { DaliProxy } from './types';
 import { formatError } from '@/utils/formatError';
 import { ErrorInfo } from '@/layouts/page';
-import { JsonSchema } from '../json-schema-editor';
+import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 
 class ItemStore {
-  public config: object | null = null;
-  public schema: JsonSchema | null = null;
+  public objectStore: ObjectStore | null = null;
+  public translator: Translator | null = null;
   public isLoading = true;
   public scanInProgress = false;
   public label: string = '';
@@ -32,7 +32,7 @@ class ItemStore {
   }
 
   async load() {
-    if (this.config) {
+    if (this.objectStore) {
       return;
     }
     try {
@@ -43,8 +43,10 @@ class ItemStore {
           group: 'GetGroup',
         };
       const data = await this.#daliProxy[methods[this.type]]({ [this.type + 'Id']: this.id });
-      this.config = data.config;
-      this.schema = data.schema;
+      this.translator = new Translator();
+      const schema = loadJsonSchema(data.schema);
+      this.translator.addTranslations(schema.translations)
+      this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
     } catch (error) {
       this.setError(error);
     } finally {
@@ -108,11 +110,11 @@ export default class DaliStore {
         const gatewayStore = new ItemStore(this.#daliProxy, gateway.id, gateway.name, 'gateway');
         gateway.buses.forEach((bus) => {
           const busStore = new ItemStore(this.#daliProxy, bus.id, bus.name, 'bus');
-          gatewayStore.children.push(busStore);
           bus.devices.forEach((device) => {
             const deviceStore = new ItemStore(this.#daliProxy, device.id, device.name, 'device');
             busStore.children.push(deviceStore);
           });
+          gatewayStore.children.push(busStore);
         });
         this.gateways.push(gatewayStore);
       });

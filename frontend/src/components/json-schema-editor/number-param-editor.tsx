@@ -29,7 +29,7 @@ const NumberEditor = observer(({
       value={typeof store.value === 'number' ? store.value : undefined}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
-      isDisabled={isDisabled}
+      isDisabled={isDisabled || store.schema.options?.wb?.read_only}
       onChange={(option) => {
         if (typeof option.value === 'number' || typeof option.value === 'string') {
           store.setValue(option.value);
@@ -46,7 +46,7 @@ const NumberEditor = observer(({
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}
       ariaErrorMessage={errorId}
-      isDisabled={isDisabled}
+      isDisabled={isDisabled || store.schema.options?.wb?.read_only}
       onChange={(value) => store.setEditString(String(value))}
     />
   );

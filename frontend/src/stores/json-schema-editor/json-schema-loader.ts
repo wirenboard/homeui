@@ -136,6 +136,8 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
     dest.wb.show_editor = !!source.wb.show_editor;
     dest.wb.omit_default = !!source.wb.omit_default;
     dest.wb.allow_undefined = !!source.wb.allow_undefined;
+    dest.wb.read_only = !!source.wb.read_only;
+    dest.wb.disable_title = !!source.wb.disable_title;
   }
   if (Array.isArray(source.enum_titles)) {
     dest.enum_titles = source.enum_titles;
