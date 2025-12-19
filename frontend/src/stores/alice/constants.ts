@@ -304,23 +304,6 @@ export const unitLabels: Record<string, string> = {
   'unit.temperature.celsius': '°C',
   'unit.temperature.kelvin': 'K',
   'unit.volt': 'V',
-  'unit.tilt': 'tilt',
-  'unit.fall': 'fall',
-  'unit.vibration': 'vibration',
-  'unit.opened': 'opened',
-  'unit.closed': 'closed',
-  'unit.click': 'click',
-  'unit.double_click': 'double click',
-  'unit.long_press': 'long press',
-  'unit.detected': 'detected',
-  'unit.not_detected': 'not detected',
-  'unit.high': 'high',
-  'unit.low': 'low',
-  'unit.normal': 'normal',
-  'unit.full': 'full',
-  'unit.empty': 'empty',
-  'unit.leak': 'leak',
-  'unit.dry': 'dry',
 };
 
 export const valueLabels: Record<string, string> = {
