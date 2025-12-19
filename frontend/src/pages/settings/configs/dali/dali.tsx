@@ -10,6 +10,7 @@ import { authStore, UserRole } from '@/stores/auth';
 import { Alert } from '@/components/alert';
 import { FormButtonGroup } from '@/components/form';
 import type { DaliPageProps } from './types';
+import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import './styles.css';
 
 const DaliPage = observer(({ store }: DaliPageProps) => {
@@ -90,6 +91,12 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                       />
                     )}
                   </FormButtonGroup>
+                  {selectedItem?.objectStore && (
+                    <JsonSchemaEditor 
+                      store={selectedItem.objectStore} 
+                      translator={selectedItem.translator} 
+                    />
+                  )}
                 </>
               )}
           </section>

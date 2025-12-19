@@ -31,6 +31,7 @@ const StringEditor = observer(({
       value={valueToDisplay}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
+      isDisabled={store.schema.options?.wb?.read_only}
       onChange={(option) => {
         if (typeof option.value === 'string') {
           store.setValue(option.value);
@@ -47,6 +48,7 @@ const StringEditor = observer(({
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}
       ariaErrorMessage={errorId}
+      isDisabled={store.schema.options?.wb?.read_only}
       onChange={(value) => {
         if (value === '' && !store.required && isOptInEditor) {
           store.setUndefined();
