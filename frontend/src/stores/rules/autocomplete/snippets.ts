@@ -5,11 +5,11 @@ import { type CompletionSource, snippetCompletion } from '@codemirror/autocomple
 const snippets = [
   snippetCompletion(
     'log("${1:string}");',
-    { label: 'log', type: 'function' }
+    { label: 'log', type: 'function', detail: '(fmt, ...args)' }
   ),
   snippetCompletion(
     'debug("${1:string}");',
-    { label: 'debug', type: 'function' }
+    { label: 'debug', type: 'function', detail: '(fmt, ...args)' }
   ),
   snippetCompletion(
     'startTimer("${1:name}", ${2:milliseconds});',
@@ -100,15 +100,15 @@ const snippets = [
     { label: 'defineVirtualDevice', type: 'function' }
   ),
   snippetCompletion(
-    'defineRule(${1:name},{\n\tasSoonAs: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
+    'defineRule("${1:name}", {\n\tasSoonAs: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
     { label: 'defineRule', detail: 'asSoonAs', type: 'function' }
   ),
   snippetCompletion(
-    'defineRule(${1:name},{\n\twhen: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
+    'defineRule("${1:name}", {\n\twhen: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
     { label: 'defineRule', detail: 'when', type: 'function' }
   ),
   snippetCompletion(
-    'defineRule(${1:name},{\n\twhenChanged: ["${2:topic}"],\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
+    'defineRule("${1:name}", {\n\twhenChanged: ["${2:topic}"],\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
     { label: 'defineRule', detail: 'whenChanged', type: 'function' }
   ),
 ];
