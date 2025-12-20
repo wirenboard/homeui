@@ -52,8 +52,8 @@ const snippets = [
     { label: 'getControl', type: 'function' }
   ),
   snippetCompletion(
-    'var config = readConfig("${1:configName}");',
-    { label: 'readConfig', type: 'function' }
+    'var config = readConfig("${1:path}");',
+    { label: 'readConfig', type: 'function', detail: '(path: string, params?: object): object' }
   ),
   snippetCompletion(
     'defineAlias("${1:aliasName}", "${2:paramName}");',
