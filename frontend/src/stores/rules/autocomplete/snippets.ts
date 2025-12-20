@@ -31,18 +31,17 @@ const snippets = [
     'startTicker("${1:name}", ${2:milliseconds});',
     { label: 'startTicker', type: 'function' }
   ),
-
   snippetCompletion(
-    'enableRule("${1:ruleName}");',
-    { label: 'enableRule', type: 'function' }
+    'enableRule(${1:ruleId});',
+    { label: 'enableRule', type: 'function', detail: '(ruleId: number)' }
   ),
   snippetCompletion(
-    'runRule("${1:ruleName}");',
-    { label: 'runRule', type: 'function' }
+    'runRule(${1:ruleId});',
+    { label: 'runRule', type: 'function', detail: '(ruleId: number)' }
   ),
   snippetCompletion(
-    'disableRule("${1:ruleName}");',
-    { label: 'disableRule', type: 'function' }
+    'disableRule(${1:ruleId});',
+    { label: 'disableRule', type: 'function', detail: '(ruleId: number)' }
   ),
   snippetCompletion(
     'getDevice(${1:deviceName})',
@@ -61,12 +60,12 @@ const snippets = [
     { label: 'defineAlias', type: 'function' }
   ),
   snippetCompletion(
-    'trackMqtt(${1:topicName}, function() {\n\t// ${2:callback}\n}});',
-    { label: 'trackMqtt', type: 'function' }
+    'trackMqtt("${1:topicName}", function(message) {\n\tlog.info("name: {}, value: {}".format(message.topic, message.value));\n}});',
+    { label: 'trackMqtt', type: 'function', detail: '(topicName: string, callback: function)' }
   ),
   snippetCompletion(
-    'publish(${1:topicName}, ${2:value});',
-    { label: 'publish', type: 'function' }
+    'publish("${1:topicName}", ${2:value}, ${3:qos}, ${4:retain});',
+    { label: 'publish', type: 'function', detail: '(topicName: string, value: any, qos?: number, retain?: boolean)' }
   ),
   snippetCompletion(
     'Notify',

@@ -34,7 +34,7 @@ const deviceMethods: Completion[] = [
   ),
   snippetCompletion(
     'isControlExists("${1:name}")',
-    { label: 'isControlExists', type: 'function', detail: '(name: string)' }
+    { label: 'isControlExists', type: 'function', detail: '(name: string): boolean' }
   ),
   { label: 'isVirtual', type: 'function', detail: '(): boolean', apply: 'isVirtual()' },
   snippetCompletion(
@@ -177,11 +177,11 @@ const stringFormatSource: CompletionSource = (context) => {
     options: [
       snippetCompletion(
         'format(${1:arg})',
-        { label: 'format', type: 'function', detail: '(token, chatId, text)' }
+        { label: 'format', type: 'function', detail: '(arg1, arg2, ...)' }
       ),
       snippetCompletion(
         'xformat(${1:arg})',
-        { label: 'xformat', type: 'function', detail: '(token, chatId, text)' }
+        { label: 'xformat', type: 'function', detail: '(arg1, arg2, ...)' }
       ),
     ],
   };
