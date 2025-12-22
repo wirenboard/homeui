@@ -67,7 +67,7 @@ const ArrayEditor = observer(({ store, translator, editorBuilder } : ArrayEditor
     return null;
   }
   const showAddButton = !store.schema.options?.wb?.read_only &&
-    (store.schema.maxItems !== undefined ||
+    (store.schema.maxItems === undefined ||
      store.schema.minItems === undefined || 
      store.schema.maxItems !== store.schema.minItems);
   return (

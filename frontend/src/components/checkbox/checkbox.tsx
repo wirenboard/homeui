@@ -30,6 +30,8 @@ export const Checkbox = ({
         label={title}
         aria-pressed={checked}
         aria-describedby={ariaDescribedby}
+        aria-invalid={ariaInvalid}
+        aria-errormessage={ariaErrorMessage}
         variant={checked ? 'primary' : 'unaccented'}
         onClick={() => onChange(!checked)}
       />

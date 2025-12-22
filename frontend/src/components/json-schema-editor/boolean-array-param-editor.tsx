@@ -6,7 +6,7 @@ import { Button } from '@/components/button';
 import BooleanEditor from './boolean-param-editor';
 import type { BooleanArrayEditorProps } from './types';
 
-const BooleanArrayEditor = observer(({ store, translator} : BooleanArrayEditorProps) => {
+const BooleanArrayEditor = observer(({ store, translator } : BooleanArrayEditorProps) => {
   const { t } = useTranslation();
   const showAddButton = !store.schema.options?.wb?.read_only &&
     (store.schema.maxItems === undefined ||

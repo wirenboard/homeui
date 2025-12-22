@@ -43,9 +43,9 @@ class ItemStore {
           device: 'GetDevice',
           group: 'GetGroup',
         };
-      let params: Record<string, any> = { [this.type + 'Id']: this.id };
+      let params: Record<string, unknown> = { [this.type + 'Id']: this.id };
       if (forceReload && this.type === 'device') {
-        params['forceReload'] = true;
+        params = { ...params, forceReload: true };
       }
       const data = await this.#daliProxy[methods[this.type]](params);
       this.translator = new Translator();
