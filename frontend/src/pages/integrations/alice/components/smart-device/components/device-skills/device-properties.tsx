@@ -22,8 +22,8 @@ interface DevicePropertiesProps {
 }
 
 const unitOptionsForInstance = (instance?: string): Option<string>[] => {
-  const list = (instance && (valueEventsByInstance[instance] ?? floatUnitsByInstance[instance])) || [];
-  return list.map((u) => ({ label: unitLabels[u] ?? valueLabels[u] ?? u, value: u }));
+  const list = (instance && (valueEventsByInstance[instance] || floatUnitsByInstance[instance])) || [];
+  return list.map((u) => ({ label: valueLabels[u] ?? unitLabels[u] ?? u, value: u }));
 };
 
 // Returns float instances that are unused or belong to current property
