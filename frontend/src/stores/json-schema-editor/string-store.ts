@@ -89,7 +89,11 @@ export class StringStore implements PropertyStore {
   }
 
   setValue(value: string): void {
-    this.value = value;
+    if (typeof value !== 'string') {
+      this.value = new MistypedValue(value);
+    } else {
+      this.value = value;
+    }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }

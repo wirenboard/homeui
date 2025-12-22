@@ -90,6 +90,22 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                         }} 
                       />
                     )}
+                    {selectedItem?.type === 'device' && (
+                      <Button 
+                        label={t('dali.buttons.reload')} 
+                        variant="success" 
+                        onClick={async () => {
+                          await selectedItem.load(true);
+                        }} 
+                      />
+                    )}
+                    <Button 
+                      label={t('common.buttons.save')} 
+                      variant="success" 
+                      onClick={async () => {
+                        await selectedItem.save();
+                      }} 
+                    />
                   </FormButtonGroup>
                   {selectedItem?.objectStore && (
                     <JsonSchemaEditor 

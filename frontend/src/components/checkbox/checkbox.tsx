@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { type ChangeEvent, useEffect, useRef } from 'react';
 import { type CheckboxProps } from './types';
+import { Button } from '@/components/button';
 import './styles.css';
 
 export const Checkbox = ({
@@ -11,6 +12,7 @@ export const Checkbox = ({
   ariaDescribedby,
   ariaInvalid,
   ariaErrorMessage,
+  variant = 'default',
   onChange,
 }: CheckboxProps) => {
   const checkboxRef = useRef<HTMLInputElement>(null);
@@ -22,6 +24,17 @@ export const Checkbox = ({
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>): void => {
     onChange(ev.target.checked);
   };
+  if (variant === 'button') {
+    return (
+      <Button
+        label={title}
+        aria-pressed={checked}
+        aria-describedby={ariaDescribedby}
+        variant={checked ? 'primary' : 'unaccented'}
+        onClick={() => onChange(!checked)}
+      />
+    );
+  }
   return (
     <label className={classNames('wb-checkbox', className)}>
       <input

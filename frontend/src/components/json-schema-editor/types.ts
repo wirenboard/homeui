@@ -35,6 +35,7 @@ export interface BooleanEditorProps {
   errorId?: string;
   descriptionId?: string;
   translator: Translator;
+  titleOverride?: string;
 }
 
 export interface NumberEditorProps {
@@ -64,6 +65,11 @@ export interface ArrayEditorProps {
   store: ArrayStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
+}
+
+export interface BooleanArrayEditorProps {
+  store: ArrayStore;
+  translator: Translator;
 }
 
 export interface ByteArrayEditorProps {

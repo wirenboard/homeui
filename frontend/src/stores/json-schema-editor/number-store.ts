@@ -96,7 +96,7 @@ export class NumberStore implements PropertyStore {
     this.error = undefined;
   }
 
-  setValue(value: number | string) {
+  setValue(value: unknown) {
     if (typeof value === 'string') {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
@@ -106,9 +106,12 @@ export class NumberStore implements PropertyStore {
         this.value = parsedValue;
         this.editString = value;
       }
-    } else {
+    } else if (typeof value === 'number') {
       this.value = value;
       this.editString = String(value);
+    } else {
+      this.value = new MistypedValue(value);
+      this.editString = '';
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();

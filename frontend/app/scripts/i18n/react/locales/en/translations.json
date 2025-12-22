@@ -14,7 +14,8 @@
          "move-up": "Move up",
          "move-down": "Move down",
          "select": "Select",
-         "read": "Read"
+         "read": "Read",
+         "save": "Save"
       }
    },
    "dashboards": {
@@ -783,9 +784,9 @@
          "group": "Group #{{name}}"
       },
       "buttons": {
-         "save": "Save",
          "rescan": "Rescan",
-         "return": "To devices list"
+         "return": "To devices list",
+         "reload": "Reload"
       }
    }
 }

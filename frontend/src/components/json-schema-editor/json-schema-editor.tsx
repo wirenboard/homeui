@@ -15,6 +15,7 @@ const NumberEditor = lazy(() => import('./number-param-editor'));
 const ObjectEditor = lazy(() => import('./object-param-editor'));
 const StringEditor = lazy(() => import('./string-param-editor'));
 const ArrayEditor = lazy(() => import('./array-param-editor'));
+const BooleanArrayEditor = lazy(() => import('./boolean-array-param-editor'));
 const ByteArrayEditor = lazy(() => import('./byte-array-param-editor'));
 
 const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
@@ -42,6 +43,16 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
     );
   }
   if (props.store.storeType === 'array') {
+    if (!Array.isArray(props.store.schema.items) && props.store.schema.items.type === 'boolean') {
+      return (
+        <Suspense>
+          <BooleanArrayEditor
+            store={props.store as ArrayStore}
+            translator={props.translator}
+          />
+        </Suspense>
+      );
+    }
     return (
       <Suspense>
         <ArrayEditor

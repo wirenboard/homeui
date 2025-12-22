@@ -4,10 +4,10 @@ import { Checkbox } from '@/components/checkbox';
 import { MistypedValue } from '@/stores/json-schema-editor';
 import type { BooleanEditorProps } from './types';
 
-const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, translator } : BooleanEditorProps) => {
+const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, translator, titleOverride } : BooleanEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
-  const title = translator.find(store.schema.title || paramId, currentLanguage);
+  const title = titleOverride ?? translator.find(store.schema.title || paramId, currentLanguage);
   const value = store.value;
   const indeterminate = value instanceof MistypedValue || value === undefined;
   const checked = indeterminate ? false : value as boolean;
@@ -19,6 +19,7 @@ const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, transl
       ariaDescribedby={descriptionId}
       ariaInvalid={store.hasErrors}
       ariaErrorMessage={errorId}
+      variant={store.schema.format === 'button' ? 'button' : 'default'}
       onChange={(checked: boolean) => store.setValue(checked)}
     />
   );
