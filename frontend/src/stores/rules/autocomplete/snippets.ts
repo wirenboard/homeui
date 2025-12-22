@@ -60,7 +60,7 @@ const snippets = [
     { label: 'defineAlias', type: 'function' }
   ),
   snippetCompletion(
-    'trackMqtt("${1:topicName}", function(message) {\n\tlog.info("name: {}, value: {}".format(message.topic, message.value));\n}});',
+    'trackMqtt("${1:topicName}", function(message) {\n\t// message.topic, message.value\n}});',
     { label: 'trackMqtt', type: 'function', detail: '(topicName: string, callback: function)' }
   ),
   snippetCompletion(
