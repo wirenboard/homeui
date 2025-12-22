@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.159.3) stable; urgency=medium
+
+  * Fix rules autocomplete
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Sat, 20 Dec 2025 16:10:00 +0400
+
 wb-mqtt-homeui (2.159.2) stable; urgency=medium
 
   * Fix reading settings from serial devices using Modbus TCP 

@@ -5,11 +5,11 @@ import { type CompletionSource, snippetCompletion } from '@codemirror/autocomple
 const snippets = [
   snippetCompletion(
     'log("${1:string}");',
-    { label: 'log', type: 'function' }
+    { label: 'log', type: 'function', detail: '(fmt, ...args)' }
   ),
   snippetCompletion(
     'debug("${1:string}");',
-    { label: 'debug', type: 'function' }
+    { label: 'debug', type: 'function', detail: '(fmt, ...args)' }
   ),
   snippetCompletion(
     'startTimer("${1:name}", ${2:milliseconds});',
@@ -31,18 +31,17 @@ const snippets = [
     'startTicker("${1:name}", ${2:milliseconds});',
     { label: 'startTicker', type: 'function' }
   ),
-
   snippetCompletion(
-    'enableRule("${1:ruleName}");',
-    { label: 'enableRule', type: 'function' }
+    'enableRule(${1:ruleId});',
+    { label: 'enableRule', type: 'function', detail: '(ruleId: number)' }
   ),
   snippetCompletion(
-    'runRule("${1:ruleName}");',
-    { label: 'runRule', type: 'function' }
+    'runRule(${1:ruleId});',
+    { label: 'runRule', type: 'function', detail: '(ruleId: number)' }
   ),
   snippetCompletion(
-    'disableRule("${1:ruleName}");',
-    { label: 'disableRule', type: 'function' }
+    'disableRule(${1:ruleId});',
+    { label: 'disableRule', type: 'function', detail: '(ruleId: number)' }
   ),
   snippetCompletion(
     'getDevice(${1:deviceName})',
@@ -53,20 +52,20 @@ const snippets = [
     { label: 'getControl', type: 'function' }
   ),
   snippetCompletion(
-    'var config = readConfig("${1:configName}");',
-    { label: 'readConfig', type: 'function' }
+    'var config = readConfig("${1:path}");',
+    { label: 'readConfig', type: 'function', detail: '(path: string, params?: object): object' }
   ),
   snippetCompletion(
     'defineAlias("${1:aliasName}", "${2:paramName}");',
     { label: 'defineAlias', type: 'function' }
   ),
   snippetCompletion(
-    'trackMqtt(${1:topicName}, function() {\n\t// ${2:callback}\n}});',
-    { label: 'trackMqtt', type: 'function' }
+    'trackMqtt("${1:topicName}", function(message) {\n\t// message.topic, message.value\n}});',
+    { label: 'trackMqtt', type: 'function', detail: '(topicName: string, callback: function)' }
   ),
   snippetCompletion(
-    'publish(${1:topicName}, ${2:value});',
-    { label: 'publish', type: 'function' }
+    'publish("${1:topicName}", ${2:value}, ${3:qos}, ${4:retain});',
+    { label: 'publish', type: 'function', detail: '(topicName: string, value: any, qos?: number, retain?: boolean)' }
   ),
   snippetCompletion(
     'Notify',
@@ -101,15 +100,15 @@ const snippets = [
     { label: 'defineVirtualDevice', type: 'function' }
   ),
   snippetCompletion(
-    'defineRule(${1:name},{\n\tasSoonAs: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
+    'defineRule("${1:name}", {\n\tasSoonAs: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
     { label: 'defineRule', detail: 'asSoonAs', type: 'function' }
   ),
   snippetCompletion(
-    'defineRule(${1:name},{\n\twhen: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
+    'defineRule("${1:name}", {\n\twhen: function() {\n\t\t//${2:condition}\n\t},\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
     { label: 'defineRule', detail: 'when', type: 'function' }
   ),
   snippetCompletion(
-    'defineRule(${1:name},{\n\twhenChanged: ["${2:topic}"],\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
+    'defineRule("${1:name}", {\n\twhenChanged: ["${2:topic}"],\n\tthen: function(newValue, devName, cellName) {\n\t\t//${3:callback}\n\t}\n});',
     { label: 'defineRule', detail: 'whenChanged', type: 'function' }
   ),
 ];
