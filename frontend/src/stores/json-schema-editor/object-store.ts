@@ -105,6 +105,7 @@ export class ObjectStore implements PropertyStore {
       reset: action,
       setUndefined: action,
       setDefault: action,
+      setValue: action,
     });
   }
 
@@ -151,6 +152,24 @@ export class ObjectStore implements PropertyStore {
         param.store.setDefault();
       } else {
         param.store.setUndefined();
+      }
+    });
+    this.isUndefined = false;
+  }
+
+  setValue(value: unknown) {
+    if (value === undefined) {
+      this.setUndefined();
+      return;
+    }
+    if (typeof value !== 'object' || Array.isArray(value) || value === null) {
+      this.setUndefined();
+      return;
+    }
+    Object.entries(value).forEach(([key, val]) => {
+      const param = this.getParamByKey(key);
+      if (param) {
+        param.store.setValue(val);
       }
     });
     this.isUndefined = false;

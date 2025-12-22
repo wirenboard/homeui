@@ -31,10 +31,11 @@ class ItemStore {
     });
   }
 
-  async load() {
-    if (this.objectStore) {
+  async load(forceReload: boolean = false) {
+    if (this.objectStore && !forceReload) {
       return;
     }
+    this.isLoading = true;
     try {
         const methods = {
           gateway: 'GetGateway',
@@ -42,11 +43,43 @@ class ItemStore {
           device: 'GetDevice',
           group: 'GetGroup',
         };
-      const data = await this.#daliProxy[methods[this.type]]({ [this.type + 'Id']: this.id });
+      let params: Record<string, unknown> = { [this.type + 'Id']: this.id };
+      if (forceReload && this.type === 'device') {
+        params = { ...params, forceReload: true };
+      }
+      const data = await this.#daliProxy[methods[this.type]](params);
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       this.translator.addTranslations(schema.translations)
       this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
+    } catch (error) {
+      this.setError(error);
+    } finally {
+      runInAction(() => {
+        this.isLoading = false;
+      });
+    }
+  }
+
+  async save() {
+    if (!this.objectStore) {
+      return;
+    }
+    this.isLoading = true;
+    try {
+        const methods = {
+          gateway: 'SetGateway',
+          bus: 'SetBus',
+          device: 'SetDevice',
+          group: 'SetGroup',
+        };
+      const params = { 
+        [this.type + 'Id']: this.id, 
+        config: this.objectStore.value
+      };
+      const data = await this.#daliProxy[methods[this.type]](params);
+      this.objectStore.setValue(data);
+      this.setError(null);
     } catch (error) {
       this.setError(error);
     } finally {

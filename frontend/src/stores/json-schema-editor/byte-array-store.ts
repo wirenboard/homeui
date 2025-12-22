@@ -39,6 +39,7 @@ export class ByteArrayStore implements PropertyStore {
       editString: observable,
       setUndefined: action,
       setEditString: action,
+      setValue: action,
       _checkConstraints: action,
       hasErrors: computed,
       isDirty: observable,
@@ -101,6 +102,22 @@ export class ByteArrayStore implements PropertyStore {
       return;
     }
     this.value = [];
+  }
+
+  setValue(value: unknown): void {
+    if (Array.isArray(value)) {
+      this.value = value.map((item) => String(item));
+      this.editString = this.value.join(', ');
+    } else {
+      if (value === undefined) {
+        this.value = this.schema.options?.wb?.show_editor && !this.schema.options?.wb?.allow_undefined ? [] : undefined;
+      } else {
+        this.value = new MistypedValue(value);
+      }
+      this.editString = '';
+    }
+    this.isDirty = this.value !== this._initialValue;
+    this._checkConstraints();
   }
 
   get hasErrors(): boolean {

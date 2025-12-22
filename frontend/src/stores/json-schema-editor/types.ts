@@ -123,6 +123,7 @@ export interface PropertyStore {
 
   setUndefined(): void;
   setDefault(): void;
+  setValue(value: unknown): void;
   commit(): void;
   reset(): void;
 }

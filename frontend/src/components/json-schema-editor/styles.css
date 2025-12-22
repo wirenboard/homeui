@@ -72,6 +72,11 @@
     gap: 10px;
 }
 
+.wb-jsonEditor-arrayEditor-horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 .wb-jsonEditor-addButton {
     max-width: 100px;
 }
