@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
+import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { notificationsStore } from '@/stores/notifications';
@@ -87,6 +88,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
       isEditingTitle={isEditingTitle}
       editingTitlePlaceholder={t('rules.labels.title-placeholder')}
       errors={errors}
+      titleArea={!rule.enabled && <Tag variant="gray">{t('rules.labels.inactive')}</Tag>}
       actions={
         <Button
           variant="success"

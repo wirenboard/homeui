@@ -413,7 +413,8 @@
          "supported-since": "Supported since firmware {{fw}}",
          "fw-mismatch": "Current firmware {{currentFw}} is not supported by this template. Minimum required version: {{requiredFw}}. Please update the firmware or switch to another template.",
          "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template.",
-         "bad-value-from-registers": "Value \"{{value}}\" read from device is not suitable for this parameter. You can set your own — it will be written to the device. If it does not matter, you can leave it as is."
+         "bad-value-from-registers": "Value \"{{value}}\" read from device is not suitable for this parameter. You can set your own — it will be written to the device. If it does not matter, you can leave it as is.",
+         "several-param-variants": "Several variants of this parameter are specified in the template. Please fix the device template."
       }
    },
    "exp-check": {
@@ -574,6 +575,7 @@
          "success": "Rule saved",
          "success-errors": "Rule saved with errors",
          "with-errors": "With errors",
+         "inactive": "Rule inactive",
          "switch-on": "Switch on",
          "switch-off": "Switch off"
       },

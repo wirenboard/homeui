@@ -9,6 +9,7 @@ export interface PageProps {
   isHideHeader?: boolean;
   stickyHeader?: boolean;
   actions?: ReactElement;
+  titleArea?: ReactElement;
   errors?: { variant?: string; text?: string; code?: number }[];
   infoLink?: string;
   onTitleChange?: (_title: string) => void;

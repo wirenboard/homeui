@@ -19,6 +19,7 @@ export interface RuleListItem {
 
 export interface RuleFetchData {
   content?: string;
+  enabled: boolean;
   error?: RuleError;
 }
 

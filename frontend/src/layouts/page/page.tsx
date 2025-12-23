@@ -17,6 +17,7 @@ export const PageLayout = ({
   title,
   errors = [],
   hasRights,
+  titleArea,
   stickyHeader,
   isEditingTitle,
   editingTitlePlaceholder,
@@ -82,6 +83,7 @@ export const PageLayout = ({
                 onClick={() => onTitleEditEnable()}
               />
             )}
+            {titleArea}
           </div>
 
           {!isLoading && <div className="page-actions">{actions}</div>}
