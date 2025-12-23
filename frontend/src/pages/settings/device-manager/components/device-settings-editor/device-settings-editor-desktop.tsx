@@ -64,7 +64,7 @@ const ChannelsTableRow = observer(({
   if (!channel.isSupportedByFirmware) {
     descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
   }
-  const description = descriptionLines.join('<br>');
+  const description = descriptionLines.join('\n');
   return (
     <TableRow key={channel.channel.name}>
       <TableCell>
