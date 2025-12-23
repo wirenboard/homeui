@@ -63,7 +63,7 @@ export const ParamEditor = observer((
   if (!param.isSupportedByFirmware) {
     descriptionLines.push(t('device-manager.errors.supported-since', { fw: param.supportedFirmware }));
   }
-  const description = descriptionLines.join('<br/>');
+  const description = descriptionLines.join('<br>');
   const title = translator.find(activeVariant.store.schema.title || param.id, currentLanguage);
   return (
     <div

@@ -66,7 +66,7 @@ const ChannelCard = observer((
   if (!channel.isSupportedByFirmware) {
     descriptionLines.push(t('device-manager.errors.supported-since', { fw: channel.channel.fw }));
   }
-  const description = descriptionLines.join('<br/>');
+  const description = descriptionLines.join('<br>');
   return (
     <Card
       key={channel.channel.name}
