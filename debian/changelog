@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.161.0) stable; urgency=medium
+
+  * Add events to Yandex Alice integration
+  * Add unlink controller link in Yandex Alice integration
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 23 Dec 2025 13:25:00 +0300
+
 wb-mqtt-homeui (2.160.0) stable; urgency=medium
 
   * Add rule disabled tag
