@@ -5,7 +5,7 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import {
-  events, // TODO: <DISABLED_EVENT> - need uncomment for Event activation in WEBUI
+  events,
   floats,
   Property,
   floatUnitsByInstance,
@@ -79,10 +79,8 @@ export const DeviceProperties = observer(({
 
     const usedValues = new Set(
       properties
-        .map((p, i) => ({ p, i }))
-        .filter(({ p }) => p.type === Property.Event && p.parameters?.instance === instance)
-        .filter(({ i }) => i !== currentPropertyIndex) // exclude current property
-        .map(({ p }) => p.parameters?.value)
+        .filter((p, i) => p.type === Property.Event && p.parameters?.instance === instance && i !== currentPropertyIndex)
+        .map((p) => p.parameters?.value)
         .filter(Boolean) as string[]
     );
 
@@ -122,6 +120,28 @@ export const DeviceProperties = observer(({
     onPropertyChange(updatedProperties);
   }, [properties, onPropertyChange]);
 
+  const handleEventInstanceChange = useCallback((
+    newInstance: string,
+    currentPropertyIndex: number
+  ) => {
+    const currentProperty = properties[currentPropertyIndex];
+    const options = getEventValueOptions(newInstance, currentPropertyIndex);
+    const enabledValues = options.filter((o) => !o.isDisabled).map((o) => o.value);
+    const currentValue = currentProperty.parameters?.value;
+    const nextValue = enabledValues.includes(currentValue) ? currentValue : (enabledValues[0] ?? null);
+
+    const updatedParams = {
+      ...currentProperty.parameters,
+      instance: newInstance,
+      value: nextValue,
+    };
+    if ((updatedParams as any).unit) delete (updatedParams as any).unit;
+
+    onPropertyChange(properties.map((item, i) => i === currentPropertyIndex
+      ? { ...item, parameters: updatedParams }
+      : item));
+  }, [properties, onPropertyChange, getEventValueOptions]);
+
   const getPropertyParameters = (type: Property, currentPropertyIndex?: number) => {
     const parameters: PropertyParameters = {};
     switch (type) {
@@ -143,10 +163,8 @@ export const DeviceProperties = observer(({
           // compute used event-values for this instance excluding current property index
           const usedValues = new Set(
             properties
-              .map((p, i) => ({ p, i }))
-              .filter(({ p }) => p.type === Property.Event && p.parameters?.instance === inst)
-              .filter(({ i }) => i !== currentPropertyIndex)
-              .map(({ p }) => p.parameters?.value)
+              .filter((p, i) => p.type === Property.Event && p.parameters?.instance === inst && i !== currentPropertyIndex)
+              .map((p) => p.parameters?.value)
               .filter(Boolean) as string[]
           );
 
@@ -249,24 +267,10 @@ export const DeviceProperties = observer(({
                     <Dropdown
                       value={property.parameters?.instance}
                       options={events.map((event) => ({ label: event, value: event }))}
-                      onChange={({ value: instance }: Option<string>) => {
-                        const options = getEventValueOptions(instance, key);
-                        const enabledValues = options.filter((o) => !o.isDisabled).map((o) => o.value);
-                        const currentValue = property.parameters?.value;
-                        const nextValue = enabledValues.includes(currentValue) ? currentValue : (enabledValues[0] ?? null);
-
-                        const updatedParams = {
-                          ...property.parameters,
-                          instance,
-                          value: nextValue,
-                        };
-                        if ((updatedParams as any).unit) delete (updatedParams as any).unit;
-
-                        onPropertyChange(properties.map((item, i) => i === key
-                          ? { ...item, parameters: updatedParams }
-                          : item));
-                       }}
-                     />
+                      onChange={({ value: instance }: Option<string>) =>
+                        handleEventInstanceChange(instance, key)
+                      }
+                    />
                    </div>
                      <div>
                      <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
