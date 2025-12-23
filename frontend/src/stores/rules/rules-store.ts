@@ -5,6 +5,7 @@ import type { Rule, RuleError, RuleFetchData, RuleListItem, RuleLog, RuleSaveDat
 export default class RulesStore {
   public rule?: Rule = {
     name: '',
+    enabled: true,
     initName: '',
   };
   public rules: RuleListItem[] = [];
@@ -32,6 +33,7 @@ export default class RulesStore {
           this.rule = {
             initName: path,
             name: path,
+            enabled: res.enabled,
             content: res.content,
           };
           if (res.error) {
@@ -59,6 +61,7 @@ export default class RulesStore {
       name: '',
       initName: '',
       content: '',
+      enabled: true,
       error: null,
     };
   }
