@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.160.0) stable; urgency=medium
+
+  * Add rule disabled tag
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 23 Dec 2025 13:05:00 +0300
+
 wb-mqtt-homeui (2.159.3) stable; urgency=medium
 
   * Fix rules autocomplete
@@ -6,7 +12,7 @@ wb-mqtt-homeui (2.159.3) stable; urgency=medium
 
 wb-mqtt-homeui (2.159.2) stable; urgency=medium
 
-  * Fix reading settings from serial devices using Modbus TCP 
+  * Fix reading settings from serial devices using Modbus TCP
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 16 Dec 2025 15:34:11 +0500
 

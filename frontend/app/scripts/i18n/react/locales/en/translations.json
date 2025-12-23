@@ -575,6 +575,7 @@
          "success": "Rule saved",
          "success-errors": "Rule saved with errors",
          "with-errors": "With errors",
+         "inactive": "Rule inactive",
          "switch-on": "Switch on",
          "switch-off": "Switch off"
       },
