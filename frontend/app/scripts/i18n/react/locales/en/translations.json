@@ -730,7 +730,7 @@
          "integration-enabled": "Integration enabled",
          "integration-disabled": "Integration disabled",
          "integration-error": "Error changing integration status",
-         "integration-enabled-binding-required": "The integration is enabled, but the controller is not linked. Click the link to link the controller.",
+         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one.",
          "controller-unlinked": "Controller has been unlinked from Yandex Alice"
       }
    },
