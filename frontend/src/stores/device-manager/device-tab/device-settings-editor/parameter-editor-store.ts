@@ -1,6 +1,6 @@
 import { makeObservable, computed, observable, action, runInAction } from 'mobx';
 import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
-import { firmwareIsNewer } from '~/utils/fwUtils';
+import { firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type { WbDeviceTemplateParameter } from '../../types';
 import { type Conditions } from './conditions';
 
@@ -193,7 +193,7 @@ export class WbDeviceParameterEditor {
   }
 
   setFirmwareInDevice(fw: string) {
-    this.isSupportedByFirmware = firmwareIsNewer(this.supportedFirmware, fw);
+    this.isSupportedByFirmware = firmwareIsNewerOrEqual(this.supportedFirmware, fw);
   }
 
   /**
