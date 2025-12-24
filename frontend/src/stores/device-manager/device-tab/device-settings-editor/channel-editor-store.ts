@@ -1,6 +1,6 @@
 import { makeObservable, computed, observable, action } from 'mobx';
 import { NumberStore, StringStore } from '@/stores/json-schema-editor';
-import { firmwareIsNewer } from '~/utils/fwUtils';
+import { firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type { WbDeviceTemplateChannel, WbDeviceTemplateChannelSettings } from '../../types';
 import { Conditions } from './conditions';
 import type { WbDeviceParameterEditor } from './parameter-editor-store';
@@ -226,7 +226,7 @@ export class WbDeviceChannelEditor {
   }
 
   setFirmwareInDevice(fw: string) {
-    this.isSupportedByFirmware = firmwareIsNewer(this.channel.fw, fw);
+    this.isSupportedByFirmware = firmwareIsNewerOrEqual(this.channel.fw, fw);
   }
 
   commit() {

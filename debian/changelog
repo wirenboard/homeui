@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.160.3) stable; urgency=medium
+
+  * Fix firmware version comparison logic in wb-mqtt-serial settings editor.
+    Parameters and channels are now correctly marked as supported
+    when their required firmware version is equal to the device firmware version.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 24 Dec 2025 13:17:59 +0500
+
 wb-mqtt-homeui (2.160.2) stable; urgency=medium
 
   * Fix notification about better template for WB-MAP3E, WB-MAP3EV, WB-MAP3ET
