@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.160.2) stable; urgency=medium
+
+  * Fix notification about better template for WB-MAP3E, WB-MAP3EV, WB-MAP3ET
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 24 Dec 2025 10:55:00 +0500
+
 wb-mqtt-homeui (2.160.1) stable; urgency=medium
 
   * Fix line breaks in wb-mqtt-serial settings editor descriptions
