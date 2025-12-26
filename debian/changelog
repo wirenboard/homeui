@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.160.5) stable; urgency=medium
+
+  * Fix incorrect display of device model in alert about unsupported device template in wb-mqtt-serial settings editor.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 26 Dec 2025 10:19:47 +0500
+
 wb-mqtt-homeui (2.160.4) stable; urgency=medium
 
   * Fix wrong notification about better template in wb-mqtt-serial settings editor.
