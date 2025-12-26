@@ -47,6 +47,7 @@ export class ReadRegistersStateStore {
           currentFw: deviceFw,
           requiredFw: templateFw,
           deviceModel: deviceModel,
+          interpolation: { escapeValue: false },
         });
         this.otherMatchingTemplates = this._deviceTypesStore.findNotDeprecatedDeviceTypes(deviceModel, deviceFw);
         this.allowEditSettings = false;
