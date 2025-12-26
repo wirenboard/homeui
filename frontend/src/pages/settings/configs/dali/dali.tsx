@@ -11,13 +11,14 @@ import { Alert } from '@/components/alert';
 import { FormButtonGroup } from '@/components/form';
 import type { DaliPageProps } from './types';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { ItemStore } from '@/stores/dali';  
 import './styles.css';
 
 const DaliPage = observer(({ store }: DaliPageProps) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
   const [data, setData] = useState<any>();
-  const [selectedItem, setSelectedItem] = useState<any>();
+  const [selectedItem, setSelectedItem] = useState<ItemStore|null>(null);
 
   useEffect(() => {
       const fetchData = async () => {
@@ -34,7 +35,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
       fetchData();
   }, []);
 
-  const onItemClick = async (item) => {
+  const onItemClick = async (item: ItemStore | null) => {
     setSelectedItem(item);
     if (item) {
       item.load();
@@ -101,7 +102,8 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                     )}
                     <Button 
                       label={t('common.buttons.save')} 
-                      variant="success" 
+                      variant="success"
+                      disabled={!selectedItem?.objectStore?.isDirty}
                       onClick={async () => {
                         await selectedItem.save();
                       }} 
