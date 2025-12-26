@@ -4,7 +4,7 @@ import { formatError } from '@/utils/formatError';
 import { ErrorInfo } from '@/layouts/page';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 
-class ItemStore {
+export class ItemStore {
   public objectStore: ObjectStore | null = null;
   public translator: Translator | null = null;
   public isLoading = true;
@@ -79,6 +79,7 @@ class ItemStore {
       };
       const data = await this.#daliProxy[methods[this.type]](params);
       this.objectStore.setValue(data);
+      this.objectStore.commit();
       this.setError(null);
     } catch (error) {
       this.setError(error);
@@ -118,7 +119,7 @@ class ItemStore {
   }
 }
 
-export default class DaliStore {
+export class DaliStore {
   public gateways: ItemStore[] = [];
   public isLoading = true;
   public errors: ErrorInfo[];
