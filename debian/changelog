@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.160.6) stable; urgency=medium
+
+  * Add optional footer in page component
+  * Add loader caption prop
+  * Add device editor show channels flag
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 30 Dec 2025 12:05:00 +0300
+
 wb-mqtt-homeui (2.160.5) stable; urgency=medium
 
   * Fix incorrect display of device model in alert about unsupported device template in wb-mqtt-serial settings editor.

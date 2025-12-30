@@ -1,7 +1,12 @@
+.page-container {
+    min-height: 100%;
+}
+
 .page {
     height: 100%;
     width: 100%;
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     padding-top: 12px;
 }
@@ -85,4 +90,10 @@
 
 .page-error {
     margin-bottom: 12px;
+}
+
+.page-footer {
+    position: relative;
+    right: 0;
+    opacity: 1;
 }

@@ -20,20 +20,20 @@ import { MakeEditors } from './device-settings-param-editor';
 import type { DeviceSettingsEditorProps, DeviceSettingsTabsProps } from './types';
 
 const DeviceSettingsSubGroup = (
-  { group, translator }:
-  { group: WbDeviceParameterEditorsGroup; translator: Translator }
+  { group, translator, showChannels }:
+  { group: WbDeviceParameterEditorsGroup; translator: Translator, showChannels: boolean }
 ) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   if (group.properties.ui_options?.wb?.disable_title) {
-    return <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} />;
+    return <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} showChannels={showChannels} />;
   }
   return (
     <div className="deviceSettingsEditor-subGroup">
       <label>
         {translator.find(group.properties.title, currentLanguage)}
       </label>
-      <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} />
+      <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} showChannels={showChannels} />
     </div>
   );
 };
@@ -117,8 +117,8 @@ const ChannelsTable = observer((
 });
 
 const DeviceSettingsTabContent = observer((
-  { group, isTopLevel, translator }:
-  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator }
+  { group, isTopLevel, translator, showChannels }:
+  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator, showChannels: boolean }
 ) => {
   const showDescription = !!group.properties.description;
   const { i18n } = useTranslation();
@@ -135,10 +135,10 @@ const DeviceSettingsTabContent = observer((
         <ParamDescription description={translator.find(group.properties.description, currentLanguage)} />
       )}
       {MakeEditors(group.parameters, translator)}
-      <ChannelsTable channels={group.channels} translator={translator} />
+      {showChannels && <ChannelsTable channels={group.channels} translator={translator} />}
       {group.subgroups.map((subGroup: WbDeviceParameterEditorsGroup) => {
         return subGroup.isEnabledByCondition ?
-          <DeviceSettingsSubGroup key={subGroup.properties.id} group={subGroup} translator={translator} />
+          <DeviceSettingsSubGroup key={subGroup.properties.id} group={subGroup} translator={translator} showChannels={showChannels} />
           : null;
       })}
     </div>
@@ -146,10 +146,15 @@ const DeviceSettingsTabContent = observer((
 });
 
 const DeviceSettingsTabs = observer((
-  { groups, translator, customChannelsStore }: DeviceSettingsTabsProps
+  { groups, translator, showChannels, customChannelsStore }: DeviceSettingsTabsProps
 ) => {
   const { i18n, t } = useTranslation();
-  const tabs = groups.map((group: WbDeviceParameterEditorsGroup) => {
+  const tabs = groups
+    .filter((group: WbDeviceParameterEditorsGroup) => {
+      const channelsLength = showChannels ? group.channels.length : 0;
+      return !!(group.parameters.length + channelsLength + group.subgroups.length);
+    })
+    .map((group: WbDeviceParameterEditorsGroup) => {
     const classNamesObj = {
       'deviceSettingsEditor-tabWithError': group.hasErrors,
       'deviceSettingsEditor-tabWithWarning': group.hasBadValuesFromRegisters && !group.hasErrors,
@@ -187,7 +192,12 @@ const DeviceSettingsTabs = observer((
           tabId={group.properties.id}
           className="deviceSettingsEditor-tabContent"
         >
-          <DeviceSettingsTabContent group={group} isTopLevel={true} translator={translator} />
+          <DeviceSettingsTabContent
+            group={group}
+            isTopLevel={true}
+            translator={translator}
+            showChannels={showChannels}
+          />
         </TabContent>
       ))}
       {customChannelsStore && (
@@ -204,7 +214,7 @@ const DeviceSettingsTabs = observer((
   );
 });
 
-export const DeviceSettingsEditorDesktop = observer(({ store, translator } : DeviceSettingsEditorProps) => {
+export const DeviceSettingsEditorDesktop = observer(({ store, translator, showChannels } : DeviceSettingsEditorProps) => {
   const { t } = useTranslation();
   return (
     <div className="deviceSettingsEditor deviceSettingsEditor-desktop">
@@ -216,6 +226,7 @@ export const DeviceSettingsEditorDesktop = observer(({ store, translator } : Dev
           groups={store.topLevelGroup.subgroups}
           translator={translator}
           customChannelsStore={store.customChannels}
+          showChannels={showChannels}
         />
       )}
       {store.topLevelGroup.subgroups.length === 0 && store.customChannels && (
