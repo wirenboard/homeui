@@ -4,6 +4,7 @@ import { type ArrayStore, type Translator } from '@/stores/json-schema-editor';
 export interface DeviceSettingsEditorProps {
   store: DeviceSettingsObjectStore;
   translator: Translator;
+  showChannels?: boolean;
 }
 
 export interface DeviceSettingsTabsProps {

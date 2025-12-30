@@ -1,4 +1,4 @@
-import { makeObservable, computed, observable } from 'mobx';
+import { makeObservable, computed } from 'mobx';
 import {
   type JsonSchema,
   type JsonObject,
@@ -89,7 +89,6 @@ export class DeviceSettingsObjectStore {
   public customChannels?: ArrayStore;
   public topLevelGroup: WbDeviceParameterEditorsGroup;
   public schemaTranslator: Translator;
-  public showChannels: boolean = true;
 
   private _parametersByName = new Map<string, WbDeviceParameterEditor>();
   private _groupsByName = new Map<string, WbDeviceParameterEditorsGroup>();
@@ -136,7 +135,6 @@ export class DeviceSettingsObjectStore {
     this._buildChannels(deviceTemplate, templateChannels);
 
     makeObservable(this, {
-      showChannels: observable,
       value: computed,
       hasErrors: computed,
       hasBadValuesFromRegisters: computed,

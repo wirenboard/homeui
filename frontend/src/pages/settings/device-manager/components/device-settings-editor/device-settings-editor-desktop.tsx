@@ -214,7 +214,7 @@ const DeviceSettingsTabs = observer((
   );
 });
 
-export const DeviceSettingsEditorDesktop = observer(({ store, translator } : DeviceSettingsEditorProps) => {
+export const DeviceSettingsEditorDesktop = observer(({ store, translator, showChannels } : DeviceSettingsEditorProps) => {
   const { t } = useTranslation();
   return (
     <div className="deviceSettingsEditor deviceSettingsEditor-desktop">
@@ -226,7 +226,7 @@ export const DeviceSettingsEditorDesktop = observer(({ store, translator } : Dev
           groups={store.topLevelGroup.subgroups}
           translator={translator}
           customChannelsStore={store.customChannels}
-          showChannels={store.showChannels}
+          showChannels={showChannels}
         />
       )}
       {store.topLevelGroup.subgroups.length === 0 && store.customChannels && (
