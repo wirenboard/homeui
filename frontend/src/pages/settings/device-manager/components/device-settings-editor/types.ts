@@ -10,4 +10,5 @@ export interface DeviceSettingsTabsProps {
   groups: WbDeviceParameterEditorsGroup[];
   customChannelsStore?: ArrayStore;
   translator: Translator;
+  showChannels: boolean;
 }
