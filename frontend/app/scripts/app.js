@@ -282,7 +282,6 @@ module
         'help',
         'mqtt',
         'system',
-        'ui',
         'logs',
         'configurations',
         'history',

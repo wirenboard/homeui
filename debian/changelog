@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.161.0) stable; urgency=medium
+
+  * Add loading state to button
+  * Remove notifications from rules
+  * Remove unused modules
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 12 Jan 2026 18:09:00 +0300
+
 wb-mqtt-homeui (2.160.6) stable; urgency=medium
 
   * Add optional footer in page component

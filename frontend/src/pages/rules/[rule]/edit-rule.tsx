@@ -6,8 +6,8 @@ import { CodeEditor } from '@/components/code-editor';
 import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { notificationsStore } from '@/stores/notifications';
 import { getExtensions } from '@/stores/rules/autocomplete';
+import { useAsyncAction } from '@/utils/async-action';
 import { getPathname } from '@/utils/url';
 import type { RulePageProps } from './types';
 import './styles.css';
@@ -49,36 +49,21 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
       });
   }, []);
 
-  const save = async () => {
-    try {
-      const initRuleName = rule.initName;
-      if (rule.initName !== rule.name) {
-        await rulesStore.checkIsNameUnique(rule.name);
-      }
-      const savedRuleName = await rulesStore.save(rule);
-      const isWithErrors = !!rule.error?.message;
-      notificationsStore.showNotification({
-        variant: isWithErrors ? 'warn' : 'success',
-        text: isWithErrors ? t('rules.labels.success-errors') : t('rules.labels.success'),
-      });
-
-      if (pathName === 'new') {
-        return location.replace(`/#!/rules/edit/${savedRuleName}`);
-      } else if (initRuleName !== rule.name) {
-        const path = await rulesStore.rename(initRuleName, rule.name);
-        return location.replace(`/#!/rules/edit/${path}`);
-      }
-      setIsEditingTitle(false);
-    } catch (err) {
-      let message = err.message;
-      if (err.data === 'MqttConnectionError') {
-        message = t('rules.errors.mqtt-connection');
-      } else if (err.message === 'file-exists') {
-        message = t('rules.errors.exists');
-      }
-      notificationsStore.showNotification({ variant: 'danger', text: message });
+  const [save, isSaving] = useAsyncAction(async () => {
+    const initRuleName = rule.initName;
+    if (rule.initName !== rule.name) {
+      await rulesStore.checkIsNameUnique(rule.name);
     }
-  };
+    const savedRuleName = await rulesStore.save(rule);
+
+    if (pathName === 'new') {
+      return location.replace(`/#!/rules/edit/${savedRuleName}`);
+    } else if (initRuleName !== rule.name) {
+      const path = await rulesStore.rename(initRuleName, rule.name);
+      return location.replace(`/#!/rules/edit/${path}`);
+    }
+    setIsEditingTitle(false);
+  });
 
   return (
     <PageLayout
@@ -94,6 +79,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
           variant="success"
           label={t('rules.buttons.save')}
           disabled={!rule.name}
+          isLoading={isSaving}
           onClick={save}
         />
       }
