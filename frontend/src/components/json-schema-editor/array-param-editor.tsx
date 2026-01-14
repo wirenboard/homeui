@@ -38,12 +38,14 @@ const ArrayItem = observer((
 
   const item = store.items[index];
 
-  // Don't want to implement full json-editor's headerTemplate logic here, just a simple version
-  let title = (item as ObjectStore)?.getParamByKey('name')?.store.value;
-  if (title === undefined || title === '') {
-    title = (item as ObjectStore)?.getParamByKey('title')?.store.value;
+  let title = '';
+  if (item?.storeType === 'object') {
+    // Don't want to implement full json-editor's headerTemplate logic here, just a simple version
+    title = (item as ObjectStore)?.getParamByKey('name')?.store.value as string;
+    if (title === undefined || title === '') {
+      title = (item as ObjectStore)?.getParamByKey('title')?.store.value as string;
+    }
   }
-
   return (
     <Card
       heading={title && String(title)}
