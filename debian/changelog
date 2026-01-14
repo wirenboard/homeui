@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.162.0) stable; urgency=medium
+
+  * Add custom menu backend
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 14 Jan 2026 17:24:56 +0500
+
 wb-mqtt-homeui (2.161.1) stable; urgency=medium
 
   * Fix editing configs of wb-mqtt-serial configs with custom channels with enums 
