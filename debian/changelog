@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.161.1) stable; urgency=medium
+
+  * Fix editing configs of wb-mqtt-serial configs with custom channels with enums 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 14 Jan 2026 16:26:06 +0500
+
 wb-mqtt-homeui (2.161.0) stable; urgency=medium
 
   * Add loading state to button
