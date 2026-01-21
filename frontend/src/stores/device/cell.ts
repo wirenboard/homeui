@@ -220,15 +220,7 @@ export default class Cell {
     return value;
   }
 
-  private async _sendValue(value: ValueType) {
-    if (!this.isComplete || this.readOnly) {
-      return;
-    }
-    this._setCellValue(value === '' && !this._isString() ? this._value : value);
-    await this._sendValueUpdate(this.deviceId, this.controlId, this._getStringifiedValue());
-  }
-
-  private _getStringifiedValue(): string {
+  public getStringifiedValue(): string {
     switch (this.valueType) {
       case 'boolean':
         return this._value ? '1' : '0';
@@ -239,6 +231,14 @@ export default class Cell {
       default:
         return String(this._value);
     }
+  }
+
+  private async _sendValue(value: ValueType) {
+    if (!this.isComplete || this.readOnly) {
+      return;
+    }
+    this._setCellValue(value === '' && !this._isString() ? this._value : value);
+    await this._sendValueUpdate(this.deviceId, this.controlId, this.getStringifiedValue());
   }
 
   private _setCellValue(value: ValueType) {

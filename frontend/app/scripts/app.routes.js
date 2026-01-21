@@ -128,8 +128,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('dashboard-svg', {
       url: '/dashboards/svg/view/:id?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}',
-      controller: 'DashboardSvgCtrl as $ctrl',
-      template: require('../views/dashboard-svg.html'),
+      template: '<svg-dashboard-page />',
       params: {
         id: {
           dynamic: true,

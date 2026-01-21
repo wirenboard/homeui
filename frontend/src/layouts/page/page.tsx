@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
@@ -13,22 +12,22 @@ import { type PageProps } from './types';
 import './styles.css';
 
 export const PageLayout = ({
-                             children,
-                             title,
-                             errors = [],
-                             hasRights,
-                             titleArea,
-                             stickyHeader,
-                             isEditingTitle,
-                             editingTitlePlaceholder,
-                             isLoading = false,
-                             isHideHeader = false,
-                             actions,
-                             infoLink,
-                             footer,
-                             onTitleChange,
-                             onTitleEditEnable,
-                           }: PropsWithChildren<PageProps>) => {
+  children,
+  title,
+  errors = [],
+  hasRights,
+  titleArea,
+  stickyHeader,
+  isEditingTitle,
+  editingTitlePlaceholder,
+  isLoading = false,
+  isHideHeader = false,
+  actions,
+  infoLink,
+  footer,
+  onTitleChange,
+  onTitleEditEnable,
+}: PropsWithChildren<PageProps>) => {
   const { t } = useTranslation();
   const [titleValue, setTitleValue] = useState('');
 
@@ -108,15 +107,9 @@ export const PageLayout = ({
           {hasRights && (
             isLoading
               ? <Loader className="page-loader" />
-              : (
-                <div
-                  className={classNames({
-                    'page-container': stickyHeader,
-                  })}
-                >
-                  {children}
-                </div>
-              )
+              : stickyHeader ? (
+                <div className="page-container">{children}</div>
+              ) : children
           )}
 
         </main>
