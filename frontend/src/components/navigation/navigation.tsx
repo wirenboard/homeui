@@ -158,7 +158,10 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
                   <button
                     className="menuItem-link navigation-logout"
                     draggable={false}
-                    onClick={logout}
+                    onClick={() => {
+                      setIsMobileMenuOpened(false);
+                      logout();
+                    }}
                   >
                     <LogoutIcon className="menuItem-icon" />
                     {!isMenuCompact && t(isAutologin ? 'navigation.buttons.switch-user' : 'navigation.buttons.logout')}
