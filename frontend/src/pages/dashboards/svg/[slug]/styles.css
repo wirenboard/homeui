@@ -1,0 +1,46 @@
+.svgDashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    line-height: 0;
+    flex-grow: 1;
+    user-select: none;
+}
+
+.svgDashboard svg {
+    height: unset;
+    width: unset;
+}
+
+.svgDashboard svg text {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.svgDashboard-fitToPage {
+    flex-grow: 1;
+    height: 1px;
+}
+
+.svgDashboard-fitToPage svg {
+    height: 100%;
+    width: 100%;
+}
+
+.svgDashboard .switch {
+    cursor: pointer;
+}
+
+@media (pointer: fine) {
+    .svgDashboard .switch:hover {
+        opacity: 0.6;
+    }
+}
+
+@media (max-width: 767px) {
+    body:not(.hmi) .svgDashboard {
+        padding-bottom: 5px;
+    }
+}

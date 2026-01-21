@@ -1,9 +1,7 @@
-'use strict';
-
 import ReactDOM from 'react-dom/client';
+import { setReactLocale } from '../locale';
 import CreateEditSvgDashboardPage from './editSvgDashboardPage';
 import EditSvgDashboardPageStore from './pageStore';
-import { setReactLocale } from '../locale';
 
 function editSvgDashboardDirective(
   mqttClient,
@@ -11,6 +9,7 @@ function editSvgDashboardDirective(
   $state,
   DeviceData,
   $locale,
+  $rootScope,
   rolesFactory
 ) {
   'ngInject';
@@ -28,7 +27,11 @@ function editSvgDashboardDirective(
       }
       scope.store = new EditSvgDashboardPageStore(
         () => $state.go('dashboards'),
-        id => $state.go('dashboard-svg', { id: id }),
+        async (id) => {
+          // this loaddata needs until we move to one datasourse (dashboardstore)
+          await $rootScope.dashboardsStore.loadData();
+          $state.go('dashboard-svg', { id: id });
+        },
         rolesFactory
       );
       scope.store.setOriginalId(scope.id);
@@ -41,7 +44,7 @@ function editSvgDashboardDirective(
         .then(() => {
           scope.store.setDashboard(scope.id, uiConfig, DeviceData, $locale.id);
         })
-        .catch(err => {
+        .catch((err) => {
           scope.store.setError(err.message);
         });
 

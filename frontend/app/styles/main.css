@@ -880,26 +880,6 @@ body.hmi .page-header {
   display: none
 }
 
-@media (min-width: 768px) {
-  body.fullscreen {
-    margin-top: 0px;
-  }
-
-  body.fullscreen .access-level-label,
-  body.fullscreen .console {
-    display: none;
-  }
-
-  body.fullscreen .page-header {
-    margin: 0px 0px 10px;
-  }
-
-  body.fullscreen #page-wrapper {
-    padding: 8px 23px 10px 23px;
-    height: 100vh;
-  }
-}
-
 .warning-notice {
   padding: 10px;
 }

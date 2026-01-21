@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.163.0) stable; urgency=medium
+
+  * Update svg dashboard page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 21 Jan 2026 10:45:00 +0300
+
 wb-mqtt-homeui (2.162.0) stable; urgency=medium
 
   * Add custom menu backend
@@ -6,7 +12,7 @@ wb-mqtt-homeui (2.162.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.161.1) stable; urgency=medium
 
-  * Fix editing configs of wb-mqtt-serial configs with custom channels with enums 
+  * Fix editing configs of wb-mqtt-serial configs with custom channels with enums
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 14 Jan 2026 16:26:06 +0500
 

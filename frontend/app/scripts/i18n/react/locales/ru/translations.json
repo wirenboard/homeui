@@ -247,11 +247,15 @@
             "goto-cloud": "Перейти в Wiren Board Cloud"
         }
    },
-   "view-svg-dashboard": {
+   "svg-dashboard": {
       "buttons": {
          "fullscreen": "Перейти в полноэкранный режим",
          "exit-fullscreen": "Выйти из полноэкранного режима",
          "edit": "Редактировать"
+      },
+      "prompt": {
+         "confirm-heading": "Подтверждение действия",
+         "confirm-question": "Вы уверены?"
       }
    },
    "edit-svg-dashboard": {
@@ -265,7 +269,6 @@
          "bindings-title": "Привязки",
          "write-enable": "Запись в канал",
          "check": "Требовать подтверждение действия",
-         "confirm-question": "Вы уверены?",
          "read-enable": "Чтение",
          "style-enable": "Стиль оформления",
          "visible-enable": "Видимость",

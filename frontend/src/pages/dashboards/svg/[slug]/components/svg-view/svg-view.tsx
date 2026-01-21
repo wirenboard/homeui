@@ -1,13 +1,13 @@
 import { get, reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useRef, useLayoutEffect } from 'react';
-import i18n from '../../i18n/react/config';
+import type { SvgViewProps, ParamProps } from './types';
 
-const getSvgElement = (svg, id) => {
+const getSvgElement = (svg: Element, id: string) => {
   return svg.querySelector(`#${id}`) || svg.querySelector(`[data-svg-param-id=${id}]`);
 };
 
-const setReadHandler = (element, param, values) => {
+const setReadHandler = (element, param: ParamProps, values) => {
   let el = element.querySelector('tspan') || element;
   let fn = undefined;
   try {
@@ -30,13 +30,14 @@ const setReadHandler = (element, param, values) => {
   );
 };
 
-const setStyleHandler = (element, param, values) => {
+const setStyleHandler = (element, param: ParamProps, values) => {
   let fn = undefined;
   try {
     fn = new Function('val', `return ${param.value}`);
   } catch (e) {
     // Syntax error in rule
   }
+
   const oldStyle = element.style.cssText;
   return reaction(
     () => get(values, param.channel),
@@ -53,7 +54,7 @@ const setStyleHandler = (element, param, values) => {
   );
 };
 
-const setVisibleHandler = (element, param, values) => {
+const setVisibleHandler = (element, param: ParamProps, values) => {
   let fn;
   try {
     fn = new Function('val', `return val${param.condition}${param.value}`);
@@ -111,17 +112,18 @@ const setLongPressHandler = (element, onLongPress) => {
   };
 };
 
-const SvgView = observer(({
+export const SvgView = observer(({
   svg,
   params,
   id,
   currentDashboard,
   values,
   className,
+  confirmHandler,
   onSwitchValue,
   onMoveToDashboard,
-}) => {
-  const svgWrapperRef = useRef();
+}: SvgViewProps) => {
+  const svgWrapperRef = useRef(null);
 
   useLayoutEffect(() => {
     svgWrapperRef.current.innerHTML = svg;
@@ -142,8 +144,8 @@ const SvgView = observer(({
           }
           if (param?.write?.enable) {
             disposers.push(
-              setClickHandler(el, () => {
-                if (!param?.write?.check || confirm(i18n.t('edit-svg-dashboard.labels.confirm-question'))) {
+              setClickHandler(el, async () => {
+                if (!param?.write?.check || await confirmHandler()) {
                   onSwitchValue(param.write.channel, param.write.value);
                 }
               })
@@ -175,5 +177,3 @@ const SvgView = observer(({
 
   return <div className={className} ref={svgWrapperRef}></div>;
 });
-
-export default SvgView;
