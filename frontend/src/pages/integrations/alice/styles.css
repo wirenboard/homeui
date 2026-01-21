@@ -55,6 +55,11 @@
     max-width: 100%;
 }
 
+.alice-tabs li:nth-child(1),
+.alice-tabs li:nth-child(2) {
+    font-weight: bold;
+}
+
 .alice-headerContainer {
     margin: 0 0 8px;
     display: flex;

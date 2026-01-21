@@ -31,6 +31,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const [isIntegrationLoading, setIntegrationLoading] = useState(true);
   const sortedRooms = useMemo(() => [{ id: 'all', label: t('alice.buttons.all-devices') }, ...roomList
     .sort(([keyA], [keyB]) => {
+      if (keyA === 'all') return -1;
+      if (keyB === 'all') return 1;
       if (keyA === DefaultRoom) return -1;
       if (keyB === DefaultRoom) return 1;
       return 0;
