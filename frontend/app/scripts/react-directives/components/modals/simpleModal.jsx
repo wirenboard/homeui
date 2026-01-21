@@ -17,7 +17,7 @@ const SimpleModal = ({ id, active, text, okText, onOk, onCancel, children }) => 
       </ModalHeader>
       <ModalBody>{children}</ModalBody>
       <ModalFooter>
-        <Button label={okText} type={'success'} onClick={onOk} />
+        <Button label={okText} type="primary" onClick={onOk} />
         <ModalCancelButton onClick={onCancel} />
       </ModalFooter>
     </Modal>

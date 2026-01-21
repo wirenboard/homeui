@@ -108,7 +108,7 @@ const BackupDownloadButtons = ({ onDownloadClick, hide }) => {
 const AfterDownloadModalPage = () => <Trans i18nKey="system.update.backup_second_page" />;
 
 const AfterDownloadModalButtons = ({ hide }) => (
-  <UploadButton label="system.buttons.select" style="success" onClick={hide} />
+  <UploadButton label="system.buttons.select" style="primary" onClick={hide} />
 );
 
 const DownloadBackupModal = ({ id, active, isFirstPage, onCancel, onDownloadClick }) => {

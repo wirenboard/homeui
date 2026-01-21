@@ -186,7 +186,7 @@ const SaveSettingsButton = ({ onClick, disabled }) => {
   const { t } = useTranslation();
   return (
     <Button
-      type="success"
+      type="primary"
       label={t('device-manager.buttons.save')}
       disabled={disabled}
       onClick={onClick}

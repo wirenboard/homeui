@@ -109,7 +109,7 @@ export const ScanPageHeader = ({ okButtonLabel, onOk, onCancel, disableOkButton,
     <h1 className="page-header">
       <span>{title}</span>
       <div className="pull-right button-group">
-        <Button type="success" label={okButtonLabel} disabled={disableOkButton} onClick={onOk} />
+        <Button type="primary" label={okButtonLabel} disabled={disableOkButton} onClick={onOk} />
         <Button label={t('scan.buttons.cancel')} onClick={onCancel} />
       </div>
     </h1>
