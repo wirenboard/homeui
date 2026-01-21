@@ -233,6 +233,9 @@ const sanitizeArraySchema = (schema: JsonSchema, definitions: Definitions, refCa
     res.items = schema.items.reduce((acc, item) => {
       const expanded = expandSchema(item, definitions, refCache);
       if (expanded) {
+        if (schema.options?.wb?.read_only) {
+          expanded.options = { ...expanded.options, wb: { ...expanded.options?.wb, read_only: true } };
+        }
         acc.push(expanded);
       }
       return acc;
@@ -241,6 +244,9 @@ const sanitizeArraySchema = (schema: JsonSchema, definitions: Definitions, refCa
     if (isObject(schema.items)) {
       const itemSchema = expandSchema(schema.items, definitions, refCache);
       if (itemSchema) {
+        if (schema.options?.wb?.read_only) {
+          itemSchema.options = { ...itemSchema.options, wb: { ...itemSchema.options?.wb, read_only: true } };
+        }
         res.items = itemSchema;
       }
     }

@@ -14,7 +14,7 @@ const TableCellWithEditor = observer(({
   translator,
   editorBuilder,
   width
-}: { paramStore: ObjectParamStore, translator: Translator, editorBuilder: EditorBuilderFunction, width: number }) => {
+}: { paramStore: ObjectParamStore, translator: Translator, editorBuilder: EditorBuilderFunction, width: number | undefined }) => {
   const errorId = useId();
   const inputId = useId();
   return (
@@ -43,7 +43,7 @@ const ObjectArrayTableEditor = observer(({ store, translator, editorBuilder } : 
     <>
       <Table style={{ color: 'var(--wb-color-text-primary)' }}>
         <TableRow isHeading>
-          <TableCell key={"index_header"} width={indexColumnWidth}/>
+          <TableCell key='index_header' width={indexColumnWidth}/>
           {Object.values(store.schema.items.properties).map((prop, index) => (
             <TableCell key={`header_${index}`} width={prop.options?.grid_columns ?
               prop.options?.grid_columns * 50 : undefined}>
@@ -78,7 +78,7 @@ const ObjectArrayTableEditor = observer(({ store, translator, editorBuilder } : 
         />
       )}
     </>
-  );  
+  );
 });
 
 export default ObjectArrayTableEditor;

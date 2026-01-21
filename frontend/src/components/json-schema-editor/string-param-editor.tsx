@@ -49,8 +49,8 @@ const StringEditor = observer(({
       value={valueToDisplay}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       ariaDescribedby={descriptionId}
-      ariaInvalid={store.hasErrors}
-      ariaErrorMessage={errorId}
+      ariaInvalid={hasErrors}
+      ariaErrorMessage={hasErrors ? errorId : undefined}
       isDisabled={store.schema.options?.wb?.read_only}
       className={hasErrors ? 'wb-jsonEditor-propertyInputError' : ''}
       onChange={(value) => {

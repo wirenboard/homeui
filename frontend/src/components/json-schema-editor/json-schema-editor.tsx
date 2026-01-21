@@ -44,7 +44,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
     );
   }
   if (props.store.storeType === 'array') {
-    if (!Array.isArray(props.store.schema.items)){
+    if (props.store.schema.items && !Array.isArray(props.store.schema.items)){
       if (props.store.schema.items.type === 'boolean') {
         return (
           <Suspense>
