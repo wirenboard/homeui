@@ -21,6 +21,17 @@ export class ArrayStore implements PropertyStore {
     this.schema = schema;
     this.required = required;
     this._builder = builder;
+
+    if (schema.options?.wb?.read_only) {
+      if (Array.isArray(schema.items)) {
+        schema.items.forEach((itemSchema) => {
+          itemSchema.options = {...itemSchema.options, wb: { ...itemSchema.options?.wb, read_only: true } };
+        });
+      } else if (schema.items) {
+        schema.items.options = { ...schema.items.options, wb: { ...schema.items.options?.wb, read_only: true } };
+      }
+    }
+
     if (schema.format === 'wb-byte-array') {
       // Special handling of byte arrays
       this._itemsSchema = (schema.items as JsonSchema).oneOf[0];

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
+import { Switch } from '@/components/switch';
 import { MistypedValue } from '@/stores/json-schema-editor';
 import type { BooleanEditorProps } from './types';
 
@@ -11,9 +12,23 @@ const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, transl
   const value = store.value;
   const indeterminate = value instanceof MistypedValue || value === undefined;
   const checked = indeterminate ? false : value as boolean;
+  if (store.schema.format === 'switch') {
+    return (
+      <div>
+        <Switch
+          value={checked}
+          ariaDescribedby={descriptionId}
+          ariaInvalid={store.hasErrors}
+          ariaErrorMessage={errorId}
+          onChange={(checked: boolean) => store.setValue(checked)}
+        />
+        {!store.schema.options?.compact && <label>{title}</label>}
+      </div>
+    );
+  }
   return (
     <Checkbox
-      title={title}
+      title={store.schema.options?.compact ? "" : title}
       checked={checked}
       indeterminate={indeterminate}
       ariaDescribedby={descriptionId}

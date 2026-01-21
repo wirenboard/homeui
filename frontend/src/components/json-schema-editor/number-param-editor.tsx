@@ -12,6 +12,7 @@ const NumberEditor = observer(({
   errorId,
   translator,
   isDisabled,
+  hideError,
 }: NumberEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
@@ -22,6 +23,7 @@ const NumberEditor = observer(({
       label: translator.find(option.label, currentLanguage),
     }));
   }, [store.enumOptions, translator, currentLanguage]);
+  const hasErrors = store.hasErrors && !hideError;
   return store.schema.enum ? (
     <Dropdown
       id={inputId}
@@ -30,6 +32,7 @@ const NumberEditor = observer(({
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
       isDisabled={isDisabled || store.schema.options?.wb?.read_only}
+      className={hasErrors ? 'wb-jsonEditor-propertyDropdownError' : ''}
       onChange={(option) => {
         if (typeof option.value === 'number' || typeof option.value === 'string') {
           store.setValue(option.value);
@@ -47,6 +50,7 @@ const NumberEditor = observer(({
       ariaInvalid={store.hasErrors}
       ariaErrorMessage={errorId}
       isDisabled={isDisabled || store.schema.options?.wb?.read_only}
+      className={hasErrors ? 'wb-jsonEditor-propertyInputError' : ''}
       onChange={(value) => store.setEditString(String(value))}
     />
   );

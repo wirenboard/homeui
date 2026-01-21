@@ -28,7 +28,7 @@ const ObjectParamEditor = ({
       descriptionId={descriptionId}
       errorId={errorId}
     >
-      {editorBuilder({ store: param.store, paramId: param.key, translator, inputId, descriptionId, errorId })}
+      {editorBuilder({ store: param.store, paramId: param.key, translator, inputId, descriptionId, errorId, hideError: param.disabled })}
     </EditorWrapper>
   );
 };

@@ -122,6 +122,7 @@ const sanitizeCustomProperties = (source: JsonSchema, dest: JsonSchema) => {
 const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => {
   dest.hidden = !!source.hidden;
   dest.show_opt_in = !!source.show_opt_in;
+  dest.compact = !!source.compact;
   if (typeof source.grid_columns === 'number') {
     dest.grid_columns = source.grid_columns;
   }

@@ -13,13 +13,8 @@
     border-radius: 6px;
 }
 
-.wb-jsonEditor-propertyError {
-    color: var(--danger-color);
-}
-
-.wb-jsonEditor-propertyError > input[type="text"],
-.wb-jsonEditor-propertyError > input[type="number"],
-.wb-jsonEditor-propertyError > div > div.dropdown__control {
+.wb-jsonEditor-propertyDropdownError > div.dropdown__control,
+.wb-jsonEditor-propertyInputError {
     border-color: var(--danger-color);
 }
 
@@ -62,8 +57,16 @@
     white-space: nowrap;
 }
 
+.wb-jsonEditor-propertyCheckboxError {
+    color: var(--danger-color);
+}
+
 .wb-jsonEditor-propertyLabel {
     white-space: nowrap;
+}
+
+.wb-jsonEditor-propertyLabelError {
+    color: var(--danger-color);
 }
 
 .wb-jsonEditor-arrayEditor {
