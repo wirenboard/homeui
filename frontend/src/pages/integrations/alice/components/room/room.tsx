@@ -131,10 +131,9 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
           {id !== DefaultRoom && id !== 'all' && (
             <>
               <Button
-                size="small"
                 type="button"
                 icon={<TrashIcon />}
-                variant="secondary"
+                variant="danger"
                 isOutlined
                 onClick={() => {
                   if (id) {
@@ -148,7 +147,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
                 type="submit"
                 disabled={!roomName}
                 label={t('alice.buttons.save')}
-                variant="secondary"
+                variant="primary"
               />
             </>
           )}

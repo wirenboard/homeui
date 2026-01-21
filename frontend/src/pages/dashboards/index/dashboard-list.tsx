@@ -69,16 +69,16 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                 <TableCell width={24} />
               )}
               <TableCell>{t('dashboards.labels.name')}</TableCell>
+              {hasEditRights && (
+                <TableCell width={40} />
+              )}
+              {hasEditRights && (
+                <TableCell width={40} />
+              )}
               {dashboardsList.some((dashboard) => dashboard.isSvg) && (
                 <TableCell width={30} align="center">SVG</TableCell>
               )}
               {hasEditRights && <TableCell width={55} align="center">{t('dashboards.labels.in-menu')}</TableCell>}
-              {hasEditRights && (
-                <TableCell width={40} />
-              )}
-              {hasEditRights && (
-                <TableCell width={40} />
-              )}
             </TableRow>
 
             <ReactSortable
@@ -112,6 +112,39 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                     {dashboard.name}
                   </TableCell>
 
+                  {hasEditRights && (
+                    <TableCell width={30} align="center" visibleOnHover preventClick>
+                      <Tooltip text={t('dashboards.buttons.edit')} placement="top">
+                        <Button
+                          size="small"
+                          icon={<EditIcon />}
+                          aria-label={`${t('dashboards.buttons.edit')}`}
+                          onClick={() => {
+                            if (dashboard.isSvg) {
+                              location.assign(`/#!/dashboards/svg/edit/${dashboard.id}`);
+                            } else {
+                              setEditedDashboardId(dashboard.id);
+                            }
+                          }}
+                        />
+                      </Tooltip>
+                    </TableCell>
+                  )}
+
+                  {hasEditRights && (
+                    <TableCell width={30} align="center" visibleOnHover preventClick>
+                      <Tooltip text={t('dashboards.buttons.delete')} placement="top">
+                        <Button
+                          size="small"
+                          variant="danger"
+                          icon={<TrashIcon />}
+                          aria-label={`${t('dashboards.buttons.delete')}`}
+                          onClick={() => setDeletedDashboardId(dashboard.id)}
+                        />
+                      </Tooltip>
+                    </TableCell>
+                  )}
+
                   {dashboardsList.some((dashboard) => dashboard.isSvg) && (
                     <TableCell width={30} align="center">
                       {dashboard.isSvg && <CheckIcon className="dashboardList-icon" />}
@@ -130,40 +163,6 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                           id={`visibility-${dashboard.id}`}
                           value={dashboard.options?.isHidden ? !dashboard.options?.isHidden : true}
                           onChange={() => dashboard.toggleVisibility()}
-                        />
-                      </Tooltip>
-                    </TableCell>
-                  )}
-
-                  {hasEditRights && (
-                    <TableCell width={40} align="center" preventClick>
-                      <Tooltip text={t('dashboards.buttons.edit')} placement="top">
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          icon={<EditIcon />}
-                          aria-label={`${t('dashboards.buttons.edit')}`}
-                          onClick={() => {
-                            if (dashboard.isSvg) {
-                              location.assign(`/#!/dashboards/svg/edit/${dashboard.id}`);
-                            } else {
-                              setEditedDashboardId(dashboard.id);
-                            }
-                          }}
-                        />
-                      </Tooltip>
-                    </TableCell>
-                  )}
-
-                  {hasEditRights && (
-                    <TableCell width={40} align="center" preventClick>
-                      <Tooltip text={t('dashboards.buttons.delete')} placement="top">
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          icon={<TrashIcon />}
-                          aria-label={`${t('dashboards.buttons.delete')}`}
-                          onClick={() => setDeletedDashboardId(dashboard.id)}
                         />
                       </Tooltip>
                     </TableCell>

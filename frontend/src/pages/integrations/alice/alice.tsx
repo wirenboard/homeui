@@ -1,10 +1,10 @@
-import classNames from 'classnames';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Switch } from '@/components/switch';
+import { Tabs, useTabs } from '@/components/tabs';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
@@ -17,7 +17,7 @@ import './styles.css';
 const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
   const {
-    rooms,
+    roomList,
     integrations,
     fetchData,
     fetchIntegrationStatus,
@@ -29,6 +29,17 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
   const [isIntegrationLoading, setIntegrationLoading] = useState(true);
+  const sortedRooms = useMemo(() => [{ id: 'all', label: t('alice.buttons.all-devices') }, ...roomList
+    .sort(([keyA], [keyB]) => {
+      if (keyA === DefaultRoom) return -1;
+      if (keyB === DefaultRoom) return 1;
+      return 0;
+    })
+    .map(([id, room]) => ({ id, label: room.name }))], [roomList]);
+  const { activeTab, setActiveTab, onTabChange } = useTabs({
+    onAfterTabChange: (roomId) => setView({ roomId }),
+    items: sortedRooms,
+  });
 
   const handleIntegrationToggle = async (enabled: boolean) => {
     const prevEnabled = aliceStore.isIntegrationEnabled;
@@ -107,12 +118,6 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     }
   }, [integrations]);
 
-  const sortedRooms = Array.from(rooms).sort(([keyA], [keyB]) => {
-    if (keyA === DefaultRoom) return -1;
-    if (keyB === DefaultRoom) return 1;
-    return 0;
-  });
-
   const isLoading = useMemo(
     () => (!!integrations?.length && pageState === 'isLoading'),
     [integrations, pageState]
@@ -164,45 +169,38 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
                   <div className="alice-mainButtons">
                     <Button
                       label={t('alice.buttons.add-device')}
-                      onClick={() => setView({ isNewDevice: true })}
+                      onClick={() => {
+                        setView({ isNewDevice: true });
+                        setActiveTab(null);
+                      }}
                     />
 
                     <Button
                       label={t('alice.buttons.add-room')}
-                      variant="secondary"
-                      onClick={() => setView({ isNewRoom: true })}
-                    />
-
-                    <Button
-                      className={classNames('alice-roomName', {
-                        'alice-roomSelected': view.roomId === 'all',
-                      })}
-                      label={t('alice.buttons.all-devices')}
-                      variant="unaccented"
-                      onClick={() => setView({ roomId: 'all' })}
+                      variant="primary"
+                      onClick={() => {
+                        setView({ isNewRoom: true });
+                        setActiveTab(null);
+                      }}
                     />
                   </div>
 
                   <div className="alice-rooms">
-                    {sortedRooms.map(([key]) => (
-                      <Fragment key={key}>
-                        <Button
-                          className={classNames('alice-roomName', {
-                            'alice-roomSelected': key === view.roomId,
-                          })}
-                          label={rooms.get(key).name}
-                          variant="unaccented"
-                          onClick={() => setView({ roomId: key })}
-                        />
-                        {key === DefaultRoom && sortedRooms.length > 1 && <hr className="alice-separator" />}
-                      </Fragment>
-                    ))}
+                    <Tabs
+                      className="alice-tabs"
+                      activeTab={activeTab}
+                      items={sortedRooms}
+                      onTabChange={onTabChange}
+                    />
                   </div>
                 </aside>
                 {!!(view.isNewRoom || view.roomId) && (
                   <Room
                     id={view.roomId}
-                    onSave={(roomId) => setView({ roomId })}
+                    onSave={(roomId) => {
+                      setView({ roomId });
+                      setActiveTab(roomId);
+                    }}
                     onDelete={() => setView({ roomId: DefaultRoom })}
                     onOpenDevice={(deviceId) => setView({ deviceId })}
                   />)}

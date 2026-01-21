@@ -140,4 +140,8 @@ export default class AliceStore {
       this.isIntegrationEnabled = enabled;
     });
   }
+
+  get roomList() {
+    return Array.from(this.rooms);
+  }
 }

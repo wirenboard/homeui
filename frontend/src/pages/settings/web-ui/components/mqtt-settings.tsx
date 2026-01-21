@@ -84,7 +84,6 @@ export const MqttSettings = () => {
       <FormButtonGroup>
         <Button
           label={t('common.buttons.apply')}
-          variant="secondary"
           disabled={!isDirty || ((useMqttPassword || addPrefixToTopic) && (!mqttLogin || !mqttPassword))}
           onClick={applyHandler}
         />

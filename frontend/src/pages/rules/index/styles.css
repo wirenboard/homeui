@@ -1,7 +1,3 @@
-.rules-icon {
-    color: var(--text-color);
-}
-
 .rules-iconError {
     color: var(--warn-color);
     width: 20px;

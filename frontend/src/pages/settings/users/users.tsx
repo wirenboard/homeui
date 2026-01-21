@@ -11,7 +11,7 @@ import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { EditUserModal } from '@/pages/settings/users/components/edit-user';
 import { authStore, UserRole } from '@/stores/auth';
-import { store } from './pageStore';
+import { store } from './page-store';
 import './styles.css';
 
 const UsersPage = observer(() => {
@@ -39,7 +39,7 @@ const UsersPage = observer(() => {
       actions={
         <Button
           label={t('users.buttons.add')}
-          variant="success"
+          variant="primary"
           disabled={store.isLoading}
           onClick={async () => {
             if (!authStore.areUsersConfigured) {
@@ -58,8 +58,8 @@ const UsersPage = observer(() => {
           <TableCell>
             {t('users.labels.type')}
           </TableCell>
-          <TableCell width={40} />
-          <TableCell width={40} />
+          <TableCell width={30} />
+          <TableCell width={30} />
         </TableRow>
 
         {store.users.map((user) => (
@@ -72,10 +72,11 @@ const UsersPage = observer(() => {
               {t('users.labels.' + user.type)}
             </TableCell>
 
-            <TableCell width={40}>
+            <TableCell width={30}>
               <Tooltip text={t('users.buttons.edit')}>
                 <Button
-                  variant="secondary"
+                  size="small"
+                  variant="primary"
                   aria-label={t('users.buttons.edit')}
                   icon={<EditIcon />}
                   onClick={() => {
@@ -86,9 +87,10 @@ const UsersPage = observer(() => {
               </Tooltip>
             </TableCell>
 
-            <TableCell width={40}>
+            <TableCell width={30}>
               <Tooltip text={t('users.buttons.delete')}>
                 <Button
+                  size="small"
                   variant="danger"
                   icon={<TrashIcon />}
                   aria-label={t('users.buttons.delete')}

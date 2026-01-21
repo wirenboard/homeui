@@ -30,7 +30,7 @@
     </div>
     <div ng-hide="$ctrl.selectedControls.length==1 && !$ctrl.selectedControls[$ctrl.selectedControls.length-1]">
         <br>
-        <button class="btn btn-success" ng-click="$ctrl.addTopic()" ng-disabled="$ctrl.disableUi" translate>
+        <button class="btn btn-primary" ng-click="$ctrl.addTopic()" ng-disabled="$ctrl.disableUi" translate>
             {{'history.buttons.add'}}
         </button>
         <br>
@@ -110,17 +110,17 @@
         </div>
     </div>
 
-    <button class="btn btn-success"
+    <button class="btn btn-primary"
             ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedControls[0] || $ctrl.disableUi"
             ng-click="$ctrl.updateDateRange()" translate>
         {{'history.buttons.load'}}
     </button>
-    <button class="btn btn-success"
+    <button class="btn btn-default"
             ng-disabled="!$ctrl.timeChanged || !$ctrl.selectedControls[0] || $ctrl.disableUi"
             ng-click="$ctrl.readDatesFromUrl()" translate>
         {{'history.buttons.reset'}}
     </button>
-    <button class="btn btn-success"
+    <button class="btn btn-default"
             ng-disabled="!$ctrl.loadPending"
             ng-click="$ctrl.stopLoadingData()" translate>
         {{'history.buttons.stop'}}
@@ -149,7 +149,7 @@
     </div>
 
     <button
-      class="btn btn-success"
+      class="btn btn-primary"
       ng-disabled="!$ctrl.chartConfig.length || $ctrl.loadPending"
       ng-click="$ctrl.downloadHistoryTable()"
       translate>

@@ -44,7 +44,7 @@ const DoneButton = ({ onDoneClick, doneLabel }) => {
   const { t } = useTranslation();
 
   return (
-    <button className="btn btn-lg btn-default" onClick={onDoneClick}>
+    <button className="btn btn-default" onClick={onDoneClick}>
       {t(doneLabel)}
     </button>
   );
@@ -97,7 +97,7 @@ const BackupDownloadButtons = ({ onDownloadClick, hide }) => {
 
   return (
     <>
-      <button type="button" className="btn btn-success" onClick={onDownloadClick}>
+      <button type="button" className="btn btn-primary" onClick={onDownloadClick}>
         {t('system.buttons.download_backup')}
       </button>
       <UploadButton label="system.buttons.select_anyway" style="default" onClick={hide} />
@@ -147,7 +147,7 @@ const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootF
           </li>
         </ul>
       </div>
-      <button type="button" className="btn btn-lg btn-success" onClick={showModal}>
+      <button type="button" className="btn btn-primary" onClick={showModal}>
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
@@ -345,12 +345,12 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset
           {canFactoryReset && <li>{t('system.factory_reset.warning2')}</li>}
         </ul>
       </div>
-      <button type="button" className="btn btn-lg btn-danger" onClick={onUploadClick}>
+      <button type="button" className="btn btn-danger" onClick={onUploadClick}>
         {t('system.buttons.select')}
       </button>
       &nbsp;
       {canFactoryReset && (
-        <button type="button" className="btn btn-lg btn-danger" onClick={onResetClick}>
+        <button type="button" className="btn btn-danger" onClick={onResetClick}>
           {t('system.buttons.reset')}
         </button>
       )}

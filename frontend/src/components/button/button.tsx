@@ -13,7 +13,6 @@ export const Button = ({
       'button-m': size === 'default',
       'button-s': size === 'small',
       'button-primary': variant === 'primary',
-      'button-success': variant === 'success',
       'button-secondary': variant === 'secondary',
       'button-danger': variant === 'danger',
       'button-unaccented': variant === 'unaccented',

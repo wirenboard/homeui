@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import UsersPage from '@/pages/settings/users/usersPage';
+import UsersPage from '@/pages/settings/users';
 import { setReactLocale } from '../locale';
 
 function usersDirective() {

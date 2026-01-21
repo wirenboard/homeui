@@ -96,6 +96,7 @@
 
 .widgetEdit-remove {
     grid-area: remove;
+    color: var(--danger-color);
 }
 
 .widgetEdit-header {
