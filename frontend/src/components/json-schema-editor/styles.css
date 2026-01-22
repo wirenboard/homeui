@@ -38,6 +38,13 @@
     gap: 15px;
 }
 
+.wb-jsonEditor-objectEditorWithBorder {
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-border-radius);
+    background: var(--background-accent-color-hover);
+    padding: 12px;
+}
+
 .wb-jsonEditor-objectEditorRow {
     display: flex;
     flex-direction: row;

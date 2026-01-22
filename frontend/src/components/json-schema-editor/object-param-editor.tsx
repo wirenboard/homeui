@@ -3,6 +3,7 @@ import { useId } from 'react';
 import { type Translator, type ObjectParamStore } from '@/stores/json-schema-editor';
 import { EditorWrapper } from './editor-wrapper';
 import type { ObjectEditorProps, EditorBuilderFunction } from './types';
+import classNames from 'classnames';
 
 const shouldRenderObjectParamEditor = (param: ObjectParamStore) => {
   return param.hidden ? false : !param.disabled || param.hasPermanentEditor;
@@ -103,9 +104,9 @@ const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
   return res;
 };
 
-const ObjectEditor = observer(({ store, translator, editorBuilder } : ObjectEditorProps) => {
+const ObjectEditor = observer(({ store, translator, editorBuilder, isTopLevel } : ObjectEditorProps) => {
   return (
-    <div className="wb-jsonEditor-objectEditor">
+    <div className={classNames("wb-jsonEditor-objectEditor", { "wb-jsonEditor-objectEditorWithBorder": !isTopLevel })}>
       {editorBuilder && makeLayout(store.params, translator, editorBuilder)}
     </div>
   );

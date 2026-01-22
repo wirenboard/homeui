@@ -4,7 +4,12 @@ import { Table, TableRow, TableCell } from '@/components/table';
 import { Button } from '@/components/button';
 import type { ArrayEditorProps, EditorBuilderFunction } from './types';
 import PlusIcon from '@/assets/icons/plus.svg';
-import type { ObjectStore, ObjectParamStore, Translator } from '@/stores/json-schema-editor';
+import {
+  type ObjectStore,
+  type ObjectParamStore,
+  type Translator,
+  comparePropertyOrder
+} from '@/stores/json-schema-editor';
 import { ParamError } from './param-error';
 import { useId } from 'react';
 import classNames from 'classnames';
@@ -39,16 +44,19 @@ const ObjectArrayTableEditor = observer(({ store, translator, editorBuilder } : 
      store.schema.minItems === undefined || 
      store.schema.maxItems !== store.schema.minItems);
   const indexColumnWidth = 20;
+  const columnSize = 50;
   return (
     <>
       <Table style={{ color: 'var(--wb-color-text-primary)' }}>
         <TableRow isHeading>
           <TableCell key='index_header' width={indexColumnWidth}/>
-          {Object.values(store.schema.items.properties).map((prop, index) => (
-            <TableCell key={`header_${index}`} width={prop.options?.grid_columns ?
-              prop.options?.grid_columns * 50 : undefined}>
-              {translator.find(prop.title, i18n.language)}
-            </TableCell>
+          {Object.entries(store.schema.items.properties)
+            .sort(comparePropertyOrder)
+            .map(([_key, prop], index) => (
+              <TableCell key={`header_${index}`} width={prop.options?.grid_columns ?
+                prop.options?.grid_columns * columnSize : undefined}>
+                {translator.find(prop.title, i18n.language)}
+              </TableCell>
           ))}
         </TableRow>
         {store.items.map((itemStore, index) => (
@@ -59,7 +67,7 @@ const ObjectArrayTableEditor = observer(({ store, translator, editorBuilder } : 
             {(itemStore as ObjectStore).params.map(paramStore => (
               <TableCellWithEditor 
                 key={`${paramStore.key}-${index}`}
-                width={paramStore.store.schema.options?.grid_columns ? paramStore.store.schema.options?.grid_columns * 50 : undefined}
+                width={paramStore.store.schema.options?.grid_columns ? paramStore.store.schema.options?.grid_columns * columnSize : undefined}
                 paramStore={paramStore}
                 translator={translator}
                 editorBuilder={editorBuilder}

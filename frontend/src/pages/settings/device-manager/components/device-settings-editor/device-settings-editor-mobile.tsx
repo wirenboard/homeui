@@ -42,7 +42,7 @@ const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore
   const inputId = useId();
   const { t } = useTranslation();
   return (
-    <div className='deviceSettingsEditor-parameter' >
+    <div className="deviceSettingsEditor-parameter" >
       <ParamSimpleLabel
         title={t('device-manager.labels.period')}
         inputId={inputId}

@@ -20,6 +20,7 @@ export interface EditorBuilderFunctionProps {
   descriptionId?: string;
   errorId?: string;
   hideError?: boolean; // Do not show error state
+  isTopLevel?: boolean; // Is the top-level editor
 }
 
 export type EditorBuilderFunction = (props: EditorBuilderFunctionProps) => ReactElement | null;
@@ -62,6 +63,7 @@ export interface ObjectEditorProps {
   store: ObjectStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
+  isTopLevel?: boolean;
 }
 
 export interface ArrayEditorProps {

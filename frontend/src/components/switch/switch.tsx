@@ -1,7 +1,7 @@
 import classNames from 'classnames';
+import { useId } from 'react';
 import { type SwitchProps } from './types';
 import './styles.css';
-import { useId } from 'react';
 
 export const Switch = ({
   value,

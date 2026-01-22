@@ -27,6 +27,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
           store={props.store as ObjectStore}
           translator={props.translator}
           editorBuilder={DefaultEditorBuilder}
+          isTopLevel={props.isTopLevel}
         />
       </Suspense>
     );
@@ -133,7 +134,7 @@ export const JsonSchemaEditor = ({ store, translator, customEditorBuilder }: Jso
   };
   return (
     <div className="wb-jsonEditor">
-      {editorBuilderFunction({ store, translator })}
+      {editorBuilderFunction({ store, translator, isTopLevel: true })}
     </div>
   );
 };
