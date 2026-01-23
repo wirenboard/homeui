@@ -13,13 +13,8 @@
     border-radius: 6px;
 }
 
-.wb-jsonEditor-propertyError {
-    color: var(--danger-color);
-}
-
-.wb-jsonEditor-propertyError > input[type="text"],
-.wb-jsonEditor-propertyError > input[type="number"],
-.wb-jsonEditor-propertyError > div > div.dropdown__control {
+.wb-jsonEditor-propertyDropdownError > div.dropdown__control,
+.wb-jsonEditor-propertyInputError {
     border-color: var(--danger-color);
 }
 
@@ -43,6 +38,13 @@
     gap: 15px;
 }
 
+.wb-jsonEditor-objectEditorWithBorder {
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-border-radius);
+    background: var(--background-accent-color-hover);
+    padding: 12px;
+}
+
 .wb-jsonEditor-objectEditorRow {
     display: flex;
     flex-direction: row;
@@ -62,8 +64,16 @@
     white-space: nowrap;
 }
 
+.wb-jsonEditor-propertyCheckboxError {
+    color: var(--danger-color);
+}
+
 .wb-jsonEditor-propertyLabel {
     white-space: nowrap;
+}
+
+.wb-jsonEditor-propertyLabelError {
+    color: var(--danger-color);
 }
 
 .wb-jsonEditor-arrayEditor {

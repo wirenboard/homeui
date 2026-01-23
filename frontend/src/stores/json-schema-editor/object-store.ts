@@ -52,7 +52,7 @@ export class ObjectParamStore {
   }
 }
 
-function comparePropertyOrder([key1, schema1], [key2, schema2]) {
+export function comparePropertyOrder([key1, schema1], [key2, schema2]) {
   const order1 = schema1.propertyOrder ?? 10000;
   const order2 = schema2.propertyOrder ?? 10000;
   if (order1 === order2) {

@@ -21,6 +21,7 @@ export class ArrayStore implements PropertyStore {
     this.schema = schema;
     this.required = required;
     this._builder = builder;
+
     if (schema.format === 'wb-byte-array') {
       // Special handling of byte arrays
       this._itemsSchema = (schema.items as JsonSchema).oneOf[0];

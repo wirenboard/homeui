@@ -41,7 +41,7 @@ const DeviceSettingsSubGroup = (
 const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore; translator: Translator }) => {
   const errorId = useId();
   return (
-    <div className={classNames('deviceSettingsEditor-parameter', { 'wb-jsonEditor-propertyError': store.hasErrors })} >
+    <div className="deviceSettingsEditor-parameter" >
       <NumberEditor store={store} translator={translator} />
       {store.hasErrors && <ParamError id={errorId} error={store.error} translator={translator} />}
     </div>

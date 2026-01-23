@@ -17,6 +17,7 @@ const StringEditor = lazy(() => import('./string-param-editor'));
 const ArrayEditor = lazy(() => import('./array-param-editor'));
 const BooleanArrayEditor = lazy(() => import('./boolean-array-param-editor'));
 const ByteArrayEditor = lazy(() => import('./byte-array-param-editor'));
+const ObjectArrayTableEditor = lazy(() => import('./object-array-table-param-editor'));
 
 const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
   if (props.store.storeType === 'object') {
@@ -26,6 +27,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
           store={props.store as ObjectStore}
           translator={props.translator}
           editorBuilder={DefaultEditorBuilder}
+          isTopLevel={props.isTopLevel}
         />
       </Suspense>
     );
@@ -43,15 +45,28 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
     );
   }
   if (props.store.storeType === 'array') {
-    if (!Array.isArray(props.store.schema.items) && props.store.schema.items.type === 'boolean') {
-      return (
-        <Suspense>
-          <BooleanArrayEditor
-            store={props.store as ArrayStore}
-            translator={props.translator}
-          />
-        </Suspense>
-      );
+    if (props.store.schema.items && !Array.isArray(props.store.schema.items)){
+      if (props.store.schema.items.type === 'boolean') {
+        return (
+          <Suspense>
+            <BooleanArrayEditor
+              store={props.store as ArrayStore}
+              translator={props.translator}
+            />
+          </Suspense>
+        );
+      }
+      if (props.store.schema.items.type === 'object' && props.store.schema.format === 'table') {
+        return (
+          <Suspense>
+            <ObjectArrayTableEditor
+              store={props.store as ArrayStore}
+              translator={props.translator}
+              editorBuilder={DefaultEditorBuilder}
+            />
+          </Suspense>
+        );
+      }
     }
     return (
       <Suspense>
@@ -72,6 +87,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
           inputId={props.inputId}
           descriptionId={props.descriptionId}
           errorId={props.errorId}
+          hideError={props.hideError}
         />
       </Suspense>
     );
@@ -85,6 +101,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
           inputId={props.inputId}
           descriptionId={props.descriptionId}
           errorId={props.errorId}
+          hideError={props.hideError}
         />
       </Suspense>
     );
@@ -117,7 +134,7 @@ export const JsonSchemaEditor = ({ store, translator, customEditorBuilder }: Jso
   };
   return (
     <div className="wb-jsonEditor">
-      {editorBuilderFunction({ store, translator })}
+      {editorBuilderFunction({ store, translator, isTopLevel: true })}
     </div>
   );
 };
