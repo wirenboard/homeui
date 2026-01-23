@@ -55,6 +55,6 @@ export const toggleAliceIntegration = async (enabled: boolean) => request.post<S
   { enabled }
 ).then(({ data }) => data);
 
-export const unlinkController = async () => request.delete<SuccessMessageFetch>(
-  `/api/integrations/alice/controller`
+export const unlinkController = async () => request.put<SuccessMessageFetch>(
+  `/api/integrations/alice/unlink_controller`
 ).then(({ data }) => data);
