@@ -6,6 +6,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .button:not(:disabled) {
@@ -36,6 +37,19 @@
     padding: 4px 8px;
 }
 
+.button-loading {
+    visibility: hidden;
+}
+
+.button-loader {
+    width: 20px !important;
+    height: 20px !important;
+    fill: var(--button-color) !important;
+    position: absolute;
+    margin: 0 auto;
+    left: calc(50% - 10px);
+}
+
 .button-primary {
     background: var(--primary-color);
     border: 1px solid var(--primary-color);
@@ -50,6 +64,10 @@
     background: var(--secondary-color);
     border: 1px solid var(--input-border-color);
     color: var(--text-color);
+}
+
+.button-secondary .button-loader {
+    fill: var(--text-color) !important;
 }
 
 .button-secondary:not(:disabled):hover {

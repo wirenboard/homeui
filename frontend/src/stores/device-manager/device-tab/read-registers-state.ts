@@ -47,6 +47,7 @@ export class ReadRegistersStateStore {
           currentFw: deviceFw,
           requiredFw: templateFw,
           deviceModel: deviceModel,
+          interpolation: { escapeValue: false },
         });
         this.otherMatchingTemplates = this._deviceTypesStore.findNotDeprecatedDeviceTypes(deviceModel, deviceFw);
         this.allowEditSettings = false;
@@ -63,12 +64,13 @@ export class ReadRegistersStateStore {
 
   successfulRead(deviceType: string, deviceModel: string, deviceFw: string) {
     this.state = ReadRegistersState.Complete;
-    const matchingTemplates = this._deviceTypesStore.findNotDeprecatedDeviceTypes(
-      deviceModel,
-      deviceFw
-    );
+    this.otherMatchingTemplates = this._deviceTypesStore
+      .findNotDeprecatedDeviceTypes(
+        deviceModel,
+        deviceFw
+      )
+      .filter(dt => this._deviceTypesStore.hasBetterFirmware(deviceType, dt, deviceModel));
     this.allowEditSettings = true;
-    this.otherMatchingTemplates = matchingTemplates.filter((dt) => dt !== deviceType);
     if (this.otherMatchingTemplates.length) {
       // selectedDeviceType is old and a better new template is available
       this.errorMessage = i18n.t('device-manager.labels.better-template');

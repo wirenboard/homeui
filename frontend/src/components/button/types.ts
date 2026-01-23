@@ -6,5 +6,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactElement;
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'unaccented' | 'warn';
   size?: 'default' | 'small' | 'large';
+  isLoading?: boolean;
   isOutlined?: boolean;
 }

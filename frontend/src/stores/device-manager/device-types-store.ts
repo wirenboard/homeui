@@ -137,6 +137,15 @@ export class DeviceTypesStore {
     return [];
   }
 
+  hasBetterFirmware(sourceDeviceType: string, targetDeviceType: string, deviceSignature: string) {
+    const fw = this._deviceTypesMap.get(sourceDeviceType)?.hw?.find((hw => hw.signature === deviceSignature))?.fw;
+    const typeDesc = this._deviceTypesMap.get(targetDeviceType);
+    if (!typeDesc?.hw) {
+      return false;
+    }
+    return typeDesc.hw.some((hw) => hw.signature === deviceSignature && firmwareIsNewer(fw, hw.fw));
+  }
+
   getDefaultId(deviceType: string, slaveId: string) {
     const id = this._deviceTypesMap.get(deviceType)?.['mqtt-id'] || deviceType;
     return `${id}_${slaveId}`;

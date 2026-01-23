@@ -10,6 +10,7 @@ export interface PageProps {
   stickyHeader?: boolean;
   actions?: ReactElement;
   titleArea?: ReactElement;
+  footer?: ReactElement;
   errors?: { variant?: string; text?: string; code?: number }[];
   infoLink?: string;
   onTitleChange?: (_title: string) => void;

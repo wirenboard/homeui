@@ -58,7 +58,7 @@ const UpdateProgressPanel = observer(
     );
   });
 
-const FirmwareVersionPanel = observer(
+export const FirmwareVersionPanel = observer(
   ({ firmwareVersion, isActual } : { firmwareVersion: string; isActual: boolean }) => {
     const { t } = useTranslation();
     return (
