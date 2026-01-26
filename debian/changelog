@@ -1,8 +1,28 @@
-wb-mqtt-homeui (2.163.0) stable; urgency=medium
+wb-mqtt-homeui (2.164.0) stable; urgency=medium
 
   * Update all buttons and common components according to the instruction
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 21 Jan 2026 14:14:00 +0300
+
+wb-mqtt-homeui (2.163.2) stable; urgency=medium
+
+  * Fix device-manager's relative paths
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 15:54:00 +0300
+
+wb-mqtt-homeui (2.163.1) stable; urgency=medium
+
+  * Fix logo size in safari
+  * Fix compact menu item class with active subitem
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 11:57:00 +0300
+
+wb-mqtt-homeui (2.163.0) stable; urgency=medium
+
+  * Add events to Yandex Alice integration
+  * Add endpoint for unlink controller link in Yandex Alice integration
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Fri, 23 Jan 2026 23:30:00 +0300
 
 wb-mqtt-homeui (2.162.0) stable; urgency=medium
 

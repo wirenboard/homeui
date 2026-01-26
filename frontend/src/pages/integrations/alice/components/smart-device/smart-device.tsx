@@ -34,6 +34,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
       ? Object.keys(deviceTypes).find((key) => deviceTypes[key].includes(devices.get(id).type))
       : Object.keys(deviceTypes).at(0);
     setCategory(cat);
+
     setData({
       name: id ? devices.get(id).name : '',
       room_id: id ? devices.get(id).room_id : DefaultRoom,
@@ -46,8 +47,10 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
   const save = useCallback(async (ev: FormEvent) => {
     ev.preventDefault();
     try {
+      const payload = { ...data } as AddDeviceParams;
+
       if (!id) {
-        const device = await addDevice(data as AddDeviceParams);
+        const device = await addDevice(payload);
         notificationsStore.showNotification({
           variant: 'success',
           text: t('alice.notifications.device-added', { name: data.name }),
@@ -55,7 +58,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
         await fetchData();
         onSave(device);
       } else {
-        await updateDevice(id, data);
+        await updateDevice(id, payload);
         notificationsStore.showNotification({
           variant: 'success',
           text: t('alice.notifications.device-updated', { name: data.name }),

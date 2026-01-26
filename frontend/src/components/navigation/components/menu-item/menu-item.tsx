@@ -84,7 +84,15 @@ export const MenuItem = ({
         <Component
           href={item.url && `#!/${item.url}`}
           className={classNames('menuItem-link', {
-            'menuItem-linkActive': id ? item.url === `${page}/${id}` : item.url === page,
+            'menuItem-linkActive':
+              (id ? item.url === `${page}/${id}` : item.url === page) ||
+              (isMenuCompact &&
+                item.children?.some(
+                  (subItem) =>
+                    (id ? subItem.url === `${page}/${id}` : subItem.url === page) ||
+                    openedSubmenus.includes(subItem.id)
+                )),
+            'menuItem-linkWithSubmenu': !!item.children?.length,
           })}
           draggable={false}
           ref={refs.setReference}

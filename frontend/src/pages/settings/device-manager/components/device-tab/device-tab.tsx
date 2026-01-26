@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { EmbeddedSoftware, DeviceTabStore } from '@/stores/device-manager';
+import { type EmbeddedSoftware, type DeviceTabStore } from '@/stores/device-manager';
 import './styles.css';
 
 const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }: { embeddedSoftware: EmbeddedSoftware }) => {

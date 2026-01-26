@@ -12,6 +12,7 @@ import {
   checkIsAliceAvailable,
   toggleAliceIntegration,
   getAliceIntegrationStatus,
+  unlinkController,
 } from './api';
 import type {
   AddDeviceParams,
@@ -143,5 +144,9 @@ export default class AliceStore {
 
   get roomList() {
     return Array.from(this.rooms);
+  }
+
+  async unlinkController(): Promise<SuccessMessageFetch> {
+    return unlinkController();
   }
 }
