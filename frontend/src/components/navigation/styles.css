@@ -81,6 +81,10 @@
     height: 44px;
 }
 
+.navigation-logoHidden {
+    display: none;
+}
+
 .navigation-toggle {
     all: unset;
     visibility: hidden;

@@ -1,6 +1,7 @@
 wb-mqtt-homeui (2.163.1) stable; urgency=medium
 
   * Fix logo size in safari
+  * Fix compact menu item class with active subitem
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 11:57:00 +0300
 
