@@ -1,10 +1,16 @@
+wb-mqtt-homeui (2.163.1) stable; urgency=medium
+
+  * Fix logo size in safari
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 11:57:00 +0300
+
 wb-mqtt-homeui (2.163.0) stable; urgency=medium
 
   * Add events to Yandex Alice integration
   * Add endpoint for unlink controller link in Yandex Alice integration
 
  -- Victor Fedorov <victor.fedorov@wirenboard.com>  Fri, 23 Jan 2026 23:30:00 +0300
- 
+
 wb-mqtt-homeui (2.162.0) stable; urgency=medium
 
   * Add custom menu backend
@@ -13,7 +19,7 @@ wb-mqtt-homeui (2.162.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.161.1) stable; urgency=medium
 
-  * Fix editing configs of wb-mqtt-serial configs with custom channels with enums 
+  * Fix editing configs of wb-mqtt-serial configs with custom channels with enums
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 14 Jan 2026 16:26:06 +0500
 

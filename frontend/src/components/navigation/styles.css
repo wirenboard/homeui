@@ -60,10 +60,11 @@
 }
 
 .navigation-logo {
-    padding: 12px 18px;
+    display: flex;
+    justify-self: center;
+    width: 144px;
     height: 60px;
     margin: 12px 0 12px;
-    width: 100%;
 
     @media(max-width: 768px) {
         margin: 0;
@@ -73,8 +74,11 @@
 }
 
 .navigation-logoCompact {
-    padding: 8px;
-    width: unset;
+    display: flex;
+    justify-self: center;
+    margin: 18px 0 22px;
+    width: 44px;
+    height: 44px;
 }
 
 .navigation-toggle {

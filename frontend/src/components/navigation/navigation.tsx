@@ -94,7 +94,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
 
           <a href="/" draggable={false}>
             {isMenuCompact
-              ? <img src={LOGO_COMPACT} className="navigation-logo navigation-logoCompact" alt={APP_NAME} />
+              ? <img src={LOGO_COMPACT} className="navigation-logoCompact" alt={APP_NAME} />
               : <img src={LOGO} className="navigation-logo" alt={APP_NAME} />
             }
           </a>
