@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.163.2) stable; urgency=medium
+
+  * Fix device-manager's relative paths
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 15:54:00 +0300
+
 wb-mqtt-homeui (2.163.1) stable; urgency=medium
 
   * Fix logo size in safari
