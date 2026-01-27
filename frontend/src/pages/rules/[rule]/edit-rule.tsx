@@ -76,7 +76,6 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
       titleArea={!rule.enabled && <Tag variant="gray">{t('rules.labels.inactive')}</Tag>}
       actions={
         <Button
-          variant="success"
           label={t('rules.buttons.save')}
           disabled={!rule.name}
           isLoading={isSaving}

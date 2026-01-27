@@ -24,20 +24,8 @@ const EditSvgDashboardHeader = observer(
             <span>{title}</span>
             <div className="pull-right button-group">
               {!isNew && (
-                <>
-                  <Button
-                    label={t('edit-svg-dashboard.buttons.to-dashboards-list')}
-                    onClick={onToDashboardsList}
-                  />
-                  <Button label={t('edit-svg-dashboard.buttons.preview')} onClick={onPreview} />
-                </>
+                <Button label={t('edit-svg-dashboard.buttons.preview')} onClick={onPreview} />
               )}
-              <Button
-                type="success"
-                label={t('edit-svg-dashboard.buttons.save')}
-                disabled={!isValidDashboard}
-                onClick={onSave}
-              />
               {isNew ? (
                 <Button label={t('edit-svg-dashboard.buttons.cancel')} onClick={onCancel} />
               ) : (
@@ -47,6 +35,13 @@ const EditSvgDashboardHeader = observer(
                   onClick={onRemove}
                 />
               )}
+
+              <Button
+                type="primary"
+                label={t('edit-svg-dashboard.buttons.save')}
+                disabled={!isValidDashboard}
+                onClick={onSave}
+              />
             </div>
           </div>
         </BootstrapRow>
@@ -79,7 +74,7 @@ const LeftPanel = observer(({ svgStore, onSelectElement }) => {
       {svgStore.hasSvg ? (
         <SvgView svg={svgStore.svg} className="svg-view" onSelectElement={onSelectElement} />
       ) : (
-        <SvgFileSelector setSvg={(content) => svgStore.setSvg(content)} buttonType="success" />
+        <SvgFileSelector setSvg={(content) => svgStore.setSvg(content)} buttonType="primary" />
       )}
     </div>
   );
@@ -93,7 +88,7 @@ const CommonParametersForm = observer(({ commonParametersStore, svgStore, childr
         <span className="flex-max-grow">{t(commonParametersStore.title)}</span>
         {svgStore.hasSvg && (
           <div className="pull-right button-group">
-            <SvgFileSelector setSvg={(content) => svgStore.setSvg(content)} />
+            <SvgFileSelector setSvg={(content) => svgStore.setSvg(content)} buttonType="primary" />
             <Button
               title={t('edit-svg-dashboard.buttons.download-svg')}
               icon="glyphicon glyphicon-download-alt"

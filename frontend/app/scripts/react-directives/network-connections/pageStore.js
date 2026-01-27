@@ -1,11 +1,9 @@
-'use strict';
-
-import Connections, { connectionsStoreFromJson, connectionsToJson } from './connectionsStore';
-import SwitcherStore, { switcherStoreToJson, switcherStoreFromJson } from './switcherStore';
-import ConfirmModalState from '../components/modals/confirmModalState';
 import { makeAutoObservable, runInAction } from 'mobx';
 import i18n from '../../i18n/react/config';
+import ConfirmModalState from '../components/modals/confirmModalState';
 import SelectModalState from '../components/modals/selectModalState';
+import Connections, { connectionsStoreFromJson, connectionsToJson } from './connectionsStore';
+import SwitcherStore, { switcherStoreToJson, switcherStoreFromJson } from './switcherStore';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
@@ -39,7 +37,7 @@ class NetworkConnectionsPageStore {
     return this.confirmModalState.show(i18n.t('network-connections.labels.changes'), [
       {
         label: i18n.t('network-connections.buttons.save'),
-        type: 'success',
+        type: 'primary',
         result: 'save',
       },
       {
@@ -155,7 +153,7 @@ class NetworkConnectionsPageStore {
   async deleteConnection(connection) {
     if ((await this.showDeleteConnectionConfirmModal()) == 'ok') {
       if (!connection.isNew) {
-        if (!(await this.save(this.connections.connections.filter(item => item !== connection)))) {
+        if (!(await this.save(this.connections.connections.filter((item) => item !== connection)))) {
           return;
         }
       }
@@ -173,7 +171,7 @@ class NetworkConnectionsPageStore {
       },
     };
     try {
-      const needToReload = jsonToSave.ui.connections.some(cn => !cn.connection_uuid);
+      const needToReload = jsonToSave.ui.connections.some((cn) => !cn.connection_uuid);
       await this.saveConnections(jsonToSave);
       this.connections.submit();
       this.switcher.submit();

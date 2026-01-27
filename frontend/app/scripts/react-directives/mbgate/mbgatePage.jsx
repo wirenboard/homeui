@@ -64,11 +64,11 @@ const MbGateSettingsPage = observer(({ pageStore }) => {
       <ConfirmModal {...pageStore.selectControlsModalState.confirmModalState} />
       <PageTitle title={t('mbgate.title')}>
         <Button
-          type="success"
+          type="primary"
           label={t('mbgate.buttons.save')}
-          onClick={() => pageStore.save()}
-          additionalStyles={'pull-right'}
+          additionalStyles="pull-right"
           disabled={!pageStore.allowSave}
+          onClick={() => pageStore.save()}
         />
       </PageTitle>
       <PageBody loading={pageStore.pageWrapperStore.loading}>

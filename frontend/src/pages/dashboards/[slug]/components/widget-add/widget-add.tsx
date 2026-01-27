@@ -110,7 +110,7 @@ export const WidgetAdd = observer(({
                   <div className="widgetAdd-actions">
                     <Tooltip text={t('widget.buttons.delete')} placement="bottom">
                       <Button
-                        variant="secondary"
+                        variant="danger"
                         size="small"
                         icon={<TrashIcon />}
                         onClick={() => setIsConfirmDelete(true)}
@@ -118,7 +118,6 @@ export const WidgetAdd = observer(({
                     </Tooltip>
                     <Tooltip text={t('widget.buttons.copy')} placement="bottom">
                       <Button
-                        variant="secondary"
                         size="small"
                         icon={<CopyIcon />}
                         onClick={copyWidget}
@@ -126,7 +125,6 @@ export const WidgetAdd = observer(({
                     </Tooltip>
                     <Tooltip text={t('widget.buttons.edit')} placement="bottom">
                       <Button
-                        variant="secondary"
                         size="small"
                         icon={<EditIcon />}
                         onClick={() => setIsEditing(!isEditing)}

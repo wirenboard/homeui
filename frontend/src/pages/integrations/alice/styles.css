@@ -36,16 +36,6 @@
     gap: 12px;
 }
 
-.alice-separator {
-    color: var(--text-color);
-    width: 100%;
-    margin: 0;
-
-    @media (max-width: 990px) {
-        display: none;
-    }
-}
-
 .alice-mainButtons {
     display: flex;
     flex-direction: column;
@@ -71,19 +61,19 @@
     }
 }
 
-.alice-roomSelected {
-    background: var(--light-gray-color);
-    font-weight: bold;
+.alice-tabs {
+    max-width: 100%;
 }
 
-.alice-roomSelectedIcon {
-    max-width: 12px;
+.alice-tabs li:nth-child(1),
+.alice-tabs li:nth-child(2) {
+    font-weight: bold;
 }
 
 .alice-headerContainer {
     margin: 0 0 8px;
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
     min-height: 38px;
 }
@@ -102,10 +92,6 @@
 .alice-title {
     font-size: 15px;
     margin-left: 8px;
-}
-
-.alice-roomName {
-    text-align: left;
 }
 
 .alice-onboarding {

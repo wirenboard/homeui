@@ -114,7 +114,6 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
 
           {!!id && (
             <Button
-              size="small"
               type="button"
               icon={<CopyIcon />}
               variant="secondary"
@@ -130,10 +129,9 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
             />
           )}
           <Button
-            size="small"
             type="button"
             icon={<TrashIcon />}
-            variant="secondary"
+            variant="danger"
             isOutlined
             onClick={() => {
               if (id) {
@@ -147,7 +145,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
             type="submit"
             disabled={!data.name}
             label={t('alice.buttons.save')}
-            variant="secondary"
+            variant="primary"
           />
         </form>
         <div>

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.164.0) stable; urgency=medium
+
+  * Update all buttons and common components according to the instruction
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 17:04:00 +0300
+
 wb-mqtt-homeui (2.163.2) stable; urgency=medium
 
   * Fix device-manager's relative paths

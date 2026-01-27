@@ -32,7 +32,7 @@ const TabPaneHeader = observer(({ connection, onToggleState }) => {
   return (
     <BootstrapRow>
       <div className="col-xs-12 col-md-3 col-lg-2">
-        <label className={'tab-pane-header-label'}>{t(label)}</label>
+        <label className="tab-pane-header-label">{t(label)}</label>
       </div>
       <div
         className={
@@ -79,16 +79,16 @@ const TabPaneButtons = observer(({ onSave, onDelete, connection }) => {
           <Button
             key="save"
             label={t('network-connections.buttons.save')}
-            type="success"
-            onClick={onSave}
+            type="primary"
             disabled={!connection.isDirty || connection.hasErrors}
+            onClick={onSave}
           />
           <Button
             key="cancel"
             label={t('network-connections.buttons.cancel')}
             type="default"
-            onClick={() => connection.reset()}
             disabled={!connection.isDirty || connection.isNew}
+            onClick={() => connection.reset()}
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ const ConnectionsEditor = observer(
     const { t } = useTranslation();
     return (
       <VerticalTabs selectedIndex={connections.selectedConnectionIndex} onSelect={onSelect}>
-        <TabsList className={'col-sm-4 col-md-3 col-lg-2'}>
+        <TabsList className="col-sm-4 col-md-3 col-lg-2">
           {makeTabItems(connections.connections)}
           <Button
             label={t('network-connections.buttons.add-connection')}
@@ -127,7 +127,7 @@ const ConnectionsEditor = observer(
             onClick={onAdd}
           />
         </TabsList>
-        <TabContent className={'col-sm-8 col-md-9 col-lg-10'}>
+        <TabContent className="col-sm-8 col-md-9 col-lg-10">
           {makeTabPanes(connections.connections, onSave, onDelete, onToggleState)}
         </TabContent>
       </VerticalTabs>

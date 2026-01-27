@@ -142,6 +142,10 @@ export default class AliceStore {
     });
   }
 
+  get roomList() {
+    return Array.from(this.rooms);
+  }
+
   async unlinkController(): Promise<SuccessMessageFetch> {
     return unlinkController();
   }

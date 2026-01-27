@@ -27,7 +27,7 @@ const FormModal = observer(({ id, active, title, formStore, onOk, onCancel, okBu
         <ModalFooter>
           <Button
             label={okButtonLabel}
-            type="success"
+            type="primary"
             disabled={formStore?.hasErrors}
             submit={true}
           />

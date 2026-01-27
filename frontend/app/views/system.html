@@ -21,15 +21,15 @@
                 <li>{{'backup.rootfs_warning2' | translate}}</li>
                 <li>{{'backup.rootfs_warning3' | translate}}</li>
             </ul>
-            <a type="button" class="btn btn-success btn-lg pull-left" style="margin-right: 10px;" ng-href="fwupdate/download/rootfs" ng-disabled="!btnEnabled" download>
+            <a type="button" class="btn btn-primary pull-left" style="margin-right: 10px;" ng-href="fwupdate/download/rootfs" ng-disabled="!btnEnabled" download>
                 <i class="glyphicon glyphicon-save"></i> <span>{{'backup.download_rootfs_button' | translate}}</span>
             </a>
             &nbsp;
-            <a type="button" class="btn btn-success btn-lg pull-left" style="margin-right: 10px;" ng-href="fwupdate/download/configs" ng-disabled="!btnEnabled" download>
+            <a type="button" class="btn btn-primary pull-left" style="margin-right: 10px;" ng-href="fwupdate/download/configs" ng-disabled="!btnEnabled" download>
                 <i class="glyphicon glyphicon-save"></i> <span>{{'backup.download_configs_button' | translate}}</span>
             </a>
             &nbsp;
-            <a type="button" class="btn btn-success btn-lg pull-left" ng-href="fwupdate/download/everything" ng-disabled="!btnEnabled" download>
+            <a type="button" class="btn btn-primary pull-left" ng-href="fwupdate/download/everything" ng-disabled="!btnEnabled" download>
                 <i class="glyphicon glyphicon-save"></i> <span>{{'backup.download_everything_button' | translate}}</span>
             </a>
 
@@ -48,12 +48,12 @@
                 <span class="spinner-loader" translate>{{'collector.states.checking'}}</span>
             </div>
 
-            <button type="button" class="btn btn-success btn-lg pull-left" ng-click="btnMethod()" ng-disabled="!btnEnabled"
+            <button type="button" class="btn btn-primary pull-left" ng-click="btnMethod()" ng-disabled="!btnEnabled"
                     ng-if="!href" ng-show="btnVisible" translate>
                 {{ text }}
             </button>
 
-            <a type="button" class="btn btn-success btn-lg pull-left" ng-href="{{href}}" ng-disabled="!btnEnabled"
+            <a type="button" class="btn btn-primary pull-left" ng-href="{{href}}" ng-disabled="!btnEnabled"
                ng-if="href" ng-show="btnVisible" download>
                 {{ text }}
             </a>

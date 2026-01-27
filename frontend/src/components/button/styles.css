@@ -30,11 +30,13 @@
 .button-m {
     font-size: var(--font-size-medium);
     padding: 6px 12px;
+    height: 34px;
 }
 
 .button-s {
     font-size: var(--font-size-small);
-    padding: 4px 8px;
+    padding: 4px 10px;
+    height: 30px;
 }
 
 .button-loading {
@@ -55,9 +57,13 @@
     border: 1px solid var(--primary-color);
 }
 
-.button-primary:not(:disabled):hover {
+.button-primary:not(:disabled):not(.button-outlined):hover {
     background: var(--primary-color-hover);
     border: 1px solid var(--primary-color-hover);
+}
+
+.button-primary.button-outlined {
+    color: var(--primary-color);
 }
 
 .button-secondary {
@@ -70,32 +76,40 @@
     fill: var(--text-color) !important;
 }
 
-.button-secondary:not(:disabled):hover {
+.button-secondary:not(:disabled):not(.button-outlined):hover {
     background: var(--secondary-color-hover);
 }
 
-.button-success {
-    background: var(--success-color);
-}
-
-.button-success:not(:disabled):hover {
-    background: var(--success-color-hover);
+.button-secondary.button-outlined {
+    color: var(--text-color);
 }
 
 .button-danger {
+    border: 1px solid var(--danger-color);
     background: var(--danger-color);
 }
 
-.button-danger:not(:disabled):hover {
+.button-danger:not(:disabled):not(.button-outlined):hover {
+    border: 1px solid var(--danger-color-hover);
     background: var(--danger-color-hover);
 }
 
+.button-danger.button-outlined {
+    color: var(--danger-color);
+}
+
 .button-warn {
+    border: 1px solid var(--warn-color);
     background: var(--warn-color);
 }
 
 .button-warn:not(:disabled):hover {
+    border: 1px solid var(--warn-color-hover);
     background: var(--warn-color-hover);
+}
+
+.button-warn.button-outlined {
+    color: var(--warn-color);
 }
 
 .button-unaccented {
@@ -128,8 +142,9 @@
 }
 
 .button-m .button-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+    margin: 3px;
 }
 
 .button-s .button-icon {
@@ -146,4 +161,5 @@
     border: 0 !important;
     padding-right: 4px;
     padding-left: 4px;
+    background: transparent;
 }

@@ -52,6 +52,7 @@ export const useTabs = ({
 
   return {
     activeTab,
+    setActiveTab,
     onTabChange,
   };
 };

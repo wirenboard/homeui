@@ -14,7 +14,7 @@ export const Confirm = ({
   confirmCallback,
   closeCallback,
   width,
-  variant = 'default',
+  variant = 'primary',
   isOpened = false,
   isOverlayCloseDisabled = false,
   isPreventSubmit = false,
@@ -56,7 +56,7 @@ export const Confirm = ({
             disabled={isDisabled}
             className="dialog-action"
             label={acceptLabel || t('modal.labels.yes')}
-            variant={variant === 'danger' ? 'danger' : 'primary'}
+            variant={variant}
             onClick={confirmCallback}
           />
         </div>

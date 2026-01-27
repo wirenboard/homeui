@@ -14,7 +14,7 @@ const ViewSvgDashboardHeader = observer(({ title, forceFullscreen, onEdit, canEd
       <div className="pull-right button-group">
         {canEdit && !(fullscreen.isFullscreen || forceFullscreen) && (
           <Button
-            type="success"
+            type="primary"
             label={t('view-svg-dashboard.buttons.edit')}
             onClick={onEdit}
           />

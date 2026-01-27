@@ -21,7 +21,7 @@ const JsonBindingsEditor = ({ bindingsStore }) => {
       <div className="json-editor-buttons">
         <div className="pull-right button-group">
           <Button
-            type="success"
+            type="primary"
             label={t('edit-svg-dashboard.buttons.save')}
             onClick={() => bindingsStore.saveJson()}
           />

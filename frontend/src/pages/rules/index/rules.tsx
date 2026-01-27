@@ -57,7 +57,7 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
       actions={
         errors.length ? null : (
           <Button
-            variant="success"
+            variant="primary"
             label={t('rules.buttons.create')}
             onClick={createRule}
           />
@@ -70,31 +70,30 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
             <TableCell ellipsis>
               <div className="rules-name">{rule.virtualPath}</div>
             </TableCell>
-            <TableCell width={40} visibleOnHover preventClick>
+            <TableCell width={30} visibleOnHover preventClick>
               <Tooltip text={t('rules.buttons.copy')} placement="top">
                 <Button
                   className="rules-icon"
                   size="small"
-                  variant="secondary"
                   icon={<CopyIcon />}
                   aria-label={`${t('rules.buttons.copy')} ${rule.virtualPath}`}
                   onClick={() => copyRule(rule.virtualPath)}
                 />
               </Tooltip>
             </TableCell>
-            <TableCell width={40} visibleOnHover preventClick>
+            <TableCell width={30} visibleOnHover preventClick>
               <Tooltip text={t('rules.buttons.delete')} placement="top">
                 <Button
                   className="rules-icon"
                   size="small"
-                  variant="secondary"
+                  variant="danger"
                   icon={<TrashIcon />}
                   aria-label={`${t('rules.buttons.delete')} ${rule.virtualPath}`}
                   onClick={() => setDeletedRulePath(rule.virtualPath)}
                 />
               </Tooltip>
             </TableCell>
-            <TableCell width={20}>
+            <TableCell width={26} align="center">
               {!!rule.error && (
                 <Tooltip text={t('rules.labels.with-errors')} placement="top">
                   <div className="rules-iconWrapper">

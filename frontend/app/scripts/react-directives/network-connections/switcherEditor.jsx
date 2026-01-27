@@ -34,15 +34,15 @@ const SwitcherElement = ({ connection, moveLeft, moveRight }) => {
       ref={setNodeRef}
     >
       {!isMobile && moveLeft && (
-        <Button onClick={onMoveLeft} icon={'glyphicon glyphicon-arrow-left'} />
+        <Button icon="glyphicon glyphicon-arrow-left" onClick={onMoveLeft} />
       )}
       <div className="priority-item-content" {...listeners} {...attributes}>
         <ConnectionItem connection={connection} />
       </div>
       {isMobile && moveLeft && (
-        <Button onClick={onMoveLeft} icon={'glyphicon glyphicon-arrow-up'} />
+        <Button icon="glyphicon glyphicon-arrow-up" onClick={onMoveLeft} />
       )}
-      {moveRight && <Button onClick={onMoveRight} icon={rightIconClass} />}
+      {moveRight && <Button icon={rightIconClass} onClick={onMoveRight} />}
     </div>
   );
 };
@@ -120,16 +120,16 @@ const PageButtons = observer(({ switcher, onSave }) => {
           <Button
             key="save"
             label={t('network-connections.buttons.save')}
-            type="success"
-            onClick={onSave}
+            type="primary"
             disabled={!switcher.isDirty || switcher.hasErrors}
+            onClick={onSave}
           />
           <Button
             key="cancel"
             label={t('network-connections.buttons.cancel')}
             type="default"
-            onClick={() => switcher.reset()}
             disabled={!switcher.isDirty}
+            onClick={() => switcher.reset()}
           />
         </div>
       </div>
