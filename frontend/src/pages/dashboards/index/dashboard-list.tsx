@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
 import { ReactSortable } from 'react-sortablejs';
 import useResizeObserver from 'use-resize-observer';
 import CheckIcon from '@/assets/icons/check.svg';
@@ -23,6 +24,7 @@ import './styles.css';
 const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => {
   const { t } = useTranslation();
   const { ref, width } = useResizeObserver();
+  const isDesktop = useMediaQuery({ minWidth: 874 });
   const {
     dashboards,
     isLoading,
@@ -113,7 +115,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   </TableCell>
 
                   {hasEditRights && (
-                    <TableCell width={30} align="center" visibleOnHover preventClick>
+                    <TableCell width={30} align="center" visibleOnHover={isDesktop} preventClick>
                       <Tooltip text={t('dashboards.buttons.edit')} placement="top">
                         <Button
                           size="small"
@@ -132,7 +134,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   )}
 
                   {hasEditRights && (
-                    <TableCell width={30} align="center" visibleOnHover preventClick>
+                    <TableCell width={30} align="center" visibleOnHover={isDesktop} preventClick>
                       <Tooltip text={t('dashboards.buttons.delete')} placement="top">
                         <Button
                           size="small"

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
 import CopyIcon from '@/assets/icons/copy.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import WarnIcon from '@/assets/icons/warn.svg';
@@ -16,6 +17,7 @@ import './styles.css';
 
 const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
   const { t } = useTranslation();
+  const isDesktop = useMediaQuery({ minWidth: 874 });
   const { rules } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
   const [isRulesUpdating, setIsRulesUpdating] = useState(false);
@@ -70,7 +72,7 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
             <TableCell ellipsis>
               <div className="rules-name">{rule.virtualPath}</div>
             </TableCell>
-            <TableCell width={30} visibleOnHover preventClick>
+            <TableCell width={30} visibleOnHover={isDesktop} preventClick>
               <Tooltip text={t('rules.buttons.copy')} placement="top">
                 <Button
                   className="rules-icon"
@@ -81,7 +83,7 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
                 />
               </Tooltip>
             </TableCell>
-            <TableCell width={30} visibleOnHover preventClick>
+            <TableCell width={30} visibleOnHover={isDesktop} preventClick>
               <Tooltip text={t('rules.buttons.delete')} placement="top">
                 <Button
                   className="rules-icon"
