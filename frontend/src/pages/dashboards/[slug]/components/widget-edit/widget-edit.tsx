@@ -1,6 +1,7 @@
 import { json } from '@codemirror/lang-json';
 import CodeMirror from '@uiw/react-codemirror';
 import classNames from 'classnames';
+import i18n from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactSortable } from 'react-sortablejs';
@@ -22,7 +23,9 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
   const { t } = useTranslation();
   const [widgetCells, setWidgetCells] = useState<(CellSimple)[]>([]);
   const [isJsonView, setIsJsonView] = useState(false);
-  const [name, setName] = useState(widget?.name);
+  const [name, setName] = useState(typeof widget?.name === 'string'
+    ? { en: widget?.name, ru: widget?.name }
+    : widget?.name);
   const [isCompactView, setIsCompactView] = useState(Boolean(widget?.compact));
   const [description, setDescription] = useState(widget?.description);
   const [code, setCode] = useState('');
@@ -44,7 +47,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
       }
       return { ...data };
     }));
-    setName(widget.name);
+    setName(typeof widget?.name === 'string' ? { en: widget?.name, ru: widget?.name } : widget?.name);
     setIsCompactView(widget.compact);
   }, [widget.id]);
 
@@ -78,7 +81,12 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
     }
     try {
       const data = JSON.parse(code);
-      setName(data.name || '');
+      let name = data.name || { en: '', ru: '' };
+      if (typeof name === 'string') {
+        name = { en: data.name, ru: data.name };
+      }
+
+      setName(name);
       setWidgetCells(data.cells || []);
       setDescription(data.description || '');
       setIsCompactView(data.compact || false);
@@ -93,14 +101,29 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
       .map(({ name, id }) => ({ label: name, value: id }));
   }, [widgetCells]);
 
+  const handleSave = () => {
+    const nameWithTranslations = { ...name };
+    const anotherLanguage = Object.keys(i18n.options.resources).filter((lang) => lang !== i18n.language).at(0);
+    if (!name[anotherLanguage]) {
+      nameWithTranslations[anotherLanguage] = name[i18n.language];
+    }
+    onSave({
+      name: nameWithTranslations,
+      description,
+      id: widget.id,
+      cells: widgetCells,
+      compact: isCompactView,
+    });
+  };
+
   return (
     <Confirm
       className="widgetEdit"
       isOpened={isOpened}
-      heading={widget.id ? `${t('widget.labels.edit')} ${widget.name}` : t('widget.labels.create')}
+      heading={widget.id ? `${t('widget.labels.edit')} ${widget.localizedName}` : t('widget.labels.create')}
       closeCallback={onClose}
       width={650}
-      isDisabled={!isCodeValid || !name || !widgetCells.length}
+      isDisabled={!isCodeValid || !name[i18n.language] || !widgetCells.length}
       acceptLabel={t('widget.buttons.save')}
       headerActions={isJsonView
         ? (
@@ -118,15 +141,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
           />
         )
       }
-      confirmCallback={() => {
-        onSave({
-          name,
-          description,
-          id: widget.id,
-          cells: widgetCells,
-          compact: isCompactView,
-        });
-      }}
+      confirmCallback={handleSave}
       isOverlayCloseDisabled
       isPreventSubmit
     >
@@ -155,10 +170,12 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
               <Input
                 className={classNames('widgetEdit-input', 'widgetEdit-name')}
                 placeholder={t('widget.labels.name')}
-                value={name}
+                value={name[i18n.language]}
                 isDisabled={isJsonView}
                 autoFocus
-                onChange={(value: string) => setName(value)}
+                onChange={(value: string) => {
+                  setName({ ...name, [i18n.language]: value });
+                }}
               />
 
               <Textarea
@@ -194,6 +211,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                 setList={(val) => {
                   if (val.length) {
                     setWidgetCells(val.map((cell: any) => {
+                      // eslint-disable-next-line
                       const { chosen, ...value } = cell;
                       return value;
                     }));
@@ -218,8 +236,26 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                     <div className="widgetEdit-id">{cell.id}</div>
                     <Input
                       className="widgetEdit-controlName"
-                      value={cell.name}
-                      onChange={(name: string) => updateCell(cell.id, { name })}
+                      value={cell.name ? (typeof cell.name === 'string' ? cell.name : cell.name[i18n.language]) : ''}
+                      onChange={(value: string) => {
+                        const name = typeof cell.name === 'string'
+                          ? { [i18n.language]: value }
+                          : { ...cell.name, [i18n.language]: value };
+                        updateCell(cell.id, { name });
+                      }}
+                      onBlur={() => {
+                        if (typeof cell.name === 'string') {
+                          cell.name = { [i18n.language]: cell.name };
+                          updateCell(cell.id, { name: cell.name });
+                        }
+                        const anotherLanguage = Object.keys(i18n.options.resources)
+                          .filter((lang) => lang !== i18n.language)
+                          .at(0);
+                        if (!cell.name[anotherLanguage]) {
+                          cell.name[anotherLanguage] = cell.name[i18n.language];
+                          updateCell(cell.id, { name: cell.name });
+                        }
+                      }}
                     />
                     <div className="widgetEdit-type">
                       {cells.has(cell.id)

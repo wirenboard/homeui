@@ -25,6 +25,7 @@ interface BaseInputProps {
   isInvalid?: boolean;
   isWithExplicitChanges?: boolean;
   onChange?: (_val: string | number, _badInput?: boolean) => void;
+  onBlur?: (_ev: any) => void;
   onChangeEvent?: (_ev: any) => void;
 }
 

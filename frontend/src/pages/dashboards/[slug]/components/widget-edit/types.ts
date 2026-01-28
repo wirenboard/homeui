@@ -3,7 +3,7 @@ import { type Cell } from '@/stores/device';
 
 export interface CellSimple {
   id: string;
-  name: string;
+  name: string | Record<string, string>;
   type: string;
   extra: {
     invert?: boolean;
