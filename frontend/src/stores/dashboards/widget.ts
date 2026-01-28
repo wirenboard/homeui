@@ -1,10 +1,11 @@
 import { generateNextId } from '@/utils/id';
+import i18n from '~/i18n/react/config';
 import type DashboardsStore from './dashboards-store';
 import { type WidgetBase } from './types';
 
 export class Widget {
   declare id: string;
-  declare name: string;
+  declare name: string | Record<string, string>;
   declare description: string;
   declare compact: boolean;
   declare cells: any[];
@@ -35,6 +36,13 @@ export class Widget {
 
   delete(id: string) {
     this.#dashboardsStore.deleteWidget(id);
+  }
+
+  get localizedName() {
+    if (!this.name) {
+      return '';
+    }
+    return typeof this.name === 'string' ? this.name : this.name[i18n.language];
   }
 
   get associatedDashboards() {

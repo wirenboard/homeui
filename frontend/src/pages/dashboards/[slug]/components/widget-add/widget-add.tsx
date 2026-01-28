@@ -27,13 +27,13 @@ export const WidgetAdd = observer(({
   isOpened,
   onClose,
 }: WidgetAddProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [widgetId, setWidgetId] = useState(Array.from(widgets.keys()).at(0));
   const [isEditing, setIsEditing] = useState<boolean | 'new'>(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
   const widgetList = useMemo(() => {
-    return Array.from(widgets.values()).map((widget) => ({ id: widget.id, label: widget.name }));
+    return Array.from(widgets.values()).map((widget) => ({ id: widget.id, label: widget.localizedName }));
   }, [widgets.keys()]);
 
   const { activeTab, onTabChange } = useTabs({
@@ -145,7 +145,7 @@ export const WidgetAdd = observer(({
                 <div className="widgetAdd-content">
                   <Card
                     className="widgetAdd-card"
-                    heading={widget.name}
+                    heading={widget.localizedName}
                     key={widget.id}
                     isBodyVisible
                   >
@@ -154,16 +154,20 @@ export const WidgetAdd = observer(({
                         {cells.has(cell.id) ? (
                           <Cell
                             cell={cells.get(cell.id)}
-                            name={cell.name}
+                            name={cell.name && (typeof cell.name === 'string' ? cell.name : cell.name[i18n.language])}
                             isCompact={widgets.get(widgetId).compact}
                             extra={cell.extra}
                           />
                         ) : cell.type === 'separator' ? (
                           <div className="dashboard-separator">
-                            {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
+                            {!!cell.name && (
+                              <span className="dashboard-separatorTitle">
+                                {typeof cell.name === 'string' ? cell.name : cell.name[i18n.language]}
+                              </span>
+                            )}
                           </div>
                         )
-                          : cell.name || 'nosuchcell'
+                          : typeof cell.name === 'string' ? cell.name : cell.name[i18n.language] || 'nosuchcell'
                         }
                       </Fragment>
                     ))}
@@ -215,7 +219,7 @@ export const WidgetAdd = observer(({
               </ul>
             </>
           )}
-          <p>{t('widget.prompt.delete')} <b>{widgets.get(widgetId).name}</b>?</p>
+          <p>{t('widget.prompt.delete')} <b>{widgets.get(widgetId).localizedName}</b>?</p>
         </Confirm>
       )}
     </>

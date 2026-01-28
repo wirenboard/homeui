@@ -2592,109 +2592,164 @@
     ],
     "widgets": [
         {
+            "id": "widget1",
+            "compact": false,
+            "description": "",
+            "name": {
+                "ru": "Статус питания",
+                "en": "Power Supply"
+            },
             "cells": [
                 {
                     "id": "power_status/Vin",
-                    "name": "Input Voltage"
+                    "name": {
+                        "ru": "Входное напряжение",
+                        "en": "Input Voltage"
+                    }
                 },
                 {
                     "id": "power_status/working on battery",
-                    "name": "On Battery",
+                    "name": {
+                        "ru": "Работа от батареи",
+                        "en": "Working on battery"
+                    },
                     "extra": {},
                     "type": "switch"
                 },
                 {
                     "id": "wb-gpio/V_OUT",
-                    "name": "Vout Switch",
+                    "name": {
+                        "ru": "Выход питания",
+                        "en": "Vout Switch"
+                    },
                     "extra": {},
                     "type": "switch"
                 }
-            ],
-            "compact": false,
-            "description": "",
-            "id": "widget1",
-            "name": "Power Supply"
+            ]
         },
         {
+            "id": "widget2",
+            "compact": true,
+            "description": "",
+            "name": {
+                "ru": "Зуммер",
+                "en": "Buzzer"
+            },
             "cells": [
                 {
                     "id": "buzzer/enabled"
                 }
-            ],
-            "compact": true,
-            "description": "",
-            "id": "widget2",
-            "name": "Buzzer"
+            ]
         },
         {
+            "id": "widget3",
+            "compact": false,
+            "description": "",
+            "name": {
+                "ru": "Сеть",
+                "en": "Network"
+            },
             "cells": [
                 {
                     "id": "network/Ethernet IP",
-                    "name": "Ethernet 1",
+                    "name": {
+                        "ru": "Ethernet 1 IP",
+                        "en": "Ethernet 1 IP"
+                    },
                     "extra": {},
                     "type": "text"
                 },
                 {
                     "id": "network/Ethernet 2 IP",
-                    "name": "Ethernet 2",
+                    "name": {
+                        "ru": "Ethernet 2 IP",
+                        "en": "Ethernet 2 IP"
+                    },
                     "extra": {},
                     "type": "text"
                 },
                 {
                     "id": "network/Wi-Fi IP",
+                    "name": {
+                        "ru": "Wi-Fi 1 IP",
+                        "en": "Wi-Fi 1 IP"
+                    },
                     "extra": {},
                     "type": "text"
                 },
                 {
                     "id": "network/Wi-Fi 2 IP",
+                    "name": {
+                        "ru": "Wi-Fi 2 IP",
+                        "en": "Wi-Fi 2 IP"
+                    },
                     "extra": {},
                     "type": "text"
                 },
                 {
                     "id": "network/GPRS IP",
-                    "name": "WWAN",
+                    "name": {
+                        "ru": "GPRS IP",
+                        "en": "GPRS IP"
+                    },
                     "extra": {},
                     "type": "text"
                 }
-            ],
-            "compact": false,
-            "description": "",
-            "id": "widget3",
-            "name": "Network IP Addresses"
+            ]
         },
         {
+            "id": "widget4",
+            "compact": false,
+            "description": "",
+            "name": {
+                "ru": "Клемма A1",
+                "en": "A1 Terminal"
+            },
             "cells": [
                 {
                     "id": "wb-adc/A1",
-                    "name": "Input Voltage",
+                    "name": {
+                        "ru": "Входное напряжение",
+                        "en": "Input Voltage"
+                    },
                     "extra": {},
                     "type": "voltage"
                 },
                 {
                     "id": "wb-gpio/A1_IN",
-                    "name": "Input State",
+                    "name": {
+                        "ru": "Состояние входа",
+                        "en": "Input State"
+                    },
                     "extra": {},
                     "type": "switch"
                 },
                 {
                     "id": "wb-gpio/A1_OUT",
-                    "name": "Output Switch",
+                    "name": {
+                        "ru": "Состояние выхода",
+                        "en": "Output Switch"
+                    },
                     "extra": {},
                     "type": "switch"
                 }
-            ],
-            "compact": false,
-            "description": "",
-            "id": "widget4",
-            "name": "A1 Terminal"
+            ]
         },
         {
-            "name": "System Info",
+            "id": "widget5",
+            "name": {
+                "ru": "Система",
+                "en": "System"
+            },
             "description": "",
             "compact": false,
             "cells": [
                 {
                     "id": "system/HW Revision",
+                    "name": {
+                        "ru": "Версия контроллера",
+                        "en": "HW Revision"
+                    },
                     "extra": {},
                     "type": "text"
                 },
@@ -2702,123 +2757,182 @@
                     "id": "system/Short SN",
                     "extra": {},
                     "type": "text",
-                    "name": "Serial Number"
+                    "name": {
+                        "ru": "Серийный номер",
+                        "en": "Serial Number"
+                    }
                 },
                 {
                     "id": "system/Batch No",
                     "extra": {},
-                    "type": "text"
+                    "type": "text",
+                    "name": {
+                        "ru": "Номер партии",
+                        "en": "Batch No"
+                    }
                 },
                 {
                     "id": "system/Current uptime",
-                    "name": "Uptime",
+                    "name": {
+                        "ru": "Время работы",
+                        "en": "Uptime"
+                    },
                     "extra": {},
                     "type": "text"
                 },
                 {
                     "id": "hwmon/Board Temperature",
                     "extra": {},
+                    "name": {
+                        "ru": "Температура корпуса",
+                        "en": "Board Temperature"
+                    },
                     "type": "temperature"
                 },
                 {
                     "id": "hwmon/CPU Temperature",
                     "extra": {},
+                    "name": {
+                        "ru": "Температура процессора",
+                        "en": "CPU Temperature"
+                    },
                     "type": "temperature"
                 }
-            ],
-            "id": "widget5"
+            ]
         },
         {
-            "name": "A2 Terminal",
+            "id": "widget6",
+            "name": {
+                "ru": "Клемма A2",
+                "en": "A2 Terminal"
+            },
             "description": "",
             "compact": false,
             "cells": [
                 {
                     "id": "wb-adc/A2",
-                    "name": "Input Voltage",
+                    "name": {
+                        "ru": "Входное напряжение",
+                        "en": "Input Voltage"
+                    },
                     "extra": {},
                     "type": "voltage"
                 },
                 {
                     "id": "wb-gpio/A2_IN",
-                    "name": "Input State",
+                    "name": {
+                        "ru": "Состояние входа",
+                        "en": "Input State"
+                    },
                     "extra": {},
                     "type": "switch"
                 },
                 {
                     "id": "wb-gpio/A2_OUT",
-                    "name": "Output Switch",
+                    "name": {
+                        "ru": "Состояние выхода",
+                        "en": "Output Switch"
+                    },
                     "extra": {},
                     "type": "switch"
                 }
-            ],
-            "id": "widget6"
+            ]
         },
         {
-            "name": "A3 Terminal",
+            "id": "widget7",
+            "name": {
+                "ru": "Клемма A3",
+                "en": "A3 Terminal"
+            },
             "description": "",
             "compact": false,
             "cells": [
                 {
                     "id": "wb-adc/A3",
-                    "name": "Input Voltage",
+                    "name": {
+                        "ru": "Входное напряжение",
+                        "en": "Input Voltage"
+                    },
                     "extra": {},
                     "type": "voltage"
                 },
                 {
                     "id": "wb-gpio/A3_IN",
-                    "name": "Input State",
+                    "name": {
+                        "ru": "Состояние входа",
+                        "en": "Input State"
+                    },
                     "extra": {},
                     "type": "switch"
                 },
                 {
                     "id": "wb-gpio/A3_OUT",
-                    "name": "Output Switch",
+                    "name": {
+                        "ru": "Состояние выхода",
+                        "en": "Output Switch"
+                    },
                     "extra": {},
                     "type": "switch"
                 }
-            ],
-            "id": "widget7"
+            ]
         },
         {
-            "name": "A4 Terminal",
+            "id": "widget8",
+            "name": {
+                "ru": "Клемма A4",
+                "en": "A4 Terminal"
+            },
             "description": "",
             "compact": false,
             "cells": [
                 {
                     "id": "wb-adc/A4",
-                    "name": "Input Voltage",
+                    "name": {
+                        "ru": "Входное напряжение",
+                        "en": "Input Voltage"
+                    },
                     "extra": {},
                     "type": "voltage"
                 },
                 {
                     "id": "wb-gpio/A4_IN",
-                    "name": "Input State",
+                    "name": {
+                        "ru": "Состояние входа",
+                        "en": "Input State"
+                    },
                     "extra": {},
                     "type": "switch"
                 },
                 {
                     "id": "wb-gpio/A4_OUT",
-                    "name": "Output Switch",
+                    "name": {
+                        "ru": "Состояние выхода",
+                        "en": "Output Switch"
+                    },
                     "extra": {},
                     "type": "switch"
                 }
-            ],
-            "id": "widget8"
+            ]
         },
         {
-            "name": "5Vout Teminal",
+            "id": "widget9",
+            "name": {
+                "ru": "Клемма 5Vout",
+                "en": "5Vout Terminal"
+            },
             "description": "",
             "compact": false,
             "cells": [
                 {
                     "id": "wb-gpio/5V_OUT",
-                    "name": "Output Switch",
+                    "name": {
+                        "ru": "Состояние выхода",
+                        "en": "Output Switch"
+                    },
                     "extra": {},
                     "type": "switch"
                 }
-            ],
-            "id": "widget9"
+            ]
         }
     ],
     "defaultDashboardId": "dashboard1"

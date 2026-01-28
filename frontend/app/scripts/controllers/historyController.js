@@ -1,10 +1,10 @@
 import plotlyDirective from '../directives/plotly';
 
 class ChartsControl {
-  constructor(deviceId, controlId, deviceName, controlName, valueType, groupName, widget) {
+  constructor(deviceId, controlId, deviceName, controlName, valueType, groupName, widget, locale) {
     this.name = (deviceName || deviceId) + ' / ' + (controlName || controlId);
     if (widget) {
-      this.name = widget.name + ' (' + this.name + ')';
+      this.name = (typeof widget.name === 'string' ? widget.name : widget.name[locale]) + ' (' + this.name + ')';
     }
     this.widget = widget;
     this.group = groupName;
@@ -225,7 +225,8 @@ class HistoryCtrl {
       cell.getName(this.$locale.id),
       cell.valueType,
       groupName,
-      widget
+      widget,
+      this.$locale.id,
     );
   }
 

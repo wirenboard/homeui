@@ -23,7 +23,7 @@ import type { DashboardPageProps } from './types';
 import './styles.css';
 
 const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPageProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { cells } = devicesStore;
   const { dashboards, widgets, isLoading } = dashboardsStore;
   const hasEditRights = authStore.hasRights(UserRole.Operator);
@@ -102,7 +102,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
               {dashboards.get(dashboardId).widgets.map((widgetId) => widgets.get(widgetId) ? (
                 <Card
                   id={widgetId}
-                  heading={widgets.get(widgetId)?.name}
+                  heading={widgets.get(widgetId)?.localizedName}
                   key={widgetId}
                   actions={actions}
                   isBodyVisible
@@ -110,18 +110,28 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
                   {widgets.get(widgetId).cells.map((cell, i) => (
                     <Fragment key={cell.id || i}>
                       {cells.has(cell.id) ? (
-                        <Cell
-                          cell={cells.get(cell.id)}
-                          name={cell.name}
-                          isCompact={widgets.get(widgetId).compact}
-                          extra={cell.extra}
-                        />
+                        <>
+                          <Cell
+                            cell={cells.get(cell.id)}
+                            name={typeof cell?.name === 'object' ? cell.name[i18n.language] : cell.name}
+                            isCompact={widgets.get(widgetId).compact}
+                            extra={cell.extra}
+                          />
+                        </>
                       ) : cell.type === 'separator' ? (
                         <div className="dashboard-separator">
-                          {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
+                          {!!cell.name && (
+                            <span className="dashboard-separatorTitle">
+                              {typeof cell.name === 'string' ? cell.name : cell.name[i18n.language]}
+                            </span>
+                          )}
                         </div>
                       )
-                        : <div>{cell.name || 'nosuchcell'}</div>
+                        : (
+                          <div>
+                            {typeof cell?.name === 'object' ? cell.name[i18n.language] : cell.name || 'nosuchcell'}
+                          </div>
+                        )
                       }
                     </Fragment>
                   ))}
@@ -170,7 +180,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
             <Trans
               i18nKey="dashboard.prompt.remove-description"
               values={{
-                name: widgets.get(removedWidgetId)?.name,
+                name: widgets.get(removedWidgetId)?.localizedName,
               }}
               components={[<b key="widget-name"/>]}
               shouldUnescape
