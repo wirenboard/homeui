@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.164.3) stable; urgency=medium
+
+  * Add release_suite to /device/info response
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 02 Feb 2026 16:00:00 +0400
+
 wb-mqtt-homeui (2.164.2) stable; urgency=medium
 
   * Show controller name on mobile resolution
