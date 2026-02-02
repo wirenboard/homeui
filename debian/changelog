@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.164.2) stable; urgency=medium
 
   * Show controller name on mobile resolution
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Feb, 02 Jan 2026 12:17:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 12:17:00 +0300
 
 wb-mqtt-homeui (2.164.1) stable; urgency=medium
 
