@@ -12,6 +12,10 @@
     }
 }
 
+.descriptionStatus-mobile {
+    overflow: hidden;
+}
+
 .descriptionStatus-description {
     display: block;
     color: var(--nav-text-color);
@@ -35,6 +39,12 @@
     border-radius: 50%;
 }
 
+.descriptionStatus-mobile .descriptionStatus-descriptionStatus {
+    position: fixed;
+    top: 2px;
+    right: 6px;
+}
+
 .descriptionStatus-descriptionStatusCompact {
     position: relative;
     top: 0;
@@ -49,6 +59,8 @@
     border-width: 1px;
     border-style: solid;
     border-radius: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .descriptionStatus-statusConnected {
