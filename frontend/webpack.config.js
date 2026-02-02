@@ -58,6 +58,7 @@ module.exports = (function makeWebpackConfig() {
       __IS_PROD__: JSON.stringify(isProd),
       __DISABLE_HTTPS_CHECK__: process.env.DISABLE_HTTPS_CHECK === 'true',
       __APP_NAME__: JSON.stringify(process.env.APP_NAME),
+      __APP_SHORT_NAME__: JSON.stringify(process.env.APP_SHORT_NAME),
       __LOGO__: JSON.stringify(process.env.LOGO),
       __LOGO_COMPACT__: JSON.stringify(process.env.LOGO_COMPACT),
       __HIDE_COMPACT_MENU__: process.env.HIDE_COMPACT_MENU === 'true',

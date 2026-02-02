@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.165.0) stable; urgency=medium
+
+  * Add short title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 13:36:00 +0300
+
 wb-mqtt-homeui (2.164.2) stable; urgency=medium
 
   * Show controller name on mobile resolution
