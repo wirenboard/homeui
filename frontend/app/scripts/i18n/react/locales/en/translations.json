@@ -636,7 +636,8 @@
          "add": "Add",
          "edit": "Edit",
          "delete": "Delete",
-         "enable-https": "Enable HTTPS"
+         "enable-https": "Enable HTTPS",
+         "use-http": "Stay on HTTP"
       }
    },
    "login": {
