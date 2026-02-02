@@ -13,4 +13,5 @@ export interface ConfirmationProps {
   isOverlayCloseDisabled?: boolean;
   variant?: 'primary' | 'danger';
   acceptLabel?: string;
+  cancelLabel?: string;
 }

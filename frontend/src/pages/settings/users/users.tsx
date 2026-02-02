@@ -131,6 +131,7 @@ const UsersPage = observer(() => {
         isOpened={isOpened}
         heading={t('users.labels.https')}
         acceptLabel={t('users.buttons.enable-https')}
+        cancelLabel={t('users.buttons.use-http')}
         closeCallback={handleClose}
         confirmCallback={handleConfirm}
       >

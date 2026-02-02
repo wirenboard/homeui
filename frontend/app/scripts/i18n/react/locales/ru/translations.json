@@ -662,7 +662,8 @@
          "add": "Добавить",
          "edit": "Редактировать",
          "delete": "Удалить",
-         "enable-https": "Настроить HTTPS"
+         "enable-https": "Настроить HTTPS",
+         "use-http": "Остаться на HTTP"
       }
    },
    "login": {
