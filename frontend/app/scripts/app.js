@@ -417,7 +417,7 @@ const realApp = angular
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
 
       $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {
-        document.title = name ? `${name} | ${__APP_NAME__}` : __APP_NAME__;
+        document.title = name ? `${name} | ${__APP_SHORT_NAME__ || __APP_NAME__}` : __APP_NAME__;
       });
 
       //.........................................................................

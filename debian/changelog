@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.165.0) stable; urgency=medium
+
+  * Add short title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 11:53:00 +0300
+
 wb-mqtt-homeui (2.164.1) stable; urgency=medium
 
   * Fix dashboards and rules actions on small resolutions
