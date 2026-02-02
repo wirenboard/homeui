@@ -12,7 +12,11 @@ export const DescriptionStatus = ({ mqttClient, isCompact, description }: Descri
   const isConnected = useMemo(() => mqttClient.isConnected(), [mqttClient.isConnected()]);
 
   return (
-    <div className="descriptionStatus">
+    <div
+      className={classNames('descriptionStatus', {
+        'descriptionStatus-mobile': !isDesktop,
+      })}
+    >
       {isCompact
         ? (
           <Tooltip
@@ -32,7 +36,7 @@ export const DescriptionStatus = ({ mqttClient, isCompact, description }: Descri
         )
         : (
           <>
-            {description && isDesktop
+            {description
               ? (
                 <>
                   <div className="descriptionStatus-description">
