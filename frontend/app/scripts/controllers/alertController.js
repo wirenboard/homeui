@@ -1,5 +1,5 @@
 class AlertCtrl {
-  constructor($scope, $timeout, AlertDelayMs, rolesFactory) {
+  constructor($scope, $timeout, AlertDelayMs) {
     'ngInject';
 
     var oldTimeout = null;
@@ -31,14 +31,6 @@ class AlertCtrl {
         }, AlertDelayMs);
       }
     });
-
-    $scope.stableNotice =
-      !localStorage.getItem('hide-stable-notice') &&
-      rolesFactory.current.role == rolesFactory.ROLE_THREE;
-    $scope.closeStableNotice = function () {
-      $scope.stableNotice = false;
-      localStorage.setItem('hide-stable-notice', true);
-    };
   }
 }
 

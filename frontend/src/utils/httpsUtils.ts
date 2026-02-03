@@ -8,10 +8,16 @@ export enum CertificateStatus {
   UNAVAILABLE = 'unavailable',
 }
 
+export enum ReleaseSuite {
+  Stable = 'stable',
+  Testing = 'testing',
+}
+
 interface DeviceInfo {
   sn: string;
   ip: string;
   https_cert: CertificateStatus;
+  release_suite: ReleaseSuite;
 }
 
 export interface HttpsStatus {
