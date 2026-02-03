@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.164.3) stable; urgency=medium
+wb-mqtt-homeui (2.165.0) stable; urgency=medium
 
   * Add release_suite to /device/info response
 
