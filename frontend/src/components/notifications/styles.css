@@ -12,7 +12,7 @@
 }
 
 .notifications div[role="alert"] {
-    font-size: 15px;
+    font-size: var(--font-size-medium);
     width: fit-content;
     padding: 12px 20px;
     box-shadow: var(--notification-box-shadow);

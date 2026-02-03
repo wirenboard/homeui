@@ -22,7 +22,7 @@
 
 .toggle-switchy > input + .toggle:before,
 .toggle-switchy > input + .toggle:after {display:flex; align-items:center; position:absolute; z-index:2; height:100%;}
-.toggle-switchy > input + .toggle:before {right:55%; font-size: 14px;}
+.toggle-switchy > input + .toggle:before {right:55%; font-size: var(--font-size-medium);}
 .toggle-switchy > input + .toggle:after {left:50%;}
 
 .toggle-switchy > input + .toggle:before {opacity:0;}
@@ -40,8 +40,8 @@
 
 .toggle-switchy > input + .toggle,
 .toggle-switchy > input + .toggle > .switch {border-radius:50px;}
-.toggle-switchy > input + .toggle:before {right:50%; font-size: 12px;}
-.toggle-switchy > input + .toggle:after {left:50%; font-size: 12px;}
+.toggle-switchy > input + .toggle:before {right:50%; font-size: var(--font-size-small);}
+.toggle-switchy > input + .toggle:after {left:50%; font-size: var(--font-size-small);}
 
 .toggle-switchy-invalid .toggle {
     background: var(--danger-color) !important;

@@ -95,7 +95,7 @@
     margin-top: 6px;
     text-align: center;
     color: var(--text-color);
-    font-size: 13px;
+    font-size: var(--font-size-small);
 }
 
 .range:disabled + .range-value {

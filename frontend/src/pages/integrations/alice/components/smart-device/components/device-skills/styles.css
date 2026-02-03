@@ -18,7 +18,7 @@
 
 .aliceDeviceSkills-gridLabel {
     color: var(--text-color);
-    font-size: 12px;
+    font-size: var(--font-size-small);
     height: 18px;
 }
 

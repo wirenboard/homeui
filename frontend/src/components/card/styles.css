@@ -40,7 +40,8 @@
 }
 
 .card-title {
-    font-size: 13px;
+    font-size: var(--font-size-medium);
+    font-weight: 400;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -54,7 +55,6 @@
 .card-actions {
     display: flex;
     gap: 12px;
-    font-size: 12px;
     align-items: center;
 }
 
@@ -97,7 +97,7 @@ button:not(:disabled).card-action:focus {
 .card-body {
     background: var(--card-body-background);
     padding: var(--card-body-padding);
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     color: var(--text-color);
     border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
     transition: background ease 300ms, color ease 300ms;
