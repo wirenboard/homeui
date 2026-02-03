@@ -596,6 +596,10 @@ const realApp = angular
           if (transition.to().name === 'login' && !rolesFactory.currentUserIsAutologinUser) {
             return $state.target('home');
           }
+          // Alice availability check on relogin
+          if (transition.from().name === 'login') {
+            checkIsAvailable();
+          }
         });
       });
     }
