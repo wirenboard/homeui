@@ -4,6 +4,12 @@
      ng-hide="$ctrl.haveRights">{{'configurations.labels.access-notice' | translate}}
 </div>
 
+<div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-show="$ctrl.showTestingOffer">
+    <button type="button" class="close" ng-click="$ctrl.closeTestingOffer()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    {{'system.labels.testing-offer' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" target="_blank" draggable="false">testing</a>
+</div>
+
 <section ng-if="$ctrl.haveRights">
     <cloud-status-meta-widget></cloud-status-meta-widget>
 

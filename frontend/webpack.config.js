@@ -77,9 +77,6 @@ module.exports = (function makeWebpackConfig() {
       minify: false,
 
       // Options passed to template
-
-      // Set to true when building for stable release
-      stableRelease: false,
     }),
   ];
 

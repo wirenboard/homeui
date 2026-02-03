@@ -30,8 +30,7 @@
         }
     },
     "heading": {
-        "loading": "Loading...",
-        "stableNotice": "If you want to be the first to get access to new features of our software, switch to "
+        "loading": "Loading..."
     },
     "dashboard": {
         "svg": {
