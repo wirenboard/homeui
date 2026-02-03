@@ -54,7 +54,8 @@ Depends: ${shlibs:Depends},
          wb-utils (>= 4.24.0~~),
          python3-bcrypt,
          python3-requests-unixsocket,
-         python3-cryptography
+         python3-cryptography,
+         wb-release-info
 Breaks: wb-configs (<< 3.38.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Description: Wiren Board Web UI web interface

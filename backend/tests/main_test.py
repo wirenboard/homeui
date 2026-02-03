@@ -2,7 +2,7 @@ import json
 import unittest
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 from wb.homeui_backend.cert import CertificateState
 from wb.homeui_backend.http_response import (
@@ -231,7 +231,9 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         self.context.sn = "ABC123"
         self.context.certificate_thread = MagicMock()
         self.context.certificate_thread.get_certificate_state.return_value = CertificateState.VALID
-        response = device_info_handler(self.request, self.context)
+        mock_file = mock_open(read_data="SUITE=stable\n")
+        with patch("wb.homeui_backend.main.open", mock_file):
+            response = device_info_handler(self.request, self.context)
 
         self.assertEqual(response.status, 200)
         self.assertEqual(
@@ -241,7 +243,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
                 ["Access-Control-Allow-Origin", "*"],
             ],
         )
-        self.assertEqual(json.loads(response.body), {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid"})
+        self.assertEqual(json.loads(response.body), {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid", "release_suite": "stable"})
 
 
 class UpdateUserHandlerTest(unittest.TestCase):
