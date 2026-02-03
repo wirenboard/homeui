@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.167.0) stable; urgency=medium
+
+  * Add save button to web ui settings
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 03 Feb 2026 11:17:00 +0300
+
 wb-mqtt-homeui (2.166.0) stable; urgency=medium
 
   * Add release_suite to /device/info response
