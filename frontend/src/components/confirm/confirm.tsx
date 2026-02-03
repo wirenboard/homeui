@@ -8,6 +8,7 @@ import './styles.css';
 export const Confirm = ({
   className,
   acceptLabel,
+  cancelLabel,
   heading,
   headerActions,
   children,
@@ -47,7 +48,7 @@ export const Confirm = ({
           <Button
             type="button"
             className="dialog-action"
-            label={t('modal.labels.cancel')}
+            label={cancelLabel || t('modal.labels.cancel')}
             variant="secondary"
             onClick={closeCallback}
           />

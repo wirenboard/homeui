@@ -1,8 +1,20 @@
-wb-mqtt-homeui (2.165.0) stable; urgency=medium
+wb-mqtt-homeui (2.166.0) stable; urgency=medium
 
   * Add release_suite to /device/info response
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Mon, 02 Feb 2026 16:00:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 03 Feb 2026 11:00:00 +0400
+
+wb-mqtt-homeui (2.165.1) stable; urgency=medium
+
+  * Fix stay http button label
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 16:29:00 +0300
+
+wb-mqtt-homeui (2.165.0) stable; urgency=medium
+
+  * Add short title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 13:36:00 +0300
 
 wb-mqtt-homeui (2.164.2) stable; urgency=medium
 
