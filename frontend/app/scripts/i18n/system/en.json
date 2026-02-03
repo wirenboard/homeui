@@ -1,6 +1,9 @@
 {
     "system": {
-        "title": "System"
+        "title": "System",
+        "labels": {
+            "testing-offer": "If you want to be the first to get access to new features of our software, switch to "
+        }
     },
     "collector": {
         "title": "Diagnostic collector",
