@@ -21,9 +21,14 @@ interface DevicePropertiesProps {
   onPropertyChange: (properties: any[]) => void;
 }
 
-const unitOptionsForInstance = (instance?: string): Option<string>[] => {
-  const list = (instance && (valueEventsByInstance[instance] || floatUnitsByInstance[instance])) || [];
-  return list.map((u) => ({ label: valueLabels[u] ?? unitLabels[u] ?? u, value: u }));
+const floatUnitOptionsForInstance = (instance?: string): Option<string>[] => {
+  const list = (instance && floatUnitsByInstance[instance]) || [];
+  return list.map((u) => ({ label: unitLabels[u] ?? u, value: u }));
+};
+
+const eventValueOptionsForInstance = (instance?: string): Option<string>[] => {
+  const list = (instance && valueEventsByInstance[instance]) || [];
+  return list.map((u) => ({ label: valueLabels[u] ?? u, value: u }));
 };
 
 // Returns float instances that are unused or belong to current property
@@ -74,7 +79,7 @@ export const DeviceProperties = observer(({
 
   // Options for Event "event-value" dropdown: keep all values but disable already used ones
   const getEventValueOptions = useCallback((instance?: string, currentPropertyIndex?: number) => {
-    const allOptions = unitOptionsForInstance(instance);
+    const allOptions = eventValueOptionsForInstance(instance);
     if (!instance) return allOptions;
 
     const usedValues = new Set(
@@ -95,7 +100,7 @@ export const DeviceProperties = observer(({
     currentPropertyIndex: number
   ) => {
     const currentProperty = properties[currentPropertyIndex];
-    const availableUnits = unitOptionsForInstance(newInstance).map((o) => o.value);
+    const availableUnits = floatUnitOptionsForInstance(newInstance).map((o) => o.value);
     const currentlySelectedUnit = currentProperty?.parameters?.unit;
 
     const updatedParams: PropertyParameters = {
@@ -126,7 +131,7 @@ export const DeviceProperties = observer(({
   ) => {
     const currentProperty = properties[currentPropertyIndex];
     const options = getEventValueOptions(newInstance, currentPropertyIndex);
-    const enabledValues = options.filter((o) => !o.isDisabled).map((o) => o.value);
+    const enabledValues = options.filter((o: any) => !o.isDisabled).map((o) => o.value);
     const currentValue = currentProperty.parameters?.value;
     const nextValue = enabledValues.includes(currentValue) ? currentValue : (enabledValues[0] ?? null);
 
@@ -148,7 +153,7 @@ export const DeviceProperties = observer(({
       case Property.Float: {
         const inst = floats.at(0);
         parameters.instance = inst;
-        const units = unitOptionsForInstance(inst).map((o) => o.value);
+        const units = floatUnitOptionsForInstance(inst).map((o) => o.value);
         // Add default unit for first instance only if float type units present
         if (units.length) {
           parameters.unit = units[0];
@@ -158,7 +163,7 @@ export const DeviceProperties = observer(({
       case Property.Event: {
         const inst = events.at(0);
         parameters.instance = inst;
-        const units = unitOptionsForInstance(inst).map((o) => o.value);
+        const units = eventValueOptionsForInstance(inst).map((o) => o.value);
         if (units.length) {
           // compute used event-values for this instance excluding current property index
           const usedValues = new Set(
@@ -238,10 +243,10 @@ export const DeviceProperties = observer(({
                   </div>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                    {unitOptionsForInstance(property.parameters?.instance).length ? (
+                    {floatUnitOptionsForInstance(property.parameters?.instance).length ? (
                       <Dropdown
                         value={property.parameters?.unit}
-                        options={unitOptionsForInstance(property.parameters?.instance)}
+                        options={floatUnitOptionsForInstance(property.parameters?.instance)}
                         onChange={({ value: unit }: Option<string>) => {
                           const val = properties.map((item, i) => i === key
                             ? { ...item, parameters: { ...item.parameters, unit } }
@@ -317,7 +322,7 @@ export const DeviceProperties = observer(({
               disabled={!freeInstances.length}
               onClick={() => {
                 const inst = freeInstances[0];
-                const units = unitOptionsForInstance(inst).map((o) => o.value);
+                const units = floatUnitOptionsForInstance(inst).map((o) => o.value);
                 const params: PropertyParameters = { instance: inst };
                 if (units.length) params.unit = units[0];
                 onPropertyChange([
