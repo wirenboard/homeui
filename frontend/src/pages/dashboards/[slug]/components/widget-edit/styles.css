@@ -125,7 +125,7 @@
 
 .widgetEdit-controls {
     overflow-x: auto;
-    font-size: 13px;
+    font-size: var(--font-size-small);
 }
 
 .widgetEdit-input {
@@ -169,7 +169,7 @@
     flex-grow: 1;
     height: 1px;
     width: 100%;
-    font-size: 13px;
+    font-size: var(--font-size-medium);
 }
 
 .widgetEdit-dropdown {

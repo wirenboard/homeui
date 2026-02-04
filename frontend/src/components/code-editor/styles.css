@@ -1,7 +1,7 @@
 .codeEditor-gutters .cm-gutterElement {
-    color: red;
+    color: var(--danger-color);
     padding-right: 5px;
-    font-size: 15px;
+    font-size: var(--font-size-medium);
     cursor: default;
 }
 

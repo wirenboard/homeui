@@ -6,6 +6,7 @@
     min-height: 40px;
     display: flex;
     align-items: center;
+    font-size: var(--font-size-small);
 
     @media(max-width: 768px) {
         margin: 0;

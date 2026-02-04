@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.169.0) stable; urgency=medium
+
+  * Updated the interface font — Roboto
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 03 Feb 2026 17:54:00 +0300
+
 wb-mqtt-homeui (2.168.0) stable; urgency=medium
 
   * Add testing offer to system page
