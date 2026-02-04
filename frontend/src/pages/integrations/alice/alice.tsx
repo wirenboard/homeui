@@ -178,7 +178,6 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
                 bindingInfo.isBinded
                   ? (
                     <div className="alice-bindingContainer">
-                      <span>{t('alice.labels.is-binded')}</span>
                       <a href={bindingInfo.url} className="alice-binding" target="_blank">
                         {t('alice.buttons.check-binding-status')}
                       </a>
