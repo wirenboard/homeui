@@ -54,6 +54,24 @@ const getAvailableFloatInstances = (
   });
 };
 
+// Returns event instances that still have available values
+const getAvailableEventInstances = (properties: any[]) => {
+  return events.filter((instance) => {
+    const availableValues = valueEventsByInstance[instance] || [];
+    if (availableValues.length === 0) return false;
+
+    const usedValues = new Set(
+      properties
+        .filter((p) => p.type === Property.Event && p.parameters?.instance === instance)
+        .map((p) => p.parameters?.value)
+        .filter(Boolean) as string[]
+    );
+
+    // Instance has available values if not all values are used
+    return usedValues.size < availableValues.length;
+  });
+};
+
 export const DeviceProperties = observer(({
   properties, deviceStore, onPropertyChange,
 }: DevicePropertiesProps) => {
@@ -161,7 +179,10 @@ export const DeviceProperties = observer(({
         break;
       }
       case Property.Event: {
-        const inst = events.at(0);
+        // Find first event instance that has available values
+        const freeEventInstances = getAvailableEventInstances(properties);
+        const inst = freeEventInstances.length > 0 ? freeEventInstances[0] : events.at(0);
+        
         parameters.instance = inst;
         const units = eventValueOptionsForInstance(inst).map((o) => o.value);
         if (units.length) {
@@ -314,21 +335,48 @@ export const DeviceProperties = observer(({
           ))}
         </div>
         {(() => {
-          const freeInstances = getAvailableFloatInstances(properties);
+          const freeFloatInstances = getAvailableFloatInstances(properties);
+          const freeEventInstances = getAvailableEventInstances(properties);
+          const canAddProperty = freeFloatInstances.length > 0 || freeEventInstances.length > 0;
+          
           return (
             <Button
               className="aliceDeviceSkills-addButton"
               label={t('alice.buttons.add-property')}
-              disabled={!freeInstances.length}
+              disabled={!canAddProperty}
               onClick={() => {
-                const inst = freeInstances[0];
-                const units = floatUnitOptionsForInstance(inst).map((o) => o.value);
-                const params: PropertyParameters = { instance: inst };
-                if (units.length) params.unit = units[0];
-                onPropertyChange([
-                  ...properties,
-                  { type: Property.Float, mqtt: '', parameters: params },
-                ]);
+                if (freeFloatInstances.length > 0) {
+                  // Add Float property
+                  const inst = freeFloatInstances[0];
+                  const units = floatUnitOptionsForInstance(inst).map((o) => o.value);
+                  const params: PropertyParameters = { instance: inst };
+                  if (units.length) params.unit = units[0];
+                  onPropertyChange([
+                    ...properties,
+                    { type: Property.Float, mqtt: '', parameters: params },
+                  ]);
+                } else if (freeEventInstances.length > 0) {
+                  // Add Event property with first available instance
+                  const inst = freeEventInstances[0];
+                  const availableValues = eventValueOptionsForInstance(inst).map((o) => o.value);
+                  const usedValues = new Set(
+                    properties
+                      .filter((p) => p.type === Property.Event && p.parameters?.instance === inst)
+                      .map((p) => p.parameters?.value)
+                      .filter(Boolean) as string[]
+                  );
+                  const firstAvailableValue = availableValues.find((v) => !usedValues.has(v));
+                  
+                  const params: PropertyParameters = { instance: inst };
+                  if (firstAvailableValue) {
+                    params.value = firstAvailableValue;
+                  }
+                  
+                  onPropertyChange([
+                    ...properties,
+                    { type: Property.Event, mqtt: '', parameters: params },
+                  ]);
+                }
               }}
             />
           );
