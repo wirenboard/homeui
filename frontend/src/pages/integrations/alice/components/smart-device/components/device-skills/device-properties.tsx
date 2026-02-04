@@ -21,9 +21,14 @@ interface DevicePropertiesProps {
   onPropertyChange: (properties: any[]) => void;
 }
 
-const unitOptionsForInstance = (instance?: string): Option<string>[] => {
-  const list = (instance && (valueEventsByInstance[instance] || floatUnitsByInstance[instance])) || [];
-  return list.map((u) => ({ label: valueLabels[u] ?? unitLabels[u] ?? u, value: u }));
+const floatUnitOptionsForInstance = (instance?: string): Option<string>[] => {
+  const list = (instance && floatUnitsByInstance[instance]) || [];
+  return list.map((u) => ({ label: unitLabels[u] ?? u, value: u }));
+};
+
+const eventValueOptionsForInstance = (instance?: string): Option<string>[] => {
+  const list = (instance && valueEventsByInstance[instance]) || [];
+  return list.map((u) => ({ label: valueLabels[u] ?? u, value: u }));
 };
 
 // Returns float instances that are unused or belong to current property
@@ -46,6 +51,24 @@ const getAvailableFloatInstances = (
     const isCurrentSelection = instance === currentInstance;
 
     return isUnused || isCurrentSelection;
+  });
+};
+
+// Returns event instances that still have available values
+const getAvailableEventInstances = (properties: any[]) => {
+  return events.filter((instance) => {
+    const availableValues = valueEventsByInstance[instance] || [];
+    if (availableValues.length === 0) return false;
+
+    const usedValues = new Set(
+      properties
+        .filter((p) => p.type === Property.Event && p.parameters?.instance === instance)
+        .map((p) => p.parameters?.value)
+        .filter(Boolean) as string[]
+    );
+
+    // Instance has available values if not all values are used
+    return usedValues.size < availableValues.length;
   });
 };
 
@@ -74,7 +97,7 @@ export const DeviceProperties = observer(({
 
   // Options for Event "event-value" dropdown: keep all values but disable already used ones
   const getEventValueOptions = useCallback((instance?: string, currentPropertyIndex?: number) => {
-    const allOptions = unitOptionsForInstance(instance);
+    const allOptions = eventValueOptionsForInstance(instance);
     if (!instance) return allOptions;
 
     const usedValues = new Set(
@@ -95,7 +118,7 @@ export const DeviceProperties = observer(({
     currentPropertyIndex: number
   ) => {
     const currentProperty = properties[currentPropertyIndex];
-    const availableUnits = unitOptionsForInstance(newInstance).map((o) => o.value);
+    const availableUnits = floatUnitOptionsForInstance(newInstance).map((o) => o.value);
     const currentlySelectedUnit = currentProperty?.parameters?.unit;
 
     const updatedParams: PropertyParameters = {
@@ -126,7 +149,7 @@ export const DeviceProperties = observer(({
   ) => {
     const currentProperty = properties[currentPropertyIndex];
     const options = getEventValueOptions(newInstance, currentPropertyIndex);
-    const enabledValues = options.filter((o) => !o.isDisabled).map((o) => o.value);
+    const enabledValues = options.filter((o: any) => !o.isDisabled).map((o) => o.value);
     const currentValue = currentProperty.parameters?.value;
     const nextValue = enabledValues.includes(currentValue) ? currentValue : (enabledValues[0] ?? null);
 
@@ -148,7 +171,7 @@ export const DeviceProperties = observer(({
       case Property.Float: {
         const inst = floats.at(0);
         parameters.instance = inst;
-        const units = unitOptionsForInstance(inst).map((o) => o.value);
+        const units = floatUnitOptionsForInstance(inst).map((o) => o.value);
         // Add default unit for first instance only if float type units present
         if (units.length) {
           parameters.unit = units[0];
@@ -156,9 +179,12 @@ export const DeviceProperties = observer(({
         break;
       }
       case Property.Event: {
-        const inst = events.at(0);
+        // Find first event instance that has available values
+        const freeEventInstances = getAvailableEventInstances(properties);
+        const inst = freeEventInstances.length > 0 ? freeEventInstances[0] : events.at(0);
+        
         parameters.instance = inst;
-        const units = unitOptionsForInstance(inst).map((o) => o.value);
+        const units = eventValueOptionsForInstance(inst).map((o) => o.value);
         if (units.length) {
           // compute used event-values for this instance excluding current property index
           const usedValues = new Set(
@@ -238,10 +264,10 @@ export const DeviceProperties = observer(({
                   </div>
                   <div>
                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
-                    {unitOptionsForInstance(property.parameters?.instance).length ? (
+                    {floatUnitOptionsForInstance(property.parameters?.instance).length ? (
                       <Dropdown
                         value={property.parameters?.unit}
-                        options={unitOptionsForInstance(property.parameters?.instance)}
+                        options={floatUnitOptionsForInstance(property.parameters?.instance)}
                         onChange={({ value: unit }: Option<string>) => {
                           const val = properties.map((item, i) => i === key
                             ? { ...item, parameters: { ...item.parameters, unit } }
@@ -309,21 +335,48 @@ export const DeviceProperties = observer(({
           ))}
         </div>
         {(() => {
-          const freeInstances = getAvailableFloatInstances(properties);
+          const freeFloatInstances = getAvailableFloatInstances(properties);
+          const freeEventInstances = getAvailableEventInstances(properties);
+          const canAddProperty = freeFloatInstances.length > 0 || freeEventInstances.length > 0;
+          
           return (
             <Button
               className="aliceDeviceSkills-addButton"
               label={t('alice.buttons.add-property')}
-              disabled={!freeInstances.length}
+              disabled={!canAddProperty}
               onClick={() => {
-                const inst = freeInstances[0];
-                const units = unitOptionsForInstance(inst).map((o) => o.value);
-                const params: PropertyParameters = { instance: inst };
-                if (units.length) params.unit = units[0];
-                onPropertyChange([
-                  ...properties,
-                  { type: Property.Float, mqtt: '', parameters: params },
-                ]);
+                if (freeFloatInstances.length > 0) {
+                  // Add Float property
+                  const inst = freeFloatInstances[0];
+                  const units = floatUnitOptionsForInstance(inst).map((o) => o.value);
+                  const params: PropertyParameters = { instance: inst };
+                  if (units.length) params.unit = units[0];
+                  onPropertyChange([
+                    ...properties,
+                    { type: Property.Float, mqtt: '', parameters: params },
+                  ]);
+                } else if (freeEventInstances.length > 0) {
+                  // Add Event property with first available instance
+                  const inst = freeEventInstances[0];
+                  const availableValues = eventValueOptionsForInstance(inst).map((o) => o.value);
+                  const usedValues = new Set(
+                    properties
+                      .filter((p) => p.type === Property.Event && p.parameters?.instance === inst)
+                      .map((p) => p.parameters?.value)
+                      .filter(Boolean) as string[]
+                  );
+                  const firstAvailableValue = availableValues.find((v) => !usedValues.has(v));
+                  
+                  const params: PropertyParameters = { instance: inst };
+                  if (firstAvailableValue) {
+                    params.value = firstAvailableValue;
+                  }
+                  
+                  onPropertyChange([
+                    ...properties,
+                    { type: Property.Event, mqtt: '', parameters: params },
+                  ]);
+                }
               }}
             />
           );
