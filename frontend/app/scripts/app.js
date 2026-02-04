@@ -5,6 +5,7 @@
 // Import slylesheets
 import '@/assets/styles/variables.css';
 import '@/assets/styles/animations.css';
+import '@/assets/styles/fonts.css';
 import '../styles/css/bootstrap.min.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';

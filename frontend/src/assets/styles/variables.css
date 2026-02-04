@@ -35,14 +35,13 @@
     --nav-status-color: #fff;
     --nav-debug-enabled-color: var(--orange-color);
 
+    --font: 'Roboto', sans-serif;
     --font-size-small: 13px;
     --font-size-medium: 14px;
-    --font-size-large: 16px;
+    --font-size-large: 15px;
 
     --scrollbar-color: var(--gray-color);
     --scrollbar-background: #0000;
-
-    --font: "Open Sans", Arial, Helvetica, Sans-Serif;
 
     --input-action-background: #3498db;
     --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(38, 167, 255, 0.5);

@@ -43,11 +43,11 @@ export const Confirm = ({
           }
         }}
       >
-        {!!children && <div className="dialog-content">{children}</div>}
-        <div className="dialog-actions">
+        {!!children && <div className="confirm-content">{children}</div>}
+        <div className="confirm-actions">
           <Button
             type="button"
-            className="dialog-action"
+            className="confirm-action"
             label={cancelLabel || t('modal.labels.cancel')}
             variant="secondary"
             onClick={closeCallback}
@@ -55,7 +55,7 @@ export const Confirm = ({
           <Button
             type="submit"
             disabled={isDisabled}
-            className="dialog-action"
+            className="confirm-action"
             label={acceptLabel || t('modal.labels.yes')}
             variant={variant}
             onClick={confirmCallback}
