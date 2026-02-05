@@ -189,6 +189,11 @@ export class WbDeviceParameterEditor {
           variant.store.setDoNotShowInvalidValue(true);
         }
       });
+    } else if (value === 'unsupported') {
+      this.variants.forEach((variant) => {
+        variant.store.readonly = true;
+        variant.store.commit();
+      });
     }
   }
 

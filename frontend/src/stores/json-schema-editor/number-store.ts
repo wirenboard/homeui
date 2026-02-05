@@ -11,6 +11,7 @@ export class NumberStore implements PropertyStore {
   public error: ValidationError | undefined;
   public enumOptions: Option<number>[] = [];
   public editString: string;
+  public readonly: boolean = false;
 
   readonly storeType = 'number';
   readonly required: boolean;
@@ -178,7 +179,7 @@ export class NumberStore implements PropertyStore {
   }
 
   /**
-   * If true, invalid value, that was set with setValue method, 
+   * If true, invalid value, that was set with setValue method,
    * will not be shown in the editor
    */
   setDoNotShowInvalidValue(doNotShow: boolean) {
