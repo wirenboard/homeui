@@ -31,13 +31,13 @@ const BadValueFromRegisterWarningText = ({ store, translator }: { store: NumberS
       {text}
     </>
   );
-}
+};
 
 export const BadValueFromRegisterWarning = ({ id, store, translator }: { id: string; store: NumberStore; translator: Translator }) => {
   return (
-    <p 
+    <p
       id={id}
-      className='deviceSettingsEditor-parameterWithBadValueFromRegisters-warning'
+      className="deviceSettingsEditor-parameterWithBadValueFromRegisters-warning"
     >
       <BadValueFromRegisterWarningText store={store} translator={translator} />
     </p>
@@ -78,13 +78,13 @@ export const ParamEditor = observer((
         key={param.id}
         store={activeVariant.store}
         translator={translator}
-        isDisabled={!param.isSupportedByFirmware}
+        isDisabled={!param.isSupportedByFirmware || activeVariant.store.readonly}
       />
       {showError && (
         <ParamError id={errorId} error={activeVariant.store.error} translator={translator} />
       )}
       {hasBadValueFromRegisters && (
-         <BadValueFromRegisterWarning id={errorId} store={activeVariant.store} translator={translator} />
+        <BadValueFromRegisterWarning id={errorId} store={activeVariant.store} translator={translator} />
       )}
       {description && (
         <ParamDescription id={descriptionId} description={description} />
