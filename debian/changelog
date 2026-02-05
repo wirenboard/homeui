@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.169.1) stable; urgency=medium
+wb-mqtt-homeui (2.169.2) stable; urgency=medium
 
   * Add logout on change current user password
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 04 Feb 2026 14:13:00 +0300
+
+wb-mqtt-homeui (2.169.1) stable; urgency=medium
+
+* Fix page title overflow
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 05 Feb 2026 14:19:00 +0300
 
 wb-mqtt-homeui (2.169.0) stable; urgency=medium
 
