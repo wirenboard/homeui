@@ -8,7 +8,6 @@ export class ItemStore {
   public objectStore: ObjectStore | null = null;
   public translator: Translator | null = null;
   public isLoading = true;
-  public scanInProgress = false;
   public label: string = '';
   public error: string | null = null;
   public children: ItemStore[] = [];
@@ -26,7 +25,6 @@ export class ItemStore {
 
     makeObservable(this, {
       isLoading: observable,
-      scanInProgress: observable,
       error: observable,
     });
   }
@@ -52,6 +50,7 @@ export class ItemStore {
       const schema = loadJsonSchema(data.schema);
       this.translator.addTranslations(schema.translations)
       this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
+      this.setError(null);
     } catch (error) {
       this.setError(error);
     } finally {
@@ -92,7 +91,7 @@ export class ItemStore {
 
   async scan() {
     try {
-      this.scanInProgress = true;
+      this.isLoading = true;
       const res = await this.#daliProxy.ScanBus({ busId: this.id });
       let devices =  [];
       res.devices.forEach((device) => {
@@ -105,7 +104,7 @@ export class ItemStore {
       this.setError(error);
     } finally {
       runInAction(() => {
-        this.scanInProgress = false;
+        this.isLoading = false;
       });
     }
   }
