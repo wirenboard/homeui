@@ -43,7 +43,7 @@
     color: var(--text-color);
     font-weight: 400;
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
