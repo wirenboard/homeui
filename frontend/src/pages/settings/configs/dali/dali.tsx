@@ -84,7 +84,6 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                       <Button 
                         label={t('dali.buttons.rescan')} 
                         variant="success" 
-                        disabled={selectedItem?.scanInProgress}
                         onClick={async () => {
                           await selectedItem.scan();
                           setData(store.gateways);
