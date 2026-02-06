@@ -51,6 +51,7 @@ export class ItemStore {
       this.translator.addTranslations(schema.translations)
       this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       this.setError(null);
+      this.label = data.name;
     } catch (error) {
       this.setError(error);
     } finally {
@@ -80,6 +81,7 @@ export class ItemStore {
       this.objectStore.setValue(data);
       this.objectStore.commit();
       this.setError(null);
+      this.label = data.name;
     } catch (error) {
       this.setError(error);
     } finally {
