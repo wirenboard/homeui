@@ -8,11 +8,12 @@ import { PageWrapper, PageBody } from '../components/page-wrapper/pageWrapper';
 import { MakeFormFields, FormCheckbox, FormSelect } from '../forms/forms';
 import SvgView from './svgView';
 import VisualBindingsEditor from './visualBindingsEditor';
+import { useParseHash } from '@/utils/url';
 
 const JsonBindingsEditor = lazy(() => import('./jsonBindingsEditor'));
 
 const EditSvgDashboardHeader = observer(
-  ({ onToDashboardsList, onPreview, onRemove, onSave, onCancel, isValidDashboard, isNew }) => {
+  ({ onPreview, onRemove, onSave, onCancel, isValidDashboard, isNew }) => {
     const { t } = useTranslation();
     const title = isNew
       ? t('edit-svg-dashboard.labels.create')
@@ -162,6 +163,8 @@ const VisualEditMode = ({ pageStore }) => {
 };
 
 const EditSvgDashboardPage = observer(({ pageStore }) => {
+  const { id } = useParseHash();
+
   return (
     <PageWrapper
       error={pageStore.pageWrapperStore.error}
@@ -173,10 +176,9 @@ const EditSvgDashboardPage = observer(({ pageStore }) => {
         <EditSvgDashboardHeader
           isNew={pageStore.isNew}
           isValidDashboard={pageStore.isValid}
-          onToDashboardsList={() => pageStore.onShowDashboardsList()}
-          onPreview={() => pageStore.onPreview()}
+          onPreview={() => pageStore.openPage('dashboard-svg', { id })}
           onRemove={() => pageStore.onRemoveDashboard()}
-          onSave={() => pageStore.onSaveDashboard()}
+          onSave={() => pageStore.onSaveDashboard(id)}
           onCancel={() => pageStore.onRemoveDashboard()}
         />
         {pageStore.bindingsStore.jsonEditMode ? (
