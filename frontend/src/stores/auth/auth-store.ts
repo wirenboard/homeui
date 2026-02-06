@@ -8,6 +8,7 @@ export default class AuthStore {
   public isAutologin: boolean;
   public areUsersConfigured: boolean = true;
   public users: User[] = [];
+  #currentUserId: string;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -18,6 +19,7 @@ export default class AuthStore {
       const { data } = await request.get<AuthResponse>('/auth/who_am_i');
       return runInAction(() => {
         this.userRole = data.user_type;
+        this.#currentUserId = data.user_id;
         this.isAutologin = !!data.autologin;
         return data;
       });
@@ -40,18 +42,23 @@ export default class AuthStore {
     const { data } = await request.post<AuthResponse>('/auth/login', body);
     return runInAction(() => {
       this.userRole = data.user_type;
+      this.#currentUserId = data.user_id;
       this.isAutologin = false;
       this.areUsersConfigured = true;
       return data;
     });
   }
 
-  async logout() {
+  async logout(redirectUrl?: string) {
+    this.#currentUserId = null;
     if (this.isAutologin) {
       // If the user is an autologin user, just show login page to select another user.
       location.assign('/#!/login');
     } else {
       await request.post('/auth/logout');
+      if (redirectUrl) {
+        location.assign(redirectUrl);
+      }
       location.reload();
     }
   }
@@ -90,6 +97,10 @@ export default class AuthStore {
 
   get isAuthenticated() {
     return !!this.userRole;
+  }
+
+  get me() {
+    return this.users.find((item) => item.id === this.#currentUserId);
   }
 
   hasRights(role: UserRole) {

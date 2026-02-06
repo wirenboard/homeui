@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.169.3) stable; urgency=medium
+
+  * Add logout on change current user password
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Feb 2026 13:04:00 +0300
+
 wb-mqtt-homeui (2.169.2) stable; urgency=medium
 
   * Fix edit svg dashboard redirects

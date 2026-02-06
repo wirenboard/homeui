@@ -193,6 +193,10 @@ class UsersPageStore {
       return;
     }
 
+    if (authStore.me.id === user.id && !authStore.me.autologin) {
+      return authStore.logout('/#!/login?returnState=accessLevel');
+    }
+
     runInAction(() => {
       this.users.map((item) => {
         if (item.id === user.id) {
