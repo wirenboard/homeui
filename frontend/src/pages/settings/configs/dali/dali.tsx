@@ -97,6 +97,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                         variant="success" 
                         onClick={async () => {
                           await selectedItem.load(true);
+                          setData(store.gateways);
                         }} 
                       />
                     )}
@@ -106,6 +107,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                       disabled={!selectedItem?.objectStore?.isDirty}
                       onClick={async () => {
                         await selectedItem.save();
+                        setData(store.gateways);
                       }} 
                     />
                   </FormButtonGroup>
