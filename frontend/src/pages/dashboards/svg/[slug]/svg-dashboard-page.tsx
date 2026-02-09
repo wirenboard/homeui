@@ -27,7 +27,7 @@ export const SvgDashboardPage = observer(({ store, dashboardsStore, devicesStore
 
   useEffect(() => {
     if (devicesStore.cells.size) {
-      store.setDeviceData(devicesStore.cells);
+      store.setDeviceData(devicesStore.cells, devicesStore);
     }
   }, [devicesStore.topics]);
 
@@ -62,6 +62,8 @@ export const SvgDashboardPage = observer(({ store, dashboardsStore, devicesStore
       }
     });
   }, []);
+
+  useEffect(() => () => store.unsubscribeAll(), [id]);
 
   return (
     <>
