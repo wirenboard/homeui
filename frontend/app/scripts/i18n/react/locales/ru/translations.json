@@ -421,7 +421,7 @@
       "ssh_desc": "доступ к консоли контроллера со стандартным паролем root/wirenboard",
       "http_desc": "доступ к веб-интерфейсу без пароля",
       "mqtt_desc": "доступ к MQTT-брокеру без пароля",
-      "found_instructions": "Как защитить контроллер Wiren Board",
+      "found_instructions": "Как защитить контроллер Wiren Board: ",
       "support_url": "https://wirenboard.com/wiki/Security"
    },
    "mbgate": {
