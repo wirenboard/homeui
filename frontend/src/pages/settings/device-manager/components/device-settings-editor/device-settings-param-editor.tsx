@@ -61,7 +61,11 @@ export const ParamEditor = observer((
     descriptionLines.push(translator.find(activeVariant.store.schema.description, currentLanguage));
   }
   if (!param.isSupportedByFirmware) {
-    descriptionLines.push(t('device-manager.errors.supported-since', { fw: param.supportedFirmware }));
+    if (param.supportedFirmware) {
+      descriptionLines.push(t('device-manager.errors.supported-since', { fw: param.supportedFirmware }));
+    } else {
+      descriptionLines.push(t('device-manager.errors.not-supported-param'));
+    }
   }
   const description = descriptionLines.join('\n');
   const title = translator.find(activeVariant.store.schema.title || param.id, currentLanguage);
@@ -78,7 +82,7 @@ export const ParamEditor = observer((
         key={param.id}
         store={activeVariant.store}
         translator={translator}
-        isDisabled={!param.isSupportedByFirmware || activeVariant.store.readonly}
+        isDisabled={!param.isSupportedByFirmware}
       />
       {showError && (
         <ParamError id={errorId} error={activeVariant.store.error} translator={translator} />

@@ -190,10 +190,7 @@ export class WbDeviceParameterEditor {
         }
       });
     } else if (value === 'unsupported') {
-      this.variants.forEach((variant) => {
-        variant.store.readonly = true;
-        variant.store.commit();
-      });
+      this.isSupportedByFirmware = false;
     }
   }
 

@@ -21,7 +21,7 @@ import type { DeviceSettingsEditorProps, DeviceSettingsTabsProps } from './types
 
 const DeviceSettingsSubGroup = (
   { group, translator, showChannels }:
-  { group: WbDeviceParameterEditorsGroup; translator: Translator, showChannels: boolean }
+  { group: WbDeviceParameterEditorsGroup; translator: Translator; showChannels: boolean }
 ) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
@@ -118,7 +118,7 @@ const ChannelsTable = observer((
 
 const DeviceSettingsTabContent = observer((
   { group, isTopLevel, translator, showChannels }:
-  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator, showChannels: boolean }
+  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator; showChannels: boolean }
 ) => {
   const showDescription = !!group.properties.description;
   const { i18n } = useTranslation();
@@ -155,19 +155,19 @@ const DeviceSettingsTabs = observer((
       return !!(group.parameters.length + channelsLength + group.subgroups.length);
     })
     .map((group: WbDeviceParameterEditorsGroup) => {
-    const classNamesObj = {
-      'deviceSettingsEditor-tabWithError': group.hasErrors,
-      'deviceSettingsEditor-tabWithWarning': group.hasBadValuesFromRegisters && !group.hasErrors,
-    };
-    return {
-      id: group.properties.id,
-      label: (
-        <span className={classNames(classNamesObj)}>
-          {translator.find(group.properties.title, i18n.language)}
-        </span>
-      ),
-    };
-  });
+      const classNamesObj = {
+        'deviceSettingsEditor-tabWithError': group.hasErrors,
+        'deviceSettingsEditor-tabWithWarning': group.hasBadValuesFromRegisters && !group.hasErrors,
+      };
+      return {
+        id: group.properties.id,
+        label: (
+          <span className={classNames(classNamesObj)}>
+            {translator.find(group.properties.title, i18n.language)}
+          </span>
+        ),
+      };
+    });
   if (customChannelsStore) {
     tabs.push({
       id: 'customChannels',
