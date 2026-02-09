@@ -1,17 +1,18 @@
-'use strict';
+// @ts-nocheck
 
 import { makeObservable, action, computed } from 'mobx';
-import { FormStore } from '../forms/formStore';
-import { BooleanStore } from '../forms/booleanStore';
-import { StringStore } from '../forms/stringStore';
-import { OptionsStore } from '../forms/optionsStore';
+import { type DashboardsStore } from '@/stores/dashboards';
 import i18n from '../../i18n/react/config';
-import { makeNotEmptyValidator } from '../forms/stringValidators';
+import AccessLevelStore from '../components/access-level/accessLevelStore';
 import ConfirmModalState from '../components/modals/confirmModalState';
+import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
+import { BooleanStore } from '../forms/booleanStore';
+import { FormStore } from '../forms/formStore';
+import { OptionsStore } from '../forms/optionsStore';
+import { StringStore } from '../forms/stringStore';
+import { makeNotEmptyValidator } from '../forms/stringValidators';
 import BindingsStore from './bindingsStore';
 import SvgStore from './svgStore';
-import AccessLevelStore from '../components/access-level/accessLevelStore';
-import PageWrapperStore from '../components/page-wrapper/pageWrapperStore';
 
 const makeCommonParametersStore = () => {
   let res = new FormStore('edit-svg-dashboard.labels.common-parameters-title');
@@ -64,18 +65,22 @@ const makeSwipeParametersStore = () => {
   return res;
 };
 
-const makeOptionsFromDashboards = dashboards =>
-  dashboards.map(d => ({
+const makeOptionsFromDashboards = (dashboards) => {
+  return dashboards.map((d) => ({
     label: d.name,
     value: d.id,
   }));
+};
 
 class EditSvgDashboardPageStore {
-  constructor(showDashboardsList, preview, rolesFactory) {
+  #dashboardsStore : DashboardsStore;
+  openPage : (page : string, params : any) => void;
+
+  constructor(dashboardsStore, openPage, rolesFactory) {
     this.dashboard = null;
     this.originalId = null;
-    this.showDashboardsList = showDashboardsList;
-    this.preview = preview;
+    this.openPage = openPage;
+    this.#dashboardsStore = dashboardsStore;
     this.svgStore = new SvgStore();
     this.confirmModalState = new ConfirmModalState();
     this.bindingsStore = new BindingsStore();
@@ -117,13 +122,13 @@ class EditSvgDashboardPageStore {
       this.commonParameters.setValue(this.dashboard.content);
       this.bindingsStore.setDevices(deviceData, localeId);
       const dashboardsForClicks = makeOptionsFromDashboards(
-        dashboards.filter(d => d.id !== dashboardId)
+        dashboards.filter((d) => d.id !== dashboardId)
       );
       this.bindingsStore.setDashboards(dashboardsForClicks);
       this.bindingsStore.setParams(this.dashboard.content.svg.params);
 
       const dashboardsForSwipe = makeOptionsFromDashboards(
-        dashboards.filter(d => d.isSvg && d.id !== dashboardId)
+        dashboards.filter((d) => d.isSvg && d.id !== dashboardId)
       );
       this.swipeParameters.params.left.setOptions(dashboardsForSwipe);
       this.swipeParameters.params.right.setOptions(dashboardsForSwipe);
@@ -136,14 +141,6 @@ class EditSvgDashboardPageStore {
 
   setOriginalId(value) {
     this.originalId = value;
-  }
-
-  onShowDashboardsList() {
-    this.showDashboardsList();
-  }
-
-  onPreview() {
-    this.preview(this.commonParameters.params.id.value);
   }
 
   async onRemoveDashboard() {
@@ -163,19 +160,24 @@ class EditSvgDashboardPageStore {
       }
     }
     this.dashboard.remove();
-    this.onShowDashboardsList();
+    this.openPage('dashboards');
   }
 
-  onSaveDashboard() {
+  async onSaveDashboard(initId: string) {
     this.bindingsStore.saveBinding();
     Object.assign(this.dashboard.content, this.commonParameters.value);
     this.dashboard.content.swipe = this.swipeParameters.value;
     this.dashboard.content.svg.current = this.svgStore.svg;
     this.dashboard.content.svg.params = this.bindingsStore.params;
+
     if (this.dashboard.content.isNew) {
       this.dashboard.content.svg_url = 'local';
       delete this.dashboard.content.isNew;
-      this.onShowDashboardsList();
+      await this.#dashboardsStore.addDashboard(this.dashboard.content);
+      this.openPage('dashboard-svg', { id: this.dashboard.content.id });
+    } else {
+      await this.#dashboardsStore.updateDashboard(initId, this.dashboard.content);
+      this.openPage('dashboard-svg-edit', { id: this.dashboard.content.id });
     }
   }
 }
