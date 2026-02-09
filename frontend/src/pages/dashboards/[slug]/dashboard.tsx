@@ -73,7 +73,6 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
             {hasEditRights && !isFullscreen && (
               <Button
                 label={t('dashboard.buttons.add-widget')}
-                variant="success"
                 onClick={() => setIsAddWidgetModalOpened(true)}
               />
             )}

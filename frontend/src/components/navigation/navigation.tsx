@@ -93,10 +93,20 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
           </button>
 
           <a href="/" draggable={false}>
-            {isMenuCompact
-              ? <img src={LOGO_COMPACT} className="navigation-logo navigation-logoCompact" alt={APP_NAME} />
-              : <img src={LOGO} className="navigation-logo" alt={APP_NAME} />
-            }
+            <img
+              src={LOGO_COMPACT}
+              className={classNames('navigation-logoCompact', {
+                'navigation-logoHidden': !isMenuCompact,
+              })}
+              alt={APP_NAME}
+            />
+            <img
+              src={LOGO}
+              className={classNames('navigation-logo', {
+                'navigation-logoHidden': isMenuCompact,
+              })}
+              alt={APP_NAME}
+            />
           </a>
         </div>
 
@@ -158,7 +168,10 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
                   <button
                     className="menuItem-link navigation-logout"
                     draggable={false}
-                    onClick={logout}
+                    onClick={() => {
+                      setIsMobileMenuOpened(false);
+                      logout();
+                    }}
                   >
                     <LogoutIcon className="menuItem-icon" />
                     {!isMenuCompact && t(isAutologin ? 'navigation.buttons.switch-user' : 'navigation.buttons.logout')}

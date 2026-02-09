@@ -178,7 +178,7 @@ export const toggles = ['backlight', 'controls_locked', 'ionization', 'keep_warm
 
 export enum Property {
   Float = 'devices.properties.float',
-  // Event = 'devices.properties.event',
+  Event = 'devices.properties.event',
 }
 
 export const floats = [
@@ -240,6 +240,19 @@ export const floatUnitsByInstance: Record<string, string[]> = {
   water_meter: ['unit.cubic_meter'],
 };
 
+export const valueEventsByInstance: Record<string, string[]> = {
+  vibration: ['value.tilt', 'value.fall', 'value.vibration'],
+  open: ['value.opened', 'value.closed'],
+  button: ['value.click', 'value.double_click', 'value.long_press'],
+  motion: ['value.detected', 'value.not_detected'],
+  smoke: ['value.detected', 'value.not_detected', 'value.high'],
+  gas: ['value.detected', 'value.not_detected', 'value.high'],
+  battery_level: ['value.low', 'value.normal', 'value.full'],
+  food_level: ['value.empty', 'value.low', 'value.normal'],
+  water_level: ['value.empty', 'value.low', 'value.normal'],
+  water_leak: ['value.dry', 'value.leak'],
+};
+
 // Predefined color scenes per Yandex Smart Home docs
 // TODO: <DISABLED_COLOR>: This scene options needed when do multiselect
 export const colorSceneOptions: Option<string>[] = [
@@ -291,6 +304,26 @@ export const unitLabels: Record<string, string> = {
   'unit.temperature.celsius': '°C',
   'unit.temperature.kelvin': 'K',
   'unit.volt': 'V',
+};
+
+export const valueLabels: Record<string, string> = {
+  'value.tilt': 'tilt',
+  'value.fall': 'fall',
+  'value.vibration': 'vibration',
+  'value.opened': 'opened',
+  'value.closed': 'closed',
+  'value.click': 'click',
+  'value.double_click': 'double click',
+  'value.long_press': 'long press',
+  'value.detected': 'detected',
+  'value.not_detected': 'not detected',
+  'value.high': 'high',
+  'value.low': 'low',
+  'value.normal': 'normal',
+  'value.full': 'full',
+  'value.empty': 'empty',
+  'value.leak': 'leak',
+  'value.dry': 'dry',
 };
 
 export const defaultColorModelParameters = {

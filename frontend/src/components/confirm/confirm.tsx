@@ -8,13 +8,14 @@ import './styles.css';
 export const Confirm = ({
   className,
   acceptLabel,
+  cancelLabel,
   heading,
   headerActions,
   children,
   confirmCallback,
   closeCallback,
   width,
-  variant = 'default',
+  variant = 'primary',
   isOpened = false,
   isOverlayCloseDisabled = false,
   isPreventSubmit = false,
@@ -42,21 +43,21 @@ export const Confirm = ({
           }
         }}
       >
-        {!!children && <div className="dialog-content">{children}</div>}
-        <div className="dialog-actions">
+        {!!children && <div className="confirm-content">{children}</div>}
+        <div className="confirm-actions">
           <Button
             type="button"
-            className="dialog-action"
-            label={t('modal.labels.cancel')}
+            className="confirm-action"
+            label={cancelLabel || t('modal.labels.cancel')}
             variant="secondary"
             onClick={closeCallback}
           />
           <Button
             type="submit"
             disabled={isDisabled}
-            className="dialog-action"
+            className="confirm-action"
             label={acceptLabel || t('modal.labels.yes')}
-            variant={variant === 'danger' ? 'danger' : 'primary'}
+            variant={variant}
             onClick={confirmCallback}
           />
         </div>

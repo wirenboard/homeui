@@ -1,8 +1,100 @@
-wb-mqtt-homeui (2.163.0) stable; urgency=medium
+wb-mqtt-homeui (2.170.0) stable; urgency=medium
 
   * Update svg dashboard page
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 21 Jan 2026 10:45:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 09 Feb 2026 15:05:00 +0300
+
+wb-mqtt-homeui (2.169.3) stable; urgency=medium
+
+  * Fix page title overflow
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 09 Feb 2026 11:22:00 +0300
+
+wb-mqtt-homeui (2.169.2) stable; urgency=medium
+
+  * Fix edit svg dashboard redirects
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 05 Feb 2026 14:45:00 +0300
+
+wb-mqtt-homeui (2.169.1) stable; urgency=medium
+
+  * Fix page title overflow
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 05 Feb 2026 14:19:00 +0300
+
+wb-mqtt-homeui (2.169.0) stable; urgency=medium
+
+  * Updated the interface font — Roboto
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 03 Feb 2026 17:54:00 +0300
+
+wb-mqtt-homeui (2.168.0) stable; urgency=medium
+
+  * Add testing offer to system page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 03 Feb 2026 14:46:00 +0300
+
+wb-mqtt-homeui (2.167.0) stable; urgency=medium
+
+  * Add save button to web ui settings
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 03 Feb 2026 11:17:00 +0300
+
+wb-mqtt-homeui (2.166.0) stable; urgency=medium
+
+  * Add release_suite to /device/info response
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 03 Feb 2026 11:00:00 +0400
+
+wb-mqtt-homeui (2.165.1) stable; urgency=medium
+
+  * Fix stay http button label
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 16:29:00 +0300
+
+wb-mqtt-homeui (2.165.0) stable; urgency=medium
+
+  * Add short title
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 13:36:00 +0300
+
+wb-mqtt-homeui (2.164.2) stable; urgency=medium
+
+  * Show controller name on mobile resolution
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 02 Feb 2026 12:17:00 +0300
+
+wb-mqtt-homeui (2.164.1) stable; urgency=medium
+
+  * Fix dashboards and rules actions on small resolutions
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 27 Jan 2026 13:06:00 +0300
+
+wb-mqtt-homeui (2.164.0) stable; urgency=medium
+
+  * Update all buttons and common components according to the instruction
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 17:04:00 +0300
+
+wb-mqtt-homeui (2.163.2) stable; urgency=medium
+
+  * Fix device-manager's relative paths
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 15:54:00 +0300
+
+wb-mqtt-homeui (2.163.1) stable; urgency=medium
+
+  * Fix logo size in safari
+  * Fix compact menu item class with active subitem
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 26 Jan 2026 11:57:00 +0300
+
+wb-mqtt-homeui (2.163.0) stable; urgency=medium
+
+  * Add events to Yandex Alice integration
+  * Add endpoint for unlink controller link in Yandex Alice integration
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Fri, 23 Jan 2026 23:30:00 +0300
 
 wb-mqtt-homeui (2.162.0) stable; urgency=medium
 

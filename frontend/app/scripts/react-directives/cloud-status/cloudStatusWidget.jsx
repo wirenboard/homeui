@@ -56,7 +56,7 @@ function CloudLink({ link }) {
   const { t } = useTranslation();
 
   return (
-    <a href={link} target="_blank" className="btn btn-success btn-lg" rel="noreferrer">
+    <a href={link} target="_blank" className="btn btn-default" rel="noreferrer">
       <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.goto-cloud')}
     </a>
   );

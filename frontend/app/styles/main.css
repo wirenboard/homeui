@@ -573,7 +573,7 @@ footer{
 }
 
 .widgets-table h4.cell-title .name {
-  font-size: 14px;
+  font-size: var(--font-size-medium);
 }
 
 .widgets-table h4.cell-title .id {

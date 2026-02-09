@@ -6,10 +6,15 @@
     min-height: 40px;
     display: flex;
     align-items: center;
+    font-size: var(--font-size-small);
 
     @media(max-width: 768px) {
         margin: 0;
     }
+}
+
+.descriptionStatus-mobile {
+    overflow: hidden;
 }
 
 .descriptionStatus-description {
@@ -35,6 +40,12 @@
     border-radius: 50%;
 }
 
+.descriptionStatus-mobile .descriptionStatus-descriptionStatus {
+    position: fixed;
+    top: 2px;
+    right: 6px;
+}
+
 .descriptionStatus-descriptionStatusCompact {
     position: relative;
     top: 0;
@@ -49,6 +60,8 @@
     border-width: 1px;
     border-style: solid;
     border-radius: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .descriptionStatus-statusConnected {

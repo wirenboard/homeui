@@ -16,24 +16,19 @@
     gap: 6px;
 }
 
-.alice-binding {
-    font-size: 14px;
+.alice-unlink {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .alice-sidebar {
     display: flex;
     flex-direction: column;
     gap: 12px;
-}
-
-.alice-separator {
-    color: var(--text-color);
-    width: 100%;
-    margin: 0;
-
-    @media (max-width: 990px) {
-        display: none;
-    }
 }
 
 .alice-mainButtons {
@@ -61,19 +56,19 @@
     }
 }
 
-.alice-roomSelected {
-    background: var(--light-gray-color);
-    font-weight: bold;
+.alice-tabs {
+    max-width: 100%;
 }
 
-.alice-roomSelectedIcon {
-    max-width: 12px;
+.alice-tabs li:nth-child(1),
+.alice-tabs li:nth-child(2) {
+    font-weight: bold;
 }
 
 .alice-headerContainer {
     margin: 0 0 8px;
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
     min-height: 38px;
 }
@@ -90,16 +85,11 @@
 }
 
 .alice-title {
-    font-size: 15px;
+    font-size: var(--font-size-large);
     margin-left: 8px;
 }
 
-.alice-roomName {
-    text-align: left;
-}
-
 .alice-onboarding {
-    font-size: 14px;
     line-height: 160%;
     padding-left: 18px;
 }
@@ -111,6 +101,5 @@
 }
 
 .alice-integrationToggle-label {
-    font-size: 14px;
     color: var(--text-color);
 }

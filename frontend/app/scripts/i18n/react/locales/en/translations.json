@@ -639,7 +639,8 @@
          "add": "Add",
          "edit": "Edit",
          "delete": "Delete",
-         "enable-https": "Enable HTTPS"
+         "enable-https": "Enable HTTPS",
+         "use-http": "Stay on HTTP"
       }
    },
    "login": {
@@ -693,7 +694,8 @@
          "device-capabilities": "Capabilities",
          "device-capabilities-description": "A list of what the device can do",
          "device-properties": "Properties",
-         "device-properties-description": "A list of the device's characteristics"
+         "device-properties-description": "A list of the device's characteristics",
+         "event-value": "Value"
       },
       "buttons": {
          "add-room": "Add room",
@@ -734,7 +736,8 @@
          "integration-enabled": "Integration enabled",
          "integration-disabled": "Integration disabled",
          "integration-error": "Error changing integration status",
-         "integration-enabled-binding-required": "The integration is enabled, but the controller is not linked. Click the link to link the controller."
+         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one.",
+         "controller-unlinked": "Controller has been unlinked from Yandex Alice"
       }
    },
    "web-ui-settings":{

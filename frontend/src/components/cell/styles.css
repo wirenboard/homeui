@@ -99,7 +99,7 @@
     text-align: right;
     max-width: 260px;
     flex-grow: 1;
-    font-size: 13px;
+    font-size: var(--font-size-small);
     cursor: pointer;
 }
 

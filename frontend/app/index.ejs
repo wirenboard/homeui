@@ -37,13 +37,6 @@
                   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                   <span ng-bind-html="messageHtml"></span>
               </div>
-              <% if (htmlWebpackPlugin.options.stableRelease) { %>
-              <div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-controller="AlertCtrl" ng-show="stableNotice">
-                <button type="button" class="close" ng-click="closeStableNotice()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                {{'heading.stableNotice' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" draggable="false">testing</a>
-              </div>
-              <% } %>
               <!-- viewport for child view -->
               <div ng-show='stateIsLoading' ng-cloak>
                   <strong translate>{{'heading.loading'}}</strong>

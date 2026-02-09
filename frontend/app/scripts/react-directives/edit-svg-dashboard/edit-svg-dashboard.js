@@ -26,12 +26,8 @@ function editSvgDashboardDirective(
         scope.root.unmount();
       }
       scope.store = new EditSvgDashboardPageStore(
-        () => $state.go('dashboards'),
-        async (id) => {
-          // this loaddata needs until we move to one datasourse (dashboardstore)
-          await $rootScope.dashboardsStore.loadData();
-          $state.go('dashboard-svg', { id: id });
-        },
+        $rootScope.dashboardsStore,
+        (id, params) => $state.go(id, params),
         rolesFactory
       );
       scope.store.setOriginalId(scope.id);
