@@ -192,7 +192,7 @@ class WhoAmIHandlerTests(unittest.TestCase):
         )
         response = auth_who_am_i_handler(self.request, self.context)
         expected_response = response_200(
-            headers=[["Content-type", "application/json"]], body='{"user_type": "user"}'
+            headers=[["Content-type", "application/json"]], body='{"user_id": "1", "user_type": "user"}'
         )
         self.assertEqual(response, expected_response)
 
