@@ -250,11 +250,15 @@
             "goto-cloud": "Open this controller in cloud"
         }
    },
-   "view-svg-dashboard": {
+   "svg-dashboard": {
       "buttons": {
          "fullscreen": "Enter fullscreen mode",
          "exit-fullscreen": "Exit fullscreen mode",
          "edit": "Edit"
+      },
+      "prompt": {
+         "confirm-heading": "Action confirmation",
+         "confirm-question": "Are you sure?"
       }
    },
    "edit-svg-dashboard": {
@@ -268,7 +272,6 @@
          "bindings-title": "Bindings",
          "write-enable": "Write",
          "check": "Confirmation of action required",
-         "confirm-question": "Are you sure?",
          "read-enable": "Read",
          "style-enable": "Style",
          "visible-enable": "Visible",
@@ -411,6 +414,7 @@
          "change-device-type": "Changing device type error: {{error}}. See the wb-mqtt-serial system log for detailed information",
          "load-registers": "Error loading current settings from device: {{error}}. Default values are displayed for parameters not present in the configuration file",
          "supported-since": "Supported since firmware {{fw}}",
+         "not-supported-param": "The firmware does not support this parameter",
          "fw-mismatch": "Current firmware {{currentFw}} is not supported by this template. Minimum required version: {{requiredFw}}. Please update the firmware or switch to another template.",
          "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template.",
          "bad-value-from-registers": "Value \"{{value}}\" read from device is not suitable for this parameter. You can set your own — it will be written to the device. If it does not matter, you can leave it as is.",
@@ -656,10 +660,10 @@
       }
    },
    "alice": {
-      "title": "Setting up integration with Yandex Alice",
+      "title": "Yandex Alice Integration",
       "labels": {
          "unavailable": "Yandex Alisa module is not installed, or the configurator service is stopped",
-         "is-binded": "This controller is bound.",
+         "is-binded": "controller is linked",
          "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
          "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
          "enable-integration": "Enable",
@@ -735,6 +739,13 @@
          "integration-error": "Error changing integration status",
          "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one.",
          "controller-unlinked": "Controller has been unlinked from Yandex Alice"
+      },
+      "binding":{
+         "unlink-controller": "(unlink controller)",
+         "confirm-unlink": "Unlink controller?",
+         "confirm-unlink-message": "Are you sure you want to unlink the controller from your Yandex account?",
+         "confirm-unlink-button":"Unlink",
+         "cur-status": "Current"
       }
    },
    "web-ui-settings":{

@@ -189,6 +189,8 @@ export class WbDeviceParameterEditor {
           variant.store.setDoNotShowInvalidValue(true);
         }
       });
+    } else if (value === 'unsupported') {
+      this.isSupportedByFirmware = false;
     }
   }
 

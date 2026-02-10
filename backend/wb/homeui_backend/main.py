@@ -205,7 +205,7 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     if user is None or not check_password(form.get("password"), user.pwd_hash):
         return response_401()
 
-    res = {"user_type": user.type.value}
+    res = {"user_type": user.type.value, "user_id": user.user_id}
     session = context.sessions_storage.add_session(user)
     return response_200(
         headers=[
@@ -231,12 +231,16 @@ def auth_who_am_i_handler(request: BaseHTTPRequestHandler, context: WebRequestHa
         return response_404()
 
     if context.session is not None:
-        res = {"user_type": context.session.user.type.value}
+        res = {
+            "user_id": context.session.user.user_id,
+            "user_type": context.session.user.type.value,
+        }
         return response_200([["Content-type", "application/json"]], json.dumps(res))
 
     autologin_user = context.users_storage.get_autologin_user()
     if autologin_user is not None:
         res = {
+            "user_id": autologin_user.user_id,
             "user_type": autologin_user.type.value,
             "autologin": True,
         }

@@ -1,14 +1,16 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import type { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
+import type { ValueType } from './types';
 
 export default class DeviceStore {
   public devices: Map<string, Device> = new Map();
   public cells: Map<string, Cell> = new Map();
   private _mqttClient: MqttClient;
   private _allDevicesTopics: { [key: string]: string[] } = {};
+  private _cellValueSubscribers: Set<(cellId: string, value: ValueType) => void> = new Set();
 
   constructor(mqttClient: MqttClient) {
     this._mqttClient = mqttClient;
@@ -220,6 +222,21 @@ export default class DeviceStore {
     });
 
     makeAutoObservable(this, {}, { autoBind: true });
+
+    reaction(
+      () => Array.from(this.cells).map(([cellId, cell]) => [cellId, cell.value] as const),
+      (next, prev) => {
+        if (!prev) {
+          return;
+        }
+        const prevMap = new Map(prev);
+        next.forEach(([cellId, value]) => {
+          if (!prevMap.has(cellId) || prevMap.get(cellId) !== value) {
+            this._notifyCellValueChange(cellId, value);
+          }
+        });
+      }
+    );
   }
 
   get filteredDevices() {
@@ -233,6 +250,19 @@ export default class DeviceStore {
         .filter(([_, device]) => !device.isSystemDevice)
         .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name))
     );
+  }
+
+  private _notifyCellValueChange(cellId: string, value: ValueType) {
+    this._cellValueSubscribers.forEach((handler) => {
+      handler(cellId, value);
+    });
+  }
+
+  subscribeOnCellValue(handler: (cellId: string, value: ValueType) => void) {
+    this._cellValueSubscribers.add(handler);
+    return () => {
+      this._cellValueSubscribers.delete(handler);
+    };
   }
 
   getDeviceCells(deviceId: string) {

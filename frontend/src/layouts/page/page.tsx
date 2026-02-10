@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
@@ -108,15 +107,9 @@ export const PageLayout = ({
           {hasRights && (
             isLoading
               ? <Loader className="page-loader" />
-              : (
-                <div
-                  className={classNames({
-                    'page-container': stickyHeader,
-                  })}
-                >
-                  {children}
-                </div>
-              )
+              : stickyHeader ? (
+                <div className="page-container">{children}</div>
+              ) : children
           )}
 
         </main>

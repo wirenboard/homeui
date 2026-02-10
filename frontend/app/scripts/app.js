@@ -32,7 +32,6 @@ import '../styles/css/device-manager.css';
 import '../styles/css/scan.css';
 import '../styles/css/network-connections.css';
 import '../styles/css/svg-edit-page.css';
-import '../styles/css/svg-view-page.css';
 import '../styles/css/mbgate.css';
 
 // homeui modules: sevices
@@ -94,7 +93,6 @@ import userRolesDirective from './directives/user-roles.directive';
 import dashboardPickerDirective from './directives/dashboardpicker';
 import onResizeDirective from './directives/resize';
 import confirmDirective from './directives/confirm';
-import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
 import loginPageDirective from './react-directives/login/login';
 
@@ -267,7 +265,6 @@ module
   .directive('dashboardPicker', dashboardPickerDirective)
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('ngConfirm', confirmDirective)
-  .directive('fullscreenToggle', fullscreenToggleDirective)
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
   .directive('rulesConsole', rulesConsoleDirective)
@@ -334,19 +331,6 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
   $transitions.onSuccess({}, function (trans) {
     $rootScope.stateIsLoading = false;
   });
-
-  $rootScope.checkFullscreen = () => {
-    const fullScreenElement =
-      document.fullscreenElement ||
-      document.webkitFullscreenElement ||
-      document.mozFullScreenElement ||
-      document.msFullscreenElement ||
-      null;
-
-    return fullScreenElement !== null || $rootScope.forceFullscreen;
-  };
-
-  $rootScope.forceFullscreen = false;
 
   if (!__IS_PROD__) {
     $rootScope.theme = localStorage.getItem('theme') || 'bootstrap';
@@ -596,6 +580,10 @@ const realApp = angular
           }
           if (transition.to().name === 'login' && !rolesFactory.currentUserIsAutologinUser) {
             return $state.target('home');
+          }
+          // Alice availability check on relogin
+          if (transition.from().name === 'login') {
+            checkIsAvailable();
           }
         });
       });
