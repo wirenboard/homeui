@@ -76,7 +76,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
     setIsMenuCompact(isMobile ? false : localStorage.getItem('isMenuCompact') === 'true');
   }, [isMobile]);
 
-  return !isAuthenticated || params.has('hmi') || location.hash === '#!/login' ? null : (
+  return !isAuthenticated || params.has('hmi') || location.hash.startsWith('#!/login') ? null : (
     <>
       <nav
         className={classNames('navigation', {
