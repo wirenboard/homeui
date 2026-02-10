@@ -6,7 +6,7 @@ wb-mqtt-homeui (2.171.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.170.0) stable; urgency=medium
 
-* Update svg dashboard page
+  * Update svg dashboard page
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Feb 2026 10:38:00 +0300
 
