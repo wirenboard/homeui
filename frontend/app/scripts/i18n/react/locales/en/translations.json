@@ -250,11 +250,15 @@
             "goto-cloud": "Open this controller in cloud"
         }
    },
-   "view-svg-dashboard": {
+   "svg-dashboard": {
       "buttons": {
          "fullscreen": "Enter fullscreen mode",
          "exit-fullscreen": "Exit fullscreen mode",
          "edit": "Edit"
+      },
+      "prompt": {
+         "confirm-heading": "Action confirmation",
+         "confirm-question": "Are you sure?"
       }
    },
    "edit-svg-dashboard": {
@@ -268,7 +272,6 @@
          "bindings-title": "Bindings",
          "write-enable": "Write",
          "check": "Confirmation of action required",
-         "confirm-question": "Are you sure?",
          "read-enable": "Read",
          "style-enable": "Style",
          "visible-enable": "Visible",
