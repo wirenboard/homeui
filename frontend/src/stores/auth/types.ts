@@ -2,6 +2,7 @@ import { type UserRole } from './constants';
 
 export interface AuthResponse {
   user_type: UserRole;
+  user_id: string;
   autologin?: boolean;
 }
 
