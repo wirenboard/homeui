@@ -427,7 +427,7 @@
       "ssh_desc": "publicly accessible ssh with default root/wirenboard credentials",
       "http_desc": "web interface is available from the Internet without password",
       "mqtt_desc": "mqtt is available from the Internet without password",
-      "found_instructions": "How to protect your Wiren Board controller",
+      "found_instructions": "How to protect your Wiren Board controller: ",
       "support_url": "https://wirenboard.com/wiki/Security"
    },
    "mbgate": {
