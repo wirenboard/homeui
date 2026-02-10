@@ -1,8 +1,21 @@
-wb-mqtt-homeui (2.169.3) stable; urgency=medium
+wb-mqtt-homeui (2.169.5) stable; urgency=medium
 
   * Add logout on change current user password
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Feb 2026 13:04:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Feb 2026 10:12:00 +0300
+
+wb-mqtt-homeui (2.169.4) stable; urgency=medium
+
+  * Fix controller status text in Alice integration
+  * Update logic for handling float and event properties in Alice integration
+
+ -- Victor Fedorov <victor.fedorov@wirenboard.com>  Tue, 10 Feb 2026 01:06:00 +0300
+
+wb-mqtt-homeui (2.169.3) stable; urgency=medium
+
+  * Fix page title overflow
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 09 Feb 2026 11:22:00 +0300
 
 wb-mqtt-homeui (2.169.2) stable; urgency=medium
 
