@@ -558,6 +558,28 @@
          "exists-on-dashboard": "Уже добавлен"
       }
    },
+   "widgets": {
+      "title": "Виджеты",
+      "labels": {
+         "name-and-description": "Название и описание",
+         "cells": "Контролы",
+         "types": "Типы",
+         "values": "Значения",
+         "graph": "История",
+         "dashboards": "Панели",
+         "preview": "Демонстрация"
+      },
+      "errors": {
+         "empty": "Не создано ни одного виджета",
+         "hidden": "Страница «Виджеты» сейчас скрыта из навигации — включить её можно в <0>настройках веб-интерфейса</0>"
+      },
+      "buttons": {
+         "add": "Добавить на панель",
+         "delete": "Удалить виджет",
+         "widget-view": "В виде виджетов",
+         "table-view": "В виде текста"
+      }
+   },
    "dashboard": {
       "labels": {
          "no-widgets": "Вы пока не добавили ни одного виджета"
@@ -784,6 +806,7 @@
          "add-prefix-to-topic": "Добавлять префикс (/client/user_id/)",
          "common-settings": "Общие настройки",
          "show-system-devices": "Показывать системные устройства",
+         "show-widgets-page": "Отображать в навигации страницу Виджеты",
          "language": "Язык интерфейса",
          "default-dashboard": "Панель по-умолчанию",
          "https-settings": "Настройки HTTPS",

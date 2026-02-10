@@ -532,6 +532,28 @@
          "exists-on-dashboard": "Already added"
       }
    },
+   "widgets": {
+      "title": "Widgets",
+      "labels": {
+         "name-and-description": "Name and description",
+         "cells": "Cells",
+         "types": "Types",
+         "values": "Values",
+         "graph": "Graph",
+         "dashboards": "Dashboards",
+         "preview": "Preview"
+      },
+      "errors": {
+         "empty": "No widgets are currently defined",
+         "hidden": "The Widgets page is currently hidden from navigation — you can enable it in <0>the web interface settings</0>"
+      },
+      "buttons": {
+         "add": "Add dashboard",
+         "delete": "Delete widget",
+         "widget-view": "Widget view",
+         "table-view": "Table view"
+      }
+   },
    "dashboard": {
       "labels": {
          "no-widgets": "No widgets found"
@@ -758,6 +780,7 @@
          "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
          "common-settings": "Common settings",
          "show-system-devices": "Show system devices",
+         "show-widgets-page": "Show Widgets page in navigation",
          "language": "UI locale",
          "default-dashboard": "Default dashboard",
          "https-settings": "HTTPS settings",

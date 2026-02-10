@@ -45,15 +45,24 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
   };
 
   const menuItems = useMemo(
-    () => getMenuItems(
-      dashboardsStore.dashboardsList,
+    () => getMenuItems({
+      dashboardsList: dashboardsStore.dashboardsList,
+      isShowWidgetsPage: dashboardsStore.isShowWidgetsPage,
       params,
       hasRights,
       computeUrlWithParams,
       integrations,
-      i18n.language
-    ),
-    [dashboardsStore.dashboardsList, params, hasRights, computeUrlWithParams, integrations, i18n.language]
+      language: i18n.language,
+    }),
+    [
+      dashboardsStore.dashboardsList,
+      dashboardsStore.isShowWidgetsPage,
+      params,
+      hasRights,
+      computeUrlWithParams,
+      integrations,
+      i18n.language,
+    ]
   );
 
   useEffect(() => {

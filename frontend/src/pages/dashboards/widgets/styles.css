@@ -1,0 +1,33 @@
+.widgets-card {
+    width: 380px;
+}
+
+.widgets-description {
+    color: var(--gray-color);
+}
+
+.widgets-cellItem {
+    height: 30px;
+    min-height: 30px;
+    align-items: center;
+    display: flex;
+    margin-bottom: 4px;
+}
+
+.widgets-cellItem input {
+    max-width: 140px;
+}
+
+.widgets-cellItem .deviceCell-reversed {
+    flex-direction: row;
+}
+
+.widgets-dashboardList {
+    padding-left: 12px;
+    margin-bottom: 6px;
+}
+
+
+.widgets-addToDashboard {
+    width: fit-content;
+}

@@ -19,25 +19,25 @@ import './styles.css';
 
 const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 
-export const CellContent = observer(({ cell, name, isCompact, extra }: CellProps) => {
+export const CellContent = observer(({ cell, name, isCompact, extra, hideHistory }: CellProps) => {
   const { t } = useTranslation();
 
   const renderCellContent = () => {
     switch (cell.displayType) {
       case CellComponent.Text:
-        return <CellText cell={cell} isCompact={isCompact} />;
+        return <CellText cell={cell} isCompact={isCompact} hideHistory={hideHistory} />;
       case CellComponent.Alert:
-        return <CellAlert cell={cell} />;
+        return <CellAlert cell={cell} hideHistory={hideHistory} />;
       case CellComponent.Switch:
-        return <CellSwitch cell={cell} inverted={extra?.invert} />;
+        return <CellSwitch cell={cell} inverted={extra?.invert} hideHistory={hideHistory} />;
       case CellComponent.Button:
-        return <CellButton cell={cell} name={name} />;
+        return <CellButton cell={cell} name={name} hideHistory={hideHistory} />;
       case CellComponent.Range:
         return <CellRange cell={cell} />;
       case CellComponent.Colorpicker:
-        return <CellColorpicker cell={cell} />;
+        return <CellColorpicker cell={cell} hideHistory={hideHistory} />;
       case CellComponent.Value:
-        return <CellValue cell={cell} />;
+        return <CellValue cell={cell} hideHistory={hideHistory} />;
       default:
         return null;
     }
@@ -77,13 +77,13 @@ export const CellContent = observer(({ cell, name, isCompact, extra }: CellProps
             )}
             {name || cell.name}
 
-            {cell.displayType === CellComponent.Range && (
+            {cell.displayType === CellComponent.Range && !hideHistory && (
               <CellHistory cell={cell} />
             )}
           </div>
         </Tooltip>
       )}
-      {isCompact && cell.displayType === CellComponent.Range && (
+      {isCompact && !hideHistory && cell.displayType === CellComponent.Range && (
         <CellHistory cell={cell} />
       )}
       {renderCellContent()}

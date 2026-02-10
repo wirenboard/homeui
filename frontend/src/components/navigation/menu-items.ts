@@ -2,7 +2,6 @@ import DesktopIcon from '@/assets/icons/desktop.svg';
 import FileIcon from '@/assets/icons/file.svg';
 import InfoIcon from '@/assets/icons/info.svg';
 import IntegrationsIcon from '@/assets/icons/integrations.svg';
-import ListIcon from '@/assets/icons/list.svg';
 import SettingsIcon from '@/assets/icons/settings.svg';
 import SitemapIcon from '@/assets/icons/sitemap.svg';
 import StatsIcon from '@/assets/icons/stats.svg';
@@ -10,14 +9,23 @@ import { UserRole } from '@/stores/auth';
 import { type Dashboard } from '@/stores/dashboards';
 import type { MenuItemInstance } from './components/menu-item';
 
-export const getMenuItems = (
-  dashboardsList: Dashboard[],
-  params: URLSearchParams,
-  hasRights: (role: UserRole) => boolean,
-  computeUrlWithParams: (url: string) => string,
-  integrations: string[],
-  language: string
-): MenuItemInstance[] => {
+export const getMenuItems = ({
+  dashboardsList,
+  params,
+  hasRights,
+  computeUrlWithParams,
+  integrations,
+  language,
+  isShowWidgetsPage,
+}: {
+  dashboardsList: Dashboard[];
+  params: URLSearchParams;
+  hasRights: (role: UserRole) => boolean;
+  computeUrlWithParams: (url: string) => string;
+  integrations: string[];
+  language: string;
+  isShowWidgetsPage: boolean;
+}): MenuItemInstance[] => {
   let availableIntegrations = integrations || [];
   if (language === 'en') {
     availableIntegrations = availableIntegrations.filter((item) => item !== 'alice');
@@ -40,6 +48,11 @@ export const getMenuItems = (
                 : `dashboards/${dashboard.id}`),
             };
           }),
+        {
+          label: 'navigation.labels.widgets',
+          url: 'dashboards/widgets',
+          isShow: isShowWidgetsPage && !params.has('fullscreen'),
+        },
       ],
     },
     {
@@ -60,12 +73,6 @@ export const getMenuItems = (
           isShow: availableIntegrations.includes('alice'),
         },
       ],
-    },
-    {
-      label: 'navigation.labels.widgets',
-      url: 'widgets',
-      icon: ListIcon,
-      isShow: !params.has('fullscreen'),
     },
     {
       label: 'navigation.labels.history',

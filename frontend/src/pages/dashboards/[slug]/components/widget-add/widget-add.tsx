@@ -8,12 +8,12 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Cell } from '@/components/cell';
-import { Confirm } from '@/components/confirm';
 import { Dialog } from '@/components/dialog';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { TabContent, Tabs, useTabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
 import { Widget } from '@/stores/dashboards';
+import { WidgetDelete } from '../widget-delete';
 import { WidgetEdit } from '../widget-edit';
 import type { WidgetAddProps } from './types';
 import './styles.css';
@@ -199,24 +199,13 @@ export const WidgetAdd = observer(({
       )}
 
       {isConfirmDelete && widgets.get(widgetId) && (
-        <Confirm
+        <WidgetDelete
           isOpened={isConfirmDelete}
-          heading={t('widget.labels.delete')}
-          variant="danger"
-          closeCallback={() => setIsConfirmDelete(false)}
-          confirmCallback={deleteWidget}
-        >
-          {!!widgets.get(widgetId).associatedDashboards?.length && (
-            <>
-              <p>{t('widget.labels.warning')}</p>
-              <ul className="widgetAdd-list">
-                {widgets.get(widgetId).associatedDashboards
-                  .map((dashboard) => (<li key={dashboard.id}>{dashboard.name}</li>))}
-              </ul>
-            </>
-          )}
-          <p>{t('widget.prompt.delete')} <b>{widgets.get(widgetId).name}</b>?</p>
-        </Confirm>
+          name={widgets.get(widgetId).name}
+          associatedDashboards={widgets.get(widgetId).associatedDashboards}
+          onClose={() => setIsConfirmDelete(false)}
+          onDelete={deleteWidget}
+        />
       )}
     </>
   );

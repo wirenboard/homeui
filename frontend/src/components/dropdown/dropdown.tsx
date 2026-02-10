@@ -40,7 +40,7 @@ export const Dropdown = ({
   const handleChange = (option) => {
     if (isButton && option) {
       setTimeout(() => {
-        select.current.clearValue();
+        select.current?.clearValue();
       });
     }
     onChange(option);
@@ -82,7 +82,7 @@ export const Dropdown = ({
       maxMenuHeight={240}
       menuPosition="fixed"
       components={{
-        MenuPortal: (props) => MenuPortal({...props, className}, size),
+        MenuPortal: (props) => MenuPortal({ ...props, className }, size),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),
       }}
       aria-label={ariaLabel}

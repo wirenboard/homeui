@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Range } from '@/components/range';
-import { type Cell } from '@/stores/device';
+import { type CellRangeProps } from './types';
 import './styles.css';
 
-export const CellRange = observer(({ cell }: { cell: Cell }) => {
+export const CellRange = observer(({ cell }: CellRangeProps) => {
   const { t } = useTranslation();
 
   return (

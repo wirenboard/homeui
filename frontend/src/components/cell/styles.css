@@ -154,6 +154,7 @@
     cursor: pointer;
 }
 
+.deviceCell-historyLinkVisible,
 .deviceCell:hover .deviceCell-historyLink,
 .deviceCell:focus-within .deviceCell-historyLink {
     min-width: 18px;

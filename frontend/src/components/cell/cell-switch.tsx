@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { Switch } from '@/components/switch';
-import { type Cell } from '@/stores/device';
 import { CellHistory } from './cell-history';
+import { type CellSwitchProps } from './types';
 import './styles.css';
 
-export const CellSwitch = observer(({ cell, inverted }: { cell: Cell; inverted?: boolean }) => (
+export const CellSwitch = observer(({ cell, inverted, hideHistory }: CellSwitchProps) => (
   <>
-    <CellHistory cell={cell} />
+    {!hideHistory && <CellHistory cell={cell} />}
 
     <Switch
       value={inverted ? !cell.value : cell.value as boolean}

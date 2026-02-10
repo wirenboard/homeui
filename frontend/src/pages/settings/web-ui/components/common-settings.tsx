@@ -13,14 +13,16 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSe
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
   const [defaultDashboardId, setDefaultDashboardId] = useState('');
   const [description, setDescription] = useState('');
+  const [isShowWidgetsPage, setIsShowWidgetsPage] = useState(false);
   const options = dashboardsStore.dashboardsList
     .filter((dashboard) => !dashboard.options.isHidden)
     .map((dashboard) => ({ label: dashboard.name, value: dashboard.id }));
 
   useEffect(() => {
-    setDescription(dashboardsStore.description);
-    setDefaultDashboardId(dashboardsStore.defaultDashboardId);
-  }, [dashboardsStore.description, dashboardsStore.defaultDashboardId]);
+    setDescription(dashboardsStore.description ?? '');
+    setDefaultDashboardId(dashboardsStore.defaultDashboardId ?? '');
+    setIsShowWidgetsPage(dashboardsStore.isShowWidgetsPage ?? false);
+  }, [dashboardsStore.description, dashboardsStore.defaultDashboardId, dashboardsStore.isShowWidgetsPage]);
 
   const languageOptions: Option<string>[] = [
     { label: 'English', value: 'en' },
@@ -33,23 +35,18 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSe
     onChangeLanguage(language);
     dashboardsStore.setDefaultDashboardId(defaultDashboardId);
     dashboardsStore.setDescription(description);
+    dashboardsStore.setIsShowWidgetsPage(isShowWidgetsPage);
   };
 
   return (
     <FormFieldGroup heading={t('web-ui-settings.labels.common-settings')}>
-      <OptionsField
-        title={t('web-ui-settings.labels.default-dashboard')}
-        value={defaultDashboardId}
-        options={options}
-        isDisabled={dashboardsStore.isLoading}
-        onChange={setDefaultDashboardId}
-      />
       <OptionsField
         title={t('web-ui-settings.labels.language')}
         value={language}
         options={languageOptions}
         onChange={setLanguage}
       />
+
       {authStore.hasRights(UserRole.Operator) && (
         <StringField
           title={t('web-ui-settings.labels.name')}
@@ -58,6 +55,21 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSe
           onChange={setDescription}
         />
       )}
+
+      <OptionsField
+        title={t('web-ui-settings.labels.default-dashboard')}
+        value={defaultDashboardId}
+        options={options}
+        isDisabled={dashboardsStore.isLoading}
+        onChange={setDefaultDashboardId}
+      />
+
+      <BooleanField
+        title={t('web-ui-settings.labels.show-widgets-page')}
+        value={isShowWidgetsPage}
+        onChange={setIsShowWidgetsPage}
+      />
+
       <BooleanField
         title={t('web-ui-settings.labels.show-system-devices')}
         value={showSystemDevices}

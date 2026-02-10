@@ -41,4 +41,11 @@ export class Widget {
     return Array.from(this.#dashboardsStore.dashboards.values())
       .filter((dashboard) => dashboard.widgets.includes(this.id));
   }
+
+  get notUsedDashboards() {
+    return Array.from(this.#dashboardsStore.dashboards.values())
+      .filter((dashboard) => {
+        return !dashboard.isSvg && !dashboard.widgets.includes(this.id);
+      });
+  }
 }
