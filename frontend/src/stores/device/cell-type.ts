@@ -17,6 +17,10 @@ export interface CellTypeEntry {
   units?: string;
 }
 
+export enum CellFormat {
+  Hex = 'w1-id',
+}
+
 export const commonCellTypes = new Map<string, CellTypeEntry>([
   ['text', {
     valueType: 'string',
@@ -171,9 +175,18 @@ const deprecatedCellTypes = new Map<string, CellTypeEntry>([
   }],
 ]);
 
+const customCellTypes = new Map<string, CellTypeEntry>([
+  ['w1-id', {
+    valueType: 'number',
+    displayType: CellComponent.Value,
+    readOnly: true,
+  }],
+]);
+
 export const cellType = new Map<string, CellTypeEntry>([
   ...commonCellTypes,
   ...deprecatedCellTypes,
+  ...customCellTypes,
 ]);
 
 export enum CellError {

@@ -1,5 +1,6 @@
 import { action, makeObservable, observable, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
+import { reverseTransformNumber, transformNumber } from '@/utils/hex-number';
 import { MistypedValue } from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
 import type { JsonSchema, ValidationError, PropertyStore } from './types';
@@ -22,7 +23,7 @@ export class NumberStore implements PropertyStore {
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
       this.value = initialValue;
-      this.editString = schema.options.is_hex ? this.#transformNumber(initialValue) : String(initialValue);
+      this.editString = schema.options.is_hex ? transformNumber(initialValue) : String(initialValue);
     } else if (initialValue === undefined) {
       this.value = undefined;
       if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
@@ -118,7 +119,7 @@ export class NumberStore implements PropertyStore {
       }
     } else {
       this.value = value;
-      this.editString = this.schema.options.is_hex ? this.#transformNumber(value) : String(value);
+      this.editString = this.schema.options.is_hex ? transformNumber(value) : String(value);
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
@@ -137,7 +138,7 @@ export class NumberStore implements PropertyStore {
     } else {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
-        this.value = this.schema.options.is_hex ? this.#reverseTransformNumber(value) : new MistypedValue(value);
+        this.value = this.schema.options.is_hex ? reverseTransformNumber(value) : new MistypedValue(value);
       } else {
         this.value = parsedValue;
       }
@@ -204,25 +205,5 @@ export class NumberStore implements PropertyStore {
    */
   setAnyUserInputIsDirty(anyUserInputIsDirty: boolean) {
     this._anyUserInputIsDirty = anyUserInputIsDirty;
-  }
-
-  #transformNumber(value?: number): string {
-    if (!value) {
-      return '0';
-    }
-    const hex = value.toString(16);
-    const lastTwo = hex.slice(-2);
-    let rest = hex.slice(0, -2);
-    rest = rest.padStart(12, '0');
-
-    return `${lastTwo}-${rest}`;
-  }
-
-  #reverseTransformNumber(value: string): number {
-    const [lastTwo, rest] = value.split('-');
-    const trimmedRest = rest.replace(/^0+/, '');
-    const hex = trimmedRest + lastTwo;
-
-    return parseInt(hex, 16);
   }
 }

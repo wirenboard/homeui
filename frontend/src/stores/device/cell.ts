@@ -1,7 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 import { hexToRgb, isHex, rgbToHex } from '@/utils/color';
+import { transformNumber } from '@/utils/hex-number';
 import i18n from '~/i18n/react/config';
-import { type CellError, cellType, type CellType, type CellTypeEntry } from './cell-type';
+import { type CellError, CellFormat, cellType, type CellType, type CellTypeEntry } from './cell-type';
 import type { CellMeta, EnumTranslations, NameTranslations, SendValueUpdate, ValueType } from './types';
 
 export default class Cell {
@@ -38,6 +39,9 @@ export default class Cell {
   }
 
   get value(): ValueType {
+    if (this.type === CellFormat.Hex) {
+      return transformNumber(this._value as number);
+    }
     return this._value;
   }
 
