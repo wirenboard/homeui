@@ -196,6 +196,7 @@ export interface WbDeviceTemplateParameter {
   group?: string;
   condition?: string;
   dependencies?: string[];
+  type?: 'w1-id';
   fw?: string;
 }
 

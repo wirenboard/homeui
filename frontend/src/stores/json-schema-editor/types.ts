@@ -41,6 +41,7 @@ export interface JsonEditorOptions {
   inputAttributes?: InputAttributes;
   patternmessage?: string; // Message for pattern validation error
   enum_titles?: string[]; // Titles for enum values
+  is_hex?: boolean; // Used for hex number valies
 
   wb?: WbOptions;
 }

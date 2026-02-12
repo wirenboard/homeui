@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.173.0) stable; urgency=medium
+
+  * Add hex param support in serial
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Feb 2026 12:29:00 +0300
+
 wb-mqtt-homeui (2.172.0) stable; urgency=medium
 
   * Update expose check widget

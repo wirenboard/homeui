@@ -22,7 +22,7 @@ export class NumberStore implements PropertyStore {
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
       this.value = initialValue;
-      this.editString = String(initialValue);
+      this.editString = schema.options.is_hex ? this.#transformNumber(initialValue) : String(initialValue);
     } else if (initialValue === undefined) {
       this.value = undefined;
       if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
@@ -96,6 +96,13 @@ export class NumberStore implements PropertyStore {
       };
       return;
     }
+    if (this.schema.options.is_hex) {
+      const hexPattern = /^28-[0-9A-Fa-f]{12}$/;
+      if (!hexPattern.test(this.editString)) {
+        this.error = { key: 'json-editor.errors.invalid-hex-format' };
+        return;
+      }
+    }
     this.error = undefined;
   }
 
@@ -111,7 +118,7 @@ export class NumberStore implements PropertyStore {
       }
     } else {
       this.value = value;
-      this.editString = String(value);
+      this.editString = this.schema.options.is_hex ? this.#transformNumber(value) : String(value);
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
@@ -127,7 +134,7 @@ export class NumberStore implements PropertyStore {
     } else {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
-        this.value = new MistypedValue(value);
+        this.value = this.schema.options.is_hex ? this.#reverseTransformNumber(value) : new MistypedValue(value);
       } else {
         this.value = parsedValue;
       }
@@ -194,5 +201,22 @@ export class NumberStore implements PropertyStore {
    */
   setAnyUserInputIsDirty(anyUserInputIsDirty: boolean) {
     this._anyUserInputIsDirty = anyUserInputIsDirty;
+  }
+
+  #transformNumber(value: number): string {
+    const hex = value.toString(16);
+    const lastTwo = hex.slice(-2);
+    let rest = hex.slice(0, -2);
+    rest = rest.padStart(12, '0');
+
+    return `${lastTwo}-${rest}`;
+  }
+
+  #reverseTransformNumber(value: string): number {
+    const [lastTwo, rest] = value.split('-');
+    const trimmedRest = rest.replace(/^0+/, '');
+    const hex = trimmedRest + lastTwo;
+
+    return parseInt(hex, 16);
   }
 }
