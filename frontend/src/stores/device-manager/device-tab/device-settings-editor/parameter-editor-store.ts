@@ -20,6 +20,7 @@ export class WbDeviceParameterEditorVariant {
     const jsonSchema = makeJsonSchemaForParameter(parameter);
     if (parameter.type === 'w1-id') {
       jsonSchema.options.is_hex = true;
+      jsonSchema.options.show_opt_in = false;
     }
     const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
     this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);

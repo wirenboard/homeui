@@ -96,8 +96,8 @@ export class NumberStore implements PropertyStore {
       };
       return;
     }
-    if (this.schema.options.is_hex) {
-      const hexPattern = /^28-[0-9A-Fa-f]{12}$/;
+    if (this.schema.options.is_hex && this.editString) {
+      const hexPattern = /^(28-[0-9A-Fa-f]{12}|0)$/;
       if (!hexPattern.test(this.editString)) {
         this.error = { key: 'json-editor.errors.invalid-hex-format' };
         return;
@@ -129,7 +129,10 @@ export class NumberStore implements PropertyStore {
 
   setEditString(value: string) {
     this.editString = value;
-    if (value === '') {
+    if (!value && this.schema.options.is_hex) {
+      this.value = 0;
+      this.editString = '0';
+    } else if (value === '') {
       this.value = undefined;
     } else {
       const parsedValue = Number(value);
@@ -203,7 +206,10 @@ export class NumberStore implements PropertyStore {
     this._anyUserInputIsDirty = anyUserInputIsDirty;
   }
 
-  #transformNumber(value: number): string {
+  #transformNumber(value?: number): string {
+    if (!value) {
+      return '0';
+    }
     const hex = value.toString(16);
     const lastTwo = hex.slice(-2);
     let rest = hex.slice(0, -2);
