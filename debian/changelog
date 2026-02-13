@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.2) stable; urgency=medium
+
+  * Add message about device firmware restore in wb-mqtt-serial settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 13 Feb 2026 08:41:37 +0500
+
 wb-mqtt-homeui (2.172.1) stable; urgency=medium
 
   * Add StorableObject to rules autocomplete
