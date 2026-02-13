@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.3) stable; urgency=medium
+
+  * Add units to editable value cell
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 13 Feb 2026 14:49:00 +0300
+
 wb-mqtt-homeui (2.172.2) stable; urgency=medium
 
   * Add message about device firmware restore in wb-mqtt-serial settings editor

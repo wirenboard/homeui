@@ -76,6 +76,9 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               isWithExplicitChanges
               onChange={(value) => cell.value = value}
             />
+            {!!cell.units && (
+              <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+            )}
           </>
         )
       )}
