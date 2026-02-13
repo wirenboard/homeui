@@ -12,6 +12,9 @@ export const transformNumber = (value?: number): string => {
 
 export const reverseTransformNumber = (value: string): number => {
   const [lastTwo, rest] = value.split('-');
+  if (!rest) {
+    return 0;
+  }
   const trimmedRest = rest.replace(/^0+/, '');
   const hex = trimmedRest + lastTwo;
 

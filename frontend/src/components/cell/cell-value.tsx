@@ -6,7 +6,9 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
 import { type Cell } from '@/stores/device';
+import { CellFormat } from '@/stores/device/cell-type';
 import { copyToClipboard } from '@/utils/clipboard';
+import { transformNumber } from '@/utils/hex-number';
 import { CellHistory } from './cell-history';
 import './styles.css';
 
@@ -18,6 +20,9 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
   const getCopiedText = useCallback((val: string) => val, []);
 
   const formattedValue = useMemo(() => {
+    if (cell.type === CellFormat.Hex) {
+      return transformNumber(cell.value as number);
+    }
     if (typeof cell.value === 'number') {
       return new Intl.NumberFormat('ru-RU', { style: 'decimal', minimumFractionDigits })
         .format(cell.value)
