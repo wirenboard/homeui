@@ -92,9 +92,12 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
           <div
             className={classNames('deviceCell-value', 'deviceCell-text')}
             onClick={() => {
-              const value = cell.isEnum
-                ? cell.enumValues.find((item) => item.value === cell.value).name
-                : cell.value;
+              let value = cell.value;
+              if (cell.isEnum) {
+                value = cell.enumValues.find((item) => item.value === cell.value).name;
+              } else if (cell.type === CellFormat.Hex) {
+                value = transformNumber(cell.value as number);
+              }
               setCapturedValue(value as string);
               copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
             }
