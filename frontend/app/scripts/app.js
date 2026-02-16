@@ -103,9 +103,10 @@ import { switchToHttps } from '@/utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
-import { aliceStore } from '@/stores/alice';
 import { DashboardsStore } from '@/stores/dashboards';
 import { RulesStore } from '@/stores/rules';
+import { uiStore } from '@/stores/ui';
+import { autorun } from 'mobx';
 
 //-----------------------------------------------------------------------------
 /**
@@ -514,11 +515,8 @@ const realApp = angular
         true
       );
 
-      const { checkIsAvailable } = aliceStore;
-
       whenMqttReady()
         .then(() => {
-          checkIsAvailable();
           if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
             return DeviceManagerProxy.Stop();
           }
@@ -538,17 +536,32 @@ const realApp = angular
         angular.element('#https-setup-label')[0].style.display = 'flex';
       }, 1000);
 
-      let hideGlobalSpinner = true;
+      const menuItemsReady = () => uiStore.menuItems.length > 0;
+      let hideGlobalSpinner = false;
+      let spinnerHidden = false;
+
+      const removeGlobalSpinner = () => {
+        clearTimeout(httpsSetupTimer);
+        angular.element('#https-setup-label').remove();
+        angular.element('double-bounce-spinner').remove();
+        angular.element('#wrapper').removeClass('fade');
+        spinnerHidden = true;
+      };
+
+      const tryHideGlobalSpinner = () => {
+        if (!spinnerHidden && hideGlobalSpinner) {
+          removeGlobalSpinner();
+        }
+      };
+
+      autorun(() => {
+        hideGlobalSpinner = menuItemsReady();
+        tryHideGlobalSpinner();
+      });
       let connectToMqtt = true;
       $transitions.onBefore({}, function (transition) {
         return fillUserType(rolesFactory).then(fillUserTypeResult => {
-          if (hideGlobalSpinner) {
-            clearTimeout(httpsSetupTimer);
-            angular.element('#https-setup-label').remove();
-            angular.element('double-bounce-spinner').remove();
-            angular.element('#wrapper').removeClass('fade');
-            hideGlobalSpinner = false;
-          }
+          tryHideGlobalSpinner();
           if (fillUserTypeResult === 'login') {
             // transition.params() contains all possible parameters by default - let's delete them
             const cleanParams = (params) => {
@@ -580,10 +593,6 @@ const realApp = angular
           }
           if (transition.to().name === 'login' && !rolesFactory.currentUserIsAutologinUser) {
             return $state.target('home');
-          }
-          // Alice availability check on relogin
-          if (transition.from().name === 'login') {
-            checkIsAvailable();
           }
         });
       });

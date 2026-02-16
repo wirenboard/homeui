@@ -8,21 +8,101 @@ import SitemapIcon from '@/assets/icons/sitemap.svg';
 import StatsIcon from '@/assets/icons/stats.svg';
 import { UserRole } from '@/stores/auth';
 import { type Dashboard } from '@/stores/dashboards';
-import type { MenuItemInstance } from './components/menu-item';
+import { type CustomMenuItem, type MenuItemInstance } from './types';
+
+export const normalizeMenuResponse = (data: CustomMenuItem[]) => {
+  const items: CustomMenuItem[] = [];
+
+  if (!Array.isArray(data)) {
+    return items;
+  }
+
+  data.forEach((entry) => {
+    if (Array.isArray(entry)) {
+      items.push(...entry);
+    } else if (entry && typeof entry === 'object') {
+      items.push(entry);
+    }
+  });
+
+  return items;
+};
+
+export const toMenuItemInstance = (item: CustomMenuItem, language: string): MenuItemInstance => {
+  const label = item.title?.[language as 'ru' | 'en'] || item.title?.ru || item.title?.en || item.id;
+  const children = item.children?.map((child) => toMenuItemInstance(child, language));
+  const output: MenuItemInstance = {
+    id: item.id,
+    url: item.url,
+    label,
+    children: children?.length ? children : undefined,
+  };
+
+  if (item.id === 'alice') {
+    output.isShow = language !== 'en';
+  }
+  return output;
+};
+
+export const mergeMenuItems = (baseItems: MenuItemInstance[], customItems: MenuItemInstance[]) => {
+  const items = [...baseItems];
+  if (!customItems.length) {
+    return filterMenuItems(items);
+  }
+  const indexById = new Map<string, number>();
+
+  items.forEach((item, index) => {
+    if (item.id) {
+      indexById.set(item.id, index);
+    }
+  });
+
+  customItems.forEach((item) => {
+    if (item.id && indexById.has(item.id)) {
+      const idx = indexById.get(item.id);
+      const baseItem = items[idx];
+      const mergedChildren = [...(baseItem.children || []), ...(item.children || [])];
+
+      items[idx] = {
+        ...baseItem,
+        ...(item.url ? { url: item.url } : null),
+        ...(item.label && item.label !== item.id ? { label: item.label } : null),
+        children: mergedChildren.length ? mergedChildren : undefined,
+      };
+    } else {
+      items.push(item);
+    }
+  });
+
+  return filterMenuItems(items);
+};
+
+const filterMenuItems = (items: MenuItemInstance[]): MenuItemInstance[] => {
+  return items.reduce<MenuItemInstance[]>((filtered, item) => {
+    const children = item.children ? filterMenuItems(item.children) : undefined;
+    const hasVisibleChildren = Boolean(children?.some((child) => child.isShow !== false));
+
+    if (!item.url && !hasVisibleChildren) {
+      return filtered;
+    }
+
+    const normalizedChildren = children?.length ? children : undefined;
+
+    filtered.push({
+      ...item,
+      ...(normalizedChildren ? { children: normalizedChildren } : {}),
+    });
+
+    return filtered;
+  }, []);
+};
 
 export const getMenuItems = (
   dashboardsList: Dashboard[],
   params: URLSearchParams,
   hasRights: (role: UserRole) => boolean,
-  computeUrlWithParams: (url: string) => string,
-  integrations: string[],
-  language: string
+  computeUrlWithParams: (url: string) => string
 ): MenuItemInstance[] => {
-  let availableIntegrations = integrations || [];
-  if (language === 'en') {
-    availableIntegrations = availableIntegrations.filter((item) => item !== 'alice');
-  }
-
   return [
     {
       label: 'navigation.labels.dashboards',
@@ -52,14 +132,7 @@ export const getMenuItems = (
       label: 'navigation.labels.integrations',
       id: 'integrations',
       icon: IntegrationsIcon,
-      isShow: hasRights(UserRole.Admin) && !params.has('fullscreen') && !!availableIntegrations.length,
-      children: [
-        {
-          label: 'navigation.labels.alice',
-          url: 'integrations/alice',
-          isShow: availableIntegrations.includes('alice'),
-        },
-      ],
+      isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
     },
     {
       label: 'navigation.labels.widgets',
@@ -79,10 +152,6 @@ export const getMenuItems = (
       isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
       children: [
         { label: 'navigation.labels.rule-editor', url: 'rules' },
-        {
-          label: 'navigation.labels.scenario',
-          url: 'configs/edit/~2Fusr~2Fshare~2Fwb-mqtt-confed~2Fschemas~2Fwb-scenarios.schema.json',
-        },
       ],
     },
     {
