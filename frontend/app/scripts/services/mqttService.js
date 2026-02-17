@@ -415,6 +415,7 @@ function mqttClient(
   };
 
   //...........................................................................
+  // in some places we call this getter to update the value in uiStore
   service.isConnected = () => {
     uiStore.setIsConnected(connected);
     return connected;
