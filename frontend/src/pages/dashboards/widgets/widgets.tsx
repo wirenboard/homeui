@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Fragment, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import EditIcon from '@/assets/icons/edit.svg';
 import CardIcon from '@/assets/icons/file-list.svg';
 import ListIcon from '@/assets/icons/list.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
@@ -11,8 +12,9 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout, type PageProps } from '@/layouts/page';
-import { WidgetDelete } from '@/pages/dashboards/[slug]';
+import { WidgetDelete, WidgetEdit } from '@/pages/dashboards/[slug]';
 import { authStore, UserRole } from '@/stores/auth';
+import { Widget } from '@/stores/dashboards';
 import { PageView, type WidgetsPageProps } from './types';
 import './styles.css';
 
@@ -22,6 +24,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
   const [view, setView] = useState(PageView.List);
   const [isHideAlert, setIsHideAlert] = useState(localStorage.getItem('hide-widgets-alert') === 'true');
   const [widgetToDelete, setWidgetToDelete] = useState(null);
+  const [widgetToEdit, setWidgetToEdit] = useState(null);
 
   const errors = useMemo(() => {
     const messages: PageProps['errors'] = [];
@@ -79,7 +82,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
               {view === PageView.List && (<TableCell width={60}>{t('widgets.labels.graph')}</TableCell>)}
               {view === PageView.Card && (<TableCell>{t('widgets.labels.preview')}</TableCell>)}
               <TableCell width={250}>{t('widgets.labels.dashboards')}</TableCell>
-              {authStore.hasRights(UserRole.Operator) && (<TableCell width={40} />)}
+              {authStore.hasRights(UserRole.Operator) && (<TableCell width={80} />)}
             </TableRow>
             {Array.from(store.widgets.values()).map((widget) => (
               <TableRow key={widget.id}>
@@ -191,15 +194,24 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
                   )}
                 </TableCell>
                 {authStore.hasRights(UserRole.Operator) && (
-                  <TableCell width={40} verticalAlign="top">
-                    <Tooltip text={t('widgets.buttons.delete')} placement="bottom">
-                      <Button
-                        variant="danger"
-                        size="small"
-                        icon={<TrashIcon />}
-                        onClick={() => setWidgetToDelete(widget.id)}
-                      />
-                    </Tooltip>
+                  <TableCell width={80} verticalAlign="top">
+                    <div className="widgets-actions">
+                      <Tooltip text={t('widget.buttons.edit')} placement="bottom">
+                        <Button
+                          size="small"
+                          icon={<EditIcon />}
+                          onClick={() => setWidgetToEdit(widget.id)}
+                        />
+                      </Tooltip>
+                      <Tooltip text={t('widgets.buttons.delete')} placement="bottom">
+                        <Button
+                          variant="danger"
+                          size="small"
+                          icon={<TrashIcon />}
+                          onClick={() => setWidgetToDelete(widget.id)}
+                        />
+                      </Tooltip>
+                    </div>
                   </TableCell>
                 )}
               </TableRow>
@@ -207,6 +219,22 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
           </Table>
         )}
       </PageLayout>
+
+      {widgetToEdit && (
+        <WidgetEdit
+          widget={store.widgets.get(widgetToEdit)}
+          cells={cells}
+          controls={devicesStore.controls}
+          isOpened={!!widgetToEdit}
+          onClose={() => {
+            setWidgetToEdit(null);
+          }}
+          onSave={(data) => {
+            (store.widgets.get(widgetToEdit) ?? new Widget(data, store)).save(data);
+            setWidgetToEdit(null);
+          }}
+        />
+      )}
 
       {widgetToDelete && (
         <WidgetDelete

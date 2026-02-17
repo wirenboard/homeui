@@ -27,7 +27,11 @@
     margin-bottom: 6px;
 }
 
-
 .widgets-addToDashboard {
     width: fit-content;
+}
+
+.widgets-actions {
+    display: flex;
+    justify-content: space-between;
 }
