@@ -374,7 +374,8 @@
          "better-template": "A new template is available for the device. This device will continue to work correctly with the current template. Switch if you need support for new features or bug fixes.",
          "select-template": "Select template",
          "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
-         "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made"
+         "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
+         "restoring-device": "Restoring device firmware"
       },
       "buttons": {
          "save": "Save config",
@@ -427,7 +428,7 @@
       "ssh_desc": "publicly accessible ssh with default root/wirenboard credentials",
       "http_desc": "web interface is available from the Internet without password",
       "mqtt_desc": "mqtt is available from the Internet without password",
-      "found_instructions": "How to protect your Wiren Board controller",
+      "found_instructions": "How to protect your Wiren Board controller: ",
       "support_url": "https://wirenboard.com/wiki/Security"
    },
    "mbgate": {

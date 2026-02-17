@@ -5,5 +5,4 @@ export interface NavigationProps {
   dashboardsStore: DashboardsStore;
   rulesStore: RulesStore;
   toggleConsole: () => void;
-  mqttClient: any;
 }
