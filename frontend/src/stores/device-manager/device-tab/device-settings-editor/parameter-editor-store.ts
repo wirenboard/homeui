@@ -19,8 +19,7 @@ export class WbDeviceParameterEditorVariant {
 
     const jsonSchema = makeJsonSchemaForParameter(parameter);
     if (parameter.type === 'w1-id') {
-      jsonSchema.options.is_hex = true;
-      jsonSchema.options.show_opt_in = false;
+      jsonSchema.format = 'w1-id';
     }
     const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
     this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
@@ -250,7 +249,6 @@ export function makeJsonSchemaForParameter(parameter: WbDeviceTemplateParameter)
     options: {
       enum_titles: parameter.enum_titles,
       show_opt_in: !parameter.required,
-      is_hex: false,
     },
   };
 }

@@ -1,6 +1,6 @@
 import { action, makeObservable, observable, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
-import { reverseTransformNumber, transformNumber } from '@/utils/hex-number';
+import { reverseTransformNumber, transformNumber } from '@/utils/one-wire-number';
 import { MistypedValue } from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
 import type { JsonSchema, ValidationError, PropertyStore } from './types';
@@ -23,7 +23,7 @@ export class NumberStore implements PropertyStore {
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
       this.value = initialValue;
-      this.editString = schema.options.is_hex ? transformNumber(initialValue) : String(initialValue);
+      this.editString = schema.format === 'w1-id' ? transformNumber(initialValue) : String(initialValue);
     } else if (initialValue === undefined) {
       this.value = undefined;
       if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
@@ -97,10 +97,10 @@ export class NumberStore implements PropertyStore {
       };
       return;
     }
-    if (this.schema.options.is_hex && this.editString) {
+    if (this.schema.format === 'w1-id' && this.editString) {
       const hexPattern = /^(28-[0-9A-Fa-f]{12}|0)$/;
       if (!hexPattern.test(this.editString)) {
-        this.error = { key: 'json-editor.errors.invalid-hex-format' };
+        this.error = { key: 'json-editor.errors.invalid-1-wire-format' };
         return;
       }
     }
@@ -119,7 +119,7 @@ export class NumberStore implements PropertyStore {
       }
     } else {
       this.value = value;
-      this.editString = this.schema.options.is_hex ? transformNumber(value) : String(value);
+      this.editString = this.schema.format === 'w1-id' ? transformNumber(value) : String(value);
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
@@ -130,7 +130,7 @@ export class NumberStore implements PropertyStore {
 
   setEditString(value: string) {
     this.editString = value;
-    if (!value && this.schema.options.is_hex) {
+    if (!value && this.schema.format === 'w1-id') {
       this.value = 0;
       this.editString = '0';
     } else if (value === '') {
@@ -138,7 +138,7 @@ export class NumberStore implements PropertyStore {
     } else {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
-        this.value = this.schema.options.is_hex ? reverseTransformNumber(value) : new MistypedValue(value);
+        this.value = this.schema.format === 'w1-id' ? reverseTransformNumber(value) : new MistypedValue(value);
       } else {
         this.value = parsedValue;
       }

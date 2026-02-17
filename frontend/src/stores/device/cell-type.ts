@@ -18,7 +18,7 @@ export interface CellTypeEntry {
 }
 
 export enum CellFormat {
-  Hex = 'w1-id',
+  OneWireId = 'w1-id',
 }
 
 export const commonCellTypes = new Map<string, CellTypeEntry>([

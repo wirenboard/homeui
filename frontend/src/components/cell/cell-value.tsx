@@ -8,7 +8,7 @@ import { Tooltip } from '@/components/tooltip';
 import { type Cell } from '@/stores/device';
 import { CellFormat } from '@/stores/device/cell-type';
 import { copyToClipboard } from '@/utils/clipboard';
-import { transformNumber } from '@/utils/hex-number';
+import { transformNumber } from '@/utils/one-wire-number';
 import { CellHistory } from './cell-history';
 import './styles.css';
 
@@ -20,7 +20,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
   const getCopiedText = useCallback((val: string) => val, []);
 
   const formattedValue = useMemo(() => {
-    if (cell.type === CellFormat.Hex) {
+    if (cell.type === CellFormat.OneWireId) {
       return transformNumber(cell.value as number);
     }
     if (typeof cell.value === 'number') {
@@ -95,7 +95,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               let value = cell.value;
               if (cell.isEnum) {
                 value = cell.enumValues.find((item) => item.value === cell.value).name;
-              } else if (cell.type === CellFormat.Hex) {
+              } else if (cell.type === CellFormat.OneWireId) {
                 value = transformNumber(cell.value as number);
               }
               setCapturedValue(value as string);
