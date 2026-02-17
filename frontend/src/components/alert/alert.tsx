@@ -1,5 +1,7 @@
 import classNames from 'classnames';
 import { lazy, type PropsWithChildren, Suspense } from 'react';
+import CloseIcon from '@/assets/icons/close.svg';
+import { Button } from '@/components/button';
 import { type AlertProps } from './types';
 import './styles.css';
 
@@ -9,7 +11,7 @@ const DangerIcon = lazy(() => import('@/assets/icons/danger.svg'));
 const WarnIcon = lazy(() => import('@/assets/icons/warn.svg'));
 
 export const Alert = ({
-  children, className, size = 'default', variant = 'info', withIcon = true, ...rest
+  children, className, size = 'default', variant = 'info', withIcon = true, onClose, ...rest
 }: PropsWithChildren<AlertProps>) => (
   <div
     role="alert"
@@ -33,5 +35,13 @@ export const Alert = ({
       </Suspense>
     )}
     <div className="alertMessage-content">{children}</div>
+    {!!onClose && (
+      <Button
+        className="alertMessage-close"
+        icon={<CloseIcon className="alertMessage-closeIcon" />}
+        isOutlined
+        onClick={onClose}
+      />
+    )}
   </div>
 );

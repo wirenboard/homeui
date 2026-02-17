@@ -93,7 +93,12 @@ export const PageLayout = ({
           )}
 
           {errors?.map((error, i) => (
-            <Alert variant={error.variant as AlertProps['variant']} key={i} className="page-error">
+            <Alert
+              variant={error.variant as AlertProps['variant']}
+              key={i}
+              className="page-error"
+              onClose={error?.onClose}
+            >
               {error.text}
             </Alert>
           ))}

@@ -32,8 +32,8 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   }, [params.has('fullscreen')]);
 
   useEffect(() => {
-    uiStore.initMenu(dashboardsStore.dashboardsList, params, computeUrlWithParams);
-  }, [dashboardsStore.dashboardsList, params, hasRights, computeUrlWithParams, i18n.language]);
+    uiStore.initMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params, computeUrlWithParams);
+  }, [dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params, computeUrlWithParams, i18n.language]);
 
   const toggleNavigation = () => {
     const value = !isMenuCompact;

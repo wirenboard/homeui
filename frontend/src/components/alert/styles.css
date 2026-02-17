@@ -5,6 +5,7 @@
     align-items: center;
     width: 100%;
     display: flex;
+    position: relative;
 }
 
 .alertMessage-icon {
@@ -20,7 +21,7 @@
 }
 
 .alertMessage-m {
-    padding: 12px 20px 12px 12px;
+    padding: 12px;
     font-size: var(--font-size-medium);
     gap: 12px;
 }
@@ -34,6 +35,7 @@
 .alertMessage-content {
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
 }
 
 .alertMessage-info {
@@ -59,4 +61,13 @@
 .alertMessage-danger {
     background: var(--alert-danger-background);
     border: 1px solid var(--alert-danger-border);
+}
+
+.alertMessage-close {
+    padding: 0 !important;
+    height: 20px !important;
+}
+
+.alertMessage-closeIcon {
+    color: var(--text-color);
 }

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment, ReactNode, useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CardIcon from '@/assets/icons/file-list.svg';
 import ListIcon from '@/assets/icons/list.svg';
@@ -20,6 +20,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
   const [view, setView] = useState(PageView.List);
+  const [isHideAlert, setIsHideAlert] = useState(localStorage.getItem('hide-widgets-alert') === 'true');
   const [widgetToDelete, setWidgetToDelete] = useState(null);
 
   const errors = useMemo(() => {
@@ -28,10 +29,14 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
       return messages;
     }
 
-    if (!store.isShowWidgetsPage) {
+    if (!store.isShowWidgetsPage && !isHideAlert) {
       messages.push({
         variant: 'info',
         text: (<Trans i18nKey="widgets.errors.hidden" components={[<a href="#!/web-ui" />]}/>),
+        onClose: () => {
+          setIsHideAlert(true);
+          localStorage.setItem('hide-widgets-alert', 'true');
+        },
       });
     }
 

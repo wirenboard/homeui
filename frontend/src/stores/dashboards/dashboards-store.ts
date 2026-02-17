@@ -36,7 +36,7 @@ export default class DashboardsStore {
             this.widgets.set(widget.id, new Widget(widget, this));
           });
           this.defaultDashboardId = defaultDashboardId;
-          this.isShowWidgetsPage = isShowWidgetsPage;
+          this.isShowWidgetsPage = !!isShowWidgetsPage;
           this.description = description || '';
 
           return content;
