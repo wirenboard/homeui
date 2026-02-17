@@ -295,7 +295,7 @@ export class DeviceTabStore {
   }
 
   updateEmbeddedSoftwareVersion(portConfig: PortTabConfig) {
-    if (this.isWbDevice) {
+    if (this.isWbDevice && this.initialData.enabled) {
       this.embeddedSoftware.updateVersion(this.slaveId, portConfig);
     }
   }
