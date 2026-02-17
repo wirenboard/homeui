@@ -1,13 +1,4 @@
-import { type FunctionComponent } from 'react';
-
-export interface MenuItemInstance {
-  label: string;
-  id?: string;
-  url?: string;
-  icon?: FunctionComponent<any>;
-  isShow?: any;
-  children?: MenuItemInstance[];
-}
+import { type MenuItemInstance } from '@/stores/ui';
 
 export interface MenuItemProps {
   item: MenuItemInstance;

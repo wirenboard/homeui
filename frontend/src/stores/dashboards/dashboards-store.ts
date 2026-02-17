@@ -11,6 +11,7 @@ export default class DashboardsStore {
   public isLoading = true;
   public description = '';
   public defaultDashboardId: string;
+  public isShowWidgetsPage: boolean = false;
   #configEditorProxy: any;
   #uiConfig: any;
 
@@ -25,7 +26,7 @@ export default class DashboardsStore {
     this.isLoading = true;
     return this.#configEditorProxy.Load({ path: uiConfigPath })
       .then(({ content }: UIConfigResponse) => {
-        const { dashboards, widgets, defaultDashboardId, description } = content;
+        const { dashboards, widgets, defaultDashboardId, isShowWidgetsPage, description } = content;
         return runInAction(() => {
           this.isLoading = false;
           dashboards.forEach((dashboard: DashboardBase) => {
@@ -35,6 +36,7 @@ export default class DashboardsStore {
             this.widgets.set(widget.id, new Widget(widget, this));
           });
           this.defaultDashboardId = defaultDashboardId;
+          this.isShowWidgetsPage = !!isShowWidgetsPage;
           this.description = description || '';
 
           return content;
@@ -129,6 +131,13 @@ export default class DashboardsStore {
     });
   }
 
+  setIsShowWidgetsPage(isShow: boolean) {
+    runInAction(() => {
+      this.isShowWidgetsPage = isShow;
+      this._saveData();
+    });
+  }
+
   setDescription(description: string) {
     runInAction(() => {
       this.description = description;
@@ -146,6 +155,7 @@ export default class DashboardsStore {
       dashboards: Array.from(this.dashboards.values()),
       widgets: Array.from(this.widgets.values()),
       description: this.description,
+      isShowWidgetsPage: this.isShowWidgetsPage,
     };
 
     // hack to synchronize old save logic

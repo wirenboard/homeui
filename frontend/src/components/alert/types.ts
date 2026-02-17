@@ -5,4 +5,5 @@ export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'info' | 'success' | 'warn' | 'danger' | 'gray';
   size?: 'default' | 'small';
   withIcon?: boolean;
+  onClose?: () => void;
 }

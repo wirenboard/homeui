@@ -1,5 +1,5 @@
 export interface DescriptionStatusProps {
-  mqttClient: any;
+  isConnected: boolean;
   isCompact: boolean;
   description: string;
 }

@@ -2,12 +2,12 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Tooltip } from '@/components/tooltip';
-import { type Cell } from '@/stores/device';
 import { copyToClipboard } from '@/utils/clipboard';
 import { CellHistory } from './cell-history';
+import { type CellAlertProps } from './types';
 import './styles.css';
 
-export const CellAlert = observer(({ cell }: { cell: Cell }) => {
+export const CellAlert = observer(({ cell, hideHistory }: CellAlertProps) => {
   const { t } = useTranslation();
 
   return (
@@ -27,7 +27,7 @@ export const CellAlert = observer(({ cell }: { cell: Cell }) => {
         </Alert>
       </Tooltip>
 
-      <CellHistory cell={cell} />
+      {!hideHistory && <CellHistory cell={cell} />}
     </>
   );
 });

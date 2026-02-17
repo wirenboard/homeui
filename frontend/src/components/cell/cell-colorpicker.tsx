@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { Colorpicker } from '@/components/colorpicker';
-import { type Cell } from '@/stores/device';
 import { CellHistory } from './cell-history';
+import { type CellColorpickerProps } from './types';
 import './styles.css';
 
-export const CellColorpicker = observer(({ cell }: { cell: Cell }) => (
+export const CellColorpicker = observer(({ cell, hideHistory }: CellColorpickerProps) => (
   <>
-    <CellHistory cell={cell} />
+    {!hideHistory && <CellHistory cell={cell} />}
 
     <Colorpicker
       value={cell.value as string}

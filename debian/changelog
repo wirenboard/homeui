@@ -1,8 +1,39 @@
-wb-mqtt-homeui (2.173.0) stable; urgency=medium
+wb-mqtt-homeui (2.175.0) stable; urgency=medium
 
   * Add 1-Wire sensor id param support in serial
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Feb 2026 12:29:00 +0300
+
+wb-mqtt-homeui (2.174.0) stable; urgency=medium
+
+  * Update widgets page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Feb 2026 14:23:00 +0300
+
+wb-mqtt-homeui (2.173.0) stable; urgency=medium
+
+  * Update menu draw logic
+  * Fix connection status on disconnect
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 16 Feb 2026 17:25:00 +0300
+
+wb-mqtt-homeui (2.172.3) stable; urgency=medium
+
+  * Add units to editable value cell
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 13 Feb 2026 14:49:00 +0300
+
+wb-mqtt-homeui (2.172.2) stable; urgency=medium
+
+  * Add message about device firmware restore in wb-mqtt-serial settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 13 Feb 2026 08:41:37 +0500
+
+wb-mqtt-homeui (2.172.1) stable; urgency=medium
+
+  * Add StorableObject to rules autocomplete
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 12 Feb 2026 14:10:00 +0400
 
 wb-mqtt-homeui (2.172.0) stable; urgency=medium
 

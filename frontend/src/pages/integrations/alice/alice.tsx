@@ -1,6 +1,6 @@
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
@@ -10,6 +10,7 @@ import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
 import { notificationsStore } from '@/stores/notifications';
+import { uiStore } from '@/stores/ui';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
 import type { AlicePageParams, AlicePageState, View } from './types';
@@ -19,10 +20,11 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const { t } = useTranslation();
   const {
     roomList,
-    integrations,
+    isAvailable,
     fetchData,
     fetchIntegrationStatus,
     isIntegrationEnabled,
+    checkIsAvailable,
     setIntegrationEnabled,
   } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
@@ -43,6 +45,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     onAfterTabChange: (roomId) => setView({ roomId }),
     items: sortedRooms,
   });
+  const isModuleInstalled = useMemo(() => uiStore.modules.some((item) => item === 'alice'), [uiStore.modules]);
 
   const handleIntegrationToggle = async (enabled: boolean) => {
     const prevEnabled = aliceStore.isIntegrationEnabled;
@@ -92,6 +95,10 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
+    if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) {
+      return;
+    }
+    checkIsAvailable();
     setIntegrationLoading(true);
     (async () => {
       try {
@@ -114,20 +121,22 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         setPageState('isConnected');
       })
       .catch(() => setPageState('isNotConnected'));
-  }, []);
+  }, [isModuleInstalled]);
 
   useEffect(() => {
-    if (integrations) {
-      setErrors(integrations.length === 0 ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+    if (!authStore.hasRights(UserRole.Admin)) {
+      return;
     }
-  }, [integrations]);
+    const hasError = !isModuleInstalled || (typeof isAvailable === 'boolean' && !isAvailable);
+    setErrors(hasError ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
+  }, [isAvailable, isModuleInstalled]);
 
   const isLoading = useMemo(
-    () => (!!integrations?.length && pageState === 'isLoading'),
-    [integrations, pageState]
+    () => (isModuleInstalled && isAvailable && pageState === 'isLoading'),
+    [isModuleInstalled, isAvailable, pageState]
   );
 
-  const handleUnlinkController = async (ev: React.MouseEvent) => {
+  const handleUnlinkController = async (ev: MouseEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
     setIsConfirmModalOpen(true);
@@ -137,20 +146,20 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     setIsConfirmModalOpen(false);
     try {
       await aliceStore.unlinkController();
-      notificationsStore.showNotification({ 
-        variant: 'success', 
-        text: t('alice.notifications.controller-unlinked') 
+      notificationsStore.showNotification({
+        variant: 'success',
+        text: t('alice.notifications.controller-unlinked'),
       });
       window.location.reload();
     } catch (err: any) {
-      notificationsStore.showNotification({ 
-        variant: 'danger', 
-        text: err?.response?.data?.detail || err?.message || String(err) 
+      notificationsStore.showNotification({
+        variant: 'danger',
+        text: err?.response?.data?.detail || err?.message || String(err),
       });
     }
   };
 
-  const integrationToggle = integrations?.includes('alice') ? (
+  const integrationToggle = isModuleInstalled && isAvailable ? (
     <div className="alice-integrationToggle">
       <span className="alice-integrationToggle-label">{t('alice.labels.enable-integration')}</span>
       <Switch
@@ -170,7 +179,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       errors={errors}
       actions={integrationToggle}
     >
-      {!!integrations?.length && (
+      {isModuleInstalled && isAvailable && (
         pageState === 'isConnected'
           ? (
             <>
@@ -181,15 +190,15 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
                       <a href={bindingInfo.url} className="alice-binding" target="_blank">
                         {t('alice.buttons.check-binding-status')}
                       </a>
-                    <span>{t('alice.labels.is-binded')}</span>
-                    <button
+                      <span>{t('alice.labels.is-binded')}</span>
+                      <button
                         type="button"
                         className="alice-binding alice-unlink"
-                        onClick={handleUnlinkController}
                         title={t('alice.binding.unlink-controller')}
+                        onClick={handleUnlinkController}
                       >
                         {t('alice.binding.unlink-controller')}
-                    </button>
+                      </button>
                     </div>
                   )
                   : (

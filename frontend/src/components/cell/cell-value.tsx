@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
-import { type Cell } from '@/stores/device';
 import { CellFormat } from '@/stores/device/cell-type';
 import { copyToClipboard } from '@/utils/clipboard';
 import { transformNumber } from '@/utils/one-wire-number';
 import { CellHistory } from './cell-history';
+import { type CellValueProps } from './types';
 import './styles.css';
 
-export const CellValue = observer(({ cell }: { cell: Cell }) => {
+export const CellValue = observer(({ cell, hideHistory }: CellValueProps) => {
   const { t } = useTranslation();
   const [capturedValue, setCapturedValue] = useState<string>(null);
   const [minimumFractionDigits, setMinimumFractionDigits] = useState(0);
@@ -53,7 +53,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
       {cell.valueType === 'number' && !cell.readOnly && (
         cell.isEnum ? (
           <div className="deviceCell-withSelect">
-            <CellHistory cell={cell} />
+            {!hideHistory && <CellHistory cell={cell} />}
             <Dropdown
               size="small"
               isInvalid={!!cell.error}
@@ -65,7 +65,7 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
           </div>
         ) : (
           <>
-            <CellHistory cell={cell} />
+            {!hideHistory && <CellHistory cell={cell} />}
             <Input
               id={cell.id}
               type="number"
@@ -81,13 +81,16 @@ export const CellValue = observer(({ cell }: { cell: Cell }) => {
               isWithExplicitChanges
               onChange={(value) => cell.value = value}
             />
+            {!!cell.units && (
+              <span className="deviceCell-units">{t(`units.${cell.units}`, cell.units)}</span>
+            )}
           </>
         )
       )}
 
       {cell.readOnly && (
         <>
-          <CellHistory cell={cell} />
+          {!hideHistory && <CellHistory cell={cell} />}
 
           <div
             className={classNames('deviceCell-value', 'deviceCell-text')}

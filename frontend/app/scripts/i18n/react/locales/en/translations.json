@@ -374,7 +374,8 @@
          "better-template": "A new template is available for the device. This device will continue to work correctly with the current template. Switch if you need support for new features or bug fixes.",
          "select-template": "Select template",
          "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
-         "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made"
+         "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
+         "restoring-device": "Restoring device firmware"
       },
       "buttons": {
          "save": "Save config",
@@ -530,6 +531,28 @@
          "edit-json": "Edit as JSON",
          "editor": "Visual editor",
          "exists-on-dashboard": "Already added"
+      }
+   },
+   "widgets": {
+      "title": "Widgets",
+      "labels": {
+         "name-and-description": "Name and description",
+         "cells": "Cells",
+         "types": "Types",
+         "values": "Values",
+         "graph": "Graph",
+         "dashboards": "Dashboards",
+         "preview": "Preview"
+      },
+      "errors": {
+         "empty": "No widgets are currently defined",
+         "hidden": "The Widgets page is currently hidden from navigation — you can enable it in <0>the web interface settings</0>"
+      },
+      "buttons": {
+         "add": "Add dashboard",
+         "delete": "Delete widget",
+         "widget-view": "Widget view",
+         "table-view": "Table view"
       }
    },
    "dashboard": {
@@ -758,6 +781,7 @@
          "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
          "common-settings": "Common settings",
          "show-system-devices": "Show system devices",
+         "show-widgets-page": "Show Widgets page in navigation",
          "language": "UI locale",
          "default-dashboard": "Default dashboard",
          "https-settings": "HTTPS settings",

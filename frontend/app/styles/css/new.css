@@ -7,18 +7,6 @@
   opacity: 0.5;
 }
 
-.custom-tooltip .tooltip-inner {
-  max-width: 300px;
-}
-
-.custom-tooltip.cell-name-tooltip {
-  left: 0% !important;
-}
-
-.custom-tooltip.cell-name-tooltip .tooltip-arrow {
-  left: 20px !important;
-}
-
 .show-on-parent-hover {
   display: none;
 }
@@ -113,35 +101,6 @@ div[uib-datepicker-popup-wrap] {
   .progress-bar {
     font-size: 1px;
   }
-}
-
-.cell.cell-value {
-  display: flex;
-}
-
-.cell-value .value {
-  margin-right: -10px;
-  width: 110px;
-  display: flex;
-  align-items: center;
-}
-
-.cell-value span{
-  display: inline-block;
-  vertical-align: bottom;
-}
-
-.value .int {
-  display: inline-block;
-  width: 50px;
-}
-
-.value .int span {
-  float: right;
-}
-
-.cell-value .units {
-  width: 20px;
 }
 
 .value .decimal {

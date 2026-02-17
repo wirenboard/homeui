@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/button';
-import { type Cell } from '@/stores/device';
 import { CellHistory } from './cell-history';
+import { type CellButtonProps } from './types';
 import './styles.css';
 
-export const CellButton = observer(({ cell, name }: { cell: Cell; name?: string }) => (
+export const CellButton = observer(({ cell, name, hideHistory }: CellButtonProps) => (
   <>
     <Button
       label={name || cell.name}
@@ -14,6 +14,6 @@ export const CellButton = observer(({ cell, name }: { cell: Cell; name?: string 
       onClick={() => cell.value = true}
     />
 
-    <CellHistory cell={cell} />
+    {!hideHistory && <CellHistory cell={cell} />}
   </>
 ));

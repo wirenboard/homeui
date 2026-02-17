@@ -1,13 +1,14 @@
+import classNames from 'classnames';
 import { compressToEncodedURIComponent } from 'lz-string';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import StatsIcon from '@/assets/icons/stats.svg';
 import { Tooltip } from '@/components/tooltip';
-import { type Cell } from '@/stores/device';
+import { type CellHistoryProps } from './types';
 import './styles.css';
 
-export const CellHistory = observer(({ cell }: { cell: Cell }) => {
+export const CellHistory = observer(({ cell, isVisible }: CellHistoryProps) => {
   const { t } = useTranslation();
 
   const getChartUrl = useMemo(() => {
@@ -20,7 +21,11 @@ export const CellHistory = observer(({ cell }: { cell: Cell }) => {
     <a href={getChartUrl} aria-label={`${t('widget.labels.graph')} ${cell.name}`}>
       <Tooltip text={t('widget.labels.graph')} placement="top-end">
         <span>
-          <StatsIcon className="deviceCell-historyLink" />
+          <StatsIcon
+            className={classNames('deviceCell-historyLink', {
+              'deviceCell-historyLinkVisible' : isVisible,
+            })}
+          />
         </span>
       </Tooltip>
     </a>

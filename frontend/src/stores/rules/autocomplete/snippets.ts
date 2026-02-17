@@ -80,6 +80,10 @@ const snippets = [
     { label: 'PersistentStorage', type: 'class' }
   ),
   snippetCompletion(
+    'StorableObject',
+    { label: 'StorableObject', type: 'class' }
+  ),
+  snippetCompletion(
     'timers.${1:timerName};',
     { label: 'timers', type: 'variable' }
   ),
