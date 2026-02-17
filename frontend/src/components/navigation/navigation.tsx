@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
@@ -9,29 +9,31 @@ import LogoutIcon from '@/assets/icons/logout.svg';
 import MenuIcon from '@/assets/icons/menu.svg';
 import { APP_NAME, HIDE_COMPACT_MENU, LOGO, LOGO_COMPACT } from '@/common/constants';
 import { MenuItem } from '@/components/navigation/components/menu-item';
-import { getMenuItems } from '@/components/navigation/menu-items';
 import { Tooltip } from '@/components/tooltip';
-import { aliceStore } from '@/stores/alice';
 import { UserRole, authStore } from '@/stores/auth';
+import { uiStore } from '@/stores/ui';
 import { useParseHash } from '@/utils/url';
-import i18n from '~/i18n/react/config';
 import { DescriptionStatus } from './components/description-status';
-import type { NavigationProps } from './types';
+import { type NavigationProps } from './types';
 import './styles.css';
 
-export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient }: NavigationProps) => {
-  const { t } = useTranslation();
+export const Navigation = observer(({ dashboardsStore, toggleConsole }: NavigationProps) => {
+  const { t, i18n } = useTranslation();
   const { id, page, params } = useParseHash();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const { integrations } = aliceStore;
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
   const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true' || false);
-  const [openedSubmenus, setOpenedSubmenus] = useState([]);
+  const [openedSubmenus, setOpenedSubmenus] = useState(['dashboards-all']);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
+  const { menuItems } = uiStore;
   const computeUrlWithParams = useCallback((url: string) => {
     return params.has('fullscreen') ? `${url}?fullscreen` : url;
   }, [params.has('fullscreen')]);
+
+  useEffect(() => {
+    uiStore.initMenu(dashboardsStore.dashboardsList, params, computeUrlWithParams);
+  }, [dashboardsStore.dashboardsList, params, hasRights, computeUrlWithParams, i18n.language]);
 
   const toggleNavigation = () => {
     const value = !isMenuCompact;
@@ -44,32 +46,20 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
     setIsMobileMenuOpened(false);
   };
 
-  const menuItems = useMemo(
-    () => getMenuItems(
-      dashboardsStore.dashboardsList,
-      params,
-      hasRights,
-      computeUrlWithParams,
-      integrations,
-      i18n.language
-    ),
-    [dashboardsStore.dashboardsList, params, hasRights, computeUrlWithParams, integrations, i18n.language]
-  );
-
   useEffect(() => {
     if (!menuItems.some((item) => item.url === page)) {
       const val = menuItems.find((item) => item.children
         ?.some((subItem) => subItem.url === page || (id && subItem.url === `${page}/${id}`)));
 
-      if (val) {
-        setOpenedSubmenus([val.id]);
+      if (val?.id) {
+        setOpenedSubmenus((prev) => {
+          const next = new Set(prev);
+          next.add(val.id);
+          return Array.from(next);
+        });
       }
     }
-  }, [page, id]);
-
-  useEffect(() => {
-    setOpenedSubmenus((prev) => [...prev, 'dashboards-all']);
-  }, []);
+  }, [menuItems, page, id]);
 
   useEffect(() => {
     setIsMobileMenuOpened(false);
@@ -111,7 +101,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
         </div>
 
         <DescriptionStatus
-          mqttClient={mqttClient}
+          isConnected={uiStore.isConnected}
           isCompact={isMenuCompact}
           description={dashboardsStore.description}
         />

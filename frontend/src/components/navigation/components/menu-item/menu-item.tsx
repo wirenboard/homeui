@@ -117,7 +117,7 @@ export const MenuItem = ({
 
           {!isMenuCompact && t(item.label)}
 
-          {item.children?.length && activePopup === item.id && (
+          {!!item.children?.length && activePopup === item.id && (
             <>
               <div
                 ref={refs.setFloating}

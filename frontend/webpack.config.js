@@ -363,7 +363,8 @@ module.exports = (function makeWebpackConfig() {
           '/api/https/request_cert',
           '/api/https',
           '/api/check',
-          '/api/integrations/alice'
+          '/api/integrations/alice',
+          '/ui/menu'
         ],
         target: process.env.MQTT_BROKER_URI,
         ws: true,
