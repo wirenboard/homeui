@@ -78,11 +78,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
         },
       },
     })
-    //...........................................................................
     .state('widgets', {
-      url: '/widgets',
-      controller: 'WidgetsCtrl as $ctrl',
-      template: require('../views/widgets.html'),
+      url: '/dashboards/widgets',
+      template: '<widgets-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -91,6 +89,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           );
         },
       },
+    })
+    //...........................................................................
+    .state('widgets-old', {
+      url: '/widgets',
+      redirectTo: 'widgets',
     })
     //...........................................................................
     .state('dashboards', {

@@ -218,6 +218,7 @@ function uiConfigService($rootScope, $q, $timeout) {
       widgets: filterCollection(data.widgets),
       defaultDashboardId: data.defaultDashboardId,
       description: data.description,
+      isShowWidgetsPage: data.isShowWidgetsPage,
     };
   }
 

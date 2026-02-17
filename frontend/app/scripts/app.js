@@ -17,13 +17,8 @@ import '../styles/css/new.css';
 import '../styles/main.css';
 import '../styles/css/spacing.css';
 
-import '../styles/css/wb-switch.css';
-
-import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
-import 'angular-xeditable/dist/css/xeditable.css';
 import '../styles/css/spinner.css';
-import '../styles/css/angular.rangeSlider.css';
 import 'ng-toast/dist/ngToast.css';
 
 import 'angular-spinkit/build/angular-spinkit.min.css';
@@ -43,7 +38,6 @@ import historyProxyService from './services/historyProxy';
 import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
 import gotoDefStartService from './services/gotoDefStart';
-import getTimeService from './services/time';
 import spinnerService from './services/spinner';
 import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
@@ -54,7 +48,6 @@ import userAgentFactory from './services/userAgent.factory';
 import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
-import translationService from './services/translationService';
 import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
 import serialPortProxyService from './services/serialPortProxy';
@@ -72,27 +65,10 @@ import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
 
 // homeui modules: directives
+import userRolesDirective from './directives/user-roles.directive';
+import onResizeDirective from './directives/resize';
 import navigationDirective from '~/react-directives/navigation/navigation';
 import rulesConsoleDirective from '~/react-directives/rules-console/rules-console';
-import cellDirective from './directives/cell';
-import widgetDirective from './directives/widget';
-import transformRgbDirective from './directives/transformrgb';
-import alarmCellDirective from './directives/alarmcell';
-import valueCellDirective from './directives/valuecell';
-import switchCellDirective from './directives/switchcell';
-import textCellDirective from './directives/textcell';
-import rangeCellDirective from './directives/rangecell';
-import buttonCellDirective from './directives/buttoncell';
-import { displayCellDirective, displayCellConfig } from './directives/displaycell';
-import cellNameDirective from './directives/cellname';
-import rgbCellDirective from './directives/rgbcell';
-import cellPickerDirective from './directives/cellpicker';
-import explicitChangesDirective from './directives/explicitchanges';
-import editableElasticTextareaDirective from './directives/editableelastictextarea';
-import userRolesDirective from './directives/user-roles.directive';
-import dashboardPickerDirective from './directives/dashboardpicker';
-import onResizeDirective from './directives/resize';
-import confirmDirective from './directives/confirm';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
 import loginPageDirective from './react-directives/login/login';
 
@@ -121,18 +97,13 @@ const module = angular
   .module('homeuiApp', [
     'ngSanitize',
     'ngTouch',
-    'angularSpectrumColorpicker',
     'ui.bootstrap',
-    'xeditable',
     'ui.select',
-    'monospaced.elastic',
     'oc.lazyLoad',
     'pascalprecht.translate',
     'angular-spinkit',
     routingModule,
     dumbTemplateModule,
-
-    'ui-rangeSlider',
     'ngToast',
     'ui.scroll',
     'tmh.dynamicLocale',
@@ -151,13 +122,11 @@ module
   .factory('HistoryProxy', historyProxyService)
   .factory('LogsProxy', logsProxyService)
   .factory('gotoDefStart', gotoDefStartService)
-  .factory('getTime', getTimeService)
   .factory('Spinner', spinnerService)
   .value('forceBeforeUnloadConfirmationForTests', false)
   .factory('PageState', pageStateService)
   .factory('DeviceData', deviceDataService)
   .factory('DiagnosticProxy', diagnosticProxyService)
-  .factory('TranslationService', translationService)
   .factory('DeviceManagerProxy', deviceManagerProxyService)
   .factory('SerialProxy', serialProxyService)
   .factory('SerialPortProxy', serialPortProxyService)
@@ -201,71 +170,9 @@ module.directive('scriptForm', function (PageState) {
 
 // Register directives
 module
-  .directive('cell', cellDirective)
   .value('scrollTimeoutMs', 100)
-  .directive('widget', widgetDirective)
-  .directive('transformRgb', transformRgbDirective)
-  .provider('displayCellConfig', displayCellConfig)
-  .directive('displayCell', displayCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('alarm', 'alarm-cell', true);
-    },
-  ])
-  .directive('alarmCell', alarmCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('value', 'value-cell');
-    },
-  ])
-  .directive('valueCell', valueCellDirective)
-
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('switch', 'switch-cell');
-    },
-  ])
-  .directive('switchCell', switchCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('text', 'text-cell');
-    },
-  ])
-  .directive('textCell', textCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('range', 'range-cell');
-    },
-  ])
-  .directive('rangeCell', rangeCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('button', 'button-cell', true);
-    },
-  ])
-  .directive('buttonCell', buttonCellDirective)
-  .directive('cellName', cellNameDirective)
-  .value('rgbLocalStorageKey', 'cell_rgb_palette')
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('rgb', 'rgb-cell');
-    },
-  ])
-  .directive('rgbCell', rgbCellDirective)
-  .directive('cellPicker', cellPickerDirective)
-  .directive('explicitChanges', explicitChangesDirective)
-  .directive('editableElasticTextarea', editableElasticTextareaDirective)
   .directive('userRole', userRolesDirective)
-  .directive('dashboardPicker', dashboardPickerDirective)
   .directive('onResize', ['$parse', onResizeDirective])
-  .directive('ngConfirm', confirmDirective)
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
   .directive('rulesConsole', rulesConsoleDirective)
@@ -284,8 +191,6 @@ module
         'logs',
         'configurations',
         'history',
-        'widgets',
-        'units',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {

@@ -4,12 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
-import { type Cell } from '@/stores/device';
 import { copyToClipboard } from '@/utils/clipboard';
 import { CellHistory } from './cell-history';
+import { type CellTextProps } from './types';
 import './styles.css';
 
-export const CellText = observer(({ cell, isCompact }: { cell: Cell; isCompact: boolean }) => {
+export const CellText = observer(({ cell, isCompact, hideHistory }: CellTextProps) => {
   const { t } = useTranslation();
 
   return (
@@ -55,7 +55,7 @@ export const CellText = observer(({ cell, isCompact }: { cell: Cell; isCompact: 
         />
       )}
 
-      {isCompact && <CellHistory cell={cell} />}
+      {isCompact && !hideHistory && <CellHistory cell={cell} />}
     </div>
   );
 });

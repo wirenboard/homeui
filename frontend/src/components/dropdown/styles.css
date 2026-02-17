@@ -68,6 +68,7 @@
 .dropdown-s .dropdown__option,
 .dropdown-s .dropdown__group-heading {
   padding: 3px 8px;
+  max-height: 30px;
 }
 
 .dropdown-s .dropdown__group-heading + div .dropdown__option {

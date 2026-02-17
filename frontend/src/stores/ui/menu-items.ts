@@ -101,6 +101,7 @@ export const getMenuItems = (
   dashboardsList: Dashboard[],
   params: URLSearchParams,
   hasRights: (role: UserRole) => boolean,
+  isShowWidgetsPage: boolean,
   computeUrlWithParams: (url: string) => string
 ): MenuItemInstance[] => {
   return [
@@ -120,6 +121,11 @@ export const getMenuItems = (
                 : `dashboards/${dashboard.id}`),
             };
           }),
+        {
+          label: 'navigation.labels.widgets',
+          url: 'dashboards/widgets',
+          isShow: isShowWidgetsPage && !params.has('fullscreen'),
+        },
       ],
     },
     {
@@ -133,12 +139,6 @@ export const getMenuItems = (
       id: 'integrations',
       icon: IntegrationsIcon,
       isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
-    },
-    {
-      label: 'navigation.labels.widgets',
-      url: 'widgets',
-      icon: ListIcon,
-      isShow: !params.has('fullscreen'),
     },
     {
       label: 'navigation.labels.history',

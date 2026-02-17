@@ -22,12 +22,13 @@ export default class UiStore {
 
   async initMenu(
     dashboards: Dashboard[],
+    isShowWidgetsPage: boolean,
     params: URLSearchParams,
     computeUrlWithParams: (url: string) => string
   ) {
     const { hasRights } = authStore;
 
-    const commontems = getMenuItems(dashboards, params, hasRights, computeUrlWithParams);
+    const commontems = getMenuItems(dashboards, params, hasRights, isShowWidgetsPage, computeUrlWithParams);
     const customItems = await this.#getCustomMenuItems();
 
     runInAction(() => {

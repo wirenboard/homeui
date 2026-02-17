@@ -4,6 +4,7 @@ export interface UIConfigResponse {
     defaultDashboardId: string;
     widgets: WidgetBase[];
     description?: string;
+    isShowWidgetsPage?: boolean;
   };
 }
 

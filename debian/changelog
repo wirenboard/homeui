@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.174.0) stable; urgency=medium
+
+  * Update widgets page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 17 Feb 2026 14:23:00 +0300
+
 wb-mqtt-homeui (2.173.0) stable; urgency=medium
 
   * Update menu draw logic

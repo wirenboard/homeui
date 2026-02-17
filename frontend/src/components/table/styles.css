@@ -4,6 +4,7 @@
 
 .wb-table {
     max-width: 100%;
+    min-width: fit-content;
     position: relative;
 }
 

@@ -182,13 +182,7 @@ module.exports = (function makeWebpackConfig() {
         'angular-touch',
         'angular-sanitize',
         './3rdparty/ui-bootstrap',
-        'spectrum-colorpicker',
-        'angular-spectrum-colorpicker',
         'ui-select',
-        'angular-elastic/elastic',
-        'angular-xeditable',
-        'angular-sortable-view/src/angular-sortable-view',
-        'angular-rangeslider',
         'ng-toast',
 
         'angular-translate',
