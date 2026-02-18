@@ -196,6 +196,8 @@ export interface WbDeviceTemplateParameter {
   group?: string;
   condition?: string;
   dependencies?: string[];
+  // Add wb-mqtt-serial support for DS18B20 ID registers (u64, 4 registers per ID).
+  type?: 'w1-id';
   fw?: string;
 }
 
