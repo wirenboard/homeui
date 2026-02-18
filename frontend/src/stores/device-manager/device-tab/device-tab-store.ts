@@ -295,7 +295,8 @@ export class DeviceTabStore {
   }
 
   updateEmbeddedSoftwareVersion(portConfig: PortTabConfig) {
-    if (this.isWbDevice) {
+    // initialData.enabled could be undefined, which means that the device is enabled
+    if (this.isWbDevice && this.initialData?.enabled !== false) {
       this.embeddedSoftware.updateVersion(this.slaveId, portConfig);
     }
   }
