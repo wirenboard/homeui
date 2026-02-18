@@ -17,3 +17,25 @@
     margin: 0;
     cursor: pointer;
 }
+
+.wb-checkbox-button {
+    border: 1px solid var(--input-border-color);
+    border-radius: 4px;
+    padding: 5px 10px;
+    background-color: var(--input-background-color);
+}
+
+.wb-checkbox-button:hover {
+    border-color: var(--input-border-hover-color);
+    background-color: var(--input-hover-background-color);
+}
+
+.wb-checkbox-button-checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.wb-checkbox-button-checked:hover {
+    background-color: var(--primary-hover-color);
+    border-color: var(--primary-hover-color);
+}

@@ -4,7 +4,7 @@ import { ByteArrayStore } from './byte-array-store';
 import { loadJsonSchema } from './json-schema-loader';
 import { MistypedValue } from './mistyped-value';
 import { NumberStore } from './number-store';
-import { ObjectStore, ObjectParamStore } from './object-store';
+import { ObjectStore, ObjectParamStore, comparePropertyOrder } from './object-store';
 import { getDefaultValue } from './schema-helpers';
 import { StoreBuilder } from './store-builder';
 import { StringStore } from './string-store';
@@ -36,5 +36,6 @@ export {
   ObjectParamStore,
   StoreBuilder,
   type ValidationError,
-  getDefaultValue
+  getDefaultValue,
+  comparePropertyOrder,
 };

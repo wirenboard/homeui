@@ -19,6 +19,8 @@ export interface EditorBuilderFunctionProps {
   inputId?: string;
   descriptionId?: string;
   errorId?: string;
+  hideError?: boolean; // Do not show error state
+  isTopLevel?: boolean; // Is the top-level editor
 }
 
 export type EditorBuilderFunction = (props: EditorBuilderFunctionProps) => ReactElement | null;
@@ -35,6 +37,7 @@ export interface BooleanEditorProps {
   errorId?: string;
   descriptionId?: string;
   translator: Translator;
+  titleOverride?: string;
 }
 
 export interface NumberEditorProps {
@@ -44,6 +47,7 @@ export interface NumberEditorProps {
   errorId?: string;
   translator: Translator;
   isDisabled?: boolean;
+  hideError?: boolean;
 }
 
 export interface StringEditorProps {
@@ -52,18 +56,25 @@ export interface StringEditorProps {
   descriptionId?: string;
   errorId?: string;
   translator: Translator;
+  hideError?: boolean;
 }
 
 export interface ObjectEditorProps {
   store: ObjectStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
+  isTopLevel?: boolean;
 }
 
 export interface ArrayEditorProps {
   store: ArrayStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
+}
+
+export interface BooleanArrayEditorProps {
+  store: ArrayStore;
+  translator: Translator;
 }
 
 export interface ByteArrayEditorProps {
@@ -85,6 +96,7 @@ export interface EditorWrapperLabelProps {
   param: ObjectParamStore;
   title: string;
   inputId: string;
+  showError: boolean;
 }
 
 export interface ParamDescriptionProps {

@@ -122,6 +122,7 @@ const sanitizeCustomProperties = (source: JsonSchema, dest: JsonSchema) => {
 const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => {
   dest.hidden = !!source.hidden;
   dest.show_opt_in = !!source.show_opt_in;
+  dest.compact = !!source.compact;
   if (typeof source.grid_columns === 'number') {
     dest.grid_columns = source.grid_columns;
   }
@@ -136,6 +137,8 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
     dest.wb.show_editor = !!source.wb.show_editor;
     dest.wb.omit_default = !!source.wb.omit_default;
     dest.wb.allow_undefined = !!source.wb.allow_undefined;
+    dest.wb.read_only = !!source.wb.read_only;
+    dest.wb.disable_title = !!source.wb.disable_title;
   }
   if (Array.isArray(source.enum_titles)) {
     dest.enum_titles = source.enum_titles;
@@ -230,6 +233,9 @@ const sanitizeArraySchema = (schema: JsonSchema, definitions: Definitions, refCa
     res.items = schema.items.reduce((acc, item) => {
       const expanded = expandSchema(item, definitions, refCache);
       if (expanded) {
+        if (schema.options?.wb?.read_only) {
+          expanded.options = { ...expanded.options, wb: { ...expanded.options?.wb, read_only: true } };
+        }
         acc.push(expanded);
       }
       return acc;
@@ -238,6 +244,9 @@ const sanitizeArraySchema = (schema: JsonSchema, definitions: Definitions, refCa
     if (isObject(schema.items)) {
       const itemSchema = expandSchema(schema.items, definitions, refCache);
       if (itemSchema) {
+        if (schema.options?.wb?.read_only) {
+          itemSchema.options = { ...itemSchema.options, wb: { ...itemSchema.options?.wb, read_only: true } };
+        }
         res.items = itemSchema;
       }
     }

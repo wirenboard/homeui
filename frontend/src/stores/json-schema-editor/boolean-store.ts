@@ -58,8 +58,12 @@ export class BooleanStore implements PropertyStore {
     this.error = undefined;
   }
 
-  setValue(value: boolean): void {
-    this.value = value;
+  setValue(value: unknown): void {
+    if (typeof value !== 'boolean') {
+      this.value = new MistypedValue(value);
+    } else {
+      this.value = value;
+    }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }

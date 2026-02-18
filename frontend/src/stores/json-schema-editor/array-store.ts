@@ -21,6 +21,7 @@ export class ArrayStore implements PropertyStore {
     this.schema = schema;
     this.required = required;
     this._builder = builder;
+
     if (schema.format === 'wb-byte-array') {
       // Special handling of byte arrays
       this._itemsSchema = (schema.items as JsonSchema).oneOf[0];
@@ -53,6 +54,7 @@ export class ArrayStore implements PropertyStore {
       reset: action,
       setUndefined: action,
       setDefault: action,
+      setValue: action,
       addItem: action,
       removeItem: action,
     });
@@ -98,6 +100,23 @@ export class ArrayStore implements PropertyStore {
       this.items = [];
       this._hasStructureChanges = true;
     }
+  }
+
+  setValue(value: unknown): void {
+    if (!Array.isArray(value)) {
+      this.setUndefined();
+      return;
+    }
+    this.items = [];
+    value.forEach((item, index) => {
+      const itemSchema = Array.isArray(this._itemsSchema) ? this._itemsSchema[index] : this._itemsSchema;
+      const itemStore = this._builder.createStore(itemSchema as JsonSchema, item, false);
+      if (itemStore) {
+        this.items.push(itemStore);
+      }
+    });
+    this.isUndefined = false;
+    this._hasStructureChanges = true;
   }
 
   commit() {
