@@ -20,15 +20,10 @@ export default class UiStore {
     this.isConnected = isConnected;
   }
 
-  async initMenu(
-    dashboards: Dashboard[],
-    isShowWidgetsPage: boolean,
-    params: URLSearchParams,
-    computeUrlWithParams: (url: string) => string
-  ) {
+  async buildMenu(dashboards: Dashboard[], isShowWidgetsPage: boolean, params: URLSearchParams) {
     const { hasRights } = authStore;
 
-    const commontems = getMenuItems(dashboards, params, hasRights, isShowWidgetsPage, computeUrlWithParams);
+    const commontems = getMenuItems(dashboards, isShowWidgetsPage, params, hasRights);
     const customItems = await this.#getCustomMenuItems();
 
     runInAction(() => {

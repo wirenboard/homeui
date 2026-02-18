@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
@@ -22,18 +22,15 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   const { id, page, params } = useParseHash();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
-  const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true' || false);
+  const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true');
   const [openedSubmenus, setOpenedSubmenus] = useState(['dashboards-all']);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
   const { menuItems } = uiStore;
-  const computeUrlWithParams = useCallback((url: string) => {
-    return params.has('fullscreen') ? `${url}?fullscreen` : url;
-  }, [params.has('fullscreen')]);
 
   useEffect(() => {
-    uiStore.initMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params, computeUrlWithParams);
-  }, [dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params, computeUrlWithParams, i18n.language]);
+    uiStore.buildMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params);
+  }, [dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params, i18n.language, isAuthenticated]);
 
   const toggleNavigation = () => {
     const value = !isMenuCompact;

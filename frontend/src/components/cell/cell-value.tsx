@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Tooltip } from '@/components/tooltip';
+import { CellFormat } from '@/stores/device/cell-type';
 import { copyToClipboard } from '@/utils/clipboard';
+import { transformNumber } from '@/utils/one-wire-number';
 import { CellHistory } from './cell-history';
 import { type CellValueProps } from './types';
 import './styles.css';
@@ -18,6 +20,9 @@ export const CellValue = observer(({ cell, hideHistory }: CellValueProps) => {
   const getCopiedText = useCallback((val: string) => val, []);
 
   const formattedValue = useMemo(() => {
+    if (cell.type === CellFormat.OneWireId) {
+      return transformNumber(cell.value as number);
+    }
     if (typeof cell.value === 'number') {
       return new Intl.NumberFormat('ru-RU', { style: 'decimal', minimumFractionDigits })
         .format(cell.value)
@@ -90,9 +95,12 @@ export const CellValue = observer(({ cell, hideHistory }: CellValueProps) => {
           <div
             className={classNames('deviceCell-value', 'deviceCell-text')}
             onClick={() => {
-              const value = cell.isEnum
-                ? cell.enumValues.find((item) => item.value === cell.value).name
-                : cell.value;
+              let value = cell.value;
+              if (cell.isEnum) {
+                value = cell.enumValues.find((item) => item.value === cell.value).name;
+              } else if (cell.type === CellFormat.OneWireId) {
+                value = transformNumber(cell.value as number);
+              }
               setCapturedValue(value as string);
               copyToClipboard(cell.isEnum ? value as string : getCopiedText(value as string));
             }
