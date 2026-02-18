@@ -1,4 +1,5 @@
-import { DaliStore, ItemStore } from './dali-store';
+import { DaliStore } from './dali-store';
+import { ItemStore } from './item-store';
 
 export {
   DaliStore,
