@@ -125,6 +125,7 @@ export interface DeviceTypeDescription {
   'with-subdevices'?: boolean;
   hw?: DeviceTypeHardware[];
   schema?: JsonSchema;
+  custom?: boolean;
 }
 
 export interface DeviceTypeDescriptionGroup {

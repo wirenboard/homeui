@@ -61,3 +61,13 @@
         flex-grow: 1;
     }
 }
+
+.deviceTab-customBadge {
+    font-size: 11px;
+    color: #0c7cd5;
+    background: #e8f2fc;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    align-self: center;
+}

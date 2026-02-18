@@ -8,6 +8,7 @@ const BootstrapLikeSelect = ({
   isClearable,
   className,
   disabled,
+  formatOptionLabel,
 }) => {
   const withGroups = options.some((el) => 'options' in el);
   const customStyles = {
@@ -35,6 +36,7 @@ const BootstrapLikeSelect = ({
       className={'wb-react-select' + (className ? ' ' + className : '')}
       classNames={customClasses}
       isDisabled={disabled}
+      formatOptionLabel={formatOptionLabel}
       onChange={onChange}
     />
   );

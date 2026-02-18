@@ -18,6 +18,7 @@ export class OptionsStore {
     this.formColumns = null;
     this.initialValue = value;
     this.readOnly = false;
+    this.error = '';
     this.setValue(value);
 
     makeObservable(this, {
@@ -27,11 +28,13 @@ export class OptionsStore {
       hasErrors: observable,
       selectedOption: observable,
       formColumns: observable,
+      error: observable,
       setValue: action,
       setSelectedOption: action,
       setOptions: action,
       setFormColumns: action,
       addOption: action,
+      setError: action,
     });
   }
 
@@ -73,6 +76,10 @@ export class OptionsStore {
     this.formColumns = columns;
   }
 
+  setError(error) {
+    this.error = error;
+  }
+
   setReadOnly(value) {
     this.readOnly = value;
   }
@@ -88,5 +95,6 @@ export class OptionsStore {
   reset() {
     this.setValue(this.initialValue);
     this.setReadOnly(false);
+    this.setError('');
   }
 }

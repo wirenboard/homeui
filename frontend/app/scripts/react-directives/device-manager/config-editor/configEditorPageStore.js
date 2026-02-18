@@ -21,6 +21,7 @@ import {
 } from './portTabStore';
 import { SettingsTab } from './settingsTabStore';
 import { TabsStore } from './tabsStore';
+import { listTemplates } from './templateUploadService';
 
 const CONFED_WRITE_FILE_ERROR = 1002;
 
@@ -208,6 +209,18 @@ class ConfigEditorPageStore {
     return new SettingsTab(config, getGeneralSettingsSchema(schema), this.schemaTranslator);
   }
 
+  async _loadCustomTemplates() {
+    try {
+      const templates = await listTemplates();
+      if (templates.length) {
+        const groupLabel = i18n.t('device-manager.labels.custom-templates-group');
+        await this.deviceTypesStore.loadCustomTemplates(templates, groupLabel);
+      }
+    } catch (err) {
+      console.warn('Failed to load custom templates:', err);
+    }
+  }
+
   async load() {
     try {
       this.loaded = false;
@@ -216,6 +229,7 @@ class ConfigEditorPageStore {
       this.schemaTranslator = new Translator();
       this.schemaTranslator.addTranslations(schema.translations);
       this.deviceTypesStore.setDeviceTypeGroups(deviceTypeGroups);
+      await this._loadCustomTemplates();
       this.portSchemaMap = makePortSchemaMap(schema);
       config?.ports?.forEach((port) => {
         const portTab = this.createPortTab(port);

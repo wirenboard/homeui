@@ -225,6 +225,28 @@ export class TabsStore {
     this.hasModifiedStructure = true;
   }
 
+  deleteDevicesByType(deviceType) {
+    const tabs = this.items.filter(
+      (item) => item.type === TabType.DEVICE && item.deviceType === deviceType
+    );
+    tabs.forEach((tab) => {
+      const portTab = this.findPortTabByDevice(tab);
+      if (portTab) {
+        const childIndex = portTab.children.indexOf(tab);
+        portTab.deleteChildren(childIndex);
+      }
+      const index = this.items.indexOf(tab);
+      if (index !== -1) {
+        this.items.splice(index, 1);
+        this.uniqueMqttIdChecker.removeTab(tab);
+      }
+    });
+    if (tabs.length) {
+      this.hasModifiedStructure = true;
+      this.onSelectTab(Math.min(this.selectedTabIndex, this.items.length - 1));
+    }
+  }
+
   deleteSelectedTab() {
     const tab = this.items[this.selectedTabIndex];
     let newSelectedTabIndex = this.selectedTabIndex;

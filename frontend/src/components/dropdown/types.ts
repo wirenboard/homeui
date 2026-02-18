@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface Option<T = string | boolean | number | null | unknown> {
   label: string;
   value: T;
@@ -19,4 +21,5 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   isSearchable?: boolean;
   isInvalid?: boolean;
   minWidth?: string;
+  formatOptionLabel?: (_option: Option<T>) => ReactNode;
 }

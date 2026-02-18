@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
@@ -82,9 +83,23 @@ export const DeviceTabContent = observer(
     onUpdateBootloader,
     onUpdateComponents,
     onReadRegisters,
+    isCustomDeviceType,
+    isCustomDeviceTypeFn,
+    onDeleteTemplate,
   }: DeviceTabContentProps) => {
     const [optionalParamsSelectDialogIsOpen, openOptionalParamsSelectDialog] = useState(false);
     const { t } = useTranslation();
+    const badgeLabel = t('device-manager.labels.custom-template-badge');
+    const formatDeviceTypeLabel = isCustomDeviceTypeFn
+      ? (option: Option<string>) => (
+        <span>
+          {option.label}
+          {isCustomDeviceTypeFn(option.value) && (
+            <span className="deviceTab-customBadge" style={{ marginLeft: 6 }}>{badgeLabel}</span>
+          )}
+        </span>
+      )
+      : undefined;
     if (tab.isLoading) {
       return <LoaderPanel message={tab.loadingMessage} />;
     }
@@ -135,8 +150,18 @@ export const DeviceTabContent = observer(
             value={tab.deviceType}
             className="deviceTab-contentHeaderSelect"
             isSearchable={true}
+            formatOptionLabel={formatDeviceTypeLabel}
             onChange={(option: Option<string>) => onDeviceTypeChange(tab, option.value)}
           />
+          {isCustomDeviceType && onDeleteTemplate && (
+            <Button
+              icon={<TrashIcon />}
+              title={t('device-manager.buttons.delete-template')}
+              variant="secondary"
+              size="small"
+              onClick={onDeleteTemplate}
+            />
+          )}
           <div className="deviceTab-contentHeaderButtons">
             {!tab.withSubdevices && tab.readRegistersState.allowEditSettings && (
               <Button

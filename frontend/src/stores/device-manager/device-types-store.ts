@@ -44,9 +44,12 @@ export class DeviceTypesStore {
   private _loadDeviceSchemaFn: (deviceType: string) => Promise<any>;
   private _deviceTypesMap: Map<string, DeviceTypeDescription>;
 
+  private _customDeviceTypes: Set<string>;
+
   constructor(loadDeviceSchemaFn: (deviceType: string) => Promise<any>) {
     this._loadDeviceSchemaFn = loadDeviceSchemaFn;
     this._deviceTypesMap = new Map<string, DeviceTypeDescription>();
+    this._customDeviceTypes = new Set<string>();
     this.deviceTypeDropdownOptions = [];
   }
 
@@ -138,7 +141,7 @@ export class DeviceTypesStore {
   }
 
   hasBetterFirmware(sourceDeviceType: string, targetDeviceType: string, deviceSignature: string) {
-    const fw = this._deviceTypesMap.get(sourceDeviceType)?.hw?.find((hw => hw.signature === deviceSignature))?.fw;
+    const fw = this._deviceTypesMap.get(sourceDeviceType)?.hw?.find(((hw) => hw.signature === deviceSignature))?.fw;
     const typeDesc = this._deviceTypesMap.get(targetDeviceType);
     if (!typeDesc?.hw) {
       return false;
@@ -157,5 +160,119 @@ export class DeviceTypesStore {
 
   withSubdevices(deviceType: string) {
     return !!this._deviceTypesMap.get(deviceType)?.['with-subdevices'];
+  }
+
+  isCustom(deviceType: string): boolean {
+    return this._customDeviceTypes.has(deviceType);
+  }
+
+  addCustomDeviceType(type: string, name: string, groupLabel: string) {
+    this._customDeviceTypes.add(type);
+
+    if (!this.isUnknown(type)) {
+      this._updateDeviceTypeName(type, name);
+      return;
+    }
+
+    this._deviceTypesMap.set(type, {
+      name,
+      deprecated: false,
+      type,
+      protocol: '',
+      'mqtt-id': '',
+      custom: true,
+    });
+
+    let group = this.deviceTypeDropdownOptions.find((g) => g.label === groupLabel);
+    if (!group) {
+      group = { label: groupLabel, options: [] };
+      this.deviceTypeDropdownOptions.push(group);
+    }
+    group.options.push({ label: name, value: type });
+  }
+
+  async preloadSchema(type: string, timeoutMs?: number): Promise<boolean> {
+    try {
+      const schemaPromise = this.getSchema(type);
+      if (timeoutMs !== undefined) {
+        const timeout = new Promise<undefined>((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), timeoutMs)
+        );
+        await Promise.race([schemaPromise, timeout]);
+      } else {
+        await schemaPromise;
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private _cacheRawSchema(type: string, rawSchema: any) {
+    const desc = this._deviceTypesMap.get(type);
+    if (!desc) {
+      return;
+    }
+    const jsonSchema = loadJsonSchema(rawSchema);
+    if (jsonSchema) {
+      fixDeviceTemplate(jsonSchema);
+      desc.schema = jsonSchema;
+    }
+  }
+
+  private _updateDeviceTypeName(type: string, name: string) {
+    const desc = this._deviceTypesMap.get(type);
+    if (desc) {
+      desc.name = name;
+    }
+    for (const group of this.deviceTypeDropdownOptions) {
+      const opt = group.options.find((o) => o.value === type);
+      if (opt) {
+        opt.label = name;
+        break;
+      }
+    }
+  }
+
+  async loadCustomTemplates(templates: { filename: string }[], groupLabel: string) {
+    for (const tpl of templates) {
+      const type = tpl.filename.replace(/\.json$/, '');
+      if (!this.isUnknown(type)) {
+        // Type already loaded by confed, mark as custom and fix name from schema
+        this._customDeviceTypes.add(type);
+        try {
+          const rawSchema = await this._loadDeviceSchemaFn(type);
+          const name = (rawSchema as Record<string, any>)?.device?.name;
+          if (name) {
+            this._updateDeviceTypeName(type, name);
+          }
+          this._cacheRawSchema(type, rawSchema);
+        } catch {
+          // Keep confed-provided name
+        }
+        continue;
+      }
+      try {
+        const rawSchema = await this._loadDeviceSchemaFn(type);
+        const name = (rawSchema as Record<string, any>)?.device?.name || type;
+        this.addCustomDeviceType(type, name, groupLabel);
+        this._cacheRawSchema(type, rawSchema);
+      } catch {
+        this.addCustomDeviceType(type, type, groupLabel);
+      }
+    }
+  }
+
+  removeCustomDeviceType(type: string) {
+    this._customDeviceTypes.delete(type);
+    this._deviceTypesMap.delete(type);
+
+    for (let i = this.deviceTypeDropdownOptions.length - 1; i >= 0; i--) {
+      const group = this.deviceTypeDropdownOptions[i];
+      group.options = group.options.filter((opt) => opt.value !== type);
+      if (group.options.length === 0) {
+        this.deviceTypeDropdownOptions.splice(i, 1);
+      }
+    }
   }
 }

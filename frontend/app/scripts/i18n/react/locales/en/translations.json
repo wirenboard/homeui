@@ -375,7 +375,13 @@
          "select-template": "Select template",
          "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
          "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
-         "restoring-device": "Restoring device firmware"
+         "restoring-device": "Restoring device firmware",
+         "custom-template": "Custom",
+         "custom-template-badge": "Custom template",
+         "custom-templates-group": "Custom templates",
+         "confirm-delete-template": "Delete custom template \"{{item}}\"?",
+         "confirm-delete-template-and-devices": "Delete template \"{{item}}\" and devices from configuration: {{devices}}?",
+         "confirm-overwrite-template": "Template \"{{item}}\" already exists. Overwrite?"
       },
       "buttons": {
          "save": "Save config",
@@ -392,7 +398,10 @@
          "search-disconnected-device": "Search for the device",
          "update": "Update",
          "parameters": "Parameters",
-         "switch-template": "Switch template"
+         "switch-template": "Switch template",
+         "upload-template": "Upload custom",
+         "uploading-template": "Uploading...",
+         "delete-template": "Delete template"
       },
       "errors": {
          "write":"Error writing config. See wb-mqtt-confed logs for details",
@@ -419,7 +428,10 @@
          "fw-mismatch": "Current firmware {{currentFw}} is not supported by this template. Minimum required version: {{requiredFw}}. Please update the firmware or switch to another template.",
          "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template.",
          "bad-value-from-registers": "Value \"{{value}}\" read from device is not suitable for this parameter. You can set your own — it will be written to the device. If it does not matter, you can leave it as is.",
-         "several-param-variants": "Several variants of this parameter are specified in the template. Please fix the device template."
+         "several-param-variants": "Several variants of this parameter are specified in the template. Please fix the device template.",
+         "upload-template": "Failed to upload template",
+         "delete-template": "Failed to delete template",
+         "invalid-template": "Invalid template file"
       }
    },
    "exp-check": {

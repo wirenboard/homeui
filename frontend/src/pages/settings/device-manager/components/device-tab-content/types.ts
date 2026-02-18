@@ -1,4 +1,4 @@
-import { DeviceTabStore } from '@/stores/device-manager';
+import { type DeviceTabStore } from '@/stores/device-manager';
 
 export interface DeviceTabContentProps {
   tab: DeviceTabStore;
@@ -12,6 +12,9 @@ export interface DeviceTabContentProps {
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
   onReadRegisters: (tab: DeviceTabStore) => void;
+  isCustomDeviceType?: boolean;
+  isCustomDeviceTypeFn?: (type: string) => boolean;
+  onDeleteTemplate?: () => void;
 }
 
 export interface ReadRegistersResultAlertProps {

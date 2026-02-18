@@ -33,6 +33,7 @@ export const Dropdown = ({
   isSearchable = false,
   isButton,
   minWidth = '150px',
+  formatOptionLabel,
   onChange,
 }: DropdownProps) => {
   const select = useRef<SelectInstance>();
@@ -96,6 +97,7 @@ export const Dropdown = ({
           display: data?.hidden ? 'none' : baseStyles.display,
         }),
       }}
+      formatOptionLabel={formatOptionLabel}
       unstyled
       onChange={handleChange}
     />
