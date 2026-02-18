@@ -807,6 +807,7 @@
          "not-a-string": "Value must be a string",
          "not-a-boolean": "Set value",
          "not-a-byte-array": "Enter an array of numbers from 0 to 255 in decimal or hexadecimal format (0-255 or 0x00-0xFF) separated by commas",
+         "invalid-1-wire-format": "Enter the value in the format 28-************",
          "not-in-enum": "Select one of the available options",
          "min-length": "Value must be at least {{limit}} characters long",
          "max-length": "Value must be no more than {{limit}} characters long",

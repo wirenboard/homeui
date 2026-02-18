@@ -2,7 +2,6 @@ import DesktopIcon from '@/assets/icons/desktop.svg';
 import FileIcon from '@/assets/icons/file.svg';
 import InfoIcon from '@/assets/icons/info.svg';
 import IntegrationsIcon from '@/assets/icons/integrations.svg';
-import ListIcon from '@/assets/icons/list.svg';
 import SettingsIcon from '@/assets/icons/settings.svg';
 import SitemapIcon from '@/assets/icons/sitemap.svg';
 import StatsIcon from '@/assets/icons/stats.svg';
@@ -99,11 +98,14 @@ const filterMenuItems = (items: MenuItemInstance[]): MenuItemInstance[] => {
 
 export const getMenuItems = (
   dashboardsList: Dashboard[],
-  params: URLSearchParams,
-  hasRights: (role: UserRole) => boolean,
   isShowWidgetsPage: boolean,
-  computeUrlWithParams: (url: string) => string
+  params: URLSearchParams,
+  hasRights: (role: UserRole) => boolean
 ): MenuItemInstance[] => {
+  const computeUrlWithParams = (url: string) => {
+    return params.has('fullscreen') ? `${url}?fullscreen` : url;
+  };
+
   return [
     {
       label: 'navigation.labels.dashboards',

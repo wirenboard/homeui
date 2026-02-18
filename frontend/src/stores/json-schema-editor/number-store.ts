@@ -1,5 +1,6 @@
 import { action, makeObservable, observable, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
+import { reverseTransformNumber, transformNumber } from '@/utils/one-wire-number';
 import { MistypedValue } from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
 import type { JsonSchema, ValidationError, PropertyStore } from './types';
@@ -22,7 +23,7 @@ export class NumberStore implements PropertyStore {
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
       this.value = initialValue;
-      this.editString = String(initialValue);
+      this.editString = schema.format === 'w1-id' ? transformNumber(initialValue) : String(initialValue);
     } else if (initialValue === undefined) {
       this.value = undefined;
       if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
@@ -96,6 +97,13 @@ export class NumberStore implements PropertyStore {
       };
       return;
     }
+    if (this.schema.format === 'w1-id' && this.editString) {
+      const hexPattern = /^(28-[0-9A-Fa-f]{12}|0)$/;
+      if (!hexPattern.test(this.editString)) {
+        this.error = { key: 'json-editor.errors.invalid-1-wire-format' };
+        return;
+      }
+    }
     this.error = undefined;
   }
 
@@ -111,7 +119,7 @@ export class NumberStore implements PropertyStore {
       }
     } else if (typeof value === 'number') {
       this.value = value;
-      this.editString = String(value);
+      this.editString = this.schema.format === 'w1-id' ? transformNumber(value) : String(value);
     } else {
       this.value = new MistypedValue(value);
       this.editString = '';
@@ -125,12 +133,15 @@ export class NumberStore implements PropertyStore {
 
   setEditString(value: string) {
     this.editString = value;
-    if (value === '') {
+    if (!value && this.schema.format === 'w1-id') {
+      this.value = 0;
+      this.editString = '0';
+    } else if (value === '') {
       this.value = undefined;
     } else {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
-        this.value = new MistypedValue(value);
+        this.value = this.schema.format === 'w1-id' ? reverseTransformNumber(value) : new MistypedValue(value);
       } else {
         this.value = parsedValue;
       }
