@@ -1,5 +1,12 @@
 import { type ReactElement } from 'react';
 
+export interface ErrorInfo {
+  variant?: string;
+  text?: string | ReactElement;
+  code?: number;
+  onClose?: () => void 
+}
+
 export interface PageProps {
   title: string;
   isEditingTitle?: boolean;
@@ -11,7 +18,7 @@ export interface PageProps {
   actions?: ReactElement;
   titleArea?: ReactElement;
   footer?: ReactElement;
-  errors?: { variant?: string; text?: string | ReactElement; code?: number; onClose?: () => void }[];
+  errors?: ErrorInfo[];
   infoLink?: string;
   onTitleChange?: (_title: string) => void;
   onTitleEditEnable?: () => void;

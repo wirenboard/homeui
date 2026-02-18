@@ -23,6 +23,9 @@ export interface WbOptions {
   // and we want to allow user to not set the property at all.
   // This option has effect only if show_editor is true
   allow_undefined?: boolean;
+
+  // If true, the property will be shown as read-only in the editor
+  read_only?: boolean;
 }
 
 export interface InputAttributes {
@@ -120,6 +123,7 @@ export interface PropertyStore {
 
   setUndefined(): void;
   setDefault(): void;
+  setValue(value: unknown): void;
   commit(): void;
   reset(): void;
 }

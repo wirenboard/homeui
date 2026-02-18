@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.175.0) stable; urgency=medium
+
+  * Add DALI gateway configuration page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 18 Feb 2026 10:42:02 +0500
+
 wb-mqtt-homeui (2.174.0) stable; urgency=medium
 
   * Update widgets page

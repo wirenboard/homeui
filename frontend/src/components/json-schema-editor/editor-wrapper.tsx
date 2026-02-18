@@ -8,7 +8,7 @@ import { ParamDescription } from './param-description';
 import { ParamError } from './param-error';
 import type { EditorWrapperProps, EditorWrapperLabelProps } from './types';
 
-const EditorWrapperLabel = ({ param, title, inputId }: EditorWrapperLabelProps) => {
+const EditorWrapperLabel = ({ param, title, inputId, showError }: EditorWrapperLabelProps) => {
   if (!param.store.schema.options?.wb?.show_editor && param.store.schema.options?.show_opt_in) {
     const checkHandler = (checked: boolean) => {
       if (checked) {
@@ -21,13 +21,13 @@ const EditorWrapperLabel = ({ param, title, inputId }: EditorWrapperLabelProps) 
       <Checkbox
         title={title}
         checked={!param.disabled}
-        className="wb-jsonEditor-propertyCheckbox"
+        className={classNames("wb-jsonEditor-propertyCheckbox", { 'wb-jsonEditor-propertyCheckboxError': showError })}
         onChange={checkHandler}
       />
     );
   }
   return (
-    <label htmlFor={inputId} className="wb-jsonEditor-propertyLabel">
+    <label htmlFor={inputId} className={classNames("wb-jsonEditor-propertyLabel", { 'wb-jsonEditor-propertyLabelError': showError })}>
       {title}
     </label>
   );
@@ -64,11 +64,8 @@ export const EditorWrapper = observer(({
   const title = translator.find(param.store.schema.title || param.key, currentLanguage);
   const showLabel = param.store.storeType !== 'boolean' && !param.store.schema.options?.compact;
   return (
-    <div
-      className={classNames('wb-jsonEditor-objectProperty', { 'wb-jsonEditor-propertyError': showError })}
-      style={style}
-    >
-      {showLabel && <EditorWrapperLabel param={param} title={title} inputId={inputId} />}
+    <div className='wb-jsonEditor-objectProperty' style={style}>
+      {showLabel && <EditorWrapperLabel param={param} title={title} inputId={inputId} showError={showError} />}
       {param.disabled ? (
         <DisabledParamPlaceholder />
       ) : (

@@ -6,5 +6,6 @@ export interface CheckboxProps {
   ariaDescribedby?: string;
   ariaInvalid?: boolean;
   ariaErrorMessage?: string;
+  variant?: 'default' | 'button';
   onChange: (checked: boolean) => void;
 }
