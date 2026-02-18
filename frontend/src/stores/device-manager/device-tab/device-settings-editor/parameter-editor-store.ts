@@ -18,6 +18,9 @@ export class WbDeviceParameterEditorVariant {
     conditions: Conditions) {
 
     const jsonSchema = makeJsonSchemaForParameter(parameter);
+    if (parameter.type === 'w1-id') {
+      jsonSchema.format = 'w1-id';
+    }
     const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
     this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);
     this._conditionFn = conditions.getFunction(parameter.condition, parameter.dependencies);
