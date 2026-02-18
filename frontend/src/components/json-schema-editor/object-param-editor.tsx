@@ -106,7 +106,12 @@ const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
 
 const ObjectEditor = observer(({ store, translator, editorBuilder, isTopLevel } : ObjectEditorProps) => {
   return (
-    <div className={classNames("wb-jsonEditor-objectEditor", { "wb-jsonEditor-objectEditorWithBorder": !isTopLevel })}>
+    <div className={
+        classNames(
+          "wb-jsonEditor-objectEditor",
+          {"wb-jsonEditor-objectEditorWithBorder": !isTopLevel && store.schema.format !== "card"}
+        )
+    }>
       {editorBuilder && makeLayout(store.params, translator, editorBuilder)}
     </div>
   );
