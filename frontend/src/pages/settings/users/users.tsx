@@ -52,14 +52,13 @@ const UsersPage = observer(() => {
     >
       <Table>
         <TableRow isHeading>
-          <TableCell>
+          <TableCell width="50%">
             {t('users.labels.login')}
           </TableCell>
-          <TableCell>
+          <TableCell width="50%">
             {t('users.labels.type')}
           </TableCell>
-          <TableCell width={30} />
-          <TableCell width={30} />
+          <TableCell width={100} />
         </TableRow>
 
         {store.users.map((user) => (
@@ -72,32 +71,32 @@ const UsersPage = observer(() => {
               {t('users.labels.' + user.type)}
             </TableCell>
 
-            <TableCell width={30}>
-              <Tooltip text={t('users.buttons.edit')}>
-                <Button
-                  size="small"
-                  variant="primary"
-                  aria-label={t('users.buttons.edit')}
-                  icon={<EditIcon />}
-                  onClick={() => {
-                    setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
-                    store.editUser(user);
-                  }}
-                />
-              </Tooltip>
-            </TableCell>
+            <TableCell align="right">
+              <div className="users-actions">
+                <Tooltip text={t('users.buttons.edit')}>
+                  <Button
+                    size="small"
+                    variant="primary"
+                    aria-label={t('users.buttons.edit')}
+                    icon={<EditIcon />}
+                    onClick={() => {
+                      setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
+                      store.editUser(user);
+                    }}
+                  />
+                </Tooltip>
 
-            <TableCell width={30}>
-              <Tooltip text={t('users.buttons.delete')}>
-                <Button
-                  size="small"
-                  variant="danger"
-                  icon={<TrashIcon />}
-                  aria-label={t('users.buttons.delete')}
-                  disabled={user.type === 'admin' && store.onlyOneAdmin}
-                  onClick={() => setDeletedUserId(user.id)}
-                />
-              </Tooltip>
+                <Tooltip text={t('users.buttons.delete')}>
+                  <Button
+                    size="small"
+                    variant="danger"
+                    icon={<TrashIcon />}
+                    aria-label={t('users.buttons.delete')}
+                    disabled={user.type === 'admin' && store.onlyOneAdmin}
+                    onClick={() => setDeletedUserId(user.id)}
+                  />
+                </Tooltip>
+              </div>
             </TableCell>
           </TableRow>
         ))}

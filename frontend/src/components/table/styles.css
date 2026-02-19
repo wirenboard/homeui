@@ -3,28 +3,19 @@
 }
 
 .wb-table {
-    max-width: 100%;
-    min-width: fit-content;
+    min-width: 100%;
     position: relative;
 }
 
 .wb-tableFullWidth {
     width: 100%;
-    display: grid;
 }
 
 .wb-tableWithoutGap .wb-tableRow {
     gap: 0;
 }
 
-.wb-tableRow {
-    display: grid;
-    gap: 12px;
-    align-items: center;
-    padding: 0 12px;
-}
-
-.wb-tableRow:not(.wb-tableRowHeading):hover {
+.wb-tableRow:not(.wb-tableRowHeading):hover .wb-tableCell {
     background: var(--table-item-hover);
 }
 
@@ -38,28 +29,50 @@
     visibility: hidden;
 }
 
-.wb-tableRowHeading {
+.wb-tableRowHeading .wb-tableCell {
     background: var(--border-color);
     font-weight: bold;
 }
 
+.wb-tableRowStickyHeading {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
 .wb-tableCell {
-    display: table-cell;
-    padding: 8px 0;
+    padding: 8px 6px;
     height: 100%;
+    position: relative;
+    vertical-align: top;
+}
+
+.wb-tableCell:first-of-type {
+    padding-left: 12px;
+}
+
+.wb-tableCell:last-of-type {
+    padding-right: 12px;
+}
+
+.wb-tableCell * {
+    z-index: 1;
+}
+
+.wb-tableCellWithLink {
+    color: var(--link-color);
 }
 
 .wb-tableCellVerticalAlignCenter {
     vertical-align: middle;
-    align-items: center;
-    display: flex;
 }
 
 .wb-tableCellAlignCenter {
-    justify-content: center;
+    text-align: center;
 }
 
 .wb-tableCellAlignRight {
+    text-align: right;
     justify-content: flex-end;
 }
 
@@ -73,7 +86,7 @@
     text-overflow: ellipsis;
 }
 
-.wb-tableRow:not(:last-of-type) {
+.wb-tableRow:not(:last-of-type) .wb-tableCell {
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -83,6 +96,67 @@
     @media(max-width: 640px) {
         visibility: visible;
     }
+}
+
+.wb-tableCellHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+}
+
+.wb-tableCellHeaderCenter {
+    justify-content: center;
+}
+
+.wb-tableCellHeaderRight {
+    justify-content: flex-end;
+}
+
+.wb-tableCellSortButton {
+    padding: 2px;
+    height: 20px;
+}
+
+.wb-tableCellSortIcons {
+    display: block;
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+.wb-tableCellSortIcon {
+    width: 14px !important;
+    height: 22px !important;
+    opacity: 0.3;
+}
+
+.wb-tableCellSortButton .button-icon {
+    height: 18px;
+}
+
+
+.wb-tableCellSortButtonActive .wb-tableCellSortIcon {
+    opacity: 1;
+}
+
+.wb-tableCellHeader span {
+    flex: 1;
+    min-width: 0;
+}
+
+.wb-tableBody {
+    display: contents;
+}
+
+.wb-tableLink {
+    background: transparent;
+    height: 100%;
+    z-index: 0;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .wb-tableLoading {

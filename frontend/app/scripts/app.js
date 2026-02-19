@@ -81,6 +81,7 @@ import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
 import { DashboardsStore } from '@/stores/dashboards';
+import { DeviceStore } from '@/stores/device';
 import { RulesStore } from '@/stores/rules';
 import { uiStore } from '@/stores/ui';
 import { autorun } from 'mobx';
@@ -188,7 +189,6 @@ module
       [
         'app',
         'help',
-        'mqtt',
         'system',
         'logs',
         'configurations',
@@ -307,6 +307,7 @@ const realApp = angular
       });
 
       $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
+      $rootScope.deviceStore = new DeviceStore(mqttClient);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
 
       $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {

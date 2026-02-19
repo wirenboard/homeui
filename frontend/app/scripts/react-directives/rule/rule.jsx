@@ -1,9 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import EditRulePage from '@/pages/rules/[rule]';
-import { DeviceStore } from '@/stores/device';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function ruleDirective($rootScope, mqttClient) {
+export default function ruleDirective($rootScope) {
   'ngInject';
 
   setReactLocale();
@@ -12,12 +11,11 @@ export default function ruleDirective($rootScope, mqttClient) {
     restrict: 'E',
     scope: {},
     link: function(scope, element) {
-      scope.devicesStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
         <EditRulePage
           rulesStore={$rootScope.rulesStore}
-          devicesStore={scope.devicesStore}
+          devicesStore={$rootScope.devicesStore}
         />
       );
 

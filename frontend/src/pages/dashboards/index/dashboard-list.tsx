@@ -80,14 +80,16 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
               {dashboardsList.some((dashboard) => dashboard.isSvg) && (
                 <TableCell width={30} align="center">SVG</TableCell>
               )}
-              {hasEditRights && <TableCell width={55} align="center">{t('dashboards.labels.in-menu')}</TableCell>}
+              {hasEditRights && <TableCell width={70}>{t('dashboards.labels.in-menu')}</TableCell>}
             </TableRow>
 
             <ReactSortable
+              tag="tbody"
               list={dashboardsList}
               setList={(value, changed) => {
                 if (changed) {
                   const clearValue = value.map((dashboard: any) => {
+                    // eslint-disable-next-line no-unused-vars
                     const { chosen, selected, ...value } = dashboard;
                     return value;
                   });
@@ -105,7 +107,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   key={dashboard.id}
                 >
                   {hasEditRights && dashboardsList.length > 1 && width >= 480 && (
-                    <TableCell width={24}>
+                    <TableCell width={24} isDraggable>
                       <MoveIcon className="dashboardList-sortHandle" />
                     </TableCell>
                   )}
@@ -148,13 +150,13 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   )}
 
                   {dashboardsList.some((dashboard) => dashboard.isSvg) && (
-                    <TableCell width={30} align="center">
+                    <TableCell align="center">
                       {dashboard.isSvg && <CheckIcon className="dashboardList-icon" />}
                     </TableCell>
                   )}
 
                   {hasEditRights && (
-                    <TableCell width={55} align="center" preventClick>
+                    <TableCell align="right" preventClick>
                       <Tooltip
                         text={t(dashboard.options?.isHidden
                           ? 'dashboards.buttons.hidden'

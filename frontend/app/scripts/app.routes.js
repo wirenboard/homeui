@@ -46,8 +46,15 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('MQTTChannels', {
       url: '/MQTTChannels',
-      template: require('../views/MQTTChannels.html'),
-      controller: 'MQTTCtrl as $ctrl',
+      template: '<mqtt-channels-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'mqtt-channels' */ './controllers/MQTTChannelsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     .state('accessLevel', {
       url: '/access-level',

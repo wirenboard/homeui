@@ -155,32 +155,6 @@ a[ng-click]:hover {
   cursor: pointer;
 }
 
-.mqtt-table-wrapper {
-  height: calc(100% - 120px);
-  overflow-y: auto !important;
-  border-top: 1px solid #ddd;
-}
-
-.mqtt-table-wrapper table {
-  border-top: 0 !important;
-  margin-top: 0 !important;
-}
-
-.mqtt-table-wrapper thead {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  box-shadow: 6px -6px #ddd inset;
-}
-
-.mqtt-table-value {
-  max-width: 300px;
-  width: max-content;
-  word-break: break-all;
-  word-wrap: break-word;
-  white-space: break-spaces;
-}
-
 .page-header {
   margin-top: 14px;
 }
