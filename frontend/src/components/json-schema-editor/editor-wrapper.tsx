@@ -1,11 +1,13 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import { type CSSProperties, type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
 import { Input } from '@/components/input';
-import { ParamDescription } from './param-description';
+import { ParamDescription, DescriptionText } from './param-description';
 import { ParamError } from './param-error';
+import { Card } from '@/components/card';
 import type { EditorWrapperProps, EditorWrapperLabelProps } from './types';
 
 const EditorWrapperLabel = ({ param, title, inputId, showError }: EditorWrapperLabelProps) => {
@@ -37,7 +39,33 @@ const DisabledParamPlaceholder = () => {
   return <Input isDisabled={true} value="" onChange={() => {}} />;
 };
 
-export const EditorWrapper = observer(({
+export const EditorCardWrapper = observer(({
+  children,
+  param,
+  translator
+}: PropsWithChildren<EditorWrapperProps>) => {
+  const { i18n } = useTranslation();
+  const [isBodyVisible, setIsBodyVisible] = useState(true);
+  const currentLanguage = i18n.language;
+  const showDescription = !!param.store.schema.description;
+  const title = translator.find(param.store.schema.title || param.key, currentLanguage);
+  return (
+      <Card
+        heading={title && String(title)}
+        variant="secondary"
+        withError={param.store.hasErrors}
+        isBodyVisible={isBodyVisible}
+        toggleBody={() => setIsBodyVisible(!isBodyVisible)}
+      >
+      {showDescription && (
+        <DescriptionText description={translator.find(param.store.schema.description, currentLanguage)} />
+      )}
+      {children}
+    </Card>
+  );
+});
+
+export const EditorCommonWrapper = observer(({
   children,
   param,
   translator,
@@ -81,4 +109,32 @@ export const EditorWrapper = observer(({
       )}
     </div>
   );
-});
+}); 
+
+export const EditorWrapper = ({
+  children,
+  param,
+  translator,
+  descriptionId,
+  errorId,
+  inputId,
+}: PropsWithChildren<EditorWrapperProps>) => {
+  if (param.store.schema.format === "card") {
+    return (
+      <EditorCardWrapper param={param} translator={translator}>
+        {children}
+      </EditorCardWrapper>
+    );
+  }
+  return (
+    <EditorCommonWrapper
+      param={param}
+      translator={translator}
+      descriptionId={descriptionId}
+      errorId={errorId}
+      inputId={inputId}
+    >
+      {children}
+    </EditorCommonWrapper>
+  );
+};
