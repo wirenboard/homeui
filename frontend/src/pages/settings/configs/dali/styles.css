@@ -4,6 +4,11 @@
     height: 100%;
 }
 
+.dali .card {
+    max-width: initial;
+    margin-bottom: 0px;
+}
+
 .dali-list {
     width: 100%;
     overflow-y: auto;
