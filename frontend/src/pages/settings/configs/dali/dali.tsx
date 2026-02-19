@@ -83,7 +83,6 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                     {selectedItem?.type === 'bus' && (
                       <Button 
                         label={t('dali.buttons.rescan')} 
-                        variant="success" 
                         onClick={async () => {
                           await selectedItem.scan();
                           setData(store.gateways);
@@ -93,7 +92,6 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                     {selectedItem?.type === 'device' && (
                       <Button 
                         label={t('dali.buttons.reload')} 
-                        variant="success" 
                         onClick={async () => {
                           await selectedItem.load(true);
                           setData(store.gateways);
@@ -102,7 +100,6 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                     )}
                     <Button 
                       label={t('common.buttons.save')} 
-                      variant="success"
                       disabled={!selectedItem?.objectStore?.isDirty}
                       onClick={async () => {
                         await selectedItem.save();

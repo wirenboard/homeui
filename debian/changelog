@@ -4,6 +4,12 @@ wb-mqtt-homeui (2.177.0) stable; urgency=medium
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 18 Feb 2026 18:29:43 +0500
 
+wb-mqtt-homeui (2.176.1) stable; urgency=medium
+
+  * Fix DALI gateway configuration page button styles
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 19 Feb 2026 17:22:31 +0500
+
 wb-mqtt-homeui (2.176.0) stable; urgency=medium
 
   * Add DALI gateway configuration page
