@@ -15,6 +15,7 @@ export const SearchDisconnectedScanPage = observer(({ pageStore }) => {
         onOk={() => pageStore.onOk()}
         onCancel={() => pageStore.onCancel()}
       />
+      <p className='text-center'><strong>{t('scan.labels.notice')}</strong></p>
       <ScanPageBody store={pageStore.commonScanStore} />
     </div>
   );

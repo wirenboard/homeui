@@ -3,7 +3,19 @@ wb-mqtt-homeui (2.178.0) stable; urgency=medium
   * Update mqtt channels page
   * Add mqtt sorting
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 19 Feb 2026 18:57:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 20 Feb 2026 18:02:00 +0300
+
+wb-mqtt-homeui (2.177.2) stable; urgency=medium
+
+  * Fix switch layout in boolean parameter editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 20 Feb 2026 15:20:44 +0500
+
+wb-mqtt-homeui (2.177.1) stable; urgency=medium
+
+  * Add notice about firmware restore when searching for disconnected devices in wb-mqtt-serial settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 19 Feb 2026 21:41:43 +0500
 
 wb-mqtt-homeui (2.177.0) stable; urgency=medium
 
