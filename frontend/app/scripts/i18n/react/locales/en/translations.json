@@ -376,7 +376,8 @@
          "select-template": "Select template",
          "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
          "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
-         "restoring-device": "Restoring device firmware"
+         "restoring-device": "Restoring device firmware",
+         "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed."
       },
       "buttons": {
          "save": "Save config",
