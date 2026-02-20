@@ -90,3 +90,12 @@
 .wb-jsonEditor-addButton {
     max-width: 100px;
 }
+
+.wb-jsonEditor-booleanEditorSwitch {
+    display: flex;
+    gap: 10px;
+}
+
+.wb-jsonEditor-booleanEditorSwitchLabel {
+    margin: 0px;
+}

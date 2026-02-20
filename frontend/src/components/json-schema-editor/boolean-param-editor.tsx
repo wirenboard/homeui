@@ -14,7 +14,7 @@ const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, transl
   const checked = indeterminate ? false : value as boolean;
   if (store.schema.format === 'switch') {
     return (
-      <div>
+      <div className='booleanEditorSwitch'>
         <Switch
           value={checked}
           ariaDescribedby={descriptionId}
@@ -22,7 +22,7 @@ const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, transl
           ariaErrorMessage={errorId}
           onChange={(checked: boolean) => store.setValue(checked)}
         />
-        {!store.schema.options?.compact && <label>{title}</label>}
+        {!store.schema.options?.compact && <label className='booleanEditorSwitchLabel'>{title}</label>}
       </div>
     );
   }
