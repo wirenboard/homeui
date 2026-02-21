@@ -1,9 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import SvgDashboardPage, { SvgDashboardPageStore } from '@/pages/dashboards/svg/[slug]';
-import { DeviceStore } from '@/stores/device';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function svgDashboardDirective(mqttClient, $rootScope) {
+export default function svgDashboardDirective($rootScope) {
   'ngInject';
 
   setReactLocale();
@@ -15,14 +14,12 @@ export default function svgDashboardDirective(mqttClient, $rootScope) {
     },
     link: function(scope, element) {
       scope.store = new SvgDashboardPageStore();
-      scope.devicesStore = new DeviceStore(mqttClient);
-
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
         <SvgDashboardPage
           store={scope.store}
           dashboardsStore={$rootScope.dashboardsStore}
-          devicesStore={scope.devicesStore}
+          devicesStore={$rootScope.deviceStore}
         />
       );
 

@@ -152,9 +152,9 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
             </>
           )}
         </form>
-        <Table isWithoutGap>
+        <Table isWithoutGap isFullWidth>
           <TableRow isHeading>
-            <TableCell>
+            <TableCell width="25%">
               <div
                 className="aliceRoom-swap"
                 onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
@@ -163,13 +163,13 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
                 <SwapIcon />
               </div>
             </TableCell>
-            <TableCell>
+            <TableCell width="25%">
               {t('alice.labels.room')}
             </TableCell>
-            <TableCell>
+            <TableCell width="25%">
               {t('alice.labels.property-capability')}
             </TableCell>
-            <TableCell>
+            <TableCell width="25%">
               {t('alice.labels.topic')}
             </TableCell>
           </TableRow>

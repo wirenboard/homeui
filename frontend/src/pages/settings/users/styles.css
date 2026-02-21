@@ -5,3 +5,8 @@
   margin-top: 12px;
   max-width: 320px;
 }
+
+.users-actions {
+  display: flex;
+  gap: 8px;
+}

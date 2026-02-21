@@ -801,6 +801,19 @@
          "get-https-status": "Failed to get HTTPS status: {{error}}"
       }
    },
+   "mqtt": {
+      "title": "MQTT Channels",
+      "labels": {
+         "search": "Search for devices",
+         "device": "Device",
+         "control": "Control",
+         "type": "Type",
+         "topic": "MQTT Topic",
+         "value": "Value",
+         "status": "Status",
+         "error": "Error: {{error}}"
+      }
+   },
    "json-editor": {
       "errors": {
          "not-a-number": "Value must be a number",

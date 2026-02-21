@@ -1,0 +1,13 @@
+.mqtt-search {
+    margin: 6px 0 12px 0;
+    max-width: 300px;
+    width: 100%;
+}
+
+.mqtt-value {
+    max-width: 160px;
+    width: max-content;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: break-spaces;
+}

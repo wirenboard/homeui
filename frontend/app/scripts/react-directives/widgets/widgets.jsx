@@ -1,9 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import WidgetsPage from '@/pages/dashboards/widgets';
-import { DeviceStore } from '@/stores/device';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function widgetsDirective($rootScope, mqttClient) {
+export default function widgetsDirective($rootScope) {
   'ngInject';
 
   setReactLocale();
@@ -12,13 +11,11 @@ export default function widgetsDirective($rootScope, mqttClient) {
     restrict: 'E',
     scope: {},
     link: function(scope, element) {
-      scope.devicesStore = new DeviceStore(mqttClient);
-
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
         <WidgetsPage
           store={$rootScope.dashboardsStore}
-          devicesStore={scope.devicesStore}
+          devicesStore={$rootScope.deviceStore}
         />
       );
 

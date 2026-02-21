@@ -69,7 +69,7 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
       <Table isLoading={isRulesUpdating}>
         {rules.map((rule) => (
           <TableRow url={`#!/rules/edit/${rule.virtualPath}`} key={rule.virtualPath}>
-            <TableCell ellipsis>
+            <TableCell width="100%" ellipsis>
               <div className="rules-name">{rule.virtualPath}</div>
             </TableCell>
             <TableCell width={30} visibleOnHover={isDesktop} preventClick>

@@ -265,6 +265,18 @@ export default class DeviceStore {
     };
   }
 
+  get filteredCells() {
+    const showSystemDevices = localStorage.getItem('show-system-devices') === 'yes';
+    let cells = Array.from(this.cells.values())
+      .sort((a, b) => a.id.localeCompare(b.id));
+
+    if (!showSystemDevices) {
+      cells = cells.filter((cell) => !cell.isSystem);
+    }
+
+    return cells;
+  }
+
   getDeviceCells(deviceId: string) {
     if (!this.devices.has(deviceId)) {
       return [];

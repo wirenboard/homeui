@@ -88,6 +88,14 @@ export default class Cell {
     return this.type !== 'incomplete' && (this._isButton() || this._value !== '-'); // / ozk замена null на  '-'
   }
 
+  get isSystem(): boolean {
+    return this.id.startsWith('system__');
+  }
+
+  get topic(): string {
+    return `/devices/${this.deviceId}/controls/${this.controlId}`;
+  }
+
   receiveValue(newValue: string) {
     if (!newValue) {
       if (this.valueType === 'rgb') {
