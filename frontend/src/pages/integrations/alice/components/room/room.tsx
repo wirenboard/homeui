@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react-lite';
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import SwapIcon from '@/assets/icons/swap.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Input } from '@/components/input';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
-import { notificationsStore } from '@/stores/notifications';
+import { useAsyncAction } from '@/utils/async-action';
 import type { RoomParams } from './types';
 import './styles.css';
 
@@ -19,6 +20,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isDeleteRoom, setIsDeleteRoom] = useState(false);
   const [roomName, setRoomName] = useState(null);
+  const [saveError, setSaveError] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
 
   const deviceList = useMemo(() => {
@@ -59,30 +61,24 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
     }
   }, [devices, rooms, id, sortDirection]);
 
-  const save = useCallback(async (ev: FormEvent) => {
+  const [save, isSaving] = useAsyncAction(async (ev: FormEvent) => {
     ev.preventDefault();
+
     try {
       if (!id) {
         const room = await addRoom(roomName);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.room-added', { name: roomName }),
-        });
         onSave(room);
       } else {
         await updateRoom(id, { name: roomName, devices: deviceList.map((device) => device.id) });
         setIsEditingTitle(false);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.room-updated', { name: roomName }),
-        });
       }
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
+      setSaveError(err.response.data.detail);
     }
-  }, [id, roomName, deviceList]);
+  });
 
   useEffect(() => {
+    setSaveError(null);
     setIsEditingTitle(!id);
     if (id === 'all') {
       setRoomName(t('alice.buttons.all-devices'));
@@ -91,16 +87,12 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
     }
   }, [id]);
 
-  const onConfirmDelete = async () => {
+  const [onConfirmDelete, isDeleting] = useAsyncAction(async () => {
     await deleteRoom(id);
-    setIsDeleteRoom(false);
     await fetchData();
-    notificationsStore.showNotification({
-      variant: 'success',
-      text: t('alice.notifications.room-deleted', { name: roomName }),
-    });
+    setIsDeleteRoom(false);
     onDelete();
-  };
+  });
 
   return (
     <>
@@ -145,13 +137,17 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
               />
               <Button
                 type="submit"
-                disabled={!roomName}
+                disabled={!roomName || !isEditingTitle}
+                isLoading={isSaving}
                 label={t('alice.buttons.save')}
                 variant="primary"
               />
             </>
           )}
         </form>
+
+        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+
         <Table isWithoutGap isFullWidth>
           <TableRow isHeading>
             <TableCell width="25%">
@@ -206,6 +202,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
         isOpened={isDeleteRoom}
         heading={t('alice.prompt.delete-room-title')}
         variant="danger"
+        isLoading={isDeleting}
         closeCallback={() => setIsDeleteRoom(false)}
         confirmCallback={onConfirmDelete}
       >

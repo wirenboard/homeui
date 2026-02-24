@@ -36,7 +36,9 @@ export default class UiStore {
       const additionalItems = await getMenu();
       this.#additionalItems = normalizeMenuResponse(additionalItems);
     }
-    this.modules = this.#collectModuleIds(this.#additionalItems);
+    runInAction(() => {
+      this.modules = this.#collectModuleIds(this.#additionalItems);
+    });
     return this.#additionalItems.map((item) => toMenuItemInstance(item, i18n.language));
   }
 

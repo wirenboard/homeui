@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.179.0) stable; urgency=medium
+
+  * Remove notifications from alice
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 24 Feb 2026 17:25:00 +0300
+
 wb-mqtt-homeui (2.178.0) stable; urgency=medium
 
   * Update mqtt channels page

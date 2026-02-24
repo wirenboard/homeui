@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CopyIcon from '@/assets/icons/copy.svg';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Dropdown } from '@/components/dropdown';
@@ -15,7 +16,7 @@ import {
   type AddDeviceParams,
   type SmartDevice as SmartDeviceData,
 } from '@/stores/alice';
-import { notificationsStore } from '@/stores/notifications';
+import { useAsyncAction } from '@/utils/async-action';
 import { DeviceSkills } from './components/device-skills';
 import type { SmartDeviceParams } from './types';
 import './styles.css';
@@ -27,9 +28,11 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
   const [category, setCategory] = useState<string>();
   const [isDeleteDevice, setIsDeleteDevice] = useState(false);
   const [data, setData] = useState<Partial<SmartDeviceData>>({ capabilities: [], properties: [] });
+  const [saveError, setSaveError] = useState(null);
 
   useEffect(() => {
     setIsEditingTitle(!id);
+    setSaveError(null);
     const cat = id
       ? Object.keys(deviceTypes).find((key) => deviceTypes[key].includes(devices.get(id).type))
       : Object.keys(deviceTypes).at(0);
@@ -44,46 +47,45 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
     });
   }, [id]);
 
-  const save = useCallback(async (ev: FormEvent) => {
+  const [save, isSaving] = useAsyncAction(async (ev: FormEvent) => {
     ev.preventDefault();
     try {
       const payload = { ...data } as AddDeviceParams;
 
       if (!id) {
         const device = await addDevice(payload);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.device-added', { name: data.name }),
-        });
         await fetchData();
         onSave(device);
       } else {
         await updateDevice(id, payload);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.device-updated', { name: data.name }),
-        });
         await fetchData();
       }
       setIsEditingTitle(false);
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
+      setSaveError(err.response.data.detail);
     }
-  }, [id, data]);
+  });
 
-  const onConfirmDelete = async () => {
+  const [onConfirmDelete, isDeleting] = useAsyncAction(async () => {
     try {
       await deleteDevice(id);
-      await fetchData();
-      notificationsStore.showNotification({
-        variant: 'success',
-        text: t('alice.notifications.device-deleted', { name: data.name }),
-      });
+      setIsDeleteDevice(false);
+      fetchData();
       onDelete();
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
+      await fetchData();
+      if (err.status === 404) {
+        return onDelete();
+      }
+      setSaveError(err.response.data.detail);
+      setIsDeleteDevice(false);
     }
-  };
+  });
+
+  const [onCopy, isCopied] = useAsyncAction(async () => {
+    const deviceId = await copyDevice(data as SmartDeviceData);
+    onOpenDevice(deviceId);
+  });
 
   return (
     <>
@@ -117,15 +119,9 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
               type="button"
               icon={<CopyIcon />}
               variant="secondary"
+              isLoading={isCopied}
               isOutlined
-              onClick={async () => {
-                const deviceId = await copyDevice(data as SmartDeviceData);
-                notificationsStore.showNotification({
-                  variant: 'success',
-                  text: t('alice.notifications.device-copied'),
-                });
-                onOpenDevice(deviceId);
-              }}
+              onClick={onCopy}
             />
           )}
           <Button
@@ -143,11 +139,15 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
           />
           <Button
             type="submit"
+            isLoading={isSaving}
             disabled={!data.name}
             label={t('alice.buttons.save')}
             variant="primary"
           />
         </form>
+
+        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+
         <div>
           <label className="aliceSmartDevice-label">
             <div>{t('alice.labels.room')}</div>
@@ -203,6 +203,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
 
       <Confirm
         isOpened={isDeleteDevice}
+        isLoading={isDeleting}
         heading={t('alice.prompt.delete-device-title')}
         variant="danger"
         closeCallback={() => setIsDeleteDevice(false)}

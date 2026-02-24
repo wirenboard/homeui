@@ -7,7 +7,6 @@ import { type AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Loader } from '@/components/loader';
-import { Notifications } from '@/components/notifications';
 import { type PageProps } from './types';
 import './styles.css';
 
@@ -49,78 +48,75 @@ export const PageLayout = ({
   }
 
   return (
-    <>
-      <div className="page-container">
-        <main className="page">
-          {hasRights && !isHideHeader && (titleValue || isEditingTitle) && (
-            <header className="page-headerContainer">
-              <div className="page-headerTitleWrapper">
-                {isEditingTitle ? (
-                  <Input
-                    className="editRule-nameInput"
-                    value={titleValue}
-                    placeholder={editingTitlePlaceholder}
-                    autoFocus
-                    isFullWidth
-                    onChange={onTitleChange}
-                  />
-                ) : (
-                  <>
-                    <h1 className="page-title">{title}</h1>
-                    {infoLink && (
-                      <a href={infoLink} target="_blank" className="page-info">
-                        <InfoIcon />
-                      </a>
-                    )}
-                  </>
-                )}
+    <div className="page-container">
+      <main className="page">
+        {hasRights && !isHideHeader && (titleValue || isEditingTitle) && (
+          <header className="page-headerContainer">
+            <div className="page-headerTitleWrapper">
+              {isEditingTitle ? (
+                <Input
+                  className="editRule-nameInput"
+                  value={titleValue}
+                  placeholder={editingTitlePlaceholder}
+                  autoFocus
+                  isFullWidth
+                  onChange={onTitleChange}
+                />
+              ) : (
+                <>
+                  <h1 className="page-title">{title}</h1>
+                  {infoLink && (
+                    <a href={infoLink} target="_blank" className="page-info">
+                      <InfoIcon />
+                    </a>
+                  )}
+                </>
+              )}
 
-                {(!isEditingTitle && onTitleChange) && (
-                  <Button
-                    size="small"
-                    type="button"
-                    icon={<EditSquareIcon />}
-                    variant="secondary"
-                    isOutlined
-                    onClick={() => onTitleEditEnable()}
-                  />
-                )}
-                {titleArea}
-              </div>
+              {(!isEditingTitle && onTitleChange) && (
+                <Button
+                  size="small"
+                  type="button"
+                  icon={<EditSquareIcon />}
+                  variant="secondary"
+                  isOutlined
+                  onClick={() => onTitleEditEnable()}
+                />
+              )}
+              {titleArea}
+            </div>
 
-              {!isLoading && <div className="page-actions">{actions}</div>}
-            </header>
-          )}
+            {!isLoading && <div className="page-actions">{actions}</div>}
+          </header>
+        )}
 
-          {errors?.map((error, i) => (
-            <Alert
-              variant={error.variant as AlertProps['variant']}
-              key={i}
-              className="page-error"
-              onClose={error?.onClose}
-            >
-              {error.text}
-            </Alert>
-          ))}
+        {errors?.map((error, i) => (
+          <Alert
+            variant={error.variant as AlertProps['variant']}
+            key={i}
+            className="page-error"
+            onClose={error?.onClose}
+          >
+            {error.text}
+          </Alert>
+        ))}
 
-          {!hasRights && (
-            <Alert variant="danger">
-              {t('page.access-denied')}
-            </Alert>
-          )}
+        {!hasRights && (
+          <Alert variant="danger">
+            {t('page.access-denied')}
+          </Alert>
+        )}
 
-          {hasRights && (
-            isLoading
-              ? <Loader className="page-loader" />
-              : stickyHeader ? (
-                <div className="page-container">{children}</div>
-              ) : children
-          )}
+        {hasRights && (
+          isLoading
+            ? <Loader className="page-loader" />
+            : stickyHeader ? (
+              <div className="page-container">{children}</div>
+            ) : children
+        )}
 
-        </main>
-        {!!footer && <footer className="page-footer">{footer}</footer>}
-      </div>
-      <Notifications />
-    </>
+      </main>
+      {!!footer && <footer className="page-footer">{footer}</footer>}
+    </div>
   );
 };
