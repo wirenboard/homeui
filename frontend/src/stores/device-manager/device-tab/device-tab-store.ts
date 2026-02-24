@@ -121,8 +121,9 @@ export class DeviceTabStore {
     return !!this.loadingMessage;
   }
 
-  async _loadConfigFromDevice(portConfig?: PortTabConfig) {
-    if (![ReadRegistersState.WaitFirstRead, ReadRegistersState.Manual].includes(this.readRegistersState.state)) {
+  async loadConfigFromDevice(portConfig?: PortTabConfig, isForce = false) {
+    if (![ReadRegistersState.WaitFirstRead, ReadRegistersState.Manual].includes(this.readRegistersState.state)
+      && !isForce) {
       return;
     }
     this._setLoading(i18n.t('device-manager.labels.reading-parameters'));
@@ -131,6 +132,7 @@ export class DeviceTabStore {
       device_type: this.deviceType,
       modbus_mode: (portConfig as PortTabTcpConfig).modbusTcp ? 'TCP' : 'RTU',
       ...toSerialRpcPortConfig(portConfig),
+      force: isForce,
     };
     let configFromDevice: LoadConfigResult;
     try {
@@ -172,7 +174,7 @@ export class DeviceTabStore {
     this.schemaStore?.setSlaveId(oldSlaveId);
     this.readRegistersState.deviceTypeChanged(type, this.slaveId ?? '', !!(this.editedData?.enabled ?? true));
     this._clearError();
-    await this._loadConfigFromDevice(portConfig);
+    await this.loadConfigFromDevice(portConfig);
     this._clearLoading();
   }
 
@@ -199,13 +201,13 @@ export class DeviceTabStore {
     return tab;
   }
 
-  async loadContent(portConfig?: PortTabConfig) {
+  async loadContent(portConfig?: PortTabConfig, isForce: boolean = false) {
     if (this.isUnknownType || this.withSubdevices) {
       this._clearLoading();
       return;
     }
     try {
-      if (!this.schemaStore) {
+      if (!this.schemaStore || isForce) {
         this._setLoading(i18n.t('device-manager.labels.loading-template'));
         const schema = await this.deviceTypesStore.getSchema(this.deviceType);
         runInAction(() => {
@@ -213,7 +215,7 @@ export class DeviceTabStore {
         });
       }
       if (portConfig) {
-        await this._loadConfigFromDevice(portConfig);
+        await this.loadConfigFromDevice(portConfig, isForce);
       }
     } catch (err) {
       this._setError(err);

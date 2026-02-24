@@ -394,6 +394,7 @@
          "search-disconnected-device": "Search for the device",
          "update": "Update",
          "parameters": "Parameters",
+         "review-config": "Review config",
          "switch-template": "Switch template"
       },
       "errors": {
