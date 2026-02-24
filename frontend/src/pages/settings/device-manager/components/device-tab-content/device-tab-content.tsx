@@ -6,9 +6,8 @@ import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { OptionalParamsSelectDialog } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
-import { DeviceSettingsEditor } from '../../components/device-settings-editor/device-settings-editor';
-import { EmbeddedSoftwarePanel } from '../../components/embedded-software-panel/embedded-software-panel';
-import { UnknownDeviceTabContent } from '../../components/unknown-device-tab/unknown-device-tab';
+import { EmbeddedSoftwarePanel, DeviceSettingsEditor } from '@/pages/settings/device-manager';
+import { UnknownDeviceTabContent } from '../../components/unknown-device-tab';
 import { ReadRegistersResultAlert } from './read-registers-result-alert';
 import type { DeviceTabContentProps } from './types';
 import './styles.css';
@@ -82,6 +81,7 @@ export const DeviceTabContent = observer(
     onUpdateBootloader,
     onUpdateComponents,
     onReadRegisters,
+    portConfig,
   }: DeviceTabContentProps) => {
     const [optionalParamsSelectDialogIsOpen, openOptionalParamsSelectDialog] = useState(false);
     const { t } = useTranslation();
@@ -151,6 +151,10 @@ export const DeviceTabContent = observer(
                 onClick={onCopyTab}
               />
             )}
+            <Button
+              label={t('device-manager.buttons.review-config')}
+              onClick={() => tab.loadContent(portConfig, true)}
+            />
           </div>
         </div>
         {tab.schemaStore && tab.readRegistersState.allowEditSettings && (

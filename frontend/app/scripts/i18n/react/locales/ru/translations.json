@@ -391,6 +391,7 @@
          "search-disconnected-device": "Найти устройство",
          "update": "Обновить",
          "parameters": "Параметры",
+         "review-config": "Перечитать настройки",
          "switch-template": "Переключить шаблон"
       },
       "errors": {
