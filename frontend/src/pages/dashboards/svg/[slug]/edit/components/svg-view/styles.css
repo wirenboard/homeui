@@ -1,0 +1,37 @@
+.svgView {
+  flex-grow: 1;
+  height: 100%;
+  width: 100%;
+}
+
+.svgView svg {
+  height: 100%;
+  width: 100%;
+}
+
+.svgView svg .selected {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.svgView svg path[id],
+.svgView svg path[data-svg-param-id],
+.svgView svg text[id],
+.svgView svg text[data-svg-param-id],
+.svgView svg tspan[id],
+.svgView svg tspan[data-svg-param-id],
+.svgView svg circle[id],
+.svgView svg circle[data-svg-param-id],
+.svgView svg rect[id],
+.svgView svg rect[data-svg-param-id] {
+  cursor: pointer;
+}
+
+.svgView svg desc {
+  display: none;
+}

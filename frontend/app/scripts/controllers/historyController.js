@@ -114,7 +114,6 @@ class HistoryCtrl {
     var HistoryProxy = $injector.get('HistoryProxy');
     var errors = $injector.get('errors');
     var historyMaxPoints = $injector.get('historyMaxPoints');
-    var uiConfig = $injector.get('uiConfig');
     this.orderByFilter = $injector.get('orderByFilter');
     this.$timeout = $injector.get('$timeout');
     this.$state = $injector.get('$state');
@@ -186,7 +185,6 @@ class HistoryCtrl {
 
     // 4. Setup
     this.updateTranslations()
-      .then(() => uiConfig.whenReady())
       .then(data => {
         this.updateControls(data.widgets, DeviceData);
         this.setSelectedControlsAndStartLoading(stateFromUrl.c);

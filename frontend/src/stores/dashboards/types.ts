@@ -1,3 +1,25 @@
+export interface SvgEditableParam {
+  enable: boolean;
+  channel?: string | null;
+  value?: any;
+  check?: boolean;
+  dashboard?: string | null;
+  condition?: string;
+}
+
+export type ParamAction =
+  | 'read'
+  | 'write'
+  | 'click'
+  | 'style'
+  | 'visible'
+  | 'long-press'
+  | 'long-press-write';
+
+export type SvgParam = Record<ParamAction, SvgEditableParam>;
+
+export type SvgDashboardConstructor = { id: string | null } & SvgParam;
+
 export interface UIConfigResponse {
   content: {
     dashboards: DashboardBase[];
@@ -22,7 +44,7 @@ interface SvgDashboard {
   svg: {
     current: string;
     original: {};
-    params: [];
+    params: Partial<SvgDashboardConstructor>[];
   };
   svg_fullwidth: boolean;
   svg_url: string;

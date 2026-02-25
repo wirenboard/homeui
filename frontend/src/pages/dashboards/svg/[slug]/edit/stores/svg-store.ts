@@ -1,24 +1,21 @@
-'use strict';
-
 import { makeAutoObservable } from 'mobx';
-import isEmpty from 'lodash/isEmpty';
 
-class SvgStore {
+export class SvgStore {
+  public svg: string = null;
+
   constructor() {
-    this.svg = {};
-
     makeAutoObservable(this);
   }
 
   get hasSvg() {
-    return !isEmpty(this.svg);
+    return !!this.svg;
   }
 
-  setSvg(svg) {
-    this.svg = svg || {};
+  setSvg(svg: string) {
+    this.svg = svg || null;
   }
 
-  exportSvg(fileName) {
+  exportSvg(fileName: string) {
     const blob = new Blob([this.svg], { type: 'image/svg+xml' });
     const url = (window.URL || window.webkitURL).createObjectURL(blob);
     const name = fileName + '.svg';
@@ -28,5 +25,3 @@ class SvgStore {
     link.click();
   }
 }
-
-export default SvgStore;

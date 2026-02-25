@@ -1,0 +1,53 @@
+.visualEditView {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+
+    @media (max-width: 992px) {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.visualEditView-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media (min-width: 992px) {
+        height: calc(100vh - 150px);
+    }
+}
+
+.visualEditView-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.visualEditView-bindingsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.visualEditView-svgButtons {
+    display: flex;
+    gap: 12px;
+}
+
+.visualEditView-legend {
+    padding-top: 0;
+    margin-bottom: 12px;
+}
+
+.visualEditView-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.visualEditView-fieldset .card-header * {
+    box-shadow: none !important;
+}
