@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { NumberEditor, ParamDescription, ParamError } from '@/components/json-schema-editor';
 import { type WbDeviceParameterEditor } from '@/stores/device-manager';
 import { type Translator, type NumberStore } from '@/stores/json-schema-editor';
+import { type BadValueFromRegisterWarningProps } from './types';
 
 export const ParamSimpleLabel = (
   { title, inputId, className }:
@@ -23,7 +24,10 @@ const BadValueFromRegisterWarningText = ({ store, translator }: { store: NumberS
     return t('device-manager.errors.bad-value-from-registers', { value: JSON.stringify(store.value) });
   }
   const currentLanguage = i18n.language;
-  const text = store.error.key ? t(store.error.key, store.error.data) : translator.find(store.error.msg, currentLanguage);
+  const text = store.error.key
+    ? t(store.error.key, store.error.data)
+    : translator.find(store.error.msg, currentLanguage);
+
   return (
     <>
       {t('device-manager.errors.bad-value-from-registers', { value: JSON.stringify(store.value) })}
@@ -33,7 +37,7 @@ const BadValueFromRegisterWarningText = ({ store, translator }: { store: NumberS
   );
 };
 
-export const BadValueFromRegisterWarning = ({ id, store, translator }: { id: string; store: NumberStore; translator: Translator }) => {
+export const BadValueFromRegisterWarning = ({ id, store, translator }: BadValueFromRegisterWarningProps) => {
   return (
     <p
       id={id}

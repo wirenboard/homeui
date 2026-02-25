@@ -18,10 +18,10 @@ import {
 } from '@/stores/alice';
 import { useAsyncAction } from '@/utils/async-action';
 import { DeviceSkills } from './components/device-skills';
-import type { SmartDeviceParams } from './types';
+import { type SmartDeviceProps } from './types';
 import './styles.css';
 
-export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpenDevice }: SmartDeviceParams) => {
+export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpenDevice }: SmartDeviceProps) => {
   const { t } = useTranslation();
   const { addDevice, devices, rooms, fetchData, deleteDevice, updateDevice, copyDevice } = aliceStore;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -184,7 +184,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
           <DeviceSkills
             capabilities={data.capabilities}
             properties={data.properties}
-            deviceStore={deviceStore}
+            devicesStore={devicesStore}
             onCapabilityChange={(capabilities) => {
               setData((prev: SmartDeviceData) => ({
                 ...prev,

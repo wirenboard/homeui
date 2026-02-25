@@ -26,7 +26,14 @@ const DeviceSettingsSubGroup = (
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   if (group.properties.ui_options?.wb?.disable_title) {
-    return <DeviceSettingsTabContent group={group} isTopLevel={false} translator={translator} showChannels={showChannels} />;
+    return (
+      <DeviceSettingsTabContent
+        group={group}
+        isTopLevel={false}
+        translator={translator}
+        showChannels={showChannels}
+      />
+    );
   }
   return (
     <div className="deviceSettingsEditor-subGroup">
@@ -128,6 +135,7 @@ const DeviceSettingsTabContent = observer((
       className={classNames({
         'deviceSettingsEditor-topGroupContent': isTopLevel,
         'deviceSettingsEditor-subGroupContent': !isTopLevel,
+        // eslint-disable-next-line stylistic/max-len
         'deviceSettingsEditor-subGroupContentWithBorder': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
       })}
     >
@@ -138,7 +146,12 @@ const DeviceSettingsTabContent = observer((
       {showChannels && <ChannelsTable channels={group.channels} translator={translator} />}
       {group.subgroups.map((subGroup: WbDeviceParameterEditorsGroup) => {
         return subGroup.isEnabledByCondition ?
-          <DeviceSettingsSubGroup key={subGroup.properties.id} group={subGroup} translator={translator} showChannels={showChannels} />
+          <DeviceSettingsSubGroup
+            key={subGroup.properties.id}
+            group={subGroup}
+            translator={translator}
+            showChannels={showChannels}
+          />
           : null;
       })}
     </div>
@@ -214,7 +227,11 @@ const DeviceSettingsTabs = observer((
   );
 });
 
-export const DeviceSettingsEditorDesktop = observer(({ store, translator, showChannels } : DeviceSettingsEditorProps) => {
+export const DeviceSettingsEditorDesktop = observer(({
+  store,
+  translator,
+  showChannels,
+} : DeviceSettingsEditorProps) => {
   const { t } = useTranslation();
   return (
     <div className="deviceSettingsEditor deviceSettingsEditor-desktop">

@@ -1,7 +1,7 @@
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 
-export interface AlicePageParams {
-  deviceStore: DeviceStore;
+export interface AlicePageProps {
+  devicesStore: DevicesStore;
 }
 
 export type AlicePageState = 'isLoading' | 'isConnected' | 'isNotConnected';

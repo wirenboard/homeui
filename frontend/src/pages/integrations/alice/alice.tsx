@@ -12,10 +12,10 @@ import { authStore, UserRole } from '@/stores/auth';
 import { uiStore } from '@/stores/ui';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
-import type { AlicePageParams, AlicePageState, View } from './types';
+import type { AlicePageProps, AlicePageState, View } from './types';
 import './styles.css';
 
-const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
+const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const { t } = useTranslation();
   const {
     roomList,
@@ -236,7 +236,7 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
                 {!!(view.isNewDevice || view.deviceId) && (
                   <SmartDevice
                     id={view.deviceId}
-                    deviceStore={deviceStore}
+                    devicesStore={devicesStore}
                     onSave={(deviceId) => setView({ deviceId })}
                     onDelete={() => setView({ roomId: 'all' })}
                     onOpenDevice={(deviceId) => setView({ deviceId })}

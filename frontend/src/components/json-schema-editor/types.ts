@@ -117,3 +117,10 @@ export interface OptionalParamsSelectDialogProps {
   translator: Translator;
   onClose: () => void;
 }
+
+export interface TableCellWithEditorProps {
+  paramStore: ObjectParamStore;
+  translator: Translator;
+  editorBuilder: EditorBuilderFunction;
+  width?: number;
+}

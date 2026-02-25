@@ -4,7 +4,7 @@ export interface ErrorInfo {
   variant?: string;
   text?: string | ReactElement;
   code?: number;
-  onClose?: () => void 
+  onClose?: () => void;
 }
 
 export interface PageProps {

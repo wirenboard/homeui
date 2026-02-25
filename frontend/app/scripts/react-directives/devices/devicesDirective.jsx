@@ -16,7 +16,7 @@ export default function devicesDirective($rootScope) {
       }
 
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<DevicesPage store={$rootScope.deviceStore} />);
+      scope.root.render(<DevicesPage store={$rootScope.devicesStore} />);
 
       element.on('$destroy', () => {
         scope.root.unmount();

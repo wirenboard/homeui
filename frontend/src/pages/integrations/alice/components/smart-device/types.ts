@@ -1,8 +1,8 @@
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 
-export interface SmartDeviceParams {
+export interface SmartDeviceProps {
   id?: string;
-  deviceStore: DeviceStore;
+  devicesStore: DevicesStore;
   onSave: (_id: string) => void;
   onDelete: () => void;
   onOpenDevice: (_id: string) => void;

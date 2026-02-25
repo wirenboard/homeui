@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { type ChangeEvent, useEffect, useRef } from 'react';
-import { type CheckboxProps } from './types';
 import { Button } from '@/components/button';
+import { type CheckboxProps } from './types';
 import './styles.css';
 
 export const Checkbox = ({

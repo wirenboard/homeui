@@ -16,7 +16,10 @@ enum WbDeviceChannelModes {
 
 const DefaultPeriod = 1000;
 
-function getEditorValuesFromChannelData(data?: WbDeviceTemplateChannelSettings): { mode: WbDeviceChannelModes; period?: number } {
+function getEditorValuesFromChannelData(data?: WbDeviceTemplateChannelSettings): {
+  mode: WbDeviceChannelModes;
+  period?: number;
+} {
   if (data === undefined) {
     return {
       mode: WbDeviceChannelModes.QueueOrder,
@@ -82,8 +85,8 @@ export class WbDeviceChannelEditor {
         options: {
           compact: true,
         },
-      }, 
-      mode === WbDeviceChannelModes.Disabled ? mode : WbDeviceChannelModes.UsingFastModbus, 
+      },
+      mode === WbDeviceChannelModes.Disabled ? mode : WbDeviceChannelModes.UsingFastModbus,
       true);
     } else {
       this.mode = new StringStore({
@@ -99,8 +102,8 @@ export class WbDeviceChannelEditor {
         options: {
           compact: true,
         },
-      }, 
-      mode, 
+      },
+      mode,
       true);
     }
 
@@ -133,11 +136,10 @@ export class WbDeviceChannelEditor {
     if (!this._conditionFn) {
       return true;
     }
-    const res = this._conditionFn.apply(null, this._dependencies?.map((dep) => {
+    return this._conditionFn.apply(null, this._dependencies?.map((dep) => {
       const param = this._parameters.get(dep);
       return param !== undefined && typeof param.value === 'number' ? param.value : undefined;
     }));
-    return res;
   }
 
   get hasErrors() {

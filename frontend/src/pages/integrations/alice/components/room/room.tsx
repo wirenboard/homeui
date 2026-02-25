@@ -11,10 +11,10 @@ import { Input } from '@/components/input';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { useAsyncAction } from '@/utils/async-action';
-import type { RoomParams } from './types';
+import type { RoomProps } from './types';
 import './styles.css';
 
-export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams) => {
+export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps) => {
   const { t } = useTranslation();
   const { addRoom, deleteRoom, devices, fetchData, rooms, updateRoom } = aliceStore;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
