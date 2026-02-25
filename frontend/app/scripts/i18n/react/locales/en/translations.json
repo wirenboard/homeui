@@ -751,19 +751,9 @@
          "openable": "Opening/closing control",
          "other": "Other devices"
       },
-      "notifications": {
-         "room-added": "Room \"{{name}}\" saved",
-         "room-updated": "\"{{name}}\" room settings updated",
-         "room-deleted": "Room \"{{name}}\" deleted",
-         "device-added": "\"{{name}}\" device saved",
-         "device-updated": "\"{{name}}\" device settings updated",
-         "device-deleted": "Device \"{{name}}\" deleted",
-         "device-copied": "Device copied",
-         "integration-enabled": "Integration enabled",
-         "integration-disabled": "Integration disabled",
+      "errors": {
          "integration-error": "Error changing integration status",
-         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one.",
-         "controller-unlinked": "Controller has been unlinked from Yandex Alice"
+         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one."
       },
       "binding":{
          "unlink-controller": "(unlink controller)",

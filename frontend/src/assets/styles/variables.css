@@ -74,8 +74,6 @@
     --alert-danger-background: #f8d7da;
     --alert-danger-border: #f5c6cb;
 
-    --notification-box-shadow: 0 4px 10px -2px #aa9c9c;
-
     --tooltip-background: #333;
     --tooltip-color: #fff;
 
@@ -139,8 +137,6 @@
     --alert-warn-border: #eebc40;
     --alert-danger-background: #dc3545;
     --alert-danger-border: #dc3545;
-
-    --notification-box-shadow: 0 4px 10px -2px var(--input-background);
 
     --tooltip-background: #7676ff;
     --tooltip-color: #fff;

@@ -9,7 +9,6 @@ import { Tabs, useTabs } from '@/components/tabs';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
-import { notificationsStore } from '@/stores/notifications';
 import { uiStore } from '@/stores/ui';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
@@ -53,13 +52,6 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
 
     try {
       await setIntegrationEnabled(enabled);
-
-      notificationsStore.showNotification({
-        variant: 'success',
-        text: enabled
-          ? t('alice.notifications.integration-enabled')
-          : t('alice.notifications.integration-disabled'),
-      });
     } catch (err) {
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.detail || err?.response?.data?.message || null;
@@ -70,11 +62,11 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
           aliceStore.isIntegrationEnabled = true;
         });
 
-        notificationsStore.showNotification({
-          variant: 'danger',
-          text: serverMessage || t('alice.notifications.integration-enabled-binding-required'),
-        });
-        return;
+        return setErrors([{
+          text: serverMessage || t('alice.errors.integration-enabled-binding-required'),
+          variant: 'warn',
+          onClose: () => setErrors([]),
+        }]);
       }
 
       runInAction(() => {
@@ -84,10 +76,10 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
       const msg = serverMessage
         ? serverMessage
         : status
-          ? `${t('alice.notifications.integration-error')} (${status})`
-          : t('alice.notifications.integration-error');
+          ? `${t('alice.errors.integration-error')} (${status})`
+          : t('alice.errors.integration-error');
 
-      notificationsStore.showNotification({ variant: 'danger', text: msg });
+      setErrors([{ text: msg, variant: 'danger', onClose: () => setErrors([]) }]);
     } finally {
       setIntegrationLoading(false);
     }
@@ -105,8 +97,8 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
         await fetchIntegrationStatus();
       } catch (err) {
         const msg = err?.response?.data?.detail || err?.response?.data?.message
-          || t('alice.notifications.integration-error');
-        notificationsStore.showNotification({ variant: 'danger', text: msg });
+          || t('alice.errors.integration-error');
+        setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
       } finally {
         setIntegrationLoading(false);
       }
@@ -146,16 +138,9 @@ const AlicePage = observer(({ deviceStore }: AlicePageParams) => {
     setIsConfirmModalOpen(false);
     try {
       await aliceStore.unlinkController();
-      notificationsStore.showNotification({
-        variant: 'success',
-        text: t('alice.notifications.controller-unlinked'),
-      });
       window.location.reload();
     } catch (err: any) {
-      notificationsStore.showNotification({
-        variant: 'danger',
-        text: err?.response?.data?.detail || err?.message || String(err),
-      });
+      setErrors([{ variant: 'danger', text: err?.response?.data?.detail || err?.message || String(err) }]);
     }
   };
 
