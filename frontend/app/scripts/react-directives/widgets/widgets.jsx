@@ -15,7 +15,7 @@ export default function widgetsDirective($rootScope) {
       scope.root.render(
         <WidgetsPage
           store={$rootScope.dashboardsStore}
-          devicesStore={$rootScope.deviceStore}
+          devicesStore={$rootScope.devicesStore}
         />
       );
 

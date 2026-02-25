@@ -1,9 +1,9 @@
 import { type DashboardsStore } from '@/stores/dashboards';
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 
 export interface WidgetsPageProps {
   store: DashboardsStore;
-  devicesStore: DeviceStore;
+  devicesStore: DevicesStore;
 }
 
 export enum PageView {

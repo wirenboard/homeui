@@ -1,7 +1,7 @@
 import { observable, set, makeAutoObservable } from 'mobx';
 import { type Dashboard } from '@/stores/dashboards';
-import type Cell from '@/stores/device/cell';
-import type DeviceStore from '@/stores/device/device-store';
+import type Cell from '@/stores/devices/cell';
+import type DevicesStore from '@/stores/devices/devices-store';
 import { type MoveToDashboardFn } from './types';
 
 export class SvgDashboardPageStore {
@@ -13,7 +13,7 @@ export class SvgDashboardPageStore {
   public dashboardId: string = null;
   public channelValues: Record<string, any>;
   private _unsubscribeOnValue = () => {};
-  private _devicesStore: DeviceStore | null = null;
+  private _devicesStore: DevicesStore | null = null;
 
   #moveToDashboardFn: MoveToDashboardFn | null = null;
 
@@ -60,7 +60,7 @@ export class SvgDashboardPageStore {
     this.setLoading(false);
   }
 
-  setDeviceData(cells: Map<string, Cell>, devicesStore: DeviceStore) {
+  setDeviceData(cells: Map<string, Cell>, devicesStore: DevicesStore) {
     this.cells = cells;
     Array.from(cells).forEach(([channel, cell]) => {
       set(this.channelValues, channel, cell.value);

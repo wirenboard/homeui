@@ -13,10 +13,10 @@ import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 import './styles.css';
 
-const DevicesPage = observer(({ store }: { store: DeviceStore }) => {
+const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
   const { t } = useTranslation();
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
 

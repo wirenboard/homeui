@@ -1,4 +1,4 @@
-import { DeviceTabStore } from '@/stores/device-manager';
+import { type DeviceTabStore } from '@/stores/device-manager';
 
 export interface DeviceTabContentProps {
   tab: DeviceTabStore;

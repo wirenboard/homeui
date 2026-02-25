@@ -1,8 +1,8 @@
 import { type TableCellSortDirection } from '@/components/table/types';
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 
 export interface MqttChannelsPageProps {
-  store: DeviceStore;
+  store: DevicesStore;
 }
 
 export type MqttChannelsSortColumn = 'id' | 'type' | 'topic' | 'value' | 'status';

@@ -72,6 +72,7 @@ async function waitCertificate(): Promise<string> {
   while (Date.now() - startTime < MAX_WAIT_TIME) {
     await new Promise((resolve) => setTimeout(resolve, CHECK_INTERVAL));
     try {
+      // eslint-disable-next-line typescript/naming-convention
       const { https_cert } = await getDeviceInfo();
       const certStatus = https_cert || CertificateStatus.UNAVAILABLE;
       if (certStatus !== CertificateStatus.REQUESTING) {
@@ -179,6 +180,7 @@ export async function switchToHttps() {
 }
 
 export const getHttpsCertificateStatus = async (): Promise<CertificateStatus> => {
+  // eslint-disable-next-line typescript/naming-convention
   const { https_cert } = await getDeviceInfo();
   return https_cert;
 };

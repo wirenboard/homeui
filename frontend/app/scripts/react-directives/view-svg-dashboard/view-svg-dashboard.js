@@ -19,7 +19,7 @@ export default function svgDashboardDirective($rootScope) {
         <SvgDashboardPage
           store={scope.store}
           dashboardsStore={$rootScope.dashboardsStore}
-          devicesStore={$rootScope.deviceStore}
+          devicesStore={$rootScope.devicesStore}
         />
       );
 

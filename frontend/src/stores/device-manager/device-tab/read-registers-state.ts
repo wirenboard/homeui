@@ -69,7 +69,7 @@ export class ReadRegistersStateStore {
         deviceModel,
         deviceFw
       )
-      .filter(dt => this._deviceTypesStore.hasBetterFirmware(deviceType, dt, deviceModel));
+      .filter((dt) => this._deviceTypesStore.hasBetterFirmware(deviceType, dt, deviceModel));
     this.allowEditSettings = true;
     if (this.otherMatchingTemplates.length) {
       // selectedDeviceType is old and a better new template is available

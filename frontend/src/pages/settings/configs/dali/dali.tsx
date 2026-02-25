@@ -2,37 +2,37 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { FormButtonGroup } from '@/components/form';
+import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { Tree } from '@/components/tree';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { Alert } from '@/components/alert';
-import { FormButtonGroup } from '@/components/form';
+import { type ItemStore } from '@/stores/dali';
 import type { DaliPageProps } from './types';
-import { JsonSchemaEditor } from '@/components/json-schema-editor';
-import { ItemStore } from '@/stores/dali';  
 import './styles.css';
 
 const DaliPage = observer(({ store }: DaliPageProps) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
   const [data, setData] = useState<any>();
-  const [selectedItem, setSelectedItem] = useState<ItemStore|null>(null);
+  const [selectedItem, setSelectedItem] = useState<ItemStore | null>(null);
 
   useEffect(() => {
-      const fetchData = async () => {
-        await store.load();
-          setData(store.gateways);
-          if (!isMobile) {
-            const firstGateway = store.gateways.at(0);
-            if (firstGateway) {
-              setSelectedItem(firstGateway);
-              firstGateway.load();
-            }
-          }
-      };
-      fetchData();
+    const fetchData = async () => {
+      await store.load();
+      setData(store.gateways);
+      if (!isMobile) {
+        const firstGateway = store.gateways.at(0);
+        if (firstGateway) {
+          setSelectedItem(firstGateway);
+          firstGateway.load();
+        }
+      }
+    };
+    fetchData();
   }, []);
 
   const onItemClick = async (item: ItemStore | null) => {
@@ -70,7 +70,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
         {(!isMobile || selectedItem) && (
           <section className="dali-content">
             {selectedItem?.isLoading
-                ? (
+              ? (
                 <div className="dali-contentLoader">
                   <Loader />
                 </div>
@@ -81,36 +81,36 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                   )}
                   <FormButtonGroup>
                     {selectedItem?.type === 'bus' && (
-                      <Button 
-                        label={t('dali.buttons.rescan')} 
+                      <Button
+                        label={t('dali.buttons.rescan')}
                         onClick={async () => {
                           await selectedItem.scan();
                           setData(store.gateways);
-                        }} 
+                        }}
                       />
                     )}
                     {selectedItem?.type === 'device' && (
-                      <Button 
-                        label={t('dali.buttons.reload')} 
+                      <Button
+                        label={t('dali.buttons.reload')}
                         onClick={async () => {
                           await selectedItem.load(true);
                           setData(store.gateways);
-                        }} 
+                        }}
                       />
                     )}
-                    <Button 
-                      label={t('common.buttons.save')} 
+                    <Button
+                      label={t('common.buttons.save')}
                       disabled={!selectedItem?.objectStore?.isDirty}
                       onClick={async () => {
                         await selectedItem.save();
                         setData(store.gateways);
-                      }} 
+                      }}
                     />
                   </FormButtonGroup>
                   {selectedItem?.objectStore && (
-                    <JsonSchemaEditor 
-                      store={selectedItem.objectStore} 
-                      translator={selectedItem.translator} 
+                    <JsonSchemaEditor
+                      store={selectedItem.objectStore}
+                      translator={selectedItem.translator}
                     />
                   )}
                 </>

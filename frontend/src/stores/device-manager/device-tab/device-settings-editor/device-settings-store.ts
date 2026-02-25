@@ -101,9 +101,9 @@ export class DeviceSettingsObjectStore {
     this.schemaTranslator.addTranslations(deviceTemplate.translations);
     this.schemaTranslator.addTranslations({
       ru: {
-        "using Fast Modbus": "по Быстрому Modbus"
-      }
-    })
+        'using Fast Modbus': 'по Быстрому Modbus',
+      },
+    });
     let customChannels: unknown[] = [];
     let templateChannels: unknown[] = [];
     if (

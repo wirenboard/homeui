@@ -1,41 +1,19 @@
-import { ArrayStore } from './array-store';
-import { BooleanStore } from './boolean-store';
-import { ByteArrayStore } from './byte-array-store';
-import { loadJsonSchema } from './json-schema-loader';
-import { MistypedValue } from './mistyped-value';
-import { NumberStore } from './number-store';
-import { ObjectStore, ObjectParamStore, comparePropertyOrder } from './object-store';
-import { getDefaultValue } from './schema-helpers';
-import { StoreBuilder } from './store-builder';
-import { StringStore } from './string-store';
-import { Translator } from './translator';
-import type {
+export { ArrayStore } from './array-store';
+export { BooleanStore } from './boolean-store';
+export { ByteArrayStore } from './byte-array-store';
+export { loadJsonSchema } from './json-schema-loader';
+export { MistypedValue } from './mistyped-value';
+export { NumberStore } from './number-store';
+export { ObjectStore, ObjectParamStore, comparePropertyOrder } from './object-store';
+export { getDefaultValue } from './schema-helpers';
+export { StoreBuilder } from './store-builder';
+export { StringStore } from './string-store';
+export { Translator } from './translator';
+export type {
   ValidationError,
   PropertyStore,
   JsonObject,
   JsonSchema,
   JsonEditorOptions,
-  TranslationsByLocale,
+  TranslationsByLocale
 } from './types';
-
-export {
-  type JsonObject,
-  type JsonSchema,
-  type JsonEditorOptions,
-  type TranslationsByLocale,
-  loadJsonSchema,
-  Translator,
-  ObjectStore,
-  BooleanStore,
-  StringStore,
-  NumberStore,
-  ArrayStore,
-  ByteArrayStore,
-  type PropertyStore,
-  MistypedValue,
-  ObjectParamStore,
-  StoreBuilder,
-  type ValidationError,
-  getDefaultValue,
-  comparePropertyOrder,
-};
