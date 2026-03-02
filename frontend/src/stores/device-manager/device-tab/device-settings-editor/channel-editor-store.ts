@@ -74,7 +74,7 @@ export class WbDeviceChannelEditor {
     this.channel = channel;
     this._parameters = parameters;
     const { mode, period } = getEditorValuesFromChannelData(initialValue === undefined ? channel : initialValue);
-    if (this.channel['semi-sporadic'] === true || this.channel.sporadic === true) {
+    if (this.channel.sporadic === true) {
       this.mode = new StringStore({
         type: 'string',
         enum: [
