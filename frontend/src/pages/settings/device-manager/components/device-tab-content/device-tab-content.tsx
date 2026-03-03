@@ -81,7 +81,6 @@ export const DeviceTabContent = observer(
     onUpdateBootloader,
     onUpdateComponents,
     onReadRegisters,
-    portConfig,
   }: DeviceTabContentProps) => {
     const [optionalParamsSelectDialogIsOpen, openOptionalParamsSelectDialog] = useState(false);
     const { t } = useTranslation();
@@ -153,7 +152,7 @@ export const DeviceTabContent = observer(
             )}
             <Button
               label={t('device-manager.buttons.review-config')}
-              onClick={() => tab.loadContent(portConfig, true)}
+              onClick={() => onReadRegisters(tab, true)}
             />
           </div>
         </div>

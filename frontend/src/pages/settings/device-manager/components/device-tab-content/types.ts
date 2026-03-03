@@ -1,5 +1,4 @@
-import { DeviceTabStore } from '@/stores/device-manager';
-import type { PortTabConfig } from '@/stores/device-manager/port-tab/types';
+import { type DeviceTabStore } from '@/stores/device-manager';
 
 export interface DeviceTabContentProps {
   tab: DeviceTabStore;
@@ -12,8 +11,7 @@ export interface DeviceTabContentProps {
   onUpdateFirmware: () => void;
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
-  onReadRegisters: (tab: DeviceTabStore) => void;
-  portConfig?: PortTabConfig;
+  onReadRegisters: (tab: DeviceTabStore, isForce?: boolean) => void;
 }
 
 export interface ReadRegistersResultAlertProps {

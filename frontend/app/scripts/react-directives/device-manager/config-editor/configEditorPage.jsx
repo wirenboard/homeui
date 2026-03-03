@@ -48,7 +48,6 @@ function getTabPaneContent(
   onUpdateBootloader,
   onUpdateComponents,
   onReadRegisters,
-  portTabBaseConfig
 ) {
   if (tab.type === TabType.PORT) {
     return (
@@ -65,7 +64,6 @@ function getTabPaneContent(
         tab={tab}
         index={index}
         deviceTypeSelectOptions={deviceTypeSelectOptions}
-        portConfig={portTabBaseConfig}
         onDeleteTab={onDeleteTab}
         onCopyTab={onCopyTab}
         onDeviceTypeChange={onDeviceTypeChange}
@@ -97,7 +95,6 @@ function makeTabPanes(
   onUpdateBootloader,
   onUpdateComponents,
   onReadRegisters,
-  portTabBaseConfig
 ) {
   return tabs.map((tab, index) => {
     return (
@@ -115,7 +112,6 @@ function makeTabPanes(
           onUpdateBootloader,
           onUpdateComponents,
           onReadRegisters,
-          portTabBaseConfig
         )}
       </TabPane>
     );
@@ -140,7 +136,6 @@ const PageTabs = observer(
     onUpdateBootloader,
     onUpdateComponents,
     onReadRegisters,
-    portTabBaseConfig,
   }) => {
     const { t } = useTranslation();
     return (
@@ -180,7 +175,6 @@ const PageTabs = observer(
             onUpdateBootloader,
             onUpdateComponents,
             onReadRegisters,
-            portTabBaseConfig
           )}
         </TabContent>
       </VerticalTabs>
@@ -312,7 +306,6 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
             deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeDropdownOptions}
             mobileModeStore={pageStore.tabs.mobileModeStore}
-            portTabBaseConfig={pageStore.tabs.selectedPortTab?.baseConfig}
             onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
             onDeleteTab={() => pageStore.deleteTab()}
             onDeletePortDevices={(tab) => pageStore.deletePortDevices(tab)}
@@ -323,7 +316,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             onUpdateFirmware={() => pageStore.updateFirmware()}
             onUpdateBootloader={() => pageStore.updateBootloader()}
             onUpdateComponents={() => pageStore.updateComponents()}
-            onReadRegisters={(tab) => pageStore.readRegisters(tab)}
+            onReadRegisters={(tab, isForce) => pageStore.readRegisters(tab, isForce)}
           />
         )}
       </PageBody>
