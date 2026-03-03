@@ -1,0 +1,30 @@
+.visualBindingsEditor-container .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.visualBindingsEditor-container .card {
+    margin-bottom: 12px;
+
+    @media (max-width: 992px) {
+        max-width: 100%;
+    }
+}
+
+.visualBindingsEditor-writeParams {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.visualBindingsEditor-writeParams .form-fieldLabel {
+    white-space: wrap;
+    flex-wrap: wrap;
+}
+
+.visualBindingsEditor-visibles {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr 3fr;
+}

@@ -1,16 +1,18 @@
 import { observer } from 'mobx-react-lite';
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import { type SvgViewProps } from './types';
+import './styles.css';
 
-const isAllowedBindableElement = element => {
+const isAllowedBindableElement = (element) => {
   const allowedNodes = ['path', 'circle', 'text', 'rect', 'g'];
   return allowedNodes.includes(element?.nodeName);
 };
 
-const getBindableElement = element => {
+const getBindableElement = (element) => {
   return element?.tagName === 'tspan' ? element.parentElement : element;
 };
 
-const getParentGroups = element => {
+const getParentGroups = (element) => {
   let res = [];
   for (let el = element; el && el.tagName !== 'svg'; el = el.parentElement) {
     if (el.tagName === 'g') {
@@ -26,7 +28,7 @@ const getBindableElementsAndGroups = (elementsUnderCursor, withGroups) => {
   };
 
   return elementsUnderCursor
-    .flatMap(el => {
+    .flatMap((el) => {
       let res = withGroups ? getParentGroups(el) : [];
       if (el && !res.length) {
         res.push(getBindableElement(el));
@@ -36,7 +38,7 @@ const getBindableElementsAndGroups = (elementsUnderCursor, withGroups) => {
     .filter(isUnique);
 };
 
-const findBindableElement = elements => {
+const findBindableElement = (elements) => {
   for (let i = 0; i < elements.length && elements[i].tagName !== 'svg'; ++i) {
     if (isAllowedBindableElement(elements[i])) {
       return elements[i];
@@ -50,7 +52,7 @@ const getElement = (e, currentElement) => {
     document.elementsFromPoint(e.clientX, e.clientY),
     e.getModifierState('Alt')
   );
-  const index = elements.findIndex(v => v === currentElement);
+  const index = elements.findIndex((v) => v === currentElement);
   if (index !== -1) {
     return (
       findBindableElement(elements.slice(index + 1)) ||
@@ -61,15 +63,15 @@ const getElement = (e, currentElement) => {
   return findBindableElement(elements);
 };
 
-const SvgView = observer(({ svg, onSelectElement, className }) => {
-  const svgWrapperRef = useRef();
+export const SvgView = observer(({ svg, onSelectElement }: SvgViewProps) => {
+  const svgWrapperRef = useRef(null);
   const [selectedElement, setSelectedElement] = useState(null);
   useEffect(() => {
     svgWrapperRef.current.innerHTML = svg;
     setSelectedElement(null);
   }, [svg]);
 
-  const onClick = e => {
+  const onClick = (e) => {
     const editable = getElement(e, selectedElement);
     if (onSelectElement) {
       onSelectElement(editable);
@@ -77,7 +79,5 @@ const SvgView = observer(({ svg, onSelectElement, className }) => {
     setSelectedElement(editable);
   };
 
-  return <div className={className} ref={svgWrapperRef} onClick={onClick}></div>;
+  return <div className="svgView" ref={svgWrapperRef} onClick={onClick}></div>;
 });
-
-export default SvgView;

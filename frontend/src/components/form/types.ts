@@ -1,3 +1,5 @@
+import { type Option } from '@/components/dropdown';
+
 export interface FormFieldProps {
   description?: string;
   error?: string;
@@ -28,10 +30,12 @@ export interface StringFieldProps {
   description?: string;
   placeholder?: string;
   error?: string;
+  view?: 'input' | 'textarea';
   defaultText?: string;
   isDisabled?: boolean;
   autoComplete?: 'username' | 'new-password' | 'current-password' | 'off';
   required?: boolean;
+  autoFocus?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -53,8 +57,10 @@ export interface OptionsFieldProps<T = string | boolean | number | null | unknow
   value: T;
   description?: string;
   error?: string;
-  options: { label: string; value: T }[];
+  options: Option[];
   isDisabled?: boolean;
+  placeholder?: string;
   isSearchable?: boolean;
+  isClearable?: boolean;
   onChange: (value: T) => void;
 }

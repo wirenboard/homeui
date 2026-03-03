@@ -1,0 +1,28 @@
+.radio {
+    all: unset;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.radioGroup {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+}
+
+.radioGroup-vertical {
+    flex-direction: column;
+}
+
+.radioGroup-horizontal {
+    flex-direction: row;
+    align-items: center;
+}
+
+.radio input {
+    margin: 0 !important;
+    position: relative !important;
+}

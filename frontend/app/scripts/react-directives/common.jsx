@@ -1,28 +1,9 @@
 import { useId, forwardRef } from 'react';
 import { Password } from '@/components/password';
 
-export const WarningTag = ({ text }) => {
-  return <span className="tag bg-warning text-nowrap">{text}</span>;
-};
-
-export const ErrorTag = ({ text }) => {
-  return <span className="tag bg-danger text-nowrap">{text}</span>;
-};
-
 export const BootstrapRow = ({ children, additionalStyles }) => {
   const classes = 'row' + (additionalStyles ? ' ' + additionalStyles : '');
   return <div className={classes}>{children}</div>;
-};
-
-export const BootstrapRowWithLabel = ({ label, children }) => {
-  return (
-    <BootstrapRow>
-      <div className="form-group col-md-12">
-        <label>{label}</label>
-        {children}
-      </div>
-    </BootstrapRow>
-  );
 };
 
 export const Spinner = () => {
@@ -186,12 +167,3 @@ export const LineEdit = forwardRef(
     }
   }
 );
-
-export const Radio = ({ label, id, value, onChange }) => {
-  return (
-    <label className="radio-inline" htmlFor={id}>
-      <input type="radio" id={id} checked={value} onChange={(e) => onChange?.(e.target.checked)} />
-      {label}
-    </label>
-  );
-};
