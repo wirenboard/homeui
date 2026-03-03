@@ -36,6 +36,7 @@ const VisibleBindingForm = observer(({ store, devices }: VisibleBindingFormProps
           options={devices}
           error={!store.params.visible.channel ? t('validator.errors.empty') : null}
           isClearable
+          isSearchable
           onChange={(value: string) => store.setParamValue('visible', 'channel', value)}
         />
 
@@ -152,6 +153,7 @@ const ClickBindingForm = observer(({
           options={dashboardOptions}
           error={!store.params[clickParamName].dashboard ? t('validator.errors.empty') : null}
           isClearable
+          isSearchable
           onChange={(value: string) => store.setParamValue(clickParamName, 'dashboard', value)}
         />
       )}
@@ -163,6 +165,7 @@ const ClickBindingForm = observer(({
             value={store.params[writeParamName].channel}
             error={!store.params[writeParamName].channel ? t('validator.errors.empty') : null}
             options={devices}
+            isSearchable
             onChange={(value: string) => store.setParamValue(writeParamName, 'channel', value)}
           />
 
@@ -213,6 +216,7 @@ const ParamBindingForm = observer(({ store, paramName, devices }: ParamBindingFo
         options={devices}
         error={!store.params[paramName].channel ? t('validator.errors.empty') : null}
         placeholder={t('edit-svg-dashboard.labels.select-channel-placeholder')}
+        isSearchable
         onChange={(value: string) => store.setParamValue(paramName, 'channel', value)}
       />
       <StringField

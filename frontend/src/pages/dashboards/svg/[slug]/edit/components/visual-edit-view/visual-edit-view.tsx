@@ -127,7 +127,8 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
                 placeholder={t('edit-svg-dashboard.labels.select-dashboard-placeholder')}
                 options={dashboardOptions}
                 isClearable
-                onChange={(value) => store.swipeParameters.left = value}
+                isSearchable
+                onChange={(value: string) => store.swipeParameters.left = value}
               />
               <OptionsField
                 title={t('edit-svg-dashboard.labels.right')}
@@ -135,7 +136,8 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
                 placeholder={t('edit-svg-dashboard.labels.select-dashboard-placeholder')}
                 options={dashboardOptions}
                 isClearable
-                onChange={(value) => store.swipeParameters.right = value}
+                isSearchable
+                onChange={(value: string) => store.swipeParameters.right = value}
               />
             </>
           )}
