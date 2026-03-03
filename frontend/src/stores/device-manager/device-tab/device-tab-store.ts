@@ -121,7 +121,7 @@ export class DeviceTabStore {
     return !!this.loadingMessage;
   }
 
-  async loadConfigFromDevice(portConfig?: PortTabConfig, isForce = false) {
+  async _loadConfigFromDevice(portConfig?: PortTabConfig, isForce = false) {
     if (![ReadRegistersState.WaitFirstRead, ReadRegistersState.Manual].includes(this.readRegistersState.state)
       && !isForce) {
       return;
@@ -174,7 +174,7 @@ export class DeviceTabStore {
     this.schemaStore?.setSlaveId(oldSlaveId);
     this.readRegistersState.deviceTypeChanged(type, this.slaveId ?? '', !!(this.editedData?.enabled ?? true));
     this._clearError();
-    await this.loadConfigFromDevice(portConfig);
+    await this._loadConfigFromDevice(portConfig);
     this._clearLoading();
   }
 
@@ -215,7 +215,7 @@ export class DeviceTabStore {
         });
       }
       if (portConfig) {
-        await this.loadConfigFromDevice(portConfig, isForce);
+        await this._loadConfigFromDevice(portConfig, isForce);
       }
     } catch (err) {
       this._setError(err);
