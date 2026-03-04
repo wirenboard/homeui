@@ -99,3 +99,19 @@
 .wb-jsonEditor-booleanEditorSwitchLabel {
     margin: 0px;
 }
+
+.dali-level-slider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dali-level-slider .range-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.dali-level-slider-mask {
+    color: var(--gray-color);
+    font-size: var(--font-size-small);
+}
