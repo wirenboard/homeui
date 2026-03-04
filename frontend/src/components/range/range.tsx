@@ -4,11 +4,13 @@ import { type RangeProps } from './types';
 import './styles.css';
 
 export const Range = ({
-  value, id, isDisabled, min, max, step, units, isInvalid, onChange, ariaLabel,
+  value, id, isDisabled, min, max, step, units, formatLabel, isInvalid, onChange, ariaLabel,
+  labelPosition = 'bottom',
 }: RangeProps) => {
   const [proxyValue, setProxyValue] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const rangeBlockWidth = 70;
+  const isRight = labelPosition === 'right';
 
   const rangeValuePosition = useMemo(() => {
     const range = max - min;
@@ -22,10 +24,30 @@ export const Range = ({
     setProxyValue(value);
   }, [value]);
 
+  const valueLabel = (
+    <div
+      className={classNames('range-value', { 'range-value-right': isRight })}
+    >
+      <div
+        className={classNames({
+          'range-negative': proxyValue < 0,
+        })}
+        style={isRight ? undefined : {
+          position: 'absolute',
+          left: rangeValuePosition,
+          width: `${rangeBlockWidth}px`,
+        }}
+      >
+        {formatLabel ? formatLabel(proxyValue) : <>{Math.abs(proxyValue)} {units}</>}
+      </div>
+    </div>
+  );
+
   return (
     <div
       className={classNames('range-container', {
         'range-invalid': isInvalid,
+        'range-container-right': isRight,
       })}
     >
       <input
@@ -49,22 +71,7 @@ export const Range = ({
         }}
         onMouseUp={() => onChange(proxyValue)}
       />
-      <div className="range-value">
-        <div
-          className={classNames({
-            'range-negative': proxyValue < 0,
-          })}
-          style={{
-            position: 'absolute',
-            left: rangeValuePosition,
-            width: `${rangeBlockWidth}px`,
-          }}
-        >
-          {Math.abs(proxyValue)}
-          {' '}
-          {units}
-        </div>
-      </div>
+      {valueLabel}
     </div>
   );
 };
