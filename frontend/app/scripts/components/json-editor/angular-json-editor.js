@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 import { createJSONEditor } from '../../json-editor/wb-json-editor';
 
 const AngularJsonEditorModule = angular

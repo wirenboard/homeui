@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 // The editor merges default value to a value passed to setValue function
 // and also removes all default values from result.

@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 // TODO: replace by implementation that has getDefault method returning undefined
 

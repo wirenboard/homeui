@@ -223,7 +223,7 @@ module.exports = (function makeWebpackConfig() {
           chunks: 'all',
         },
         jsoneditor: {
-          test: /[\\/]app[\\/]3rdparty[\\/]jsoneditor.js/,
+          test: /[\\/]node_modules[\\/]@wirenboard[\\/]json-editor[\\/]dist[\\/]jsoneditor\.js/,
           name: 'jsoneditor',
           chunks: 'all',
         },
