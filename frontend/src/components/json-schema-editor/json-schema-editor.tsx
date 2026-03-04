@@ -18,6 +18,7 @@ const ArrayEditor = lazy(() => import('./array-param-editor'));
 const BooleanArrayEditor = lazy(() => import('./boolean-array-param-editor'));
 const ByteArrayEditor = lazy(() => import('./byte-array-param-editor'));
 const ObjectArrayTableEditor = lazy(() => import('./object-array-table-param-editor'));
+const DaliLevelSliderEditor = lazy(() => import('./level-slider-param-editor'));
 
 const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
   if (props.store.storeType === 'object') {
@@ -25,6 +26,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
       <Suspense>
         <ObjectEditor
           store={props.store as ObjectStore}
+          rootStore={props.rootStore}
           translator={props.translator}
           editorBuilder={DefaultEditorBuilder}
           isTopLevel={props.isTopLevel}
@@ -61,6 +63,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
           <Suspense>
             <ObjectArrayTableEditor
               store={props.store as ArrayStore}
+              rootStore={props.rootStore}
               translator={props.translator}
               editorBuilder={DefaultEditorBuilder}
             />
@@ -72,6 +75,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
       <Suspense>
         <ArrayEditor
           store={props.store as ArrayStore}
+          rootStore={props.rootStore}
           translator={props.translator}
           editorBuilder={DefaultEditorBuilder}
         />
@@ -93,6 +97,17 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
     );
   }
   if (props.store.storeType === 'number') {
+    if (props.store.schema.format === 'dali-level') {
+      return (
+        <Suspense>
+          <DaliLevelSliderEditor
+            store={props.store as NumberStore}
+            rootStore={props.rootStore}
+            inputId={props.inputId}
+          />
+        </Suspense>
+      );
+    }
     return (
       <Suspense>
         <NumberEditor
@@ -134,7 +149,7 @@ export const JsonSchemaEditor = ({ store, translator, customEditorBuilder }: Jso
   };
   return (
     <div className="wb-jsonEditor">
-      {editorBuilderFunction({ store, translator, isTopLevel: true })}
+      {editorBuilderFunction({ store, rootStore: store, translator, isTopLevel: true })}
     </div>
   );
 };

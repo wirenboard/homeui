@@ -11,6 +11,7 @@ import { type ArrayEditorProps, type TableCellWithEditorProps } from './types';
 
 const TableCellWithEditor = observer(({
   paramStore,
+  rootStore,
   translator,
   editorBuilder,
   width,
@@ -22,7 +23,7 @@ const TableCellWithEditor = observer(({
       <div
         className={classNames('wb-jsonEditor-objectProperty')}
       >
-        {editorBuilder({ store: paramStore.store, paramId: paramStore.key, translator, inputId, errorId })}
+        {editorBuilder({ store: paramStore.store, rootStore, paramId: paramStore.key, translator, inputId, errorId })}
         {paramStore.store.hasErrors && (
           <ParamError
             id={errorId}
@@ -35,7 +36,7 @@ const TableCellWithEditor = observer(({
   );
 });
 
-const ObjectArrayTableEditor = observer(({ store, translator, editorBuilder } : ArrayEditorProps) => {
+const ObjectArrayTableEditor = observer(({ store, rootStore, translator, editorBuilder } : ArrayEditorProps) => {
   const { t, i18n } = useTranslation();
   if (!editorBuilder) {
     return null;
@@ -75,6 +76,7 @@ const ObjectArrayTableEditor = observer(({ store, translator, editorBuilder } : 
                   ? paramStore.store.schema.options?.grid_columns * columnSize
                   : undefined}
                 paramStore={paramStore}
+                rootStore={rootStore}
                 translator={translator}
                 editorBuilder={editorBuilder}
               />
