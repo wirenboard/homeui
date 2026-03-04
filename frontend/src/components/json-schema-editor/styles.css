@@ -104,6 +104,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    height: 100%;
 }
 
 .dali-level-slider .range-container {
@@ -112,6 +113,5 @@
 }
 
 .dali-level-slider-mask {
-    color: var(--gray-color);
     font-size: var(--font-size-small);
 }
