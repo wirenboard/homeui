@@ -146,7 +146,7 @@ export class DeviceTabStore {
       configFromDevice.model,
       configFromDevice.fw
     );
-    this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw);
+    this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw, isForce);
   }
 
   async setDeviceType(type: string, portConfig: PortTabConfig) {
@@ -202,6 +202,9 @@ export class DeviceTabStore {
   }
 
   async loadContent(portConfig?: PortTabConfig, isForce: boolean = false) {
+    if (isForce && this.isDirty && !confirm(i18n.t('device-manager.labels.uncommitted-settings'))) {
+      return;
+    }
     if (this.isUnknownType || this.withSubdevices) {
       this._clearLoading();
       return;

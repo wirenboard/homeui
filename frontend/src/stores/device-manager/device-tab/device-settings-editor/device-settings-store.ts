@@ -101,9 +101,9 @@ export class DeviceSettingsObjectStore {
     this.schemaTranslator.addTranslations(deviceTemplate.translations);
     this.schemaTranslator.addTranslations({
       ru: {
-        "using Fast Modbus": "по Быстрому Modbus"
-      }
-    })
+        'using Fast Modbus': 'по Быстрому Modbus',
+      },
+    });
     let customChannels: unknown[] = [];
     let templateChannels: unknown[] = [];
     if (
@@ -285,7 +285,7 @@ export class DeviceSettingsObjectStore {
     this.customChannels?.commit();
   }
 
-  setFromDeviceRegisters(value: unknown, fw: string){
+  setFromDeviceRegisters(value: unknown, fw: string, isForce?: boolean){
     const valueAsObject = value as Record<string, any>;
     if (!valueAsObject) {
       return;
@@ -293,7 +293,7 @@ export class DeviceSettingsObjectStore {
     this._parametersByName.forEach((param, _name) => {
       param.setFirmwareInDevice(fw);
       if (Object.hasOwn(valueAsObject, param.id)) {
-        param.setFromDeviceRegister(valueAsObject[param.id]);
+        param.setFromDeviceRegister(valueAsObject[param.id], isForce);
       }
     });
     this._groupsByName.forEach((group, _name) => {
