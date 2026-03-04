@@ -57,6 +57,8 @@ Depends: ${shlibs:Depends},
          python3-cryptography,
          wb-release-info
 Breaks: wb-configs (<< 3.38.0~~)
+Conflicts: wb-mqtt-homeui (<< 2.140.0~~)
+Replaces: wb-mqtt-homeui (<< 2.140.0~~)
 Recommends: wb-mqtt-logs, wb-device-manager
 Description: Wiren Board Web UI web interface
   The package contains backend files
