@@ -53,7 +53,9 @@ const DaliLevelSliderEditor = observer(({
 }: DaliLevelSliderEditorProps) => {
   const { t } = useTranslation();
   const value = typeof store.value === 'number' ? store.value : 0;
-  const isMasked = value === MASK_VALUE;
+  const maxValue = store.schema.maximum ?? 254;
+  const showMaskSwitch = maxValue >= MASK_VALUE;
+  const isMasked = showMaskSwitch && value === MASK_VALUE;
   const isDisabled = !!store.schema.options?.wb?.read_only;
   const dimmingCurve = getDimmingCurve(rootStore);
 
@@ -72,11 +74,13 @@ const DaliLevelSliderEditor = observer(({
 
   return (
     <div className="dali-level-slider">
-      <Switch
-        value={!isMasked}
-        isDisabled={isDisabled}
-        onChange={onSwitchChange}
-      />
+      {showMaskSwitch && (
+        <Switch
+          value={!isMasked}
+          isDisabled={isDisabled}
+          onChange={onSwitchChange}
+        />
+      )}
       {isMasked ? (
         <span className="dali-level-slider-mask">{t('json-editor.labels.dali-mask')}</span>
       ) : (
@@ -84,7 +88,7 @@ const DaliLevelSliderEditor = observer(({
           id={inputId ?? ''}
           value={value}
           min={0}
-          max={254}
+          max={Math.min(maxValue, 254)}
           step={1}
           isDisabled={isDisabled}
           isInvalid={store.hasErrors}
