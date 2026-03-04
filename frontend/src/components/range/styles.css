@@ -112,7 +112,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    height: auto;
     padding-top: 0;
 }
 
@@ -127,5 +126,6 @@
     height: auto;
     position: static;
     margin-top: 0;
+    line-height: normal;
     min-width: 50px;
 }
