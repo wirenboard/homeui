@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 import JsonEditorRussianTranslation from './json-editor-ru';
 import makeLazyTabsArrayEditor from './lazy-tabs-array-editor';
 import makeDisabledEditorWrapper from './disabled-editor-wrapper';

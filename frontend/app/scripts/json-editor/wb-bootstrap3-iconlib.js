@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 const glyphiconIconPrefix = 'glyphicon glyphicon-';
 const glyphiconMapping = {
