@@ -107,3 +107,25 @@
     margin-left: -6px;
     margin-right: 2px;
 }
+
+.range-container-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 0;
+}
+
+.range-container-right .range {
+    flex: 1;
+    min-width: 0;
+}
+
+.range-value-right {
+    flex-shrink: 0;
+    width: auto;
+    height: auto;
+    position: static;
+    margin-top: 0;
+    line-height: normal;
+    min-width: 50px;
+}
