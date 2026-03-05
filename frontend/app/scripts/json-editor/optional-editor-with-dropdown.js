@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 // Editor for not required properties
 // Must be used with show_opt_in option

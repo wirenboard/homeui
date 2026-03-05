@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 // Editor for oneOf items with collapse button.
 // In contrast with original multiple editor the editor doesn't rely on full oneOf items validation.

@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 function makeLazyTabsArrayEditor() {
   return class extends JSONEditor.defaults.editors['array'] {
