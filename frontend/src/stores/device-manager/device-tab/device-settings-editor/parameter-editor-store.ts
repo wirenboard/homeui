@@ -177,14 +177,17 @@ export class WbDeviceParameterEditor {
     });
   }
 
-  setFromDeviceRegister(value: unknown) {
-    if (!this.isSetInUserDefinedConfig && this.isSupportedByFirmware && typeof value === 'number') {
+  setFromDeviceRegister(value: unknown, isForce?: boolean) {
+    if ((!this.isSetInUserDefinedConfig || isForce) && this.isSupportedByFirmware && typeof value === 'number') {
       this.variants.forEach((variant) => {
         variant.store.setValue(value);
         variant.store.commit();
         if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
           runInAction(() => {
             this.isSetInDeviceRegisters = true;
+            if (isForce) {
+              variant.store.isDirty = true;
+            }
           });
         }
         if (this.isSetInDeviceRegisters && variant.store.hasErrors) {
