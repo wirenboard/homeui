@@ -183,11 +183,11 @@ export class WbDeviceParameterEditor {
         variant.store.setValue(value);
         variant.store.commit();
         if (!this.isSetInDeviceRegisters && value !== getDefaultValue(variant.store.schema)) {
-          if (isForce) {
-            variant.store.isDirty = true;
-          }
           runInAction(() => {
             this.isSetInDeviceRegisters = true;
+            if (isForce) {
+              variant.store.isDirty = true;
+            }
           });
         }
         if (this.isSetInDeviceRegisters && variant.store.hasErrors) {
