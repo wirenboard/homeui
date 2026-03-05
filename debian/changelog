@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.181.0) stable; urgency=medium
+
+  * Add translations to default value in json-editor
+  * Move json-editor to external package
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 04 Mar 2026 15:20:00 +0300
+
 wb-mqtt-homeui (2.180.0) stable; urgency=medium
 
   * Add translations to default value in json-editor
