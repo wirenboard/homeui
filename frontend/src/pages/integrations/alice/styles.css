@@ -103,3 +103,7 @@
 .alice-integrationToggle-label {
     color: var(--text-color);
 }
+
+.alice-saveAlert {
+    margin-bottom: 12px;
+}

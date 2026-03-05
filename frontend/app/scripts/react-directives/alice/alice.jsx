@@ -12,7 +12,7 @@ export default function aliceDirective($rootScope) {
     scope: {},
     link: function(scope, element) {
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<AlicePage deviceStore={$rootScope.deviceStore} />);
+      scope.root.render(<AlicePage devicesStore={$rootScope.devicesStore} />);
 
       element.on('$destroy', ()=> {
         scope.root.unmount();

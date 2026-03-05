@@ -1,6 +1,6 @@
 import { autocompletion, type CompletionSource } from '@codemirror/autocomplete';
 import { javascript, javascriptLanguage } from '@codemirror/lang-javascript';
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 import { getEnums } from './enums';
 import { methods } from './methods';
 import { snippetSource } from './snippets';
@@ -15,7 +15,7 @@ function mergeSources(sources: CompletionSource[]): CompletionSource {
   };
 }
 
-export const getExtensions = (devicesStore: DeviceStore) => {
+export const getExtensions = (devicesStore: DevicesStore) => {
   const autocomplete = mergeSources([
     ...getEnums(devicesStore),
     ...methods,

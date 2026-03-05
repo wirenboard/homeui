@@ -14,12 +14,7 @@ import {
   type PropertyParameters,
   unitLabels,
 } from '@/stores/alice';
-
-interface DevicePropertiesProps {
-  properties: any[];
-  deviceStore: any;
-  onPropertyChange: (properties: any[]) => void;
-}
+import { type DevicePropertiesProps } from './types';
 
 const floatUnitOptionsForInstance = (instance?: string): Option<string>[] => {
   const list = (instance && floatUnitsByInstance[instance]) || [];
@@ -73,7 +68,7 @@ const getAvailableEventInstances = (properties: any[]) => {
 };
 
 export const DeviceProperties = observer(({
-  properties, deviceStore, onPropertyChange,
+  properties, devicesStore, onPropertyChange,
 }: DevicePropertiesProps) => {
   const { t } = useTranslation();
 
@@ -102,7 +97,9 @@ export const DeviceProperties = observer(({
 
     const usedValues = new Set(
       properties
-        .filter((p, i) => p.type === Property.Event && p.parameters?.instance === instance && i !== currentPropertyIndex)
+        .filter((p, i) => p.type === Property.Event
+          && p.parameters?.instance === instance
+          && i !== currentPropertyIndex)
         .map((p) => p.parameters?.value)
         .filter(Boolean) as string[]
     );
@@ -127,10 +124,9 @@ export const DeviceProperties = observer(({
     };
 
     if (availableUnits.length) {
-      const nextUnit = availableUnits.includes(currentlySelectedUnit)
+      updatedParams.unit = availableUnits.includes(currentlySelectedUnit)
         ? currentlySelectedUnit
         : availableUnits[0];
-      updatedParams.unit = nextUnit;
     } else {
       // If units not present - remove unit fields
       delete (updatedParams as any).unit;
@@ -182,14 +178,16 @@ export const DeviceProperties = observer(({
         // Find first event instance that has available values
         const freeEventInstances = getAvailableEventInstances(properties);
         const inst = freeEventInstances.length > 0 ? freeEventInstances[0] : events.at(0);
-        
+
         parameters.instance = inst;
         const units = eventValueOptionsForInstance(inst).map((o) => o.value);
         if (units.length) {
           // compute used event-values for this instance excluding current property index
           const usedValues = new Set(
             properties
-              .filter((p, i) => p.type === Property.Event && p.parameters?.instance === inst && i !== currentPropertyIndex)
+              .filter((p, i) => p.type === Property.Event
+                && p.parameters?.instance === inst
+                && i !== currentPropertyIndex)
               .map((p) => p.parameters?.value)
               .filter(Boolean) as string[]
           );
@@ -238,9 +236,9 @@ export const DeviceProperties = observer(({
                 <Dropdown
                   className="aliceDeviceSkills-dropdown"
                   value={property.mqtt}
-                  placeholder={deviceStore.topics.flatMap((g) => g.options)
+                  placeholder={devicesStore.topics.flatMap((g) => g.options)
                     .find((o) => o.value === property.mqtt)?.label}
-                  options={deviceStore.topics as any[]}
+                  options={devicesStore.topics as any[]}
                   isSearchable
                   onChange={({ value }: Option<string>) => {
                     onPropertyChange(properties.map((item, i) => i === key ? { ...item, mqtt: value } : item));
@@ -297,11 +295,11 @@ export const DeviceProperties = observer(({
                         handleEventInstanceChange(instance, key)
                       }
                     />
-                   </div>
-                     <div>
-                     <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                       {t('alice.labels.event-value')}
-                     </div>
+                  </div>
+                  <div>
+                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
+                      {t('alice.labels.event-value')}
+                    </div>
                     {getEventValueOptions(property.parameters?.instance, key).length ? (
                       <Dropdown
                         value={property.parameters?.value}
@@ -318,9 +316,9 @@ export const DeviceProperties = observer(({
                         {t('alice.labels.no-units')}
                       </div>
                     )}
-                   </div>
-                 </>
-               )}
+                  </div>
+                </>
+              )}
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
                   size="small"
@@ -338,7 +336,7 @@ export const DeviceProperties = observer(({
           const freeFloatInstances = getAvailableFloatInstances(properties);
           const freeEventInstances = getAvailableEventInstances(properties);
           const canAddProperty = freeFloatInstances.length > 0 || freeEventInstances.length > 0;
-          
+
           return (
             <Button
               className="aliceDeviceSkills-addButton"
@@ -366,12 +364,12 @@ export const DeviceProperties = observer(({
                       .filter(Boolean) as string[]
                   );
                   const firstAvailableValue = availableValues.find((v) => !usedValues.has(v));
-                  
+
                   const params: PropertyParameters = { instance: inst };
                   if (firstAvailableValue) {
                     params.value = firstAvailableValue;
                   }
-                  
+
                   onPropertyChange([
                     ...properties,
                     { type: Property.Event, mqtt: '', parameters: params },

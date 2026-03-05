@@ -1,5 +1,5 @@
 import type { CompletionSource } from '@codemirror/autocomplete';
-import { type Device, commonCellTypes, type DeviceStore } from '@/stores/device';
+import { type Device, commonCellTypes, type DevicesStore } from '@/stores/devices';
 
 const makeDevTopicsSource = (topics: string[]): CompletionSource => {
   return (context) => {
@@ -127,7 +127,7 @@ const makeTopicSource = (fnName: string, topics: string[]): CompletionSource => 
   };
 };
 
-export const getEnums = (devicesStore: DeviceStore) => {
+export const getEnums = (devicesStore: DevicesStore) => {
   const devices = Array.from(devicesStore.devices.keys());
   const topics = devicesStore.controls.map(({ id }) => id);
 

@@ -3,11 +3,11 @@ import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { type CSSProperties, type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card } from '@/components/card';
 import { Checkbox } from '@/components/checkbox';
 import { Input } from '@/components/input';
 import { ParamDescription, DescriptionText } from './param-description';
 import { ParamError } from './param-error';
-import { Card } from '@/components/card';
 import type { EditorWrapperProps, EditorWrapperLabelProps } from './types';
 
 const EditorWrapperLabel = ({ param, title, inputId, showError }: EditorWrapperLabelProps) => {
@@ -23,13 +23,16 @@ const EditorWrapperLabel = ({ param, title, inputId, showError }: EditorWrapperL
       <Checkbox
         title={title}
         checked={!param.disabled}
-        className={classNames("wb-jsonEditor-propertyCheckbox", { 'wb-jsonEditor-propertyCheckboxError': showError })}
+        className={classNames('wb-jsonEditor-propertyCheckbox', { 'wb-jsonEditor-propertyCheckboxError': showError })}
         onChange={checkHandler}
       />
     );
   }
   return (
-    <label htmlFor={inputId} className={classNames("wb-jsonEditor-propertyLabel", { 'wb-jsonEditor-propertyLabelError': showError })}>
+    <label
+      htmlFor={inputId}
+      className={classNames('wb-jsonEditor-propertyLabel', { 'wb-jsonEditor-propertyLabelError': showError })}
+    >
       {title}
     </label>
   );
@@ -42,7 +45,7 @@ const DisabledParamPlaceholder = () => {
 export const EditorCardWrapper = observer(({
   children,
   param,
-  translator
+  translator,
 }: PropsWithChildren<EditorWrapperProps>) => {
   const { i18n } = useTranslation();
   const [isBodyVisible, setIsBodyVisible] = useState(true);
@@ -50,13 +53,13 @@ export const EditorCardWrapper = observer(({
   const showDescription = !!param.store.schema.description;
   const title = translator.find(param.store.schema.title || param.key, currentLanguage);
   return (
-      <Card
-        heading={title && String(title)}
-        variant="secondary"
-        withError={param.store.hasErrors}
-        isBodyVisible={isBodyVisible}
-        toggleBody={() => setIsBodyVisible(!isBodyVisible)}
-      >
+    <Card
+      heading={title && String(title)}
+      variant="secondary"
+      withError={param.store.hasErrors}
+      isBodyVisible={isBodyVisible}
+      toggleBody={() => setIsBodyVisible(!isBodyVisible)}
+    >
       {showDescription && (
         <DescriptionText description={translator.find(param.store.schema.description, currentLanguage)} />
       )}
@@ -92,7 +95,7 @@ export const EditorCommonWrapper = observer(({
   const title = translator.find(param.store.schema.title || param.key, currentLanguage);
   const showLabel = param.store.storeType !== 'boolean' && !param.store.schema.options?.compact;
   return (
-    <div className='wb-jsonEditor-objectProperty' style={style}>
+    <div className="wb-jsonEditor-objectProperty" style={style}>
       {showLabel && <EditorWrapperLabel param={param} title={title} inputId={inputId} showError={showError} />}
       {param.disabled ? (
         <DisabledParamPlaceholder />
@@ -109,7 +112,7 @@ export const EditorCommonWrapper = observer(({
       )}
     </div>
   );
-}); 
+});
 
 export const EditorWrapper = ({
   children,
@@ -119,7 +122,7 @@ export const EditorWrapper = ({
   errorId,
   inputId,
 }: PropsWithChildren<EditorWrapperProps>) => {
-  if (param.store.schema.format === "card") {
+  if (param.store.schema.format === 'card') {
     return (
       <EditorCardWrapper param={param} translator={translator}>
         {children}

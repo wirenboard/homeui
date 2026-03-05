@@ -5,7 +5,7 @@ import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
 import type { ValueType } from './types';
 
-export default class DeviceStore {
+export default class DevicesStore {
   public devices: Map<string, Device> = new Map();
   public cells: Map<string, Cell> = new Map();
   private _mqttClient: MqttClient;

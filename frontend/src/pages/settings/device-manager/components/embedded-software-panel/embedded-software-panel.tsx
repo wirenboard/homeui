@@ -4,9 +4,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import {
-  EmbeddedSoftware,
-  EmbeddedSoftwareComponent,
-  ComponentFirmware
+  type EmbeddedSoftware,
+  type EmbeddedSoftwareComponent,
+  type ComponentFirmware,
 } from '@/stores/device-manager';
 import type { EmbeddedSoftwarePanelProps, HasUpdateAlertProps } from './types';
 

@@ -7,7 +7,7 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import { OptionalParamsSelectDialog } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
 import { EmbeddedSoftwarePanel, DeviceSettingsEditor } from '@/pages/settings/device-manager';
-import { UnknownDeviceTabContent } from '../../components/unknown-device-tab';
+import { UnknownDeviceTabContent } from '../unknown-device-tab';
 import { ReadRegistersResultAlert } from './read-registers-result-alert';
 import type { DeviceTabContentProps } from './types';
 import './styles.css';

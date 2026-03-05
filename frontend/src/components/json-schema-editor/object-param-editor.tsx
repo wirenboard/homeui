@@ -1,9 +1,9 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useId } from 'react';
 import { type Translator, type ObjectParamStore } from '@/stores/json-schema-editor';
 import { EditorWrapper } from './editor-wrapper';
 import type { ObjectEditorProps, EditorBuilderFunction } from './types';
-import classNames from 'classnames';
 
 const shouldRenderObjectParamEditor = (param: ObjectParamStore) => {
   return param.hidden ? false : !param.disabled || param.hasPermanentEditor;
@@ -29,7 +29,15 @@ const ObjectParamEditor = ({
       descriptionId={descriptionId}
       errorId={errorId}
     >
-      {editorBuilder({ store: param.store, paramId: param.key, translator, inputId, descriptionId, errorId, hideError: param.disabled })}
+      {editorBuilder({
+        store: param.store,
+        paramId: param.key,
+        translator,
+        inputId,
+        descriptionId,
+        errorId,
+        hideError: param.disabled,
+      })}
     </EditorWrapper>
   );
 };
@@ -106,12 +114,14 @@ const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
 
 const ObjectEditor = observer(({ store, translator, editorBuilder, isTopLevel } : ObjectEditorProps) => {
   return (
-    <div className={
+    <div
+      className={
         classNames(
-          "wb-jsonEditor-objectEditor",
-          {"wb-jsonEditor-objectEditorWithBorder": !isTopLevel && store.schema.format !== "card"}
+          'wb-jsonEditor-objectEditor',
+          { 'wb-jsonEditor-objectEditorWithBorder': !isTopLevel && store.schema.format !== 'card' }
         )
-    }>
+      }
+    >
       {editorBuilder && makeLayout(store.params, translator, editorBuilder)}
     </div>
   );

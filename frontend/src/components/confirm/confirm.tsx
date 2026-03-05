@@ -17,6 +17,7 @@ export const Confirm = ({
   width,
   variant = 'primary',
   isOpened = false,
+  isLoading = false,
   isOverlayCloseDisabled = false,
   isPreventSubmit = false,
   isDisabled = false,
@@ -54,6 +55,7 @@ export const Confirm = ({
           />
           <Button
             type="submit"
+            isLoading={isLoading}
             disabled={isDisabled}
             className="confirm-action"
             label={acceptLabel || t('modal.labels.yes')}

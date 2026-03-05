@@ -1,7 +1,7 @@
 import { type DashboardsStore } from '@/stores/dashboards';
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 
 export interface DashboardPageProps {
   dashboardsStore: DashboardsStore;
-  devicesStore: DeviceStore;
+  devicesStore: DevicesStore;
 }

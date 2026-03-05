@@ -23,7 +23,7 @@ export default function dashboardDirective($rootScope, $stateParams) {
       scope.root.render(
         <DashboardPage
           dashboardsStore={$rootScope.dashboardsStore}
-          devicesStore={$rootScope.deviceStore}
+          devicesStore={$rootScope.devicesStore}
         />
       );
 

@@ -118,6 +118,7 @@ const DeviceSettingsCardContent = observer((
       className={classNames({
         'deviceSettingsEditor-topGroupContent': isTopLevel,
         'deviceSettingsEditor-subGroupContent': !isTopLevel,
+        // eslint-disable-next-line stylistic/max-len
         'deviceSettingsEditor-subGroupContentWithBorder': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
       })}
     >

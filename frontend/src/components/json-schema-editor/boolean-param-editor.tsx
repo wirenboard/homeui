@@ -5,7 +5,14 @@ import { Switch } from '@/components/switch';
 import { MistypedValue } from '@/stores/json-schema-editor';
 import type { BooleanEditorProps } from './types';
 
-const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, translator, titleOverride } : BooleanEditorProps) => {
+const BooleanEditor = observer(({
+  store,
+  paramId,
+  errorId,
+  descriptionId,
+  translator,
+  titleOverride,
+} : BooleanEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   const title = titleOverride ?? translator.find(store.schema.title || paramId, currentLanguage);
@@ -14,7 +21,7 @@ const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, transl
   const checked = indeterminate ? false : value as boolean;
   if (store.schema.format === 'switch') {
     return (
-      <div className='wb-jsonEditor-booleanEditorSwitch'>
+      <div className="wb-jsonEditor-booleanEditorSwitch">
         <Switch
           value={checked}
           ariaDescribedby={descriptionId}
@@ -22,13 +29,14 @@ const BooleanEditor = observer(({ store, paramId, errorId, descriptionId, transl
           ariaErrorMessage={errorId}
           onChange={(checked: boolean) => store.setValue(checked)}
         />
-        {!store.schema.options?.compact && <label className='wb-jsonEditor-booleanEditorSwitchLabel'>{title}</label>}
+        {!store.schema.options?.compact && <label className="wb-jsonEditor-booleanEditorSwitchLabel">{title}</label>}
       </div>
     );
   }
+
   return (
     <Checkbox
-      title={store.schema.options?.compact ? "" : title}
+      title={store.schema.options?.compact ? '' : title}
       checked={checked}
       indeterminate={indeterminate}
       ariaDescribedby={descriptionId}

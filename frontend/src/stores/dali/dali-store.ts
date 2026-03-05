@@ -1,8 +1,8 @@
 import { runInAction, makeObservable, observable } from 'mobx';
-import type { DaliProxy } from './types';
+import { type ErrorInfo } from '@/layouts/page';
 import { formatError } from '@/utils/formatError';
-import { ErrorInfo } from '@/layouts/page';
 import { ItemStore } from './item-store';
+import type { DaliProxy } from './types';
 
 export class DaliStore {
   public gateways: ItemStore[] = [];

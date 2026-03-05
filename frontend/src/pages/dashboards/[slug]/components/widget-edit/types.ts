@@ -1,5 +1,5 @@
 import { type Widget } from '@/stores/dashboards/widget';
-import { type Cell } from '@/stores/device';
+import { type Cell } from '@/stores/devices';
 
 export interface CellSimple {
   id: string;

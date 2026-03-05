@@ -1,7 +1,7 @@
-import { type DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 import { type RulesStore } from '@/stores/rules';
 
 export interface RulePageProps {
   rulesStore: RulesStore;
-  devicesStore: DeviceStore;
+  devicesStore: DevicesStore;
 }

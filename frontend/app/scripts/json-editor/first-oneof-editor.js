@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 // The editor is derived from multiple editor.
 // It is used with oneOf nodes and shows editor only for the first item in oneOf array

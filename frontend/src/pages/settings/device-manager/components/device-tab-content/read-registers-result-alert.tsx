@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
-import { Dropdown, Option } from '@/components/dropdown';
-import { ReadRegistersState, DeviceTabStore } from '@/stores/device-manager';
+import { Dropdown, type Option } from '@/components/dropdown';
+import { ReadRegistersState, type DeviceTabStore } from '@/stores/device-manager';
 import type { ReadRegistersResultAlertProps } from './types';
 
 const DeprecatedAlert = () => {

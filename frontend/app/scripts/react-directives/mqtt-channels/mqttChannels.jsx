@@ -16,7 +16,7 @@ export default function mqttChannels($rootScope) {
       }
 
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<MqttChannelsPage store={$rootScope.deviceStore} />);
+      scope.root.render(<MqttChannelsPage store={$rootScope.devicesStore} />);
 
       element.on('$destroy', () => {
         scope.root.unmount();

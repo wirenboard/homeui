@@ -1,4 +1,4 @@
-import { EmbeddedSoftware } from '@/stores/device-manager';
+import { type EmbeddedSoftware } from '@/stores/device-manager';
 
 export interface EmbeddedSoftwarePanelProps {
   embeddedSoftware: EmbeddedSoftware;

@@ -194,6 +194,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                 setList={(val) => {
                   if (val.length) {
                     setWidgetCells(val.map((cell: any) => {
+                      // eslint-disable-next-line no-unused-vars
                       const { chosen, ...value } = cell;
                       return value;
                     }));

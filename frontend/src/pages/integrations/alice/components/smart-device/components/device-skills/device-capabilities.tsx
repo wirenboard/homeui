@@ -20,6 +20,7 @@ import {
   defaultTemperatureParameters,
   defaultColorSceneParameters,
 } from '@/stores/alice';
+import { type DeviceCapabilitiesProps } from './types';
 
 // Default range values for unlocked instances
 const RANGE_LIMITS_DEFAULT = { min: 0, max: 100, precision: 1 };
@@ -33,12 +34,6 @@ const RANGE_LIMITS_LOCKED: Record<string, { min: number; max: number; precision?
   // temperature: No lock applied
   // volume: No lock applied
 };
-
-interface DeviceCapabilitiesProps {
-  capabilities: SmartDeviceCapability[];
-  deviceStore: any;
-  onCapabilityChange: (capabilities: SmartDeviceCapability[]) => void;
-}
 
 const getAvailableColorModels = (
   capabilities: SmartDeviceCapability[],
@@ -56,7 +51,7 @@ const getAvailableColorModels = (
     .filter(Boolean);
 
   return Object.values(Color)
-    .filter((m) => m !== Color.ColorScene) // TODO: <DISABLED_COLOR> This line disable Color scene, need remove for enable
+    .filter((m) => m !== Color.ColorScene) // TODO: <DISABLED_COLOR> Its disable Color scene, need remove for enable
     .filter((colorModel) => !usedColorModels.includes(colorModel));
 };
 
@@ -112,7 +107,7 @@ const isCapabilityDisabled = (
 };
 
 export const DeviceCapabilities = observer(({
-  capabilities, deviceStore, onCapabilityChange,
+  capabilities, devicesStore, onCapabilityChange,
 }: DeviceCapabilitiesProps) => {
   const { t } = useTranslation();
 
@@ -230,10 +225,9 @@ export const DeviceCapabilities = observer(({
   }, [capabilities]);
 
   const getAvailableCapabilities = () => {
-    const availableCapabilities = Object.values(Capability).filter((capType) => {
+    return Object.values(Capability).filter((capType) => {
       return !isCapabilityDisabled(capType, capabilities);
     });
-    return availableCapabilities;
   };
 
   const getCapabilityParameters = (type: Capability) => {
@@ -325,9 +319,9 @@ export const DeviceCapabilities = observer(({
                 <Dropdown
                   className="aliceDeviceSkills-dropdown"
                   value={capability.mqtt}
-                  placeholder={deviceStore.topics.flatMap((g) => g.options)
+                  placeholder={devicesStore.topics.flatMap((g) => g.options)
                     .find((o) => o.value === capability.mqtt)?.label}
-                  options={deviceStore.topics as any[]}
+                  options={devicesStore.topics as any[]}
                   isSearchable
                   onChange={({ value }: Option<string>) => {
                     onCapabilityChange(capabilities.map((item, i) => (
@@ -500,7 +494,10 @@ export const DeviceCapabilities = observer(({
                               onChangeEvent={(event) => {
                                 const min = event.currentTarget.valueAsNumber || 0;
                                 const val = capabilities.map((item, i) => i === key
-                                  ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, min } } }
+                                  ? {
+                                    ...item,
+                                    parameters: { ...item.parameters, range: { ...item.parameters.range, min } },
+                                  }
                                   : item);
                                 onCapabilityChange(val);
                               }}
@@ -516,7 +513,10 @@ export const DeviceCapabilities = observer(({
                               onChangeEvent={(event) => {
                                 const max = event.currentTarget.valueAsNumber || 0;
                                 const val = capabilities.map((item, i) => i === key
-                                  ? { ...item, parameters: { ...item.parameters, range: { ...item.parameters.range, max } } }
+                                  ? {
+                                    ...item,
+                                    parameters: { ...item.parameters, range: { ...item.parameters.range, max } },
+                                  }
                                   : item);
                                 onCapabilityChange(val);
                               }}

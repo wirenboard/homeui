@@ -1,5 +1,5 @@
 import {
-  JsonSchema
+  type JsonSchema,
 } from '@/stores/json-schema-editor';
 
 export interface Gateway {

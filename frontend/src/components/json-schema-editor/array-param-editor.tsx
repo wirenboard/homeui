@@ -5,9 +5,9 @@ import ArrowDownIcon from '@/assets/icons/arrow-down.svg';
 import ArrowUpIcon from '@/assets/icons/arrow-up.svg';
 import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { type ArrayStore, type ObjectStore, type Translator } from '@/stores/json-schema-editor';
-import { Button } from '@/components/button';
 import type { ArrayEditorProps, EditorBuilderFunction } from './types';
 
 const ArrayItem = observer((
@@ -68,8 +68,9 @@ const ArrayEditor = observer(({ store, translator, editorBuilder } : ArrayEditor
   }
   const showAddButton = !store.schema.options?.wb?.read_only &&
     (store.schema.maxItems === undefined ||
-     store.schema.minItems === undefined || 
+     store.schema.minItems === undefined ||
      store.schema.maxItems !== store.schema.minItems);
+
   return (
     <div className="wb-jsonEditor-arrayEditor">
       {store.items.map((_item, i) => (

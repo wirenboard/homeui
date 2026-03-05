@@ -138,7 +138,7 @@ export class DeviceTypesStore {
   }
 
   hasBetterFirmware(sourceDeviceType: string, targetDeviceType: string, deviceSignature: string) {
-    const fw = this._deviceTypesMap.get(sourceDeviceType)?.hw?.find((hw => hw.signature === deviceSignature))?.fw;
+    const fw = this._deviceTypesMap.get(sourceDeviceType)?.hw?.find(((hw) => hw.signature === deviceSignature))?.fw;
     const typeDesc = this._deviceTypesMap.get(targetDeviceType);
     if (!typeDesc?.hw) {
       return false;
