@@ -2,17 +2,15 @@ import { observer } from 'mobx-react-lite';
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Colorpicker } from '@/components/colorpicker';
-import { Switch } from '@/components/switch';
 import { rgbToHex, hexToRgb } from '@/utils/color';
+import { ChannelSlider } from './components/channel-slider';
 import type { DaliRGBEditorProps } from './types';
 
-const CHANNEL_MIN = 0;
-const CHANNEL_MAX = 254;
 const MASK_VALUE = 255;
 
 const parseRGB = (value: string): [number, number, number] => {
   const parts = value.split(';');
-  const clamp = (v: number) => Math.min(MASK_VALUE, Math.max(CHANNEL_MIN, v));
+  const clamp = (v: number) => Math.min(MASK_VALUE, Math.max(0, v));
   const r = clamp(parseInt(parts[0], 10) || 0);
   const g = clamp(parseInt(parts[1], 10) || 0);
   const b = clamp(parseInt(parts[2], 10) || 0);
@@ -20,68 +18,6 @@ const parseRGB = (value: string): [number, number, number] => {
 };
 
 const toRGBString = (r: number, g: number, b: number): string => `${r};${g};${b}`;
-
-interface ChannelSliderProps {
-  value: number;
-  color: string;
-  isDisabled: boolean;
-  isInvalid: boolean;
-  maskLabel: string;
-  onChange: (val: number) => void;
-}
-
-const ChannelSlider = ({ value, color, isDisabled, isInvalid, maskLabel, onChange }: ChannelSliderProps) => {
-  const isMasked = value === MASK_VALUE;
-  const gradient = `linear-gradient(to right, #000000, ${color})`;
-
-  const onSwitchChange = useCallback((enabled: boolean) => {
-    onChange(enabled ? 0 : MASK_VALUE);
-  }, [onChange]);
-
-  const onSliderChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.valueAsNumber);
-  }, [onChange]);
-
-  const onMouseUp = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
-    onChange((e.target as HTMLInputElement).valueAsNumber);
-  }, [onChange]);
-
-  const onTouchEnd = useCallback((e: React.TouchEvent<HTMLInputElement>) => {
-    onChange((e.target as HTMLInputElement).valueAsNumber);
-  }, [onChange]);
-
-  const onKeyUp = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    onChange((e.target as HTMLInputElement).valueAsNumber);
-  }, [onChange]);
-
-  return (
-    <div className="dali-rgb-channel">
-      <Switch
-        value={!isMasked}
-        isDisabled={isDisabled}
-        onChange={onSwitchChange}
-      />
-      {isMasked ? (
-        <span className="dali-rgb-channel-mask">{maskLabel}</span>
-      ) : (
-        <input
-          type="range"
-          className={`range dali-rgb-channel-slider${isInvalid ? ' dali-rgb-channel-slider-invalid' : ''}`}
-          style={{ background: gradient }}
-          value={value}
-          min={CHANNEL_MIN}
-          max={CHANNEL_MAX}
-          step={1}
-          disabled={isDisabled}
-          onKeyUp={onKeyUp}
-          onMouseUp={onMouseUp}
-          onTouchEnd={onTouchEnd}
-          onChange={onSliderChange}
-        />
-      )}
-    </div>
-  );
-};
 
 const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
   const colorpickerId = useId();
