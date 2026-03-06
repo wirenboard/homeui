@@ -21,9 +21,6 @@ const parseRGB = (value: string): [number, number, number] => {
 
 const toRGBString = (r: number, g: number, b: number): string => `${r};${g};${b}`;
 
-// For colorpicker, clamp masked channels to 0
-const toHexChannel = (v: number): number => (v === MASK_VALUE ? 0 : v);
-
 interface ChannelSliderProps {
   value: number;
   color: string;
@@ -97,20 +94,14 @@ const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
   const [r, g, b] = parseRGB(rawValue);
 
   const hexValue = rgbToHex(
-    String(toHexChannel(r)),
-    String(toHexChannel(g)),
-    String(toHexChannel(b))
+    String(r === MASK_VALUE ? 0 : r),
+    String(g === MASK_VALUE ? 0 : g),
+    String(b === MASK_VALUE ? 0 : b),
   );
 
   const onColorChange = useCallback((hex: string) => {
-    // Only update non-masked channels
-    const [nr, ng, nb] = hexToRgb(hex).split(';');
-    store.setValue(toRGBString(
-      r === MASK_VALUE ? MASK_VALUE : parseInt(nr, 10),
-      g === MASK_VALUE ? MASK_VALUE : parseInt(ng, 10),
-      b === MASK_VALUE ? MASK_VALUE : parseInt(nb, 10),
-    ));
-  }, [store, r, g, b]);
+    store.setValue(hexToRgb(hex));
+  }, [store]);
 
   const onRChange = useCallback((val: number) => {
     store.setValue(toRGBString(val, g, b));
