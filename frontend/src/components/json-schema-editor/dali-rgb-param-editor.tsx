@@ -138,7 +138,6 @@ const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
         isInvalid={isInvalid}
         onChange={onColorChange}
       />
-      <span className="dali-rgb-editor-values">{r};{g};{b}</span>
     </div>
   );
 });
