@@ -115,3 +115,19 @@
 .dali-level-slider-mask {
     font-size: var(--font-size-small);
 }
+
+.dali-color-temperature-slider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+}
+
+.dali-color-temperature-slider .range-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.dali-color-temperature-slider-mask {
+    font-size: var(--font-size-small);
+}
