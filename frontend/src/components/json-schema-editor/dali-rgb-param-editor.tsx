@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { useCallback, useId } from 'react';
 import { Colorpicker } from '@/components/colorpicker';
-import { Range } from '@/components/range';
 import { rgbToHex, hexToRgb } from '@/utils/color';
 import type { DaliRGBEditorProps } from './types';
 
@@ -18,9 +17,34 @@ const parseRGB = (value: string): [number, number, number] => {
 
 const toRGBString = (r: number, g: number, b: number): string => `${r};${g};${b}`;
 
-const formatR = (v: number): string => `R: ${v}`;
-const formatG = (v: number): string => `G: ${v}`;
-const formatB = (v: number): string => `B: ${v}`;
+interface ChannelSliderProps {
+  value: number;
+  color: string;
+  isDisabled: boolean;
+  isInvalid: boolean;
+  onChange: (val: number) => void;
+}
+
+const ChannelSlider = ({ value, color, isDisabled, isInvalid, onChange }: ChannelSliderProps) => {
+  const gradient = `linear-gradient(to right, #000000, ${color})`;
+  return (
+    <input
+      type="range"
+      className={`range dali-rgb-channel-slider${isInvalid ? ' dali-rgb-channel-slider-invalid' : ''}`}
+      style={{ background: gradient }}
+      value={value}
+      min={CHANNEL_MIN}
+      max={CHANNEL_MAX}
+      step={1}
+      disabled={isDisabled}
+      onKeyUp={(e) => onChange((e.target as HTMLInputElement).valueAsNumber)}
+      onInput={(e) => (e.target as HTMLInputElement).valueAsNumber}
+      onMouseUp={(e) => onChange((e.target as HTMLInputElement).valueAsNumber)}
+      onTouchEnd={(e) => onChange((e.target as HTMLInputElement).valueAsNumber)}
+      onChange={(e) => onChange(e.target.valueAsNumber)}
+    />
+  );
+};
 
 const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
   const colorpickerId = useId();
@@ -49,7 +73,7 @@ const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
   }, [store, r, g]);
 
   return (
-    <div className="dali-rgb-editor">
+    <div className="dali-rgb-editor" id={inputId}>
       <Colorpicker
         id={colorpickerId}
         value={hexValue}
@@ -58,48 +82,9 @@ const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
         onChange={onColorChange}
       />
       <div className="dali-rgb-editor-sliders">
-        <div className="dali-rgb-editor-row">
-          <Range
-            id={inputId ?? ''}
-            value={r}
-            min={CHANNEL_MIN}
-            max={CHANNEL_MAX}
-            step={1}
-            isDisabled={isDisabled}
-            isInvalid={isInvalid}
-            labelPosition="right"
-            formatLabel={formatR}
-            onChange={onRChange}
-          />
-        </div>
-        <div className="dali-rgb-editor-row">
-          <Range
-            id=""
-            value={g}
-            min={CHANNEL_MIN}
-            max={CHANNEL_MAX}
-            step={1}
-            isDisabled={isDisabled}
-            isInvalid={isInvalid}
-            labelPosition="right"
-            formatLabel={formatG}
-            onChange={onGChange}
-          />
-        </div>
-        <div className="dali-rgb-editor-row">
-          <Range
-            id=""
-            value={b}
-            min={CHANNEL_MIN}
-            max={CHANNEL_MAX}
-            step={1}
-            isDisabled={isDisabled}
-            isInvalid={isInvalid}
-            labelPosition="right"
-            formatLabel={formatB}
-            onChange={onBChange}
-          />
-        </div>
+        <ChannelSlider value={r} color={`rgb(255, 0, 0)`} isDisabled={isDisabled} isInvalid={isInvalid} onChange={onRChange} />
+        <ChannelSlider value={g} color={`rgb(0, 255, 0)`} isDisabled={isDisabled} isInvalid={isInvalid} onChange={onGChange} />
+        <ChannelSlider value={b} color={`rgb(0, 0, 255)`} isDisabled={isDisabled} isInvalid={isInvalid} onChange={onBChange} />
       </div>
     </div>
   );
