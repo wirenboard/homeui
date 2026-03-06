@@ -234,3 +234,8 @@
 .dali-rgb-channel-slider-invalid::-moz-range-thumb {
     background: var(--danger-color);
 }
+
+.dali-white-editor {
+    display: flex;
+    align-items: center;
+}

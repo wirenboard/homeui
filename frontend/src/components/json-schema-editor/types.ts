@@ -67,6 +67,11 @@ export interface DaliRGBEditorProps {
   inputId?: string;
 }
 
+export interface DaliWhiteEditorProps {
+  store: NumberStore;
+  inputId?: string;
+}
+
 export interface StringEditorProps {
   store: StringStore;
   inputId?: string;
