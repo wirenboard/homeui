@@ -140,10 +140,31 @@
 
 .dali-rgb-editor-sliders {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex: 1;
     min-width: 0;
     gap: 4px;
+}
+
+.dali-rgb-channel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+}
+
+.dali-rgb-channel-mask {
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+}
+
+.dali-rgb-editor-values {
+    font-size: var(--font-size-small);
+    color: var(--text-color);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .dali-rgb-channel-slider {
