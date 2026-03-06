@@ -131,3 +131,21 @@
 .dali-color-temperature-slider-mask {
     font-size: var(--font-size-small);
 }
+
+.dali-rgb-editor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dali-rgb-editor-sliders {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+}
+
+.dali-rgb-editor-row .range-container {
+    width: 100%;
+}

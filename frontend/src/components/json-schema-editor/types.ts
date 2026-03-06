@@ -62,6 +62,11 @@ export interface DaliColorTemperatureSliderEditorProps {
   inputId?: string;
 }
 
+export interface DaliRGBEditorProps {
+  store: StringStore;
+  inputId?: string;
+}
+
 export interface StringEditorProps {
   store: StringStore;
   inputId?: string;

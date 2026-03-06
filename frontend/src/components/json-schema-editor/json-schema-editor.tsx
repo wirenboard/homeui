@@ -20,6 +20,7 @@ const ByteArrayEditor = lazy(() => import('./byte-array-param-editor'));
 const ObjectArrayTableEditor = lazy(() => import('./object-array-table-param-editor'));
 const DaliLevelSliderEditor = lazy(() => import('./level-slider-param-editor'));
 const ColorTemperatureSliderEditor = lazy(() => import('./dali-color-temperature-slider-param-editor'));
+const DaliRGBEditor = lazy(() => import('./dali-rgb-param-editor'));
 
 const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
   if (props.store.storeType === 'object') {
@@ -84,6 +85,16 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
     );
   }
   if (props.store.storeType === 'string') {
+    if (props.store.schema.format === 'dali-rgb') {
+      return (
+        <Suspense>
+          <DaliRGBEditor
+            store={props.store as StringStore}
+            inputId={props.inputId}
+          />
+        </Suspense>
+      );
+    }
     return (
       <Suspense>
         <StringEditor
