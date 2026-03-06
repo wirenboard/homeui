@@ -5,6 +5,7 @@ import { useFilePicker } from 'use-file-picker';
 import DownloadIcon from '@/assets/icons/download.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { BooleanField, StringField, OptionsField } from '@/components/form';
 import { useParseHash } from '@/utils/url';
 import { SvgView } from '../svg-view';
@@ -53,7 +54,9 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
         {store.svgStore.hasSvg && (
           <fieldset className="visualEditView-fieldset">
             <legend className="visualEditView-bindingsHeader visualEditView-legend">
-              {t('edit-svg-dashboard.labels.bindings-title')}
+              <span className="visualEditView-legendTitle">
+                {t('edit-svg-dashboard.labels.bindings-title')}
+              </span>
               <Button
                 label={t('edit-svg-dashboard.buttons.edit-json')}
                 variant="secondary"
@@ -73,22 +76,24 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
         )}
 
         <fieldset className="visualEditView-fieldset">
-          <legend className="visualEditView-legend">
-            {t('edit-svg-dashboard.labels.common-parameters-title')}
+          <legend className="visualEditView-bindingsHeader visualEditView-legend">
+            <span className="visualEditView-legendTitle">
+              {t('edit-svg-dashboard.labels.common-parameters-title')}
+            </span>
+            {store.svgStore.hasSvg && (
+              <div className="visualEditView-svgButtons">
+                <Button
+                  label={t('edit-svg-dashboard.buttons.load-svg')}
+                  onClick={() => openFileSelector()}
+                />
+                <Button
+                  icon={<DownloadIcon />}
+                  variant="secondary"
+                  onClick={() => store.svgStore.exportSvg(store.commonParameters['name'])}
+                />
+              </div>
+            )}
           </legend>
-          {store.svgStore.hasSvg && (
-            <div className="visualEditView-svgButtons">
-              <Button
-                label={t('edit-svg-dashboard.buttons.load-svg')}
-                onClick={() => openFileSelector()}
-              />
-              <Button
-                icon={<DownloadIcon />}
-                variant="secondary"
-                onClick={() => store.svgStore.exportSvg(store.commonParameters['name'])}
-              />
-            </div>
-          )}
 
           <StringField
             title={t('edit-svg-dashboard.labels.common-parameters-id')}
@@ -108,19 +113,21 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
           <BooleanField
             title={t('edit-svg-dashboard.labels.common-parameters-fullscreen')}
             value={store.commonParameters['svg_fullwidth']}
-            onChange={(val) => {
-              store.commonParameters['svg_fullwidth'] = val;
-            }}
+            onChange={(val) => store.setCommonParam('svg_fullwidth', val)}
           />
 
-          <BooleanField
-            title={t('edit-svg-dashboard.labels.swipe-enable')}
-            value={store.swipeParameters.enable}
-            onChange={(val) => store.swipeParameters.enable = val}
-          />
-
-          {store.swipeParameters.enable && (
-            <>
+          <Card
+            variant="secondary"
+            isBodyVisible={store.swipeParameters.enable}
+            heading={
+              <BooleanField
+                title={t('edit-svg-dashboard.labels.swipe-enable')}
+                value={store.swipeParameters.enable}
+                onChange={(val) => store.setSwipeParameters('enable', val)}
+              />
+            }
+          >
+            <div className="visualEditView-swipeWrapper">
               <OptionsField
                 title={t('edit-svg-dashboard.labels.left')}
                 value={store.swipeParameters.left}
@@ -128,7 +135,7 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
                 options={dashboardOptions}
                 isClearable
                 isSearchable
-                onChange={(value: string) => store.swipeParameters.left = value}
+                onChange={(value: string) => store.setSwipeParameters('left', value)}
               />
               <OptionsField
                 title={t('edit-svg-dashboard.labels.right')}
@@ -137,10 +144,10 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
                 options={dashboardOptions}
                 isClearable
                 isSearchable
-                onChange={(value: string) => store.swipeParameters.right = value}
+                onChange={(value: string) => store.setSwipeParameters('right', value)}
               />
-            </>
-          )}
+            </div>
+          </Card>
         </fieldset>
       </div>
     </div>

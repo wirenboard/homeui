@@ -10,6 +10,10 @@
     }
 }
 
+.visualEditView .card {
+    max-width: unset;
+}
+
 .visualEditView-content {
     display: flex;
     flex-direction: column;
@@ -30,6 +34,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .visualEditView-svgButtons {
@@ -42,6 +48,11 @@
     margin-bottom: 12px;
 }
 
+.visualEditView-legendTitle {
+    font-weight: bold;
+    word-break: keep-all;
+}
+
 .visualEditView-fieldset {
     display: flex;
     flex-direction: column;
@@ -50,4 +61,11 @@
 
 .visualEditView-fieldset .card-header * {
     box-shadow: none !important;
+}
+
+
+.visualEditView-swipeWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }

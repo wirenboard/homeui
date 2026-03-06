@@ -36,6 +36,12 @@ export class EditSvgDashboardPageStore {
     });
   }
 
+  setSwipeParameters<K extends keyof typeof this.swipeParameters>(key: K, value: typeof this.swipeParameters[K]) {
+    runInAction(() => {
+      this.swipeParameters[key] = value;
+    });
+  }
+
   get isNew() {
     return !this.originalId;
   }

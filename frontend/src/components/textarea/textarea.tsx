@@ -17,11 +17,11 @@ export const Textarea = ({
   ariaErrorMessage,
   ...rest
 }: TextareaProps) => {
-  const [internalValue, setInternalValue] = useState(value);
+  const [internalValue, setInternalValue] = useState(value || '');
   const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
 
   useEffect(() => {
-    setInternalValue(value);
+    setInternalValue(value || '');
   }, [value]);
 
   const handleBlurOrChange = () => {
