@@ -140,10 +140,10 @@
 
 .dali-rgb-editor-sliders {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex: 1;
     min-width: 0;
-    gap: 4px;
+    gap: 8px;
 }
 
 .dali-rgb-channel {
