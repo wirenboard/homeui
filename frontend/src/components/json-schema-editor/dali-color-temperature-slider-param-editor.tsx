@@ -20,7 +20,7 @@ const formatKelvin = (mirek: number): string => {
 
 const MASK_VALUE = 65535;
 
-const DaliColorTemperatureSliderEditor = observer(({
+export const DaliColorTemperatureSliderEditor = observer(({
   store,
   inputId,
 }: DaliColorTemperatureSliderEditorProps) => {
@@ -68,5 +68,3 @@ const DaliColorTemperatureSliderEditor = observer(({
     </div>
   );
 });
-
-export default DaliColorTemperatureSliderEditor;

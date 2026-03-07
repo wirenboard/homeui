@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, ChangeEvent, MouseEvent, TouchEvent, KeyboardEvent } from 'react';
 import { Switch } from '@/components/switch';
 
 const CHANNEL_MIN = 0;
@@ -22,19 +22,19 @@ export const ChannelSlider = ({ value, color, isDisabled, isInvalid, maskLabel, 
     onChange(enabled ? 0 : MASK_VALUE);
   }, [onChange]);
 
-  const onSliderChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const onSliderChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.valueAsNumber);
   }, [onChange]);
 
-  const onMouseUp = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
+  const onMouseUp = useCallback((e: MouseEvent<HTMLInputElement>) => {
     onChange((e.target as HTMLInputElement).valueAsNumber);
   }, [onChange]);
 
-  const onTouchEnd = useCallback((e: React.TouchEvent<HTMLInputElement>) => {
+  const onTouchEnd = useCallback((e: TouchEvent<HTMLInputElement>) => {
     onChange((e.target as HTMLInputElement).valueAsNumber);
   }, [onChange]);
 
-  const onKeyUp = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyUp = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
     onChange((e.target as HTMLInputElement).valueAsNumber);
   }, [onChange]);
 

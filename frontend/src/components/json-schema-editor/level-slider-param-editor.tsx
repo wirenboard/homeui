@@ -46,7 +46,7 @@ const getDimmingCurve = (rootStore: DaliLevelSliderEditorProps['rootStore']): nu
 
 const MASK_VALUE = 255;
 
-const DaliLevelSliderEditor = observer(({
+export const DaliLevelSliderEditor = observer(({
   store,
   rootStore,
   inputId,
@@ -100,5 +100,3 @@ const DaliLevelSliderEditor = observer(({
     </div>
   );
 });
-
-export default DaliLevelSliderEditor;
