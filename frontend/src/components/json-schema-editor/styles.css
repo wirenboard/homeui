@@ -115,3 +115,127 @@
 .dali-level-slider-mask {
     font-size: var(--font-size-small);
 }
+
+.dali-color-temperature-slider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+}
+
+.dali-color-temperature-slider .range-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.dali-color-temperature-slider-mask {
+    font-size: var(--font-size-small);
+}
+
+.dali-rgb-editor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dali-rgb-editor-sliders {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+}
+
+.dali-rgb-channel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+    min-height: 19px;
+}
+
+.dali-rgb-channel-mask {
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+}
+
+.dali-rgb-editor-values {
+    font-size: var(--font-size-small);
+    color: var(--text-color);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dali-rgb-channel-slider {
+    width: 100%;
+    appearance: none;
+    height: 8px;
+    border-radius: 5px;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+}
+
+.dali-rgb-channel-slider:not(:disabled):hover {
+    cursor: pointer;
+}
+
+.dali-rgb-channel-slider:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.dali-rgb-channel-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--input-action-background);
+    transition: background .15s ease-in-out, var(--input-active-shadow-transition);
+}
+
+.dali-rgb-channel-slider::-moz-range-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--input-action-background);
+    transition: background .15s ease-in-out, var(--input-active-shadow-transition);
+}
+
+.dali-rgb-channel-slider:not(:disabled):hover::-webkit-slider-thumb,
+.dali-rgb-channel-slider:not(:disabled):focus::-webkit-slider-thumb {
+    cursor: pointer;
+    background: var(--primary-color-hover);
+}
+
+.dali-rgb-channel-slider:not(:disabled):focus::-moz-range-thumb {
+    cursor: pointer;
+    background: var(--primary-color-hover);
+}
+
+.dali-rgb-channel-slider:focus::-webkit-slider-thumb {
+    box-shadow: var(--input-active-shadow);
+}
+
+.dali-rgb-channel-slider:focus::-moz-range-thumb {
+    box-shadow: var(--input-active-shadow);
+}
+
+.dali-rgb-channel-slider-invalid::-webkit-slider-thumb {
+    background: var(--danger-color);
+}
+
+.dali-rgb-channel-slider-invalid::-moz-range-thumb {
+    background: var(--danger-color);
+}
+
+.dali-white-editor {
+    display: flex;
+    align-items: center;
+}
