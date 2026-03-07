@@ -19,7 +19,7 @@ const parseRGB = (value: string): [number, number, number] => {
 
 const toRGBString = (r: number, g: number, b: number): string => `${r};${g};${b}`;
 
-export const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
+const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
   const colorpickerId = useId();
   const { t } = useTranslation();
   const isDisabled = !!store.schema.options?.wb?.read_only;
@@ -68,3 +68,5 @@ export const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) =
     </div>
   );
 });
+
+export default DaliRGBEditor;

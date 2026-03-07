@@ -6,7 +6,7 @@ import type { DaliWhiteEditorProps } from './types';
 
 const MASK_VALUE = 255;
 
-export const DaliWhiteEditor = observer(({ store, inputId }: DaliWhiteEditorProps) => {
+const DaliWhiteEditor = observer(({ store, inputId }: DaliWhiteEditorProps) => {
   const { t } = useTranslation();
   const isDisabled = !!store.schema.options?.wb?.read_only;
   const isInvalid = store.hasErrors;
@@ -31,3 +31,5 @@ export const DaliWhiteEditor = observer(({ store, inputId }: DaliWhiteEditorProp
     </div>
   );
 });
+
+export default DaliWhiteEditor;
