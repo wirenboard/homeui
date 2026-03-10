@@ -6,6 +6,7 @@ import logging
 import os
 import socketserver
 import subprocess
+import threading
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -16,6 +17,7 @@ from typing import Any, Callable, Optional
 from urllib.parse import urlparse
 
 import bcrypt
+import requests
 
 from .cert import CertificateCheckingThread
 from .config_file import Config
@@ -39,6 +41,11 @@ from .users_storage import User, UsersStorage, UserType
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
+
+SECURITY_CONFIG_FILE = "/etc/wb-security.conf"
+SERIAL_NUMBER_FILE = "/var/lib/wirenboard/short_sn.conf"
+CHECK_SERVER = "http://probe.wirenboard.com"
+MQTT_CHECK_TOPIC = "/rpc/v1/exp-check"
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -216,7 +223,7 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     )
 
 
-def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def auth_logout_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     if context.session is not None:
         context.sessions_storage.delete_session(context.session)
     cookie = cookies.SimpleCookie()
@@ -226,7 +233,9 @@ def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     return response_200(headers=[make_set_cookie_header(cookie)])
 
 
-def auth_who_am_i_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def auth_who_am_i_handler(
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
     if not context.users_storage.has_users():
         return response_404()
 
@@ -345,7 +354,7 @@ def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     return response_204()
 
 
-def get_users_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def get_users_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     users = map(
         lambda user: {
             "id": user.user_id,
@@ -376,13 +385,13 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
 
 
 def https_request_cert_handler(
-    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
     context.certificate_thread.request_certificate()
     return response_200()
 
 
-def get_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def get_https_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     return response_200(
         [["Content-type", "application/json"]],
         json.dumps({"enabled": context.certificate_thread.is_certificate_update_allowed()}),
@@ -455,7 +464,66 @@ def load_subfolder_items(folder_path: str) -> Optional[list]:
     return list(menu_items.values())
 
 
-def custom_menu_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def _mqtt_publish_check_result(payload: str) -> None:
+    try:
+        subprocess.run(
+            ["mosquitto_pub", "-t", MQTT_CHECK_TOPIC, "-m", payload, "-r"],
+            check=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):
+        logging.error("Failed to publish MQTT check result", exc_info=True)
+
+
+def _run_security_check(sn: str, url: str) -> None:
+    try:
+        with open(SECURITY_CONFIG_FILE, "r", encoding="utf-8") as fp:
+            config = json.load(fp)
+    except (OSError, json.JSONDecodeError):
+        logging.warning("Failed to read security config, treat check as disabled")
+        _mqtt_publish_check_result('{"result": "not found"}')
+        return
+
+    if not config.get("probeOpenPorts", False):
+        _mqtt_publish_check_result('{"result": "not found"}')
+        return
+
+    probe_url = f"{CHECK_SERVER}/probe/"
+    probe_data = {"serial": sn, "url": url}
+    logging.debug("Requesting probe server: %s with data %s", probe_url, probe_data)
+
+    try:
+        response = requests.post(
+            probe_url,
+            data=probe_data,
+            timeout=120,
+        )
+        response.raise_for_status()
+        data = response.json()
+    except (requests.RequestException, ValueError):
+        logging.error("Failed to get response from probe server", exc_info=True)
+        return
+
+    if data.get("result") == "cooldown":
+        _mqtt_publish_check_result('{"result": "not found"}')
+    else:
+        _mqtt_publish_check_result(json.dumps(data))
+
+
+def security_check_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    scheme = request.headers.get("X-Forwarded-Proto", "http")
+    host = request.headers.get("Host", "")
+    url = f"{scheme}://{host}/"
+
+    thread = threading.Thread(target=_run_security_check, args=(context.sn, url), daemon=True)
+    thread.start()
+
+    return response_200([["Content-type", "text/plain"]], "OK")
+
+
+def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
     menu_items = []
     with os.scandir(CUSTOM_MENU_FOLDER) as entries:
         for entry in sorted(entries, key=lambda e: e.name):
@@ -535,19 +603,20 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             response = response_500("%s\n%s" % (str(e), traceback.format_exc()))
         self.process_response(response)
 
-    def do_GET(self) -> None:
+    def do_GET(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
                 "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
+                "/api/check": RequestHandler(fn=security_check_handler),
                 "/api/https": RequestHandler(fn=get_https_handler),
                 "/ui/menu": RequestHandler(fn=custom_menu_handler),
             }
         )
 
-    def do_POST(self) -> None:
+    def do_POST(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
                 "/users": RequestHandler(fn=add_user_handler),
@@ -557,7 +626,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             }
         )
 
-    def do_PATCH(self) -> None:
+    def do_PATCH(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
                 "/users/*": RequestHandler(fn=update_user_handler),
@@ -565,7 +634,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             }
         )
 
-    def do_DELETE(self) -> None:
+    def do_DELETE(self) -> None:  # pylint: disable=invalid-name
         self.process_request({"/users/*": RequestHandler(fn=delete_user_handler)})
 
     def log_message(self, format: str, *args: Any) -> None:

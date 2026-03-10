@@ -243,7 +243,10 @@ class DeviceInfoHandlerTests(unittest.TestCase):
                 ["Access-Control-Allow-Origin", "*"],
             ],
         )
-        self.assertEqual(json.loads(response.body), {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid", "release_suite": "stable"})
+        self.assertEqual(
+            json.loads(response.body),
+            {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid", "release_suite": "stable"},
+        )
 
 
 class UpdateUserHandlerTest(unittest.TestCase):

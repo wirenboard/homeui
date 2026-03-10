@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.180.0) stable; urgency=medium
+
+  * Move security check handler to backend service
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 04 Mar 2026 14:10:00 +0400
+
 wb-mqtt-homeui (2.179.2) stable; urgency=medium
 
   * Fix channel editor semi sporadic

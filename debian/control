@@ -15,6 +15,7 @@ Build-Depends: debhelper (>= 10),
                python3-setuptools,
                python3-pytest,
                python3-bcrypt,
+               python3-requests,
                python3-requests-unixsocket,
                python3-cryptography
 Homepage: https://github.com/wirenboard/homeui
@@ -53,6 +54,7 @@ Depends: ${shlibs:Depends},
          nginx-extras,
          wb-utils (>= 4.24.0~~),
          python3-bcrypt,
+         python3-requests,
          python3-requests-unixsocket,
          python3-cryptography,
          wb-release-info
