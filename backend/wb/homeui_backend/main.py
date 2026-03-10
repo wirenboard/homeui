@@ -43,7 +43,6 @@ DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
 
 SECURITY_CONFIG_FILE = "/etc/wb-security.conf"
-SERIAL_NUMBER_FILE = "/var/lib/wirenboard/short_sn.conf"
 CHECK_SERVER = "http://probe.wirenboard.com"
 MQTT_CHECK_TOPIC = "/rpc/v1/exp-check"
 
