@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.183.1) stable; urgency=medium
+
+  * Fix login page scroll
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Mar 2026 14:17:00 +0300
+
 wb-mqtt-homeui (2.183.0) stable; urgency=medium
 
   * Update svg edit page
