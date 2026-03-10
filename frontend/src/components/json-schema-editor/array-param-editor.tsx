@@ -7,12 +7,12 @@ import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
-import { type ArrayStore, type ObjectStore, type Translator } from '@/stores/json-schema-editor';
+import { type ArrayStore, type ObjectStore, type PropertyStore, type Translator } from '@/stores/json-schema-editor';
 import type { ArrayEditorProps, EditorBuilderFunction } from './types';
 
 const ArrayItem = observer((
-  { index, store, translator, editorBuilder }:
-  { index: number; store: ArrayStore; translator: Translator; editorBuilder: EditorBuilderFunction }
+  { index, store, rootStore, translator, editorBuilder }:
+  { index: number; store: ArrayStore; rootStore: PropertyStore; translator: Translator; editorBuilder: EditorBuilderFunction }
 ) => {
   const { t } = useTranslation();
   const [isBodyVisible, setIsBodyVisible] = useState(true);
@@ -54,14 +54,14 @@ const ArrayItem = observer((
         toggleBody={() => setIsBodyVisible(!isBodyVisible)}
         actions={actions}
       >
-        {editorBuilder({ store: item, translator })}
+        {editorBuilder({ store: item, rootStore, translator })}
       </Card>
     );
   }
-  return editorBuilder({ store: item, translator });
+  return editorBuilder({ store: item, rootStore, translator });
 });
 
-const ArrayEditor = observer(({ store, translator, editorBuilder } : ArrayEditorProps) => {
+const ArrayEditor = observer(({ store, rootStore, translator, editorBuilder } : ArrayEditorProps) => {
   const { t } = useTranslation();
   if (!editorBuilder) {
     return null;
@@ -78,6 +78,7 @@ const ArrayEditor = observer(({ store, translator, editorBuilder } : ArrayEditor
           key={i}
           index={i}
           store={store}
+          rootStore={rootStore}
           translator={translator}
           editorBuilder={editorBuilder}
         />

@@ -1,4 +1,4 @@
-import { runInAction, makeObservable, observable } from 'mobx';
+import { runInAction, makeObservable, observable, action } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 
@@ -22,6 +22,9 @@ export class ItemStore {
     this.label = name;
 
     makeObservable(this, {
+      save: action,
+      load: action,
+      scan: action,
       isLoading: observable,
       error: observable,
     });
