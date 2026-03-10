@@ -61,7 +61,7 @@ def read_or_generate_private_key(file_name: str) -> rsa.RSAPrivateKey:
             if isinstance(private_key, rsa.RSAPrivateKey):
                 return private_key
             logging.debug("Data in %s is not RSA private key", file_name)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logging.debug("Error loading private key from file: %s", e)
 
     logging.debug("Generating private key")
@@ -285,7 +285,7 @@ class CertificateCheckingThread:
                     continue
                 state_on_update_fail = CertificateState.VALID
                 logging.debug("Certificate needs renewal")
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 logging.debug("Error checking certificate: %s", e)
 
             with self._allow_certificate_update_lock:
@@ -297,6 +297,6 @@ class CertificateCheckingThread:
                 update_cert(self.sn)
                 update_nginx_config(self.sn)
                 self._set_state(CertificateState.VALID)
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 logging.error("Error updating certificate: %s", e)
                 self._set_state(state_on_update_fail)

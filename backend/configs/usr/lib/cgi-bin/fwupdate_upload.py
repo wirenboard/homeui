@@ -65,7 +65,8 @@ def main():
     do_factory_reset = "factory_reset" in form.keys() and str(form.getvalue("factory_reset")) == "true"
     is_from_cloud = "from_cloud" in form.keys() and str(form.getvalue("from_cloud")) == "true"
     if do_factory_reset or do_expand_rootfs or is_from_cloud:
-        # we need to update-with-reboot in order to expand rootfs, so we're changing output directory to .wb_update
+        # we need to update-with-reboot in order to expand rootfs,
+        # so we're changing output directory to .wb_update
         rw_dir = "/mnt/data/.wb-update/"
         os.makedirs(rw_dir, exist_ok=True)
         # create flags file
@@ -94,5 +95,5 @@ def main():
 
 try:
     main()
-except Exception as e:
+except Exception as e:  # pylint: disable=broad-exception-caught
     _die(str(e))

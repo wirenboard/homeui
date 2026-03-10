@@ -95,7 +95,7 @@ def get_session(
             request.log_error("Cookie expired")
             return None
         return session
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         request.log_error("Failed to get user from cookie: %s", str(e))
     return None
 
@@ -107,7 +107,7 @@ def get_release_suite(release_file: str = "/usr/lib/wb-release") -> str:
             return res.get("SUITE", "")
     except FileNotFoundError:
         logging.warning("Release file %s not found", release_file)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logging.error("Failed to read release file %s: %s", release_file, e)
     return ""
 
@@ -203,7 +203,7 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
         validate_login_request(form)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
     user = context.users_storage.get_user_by_login(form.get("login"))
@@ -262,7 +262,7 @@ def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandler
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
         validate_add_user_request(form)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
     user_to_add = User(
@@ -301,7 +301,7 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     try:
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
     delete_user_sessions = False
@@ -401,7 +401,7 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
     try:
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
     https_enabled = form.get("enabled")
     if https_enabled is not None:
@@ -425,7 +425,7 @@ def load_json_file(json_file: str) -> Optional[Any]:
     try:
         with open(json_file, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logging.error("Failed to load JSON file %s: %s", json_file, e)
         return None
 
@@ -598,7 +598,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def process_request(self, handlers: dict[str, RequestHandler]) -> None:
         try:
             response = self._request_handler(handlers)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             response = response_500("%s\n%s" % (str(e), traceback.format_exc()))
         self.process_response(response)
 

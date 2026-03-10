@@ -18,7 +18,7 @@ def _die(msg=""):
 def check_for_form(form):
     try:
         form.keys()
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         _error("No form in request")
 
 
@@ -33,7 +33,8 @@ def main():
     check_for_form(form)
     check_for_confirmation(form)
 
-    # we need to update-with-reboot in order to factory reset, so we're changing output directory to .wb_update
+    # we need to update-with-reboot in order to factory reset,
+    # so we're changing output directory to .wb_update
     rw_dir = "/mnt/data/.wb-update/"
     os.makedirs(rw_dir, exist_ok=True)
 
@@ -47,5 +48,5 @@ def main():
 
 try:
     main()
-except Exception as e:
+except Exception as e:  # pylint: disable=broad-exception-caught
     _die(str(e))

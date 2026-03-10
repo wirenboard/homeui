@@ -38,18 +38,20 @@ class Config:
                     self.enable_https = enable_https
                     return
                 raise TypeError(f"Invalid {ENABLE_HTTPS_TAG} field type")
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             # Config file doesn't exist or is broken,
             # disable certificate update only if no users are configured
             if users_storage.has_users():
                 logging.error(
-                    "Enabling HTTPS since config file is missing or broken and there are configured users: %s",
+                    "Enabling HTTPS since config file is missing or " \
+                    "broken and there are configured users: %s",
                     str(e),
                 )
                 self.enable_https = True
                 return
             logging.error(
-                "Disabling HTTPS since config file is missing or broken and there are no configured users: %s",
+                "Disabling HTTPS since config file is missing or " \
+                "broken and there are no configured users: %s",
                 str(e),
             )
 
