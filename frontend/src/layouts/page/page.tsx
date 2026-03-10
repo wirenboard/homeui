@@ -6,7 +6,7 @@ import { Alert } from '@/components/alert';
 import { type AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import { Loader } from '@/components/loader';
+import { PageLoader } from './components/loader';
 import { type PageProps } from './types';
 import './styles.css';
 
@@ -20,6 +20,7 @@ export const PageLayout = ({
   isEditingTitle,
   editingTitlePlaceholder,
   isLoading = false,
+  loadingOptions,
   isHideHeader = false,
   actions,
   infoLink,
@@ -109,7 +110,7 @@ export const PageLayout = ({
 
         {hasRights && (
           isLoading
-            ? <Loader className="page-loader" />
+            ? <PageLoader options={loadingOptions} />
             : stickyHeader ? (
               <div className="page-container">{children}</div>
             ) : children
