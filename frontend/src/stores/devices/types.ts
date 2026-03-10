@@ -1,3 +1,5 @@
+import { type Option } from '@/components/dropdown';
+
 type Locale = 'ru' | 'en';
 
 export type NameTranslations = {
@@ -28,3 +30,5 @@ export interface CellMeta {
 export type ValueType = string | number | boolean | null;
 
 export type SendValueUpdate = (_deviceId: string, _controlId: string, _value: string) => Promise<void>;
+
+export type DeviceOption = Option<string>;
