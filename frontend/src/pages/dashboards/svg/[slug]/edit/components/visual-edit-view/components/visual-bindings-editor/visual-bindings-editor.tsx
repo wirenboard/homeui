@@ -120,7 +120,6 @@ const ClickBindingForm = observer(({
       }
     >
       <>
-        {}
         <RadioGroup
           layout="horizontal"
           options={[
