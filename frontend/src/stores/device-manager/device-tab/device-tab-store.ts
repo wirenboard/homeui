@@ -1,4 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
+import every from 'lodash/every';
+import intersection from 'lodash/intersection';
+import isEqual from 'lodash/isEqual';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import { type JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
@@ -121,7 +124,7 @@ export class DeviceTabStore {
     return !!this.loadingMessage;
   }
 
-  async _loadConfigFromDevice(portConfig?: PortTabConfig, isForce = false) {
+  async _loadConfigFromDevice(portConfig?: PortTabConfig, isForce = false, previousData?: JsonObject) {
     if (![ReadRegistersState.WaitFirstRead, ReadRegistersState.Manual].includes(this.readRegistersState.state)
       && !isForce) {
       return;
@@ -141,6 +144,19 @@ export class DeviceTabStore {
       this.readRegistersState.readError(err);
       return;
     }
+
+    if (isForce && previousData) {
+      const isEqualByCommonFields = (a: JsonObject, b: JsonObject)=> {
+        const commonKeys = intersection(Object.keys(a), Object.keys(b));
+        return every(commonKeys, (key: string) => isEqual(a[key], b[key]));
+      };
+
+      const isDirty = !isEqualByCommonFields(configFromDevice.parameters, previousData);
+      if (isDirty && !confirm(i18n.t('device-manager.labels.uncommitted-settings'))) {
+        return;
+      }
+    }
+
     this.readRegistersState.successfulRead(
       this.deviceType,
       configFromDevice.model,
@@ -202,9 +218,7 @@ export class DeviceTabStore {
   }
 
   async loadContent(portConfig?: PortTabConfig, isForce: boolean = false) {
-    if (isForce && this.isDirty && !confirm(i18n.t('device-manager.labels.uncommitted-settings'))) {
-      return;
-    }
+    let previousData = { ...this.editedData };
     if (this.isUnknownType || this.withSubdevices) {
       this._clearLoading();
       return;
@@ -218,7 +232,7 @@ export class DeviceTabStore {
         });
       }
       if (portConfig) {
-        await this._loadConfigFromDevice(portConfig, isForce);
+        await this._loadConfigFromDevice(portConfig, isForce, previousData);
       }
     } catch (err) {
       this._setError(err);
