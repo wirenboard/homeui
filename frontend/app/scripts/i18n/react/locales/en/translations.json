@@ -822,7 +822,8 @@
          "required": "This field is required"
       },
       "labels": {
-         "select-params": "Add or remove parameters"
+         "select-params": "Add or remove parameters",
+         "dali-mask": "MASK (do not change)"
       }
    },
    "dali": {

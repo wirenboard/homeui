@@ -7,6 +7,7 @@ dist
 .sass-cache
 npm-debug.log
 .tern-port
+.claude
 
 debian/files
 debian/wb-mqtt-homeui.debhelper.log

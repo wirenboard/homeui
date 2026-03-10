@@ -14,6 +14,7 @@ import {
 
 export interface EditorBuilderFunctionProps {
   store: PropertyStore;
+  rootStore: PropertyStore;
   paramId?: string;
   translator: Translator;
   inputId?: string;
@@ -50,6 +51,27 @@ export interface NumberEditorProps {
   hideError?: boolean;
 }
 
+export interface DaliLevelSliderEditorProps {
+  store: NumberStore;
+  rootStore: PropertyStore;
+  inputId?: string;
+}
+
+export interface DaliColorTemperatureSliderEditorProps {
+  store: NumberStore;
+  inputId?: string;
+}
+
+export interface DaliRGBEditorProps {
+  store: StringStore;
+  inputId?: string;
+}
+
+export interface DaliWhiteEditorProps {
+  store: NumberStore;
+  inputId?: string;
+}
+
 export interface StringEditorProps {
   store: StringStore;
   inputId?: string;
@@ -61,6 +83,7 @@ export interface StringEditorProps {
 
 export interface ObjectEditorProps {
   store: ObjectStore;
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
   isTopLevel?: boolean;
@@ -68,6 +91,7 @@ export interface ObjectEditorProps {
 
 export interface ArrayEditorProps {
   store: ArrayStore;
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
 }
@@ -120,6 +144,7 @@ export interface OptionalParamsSelectDialogProps {
 
 export interface TableCellWithEditorProps {
   paramStore: ObjectParamStore;
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder: EditorBuilderFunction;
   width?: number;
