@@ -42,7 +42,9 @@
          "delete-description": "Are you sure you want to delete \"{{name}}\" dashboard?"
       },
       "errors": {
-         "duplicate": "Duplicate dashboard ids are not allowed"
+         "duplicate": "Duplicate dashboard ids are not allowed",
+         "save": "Config saving failed",
+         "overflow": "Config saving failed. Try to clear page's localStorage and restart the browser. If problem remains, try to reduce overall size of SVG images."
       }
    },
    "navigation": {
@@ -279,7 +281,6 @@
          "channel": "Channel",
          "value": "Value",
          "tag-name": "Tag type: {{tag}}",
-         "confirm-remove": "Do you really want to remove this dashboard?",
          "condition": "Condition",
          "select-channel-placeholder": "Select channel",
          "on": "Value on",
@@ -311,6 +312,10 @@
          "to-dashboards-list": "Dashboards list",
          "preview": "Preview",
          "remove": "Remove"
+      },
+      "prompt": {
+         "confirm-remove": "Dashboard delete",
+         "delete-dashboard": "Are you sure you want to delete dashboard \"{{name}}\"?"
       }
    },
    "validator": {

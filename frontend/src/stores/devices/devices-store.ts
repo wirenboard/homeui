@@ -3,7 +3,7 @@ import type { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
-import type { ValueType } from './types';
+import type { DeviceOption, ValueType } from './types';
 
 export default class DevicesStore {
   public devices: Map<string, Device> = new Map();
@@ -300,7 +300,7 @@ export default class DevicesStore {
     });
   }
 
-  get topics() {
+  get topics(): DeviceOption[] {
     return Array.from(this.devices).map(([_deviceId, device]) => ({
       label: device.name,
       options: device.cellIds.reduce((cells, c) => {

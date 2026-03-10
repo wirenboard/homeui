@@ -8,7 +8,8 @@
     "test": "jest test/react",
     "start": "npx webpack serve --history-api-fallback --client-progress --open",
     "lint": "npx eslint --cache --cache-location .eslintcache",
-    "lint:fix": "npx eslint --fix"
+    "lint:fix": "npx eslint --fix",
+    "tsc": "tsc --noEmit"
   },
   "repository": {
     "type": "git",

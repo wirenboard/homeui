@@ -26,7 +26,6 @@ import 'angular-spinkit/build/angular-spinkit.min.css';
 import '../styles/css/device-manager.css';
 import '../styles/css/scan.css';
 import '../styles/css/network-connections.css';
-import '../styles/css/svg-edit-page.css';
 import '../styles/css/mbgate.css';
 
 // homeui modules: sevices
@@ -37,14 +36,11 @@ import configEditorProxyService from './services/configEditorProxy';
 import historyProxyService from './services/historyProxy';
 import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
-import gotoDefStartService from './services/gotoDefStart';
 import spinnerService from './services/spinner';
 import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
 import deviceDataService from './services/devicedata';
-import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
-import userAgentFactory from './services/userAgent.factory';
 import rolesFactoryService from './services/roles.factory';
 import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
@@ -113,7 +109,6 @@ const module = angular
   ])
   .value('historyMaxPoints', 1000)
   .value('logsMaxRows', 50)
-  .value('webuiConfigPath', '/etc/wb-webui.conf')
   .value('configSaveDebounceMs', 300);
 
 // Register services
@@ -123,7 +118,6 @@ module
   .factory('ConfigEditorProxy', configEditorProxyService)
   .factory('HistoryProxy', historyProxyService)
   .factory('LogsProxy', logsProxyService)
-  .factory('gotoDefStart', gotoDefStartService)
   .factory('Spinner', spinnerService)
   .value('forceBeforeUnloadConfirmationForTests', false)
   .factory('PageState', pageStateService)
@@ -137,7 +131,6 @@ module
   .factory('DaliProxy', daliProxyService)
 
   .service('handleData', handleDataService)
-  .service('userAgentFactory', userAgentFactory)
   .service('rolesFactory', rolesFactoryService)
   .service('historyUrlService', historyUrlService)
 
@@ -145,7 +138,6 @@ module
     'ngInject';
     // make sure DeviceData is loaded at the startup so no MQTT messages are missed
   })
-  .factory('uiConfig', uiConfigService)
   .filter('hilite', hiliteService);
 
 // Register controllers
@@ -274,10 +266,8 @@ const realApp = angular
       mqttClient,
       ConfigEditorProxy,
       EditorProxy,
-      webuiConfigPath,
       errors,
       whenMqttReady,
-      uiConfig,
       $timeout,
       configSaveDebounceMs,
       ngToast,
@@ -306,7 +296,7 @@ const realApp = angular
         });
       });
 
-      $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
+      $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy);
       $rootScope.devicesStore = new DevicesStore(mqttClient);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
 
@@ -319,10 +309,8 @@ const realApp = angular
         $rootScope,
         mqttClient,
         ConfigEditorProxy,
-        webuiConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
       ) {
         return function (loginData) {
           if (loginData.url) {
@@ -342,7 +330,6 @@ const realApp = angular
               $rootScope.rulesStore.subscribeRuleDebugging();
               return $rootScope.dashboardsStore.loadData(true);
             })
-            .then(result => uiConfig.ready(result))
             .catch(errors.catch('app.errors.load'));
 
           return true;
@@ -363,10 +350,8 @@ const realApp = angular
         $rootScope,
         mqttClient,
         ConfigEditorProxy,
-        webuiConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
       );
 
       //.........................................................................
@@ -392,36 +377,6 @@ const realApp = angular
       }
       $translate.use(language);
       tmhDynamicLocale.set(language);
-
-      var firstBootstrap = true;
-
-      // Watch for WebUI config changes
-      $rootScope.$watch(
-        () => uiConfig.filtered(),
-        async (newData, oldData) => {
-          if (angular.equals(newData, oldData)) {
-            return;
-          }
-          if (firstBootstrap) {
-            firstBootstrap = false;
-            return;
-          }
-          console.log('new data: %o', newData);
-          errors.hideError();
-          await ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
-            .then(() => {
-              console.log('config saved');
-            })
-            .catch(err => {
-              if (err.name === 'QuotaExceededError') {
-                errors.showError('app.errors.overflow');
-              } else {
-                errors.showError('app.errors.save', err);
-              }
-            });
-        },
-        true
-      );
 
       whenMqttReady()
         .then(() => {

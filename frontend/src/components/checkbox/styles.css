@@ -5,6 +5,7 @@
     gap: 5px;
     margin: 0;
     cursor: pointer;
+    accent-color: var(--primary-color);
 }
 
 .wb-checkbox input:focus {

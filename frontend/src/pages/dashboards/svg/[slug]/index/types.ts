@@ -1,4 +1,4 @@
-import { type SvgDashboardPageStore } from '@/pages/dashboards/svg/[slug]';
+import { type SvgDashboardPageStore } from '@/pages/dashboards/svg/[slug]/index';
 import { type DashboardsStore } from '@/stores/dashboards';
 import { type DevicesStore } from '@/stores/devices';
 

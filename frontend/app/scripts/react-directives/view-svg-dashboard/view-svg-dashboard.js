@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import SvgDashboardPage, { SvgDashboardPageStore } from '@/pages/dashboards/svg/[slug]';
+import SvgDashboardPage, { SvgDashboardPageStore } from '@/pages/dashboards/svg/[slug]/index';
 import { setReactLocale } from '~/react-directives/locale';
 
 export default function svgDashboardDirective($rootScope) {
