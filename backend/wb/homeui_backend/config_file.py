@@ -43,14 +43,14 @@ class Config:
             # disable certificate update only if no users are configured
             if users_storage.has_users():
                 logging.error(
-                    "Enabling HTTPS since config file is missing or " \
+                    "Enabling HTTPS since config file is missing or "
                     "broken and there are configured users: %s",
                     str(e),
                 )
                 self.enable_https = True
                 return
             logging.error(
-                "Disabling HTTPS since config file is missing or " \
+                "Disabling HTTPS since config file is missing or "
                 "broken and there are no configured users: %s",
                 str(e),
             )

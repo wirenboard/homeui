@@ -599,7 +599,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         try:
             response = self._request_handler(handlers)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            response = response_500("%s\n%s" % (str(e), traceback.format_exc()))
+            response = response_500(f"{e}\n{traceback.format_exc()}")
         self.process_response(response)
 
     def do_GET(self) -> None:  # pylint: disable=invalid-name
@@ -636,7 +636,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_DELETE(self) -> None:  # pylint: disable=invalid-name
         self.process_request({"/users/*": RequestHandler(fn=delete_user_handler)})
 
-    def log_message(self, format: str, *args: Any) -> None:
+    def log_message(self, format: str, *args: Any) -> None:  # pylint: disable=redefined-builtin
         if self.enable_debug:
             super().log_message(format, *args)
 
