@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useId } from 'react';
-import { type Translator, type ObjectParamStore } from '@/stores/json-schema-editor';
+import { type Translator, type ObjectParamStore, type PropertyStore } from '@/stores/json-schema-editor';
 import { EditorWrapper } from './editor-wrapper';
 import type { ObjectEditorProps, EditorBuilderFunction } from './types';
 
@@ -11,10 +11,12 @@ const shouldRenderObjectParamEditor = (param: ObjectParamStore) => {
 
 const ObjectParamEditor = ({
   param,
+  rootStore,
   translator,
   editorBuilder,
 }: {
   param: ObjectParamStore;
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder: EditorBuilderFunction;
 }) => {
@@ -31,6 +33,7 @@ const ObjectParamEditor = ({
     >
       {editorBuilder({
         store: param.store,
+        rootStore,
         paramId: param.key,
         translator,
         inputId,
@@ -44,10 +47,12 @@ const ObjectParamEditor = ({
 
 const ObjectParamEditorRow = ({
   params,
+  rootStore,
   translator,
   editorBuilder,
 }: {
   params: ObjectParamStore[];
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder: EditorBuilderFunction;
 }) => {
@@ -55,6 +60,7 @@ const ObjectParamEditorRow = ({
     return (
       <ObjectParamEditor
         param={params[0]}
+        rootStore={rootStore}
         translator={translator}
         editorBuilder={editorBuilder}
       />
@@ -66,6 +72,7 @@ const ObjectParamEditorRow = ({
         <ObjectParamEditor
           key={p.key}
           param={p}
+          rootStore={rootStore}
           translator={translator}
           editorBuilder={editorBuilder}
         />
@@ -74,7 +81,7 @@ const ObjectParamEditorRow = ({
   );
 };
 
-const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
+const makeLayout = (params: ObjectParamStore[], rootStore: PropertyStore, translator, editorBuilder) => {
   let res = [];
   let elements = [];
   let slotsInRow = 0;
@@ -90,6 +97,7 @@ const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
           <ObjectParamEditorRow
             key={elements.map((e) => e.key).join('-')}
             params={elements}
+            rootStore={rootStore}
             translator={translator}
             editorBuilder={editorBuilder}
           />
@@ -104,6 +112,7 @@ const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
       <ObjectParamEditorRow
         key={elements.map((e) => e.key).join('-')}
         params={elements}
+        rootStore={rootStore}
         translator={translator}
         editorBuilder={editorBuilder}
       />
@@ -112,7 +121,7 @@ const makeLayout = (params: ObjectParamStore[], translator, editorBuilder) => {
   return res;
 };
 
-const ObjectEditor = observer(({ store, translator, editorBuilder, isTopLevel } : ObjectEditorProps) => {
+const ObjectEditor = observer(({ store, rootStore, translator, editorBuilder, isTopLevel } : ObjectEditorProps) => {
   return (
     <div
       className={
@@ -122,7 +131,7 @@ const ObjectEditor = observer(({ store, translator, editorBuilder, isTopLevel } 
         )
       }
     >
-      {editorBuilder && makeLayout(store.params, translator, editorBuilder)}
+      {editorBuilder && makeLayout(store.params, rootStore, translator, editorBuilder)}
     </div>
   );
 });

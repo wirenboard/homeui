@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 function makeTranslatedInfoEditor() {
   return class extends JSONEditor.AbstractEditor {
