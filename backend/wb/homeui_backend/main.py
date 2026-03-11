@@ -505,6 +505,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     enable_debug: bool = False
     sn: str = ""
     certificate_thread: CertificateCheckingThread
+    security_check_thread: SecurityCheckingThread
     rate_limiter: RateLimiter
     config: Config
 
