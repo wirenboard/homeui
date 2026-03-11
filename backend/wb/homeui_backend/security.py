@@ -40,7 +40,7 @@ def run_security_check(sn: str, url: str) -> None:
         return
 
     probe_data = {"serial": sn, "url": url}
-    logging.debug("Requesting probe server: %s with data %s", probe_url, probe_data)
+    logging.debug("Requesting probe server: %s with data %s", PROBE_URL, probe_data)
 
     try:
         response = requests.post(
@@ -83,13 +83,13 @@ class SecurityCheckingThread:
         while True:
             try:
                 url = self._queue.get(timeout=1)
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 continue
 
             try:
                 logging.debug("Picked up security check for %s", url)
                 run_security_check(self.sn, url)
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 logging.exception("Unhandled exception in security check")
             finally:
                 with self._pending_lock:
