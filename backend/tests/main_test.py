@@ -23,11 +23,7 @@ from wb.homeui_backend.main import (
     security_check_handler,
     update_user_handler,
 )
-from wb.homeui_backend.security import (
-    MOSQUITTO_PUBLISH_TIMEOUT,
-    MQTT_CHECK_TOPIC,
-    run_security_check,
-)
+from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
 
@@ -444,18 +440,14 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                 mock_response = MagicMock()
                 mock_response.json.return_value = {"result": "cooldown"}
                 mock_post.return_value = mock_response
-                with patch("wb.homeui_backend.security.subprocess.run") as mock_subproc:
+                with patch("wb.homeui_backend.security.MQTTClient") as mock_mqtt_client_cls:
+                    mock_client = MagicMock()
+                    mock_mqtt_client_cls.return_value = mock_client
+
                     run_security_check("awb8test", "https://example.com/")
 
-                    mock_subproc.assert_called_once_with(
-                        [
-                            "mosquitto_pub",
-                            "-t",
-                            MQTT_CHECK_TOPIC,
-                            "-m",
-                            '{"result": "not found"}',
-                            "-r",
-                        ],
-                        check=True,
-                        timeout=MOSQUITTO_PUBLISH_TIMEOUT,
+                    mock_client.start.assert_called_once()
+                    mock_client.publish.assert_called_once_with(
+                        MQTT_CHECK_TOPIC, '{"result": "not found"}', True
                     )
+                    mock_client.stop.assert_called_once()

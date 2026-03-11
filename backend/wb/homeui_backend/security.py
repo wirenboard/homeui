@@ -1,29 +1,35 @@
 import json
 import logging
-import subprocess
 import threading
+from contextlib import contextmanager
 from queue import Empty, Queue
 from typing import Set
 
 import requests
+from wb_common.mqtt_client import MQTTClient
 
 MQTT_CHECK_TOPIC = "/rpc/v1/exp-check"
 PROBE_URL = "http://probe.wirenboard.com/probe/"
 SECURITY_CONFIG_FILE = "/etc/wb-security.conf"
 
-MOSQUITTO_PUBLISH_TIMEOUT = 10
 PROBE_REQUEST_TIMEOUT = 120
+
+
+@contextmanager
+def mqtt_client(name):
+    client = MQTTClient(name)
+    client.start()
+    yield client
+    client.stop()
 
 
 def mqtt_publish_check_result(payload: str) -> None:
     try:
-        subprocess.run(
-            ["mosquitto_pub", "-t", MQTT_CHECK_TOPIC, "-m", payload, "-r"],
-            check=True,
-            timeout=MOSQUITTO_PUBLISH_TIMEOUT,
-        )
-    except (OSError, subprocess.SubprocessError):
-        logging.error("Failed to publish MQTT check result", exc_info=True)
+        with mqtt_client("wb-homeui-backend") as client:
+            m_info = client.publish(MQTT_CHECK_TOPIC, payload, True)
+            m_info.wait_for_publish()
+    except ConnectionError:
+        logging.error("MQTT client failed to connect, skipping publish")
 
 
 def run_security_check(sn: str, url: str) -> None:
@@ -77,7 +83,6 @@ class SecurityCheckingThread:
             self._pending.add(url)
             self._queue.put(url)
             logging.debug("Enqueued security check for %s", url)
-            return
 
     def run(self) -> None:
         while True:
