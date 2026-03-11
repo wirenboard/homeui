@@ -7,9 +7,9 @@ from typing import Set
 
 import requests
 
-SECURITY_CONFIG_FILE = "/etc/wb-security.conf"
-CHECK_SERVER = "http://probe.wirenboard.com"
 MQTT_CHECK_TOPIC = "/rpc/v1/exp-check"
+PROBE_URL = "http://probe.wirenboard.com/probe/"
+SECURITY_CONFIG_FILE = "/etc/wb-security.conf"
 
 MOSQUITTO_PUBLISH_TIMEOUT = 10
 PROBE_REQUEST_TIMEOUT = 120
@@ -39,13 +39,12 @@ def run_security_check(sn: str, url: str) -> None:
         mqtt_publish_check_result('{"result": "not found"}')
         return
 
-    probe_url = f"{CHECK_SERVER}/probe/"
     probe_data = {"serial": sn, "url": url}
     logging.debug("Requesting probe server: %s with data %s", probe_url, probe_data)
 
     try:
         response = requests.post(
-            probe_url,
+            PROBE_URL,
             data=probe_data,
             timeout=PROBE_REQUEST_TIMEOUT,
         )

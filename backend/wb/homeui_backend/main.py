@@ -6,7 +6,6 @@ import logging
 import os
 import socketserver
 import subprocess
-import threading
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
