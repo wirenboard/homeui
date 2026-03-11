@@ -7,12 +7,19 @@ export interface ErrorInfo {
   onClose?: () => void;
 }
 
+export interface LoadingOptions {
+  loader?: 'spinner' | 'progress';
+  label?: string;
+  progress?: number;
+}
+
 export interface PageProps {
   title: string;
   isEditingTitle?: boolean;
   editingTitlePlaceholder?: string;
   hasRights: boolean;
   isLoading?: boolean;
+  loadingOptions?: LoadingOptions;
   isHideHeader?: boolean;
   stickyHeader?: boolean;
   actions?: ReactElement;
