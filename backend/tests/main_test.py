@@ -35,6 +35,7 @@ class DeleteUserHandlerTest(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
             session=Session(
                 "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
             ),
@@ -89,6 +90,7 @@ class GetUsersHandlerTests(unittest.TestCase):
             users_storage=users_storage,
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
             session=session,
         )
 
@@ -114,6 +116,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=self.sessions_storage_mock,
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_no_required_user_type_no_user_without_users(self):
@@ -183,6 +186,7 @@ class WhoAmIHandlerTests(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_with_authenticated_user(self):
@@ -224,6 +228,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
             users_storage=MagicMock(),
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_device_info_handler(self):
@@ -231,6 +236,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         self.context.sn = "ABC123"
         self.context.certificate_thread = MagicMock()
         self.context.certificate_thread.get_certificate_state.return_value = CertificateState.VALID
+        self.context.security_check_thread = MagicMock()
         mock_file = mock_open(read_data="SUITE=stable\n")
         with patch("wb.homeui_backend.main.open", mock_file):
             response = device_info_handler(self.request, self.context)
@@ -259,6 +265,7 @@ class UpdateUserHandlerTest(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=self.sessions_storage_mock,
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_bad_url(self):
