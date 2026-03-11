@@ -610,7 +610,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
-                "/api/check": RequestHandler(fn=security_check_handler),
+                "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
                 "/api/https": RequestHandler(fn=get_https_handler),
                 "/ui/menu": RequestHandler(fn=custom_menu_handler),
             }
