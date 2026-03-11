@@ -513,8 +513,9 @@ def security_check_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
     scheme = request.headers.get("X-Forwarded-Proto", "http")
-    host = request.headers.get("Host", "")
-    url = f"{scheme}://{host}/"
+    host = request.headers.get("X-Forwarded-Host", "")
+    port = request.headers.get("X-Forwarded-Port", 80)
+    url = f"{scheme}://{host}:{port}/"
 
     thread = threading.Thread(target=_run_security_check, args=(context.sn, url), daemon=True)
     thread.start()
