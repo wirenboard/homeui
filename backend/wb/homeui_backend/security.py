@@ -2,7 +2,7 @@ import json
 import logging
 import subprocess
 import threading
-from queue import Queue
+from queue import Empty, Queue
 from typing import Set
 
 import requests
@@ -83,7 +83,7 @@ class SecurityCheckingThread:
         while True:
             try:
                 url = self._queue.get(timeout=1)
-            except Exception:  # pylint: disable=broad-exception-caught
+            except Empty:
                 continue
 
             try:
