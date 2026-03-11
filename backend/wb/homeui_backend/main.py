@@ -34,7 +34,7 @@ from .http_response import (
     response_500,
 )
 from .rate_limiter import RateLimiter
-from .security import run_security_check
+from .security import SecurityCheckingThread
 from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
 
@@ -157,6 +157,7 @@ class WebRequestHandlerContext:
     users_storage: UsersStorage
     sessions_storage: SessionsStorage
     certificate_thread: CertificateCheckingThread
+    security_check_thread: SecurityCheckingThread
     session: Optional[Session] = None
 
 
@@ -467,8 +468,7 @@ def security_check_handler(
     port = request.headers.get("X-Forwarded-Port", 80)
     url = f"{scheme}://{host}:{port}/"
 
-    thread = threading.Thread(target=run_security_check, args=(context.sn, url), daemon=True)
-    thread.start()
+    context.security_check_thread.request_check(url)
 
     return response_200([["Content-type", "text/plain"]], "OK")
 
@@ -542,6 +542,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 self.users_storage,
                 self.sessions_storage,
                 self.certificate_thread,
+                self.security_check_thread,
                 session,
             ),
         )
@@ -640,6 +641,7 @@ def main():
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn, WebRequestHandler.config.is_https_enabled()
     )
+    WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
 
     try:
