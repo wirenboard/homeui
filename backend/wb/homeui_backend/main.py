@@ -17,7 +17,6 @@ from typing import Any, Callable, Optional
 from urllib.parse import urlparse
 
 import bcrypt
-import requests
 
 from .cert import CertificateCheckingThread
 from .config_file import Config
@@ -35,16 +34,13 @@ from .http_response import (
     response_500,
 )
 from .rate_limiter import RateLimiter
+from .security import run_security_check
 from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
 
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
-
-SECURITY_CONFIG_FILE = "/etc/wb-security.conf"
-CHECK_SERVER = "http://probe.wirenboard.com"
-MQTT_CHECK_TOPIC = "/rpc/v1/exp-check"
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -463,52 +459,6 @@ def load_subfolder_items(folder_path: str) -> Optional[list]:
     return list(menu_items.values())
 
 
-def _mqtt_publish_check_result(payload: str) -> None:
-    try:
-        subprocess.run(
-            ["mosquitto_pub", "-t", MQTT_CHECK_TOPIC, "-m", payload, "-r"],
-            check=True,
-            timeout=10,
-        )
-    except (OSError, subprocess.SubprocessError):
-        logging.error("Failed to publish MQTT check result", exc_info=True)
-
-
-def _run_security_check(sn: str, url: str) -> None:
-    try:
-        with open(SECURITY_CONFIG_FILE, "r", encoding="utf-8") as fp:
-            config = json.load(fp)
-    except (OSError, json.JSONDecodeError):
-        logging.warning("Failed to read security config, treat check as disabled")
-        _mqtt_publish_check_result('{"result": "not found"}')
-        return
-
-    if not config.get("probeOpenPorts", False):
-        _mqtt_publish_check_result('{"result": "not found"}')
-        return
-
-    probe_url = f"{CHECK_SERVER}/probe/"
-    probe_data = {"serial": sn, "url": url}
-    logging.debug("Requesting probe server: %s with data %s", probe_url, probe_data)
-
-    try:
-        response = requests.post(
-            probe_url,
-            data=probe_data,
-            timeout=120,
-        )
-        response.raise_for_status()
-        data = response.json()
-    except (requests.RequestException, ValueError):
-        logging.error("Failed to get response from probe server", exc_info=True)
-        return
-
-    if data.get("result") == "cooldown":
-        _mqtt_publish_check_result('{"result": "not found"}')
-    else:
-        _mqtt_publish_check_result(json.dumps(data))
-
-
 def security_check_handler(
     request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
@@ -517,7 +467,7 @@ def security_check_handler(
     port = request.headers.get("X-Forwarded-Port", 80)
     url = f"{scheme}://{host}:{port}/"
 
-    thread = threading.Thread(target=_run_security_check, args=(context.sn, url), daemon=True)
+    thread = threading.Thread(target=run_security_check, args=(context.sn, url), daemon=True)
     thread.start()
 
     return response_200([["Content-type", "text/plain"]], "OK")
