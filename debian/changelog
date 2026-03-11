@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.184.0) stable; urgency=medium
+wb-mqtt-homeui (2.185.0) stable; urgency=medium
 
   * Move security check handler to backend service
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 10 Mar 2026 18:10:00 +0400
+
+wb-mqtt-homeui (2.184.0) stable; urgency=medium
+
+  * Add page loader options
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Mar 2026 18:01:00 +0300
 
 wb-mqtt-homeui (2.183.2) stable; urgency=medium
 
