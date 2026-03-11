@@ -20,8 +20,10 @@ from wb.homeui_backend.main import (
     delete_user_handler,
     device_info_handler,
     get_users_handler,
+    security_check_handler,
     update_user_handler,
 )
+from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
 
@@ -405,3 +407,51 @@ class UpdateUserHandlerTest(unittest.TestCase):
                 User("1", "user1", "hashed_password", UserType.ADMIN, False)
             )
             self.assertEqual(response, response_200())
+
+
+class SecurityCheckHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock(spec=BaseHTTPRequestHandler)
+        self.request.headers = {
+            "X-Forwarded-Proto": "https",
+            "X-Forwarded-Host": "example.com",
+            "X-Forwarded-Port": "443",
+        }
+        self.context = WebRequestHandlerContext(
+            sn="awb8test",
+            users_storage=MagicMock(),
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            session=None,
+        )
+
+    def test_security_check_enqueued_and_returns_200(self):
+        response = security_check_handler(self.request, self.context)
+        self.assertEqual(response.status, 200)
+
+        expected_url = "https://example.com:443/"
+        self.context.security_check_thread.request_check.assert_called_once_with(expected_url)
+
+    def test_run_security_check_cooldown_publishes_not_found(self):
+        config = json.dumps({"probeOpenPorts": True})
+        with patch("wb.homeui_backend.security.open", mock_open(read_data=config)):
+            with patch("wb.homeui_backend.security.requests.post") as mock_post:
+                mock_response = MagicMock()
+                mock_response.json.return_value = {"result": "cooldown"}
+                mock_post.return_value = mock_response
+                with patch("wb.homeui_backend.security.subprocess.run") as mock_subproc:
+                    run_security_check("awb8test", "https://example.com/")
+
+                    mock_subproc.assert_called_once_with(
+                        [
+                            "mosquitto_pub",
+                            "-t",
+                            MQTT_CHECK_TOPIC,
+                            "-m",
+                            '{"result": "not found"}',
+                            "-r",
+                        ],
+                        check=True,
+                        timeout=10,
+                    )
