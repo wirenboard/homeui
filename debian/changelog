@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb101) stable; urgency=medium
+
+  * Fix erroneous installation of old versions (because of webui.schema.json move)
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Tue, 10 Mar 2026 16:01:34 +0300
+
 wb-mqtt-homeui (2.172.0-wb100) stable; urgency=medium
 
   * Fix channel editor semi sporadic
