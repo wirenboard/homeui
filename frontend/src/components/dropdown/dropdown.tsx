@@ -30,6 +30,7 @@ export const Dropdown = ({
   ariaLabel,
   isDisabled,
   isInvalid,
+  isClearable = false,
   isSearchable = false,
   isButton,
   minWidth = '150px',
@@ -76,7 +77,7 @@ export const Dropdown = ({
       placeholder={placeholder || ''}
       isDisabled={isDisabled}
       isSearchable={isSearchable}
-      isClearable={false}
+      isClearable={isClearable}
       menuPortalTarget={document.body}
       menuPlacement="auto"
       maxMenuHeight={240}

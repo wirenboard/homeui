@@ -21,7 +21,7 @@ export const BooleanField = ({
       descriptionId={descriptionId}
       errorId={errorId}
     >
-      <div className="form-fieldSwitch">
+      <label className="form-fieldSwitch">
         <Switch
           id={inputId}
           value={value}
@@ -30,7 +30,7 @@ export const BooleanField = ({
           onChange={onChange}
         />
         <span>{title}</span>
-      </div>
+      </label>
     </FormField>
   );
 };

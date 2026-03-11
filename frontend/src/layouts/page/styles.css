@@ -78,11 +78,6 @@
     gap: 12px;
 }
 
-.page-loader {
-    margin: 0 auto;
-    display: flex;
-}
-
 .page-container {
     max-height: 100%;
     overflow: auto;

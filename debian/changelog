@@ -1,8 +1,32 @@
-wb-mqtt-homeui (2.183.0) stable; urgency=medium
+wb-mqtt-homeui (2.185.0) stable; urgency=medium
 
   * Device editor — add reread config button
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Mar 2026 13:17:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 11 Mar 2026 11:20:00 +0300
+
+wb-mqtt-homeui (2.184.0) stable; urgency=medium
+
+  * Add page loader options
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Mar 2026 18:01:00 +0300
+
+wb-mqtt-homeui (2.183.2) stable; urgency=medium
+
+  * Fix erroneous installation of old versions (because of webui.schema.json move)
+
+ -- Vladimir Romanov <v.romanov@wirenboard.com>  Tue, 10 Mar 2026 16:01:34 +0300
+
+wb-mqtt-homeui (2.183.1) stable; urgency=medium
+
+  * Fix login page scroll
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Mar 2026 14:17:00 +0300
+
+wb-mqtt-homeui (2.183.0) stable; urgency=medium
+
+  * Update svg edit page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 10 Mar 2026 14:05:00 +0300
 
 wb-mqtt-homeui (2.182.1) stable; urgency=medium
 

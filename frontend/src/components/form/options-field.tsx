@@ -10,7 +10,9 @@ export const OptionsField = ({
   description,
   error,
   options,
+  placeholder,
   isDisabled,
+  isClearable,
   isSearchable,
   onChange,
 }: OptionsFieldProps) => {
@@ -29,9 +31,12 @@ export const OptionsField = ({
         id={inputId}
         value={value}
         options={options}
+        placeholder={placeholder}
+        isClearable={isClearable}
         isDisabled={isDisabled}
         isSearchable={isSearchable}
-        onChange={(option) => onChange(option.value)}
+        isInvalid={!!error}
+        onChange={(option) => onChange(option?.value)}
       />
     </FormField>
   );
