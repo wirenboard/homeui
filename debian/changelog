@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.184.1) stable; urgency=medium
+
+  * Fix footer position
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 11 Mar 2026 14:24:00 +0300
+
 wb-mqtt-homeui (2.184.0) stable; urgency=medium
 
   * Add page loader options
