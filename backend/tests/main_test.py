@@ -23,7 +23,11 @@ from wb.homeui_backend.main import (
     security_check_handler,
     update_user_handler,
 )
-from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
+from wb.homeui_backend.security import (
+    MOSQUITTO_PUBLISH_TIMEOUT,
+    MQTT_CHECK_TOPIC,
+    run_security_check,
+)
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
 
@@ -453,5 +457,5 @@ class SecurityCheckHandlerTest(unittest.TestCase):
                             "-r",
                         ],
                         check=True,
-                        timeout=10,
+                        timeout=MOSQUITTO_PUBLISH_TIMEOUT,
                     )
