@@ -12,7 +12,9 @@ class UserType(Enum):
 
 
 class User:
-    def __init__(self, user_id: str, login: str, pwd_hash: str, user_type: UserType, autologin: bool):
+    def __init__(
+        self, user_id: str, login: str, pwd_hash: str, user_type: UserType, autologin: bool
+    ):  # pylint: disable=too-many-arguments
         self.user_id: str = user_id
         self.login: str = login
         self.pwd_hash: str = pwd_hash

@@ -1,8 +1,26 @@
-wb-mqtt-homeui (2.185.0) stable; urgency=medium
+wb-mqtt-homeui (2.186.0) stable; urgency=medium
 
   * Device editor — add reread config button
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 11 Mar 2026 11:20:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Mar 2026 13:32:00 +0300
+
+wb-mqtt-homeui (2.185.1) stable; urgency=medium
+
+  * Fix DALI color temperature editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Mar 2026 13:50:35 +0500
+
+wb-mqtt-homeui (2.185.0) stable; urgency=medium
+
+  * Move security check handler to backend service
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 11 Mar 2026 16:00:00 +0400
+
+wb-mqtt-homeui (2.184.1) stable; urgency=medium
+
+  * Fix footer position
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 11 Mar 2026 14:24:00 +0300
 
 wb-mqtt-homeui (2.184.0) stable; urgency=medium
 
