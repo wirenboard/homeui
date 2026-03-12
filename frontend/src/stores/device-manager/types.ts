@@ -92,6 +92,7 @@ interface LoadConfigBaseParams {
   slave_id: number;
   device_type: string;
   modbus_mode: 'TCP' | 'RTU';
+  force?: boolean;
 }
 
 export interface SerialRpcTcpPortConfig {

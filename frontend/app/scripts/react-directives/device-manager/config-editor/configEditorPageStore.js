@@ -502,10 +502,10 @@ class ConfigEditorPageStore {
     }
   }
 
-  readRegisters(tab) {
+  readRegisters(tab, isForce = false) {
     const portTab = this.tabs.selectedPortTab;
     if (tab && portTab) {
-      tab.loadContent(portTab.baseConfig);
+      tab.loadContent(portTab.baseConfig, isForce);
     }
   }
 }
