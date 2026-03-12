@@ -5,7 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/wb-homeui-backend
+EnvironmentFile=-/etc/default/wb-homeui-backend
+ExecStart=/usr/bin/wb-homeui-backend $WB_HOMEUI_BACKEND_OPTIONS
 ExecStartPre=/usr/lib/wb-homeui-backend/generate-system-config.sh
 Restart=on-failure
 RestartSec=2
