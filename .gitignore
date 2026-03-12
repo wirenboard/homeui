@@ -23,6 +23,7 @@ coverage
 .vscode
 .idea
 *.env
+.venv
 
 .coveragerc
 .prettierrc

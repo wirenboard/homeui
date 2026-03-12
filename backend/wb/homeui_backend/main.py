@@ -33,6 +33,7 @@ from .http_response import (
     response_500,
 )
 from .rate_limiter import RateLimiter
+from .security import SecurityCheckingThread
 from .sessions_storage import Session, SessionsStorage
 from .users_storage import User, UsersStorage, UserType
 
@@ -89,7 +90,7 @@ def get_session(
             request.log_error("Cookie expired")
             return None
         return session
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         request.log_error("Failed to get user from cookie: %s", str(e))
     return None
 
@@ -101,7 +102,7 @@ def get_release_suite(release_file: str = "/usr/lib/wb-release") -> str:
             return res.get("SUITE", "")
     except FileNotFoundError:
         logging.warning("Release file %s not found", release_file)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logging.error("Failed to read release file %s: %s", release_file, e)
     return ""
 
@@ -155,6 +156,7 @@ class WebRequestHandlerContext:
     users_storage: UsersStorage
     sessions_storage: SessionsStorage
     certificate_thread: CertificateCheckingThread
+    security_check_thread: SecurityCheckingThread
     session: Optional[Session] = None
 
 
@@ -197,7 +199,7 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
         validate_login_request(form)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
     user = context.users_storage.get_user_by_login(form.get("login"))
@@ -216,7 +218,7 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     )
 
 
-def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def auth_logout_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     if context.session is not None:
         context.sessions_storage.delete_session(context.session)
     cookie = cookies.SimpleCookie()
@@ -226,7 +228,9 @@ def auth_logout_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     return response_200(headers=[make_set_cookie_header(cookie)])
 
 
-def auth_who_am_i_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def auth_who_am_i_handler(
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
     if not context.users_storage.has_users():
         return response_404()
 
@@ -254,7 +258,7 @@ def add_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHandler
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
         validate_add_user_request(form)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
     user_to_add = User(
@@ -293,7 +297,7 @@ def update_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     try:
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
     delete_user_sessions = False
@@ -345,7 +349,7 @@ def delete_user_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
     return response_204()
 
 
-def get_users_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def get_users_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     users = map(
         lambda user: {
             "id": user.user_id,
@@ -376,13 +380,13 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
 
 
 def https_request_cert_handler(
-    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+    _request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
 ) -> HttpResponse:
     context.certificate_thread.request_certificate()
     return response_200()
 
 
-def get_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def get_https_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     return response_200(
         [["Content-type", "application/json"]],
         json.dumps({"enabled": context.certificate_thread.is_certificate_update_allowed()}),
@@ -393,7 +397,7 @@ def update_https_handler(request: BaseHTTPRequestHandler, context: WebRequestHan
     try:
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
     https_enabled = form.get("enabled")
     if https_enabled is not None:
@@ -417,7 +421,7 @@ def load_json_file(json_file: str) -> Optional[Any]:
     try:
         with open(json_file, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logging.error("Failed to load JSON file %s: %s", json_file, e)
         return None
 
@@ -455,7 +459,20 @@ def load_subfolder_items(folder_path: str) -> Optional[list]:
     return list(menu_items.values())
 
 
-def custom_menu_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+def security_check_handler(
+    request: BaseHTTPRequestHandler, context: WebRequestHandlerContext
+) -> HttpResponse:
+    scheme = request.headers.get("X-Forwarded-Proto", "http")
+    host = request.headers.get("X-Forwarded-Host", "")
+    port = request.headers.get("X-Forwarded-Port", 80)
+    url = f"{scheme}://{host}:{port}/"
+
+    context.security_check_thread.request_check(url)
+
+    return response_200([["Content-type", "text/plain"]], "OK")
+
+
+def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
     menu_items = []
     with os.scandir(CUSTOM_MENU_FOLDER) as entries:
         for entry in sorted(entries, key=lambda e: e.name):
@@ -488,6 +505,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     enable_debug: bool = False
     sn: str = ""
     certificate_thread: CertificateCheckingThread
+    security_check_thread: SecurityCheckingThread
     rate_limiter: RateLimiter
     config: Config
 
@@ -524,6 +542,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 self.users_storage,
                 self.sessions_storage,
                 self.certificate_thread,
+                self.security_check_thread,
                 session,
             ),
         )
@@ -531,23 +550,24 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def process_request(self, handlers: dict[str, RequestHandler]) -> None:
         try:
             response = self._request_handler(handlers)
-        except Exception as e:
-            response = response_500("%s\n%s" % (str(e), traceback.format_exc()))
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            response = response_500(f"{e}\n{traceback.format_exc()}")
         self.process_response(response)
 
-    def do_GET(self) -> None:
+    def do_GET(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
                 "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
+                "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
                 "/api/https": RequestHandler(fn=get_https_handler),
                 "/ui/menu": RequestHandler(fn=custom_menu_handler),
             }
         )
 
-    def do_POST(self) -> None:
+    def do_POST(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
                 "/users": RequestHandler(fn=add_user_handler),
@@ -557,7 +577,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             }
         )
 
-    def do_PATCH(self) -> None:
+    def do_PATCH(self) -> None:  # pylint: disable=invalid-name
         self.process_request(
             {
                 "/users/*": RequestHandler(fn=update_user_handler),
@@ -565,10 +585,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             }
         )
 
-    def do_DELETE(self) -> None:
+    def do_DELETE(self) -> None:  # pylint: disable=invalid-name
         self.process_request({"/users/*": RequestHandler(fn=delete_user_handler)})
 
-    def log_message(self, format: str, *args: Any) -> None:
+    def log_message(self, format: str, *args: Any) -> None:  # pylint: disable=redefined-builtin
         if self.enable_debug:
             super().log_message(format, *args)
 
@@ -621,6 +641,7 @@ def main():
     WebRequestHandler.certificate_thread = CertificateCheckingThread(
         sn, WebRequestHandler.config.is_https_enabled()
     )
+    WebRequestHandler.security_check_thread = SecurityCheckingThread(sn)
     WebRequestHandler.rate_limiter = RateLimiter()
 
     try:

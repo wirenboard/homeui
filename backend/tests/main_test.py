@@ -20,8 +20,10 @@ from wb.homeui_backend.main import (
     delete_user_handler,
     device_info_handler,
     get_users_handler,
+    security_check_handler,
     update_user_handler,
 )
+from wb.homeui_backend.security import MQTT_CHECK_TOPIC, run_security_check
 from wb.homeui_backend.sessions_storage import Session, SessionsStorage
 from wb.homeui_backend.users_storage import User, UsersStorage, UserType
 
@@ -35,6 +37,7 @@ class DeleteUserHandlerTest(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
             session=Session(
                 "1", User("1", "user1", "password1", UserType.ADMIN, False), datetime.now(timezone.utc)
             ),
@@ -89,6 +92,7 @@ class GetUsersHandlerTests(unittest.TestCase):
             users_storage=users_storage,
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
             session=session,
         )
 
@@ -114,6 +118,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=self.sessions_storage_mock,
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_no_required_user_type_no_user_without_users(self):
@@ -183,6 +188,7 @@ class WhoAmIHandlerTests(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_with_authenticated_user(self):
@@ -224,6 +230,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
             users_storage=MagicMock(),
             sessions_storage=MagicMock(),
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_device_info_handler(self):
@@ -231,6 +238,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         self.context.sn = "ABC123"
         self.context.certificate_thread = MagicMock()
         self.context.certificate_thread.get_certificate_state.return_value = CertificateState.VALID
+        self.context.security_check_thread = MagicMock()
         mock_file = mock_open(read_data="SUITE=stable\n")
         with patch("wb.homeui_backend.main.open", mock_file):
             response = device_info_handler(self.request, self.context)
@@ -243,7 +251,10 @@ class DeviceInfoHandlerTests(unittest.TestCase):
                 ["Access-Control-Allow-Origin", "*"],
             ],
         )
-        self.assertEqual(json.loads(response.body), {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid", "release_suite": "stable"})
+        self.assertEqual(
+            json.loads(response.body),
+            {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid", "release_suite": "stable"},
+        )
 
 
 class UpdateUserHandlerTest(unittest.TestCase):
@@ -256,6 +267,7 @@ class UpdateUserHandlerTest(unittest.TestCase):
             users_storage=self.users_storage_mock,
             sessions_storage=self.sessions_storage_mock,
             certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
         )
 
     def test_bad_url(self):
@@ -395,3 +407,47 @@ class UpdateUserHandlerTest(unittest.TestCase):
                 User("1", "user1", "hashed_password", UserType.ADMIN, False)
             )
             self.assertEqual(response, response_200())
+
+
+class SecurityCheckHandlerTest(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock(spec=BaseHTTPRequestHandler)
+        self.request.headers = {
+            "X-Forwarded-Proto": "https",
+            "X-Forwarded-Host": "example.com",
+            "X-Forwarded-Port": "443",
+        }
+        self.context = WebRequestHandlerContext(
+            sn="awb8test",
+            users_storage=MagicMock(),
+            sessions_storage=MagicMock(),
+            certificate_thread=MagicMock(),
+            security_check_thread=MagicMock(),
+            session=None,
+        )
+
+    def test_security_check_enqueued_and_returns_200(self):
+        response = security_check_handler(self.request, self.context)
+        self.assertEqual(response.status, 200)
+
+        expected_url = "https://example.com:443/"
+        self.context.security_check_thread.request_check.assert_called_once_with(expected_url)
+
+    def test_run_security_check_cooldown_publishes_not_found(self):
+        config = json.dumps({"probeOpenPorts": True})
+        with patch("wb.homeui_backend.security.open", mock_open(read_data=config)):
+            with patch("wb.homeui_backend.security.requests.post") as mock_post:
+                mock_response = MagicMock()
+                mock_response.json.return_value = {"result": "cooldown"}
+                mock_post.return_value = mock_response
+                with patch("wb.homeui_backend.security.MQTTClient") as mock_mqtt_client_cls:
+                    mock_client = MagicMock()
+                    mock_mqtt_client_cls.return_value = mock_client
+
+                    run_security_check("awb8test", "https://example.com/")
+
+                    mock_client.start.assert_called_once()
+                    mock_client.publish.assert_called_once_with(
+                        MQTT_CHECK_TOPIC, '{"result": "not found"}', True
+                    )
+                    mock_client.stop.assert_called_once()
