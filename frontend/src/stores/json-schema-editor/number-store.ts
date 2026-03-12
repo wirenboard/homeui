@@ -81,6 +81,11 @@ export class NumberStore implements PropertyStore {
       this.error = { key: 'json-editor.errors.not-an-integer' };
       return;
     }
+    if (this.schema.format === "dali-tc" && this.value === 65535) {
+      // DALI color temperature special masked value, allow it even if it's out of range
+      this.error = undefined;
+      return;
+    }
     if (
       (this.schema.minimum !== undefined && this.schema.minimum > this.value) ||
       (this.schema.maximum !== undefined && this.schema.maximum < this.value)

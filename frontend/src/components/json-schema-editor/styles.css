@@ -128,6 +128,11 @@
     min-width: 0;
 }
 
+.dali-color-temperature-slider .range-container input {
+    /* Invert slider */
+    direction: rtl;
+}
+
 .dali-color-temperature-slider-mask {
     font-size: var(--font-size-small);
 }
