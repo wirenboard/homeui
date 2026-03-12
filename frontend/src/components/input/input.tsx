@@ -20,11 +20,12 @@ export const Input = ({
   ariaErrorMessage,
   ...rest
 }: InputProps) => {
-  const [internalValue, setInternalValue] = useState(value || '');
+  const defaultValue = type === 'number' ? 0 : '';
+  const [internalValue, setInternalValue] = useState(value || defaultValue);
   const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
 
   useEffect(() => {
-    setInternalValue(value || '');
+    setInternalValue(value || defaultValue);
   }, [value]);
 
   const handleBlurOrChange = () => {
