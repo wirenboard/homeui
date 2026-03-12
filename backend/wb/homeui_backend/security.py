@@ -60,6 +60,9 @@ def run_security_check(sn: str, url: str) -> None:
         logging.error("Failed to get response from probe server", exc_info=True)
         return
 
+    if data.get("result") == "found":
+        logging.warning("Security issues found: %s", data.get("details"))
+
     if data.get("result") == "cooldown":
         mqtt_publish_check_result('{"result": "not found"}')
     else:
