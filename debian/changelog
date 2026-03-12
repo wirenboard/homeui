@@ -1,6 +1,7 @@
 wb-mqtt-homeui (2.172.0-wb110) stable; urgency=medium
 
   * Add 1-Wire sensor id param support in serial
+  * Device editor — add reread config button
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 17:55:00 +0300
 
