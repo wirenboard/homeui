@@ -83,6 +83,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
               <Button
                 icon={isFullscreen ? <FullScreenExitIcon/> : <FullScreenIcon/>}
                 variant="secondary"
+                aria-label={isFullscreen ? t('dashboard.buttons.fullscreen-exit') : t('dashboard.buttons.fullscreen')}
                 onClick={() => toggleFullscreen()}
               />
             </Tooltip>

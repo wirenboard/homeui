@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type KeyboardEvent, type ReactElement, type Ref } from 'react';
 
 export interface TabItem {
   id: string;
@@ -35,4 +35,6 @@ export interface TabProps {
   id: string;
   activeTab?: string;
   onTabChange?: (_id: string) => void;
+  onKeyDown?: (event: KeyboardEvent<HTMLButtonElement>) => void;
+  buttonRef?: Ref<HTMLButtonElement>;
 }

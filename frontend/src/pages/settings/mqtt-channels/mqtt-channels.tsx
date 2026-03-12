@@ -103,7 +103,7 @@ const MqttChannelsPage = observer(({ store }: MqttChannelsPageProps) => {
             || item.type?.includes(search)
             || String(item.value)?.includes(search))
           .map((cell) => (
-            <TableRow key={cell.id}>
+            <TableRow key={cell.id} tabIndex={0}>
               <TableCell verticalAlign="top">
                 {cell.id}
               </TableCell>

@@ -9,7 +9,7 @@ export const PageWrapper = observer(({ error, className, accessLevelStore, child
   return (
     <div className={className}>
       <AccessLevelErrorBanner store={accessLevelStore}>
-        <ErrorBar msg={error}></ErrorBar>
+        <ErrorBar msg={error} />
         {children}
       </AccessLevelErrorBanner>
     </div>
@@ -18,7 +18,7 @@ export const PageWrapper = observer(({ error, className, accessLevelStore, child
 
 export const PageTitle = ({ title, children }) => {
   return (
-    <h1 className="page-header">
+    <h1 className="page-header" tabIndex={-1}>
       {title && <span className="page-header-title">{title}</span>}
       {children}
     </h1>

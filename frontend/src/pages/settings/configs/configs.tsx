@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, type MouseEvent } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
@@ -43,7 +43,11 @@ const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
         </TableRow>
 
         {store.configs.map((config, i) => (
-          <TableRow key={config.configPath + i} url={getUrl(config)}>
+          <TableRow
+            url={getUrl(config)}
+            aria-label={config.titleTranslations?.[i18n.language] || config.title}
+            key={config.configPath + i}
+          >
             <TableCell>
               {config.titleTranslations?.[i18n.language] || config.title}
             </TableCell>

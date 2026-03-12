@@ -2,13 +2,12 @@ import { observer } from 'mobx-react-lite';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
-import SwapIcon from '@/assets/icons/swap.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Input } from '@/components/input';
-import { Table, TableCell, TableRow } from '@/components/table';
+import { Table, TableCell, type TableCellSortDirection, TableRow } from '@/components/table';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { useAsyncAction } from '@/utils/async-action';
 import type { RoomProps } from './types';
@@ -21,7 +20,15 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
   const [isDeleteRoom, setIsDeleteRoom] = useState(false);
   const [roomName, setRoomName] = useState(null);
   const [saveError, setSaveError] = useState(null);
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [sortDirection, setSortDirection] = useState<TableCellSortDirection>('asc');
+
+  const getSortProps = (column: string) => ({
+    onSort: () => {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    },
+    isActive: column === 'device',
+    direction: sortDirection,
+  });
 
   const deviceList = useMemo(() => {
     const formatRoomDevices = (keys: string[]) => keys
@@ -114,6 +121,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
                 size="small"
                 type="button"
                 icon={<EditSquareIcon />}
+                aria-label={t('alice.buttons.edit-room-name')}
                 variant="secondary"
                 isOutlined
                 onClick={() => setIsEditingTitle(true)}
@@ -125,6 +133,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
               <Button
                 type="button"
                 icon={<TrashIcon />}
+                aria-label={t('alice.buttons.delete-room')}
                 variant="danger"
                 isOutlined
                 onClick={() => {
@@ -150,14 +159,8 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
 
         <Table isWithoutGap isFullWidth>
           <TableRow isHeading>
-            <TableCell width="25%">
-              <div
-                className="aliceRoom-swap"
-                onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-              >
-                {t('alice.labels.device')}
-                <SwapIcon />
-              </div>
+            <TableCell width="25%" sort={getSortProps('device')}>
+              {t('alice.labels.device')}
             </TableCell>
             <TableCell width="25%">
               {t('alice.labels.room')}
@@ -170,7 +173,12 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
             </TableCell>
           </TableRow>
           {deviceList.map((device) => (
-            <TableRow key={device.id} className="aliceRoom-item" onClick={() => onOpenDevice(device.id)}>
+            <TableRow
+              key={device.id}
+              className="aliceRoom-item"
+              aria-label={t('alice.buttons.open-device', { name: device.name })}
+              onClick={() => onOpenDevice(device.id)}
+            >
               <TableCell verticalAlign="top" ellipsis>
                 {device.name}
               </TableCell>

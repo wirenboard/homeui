@@ -112,6 +112,7 @@ export const WidgetAdd = observer(({
                       <Button
                         variant="danger"
                         size="small"
+                        aria-label={t('widget.buttons.delete')}
                         icon={<TrashIcon />}
                         onClick={() => setIsConfirmDelete(true)}
                       />
@@ -119,6 +120,7 @@ export const WidgetAdd = observer(({
                     <Tooltip text={t('widget.buttons.copy')} placement="bottom">
                       <Button
                         size="small"
+                        aria-label={t('widget.buttons.copy')}
                         icon={<CopyIcon />}
                         onClick={copyWidget}
                       />
@@ -126,17 +128,18 @@ export const WidgetAdd = observer(({
                     <Tooltip text={t('widget.buttons.edit')} placement="bottom">
                       <Button
                         size="small"
+                        aria-label={t('widget.buttons.edit')}
                         icon={<EditIcon />}
                         onClick={() => setIsEditing(!isEditing)}
                       />
                     </Tooltip>
                     <Button
-                      label={dashboard.hasWidget(widget.id)
+                      label={dashboard?.hasWidget(widget.id)
                         ? t('widget.buttons.exists-on-dashboard')
                         : t('widget.buttons.add')}
-                      icon={dashboard.hasWidget(widget.id) && <CheckIcon />}
+                      icon={dashboard?.hasWidget(widget.id) && <CheckIcon />}
                       size="small"
-                      disabled={dashboard.hasWidget(widget.id)}
+                      disabled={dashboard?.hasWidget(widget.id)}
                       onClick={() => dashboard.addWidget(widget.id)}
                     />
                   </div>

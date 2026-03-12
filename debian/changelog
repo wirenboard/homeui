@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.185.1) stable; urgency=medium
+
+  * Update a11y
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Mar 2026 11:02:00 +0300
+
 wb-mqtt-homeui (2.185.0) stable; urgency=medium
 
   * Move security check handler to backend service

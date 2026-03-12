@@ -68,9 +68,13 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
     >
       <Table isLoading={isRulesUpdating}>
         {rules.map((rule) => (
-          <TableRow url={`#!/rules/edit/${rule.virtualPath}`} key={rule.virtualPath}>
+          <TableRow
+            url={`#!/rules/edit/${rule.virtualPath}`}
+            aria-label={t('rules.labels.open-rule', { path: rule.virtualPath })}
+            key={rule.virtualPath}
+          >
             <TableCell width="100%" ellipsis>
-              <div className="rules-name">{rule.virtualPath}</div>
+              <div className="rules-name" id={`rulepath-${rule.virtualPath}`}>{rule.virtualPath}</div>
             </TableCell>
             <TableCell width={30} visibleOnHover={isDesktop} preventClick>
               <Tooltip text={t('rules.buttons.copy')} placement="top">
@@ -105,10 +109,16 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
               )}
             </TableCell>
             <TableCell width={34} preventClick>
-              <Tooltip text={rule.enabled ? t('rules.labels.switch-off') : t('rules.labels.switch-on')} placement="top">
+              <Tooltip
+                text={rule.enabled ? t('rules.labels.switch-off') : t('rules.labels.switch-on')}
+                id={`ruleDisable-${rule.virtualPath}`}
+                aria-label={rule.enabled ? t('rules.labels.switch-off') : t('rules.labels.switch-on')}
+                placement="top"
+              >
                 <Switch
                   id={rule.virtualPath}
                   value={rule.enabled}
+                  ariaLabelledby={`rulepath-${rule.virtualPath} ruleDisable-${rule.virtualPath}`}
                   onChange={() => changeRuleState(rule.virtualPath, rule.enabled)}
                 />
               </Tooltip>

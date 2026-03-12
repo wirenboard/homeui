@@ -3,7 +3,7 @@ ng-hide="$ctrl.haveRights">{{'configurations.labels.access-notice' | translate}}
 </div>
 
 <section ng-if="$ctrl.haveRights">
-    <h1 class="page-header">
+    <h1 class="page-header" tabindex="-1">
         <span>{{ file.configPath }}</span>
     </h1>
     <div class="spinner" ng-show="spinnerActive('configEditorProxy')" ng-cloak>

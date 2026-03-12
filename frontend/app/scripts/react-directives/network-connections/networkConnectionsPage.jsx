@@ -65,7 +65,7 @@ const DeprecationWarning = ({ deprecatedConnections }) => {
         count={deprecatedConnections.length}
         values={{ connections: deprecatedConnections.join(', ') }}
       >
-        {'network-connections.labels.main-deprecation-notice'}
+        network-connections.labels.main-deprecation-notice
       </Trans>
     </WarningBar>
   );
@@ -75,8 +75,8 @@ const NetworkConnectionsPage = observer(({ pageStore }) => {
   const { t } = useTranslation();
   return (
     <div className="network-connections-page">
-      <ErrorBar msg={pageStore.error}></ErrorBar>
-      <h1 className="page-header">{t('network-connections.labels.connections')}</h1>
+      <ErrorBar msg={pageStore.error} />
+      <h1 className="page-header" tabIndex={-1}>{t('network-connections.labels.connections')}</h1>
       <ConfirmModal {...pageStore.confirmModalState} />
       <SelectModal {...pageStore.selectNewConnectionModalState} />
       {pageStore.loading && <Spinner />}
@@ -99,7 +99,7 @@ const NetworkConnectionsPage = observer(({ pageStore }) => {
 });
 
 function CreateNetworkConnectionsPage({ pageStore }) {
-  return <NetworkConnectionsPage pageStore={pageStore}></NetworkConnectionsPage>;
+  return <NetworkConnectionsPage pageStore={pageStore} />;
 }
 
 export default CreateNetworkConnectionsPage;

@@ -1,4 +1,10 @@
 {
+   "app": {
+      "buttons": {
+         "close": "Close",
+         "skip-to-main-content": "Skip to main content"
+      }
+   },
    "common":{
       "labels": {
          "password-strength-0": "Short password",
@@ -15,7 +21,10 @@
          "move-down": "Move down",
          "select": "Select",
          "read": "Read",
-         "save": "Save"
+         "save": "Save",
+         "password-hide": "Hide password",
+         "password-show": "Show password",
+         "sort": "Change sorting"
       }
    },
    "dashboards": {
@@ -31,8 +40,11 @@
       },
       "buttons": {
          "add": "Add",
+         "open": "Open \"{{name}}\" dashboard",
          "edit": "Edit",
+         "edit-dashboard": "Edit \"{{name}}\" dashboard",
          "delete": "Delete",
+         "delete-dashboard": "Delete \"{{name}}\" dashboard",
          "save": "Save",
          "hide": "Hidden from menu",
          "visible": "Shown in menu"
@@ -49,7 +61,7 @@
    },
    "navigation": {
       "labels": {
-         "toggle": "Toggle navigation",
+         "toggle": "Toggle navigation display mode",
          "home": "Home",
          "dashboards": "Dashboards",
          "list": "List",
@@ -533,6 +545,7 @@
          "add": "Add to dashboard",
          "save": "Save",
          "delete": "Delete widget",
+         "delete-control": "Delete control",
          "copy": "Copy widget",
          "edit": "Edit widget",
          "edit-json": "Edit as JSON",
@@ -605,6 +618,7 @@
       },
       "labels": {
          "delete-title": "Rule deletion",
+         "open-rule": "Open rule \"{{path}}\"",
          "title-placeholder": "Rule name",
          "success": "Rule saved",
          "success-errors": "Rule saved with errors",
@@ -622,6 +636,7 @@
       }
    },
    "rules-console": {
+      "title": "Debug console",
       "labels": {
          "filter-all": "All levels"
       },
@@ -697,6 +712,7 @@
          "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
          "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
          "enable-integration": "Enable",
+         "enable-integration-caption": "Enable integration",
          "room": "Room",
          "room-name": "Room name",
          "empty-list": "No devices added",
@@ -730,7 +746,13 @@
       },
       "buttons": {
          "add-room": "Add room",
+         "edit-room-name": "Edit room name",
+         "delete-room": "Delete room",
          "add-device": "Add device",
+         "edit-device-name": "Edit device name",
+         "delete-device": "Delete device",
+         "copy-device": "Copy device",
+         "open-device": "Open \"{{name}}\" device",
          "bind": "Bind controller via Yandex ID",
          "check-binding-status": "Check status",
          "save": "Save",

@@ -24,6 +24,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
   const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true');
   const [openedSubmenus, setOpenedSubmenus] = useState(['dashboards-all']);
+  const [isMenuFocused, setIsMenuFocused] = useState(true);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
   const { menuItems } = uiStore;
@@ -79,22 +80,29 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
             <MenuIcon />
           </button>
 
-          <a href="/" draggable={false}>
-            <img
-              src={LOGO_COMPACT}
-              className={classNames('navigation-logoCompact', {
-                'navigation-logoHidden': !isMenuCompact,
-              })}
-              alt={APP_NAME}
-            />
-            <img
-              src={LOGO}
-              className={classNames('navigation-logo', {
-                'navigation-logoHidden': isMenuCompact,
-              })}
-              alt={APP_NAME}
-            />
-          </a>
+          <div
+            className={classNames({
+              'navigation-logoWrapper': !isMenuCompact,
+              'navigation-logoWrapperCompact': isMenuCompact,
+            })}
+          >
+            <a href="/" className="navigation-logoLink" draggable={false}>
+              <img
+                src={LOGO_COMPACT}
+                className={classNames('navigation-logoCompact', {
+                  'navigation-logoHidden': !isMenuCompact,
+                })}
+                alt={APP_NAME}
+              />
+              <img
+                src={LOGO}
+                className={classNames('navigation-logo', {
+                  'navigation-logoHidden': isMenuCompact,
+                })}
+                alt={APP_NAME}
+              />
+            </a>
+          </div>
         </div>
 
         <DescriptionStatus
@@ -132,6 +140,8 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                 activePopup={activePopup}
                 closeMobileMenu={() => setIsMobileMenuOpened(false)}
                 key={i}
+                isMenuFocused={isMenuFocused}
+                setIsMenuFocused={setIsMenuFocused}
               />
             ))}
           </ul>
@@ -155,6 +165,10 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                   <button
                     className="menuItem-link navigation-logout"
                     draggable={false}
+                    aria-label={t(isAutologin ? 'navigation.buttons.switch-user' : 'navigation.buttons.logout')}
+                    tabIndex={isMenuFocused ? null : -1}
+                    onFocus={() => setIsMenuFocused(true)}
+                    onBlur={() => setIsMenuFocused(false)}
                     onClick={() => {
                       setIsMobileMenuOpened(false);
                       logout();
@@ -175,6 +189,10 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                   <button
                     className={classNames('menuItem-link')}
                     draggable={false}
+                    aria-label={t('navigation.buttons.debug')}
+                    tabIndex={isMenuFocused ? null : -1}
+                    onFocus={() => setIsMenuFocused(true)}
+                    onBlur={() => setIsMenuFocused(false)}
                     onClick={handleDebugClick}
                   >
                     <ConsoleIcon className="menuItem-icon" />

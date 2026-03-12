@@ -9,6 +9,7 @@ import FilelistIcon from '@/assets/icons/file-list.svg';
 import MoveIcon from '@/assets/icons/move.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
@@ -104,16 +105,22 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
       acceptLabel={t('widget.buttons.save')}
       headerActions={isJsonView
         ? (
-          <FilelistIcon
-            title={t('widget.buttons.editor')}
-            className="widgetEdit-toggleViewIcon"
+          <Button
+            variant="secondary"
+            icon={<FilelistIcon className="widgetEdit-toggleViewIcon" />}
+            aria-label={t('widget.buttons.editor')}
+            size="large"
+            isOutlined
             onClick={() => setIsJsonView(!isJsonView)}
           />
         )
         : (
-          <FileCodeIcon
-            title={t('widget.buttons.edit-json')}
-            className="widgetEdit-toggleViewIcon"
+          <Button
+            variant="secondary"
+            icon={<FileCodeIcon className="widgetEdit-toggleViewIcon"/>}
+            aria-label={t('widget.buttons.edit-json')}
+            size="large"
+            isOutlined
             onClick={() => setIsJsonView(!isJsonView)}
           />
         )
@@ -168,10 +175,10 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                 onChange={(value) => setDescription(value)}
               />
 
-              <div className="widgetEdit-label">
+              <label className="widgetEdit-label">
                 <div>{t('widget.labels.compact')}</div>
                 <Switch id="compact" value={isCompactView} onChange={(value) => setIsCompactView(value)} />
-              </div>
+              </label>
             </div>
 
             <div className="widgetEdit-controls">
@@ -210,6 +217,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                     className={classNames('widgetEdit-editedCell', {
                       'widgetEdit-editedCellWithInverted': hasInvertedColumn,
                     })}
+                    tabIndex={0}
                   >
                     <div className="widgetEdit-sort">
                       {widgetCells.length > 1 && (
@@ -238,8 +246,12 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                         )}
                       </div>
                     )}
-                    <TrashIcon
-                      className="widgetEdit-iconAction widgetEdit-remove"
+                    <Button
+                      variant="secondary"
+                      icon={<TrashIcon className="widgetEdit-iconAction widgetEdit-remove"/>}
+                      aria-label={t('widget.buttons.delete-control')}
+                      size="large"
+                      isOutlined
                       onClick={() => removeCell(cell.id)}
                     />
                   </div>

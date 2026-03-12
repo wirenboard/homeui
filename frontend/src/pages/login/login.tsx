@@ -5,7 +5,7 @@ import LocaleIcon from '@/assets/icons/locale.svg';
 import LoaderIcon from '@/assets/icons/spinner.svg';
 import { APP_NAME, LOGO } from '@/common/constants';
 import { Alert } from '@/components/alert';
-import { Button } from '@/components/button';
+import { Button, ButtonLink } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
@@ -90,13 +90,12 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
 
           <div className="login-actions">
             {isAutologin && (
-              <a href="/">
-                <Button
-                  className="login-button"
-                  type="button"
-                  label={t('login.buttons.auto-login')}
-                />
-              </a>
+              <ButtonLink
+                href="/"
+                className="login-button"
+                type="button"
+                label={t('login.buttons.auto-login')}
+              />
             )}
 
             <Button

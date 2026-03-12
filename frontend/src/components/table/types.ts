@@ -35,4 +35,6 @@ export interface TableCellProps extends HTMLAttributes<HTMLDivElement> {
   align?: 'left' | 'center' | 'right';
   sort?: TableCellSort;
   url?: string;
+  isFirstLinkColumn?: boolean;
+  ariaLabel?: string;
 }

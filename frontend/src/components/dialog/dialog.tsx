@@ -9,6 +9,7 @@ import {
 } from '@floating-ui/react';
 import classNames from 'classnames';
 import { type PropsWithChildren, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 import CloseIcon from '@/assets/icons/close-circle.svg';
 import type { DialogProps } from './types';
 import './styles.css';
@@ -25,6 +26,7 @@ export const Dialog = ({
   isOpened,
   onClose,
 }: PropsWithChildren<DialogProps>) => {
+  const { t } = useTranslation();
   const headingId = useId();
 
   const { context, refs } = useFloating({
@@ -62,7 +64,7 @@ export const Dialog = ({
               <div>
                 {headerActions}
                 {showCloseButton && (
-                  <button className="dialog-close" onClick={() => onClose?.()}>
+                  <button className="dialog-close" aria-label={t('app.buttons.close')} onClick={() => onClose?.()}>
                     <CloseIcon />
                   </button>
                 )}

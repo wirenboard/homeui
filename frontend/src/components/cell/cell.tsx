@@ -45,6 +45,7 @@ export const CellContent = observer(({ cell, name, isCompact, extra, hideHistory
 
   return (
     <div
+      tabIndex={-1}
       className={classNames(
         'deviceCell',
         {

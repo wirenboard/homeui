@@ -64,7 +64,7 @@ const UsersPage = observer(() => {
         {store.users.map((user) => (
           <TableRow key={user.id}>
             <TableCell ellipsis>
-              {user.login}
+              <span id={`username-${user.login}`}>{user.login}</span>
             </TableCell>
 
             <TableCell>
@@ -73,11 +73,15 @@ const UsersPage = observer(() => {
 
             <TableCell align="right">
               <div className="users-actions">
-                <Tooltip text={t('users.buttons.edit')}>
+                <Tooltip
+                  id={`edit-${user.login}`}
+                  text={t('users.buttons.edit')}
+                  aria-label={t('users.buttons.edit')}
+                >
                   <Button
                     size="small"
                     variant="primary"
-                    aria-label={t('users.buttons.edit')}
+                    aria-labelledby={`username-${user.login} edit-${user.login}`}
                     icon={<EditIcon />}
                     onClick={() => {
                       setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
@@ -86,12 +90,16 @@ const UsersPage = observer(() => {
                   />
                 </Tooltip>
 
-                <Tooltip text={t('users.buttons.delete')}>
+                <Tooltip
+                  id={`delete-${user.login}`}
+                  text={t('users.buttons.delete')}
+                  aria-label={t('users.buttons.delete')}
+                >
                   <Button
                     size="small"
                     variant="danger"
                     icon={<TrashIcon />}
-                    aria-label={t('users.buttons.delete')}
+                    aria-labelledby={`username-${user.login} delete-${user.login}`}
                     disabled={user.type === 'admin' && store.onlyOneAdmin}
                     onClick={() => setDeletedUserId(user.id)}
                   />

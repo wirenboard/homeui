@@ -40,6 +40,7 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
         >
           <Button
             variant="secondary"
+            aria-label={store.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
             icon={store.hasOpenedDivices ? <CollapseIcon /> : <ExpandIcon />}
             onClick={store.toggleDevices}
           />

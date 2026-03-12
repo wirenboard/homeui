@@ -106,7 +106,7 @@ const BottomPanel = observer(
 export const ScanPageHeader = ({ okButtonLabel, onOk, onCancel, disableOkButton, title }) => {
   const { t } = useTranslation();
   return (
-    <h1 className="page-header">
+    <h1 className="page-header" tabIndex={-1}>
       <span>{title}</span>
       <div className="pull-right button-group">
         <Button type="primary" label={okButtonLabel} disabled={disableOkButton} onClick={onOk} />

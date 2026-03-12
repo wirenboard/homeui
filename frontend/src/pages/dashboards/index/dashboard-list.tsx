@@ -101,6 +101,9 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
             >
               {dashboardsList.map((dashboard) => (
                 <TableRow
+                  role="row"
+                  aria-roledescription="sortable row"
+                  aria-label={t('dashboards.buttons.open', { name: dashboard.name })}
                   url={dashboard.isSvg
                     ? `/#!/dashboards/svg/view/${dashboard.id}`
                     : `/#!/dashboards/${dashboard.id}`}
@@ -122,7 +125,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                         <Button
                           size="small"
                           icon={<EditIcon />}
-                          aria-label={`${t('dashboards.buttons.edit')}`}
+                          aria-label={t('dashboards.buttons.edit-dashboard', { name: dashboard.name })}
                           onClick={() => {
                             if (dashboard.isSvg) {
                               location.assign(`/#!/dashboards/svg/edit/${dashboard.id}`);
@@ -142,7 +145,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                           size="small"
                           variant="danger"
                           icon={<TrashIcon />}
-                          aria-label={`${t('dashboards.buttons.delete')}`}
+                          aria-label={t('dashboards.buttons.delete-dashboard', { name: dashboard.name })}
                           onClick={() => setDeletedDashboardId(dashboard.id)}
                         />
                       </Tooltip>
@@ -165,6 +168,9 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                       >
                         <Switch
                           id={`visibility-${dashboard.id}`}
+                          ariaLabel={t(dashboard.options?.isHidden
+                            ? 'dashboards.buttons.hidden'
+                            : 'dashboards.buttons.visible')}
                           value={dashboard.options?.isHidden ? !dashboard.options?.isHidden : true}
                           onChange={() => dashboard.toggleVisibility()}
                         />

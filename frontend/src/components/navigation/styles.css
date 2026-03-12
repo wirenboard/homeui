@@ -59,24 +59,48 @@
     padding: 4px;
 }
 
+.navigation-logoWrapper {
+    width: 100%;
+    padding: 22px 0 22px;
+
+    @media(max-width: 768px) {
+        padding: 0;
+        width: unset;
+    }
+}
+
+.navigation-logoWrapperCompact {
+    padding: 18px 0 22px;
+}
+
+.navigation-logoLink {
+    display: block;
+    width: fit-content;
+    height: fit-content;
+    margin: 0 auto;
+}
+
 .navigation-logo {
     display: flex;
     justify-self: center;
     width: 144px;
-    height: 60px;
-    margin: 12px 0 12px;
+    height: 40px;
 
     @media(max-width: 768px) {
-        margin: 0;
-        padding: 0;
         height: 36px;
     }
+}
+
+.navigation-logo:hover,
+.navigation-logoLink:focus,
+.navigation-logoCompact:hover {
+    transform: scale(1.05);
+    transition: transform ease 300ms;
 }
 
 .navigation-logoCompact {
     display: flex;
     justify-self: center;
-    margin: 18px 0 22px;
     width: 44px;
     height: 44px;
 }

@@ -37,7 +37,7 @@ export const PageLayout = ({
 
   if (errors.find((error) => error.code === 404)) {
     return (
-      <main className="page">
+      <main className="page" tabIndex={-1}>
         <header className="page-headerContainer">
           <h1 className="page-title">{t('page.not-found')}</h1>
         </header>
@@ -50,7 +50,7 @@ export const PageLayout = ({
 
   return (
     <div className="page-container">
-      <main className="page">
+      <main className="page" tabIndex={-1}>
         {hasRights && !isHideHeader && (titleValue || isEditingTitle) && (
           <header className="page-headerContainer">
             <div className="page-headerTitleWrapper">
@@ -65,7 +65,7 @@ export const PageLayout = ({
                 />
               ) : (
                 <>
-                  <h1 className="page-title">{title}</h1>
+                  <h1 className="page-title" tabIndex={-1}>{title}</h1>
                   {infoLink && (
                     <a href={infoLink} target="_blank" className="page-info">
                       <InfoIcon />
