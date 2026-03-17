@@ -167,10 +167,10 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                       translator={selectedItem.translator}
                     />
                   )}
-                  {selectedItem?.busMonitor?.isEnabled && (
-                    <BusMonitor monitorStore={selectedItem.busMonitor} />
-                  )}
                 </>
+              )}
+              {selectedItem?.busMonitor?.isEnabled && (
+                <BusMonitor monitorStore={selectedItem.busMonitor} />
               )}
           </section>
         )}
