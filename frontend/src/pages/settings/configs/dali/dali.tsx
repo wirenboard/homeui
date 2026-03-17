@@ -154,7 +154,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                     )}
                     <Button
                       label={t('common.buttons.save')}
-                      disabled={!selectedItem?.objectStore?.isDirty}
+                      disabled={!selectedItem?.objectStore?.isDirty || selectedItem?.objectStore?.hasErrors}
                       onClick={async () => {
                         await selectedItem.save();
                         setData(store.gateways);
