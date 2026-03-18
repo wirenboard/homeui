@@ -841,7 +841,10 @@
       "buttons": {
          "rescan": "Rescan",
          "return": "To devices list",
-         "reload": "Reload"
+         "reload": "Reload",
+         "clear-log": "Clear log",
+         "pause-log": "Pause log",
+         "resume-log": "Resume log"
       }
    }
 }

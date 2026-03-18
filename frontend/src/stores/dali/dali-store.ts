@@ -10,10 +10,12 @@ export class DaliStore {
   public errors: ErrorInfo[];
   #daliProxy: DaliProxy;
   #whenMqttReady: () => Promise<void>;
+  #mqttClient: any;
 
-  constructor(whenMqttReady: () => Promise<void>, daliProxy: DaliProxy) {
+  constructor(whenMqttReady: () => Promise<void>, daliProxy: DaliProxy, mqttClient: any) {
     this.#daliProxy = daliProxy;
     this.#whenMqttReady = whenMqttReady;
+    this.#mqttClient = mqttClient;
 
     makeObservable(this, {
       isLoading: observable,
@@ -26,11 +28,11 @@ export class DaliStore {
       await this.#whenMqttReady();
       const gateways = await this.#daliProxy.GetList();
       gateways.forEach((gateway) => {
-        const gatewayStore = new ItemStore(this.#daliProxy, gateway.id, gateway.name, 'gateway');
+        const gatewayStore = new ItemStore(this.#daliProxy, gateway.id, gateway.name, 'gateway', this.#mqttClient);
         gateway.buses.forEach((bus) => {
-          const busStore = new ItemStore(this.#daliProxy, bus.id, bus.name, 'bus');
+          const busStore = new ItemStore(this.#daliProxy, bus.id, bus.name, 'bus', this.#mqttClient);
           bus.devices.forEach((device) => {
-            const deviceStore = new ItemStore(this.#daliProxy, device.id, device.name, 'device');
+            const deviceStore = new ItemStore(this.#daliProxy, device.id, device.name, 'device', this.#mqttClient);
             busStore.children.push(deviceStore);
           });
           gatewayStore.children.push(busStore);

@@ -12,6 +12,7 @@ import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { type ItemStore } from '@/stores/dali';
 import type { DaliPageProps } from './types';
+import { BusMonitor } from './components/bus-monitor';
 import './styles.css';
 
 const DaliPage = observer(({ store }: DaliPageProps) => {
@@ -100,7 +101,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                     )}
                     <Button
                       label={t('common.buttons.save')}
-                      disabled={!selectedItem?.objectStore?.isDirty}
+                      disabled={!selectedItem?.objectStore?.isDirty || selectedItem?.objectStore?.hasErrors}
                       onClick={async () => {
                         await selectedItem.save();
                         setData(store.gateways);
@@ -114,6 +115,9 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                     />
                   )}
                 </>
+              )}
+              {selectedItem?.busMonitor?.isEnabled && (
+                <BusMonitor monitorStore={selectedItem.busMonitor} />
               )}
           </section>
         )}
