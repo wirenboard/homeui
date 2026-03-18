@@ -6,6 +6,7 @@ import ClearIcon from '@/assets/icons/clear.svg';
 import VisibilityOff from '@/assets/icons/visibility-off.svg';
 import VisibilityOn from '@/assets/icons/visibility.svg';
 import { type MonitorStore } from '@/stores/dali';
+import './styles.css';
 
 export const BusMonitor = observer(({ monitorStore } : { monitorStore: MonitorStore }) => {
   const { t } = useTranslation();
