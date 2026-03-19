@@ -1,6 +1,12 @@
+wb-mqtt-homeui (2.188.0) stable; urgency=medium
+
+  * Update config page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 19 Mar 2026 10:10:00 +0300
+
 wb-mqtt-homeui (2.187.0) stable; urgency=medium
 
-  * Add simple DALI bus monitor 
+  * Add simple DALI bus monitor
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Mar 2026 17:51:05 +0500
 

@@ -424,10 +424,6 @@ table.table-bordered {
   margin-top: 2px;
 }
 
-.je-object__container[data-schemapath="root"] {
-  margin-top: 20px;
-}
-
 ul.col-md-2.nav.nav-pills.nav-stacked {
     margin-bottom: 9px;
 }

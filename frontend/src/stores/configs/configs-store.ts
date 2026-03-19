@@ -1,8 +1,10 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { type ConfigListItem } from './types';
+import type { ConfigListItem, Config } from './types';
 
 export default class ConfigsStore {
   public configs: ConfigListItem[] = [];
+  public config: Config = null;
+  public path: string = null;
 
   #configEditorProxy: any;
   #whenMqttReady: () => Promise<void>;
@@ -23,5 +25,32 @@ export default class ConfigsStore {
           this.configs = configs;
         });
       });
+  }
+
+  async getConfig(path: string) {
+    return this.#whenMqttReady()
+      .then(() => this.#configEditorProxy.Load({ path }))
+      .then((config: Config) => {
+        runInAction(() => {
+          this.config = config;
+          this.path = path;
+        });
+      });
+  }
+
+  async saveConfig() {
+    return this.#configEditorProxy.Save({ path: this.config.configPath, content: this.config.content });
+  }
+
+  clearConfig() {
+    runInAction(() => {
+      this.config = null;
+    });
+  }
+
+  setContent(content: any) {
+    runInAction(() => {
+      this.config.content = content;
+    });
   }
 }

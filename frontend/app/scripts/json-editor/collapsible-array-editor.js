@@ -1,12 +1,10 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
 // Editor for array.
 // Expects list layout.
 // Has additional "Collapse all items" button
 // To get full functionality item editors must have expandEditor and collapseEditor functions
-function makeCollapsibleArrayEditor() {
+export function makeCollapsibleArrayEditor() {
   JSONEditor.defaults.languages.en.collapse_all = 'Collapse all items';
   return class extends JSONEditor.defaults.editors['array'] {
     build() {
@@ -140,5 +138,3 @@ function makeCollapsibleArrayEditor() {
     }
   };
 }
-
-export default makeCollapsibleArrayEditor;

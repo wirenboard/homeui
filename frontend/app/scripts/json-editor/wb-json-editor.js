@@ -1,26 +1,25 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
-import JsonEditorRussianTranslation from './json-editor-ru';
-import makeLazyTabsArrayEditor from './lazy-tabs-array-editor';
-import makeDisabledEditorWrapper from './disabled-editor-wrapper';
-import makeTranslatedInfoEditor from './translated-info-editor';
-import makeIntegerEditorWithSpecialValue from './integer-editor-with-special-value';
-import makeReadonlyOneOfEditor from './readonly-oneof-editor';
-import makeMergedDefaultValuesEditor from './merged-default-values-editor';
-import makeEditWithDropdownEditor from './edit-with-dropdown';
-import makeAutocompleteEditor from './autocomplete';
-import makeCollapsibleArrayEditor from './collapsible-array-editor';
-import makeCollapsibleMultipleEditor from './collapsible-multiple-editor';
-import makeObjectEditorWithButtonsOnTop from './object-editor-with-buttons-on-top';
-import makeSelectWithHiddenItems from './select-with-hidden-items';
-import makeGroupsEditor from './group-editor';
-import makeOptionalEditorWithDropDown from './optional-editor-with-dropdown';
-import makeWbBootstrap3Theme from './wb-bootstrap3-theme';
-import makeWbBootstrap3Iconlib from './wb-bootstrap3-iconlib';
-import makeWbArrayEditor from './wb-array-editor';
-import makeFirstOneOfEditor from './first-oneof-editor';
-import { compileTemplate } from '../services/dumbtemplate';
+import merge from 'lodash/merge';
+import { JsonEditorRussianTranslation } from './json-editor-ru';
+import { makeLazyTabsArrayEditor } from './lazy-tabs-array-editor';
+import { makeDisabledEditorWrapper } from './disabled-editor-wrapper';
+import { makeTranslatedInfoEditor } from './translated-info-editor';
+import { makeIntegerEditorWithSpecialValue } from './integer-editor-with-special-value';
+import { makeReadonlyOneOfEditor } from './readonly-oneof-editor';
+import { makeMergedDefaultValuesEditor } from './merged-default-values-editor';
+import { makeEditWithDropdownEditor } from './edit-with-dropdown';
+import { makeAutocompleteEditor } from './autocomplete';
+import { makeCollapsibleArrayEditor } from './collapsible-array-editor';
+import { makeCollapsibleMultipleEditor } from './collapsible-multiple-editor';
+import { makeObjectEditorWithButtonsOnTop } from './object-editor-with-buttons-on-top';
+import { makeSelectWithHiddenItems } from './select-with-hidden-items';
+import { makeGroupsEditor } from './group-editor';
+import { makeOptionalEditorWithDropDown } from './optional-editor-with-dropdown';
+import { makeWbBootstrap3Theme } from './wb-bootstrap3-theme';
+import { makeWbBootstrap3Iconlib } from './wb-bootstrap3-iconlib';
+import { makeWbArrayEditor } from './wb-array-editor';
+import { makeFirstOneOfEditor } from './first-oneof-editor';
+import { compileTemplate } from './dumbtemplate';
 
 var needOverride = true;
 
@@ -102,7 +101,7 @@ function conditionalOneOfValidator(schema, value, path) {
             if (!item.hasOwnProperty('options')) {
               item.options = {};
             }
-            angular.merge(item.options, { wb: { error: 'disabled' } });
+            merge(item.options, { wb: { error: 'disabled' } });
           } else {
             if (item.options && item.options.wb) {
               delete item.options.wb.error;

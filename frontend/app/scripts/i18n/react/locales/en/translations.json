@@ -16,6 +16,9 @@
          "select": "Select",
          "read": "Read",
          "save": "Save"
+      },
+      "prompt": {
+         "dirty": "The page has unsaved changes. Are you sure you want to leave?"
       }
    },
    "dashboards": {

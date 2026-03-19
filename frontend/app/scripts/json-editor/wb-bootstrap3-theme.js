@@ -1,8 +1,6 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
-function makeWbBootstrap3Theme() {
+export function makeWbBootstrap3Theme() {
   return class extends JSONEditor.defaults.themes.bootstrap3 {
     getErrorMessage(text) {
       const el = document.createElement('p');
@@ -58,5 +56,3 @@ function makeWbBootstrap3Theme() {
     }
   };
 }
-
-export default makeWbBootstrap3Theme;

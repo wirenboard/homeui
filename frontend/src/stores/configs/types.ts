@@ -9,3 +9,10 @@ export interface ConfigListItem {
     en?: string;
   };
 }
+
+export interface Config {
+  configPath: string;
+  editor?: string;
+  content: any;
+  schema: any;
+}

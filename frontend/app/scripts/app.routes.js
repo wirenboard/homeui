@@ -270,8 +270,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('configEdit', {
       url: '/configs/edit/{path:.*}',
-      controller: 'ConfigCtrl as $ctrl',
-      template: require('../views/config.html'),
+      template: '<config-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';

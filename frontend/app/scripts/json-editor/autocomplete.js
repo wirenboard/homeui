@@ -1,8 +1,6 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
-export default function makeAutocompleteEditor(options = []) {
+export function makeAutocompleteEditor(options = []) {
   return class extends JSONEditor.defaults.editors.string {
     build() {
       super.build();
