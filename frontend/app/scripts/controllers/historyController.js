@@ -1,3 +1,4 @@
+import { when } from 'mobx';
 import plotlyDirective from '../directives/plotly';
 
 class ChartsControl {
@@ -183,12 +184,16 @@ class HistoryCtrl {
 
     this.dataPointsMultiple = [];
 
-    // 4. Setup
-    this.updateTranslations()
-      .then(data => {
-        this.updateControls(data.widgets, DeviceData);
-        this.setSelectedControlsAndStartLoading(stateFromUrl.c);
-      });
+    when(
+      () => $rootScope.dashboardsStore.isLoading === false,
+      () => {
+        this.updateTranslations()
+          .then(() => {
+            this.updateControls(Array.from($rootScope.dashboardsStore.widgets.values()), DeviceData);
+            this.setSelectedControlsAndStartLoading(stateFromUrl.c);
+          });
+      }
+    );
 
     this.plotlyEvents = graph => {
       // !!!!! метод обязательно должен быть в конструкторе иначе контекст будет непонятно чей
