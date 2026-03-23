@@ -139,6 +139,14 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
     dest.wb.allow_undefined = !!source.wb.allow_undefined;
     dest.wb.read_only = !!source.wb.read_only;
     dest.wb.disable_title = !!source.wb.disable_title;
+    if (typeof source.wb.dali_tc?.minimum === 'number') {
+      dest.wb.dali_tc = dest.wb.dali_tc || {};
+      dest.wb.dali_tc.minimum = source.wb.dali_tc.minimum;
+    }
+    if (typeof source.wb.dali_tc?.maximum === 'number') {
+      dest.wb.dali_tc = dest.wb.dali_tc || {};
+      dest.wb.dali_tc.maximum = source.wb.dali_tc.maximum;
+    }
   }
   if (Array.isArray(source.enum_titles)) {
     dest.enum_titles = source.enum_titles;
