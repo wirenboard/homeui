@@ -26,8 +26,8 @@ export const DaliColorTemperatureSliderEditor = observer(({
 }: DaliColorTemperatureSliderEditorProps) => {
   const { t } = useTranslation();
   const value = typeof store.value === 'number' ? store.value : 0;
-  const minValue = store.schema.minimum ?? 1;
-  const maxValue = store.schema.maximum ?? (MASK_VALUE - 1);
+  const minValue = store.schema.options?.wb?.dali_tc?.minimum ?? 1;
+  const maxValue = store.schema.options?.wb?.dali_tc?.maximum ?? (MASK_VALUE - 1);
   const isMasked = value === MASK_VALUE;
   const isDisabled = !!store.schema.options?.wb?.read_only;
 

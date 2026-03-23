@@ -5,6 +5,11 @@ export interface TranslationsByLocale {
   ru?: Record<string, string>;
 }
 
+export interface WbDaliTcEditorOptions {
+  minimum?: number;
+  maximum?: number;
+}
+
 export interface WbOptions {
   // Show editor even if the property is not required and options.show_opt_in is not set
   // If the property is not set in original JSON, it will be set to default value
@@ -26,6 +31,8 @@ export interface WbOptions {
 
   // If true, the property will be shown as read-only in the editor
   read_only?: boolean;
+
+  dali_tc?: WbDaliTcEditorOptions;
 }
 
 export interface InputAttributes {
