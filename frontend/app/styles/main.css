@@ -869,7 +869,8 @@ body.hmi #wrapper {
 
 body.hmi #page-wrapper {
     height: 100vh;
-    padding: 0px;
+    padding: 0;
+    scrollbar-gutter: unset;
 }
 
 body.hmi #widgets-list {
@@ -878,6 +879,10 @@ body.hmi #widgets-list {
 
 body.hmi .page-header {
   display: none
+}
+
+body.hmi .page {
+    padding-top: 0;
 }
 
 .warning-notice {

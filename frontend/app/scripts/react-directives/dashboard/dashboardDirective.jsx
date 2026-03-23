@@ -18,7 +18,10 @@ export default function dashboardDirective($rootScope, $stateParams, mqttClient)
         scope.root.unmount();
       }
 
-      $rootScope.isHMI = $stateParams.hmi;
+      $rootScope.$watch(() => $stateParams.hmi, (isHmi) => {
+        $rootScope.isHMI = !!isHmi;
+      })
+
       $rootScope.forceFullscreen = $stateParams.fullscreen === true;
       scope.devicesStore = new DeviceStore(mqttClient);
       scope.root = ReactDOM.createRoot(element[0]);

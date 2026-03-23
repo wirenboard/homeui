@@ -30,6 +30,10 @@
     margin-top: 0;
 }
 
+.dashboard-fullScreen .columnsWrapper-container {
+    max-width: 100%;
+}
+
 .page-headerTitleWrapper {
     display: flex;
     gap: 12px;
