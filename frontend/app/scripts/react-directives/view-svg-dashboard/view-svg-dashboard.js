@@ -3,7 +3,7 @@ import SvgDashboardPage, { SvgDashboardPageStore } from '@/pages/dashboards/svg/
 import { DeviceStore } from '@/stores/device';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function svgDashboardDirective(mqttClient, $rootScope) {
+export default function svgDashboardDirective(mqttClient, $rootScope, $stateParams) {
   'ngInject';
 
   setReactLocale();
@@ -18,6 +18,11 @@ export default function svgDashboardDirective(mqttClient, $rootScope) {
       scope.devicesStore = new DeviceStore(mqttClient);
 
       scope.root = ReactDOM.createRoot(element[0]);
+
+      $rootScope.$watch(() => $stateParams.hmi, (isHmi) => {
+        $rootScope.isHMI = !!isHmi;
+      });
+
       scope.root.render(
         <SvgDashboardPage
           store={scope.store}
