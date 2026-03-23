@@ -17,7 +17,10 @@ export default function dashboardDirective($rootScope, $stateParams) {
         scope.root.unmount();
       }
 
-      $rootScope.isHMI = $stateParams.hmi;
+      $rootScope.$watch(() => $stateParams.hmi, (isHmi) => {
+        $rootScope.isHMI = !!isHmi;
+      })
+
       $rootScope.forceFullscreen = $stateParams.fullscreen === true;
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
