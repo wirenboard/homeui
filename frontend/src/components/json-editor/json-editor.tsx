@@ -1,13 +1,16 @@
+import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react-lite';
 import { useLayoutEffect, useRef, useState } from 'react';
-import i18n from '../../../i18n/react/config';
-import { createJSONEditor } from '../../../json-editor/wb-json-editor';
+import i18n from '~/i18n/react/config';
+import { createJSONEditor } from '~/json-editor/wb-json-editor';
+import { type JsonEditorProps } from './types';
+import './styles.css';
 
-const JsonEditor = observer((props) => {
-  const container = useRef();
+export const JsonEditor = observer((props: JsonEditorProps) => {
+  const container = useRef<HTMLDivElement>(null);
   let jse = useRef(null);
-  const stateRef = useRef();
+  const stateRef = useRef(null);
   const [schema, setSchema] = useState(undefined);
   const [firstStart, setFirstStart] = useState(true);
   stateRef.current = firstStart;
@@ -21,7 +24,8 @@ const JsonEditor = observer((props) => {
       props.schema,
       props.data,
       i18n.language,
-      props.root
+      props.root,
+      props.cells
     );
     editor.on('change', () => {
       if (props.onChange) {
@@ -52,7 +56,6 @@ const JsonEditor = observer((props) => {
       }
     }
   });
-  return <div ref={container} className={props.className} />;
-});
 
-export default JsonEditor;
+  return <div ref={container} className={classNames('json-editor', props.className)} />;
+});

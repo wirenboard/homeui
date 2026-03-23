@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, type MouseEvent } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';

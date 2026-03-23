@@ -1,6 +1,4 @@
-'use strict';
-
-const JsonEditorRussianTranslation = {
+export const JsonEditorRussianTranslation = {
   /**
    * When a property is not set
    */
@@ -331,5 +329,3 @@ const JsonEditorRussianTranslation = {
 
   channel: 'Канал',
 };
-
-export default JsonEditorRussianTranslation;

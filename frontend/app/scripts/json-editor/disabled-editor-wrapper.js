@@ -1,6 +1,4 @@
-'use strict';
-
-function makeDisabledEditorWrapper(Base) {
+export function makeDisabledEditorWrapper(Base) {
   return class extends Base {
     build() {
       super.build();
@@ -29,5 +27,3 @@ function makeDisabledEditorWrapper(Base) {
     }
   };
 }
-
-export default makeDisabledEditorWrapper;

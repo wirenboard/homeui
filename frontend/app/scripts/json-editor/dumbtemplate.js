@@ -1,14 +1,3 @@
-const dumbTemplateModule = angular
-  .module('homeuiApp.DumbTemplate', [])
-  .factory('DumbTemplate', dumbTemplateService).name;
-
-//-----------------------------------------------------------------------------
-function dumbTemplateService() {
-  return {
-    compile: compileTemplate,
-  };
-}
-
 export function compileTemplate(src, translateFn) {
   // sorry, no actual compilation at the moment
   return function (vars) {
@@ -113,6 +102,3 @@ export function compileTemplate(src, translateFn) {
     );
   };
 }
-
-//-----------------------------------------------------------------------------
-export default dumbTemplateModule;
