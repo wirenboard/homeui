@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom/client';
 import ConfigPage from '@/pages/settings/configs/[path]';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function configDirective($rootScope, $transitions) {
+export default function configDirective($rootScope) {
   'ngInject';
 
   setReactLocale();
@@ -19,7 +19,7 @@ export default function configDirective($rootScope, $transitions) {
       scope.root.render(
         <ConfigPage
           store={$rootScope.configsStore}
-          transitions={$transitions}
+          rootScope={$rootScope}
           devicesStore={$rootScope.devicesStore}
         />
       );

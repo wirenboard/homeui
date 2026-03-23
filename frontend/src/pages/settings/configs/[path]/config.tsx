@@ -11,10 +11,10 @@ import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import { useParseHash } from '@/utils/url';
 import { type ConfigPageProps } from './types';
 
-const ConfigPage = observer(({ store, transitions, devicesStore }: ConfigPageProps) => {
+const ConfigPage = observer(({ store, rootScope, devicesStore }: ConfigPageProps) => {
   const { t } = useTranslation();
   const { id } = useParseHash();
-  const { isDirty, setIsDirty } = usePreventLeavePage(transitions);
+  const { isDirty, setIsDirty } = usePreventLeavePage(rootScope);
   const [errors, setErrors] = useState([]);
   const [isValid, setIsValid] = useState(true);
 
@@ -27,12 +27,6 @@ const ConfigPage = observer(({ store, transitions, devicesStore }: ConfigPagePro
   }, [id]);
 
   const [loadConfig, isLoading] = useAsyncAction(async () => {
-    if (path === store.path && store.config) {
-      return;
-    } else {
-      store.clearConfig();
-    }
-
     return store.getConfig(path).catch((err) => {
       setErrors([{ variant: 'danger', text: `${t('configurations.errors.load')}: ${err.message} ${err.data}` }]);
     });
@@ -42,6 +36,10 @@ const ConfigPage = observer(({ store, transitions, devicesStore }: ConfigPagePro
     if (id) {
       loadConfig();
     }
+
+    return () => {
+      store.clearConfig();
+    };
   }, [id]);
 
   const onChange = (content, errors) => {

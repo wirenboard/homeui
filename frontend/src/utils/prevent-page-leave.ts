@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import i18n from '~/i18n/react/config';
 
-export const usePreventLeavePage = (transitions) => {
+export const usePreventLeavePage = (rootScope: any) => {
   const [isDirty, setIsDirty] = useState(false);
   const isDirtyRef = useRef(isDirty);
 
@@ -18,20 +18,21 @@ export const usePreventLeavePage = (transitions) => {
     };
     window.addEventListener('beforeunload', onBeforeUnload);
 
-    // TODO: move from transitions to react router useBlocker
-    const unsubscribe = transitions.onBefore({}, () => {
-      if (isDirtyRef.current) {
-        if (!confirm(i18n.t('common.prompt.dirty'))) {
-          return false;
-        }
+    // TODO: move from $locationChangeStart to react router useBlocker
+    const unsubscribe = rootScope.$on(
+      '$locationChangeStart',
+      (event: any, newUrl: string) => {
+        if (!isDirtyRef.current) return;
 
-        setIsDirty(false);
-        return true;
-      } else {
-        setIsDirty(false);
-        return true;
+        event.preventDefault();
+
+        if (confirm(i18n.t('common.prompt.dirty'))) {
+          isDirtyRef.current = false;
+          setIsDirty(false);
+          window.location.assign(newUrl);
+        }
       }
-    });
+    );
 
     return () => {
       window.removeEventListener('beforeunload', onBeforeUnload);
