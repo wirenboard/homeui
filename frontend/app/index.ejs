@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js">
+<html ng-app="realHomeuiApp" class="no-js" ng-attr-lang="{{ language }}">
   <head>
     <meta charset="utf-8">
     <title><%= APP_NAME %></title>
@@ -17,7 +17,7 @@
     </style>
   </head>
 
-  <body ng-app="realHomeuiApp" class="{{theme}}" ng-class="{ 'hmi': isHMI }">
+  <body class="{{theme}}" ng-class="{ 'hmi': isHMI }">
   <skip-to-main-content></skip-to-main-content>
   <toast></toast>
 

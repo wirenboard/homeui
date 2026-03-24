@@ -90,6 +90,9 @@ export const SvgDashboardPage = observer(({ store, dashboardsStore, devicesStore
                 <Button
                   icon={isFullscreen ? <FullScreenExitIcon/> : <FullScreenIcon/>}
                   variant="secondary"
+                  aria-label={isFullscreen
+                    ? t('svg-dashboard.buttons.exit-fullscreen')
+                    : t('svg-dashboard.buttons.fullscreen')}
                   onClick={() => toggleFullscreen()}
                 />
               </Tooltip>

@@ -280,7 +280,9 @@ const realApp = angular
     ) => {
       'ngInject';
 
-      $rootScope.$on('$translateChangeSuccess', () => {
+      $rootScope.$on('$translateChangeSuccess', (data) => {
+        $rootScope.language = $translate.use();
+
         $translate([
           'datepicker.buttons.close',
           'datepicker.buttons.today',

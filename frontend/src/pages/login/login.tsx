@@ -51,7 +51,12 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
     <section className="login">
       <img src={LOGO} className="login-logo" alt={APP_NAME}/>
 
-      <div className="login-title">{t('login.title')}</div>
+      <h1
+        className="login-title"
+        aria-label={t('login.labels.authorization-title')}
+        tabIndex={-1}
+      >{t('login.title')}
+      </h1>
 
       <fieldset className="login-wrapper">
         <form className="login-form" onSubmit={onSubmit}>
@@ -76,6 +81,7 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
                 id="password"
                 v-model="data.pass"
                 name="pass"
+                ariaLabel={t('login.labels.password')}
                 autoComplete="current-password"
                 value={password}
                 required
@@ -116,6 +122,7 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
           <LocaleIcon className="login-languageIcon" />
           <Dropdown
             id="language"
+            ariaLabel={t('login.buttons.choose-language')}
             className="login-language"
             options={languageOptions}
             value={language}

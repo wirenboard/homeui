@@ -41,6 +41,7 @@ const UsersPage = observer(() => {
           label={t('users.buttons.add')}
           variant="primary"
           disabled={store.isLoading}
+          aria-haspopup="dialog"
           onClick={async () => {
             if (!authStore.areUsersConfigured) {
               setEditedUser({ readOnly: true });
@@ -83,6 +84,7 @@ const UsersPage = observer(() => {
                     variant="primary"
                     aria-labelledby={`username-${user.login} edit-${user.login}`}
                     icon={<EditIcon />}
+                    aria-haspopup="dialog"
                     onClick={() => {
                       setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
                       store.editUser(user);
@@ -99,8 +101,9 @@ const UsersPage = observer(() => {
                     size="small"
                     variant="danger"
                     icon={<TrashIcon />}
-                    aria-labelledby={`username-${user.login} delete-${user.login}`}
                     disabled={user.type === 'admin' && store.onlyOneAdmin}
+                    aria-labelledby={`username-${user.login} delete-${user.login}`}
+                    aria-haspopup="dialog"
                     onClick={() => setDeletedUserId(user.id)}
                   />
                 </Tooltip>

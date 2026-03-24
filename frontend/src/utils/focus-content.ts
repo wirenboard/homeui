@@ -4,7 +4,9 @@ export const focusToMainContent = (delay: number = 0) => {
       = document.querySelector('main.page')
       || document.querySelector('#page-wrapper');
 
-    if (focusedBlock.querySelector('h1')) {
+    if (focusedBlock.querySelector('.login-form')) {
+      focusedBlock = focusedBlock.querySelector('input');
+    } else if (focusedBlock.querySelector('h1')) {
       focusedBlock = focusedBlock.querySelector('h1');
     }
     focusedBlock?.focus();

@@ -27,7 +27,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   const [isMenuFocused, setIsMenuFocused] = useState(true);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
-  const { menuItems } = uiStore;
+  const { menuItems, isConsoleVisible, toggleConsoleVisibility } = uiStore;
 
   useEffect(() => {
     uiStore.buildMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params);
@@ -41,6 +41,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
 
   const handleDebugClick = () => {
     toggleConsole();
+    toggleConsoleVisibility();
     setIsMobileMenuOpened(false);
   };
 
@@ -74,7 +75,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
         <div className="navigation-header">
           <button
             className="navigation-mobileButton"
-            aria-label={t('navigation.labels.toggle')}
+            aria-label={t('navigation.buttons.open-mobile')}
             onClick={() => setIsMobileMenuOpened(!isMobileMenuOpened)}
           >
             <MenuIcon />
@@ -86,7 +87,12 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
               'navigation-logoWrapperCompact': isMenuCompact,
             })}
           >
-            <a href="/" className="navigation-logoLink" draggable={false}>
+            <a
+              href="/"
+              aria-label={t('navigation.labels.home')}
+              className="navigation-logoLink"
+              draggable={false}
+            >
               <img
                 src={LOGO_COMPACT}
                 className={classNames('navigation-logoCompact', {
@@ -116,6 +122,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
             className={classNames('navigation-toggle', {
               'navigation-toggleIconRotated': !isMenuCompact,
             })}
+            aria-label={isMenuCompact ? t('navigation.buttons.compact-off') : t('navigation.buttons.compact-on')}
             onClick={toggleNavigation}
           >
             <ChevronRightIcon className="navigation-toggleIcon" />
@@ -191,6 +198,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                     draggable={false}
                     aria-label={t('navigation.buttons.debug')}
                     tabIndex={isMenuFocused ? null : -1}
+                    aria-expanded={isConsoleVisible}
                     onFocus={() => setIsMenuFocused(true)}
                     onBlur={() => setIsMenuFocused(false)}
                     onClick={handleDebugClick}

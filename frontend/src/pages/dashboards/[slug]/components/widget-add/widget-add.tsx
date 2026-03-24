@@ -79,6 +79,7 @@ export const WidgetAdd = observer(({
             <Button
               className="widgetAdd-createButton"
               label={t('widget.buttons.create-widget')}
+              aria-haspopup="dialog"
               onClick={createWidget}
             />
 
@@ -114,6 +115,7 @@ export const WidgetAdd = observer(({
                         size="small"
                         aria-label={t('widget.buttons.delete')}
                         icon={<TrashIcon />}
+                        aria-haspopup="dialog"
                         onClick={() => setIsConfirmDelete(true)}
                       />
                     </Tooltip>
@@ -130,6 +132,7 @@ export const WidgetAdd = observer(({
                         size="small"
                         aria-label={t('widget.buttons.edit')}
                         icon={<EditIcon />}
+                        aria-haspopup="dialog"
                         onClick={() => setIsEditing(!isEditing)}
                       />
                     </Tooltip>

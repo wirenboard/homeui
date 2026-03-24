@@ -21,6 +21,7 @@ interface BaseInputProps {
   ariaDescribedby?: string;
   ariaInvalid?: boolean;
   ariaErrorMessage?: string;
+  ariaLive?: 'off' | 'assertive' | 'polite';
   isFullWidth?: boolean;
   isInvalid?: boolean;
   isWithExplicitChanges?: boolean;

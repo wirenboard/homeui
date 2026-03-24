@@ -76,7 +76,16 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
             <TableCell width="100%" ellipsis>
               <div className="rules-name" id={`rulepath-${rule.virtualPath}`}>{rule.virtualPath}</div>
             </TableCell>
-            <TableCell width={30} visibleOnHover={isDesktop} preventClick>
+            <TableCell width={26} align="center" preventClick>
+              {!!rule.error && (
+                <Tooltip text={t('rules.labels.with-errors')} placement="top">
+                  <div className="rules-iconWrapper">
+                    <WarnIcon className="rules-iconError" role="alert" />
+                  </div>
+                </Tooltip>
+              )}
+            </TableCell>
+            <TableCell width={30} preventClick>
               <Tooltip text={t('rules.buttons.copy')} placement="top">
                 <Button
                   className="rules-icon"
@@ -87,7 +96,7 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
                 />
               </Tooltip>
             </TableCell>
-            <TableCell width={30} visibleOnHover={isDesktop} preventClick>
+            <TableCell width={30} preventClick>
               <Tooltip text={t('rules.buttons.delete')} placement="top">
                 <Button
                   className="rules-icon"
@@ -95,18 +104,10 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
                   variant="danger"
                   icon={<TrashIcon />}
                   aria-label={`${t('rules.buttons.delete')} ${rule.virtualPath}`}
+                  aria-haspopup="dialog"
                   onClick={() => setDeletedRulePath(rule.virtualPath)}
                 />
               </Tooltip>
-            </TableCell>
-            <TableCell width={26} align="center">
-              {!!rule.error && (
-                <Tooltip text={t('rules.labels.with-errors')} placement="top">
-                  <div className="rules-iconWrapper">
-                    <WarnIcon className="rules-iconError" role="alert" />
-                  </div>
-                </Tooltip>
-              )}
             </TableCell>
             <TableCell width={34} preventClick>
               <Tooltip

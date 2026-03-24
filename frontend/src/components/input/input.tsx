@@ -16,6 +16,7 @@ export const Input = ({
   size = 'default',
   ariaLabel,
   ariaDescribedby,
+  ariaLive,
   ariaInvalid,
   ariaErrorMessage,
   ...rest
@@ -71,6 +72,7 @@ export const Input = ({
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedby}
       aria-invalid={ariaInvalid}
+      aria-live={ariaLive}
       aria-errormessage={ariaErrorMessage}
       onChange={handleOnChange}
       onBlur={handleBlurOrChange}

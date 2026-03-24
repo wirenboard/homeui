@@ -117,13 +117,12 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
   }, [isMobile]);
 
   return (
-    <div
+    <aside
       className={classNames('rulesConsole', {
         'rulesConsole-bottom': position === 'bottom',
         'rulesConsole-right': position === 'right',
       })}
       ref={container}
-      role="region"
       aria-label={t('rules-console.title')}
       tabIndex={0}
       style={{ height: position === 'bottom' ? height : '100%', width: position === 'right' ? width : '100%' }}
@@ -211,6 +210,7 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
         className="rulesConsole-content"
         ref={content}
         role="log"
+        aria-live="polite"
         onScroll={handleScroll}
       >
         {logs
@@ -235,6 +235,6 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
             </div>
           ))}
       </div>
-    </div>
+    </aside>
   );
 });

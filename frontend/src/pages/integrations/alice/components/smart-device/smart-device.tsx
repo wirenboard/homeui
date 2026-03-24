@@ -131,6 +131,7 @@ export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpe
             icon={<TrashIcon />}
             variant="danger"
             aria-label={t('alice.buttons.delete-device')}
+            aria-haspopup="dialog"
             isOutlined
             onClick={() => {
               if (id) {

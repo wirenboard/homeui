@@ -84,7 +84,7 @@ export const WarningBar = ({ children }) => {
   );
 };
 
-export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title, submit }) => {
+export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, ariaHasPopup, title, submit }) => {
   const classes =
     'btn btn-' + (type ? type : 'default') + (additionalStyles ? ' ' + additionalStyles : '');
   return (
@@ -93,6 +93,7 @@ export const Button = ({ label, type, onClick, disabled, additionalStyles, icon,
       className={classes}
       disabled={disabled}
       title={title}
+      aria-haspopup={ariaHasPopup ? 'dialog' : null}
       onClick={onClick}
     >
       {icon && (
@@ -118,7 +119,8 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
 };
 
 export const LineEdit = forwardRef(
-  ({ placeholder, value, onChange, disabled, type, name, required, autocomplete, showIndicator }, ref) => {
+  ({ placeholder, value, onChange, disabled, type, name, required, autocomplete, showIndicator, labelId, descriptionId }, ref) => {
+    console.log(labelId)
     if (type === 'textarea') {
       return (
         <textarea
@@ -130,6 +132,8 @@ export const LineEdit = forwardRef(
           name={name}
           required={required}
           autoComplete={autocomplete}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
           onChange={onChange}
         />
       );
@@ -145,6 +149,8 @@ export const LineEdit = forwardRef(
           required={required}
           autoComplete={autocomplete}
           showIndicator={showIndicator}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
           isFullWidth
           onChangeEvent={onChange}
         />
@@ -161,6 +167,8 @@ export const LineEdit = forwardRef(
           name={name}
           required={required}
           autoComplete={autocomplete}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
           onChange={onChange}
         />
       );

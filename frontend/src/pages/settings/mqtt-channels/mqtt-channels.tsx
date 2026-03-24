@@ -23,10 +23,11 @@ const MqttChannelsPage = observer(({ store }: MqttChannelsPageProps) => {
     setSortDirection('asc');
   };
 
-  const getSortProps = (column: MqttChannelsSortColumn) => ({
+  const getSortProps = (column: MqttChannelsSortColumn, label: string) => ({
     onSort: () => toggleSort(column),
     isActive: column === sortColumn,
     direction: column === sortColumn ? sortDirection : undefined,
+    label,
   });
 
   const compareStrings = (first: string, second: string) => first.localeCompare(second);
@@ -81,19 +82,19 @@ const MqttChannelsPage = observer(({ store }: MqttChannelsPageProps) => {
 
       <Table isFullWidth>
         <TableRow isHeading>
-          <TableCell sort={getSortProps('id')}>
+          <TableCell sort={getSortProps('id', `${t('mqtt.labels.device')} ${t('mqtt.labels.control')}`)}>
             {t('mqtt.labels.device')}/{t('mqtt.labels.control')}
           </TableCell>
-          <TableCell sort={getSortProps('type')}>
+          <TableCell sort={getSortProps('type', t('mqtt.labels.type'))}>
             {t('mqtt.labels.type')}
           </TableCell>
-          <TableCell sort={getSortProps('topic')}>
+          <TableCell sort={getSortProps('topic', t('mqtt.labels.topic'))}>
             {t('mqtt.labels.topic')}
           </TableCell>
-          <TableCell sort={getSortProps('value')}>
+          <TableCell sort={getSortProps('value', t('mqtt.labels.value'))}>
             {t('mqtt.labels.value')}
           </TableCell>
-          <TableCell sort={getSortProps('status')} width={110} align="right">
+          <TableCell sort={getSortProps('status', t('mqtt.labels.status'))} width={110} align="right">
             {t('mqtt.labels.status')}
           </TableCell>
         </TableRow>

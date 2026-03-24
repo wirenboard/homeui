@@ -28,7 +28,7 @@ export const RegistersForm = observer(({ pageStore, registersStore }) => {
         }}
       >
         <span>{registersStore.name}</span>
-        <Button label={t('mbgate.buttons.add')} onClick={() => pageStore.addControls()} />
+        <Button label={t('mbgate.buttons.add')} ariaHasPopup={true} onClick={() => pageStore.addControls()} />
       </legend>
       <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
         <ShowParamCaptionContext.Provider value={true}>

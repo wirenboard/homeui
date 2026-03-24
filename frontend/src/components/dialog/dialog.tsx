@@ -55,6 +55,7 @@ export const Dialog = ({
               'aria-modal': true,
               onClick: (e) => e.stopPropagation(),
             })}
+            aria-labelledby={heading}
             style={{ maxWidth: `${width}px` }}
           >
             <header className="dialog-header">
@@ -64,7 +65,7 @@ export const Dialog = ({
               <div>
                 {headerActions}
                 {showCloseButton && (
-                  <button className="dialog-close" aria-label={t('app.buttons.close')} onClick={() => onClose?.()}>
+                  <button className="dialog-close" aria-label={t('common.buttons.close')} onClick={() => onClose?.()}>
                     <CloseIcon />
                   </button>
                 )}

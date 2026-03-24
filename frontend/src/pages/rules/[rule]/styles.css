@@ -6,10 +6,6 @@
     flex-grow: 1;
 }
 
-.editRule-nameInput {
-    max-width: 70%;
-}
-
 .editRule-error {
     margin-bottom: 12px;
 }

@@ -4,8 +4,9 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { ReactSortable } from 'react-sortablejs';
 import useResizeObserver from 'use-resize-observer';
-import CheckIcon from '@/assets/icons/check.svg';
 import EditIcon from '@/assets/icons/edit.svg';
+import FileSvgIcon from '@/assets/icons/file-svg.svg';
+import FileTextIcon from '@/assets/icons/file-text.svg';
 import MoveIcon from '@/assets/icons/move.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
@@ -78,7 +79,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                 <TableCell width={40} />
               )}
               {dashboardsList.some((dashboard) => dashboard.isSvg) && (
-                <TableCell width={30} align="center">SVG</TableCell>
+                <TableCell width={30} align="center">{t('dashboards.labels.type')}</TableCell>
               )}
               {hasEditRights && <TableCell width={70}>{t('dashboards.labels.in-menu')}</TableCell>}
             </TableRow>
@@ -120,11 +121,12 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   </TableCell>
 
                   {hasEditRights && (
-                    <TableCell width={30} align="center" visibleOnHover={isDesktop} preventClick>
+                    <TableCell width={30} align="center" preventClick>
                       <Tooltip text={t('dashboards.buttons.edit')} placement="top">
                         <Button
                           size="small"
                           icon={<EditIcon />}
+                          aria-haspopup={dashboard.isSvg ? null : 'dialog'}
                           aria-label={t('dashboards.buttons.edit-dashboard', { name: dashboard.name })}
                           onClick={() => {
                             if (dashboard.isSvg) {
@@ -139,13 +141,14 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   )}
 
                   {hasEditRights && (
-                    <TableCell width={30} align="center" visibleOnHover={isDesktop} preventClick>
+                    <TableCell width={30} align="center" preventClick>
                       <Tooltip text={t('dashboards.buttons.delete')} placement="top">
                         <Button
                           size="small"
                           variant="danger"
                           icon={<TrashIcon />}
                           aria-label={t('dashboards.buttons.delete-dashboard', { name: dashboard.name })}
+                          aria-haspopup="dialog"
                           onClick={() => setDeletedDashboardId(dashboard.id)}
                         />
                       </Tooltip>
@@ -153,8 +156,26 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   )}
 
                   {dashboardsList.some((dashboard) => dashboard.isSvg) && (
-                    <TableCell align="center">
-                      {dashboard.isSvg && <CheckIcon className="dashboardList-icon" />}
+                    <TableCell align="center" preventClick>
+                      {dashboard.isSvg ? (
+                        <Tooltip text={t('dashboards.labels.svg-flag')} placement="top">
+                          <FileSvgIcon
+                            tabIndex={0}
+                            aria-label={t('dashboards.labels.svg-flag')}
+                            aria-hidden={false}
+                            className="dashboardList-icon"
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip text={t('dashboards.labels.text-flag')} placement="top">
+                          <FileTextIcon
+                            tabIndex={0}
+                            aria-label={t('dashboards.labels.text-flag')}
+                            aria-hidden={false}
+                            className="dashboardList-icon"
+                          />
+                        </Tooltip>
+                      )}
                     </TableCell>
                   )}
 
@@ -168,9 +189,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                       >
                         <Switch
                           id={`visibility-${dashboard.id}`}
-                          ariaLabel={t(dashboard.options?.isHidden
-                            ? 'dashboards.buttons.hidden'
-                            : 'dashboards.buttons.visible')}
+                          ariaLabel={t('dashboards.buttons.visible-flag', { name: dashboard.name })}
                           value={dashboard.options?.isHidden ? !dashboard.options?.isHidden : true}
                           onChange={() => dashboard.toggleVisibility()}
                         />

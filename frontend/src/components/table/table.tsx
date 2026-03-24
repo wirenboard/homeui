@@ -29,6 +29,7 @@ export const TableRow = ({
         url: shouldPassUrl ? url : null,
         ariaLabel: !!url && rest['aria-label'],
         isFirstLinkColumn,
+        isHeading,
       } as Partial<typeof child.props>);
     }
   });
@@ -68,6 +69,7 @@ export const TableCell = ({
   url,
   ariaLabel,
   isFirstLinkColumn,
+  isHeading,
   // eslint-disable-next-line no-unused-vars
   isDraggable,
   ...rest
@@ -90,25 +92,35 @@ export const TableCell = ({
   });
 
   const sortButton = sort && (
-    <Button
-      className={classNames('wb-tableCellSortButton', {
-        'wb-tableCellSortButtonActive': sort.isActive,
-      })}
-      variant="unaccented"
-      size="small"
-      icon={
-        sort.direction === 'asc' || !sort.isActive
-          ? <SortAscIcon className="wb-tableCellSortIcon" />
-          : <SortDescIcon className="wb-tableCellSortIcon" />
-      }
-      aria-label={t('common.buttons.sort')}
-      isOutlined
-      onClick={sort.onSort}
-    />
+    <>
+      <Button
+        className={classNames('wb-tableCellSortButton', {
+          'wb-tableCellSortButtonActive': sort.isActive,
+        })}
+        variant="unaccented"
+        size="small"
+        icon={
+          sort.direction === 'asc' || !sort.isActive
+            ? <SortAscIcon className="wb-tableCellSortIcon"/>
+            : <SortDescIcon className="wb-tableCellSortIcon"/>
+        }
+        aria-label={t('common.buttons.sort', { column: sort.label })}
+        aria-describedby="sort-direction-type"
+        isOutlined
+        onClick={sort.onSort}
+      />
+      {sort.isActive && (
+        <span id="sort-direction-type" className="sr-only">
+          {sort.direction === 'asc' ? t('common.labels.asc') : t('common.labels.desc')}
+        </span>
+      )}
+    </>
   );
 
+  const Component = isHeading ? 'th' : 'td';
+
   return (
-    <td
+    <Component
       style={width ? ({ width: width }) : null}
       className={classNames('wb-tableCell', className, {
         'wb-tableCellEllipsis': ellipsis,
@@ -118,6 +130,7 @@ export const TableCell = ({
         'wb-tableCellAlignRight': align === 'right',
         'wb-tableCellWithLink': !!url,
       })}
+      aria-sort={sort?.isActive ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
       onClick={(ev) => {
         if (preventClick) {
           ev.preventDefault();
@@ -125,7 +138,7 @@ export const TableCell = ({
       }}
       {...rest}
     >
-      {!!url && (
+      {!!url && !preventClick && (
         <a
           href={url}
           className="wb-tableLink"
@@ -142,7 +155,7 @@ export const TableCell = ({
       ) : (
         content
       )}
-    </td>
+    </Component>
   );
 };
 

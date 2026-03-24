@@ -162,6 +162,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
               <Input
                 className={classNames('widgetEdit-input', 'widgetEdit-name')}
                 placeholder={t('widget.labels.name')}
+                ariaLabel={t('widget.labels.name')}
                 value={name}
                 isDisabled={isJsonView}
                 autoFocus
@@ -171,6 +172,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
               <Textarea
                 className="widgetEdit-description"
                 placeholder={t('widget.labels.description')}
+                ariaLabel={t('widget.labels.description')}
                 value={description}
                 onChange={(value) => setDescription(value)}
               />
@@ -241,6 +243,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                           <Switch
                             id={`inverted_${cell.id}_${i}`}
                             value={cell.extra?.invert}
+                            ariaLabel={t('widget.labels.invert')}
                             onChange={(invert) => updateCell(cell.id, { extra: { invert } })}
                           />
                         )}
@@ -263,6 +266,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
               value={null}
               className="widgetEdit-dropdown"
               placeholder={t('widget.labels.add-control')}
+              ariaLabel={t('widget.labels.add-control')}
               options={controlsOptions}
               isButton
               isSearchable

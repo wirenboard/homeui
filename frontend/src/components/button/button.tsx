@@ -19,6 +19,7 @@ export const Button = ({
       'button-warn': variant === 'warn',
       'button-outlined': isOutlined,
     })}
+    aria-busy={isLoading}
     {...rest}
   >
     {isLoading && <Loader className="button-loader" />}

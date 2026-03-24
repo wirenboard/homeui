@@ -4,6 +4,7 @@ export interface CardAction {
   title: string;
   action?: (_args: unknown | unknown[]) => void;
   url?: (_id?: string) => string;
+  isPopupAction?: boolean;
   icon: FC<SVGProps<SVGSVGElement>>;
   disabled?: boolean;
 }

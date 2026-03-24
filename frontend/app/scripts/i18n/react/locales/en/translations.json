@@ -1,12 +1,9 @@
 {
-   "app": {
-      "buttons": {
-         "close": "Close",
-         "skip-to-main-content": "Skip to main content"
-      }
-   },
    "common":{
       "labels": {
+         "loading": "Loading",
+         "asc": "ascending",
+         "desc": "descending",
          "password-strength-0": "Short password",
          "password-strength-1": "Very weak password",
          "password-strength-2": "Weak password",
@@ -14,8 +11,10 @@
          "password-strength-4": "Strong password"
       },
       "buttons": {
+         "close": "Close",
          "apply": "Apply",
          "add": "Add",
+         "edit": "Edit",
          "remove": "Remove",
          "move-up": "Move up",
          "move-down": "Move down",
@@ -24,7 +23,10 @@
          "save": "Save",
          "password-hide": "Hide password",
          "password-show": "Show password",
-         "sort": "Change sorting"
+         "sort": "Sort by column \"{{column}}\"",
+         "collapse": "Collapse",
+         "expand": "Expand",
+         "skip-to-main-content": "Skip to main content"
       },
       "prompt": {
          "dirty": "The page has unsaved changes. Are you sure you want to leave?"
@@ -35,10 +37,13 @@
       "labels": {
          "id": "Panel id (used in url)",
          "name": "Name",
+         "type": "Type",
          "in-menu": "In nav",
          "empty-list": "No dashboards currently defined",
          "edit": "Edit panel \"{{name}}\"",
          "create": "Add panel",
+         "svg-flag": "SVG panel type",
+         "text-flag": "Text panel type",
          "text-dashboard": "Text"
       },
       "buttons": {
@@ -50,7 +55,8 @@
          "delete-dashboard": "Delete \"{{name}}\" dashboard",
          "save": "Save",
          "hide": "Hidden from menu",
-         "visible": "Shown in menu"
+         "visible": "Shown in menu",
+         "visible-flag": "Show dashboard \"{{name}}\" in navigation menu"
       },
       "prompt": {
          "delete-title": "Dashboard deletion",
@@ -88,6 +94,9 @@
          "device-manager": "Device manager"
       },
       "buttons": {
+         "open-mobile": "Open mobile menu",
+         "compact-off": "Collapse navigation",
+         "compact-on": "Expand navigation",
          "logout": "Logout",
          "switch-user": "Switch user",
          "debug": "Debug"
@@ -323,7 +332,8 @@
          "save": "Save",
          "cancel": "Cancel",
          "edit-json": "Edit as JSON",
-         "load-svg": "Load SVG",
+         "load-svg": "Upload SVG",
+         "download-svg": "Download SVG",
          "to-dashboards-list": "Dashboards list",
          "preview": "Preview",
          "remove": "Remove"
@@ -701,9 +711,11 @@
       },
       "buttons": {
          "login": "Sign in",
-         "auto-login": "Sign in without password"
+         "auto-login": "Sign in without password",
+         "choose-language": "Choose language"
       },
       "labels": {
+         "authorization-title": "Logging in to the controller interface",
          "login": "Login",
          "password": "Password",
          "documentation": "Documentation"

@@ -89,6 +89,7 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
                 <Button
                   icon={<DownloadIcon />}
                   variant="secondary"
+                  aria-label={t('edit-svg-dashboard.buttons.download-svg')}
                   onClick={() => store.svgStore.exportSvg(store.commonParameters['name'])}
                 />
               </div>

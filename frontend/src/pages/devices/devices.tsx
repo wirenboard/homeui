@@ -26,7 +26,10 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
 
   const actions = [
     {
-      title: t('devices.labels.delete'), action: (id: string) => setDeletedDeviceId(id), icon: TrashIcon,
+      title: t('devices.labels.delete'),
+      action: (id: string) => setDeletedDeviceId(id),
+      icon: TrashIcon,
+      isPopupAction: true,
     },
   ];
 

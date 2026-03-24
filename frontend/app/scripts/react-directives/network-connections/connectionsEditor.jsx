@@ -73,6 +73,7 @@ const TabPaneButtons = observer(({ onSave, onDelete, connection }) => {
           key="delete"
           label={t('network-connections.buttons.delete')}
           type="danger"
+          ariaHasPopup={true}
           onClick={() => onDelete(connection)}
         />
         <div className="pull-right buttons-holder">
@@ -124,6 +125,7 @@ const ConnectionsEditor = observer(
             label={t('network-connections.buttons.add-connection')}
             additionalStyles="add-connection-button"
             icon="glyphicon glyphicon-plus"
+            ariaHasPopup={true}
             onClick={onAdd}
           />
         </TabsList>

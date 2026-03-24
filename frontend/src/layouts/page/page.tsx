@@ -56,7 +56,8 @@ export const PageLayout = ({
             <div className="page-headerTitleWrapper">
               {isEditingTitle ? (
                 <Input
-                  className="editRule-nameInput"
+                  className="page-nameInput"
+                  ariaLive="polite"
                   value={titleValue}
                   placeholder={editingTitlePlaceholder}
                   autoFocus
@@ -78,6 +79,8 @@ export const PageLayout = ({
                 <Button
                   size="small"
                   type="button"
+                  aria-label={t('common.buttons.edit')}
+                  aria-description={editingTitlePlaceholder}
                   icon={<EditSquareIcon />}
                   variant="secondary"
                   isOutlined

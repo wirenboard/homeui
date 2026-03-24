@@ -147,7 +147,12 @@ const UpdateEntrypoint = observer(({ expandRootFsHandler, showModal, expandRootF
           </li>
         </ul>
       </div>
-      <button type="button" className="btn btn-primary" onClick={showModal}>
+      <button
+        type="button"
+        className="btn btn-primary"
+        aria-haspopup="dialog"
+        onClick={showModal}
+      >
         {t('system.buttons.select')}
       </button>
       <div style={{ margin: '10px' }}>
@@ -248,7 +253,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
     return (
       <>
         <FactoryResetModal state={store.modalState} store={store} />
-        <div className="panel panel-default">
+        <article className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">
               <i className="glyphicon glyphicon-repeat"></i> {t('system.factory_reset.title')}
@@ -257,14 +262,14 @@ const FirmwareUpdateWidget = observer(({ store }) => {
           <div className="panel-body">
             {store.receivedFirstStatus ? <UploadWidget store={store} /> : <ServiceUnavailable />}
           </div>
-        </div>
+        </article>
       </>
     );
   }
   return (
     <>
       <DownloadBackupModal {...store.modalState} />
-      <div className="panel panel-default">
+      <article className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">
             <i className="glyphicon glyphicon-upload"></i> {t('system.update.title')}
@@ -273,7 +278,7 @@ const FirmwareUpdateWidget = observer(({ store }) => {
         <div className="panel-body">
           {store.receivedFirstStatus ? <UploadWidget store={store} /> : <ServiceUnavailable />}
         </div>
-      </div>
+      </article>
     </>
   );
 });
@@ -345,12 +350,22 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset
           {canFactoryReset && <li>{t('system.factory_reset.warning2')}</li>}
         </ul>
       </div>
-      <button type="button" className="btn btn-danger" onClick={onUploadClick}>
+      <button
+        type="button"
+        className="btn btn-danger"
+        aria-haspopup="dialog"
+        onClick={onUploadClick}
+      >
         {t('system.buttons.select')}
       </button>
       &nbsp;
       {canFactoryReset && (
-        <button type="button" className="btn btn-danger" onClick={onResetClick}>
+        <button
+          type="button"
+          className="btn btn-danger"
+          aria-haspopup="dialog"
+          onClick={onResetClick}
+        >
           {t('system.buttons.reset')}
         </button>
       )}

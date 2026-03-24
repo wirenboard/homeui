@@ -36,6 +36,7 @@ const CardActionButton = ({ action, id }: { action: CardAction; id?: string }) =
         type="button"
         className="card-action"
         aria-label={action.title}
+        aria-haspopup={action.isPopupAction ? 'dialog' : null}
         disabled
       >
         <action.icon />
@@ -53,6 +54,7 @@ const CardActionButton = ({ action, id }: { action: CardAction; id?: string }) =
         className="card-action"
         disabled={action.disabled}
         aria-label={action.title}
+        aria-haspopup={action.isPopupAction ? 'dialog' : null}
         onClick={actionCall}
       >
         <action.icon />

@@ -22,12 +22,13 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
   const [saveError, setSaveError] = useState(null);
   const [sortDirection, setSortDirection] = useState<TableCellSortDirection>('asc');
 
-  const getSortProps = (column: string) => ({
+  const getSortProps = (column: string, label: string) => ({
     onSort: () => {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     },
     isActive: column === 'device',
     direction: sortDirection,
+    label,
   });
 
   const deviceList = useMemo(() => {
@@ -134,6 +135,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
                 type="button"
                 icon={<TrashIcon />}
                 aria-label={t('alice.buttons.delete-room')}
+                aria-haspopup="dialog"
                 variant="danger"
                 isOutlined
                 onClick={() => {
@@ -159,7 +161,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
 
         <Table isWithoutGap isFullWidth>
           <TableRow isHeading>
-            <TableCell width="25%" sort={getSortProps('device')}>
+            <TableCell width="25%" sort={getSortProps('device', t('alice.labels.device'))}>
               {t('alice.labels.device')}
             </TableCell>
             <TableCell width="25%">

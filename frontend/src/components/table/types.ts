@@ -6,6 +6,7 @@ export interface TableCellSort {
   onSort: () => void;
   isActive?: boolean;
   direction?: TableCellSortDirection;
+  label?: string;
 }
 
 export interface TableProps extends HTMLAttributes<HTMLDivElement> {
@@ -36,5 +37,6 @@ export interface TableCellProps extends HTMLAttributes<HTMLDivElement> {
   sort?: TableCellSort;
   url?: string;
   isFirstLinkColumn?: boolean;
+  isHeading?: boolean;
   ariaLabel?: string;
 }

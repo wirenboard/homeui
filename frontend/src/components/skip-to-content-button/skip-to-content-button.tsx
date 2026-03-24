@@ -11,7 +11,7 @@ export const SkipToContentButton = () => {
       <Button
         className="skipToContentButton"
         size="large"
-        label={t('app.buttons.skip-to-main-content')}
+        label={t('common.buttons.skip-to-main-content')}
         onClick={() => focusToMainContent()}
       />
     </div>

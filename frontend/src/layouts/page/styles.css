@@ -76,6 +76,10 @@
     height: 20px;
 }
 
+.page-nameInput {
+    max-width: 70%;
+}
+
 .page-actions {
     flex-shrink: 0;
     display: flex;
