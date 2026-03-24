@@ -161,7 +161,6 @@
          "ethernet": "Wired connection (Ethernet)",
          "modem": "GSM-modem connection",
          "canbus": "CAN bus",
-         "confirm-delete-connection": "Do you really want to delete the connection?",
          "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
          "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>",
          "manual-connect": "Manual connect",
@@ -191,8 +190,15 @@
          "add-connection": "Add connection",
          "delete": "Delete",
          "add": "Add",
+         "priority-up": "Increase priority",
+         "priority-down": "Decrease priority",
          "connect": "Connect",
          "disconnect": "Disconnect"
+      },
+      "prompt": {
+         "confirmation-title": "Confirmation",
+         "delete-title": "Connection delete",
+         "confirm-delete-connection": "Do you really want to delete the connection?"
       },
       "errors": {
          "write": "Error writing config. See wb-mqtt-confed logs for details"

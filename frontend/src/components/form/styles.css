@@ -1,14 +1,15 @@
 .form-descriptionText {
-    display: block;
+    display: inline-block;
     color: var(--gray-color);
     margin-top: 5px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     flex-basis: 100%;
     white-space: pre-wrap;
 }
 
 .form-defaultText {
     padding: .1em .3em;
+    display: inline-block;
     white-space: break-spaces;
     background-color: var(--light-gray-color);
     border-radius: 6px;
@@ -21,10 +22,6 @@
 .form-errorText input[type="text"],
 .form-errorText input[type="number"] {
     border-color: var(--danger-color);
-}
-
-.form-fieldLabel {
-    white-space: nowrap;
 }
 
 .form-field {

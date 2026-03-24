@@ -1,12 +1,10 @@
-'use strict';
-
-import { BooleanStore } from './booleanStore';
-import { FormStore } from './formStore';
-import { NumberStore } from './numberStore';
-import { StringStore } from './stringStore';
 import { ArrayStore } from './arrayStore';
+import { BooleanStore } from './boolean-store';
+import { FormStore } from './formStore';
+import { NumberStore } from './number-store';
 import { OneOfStore } from './oneOfStore';
 import { OptionsStore } from './optionsStore';
+import { StringStore } from './string-store';
 import { makeMinLengthValidator } from './stringValidators';
 
 class Translator {
@@ -22,7 +20,7 @@ class Translator {
 
 function matchRequired(required, value) {
   const keys = Object.keys(value);
-  return required.every(key => keys.includes(key));
+  return required.every((key) => keys.includes(key));
 }
 
 function getRealSchema(schema, definitions) {
@@ -42,7 +40,7 @@ function makeBooleanStore(schema, translator) {
 
 function makeOptionsStore(schema, translator) {
   const titlesSource = schema?.options?.enum_titles || schema?.enum;
-  const optionsTitles = titlesSource.map(value => translator.find(value));
+  const optionsTitles = titlesSource.map((value) => translator.find(value));
   return new OptionsStore({
     name: translator.find(schema?.title),
     options: schema?.enum.map((value, index) => ({
@@ -129,7 +127,7 @@ function makeArrayStore(schema, translator, definitions) {
   const itemSchema = getRealSchema(schema.items, definitions);
   const headers = Object.entries(itemSchema?.properties || {})
     .sort(comparePropertyOrder)
-    .map(([key, value]) => translator.find(value.title));
+    .map(([_key, value]) => translator.find(value.title));
   return new ArrayStore(translator.find(schema?.title), headers, () =>
     createStore(itemSchema, translator, definitions)
   );
@@ -140,10 +138,10 @@ function makeOneOfStore(schema, translator, definitions) {
     return undefined;
   }
   let store = new OneOfStore(translator.find(schema?.title));
-  schema.oneOf.forEach(item => {
+  schema.oneOf.forEach((item) => {
     const itemSchema = getRealSchema(item, definitions);
     const itemStore = createStore(itemSchema, translator, definitions);
-    store.add(itemStore, value => matchRequired(itemSchema?.required || [], value));
+    store.add(itemStore, (value) => matchRequired(itemSchema?.required || [], value));
   });
   return store;
 }

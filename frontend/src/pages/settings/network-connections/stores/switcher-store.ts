@@ -1,38 +1,36 @@
-'use strict';
-
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import i18n from '../../i18n/react/config';
-import { NumberStore } from '../forms/numberStore';
-import { StringStore } from '../forms/stringStore';
-import { BooleanStore } from '../forms/booleanStore';
-
-export const HIGH_TIER = 'high';
-export const MEDIUM_TIER = 'medium';
-export const LOW_TIER = 'low';
+import i18n from '~/i18n/react/config';
+import { BooleanStore } from '~/react-directives/forms/boolean-store';
+import { NumberStore } from '~/react-directives/forms/number-store';
+import { StringStore } from '~/react-directives/forms/string-store';
+import { type Tier, TierLevel } from '../components/switcher/types';
+import { type Connections } from '../stores/connections-store';
+import { type SingleConnection } from '../stores/single-connection-store';
+import { NetworkType } from '../stores/types';
 
 const DefaultConnectionPriorities = {
-  '01_nm_ethernet': HIGH_TIER,
-  '03_nm_wifi': MEDIUM_TIER,
-  '02_nm_modem': LOW_TIER,
+  [NetworkType.Ethernet]: TierLevel.High,
+  [NetworkType.Wifi]: TierLevel.Medium,
+  [NetworkType.Modem]: TierLevel.Low,
 };
 
-export function getTierByType(connectionType) {
+function getTierByType(connectionType: NetworkType) {
   return DefaultConnectionPriorities[connectionType];
 }
 
-function makeTier(name, id) {
+function makeTier(name: any, id: TierLevel): Tier {
   return { name, connections: [], id };
 }
 
-function makeTiers() {
+function makeTiers(): Tier[] {
   return [
-    makeTier(i18n.t('network-connections.labels.high'), HIGH_TIER),
-    makeTier(i18n.t('network-connections.labels.medium'), MEDIUM_TIER),
-    makeTier(i18n.t('network-connections.labels.low'), LOW_TIER),
+    makeTier(i18n.t('network-connections.labels.high'), TierLevel.High),
+    makeTier(i18n.t('network-connections.labels.medium'), TierLevel.Medium),
+    makeTier(i18n.t('network-connections.labels.low'), TierLevel.Low),
   ];
 }
 
-function manageableBySwitcher(connection) {
+function manageableBySwitcher(connection: SingleConnection) {
   return (
     Object.keys(DefaultConnectionPriorities).includes(connection.data.type)
      && connection.editedData.ipv4.method !== 'shared'
@@ -40,8 +38,8 @@ function manageableBySwitcher(connection) {
   );
 }
 
-function removeFromArray(array, item) {
-  const itemIndex = array.findIndex(el => el === item);
+function removeFromArray(array: SingleConnection[], item: SingleConnection) {
+  const itemIndex = array.findIndex((el) => el === item);
   if (itemIndex === -1) {
     return false;
   }
@@ -49,30 +47,30 @@ function removeFromArray(array, item) {
   return true;
 }
 
-function copyTiers(src, dst) {
+function copyTiers(src: Tier[], dst: Tier[]) {
   src.forEach((tier, index) => {
     dst[index].connections = [];
-    tier.connections.forEach(item => dst[index].connections.push(item));
+    tier.connections.forEach((item) => dst[index].connections.push(item));
   });
 }
 
-function getConnectionsManageableBySwitcher(connectionsStore) {
-  return connectionsStore.connections.filter(item => manageableBySwitcher(item));
+function getConnectionsManageableBySwitcher(connectionsStore: Connections) {
+  return connectionsStore.connections.filter((item) => manageableBySwitcher(item));
 }
 
-function updateTiers(connections, connectionPrioritiesStore) {
-  var res = {};
-  connections.forEach(cn => {
-    const tier = connectionPrioritiesStore.tiers.find(t => t.connections.includes(cn));
+function updateTiers(connections: SingleConnection[], connectionPrioritiesStore: ConnectionPrioritiesStore) {
+  let res = {};
+  connections.forEach((cn) => {
+    const tier = connectionPrioritiesStore.tiers.find((t) => t.connections.includes(cn));
     const id = tier ? tier.id : getTierByType(cn.data.type);
-    if (!res.hasOwnProperty(id)) {
+    if (!Object.hasOwn(res, id)) {
       res[id] = [];
     }
     res[id].push(cn);
   });
   runInAction(() => {
     let isChanged = false;
-    connectionPrioritiesStore.tiers.forEach(t => {
+    connectionPrioritiesStore.tiers.forEach((t) => {
       const newConnections = res[t.id] || [];
       if (t.connections.length !== newConnections.length) {
         t.connections = newConnections;
@@ -85,22 +83,25 @@ function updateTiers(connections, connectionPrioritiesStore) {
   });
 }
 
-class ConnectionPrioritiesStore {
-  constructor(connectionsStore) {
+export class ConnectionPrioritiesStore {
+  public tiers: Tier[];
+  public storedTiers: Tier[];
+  public isDirty = false;
+
+  constructor(connectionsStore: Connections) {
     this.tiers = makeTiers();
     this.storedTiers = makeTiers();
-    this.isDirty = false;
 
     reaction(
       () => getConnectionsManageableBySwitcher(connectionsStore),
-      connections => updateTiers(connections, this)
+      (connections) => updateTiers(connections, this)
     );
     makeAutoObservable(this);
   }
 
-  moveConnectionToTier(connection, tier) {
+  moveConnectionToTier(connection: SingleConnection, tier: Tier) {
     if (!tier.connections.includes(connection)) {
-      this.tiers.some(tier => removeFromArray(tier.connections, connection));
+      this.tiers.some((tier) => removeFromArray(tier.connections, connection));
       tier.connections.push(connection);
       this.isDirty = true;
     }
@@ -117,8 +118,15 @@ class ConnectionPrioritiesStore {
   }
 }
 
-class SwitcherStore {
-  constructor(connectionsStore) {
+export class SwitcherStore {
+  public connectionPriorities: ConnectionPrioritiesStore;
+  public urlProperties: any;
+  public connectivityUrl: StringStore;
+  public connectivityPayload: StringStore;
+  public debug: BooleanStore;
+  public stickyConnectionPeriod: NumberStore;
+
+  constructor(connectionsStore: Connections) {
     this.stickyConnectionPeriod = new NumberStore({
       type: 'integer',
       name: i18n.t('network-connections.labels.sticky-connection-period'),
@@ -131,7 +139,7 @@ class SwitcherStore {
       name: i18n.t('network-connections.labels.connectivity-url'),
       description: i18n.t('network-connections.labels.connectivity-url-desc'),
       defaultText: i18n.t('network-connections.labels.connectivity-url-default-text'),
-      validator: value => {
+      validator: (value) => {
         if (value !== '') {
           if (value.length < this.urlProperties.minLength) {
             return i18n.t('network-connections.labels.connectivity-url-error-length', {
@@ -159,7 +167,7 @@ class SwitcherStore {
     this.connectionPriorities = new ConnectionPrioritiesStore(connectionsStore);
   }
 
-  setSchemaProperties(schemaProperties) {
+  setSchemaProperties(schemaProperties: any) {
     this.urlProperties = schemaProperties.connectivity_check_url;
     this.stickyConnectionPeriod.setDefaultText(schemaProperties.sticky_connection_period_s.default);
     this.connectivityUrl.setDefaultText(schemaProperties.connectivity_check_url.default);
@@ -167,24 +175,25 @@ class SwitcherStore {
   }
 
   submit() {
-    return Object.entries(this).forEach(([k, v]) => v.submit?.());
+    return Object.entries(this).forEach(([_k, v]) => v.submit?.());
   }
 
   reset() {
-    return Object.entries(this).forEach(([k, v]) => v.reset?.());
+    return Object.entries(this).forEach(([_k, v]) => v.reset?.());
   }
 
   get isDirty() {
-    return Object.entries(this).some(([k, v]) => v.isDirty);
+    return Object.entries(this).some(([_k, v]) => v?.isDirty);
   }
 
   get hasErrors() {
-    return Object.entries(this).some(([k, v]) => v.hasErrors);
+    return Object.entries(this).some(([_k, v]) => v.hasErrors);
   }
 }
 
-export function switcherStoreToJson(store, connectionsToStore) {
-  let res = {};
+export function switcherStoreToJson(store: SwitcherStore, connectionsToStore: SingleConnection[]) {
+  let res: any = {};
+  // @ts-ignore
   if (store.stickyConnectionPeriod.value !== '') {
     res.sticky_connection_period_s = store.stickyConnectionPeriod.value;
   }
@@ -198,15 +207,15 @@ export function switcherStoreToJson(store, connectionsToStore) {
     res.debug = store.debug.value;
   }
   res.tiers = {};
-  store.connectionPriorities.tiers.forEach(tier => {
+  store.connectionPriorities.tiers.forEach((tier) => {
     res.tiers[tier.id] = tier.connections
-      .filter(cn => connectionsToStore.includes(cn))
-      .map(cn => cn.name);
+      .filter((cn) => connectionsToStore.includes(cn))
+      .map((cn) => cn.name);
   });
   return res;
 }
 
-export function switcherStoreFromJson(store, json, connectionsStore) {
+export function switcherStoreFromJson(store: SwitcherStore, json: any, connectionsStore: Connections) {
   store.stickyConnectionPeriod.setValue(json.sticky_connection_period_s);
   store.stickyConnectionPeriod.submit();
   store.connectivityUrl.setValue(json.connectivity_check_url);
@@ -217,10 +226,10 @@ export function switcherStoreFromJson(store, json, connectionsStore) {
   store.debug.submit();
 
   const manageableConnections = getConnectionsManageableBySwitcher(connectionsStore);
-  store.connectionPriorities.tiers.forEach(tier => {
+  store.connectionPriorities.tiers.forEach((tier) => {
     tier.connections = [];
-    (json?.tiers?.[tier.id] ?? []).forEach(name => {
-      const cn = manageableConnections.find(item => item.name === name);
+    (json?.tiers?.[tier.id] ?? []).forEach((name: string) => {
+      const cn = manageableConnections.find((item) => item.name === name);
       if (cn) {
         tier.connections.push(cn);
       }
@@ -229,5 +238,3 @@ export function switcherStoreFromJson(store, json, connectionsStore) {
   store.connectionPriorities.submit();
   updateTiers(manageableConnections, store.connectionPriorities);
 }
-
-export default SwitcherStore;

@@ -26,7 +26,7 @@ export interface FieldErrorProps {
 
 export interface StringFieldProps {
   title: string;
-  value: string;
+  value: string | number;
   description?: string;
   placeholder?: string;
   error?: string;
