@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb103) stable; urgency=medium
+
+  * Fix hmi dashboard padding
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 24 Mar 2026 16:08:00 +0300
+
 wb-mqtt-homeui (2.172.0-wb102) stable; urgency=medium
 
   * Fix hmi dashboard padding
