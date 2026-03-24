@@ -847,7 +847,8 @@
          "reload": "Reload",
          "clear-log": "Clear log",
          "pause-log": "Pause log",
-         "resume-log": "Resume log"
+         "resume-log": "Resume log",
+         "set": "Set"
       }
    }
 }

@@ -6,6 +6,6 @@ export interface TreeProps {
 
 export interface TreeItem {
   id: string;
-  label: string;
+  label: string | React.ReactNode;
   children?: TreeItem[];
 }
