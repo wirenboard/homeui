@@ -1,9 +1,8 @@
 .editRule-container {
     display: flex;
     flex-direction: column;
-    height: 1px;
     width: 100%;
-    flex-grow: 1;
+    flex: 1 1 0;
 }
 
 .editRule-nameInput {
