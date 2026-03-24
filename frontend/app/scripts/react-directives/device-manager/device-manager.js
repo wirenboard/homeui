@@ -174,7 +174,7 @@ function deviceManagerDirective(
           mqttClient.addStickySubscription('/wb-device-manager/state', (msg) =>
             scope.store.updateScanState(msg.payload)
           );
-          mqttClient.addStickySubscription('/wb-device-manager/firmware_update/state', (msg) =>
+          mqttClient.addStickySubscription('/wb-mqtt-serial/firmware_update/state', (msg) =>
             scope.store.setEmbeddedSoftwareUpdateProgress(msg.payload)
           );
         });

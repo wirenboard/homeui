@@ -274,9 +274,9 @@ const HasUpdateAlert = observer(
 
 function getErrorDescriptionKey(type: string, errorId: string) {
   const idToKey = new Map([
-    ['com.wb.device_manager.download_error', 'download'],
-    ['com.wb.device_manager.rpc_call_timeout_error', 'rpc-timeout'],
-    ['com.wb.device_manager.device.response_timeout_error', 'recoverable'],
+    ['com.wb.serial_driver.download_error', 'download'],
+    ['com.wb.serial_driver.rpc_call_timeout_error', 'rpc-timeout'],
+    ['com.wb.serial_driver.device.response_timeout_error', 'recoverable'],
   ]);
   const genericException = type === 'component' ? 'generic-component' : 'generic';
   const key = idToKey.get(errorId) || genericException;
