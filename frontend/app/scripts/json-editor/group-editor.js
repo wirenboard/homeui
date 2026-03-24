@@ -1,6 +1,5 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
+import extend from 'lodash/extend';
 
 class Conditions {
   constructor() {
@@ -337,7 +336,7 @@ class Tab {
   }
 }
 
-function makeGroupsEditor() {
+export function makeGroupsEditor() {
   JSONEditor.defaults.languages.en.channel = 'Channel';
   return class extends JSONEditor.AbstractEditor {
     constructor(options, defaults) {
@@ -630,7 +629,7 @@ function makeGroupsEditor() {
     }
 
     setValue(value, initial) {
-      this.value = angular.extend({}, value);
+      this.value = extend({}, value);
       this.disableValueUpdate = true;
       var hasChanges = true;
       for (var cycles = 0; hasChanges && cycles < 10; ++cycles) {
@@ -802,7 +801,7 @@ function makeGroupsEditor() {
           }
           if (ed.schema.hasOwnProperty('oneOf')) {
             ed.schema.oneOf.forEach(
-              s => (s.options = angular.extend(s.options || {}, { show_opt_in: true }))
+              s => (s.options = extend(s.options || {}, { show_opt_in: true }))
             );
           }
           const editorClass = this.jsoneditor.getEditorClass(ed.schema);
@@ -1004,5 +1003,3 @@ function makeGroupsEditor() {
     }
   };
 }
-
-export default makeGroupsEditor;

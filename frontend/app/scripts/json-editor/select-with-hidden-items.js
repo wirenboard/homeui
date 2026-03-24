@@ -1,8 +1,6 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
-function makeSelectWithHiddenItems() {
+export function makeSelectWithHiddenItems() {
   return class extends JSONEditor.defaults.editors['select'] {
     enable() {
       // Can't set values for parameters with empty enum_values,
@@ -70,5 +68,3 @@ function makeSelectWithHiddenItems() {
     }
   };
 }
-
-export default makeSelectWithHiddenItems;

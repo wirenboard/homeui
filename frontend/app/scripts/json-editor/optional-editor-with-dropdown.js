@@ -1,5 +1,3 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
 // Editor for not required properties
@@ -12,7 +10,7 @@ import { JSONEditor } from '@wirenboard/json-editor';
 //     "undefined_title": "title in select to set undefined",
 //     "undefined_message": "additional message when undefined"
 // }
-function makeOptionalEditorWithDropDown() {
+export function makeOptionalEditorWithDropDown() {
   return class extends JSONEditor.AbstractEditor {
     activate() {
       this._switchToEditor();
@@ -168,5 +166,3 @@ function makeOptionalEditorWithDropDown() {
     }
   };
 }
-
-export default makeOptionalEditorWithDropDown;

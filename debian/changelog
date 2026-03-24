@@ -1,8 +1,62 @@
-wb-mqtt-homeui (2.185.1) stable; urgency=medium
+wb-mqtt-homeui (2.188.2) stable; urgency=medium
 
   * Update a11y
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Mar 2026 11:02:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 24 Mar 2026 12:24:00 +0300
+
+wb-mqtt-homeui (2.188.1) stable; urgency=medium
+
+  * Fix dashboard hmi padding
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 23 Mar 2026 14:23:00 +0300
+
+wb-mqtt-homeui (2.188.0) stable; urgency=medium
+
+  * Update config page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 23 Mar 2026 11:21:00 +0300
+
+wb-mqtt-homeui (2.187.2) stable; urgency=medium
+
+  * Fix DALI colour temperature editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 23 Mar 2026 11:03:12 +0500
+
+wb-mqtt-homeui (2.187.1) stable; urgency=medium
+
+  * Fix history loading
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 20 Mar 2026 11:41:00 +0300
+
+wb-mqtt-homeui (2.187.0) stable; urgency=medium
+
+  * Add simple DALI bus monitor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 17 Mar 2026 17:51:05 +0500
+
+wb-mqtt-homeui (2.186.1) stable; urgency=medium
+
+  * Fix input default value
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Mar 2026 16:03:00 +0300
+
+wb-mqtt-homeui (2.186.0) stable; urgency=medium
+
+  * Device editor — add reread config button
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 12 Mar 2026 14:26:00 +0300
+
+wb-mqtt-homeui (2.185.2) stable; urgency=medium
+
+  * Add EnvironmentFile to wb-homeui-backend.service
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 12 Mar 2026 14:00:00 +0400
+
+wb-mqtt-homeui (2.185.1) stable; urgency=medium
+
+  * Fix DALI color temperature editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 12 Mar 2026 13:50:35 +0500
 
 wb-mqtt-homeui (2.185.0) stable; urgency=medium
 

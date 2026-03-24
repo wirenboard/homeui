@@ -1,8 +1,6 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
-function makeTranslatedInfoEditor() {
+export function makeTranslatedInfoEditor() {
   return class extends JSONEditor.AbstractEditor {
     constructor(options, defaults) {
       super(options, defaults);
@@ -20,5 +18,3 @@ function makeTranslatedInfoEditor() {
     }
   };
 }
-
-export default makeTranslatedInfoEditor;

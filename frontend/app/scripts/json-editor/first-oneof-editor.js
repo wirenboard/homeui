@@ -1,10 +1,8 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
 // The editor is derived from multiple editor.
 // It is used with oneOf nodes and shows editor only for the first item in oneOf array
-function makeFirstOneOfEditor() {
+export function makeFirstOneOfEditor() {
   return class extends JSONEditor.defaults.editors['multiple'] {
     build() {
       super.build();
@@ -16,5 +14,3 @@ function makeFirstOneOfEditor() {
     }
   };
 }
-
-export default makeFirstOneOfEditor;

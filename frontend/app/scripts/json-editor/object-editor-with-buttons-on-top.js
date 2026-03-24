@@ -1,10 +1,8 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
 // Create object editor with title_controls container on top
 // It can be used to place controls created by array item editor on top
-function makeObjectEditorWithButtonsOnTop() {
+export function makeObjectEditorWithButtonsOnTop() {
   return class extends JSONEditor.defaults.editors['object'] {
     build() {
       super.build();
@@ -14,5 +12,3 @@ function makeObjectEditorWithButtonsOnTop() {
     }
   };
 }
-
-export default makeObjectEditorWithButtonsOnTop;

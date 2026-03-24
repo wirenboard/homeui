@@ -6,8 +6,7 @@ import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { OptionalParamsSelectDialog } from '@/components/json-schema-editor';
 import { Loader } from '@/components/loader';
-import { DeviceSettingsEditor } from '../device-settings-editor';
-import { EmbeddedSoftwarePanel } from '../embedded-software-panel';
+import { EmbeddedSoftwarePanel, DeviceSettingsEditor } from '@/pages/settings/device-manager';
 import { UnknownDeviceTabContent } from '../unknown-device-tab';
 import { ReadRegistersResultAlert } from './read-registers-result-alert';
 import type { DeviceTabContentProps } from './types';
@@ -151,6 +150,10 @@ export const DeviceTabContent = observer(
                 onClick={onCopyTab}
               />
             )}
+            <Button
+              label={t('device-manager.buttons.review-config')}
+              onClick={() => onReadRegisters(tab, true)}
+            />
           </div>
         </div>
         {tab.schemaStore && tab.readRegistersState.allowEditSettings && (

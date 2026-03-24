@@ -47,7 +47,7 @@ function getTabPaneContent(
   onUpdateFirmware,
   onUpdateBootloader,
   onUpdateComponents,
-  onReadRegisters
+  onReadRegisters,
 ) {
   if (tab.type === TabType.PORT) {
     return (
@@ -94,7 +94,7 @@ function makeTabPanes(
   onUpdateFirmware,
   onUpdateBootloader,
   onUpdateComponents,
-  onReadRegisters
+  onReadRegisters,
 ) {
   return tabs.map((tab, index) => {
     return (
@@ -111,7 +111,7 @@ function makeTabPanes(
           onUpdateFirmware,
           onUpdateBootloader,
           onUpdateComponents,
-          onReadRegisters
+          onReadRegisters,
         )}
       </TabPane>
     );
@@ -174,7 +174,7 @@ const PageTabs = observer(
             onUpdateFirmware,
             onUpdateBootloader,
             onUpdateComponents,
-            onReadRegisters
+            onReadRegisters,
           )}
         </TabContent>
       </VerticalTabs>
@@ -316,7 +316,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             onUpdateFirmware={() => pageStore.updateFirmware()}
             onUpdateBootloader={() => pageStore.updateBootloader()}
             onUpdateComponents={() => pageStore.updateComponents()}
-            onReadRegisters={(tab) => pageStore.readRegisters(tab)}
+            onReadRegisters={(tab, isForce) => pageStore.readRegisters(tab, isForce)}
           />
         )}
       </PageBody>

@@ -1,6 +1,7 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
+import { MonitorStore } from './monitor-store'
 
 export class ItemStore {
   public objectStore: ObjectStore | null = null;
@@ -9,16 +10,20 @@ export class ItemStore {
   public label: string = '';
   public error: string | null = null;
   public children: ItemStore[] = [];
+  public busMonitor: MonitorStore | null = null;
 
   readonly type: string;
   readonly id: string;
 
   #daliProxy: any;
 
-  constructor(daliProxy: any, id: string, name: string, type: string) {
+  constructor(daliProxy: any, id: string, name: string, type: string, mqttClient: any) {
     this.#daliProxy = daliProxy;
     this.id = id;
     this.type = type;
+    if (type === 'bus') {
+      this.busMonitor = new MonitorStore(mqttClient);
+    }
     this.label = name;
 
     makeObservable(this, {
@@ -53,6 +58,13 @@ export class ItemStore {
       this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       this.setError(null);
       this.label = data.name || this.label;
+      if (this.busMonitor) {
+        if (data.config.bus_monitor_enabled) {
+          this.busMonitor.enableMonitoring(this.id);
+        } else {
+          this.busMonitor.disableMonitoring();
+        }
+      }
     } catch (error) {
       this.setError(error);
     } finally {
@@ -83,6 +95,13 @@ export class ItemStore {
       this.objectStore.commit();
       this.setError(null);
       this.label = data.name || this.label;
+      if (this.busMonitor) {
+        if (data.bus_monitor_enabled) {
+          this.busMonitor.enableMonitoring(this.id);
+        } else {
+          this.busMonitor.disableMonitoring();
+        }
+      }
     } catch (error) {
       this.setError(error);
     } finally {

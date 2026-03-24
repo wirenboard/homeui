@@ -1,9 +1,8 @@
 import ReactDOM from 'react-dom/client';
 import { setReactLocale } from '~/react-directives/locale';
-import ConfigsPage from '@/pages/settings/configs';
-import { ConfigsStore } from '@/stores/configs';
+import ConfigsPage from '@/pages/settings/configs/index/';
 
-export default function configsDirective(whenMqttReady, ConfigEditorProxy) {
+export default function configsDirective($rootScope) {
   'ngInject';
 
   setReactLocale();
@@ -16,10 +15,9 @@ export default function configsDirective(whenMqttReady, ConfigEditorProxy) {
         scope.root.unmount();
       }
 
-      scope.store = new ConfigsStore(whenMqttReady, ConfigEditorProxy);
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
-        <ConfigsPage store={scope.store}/>
+        <ConfigsPage store={$rootScope.configsStore}/>
       );
 
       element.on('$destroy', () => {

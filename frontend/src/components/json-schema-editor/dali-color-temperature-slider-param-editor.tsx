@@ -26,10 +26,9 @@ export const DaliColorTemperatureSliderEditor = observer(({
 }: DaliColorTemperatureSliderEditorProps) => {
   const { t } = useTranslation();
   const value = typeof store.value === 'number' ? store.value : 0;
-  const minValue = store.schema.minimum ?? 1;
-  const maxValue = store.schema.maximum ?? (MASK_VALUE - 1);
-  const showMaskSwitch = maxValue >= MASK_VALUE;
-  const isMasked = showMaskSwitch && value === MASK_VALUE;
+  const minValue = store.schema.options?.wb?.dali_tc?.minimum ?? 1;
+  const maxValue = store.schema.options?.wb?.dali_tc?.maximum ?? (MASK_VALUE - 1);
+  const isMasked = value === MASK_VALUE;
   const isDisabled = !!store.schema.options?.wb?.read_only;
 
   const onSwitchChange = useCallback((enabled: boolean) => {
@@ -42,13 +41,11 @@ export const DaliColorTemperatureSliderEditor = observer(({
 
   return (
     <div className="dali-color-temperature-slider">
-      {showMaskSwitch && (
-        <Switch
-          value={!isMasked}
-          isDisabled={isDisabled}
-          onChange={onSwitchChange}
-        />
-      )}
+      <Switch
+        value={!isMasked}
+        isDisabled={isDisabled}
+        onChange={onSwitchChange}
+      />
       {isMasked ? (
         <span className="dali-color-temperature-slider-mask">{t('json-editor.labels.dali-mask')}</span>
       ) : (
@@ -68,3 +65,5 @@ export const DaliColorTemperatureSliderEditor = observer(({
     </div>
   );
 });
+
+export default DaliColorTemperatureSliderEditor;

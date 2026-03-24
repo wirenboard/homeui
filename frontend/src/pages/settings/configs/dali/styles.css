@@ -36,3 +36,24 @@
     align-items: center;
     justify-content: center;
 }
+
+.dali-busMonitorContent {
+    height: 500px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-border-radius);
+    background: var(--background-color);
+    overflow: scroll;
+    padding-left: 10px;
+    font-family: monospace;
+}
+
+.dali-busMonitorContent div {
+    white-space: pre;
+}
+
+.dali-busMonitorHeader {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-bottom: 5px;
+}

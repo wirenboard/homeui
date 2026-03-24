@@ -25,6 +25,9 @@
          "password-hide": "Hide password",
          "password-show": "Show password",
          "sort": "Change sorting"
+      },
+      "prompt": {
+         "dirty": "The page has unsaved changes. Are you sure you want to leave?"
       }
    },
    "dashboards": {
@@ -394,6 +397,7 @@
          "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
          "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
          "restoring-device": "Restoring device firmware",
+         "uncommitted-settings": "You have modified settings that will be lost. Continue?",
          "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed."
       },
       "buttons": {
@@ -411,6 +415,7 @@
          "search-disconnected-device": "Search for the device",
          "update": "Update",
          "parameters": "Parameters",
+         "review-config": "Review config",
          "switch-template": "Switch template"
       },
       "errors": {
@@ -861,7 +866,10 @@
       "buttons": {
          "rescan": "Rescan",
          "return": "To devices list",
-         "reload": "Reload"
+         "reload": "Reload",
+         "clear-log": "Clear log",
+         "pause-log": "Pause log",
+         "resume-log": "Resume log"
       }
    }
 }

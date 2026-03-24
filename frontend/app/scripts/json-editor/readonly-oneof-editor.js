@@ -1,10 +1,8 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
 // The editor is derived from multiple editor.
 // It is used with oneOf nodes when changing of type is prohibited
-function makeReadonlyOneOfEditor() {
+export function makeReadonlyOneOfEditor() {
   return class extends JSONEditor.defaults.editors['multiple'] {
     build() {
       super.build();
@@ -37,5 +35,3 @@ function makeReadonlyOneOfEditor() {
     }
   };
 }
-
-export default makeReadonlyOneOfEditor;

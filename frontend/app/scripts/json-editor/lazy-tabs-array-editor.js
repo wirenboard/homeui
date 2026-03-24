@@ -1,8 +1,6 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
-function makeLazyTabsArrayEditor() {
+export function makeLazyTabsArrayEditor() {
   return class extends JSONEditor.defaults.editors['array'] {
     unregister() {
       if (this.jsoneditor) {
@@ -403,5 +401,3 @@ function makeLazyTabsArrayEditor() {
     }
   };
 }
-
-export default makeLazyTabsArrayEditor;

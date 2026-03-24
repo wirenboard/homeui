@@ -1,6 +1,5 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
+import merge from 'lodash/merge';
 
 // Editor for oneOf items with collapse button.
 // In contrast with original multiple editor the editor doesn't rely on full oneOf items validation.
@@ -30,7 +29,7 @@ import { JSONEditor } from '@wirenboard/json-editor';
 //     "group": "group_id"
 // }
 
-function makeCollapsibleMultipleEditor() {
+export function makeCollapsibleMultipleEditor() {
   return class extends JSONEditor.AbstractEditor {
     register() {
       if (this.editors) {
@@ -289,7 +288,7 @@ function makeCollapsibleMultipleEditor() {
       const holder = this.theme.getChildEditorHolder();
       this.editor_holder.appendChild(holder);
 
-      let schema = angular.merge({}, type);
+      let schema = merge({}, type);
       const editor = this.jsoneditor.getEditorClass(schema);
 
       this.editors[i] = this.jsoneditor.createEditor(editor, {
@@ -335,8 +334,8 @@ function makeCollapsibleMultipleEditor() {
     }
 
     setValue(val, initial) {
-      this.value = angular.merge({}, val);
-      this.valueToSet = angular.merge({}, val);
+      this.value = merge({}, val);
+      this.valueToSet = merge({}, val);
       const prevType = this.type;
       var validI = null;
       this.types.forEach((type, i) => {
@@ -483,7 +482,7 @@ function makeCollapsibleMultipleEditor() {
         const check = `${this.path}.oneOf[${originalIndex}]`;
         const filterError = (newErrors, error) => {
           if (error.path.startsWith(check) || error.path === check.substr(0, error.path.length)) {
-            const newError = angular.merge({}, error);
+            const newError = merge({}, error);
 
             if (error.path.startsWith(check)) {
               newError.path = this.path + newError.path.substr(check.length);
@@ -604,5 +603,3 @@ function makeCollapsibleMultipleEditor() {
     }
   };
 }
-
-export default makeCollapsibleMultipleEditor;

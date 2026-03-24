@@ -3,7 +3,7 @@ import { VerticalTabs, TabsList, TabContent, TabPane, TabItem } from '../compone
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { BootstrapRow } from '../common';
-import JsonEditor from '../components/json-editor/jsonEditor';
+import { JsonEditor } from '@/components/json-editor';
 import { Button } from '../common';
 import ConnectionItem from './connectionItem';
 

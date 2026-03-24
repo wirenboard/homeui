@@ -1,5 +1,3 @@
-'use strict';
-
 import { JSONEditor } from '@wirenboard/json-editor';
 
 // Editor for array.
@@ -19,7 +17,7 @@ import { JSONEditor } from '@wirenboard/json-editor';
 //     "color": "default" // Bootstrap contextual color ("default", "warning", "danger" etc.)
 // }
 
-function makeWbArrayEditor() {
+export function makeWbArrayEditor() {
   JSONEditor.defaults.languages.en.select_type = 'Select type';
   return class extends JSONEditor.defaults.editors['array'] {
     constructor(options, defaults) {
@@ -334,5 +332,3 @@ function makeWbArrayEditor() {
     }
   };
 }
-
-export default makeWbArrayEditor;
