@@ -1,3 +1,4 @@
+/usr/lib/wb-homeui-backend/generate-system-config.sh
 wb_move /var/lib/wb-homeui/users.db
 wb_move /etc/wb-webui.conf
 wb_move /etc/wb-homeui-backend.conf
