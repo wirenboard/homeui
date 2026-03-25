@@ -270,7 +270,8 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('configEdit', {
       url: '/configs/edit/{path:.*}',
-      template: '<config-page />',
+      controller: 'ConfigCtrl as $ctrl',
+      template: require('../views/config.html'),
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -369,6 +370,19 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
           return import(/* webpackChunkName: 'alice' */ './controllers/aliceController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
+    })
+    //...........................................................................
+    .state('plugin', {
+      url: '/plugins/{pluginId}/{componentName}',
+      template: '<plugin-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'plugin' */ './controllers/pluginController').then(
             module => $ocLazyLoad.load({ name: module.default.name })
           );
         },

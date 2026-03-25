@@ -6,6 +6,31 @@ import { getMenu } from './api';
 import { getMenuItems, mergeMenuItems, normalizeMenuResponse, toMenuItemInstance } from './menu-items';
 import type { CustomMenuItem, MenuItemInstance } from './types';
 
+interface PluginManifest {
+  id: string;
+  version: string;
+  title: { ru: string; en: string };
+  entrypoint: string;
+  menu?: {
+    parentId: string;
+    item: {
+      id: string;
+      url: string;
+      title?: { ru?: string; en?: string };
+    };
+  };
+}
+
+const getPlugins = async (): Promise<PluginManifest[]> => {
+  try {
+    const response = await fetch('/api/plugins');
+    if (!response.ok) return [];
+    return await response.json();
+  } catch {
+    return [];
+  }
+};
+
 export default class UiStore {
   public isConnected = false;
   public menuItems: MenuItemInstance[] = [];
@@ -33,8 +58,28 @@ export default class UiStore {
 
   async #getCustomMenuItems() {
     if (!this.#additionalItems) {
-      const additionalItems = await getMenu();
+      const [additionalItems, pluginManifests] = await Promise.all([getMenu(), getPlugins()]);
       this.#additionalItems = normalizeMenuResponse(additionalItems);
+
+      // Store manifests for plugin directive to access
+      (window as any).__HOMEUI_PLUGIN_MANIFESTS__ = pluginManifests;
+
+      // Convert plugin menus to custom menu items
+      for (const manifest of pluginManifests) {
+        if (manifest.menu) {
+          const pluginMenuItem: CustomMenuItem = {
+            id: manifest.menu.parentId,
+            children: [
+              {
+                id: manifest.menu.item.id,
+                url: manifest.menu.item.url,
+                title: manifest.menu.item.title || manifest.title,
+              },
+            ],
+          };
+          this.#additionalItems.push(pluginMenuItem);
+        }
+      }
     }
     runInAction(() => {
       this.modules = this.#collectModuleIds(this.#additionalItems);
