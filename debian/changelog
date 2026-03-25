@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.189.0) stable; urgency=medium
+
+  * Add DALI group settings page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 25 Mar 2026 12:40:34 +0500
+
 wb-mqtt-homeui (2.188.1) stable; urgency=medium
 
   * Fix dashboard hmi padding
