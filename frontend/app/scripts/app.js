@@ -40,7 +40,6 @@ import historyProxyService from './services/historyProxy';
 import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
 import spinnerService from './services/spinner';
-import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
 import deviceDataService from './services/devicedata';
 import hiliteService from './services/hilite';
@@ -59,7 +58,6 @@ import handleDataService from './services/handle-data';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import MQTTCtrl from './controllers/MQTTChannelsController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 import DiagnosticCtrl from './controllers/diagnosticController';
 import BackupCtrl from './controllers/backupController';
@@ -79,6 +77,7 @@ import { switchToHttps } from '@/utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
+import { ConfigsStore} from '@/stores/configs';
 import { DashboardsStore } from '@/stores/dashboards';
 import { DevicesStore } from '@/stores/devices';
 import { RulesStore } from '@/stores/rules';
@@ -104,7 +103,6 @@ const module = angular
     'pascalprecht.translate',
     'angular-spinkit',
     routingModule,
-    dumbTemplateModule,
     'ngToast',
     'ui.scroll',
     'tmh.dynamicLocale',
@@ -148,7 +146,6 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('MQTTCtrl', MQTTCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
   .controller('DiagnosticCtrl', DiagnosticCtrl)
   .controller('BackupCtrl', BackupCtrl)
@@ -186,7 +183,6 @@ module
         'help',
         'system',
         'logs',
-        'configurations',
         'history',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
@@ -302,6 +298,7 @@ const realApp = angular
       $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy);
       $rootScope.devicesStore = new DevicesStore(mqttClient);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
+      $rootScope.configsStore = new ConfigsStore(whenMqttReady, ConfigEditorProxy);
 
       // Expose services for plugins
       if (window.__HOMEUI__) {
