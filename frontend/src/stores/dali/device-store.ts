@@ -1,10 +1,10 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
-import { BaseItemStore } from './base-item-store';
+import { BaseItemStore, ItemType } from './base-item-store';
 import type { BusStore } from './bus-store';
 
 export class DeviceStore extends BaseItemStore {
-  readonly type = 'device' as const;
+  readonly type = ItemType.Device;
 
   // Array of group indexes that this device belongs to (e.g. 0, 1, etc.)
   public groups: number[] = [];

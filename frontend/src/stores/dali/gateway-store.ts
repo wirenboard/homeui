@@ -1,10 +1,10 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
-import { BaseItemStore } from './base-item-store';
+import { BaseItemStore, ItemType } from './base-item-store';
 import type { BusStore } from './bus-store';
 
 export class GatewayStore extends BaseItemStore {
-  readonly type = 'gateway' as const;
+  readonly type = ItemType.Gateway;
   public children: BusStore[] = [];
 
   constructor(daliProxy: any, id: string, name: string) {

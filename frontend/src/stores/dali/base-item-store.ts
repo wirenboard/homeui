@@ -1,6 +1,13 @@
 import { ObjectStore, Translator } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 
+export enum ItemType {
+  Gateway = 'gateway',
+  Bus = 'bus',
+  Device = 'device',
+  Group = 'group',
+}
+
 export abstract class BaseItemStore {
   public objectStore: ObjectStore | null = null;
   public translator: Translator | null = null;
@@ -17,10 +24,6 @@ export abstract class BaseItemStore {
   }
 
   setError(error: unknown) {
-    if (!error) {
-      this.error = null;
-      return;
-    }
-    this.error = formatError(error);
+    this.error = error ? formatError(error) : null;
   }
 }

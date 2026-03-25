@@ -1,12 +1,12 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
-import { BaseItemStore } from './base-item-store';
+import { BaseItemStore, ItemType } from './base-item-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
 import { MonitorStore } from './monitor-store'
 
 export class BusStore extends BaseItemStore {
-  readonly type = 'bus' as const;
+  readonly type = ItemType.Bus;
   public children: (DeviceStore | GroupStore)[] = [];
   public busMonitor: MonitorStore | null = null;
 
@@ -91,12 +91,12 @@ export class BusStore extends BaseItemStore {
   syncGroupChildren() {
     const activeGroupNums = new Set<number>(
       this.children
-        .filter((c): c is DeviceStore => c.type === 'device')
+        .filter((c): c is DeviceStore => c.type === ItemType.Device)
         .flatMap(d => d.groups)
     );
     // Remove group children that have no devices left
     this.children = this.children.filter(c => {
-      if (c.type !== 'group') {
+      if (c.type !== ItemType.Group) {
         return true;
       }
       return activeGroupNums.has(c.index);
@@ -104,7 +104,7 @@ export class BusStore extends BaseItemStore {
     // Add group children for active groups not yet in children
     const existingGroupIndexes = new Set(
       this.children
-        .filter((c): c is GroupStore => c.type === 'group')
+        .filter((c): c is GroupStore => c.type === ItemType.Group)
         .map(c => c.index)
     );
     const groupIndexesToAdd: number[] = Array.from(activeGroupNums.keys()).filter(index => !existingGroupIndexes.has(index));
@@ -112,8 +112,8 @@ export class BusStore extends BaseItemStore {
       this.children.push(new GroupStore(this.daliProxy, this.makeGroupId(index), index));
     });
     this.children.sort((a, b) => {
-      if (a.type !== 'group' || b.type !== 'group') {
-        return a.type === 'group' ? 1 : b.type === 'group' ? -1 : 0;
+      if (a.type !== ItemType.Group || b.type !== ItemType.Group) {
+        return a.type === ItemType.Group ? 1 : b.type === ItemType.Group ? -1 : 0;
       }
       return a.index - b.index;
     });

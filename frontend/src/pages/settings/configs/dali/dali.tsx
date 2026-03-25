@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Alert } from '@/components/alert';
@@ -163,7 +163,7 @@ const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => v
 const buildTreeItems = (items: ItemStore[], storeMap: Map<string, ItemStore>, t: (key: string, options?: object) => string): TreeItem[] =>
   items.map(item => {
     storeMap.set(item.id, item);
-    let label: string | React.ReactNode = item.label;
+    let label: string | ReactNode = item.label;
     if (item.type === 'group') {
       label = t('dali.labels.group', { name: item.label });
     } else if (item.type === 'device' && item.groups.length) {
