@@ -40,6 +40,7 @@ from .users_storage import User, UsersStorage, UserType
 DEFAULT_SOCKET_FILE = "/tmp/wb-homeui.socket"
 DEFAULT_DB_FILE = "/var/lib/wb-homeui/users.db"
 CUSTOM_MENU_FOLDER = "/usr/share/wb-mqtt-homeui/custom-menu"
+PLUGINS_FOLDER = "/usr/share/wb-mqtt-homeui/plugins"
 
 ADMIN_COOKIE_LIFETIME = timedelta(days=14)
 
@@ -472,6 +473,18 @@ def security_check_handler(
     return response_200([["Content-type", "text/plain"]], "OK")
 
 
+def plugins_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
+    plugins = []
+    if os.path.isdir(PLUGINS_FOLDER):
+        for entry in sorted(os.listdir(PLUGINS_FOLDER)):
+            manifest_path = os.path.join(PLUGINS_FOLDER, entry, "manifest.json")
+            if os.path.isfile(manifest_path):
+                data = load_json_file(manifest_path)
+                if data is not None:
+                    plugins.append(data)
+    return response_200([["Content-type", "application/json"]], json.dumps(plugins))
+
+
 def custom_menu_handler(_request: BaseHTTPRequestHandler, _context: WebRequestHandlerContext) -> HttpResponse:
     menu_items = []
     with os.scandir(CUSTOM_MENU_FOLDER) as entries:
@@ -564,6 +577,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
                 "/api/https": RequestHandler(fn=get_https_handler),
                 "/ui/menu": RequestHandler(fn=custom_menu_handler),
+                "/api/plugins": RequestHandler(fn=plugins_handler),
             }
         )
 

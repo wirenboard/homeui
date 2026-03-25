@@ -2,6 +2,9 @@
 
 'use strict';
 
+// Initialize plugin API before anything else
+import './plugin-api';
+
 // Import slylesheets
 import '@/assets/styles/variables.css';
 import '@/assets/styles/animations.css';
@@ -296,6 +299,15 @@ const realApp = angular
       $rootScope.devicesStore = new DevicesStore(mqttClient);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
       $rootScope.configsStore = new ConfigsStore(whenMqttReady, ConfigEditorProxy);
+
+      // Expose services for plugins
+      if (window.__HOMEUI__) {
+        window.__HOMEUI__.services = {
+          ConfigEditorProxy,
+          EditorProxy,
+          mqttClient,
+        };
+      }
 
       $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {
         document.title = name ? `${name} | ${__APP_SHORT_NAME__ || __APP_NAME__}` : __APP_NAME__;

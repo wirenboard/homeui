@@ -305,7 +305,7 @@ module.exports = (function makeWebpackConfig() {
 
       // Output path from the view of the page
       // Uses dev-server in development
-      publicPath: '/',
+      publicPath: 'http://localhost:8080/',
 
       // Filename for entry points
       filename: '[name].bundle.js',
@@ -358,7 +358,9 @@ module.exports = (function makeWebpackConfig() {
           '/api/https',
           '/api/check',
           '/api/integrations/alice',
-          '/ui/menu'
+          '/ui/menu',
+          '/api/plugins',
+          '/plugins/'
         ],
         target: process.env.MQTT_BROKER_URI,
         ws: true,

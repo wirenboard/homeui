@@ -373,6 +373,19 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           );
         },
       },
+    })
+    //...........................................................................
+    .state('plugin', {
+      url: '/plugins/:pluginId/:componentName',
+      template: '<plugin-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'plugin' */ './controllers/pluginController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     });
 }
 

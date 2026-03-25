@@ -19,6 +19,10 @@ Change listen settings in `/etc/nginx/includes/default.wb.d/listen.conf`.
 3. Create `.env` file and set `MQTT_BROKER_URI` if your controller is running on different IP (default is 10.200.200.1)
 4. Start the development server: `npm run start`
 
+## Plugins
+
+homeui supports runtime plugins that add new pages without rebuilding the application. See [PLUGINS.md](PLUGINS.md) for the full guide.
+
 ## Custom menu
 One can put a JSON-file with custom menu description in `/usr/share/wb-mqtt-homeui/custom-menu`.
 Items, defined in the file, will be added to left navigation panel.
