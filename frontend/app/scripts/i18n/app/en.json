@@ -1,6 +1,7 @@
 {
     "app": {
         "errors": {
+            "nginx": "The server returned an invalid response — check your nginx configuration, `proxy_pass`, and API routing",
             "load": "Cannot load WebUI config.",
             "save": "Config saving failed",
             "overflow": "Config saving failed. Try to clear page's localStorage and restart the browser. If problem remains, try to reduce overall size of SVG images.",

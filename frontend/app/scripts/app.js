@@ -541,7 +541,7 @@ const realApp = angular
       let hideGlobalSpinner = true;
       let connectToMqtt = true;
       $transitions.onBefore({}, function (transition) {
-        return fillUserType(rolesFactory).then(fillUserTypeResult => {
+        return fillUserType(rolesFactory, errors).then(fillUserTypeResult => {
           if (hideGlobalSpinner) {
             clearTimeout(httpsSetupTimer);
             angular.element('#https-setup-label').remove();
