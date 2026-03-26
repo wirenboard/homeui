@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb104) stable; urgency=medium
+
+  * Show error message on wrong resonse type
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 26 Mar 2026 12:42:00 +0300
+
 wb-mqtt-homeui (2.172.0-wb103) stable; urgency=medium
 
   * Fix hmi dashboard padding
