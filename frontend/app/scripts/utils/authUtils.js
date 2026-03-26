@@ -1,5 +1,4 @@
 import { authStore } from '@/stores/auth';
-import { ApiError, ErrorCode } from '@/utils/request';
 
 /**
  * Fills the user type by fetching the current user's information and setting the role in the rolesFactory.
@@ -10,7 +9,7 @@ import { ApiError, ErrorCode } from '@/utils/request';
  * @returns {Promise<string>} A promise that resolves to 'ok' if the user type is successfully set,
  *                            or 'login' if the user is not authenticated (HTTP 401).
  */
-export async function fillUserType(rolesFactory, errors) {
+export async function fillUserType(rolesFactory) {
   if (rolesFactory.current.role !== undefined) {
     return 'ok';
   }
@@ -21,9 +20,7 @@ export async function fillUserType(rolesFactory, errors) {
     rolesFactory.setCurrentUserIsAutologinUser(user.autologin);
     return 'ok';
   } catch (err) {
-    if (err instanceof ApiError && err.code === ErrorCode.HTMLResponse) {
-      errors.showError('app.errors.nginx', err);
-    } else if (err.status === 401) {
+    if (err.status === 401) {
       return 'login';
     }
   }
