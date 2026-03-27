@@ -9,7 +9,7 @@ export const Tree = ({ data, isDisabled, onItemClick }: TreeProps) => {
   const [active, setActive] = useState<string>();
 
   useEffect(() => {
-    if (data.length) {
+    if (data.length && !active) {
       setActive(data.at(0).id);
     }
   }, [data]);

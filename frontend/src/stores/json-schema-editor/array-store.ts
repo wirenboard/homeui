@@ -30,7 +30,27 @@ export class ArrayStore implements PropertyStore {
     }
 
     if (initialValue === undefined || schema.items === undefined) {
-      this.isUndefined = true;
+      if (required) {
+        if (Array.isArray(this._itemsSchema)) {
+          this._itemsSchema.forEach((itemSchema) => {
+            const itemStore = this._builder.createStore(itemSchema as JsonSchema, undefined, false);
+            if (itemStore) {
+              itemStore.setDefault();
+              this.items.push(itemStore);
+            }
+          });
+        } else {
+          for (let i = 0; i < (schema.minItems ?? 0); i++) {
+            const itemStore = this._builder.createStore(this._itemsSchema as JsonSchema, undefined, false);
+            if (itemStore) {
+              itemStore.setDefault();
+              this.items.push(itemStore);
+            }
+          }
+        }
+      } else {
+        this.isUndefined = true;
+      }
     } else {
       if (Array.isArray(initialValue)) {
         initialValue.forEach((item, index) => {
@@ -93,7 +113,19 @@ export class ArrayStore implements PropertyStore {
 
   setDefault() {
     if (Array.isArray(this._itemsSchema)) {
-      this.items.forEach((item) => item.setDefault());
+      if (this.items.length === 0) {
+        this._itemsSchema.forEach((itemSchema) => {
+          const itemStore = this._builder.createStore(itemSchema as JsonSchema, undefined, false);
+          if (itemStore) {
+            itemStore.setDefault();
+            this.items.push(itemStore);
+          }
+        });
+        this._hasStructureChanges = true;
+      } else {
+        this.items.forEach((item) => item.setDefault());
+      }
+      this.isUndefined = false;
       return;
     }
     if (this.items.length) {

@@ -1,3 +1,5 @@
+import type { ReactNode} from 'react';
+
 export interface TreeProps {
   data: TreeItem[];
   isDisabled?: boolean;
@@ -6,6 +8,6 @@ export interface TreeProps {
 
 export interface TreeItem {
   id: string;
-  label: string;
+  label: string | ReactNode;
   children?: TreeItem[];
 }

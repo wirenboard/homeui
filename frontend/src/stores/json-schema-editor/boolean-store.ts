@@ -19,7 +19,7 @@ export class BooleanStore implements PropertyStore {
     if (typeof initialValue === 'boolean') {
       this.value = initialValue;
     } else if (initialValue === undefined) {
-      if (schema.options?.wb?.show_editor) {
+      if (required || schema.options?.wb?.show_editor) {
         this.value = getDefaultBooleanValue(schema) ?? false;
       } else {
         this.value = undefined;
