@@ -20,7 +20,7 @@ export class StringStore implements PropertyStore {
     if (typeof initialValue === 'string') {
       this.value = initialValue;
     } else if (initialValue === undefined) {
-      if (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined) {
+      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
         this.value = getDefaultStringValue(schema) ?? '';
       } else {
         this.value = undefined;

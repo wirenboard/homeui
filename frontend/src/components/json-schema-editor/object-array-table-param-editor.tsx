@@ -67,7 +67,7 @@ const ObjectArrayTableEditor = observer(({ store, rootStore, translator, editorB
         {store.items.map((itemStore, index) => (
           <TableRow key={index}>
             <TableCell key={`index_${index}`} width={indexColumnWidth}>
-              {index + 1}
+              {index}
             </TableCell>
             {(itemStore as ObjectStore).params.map((paramStore) => (
               <TableCellWithEditor
