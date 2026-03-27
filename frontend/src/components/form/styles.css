@@ -16,6 +16,8 @@
 
 .form-errorText {
     color: var(--danger-color);
+    margin-top: 5px;
+    margin-bottom: 0;
 }
 
 .form-errorText input[type="text"],

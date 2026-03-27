@@ -14,7 +14,15 @@
 
 .dali-busMonitorHeader {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
     gap: 10px;
     padding-bottom: 5px;
+}
+
+.dali-busMonitorToggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    cursor: pointer;
 }

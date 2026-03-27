@@ -105,6 +105,7 @@ export const Card = ({
       className={classNames('card', className, {
         'card-primary': variant === 'primary',
         'card-secondary': variant === 'secondary',
+        'card-tertiary': variant === 'tertiary',
       })}
       id={id}
     >

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useId } from 'react';
 import {
   type ObjectStore,
   type StringStore,
@@ -9,6 +9,8 @@ import {
 } from '@/stores/json-schema-editor';
 import type { JsonSchemaEditorProps, EditorBuilderFunctionProps } from './types';
 import './styles.css';
+import { ParamError } from './param-error';
+import { observer } from 'mobx-react-lite';
 
 const BooleanEditor = lazy(() => import('./boolean-param-editor'));
 const NumberEditor = lazy(() => import('./number-param-editor'));
@@ -170,7 +172,8 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
   return null;
 };
 
-export const JsonSchemaEditor = ({ store, translator, customEditorBuilder }: JsonSchemaEditorProps) => {
+export const JsonSchemaEditor = observer(({ store, translator, customEditorBuilder }: JsonSchemaEditorProps) => {
+  const errorId = useId();
   const editorBuilderFunction = (props: EditorBuilderFunctionProps) => {
     if (customEditorBuilder) {
       const editor = customEditorBuilder(props);
@@ -180,9 +183,17 @@ export const JsonSchemaEditor = ({ store, translator, customEditorBuilder }: Jso
     }
     return DefaultEditorBuilder(props);
   };
+  const isSimpleType = ['string', 'number', 'boolean', 'byte-array'].includes(store.storeType);
   return (
     <div className="wb-jsonEditor">
       {editorBuilderFunction({ store, rootStore: store, translator, isTopLevel: true })}
+      {isSimpleType && store.hasErrors && (
+        <ParamError
+          id={errorId}
+          error={store.error}
+          translator={translator}
+        />
+      )}
     </div>
   );
-};
+});
