@@ -64,7 +64,7 @@
     justify-self: center;
     width: 144px;
     height: 60px;
-    margin: 12px 0 12px;
+    margin: 12px auto;
 
     @media(max-width: 768px) {
         margin: 0;
@@ -76,7 +76,7 @@
 .navigation-logoCompact {
     display: flex;
     justify-self: center;
-    margin: 18px 0 22px;
+    margin: 18px auto 22px;
     width: 44px;
     height: 44px;
 }

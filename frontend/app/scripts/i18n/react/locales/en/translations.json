@@ -128,9 +128,14 @@
       "wb": {
          "device_manager": {
             "failed_to_scan_error": "Scan failed for ports: {{ failed_ports }}. Check logs for more information",
+            "error": "Error"
+         },
+         "serial_driver": {
             "error": "Error",
             "device": {
               "read_device_signature_error": "Failed to read device signature",
+              "read_serial_params_error": "Failed to read device port settings",
+              "read_sn_error": "Failed to read device serial number",
               "read_fw_version_error": "Failed to read FW version",
               "read_fw_signature_error": "Failed to read FW signature"
             }
