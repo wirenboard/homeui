@@ -5,8 +5,8 @@ import type { NetworkType } from '../../stores/types';
 export interface ConnectionsEditorProps {
   connections: Connections;
   onToggleState: (_connection: SingleConnection) => void;
-  onSelect: (_index: number) => Promise<boolean>;
-  onSave: () => void;
-  onAdd: (_connectionType: NetworkType) => void;
-  onDelete: (_connection: SingleConnection) => void;
+  onSelect: (_newIndex: number, _currentIndex: number) => Promise<number | null>;
+  onSave: () => Promise<boolean>;
+  onAdd: (_connectionType: NetworkType, _currentIndex: number) => Promise<number | null>;
+  onDelete: (_connection: SingleConnection) => Promise<void>;
 }

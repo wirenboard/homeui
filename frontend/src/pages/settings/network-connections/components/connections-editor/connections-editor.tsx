@@ -7,6 +7,7 @@ import { Confirm } from '@/components/confirm';
 import { Input } from '@/components/input';
 import { JsonEditor } from '@/components/json-editor';
 import { Tabs, TabContent, useTabs } from '@/components/tabs';
+import { useAsyncAction } from '@/utils/async-action';
 import { NetworkType } from '../../stores/types';
 import { ConnectionItem } from '../connection-item';
 import { CreateConnectionModal } from '../create-connection-modal';
@@ -35,18 +36,28 @@ export const ConnectionsEditor = observer(({
   const tabs = useMemo(() => connections.connections.map((connection, index) => ({
     id: String(index),
     label: <ConnectionItem connection={connection} />,
-  })), [connections.connections]);
+  })), [connections.connections?.length]);
 
   const { activeTab, setActiveTab, onTabChange } = useTabs({
-    defaultTab: String(connections.selectedConnectionIndex),
+    defaultTab: '0',
     onBeforeTabChange: async (id) => {
-      const isSelected = await onSelect(Number(id));
-      if (isSelected) {
-        setActiveTab(id);
+      const targetIndex = await onSelect(Number(id), Number(activeTab));
+      if (targetIndex !== null) {
+        setActiveTab(String(targetIndex));
       }
-      return isSelected;
+      return false;
     },
     items: tabs,
+  });
+
+  const [onConfirmDelete, isDeleting] = useAsyncAction(async () => {
+    await onDelete(confirmDeleteConnection);
+    setConfirmDeleteConnection(null);
+  });
+
+  const [onConfirmSave, isSaving] = useAsyncAction(async () => {
+    await onSave();
+    setConfirmDeleteConnection(null);
   });
 
   return (
@@ -63,6 +74,7 @@ export const ConnectionsEditor = observer(({
             className="connectionEditor-add"
             icon={<PlusIcon />}
             variant="secondary"
+            aria-haspopup="dialog"
             onClick={() => setIsShowCreate(true)}
           />
         </div>
@@ -75,7 +87,7 @@ export const ConnectionsEditor = observer(({
               className="deviceSettingsEditor-tabContent"
             >
               {!!connection.managedByNM && (
-                <div className="connectionEditor-header">
+                <header className="connectionEditor-header">
                   <label className="connectionEditor-connectionNameWrapper">
                     {t(labels[connection.data.type] || 'network-connections.labels.connection')}
                     <Input
@@ -87,7 +99,6 @@ export const ConnectionsEditor = observer(({
                     />
                   </label>
                   <Button
-                    variant="secondary"
                     disabled={!connection.allowSwitchState}
                     label={t(
                       connection.state === 'activated'
@@ -96,7 +107,7 @@ export const ConnectionsEditor = observer(({
                     )}
                     onClick={() => onToggleState(connection)}
                   />
-                </div>
+                </header>
               )}
 
               <JsonEditor
@@ -110,6 +121,7 @@ export const ConnectionsEditor = observer(({
                 <Button
                   label={t('network-connections.buttons.delete')}
                   variant="danger"
+                  aria-haspopup="dialog"
                   onClick={() => setConfirmDeleteConnection(connection)}
                 />
                 <div className="connectionEditor-actions">
@@ -123,8 +135,9 @@ export const ConnectionsEditor = observer(({
                   <Button
                     label={t('network-connections.buttons.save')}
                     variant="primary"
+                    isLoading={isSaving}
                     disabled={!connection.isDirty || connection.hasErrors}
-                    onClick={onSave}
+                    onClick={onConfirmSave}
                   />
                 </div>
               </div>
@@ -138,12 +151,10 @@ export const ConnectionsEditor = observer(({
           isOpened={!!confirmDeleteConnection}
           heading={t('network-connections.prompt.delete-title')}
           variant="danger"
+          isLoading={isDeleting}
           acceptLabel={t('network-connections.buttons.delete')}
           closeCallback={() => setConfirmDeleteConnection(null)}
-          confirmCallback={() => {
-            onDelete(confirmDeleteConnection);
-            setConfirmDeleteConnection(null);
-          }}
+          confirmCallback={onConfirmDelete}
         >
           {t('network-connections.prompt.confirm-delete-connection')}
         </Confirm>
@@ -153,8 +164,11 @@ export const ConnectionsEditor = observer(({
         <CreateConnectionModal
           isOpened={isShowCreate}
           onClose={() => setIsShowCreate(false)}
-          onCreate={(value) => {
-            onAdd(value);
+          onCreate={async (value) => {
+            const newIndex = await onAdd(value, Number(activeTab));
+            if (newIndex !== null) {
+              setActiveTab(String(newIndex));
+            }
             setIsShowCreate(false);
           }}
         />

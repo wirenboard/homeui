@@ -48,11 +48,10 @@ const NetworkConnectionsPage = observer(({ store, rootScope }: NetworkConnection
             {!!store.connections.deprecatedConnections.length && (
               <Alert variant="warn" className="networkConnections-alert">
                 <Trans
+                  i18nKey="network-connections.labels.main-deprecation-notice"
                   count={store.connections.deprecatedConnections.length}
                   values={{ connections: store.connections.deprecatedConnections.join(', ') }}
-                >
-                  network-connections.labels.main-deprecation-notice
-                </Trans>
+                />
               </Alert>
             )}
             <Tabs
@@ -67,8 +66,10 @@ const NetworkConnectionsPage = observer(({ store, rootScope }: NetworkConnection
                   connections={store.connections}
                   onSave={() => store.saveAll()}
                   onDelete={(connection) => store.deleteConnection(connection)}
-                  onSelect={(index) => store.selectConnection(index, confirmChanges, confirmErrors)}
-                  onAdd={(connectionType) => store.createConnection(connectionType, confirmChanges, confirmErrors)}
+                  onSelect={(newIndex, currentIndex) => store
+                    .selectConnection(newIndex, currentIndex, confirmChanges, confirmErrors)}
+                  onAdd={(connectionType, currentIndex) => store
+                    .createConnection(connectionType, currentIndex, confirmChanges, confirmErrors)}
                   onToggleState={(connection) => store.toggleConnectionState(connection)}
                 />
               </TabContent>

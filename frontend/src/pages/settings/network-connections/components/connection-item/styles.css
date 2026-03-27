@@ -10,6 +10,7 @@
 
 .connectionItem-icon  {
     width: 26px;
+    flex-shrink: 0;
 }
 
 .connectionItem.activated .connectionItem-icon {
@@ -20,6 +21,7 @@
     color: #c09853;
 }
 
+.connectionItem.new .connectionItem-icon,
 .connectionItem.not-connected .connectionItem-icon,
 .connectionItem.deactivated-by-cm .connectionItem-icon,
 .connectionItem.unknown .connectionItem-icon {

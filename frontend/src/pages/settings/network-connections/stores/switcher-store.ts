@@ -33,8 +33,8 @@ function makeTiers(): Tier[] {
 function manageableBySwitcher(connection: SingleConnection) {
   return (
     Object.keys(DefaultConnectionPriorities).includes(connection.data.type)
-     && connection.editedData.ipv4.method !== 'shared'
-     && connection.editedData.connection_autoconnect
+     && connection.editedData?.ipv4?.method !== 'shared'
+     && connection.editedData?.connection_autoconnect
   );
 }
 

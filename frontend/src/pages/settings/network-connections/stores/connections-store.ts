@@ -1,4 +1,4 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { type ConnectionState, NetworkType } from '@/pages/settings/network-connections/stores/types';
 import type { JsonSchema } from '@/stores/json-schema-editor';
 import { SingleConnection, makeConnectionSchema } from './single-connection-store';
@@ -13,22 +13,10 @@ export class Connections {
   public connections: SingleConnection[] = [];
   public schema: JsonSchema;
   public additionalData = {};
-  public selectedConnectionIndex = 0;
   public lastConnectionState = {};
 
   constructor() {
-    makeObservable(this, {
-      connections: observable,
-      selectedConnectionIndex: observable,
-      deprecatedConnections: computed,
-      isDirty: computed,
-      setSchemaAndData: action,
-      addConnection: action,
-      removeConnection: action,
-      setSelectedConnectionIndex: action,
-      submit: action,
-      reset: action,
-    });
+    makeAutoObservable(this);
   }
 
   get deprecatedConnections() {
@@ -67,16 +55,7 @@ export class Connections {
       return false;
     }
     this.connections.splice(index, 1);
-    if (index === this.selectedConnectionIndex) {
-      this.selectedConnectionIndex = 0;
-    }
     return true;
-  }
-
-  setSelectedConnectionIndex(index: number) {
-    if (index >= 0 && index < this.connections.length) {
-      this.selectedConnectionIndex = index;
-    }
   }
 
   updateUuids(connectionsFromJson: any[]) {
@@ -87,12 +66,13 @@ export class Connections {
           (item) => cn.type === item.data.type && cn.connection_id === item.data.connection_id
         );
         if (res) {
+          const connection = this.lastConnectionState[cn.connection_uuid];
           res.setUuid(cn.connection_uuid);
-          res.setState(this.lastConnectionState[cn.connection_uuid]?.state);
-          res.setConnectivity(this.lastConnectionState[cn.connection_uuid]?.connectivity);
-          res.setOperator(this.lastConnectionState[cn.connection_uuid]?.operator);
-          res.setSignalQuality(this.lastConnectionState[cn.connection_uuid]?.signal);
-          res.setAccessTechnologies(this.lastConnectionState[cn.connection_uuid]?.ats);
+          res.setState(connection?.state);
+          res.setConnectivity(connection?.connectivity);
+          res.setOperator(connection?.operator);
+          res.setSignalQuality(connection?.signal);
+          res.setAccessTechnologies(connection?.ats);
         }
       }
     });
@@ -196,7 +176,4 @@ export class Connections {
 export function connectionsStoreFromJson(store: Connections, json: any) {
   json.ui.connections
     .forEach((connectionData: any) => store.addConnection({ type: connectionData.type, connectionData }));
-  if (store.connections.length) {
-    store.setSelectedConnectionIndex(0);
-  }
 }

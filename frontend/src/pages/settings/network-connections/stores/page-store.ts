@@ -100,20 +100,20 @@ export class NetworkConnectionsPageStore {
 
         if (action === 'cancel') {
           return false;
-        }
-        if (action === 'dont-save') {
+        } else if (action === 'dont-save') {
           activePageStore.reset();
-        }
-        if (action === 'save') {
+        } else if (action === 'save') {
           if (!(await this.saveAll())) {
             return false;
           }
           activePageStore.submit();
         }
       }
+
       runInAction(() => {
         this.selectedTabIndex = index;
       });
+
       return true;
     } catch (err) {
       return false;
@@ -124,8 +124,12 @@ export class NetworkConnectionsPageStore {
     return this.connections.isDirty || this.switcher.isDirty;
   }
 
-  async allowConnectionSwitch(showHasChangesConfirm: Confirmation, showHasErrorsConfirm: Confirmation) {
-    const activeConnection = this.connections.connections[this.connections.selectedConnectionIndex];
+  async allowConnectionSwitch(
+    currentIndex: number,
+    showHasChangesConfirm: Confirmation,
+    showHasErrorsConfirm: Confirmation
+  ) {
+    const activeConnection = this.connections.connections[currentIndex];
     if (!activeConnection?.isDirty) {
       return true;
     }
@@ -134,41 +138,48 @@ export class NetworkConnectionsPageStore {
       ? await showHasErrorsConfirm()
       : await showHasChangesConfirm();
 
-    if (action === 'save') {
-      await this.saveAll();
-    } else if (action === 'cancel') {
-      return false;
+    switch (action) {
+      case 'save':
+        await this.saveAll();
+        return true;
+      case 'dont-save':
+        if (activeConnection.isNew) {
+          return this.connections.removeConnection(activeConnection);
+        } else {
+          activeConnection.reset();
+          return true;
+        }
+      case 'cancel':
+        return false;
     }
-    if (activeConnection.isNew) {
-      this.connections.removeConnection(activeConnection);
-    } else {
-      activeConnection.reset();
-    }
-    return true;
   }
 
-  async selectConnection(index: number, showHasChangesConfirm: Confirmation, showHasErrorsConfirm: Confirmation) {
-    if (index >= 0 && index < this.connections.connections.length) {
-      const canSwitch = await this.allowConnectionSwitch(showHasChangesConfirm, showHasErrorsConfirm);
+  async selectConnection(
+    newIndex: number,
+    currentIndex: number,
+    showHasChangesConfirm: Confirmation,
+    showHasErrorsConfirm: Confirmation
+  ): Promise<number | null> {
+    if (newIndex < 0 || newIndex >= this.connections.connections.length) return null;
 
-      if (canSwitch) {
-        this.connections.setSelectedConnectionIndex(index);
-      }
+    const lengthBefore = this.connections.connections.length;
+    const canSwitch = await this.allowConnectionSwitch(currentIndex, showHasChangesConfirm, showHasErrorsConfirm);
+    if (!canSwitch) return null;
 
-      return canSwitch;
-    }
+    const wasRemoved = this.connections.connections.length < lengthBefore;
+    return wasRemoved && currentIndex < newIndex ? newIndex - 1 : newIndex;
   }
 
   async createConnection(
     connectionType: NetworkType,
+    currentIndex: number,
     showHasChangesConfirm: Confirmation,
     showHasErrorsConfirm: Confirmation
-  ) {
-    if (await this.allowConnectionSwitch(showHasChangesConfirm, showHasErrorsConfirm)) {
-      this.connections.setSelectedConnectionIndex(
-        this.connections.addConnection({ type: connectionType, state: ConnectionState.new })
-      );
+  ): Promise<number | null> {
+    if (await this.allowConnectionSwitch(currentIndex, showHasChangesConfirm, showHasErrorsConfirm)) {
+      return this.connections.addConnection({ type: connectionType, state: ConnectionState.new });
     }
+    return null;
   }
 
   async deleteConnection(connection: SingleConnection) {
@@ -181,7 +192,6 @@ export class NetworkConnectionsPageStore {
   }
 
   async save(connections: SingleConnection[]) {
-    this.setLoading(true);
     this.setError('');
     const jsonToSave = {
       ui: {
@@ -190,15 +200,14 @@ export class NetworkConnectionsPageStore {
       },
     };
     try {
-      const needToReload = jsonToSave.ui.connections.some((cn) => !cn.connection_uuid);
       await this.saveConnections(jsonToSave);
-      this.connections.submit();
-      this.switcher.submit();
+      const needToReload = jsonToSave.ui.connections.some((cn) => !cn.connection_uuid);
       if (needToReload) {
         const savedConnections = await this.loadConnections();
         this.connections.updateUuids(savedConnections);
       }
-      this.setLoading(false);
+      this.connections.submit();
+      this.switcher.submit();
       return true;
     } catch (err) {
       const CONFED_WRITE_FILE_ERROR = 1002;
@@ -207,7 +216,6 @@ export class NetworkConnectionsPageStore {
       } else {
         this.setError(err.message);
       }
-      this.setLoading(false);
       return false;
     }
   }

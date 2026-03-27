@@ -36,7 +36,7 @@ export interface StringFieldProps {
   autoComplete?: 'username' | 'new-password' | 'current-password' | 'off';
   required?: boolean;
   autoFocus?: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: string | number) => void;
 }
 
 export interface BooleanFieldProps {

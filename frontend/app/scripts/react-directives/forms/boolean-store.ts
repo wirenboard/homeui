@@ -1,4 +1,4 @@
-import { makeObservable, action, observable } from 'mobx';
+import { makeObservable, action, observable, runInAction } from 'mobx';
 
 export class BooleanStore {
   public type?: string = 'boolean';
@@ -36,7 +36,9 @@ export class BooleanStore {
   }
 
   submit() {
-    this.initialValue = this.value;
+    runInAction(() => {
+      this.initialValue = this.value;
+    });
   }
 
   reset() {

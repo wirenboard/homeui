@@ -11,6 +11,7 @@ import ArrowUpIcon from '@/assets/icons/arrow-up.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { StringField, BooleanField } from '@/components/form';
+import { useAsyncAction } from '@/utils/async-action';
 import { type SingleConnection } from '../../stores/single-connection-store';
 import { ConnectionItem } from '../connection-item';
 import { type ConnectionPrioritiesEditorProps, type SwitcherColumnProps, type SwitcherProps, type Tier } from './types';
@@ -132,6 +133,10 @@ const ConnectionPrioritiesEditor = ({ store }: ConnectionPrioritiesEditorProps) 
 export const SwitcherEditor = observer(({ switcher, onSave }: SwitcherProps) => {
   const { t } = useTranslation();
 
+  const [onConfirmSave, isSaving] = useAsyncAction(async () => {
+    await onSave();
+  });
+
   return (
     <div className="networkSwitcher">
       <div className="networkSwitcher-description">
@@ -150,21 +155,21 @@ export const SwitcherEditor = observer(({ switcher, onSave }: SwitcherProps) => 
           description={switcher.connectivityUrl.description}
           defaultText={switcher.connectivityUrl.defaultText}
           value={switcher.connectivityUrl.value}
-          onChange={(value) => switcher.connectivityUrl.value = value}
+          onChange={(value: string) => switcher.connectivityUrl.value = value}
         />
         <StringField
           title={switcher.connectivityPayload.name}
           description={switcher.connectivityPayload.description}
           defaultText={switcher.connectivityPayload.defaultText}
           value={switcher.connectivityPayload.value}
-          onChange={(value) => switcher.connectivityPayload.value = value}
+          onChange={(value: string) => switcher.connectivityPayload.value = value}
         />
         <StringField
           title={switcher.stickyConnectionPeriod.name}
           description={switcher.stickyConnectionPeriod.description}
           defaultText={switcher.stickyConnectionPeriod.defaultText}
           value={switcher.stickyConnectionPeriod.value}
-          onChange={(value) => switcher.connectivityPayload.value = value}
+          onChange={(value: number) => switcher.stickyConnectionPeriod.value = value}
         />
       </div>
 
@@ -178,7 +183,8 @@ export const SwitcherEditor = observer(({ switcher, onSave }: SwitcherProps) => 
         <Button
           label={t('network-connections.buttons.save')}
           disabled={!switcher.isDirty || switcher.hasErrors}
-          onClick={onSave}
+          isLoading={isSaving}
+          onClick={onConfirmSave}
         />
       </div>
     </div>

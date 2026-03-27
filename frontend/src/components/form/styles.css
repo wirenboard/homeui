@@ -1,6 +1,9 @@
+.form-fieldDescription {
+    color: var(--gray-color);
+}
+
 .form-descriptionText {
     display: inline-block;
-    color: var(--gray-color);
     margin-top: 5px;
     margin-bottom: 0;
     flex-basis: 100%;
@@ -11,6 +14,7 @@
     padding: .1em .3em;
     display: inline-block;
     white-space: break-spaces;
+    color: var(--text-color);
     background-color: var(--light-gray-color);
     border-radius: 6px;
 }
