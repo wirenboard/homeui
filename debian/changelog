@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.191.0) stable; urgency=medium
+
+  * Add DALI bus settings page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 27 Mar 2026 21:38:29 +0500
+
 wb-mqtt-homeui (2.190.1) stable; urgency=medium
 
   * Show error message on wrong resonse type
