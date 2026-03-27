@@ -17,13 +17,13 @@ export interface Bus {
 
 export interface Group {
   id: string;
-  name: number;
+  index: number;
 }
 
 export interface Device {
   id: string;
   name: string;
-  groups: string[];
+  groups: number[];
 }
 
 export interface GatewayDetailed {
@@ -53,14 +53,25 @@ export interface GetDeviceParams {
   id: string;
 }
 
+export interface GetGroupParams {
+  groupId: string;
+}
+
 export interface ScanBusParams {
   busId: string;
+}
+
+export interface GroupDetailed {
+  config: object;
+  schema: JsonSchema;
 }
 
 export interface DaliProxy {
   GetGateway(params: GetGatewayParams): Promise<GatewayDetailed>;
   GetBus(params: GetBusParams): Promise<BusDetailed>;
   GetDevice(params: GetDeviceParams): Promise<DeviceDetailed>;
+  GetGroup(params: GetGroupParams): Promise<GroupDetailed>;
+  SetGroup(params: { groupId: string; config: object }): Promise<GroupDetailed>;
   GetList(): Promise<Gateway[]>;
   ScanBus(params: ScanBusParams): Promise<Bus>;
 }
