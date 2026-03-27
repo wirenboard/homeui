@@ -4,14 +4,49 @@ import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Loader } from '@/components/loader';
+import { useAsyncAction } from '@/utils/async-action';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import type { ObjectParamStore } from '@/stores/json-schema-editor';
 import type { GroupStore } from '@/stores/dali';
 import './styles.css';
 
 const MAX_SLOTS = 12;
 
-export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
+const GroupParam = observer(({ store, param }: { store: GroupStore; param: ObjectParamStore }) => {
   const { t, i18n } = useTranslation();
+  const [save, isSaving] = useAsyncAction(async () => {
+    await store.saveParam(param.key);
+  });
+
+  const gridColumns = param.store.schema.options?.grid_columns;
+  const style: CSSProperties = {};
+  if (gridColumns) {
+    style.flexGrow = 1;
+    style.flexBasis = gridColumns === 12 ? '100%' : `${(gridColumns / 12) * 100 - 7}%`;
+  }
+
+  return (
+    <div key={param.key} className="dali-groupParam" style={style}>
+      <div className="dali-groupParam-header">
+        <span>{store.translator.find(param.store.schema.title || param.key, i18n.language)}</span>
+        <Button
+          label={t('dali.buttons.set')}
+          onClick={save}
+          isLoading={isSaving}
+          disabled={param.store.hasErrors}
+        />
+      </div>
+      <div className={classNames('dali-groupParam-editor', { 'wb-jsonEditor-objectEditorWithBorder': param.store.storeType === 'object' })}>
+        <JsonSchemaEditor
+          store={param.store}
+          translator={store.translator}
+        />
+      </div>
+    </div>
+  );
+});
+
+export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
   const params = store.objectStore.params.filter(p => !p.hidden);
 
   const rows: (typeof params)[] = [];
@@ -31,7 +66,7 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
   if (currentRow.length) {
     rows.push(currentRow);
   }
-
+ 
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -44,33 +79,9 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
     <>
       {rows.map(rowParams => {
         const rowKey = rowParams.map(p => p.key).join('-');
-        const items = rowParams.map(param => {
-          const gridColumns = param.store.schema.options?.grid_columns;
-          const style: CSSProperties = {};
-          if (gridColumns) {
-            style.flexGrow = 1;
-            style.flexBasis = gridColumns === 12 ? '100%' : `${(gridColumns / 12) * 100 - 7}%`;
-          }
-          return (
-            <div key={param.key} className="dali-groupParam" style={style}>
-              <div className="dali-groupParam-header">
-                <span>{store.translator.find(param.store.schema.title || param.key, i18n.language)}</span>
-                <Button
-                  label={t('dali.buttons.set')}
-                  onClick={async () => {
-                    await store.saveParam(param.key);
-                  }}
-                />
-              </div>
-              <div className={classNames('dali-groupParam-editor', { 'wb-jsonEditor-objectEditorWithBorder': param.store.storeType === 'object' })}>
-                <JsonSchemaEditor
-                  store={param.store}
-                  translator={store.translator}
-                />
-              </div>
-            </div>
-          );
-        });
+        const items = rowParams.map(param => (
+          <GroupParam key={param.key} store={store} param={param} />
+        ));
         if (rowParams.length === 1) {
           return items[0];
         }

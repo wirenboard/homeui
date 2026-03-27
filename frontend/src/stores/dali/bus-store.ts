@@ -109,7 +109,6 @@ export class BusStore extends BaseItemStore {
     if (!param) {
       return;
     }
-    this.isLoading = true;
     try {
       await this.daliProxy.SetBus({ busId: this.id, config: { [key]: param.store.value } });
       runInAction(() => {
@@ -118,8 +117,6 @@ export class BusStore extends BaseItemStore {
       });
     } catch (error) {
       this.setError(error);
-    } finally {
-      runInAction(() => { this.isLoading = false; });
     }
   }
 

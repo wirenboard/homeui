@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BooleanField } from '@/components/form';
 import { FieldLabel } from '@/components/form/field-label';
@@ -12,6 +12,7 @@ export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) =>
   const { websocketEnabled, websocketPort } = store;
   const [portStr, setPortStr] = useState(websocketPort !== undefined ? String(websocketPort) : '');
   const [portError, setPortError] = useState<string | undefined>(undefined);
+  const inputId = useId();
 
   useEffect(() => {
     setPortStr(websocketPort !== undefined ? String(websocketPort) : '');
@@ -37,8 +38,9 @@ export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) =>
         onChange={v => store.setWebsocketEnabled(v)}
       />
       <FormField error={portError}>
-        <FieldLabel title={t('dali.labels.websocket-port')} />
+        <FieldLabel title={t('dali.labels.websocket-port')} inputId={inputId}/>
         <Input
+          id={inputId}
           value={portStr}
           isDisabled={!websocketEnabled}
           isInvalid={!!portError}

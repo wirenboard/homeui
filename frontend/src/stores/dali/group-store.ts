@@ -47,7 +47,6 @@ export class GroupStore extends BaseItemStore {
     if (!param) {
       return;
     }
-    this.isLoading = true;
     try {
       await this.daliProxy.SetGroup({ groupId: this.id, config: { [key]: param.store.value } });
       runInAction(() => {
@@ -56,8 +55,6 @@ export class GroupStore extends BaseItemStore {
       });
     } catch (error) {
       this.setError(error);
-    } finally {
-      runInAction(() => { this.isLoading = false; });
     }
   }
 }
