@@ -148,28 +148,31 @@ export const SwitcherEditor = observer(({ switcher, onSave }: SwitcherProps) => 
         <BooleanField
           title={switcher.debug.name}
           value={switcher.debug.value}
-          onChange={(value) => switcher.debug.value = value}
+          onChange={(value) => switcher.debug.setValue(value)}
         />
         <StringField
           title={switcher.connectivityUrl.name}
           description={switcher.connectivityUrl.description}
           defaultText={switcher.connectivityUrl.defaultText}
           value={switcher.connectivityUrl.value}
-          onChange={(value: string) => switcher.connectivityUrl.value = value}
+          error={switcher.connectivityUrl.error}
+          onChange={(value: string) => switcher.connectivityUrl.setValue(value)}
         />
         <StringField
           title={switcher.connectivityPayload.name}
           description={switcher.connectivityPayload.description}
           defaultText={switcher.connectivityPayload.defaultText}
           value={switcher.connectivityPayload.value}
-          onChange={(value: string) => switcher.connectivityPayload.value = value}
+          error={switcher.connectivityPayload.error}
+          onChange={(value: string) => switcher.connectivityPayload.setValue(value)}
         />
         <StringField
           title={switcher.stickyConnectionPeriod.name}
           description={switcher.stickyConnectionPeriod.description}
           defaultText={switcher.stickyConnectionPeriod.defaultText}
           value={switcher.stickyConnectionPeriod.value}
-          onChange={(value: number) => switcher.stickyConnectionPeriod.value = value}
+          error={switcher.stickyConnectionPeriod.error}
+          onChange={(value: number) => switcher.stickyConnectionPeriod.setValue(value)}
         />
       </div>
 

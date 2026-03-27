@@ -8,7 +8,7 @@ export class NumberStore {
   public placeholder?: string;
   public defaultText?: string;
   public formColumns?: number = null;
-  public customError?: string | boolean = '';
+  public customError?: string = '';
   public value?: number;
   public initialValue?: number;
   public min?: number;

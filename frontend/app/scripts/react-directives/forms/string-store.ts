@@ -4,11 +4,11 @@ export class StringStore {
   public type?: string = 'string';
   public name?: string;
   public description?: string;
-  public validator?: (_value: string) => string | boolean;
+  public validator?: (_value: string) => string;
   public placeholder?: string;
   public defaultText?: string;
   public formColumns?: number = null;
-  public error?: string | boolean = '';
+  public error?: string = '';
   public isHideErrorText?: boolean;
   public readOnly?: boolean;
   public required?: boolean;

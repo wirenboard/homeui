@@ -20,6 +20,7 @@
 }
 
 .form-errorText {
+    margin: 6px 0 0;
     color: var(--danger-color);
 }
 
