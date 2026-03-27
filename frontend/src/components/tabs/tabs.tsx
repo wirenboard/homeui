@@ -7,7 +7,7 @@ export const TabList = ({ className, children, activeTab, onTabChange }: PropsWi
   <ul className={classNames('tabs', className)}>{
     Children.map(children, (child) => {
       if (isValidElement(child)) {
-        return cloneElement(child as ReactElement, {
+        return cloneElement(child as any, {
           activeTab,
           onTabChange,
         });
@@ -35,8 +35,14 @@ export const Tab = ({ children, id, activeTab, onTabChange }: PropsWithChildren<
   </li>
 );
 
-export const Tabs = ({ className, items, activeTab, onTabChange }: TabsProps) => (
-  <ul className={classNames('tabs', className)} role="tablist">
+export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: TabsProps) => (
+  <ul
+    className={classNames('tabs', className, {
+      'tabs-vertical': !orientation || orientation === 'vertical',
+      'tabs-horizontal': orientation === 'horizontal',
+    })}
+    role="tablist"
+  >
     {items.map((item) => (
       <Tab key={item.id} activeTab={activeTab} id={item.id} onTabChange={onTabChange}>
         {item.label}

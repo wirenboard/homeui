@@ -162,7 +162,6 @@
          "ethernet": "Ethernet-соединение",
          "modem": "GSM-соединение",
          "canbus": "CAN bus",
-         "confirm-delete-connection": "Вы действительно хотите удалить это соединение?",
          "main-deprecation-notice": "Соединения {{connections}} настроены в /etc/network/interfaces. Для них доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается в Wiren Board. Для перехода на NetworkManager используйте существующие из списка (или создайте новые, если нужно) и <strong>удалите устаревшие</strong>.",
          "main-deprecation-notice_one": "Соединение {{connections}} настроено в /etc/network/interfaces. Для него доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается в Wiren Board. Для перехода на NetworkManager используйте существующее из списка (или создайте новое, если нужно) и <strong>удалите устаревшее</strong>.",
          "manual-connect": "Подключается вручную",
@@ -189,8 +188,15 @@
          "add-connection": "Добавить соединение",
          "delete": "Удалить",
          "add": "Добавить",
+         "priority-up": "Повысить приоритет",
+         "priority-down": "Понизить приоритет",
          "connect": "Подключить",
          "disconnect": "Отключить"
+      },
+      "prompt": {
+         "confirmation-title": "Подтверждение действия",
+         "delete-title": "Удаление соединения",
+         "confirm-delete-connection": "Вы действительно хотите удалить это соединение?"
       },
       "errors": {
          "write": "Ошибка при сохранении настроек. Более детальная информация находится в журнале работы сервиса wb-mqtt-confed"

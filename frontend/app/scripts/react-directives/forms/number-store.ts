@@ -1,9 +1,32 @@
 import { action, makeObservable, observable, computed } from 'mobx';
-import i18n from '../../i18n/react/config';
+import i18n from '~/i18n/react/config';
 
 export class NumberStore {
-  constructor({ type, name, description, placeholder, min, max, value, defaultText, strict }) {
-    this.type = type || 'number';
+  public type?: string = 'number';
+  public name?: string;
+  public description?: string;
+  public placeholder?: string;
+  public defaultText?: string;
+  public formColumns?: number = null;
+  public customError?: string = '';
+  public value?: number;
+  public initialValue?: number;
+  public min?: number;
+  public max?: number;
+  public strict?: boolean;
+
+  constructor({
+    type = 'number',
+    name,
+    description,
+    placeholder,
+    min,
+    max,
+    value,
+    defaultText,
+    strict,
+  }: Partial<NumberStore>) {
+    this.type = type;
     this.name = name;
     this.description = description;
     this.placeholder = placeholder;
@@ -34,7 +57,7 @@ export class NumberStore {
     });
   }
 
-  setValue(value) {
+  setValue(value: any) {
     if (value === undefined) {
       this.value = undefined;
     } else {
@@ -43,7 +66,7 @@ export class NumberStore {
     }
   }
 
-  setFormColumns(columns) {
+  setFormColumns(columns: number) {
     this.formColumns = columns;
   }
 
@@ -66,6 +89,7 @@ export class NumberStore {
     if (this.customError) {
       return true;
     }
+    // @ts-ignore
     if ((!this.strict && this.value !== undefined && this.value !== '') || this.strict) {
       return (
         (this.type === 'integer' && !Number.isInteger(this.value)) ||
@@ -89,15 +113,15 @@ export class NumberStore {
     this.setValue(this.initialValue);
   }
 
-  setCustomError(error) {
+  setCustomError(error: string) {
     this.customError = error;
   }
 
-  setStrict(strict) {
+  setStrict(strict: boolean) {
     this.strict = strict;
   }
 
-  setDefaultText(defaultText) {
+  setDefaultText(defaultText: string) {
     this.defaultText = defaultText;
   }
 }

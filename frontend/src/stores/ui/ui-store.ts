@@ -17,7 +17,9 @@ export default class UiStore {
   }
 
   setIsConnected(isConnected: boolean) {
-    this.isConnected = isConnected;
+    runInAction(() => {
+      this.isConnected = isConnected;
+    });
   }
 
   async buildMenu(dashboards: Dashboard[], isShowWidgetsPage: boolean, params: URLSearchParams) {
