@@ -78,6 +78,9 @@ export class BusStore extends BaseItemStore {
   }
 
   async load() {
+    if (this.objectStore) {
+      return;
+    }
     this.isLoading = true;
     try {
       const data = await this.daliProxy.GetBus({ busId: this.id });
@@ -131,6 +134,8 @@ export class BusStore extends BaseItemStore {
         this.syncGroupChildren();
         this.setError(null);
       });
+      this.objectStore = null;
+      await this.load();
     } catch (error) {
       this.setError(error);
     } finally {
