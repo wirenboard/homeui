@@ -67,7 +67,6 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
         const firstGateway = store.gateways.at(0);
         if (firstGateway) {
           setSelectedItem(firstGateway);
-          firstGateway.load();
         }
       }
     };
