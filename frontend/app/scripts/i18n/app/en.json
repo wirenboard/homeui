@@ -1,6 +1,7 @@
 {
     "app": {
         "errors": {
+            "nginx": "The server returned an invalid response — check your nginx configuration, `proxy_pass`, and API routing",
             "load": "Cannot load WebUI config.",
             "stop-scan": "The controller started searching for Modbus devices. This could lead to slow polling of already configured devices. The search process is forcibly stopped"
         },

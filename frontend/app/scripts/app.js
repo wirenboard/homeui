@@ -420,7 +420,7 @@ const realApp = angular
       });
       let connectToMqtt = true;
       $transitions.onBefore({}, function (transition) {
-        return fillUserType(rolesFactory).then(fillUserTypeResult => {
+        return fillUserType(rolesFactory, errors).then(fillUserTypeResult => {
           tryHideGlobalSpinner();
           if (fillUserTypeResult === 'login') {
             // transition.params() contains all possible parameters by default - let's delete them
