@@ -9,6 +9,7 @@
     flex-grow: 1;
     flex-direction: column;
     padding-top: 12px;
+    overflow: auto;
 }
 
 .page-headerContainer {
