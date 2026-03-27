@@ -1,0 +1,26 @@
+.dali-busParams .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dali-busParam {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dali-busParam-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dali-busParam-editor {
+    flex: 1;
+    min-width: 0;
+}
+
+.dali-busParam-editor .input {
+    width: 100%;
+}

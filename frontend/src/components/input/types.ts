@@ -26,6 +26,8 @@ interface BaseInputProps {
   isWithExplicitChanges?: boolean;
   onChange?: (_val: string | number, _badInput?: boolean) => void;
   onChangeEvent?: (_ev: any) => void;
+  onBlur?: () => void;
+  onEnter?: () => void;
 }
 
 export type InputProps = RequireAtLeastOne<BaseInputProps, 'onChange' | 'onChangeEvent'>;
