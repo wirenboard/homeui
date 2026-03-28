@@ -47,7 +47,7 @@ export default class DashboardsStore {
 
   async addDashboard(data: Dashboard) {
     this.dashboards.set(data.id, new Dashboard(data, this));
-    logAction('Add dashboard', data.name || data.id, 'Dashboard');
+    logAction(`Add dashboard ${data.name || data.id}`, '', 'Dashboard');
 
     this._saveData();
   }
@@ -60,20 +60,21 @@ export default class DashboardsStore {
       this.dashboards.delete(id);
     }
 
-    logAction('Update dashboard', data.name || data.id, 'Dashboard');
+    logAction(`Update dashboard ${data.name || data.id}`, '', 'Dashboard');
 
     this._saveData();
   }
 
   async updateDashboards(data: Dashboard[]) {
     this.dashboards = new Map(data.map((dashboard) => [dashboard.id, new Dashboard(dashboard, this)]));
+    logAction('Update dashboards order', '', 'Dashboard');
     this._saveData();
   }
 
   async deleteDashboard(id: string) {
     const dashboardName = this.dashboards.get(id)?.name || id;
     this.dashboards.delete(id);
-    logAction('Delete dashboard', dashboardName, 'Dashboard');
+    logAction(`Delete dashboard ${dashboardName}`, '', 'Dashboard');
     this._saveData();
   }
 
@@ -82,16 +83,20 @@ export default class DashboardsStore {
       const dashboard = this.dashboards.get(dashboardId);
       dashboard.widgets.push(widgetId);
       this.dashboards.set(dashboardId, new Dashboard(dashboard, this));
+      const widgetName = this.widgets.get(widgetId)?.name || widgetId;
+      logAction(`Add widget ${widgetName} to dashboard ${dashboard.name || dashboardId}`, '', 'Dashboard');
       this._saveData();
     });
   }
 
   removeWidgetFromDashboard(dashboardId: string, widgetId: string, withSave = true) {
     runInAction(() => {
+      const widgetName = this.widgets.get(widgetId)?.name || widgetId;
       const dashboard = this.dashboards.get(dashboardId);
       dashboard.widgets = dashboard.widgets.filter((widget) => widget !== widgetId);
       this.dashboards.set(dashboardId, new Dashboard(dashboard, this));
       if (withSave) {
+        logAction(`Remove widget ${widgetName} from dashboard ${dashboard.name || dashboardId}`, '', 'Dashboard');
         this._saveData();
       }
     });
@@ -102,6 +107,7 @@ export default class DashboardsStore {
       const id = generateNextId(Array.from(this.widgets.keys()), 'widget');
       const copiedWidget = this.widgets.get(widgetId);
       this.widgets.set(id, new Widget({ ...copiedWidget, id, name: `${copiedWidget.name}_copy` }, this));
+      logAction(`Copy widget ${copiedWidget.name || widgetId}`, '', 'Dashboard');
       this._saveData();
       return id;
     });
@@ -109,17 +115,20 @@ export default class DashboardsStore {
 
   updateWidget(widget: WidgetBase) {
     this.widgets.set(widget.id, new Widget(widget, this));
+    logAction(`Update widget ${widget.name || widget.id}`, '', 'Dashboard');
     this._saveData();
   }
 
   deleteWidget(widgetId: string) {
     runInAction(() => {
+      const widgetName = this.widgets.get(widgetId)?.name || widgetId;
       this.dashboards.forEach((dashboard) => {
         if (dashboard.hasWidget(widgetId)) {
           this.removeWidgetFromDashboard(dashboard.id, widgetId, false);
         }
       });
       this.widgets.delete(widgetId);
+      logAction(`Delete widget ${widgetName}`, '', 'Dashboard');
       this._saveData();
     });
   }
