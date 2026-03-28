@@ -6,12 +6,11 @@ export interface AuditLogEntry {
   id: number;
   timestamp: number;
   login: string;
-  action: string;
-  argument: AuditLogEntryArgument;
+  scope: string;
+  event: AuditLogEntryEvent;
 }
 
-export interface AuditLogEntryArgument {
-  type: string;
+export interface AuditLogEntryEvent {
   text?: string;
   ip?: string;
   ua?: string;

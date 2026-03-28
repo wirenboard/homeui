@@ -82,13 +82,13 @@ class AuditLogStorage:
     def __init__(self, db_connection):
         self.db_connection = db_connection
 
-    def add_entry(self, login: str, action: str, argument: dict) -> None:
+    def add_entry(self, login: str, scope: str, event: dict) -> None:
         # Use context manager for atomic INSERT + DELETE (both commit or both rollback)
         with self.db_connection:
             cursor = self.db_connection.cursor()
             cursor.execute(
-                "INSERT INTO audit_log (timestamp, login, action, argument) VALUES (?, ?, ?, ?)",
-                (int(datetime.now(timezone.utc).timestamp()), login, action, json.dumps(argument)),
+                "INSERT INTO audit_log (timestamp, login, scope, event) VALUES (?, ?, ?, ?)",
+                (int(datetime.now(timezone.utc).timestamp()), login, scope, json.dumps(event)),
             )
             cursor.execute(
                 "DELETE FROM audit_log WHERE id NOT IN (SELECT id FROM audit_log ORDER BY id DESC LIMIT 1000)"
@@ -97,29 +97,29 @@ class AuditLogStorage:
     def get_entries(self, limit: int = 100, offset: int = 0) -> list[dict]:
         cursor = self.db_connection.cursor()
         cursor.execute(
-            "SELECT id, timestamp, login, action, argument FROM audit_log ORDER BY id DESC LIMIT ? OFFSET ?",
+            "SELECT id, timestamp, login, scope, event FROM audit_log ORDER BY id DESC LIMIT ? OFFSET ?",
             (limit, offset),
         )
         entries = []
         for row in cursor.fetchall():
-            raw_argument = row[4]
-            argument: dict
+            raw_event = row[4]
+            event: dict
             try:
-                parsed_argument = json.loads(raw_argument)
-                if isinstance(parsed_argument, dict):
-                    argument = parsed_argument
+                parsed_event = json.loads(raw_event)
+                if isinstance(parsed_event, dict):
+                    event = parsed_event
                 else:
-                    argument = {"type": "action", "text": str(raw_argument)}
+                    event = {"text": str(raw_event)}
             except Exception:  # pylint: disable=broad-exception-caught
-                argument = {"type": "action", "text": str(raw_argument)}
+                event = {"text": str(raw_event)}
 
             entries.append(
                 {
                     "id": row[0],
                     "timestamp": row[1],
                     "login": row[2],
-                    "action": row[3],
-                    "argument": argument,
+                    "scope": row[3],
+                    "event": event,
                 }
             )
         return entries

@@ -702,6 +702,7 @@
          "time": "Time",
          "user": "User",
          "action": "Action",
+         "description": "Description",
          "type": "Type",
          "argument": "Argument",
          "error": "Failed to load audit log",

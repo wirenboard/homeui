@@ -85,7 +85,7 @@ export class EditSvgDashboardPageStore {
       this.dashboard.svg_url = 'local';
       await this.#dashboardsStore.addDashboard(this.dashboard);
     } else {
-      logAction(`Edit SVG dashboard "${this.dashboard.name || this.originalId}"`, '', 'Dashboard');
+      logAction(`Edit SVG dashboard "${this.dashboard.name || this.originalId}"`, 'Dashboard');
       await this.#dashboardsStore.updateDashboard(this.originalId, this.dashboard);
     }
     return this.dashboard.id;

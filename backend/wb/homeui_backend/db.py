@@ -35,8 +35,8 @@ def create_tables(con: sqlite3.Connection):
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "timestamp INTEGER NOT NULL, "
             "login TEXT NOT NULL, "
-            "action TEXT NOT NULL, "
-            "argument TEXT NOT NULL)"
+            "scope TEXT NOT NULL, "
+            "event TEXT NOT NULL)"
         )
     )
     con.commit()
@@ -71,8 +71,8 @@ def migration_3(con: sqlite3.Connection) -> None:
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "timestamp INTEGER NOT NULL, "
             "login TEXT NOT NULL, "
-            "action TEXT NOT NULL, "
-            "argument TEXT NOT NULL)"
+            "scope TEXT NOT NULL, "
+            "event TEXT NOT NULL)"
         )
     )
     con.commit()

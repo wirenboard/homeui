@@ -52,7 +52,7 @@ export class Dashboard {
 
   async toggleVisibility() {
     this.options.isHidden = Object.hasOwn(this.options, 'isHidden') ? !this.options.isHidden : true;
-    logAction(this.options.isHidden ? `Hide dashboard "${this.name || this.id}"` : `Show dashboard "${this.name || this.id}"`, '', 'Dashboard');
+    logAction(this.options.isHidden ? `Hide dashboard "${this.name || this.id}"` : `Show dashboard "${this.name || this.id}"`, 'Dashboard');
     return this.#dashboardsStore.updateDashboard(this.id, this);
   }
 }

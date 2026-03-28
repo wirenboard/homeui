@@ -5,7 +5,7 @@ import { Button } from '@/components/button';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { AuditLogEntryArgument, auditLogStore } from './page-store';
+import { AuditLogEntryEvent, auditLogStore } from './page-store';
 import './styles.css';
 
 function buildPageNumbers(current: number, total: number): (number | '...')[] {
@@ -34,14 +34,14 @@ function buildPageNumbers(current: number, total: number): (number | '...')[] {
   return result;
 }
 
-function formatAction(entry: { action: string; login: string; argument: AuditLogEntryArgument }) {
-  if (entry.argument.type === 'auth') {
-    const ip = entry.argument.ip || '';
-    const userAgent = entry.argument.ua_pretty || entry.argument.ua || '';
-    return `${entry.action} ${entry.login}, ip ${ip}, ${userAgent}`;
+function formatDescription(entry: { login: string; scope: string; event: AuditLogEntryEvent }) {
+  if (entry.scope === 'auth') {
+    const ip = entry.event.ip || '';
+    const userAgent = entry.event.ua_pretty || entry.event.ua || '';
+    return `${entry.event.text || ''} ${entry.login}, ip ${ip}, ${userAgent}`;
   }
 
-  return entry.argument.text ? `${entry.action} ${entry.argument.text}` : entry.action;
+  return entry.event.text || '';
 }
 
 const AuditLogPage = observer(() => {
@@ -67,15 +67,15 @@ const AuditLogPage = observer(() => {
             <TableCell width="15%">{t('audit-log.labels.time')}</TableCell>
             <TableCell width="12%">{t('audit-log.labels.user')}</TableCell>
             <TableCell width="10%">{t('audit-log.labels.type')}</TableCell>
-            <TableCell width="63%">{t('audit-log.labels.action')}</TableCell>
+            <TableCell width="63%">{t('audit-log.labels.description')}</TableCell>
           </TableRow>
 
           {auditLogStore.entries.map((entry) => (
             <TableRow key={entry.id}>
               <TableCell>{new Date(entry.timestamp * 1000).toLocaleString()}</TableCell>
               <TableCell ellipsis>{entry.login}</TableCell>
-              <TableCell ellipsis>{entry.argument.type}</TableCell>
-              <TableCell ellipsis>{formatAction(entry)}</TableCell>
+              <TableCell ellipsis>{entry.scope}</TableCell>
+              <TableCell ellipsis>{formatDescription(entry)}</TableCell>
             </TableRow>
           ))}
         </Table>

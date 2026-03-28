@@ -215,9 +215,9 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
         context.audit_log_storage.add_entry(
             login_to_log,
-            "Login failed",
+            "auth",
             {
-                "type": "auth",
+                "text": "Login failed",
                 "ip": client_ip,
                 "ua": user_agent,
                 "ua_pretty": format_user_agent(user_agent),
@@ -227,9 +227,9 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     context.audit_log_storage.add_entry(
         login,
-        "Login",
+        "auth",
         {
-            "type": "auth",
+            "text": "Login",
             "ip": client_ip,
             "ua": user_agent,
             "ua_pretty": format_user_agent(user_agent),
@@ -416,16 +416,16 @@ def add_audit_log_handler(request: BaseHTTPRequestHandler, context: WebRequestHa
     try:
         length = int(request.headers.get("Content-Length", 0))
         form = json.loads(request.rfile.read(length).decode("utf-8"))
-        action = form.get("action")
-        argument = form.get("argument")
-        if not action or not isinstance(action, str):
-            raise TypeError("Invalid action field")
-        if not isinstance(argument, dict) or not isinstance(argument.get("type"), str):
-            raise TypeError("Invalid argument field")
+        scope = form.get("scope")
+        event = form.get("event")
+        if not scope or not isinstance(scope, str):
+            raise TypeError("Invalid scope field")
+        if not isinstance(event, dict):
+            raise TypeError("Invalid event field")
     except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
-    context.audit_log_storage.add_entry(context.session.user.login, action[:255], argument)
+    context.audit_log_storage.add_entry(context.session.user.login, scope, event)
     return response_200()
 
 

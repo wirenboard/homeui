@@ -43,7 +43,7 @@ export default class ConfigsStore {
     // Capture configPath before the async call to avoid accessing this.config after it may be cleared
     const configPath = this.config.configPath;
     return this.#configEditorProxy.Save({ path: configPath, content: this.config.content })
-      .then(() => logAction(`Edit config "${configPath}"`, '', 'Configs'));
+      .then(() => logAction(`Edit config "${configPath}"`, 'Configs'));
   }
 
   clearConfig() {

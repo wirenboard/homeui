@@ -171,7 +171,7 @@ class UsersPageStore {
     if (res === null) {
       return;
     }
-    logAction(`Add user "${user.login}"`, '', 'Users');
+    logAction(`Add user "${user.login}"`, 'Users');
     if (!authStore.areUsersConfigured) {
       location.reload();
       return;
@@ -194,7 +194,7 @@ class UsersPageStore {
     if (res === null) {
       return;
     }
-    logAction(`Edit user "${user.login}"`, '', 'Users');
+    logAction(`Edit user "${user.login}"`, 'Users');
 
     if (authStore.me.id === user.id && !authStore.me.autologin) {
       return authStore.logout('/#!/login?returnState=accessLevel');
@@ -223,7 +223,7 @@ class UsersPageStore {
     if (res === null) {
       return;
     }
-    logAction(`Delete user "${loginToLog}"`, '', 'Users');
+    logAction(`Delete user "${loginToLog}"`, 'Users');
     runInAction(() => {
       this.users = this.users.filter((u) => u.id !== userId);
     });

@@ -86,7 +86,7 @@ export default class RulesStore {
           }
         });
         if (!res.error) {
-          logAction(`Edit rule "${path}"`, '', 'Rules');
+          logAction(`Edit rule "${path}"`, 'Rules');
         }
         return res.path;
       });
@@ -95,7 +95,7 @@ export default class RulesStore {
   async rename(oldName: string, newName: string): Promise<string> {
     return this.#editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
       .then(async () => {
-        logAction(`Rename rule "${oldName}" to "${this.getValidRuleName(newName)}"`, '', 'Rules');
+        logAction(`Rename rule "${oldName}" to "${this.getValidRuleName(newName)}"`, 'Rules');
         await new Promise((resolve) => setTimeout(resolve, 1500));
         return this.getValidRuleName(newName);
       });
@@ -117,7 +117,7 @@ export default class RulesStore {
 
   async changeState(path: string, state: boolean): Promise<void> {
     await this.#editorProxy.ChangeState({ path, state });
-    logAction(state ? `Enable rule "${path}"` : `Disable rule "${path}"`, '', 'Rules');
+    logAction(state ? `Enable rule "${path}"` : `Disable rule "${path}"`, 'Rules');
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.getList();
   }
@@ -150,7 +150,7 @@ export default class RulesStore {
         runInAction(() => {
           this.rules = this.rules.filter((rule) => rule.virtualPath !== path);
         });
-        logAction(`Remove rule "${path}"`, '', 'Rules');
+        logAction(`Remove rule "${path}"`, 'Rules');
       }
     });
   }
