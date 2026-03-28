@@ -53,8 +53,10 @@ export default class DashboardsStore {
   }
 
   async updateDashboard(id: string, data: Dashboard) {
-    // Read the old name before modifying the dashboards map
-    const oldName = this.dashboards.get(id)?.name || id;
+    // Read old values before modifying the dashboards map
+    const oldDashboard = this.dashboards.get(id);
+    const oldName = oldDashboard?.name || id;
+    const oldIsHidden = oldDashboard?.options?.isHidden;
 
     if (id === data.id) {
       this.dashboards.set(id, new Dashboard(data, this));
@@ -64,10 +66,14 @@ export default class DashboardsStore {
       this.dashboards.delete(id);
     }
 
+    const newIsHidden = data.options?.isHidden;
     if (id !== data.id) {
       logAction(`Change dashboard id "${id}" to "${data.id}"`, '', 'Dashboard');
     } else if (oldName !== (data.name || data.id)) {
       logAction(`Rename dashboard "${oldName}" to "${data.name || data.id}"`, '', 'Dashboard');
+    } else if (oldIsHidden !== newIsHidden) {
+      // Visibility toggle - log show or hide action
+      logAction(newIsHidden ? `Hide dashboard "${data.name || data.id}"` : `Show dashboard "${data.name || data.id}"`, '', 'Dashboard');
     } else {
       logAction(`Edit dashboard "${data.name || data.id}"`, '', 'Dashboard');
     }
