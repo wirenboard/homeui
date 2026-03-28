@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { Dashboard, type DashboardsStore, type DashboardBase } from '@/stores/dashboards';
+import { logAction } from '@/utils/logAction';
 import { BindingsStore } from './bindings-store';
 import { SvgStore } from './svg-store';
 
@@ -84,6 +85,7 @@ export class EditSvgDashboardPageStore {
       this.dashboard.svg_url = 'local';
       await this.#dashboardsStore.addDashboard(this.dashboard);
     } else {
+      logAction(`Edit SVG dashboard "${this.dashboard.name || this.originalId}"`, '', 'Dashboard');
       await this.#dashboardsStore.updateDashboard(this.originalId, this.dashboard);
     }
     return this.dashboard.id;

@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import type DashboardsStore from '@/stores/dashboards/dashboards-store';
+import { logAction } from '@/utils/logAction';
 import { type DashboardBase } from './types';
 
 export class Dashboard {
@@ -51,6 +52,7 @@ export class Dashboard {
 
   async toggleVisibility() {
     this.options.isHidden = Object.hasOwn(this.options, 'isHidden') ? !this.options.isHidden : true;
+    logAction(this.options.isHidden ? `Hide dashboard "${this.name || this.id}"` : `Show dashboard "${this.name || this.id}"`, '', 'Dashboard');
     return this.#dashboardsStore.updateDashboard(this.id, this);
   }
 }
