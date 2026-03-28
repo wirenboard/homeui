@@ -742,14 +742,14 @@
       "events": {
          "login": "Вход с {{ip}} ({{ua_pretty}})",
          "login_failed": "Неудачный вход с {{ip}} ({{ua_pretty}})",
-         "add_user": "Пользователь \"{{login}}\" добавлен",
-         "edit_user": "Пользователь \"{{login}}\" изменён",
-         "delete_user": "Пользователь \"{{login}}\" удалён",
-         "add_dashboard": "Панель \"{{name}}\" добавлена",
-         "change_dashboard_id": "Идентификатор панели изменён с \"{{old_id}}\" на \"{{new_id}}\"",
+         "add_user": "Создан пользователь \"{{login}}\"",
+         "edit_user": "Изменен пользователь \"{{login}}\"",
+         "delete_user": "Удален пользователь \"{{login}}\"",
+         "add_dashboard": "Добавлена панель \"{{name}}\"",
+         "change_dashboard_id": "Id панели изменён с \"{{old_id}}\" на \"{{new_id}}\"",
          "rename_dashboard": "Панель \"{{old_name}}\" переименована в \"{{new_name}}\"",
-         "reorder_dashboards": "Порядок панелей обновлён",
-         "delete_dashboard": "Панель \"{{name}}\" удалена",
+         "reorder_dashboards": "Изменен порядок панелей",
+         "delete_dashboard": "Удалена панель \"{{name}}\"",
          "add_widget_to_dashboard": "Виджет \"{{widget_name}}\" добавлен на панель \"{{dashboard_name}}\"",
          "remove_widget_from_dashboard": "Виджет \"{{widget_name}}\" убран с панели \"{{dashboard_name}}\"",
          "copy_widget": "Виджет \"{{name}}\" скопирован",
@@ -759,14 +759,14 @@
          "show_dashboard": "Панель \"{{name}}\" показана",
           "edit_svg_dashboard": "SVG-панель \"{{name}}\" изменена",
           "edit_rule": "Правило \"{{name}}\" изменено",
-          "copy_rule": "Правило \"{{name}}\" скопировано",
+          "copy_rule": "Правило \"{{name}}\" скопировано в \"{{new_name}}\"",
           "rename_rule": "Правило \"{{old_name}}\" переименовано в \"{{new_name}}\"",
           "enable_rule": "Правило \"{{name}}\" включено",
          "disable_rule": "Правило \"{{name}}\" выключено",
          "delete_rule": "Правило \"{{name}}\" удалено",
          "edit_config": "Конфиг \"{{path}}\" изменён",
          "edit_network_connections": "Настройки сетевых соединений изменены",
-         "edit_serial_config": "Настройки последовательных устройств изменены"
+         "edit_serial_config": "Настройки serial-устройств изменены"
       }
    },
    "login": {

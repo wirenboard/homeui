@@ -14,10 +14,10 @@ export interface AuditLogEntryEvent {
   action?: string;
   login?: string;
   name?: string;
+  new_name?: string;
   old_id?: string;
   new_id?: string;
   old_name?: string;
-  new_name?: string;
   widget_name?: string;
   dashboard_name?: string;
   path?: string;

@@ -716,7 +716,7 @@
       "events": {
          "login": "Login from {{ip}} ({{ua_pretty}})",
          "login_failed": "Login failed from {{ip}} ({{ua_pretty}})",
-         "add_user": "User \"{{login}}\" added",
+         "add_user": "User \"{{login}}\" created",
          "edit_user": "User \"{{login}}\" edited",
          "delete_user": "User \"{{login}}\" deleted",
          "add_dashboard": "Dashboard \"{{name}}\" added",
@@ -733,7 +733,7 @@
          "show_dashboard": "Dashboard \"{{name}}\" shown",
           "edit_svg_dashboard": "SVG dashboard \"{{name}}\" edited",
           "edit_rule": "Rule \"{{name}}\" edited",
-          "copy_rule": "Rule \"{{name}}\" copied",
+          "copy_rule": "Rule \"{{name}}\" copied to \"{{new_name}}\"",
           "rename_rule": "Rule \"{{old_name}}\" renamed to \"{{new_name}}\"",
           "enable_rule": "Rule \"{{name}}\" enabled",
          "disable_rule": "Rule \"{{name}}\" disabled",

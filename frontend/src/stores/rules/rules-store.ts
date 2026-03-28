@@ -144,7 +144,7 @@ export default class RulesStore {
       { ...copiedRule, initName: this.getValidRuleName(copiedRule.name) },
       true
     );
-    logAction({ action: 'copy_rule', name: path }, 'Rules');
+    logAction({ action: 'copy_rule', name: path, new_name: copiedRuleName }, 'Rules');
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.changeState(copiedRuleName, false);
   }
