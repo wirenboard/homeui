@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
@@ -57,6 +58,39 @@ const AuditLogPage = observer(() => {
       hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={false}
     >
+      <div className="audit-log-filters">
+        <label className="audit-log-filter-label">
+          {t('audit-log.labels.filter-user')}
+          <Dropdown
+            options={[
+              { value: null, label: t('audit-log.labels.all-users') },
+              ...auditLogStore.availableUsers.map((user) => ({ value: user, label: user })),
+            ]}
+            value={auditLogStore.filterUser}
+            onChange={(option: Option<string>) => {
+              if ('value' in option) {
+                auditLogStore.setFilterUser(option.value);
+              }
+            }}
+          />
+        </label>
+        <label className="audit-log-filter-label">
+          {t('audit-log.labels.filter-scope')}
+          <Dropdown
+            options={[
+              { value: null, label: t('audit-log.labels.all-scopes') },
+              ...auditLogStore.availableScopes.map((scope) => ({ value: scope, label: scope })),
+            ]}
+            value={auditLogStore.filterScope}
+            onChange={(option: Option<string>) => {
+              if ('value' in option) {
+                auditLogStore.setFilterScope(option.value);
+              }
+            }}
+          />
+        </label>
+      </div>
+
       <div
         className={auditLogStore.isLoading
           ? 'audit-log-content audit-log-content_loading'

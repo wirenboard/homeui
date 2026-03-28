@@ -2,6 +2,21 @@
   transition: opacity 0.2s ease;
 }
 
+.audit-log-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.audit-log-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .audit-log-content_loading {
   opacity: 0.5;
 }

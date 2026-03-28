@@ -17,7 +17,7 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
 
       const saveConnections = async (data) => {
         await ConfigEditorProxy.Save({ path, content: data });
-        logAction('Edit network connections config', '', 'Configs');
+        logAction('Edit network connections config', 'Configs');
       };
 
       const loadConnections = async () => {

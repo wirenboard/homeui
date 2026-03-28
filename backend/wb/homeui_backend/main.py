@@ -401,12 +401,27 @@ def get_audit_log_handler(request: BaseHTTPRequestHandler, context: WebRequestHa
         offset = max(0, int(query.get("offset", [0])[0]))
     except (ValueError, TypeError):
         return response_400("Invalid limit or offset parameter")
-    entries = context.audit_log_storage.get_entries(limit=limit, offset=offset)
-    total = context.audit_log_storage.get_total_count()
+    login_filter = query.get("login", [None])[0] or None
+    scope_filter = query.get("scope", [None])[0] or None
+    entries = context.audit_log_storage.get_entries(
+        limit=limit,
+        offset=offset,
+        login_filter=login_filter,
+        scope_filter=scope_filter,
+    )
+    total = context.audit_log_storage.get_total_count(login_filter=login_filter, scope_filter=scope_filter)
     return response_200(
         [["Content-type", "application/json"]],
         json.dumps({"entries": entries, "total": total}),
     )
+
+
+def get_audit_log_options_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    if context.session is None:
+        return response_401()
+
+    options = context.audit_log_storage.get_filter_options()
+    return response_200([["Content-type", "application/json"]], json.dumps(options))
 
 
 def add_audit_log_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
@@ -629,6 +644,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
+                "/audit_log/options": RequestHandler(fn=get_audit_log_options_handler),
                 "/audit_log": RequestHandler(fn=get_audit_log_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),

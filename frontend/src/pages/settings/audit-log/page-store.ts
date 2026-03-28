@@ -24,6 +24,10 @@ class AuditLogPageStore {
   public pageSize = 20;
   public total = 0;
   public error = false;
+  public filterUser: string | null = null;
+  public filterScope: string | null = null;
+  public availableUsers: string[] = [];
+  public availableScopes: string[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -33,16 +37,44 @@ class AuditLogPageStore {
     return Math.ceil(this.total / this.pageSize);
   }
 
+  async loadOptions() {
+    try {
+      const { users, scopes } = await request
+        .get<{ users: string[]; scopes: string[] }>('/audit-log/options')
+        .then(({ data }) => data);
+      runInAction(() => {
+        this.availableUsers = users;
+        this.availableScopes = scopes;
+      });
+    } catch {
+      // Silently ignore options loading errors.
+    }
+  }
+
   async load(page = 0) {
+    if (page === 0) {
+      this.loadOptions();
+    }
+
     runInAction(() => {
       this.isLoading = true;
       this.error = false;
     });
     const offset = page * this.pageSize;
+    const params: Record<string, unknown> = { limit: this.pageSize, offset };
+
+    if (this.filterUser) {
+      params.login = this.filterUser;
+    }
+
+    if (this.filterScope) {
+      params.scope = this.filterScope;
+    }
+
     try {
       const { entries, total } = await request
         .get<{ entries: AuditLogEntry[]; total: number }>('/audit-log', {
-          params: { limit: this.pageSize, offset },
+          params,
         })
         .then(({ data }) => data);
       runInAction(() => {
@@ -64,6 +96,16 @@ class AuditLogPageStore {
       return;
     }
     await this.load(page);
+  }
+
+  setFilterUser(value: string | null) {
+    this.filterUser = value;
+    this.load(0);
+  }
+
+  setFilterScope(value: string | null) {
+    this.filterScope = value;
+    this.load(0);
   }
 }
 
