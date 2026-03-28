@@ -68,6 +68,18 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
         },
       },
     })
+    .state('auditLog', {
+      url: '/audit-log',
+      template: '<audit-log-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'audit-log' */ './controllers/auditLogController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
+    })
     .state('scan', {
       url: '/scan',
       redirectTo: 'serial-config',

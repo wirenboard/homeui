@@ -31,14 +31,12 @@ def create_tables(con: sqlite3.Connection):
 
     cursor.execute(
         (
-            "CREATE TABLE IF NOT EXISTS auth_log ("
+            "CREATE TABLE IF NOT EXISTS audit_log ("
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "timestamp INTEGER NOT NULL, "
             "login TEXT NOT NULL, "
-            "success INTEGER NOT NULL, "
-            "ip TEXT, "
-            "user_agent TEXT, "
-            "user_agent_pretty TEXT)"
+            "action TEXT NOT NULL, "
+            "argument TEXT NOT NULL)"
         )
     )
     con.commit()
@@ -69,14 +67,12 @@ def migration_3(con: sqlite3.Connection) -> None:
     cursor = con.cursor()
     cursor.execute(
         (
-            "CREATE TABLE IF NOT EXISTS auth_log ("
+            "CREATE TABLE IF NOT EXISTS audit_log ("
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "timestamp INTEGER NOT NULL, "
             "login TEXT NOT NULL, "
-            "success INTEGER NOT NULL, "
-            "ip TEXT, "
-            "user_agent TEXT, "
-            "user_agent_pretty TEXT)"
+            "action TEXT NOT NULL, "
+            "argument TEXT NOT NULL)"
         )
     )
     con.commit()

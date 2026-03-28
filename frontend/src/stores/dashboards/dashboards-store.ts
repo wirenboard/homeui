@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { uiConfigPath } from '@/common/paths';
 import type { DashboardBase, UIConfigResponse, WidgetBase } from '@/stores/dashboards';
 import { generateNextId } from '@/utils/id';
+import { logAction } from '@/utils/logAction';
 import i18n from '~/i18n/react/config';
 import { Dashboard } from './dashboard';
 import { Widget } from './widget';
@@ -46,6 +47,7 @@ export default class DashboardsStore {
 
   async addDashboard(data: Dashboard) {
     this.dashboards.set(data.id, new Dashboard(data, this));
+    logAction('Add dashboard', data.name || data.id, 'Dashboard');
 
     this._saveData();
   }
@@ -58,6 +60,8 @@ export default class DashboardsStore {
       this.dashboards.delete(id);
     }
 
+    logAction('Update dashboard', data.name || data.id, 'Dashboard');
+
     this._saveData();
   }
 
@@ -67,7 +71,9 @@ export default class DashboardsStore {
   }
 
   async deleteDashboard(id: string) {
+    const dashboardName = this.dashboards.get(id)?.name || id;
     this.dashboards.delete(id);
+    logAction('Delete dashboard', dashboardName, 'Dashboard');
     this._saveData();
   }
 

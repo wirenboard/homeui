@@ -2,19 +2,10 @@ import { type AxiosError } from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { authStore, UserRole, type User } from '@/stores/auth';
 import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/httpsUtils';
+import { logAction } from '@/utils/logAction';
 import { request } from '@/utils/request';
 import i18n from '~/i18n/react/config';
 import type { UserParams } from './components/edit-user/types';
-
-export interface AuthLogEntry {
-  id: number;
-  timestamp: number;
-  login: string;
-  success: boolean;
-  ip: string;
-  user_agent: string;
-  user_agent_pretty?: string;
-}
 
 function sortUsers(users: User[]) {
   users.sort((a, b) => {
@@ -29,12 +20,6 @@ class UsersPageStore {
   public isLoading = false;
   public errors = [];
   public users: User[] = [];
-  public authLog: AuthLogEntry[] = [];
-  public authLogLoading = false;
-  public authLogPage = 0;
-  public authLogPageSize = 8;
-  public authLogTotal = 0;
-  public authLogHasMore = false;
   public httpsDomainName = '';
   public autologinUser = null;
   public autologinOptions = [];
@@ -81,54 +66,6 @@ class UsersPageStore {
         this.isLoading = false;
       });
     }
-  }
-
-  async loadAuthLog(page = 0) {
-    runInAction(() => { this.authLogLoading = true; });
-    const offset = page * this.authLogPageSize;
-    try {
-      const { entries, total } = await request
-        .get<{ entries: AuthLogEntry[]; total: number }>('/auth/login-log', {
-          params: {
-            limit: this.authLogPageSize,
-            offset,
-          },
-        })
-        .then(({ data }) => data);
-      runInAction(() => {
-        this.authLog = entries;
-        this.authLogPage = page;
-        this.authLogTotal = total;
-        this.authLogHasMore = entries.length === this.authLogPageSize;
-      });
-    } catch {
-      // Ignore auth log loading errors to keep users management available.
-    } finally {
-      runInAction(() => {
-        this.authLogLoading = false;
-      });
-    }
-  }
-
-  setPageSize(n: number) {
-    if (n === this.authLogPageSize) {
-      return;
-    }
-    this.authLogPageSize = n;
-    this.loadAuthLog(0);
-  }
-
-  async loadAuthLogPage(page: number) {
-    // Use authLogTotalPages for reliable boundary check (authLogHasMore can give false positive
-    // when the last page is exactly full)
-    if (page < 0 || page >= this.authLogTotalPages || this.authLogLoading) {
-      return;
-    }
-    await this.loadAuthLog(page);
-  }
-
-  get authLogTotalPages() {
-    return Math.ceil(this.authLogTotal / this.authLogPageSize);
   }
 
   refreshAutologinUserOptions() {
@@ -234,6 +171,7 @@ class UsersPageStore {
     if (res === null) {
       return;
     }
+    logAction('Add user', user.login, 'Auth');
     if (!authStore.areUsersConfigured) {
       location.reload();
       return;
@@ -256,6 +194,7 @@ class UsersPageStore {
     if (res === null) {
       return;
     }
+    logAction('Edit user', user.login, 'Auth');
 
     if (authStore.me.id === user.id && !authStore.me.autologin) {
       return authStore.logout('/#!/login?returnState=accessLevel');
@@ -279,10 +218,12 @@ class UsersPageStore {
   }
 
   async deleteUser(userId: string) {
+    const loginToLog = this.users.find((u) => u.id === userId)?.login ?? userId;
     const res = await this.fetchWrapper(() => authStore.deleteUser(userId));
     if (res === null) {
       return;
     }
+    logAction('Delete user', loginToLog, 'Auth');
     runInAction(() => {
       this.users = this.users.filter((u) => u.id !== userId);
     });

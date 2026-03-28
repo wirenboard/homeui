@@ -36,6 +36,7 @@ class DeleteUserHandlerTest(unittest.TestCase):
             sn="",
             users_storage=self.users_storage_mock,
             sessions_storage=MagicMock(),
+            audit_log_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             session=Session(
@@ -91,6 +92,7 @@ class GetUsersHandlerTests(unittest.TestCase):
             sn="",
             users_storage=users_storage,
             sessions_storage=MagicMock(),
+            audit_log_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             session=session,
@@ -117,6 +119,7 @@ class CheckAuthHandlerTests(unittest.TestCase):
             sn="",
             users_storage=self.users_storage_mock,
             sessions_storage=self.sessions_storage_mock,
+            audit_log_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
         )
@@ -187,6 +190,7 @@ class WhoAmIHandlerTests(unittest.TestCase):
             sn="",
             users_storage=self.users_storage_mock,
             sessions_storage=MagicMock(),
+            audit_log_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
         )
@@ -229,6 +233,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
             sn="",
             users_storage=MagicMock(),
             sessions_storage=MagicMock(),
+            audit_log_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
         )
@@ -266,6 +271,7 @@ class UpdateUserHandlerTest(unittest.TestCase):
             sn="",
             users_storage=self.users_storage_mock,
             sessions_storage=self.sessions_storage_mock,
+            audit_log_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
         )
@@ -421,6 +427,7 @@ class SecurityCheckHandlerTest(unittest.TestCase):
             sn="awb8test",
             users_storage=MagicMock(),
             sessions_storage=MagicMock(),
+            audit_log_storage=MagicMock(),
             certificate_thread=MagicMock(),
             security_check_thread=MagicMock(),
             session=None,

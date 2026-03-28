@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from datetime import datetime, timezone
+import json
 
 # Support both ua-parser 0.x (Debian stable, API: user_agent_parser.Parse() returns dict)
 # and ua-parser 1.x (pip, API: parse() returns dataclass Result).
@@ -77,51 +78,53 @@ def format_user_agent(ua_string: str) -> str:
         return ua_string[:100]
 
 
-class AuthLogStorage:
+class AuditLogStorage:
     def __init__(self, db_connection):
         self.db_connection = db_connection
 
-    def add_entry(self, login: str, success: bool, ip: str, user_agent: str) -> None:
-        # Truncate login to 255 chars to prevent log pollution from malicious input
-        login_to_log = login[:255]
-        # Parse user agent at write time so the pretty string is stored alongside the raw one
-        user_agent_pretty = format_user_agent(user_agent)
+    def add_entry(self, login: str, action: str, argument: dict) -> None:
         # Use context manager for atomic INSERT + DELETE (both commit or both rollback)
         with self.db_connection:
             cursor = self.db_connection.cursor()
             cursor.execute(
-                "INSERT INTO auth_log (timestamp, login, success, ip, user_agent, user_agent_pretty) "
-                "VALUES (?, ?, ?, ?, ?, ?)",
-                (int(datetime.now(timezone.utc).timestamp()), login_to_log, int(success), ip,
-                 user_agent, user_agent_pretty),
+                "INSERT INTO audit_log (timestamp, login, action, argument) VALUES (?, ?, ?, ?)",
+                (int(datetime.now(timezone.utc).timestamp()), login, action, json.dumps(argument)),
             )
             cursor.execute(
-                "DELETE FROM auth_log WHERE id NOT IN (SELECT id FROM auth_log ORDER BY id DESC LIMIT 1000)"
+                "DELETE FROM audit_log WHERE id NOT IN (SELECT id FROM audit_log ORDER BY id DESC LIMIT 1000)"
             )
 
     def get_entries(self, limit: int = 100, offset: int = 0) -> list[dict]:
         cursor = self.db_connection.cursor()
         cursor.execute(
-            (
-                "SELECT id, timestamp, login, success, ip, user_agent, user_agent_pretty "
-                "FROM auth_log ORDER BY id DESC LIMIT ? OFFSET ?"
-            ),
+            "SELECT id, timestamp, login, action, argument FROM audit_log ORDER BY id DESC LIMIT ? OFFSET ?",
             (limit, offset),
         )
-        return [
-            {
-                "id": row[0],
-                "timestamp": row[1],
-                "login": row[2],
-                "success": bool(row[3]),
-                "ip": row[4],
-                "user_agent": row[5],
-                "user_agent_pretty": row[6],
-            }
-            for row in cursor.fetchall()
-        ]
+        entries = []
+        for row in cursor.fetchall():
+            raw_argument = row[4]
+            argument: dict
+            try:
+                parsed_argument = json.loads(raw_argument)
+                if isinstance(parsed_argument, dict):
+                    argument = parsed_argument
+                else:
+                    argument = {"type": "action", "text": str(raw_argument)}
+            except Exception:  # pylint: disable=broad-exception-caught
+                argument = {"type": "action", "text": str(raw_argument)}
+
+            entries.append(
+                {
+                    "id": row[0],
+                    "timestamp": row[1],
+                    "login": row[2],
+                    "action": row[3],
+                    "argument": argument,
+                }
+            )
+        return entries
 
     def get_total_count(self) -> int:
         cursor = self.db_connection.cursor()
-        cursor.execute("SELECT COUNT(*) FROM auth_log")
+        cursor.execute("SELECT COUNT(*) FROM audit_log")
         return cursor.fetchone()[0]

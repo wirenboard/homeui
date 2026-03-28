@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { logAction } from '@/utils/logAction';
 import type { ConfigListItem, Config } from './types';
 
 export default class ConfigsStore {
@@ -39,7 +40,10 @@ export default class ConfigsStore {
   }
 
   async saveConfig() {
-    return this.#configEditorProxy.Save({ path: this.config.configPath, content: this.config.content });
+    // Capture configPath before the async call to avoid accessing this.config after it may be cleared
+    const configPath = this.config.configPath;
+    return this.#configEditorProxy.Save({ path: configPath, content: this.config.content })
+      .then(() => logAction('Save config', configPath, 'Config'));
   }
 
   clearConfig() {

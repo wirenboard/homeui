@@ -167,6 +167,7 @@ export const getMenuItems = (
         { label: 'navigation.labels.system', url: 'system', isShow: hasRights(UserRole.Admin) },
         { label: 'navigation.labels.channels', url: 'MQTTChannels' },
         { label: 'navigation.labels.access', url: 'access-level', isShow: hasRights(UserRole.Admin) },
+        { label: 'navigation.labels.audit-log', url: 'audit-log', isShow: hasRights(UserRole.Admin) },
         { label: 'navigation.labels.logs', url: 'logs', isShow: hasRights(UserRole.Operator) },
       ],
     },

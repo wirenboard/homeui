@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { generateNextId } from '@/utils/id';
+import { logAction } from '@/utils/logAction';
 import type { Rule, RuleError, RuleFetchData, RuleListItem, RuleLog, RuleSaveData } from './types';
 
 export default class RulesStore {
@@ -84,6 +85,9 @@ export default class RulesStore {
             rule.error = null;
           }
         });
+        if (!res.error) {
+          logAction('Save rule', path, 'Rules');
+        }
         return res.path;
       });
   }
@@ -91,6 +95,7 @@ export default class RulesStore {
   async rename(oldName: string, newName: string): Promise<string> {
     return this.#editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
       .then(async () => {
+        logAction('Rename rule', `"${oldName}" to "${this.getValidRuleName(newName)}"`, 'Rules');
         await new Promise((resolve) => setTimeout(resolve, 1500));
         return this.getValidRuleName(newName);
       });
@@ -112,6 +117,7 @@ export default class RulesStore {
 
   async changeState(path: string, state: boolean): Promise<void> {
     await this.#editorProxy.ChangeState({ path, state });
+    logAction(state ? 'Enable rule' : 'Disable rule', path, 'Rules');
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.getList();
   }
@@ -144,6 +150,7 @@ export default class RulesStore {
         runInAction(() => {
           this.rules = this.rules.filter((rule) => rule.virtualPath !== path);
         });
+        logAction('Remove rule', path, 'Rules');
       }
     });
   }

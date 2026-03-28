@@ -29,6 +29,7 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
       setIsLoading(true);
       const data = await authStore.login({ login, password });
       onSuccessLogin(data.user_type);
+      // Login is recorded on the backend side in auth_login_handler
     } catch {
       setIsShowError(true);
     } finally {

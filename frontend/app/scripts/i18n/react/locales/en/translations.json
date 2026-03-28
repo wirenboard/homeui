@@ -71,6 +71,7 @@
          "system": "System",
          "channels": "MQTT Channels",
          "access": "Users",
+         "audit-log": "Audit Log",
          "logs": "Logs",
          "scan": "Scan",
          "device-manager": "Device manager"
@@ -693,6 +694,20 @@
          "delete": "Delete",
          "enable-https": "Enable HTTPS",
          "use-http": "Stay on HTTP"
+      }
+   },
+   "audit-log": {
+      "title": "Audit Log",
+      "labels": {
+         "time": "Time",
+         "user": "User",
+         "action": "Action",
+         "type": "Type",
+         "argument": "Argument",
+         "error": "Failed to load audit log",
+         "empty": "No audit log entries yet",
+         "prev-page": "Previous",
+         "next-page": "Next"
       }
    },
    "login": {
