@@ -202,11 +202,17 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
     except Exception as e:  # pylint: disable=broad-exception-caught
         return response_400(str(e))
 
-    user = context.users_storage.get_user_by_login(form.get("login"))
+    login = form.get("login", "")
+    client_ip = request.headers.get("X-Real-IP") or request.headers.get("X-Forwarded-For") or "unknown"
+    user_agent = request.headers.get("User-Agent") or "unknown"
+
+    user = context.users_storage.get_user_by_login(login)
 
     if user is None or not check_password(form.get("password"), user.pwd_hash):
+        logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
         return response_401()
 
+    logging.info("Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent)
     res = {"user_type": user.type.value, "user_id": user.user_id}
     session = context.sessions_storage.add_session(user)
     return response_200(
