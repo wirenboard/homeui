@@ -672,9 +672,20 @@
          "confirm-delete":"Do you really want to delete user \"{{name}}\"?",
          "autologin": "Automatically log in as user:",
          "no-autologin": "Do not use autologin",
-         "https": "HTTPS",
-         "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access."
-      },
+         "auth-log-title": "Login history",
+         "auth-log-time": "Time",
+         "auth-log-login": "Login",
+         "auth-log-result": "Result",
+         "auth-log-ip": "IP Address",
+         "auth-log-user-agent": "User Agent",
+          "auth-log-success": "Success",
+          "auth-log-failed": "Failed",
+          "auth-log-empty": "No login attempts recorded",
+          "auth-log-prev-page": "Previous",
+          "auth-log-next-page": "Next",
+          "https": "HTTPS",
+          "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access."
+       },
       "buttons": {
          "save": "Save",
          "add": "Add",

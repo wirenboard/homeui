@@ -13,10 +13,11 @@ from http import cookies
 from http.server import BaseHTTPRequestHandler
 from sys import argv
 from typing import Any, Callable, Optional
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import bcrypt
 
+from .auth_log_storage import AuthLogStorage
 from .cert import CertificateCheckingThread
 from .config_file import Config
 from .db import open_db
@@ -155,6 +156,7 @@ class WebRequestHandlerContext:
     sn: str
     users_storage: UsersStorage
     sessions_storage: SessionsStorage
+    auth_log_storage: AuthLogStorage
     certificate_thread: CertificateCheckingThread
     security_check_thread: SecurityCheckingThread
     session: Optional[Session] = None
@@ -210,8 +212,10 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     if user is None or not check_password(form.get("password"), user.pwd_hash):
         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
+        context.auth_log_storage.add_entry(login, False, client_ip, user_agent)
         return response_401()
 
+    context.auth_log_storage.add_entry(login, True, client_ip, user_agent)
     logging.info("Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent)
     res = {"user_type": user.type.value, "user_id": user.user_id}
     session = context.sessions_storage.add_session(user)
@@ -368,6 +372,21 @@ def get_users_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandl
     return response_200([["Content-type", "application/json"]], json.dumps(list(users)))
 
 
+def get_auth_log_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
+    query = parse_qs(urlparse(request.path).query)
+    try:
+        limit = max(1, min(int(query.get("limit", [100])[0]), 1000))
+        offset = max(0, int(query.get("offset", [0])[0]))
+    except (ValueError, TypeError):
+        return response_400("Invalid limit or offset parameter")
+    entries = context.auth_log_storage.get_entries(limit=limit, offset=offset)
+    total = context.auth_log_storage.get_total_count()
+    return response_200(
+        [["Content-type", "application/json"]],
+        json.dumps({"entries": entries, "total": total}),
+    )
+
+
 def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     host_ip = request.headers.get("X-Forwarded-Host-Ip", "")
     res = {
@@ -508,6 +527,7 @@ def find_handler(url: str, handlers: dict[str, RequestHandler]) -> Optional[Requ
 class WebRequestHandler(BaseHTTPRequestHandler):
     users_storage: UsersStorage
     sessions_storage: SessionsStorage
+    auth_log_storage: AuthLogStorage
     enable_debug: bool = False
     sn: str = ""
     certificate_thread: CertificateCheckingThread
@@ -547,6 +567,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 self.sn,
                 self.users_storage,
                 self.sessions_storage,
+                self.auth_log_storage,
                 self.certificate_thread,
                 self.security_check_thread,
                 session,
@@ -566,6 +587,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "/auth/check": RequestHandler(fn=auth_check_handler, rate_per_minute_limit=100),
                 "/auth/who_am_i": RequestHandler(fn=auth_who_am_i_handler),
                 "/users": RequestHandler(fn=get_users_handler),
+                "/auth/login_log": RequestHandler(fn=get_auth_log_handler),
                 "/device/info": RequestHandler(fn=device_info_handler),
                 "/api/check": RequestHandler(fn=security_check_handler, rate_per_minute_limit=3),
                 "/api/https": RequestHandler(fn=get_https_handler),
@@ -641,6 +663,7 @@ def main():
 
     WebRequestHandler.users_storage = UsersStorage(con)
     WebRequestHandler.sessions_storage = SessionsStorage(con)
+    WebRequestHandler.auth_log_storage = AuthLogStorage(con)
     WebRequestHandler.enable_debug = args.debug
     WebRequestHandler.sn = sn
     WebRequestHandler.config = Config(WebRequestHandler.users_storage)

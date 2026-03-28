@@ -14,6 +14,31 @@ import { authStore, UserRole } from '@/stores/auth';
 import { store } from './page-store';
 import './styles.css';
 
+function buildPageNumbers(current: number, total: number): (number | '...')[] {
+  if (total <= 1) {
+    return [];
+  }
+
+  const pages = new Set<number>();
+  pages.add(0);
+  pages.add(total - 1);
+
+  for (let i = Math.max(0, current - 2); i <= Math.min(total - 1, current + 2); i++) {
+    pages.add(i);
+  }
+
+  const sorted = Array.from(pages).sort((a, b) => a - b);
+  const result: (number | '...')[] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) {
+      result.push('...');
+    }
+    result.push(sorted[i]);
+  }
+
+  return result;
+}
+
 const UsersPage = observer(() => {
   const { t } = useTranslation();
   const [deletedUserId, setDeletedUserId] = useState('');
@@ -24,6 +49,7 @@ const UsersPage = observer(() => {
   useEffect(() => {
     if (authStore.hasRights(UserRole.Admin)) {
       store.loadUsers();
+      store.loadAuthLog();
     }
 
     store.showEnableHttpsConfirmModal = confirm;
@@ -50,7 +76,8 @@ const UsersPage = observer(() => {
         />
       }
     >
-      <Table>
+      {/* flex-shrink: 0 prevents the users table from collapsing in the flex page layout */}
+      <Table style={{ flexShrink: 0 }}>
         <TableRow isHeading>
           <TableCell width="50%">
             {t('users.labels.login')}
@@ -107,9 +134,114 @@ const UsersPage = observer(() => {
         <Dropdown
           options={store.autologinOptions}
           value={store.autologinUser}
-          onChange={({ value }: Option<string>) => store.setAutologinUser(value)}
+          onChange={(option: Option<string>) => {
+            if ('value' in option) {
+              store.setAutologinUser(option.value);
+            }
+          }}
         />
       </label>
+
+      <div className="users-auth-log">
+        <h1 className="users-auth-log-title">
+          {t('users.labels.auth-log-title')}
+        </h1>
+
+        <div
+          className={store.authLogLoading
+            ? 'users-auth-log-content users-auth-log-content_loading'
+            : 'users-auth-log-content'}
+        >
+          <Table>
+            <TableRow isHeading>
+              <TableCell width="15%">
+                {t('users.labels.auth-log-time')}
+              </TableCell>
+              <TableCell width="10%">
+                {t('users.labels.auth-log-login')}
+              </TableCell>
+              <TableCell width="8%">
+                {t('users.labels.auth-log-result')}
+              </TableCell>
+              <TableCell width="12%">
+                {t('users.labels.auth-log-ip')}
+              </TableCell>
+              <TableCell width="55%">
+                {t('users.labels.auth-log-user-agent')}
+              </TableCell>
+            </TableRow>
+
+            {store.authLog.map((entry) => (
+              <TableRow key={entry.id}>
+                <TableCell>
+                  {new Date(entry.timestamp * 1000).toLocaleString()}
+                </TableCell>
+                <TableCell ellipsis>
+                  {entry.login}
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={entry.success
+                      ? 'users-auth-log-result users-auth-log-result_success'
+                      : 'users-auth-log-result users-auth-log-result_failed'}
+                  >
+                    {entry.success
+                      ? `✓ ${t('users.labels.auth-log-success')}`
+                      : `✗ ${t('users.labels.auth-log-failed')}`}
+                  </span>
+                </TableCell>
+                <TableCell ellipsis>
+                  {entry.ip}
+                </TableCell>
+                <TableCell ellipsis>
+                  {entry.user_agent}
+                </TableCell>
+              </TableRow>
+            ))}
+          </Table>
+
+          {!store.authLogLoading && store.authLog.length === 0 && (
+            <div className="users-auth-log-empty">
+              {t('users.labels.auth-log-empty')}
+            </div>
+          )}
+        </div>
+
+        {/* Pagination controls are outside the scrollable content area */}
+        <div className="users-auth-log-pagination">
+          <Button
+            label={`← ${t('users.labels.auth-log-prev-page')}`}
+            variant="secondary"
+            disabled={store.authLogLoading || store.authLogPage === 0}
+            onClick={() => store.loadAuthLogPage(store.authLogPage - 1)}
+          />
+
+          {buildPageNumbers(store.authLogPage, store.authLogTotalPages).map((item, index) => (
+            item === '...'
+              ? (
+                <span key={`ellipsis-${index}`} className="users-auth-log-ellipsis">
+                  ...
+                </span>
+              )
+              : (
+                <Button
+                  key={item}
+                  label={String(item + 1)}
+                  variant={item === store.authLogPage ? 'primary' : 'secondary'}
+                  disabled={store.authLogLoading}
+                  onClick={() => store.loadAuthLogPage(item)}
+                />
+              )
+          ))}
+
+          <Button
+            label={`${t('users.labels.auth-log-next-page')} →`}
+            variant="secondary"
+            disabled={store.authLogLoading || store.authLogPage >= store.authLogTotalPages - 1}
+            onClick={() => store.loadAuthLogPage(store.authLogPage + 1)}
+          />
+        </div>
+      </div>
 
       {userEditOpened && (
         <EditUserModal
