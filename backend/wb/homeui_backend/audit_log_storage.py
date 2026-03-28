@@ -95,16 +95,16 @@ class AuditLogStorage:
                 "DELETE FROM audit_log WHERE id NOT IN (SELECT id FROM audit_log ORDER BY id DESC LIMIT 1000)"
             )
 
-    def get_entries(
+    def _build_conditions(
         self,
-        limit: int = 100,
-        offset: int = 0,
-        login_filter: Optional[str] = None,
-        scope_filter: Optional[str] = None,
-    ) -> List[dict]:
-        cursor = self.db_connection.cursor()
-        conditions = []
-        params = []
+        login_filter: Optional[str],
+        scope_filter: Optional[str],
+        start_timestamp: Optional[int],
+        end_timestamp: Optional[int],
+    ):
+        """Build SQL WHERE conditions and params list from filter arguments."""
+        conditions: list = []
+        params: list = []
 
         if login_filter:
             conditions.append("login = ?")
@@ -113,6 +113,29 @@ class AuditLogStorage:
         if scope_filter:
             conditions.append("scope = ?")
             params.append(scope_filter)
+
+        # Use 'is not None' instead of truthy check: value 0 is a valid Unix timestamp
+        if start_timestamp is not None:
+            conditions.append("timestamp >= ?")
+            params.append(start_timestamp)
+
+        if end_timestamp is not None:
+            conditions.append("timestamp <= ?")
+            params.append(end_timestamp)
+
+        return conditions, params
+
+    def get_entries(
+        self,
+        limit: int = 100,
+        offset: int = 0,
+        login_filter: Optional[str] = None,
+        scope_filter: Optional[str] = None,
+        start_timestamp: Optional[int] = None,
+        end_timestamp: Optional[int] = None,
+    ) -> List[dict]:
+        cursor = self.db_connection.cursor()
+        conditions, params = self._build_conditions(login_filter, scope_filter, start_timestamp, end_timestamp)
 
         where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
         query = f"SELECT id, timestamp, login, scope, event FROM audit_log {where} ORDER BY id DESC LIMIT ? OFFSET ?"
@@ -142,18 +165,15 @@ class AuditLogStorage:
             )
         return entries
 
-    def get_total_count(self, login_filter: Optional[str] = None, scope_filter: Optional[str] = None) -> int:
+    def get_total_count(
+        self,
+        login_filter: Optional[str] = None,
+        scope_filter: Optional[str] = None,
+        start_timestamp: Optional[int] = None,
+        end_timestamp: Optional[int] = None,
+    ) -> int:
         cursor = self.db_connection.cursor()
-        conditions = []
-        params = []
-
-        if login_filter:
-            conditions.append("login = ?")
-            params.append(login_filter)
-
-        if scope_filter:
-            conditions.append("scope = ?")
-            params.append(scope_filter)
+        conditions, params = self._build_conditions(login_filter, scope_filter, start_timestamp, end_timestamp)
 
         where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
         query = f"SELECT COUNT(*) FROM audit_log {where}"

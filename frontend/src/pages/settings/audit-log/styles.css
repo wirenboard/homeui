@@ -17,6 +17,24 @@
   white-space: nowrap;
 }
 
+.audit-log-datetime-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 16px;
+  flex-wrap: wrap;
+}
+
+.audit-log-datetime-input {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  background: var(--input-bg, #fff);
+  color: var(--text-color);
+  font-size: 14px;
+}
+
 .audit-log-content_loading {
   opacity: 0.5;
 }

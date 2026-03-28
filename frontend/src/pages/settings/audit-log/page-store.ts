@@ -35,6 +35,8 @@ class AuditLogPageStore {
   public error = false;
   public filterUser: string | null = null;
   public filterScope: string | null = null;
+  public filterStart: number | null = null;
+  public filterEnd: number | null = null;
   public availableUsers: string[] = [];
   public availableScopes: string[] = [];
 
@@ -80,6 +82,14 @@ class AuditLogPageStore {
       params.scope = this.filterScope;
     }
 
+    if (this.filterStart !== null) {
+      params.start = this.filterStart;
+    }
+
+    if (this.filterEnd !== null) {
+      params.end = this.filterEnd;
+    }
+
     try {
       const { entries, total } = await request
         .get<{ entries: AuditLogEntry[]; total: number }>('/audit-log', {
@@ -114,6 +124,23 @@ class AuditLogPageStore {
 
   setFilterScope(value: string | null) {
     this.filterScope = value;
+    this.load(0);
+  }
+
+  setFilterStart(value: number | null) {
+    this.filterStart = value;
+    this.load(0);
+  }
+
+  setFilterEnd(value: number | null) {
+    this.filterEnd = value;
+    this.load(0);
+  }
+
+  resetDateFilters() {
+    // Reset both date filters at once to trigger only a single reload.
+    this.filterStart = null;
+    this.filterEnd = null;
     this.load(0);
   }
 }

@@ -403,13 +403,29 @@ def get_audit_log_handler(request: BaseHTTPRequestHandler, context: WebRequestHa
         return response_400("Invalid limit or offset parameter")
     login_filter = query.get("login", [None])[0] or None
     scope_filter = query.get("scope", [None])[0] or None
+    start_filter = query.get("start", [None])[0]
+    end_filter = query.get("end", [None])[0]
+
+    try:
+        start_timestamp = int(start_filter) if start_filter else None
+        end_timestamp = int(end_filter) if end_filter else None
+    except (ValueError, TypeError):
+        return response_400("Invalid start or end parameter")
+
     entries = context.audit_log_storage.get_entries(
         limit=limit,
         offset=offset,
         login_filter=login_filter,
         scope_filter=scope_filter,
+        start_timestamp=start_timestamp,
+        end_timestamp=end_timestamp,
     )
-    total = context.audit_log_storage.get_total_count(login_filter=login_filter, scope_filter=scope_filter)
+    total = context.audit_log_storage.get_total_count(
+        login_filter=login_filter,
+        scope_filter=scope_filter,
+        start_timestamp=start_timestamp,
+        end_timestamp=end_timestamp,
+    )
     return response_200(
         [["Content-type", "application/json"]],
         json.dumps({"entries": entries, "total": total}),

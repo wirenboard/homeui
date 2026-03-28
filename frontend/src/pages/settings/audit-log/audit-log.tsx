@@ -51,6 +51,14 @@ function formatDescription(
   return '';
 }
 
+function formatTimestampToDatetimeLocal(timestamp: number | null): string {
+  if (timestamp === null) {
+    return '';
+  }
+
+  return new Date(timestamp * 1000).toLocaleString('sv').replace(' ', 'T').slice(0, 16);
+}
+
 const AuditLogPage = observer(() => {
   const { t } = useTranslation();
 
@@ -95,6 +103,47 @@ const AuditLogPage = observer(() => {
             }}
           />
         </label>
+        <div className="audit-log-datetime-group">
+          <label className="audit-log-filter-label">
+            {t('audit-log.labels.filter-start')}
+            <input
+              type="datetime-local"
+              className="audit-log-datetime-input"
+              value={formatTimestampToDatetimeLocal(auditLogStore.filterStart)}
+              onChange={(e) => {
+                if (!e.target.value) {
+                  auditLogStore.setFilterStart(null);
+                  return;
+                }
+
+                auditLogStore.setFilterStart(Math.floor(new Date(e.target.value).getTime() / 1000));
+              }}
+            />
+          </label>
+          <label className="audit-log-filter-label">
+            {t('audit-log.labels.filter-end')}
+            <input
+              type="datetime-local"
+              className="audit-log-datetime-input"
+              value={formatTimestampToDatetimeLocal(auditLogStore.filterEnd)}
+              onChange={(e) => {
+                if (!e.target.value) {
+                  auditLogStore.setFilterEnd(null);
+                  return;
+                }
+
+                auditLogStore.setFilterEnd(Math.floor(new Date(e.target.value).getTime() / 1000));
+              }}
+            />
+          </label>
+          {(auditLogStore.filterStart !== null || auditLogStore.filterEnd !== null) && (
+            <Button
+              label={t('audit-log.labels.reset-dates')}
+              variant="secondary"
+              onClick={() => auditLogStore.resetDateFilters()}
+            />
+          )}
+        </div>
       </div>
 
       <div
