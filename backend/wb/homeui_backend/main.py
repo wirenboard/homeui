@@ -215,9 +215,9 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
         context.audit_log_storage.add_entry(
             login_to_log,
-            "auth",
+            "Auth",
             {
-                "text": "Login failed",
+                "action": "login_failed",
                 "ip": client_ip,
                 "ua": user_agent,
                 "ua_pretty": format_user_agent(user_agent),
@@ -227,9 +227,9 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
 
     context.audit_log_storage.add_entry(
         login,
-        "auth",
+        "Auth",
         {
-            "text": "Login",
+            "action": "login",
             "ip": client_ip,
             "ua": user_agent,
             "ua_pretty": format_user_agent(user_agent),

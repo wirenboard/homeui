@@ -47,7 +47,7 @@ function deviceManagerDirective(
       const path = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-serial-dummy.schema.json';
       const saveConfig = async (data) => {
         await ConfigEditorProxy.Save({ path: path, content: data });
-        logAction('Edit serial devices config', 'Configs');
+        logAction({ action: 'edit_serial_config' }, 'Configs');
       };
 
       const loadConfig = async () => {

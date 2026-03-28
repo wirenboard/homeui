@@ -67,7 +67,7 @@ export default class RulesStore {
     };
   }
 
-  async save(rule: Rule): Promise<string> {
+  async save(rule: Rule, skipLog = false): Promise<string> {
     let path = rule.initName;
     if (!path) {
       path = this.getValidRuleName(rule.name);
@@ -85,8 +85,8 @@ export default class RulesStore {
             rule.error = null;
           }
         });
-        if (!res.error) {
-          logAction(`Edit rule "${path}"`, 'Rules');
+        if (!res.error && !skipLog) {
+          logAction({ action: 'edit_rule', name: path }, 'Rules');
         }
         return res.path;
       });
@@ -95,7 +95,7 @@ export default class RulesStore {
   async rename(oldName: string, newName: string): Promise<string> {
     return this.#editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
       .then(async () => {
-        logAction(`Rename rule "${oldName}" to "${this.getValidRuleName(newName)}"`, 'Rules');
+        logAction({ action: 'rename_rule', old_name: oldName, new_name: this.getValidRuleName(newName) }, 'Rules');
         await new Promise((resolve) => setTimeout(resolve, 1500));
         return this.getValidRuleName(newName);
       });
@@ -117,7 +117,7 @@ export default class RulesStore {
 
   async changeState(path: string, state: boolean): Promise<void> {
     await this.#editorProxy.ChangeState({ path, state });
-    logAction(state ? `Enable rule "${path}"` : `Disable rule "${path}"`, 'Rules');
+    logAction(state ? { action: 'enable_rule', name: path } : { action: 'disable_rule', name: path }, 'Rules');
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.getList();
   }
@@ -139,7 +139,12 @@ export default class RulesStore {
       this.rules.map((rule) => rule.virtualPath.replace(/\.js$/, '')),
       copiedRule.name.replace(/\.js$/, '')
     );
-    const copiedRuleName = await this.save({ ...copiedRule, initName: this.getValidRuleName(copiedRule.name) });
+    // Skip edit_rule logging in save(); log copy_rule explicitly instead
+    const copiedRuleName = await this.save(
+      { ...copiedRule, initName: this.getValidRuleName(copiedRule.name) },
+      true
+    );
+    logAction({ action: 'copy_rule', name: path }, 'Rules');
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.changeState(copiedRuleName, false);
   }
@@ -150,7 +155,7 @@ export default class RulesStore {
         runInAction(() => {
           this.rules = this.rules.filter((rule) => rule.virtualPath !== path);
         });
-        logAction(`Remove rule "${path}"`, 'Rules');
+        logAction({ action: 'delete_rule', name: path }, 'Rules');
       }
     });
   }

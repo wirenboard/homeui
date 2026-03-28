@@ -11,7 +11,16 @@ export interface AuditLogEntry {
 }
 
 export interface AuditLogEntryEvent {
-  text?: string;
+  action?: string;
+  login?: string;
+  name?: string;
+  old_id?: string;
+  new_id?: string;
+  old_name?: string;
+  new_name?: string;
+  widget_name?: string;
+  dashboard_name?: string;
+  path?: string;
   ip?: string;
   ua?: string;
   ua_pretty?: string;

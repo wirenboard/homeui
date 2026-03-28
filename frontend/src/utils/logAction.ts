@@ -3,11 +3,9 @@
 // to ensure logging never breaks main functionality.
 import { request } from './request';
 
-export function logAction(eventText: string, scope = 'action'): void {
+export function logAction(event: object, scope = 'action'): void {
   request.post('/audit-log', {
     scope,
-    event: {
-      text: eventText,
-    },
+    event,
   }).catch(() => {});
 }

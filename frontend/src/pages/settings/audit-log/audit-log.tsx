@@ -35,14 +35,20 @@ function buildPageNumbers(current: number, total: number): (number | '...')[] {
   return result;
 }
 
-function formatDescription(entry: { login: string; scope: string; event: AuditLogEntryEvent }) {
-  if (entry.scope === 'auth') {
-    const ip = entry.event.ip || '';
-    const userAgent = entry.event.ua_pretty || entry.event.ua || '';
-    return `${entry.event.text || ''} ${entry.login}, ip ${ip}, ${userAgent}`;
+function formatDescription(
+  entry: { login: string; scope: string; event: AuditLogEntryEvent },
+  t: (key: string, params?: object) => string,
+): string {
+  const { event } = entry;
+
+  if (event.action) {
+    const key = `audit-log.events.${event.action}`;
+    const translated = t(key, { login: entry.login, ...event });
+    // i18next returns the key itself when translation is missing; show raw JSON instead
+    return translated === key ? JSON.stringify(event) : translated;
   }
 
-  return entry.event.text || '';
+  return '';
 }
 
 const AuditLogPage = observer(() => {
@@ -109,7 +115,7 @@ const AuditLogPage = observer(() => {
               <TableCell>{new Date(entry.timestamp * 1000).toLocaleString()}</TableCell>
               <TableCell ellipsis>{entry.login}</TableCell>
               <TableCell ellipsis>{entry.scope}</TableCell>
-              <TableCell ellipsis>{formatDescription(entry)}</TableCell>
+              <TableCell ellipsis>{formatDescription(entry, t)}</TableCell>
             </TableRow>
           ))}
         </Table>
