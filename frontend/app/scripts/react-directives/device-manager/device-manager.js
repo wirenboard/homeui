@@ -1,6 +1,7 @@
 import { autorun } from 'mobx';
 import ReactDOM from 'react-dom/client';
 import i18n from '../../i18n/react/config';
+import { logAction } from '@/utils/logAction';
 import { setReactLocale } from '../locale';
 import CreateDeviceManagerPage from './deviceManagerPage';
 import DeviceManagerPageStore from './deviceManagerPageStore';
@@ -46,6 +47,7 @@ function deviceManagerDirective(
       const path = '/usr/share/wb-mqtt-confed/schemas/wb-mqtt-serial-dummy.schema.json';
       const saveConfig = async (data) => {
         await ConfigEditorProxy.Save({ path: path, content: data });
+        logAction('Edit serial devices config', '', 'Configs');
       };
 
       const loadConfig = async () => {

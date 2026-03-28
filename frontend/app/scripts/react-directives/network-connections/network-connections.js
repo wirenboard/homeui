@@ -1,5 +1,6 @@
 import { autorun } from 'mobx';
 import ReactDOM from 'react-dom/client';
+import { logAction } from '@/utils/logAction';
 import { setReactLocale } from '../locale';
 import CreateNetworkConnectionsPage from './networkConnectionsPage';
 import NetworkConnectionsPageStore from './pageStore';
@@ -16,6 +17,7 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
 
       const saveConnections = async (data) => {
         await ConfigEditorProxy.Save({ path, content: data });
+        logAction('Edit network connections config', '', 'Configs');
       };
 
       const loadConnections = async () => {
