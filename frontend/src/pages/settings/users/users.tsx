@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditIcon from '@/assets/icons/edit.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
@@ -45,16 +45,44 @@ const UsersPage = observer(() => {
   const [ confirm, isOpened, handleConfirm, handleClose ] = useConfirm<any>();
   const [ userSave, userEditOpened, saveUser, closeUserEdit ] = useConfirm<any>();
   const [ editedUser, setEditedUser ] = useState<any>();
+  const authLogContentRef = useRef<HTMLDivElement>(null);
+
+  const calculatePageSize = useCallback(() => {
+    if (!authLogContentRef.current) {
+      return;
+    }
+
+    const top = authLogContentRef.current.getBoundingClientRect().top;
+    const PAGINATION_BAR_HEIGHT = 52; // pagination margin-top (12px) + button height (~40px)
+    const HEADING_ROW_HEIGHT = 37; // table heading row: padding 8px*2 + line-height ~21px
+    const ROW_HEIGHT = 37; // data row height: padding 8px*2 + line-height ~21px, matches .wb-tableCell
+    const available = window.innerHeight - top - PAGINATION_BAR_HEIGHT - HEADING_ROW_HEIGHT;
+    const pageSize = Math.max(1, Math.floor(available / ROW_HEIGHT));
+
+    store.setPageSize(pageSize);
+  }, []);
 
   useEffect(() => {
     if (authStore.hasRights(UserRole.Admin)) {
       store.loadUsers();
       store.loadAuthLog();
-    }
+      window.addEventListener('resize', calculatePageSize);
 
-    store.showEnableHttpsConfirmModal = confirm;
-    store.showUserEditModal = userSave;
-  }, []);
+      store.showEnableHttpsConfirmModal = confirm;
+      store.showUserEditModal = userSave;
+
+      return () => {
+        window.removeEventListener('resize', calculatePageSize);
+      };
+    }
+  }, [calculatePageSize]);
+
+  // Recalculate page size when users load, because the users table changes height
+  // and shifts the auth-log section's position on screen
+  // eslint-disable-next-line -- store.users.length is tracked via MobX observer
+  useEffect(() => {
+    calculatePageSize();
+  }, [store.users.length, calculatePageSize]);
 
   return (
     <PageLayout
@@ -148,6 +176,7 @@ const UsersPage = observer(() => {
         </h1>
 
         <div
+          ref={authLogContentRef}
           className={store.authLogLoading
             ? 'users-auth-log-content users-auth-log-content_loading'
             : 'users-auth-log-content'}

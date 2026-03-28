@@ -109,6 +109,14 @@ class UsersPageStore {
     }
   }
 
+  setPageSize(n: number) {
+    if (n === this.authLogPageSize) {
+      return;
+    }
+    this.authLogPageSize = n;
+    this.loadAuthLog(0);
+  }
+
   async loadAuthLogPage(page: number) {
     // Use authLogTotalPages for reliable boundary check (authLogHasMore can give false positive
     // when the last page is exactly full)
