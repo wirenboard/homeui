@@ -37,7 +37,8 @@ def create_tables(con: sqlite3.Connection):
             "login TEXT NOT NULL, "
             "success INTEGER NOT NULL, "
             "ip TEXT, "
-            "user_agent TEXT)"
+            "user_agent TEXT, "
+            "user_agent_pretty TEXT)"
         )
     )
     con.commit()
@@ -74,7 +75,8 @@ def migration_3(con: sqlite3.Connection) -> None:
             "login TEXT NOT NULL, "
             "success INTEGER NOT NULL, "
             "ip TEXT, "
-            "user_agent TEXT)"
+            "user_agent TEXT, "
+            "user_agent_pretty TEXT)"
         )
     )
     con.commit()

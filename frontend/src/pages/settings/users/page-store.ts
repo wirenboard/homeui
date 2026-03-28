@@ -13,6 +13,7 @@ export interface AuthLogEntry {
   success: boolean;
   ip: string;
   user_agent: string;
+  user_agent_pretty?: string;
 }
 
 function sortUsers(users: User[]) {

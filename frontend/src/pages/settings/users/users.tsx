@@ -223,7 +223,9 @@ const UsersPage = observer(() => {
                   {entry.ip}
                 </TableCell>
                 <TableCell ellipsis>
-                  {entry.user_agent}
+                  <Tooltip text={entry.user_agent}>
+                    <span>{entry.user_agent_pretty ?? entry.user_agent}</span>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
