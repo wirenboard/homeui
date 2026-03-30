@@ -19,8 +19,8 @@ export const useConfirm = <T = true>() => {
     setPayload(null);
   }, [resolver, payload]);
 
-  const handleClose = useCallback(() => {
-    resolver?.(null);
+  const handleClose = useCallback((data: T) => {
+    resolver?.(data || null);
     setIsOpened(false);
     setPayload(null);
   }, [resolver]);

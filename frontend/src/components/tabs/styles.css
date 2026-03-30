@@ -2,11 +2,13 @@
     list-style-type: none;
     margin: 0;
     padding: 0;
-    max-width: 220px;
     width: 100%;
     scrollbar-width: thin;
-    border: 1px solid var(--border-color);
     border-radius: var(--input-border-radius);
+}
+
+.tabs-vertical {
+    border: 1px solid var(--border-color);
     max-height: fit-content;
 }
 
@@ -15,26 +17,55 @@
     text-align: left;
     border: 0;
     background: none;
-    padding: 6px 12px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.tabs-button:hover,
-.tabs-button:focus {
+.tabs-vertical .tabs-button {
+    padding: 6px 12px;
+}
+
+li:not(.tabs-buttonSelected) .tabs-button:focus,
+li:not(.tabs-buttonSelected) .tabs-button:hover {
     background: var(--border-color);
     transition: background 200ms linear, var(--input-active-shadow-transition);
 }
 
-.tabs-buttonSelected {
+.tabs-vertical .tabs-buttonSelected {
     border-right: 6px solid var(--primary-color) !important;
 }
 
-.tabs li:not(:last-of-type) .tabs-button:not(:focus) {
+.tabs-vertical li:not(:last-of-type) .tabs-button {
     border-bottom: 1px solid var(--border-color);
 }
 
-.tabs li:not(:last-of-type) .tabs-button:focus {
-    border-bottom: 1px solid transparent;
+.tabs-horizontal {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.tabs-horizontal .tabs-button {
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    padding: 8px 12px;
+}
+
+.tabs-horizontal li {
+    border-top: 4px solid transparent;
+}
+
+.tabs-horizontal .tabs-buttonSelected .tabs-button {
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.tabs-horizontal .tabs-buttonSelected {
+    margin-bottom: -1px;
+    background: var(--background-color);
+    font-weight: bold;
+    border-top: 4px solid var(--primary-color);
 }

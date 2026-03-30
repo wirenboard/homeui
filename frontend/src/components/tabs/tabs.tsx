@@ -54,7 +54,7 @@ export const Tab = ({
   </li>
 );
 
-export const Tabs = ({ className, items, activeTab, onTabChange }: TabsProps) => {
+export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: TabsProps) => {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const tabIds = items.map((item) => item.id);
 
@@ -103,7 +103,13 @@ export const Tabs = ({ className, items, activeTab, onTabChange }: TabsProps) =>
   tabRefs.current = tabRefs.current.slice(0, tabIds.length);
 
   return (
-    <ul className={classNames('tabs', className)} role="tablist">
+    <ul
+      className={classNames('tabs', className, {
+        'tabs-vertical': !orientation || orientation === 'vertical',
+        'tabs-horizontal': orientation === 'horizontal',
+      })}
+      role="tablist"
+    >
       {items.map((item, index) => (
         <Tab
           key={item.id}
@@ -119,7 +125,7 @@ export const Tabs = ({ className, items, activeTab, onTabChange }: TabsProps) =>
         </Tab>
       ))}
     </ul>
-  );
+  )
 };
 
 export const TabContent = ({ tabId, activeTab, children, className }: PropsWithChildren<TabContentProps>) => {

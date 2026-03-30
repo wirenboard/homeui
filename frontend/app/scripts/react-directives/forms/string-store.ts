@@ -1,6 +1,23 @@
 import { makeObservable, observable, action, computed } from 'mobx';
 
 export class StringStore {
+  public type?: string = 'string';
+  public name?: string;
+  public description?: string;
+  public validator?: (_value: string) => string;
+  public placeholder?: string;
+  public defaultText?: string;
+  public formColumns?: number = null;
+  public error?: string = '';
+  public isHideErrorText?: boolean;
+  public readOnly?: boolean;
+  public required?: boolean;
+  public showIndicator?: boolean;
+  public value?: string;
+  public initialValue?: string;
+  public editType?: string = 'text';
+  public autocomplete?: string;
+
   constructor({
     name,
     description,
@@ -14,8 +31,7 @@ export class StringStore {
     editType = 'text',
     required,
     autocomplete,
-  }) {
-    this.type = 'string';
+  }: Partial<StringStore>) {
     this.name = name;
     this.description = description;
     this.validator = validator;
@@ -48,7 +64,7 @@ export class StringStore {
     });
   }
 
-  setValue(value) {
+  setValue(value: string) {
     const type = typeof value;
     if (type === 'string') {
       this.value = value;
@@ -60,15 +76,15 @@ export class StringStore {
     this.error = this.validator?.(this.value) ?? '';
   }
 
-  setPlaceholder(placeholder) {
+  setPlaceholder(placeholder: string) {
     this.placeholder = placeholder;
   }
 
-  setDefaultText(text) {
+  setDefaultText(text: string) {
     this.defaultText = text;
   }
 
-  setFormColumns(columns) {
+  setFormColumns(columns: number) {
     this.formColumns = columns;
   }
 
@@ -88,7 +104,7 @@ export class StringStore {
     this.setValue(this.initialValue);
   }
 
-  setReadOnly(readOnly) {
+  setReadOnly(readOnly: boolean) {
     this.readOnly = readOnly;
   }
 }

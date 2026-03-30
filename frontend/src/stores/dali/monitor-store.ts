@@ -22,7 +22,7 @@ export class MonitorStore {
     this.topic = `/wb-dali/${bus_mqtt_id}/bus_monitor`;
     this._subscribeToTopic();
     this.isEnabled = true;
-    this.onPause = false;
+    this.isOnPause = false;
   }
 
   disableMonitoring() {

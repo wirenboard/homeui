@@ -1,45 +1,83 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { FormButtonGroup } from '@/components/form';
-import { JsonSchemaEditor } from '@/components/json-schema-editor';
-import { Loader } from '@/components/loader';
-import { Tree } from '@/components/tree';
+import { Alert } from '@/components/alert';
+import { Tree, type TreeItem } from '@/components/tree';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type ItemStore } from '@/stores/dali';
+import type { ItemStore, GroupStore, DeviceStore, BusStore } from '@/stores/dali';
 import type { DaliPageProps } from './types';
-import { BusMonitor } from './components/bus-monitor';
+import { BusTabContent } from './components/bus-tab-content';
+import { DeviceTabContent } from './components/device-tab-content';
+import { GroupTabContent } from './components/group-tab-content';
 import './styles.css';
+
+const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => void }) => {
+  if (store.type === 'bus') {
+    return <BusTabContent store={store as BusStore} onScan={onRefresh} />;
+  }
+  if (!store.objectStore || !store.translator) {
+    return null;
+  }
+  if (store.type === 'group') {
+    return <GroupTabContent store={store as GroupStore} />;
+  }
+  if (store.type === 'device') {
+    return <DeviceTabContent store={store as DeviceStore} onSave={onRefresh} />;
+  }
+  return null;
+};
+
+const buildTreeItems = (items: ItemStore[], storeMap: Map<string, ItemStore>, t: (key: string, options?: object) => string): TreeItem[] =>
+  items.map(item => {
+    storeMap.set(item.id, item);
+    let label: string | ReactNode = item.label;
+    if (item.type === 'group') {
+      label = t('dali.labels.group', { name: item.label });
+    } else if (item.type === 'device' && item.groups.length) {
+      label = <>{item.label} <strong>{item.groups.map(g => `G${g}`).join(' ')}</strong></>;
+    }
+    const children = 'children' in item ? item.children : [];
+    return {
+      id: item.id,
+      label,
+      children: children.length ? buildTreeItems(children, storeMap, t) : undefined,
+    };
+  });
 
 const DaliPage = observer(({ store }: DaliPageProps) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<TreeItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<ItemStore | null>(null);
+  const itemStoreMap = useRef<Map<string, ItemStore>>(new Map());
+
+  const refreshData = () => {
+    itemStoreMap.current.clear();
+    setData(buildTreeItems(store.gateways, itemStoreMap.current, t));
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       await store.load();
-      setData(store.gateways);
+      refreshData();
       if (!isMobile) {
         const firstGateway = store.gateways.at(0);
         if (firstGateway) {
           setSelectedItem(firstGateway);
-          firstGateway.load();
         }
       }
     };
     fetchData();
   }, []);
 
-  const onItemClick = async (item: ItemStore | null) => {
+  const onItemClick = async (treeItem: TreeItem) => {
+    const item = itemStoreMap.current.get(treeItem.id) ?? null;
     setSelectedItem(item);
     if (item) {
-      item.load();
+      item.load().then(() => refreshData());
     }
   };
 
@@ -70,55 +108,10 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
         )}
         {(!isMobile || selectedItem) && (
           <section className="dali-content">
-            {selectedItem?.isLoading
-              ? (
-                <div className="dali-contentLoader">
-                  <Loader />
-                </div>
-              ) : (
-                <>
-                  {selectedItem?.error && (
-                    <Alert variant="danger">{selectedItem.error}</Alert>
-                  )}
-                  <FormButtonGroup>
-                    {selectedItem?.type === 'bus' && (
-                      <Button
-                        label={t('dali.buttons.rescan')}
-                        onClick={async () => {
-                          await selectedItem.scan();
-                          setData(store.gateways);
-                        }}
-                      />
-                    )}
-                    {selectedItem?.type === 'device' && (
-                      <Button
-                        label={t('dali.buttons.reload')}
-                        onClick={async () => {
-                          await selectedItem.load(true);
-                          setData(store.gateways);
-                        }}
-                      />
-                    )}
-                    <Button
-                      label={t('common.buttons.save')}
-                      disabled={!selectedItem?.objectStore?.isDirty || selectedItem?.objectStore?.hasErrors}
-                      onClick={async () => {
-                        await selectedItem.save();
-                        setData(store.gateways);
-                      }}
-                    />
-                  </FormButtonGroup>
-                  {selectedItem?.objectStore && (
-                    <JsonSchemaEditor
-                      store={selectedItem.objectStore}
-                      translator={selectedItem.translator}
-                    />
-                  )}
-                </>
-              )}
-              {selectedItem?.busMonitor?.isEnabled && (
-                <BusMonitor monitorStore={selectedItem.busMonitor} />
-              )}
+            {!selectedItem?.isLoading && selectedItem?.error && (
+              <Alert variant="danger">{selectedItem.error}</Alert>
+            )}
+            <TabContent store={selectedItem} onRefresh={refreshData} />
           </section>
         )}
       </div>

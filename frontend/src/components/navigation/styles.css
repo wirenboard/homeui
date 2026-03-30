@@ -84,7 +84,8 @@
     display: flex;
     justify-self: center;
     width: 144px;
-    height: 40px;
+    height: 60px;
+    margin: 12px auto;
 
     @media(max-width: 768px) {
         height: 36px;
@@ -101,6 +102,7 @@
 .navigation-logoCompact {
     display: flex;
     justify-self: center;
+    margin: 18px auto 22px;
     width: 44px;
     height: 44px;
 }

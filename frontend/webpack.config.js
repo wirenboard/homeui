@@ -305,7 +305,7 @@ module.exports = (function makeWebpackConfig() {
 
       // Output path from the view of the page
       // Uses dev-server in development
-      publicPath: 'http://localhost:8080/',
+      publicPath: '/',
 
       // Filename for entry points
       filename: '[name].bundle.js',

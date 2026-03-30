@@ -1,62 +1,48 @@
-'use strict';
-
-import { action, observable, makeObservable, computed } from 'mobx';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import { action, observable, makeObservable, computed } from 'mobx';
+import { ConnectionState, NetworkType } from './types';
 
 export class SingleConnection {
-  name = '';
-  // "activated"
-  // "activating"
-  // "deactivating"
-  // "not-connected"
-  // "deprecated"
-  // "new"
-  // "unknown"
-  // "deactivating-by-cm"
-  // "deactivated-by-cm"
-  state = 'unknown';
-  icon = '';
-  schema = {};
-  data = {};
-  editedData = {};
-  isDirty = false;
-  editedConnectionId = '';
-  connectivity = false;
-  operator = '';
-  signalQuality = 0;
-  accessTechnologies = '';
-  hasValidationErrors = false;
+  public name = '';
+  public state: ConnectionState = ConnectionState.unknown;
+  public schema = {};
+  public data: any = {};
+  public editedData: any = {};
+  public isDirty = false;
+  public editedConnectionId = '';
+  public connectivity = false;
+  public operator = '';
+  public signalQuality = 0;
+  public accessTechnologies = '';
+  public hasValidationErrors = false;
 
-  constructor(schema, data, state) {
+  constructor(schema: any, data: any, state: ConnectionState) {
     this.schema = schema;
     this.editedData = data;
     this.data = data;
     this.editedConnectionId = data.connection_id;
-    const typeToIcon = {
-      '01_nm_ethernet': 'fas fa-network-wired',
-      '02_nm_modem': 'fas fa-signal',
-      '03_nm_wifi': 'fas fa-wifi',
-      '04_nm_wifi_ap': 'wbi wifi-ap',
-      can: 'can-bus',
-    };
-    if (typeToIcon.hasOwnProperty(data.type)) {
-      this.icon = typeToIcon[data.type];
+
+    if ([
+      NetworkType.Wifi,
+      NetworkType.Modem,
+      NetworkType.Ethernet,
+      NetworkType.WifiAp,
+      NetworkType.Can,
+    ].includes(data.type)) {
       if (state) {
         this.state = state;
       } else {
-        if (data.type != 'can') {
-          this.state = 'not-connected';
+        if (data.type !== NetworkType.Can) {
+          this.state = ConnectionState['not-connected'];
         }
       }
     } else {
-      this.icon = 'glyphicon glyphicon-exclamation-sign';
-      this.state = 'deprecated';
+      this.state = ConnectionState.deprecated;
     }
     this.updateName();
     makeObservable(this, {
       name: observable,
-      description: observable,
       state: observable,
       isDirty: observable,
       data: observable,
@@ -131,34 +117,27 @@ export class SingleConnection {
     }
   }
 
-  setState(newState) {
-    const states = {
-      activated: 'activated',
-      activating: 'activating',
-      deactivating: 'deactivating',
-      'deactivating by wb-connection-manager': 'deactivating-by-cm',
-      'deactivated by wb-connection-manager': 'deactivated-by-cm',
-    };
-    this.state = states[newState] || 'not-connected';
+  setState(newState: ConnectionState) {
+    this.state = ConnectionState[newState] || 'not-connected';
   }
 
-  setConnectivity(connectivity) {
+  setConnectivity(connectivity: boolean) {
     this.connectivity = connectivity;
   }
 
-  setOperator(operator) {
+  setOperator(operator: string) {
     this.operator = operator;
   }
 
-  setSignalQuality(signalQuality) {
+  setSignalQuality(signalQuality: number) {
     this.signalQuality = signalQuality;
   }
 
-  setAccessTechnologies(accessTechnologies) {
+  setAccessTechnologies(accessTechnologies: string) {
     this.accessTechnologies = accessTechnologies;
   }
 
-  setEditedData(data, errors) {
+  setEditedData(data: any, errors: string[]) {
     if (this.managedByNM) {
       if (['03_nm_wifi', '04_nm_wifi_ap'].includes(this.editedData.type)) {
         const ssid = data['802-11-wireless_ssid'];
@@ -179,7 +158,7 @@ export class SingleConnection {
     this.hasValidationErrors = Boolean(errors.length);
   }
 
-  setConnectionId(id) {
+  setConnectionId(id: string) {
     if (this.editedConnectionId === id) {
       return;
     }
@@ -189,7 +168,7 @@ export class SingleConnection {
     this.isDirty = !isEqual(this.editedData, this.data);
   }
 
-  setUuid(uuid) {
+  setUuid(uuid: string) {
     if (this.managedByNM) {
       this.data.connection_uuid = uuid;
     }
@@ -202,10 +181,10 @@ export class SingleConnection {
     this.hasValidationErrors = false;
     if (this.managedByNM) {
       if (this.isNew) {
-        this.state = 'not-connected';
+        this.state = ConnectionState['not-connected'];
       }
     } else if (this.data.type === 'can') {
-      this.state = 'unknown';
+      this.state = ConnectionState.unknown;
     }
   }
 
@@ -220,30 +199,31 @@ export class SingleConnection {
   }
 }
 
-export function getConnectionJson(connection) {
-  var res = cloneDeep(connection);
+export function getConnectionJson(connection: any) {
+  let res = cloneDeep(connection);
   delete res.data;
   return res;
 }
 
-export function makeConnectionSchema(type, fullSchema) {
-  const types = new Map([
-    ['01_nm_ethernet', 'nm_ethernet'],
-    ['02_nm_modem', 'nm_modem'],
-    ['03_nm_wifi', 'nm_wifi'],
-    ['04_nm_wifi_ap', 'nm_wifi_ap'],
-    ['can', 'old_can'],
-    ['loopback', 'old_loopback'],
-    ['static', 'old_static'],
-    ['dhcp', 'old_dhcp'],
-    ['ppp', 'old_ppp'],
-    ['manual', 'old_manual'],
+export function makeConnectionSchema(type: NetworkType, fullSchema: any) {
+  const types = new Map<NetworkType, string>([
+    [NetworkType.Ethernet, 'nm_ethernet'],
+    [NetworkType.Modem, 'nm_modem'],
+    [NetworkType.Wifi, 'nm_wifi'],
+    [NetworkType.WifiAp, 'nm_wifi_ap'],
+    [NetworkType.Can, 'old_can'],
+    [NetworkType.Loopback, 'old_loopback'],
+    [NetworkType.Static, 'old_static'],
+    [NetworkType.Dhcp, 'old_dhcp'],
+    [NetworkType.Ppp, 'old_ppp'],
+    [NetworkType.Manual, 'old_manual'],
   ]);
-  var schema = cloneDeep(fullSchema.definitions[types.get(type)]);
+
+  let schema = cloneDeep(fullSchema.definitions[types.get(type)]);
   schema.definitions = fullSchema.definitions;
   schema.translations = fullSchema.translations;
-  if (schema.hasOwnProperty('allOf')) {
-    var dataSchema = { properties: { data: fullSchema.properties.data } };
+  if (Object.hasOwn(schema, 'allOf')) {
+    let dataSchema = { properties: { data: fullSchema.properties.data } };
     schema.allOf.push(dataSchema);
   } else {
     schema.properties = schema.properties || {};

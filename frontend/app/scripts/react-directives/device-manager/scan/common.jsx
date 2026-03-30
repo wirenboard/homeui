@@ -38,7 +38,7 @@ export const ErrorCheck = ({ errors, errorId, children }) => {
 export function FirmwareVersion({ version, availableFw, extSupport, errors }) {
   const { t } = useTranslation();
   return (
-    <ErrorCheck errors={errors} errorId={'com.wb.device_manager.device.read_fw_version_error'}>
+    <ErrorCheck errors={errors} errorId={'com.wb.serial_driver.device.read_fw_version_error'}>
       {version}
       {availableFw && <WarningTag text={t('scan.labels.available', { version: availableFw })} />}
       {extSupport && (
@@ -87,7 +87,7 @@ export const DeviceName = ({
   return (
     <ErrorCheck
       errors={errors}
-      errorId={'com.wb.device_manager.device.read_device_signature_error'}
+      errorId={'com.wb.serial_driver.device.read_device_signature_error'}
     >
       <DeviceNameLabel
         title={title}

@@ -149,9 +149,14 @@
       "wb": {
          "device_manager": {
             "failed_to_scan_error": "Scan failed for ports: {{ failed_ports }}. Check logs for more information",
+            "error": "Error"
+         },
+         "serial_driver": {
             "error": "Error",
             "device": {
               "read_device_signature_error": "Failed to read device signature",
+              "read_serial_params_error": "Failed to read device port settings",
+              "read_sn_error": "Failed to read device serial number",
               "read_fw_version_error": "Failed to read FW version",
               "read_fw_signature_error": "Failed to read FW signature"
             }
@@ -177,7 +182,6 @@
          "ethernet": "Wired connection (Ethernet)",
          "modem": "GSM-modem connection",
          "canbus": "CAN bus",
-         "confirm-delete-connection": "Do you really want to delete the connection?",
          "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
          "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>",
          "manual-connect": "Manual connect",
@@ -207,8 +211,15 @@
          "add-connection": "Add connection",
          "delete": "Delete",
          "add": "Add",
+         "priority-up": "Increase priority",
+         "priority-down": "Decrease priority",
          "connect": "Connect",
          "disconnect": "Disconnect"
+      },
+      "prompt": {
+         "confirmation-title": "Confirmation",
+         "delete-title": "Connection delete",
+         "confirm-delete-connection": "Do you really want to delete the connection?"
       },
       "errors": {
          "write": "Error writing config. See wb-mqtt-confed logs for details"
@@ -873,7 +884,15 @@
    "dali": {
       "title": "DALI devices",
       "labels": {
-         "group": "Group #{{name}}"
+         "group": "Group #{{name}}",
+         "bus-monitor": "Bus Monitor",
+         "bus-settings": "Broadcast settings",
+         "websocket-enabled": "Lunatone DALI-2 IoT Gateway emulator",
+         "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
+         "websocket-port": "WebSocket port",
+         "websocket-port-error": "Port must be an integer between 1 and 65535",
+         "polling-interval": "Polling Interval (s)",
+         "polling-interval-error": "Interval must be a positive integer"
       },
       "buttons": {
          "rescan": "Rescan",
@@ -881,7 +900,8 @@
          "reload": "Reload",
          "clear-log": "Clear log",
          "pause-log": "Pause log",
-         "resume-log": "Resume log"
+         "resume-log": "Resume log",
+         "set": "Set"
       }
    }
 }

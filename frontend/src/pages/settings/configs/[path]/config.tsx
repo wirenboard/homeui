@@ -43,7 +43,7 @@ const ConfigPage = observer(({ store, rootScope, devicesStore }: ConfigPageProps
   }, [id]);
 
   const onChange = (content, errors) => {
-    if (path !== store.path) {
+    if (path !== store.path || !store.config?.content) {
       return;
     }
     if (!isEqual(JSON.parse(JSON.stringify(store.config?.content)), JSON.parse(JSON.stringify(content)))) {

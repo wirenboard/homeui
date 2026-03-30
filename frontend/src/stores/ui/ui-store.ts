@@ -18,7 +18,9 @@ export default class UiStore {
   }
 
   setIsConnected(isConnected: boolean) {
-    this.isConnected = isConnected;
+    runInAction(() => {
+      this.isConnected = isConnected;
+    });
   }
 
   toggleConsoleVisibility() {

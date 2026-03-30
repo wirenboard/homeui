@@ -10,6 +10,7 @@ export const Input = ({
   isWithExplicitChanges,
   onChange,
   onChangeEvent,
+  onEnter,
   type = 'text',
   isFullWidth = false,
   isInvalid,
@@ -39,6 +40,7 @@ export const Input = ({
     inputMethod.current = 'keyboard';
     if (ev.key === 'Enter') {
       handleBlurOrChange();
+      onEnter?.();
     } else if (ev.key === 'Escape') {
       ev.preventDefault();
       setInternalValue(value);

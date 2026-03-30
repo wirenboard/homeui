@@ -1,40 +1,41 @@
 import { type KeyboardEvent, type ReactElement, type Ref } from 'react';
 
 export interface TabItem {
-  id: string;
+  id: any;
   label: string | ReactElement<any, string>;
 }
 
 export interface TabsProps {
   className?: string;
   items: TabItem[];
-  activeTab: string;
-  onTabChange: (id: string) => void;
+  activeTab: any;
+  orientation?: 'horizontal' | 'vertical';
+  onTabChange: (id: any) => void;
 }
 
 export interface TabContentProps {
-  tabId: string;
+  tabId: any;
   className?: string;
-  activeTab: string;
+  activeTab: any;
 }
 
 export interface UseTabsArgs {
   items: TabItem[];
-  defaultTab?: string;
-  onBeforeTabChange?: (next: string, current: string) => boolean | Promise<boolean>;
-  onAfterTabChange?: (next: string, prev: string) => void;
+  defaultTab?: any;
+  onBeforeTabChange?: (next: any, current: any) => boolean | Promise<boolean>;
+  onAfterTabChange?: (next: any, prev: any) => void;
 }
 
 export interface TabListProps {
   className?: string;
-  activeTab: string;
-  onTabChange: (_id: string) => void;
+  activeTab: any;
+  onTabChange: (_id: any) => void;
 }
 
 export interface TabProps {
-  id: string;
-  activeTab?: string;
-  onTabChange?: (_id: string) => void;
+  id: any;
+  activeTab?: any;
+  onTabChange?: (_id: any) => void;
   onKeyDown?: (event: KeyboardEvent<HTMLButtonElement>) => void;
   buttonRef?: Ref<HTMLButtonElement>;
 }
