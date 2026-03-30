@@ -60,28 +60,27 @@ const BusParam = observer(({ store, param }: { store: BusStore; param: ObjectPar
 
 const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
-  const params = store.objectStore.params.filter(p => !p.hidden);
 
-  if (!store.objectStore || !store.translator || !params.length) {
-    return null;
-  }
-
-  const rows: (typeof params)[] = [];
-  let currentRow: typeof params = [];
-  let slotsInRow = 0;
-  for (const param of params) {
-    const gridColumns = param.store.schema.options?.grid_columns ?? MAX_SLOTS + 1;
-    if (slotsInRow === 0 || slotsInRow + gridColumns <= MAX_SLOTS) {
-      slotsInRow += gridColumns;
-      currentRow.push(param);
-    } else {
-      rows.push(currentRow);
-      currentRow = [param];
-      slotsInRow = gridColumns;
+  let rows = [];
+  if (store.objectStore) {
+    const params = store.objectStore.params.filter(p => !p.hidden);
+  
+    let currentRow: typeof params = [];
+    let slotsInRow = 0;
+    for (const param of params) {
+      const gridColumns = param.store.schema.options?.grid_columns ?? MAX_SLOTS + 1;
+      if (slotsInRow === 0 || slotsInRow + gridColumns <= MAX_SLOTS) {
+        slotsInRow += gridColumns;
+        currentRow.push(param);
+      } else {
+        rows.push(currentRow);
+        currentRow = [param];
+        slotsInRow = gridColumns;
+      }
     }
-  }
-  if (currentRow.length) {
-    rows.push(currentRow);
+    if (currentRow.length) {
+      rows.push(currentRow);
+    }
   }
 
   return (
@@ -92,20 +91,28 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
       toggleBody={() => { store.broadcastSettingsVisible = !store.broadcastSettingsVisible; }}
       heading={t('dali.labels.bus-settings')}
     >
-      {rows.map(rowParams => {
-        const rowKey = rowParams.map(p => p.key).join('-');
-        const items = rowParams.map(param => (
-          <BusParam key={param.key} store={store} param={param} />
-        ));
-        if (rowParams.length === 1) {
-          return items[0];
-        }
-        return (
-          <div key={rowKey} className="wb-jsonEditor-objectEditorRow">
-            {items}
-          </div>
-        );
-      })}
+      {store.isParametersSchemaLoading ? (
+        <div className="dali-contentLoader">
+          <Loader />
+        </div>
+      ) : (
+        <>
+          {rows.map(rowParams => {
+            const rowKey = rowParams.map(p => p.key).join('-');
+            const items = rowParams.map(param => (
+              <BusParam key={param.key} store={store} param={param} />
+            ));
+            if (rowParams.length === 1) {
+              return items[0];
+            }
+            return (
+              <div key={rowKey} className="wb-jsonEditor-objectEditorRow">
+                {items}
+              </div>
+            );
+          })}
+        </>
+      )}
     </Card>
   );
 });
@@ -113,28 +120,35 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
 export const BusTabContent = observer(({ store, onScan }: { store: BusStore; onScan: () => void }) => {
   const { t } = useTranslation();
 
+  if (store.isLoading) {
+    return (
+      <div className="dali-contentLoader">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <>
-      {store?.isLoading
-        ? (
-          <div className="dali-contentLoader">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            <FormButtonGroup>
-              <Button
-                label={t('dali.buttons.rescan')}
-                onClick={async () => {
-                  await store.scan();
-                  onScan();
-                }}
-              />
-            </FormButtonGroup>
-            <BusSettingsForm store={store} />
-            <BusParamsTabContent store={store} />
-          </>
-        )}
+      {store.isScanning ? (
+        <div className="dali-contentLoader">
+          <Loader />
+        </div>
+      ) : (
+        <>
+          <FormButtonGroup>
+            <Button
+              label={t('dali.buttons.rescan')}
+              onClick={async () => {
+                await store.scan();
+                onScan();
+              }}
+            />
+          </FormButtonGroup>
+          <BusSettingsForm store={store} />
+          <BusParamsTabContent store={store} />
+        </>
+      )}
       <BusMonitor
         monitorStore={store.busMonitor}
         busMonitorEnabled={store.busMonitorEnabled}

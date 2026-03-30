@@ -47,6 +47,14 @@ const GroupParam = observer(({ store, param }: { store: GroupStore; param: Objec
 });
 
 export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
+  if (store.isLoading) {
+    return (
+      <div className="dali-contentLoader">
+        <Loader />
+      </div>
+    );
+  }
+
   const params = store.objectStore.params.filter(p => !p.hidden);
 
   const rows: (typeof params)[] = [];
@@ -67,14 +75,6 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
     rows.push(currentRow);
   }
  
-  if (store.isLoading) {
-    return (
-      <div className="dali-contentLoader">
-        <Loader />
-      </div>
-    );
-  }
-
   return (
     <>
       {rows.map(rowParams => {

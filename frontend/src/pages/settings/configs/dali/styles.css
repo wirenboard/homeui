@@ -3,6 +3,7 @@
     gap: 12px;
     height: 100%;
     overflow: auto;
+    flex-grow: 1;
 }
 
 .dali .card {

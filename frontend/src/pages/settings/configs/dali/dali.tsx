@@ -18,9 +18,6 @@ const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => v
   if (store.type === 'bus') {
     return <BusTabContent store={store as BusStore} onScan={onRefresh} />;
   }
-  if (!store.objectStore || !store.translator) {
-    return null;
-  }
   if (store.type === 'group') {
     return <GroupTabContent store={store as GroupStore} />;
   }
