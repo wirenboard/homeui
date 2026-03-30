@@ -44,7 +44,7 @@ export const Tab = ({
       aria-selected={activeTab === id}
       className="tabs-button"
       aria-controls={id}
-      tabIndex={activeTab === id ? null : -1}
+      tabIndex={activeTab === id ? 0 : -1}
       ref={buttonRef}
       onKeyDown={onKeyDown}
       onClick={() => onTabChange(id)}
@@ -65,38 +65,65 @@ export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: 
 
   const activateTabAt = (index: number) => {
     const nextId = tabIds[index];
-    if (!nextId) {
+    if (nextId === undefined) {
       return;
     }
 
     onTabChange(nextId);
-    focusTab(index);
+    requestAnimationFrame(() => {
+      focusTab(index);
+    });
   };
 
-  const handleKeyDown = (index: number) => (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (!tabIds.length) {
-      return;
-    }
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const currentIndex = tabIds.findIndex((id) => id === activeTab);
+
+    if (currentIndex === -1) return;
 
     switch (event.key) {
       case 'ArrowRight':
       case 'ArrowDown':
         event.preventDefault();
-        activateTabAt((index + 1) % tabIds.length);
+        activateTabAt((currentIndex + 1) % tabIds.length);
         break;
+
       case 'ArrowLeft':
       case 'ArrowUp':
         event.preventDefault();
-        activateTabAt((index - 1 + tabIds.length) % tabIds.length);
+        activateTabAt((currentIndex - 1 + tabIds.length) % tabIds.length);
         break;
+
       case 'Home':
         event.preventDefault();
         activateTabAt(0);
         break;
+
       case 'End':
         event.preventDefault();
         activateTabAt(tabIds.length - 1);
         break;
+
+      case 'Enter':
+      case ' ': {
+        event.preventDefault();
+        const nextId = tabIds[currentIndex];
+        onTabChange(nextId);
+
+        // 👉 перенос фокуса в panel
+        requestAnimationFrame(() => {
+          const tabList = (event.target as any).closest('[role="tablist"]');
+          if (!tabList) return;
+
+          const currentTabId = tabIds[currentIndex];
+
+          requestAnimationFrame(() => {
+            const panel = document.getElementById(currentTabId);
+            panel?.focus();
+          });
+        });
+
+        break;
+      }
     }
   };
 
@@ -108,6 +135,7 @@ export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: 
         'tabs-vertical': !orientation || orientation === 'vertical',
         'tabs-horizontal': orientation === 'horizontal',
       })}
+      aria-orientation={orientation === 'vertical' ? 'vertical' : 'horizontal'}
       role="tablist"
     >
       {items.map((item, index) => (
@@ -119,15 +147,25 @@ export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: 
             tabRefs.current[index] = node;
           }}
           onTabChange={onTabChange}
-          onKeyDown={handleKeyDown(index)}
+          onKeyDown={handleKeyDown}
         >
           {item.label}
         </Tab>
       ))}
     </ul>
-  )
+  );
 };
 
 export const TabContent = ({ tabId, activeTab, children, className }: PropsWithChildren<TabContentProps>) => {
-  return activeTab === tabId ? <div role="tabpanel" className={classNames(className)}>{children}</div> : null;
+  return activeTab === tabId
+    ? (
+      <div
+        role="tabpanel"
+        id={tabId}
+        tabIndex={0}
+        className={classNames(className)}
+      >{children}
+      </div>
+    )
+    : null;
 };
