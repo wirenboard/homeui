@@ -7,7 +7,7 @@ export const useTabs = ({
   onBeforeTabChange,
   onAfterTabChange,
 }: UseTabsArgs) => {
-  const [activeTab, setActiveTab] = useState<string | undefined>(() =>
+  const [activeTab, setActiveTab] = useState<string | number | undefined>(() =>
     defaultTab && items.find((i) => i.id === defaultTab)
       ? defaultTab
       : items[0]?.id

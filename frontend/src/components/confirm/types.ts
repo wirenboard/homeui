@@ -6,8 +6,9 @@ export interface ConfirmationProps {
   heading?: string;
   width?: number;
   headerActions?: ReactElement;
-  confirmCallback: () => Promise<void> | void;
-  closeCallback: () => void;
+  footerActions?: ReactElement;
+  confirmCallback?: () => Promise<void> | void;
+  closeCallback?: () => void;
   isDisabled?: boolean;
   isPreventSubmit?: boolean;
   isLoading?: boolean;
