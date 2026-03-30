@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.192.1) stable; urgency=medium
+
+  * Fix scroll on settings pages. The bug was introduced in 2.191.0.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 30 Mar 2026 12:14:06 +0500
+
 wb-mqtt-homeui (2.192.0) stable; urgency=medium
 
   * Update network connections page
