@@ -876,7 +876,15 @@
    "dali": {
       "title": "Устройства DALI",
       "labels": {
-         "group": "Группа {{name}}"
+         "group": "Группа {{name}}",
+         "bus-monitor": "Монитор шины",
+         "bus-settings": "Широковещательные настройки",
+         "websocket-enabled": "Эмуляция шлюза Lunatone DALI-2 IoT",
+         "websocket-description": "Включение этой опции запустит WebSocket-сервер, который эмулирует Lunatone DALI-2 IoT Gateway. К нему можно подключить Lunatone DALI Cockpit для управления устройствами. В DALI Cockpit надо выбрать Network в качестве интерфейса шины, указать DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, ввести адрес контроллера и порт, заданный ниже.",
+         "websocket-port": "Порт WebSocket'а",
+         "websocket-port-error": "Порт должен быть целым числом от 1 до 65535",
+         "polling-interval": "Интервал опроса (с)",
+         "polling-interval-error": "Интервал должен быть целым положительным числом"
       },
       "buttons": {
          "rescan": "Пересканировать",

@@ -30,6 +30,7 @@ export class GroupStore extends BaseItemStore {
       const schema = loadJsonSchema(data);
       this.translator.addTranslations(schema.translations);
       this.objectStore = new ObjectStore(schema, {}, false, new StoreBuilder());
+      this.objectStore.setDefault();
       this.setError(null);
     } catch (error) {
       this.setError(error);
@@ -46,18 +47,14 @@ export class GroupStore extends BaseItemStore {
     if (!param) {
       return;
     }
-    this.isLoading = true;
     try {
-      const data = await this.daliProxy.SetGroup({ groupId: this.id, config: { [key]: param.store.value } });
+      await this.daliProxy.SetGroup({ groupId: this.id, config: { [key]: param.store.value } });
       runInAction(() => {
-        this.objectStore.setValue(data);
         param.store.commit();
         this.setError(null);
       });
     } catch (error) {
       this.setError(error);
-    } finally {
-      runInAction(() => { this.isLoading = false; });
     }
   }
 }

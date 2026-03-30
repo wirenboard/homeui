@@ -850,7 +850,15 @@
    "dali": {
       "title": "DALI devices",
       "labels": {
-         "group": "Group #{{name}}"
+         "group": "Group #{{name}}",
+         "bus-monitor": "Bus Monitor",
+         "bus-settings": "Broadcast settings",
+         "websocket-enabled": "Lunatone DALI-2 IoT Gateway emulator",
+         "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
+         "websocket-port": "WebSocket port",
+         "websocket-port-error": "Port must be an integer between 1 and 65535",
+         "polling-interval": "Polling Interval (s)",
+         "polling-interval-error": "Interval must be a positive integer"
       },
       "buttons": {
          "rescan": "Rescan",

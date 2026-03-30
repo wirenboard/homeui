@@ -139,6 +139,23 @@ button:not(:disabled).card-action:focus {
     background-color: var(--border-color);
 }
 
+.card-tertiary {
+    border: 1px solid var(--input-border-color);
+}
+
+.card-tertiary .card-header {
+    background-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.card-tertiary .card-headerContainer {
+    background-color: var(--border-color);
+}
+
+.card-tertiary .card-body {
+    background-color: var(--background-accent-color-hover);
+}
+
 button:disabled.card-action svg {
     color: var(--light-gray-color);
 }
