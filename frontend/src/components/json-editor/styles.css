@@ -1,3 +1,4 @@
-.json-editor {
-  overflow: hidden;
+.json-editor .well .row {
+  margin-left: 0;
+  margin-right: 0;
 }

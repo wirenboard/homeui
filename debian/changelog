@@ -2,6 +2,7 @@ wb-mqtt-homeui (2.192.2) stable; urgency=medium
 
   * Fix add svg dashboard "url trap"
   * Fix config editor console error
+  * Fix config editor scroll
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 30 Mar 2026 11:17:00 +0300
 
