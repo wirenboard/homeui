@@ -6,6 +6,7 @@ import { Tooltip } from '@/components/tooltip';
 import ClearIcon from '@/assets/icons/clear.svg';
 import VisibilityOff from '@/assets/icons/visibility-off.svg';
 import VisibilityOn from '@/assets/icons/visibility.svg';
+import { useAsyncAction } from '@/utils/async-action';
 import { type BusMonitorProps } from './types';
 import './styles.css';
 
@@ -27,6 +28,10 @@ export const BusMonitor = observer(({ monitorStore, busMonitorEnabled, onToggle 
     }
   }, [isStopAutoScroll, monitorStore.logs.length, content.current]);
 
+  const [toggle, isToggling] = useAsyncAction(async () => {
+    await onToggle(!busMonitorEnabled);
+  });
+
   return (
     <div>
       <div className="dali-busMonitorHeader">
@@ -34,7 +39,8 @@ export const BusMonitor = observer(({ monitorStore, busMonitorEnabled, onToggle 
           <Switch
             value={busMonitorEnabled}
             ariaLabel={t('dali.labels.bus-monitor')}
-            onChange={onToggle}
+            isDisabled={isToggling}
+            onChange={toggle}
           />
           <span>{t('dali.labels.bus-monitor')}</span>
         </label>
