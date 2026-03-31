@@ -859,6 +859,12 @@ ul.col-md-2.nav.nav-pills.nav-stacked {
   padding-right: 5px;
 }
 
+svg-dashboard-page:has(.svgDashboard-fitToPage) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 body.hmi {
     margin-top: 0;
 }
