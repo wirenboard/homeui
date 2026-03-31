@@ -1,4 +1,8 @@
-.json-editor .well .row {
+.json-editor .well .row,
+.json-editor .je-object__container .col-md-12,
+.json-editor .je-object__container .row {
   margin-left: 0;
   margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
