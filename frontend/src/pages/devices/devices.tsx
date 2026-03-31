@@ -47,15 +47,15 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
       }
     >
       <section className="devices">
-        {store.filteredDevices.size ? (
+        {store.filteredDevices.length ? (
           <ColumnsWrapper
             columnClassName="devices-column"
             baseColumnWidth={376}
           >
-            {Array.from(store.filteredDevices).map(([deviceId, device]) => (
+            {store.filteredDevices.map((device) => (
               <Card
                 heading={device.name}
-                id={deviceId}
+                id={device.id}
                 actions={actions}
                 toggleBody={device.toggleDeviceVisibility}
                 isBodyVisible={device.isVisible}
