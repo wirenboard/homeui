@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx';
+import { makeAutoObservable, observable, reaction, runInAction } from 'mobx';
 import type { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
@@ -6,8 +6,8 @@ import { isTopicsAreEqual, splitTopic } from './helpers';
 import type { DeviceOption, ValueType } from './types';
 
 export default class DevicesStore {
-  public devices: Map<string, Device> = new Map();
-  public cells: Map<string, Cell> = new Map();
+  public devices: Map<string, Device> = observable.map();
+  public cells: Map<string, Cell> = observable.map();
   private _mqttClient: MqttClient;
   private _allDevicesTopics: { [key: string]: string[] } = {};
   private _cellValueSubscribers: Set<(cellId: string, value: ValueType) => void> = new Set();
@@ -42,9 +42,8 @@ export default class DevicesStore {
     };
 
     const getCellFromTopic = (topic: string) => {
-      const { deviceId, cellId } = splitTopic(topic);
+      const { cellId } = splitTopic(topic);
 
-      getOrCreateDevice(deviceId);
       return getOrCreateCell(cellId);
     };
 
@@ -75,7 +74,7 @@ export default class DevicesStore {
     };
 
     const updateCellCompleteness = (cell: Cell) => {
-      if (cell.isComplete) {
+      if (cell.isComplete && this.devices.has(cell.deviceId)) {
         addCellToDevice(cell.id, cell.deviceId);
         return;
       }
@@ -239,17 +238,16 @@ export default class DevicesStore {
     );
   }
 
-  get filteredDevices() {
+  get filteredDevices(): Device[] {
     const showSystemDevices = localStorage.getItem('show-system-devices') === 'yes';
+    const devices = [...this.devices.values()];
     if (showSystemDevices) {
-      return this.devices;
+      return devices;
     }
 
-    return new Map(
-      Array.from(this.devices.entries())
-        .filter(([_, device]) => !device.isSystemDevice)
-        .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name))
-    );
+    return devices
+      .filter((device) => !device.isSystemDevice)
+      .sort((device1, device2) => device1.name.localeCompare(device2.name));
   }
 
   private _notifyCellValueChange(cellId: string, value: ValueType) {
@@ -331,7 +329,7 @@ export default class DevicesStore {
   }
 
   get hasOpenedDivices() {
-    return Array.from(this.filteredDevices.values()).some((device) => device.isVisible);
+    return this.filteredDevices.some((device) => device.isVisible);
   }
 
   get controls() {
