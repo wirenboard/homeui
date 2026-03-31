@@ -1,5 +1,5 @@
-import { observable, set, makeAutoObservable } from 'mobx';
-import { type Dashboard } from '@/stores/dashboards';
+import { observable, makeAutoObservable, type ObservableMap } from 'mobx';
+import { type Dashboard, type SvgEditableParam } from '@/stores/dashboards';
 import type Cell from '@/stores/devices/cell';
 import type DevicesStore from '@/stores/devices/devices-store';
 import { type MoveToDashboardFn } from './types';
@@ -11,14 +11,14 @@ export class SvgDashboardPageStore {
   public dashboardIndex = 0;
   public cells: Map<string, Cell> = null;
   public dashboardId: string = null;
-  public channelValues: Record<string, any>;
+  public channelValues: ObservableMap<string, any>;
   private _unsubscribeOnValue = () => {};
   private _devicesStore: DevicesStore | null = null;
 
   #moveToDashboardFn: MoveToDashboardFn | null = null;
 
   constructor() {
-    this.channelValues = observable.object({});
+    this.channelValues = observable.map<string, any>();
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -33,6 +33,18 @@ export class SvgDashboardPageStore {
 
   setDashboards(dashboards: Dashboard[]) {
     this.dashboardConfigs = dashboards;
+  }
+
+  private getUsedChannels(): Set<string> {
+    const channels = new Set<string>();
+    this.dashboards[this.dashboardIndex]?.svg?.params?.forEach((param) => {
+      Object.values(param).forEach((p: SvgEditableParam) => {
+        if (p?.enable && p?.channel) {
+          channels.add(p.channel);
+        }
+      });
+    });
+    return channels;
   }
 
   setDashboard(dashboardId: string) {
@@ -57,20 +69,39 @@ export class SvgDashboardPageStore {
         this.dashboards.push(rightDashboard);
       }
     }
+
+    if (this.cells) {
+      const usedChannels = this.getUsedChannels();
+      Array.from(this.channelValues.keys())
+        .filter((key) => !usedChannels.has(key))
+        .forEach((key) => this.channelValues.delete(key));
+      usedChannels.forEach((channel) => {
+        if (!this.channelValues.has(channel)) {
+          const cell = this.cells.get(channel);
+          if (cell) {
+            this.channelValues.set(channel, cell.value);
+          }
+        }
+      });
+    }
+
     this.setLoading(false);
   }
 
   setDeviceData(cells: Map<string, Cell>, devicesStore: DevicesStore) {
     this.cells = cells;
-    Array.from(cells).forEach(([channel, cell]) => {
-      set(this.channelValues, channel, cell.value);
-    });
 
     if (!this._devicesStore) {
+      const usedChannels = this.getUsedChannels();
+      cells.forEach((cell, channel) => {
+        if (usedChannels.has(channel)) {
+          this.channelValues.set(channel, cell.value);
+        }
+      });
       this._devicesStore = devicesStore;
       this._unsubscribeOnValue = devicesStore.subscribeOnCellValue((cellId, value) => {
-        if (this.cells?.has(cellId)) {
-          set(this.channelValues, cellId, value);
+        if (this.channelValues.has(cellId)) {
+          this.channelValues.set(cellId, value);
         }
       });
     }
@@ -102,7 +133,9 @@ export class SvgDashboardPageStore {
   }
 
   unsubscribeAll() {
+    this.channelValues.clear();
     this._unsubscribeOnValue();
+    this._unsubscribeOnValue = () => {};
     this._devicesStore = null;
   }
 }
