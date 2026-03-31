@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.172.0-wb105) stable; urgency=medium
+
+  * Fix svg dashboards memory leaks
+  * Fix svg dashboards fit to content view
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 31 Mar 2026 13:36:00 +0300
+
 wb-mqtt-homeui (2.172.0-wb104) stable; urgency=medium
 
   * Show error message on wrong resonse type
