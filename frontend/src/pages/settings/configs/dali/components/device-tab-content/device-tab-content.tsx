@@ -27,17 +27,19 @@ export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStor
         />
         <Button
           label={t('common.buttons.save')}
-          disabled={!store.objectStore.isDirty || store.objectStore.hasErrors}
+          disabled={!store.objectStore?.isDirty || store.objectStore?.hasErrors}
           onClick={async () => {
             await store.save();
             onSave();
           }}
         />
       </FormButtonGroup>
-      <JsonSchemaEditor
-        store={store.objectStore}
-        translator={store.translator}
-      />
+      {store.objectStore && (
+        <JsonSchemaEditor
+          store={store.objectStore}
+          translator={store.translator}
+        />
+      )}
     </>
   );
 });

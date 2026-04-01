@@ -55,6 +55,10 @@ export const GroupTabContent = observer(({ store }: { store: GroupStore }) => {
     );
   }
 
+  if (!store.objectStore) {
+    return null;
+  }
+
   const params = store.objectStore.params.filter(p => !p.hidden);
 
   const rows: (typeof params)[] = [];
