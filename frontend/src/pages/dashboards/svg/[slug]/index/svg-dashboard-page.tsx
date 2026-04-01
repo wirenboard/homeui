@@ -17,7 +17,7 @@ import { SvgView } from './components/svg-view';
 import { type SvgDashboardPageProps } from './types';
 import './styles.css';
 
-export const SvgDashboardPage = observer(({ store, dashboardsStore, devicesStore }: SvgDashboardPageProps) => {
+export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
   const { ref, width } = useResizeObserver();
   const { t } = useTranslation();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
@@ -26,17 +26,10 @@ export const SvgDashboardPage = observer(({ store, dashboardsStore, devicesStore
   const { hasRights } = authStore;
 
   useEffect(() => {
-    if (devicesStore.cells.size) {
-      store.setDeviceData(devicesStore.cells, devicesStore);
-    }
-  }, [devicesStore.topics]);
-
-  useEffect(() => {
-    if (dashboardsStore.dashboardsList.length) {
-      store.setDashboards(dashboardsStore.dashboardsList);
+    if (store.dashboardConfigs.length) {
       store.setDashboard(id);
     }
-  }, [id, dashboardsStore.dashboardsList]);
+  }, [id, store.dashboardConfigs]);
 
   useEffect(() => {
     store.setMoveToDashboardFn((dashboardId: string, sourceDashboardId: string) => {

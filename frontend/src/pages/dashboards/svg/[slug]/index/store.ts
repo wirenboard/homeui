@@ -1,26 +1,38 @@
-import { observable, makeAutoObservable, type ObservableMap } from 'mobx';
-import { type Dashboard, type SvgEditableParam } from '@/stores/dashboards';
-import type Cell from '@/stores/devices/cell';
+import { observable, makeAutoObservable, type ObservableMap, reaction, runInAction } from 'mobx';
+import type { Dashboard, DashboardsStore, SvgEditableParam } from '@/stores/dashboards';
 import type DevicesStore from '@/stores/devices/devices-store';
 import { type MoveToDashboardFn } from './types';
 
 export class SvgDashboardPageStore {
   public loading = true;
   public dashboards: Dashboard[] = [];
-  public dashboardConfigs: Dashboard[] = [];
   public dashboardIndex = 0;
-  public cells: Map<string, Cell> = null;
   public dashboardId: string = null;
   public channelValues: ObservableMap<string, any>;
   private _unsubscribeOnValue = () => {};
-  private _devicesStore: DevicesStore | null = null;
+
+  private _frame: number | null = null;
+  private _pendingUpdates = new Map<string, any>();
 
   #moveToDashboardFn: MoveToDashboardFn | null = null;
+  #dashboardsStore: DashboardsStore;
+  #devicesStore: DevicesStore;
 
-  constructor() {
+  constructor(dashboardsStore: DashboardsStore, devicesStore: DevicesStore) {
     this.channelValues = observable.map<string, any>();
+    this.#dashboardsStore = dashboardsStore;
+    this.#devicesStore = devicesStore;
 
     makeAutoObservable(this, {}, { autoBind: true });
+
+    reaction(
+      () => [this.getUsedChannels(), this.dashboardId],
+      () => {
+        if (this.#devicesStore.cells.size) {
+          this.setDeviceData();
+        }
+      }
+    );
   }
 
   setLoading(isLoading: boolean) {
@@ -31,8 +43,8 @@ export class SvgDashboardPageStore {
     return this.dashboardConfigs.find((d) => d.isSvg && d.id === dashboardId) || null;
   }
 
-  setDashboards(dashboards: Dashboard[]) {
-    this.dashboardConfigs = dashboards;
+  get dashboardConfigs(): Dashboard[] {
+    return this.#dashboardsStore.dashboardsList;
   }
 
   private getUsedChannels(): Set<string> {
@@ -70,14 +82,14 @@ export class SvgDashboardPageStore {
       }
     }
 
-    if (this.cells) {
+    if (this.#devicesStore.cells) {
       const usedChannels = this.getUsedChannels();
       Array.from(this.channelValues.keys())
         .filter((key) => !usedChannels.has(key))
         .forEach((key) => this.channelValues.delete(key));
       usedChannels.forEach((channel) => {
         if (!this.channelValues.has(channel)) {
-          const cell = this.cells.get(channel);
+          const cell = this.#devicesStore.cells.get(channel);
           if (cell) {
             this.channelValues.set(channel, cell.value);
           }
@@ -88,31 +100,40 @@ export class SvgDashboardPageStore {
     this.setLoading(false);
   }
 
-  setDeviceData(cells: Map<string, Cell>, devicesStore: DevicesStore) {
-    this.cells = cells;
+  setDeviceData() {
+    const usedChannels = this.getUsedChannels();
+    this.#devicesStore.cells.forEach((cell, channel) => {
+      if (usedChannels.has(channel)) {
+        this.channelValues.set(channel, cell.value);
+      }
+    });
+    this._unsubscribeOnValue = this.#devicesStore.subscribeOnCellValue((cellId, value) => {
+      if (!this.channelValues.has(cellId)) return;
 
-    if (!this._devicesStore) {
-      const usedChannels = this.getUsedChannels();
-      cells.forEach((cell, channel) => {
-        if (usedChannels.has(channel)) {
-          this.channelValues.set(channel, cell.value);
-        }
+      this._pendingUpdates.set(cellId, value);
+
+      if (this._frame) return;
+
+      this._frame = requestAnimationFrame(() => {
+        this._frame = null;
+
+        runInAction(() => {
+          this._pendingUpdates.forEach((val, id) => {
+            this.channelValues.set(id, val);
+          });
+        });
+
+        this._pendingUpdates.clear();
       });
-      this._devicesStore = devicesStore;
-      this._unsubscribeOnValue = devicesStore.subscribeOnCellValue((cellId, value) => {
-        if (this.channelValues.has(cellId)) {
-          this.channelValues.set(cellId, value);
-        }
-      });
-    }
+    });
   }
 
   switchValue(channel: string, value: any) {
-    if (!this.cells) {
+    if (!this.#devicesStore.cells) {
       return;
     }
     try {
-      const cell = this.cells.get(channel);
+      const cell = this.#devicesStore.cells.get(channel);
       cell.value = cell.getStringifiedValue() === String(value.on) ? value.off : value.on;
     } catch (e) {
       // Do nothing if cell is not found
@@ -136,6 +157,5 @@ export class SvgDashboardPageStore {
     this.channelValues.clear();
     this._unsubscribeOnValue();
     this._unsubscribeOnValue = () => {};
-    this._devicesStore = null;
   }
 }
