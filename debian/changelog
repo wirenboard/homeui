@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.193.0) stable; urgency=medium
+
+  * Add DALI device identification button
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Apr 2026 15:25:58 +0500
+
 wb-mqtt-homeui (2.192.5) stable; urgency=medium
 
   * Fix DALI device settings editor crash on bus reading errors

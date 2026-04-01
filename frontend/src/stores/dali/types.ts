@@ -72,6 +72,11 @@ export interface GetGroupParams {
   groupId: string;
 }
 
+export interface SetGroupParams {
+  groupId: string;
+  config: object;
+}
+
 export interface ScanBusParams {
   busId: string;
 }
@@ -89,7 +94,8 @@ export interface DaliProxy {
   GetDevice(params: GetDeviceParams): Promise<DeviceDetailed>;
   SetDevice(params: SetDeviceParams): Promise<DeviceDetailed>;
   GetGroup(params: GetGroupParams): Promise<GroupDetailed>;
-  SetGroup(params: { groupId: string; config: object }): Promise<GroupDetailed>;
+  SetGroup(params: SetGroupParams): Promise<GroupDetailed>;
   GetList(): Promise<Gateway[]>;
   ScanBus(params: ScanBusParams): Promise<Bus>;
+  IdentifyDevice(params: { deviceId: string }): Promise<void>;
 }
