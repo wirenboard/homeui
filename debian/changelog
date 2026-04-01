@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.192.5) stable; urgency=medium
+
+  * Fix DALI device settings editor crash on bus reading errors
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Apr 2026 10:26:06 +0500
+
 wb-mqtt-homeui (2.192.4) stable; urgency=medium
 
   * Fix svg dashboards memory leaks
