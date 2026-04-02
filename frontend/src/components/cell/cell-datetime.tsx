@@ -10,7 +10,7 @@ import './styles.css';
 
 export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
   const { t } = useTranslation();
-  console.log(cell.value);
+
   return (
     <div className="deviceCell-textWrapper">
       <CellHistory cell={cell} />
@@ -22,7 +22,7 @@ export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
           trigger="click"
         >
           <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
-            {format(fromUnixTime(cell.value as number || 0), 'yyyy-MM-dd HH:mm')}
+            {format(fromUnixTime(cell.value as number || 0), 'dd.MM.yyyy HH:mm')}
           </div>
         </Tooltip>
       )}
