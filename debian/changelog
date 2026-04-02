@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.194.0) stable; urgency=medium
+
+  * Add unixtime cell type support
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 02 Apr 2026 16:11:00 +0300
+
 wb-mqtt-homeui (2.193.0) stable; urgency=medium
 
   * Add DALI device identification button

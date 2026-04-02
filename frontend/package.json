@@ -48,6 +48,7 @@
     "axios": "1.12.2",
     "bootstrap": "^3.3.7",
     "classnames": "2.5.1",
+    "date-fns": "4.1.0",
     "dompurify": "3.0.1",
     "i18next": "^22.0.6",
     "jquery": "^3.6.1",

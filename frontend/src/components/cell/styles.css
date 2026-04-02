@@ -159,3 +159,7 @@
 .deviceCell:focus-within .deviceCell-historyLink {
     min-width: 18px;
 }
+
+.deviceCell-dateTime {
+    max-width: 160px;
+}
