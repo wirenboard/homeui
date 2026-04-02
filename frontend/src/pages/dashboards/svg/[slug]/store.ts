@@ -90,9 +90,7 @@ export class SvgDashboardPageStore {
       usedChannels.forEach((channel) => {
         if (!this.channelValues.has(channel)) {
           const cell = this.#devicesStore.cells.get(channel);
-          if (cell) {
-            this.channelValues.set(channel, cell.value);
-          }
+          this.channelValues.set(channel, cell ? cell.value : '');
         }
       });
     }
@@ -101,6 +99,8 @@ export class SvgDashboardPageStore {
   }
 
   setDeviceData() {
+    this._unsubscribeOnValue();
+
     const usedChannels = this.getUsedChannels();
     this.#devicesStore.cells.forEach((cell, channel) => {
       if (usedChannels.has(channel)) {
@@ -115,11 +115,16 @@ export class SvgDashboardPageStore {
       if (this._frame) return;
 
       this._frame = requestAnimationFrame(() => {
-        this._frame = null;
+        if (this._frame) {
+          cancelAnimationFrame(this._frame);
+          this._frame = null;
+        }
 
         runInAction(() => {
           this._pendingUpdates.forEach((val, id) => {
-            this.channelValues.set(id, val);
+            if (this.channelValues.get(id) !== val) {
+              this.channelValues.set(id, val);
+            }
           });
         });
 
