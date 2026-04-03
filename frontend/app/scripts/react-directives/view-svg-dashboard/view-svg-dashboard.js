@@ -13,7 +13,7 @@ export default function svgDashboardDirective($rootScope, $stateParams) {
       id: '=',
     },
     link: function(scope, element) {
-      scope.store = new SvgDashboardPageStore();
+      scope.store = new SvgDashboardPageStore($rootScope.dashboardsStore, $rootScope.devicesStore);
       scope.root = ReactDOM.createRoot(element[0]);
 
       $rootScope.$watch(() => $stateParams.hmi, (isHmi) => {
@@ -21,11 +21,7 @@ export default function svgDashboardDirective($rootScope, $stateParams) {
       });
 
       scope.root.render(
-        <SvgDashboardPage
-          store={scope.store}
-          dashboardsStore={$rootScope.dashboardsStore}
-          devicesStore={$rootScope.devicesStore}
-        />
+        <SvgDashboardPage store={scope.store} />
       );
 
       element.on('$destroy', function () {

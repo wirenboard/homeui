@@ -14,7 +14,7 @@ function getFoldedDevices(): string[] {
 
 export default class Device {
   public id: string;
-  public cellIds: string[] = [];
+  public cells: Set<string> = new Set();
   public explicit: boolean = false;
   public isVisible: boolean = true;
   private _name: string;
@@ -43,6 +43,14 @@ export default class Device {
     }
   }
 
+  addCell(cellId: string) {
+    this.cells.add(cellId);
+  }
+
+  removeCell(cellId: string) {
+    this.cells.delete(cellId);
+  }
+
   get isSystemDevice(): boolean {
     return this.id.startsWith('system__');
   }
@@ -57,6 +65,6 @@ export default class Device {
   }
 
   getControls(): string[] {
-    return this.cellIds.map((item) => item.replace(`${this.id}/`, ''));
+    return [...this.cells].map((item) => item.replace(`${this.id}/`, ''));
   }
 }
