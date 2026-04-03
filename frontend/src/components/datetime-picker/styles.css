@@ -1,0 +1,104 @@
+.datetimePicker-container {
+    background: var(--card-body-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-border-radius);
+    padding: 8px;
+    z-index: 1000;
+}
+
+.datetimePicker-inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.datetimePicker-input {
+    box-sizing: border-box;
+    padding-right: 38px;
+    width: calc(100% - 38px);
+}
+
+.datetimePicker-openButton {
+    position: absolute;
+    right: 3px;
+    border: 0;
+    height: auto;
+    z-index: 10;
+}
+
+.rdp-month_caption {
+    display: flex;
+    font-weight: bold;
+    font-size: var(--font-size-large);
+}
+
+.rdp-nav {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    display: flex;
+    align-items: center;
+    top: 4px;
+    right: 4px;
+}
+
+.rdp-button_next, .rdp-button_previous {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+}
+
+.rdp-day {
+    width: 36px;
+    height: 36px;
+}
+
+.rdp-day_button {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--input-border-radius);
+    background: var(--secondary-color);
+    border: 1px solid var(--input-border-color);
+}
+
+.rdp-day_button:hover,
+.rdp-day_button:focus {
+    background: var(--secondary-color-hover);
+}
+
+.rdp-today .rdp-day_button {
+    font-weight: bold;
+}
+
+.rdp-selected .rdp-day_button {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--button-color)
+}
+
+.rdp-weekday {
+    padding: 6px 0;
+    font-weight: bold;
+    text-align: center;
+}
+
+.datetimePicker-timeContainer {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

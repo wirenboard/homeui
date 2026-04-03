@@ -1,6 +1,7 @@
 {
    "common":{
       "labels": {
+         "time": "Время",
          "password-strength-0": "Короткий пароль",
          "password-strength-1": "Очень слабый пароль",
          "password-strength-2": "Слабый пароль",
@@ -130,7 +131,7 @@
          "device_manager": {
             "failed_to_scan_error": "Произошла ошибка во время сканирования портов: {{ failed_ports }}. Более детальную информацию можно посмотреть в системном журнале",
             "error": "Ошибка"
-         },         
+         },
          "serial_driver": {
             "error": "Error",
             "device": {

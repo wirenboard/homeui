@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.194.0) stable; urgency=medium
+
+  * Add unixtime cell type support
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Apr 2026 17:41:00 +0300
+
 wb-mqtt-homeui (2.193.1) stable; urgency=medium
 
   * Fix svg dashboards memory leaks
