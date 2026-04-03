@@ -151,7 +151,7 @@ export const DeviceTabContent = observer(
               />
             )}
             <Button
-              label={t('device-manager.buttons.review-config')}
+              label={t('device-manager.buttons.reread-config')}
               onClick={() => onReadRegisters(tab, true)}
             />
           </div>

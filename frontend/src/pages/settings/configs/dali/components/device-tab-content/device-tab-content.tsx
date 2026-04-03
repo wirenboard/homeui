@@ -4,10 +4,15 @@ import { Button } from '@/components/button';
 import { Loader } from '@/components/loader';
 import { FormButtonGroup } from '@/components/form';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { useAsyncAction } from '@/utils/async-action';
 import type { DeviceStore } from '@/stores/dali';
 
 export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStore; onSave: () => void }) => {
   const { t } = useTranslation();
+  const [identify, isIdentifying] = useAsyncAction(async () => {
+    await store.identify();
+  });
+
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -18,6 +23,11 @@ export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStor
   return (
     <>
       <FormButtonGroup>
+        <Button
+          label={t('dali.buttons.identify')}
+          isLoading={isIdentifying}
+          onClick={identify}
+        />
         <Button
           label={t('dali.buttons.reload')}
           onClick={async () => {

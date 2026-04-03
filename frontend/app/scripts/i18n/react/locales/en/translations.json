@@ -414,7 +414,7 @@
          "search-disconnected-device": "Search for the device",
          "update": "Update",
          "parameters": "Parameters",
-         "review-config": "Review config",
+         "reread-config": "Reread config",
          "switch-template": "Switch template"
       },
       "errors": {
@@ -867,7 +867,8 @@
          "clear-log": "Clear log",
          "pause-log": "Pause log",
          "resume-log": "Resume log",
-         "set": "Set"
+         "set": "Set",
+         "identify": "Identify"
       }
    }
 }
