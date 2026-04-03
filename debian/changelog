@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb106) stable; urgency=medium
+
+  * Fix svg dashboards memory leaks
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 01 Apr 2026 14:44:00 +0300
+
 wb-mqtt-homeui (2.172.0-wb105) stable; urgency=medium
 
   * Fix svg dashboards memory leaks

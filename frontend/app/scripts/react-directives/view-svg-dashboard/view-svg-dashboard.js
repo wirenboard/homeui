@@ -14,9 +14,8 @@ export default function svgDashboardDirective(mqttClient, $rootScope, $statePara
       id: '=',
     },
     link: function(scope, element) {
-      scope.store = new SvgDashboardPageStore();
       scope.devicesStore = new DeviceStore(mqttClient);
-
+      scope.store = new SvgDashboardPageStore($rootScope.dashboardsStore, scope.devicesStore);
       scope.root = ReactDOM.createRoot(element[0]);
 
       $rootScope.$watch(() => $stateParams.hmi, (isHmi) => {
@@ -24,11 +23,7 @@ export default function svgDashboardDirective(mqttClient, $rootScope, $statePara
       });
 
       scope.root.render(
-        <SvgDashboardPage
-          store={scope.store}
-          dashboardsStore={$rootScope.dashboardsStore}
-          devicesStore={scope.devicesStore}
-        />
+        <SvgDashboardPage store={scope.store} />
       );
 
       element.on('$destroy', function () {
