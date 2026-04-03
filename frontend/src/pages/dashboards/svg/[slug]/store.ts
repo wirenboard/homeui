@@ -10,7 +10,7 @@ export class SvgDashboardPageStore {
   public dashboardId: string = null;
   public channelValues: ObservableMap<string, any>;
   private _unsubscribeOnValue = () => {};
-
+  private _disposeReaction = () => {};
   private _frame: number | null = null;
   private _pendingUpdates = new Map<string, any>();
 
@@ -25,7 +25,7 @@ export class SvgDashboardPageStore {
 
     makeAutoObservable(this, {}, { autoBind: true });
 
-    reaction(
+    this._disposeReaction = reaction(
       () => [this.getUsedChannels(), this.dashboardId],
       () => {
         if (this.#devicesStore.cells.size) {
@@ -158,9 +158,13 @@ export class SvgDashboardPageStore {
     }
   }
 
-  unsubscribeAll() {
+  unsubscribeAll(isPageDestroy: boolean) {
     this.channelValues.clear();
     this._unsubscribeOnValue();
     this._unsubscribeOnValue = () => {};
+    if (isPageDestroy) {
+      this._disposeReaction();
+      this._disposeReaction = () => {};
+    }
   }
 }

@@ -70,7 +70,10 @@ export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
     });
   }, []);
 
-  useEffect(() => () => store.unsubscribeAll(), [id]);
+  useEffect(() => () => {
+    const isPageDestroy = !location.hash.startsWith('#!/dashboards/svg/view');
+    store.unsubscribeAll(isPageDestroy);
+  }, []);
 
   return (
     <>
