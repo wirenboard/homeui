@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.193.1) stable; urgency=medium
+
+  * Fix svg dashboards memory leaks
+  * Fix offset issue on SVG dashboards in HMI panels after transition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Apr 2026 12:30:00 +0300
+
 wb-mqtt-homeui (2.193.0) stable; urgency=medium
 
   * Add DALI device identification button
