@@ -1,5 +1,4 @@
 import { get, reaction } from 'mobx';
-import { observer } from 'mobx-react-lite';
 import { useRef, useLayoutEffect } from 'react';
 import type { SvgViewProps, ParamProps } from './types';
 
@@ -8,50 +7,45 @@ const getSvgElement = (svg: Element, id: string) => {
 };
 
 const setReadHandler = (element, param: ParamProps, values) => {
-  let el = element.querySelector('tspan') || element;
-  let fn = undefined;
+  const el = element.querySelector('tspan') || element;
+  let fn;
   try {
     fn = new Function('val', `return ${param.value}`);
   } catch (e) {
     // Syntax error in rule
   }
-  return reaction(
-    () => get(values, param.channel),
-    (value) => {
-      if (fn) {
-        try {
-          el.innerHTML = fn(value);
-        } catch (e) {
-          // Exception in rule
-        }
+  const apply = (value) => {
+    if (fn) {
+      try {
+        el.innerHTML = fn(value);
+      } catch (e) {
+        // Exception in rule
       }
-    },
-    { fireImmediately: true }
-  );
+    }
+  };
+  apply(get(values, param.channel));
+  return reaction(() => get(values, param.channel), apply);
 };
 
 const setStyleHandler = (element, param: ParamProps, values) => {
-  let fn = undefined;
+  let fn;
   try {
     fn = new Function('val', `return ${param.value}`);
   } catch (e) {
     // Syntax error in rule
   }
-
   const oldStyle = element.style.cssText;
-  return reaction(
-    () => get(values, param.channel),
-    (value) => {
-      if (fn) {
-        try {
-          element.style.cssText = oldStyle + fn(value);
-        } catch (e) {
-          // Exception in rule
-        }
+  const apply = (value) => {
+    if (fn) {
+      try {
+        element.style.cssText = oldStyle + fn(value);
+      } catch (e) {
+        // Exception in rule
       }
-    },
-    { fireImmediately: true }
-  );
+    }
+  };
+  apply(get(values, param.channel));
+  return reaction(() => get(values, param.channel), apply);
 };
 
 const setVisibleHandler = (element, param: ParamProps, values) => {
@@ -61,19 +55,17 @@ const setVisibleHandler = (element, param: ParamProps, values) => {
   } catch (e) {
     // Syntax error in rule
   }
-  return reaction(
-    () => get(values, param.channel),
-    (value) => {
-      if (fn) {
-        try {
-          element.style.display = fn(value) ? '' : 'none';
-        } catch (e) {
-          // Exception in rule
-        }
+  const apply = (value) => {
+    if (fn) {
+      try {
+        element.style.display = fn(value) ? '' : 'none';
+      } catch (e) {
+        // Exception in rule
       }
-    },
-    { fireImmediately: true }
-  );
+    }
+  };
+  apply(get(values, param.channel));
+  return reaction(() => get(values, param.channel), apply);
 };
 
 const setClickHandler = (element, onClick) => {
@@ -112,7 +104,7 @@ const setLongPressHandler = (element, onLongPress) => {
   };
 };
 
-export const SvgView = observer(({
+export const SvgView = ({
   svg,
   params,
   id,
@@ -127,53 +119,62 @@ export const SvgView = observer(({
 
   useLayoutEffect(() => {
     svgWrapperRef.current.innerHTML = svg;
+    return () => {
+      if (svgWrapperRef.current) {
+        svgWrapperRef.current.innerHTML = '';
+      }
+    };
+  }, [svg]);
+
+  useLayoutEffect(() => {
+    if (id !== currentDashboard) {
+      return;
+    }
+
     let disposers = [];
 
-    if (id === currentDashboard) {
-      params.forEach((param) => {
-        let el = getSvgElement(svgWrapperRef.current, param.id);
-        if (el) {
-          if (param?.read?.enable) {
-            disposers.push(setReadHandler(el, param.read, values));
-          }
-          if (param?.style?.enable) {
-            disposers.push(setStyleHandler(el, param.style, values));
-          }
-          if (param?.visible?.enable) {
-            disposers.push(setVisibleHandler(el, param.visible, values));
-          }
-          if (param?.write?.enable) {
-            disposers.push(
-              setClickHandler(el, async () => {
-                if (!param?.write?.check || await confirmHandler()) {
-                  onSwitchValue(param.write.channel, param.write.value);
-                }
-              })
-            );
-          } else if (param?.click?.enable) {
-            disposers.push(setClickHandler(el, () => onMoveToDashboard(param.click.dashboard)));
-          }
-          if (param['long-press']?.enable) {
-            disposers.push(
-              setLongPressHandler(el, () => onMoveToDashboard(param['long-press'].dashboard))
-            );
-          } else if (param['long-press-write']?.enable) {
-            disposers.push(
-              setLongPressHandler(el, () => {
-                onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
-              })
-            );
-          }
+    params.forEach((param) => {
+      let el = getSvgElement(svgWrapperRef.current, param.id);
+      if (el) {
+        if (param?.read?.enable) {
+          disposers.push(setReadHandler(el, param.read, values));
         }
-      });
-    }
+        if (param?.style?.enable) {
+          disposers.push(setStyleHandler(el, param.style, values));
+        }
+        if (param?.visible?.enable) {
+          disposers.push(setVisibleHandler(el, param.visible, values));
+        }
+        if (param?.write?.enable) {
+          disposers.push(
+            setClickHandler(el, async () => {
+              if (!param?.write?.check || await confirmHandler()) {
+                onSwitchValue(param.write.channel, param.write.value);
+              }
+            })
+          );
+        } else if (param?.click?.enable) {
+          disposers.push(setClickHandler(el, () => onMoveToDashboard(param.click.dashboard)));
+        }
+        if (param['long-press']?.enable) {
+          disposers.push(
+            setLongPressHandler(el, () => onMoveToDashboard(param['long-press'].dashboard))
+          );
+        } else if (param['long-press-write']?.enable) {
+          disposers.push(
+            setLongPressHandler(el, () => {
+              onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
+            })
+          );
+        }
+      }
+    });
 
     return () => {
       disposers.forEach((disposer) => disposer());
       disposers = null;
-      svgWrapperRef.current.innerHTML = '';
     };
-  }, [svg, id, currentDashboard]);
+  }, [svg, id, currentDashboard, values]);
 
   return <div className={className} ref={svgWrapperRef}></div>;
-});
+};

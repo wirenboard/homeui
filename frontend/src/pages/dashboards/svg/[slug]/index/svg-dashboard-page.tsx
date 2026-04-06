@@ -17,7 +17,7 @@ import { SvgView } from './components/svg-view';
 import { type SvgDashboardPageProps } from './types';
 import './styles.css';
 
-export const SvgDashboardPage = observer(({ store, dashboardsStore, devicesStore }: SvgDashboardPageProps) => {
+export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
   const { ref, width } = useResizeObserver();
   const { t } = useTranslation();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
@@ -26,44 +26,54 @@ export const SvgDashboardPage = observer(({ store, dashboardsStore, devicesStore
   const { hasRights } = authStore;
 
   useEffect(() => {
-    if (devicesStore.cells.size) {
-      store.setDeviceData(devicesStore.cells, devicesStore);
-    }
-  }, [devicesStore.topics]);
-
-  useEffect(() => {
-    if (dashboardsStore.dashboardsList.length) {
-      store.setDashboards(dashboardsStore.dashboardsList);
+    if (store.dashboardConfigs.length) {
       store.setDashboard(id);
     }
-  }, [id, dashboardsStore.dashboardsList]);
+  }, [id, store.dashboardConfigs]);
 
   useEffect(() => {
     store.setMoveToDashboardFn((dashboardId: string, sourceDashboardId: string) => {
       const dashboard = store.dashboardConfigs.find((d) => d.id === dashboardId);
-      let url = dashboard.isSvg ? `/#!/dashboards/svg/view/${dashboardId}` : `/#!/dashboards/${dashboardId}`;
-
-      const getConcatSymbol = () => url.includes('?') ? '&' : '?';
-
-      if (dashboard) {
-        if (params.has('fullscreen')) {
-          url += `?fullscreen=${params.get('fullscreen')}`;
-        }
-        if (params.has('hmi')) {
-          url += `${getConcatSymbol()}hmi=${params.get('hmi')}`;
-          if (params.has('hmicolor')) {
-            url += `${getConcatSymbol()}hmicolor=${params.get('hmicolor')}`;
-          }
-        }
-        if (!dashboard.isSvg) {
-          url += `${getConcatSymbol()}sourceDashboardId=${sourceDashboardId}`;
-        }
-        location.assign(url);
+      if (!dashboard) {
+        return;
       }
+
+      const base = dashboard.isSvg
+        ? `/#!/dashboards/svg/view/${dashboardId}`
+        : `/#!/dashboards/${dashboardId}`;
+
+      const query = new URLSearchParams();
+
+      if (params.has('fullscreen')) {
+        const val = params.get('fullscreen') || 'true';
+        query.append('fullscreen', val);
+      }
+
+      if (params.has('hmi')) {
+        const val = params.get('hmi') || 'true';
+        query.append('hmi', val);
+
+        if (params.has('hmicolor')) {
+          query.append('hmicolor', params.get('hmicolor')!);
+        }
+      }
+
+      if (!dashboard.isSvg) {
+        query.append('sourceDashboardId', sourceDashboardId);
+      }
+
+      const url = query.toString()
+        ? `${base}?${query.toString()}`
+        : base;
+
+      location.assign(url);
     });
   }, []);
 
-  useEffect(() => () => store.unsubscribeAll(), [id]);
+  useEffect(() => () => {
+    const isPageDestroy = !location.hash.startsWith('#!/dashboards/svg/view');
+    store.unsubscribeAll(isPageDestroy);
+  }, []);
 
   return (
     <>

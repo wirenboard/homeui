@@ -158,7 +158,7 @@ export const DeviceTabContent = observer(
               />
             )}
             <Button
-              label={t('device-manager.buttons.review-config')}
+              label={t('device-manager.buttons.reread-config')}
               aria-haspopup="dialog"
               onClick={() => onReadRegisters(tab, true)}
             />

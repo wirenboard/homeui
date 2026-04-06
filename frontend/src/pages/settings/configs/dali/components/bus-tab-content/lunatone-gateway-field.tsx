@@ -5,6 +5,7 @@ import { BooleanField } from '@/components/form';
 import { FieldLabel } from '@/components/form/field-label';
 import { FormField } from '@/components/form/form-field';
 import { Input } from '@/components/input';
+import { useAsyncAction } from '@/utils/async-action';
 import type { BusStore } from '@/stores/dali';
 
 export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) => {
@@ -17,6 +18,10 @@ export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) =>
   useEffect(() => {
     setPortStr(websocketPort !== undefined ? String(websocketPort) : '');
   }, [websocketPort]);
+
+  const [toggle, isToggling] = useAsyncAction(async () => {
+    await store.setWebsocketEnabled(!websocketEnabled);
+  });
 
   const isValid = (v: string) => {
     const num = Number(v);
@@ -35,14 +40,15 @@ export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) =>
         title={t('dali.labels.websocket-enabled')}
         value={websocketEnabled}
         description={t('dali.labels.websocket-description')}
-        onChange={v => store.setWebsocketEnabled(v)}
+        isDisabled={isToggling}
+        onChange={toggle}
       />
       <FormField error={portError}>
         <FieldLabel title={t('dali.labels.websocket-port')} inputId={inputId}/>
         <Input
           id={inputId}
           value={portStr}
-          isDisabled={!websocketEnabled}
+          isDisabled={!websocketEnabled || isToggling}
           isInvalid={!!portError}
           onChange={v => {
             const str = String(v);

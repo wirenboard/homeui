@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { CellAlert } from '@/components/cell/cell-alert';
 import { CellButton } from '@/components/cell/cell-button';
 import { CellColorpicker } from '@/components/cell/cell-colorpicker';
+import { CellDateTime } from '@/components/cell/cell-datetime';
 import { CellHistory } from '@/components/cell/cell-history';
 import { CellRange } from '@/components/cell/cell-range';
 import { CellSwitch } from '@/components/cell/cell-switch';
@@ -36,6 +37,8 @@ export const CellContent = observer(({ cell, name, isCompact, extra, hideHistory
         return <CellRange cell={cell} />;
       case CellComponent.Colorpicker:
         return <CellColorpicker cell={cell} hideHistory={hideHistory} />;
+      case CellComponent.DateTime:
+        return <CellDateTime cell={cell} />;
       case CellComponent.Value:
         return <CellValue cell={cell} hideHistory={hideHistory} />;
       default:

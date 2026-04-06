@@ -217,7 +217,7 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
 
   $transitions.onStart({}, function (trans) {
     // to avoid blinking on id change
-    if (trans.from().name === 'dashboard' && trans.to().name === 'dashboard') {
+    if (trans.from().name === trans.to().name) {
       return;
     }
     document.getElementById('overlay').classList.remove('overlay');
