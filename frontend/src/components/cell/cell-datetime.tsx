@@ -9,7 +9,8 @@ import { CellHistory } from './cell-history';
 import './styles.css';
 
 export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
 
   return (
     <div className="deviceCell-textWrapper">
@@ -23,7 +24,7 @@ export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
             trigger="click"
           >
             <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
-              {format(fromUnixTime(cell.value as number || 0), 'dd.MM.yyyy HH:mm')}
+              {format(fromUnixTime(cell.value as number || 0), dateFormat)}
             </div>
           </Tooltip>
         )

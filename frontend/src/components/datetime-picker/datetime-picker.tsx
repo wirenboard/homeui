@@ -28,14 +28,16 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Date | null>(value ?? null);
-  const [inputValue, setInputValue] = useState(selected ? format(selected, 'yyyy-MM-dd HH:mm') : '');
+  const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
+  const [inputValue, setInputValue] = useState(selected ? format(selected, dateFormat) : '');
 
   const id = useId();
+  const timeId = useId();
 
   useEffect(() => {
     if (value?.getTime() !== selected?.getTime()) {
       setSelected(value ?? null);
-      setInputValue(value ? format(value, 'yyyy-MM-dd HH:mm') : '');
+      setInputValue(value ? format(value, dateFormat) : '');
     }
   }, [value]);
 
@@ -52,7 +54,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
     }
 
     setSelected(newDate);
-    setInputValue(format(newDate, 'yyyy-MM-dd HH:mm'));
+    setInputValue(format(newDate, dateFormat));
     onChange?.(newDate);
   };
 
@@ -99,7 +101,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
     newDate.setMinutes(m);
 
     setSelected(newDate);
-    setInputValue(format(newDate, 'yyyy-MM-dd HH:mm'));
+    setInputValue(format(newDate, dateFormat));
     onChange?.(newDate);
   };
 
@@ -111,7 +113,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
       return;
     }
 
-    const parsedDate = parse(val, 'yyyy-MM-dd HH:mm', new Date());
+    const parsedDate = parse(val, dateFormat, new Date());
 
     if (isValid(parsedDate)) {
       setSelected(parsedDate);
@@ -129,7 +131,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
             'input-s': size === 'small',
             'input-invalid': isInvalid,
           })}
-          mask="0000-00-00 00:00"
+          mask={i18n.language === 'ru' ? '00.00.0000 00:00' : '00/00/0000 00:00'}
           value={inputValue}
           disabled={disabled}
           aria-haspopup="dialog"
@@ -149,6 +151,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
           size={size || 'default'}
           icon={<CalendarIcon />}
           disabled={disabled}
+          aria-label={t('common.buttons.open-calendar')}
           {...getReferenceProps()}
         />
       </div>
@@ -171,9 +174,10 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
                 onSelect={handleDateSelect}
               />
 
-              <label className="datetimePicker-timeContainer">
+              <label className="datetimePicker-timeContainer" htmlFor={timeId}>
                 <span>{t('common.labels.time')}:</span>
                 <Input
+                  id={timeId}
                   type="time"
                   value={selected ? format(selected, 'HH:mm') : '00:00'}
                   onChange={handleTimeChange}
