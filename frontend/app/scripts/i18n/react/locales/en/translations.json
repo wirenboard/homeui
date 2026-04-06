@@ -1,6 +1,7 @@
 {
    "common":{
       "labels": {
+         "time": "Time",
          "password-strength-0": "Short password",
          "password-strength-1": "Very weak password",
          "password-strength-2": "Weak password",
@@ -15,7 +16,8 @@
          "move-down": "Move down",
          "select": "Select",
          "read": "Read",
-         "save": "Save"
+         "save": "Save",
+         "open-calendar": "Open calendar"
       },
       "prompt": {
          "dirty": "The page has unsaved changes. Are you sure you want to leave?"
