@@ -27,7 +27,7 @@
          "sort": "Сортировать по столбцу \"{{column}}\"",
          "collapse": "Свернуть",
          "expand": "Развернуть",
-         "skip-to-main-content": "Перейти к содержанию"
+         "skip-to-main-content": "Перейти к содержанию",
          "open-calendar": "Открыть календарь"
       },
       "prompt": {

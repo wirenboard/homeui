@@ -1,32 +1,63 @@
 import { JSONEditor } from '@wirenboard/json-editor';
+import { createRoot } from 'react-dom/client';
+import { createElement } from 'react';
+import { Dropdown } from '@/components/dropdown';
 
-export function makeAutocompleteEditor(options = []) {
-  return class extends JSONEditor.defaults.editors.string {
+export function makeAutocompleteEditor(devices) {
+  return class extends JSONEditor.AbstractEditor {
     build() {
-      super.build();
+      this.control = document.createElement('div');
+      this.control.style.minWidth = '180px';
+      this.container.appendChild(this.control);
 
-      if (options.length) {
-        this.addDatalist(options)
-      }
+      this.render();
     }
 
-    addDatalist(options) {
-      const datalistId = 'options-datalist';
-      this.input.setAttribute('list', datalistId);
-
-      // Since we have autocomplete only for devices it is enough to have only one datalist for multiple similar inputs
-      if (!this.jsoneditor.element.querySelector(`#${datalistId}`)) {
-        const datalist = document.createElement('datalist');
-        datalist.id = datalistId;
-
-        options.forEach((optionValue) => {
-          const option = document.createElement('option');
-          option.value = optionValue;
-          datalist.appendChild(option);
-        });
-
-        this.jsoneditor.element.appendChild(datalist);
+    render() {
+      if (!this.reactRoot) {
+        this.reactRoot = createRoot(this.control);
       }
+
+      const options = devices?.map(topic => ({
+        label: topic,
+        value: topic,
+      })) || [];
+
+      this.reactRoot.render(
+        createElement(Dropdown, {
+          options,
+          value: this.value,
+          isSearchable: true,
+          isClearable: true,
+          onChange: (option) => {
+            this.setValue(option?.value || '');
+            this.onChange(true);
+          },
+        })
+      );
+    }
+
+    setValue(value) {
+      if (this.value === value){
+        return;
+      }
+      this.value = value;
+      this.render();
+    }
+
+    getValue() {
+      return this.value;
+    }
+
+    refresh() {
+      this.render();
+    }
+
+    destroy() {
+      if (this.reactRoot) {
+        this.reactRoot.unmount();
+      }
+      super.destroy();
     }
   };
 }

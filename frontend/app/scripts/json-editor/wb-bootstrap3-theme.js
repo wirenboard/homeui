@@ -32,6 +32,20 @@ export function makeWbBootstrap3Theme() {
       tab.childNodes[0].classList.add('text-' + color);
     }
 
+    markTabActive(row) {
+      super.markTabActive(row);
+      if (row.tab?.querySelector('a')) {
+        row.tab.querySelector('a').setAttribute('aria-selected', 'true');
+      }
+    }
+
+    markTabInactive(row) {
+      super.markTabInactive(row);
+      if (row.tab?.querySelector('a')) {
+        row.tab.querySelector('a').setAttribute('aria-selected', 'false');
+      }
+    }
+
     removeTabContextualColors(tab) {
       this.removeContextualColorsInElement(tab);
       this.removeContextualColorsInElement(tab.childNodes[0]);

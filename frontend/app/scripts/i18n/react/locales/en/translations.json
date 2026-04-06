@@ -27,7 +27,7 @@
          "sort": "Sort by column \"{{column}}\"",
          "collapse": "Collapse",
          "expand": "Expand",
-         "skip-to-main-content": "Skip to main content"
+         "skip-to-main-content": "Skip to main content",
          "open-calendar": "Open calendar"
       },
       "prompt": {
