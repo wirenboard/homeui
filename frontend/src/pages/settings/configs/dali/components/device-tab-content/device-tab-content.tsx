@@ -5,6 +5,7 @@ import { Loader } from '@/components/loader';
 import { FormButtonGroup } from '@/components/form';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { useAsyncAction } from '@/utils/async-action';
+import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
 
 export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStore; onSave: () => void }) => {
@@ -23,11 +24,13 @@ export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStor
   return (
     <>
       <FormButtonGroup>
-        <Button
-          label={t('dali.buttons.identify')}
-          isLoading={isIdentifying}
-          onClick={identify}
-        />
+        <Tooltip text={t('dali.labels.identify-tooltip')}>
+          <Button
+            label={t('dali.buttons.identify')}
+            isLoading={isIdentifying}
+            onClick={identify}
+          />
+        </Tooltip>
         <Button
           label={t('dali.buttons.reload')}
           onClick={async () => {
