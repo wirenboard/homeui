@@ -4,9 +4,66 @@
   gap: 6px;
   margin-top: 12px;
   max-width: 320px;
+  /* Prevent flex shrink in page flex layout */
+  flex-shrink: 0;
 }
 
 .users-actions {
   display: flex;
   gap: 8px;
+}
+
+.users-auth-log {
+  margin-top: 40px;
+  /* Prevent flex shrink in page flex layout */
+  flex-shrink: 0;
+}
+
+/* Matches the style of the page-headerContainer + page-title from PageLayout */
+.users-auth-log-title {
+  margin: 0;
+  font-weight: 400;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.users-auth-log-content {
+  transition: opacity 0.2s ease;
+}
+
+.users-auth-log-content_loading {
+  opacity: 0.5;
+}
+
+.users-auth-log-result {
+  font-weight: 600;
+}
+
+.users-auth-log-result_success {
+  color: #2e7d32;
+}
+
+.users-auth-log-result_failed {
+  color: #c62828;
+}
+
+.users-auth-log-empty {
+  margin-top: 12px;
+}
+
+.users-auth-log-pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.users-auth-log-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+  color: var(--text-color);
 }
