@@ -47,12 +47,12 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
       }
     >
       <section className="devices">
-        {store.filteredDevices.length ? (
+        {store.filteredDevices.size ? (
           <ColumnsWrapper
             columnClassName="devices-column"
             baseColumnWidth={376}
           >
-            {store.filteredDevices.map((device) => (
+            {Array.from(store.filteredDevices.values()).map((device) => (
               <Card
                 heading={device.name}
                 id={device.id}

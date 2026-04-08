@@ -206,8 +206,7 @@ export default class DevicesStore {
   }
 
   #getCellFromTopic(topic: string) {
-    const { deviceId, cellId } = splitTopic(topic);
-
+    const { cellId } = splitTopic(topic);
     return this.#getOrCreateCell(cellId);
   }
 
@@ -297,8 +296,12 @@ export default class DevicesStore {
       {
         handledTopic: `${cellTopicBase}/meta`,
         handler: (message: string) => {
-          cell.setMeta(message);
-          this.#updateCellCompleteness(cell);
+          if (message) {
+            cell.setMeta(message);
+            this.#updateCellCompleteness(cell);
+          } else {
+            this.#removeCellFromDevice(cell.id, cell.deviceId);
+          }
         },
       },
       {
