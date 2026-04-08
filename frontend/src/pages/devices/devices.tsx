@@ -52,10 +52,10 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
             columnClassName="devices-column"
             baseColumnWidth={376}
           >
-            {Array.from(store.filteredDevices.values()).map((device) => (
+            {Array.from(store.filteredDevices).map(([deviceId, device]) => (
               <Card
                 heading={device.name}
-                id={device.id}
+                id={deviceId}
                 actions={actions}
                 toggleBody={device.toggleDeviceVisibility}
                 isBodyVisible={device.isVisible}
