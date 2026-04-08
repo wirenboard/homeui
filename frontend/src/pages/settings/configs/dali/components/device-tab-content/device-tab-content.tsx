@@ -4,10 +4,16 @@ import { Button } from '@/components/button';
 import { Loader } from '@/components/loader';
 import { FormButtonGroup } from '@/components/form';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { useAsyncAction } from '@/utils/async-action';
+import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
 
 export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStore; onSave: () => void }) => {
   const { t } = useTranslation();
+  const [identify, isIdentifying] = useAsyncAction(async () => {
+    await store.identify();
+  });
+
   if (store.isLoading) {
     return (
       <div className="dali-contentLoader">
@@ -18,6 +24,13 @@ export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStor
   return (
     <>
       <FormButtonGroup>
+        <Tooltip text={t('dali.labels.identify-tooltip')}>
+          <Button
+            label={t('dali.buttons.identify')}
+            isLoading={isIdentifying}
+            onClick={identify}
+          />
+        </Tooltip>
         <Button
           label={t('dali.buttons.reload')}
           onClick={async () => {
@@ -27,17 +40,19 @@ export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStor
         />
         <Button
           label={t('common.buttons.save')}
-          disabled={!store.objectStore.isDirty || store.objectStore.hasErrors}
+          disabled={!store.objectStore?.isDirty || store.objectStore?.hasErrors}
           onClick={async () => {
             await store.save();
             onSave();
           }}
         />
       </FormButtonGroup>
-      <JsonSchemaEditor
-        store={store.objectStore}
-        translator={store.translator}
-      />
+      {store.objectStore && (
+        <JsonSchemaEditor
+          store={store.objectStore}
+          translator={store.translator}
+        />
+      )}
     </>
   );
 });

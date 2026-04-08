@@ -174,7 +174,7 @@ export const SvgView = ({
       disposers.forEach((disposer) => disposer());
       disposers = null;
     };
-  }, [svg, id, currentDashboard]);
+  }, [svg, id, currentDashboard, values]);
 
   return <div className={className} ref={svgWrapperRef}></div>;
 };

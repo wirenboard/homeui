@@ -71,6 +71,14 @@ export class DeviceStore extends BaseItemStore {
     }
   }
 
+  async identify() {
+    try {
+      await this.daliProxy.IdentifyDevice({ deviceId: this.id });
+    } catch (error) {
+      this.setError(error);
+    }
+  }
+
   private updateGroups(groups: boolean[] | undefined) {
     if (!groups) {
       return;

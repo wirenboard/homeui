@@ -1,8 +1,45 @@
-wb-mqtt-homeui (2.192.5) stable; urgency=medium
+wb-mqtt-homeui (2.195.1) stable; urgency=medium
 
   * Fix strict device remove
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 31 Mar 2026 18:22:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 08 Apr 2026 11:56:00 +0300
+
+wb-mqtt-homeui (2.195.0) stable; urgency=medium
+
+  * Add new units - var, VA, kvarh
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Tue, 07 Apr 2026 16:00:00 +0300
+
+wb-mqtt-homeui (2.194.1) stable; urgency=medium
+
+  * Add tooltip to DALI device identification button
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 07 Apr 2026 10:12:57 +0500
+
+wb-mqtt-homeui (2.194.0) stable; urgency=medium
+
+  * Add unixtime cell type support
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Apr 2026 17:41:00 +0300
+
+wb-mqtt-homeui (2.193.1) stable; urgency=medium
+
+  * Fix svg dashboards memory leaks
+  * Fix offset issue on SVG dashboards in HMI panels after transition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Apr 2026 12:30:00 +0300
+
+wb-mqtt-homeui (2.193.0) stable; urgency=medium
+
+  * Add DALI device identification button
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Apr 2026 15:25:58 +0500
+
+wb-mqtt-homeui (2.192.5) stable; urgency=medium
+
+  * Fix DALI device settings editor crash on bus reading errors
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Apr 2026 10:26:06 +0500
 
 wb-mqtt-homeui (2.192.4) stable; urgency=medium
 
