@@ -89,7 +89,8 @@ const makeLayout = (params: ObjectParamStore[], rootStore: PropertyStore, transl
   for (const param of params) {
     if (shouldRenderObjectParamEditor(param)) {
       const gridColumns = param.store.schema.options?.grid_columns ?? MAX_SLOTS + 1;
-      if (slotsInRow === 0 || slotsInRow + gridColumns <= MAX_SLOTS) {
+      const newRow = param.store.schema.options?.wb?.new_row ?? false;
+      if (slotsInRow === 0 || (!newRow && slotsInRow + gridColumns <= MAX_SLOTS)) {
         slotsInRow += gridColumns;
         elements.push(param);
       } else {

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.196.0) stable; urgency=medium
+
+  * Add new_row parameter to wb options in json-editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 08 Apr 2026 15:12:32 +0500
+
 wb-mqtt-homeui (2.195.0) stable; urgency=medium
 
   * Add new units - var, VA, kvarh

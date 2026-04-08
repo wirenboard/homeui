@@ -32,6 +32,9 @@ export interface WbOptions {
   // If true, the property will be shown as read-only in the editor
   read_only?: boolean;
 
+  // If true, the property will start a new row in the flex layout
+  new_row?: boolean;
+
   dali_tc?: WbDaliTcEditorOptions;
 }
 
