@@ -206,9 +206,7 @@ export default class DevicesStore {
   }
 
   #getCellFromTopic(topic: string) {
-    const { deviceId, cellId } = splitTopic(topic);
-
-    this.#getOrCreateDevice(deviceId);
+    const { cellId } = splitTopic(topic);
     return this.#getOrCreateCell(cellId);
   }
 
@@ -237,7 +235,7 @@ export default class DevicesStore {
   }
 
   #updateCellCompleteness(cell: Cell) {
-    if (cell.isComplete) {
+    if (cell.isComplete && this.devices.has(cell.deviceId)) {
       this.#addCellToDevice(cell.id, cell.deviceId);
       return;
     }
@@ -298,8 +296,12 @@ export default class DevicesStore {
       {
         handledTopic: `${cellTopicBase}/meta`,
         handler: (message: string) => {
-          cell.setMeta(message);
-          this.#updateCellCompleteness(cell);
+          if (message) {
+            cell.setMeta(message);
+            this.#updateCellCompleteness(cell);
+          } else {
+            this.#removeCellFromDevice(cell.id, cell.deviceId);
+          }
         },
       },
       {

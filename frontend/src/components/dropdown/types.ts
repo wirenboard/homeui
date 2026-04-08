@@ -3,7 +3,7 @@ export type Option<T = string | boolean | number | null | unknown> = {
   value: T;
   hidden?: boolean;
 } | {
-  value: T;
+  value?: T;
   label: string;
   hidden?: boolean;
   options?: Option<T>[];
