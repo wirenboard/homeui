@@ -8,7 +8,7 @@ import { UserRole } from '@/stores/auth';
 import type { EditUserModalProps } from './types';
 import './styles.css';
 
-export const EditUserModal = ({ onSave, user, onCancel }: EditUserModalProps) => {
+export const EditUserModal = ({ onSave, user, isLoading, onCancel }: EditUserModalProps) => {
   const { t } = useTranslation();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +24,7 @@ export const EditUserModal = ({ onSave, user, onCancel }: EditUserModalProps) =>
   useEffect(() => {
     if (user) {
       setLogin(user.login || '');
-      setType(user.readOnly ? UserRole.Admin : user.type);
+      setType(user.readOnly ? UserRole.Admin : (user.type || type));
 
       if (user.readOnly) {
         setIsReadOnlyAdmin(true);
@@ -39,6 +39,7 @@ export const EditUserModal = ({ onSave, user, onCancel }: EditUserModalProps) =>
       acceptLabel={t('users.buttons.save')}
       confirmCallback={() => onSave({ login, password, type })}
       closeCallback={onCancel}
+      isLoading={isLoading}
       isDisabled={!login || !password}
       isOpened
     >

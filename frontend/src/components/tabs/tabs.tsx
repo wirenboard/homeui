@@ -109,7 +109,6 @@ export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: 
         const nextId = tabIds[currentIndex];
         onTabChange(nextId);
 
-        // 👉 перенос фокуса в panel
         requestAnimationFrame(() => {
           const tabList = (event.target as any).closest('[role="tablist"]');
           if (!tabList) return;

@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react-lite';
 import { useContext, createContext, forwardRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, LineEdit, Button } from '../common';
+import TrashIcon from '@/assets/icons/trash.svg';
+import { Button } from '@/components/button';
+import { Checkbox, LineEdit } from '../common';
 import BootstrapLikeSelect from '../components/select/select';
 import CollapsiblePanel from './collapsiblePanel';
 
@@ -147,8 +149,10 @@ export const FormCollapsibleTable = observer(({ store }) => {
                 })}
                 <td>
                   <Button
-                    icon="glyphicon glyphicon-trash"
                     title={t('forms.remove')}
+                    aria-label={t('forms.remove')}
+                    variant="secondary"
+                    icon={<TrashIcon />}
                     onClick={() => {
                       if (confirm(t('forms.confirm-remove'))) {
                         store.remove(index);

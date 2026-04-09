@@ -108,6 +108,7 @@ export const Dropdown = ({
           display: data?.hidden ? 'none' : baseStyles.display,
         }),
       }}
+      tabSelectsValue={false}
       unstyled
       onMenuOpen={() => setIsMenuOpen(true)}
       onMenuClose={() => setIsMenuOpen(false)}

@@ -354,6 +354,7 @@ const ResetEntrypoint = observer(({ onUploadClick, onResetClick, canFactoryReset
         type="button"
         className="btn btn-danger"
         aria-haspopup="dialog"
+        aria-label={t('system.buttons.select_and_reset')}
         onClick={onUploadClick}
       >
         {t('system.buttons.select')}

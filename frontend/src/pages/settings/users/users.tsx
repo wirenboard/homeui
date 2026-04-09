@@ -11,6 +11,7 @@ import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { EditUserModal } from '@/pages/settings/users/components/edit-user';
 import { authStore, UserRole } from '@/stores/auth';
+import { useAsyncAction } from '@/utils/async-action';
 import { store } from './page-store';
 import './styles.css';
 
@@ -18,35 +19,53 @@ const UsersPage = observer(() => {
   const { t } = useTranslation();
   const [deletedUserId, setDeletedUserId] = useState('');
   const [ confirm, isOpened, handleConfirm, handleClose ] = useConfirm<any>();
-  const [ userSave, userEditOpened, saveUser, closeUserEdit ] = useConfirm<any>();
   const [ editedUser, setEditedUser ] = useState<any>();
 
-  useEffect(() => {
+  const [loadUsers, isLoading] = useAsyncAction(async () => {
     if (authStore.hasRights(UserRole.Admin)) {
-      store.loadUsers();
+      await store.loadUsers();
+    }
+  });
+
+  useEffect(() => {
+    loadUsers();
+    store.showEnableHttpsConfirmModal = confirm;
+  }, []);
+
+  const [save, isSaving] = useAsyncAction(async (data) => {
+    if (editedUser.id) {
+      await store.editUser(editedUser, data);
+    } else {
+      await store.addUser(data);
     }
 
-    store.showEnableHttpsConfirmModal = confirm;
-    store.showUserEditModal = userSave;
-  }, []);
+    setEditedUser(null);
+  });
+
+  const [deleteUser, isDeleting] = useAsyncAction(async (id: string) => {
+    await store.deleteUser(id);
+    setDeletedUserId(null);
+  });
 
   return (
     <PageLayout
       title={t('users.title')}
       hasRights={authStore.hasRights(UserRole.Admin)}
-      isLoading={store.isLoading}
+      isLoading={isLoading}
       errors={store.errors}
       actions={
         <Button
           label={t('users.buttons.add')}
           variant="primary"
-          disabled={store.isLoading}
           aria-haspopup="dialog"
           onClick={async () => {
             if (!authStore.areUsersConfigured) {
               setEditedUser({ readOnly: true });
+              if (!await store.confirmSetupHttps()) {
+                return;
+              }
             }
-            await store.addUser();
+            setEditedUser({});
           }}
         />
       }
@@ -87,7 +106,6 @@ const UsersPage = observer(() => {
                     aria-haspopup="dialog"
                     onClick={() => {
                       setEditedUser({ ...user, readOnly: user.type === 'admin' && store.onlyOneAdmin });
-                      store.editUser(user);
                     }}
                   />
                 </Tooltip>
@@ -122,15 +140,12 @@ const UsersPage = observer(() => {
         />
       </label>
 
-      {userEditOpened && (
+      {editedUser && (
         <EditUserModal
           user={editedUser}
-          onSave={(data) => {
-            saveUser(data);
-            setEditedUser(null);
-          }}
+          isLoading={isSaving}
+          onSave={save}
           onCancel={() => {
-            closeUserEdit();
             setEditedUser(null);
           }}
         />
@@ -156,12 +171,10 @@ const UsersPage = observer(() => {
           isOpened={!!deletedUserId}
           heading={t('users.labels.confirm-delete-heading')}
           variant="danger"
+          isLoading={isDeleting}
           acceptLabel={t('users.buttons.delete')}
           closeCallback={() => setDeletedUserId(null)}
-          confirmCallback={async () => {
-            await store.deleteUser(deletedUserId);
-            setDeletedUserId(null);
-          }}
+          confirmCallback={() => deleteUser(deletedUserId)}
         >
           {
             t(

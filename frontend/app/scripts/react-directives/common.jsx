@@ -120,7 +120,6 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
 
 export const LineEdit = forwardRef(
   ({ placeholder, value, onChange, disabled, type, name, required, autocomplete, showIndicator, labelId, descriptionId }, ref) => {
-    console.log(labelId)
     if (type === 'textarea') {
       return (
         <textarea
