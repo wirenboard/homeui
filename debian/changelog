@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.196.1) stable; urgency=medium
+
+  * Hide widget actions for hmi moode
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 11:01:00 +0300
+
 wb-mqtt-homeui (2.196.0) stable; urgency=medium
 
   * Add new_row parameter to wb options in json-editor
