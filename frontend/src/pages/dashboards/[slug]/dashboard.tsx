@@ -33,7 +33,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
 
-  const actions = hasEditRights ? [
+  const actions = hasEditRights && !params.has('hmi') ? [
     {
       title: t('dashboard.buttons.remove-widget'), action: (id: string) => setRemovedWidgetId(id),
       icon: TrashIcon,

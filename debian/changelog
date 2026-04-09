@@ -1,8 +1,44 @@
-wb-mqtt-homeui (2.194.1) stable; urgency=medium
+wb-mqtt-homeui (2.197.0) stable; urgency=medium
 
   * Update a11y
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 06 Apr 2026 13:35:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 12:40:00 +0300
+
+wb-mqtt-homeui (2.196.2) stable; urgency=medium
+
+  * Fix /auth/users POST response Content-Type
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Apr 2026 13:55:03 +0500
+
+wb-mqtt-homeui (2.196.1) stable; urgency=medium
+
+  * Hide widget actions for hmi moode
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 11:01:00 +0300
+
+wb-mqtt-homeui (2.196.0) stable; urgency=medium
+
+  * Add new_row parameter to wb options in json-editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Apr 2026 10:31:24 +0500
+
+wb-mqtt-homeui (2.195.1) stable; urgency=medium
+
+  * Fix strict device remove
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 08 Apr 2026 11:56:00 +0300
+
+wb-mqtt-homeui (2.195.0) stable; urgency=medium
+
+  * Add new units - var, VA, kvarh
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Tue, 07 Apr 2026 16:00:00 +0300
+
+wb-mqtt-homeui (2.194.1) stable; urgency=medium
+
+  * Add tooltip to DALI device identification button
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 07 Apr 2026 10:12:57 +0500
 
 wb-mqtt-homeui (2.194.0) stable; urgency=medium
 

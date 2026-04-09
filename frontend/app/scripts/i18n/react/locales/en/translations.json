@@ -894,7 +894,8 @@
          "websocket-port": "WebSocket port",
          "websocket-port-error": "Port must be an integer between 1 and 65535",
          "polling-interval": "Polling Interval (s)",
-         "polling-interval-error": "Interval must be a positive integer"
+         "polling-interval-error": "Interval must be a positive integer",
+         "identify-tooltip": "The device will flash the light or attract attention, which can help to identify it among other devices"
       },
       "buttons": {
          "rescan": "Rescan",
