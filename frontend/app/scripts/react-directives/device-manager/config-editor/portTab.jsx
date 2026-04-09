@@ -31,6 +31,7 @@ export const PortTabContent = ({ tab, onDeleteTab, onDeletePortDevices }) => {
             label={t('device-manager.buttons.delete-devices')}
             type="danger"
             disabled={!tab.hasChildren}
+            ariaHasPopup={true}
             onClick={() => onDeletePortDevices(tab)}
           />
           {tab.canDelete && (

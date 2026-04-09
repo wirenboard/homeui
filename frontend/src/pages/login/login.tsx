@@ -5,7 +5,7 @@ import LocaleIcon from '@/assets/icons/locale.svg';
 import LoaderIcon from '@/assets/icons/spinner.svg';
 import { APP_NAME, LOGO } from '@/common/constants';
 import { Alert } from '@/components/alert';
-import { Button } from '@/components/button';
+import { Button, ButtonLink } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
@@ -51,7 +51,12 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
     <section className="login">
       <img src={LOGO} className="login-logo" alt={APP_NAME}/>
 
-      <div className="login-title">{t('login.title')}</div>
+      <h1
+        className="login-title"
+        aria-label={t('login.labels.authorization-title')}
+        tabIndex={-1}
+      >{t('login.title')}
+      </h1>
 
       <fieldset className="login-wrapper">
         <form className="login-form" onSubmit={onSubmit}>
@@ -76,6 +81,7 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
                 id="password"
                 v-model="data.pass"
                 name="pass"
+                ariaLabel={t('login.labels.password')}
                 autoComplete="current-password"
                 value={password}
                 required
@@ -90,13 +96,12 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
 
           <div className="login-actions">
             {isAutologin && (
-              <a href="/">
-                <Button
-                  className="login-button"
-                  type="button"
-                  label={t('login.buttons.auto-login')}
-                />
-              </a>
+              <ButtonLink
+                href="/"
+                className="login-button"
+                type="button"
+                label={t('login.buttons.auto-login')}
+              />
             )}
 
             <Button
@@ -117,6 +122,7 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
           <LocaleIcon className="login-languageIcon" />
           <Dropdown
             id="language"
+            ariaLabel={t('login.buttons.choose-language')}
             className="login-language"
             options={languageOptions}
             value={language}

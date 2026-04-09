@@ -64,6 +64,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
             >
               <Button
                 icon={view === PageView.List ? <CardIcon /> : <ListIcon />}
+                aria-label={t(view === PageView.List ? 'widgets.buttons.widget-view' : 'widgets.buttons.table-view')}
                 variant="secondary"
                 onClick={() => setView(view === PageView.List ? PageView.Card : PageView.List)}
               />
@@ -200,6 +201,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
                         <Button
                           size="small"
                           icon={<EditIcon />}
+                          aria-label={t('widget.buttons.edit')}
                           onClick={() => setWidgetToEdit(widget.id)}
                         />
                       </Tooltip>
@@ -207,6 +209,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
                         <Button
                           variant="danger"
                           size="small"
+                          aria-label={t('widget.buttons.delete')}
                           icon={<TrashIcon />}
                           onClick={() => setWidgetToDelete(widget.id)}
                         />

@@ -140,18 +140,26 @@ export const DeviceTabContent = observer(
             {!tab.withSubdevices && tab.readRegistersState.allowEditSettings && (
               <Button
                 label={t('device-manager.buttons.parameters')}
+                aria-haspopup="dialog"
                 onClick={() => openOptionalParamsSelectDialog(!optionalParamsSelectDialogIsOpen)}
               />
             )}
-            <Button label={t('device-manager.buttons.delete')} variant="danger" onClick={onDeleteTab} />
+            <Button
+              label={t('device-manager.buttons.delete')}
+              variant="danger"
+              aria-haspopup="dialog"
+              onClick={onDeleteTab}
+            />
             {!tab.withSubdevices && tab.readRegistersState.allowEditSettings && (
               <Button
                 label={t('device-manager.buttons.copy')}
+                aria-haspopup="dialog"
                 onClick={onCopyTab}
               />
             )}
             <Button
               label={t('device-manager.buttons.reread-config')}
+              aria-haspopup="dialog"
               onClick={() => onReadRegisters(tab, true)}
             />
           </div>

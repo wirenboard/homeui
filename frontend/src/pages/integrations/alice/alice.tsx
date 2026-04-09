@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Switch } from '@/components/switch';
-import { Tabs, useTabs } from '@/components/tabs';
+import { TabContent, Tabs, useTabs } from '@/components/tabs';
 import { PageLayout } from '@/layouts/page';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
 import { authStore, UserRole } from '@/stores/auth';
@@ -150,6 +150,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       <Switch
         id="alice-integration-enabled"
         value={isIntegrationEnabled}
+        ariaLabel={t('alice.labels.enable-integration')}
         isDisabled={isIntegrationLoading}
         onChange={handleIntegrationToggle}
       />
@@ -224,15 +225,19 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
                   </div>
                 </aside>
                 {!!(view.isNewRoom || view.roomId) && (
-                  <Room
-                    id={view.roomId}
-                    onSave={(roomId) => {
-                      setView({ roomId });
-                      setActiveTab(roomId);
-                    }}
-                    onDelete={() => setView({ roomId: DefaultRoom })}
-                    onOpenDevice={(deviceId) => setView({ deviceId })}
-                  />)}
+                  <TabContent tabId={view.roomId} activeTab={view.roomId}>
+                    <Room
+                      id={view.roomId}
+                      onSave={(roomId) => {
+                        setView({ roomId });
+                        setActiveTab(roomId);
+                      }}
+                      onDelete={() => setView({ roomId: DefaultRoom })}
+                      onOpenDevice={(deviceId) => setView({ deviceId })}
+                    />
+                  </TabContent>
+                )}
+
                 {!!(view.isNewDevice || view.deviceId) && (
                   <SmartDevice
                     id={view.deviceId}

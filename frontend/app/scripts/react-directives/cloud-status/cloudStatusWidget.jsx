@@ -70,7 +70,7 @@ const CloudStatusWidget = observer(({ store }) => {
   }
 
   return (
-    <div className="panel panel-default">
+    <article className="panel panel-default">
       <div className="panel-heading">
         <h3 className="panel-title">
           <i className="glyphicon glyphicon-cloud" /> {t('system.cloud-status.title')} ({store.provider})
@@ -86,7 +86,7 @@ const CloudStatusWidget = observer(({ store }) => {
           <ActivationLink link={store.activationLink} />
         )}
       </div>
-    </div>
+    </article>
   );
 });
 

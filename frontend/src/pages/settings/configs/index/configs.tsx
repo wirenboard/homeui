@@ -43,7 +43,11 @@ const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
         </TableRow>
 
         {store.configs.map((config, i) => (
-          <TableRow key={config.configPath + i} url={getUrl(config)}>
+          <TableRow
+            url={getUrl(config)}
+            aria-label={config.titleTranslations?.[i18n.language] || config.title}
+            key={config.configPath + i}
+          >
             <TableCell>
               {config.titleTranslations?.[i18n.language] || config.title}
             </TableCell>

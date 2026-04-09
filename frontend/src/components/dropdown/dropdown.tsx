@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { useRef } from 'react';
-import Select, { components, type SelectInstance } from 'react-select';
+import { useRef, useState } from 'react';
+import Select, { components, type SelectInstance, type Props } from 'react-select';
 import PlusIcon from '@/assets/icons/plus.svg';
 import type { DropdownProps, Option } from './types';
 import './styles.css';
@@ -36,7 +36,8 @@ export const Dropdown = ({
   minWidth = '150px',
   onChange,
 }: DropdownProps) => {
-  const select = useRef<SelectInstance>();
+  const select = useRef<SelectInstance>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleChange = (option) => {
     if (isButton && option) {
@@ -45,6 +46,16 @@ export const Dropdown = ({
       });
     }
     onChange(option);
+  };
+
+  const handleKeyDown = (ev) => {
+    if (ev.key === 'Enter' && !isMenuOpen) {
+      ev.preventDefault();
+      select.current.openMenu('first');
+    }
+    if (ev.key === 'Escape' && isMenuOpen) {
+      ev.stopPropagation();
+    }
   };
 
   const findOption = (options: Option<unknown>[], value: unknown) => {
@@ -97,7 +108,11 @@ export const Dropdown = ({
           display: data?.hidden ? 'none' : baseStyles.display,
         }),
       }}
+      tabSelectsValue={false}
       unstyled
+      onMenuOpen={() => setIsMenuOpen(true)}
+      onMenuClose={() => setIsMenuOpen(false)}
+      onKeyDown={handleKeyDown}
       onChange={handleChange}
     />
   );

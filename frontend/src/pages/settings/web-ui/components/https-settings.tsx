@@ -47,7 +47,7 @@ const CertStatusBanner = () => {
       variant = 'info';
   }
 
-  return <Alert variant={variant}>{content}</Alert>;
+  return <Alert variant={variant} role="status">{content}</Alert>;
 };
 
 const HttpsSettings = ({ onError }: HttpsSettingsProps) => {

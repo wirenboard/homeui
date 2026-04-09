@@ -20,7 +20,9 @@
 .login-title {
     font-weight: bold;
     font-size: 18px;
-    margin-top: 16px;
+    letter-spacing: unset;
+    line-height: unset;
+    margin: 16px 0 0 0;
 }
 
 .login-wrapper {

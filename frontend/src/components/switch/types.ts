@@ -5,6 +5,7 @@ export interface SwitchProps {
   isDisabled?: boolean;
   isInvalid?: boolean;
   ariaLabel?: string;
+  ariaLabelledby?: string;
   ariaDescribedby?: string;
   ariaInvalid?: boolean;
   ariaErrorMessage?: string;
