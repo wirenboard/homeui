@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.196.3) stable; urgency=medium
+
+  * Fix datetime autopost value on render
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 13:21:00 +0300
+
 wb-mqtt-homeui (2.196.2) stable; urgency=medium
 
   * Fix /auth/users POST response Content-Type

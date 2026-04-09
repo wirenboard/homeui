@@ -116,8 +116,10 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
     const parsedDate = parse(val, dateFormat, new Date());
 
     if (isValid(parsedDate)) {
-      setSelected(parsedDate);
-      onChange?.(parsedDate);
+      if (parsedDate.getTime() !== value?.getTime()) {
+        setSelected(parsedDate);
+        onChange?.(parsedDate);
+      }
     }
   };
 
