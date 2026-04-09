@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb107) stable; urgency=medium
+
+  * Fix /auth/users POST response Content-Type
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Apr 2026 13:55:03 +0500
+
 wb-mqtt-homeui (2.172.0-wb106) stable; urgency=medium
 
   * Fix svg dashboards memory leaks
