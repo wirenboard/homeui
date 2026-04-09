@@ -216,6 +216,9 @@ export class DeviceSettingsObjectStore {
       });
     }
     deviceTemplate.channels.forEach((channel) => {
+      if (channel.hidden) {
+        return;
+      }
       const channelEditor = new WbDeviceChannelEditor(
         channel,
         initialChannelsByName[channel.name],

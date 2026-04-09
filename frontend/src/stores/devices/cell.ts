@@ -14,6 +14,7 @@ export default class Cell {
   public max?: number;
   public step: number;
   public order: number;
+  public hidden: boolean = false;
 
   private _value: ValueType = '';
   private _readOnly: boolean | null = null;
@@ -198,6 +199,9 @@ export default class Cell {
             break;
           case 'error':
             this.setError(parsedMeta.error);
+            break;
+          case 'hidden':
+            this.hidden = !!parsedMeta.hidden;
             break;
           default:
             // unsettanble
