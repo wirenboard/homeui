@@ -31,7 +31,7 @@ export const usePreventLeavePage = (rootScope: any) => {
           setIsDirty(false);
           window.location.assign(newUrl);
         }
-      }
+      },
     );
 
     return () => {

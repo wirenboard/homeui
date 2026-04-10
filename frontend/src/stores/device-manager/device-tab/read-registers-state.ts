@@ -67,7 +67,7 @@ export class ReadRegistersStateStore {
     this.otherMatchingTemplates = this._deviceTypesStore
       .findNotDeprecatedDeviceTypes(
         deviceModel,
-        deviceFw
+        deviceFw,
       )
       .filter((dt) => this._deviceTypesStore.hasBetterFirmware(deviceType, dt, deviceModel));
     this.allowEditSettings = true;

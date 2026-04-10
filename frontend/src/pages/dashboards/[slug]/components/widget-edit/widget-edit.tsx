@@ -67,7 +67,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
     const updatedValue = widgetCells.map((widgetCell) =>
       cellId === widgetCell.id
         ? { ...widgetCell, ...value }
-        : widgetCell
+        : widgetCell,
     );
     setWidgetCells(updatedValue);
   };

@@ -2,16 +2,16 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-import { Button } from '@/components/button';
 import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
 import { Tree, type TreeItem } from '@/components/tree';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import type { ItemStore, GroupStore, DeviceStore, BusStore } from '@/stores/dali';
-import type { DaliPageProps } from './types';
 import { BusTabContent } from './components/bus-tab-content';
 import { DeviceTabContent } from './components/device-tab-content';
 import { GroupTabContent } from './components/group-tab-content';
+import type { DaliPageProps } from './types';
 import './styles.css';
 
 const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => void }) => {
@@ -27,14 +27,18 @@ const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => v
   return null;
 };
 
-const buildTreeItems = (items: ItemStore[], storeMap: Map<string, ItemStore>, t: (key: string, options?: object) => string): TreeItem[] =>
-  items.map(item => {
+const buildTreeItems = (
+  items: ItemStore[],
+  storeMap: Map<string, ItemStore>,
+  t: (key: string, options?: object) => string,
+): TreeItem[] =>
+  items.map((item) => {
     storeMap.set(item.id, item);
     let label: string | ReactNode = item.label;
     if (item.type === 'group') {
       label = t('dali.labels.group', { name: item.label });
     } else if (item.type === 'device' && item.groups.length) {
-      label = <>{item.label} <strong>{item.groups.map(g => `G${g}`).join(' ')}</strong></>;
+      label = <>{item.label} <strong>{item.groups.map((g) => `G${g}`).join(' ')}</strong></>;
     }
     const children = 'children' in item ? item.children : [];
     return {

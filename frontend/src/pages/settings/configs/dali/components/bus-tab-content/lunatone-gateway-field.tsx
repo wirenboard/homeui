@@ -5,8 +5,8 @@ import { BooleanField } from '@/components/form';
 import { FieldLabel } from '@/components/form/field-label';
 import { FormField } from '@/components/form/form-field';
 import { Input } from '@/components/input';
-import { useAsyncAction } from '@/utils/async-action';
 import type { BusStore } from '@/stores/dali';
+import { useAsyncAction } from '@/utils/async-action';
 
 export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
@@ -50,12 +50,14 @@ export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) =>
           value={portStr}
           isDisabled={!websocketEnabled || isToggling}
           isInvalid={!!portError}
-          onChange={v => {
+          onChange={(v) => {
             const str = String(v);
             setPortStr(str);
             setPortError(isValid(str) ? undefined : t('dali.labels.websocket-port-error'));
           }}
-          onBlur={() => { setTimeout(() => save(portStr), 0); }}
+          onBlur={() => {
+            setTimeout(() => save(portStr), 0);
+          }}
           onEnter={() => save(portStr)}
         />
       </FormField>
