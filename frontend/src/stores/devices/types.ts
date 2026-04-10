@@ -25,6 +25,7 @@ export interface CellMeta {
   units?: string;
   order?: number;
   error?: string;
+  hidden?: boolean;
 }
 
 export type ValueType = string | number | boolean | null;

@@ -63,7 +63,7 @@ export default class DevicesStore {
       .sort((a, b) => a.id.localeCompare(b.id));
 
     if (!showSystemDevices) {
-      cells = cells.filter((cell) => !cell.isSystem);
+      cells = cells.filter((cell) => !cell.isSystem && !cell.hidden);
     }
 
     return cells;
@@ -77,7 +77,7 @@ export default class DevicesStore {
 
     for (const cellId of device.cells) {
       const cell = this.cells.get(cellId);
-      if (cell) {
+      if (cell && !cell.hidden) {
         result.push(cell);
       }
     }
@@ -118,7 +118,7 @@ export default class DevicesStore {
 
       for (const cellId of device.cells) {
         const cell = this.cells.get(cellId);
-        if (!cell) continue;
+        if (!cell || cell.hidden) continue;
 
         options.push({
           value: cell.id,
@@ -155,7 +155,7 @@ export default class DevicesStore {
 
   get controls() {
     return Array.from(this.cells.values())
-      .filter((cell) => !cell.id.startsWith('system__'))
+      .filter((cell) => !cell.id.startsWith('system__') && !cell.hidden)
       .map((cell) => ({ id: cell.id, name: `${this.devices.get(cell.deviceId)?.name} / ${cell.name}` }));
   }
 
