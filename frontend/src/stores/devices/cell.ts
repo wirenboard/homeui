@@ -263,12 +263,8 @@ export default class Cell {
         }
         break;
       case 'boolean':
-        if (!value) {
-          this._value = this._isString() ? '' : '-';
-        } else {
-          // it could  be boolean or string '0' | '1'
-          this._value = Boolean(Number(value));
-        }
+        // it could  be boolean or string '0' | '1'
+        this._value = Boolean(Number(value));
         break;
       case 'pushbutton':
         // unsettable
