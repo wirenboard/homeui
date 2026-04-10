@@ -5,7 +5,7 @@ type AsyncFunction<T extends any[], R> = (...args: T) => Promise<R>;
 const MIN_LOADING_TIME = 300;
 
 export const useAsyncAction = <T extends any[], R>(
-  asyncFunction: AsyncFunction<T, R>
+  asyncFunction: AsyncFunction<T, R>,
 ): [AsyncFunction<T, R>, boolean] => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,7 +28,7 @@ export const useAsyncAction = <T extends any[], R>(
         setIsLoading(false);
       }
     },
-    [asyncFunction]
+    [asyncFunction],
   );
 
   return [execute, isLoading];

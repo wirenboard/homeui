@@ -1,4 +1,4 @@
-import { ObjectStore, Translator } from '@/stores/json-schema-editor';
+import { type ObjectStore, type Translator } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 
 export enum ItemType {

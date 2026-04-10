@@ -9,7 +9,7 @@ import { type BadValueFromRegisterWarningProps } from './types';
 
 export const ParamSimpleLabel = (
   { title, inputId, className }:
-  { title: string; inputId: string; className?: string }
+  { title: string; inputId: string; className?: string },
 ) => {
   return (
     <label htmlFor={inputId} className={classNames('wb-jsonEditor-propertyLabel', className)}>
@@ -50,7 +50,7 @@ export const BadValueFromRegisterWarning = ({ id, store, translator }: BadValueF
 
 export const ParamEditor = observer((
   { param, translator }:
-  { param: WbDeviceParameterEditor; translator: Translator }
+  { param: WbDeviceParameterEditor; translator: Translator },
 ) => {
   const descriptionId = useId();
   const errorId = useId();

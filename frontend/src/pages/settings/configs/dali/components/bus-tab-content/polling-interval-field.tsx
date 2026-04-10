@@ -33,12 +33,14 @@ export const PollingIntervalField = observer(({ store }: { store: BusStore }) =>
       <Input
         value={pollingStr}
         isInvalid={!!pollingError}
-        onChange={v => {
+        onChange={(v) => {
           const str = String(v);
           setPollingStr(str);
           setPollingError(isValid(str) ? undefined : t('dali.labels.polling-interval-error'));
         }}
-        onBlur={() => { setTimeout(() => save(pollingStr), 0); }}
+        onBlur={() => {
+          setTimeout(() => save(pollingStr), 0);
+        }}
         onEnter={() => save(pollingStr)}
       />
     </FormField>

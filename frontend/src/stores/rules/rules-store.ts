@@ -131,7 +131,7 @@ export default class RulesStore {
     const copiedRule = await this.load(path);
     copiedRule.name = generateNextId(
       this.rules.map((rule) => rule.virtualPath.replace(/\.js$/, '')),
-      copiedRule.name.replace(/\.js$/, '')
+      copiedRule.name.replace(/\.js$/, ''),
     );
     const copiedRuleName = await this.save({ ...copiedRule, initName: this.getValidRuleName(copiedRule.name) });
     await new Promise((resolve) => setTimeout(resolve, 2000));

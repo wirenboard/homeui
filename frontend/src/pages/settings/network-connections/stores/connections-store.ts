@@ -42,7 +42,7 @@ export class Connections {
     const connection = new SingleConnection(
       makeConnectionSchema(type, this.schema),
       connectionInfo,
-      state
+      state,
     );
     this.connections.push(connection);
     this.connections = this.#stableSort(this.connections);
@@ -63,7 +63,7 @@ export class Connections {
       let res = this.findConnection(cn.connection_uuid);
       if (!res) {
         res = this.connections.find(
-          (item) => cn.type === item.data.type && cn.connection_id === item.data.connection_id
+          (item) => cn.type === item.data.type && cn.connection_id === item.data.connection_id,
         );
         if (res) {
           const connection = this.lastConnectionState[cn.connection_uuid];

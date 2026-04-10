@@ -43,5 +43,5 @@ request.interceptors.response.use(
     }
 
     return response;
-  }
+  },
 );

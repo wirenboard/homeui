@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
-import { Loader } from '@/components/loader';
 import { FormButtonGroup } from '@/components/form';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
-import { useAsyncAction } from '@/utils/async-action';
+import { Loader } from '@/components/loader';
 import { Tooltip } from '@/components/tooltip';
 import type { DeviceStore } from '@/stores/dali';
+import { useAsyncAction } from '@/utils/async-action';
 
 export const DeviceTabContent = observer(({ store, onSave }: { store: DeviceStore; onSave: () => void }) => {
   const { t } = useTranslation();

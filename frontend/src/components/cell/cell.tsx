@@ -55,7 +55,7 @@ export const CellContent = observer(({ cell, name, isCompact, extra, hideHistory
           'deviceCell-error': cell.error?.some((error) => [CellError.Read, CellError.Write].includes(error)),
           'deviceCell-errorPeriod': cell.error && cell.error.includes(CellError.Period),
           'deviceCell-reversed': isCompact && ![CellComponent.Alert, CellComponent.Button].includes(cell.displayType),
-        }
+        },
       )}
     >
       {!isCompact && ![CellComponent.Alert, CellComponent.Button].includes(cell.displayType) && (

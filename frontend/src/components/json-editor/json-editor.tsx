@@ -25,7 +25,7 @@ export const JsonEditor = observer((props: JsonEditorProps) => {
       props.data,
       i18n.language,
       props.root,
-      props.cells
+      props.cells,
     );
     editor.on('change', () => {
       if (props.onChange) {
