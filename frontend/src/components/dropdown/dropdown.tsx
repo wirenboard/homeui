@@ -22,6 +22,12 @@ const Placeholder = (props: any) => (
   </components.Placeholder>
 );
 
+const SingleValue = (props: any) => (
+  <components.SingleValue {...props} innerProps={{ ...props.innerProps, 'aria-hidden': true }}>
+    {props.children}
+  </components.SingleValue>
+);
+
 const MenuPortal = (props: any, size: DropdownProps['size']) => (
   <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
 );
@@ -104,6 +110,7 @@ export const Dropdown = ({
         MenuPortal: (props) => MenuPortal({ ...props, className }, size),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),
         Placeholder: (props) => Placeholder(props),
+        SingleValue: (props) => SingleValue(props),
       }}
       aria-label={ariaLabel || placeholder}
       styles={{
