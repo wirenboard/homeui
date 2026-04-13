@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.197.3) stable; urgency=medium
+
+  * Error handling for invalid data from MQTT
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Apr 2026 15:12:00 +0300
+
 wb-mqtt-homeui (2.197.2) stable; urgency=medium
 
   * Fix removing zero value cell
