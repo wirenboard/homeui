@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { useRef, useState } from 'react';
-import Select, { components, type SelectInstance, type Props } from 'react-select';
+import { useId, useRef, useState } from 'react';
+import Select, { components, type SelectInstance } from 'react-select';
 import PlusIcon from '@/assets/icons/plus.svg';
 import type { DropdownProps, Option } from './types';
 import './styles.css';
@@ -15,6 +15,12 @@ const getClassNames = (className: string, size: DropdownProps['size']) => classN
   'dropdown-m': size === 'default',
   'dropdown-s': size === 'small',
 });
+
+const Placeholder = (props: any) => (
+  <components.Placeholder {...props} innerProps={{ ...props.innerProps, 'aria-hidden': true }}>
+    {props.selectProps?.placeholder}
+  </components.Placeholder>
+);
 
 const MenuPortal = (props: any, size: DropdownProps['size']) => (
   <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
@@ -38,6 +44,7 @@ export const Dropdown = ({
 }: DropdownProps) => {
   const select = useRef<SelectInstance>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const inputId = id ?? useId();
 
   const handleChange = (option) => {
     if (isButton && option) {
@@ -77,7 +84,7 @@ export const Dropdown = ({
   return (
     <Select
       ref={select}
-      inputId={id}
+      inputId={inputId}
       className={classNames(getClassNames(className, size), {
         'dropdown-button': isButton,
         'dropdown-invalid': isInvalid,
@@ -96,8 +103,9 @@ export const Dropdown = ({
       components={{
         MenuPortal: (props) => MenuPortal({ ...props, className }, size),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),
+        Placeholder: (props) => Placeholder(props),
       }}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel || placeholder}
       styles={{
         control: (baseStyles, _state) => ({
           ...baseStyles,
