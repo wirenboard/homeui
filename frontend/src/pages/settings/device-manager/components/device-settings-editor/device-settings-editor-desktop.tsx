@@ -72,15 +72,13 @@ const ChannelsTableRow = observer(({
         {description && <ParamDescription description={description} />}
       </TableCell>
       <TableCell>
-        {channel.isSupportedByFirmware && (
-          <StringEditor
-            store={channel.mode}
-            translator={translator}
-          />
-        )}
+        <StringEditor
+          store={channel.mode}
+          translator={translator}
+        />
       </TableCell>
       <TableCell>
-        {channel.isSupportedByFirmware && channel.hasCustomPeriod && (
+        {channel.hasCustomPeriod && (
           <CustomPeriodEditor
             store={channel.period}
             translator={translator}
