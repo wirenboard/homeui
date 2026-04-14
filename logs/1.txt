@@ -1,0 +1,390 @@
+Push event to branch feature/vvzvlad-login-logs-v2
+Connecting to https://api.github.com using jenkins-github-token
+GitHub throttling is disabled, which is not allowed for public GitHub usage, so ThrottleOnOver will be used instead. To configure a different rate limiting strategy, go to "GitHub API usage" under "Configure System" in the Jenkins settings.
+Obtained Jenkinsfile from 8903cc4c5717fc442058644058925b49c5f6d45a
+Loading library wbci@master
+Attempting to resolve master from remote references...
+ > git --version # timeout=10
+ > git --version # 'git version 2.7.4'
+using GIT_SSH to set credentials jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675)
+Verifying host key using manually-configured host key entries
+ > git ls-remote -h git@github.com:wirenboard/jenkins-pipeline-lib # timeout=10
+Found match: refs/heads/master revision 417ee4223377805e3f065f00145d6a93f54686fd
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential jenkins-github-public-ssh
+Cloning the remote Git repository
+Cloning with configured refspecs honoured and without tags
+Cloning repository git@github.com:wirenboard/jenkins-pipeline-lib
+ > git init /home/jenkins/workspace/ui_feature_vvzvlad-login-logs-v2@libs/1634dfd3c78bee11c235c4640b0c3965c856713f5004edfbf1f7a92f35c5f344 # timeout=10
+Fetching upstream changes from git@github.com:wirenboard/jenkins-pipeline-lib
+ > git --version # timeout=10
+ > git --version # 'git version 2.7.4'
+using GIT_SSH to set credentials jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675)
+Verifying host key using manually-configured host key entries
+ > git fetch --no-tags --progress git@github.com:wirenboard/jenkins-pipeline-lib +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url git@github.com:wirenboard/jenkins-pipeline-lib # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision 417ee4223377805e3f065f00145d6a93f54686fd (master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 417ee4223377805e3f065f00145d6a93f54686fd # timeout=10
+Commit message: "Fix copyCodestyle (#144)"
+First time build. Skipping changelog.
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on build-node-2-vm in /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential jenkins-github-public-ssh
+Cloning the remote Git repository
+Cloning repository git@github.com:wirenboard/homeui.git
+ > git init /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project # timeout=10
+Fetching upstream changes from git@github.com:wirenboard/homeui.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.52.0'
+using GIT_SSH to set credentials jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675)
+Verifying host key using manually-configured host key entries
+ > git fetch --tags --force --progress -- git@github.com:wirenboard/homeui.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision 8903cc4c5717fc442058644058925b49c5f6d45a (feature/vvzvlad-login-logs-v2)
+Commit message: "feat(auth): add login logging with client IP and user‑agent"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Cleanup workspace)
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] done
+[Pipeline] }
+ > git config remote.origin.url git@github.com:wirenboard/homeui.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8903cc4c5717fc442058644058925b49c5f6d45a # timeout=20
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Determine version suffix)
+[Pipeline] dir
+Running in /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sshagent
+[ssh-agent] Using credentials jenkins (jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675))
+[ssh-agent] Looking for ssh-agent implementation...
+[ssh-agent]   Exec ssh-agent (binary ssh-agent on a remote machine)
+$ ssh-agent
+SSH_AUTH_SOCK=/home/jenkins/.ssh/agent/s.86mlTeBfNb.agent.pkOQtA2wkz
+SSH_AGENT_PID=933849
+Running ssh-add (command line suppressed)
+Identity added: /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project@tmp/private_key_16376544334701597964.key (/home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project@tmp/private_key_16376544334701597964.key)
+[ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
++ git config --add remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
++ git fetch --all
+[Pipeline] }
+$ ssh-agent -k
+unset SSH_AUTH_SOCK;
+unset SSH_AGENT_PID;
+echo Agent pid 933849 killed;
+[ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] echo
+addVersionSuffix()
+[Pipeline] sh
++ git show-ref origin/main
+[Pipeline] sh
++ git show-ref origin/master
+fa90c5162a0ed9374762a18a2b4d6c8b30656876 refs/remotes/origin/master
+[Pipeline] sh
++ echo feature/vvzvlad-login-logs-v2
++ sed -e 's/\W/+/g' -e s/_/+/g
++ git log --right-only --oneline origin/master..HEAD
++ wc -l
++ git rev-parse --short HEAD
++ echo 'feature+vvzvlad+login+logs+v2~1~g8903cc4c'
+[Pipeline] echo
+versionSuffix = ~exp~feature+vvzvlad+login+logs+v2~1~g8903cc4c
+[Pipeline] sh
++ head -n 1 debian/changelog
++ sed 's/.*(\(.*\)).*/\1/'
+[Pipeline] echo
+version = 2.197.7
+[Pipeline] sh
++ git log -1 '--pretty=format:%an'
+[Pipeline] echo
+author = vvzvlad
+[Pipeline] sh
++ git log -1 '--pretty=format:%ae'
+[Pipeline] echo
+email = git@vvzvlad.xyz
+[Pipeline] sh
++ git log -1 '--pretty=%B'
+[Pipeline] sh
++ wbdev user 'DEBFULLNAME=vvzvlad' 'DEBEMAIL=git@vvzvlad.xyz' dch -v '2.197.7~exp~feature+vvzvlad+login+logs+v2~1~g8903cc4c' -b '(Version is generated automatically by CI/CD)
+feat(auth): add login logging with client IP and user‑agent'
+dch warning: new version (2.197.7~exp~feature+vvzvlad+login+logs+v2~1~g8903cc4c) is less than
+the current version number (2.197.7).
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Code style check)
+Stage "Code style check" skipped due to when conditional
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Static Code Analysis)
+Stage "Static Code Analysis" skipped due to when conditional
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Python Checks)
+[Pipeline] dir
+Running in /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ rm -rf ./codestyle.tmp
+[Pipeline] copyArtifacts
+Due to the Copy artifact compatibility mode, set as migration, the build can reach the project wirenboard/codestyle/master.
+ But in Production mode, this will not be the case anymore.
+ Please consider adding the CopyArtifactPermission on the project you want to copy.
+Copied 12 artifacts from "Wiren Board » codestyle » master" build number 61
+[Pipeline] sh
++ cp codestyle.tmp/python/ci/find-python-files find-python-files
+[Pipeline] sh
++ chmod +x find-python-files
+[Pipeline] sh
++ wbdev user bash -c 'WB_PYTHON_FILES_EXCLUDE="frontend" ./find-python-files'
++ xargs
+[Pipeline] sh
++ python3 -m venv /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv
+[Pipeline] sh
++ test -f /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project/pyproject.toml
++ cp codestyle.tmp/python/config/pyproject.toml /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project/pyproject.toml
++ echo pyproject.toml
+[Pipeline] sh
++ cp codestyle.tmp/python/config/requirements.txt /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt
+[Pipeline] sh
++ source /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/bin/activate
++ deactivate nondestructive
++ '[' -n  ]
++ '[' -n  ]
++ hash -r
++ '[' -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ '[' '!' nondestructive '=' nondestructive ]
++ uname
++ export 'VIRTUAL_ENV=/home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv'
++ _OLD_VIRTUAL_PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ PATH=/home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/bin:/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ export PATH
++ VIRTUAL_ENV_PROMPT='(tmp_venv) '
++ export VIRTUAL_ENV_PROMPT
++ '[' -n  ]
++ '[' -z  ]
++ _OLD_VIRTUAL_PS1='\w \$ '
++ PS1='((tmp_venv) ) \w \$ '
++ export PS1
++ hash -r
++ pip3 install --upgrade pip
+Requirement already satisfied: pip in /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/lib/python3.12/site-packages (25.0.1)
+Collecting pip
+  Using cached pip-26.0.1-py3-none-any.whl.metadata (4.7 kB)
+Using cached pip-26.0.1-py3-none-any.whl (1.8 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 25.0.1
+    Uninstalling pip-25.0.1:
+      Successfully uninstalled pip-25.0.1
+Successfully installed pip-26.0.1
++ pip3 install -r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt
+Collecting black==24.2.0 (from -r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 1))
+  Using cached black-24.2.0-py3-none-any.whl.metadata (74 kB)
+Collecting isort==5.13.2 (from -r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 2))
+  Using cached isort-5.13.2-py3-none-any.whl.metadata (12 kB)
+Collecting pylint==3.1.0 (from -r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 3))
+  Using cached pylint-3.1.0-py3-none-any.whl.metadata (12 kB)
+Collecting pytest-cov==2.10.1 (from -r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 4))
+  Using cached pytest_cov-2.10.1-py2.py3-none-any.whl.metadata (20 kB)
+Collecting click>=8.0.0 (from black==24.2.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 1))
+  Using cached click-8.3.2-py3-none-any.whl.metadata (2.6 kB)
+Collecting mypy-extensions>=0.4.3 (from black==24.2.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 1))
+  Using cached mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)
+Collecting packaging>=22.0 (from black==24.2.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 1))
+  Using cached packaging-26.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting pathspec>=0.9.0 (from black==24.2.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 1))
+  Using cached pathspec-1.0.4-py3-none-any.whl.metadata (13 kB)
+Collecting platformdirs>=2 (from black==24.2.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 1))
+  Using cached platformdirs-4.9.6-py3-none-any.whl.metadata (4.7 kB)
+Collecting astroid<=3.2.0-dev0,>=3.1.0 (from pylint==3.1.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 3))
+  Using cached astroid-3.1.0-py3-none-any.whl.metadata (4.5 kB)
+Collecting mccabe<0.8,>=0.6 (from pylint==3.1.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 3))
+  Using cached mccabe-0.7.0-py2.py3-none-any.whl.metadata (5.0 kB)
+Collecting tomlkit>=0.10.1 (from pylint==3.1.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 3))
+  Using cached tomlkit-0.14.0-py3-none-any.whl.metadata (2.8 kB)
+Collecting dill>=0.3.6 (from pylint==3.1.0->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 3))
+  Using cached dill-0.4.1-py3-none-any.whl.metadata (10 kB)
+Collecting pytest>=4.6 (from pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 4))
+  Using cached pytest-9.0.3-py3-none-any.whl.metadata (7.6 kB)
+Collecting coverage>=4.4 (from pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 4))
+  Using cached coverage-7.13.5-cp312-cp312-musllinux_1_2_x86_64.whl.metadata (8.5 kB)
+Collecting iniconfig>=1.0.1 (from pytest>=4.6->pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 4))
+  Using cached iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting pluggy<2,>=1.5 (from pytest>=4.6->pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 4))
+  Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest>=4.6->pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/requirements.txt (line 4))
+  Using cached pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+Using cached black-24.2.0-py3-none-any.whl (200 kB)
+Using cached isort-5.13.2-py3-none-any.whl (92 kB)
+Using cached pylint-3.1.0-py3-none-any.whl (515 kB)
+Using cached pytest_cov-2.10.1-py2.py3-none-any.whl (19 kB)
+Using cached astroid-3.1.0-py3-none-any.whl (275 kB)
+Using cached mccabe-0.7.0-py2.py3-none-any.whl (7.3 kB)
+Using cached click-8.3.2-py3-none-any.whl (108 kB)
+Using cached coverage-7.13.5-cp312-cp312-musllinux_1_2_x86_64.whl (252 kB)
+Using cached dill-0.4.1-py3-none-any.whl (120 kB)
+Using cached mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+Using cached packaging-26.0-py3-none-any.whl (74 kB)
+Using cached pathspec-1.0.4-py3-none-any.whl (55 kB)
+Using cached platformdirs-4.9.6-py3-none-any.whl (21 kB)
+Using cached pytest-9.0.3-py3-none-any.whl (375 kB)
+Using cached pluggy-1.6.0-py3-none-any.whl (20 kB)
+Using cached iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Using cached pygments-2.20.0-py3-none-any.whl (1.2 MB)
+Using cached tomlkit-0.14.0-py3-none-any.whl (39 kB)
+Installing collected packages: tomlkit, pygments, pluggy, platformdirs, pathspec, packaging, mypy-extensions, mccabe, isort, iniconfig, dill, coverage, click, astroid, pytest, pylint, black, pytest-cov
+
+Successfully installed astroid-3.1.0 black-24.2.0 click-8.3.2 coverage-7.13.5 dill-0.4.1 iniconfig-2.3.0 isort-5.13.2 mccabe-0.7.0 mypy-extensions-1.1.0 packaging-26.0 pathspec-1.0.4 platformdirs-4.9.6 pluggy-1.6.0 pygments-2.20.0 pylint-3.1.0 pytest-9.0.3 pytest-cov-2.10.1 tomlkit-0.14.0
+[Pipeline] echo
+Python files: ./backend/tests/rate_limiter_test.py ./backend/tests/main_test.py ./backend/tests/__init__.py ./backend/setup.py ./backend/configs/usr/lib/cgi-bin/fwupdate_upload.py ./backend/configs/usr/lib/cgi-bin/factory_reset.py ./backend/wb/homeui_backend/http_response.py ./backend/wb/homeui_backend/main.py ./backend/wb/homeui_backend/security.py ./backend/wb/homeui_backend/keys_storage.py ./backend/wb/homeui_backend/cert.py ./backend/wb/homeui_backend/users_storage.py ./backend/wb/homeui_backend/rate_limiter.py ./backend/wb/homeui_backend/__init__.py ./backend/wb/homeui_backend/config_file.py ./backend/wb/homeui_backend/db.py ./backend/wb/homeui_backend/sessions_storage.py ./codestyle.tmp/python/config/setup.py ./backend/wb-homeui-backend ./backend/wb-homeui-users
+[Pipeline] echo
+Running black from venv
+[Pipeline] sh
++ source /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/bin/activate
++ deactivate nondestructive
++ '[' -n  ]
++ '[' -n  ]
++ hash -r
++ '[' -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ '[' '!' nondestructive '=' nondestructive ]
++ uname
++ export 'VIRTUAL_ENV=/home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv'
++ _OLD_VIRTUAL_PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ PATH=/home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/tmp_venv/bin:/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ export PATH
++ VIRTUAL_ENV_PROMPT='(tmp_venv) '
++ export VIRTUAL_ENV_PROMPT
++ '[' -n  ]
++ '[' -z  ]
++ _OLD_VIRTUAL_PS1='\w \$ '
++ PS1='((tmp_venv) ) \w \$ '
++ export PS1
++ hash -r
++ python3 -m black --version
+python -m black, 24.2.0 (compiled: no)
+Python (CPython) 3.12.12
++ python3 -m black --config /home/jenkins/builder/workspace/ui_feature_vvzvlad-login-logs-v2/project/pyproject.toml --check --diff ./backend/tests/rate_limiter_test.py ./backend/tests/main_test.py ./backend/tests/__init__.py ./backend/setup.py ./backend/configs/usr/lib/cgi-bin/fwupdate_upload.py ./backend/configs/usr/lib/cgi-bin/factory_reset.py ./backend/wb/homeui_backend/http_response.py ./backend/wb/homeui_backend/main.py ./backend/wb/homeui_backend/security.py ./backend/wb/homeui_backend/keys_storage.py ./backend/wb/homeui_backend/cert.py ./backend/wb/homeui_backend/users_storage.py ./backend/wb/homeui_backend/rate_limiter.py ./backend/wb/homeui_backend/__init__.py ./backend/wb/homeui_backend/config_file.py ./backend/wb/homeui_backend/db.py ./backend/wb/homeui_backend/sessions_storage.py ./codestyle.tmp/python/config/setup.py ./backend/wb-homeui-backend ./backend/wb-homeui-users
+--- backend/wb/homeui_backend/main.py	2026-04-14 18:31:39.750307+00:00
++++ backend/wb/homeui_backend/main.py	2026-04-14 18:32:29.901433+00:00
+@@ -210,11 +210,13 @@
+ 
+     if user is None or not check_password(form.get("password"), user.pwd_hash):
+         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
+         return response_401()
+ 
+-    logging.info("Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent)
++    logging.info(
++        "Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent
++    )
+     res = {"user_type": user.type.value, "user_id": user.user_id}
+     session = context.sessions_storage.add_session(user)
+     return response_200(
+         headers=[
+             make_set_cookie_header(make_id_cookie(session)),
+would reformat backend/wb/homeui_backend/main.py
+
+Oh no! 💥 💔 💥
+1 file would be reformatted, 19 files would be left unchanged.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Setup builds)
+Stage "Setup builds" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Coverage)
+Stage "Coverage" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Send report to coveralls)
+Stage "Send report to coveralls" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Check version has bumped)
+Stage "Check version has bumped" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lintian)
+Stage "Lintian" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Setup deploy)
+Stage "Setup deploy" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+
+GitHub has been notified of this commit’s build result
+
+Finished: FAILURE

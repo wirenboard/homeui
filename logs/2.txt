@@ -1,0 +1,395 @@
+Push event to branch feature/vvzvlad-login-logs
+Connecting to https://api.github.com using jenkins-github-token
+GitHub throttling is disabled, which is not allowed for public GitHub usage, so ThrottleOnOver will be used instead. To configure a different rate limiting strategy, go to "GitHub API usage" under "Configure System" in the Jenkins settings.
+Obtained Jenkinsfile from e7bc341cca1d0fcc69ad5f175173f20c05dd8d18
+Loading library wbci@master
+Attempting to resolve master from remote references...
+ > git --version # timeout=10
+ > git --version # 'git version 2.7.4'
+using GIT_SSH to set credentials jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675)
+Verifying host key using manually-configured host key entries
+ > git ls-remote -h git@github.com:wirenboard/jenkins-pipeline-lib # timeout=10
+Found match: refs/heads/master revision 417ee4223377805e3f065f00145d6a93f54686fd
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential jenkins-github-public-ssh
+ > git rev-parse --resolve-git-dir /home/jenkins/workspace/omeui_feature_vvzvlad-login-logs@libs/1634dfd3c78bee11c235c4640b0c3965c856713f5004edfbf1f7a92f35c5f344/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url git@github.com:wirenboard/jenkins-pipeline-lib # timeout=10
+Fetching without tags
+Fetching upstream changes from git@github.com:wirenboard/jenkins-pipeline-lib
+ > git --version # timeout=10
+ > git --version # 'git version 2.7.4'
+using GIT_SSH to set credentials jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675)
+Verifying host key using manually-configured host key entries
+ > git fetch --no-tags --progress git@github.com:wirenboard/jenkins-pipeline-lib +refs/heads/*:refs/remotes/origin/* # timeout=10
+Checking out Revision 417ee4223377805e3f065f00145d6a93f54686fd (master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 417ee4223377805e3f065f00145d6a93f54686fd # timeout=10
+Commit message: "Fix copyCodestyle (#144)"
+ > git rev-list --no-walk 417ee4223377805e3f065f00145d6a93f54686fd # timeout=10
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on build-node-2-vm in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs
+[Pipeline] {
+[Pipeline] dir
+Running in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential jenkins-github-public-ssh
+Fetching changes from the remote Git repository
+ > git rev-parse --resolve-git-dir /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project/.git # timeout=10
+ > git config remote.origin.url git@github.com:wirenboard/homeui.git # timeout=10
+Fetching upstream changes from git@github.com:wirenboard/homeui.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.52.0'
+using GIT_SSH to set credentials jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675)
+Verifying host key using manually-configured host key entries
+ > git fetch --tags --force --progress -- git@github.com:wirenboard/homeui.git +refs/heads/feature/vvzvlad-login-logs:refs/remotes/origin/feature/vvzvlad-login-logs # timeout=10
+Checking out Revision e7bc341cca1d0fcc69ad5f175173f20c05dd8d18 (feature/vvzvlad-login-logs)
+Commit message: "Merge branch 'feature/vvzvlad-login-logs' of https://github.com/wirenboard/homeui into vvzvlad-login-logs"
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f e7bc341cca1d0fcc69ad5f175173f20c05dd8d18 # timeout=20
+ > git rev-list --no-walk 32a17b3f1daddab0475fa52076a634ba35436d51 # timeout=10
+'git whatchanged' is nominated for removal.
+
+hint: You can replace 'git whatchanged <opts>' with:
+hint:	git log <opts> --raw --no-merges
+hint: Or make an alias:
+hint:	git config set --global alias.whatchanged 'log --raw --no-merges'
+
+If you still use this command, here's what you can do:
+
+- read https://git-scm.com/docs/BreakingChanges.html
+- check if anyone has discussed this on the mailing
+  list and if they came up with something that can
+  help you: https://lore.kernel.org/git/?q=git%20whatchanged
+- send an email to <git@vger.kernel.org> to let us
+  know that you still use this command and were unable
+  to determine a suitable replacement
+
+fatal: refusing to run without --i-still-use-this
+ERROR: Unable to retrieve changeset
+hudson.plugins.git.GitException: Error: git whatchanged --no-abbrev -M "--format=commit %H%ntree %T%nparent %P%nauthor %aN <%aE> %ai%ncommitter %cN <%cE> %ci%n%n%w(0,4,4)%B" -n 1024 e7bc341cca1d0fcc69ad5f175173f20c05dd8d18 ^32a17b3f1daddab0475fa52076a634ba35436d51 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project
+	at org.jenkinsci.plugins.gitclient.CliGitAPIImpl$6.execute(CliGitAPIImpl.java:1273)
+	at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler$GitCommandMasterToSlaveCallable.call(RemoteGitImpl.java:158)
+	at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler$GitCommandMasterToSlaveCallable.call(RemoteGitImpl.java:151)
+	at hudson.remoting.UserRequest.perform(UserRequest.java:225)
+	at hudson.remoting.UserRequest.perform(UserRequest.java:50)
+	at hudson.remoting.Request$2.run(Request.java:391)
+	at hudson.remoting.InterceptingExecutorService.lambda$wrap$0(InterceptingExecutorService.java:81)
+	at java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at hudson.remoting.Engine$1.lambda$newThread$0(Engine.java:312)
+	at java.lang.Thread.run(Unknown Source)
+	Suppressed: hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from 10.100.1.139/10.100.1.139:55040
+		at hudson.remoting.Channel.attachCallSiteStackTrace(Channel.java:1784)
+		at hudson.remoting.UserRequest$ExceptionResponse.retrieve(UserRequest.java:356)
+		at hudson.remoting.Channel.call(Channel.java:1000)
+		at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler.execute(RemoteGitImpl.java:143)
+		at sun.reflect.GeneratedMethodAccessor1061.invoke(Unknown Source)
+		at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+		at java.lang.reflect.Method.invoke(Method.java:498)
+		at org.jenkinsci.plugins.gitclient.RemoteGitImpl$CommandInvocationHandler.invoke(RemoteGitImpl.java:129)
+		at com.sun.proxy.$Proxy103.execute(Unknown Source)
+		at hudson.plugins.git.GitSCM.computeChangeLog(GitSCM.java:1505)
+		at hudson.plugins.git.GitSCM.checkout(GitSCM.java:1391)
+		at org.jenkinsci.plugins.workflow.steps.scm.SCMStep.checkout(SCMStep.java:129)
+		at org.jenkinsci.plugins.workflow.steps.scm.SCMStep$StepExecutionImpl.run(SCMStep.java:97)
+		at org.jenkinsci.plugins.workflow.steps.scm.SCMStep$StepExecutionImpl.run(SCMStep.java:84)
+		at org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution.lambda$start$0(SynchronousNonBlockingStepExecution.java:47)
+		at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+		at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Cleanup workspace)
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] done
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Determine version suffix)
+[Pipeline] dir
+Running in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sshagent
+[ssh-agent] Using credentials jenkins (jenkins-github-public-ssh (replaces old key with ID 2488b793-a251-41ce-99f2-8790bfcdd675))
+[ssh-agent] Looking for ssh-agent implementation...
+[ssh-agent]   Exec ssh-agent (binary ssh-agent on a remote machine)
+$ ssh-agent
+SSH_AUTH_SOCK=/home/jenkins/.ssh/agent/s.86mlTeBfNb.agent.CWkFuUUzLT
+SSH_AGENT_PID=933233
+Running ssh-add (command line suppressed)
+Identity added: /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project@tmp/private_key_15377893103211205399.key (/home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project@tmp/private_key_15377893103211205399.key)
+[ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
++ git config --add remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
++ git fetch --all
+From github.com:wirenboard/homeui
+   aeede80d..38fc2c8e  feature/eslint-bump  -> origin/feature/eslint-bump
+ * [new branch]        feature/history-page -> origin/feature/history-page
+ + d72b7ace...a9883ccd feature/trixie       -> origin/feature/trixie  (forced update)
+   6c74ebcc..fa90c516  master               -> origin/master
+[Pipeline] }
+$ ssh-agent -k
+unset SSH_AUTH_SOCK;
+unset SSH_AGENT_PID;
+echo Agent pid 933233 killed;
+[ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] echo
+addVersionSuffix()
+[Pipeline] sh
++ git show-ref origin/main
+[Pipeline] sh
++ git show-ref origin/master
+fa90c5162a0ed9374762a18a2b4d6c8b30656876 refs/remotes/origin/master
+[Pipeline] sh
++ echo feature/vvzvlad-login-logs
++ sed -e 's/\W/+/g' -e s/_/+/g
++ git log --right-only --oneline origin/master..HEAD
++ wc -l
++ git rev-parse --short HEAD
++ echo 'feature+vvzvlad+login+logs~5~ge7bc341c'
+[Pipeline] echo
+versionSuffix = ~exp~feature+vvzvlad+login+logs~5~ge7bc341c
+[Pipeline] sh
++ head -n 1 debian/changelog
++ sed 's/.*(\(.*\)).*/\1/'
+[Pipeline] echo
+version = 2.197.6
+[Pipeline] sh
++ git log -1 '--pretty=format:%an'
+[Pipeline] echo
+author = vvzvlad
+[Pipeline] sh
++ git log -1 '--pretty=format:%ae'
+[Pipeline] echo
+email = git@vvzvlad.xyz
+[Pipeline] sh
++ git log -1 '--pretty=%B'
+[Pipeline] sh
++ wbdev user 'DEBFULLNAME=vvzvlad' 'DEBEMAIL=git@vvzvlad.xyz' dch -v '2.197.6~exp~feature+vvzvlad+login+logs~5~ge7bc341c' -b '(Version is generated automatically by CI/CD)
+Merge branch '"'"'feature/vvzvlad-login-logs'"'"' of https://github.com/wirenboard/homeui into vvzvlad-login-logs
+
+# Conflicts:
+#	debian/changelog'
+dch warning: new version (2.197.6~exp~feature+vvzvlad+login+logs~5~ge7bc341c) is less than
+the current version number (2.197.6).
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Code style check)
+Stage "Code style check" skipped due to when conditional
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Static Code Analysis)
+Stage "Static Code Analysis" skipped due to when conditional
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Python Checks)
+[Pipeline] dir
+Running in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ rm -rf ./codestyle.tmp
+[Pipeline] copyArtifacts
+Due to the Copy artifact compatibility mode, set as migration, the build can reach the project wirenboard/codestyle/master.
+ But in Production mode, this will not be the case anymore.
+ Please consider adding the CopyArtifactPermission on the project you want to copy.
+Copied 12 artifacts from "Wiren Board » codestyle » master" build number 61
+[Pipeline] sh
++ cp codestyle.tmp/python/ci/find-python-files find-python-files
+[Pipeline] sh
++ chmod +x find-python-files
+[Pipeline] sh
++ wbdev user bash -c 'WB_PYTHON_FILES_EXCLUDE="frontend" ./find-python-files'
++ xargs
+[Pipeline] sh
++ python3 -m venv /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv
+[Pipeline] sh
++ test -f /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project/pyproject.toml
+[Pipeline] sh
++ cp codestyle.tmp/python/config/requirements.txt /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt
+[Pipeline] sh
++ source /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/bin/activate
++ deactivate nondestructive
++ '[' -n  ]
++ '[' -n  ]
++ hash -r
++ '[' -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ '[' '!' nondestructive '=' nondestructive ]
++ uname
++ export 'VIRTUAL_ENV=/home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv'
++ _OLD_VIRTUAL_PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ PATH=/home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/bin:/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ export PATH
++ VIRTUAL_ENV_PROMPT='(tmp_venv) '
++ export VIRTUAL_ENV_PROMPT
++ '[' -n  ]
++ '[' -z  ]
++ _OLD_VIRTUAL_PS1='\w \$ '
++ PS1='((tmp_venv) ) \w \$ '
++ export PS1
++ hash -r
++ pip3 install --upgrade pip
+Requirement already satisfied: pip in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (26.0.1)
++ pip3 install -r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt
+Requirement already satisfied: black==24.2.0 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from -r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 1)) (24.2.0)
+Requirement already satisfied: isort==5.13.2 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from -r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 2)) (5.13.2)
+Requirement already satisfied: pylint==3.1.0 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from -r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 3)) (3.1.0)
+Requirement already satisfied: pytest-cov==2.10.1 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from -r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 4)) (2.10.1)
+Requirement already satisfied: click>=8.0.0 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from black==24.2.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 1)) (8.3.1)
+Requirement already satisfied: mypy-extensions>=0.4.3 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from black==24.2.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 1)) (1.1.0)
+Requirement already satisfied: packaging>=22.0 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from black==24.2.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 1)) (26.0)
+Requirement already satisfied: pathspec>=0.9.0 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from black==24.2.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 1)) (1.0.4)
+Requirement already satisfied: platformdirs>=2 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from black==24.2.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 1)) (4.9.4)
+Requirement already satisfied: astroid<=3.2.0-dev0,>=3.1.0 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pylint==3.1.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 3)) (3.1.0)
+Requirement already satisfied: mccabe<0.8,>=0.6 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pylint==3.1.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 3)) (0.7.0)
+Requirement already satisfied: tomlkit>=0.10.1 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pylint==3.1.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 3)) (0.14.0)
+Requirement already satisfied: dill>=0.3.6 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pylint==3.1.0->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 3)) (0.4.1)
+Requirement already satisfied: pytest>=4.6 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 4)) (9.0.2)
+Requirement already satisfied: coverage>=4.4 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 4)) (7.13.5)
+Requirement already satisfied: iniconfig>=1.0.1 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pytest>=4.6->pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 4)) (2.3.0)
+Requirement already satisfied: pluggy<2,>=1.5 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pytest>=4.6->pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 4)) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/lib/python3.12/site-packages (from pytest>=4.6->pytest-cov==2.10.1->-r /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/requirements.txt (line 4)) (2.20.0)
+[Pipeline] echo
+Python files: ./backend/tests/rate_limiter_test.py ./backend/tests/main_test.py ./backend/tests/__init__.py ./backend/setup.py ./backend/configs/usr/lib/cgi-bin/fwupdate_upload.py ./backend/configs/usr/lib/cgi-bin/factory_reset.py ./backend/wb/homeui_backend/http_response.py ./backend/wb/homeui_backend/main.py ./backend/wb/homeui_backend/security.py ./backend/wb/homeui_backend/keys_storage.py ./backend/wb/homeui_backend/cert.py ./backend/wb/homeui_backend/users_storage.py ./backend/wb/homeui_backend/rate_limiter.py ./backend/wb/homeui_backend/__init__.py ./backend/wb/homeui_backend/config_file.py ./backend/wb/homeui_backend/db.py ./backend/wb/homeui_backend/sessions_storage.py ./codestyle.tmp/python/config/setup.py ./backend/wb-homeui-backend ./backend/wb-homeui-users
+[Pipeline] echo
+Running black from venv
+[Pipeline] sh
++ source /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/bin/activate
++ deactivate nondestructive
++ '[' -n  ]
++ '[' -n  ]
++ hash -r
++ '[' -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ '[' '!' nondestructive '=' nondestructive ]
++ uname
++ export 'VIRTUAL_ENV=/home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv'
++ _OLD_VIRTUAL_PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ PATH=/home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/tmp_venv/bin:/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++ export PATH
++ VIRTUAL_ENV_PROMPT='(tmp_venv) '
++ export VIRTUAL_ENV_PROMPT
++ '[' -n  ]
++ '[' -z  ]
++ _OLD_VIRTUAL_PS1='\w \$ '
++ PS1='((tmp_venv) ) \w \$ '
++ export PS1
++ hash -r
++ python3 -m black --version
+python -m black, 24.2.0 (compiled: no)
+Python (CPython) 3.12.12
++ python3 -m black --config /home/jenkins/builder/workspace/omeui_feature_vvzvlad-login-logs/project/pyproject.toml --check --diff ./backend/tests/rate_limiter_test.py ./backend/tests/main_test.py ./backend/tests/__init__.py ./backend/setup.py ./backend/configs/usr/lib/cgi-bin/fwupdate_upload.py ./backend/configs/usr/lib/cgi-bin/factory_reset.py ./backend/wb/homeui_backend/http_response.py ./backend/wb/homeui_backend/main.py ./backend/wb/homeui_backend/security.py ./backend/wb/homeui_backend/keys_storage.py ./backend/wb/homeui_backend/cert.py ./backend/wb/homeui_backend/users_storage.py ./backend/wb/homeui_backend/rate_limiter.py ./backend/wb/homeui_backend/__init__.py ./backend/wb/homeui_backend/config_file.py ./backend/wb/homeui_backend/db.py ./backend/wb/homeui_backend/sessions_storage.py ./codestyle.tmp/python/config/setup.py ./backend/wb-homeui-backend ./backend/wb-homeui-users
+--- backend/wb/homeui_backend/main.py	2026-04-14 12:06:13.969622+00:00
++++ backend/wb/homeui_backend/main.py	2026-04-14 18:05:34.408260+00:00
+@@ -210,11 +210,13 @@
+ 
+     if user is None or not check_password(form.get("password"), user.pwd_hash):
+         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
+         return response_401()
+ 
+-    logging.info("Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent)
++    logging.info(
++        "Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent
++    )
+     res = {"user_type": user.type.value, "user_id": user.user_id}
+     session = context.sessions_storage.add_session(user)
+     return response_200(
+         headers=[
+             make_set_cookie_header(make_id_cookie(session)),
+would reformat backend/wb/homeui_backend/main.py
+
+Oh no! 💥 💔 💥
+1 file would be reformatted, 19 files would be left unchanged.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Setup builds)
+Stage "Setup builds" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Coverage)
+Stage "Coverage" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Send report to coveralls)
+Stage "Send report to coveralls" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Check version has bumped)
+Stage "Check version has bumped" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lintian)
+Stage "Lintian" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Setup deploy)
+Stage "Setup deploy" skipped due to earlier failure(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+
+GitHub has been notified of this commit’s build result
+
+Finished: FAILURE

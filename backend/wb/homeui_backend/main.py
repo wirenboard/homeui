@@ -212,7 +212,9 @@ def auth_login_handler(request: BaseHTTPRequestHandler, context: WebRequestHandl
         logging.warning("Login failed: user=%r ip=%s ua=%s", login, client_ip, user_agent)
         return response_401()
 
-    logging.info("Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent)
+    logging.info(
+        "Login successful: user=%r type=%s ip=%s ua=%s", login, user.type.value, client_ip, user_agent
+    )
     res = {"user_type": user.type.value, "user_id": user.user_id}
     session = context.sessions_storage.add_session(user)
     return response_200(
