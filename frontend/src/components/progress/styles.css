@@ -3,13 +3,14 @@
     border-radius: var(--input-border-radius);
     position: relative;
     overflow: hidden;
+    height: 22px;
 }
 
 .wb-progress-bar[value] {
     width: 100%;
     -webkit-appearance: none;
     appearance: none;
-    height: 22px;
+    height: 100%;
 }
 
 .wb-progress-bar[value]::-webkit-progress-bar {
@@ -27,7 +28,7 @@
 .wb-progress-caption {
     position: absolute;
     display: flex;
-    top: 2px;
+    top: 1px;
     left: 0;
     margin: 0 auto;
     align-items: center;

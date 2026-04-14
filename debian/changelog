@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.198.0) stable; urgency=medium
+
+  * Update history page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 14 Apr 2026 18:10:00 +0300
+
 wb-mqtt-homeui (2.197.5) stable; urgency=medium
 
   * Fix unixtime cell useless updates

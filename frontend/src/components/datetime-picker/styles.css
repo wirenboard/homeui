@@ -10,13 +10,12 @@
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
 }
 
 .datetimePicker-input {
     box-sizing: border-box;
     padding-right: 38px;
-    width: calc(100% - 38px);
+    width: 100%;
 }
 
 .datetimePicker-openButton {
@@ -73,6 +72,16 @@
     border-radius: var(--input-border-radius);
     background: var(--secondary-color);
     border: 1px solid var(--input-border-color);
+}
+
+.rdp-day_button:disabled {
+    border: 0;
+    color: var(--gray-color);
+}
+
+.rdp-day_button:disabled:hover {
+    cursor: not-allowed;
+    background: transparent;
 }
 
 .rdp-day_button:hover,

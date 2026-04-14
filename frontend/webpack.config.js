@@ -213,7 +213,7 @@ module.exports = (function makeWebpackConfig() {
           chunks: 'all',
         },
         plotly: {
-          test: /[\\/]node_modules[\\/]plotly\.js-basic-dist-min[\\/]/,
+          test: /[\\/]node_modules[\\/](plotly\.js-basic-dist-min|react-plotly\.js|plotly\.js-locales)[\\/]/,
           name: 'plotly',
           chunks: 'all',
         },

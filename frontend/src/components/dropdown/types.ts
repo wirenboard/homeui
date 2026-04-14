@@ -1,6 +1,6 @@
 export type Option<T = string | boolean | number | null | unknown> = {
   label: string;
-  value: T;
+  value?: T;
   hidden?: boolean;
 } | {
   value?: T;

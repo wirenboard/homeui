@@ -24,14 +24,24 @@ import { Input } from '@/components/input';
 import { type DateTimePickerProps } from './types';
 import './styles.css';
 
-export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid, size }: DateTimePickerProps) => {
+export const DateTimePicker = ({
+  value,
+  id,
+  className,
+  onChange,
+  disabled,
+  disabledDates,
+  ariaLabel,
+  isInvalid,
+  size,
+}: DateTimePickerProps) => {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Date | null>(value ?? null);
   const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
   const [inputValue, setInputValue] = useState(selected ? format(selected, dateFormat) : '');
 
-  const id = useId();
+  const generatedId = useId();
   const timeId = useId();
 
   useEffect(() => {
@@ -129,9 +139,9 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
 
   return (
     <>
-      <div className="datetimePicker-inputWrapper" ref={refs.setReference}>
+      <div className={classNames('datetimePicker-inputWrapper', className)} ref={refs.setReference}>
         <IMaskInput
-          id={id}
+          id={id ?? generatedId}
           className={classNames('input', 'datetimePicker-input', {
             'input-m': (size || 'default') === 'default',
             'input-s': size === 'small',
@@ -143,7 +153,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-label={ariaLabel}
-          aria-controls={`${id}-popup`}
+          aria-controls={`${id ?? generatedId}-popup`}
           onAccept={(val: string) => handleInputChange(val)}
           onKeyDown={(ev) => {
             if (ev.key === 'Enter') {
@@ -151,15 +161,17 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
             }
           }}
         />
-        <Button
-          className="datetimePicker-openButton"
-          variant="secondary"
-          size={size || 'default'}
-          icon={<CalendarIcon />}
-          disabled={disabled}
-          aria-label={t('common.buttons.open-calendar')}
-          {...getReferenceProps()}
-        />
+        {!disabled && (
+          <Button
+            className="datetimePicker-openButton"
+            variant="secondary"
+            size={size || 'default'}
+            icon={<CalendarIcon />}
+            disabled={disabled}
+            aria-label={t('common.buttons.open-calendar')}
+            {...getReferenceProps()}
+          />
+        )}
       </div>
 
       {open && (
@@ -167,7 +179,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
           <FloatingFocusManager context={context} modal>
             <div
               ref={refs.setFloating}
-              id={`${id}-popup`}
+              id={`${id ?? generatedId}-popup`}
               className="datetimePicker-container"
               style={{ ...floatingStyles }}
               {...getFloatingProps()}
@@ -176,6 +188,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
                 mode="single"
                 selected={selected ?? undefined}
                 locale={i18n.language === 'ru' ? ru : enGB}
+                disabled={disabledDates}
                 autoFocus
                 onSelect={handleDateSelect}
               />

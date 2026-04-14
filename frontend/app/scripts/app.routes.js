@@ -228,8 +228,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('history', {
       url: '/history?{fullscreen:boolean}',
-      controller: 'HistoryCtrl as $ctrl',
-      template: require('../views/history.html'),
+      template: '<history-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -239,11 +238,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
         },
       },
     })
-    //...........................................................................
     .state('history.sample', {
-      url: '/{data}',
-      template: require('../views/history.html'),
-      controller: 'HistoryCtrl as $ctrl',
+      url: '/:id',
+      template: '<history-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
