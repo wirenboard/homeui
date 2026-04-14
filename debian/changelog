@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb108) stable; urgency=medium
+
+  * Allow disabling poll of channels not supported by firmware in device settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 13 Apr 2026 19:12:25 +0500
+
 wb-mqtt-homeui (2.172.0-wb107) stable; urgency=medium
 
   * Fix /auth/users POST response Content-Type
