@@ -11,7 +11,6 @@ import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';
 import '../styles/css/fontawesome5-solid.min.css';
 import '../styles/css/smartadmin-production.min.css';
-import '../styles/css/icons.css';
 
 import '../styles/css/new.css';
 import '../styles/main.css';
@@ -25,7 +24,6 @@ import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
 import '../styles/css/scan.css';
-import '../styles/css/network-connections.css';
 import '../styles/css/mbgate.css';
 
 // homeui modules: sevices
@@ -217,7 +215,7 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
 
   $transitions.onStart({}, function (trans) {
     // to avoid blinking on id change
-    if (trans.from().name === 'dashboard' && trans.to().name === 'dashboard') {
+    if (trans.from().name === trans.to().name) {
       return;
     }
     document.getElementById('overlay').classList.remove('overlay');

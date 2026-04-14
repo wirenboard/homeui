@@ -52,7 +52,7 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSe
           title={t('web-ui-settings.labels.name')}
           description={t('web-ui-settings.labels.name-description')}
           value={description}
-          onChange={setDescription}
+          onChange={(val: string) => setDescription(val)}
         />
       )}
 

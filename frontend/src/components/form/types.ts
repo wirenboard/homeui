@@ -26,7 +26,7 @@ export interface FieldErrorProps {
 
 export interface StringFieldProps {
   title: string;
-  value: string;
+  value: string | number;
   description?: string;
   placeholder?: string;
   error?: string;
@@ -36,7 +36,7 @@ export interface StringFieldProps {
   autoComplete?: 'username' | 'new-password' | 'current-password' | 'off';
   required?: boolean;
   autoFocus?: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: string | number) => void;
 }
 
 export interface BooleanFieldProps {

@@ -516,8 +516,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     config: Config
 
     def process_response(self, response: HttpResponse) -> None:
-        if response.status == 200:
-            self.send_response(200)
+        if 200 <= response.status < 300:
+            self.send_response(response.status)
             if response.headers is not None:
                 for header in response.headers:
                     self.send_header(header[0], header[1])

@@ -139,6 +139,7 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
     dest.wb.allow_undefined = !!source.wb.allow_undefined;
     dest.wb.read_only = !!source.wb.read_only;
     dest.wb.disable_title = !!source.wb.disable_title;
+    dest.wb.new_row = !!source.wb.new_row;
     if (typeof source.wb.dali_tc?.minimum === 'number') {
       dest.wb.dali_tc = dest.wb.dali_tc || {};
       dest.wb.dali_tc.minimum = source.wb.dali_tc.minimum;

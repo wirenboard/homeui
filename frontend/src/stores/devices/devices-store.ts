@@ -1,220 +1,33 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import type { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
-import type { DeviceOption, ValueType } from './types';
+import type { ValueType } from './types';
 
 export default class DevicesStore {
   public devices: Map<string, Device> = new Map();
   public cells: Map<string, Cell> = new Map();
-  private _mqttClient: MqttClient;
-  private _allDevicesTopics: { [key: string]: string[] } = {};
-  private _cellValueSubscribers: Set<(cellId: string, value: ValueType) => void> = new Set();
+
+  #cellValueSubscribers: Set<(cellId: string, value: ValueType) => void> = new Set();
+  #allDevicesTopics: Map<string, { deviceTopics: Set<string>; cellTopics: Set<string> }> = new Map();
+  #mqttClient: MqttClient;
 
   constructor(mqttClient: MqttClient) {
-    this._mqttClient = mqttClient;
-
-    const getOrCreateDevice = (id: string) => {
-      if (!this.devices.has(id)) {
-        runInAction(() => {
-          this.devices.set(id, new Device(id));
-        });
-      }
-      return this.devices.get(id);
-    };
-
-    const sendCellValueUpdate = async (deviceId: string, controlId: string, value: string) => {
-      const topic = `/devices/${deviceId}/controls/${controlId}/on`;
-      await mqttClient.send(topic, value, false);
-    };
-
-    const getOrCreateCell = (id: string) => {
-      if (this.cells.has(id)) {
-        return this.cells.get(id);
-      }
-      const cell = new Cell(id, sendCellValueUpdate);
-      runInAction(() => {
-        this.cells.set(id, cell);
-      });
-
-      return cell;
-    };
-
-    const getCellFromTopic = (topic: string) => {
-      const { deviceId, cellId } = splitTopic(topic);
-
-      getOrCreateDevice(deviceId);
-      return getOrCreateCell(cellId);
-    };
-
-    const addCellToDevice = (cellId: string, deviceId: string) => {
-      const device = getOrCreateDevice(deviceId);
-      if (!device.cellIds.includes(cellId)) {
-        runInAction(() => device.cellIds.push(cellId));
-      }
-    };
-
-    const maybeRemoveDevice = (id: string) => {
-      if (!this.devices.has(id)) {
-        return;
-      }
-      if (!this.devices.get(id).explicit && !this.devices.get(id).cellIds.length) {
-        runInAction(() => this.devices.delete(id));
-      }
-    };
-
-    const removeCellFromDevice = (cellId: string, deviceId: string) => {
-      if (!this.devices.has(deviceId)) {
-        return;
-      }
-
-      runInAction(() => {
-        this.devices.get(deviceId).cellIds = this.devices.get(deviceId).cellIds.filter((id) => id !== cellId);
-      });
-    };
-
-    const updateCellCompleteness = (cell: Cell) => {
-      if (cell.isComplete) {
-        addCellToDevice(cell.id, cell.deviceId);
-        return;
-      }
-      removeCellFromDevice(cell.id, cell.deviceId);
-      maybeRemoveDevice(cell.deviceId);
-      if (cell.type === 'incomplete' && cell.value === null) {
-        runInAction(() => {
-          this.cells.delete(cell.id);
-        });
-      }
-    };
+    this.#mqttClient = mqttClient;
 
     // add subscription to all the topics of devices
-    mqttClient.addStickySubscription('/devices/#', ({ topic, payload }: { topic: string; payload: string }) => {
+    this.#mqttClient.addStickySubscription('/devices/#', ({ topic, payload }: { topic: string; payload: string }) => {
       const { deviceId } = splitTopic(topic);
 
-      this._allDevicesTopics[deviceId] ||= [];
-      if (!this._allDevicesTopics[deviceId].includes(topic)) {
-        this._allDevicesTopics[deviceId].push(topic);
+      const topics = this.#getOrCreateTopics(deviceId);
+      if (topic.includes('/controls/')) {
+        topics.cellTopics.add(topic);
+      } else {
+        topics.deviceTopics.add(topic);
       }
 
-      const deviceTopicBase = '/devices/+';
-      const cellTopicBase = `${deviceTopicBase}/controls/+`;
-
-      // define handler functions for each specific topic
-      const subscriptionHandlers = [
-        {
-          handledTopic: `${deviceTopicBase}/meta`,
-          handler: () => {
-            if (payload) {
-              const device = getOrCreateDevice(deviceId);
-              device.setMeta(payload);
-              device.explicit = true;
-            } else if (this.devices.has(deviceId)) {
-              this.devices.get(deviceId).explicit = false;
-              maybeRemoveDevice(deviceId);
-            }
-          },
-        },
-        {
-          handledTopic: `${deviceTopicBase}/meta/name`,
-          handler: () => {
-            if (payload) {
-              const device = getOrCreateDevice(deviceId);
-              device.name = payload;
-              device.explicit = true;
-            } else if (this.devices.has(deviceId)) {
-              this.devices.get(deviceId).name = deviceId;
-              this.devices.get(deviceId).explicit = false;
-              maybeRemoveDevice(deviceId);
-            }
-          },
-        },
-        {
-          handledTopic: cellTopicBase,
-          handler: (message: string) => {
-            const cell = getCellFromTopic(topic);
-            cell.receiveValue(message);
-            updateCellCompleteness(cell);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta`,
-          handler: (message: string) => {
-            const cell = getCellFromTopic(topic);
-            cell.setMeta(message);
-            updateCellCompleteness(cell);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/type`,
-          handler: (message: string) => {
-            const cell = getCellFromTopic(topic);
-            cell.setType(message);
-            updateCellCompleteness(cell);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/name`,
-          handler: (message: string) => {
-            getCellFromTopic(topic).setName(message);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/units`,
-          handler: (message: string) => {
-            getCellFromTopic(topic).setUnits(message);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/readonly`,
-          handler: (message: string) => {
-            if (['', '0', '1'].includes(message)) {
-              getCellFromTopic(topic).setReadOnly(message ? Boolean(Number(message)) : null);
-            } else {
-              console.warn(`${topic} payload is neither '0', '1' nor empty`);
-            }
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/writable`,
-          handler: () => {
-            console.warn(`${topic}: meta/writable is not supported anymore. Use meta/readonly=0`);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/error`,
-          handler: (message: string) => {
-            getCellFromTopic(topic).setError(message);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/min`,
-          handler: (message: string) => {
-            getCellFromTopic(topic).setMin(message);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/max`,
-          handler: (message: string) => {
-            getCellFromTopic(topic).setMax(message);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/precision`,
-          handler: (message: string) => {
-            getCellFromTopic(topic).setStep(message);
-          },
-        },
-        {
-          handledTopic: `${cellTopicBase}/meta/order`,
-          handler: (message: string) => {
-            const cell = getCellFromTopic(topic);
-            cell.setOrder(message);
-          },
-        },
-      ];
-
-      subscriptionHandlers.forEach(({ handledTopic, handler }) => {
+      this.#getSubscriptionHandlers(topic, payload).forEach(({ handledTopic, handler }) => {
         if (isTopicsAreEqual(topic, handledTopic)) {
           handler(payload);
         }
@@ -222,21 +35,6 @@ export default class DevicesStore {
     });
 
     makeAutoObservable(this, {}, { autoBind: true });
-
-    reaction(
-      () => Array.from(this.cells).map(([cellId, cell]) => [cellId, cell.value] as const),
-      (next, prev) => {
-        if (!prev) {
-          return;
-        }
-        const prevMap = new Map(prev);
-        next.forEach(([cellId, value]) => {
-          if (!prevMap.has(cellId) || prevMap.get(cellId) !== value) {
-            this._notifyCellValueChange(cellId, value);
-          }
-        });
-      }
-    );
   }
 
   get filteredDevices() {
@@ -252,16 +50,10 @@ export default class DevicesStore {
     );
   }
 
-  private _notifyCellValueChange(cellId: string, value: ValueType) {
-    this._cellValueSubscribers.forEach((handler) => {
-      handler(cellId, value);
-    });
-  }
-
   subscribeOnCellValue(handler: (cellId: string, value: ValueType) => void) {
-    this._cellValueSubscribers.add(handler);
+    this.#cellValueSubscribers.add(handler);
     return () => {
-      this._cellValueSubscribers.delete(handler);
+      this.#cellValueSubscribers.delete(handler);
     };
   }
 
@@ -271,49 +63,76 @@ export default class DevicesStore {
       .sort((a, b) => a.id.localeCompare(b.id));
 
     if (!showSystemDevices) {
-      cells = cells.filter((cell) => !cell.isSystem);
+      cells = cells.filter((cell) => !cell.isSystem && !cell.hidden);
     }
 
     return cells;
   }
 
   getDeviceCells(deviceId: string) {
-    if (!this.devices.has(deviceId)) {
-      return [];
+    const device = this.devices.get(deviceId);
+    if (!device) return [];
+
+    const result: Cell[] = [];
+
+    for (const cellId of device.cells) {
+      const cell = this.cells.get(cellId);
+      if (cell && !cell.hidden) {
+        result.push(cell);
+      }
     }
-    return Array.from(this.cells)
-      .filter(([cellId]) => this.devices.get(deviceId).cellIds.includes(cellId))
-      .map(([_, cell]) => cell)
-      .sort((cellA: Cell, cellB: Cell) => (cellB.order === null ? -1 : (cellA.order || 1) - cellB.order));
+
+    result.sort((a, b) => {
+      if (b.order === null) return -1;
+      return (a.order ?? 1) - b.order;
+    });
+
+    return result;
   }
 
   deleteDevice(id: string) {
-    // We have to delete cells first, then devices, so we should to sort topics
-    const deviceTopics = this._allDevicesTopics[id].filter((topic) => !topic.includes('controls'))
-      .sort((a: string, b: string) => b.length - a.length);
-    const cellsTopics = this._allDevicesTopics[id].filter((topic) => topic.includes('controls'));
+    const entry = this.#allDevicesTopics.get(id);
+    if (!entry) return;
 
-    runInAction(() => {
-      [...cellsTopics, ...deviceTopics].forEach((topic) => {
-        this._mqttClient.send(topic, '', true, 2);
-      });
-    });
+    const { cellTopics, deviceTopics } = entry;
+
+    for (const topic of cellTopics) {
+      this.#mqttClient.send(topic, '', true, 2);
+    }
+
+    const sortedDeviceTopics = Array.from(deviceTopics)
+      .sort((a, b) => b.length - a.length);
+
+    for (const topic of sortedDeviceTopics) {
+      this.#mqttClient.send(topic, '', true, 2);
+    }
+
+    this.#allDevicesTopics.delete(id);
   }
 
-  get topics(): DeviceOption[] {
-    return Array.from(this.devices).map(([_deviceId, device]) => ({
-      label: device.name,
-      options: device.cellIds.reduce((cells, c) => {
-        let cell = this.cells.get(c);
-        if (cell) {
-          cells.push({
-            value: cell.id,
-            label: `${cell.name} [${cell.id}]`,
-          });
-        }
-        return cells;
-      }, []),
-    }));
+  get topics(): any[] {
+    const result = [];
+
+    for (const device of this.devices.values()) {
+      const options = [];
+
+      for (const cellId of device.cells) {
+        const cell = this.cells.get(cellId);
+        if (!cell || cell.hidden) continue;
+
+        options.push({
+          value: cell.id,
+          label: `${cell.name} [${cell.id}]`,
+        });
+      }
+
+      result.push({
+        label: device.name,
+        options,
+      });
+    }
+
+    return result;
   }
 
   toggleDevices() {
@@ -336,7 +155,220 @@ export default class DevicesStore {
 
   get controls() {
     return Array.from(this.cells.values())
-      .filter((cell) => !cell.id.startsWith('system__'))
+      .filter((cell) => !cell.id.startsWith('system__') && !cell.hidden)
       .map((cell) => ({ id: cell.id, name: `${this.devices.get(cell.deviceId)?.name} / ${cell.name}` }));
+  }
+
+  async sendCellValueUpdate(deviceId: string, controlId: string, value: string) {
+    const topic = `/devices/${deviceId}/controls/${controlId}/on`;
+    await this.#mqttClient.send(topic, value, false);
+  }
+
+  #getOrCreateTopics(deviceId: string) {
+    let entry = this.#allDevicesTopics.get(deviceId);
+
+    if (!entry) {
+      entry = {
+        deviceTopics: new Set(),
+        cellTopics: new Set(),
+      };
+      this.#allDevicesTopics.set(deviceId, entry);
+    }
+
+    return entry;
+  }
+
+  #notifyCellValueChange(cellId: string, value: ValueType) {
+    for (const handler of this.#cellValueSubscribers) {
+      handler(cellId, value);
+    }
+  }
+
+  #getOrCreateDevice(id: string){
+    if (!this.devices.has(id)) {
+      runInAction(() => {
+        this.devices.set(id, new Device(id));
+      });
+    }
+    return this.devices.get(id);
+  }
+
+  #getOrCreateCell(id: string) {
+    if (this.cells.has(id)) {
+      return this.cells.get(id);
+    }
+    const cell = new Cell(id, this.sendCellValueUpdate);
+    runInAction(() => {
+      this.cells.set(id, cell);
+    });
+
+    return cell;
+  }
+
+  #getCellFromTopic(topic: string) {
+    const { cellId } = splitTopic(topic);
+    return this.#getOrCreateCell(cellId);
+  }
+
+  #addCellToDevice(cellId: string, deviceId: string){
+    const device = this.#getOrCreateDevice(deviceId);
+    runInAction(() => device.addCell(cellId));
+  }
+
+  #maybeRemoveDevice(id: string){
+    if (!this.devices.has(id)) {
+      return;
+    }
+    if (!this.devices.get(id).explicit && !this.devices.get(id).cells.size) {
+      runInAction(() => this.devices.delete(id));
+    }
+  }
+
+  #removeCellFromDevice(cellId: string, deviceId: string) {
+    if (!this.devices.has(deviceId)) {
+      return;
+    }
+
+    runInAction(() => {
+      this.devices.get(deviceId).removeCell(cellId);
+    });
+  }
+
+  #updateCellCompleteness(cell: Cell) {
+    if (cell.isComplete && this.devices.has(cell.deviceId)) {
+      this.#addCellToDevice(cell.id, cell.deviceId);
+      return;
+    }
+    this.#removeCellFromDevice(cell.id, cell.deviceId);
+    this.#maybeRemoveDevice(cell.deviceId);
+    if (cell.type === 'incomplete' && cell.value === null) {
+      runInAction(() => {
+        this.cells.delete(cell.id);
+      });
+    }
+  }
+
+  // define handler functions for each specific topic
+  #getSubscriptionHandlers(topic: string, payload: string) {
+    const { deviceId } = splitTopic(topic);
+
+    const deviceTopicBase = '/devices/+';
+    const cellTopicBase = `${deviceTopicBase}/controls/+`;
+
+    const cell = this.#getCellFromTopic(topic);
+
+    return [
+      {
+        handledTopic: `${deviceTopicBase}/meta`,
+        handler: () => {
+          if (payload) {
+            const device = this.#getOrCreateDevice(deviceId);
+            device.setMeta(payload);
+            device.explicit = true;
+          } else if (this.devices.has(deviceId)) {
+            this.devices.get(deviceId).explicit = false;
+            this.#maybeRemoveDevice(deviceId);
+          }
+        },
+      },
+      {
+        handledTopic: `${deviceTopicBase}/meta/name`,
+        handler: () => {
+          if (payload) {
+            const device = this.#getOrCreateDevice(deviceId);
+            device.name = payload;
+            device.explicit = true;
+          } else if (this.devices.has(deviceId)) {
+            this.devices.get(deviceId).name = deviceId;
+            this.devices.get(deviceId).explicit = false;
+            this.#maybeRemoveDevice(deviceId);
+          }
+        },
+      },
+      {
+        handledTopic: cellTopicBase,
+        handler: (message: string) => {
+          cell.receiveValue(message);
+          this.#updateCellCompleteness(cell);
+          this.#notifyCellValueChange(cell.id, cell.value);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta`,
+        handler: (message: string) => {
+          if (message) {
+            cell.setMeta(message);
+            this.#updateCellCompleteness(cell);
+          } else {
+            this.#removeCellFromDevice(cell.id, cell.deviceId);
+          }
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/type`,
+        handler: (message: string) => {
+          cell.setType(message);
+          this.#updateCellCompleteness(cell);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/name`,
+        handler: (message: string) => {
+          cell.setName(message);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/units`,
+        handler: (message: string) => {
+          cell.setUnits(message);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/readonly`,
+        handler: (message: string) => {
+          if (['', '0', '1'].includes(message)) {
+            cell.setReadOnly(message ? Boolean(Number(message)) : null);
+          } else {
+            console.warn(`${topic} payload is neither '0', '1' nor empty`);
+          }
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/writable`,
+        handler: () => {
+          console.warn(`${topic}: meta/writable is not supported anymore. Use meta/readonly=0`);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/error`,
+        handler: (message: string) => {
+          cell.setError(message);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/min`,
+        handler: (message: string) => {
+          cell.setMin(message);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/max`,
+        handler: (message: string) => {
+          cell.setMax(message);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/precision`,
+        handler: (message: string) => {
+          cell.setStep(message);
+        },
+      },
+      {
+        handledTopic: `${cellTopicBase}/meta/order`,
+        handler: (message: string) => {
+          cell.setOrder(message);
+        },
+      },
+    ];
   }
 }

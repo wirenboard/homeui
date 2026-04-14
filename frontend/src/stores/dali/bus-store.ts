@@ -16,6 +16,11 @@ export class BusStore extends BaseItemStore {
   public busMonitorEnabled: boolean = false;
   public broadcastSettingsVisible: boolean = false;
 
+  public isParametersSchemaLoading: boolean = false;
+  public isScanning: boolean = false;
+
+  private isFirstLoad: boolean = true;
+
   constructor(daliProxy: any, id: string, name: string, mqttClient: any) {
     super(daliProxy, id, name);
     this.busMonitor = new MonitorStore(mqttClient);
@@ -28,6 +33,8 @@ export class BusStore extends BaseItemStore {
       setWebsocketPort: action,
       setBusMonitorEnabled: action,
       isLoading: observable,
+      isParametersSchemaLoading: observable,
+      isScanning: observable,
       error: observable,
       pollingInterval: observable,
       websocketEnabled: observable,
@@ -52,7 +59,15 @@ export class BusStore extends BaseItemStore {
   async setWebsocketEnabled(value: boolean) {
     const prev = this.websocketEnabled;
     this.websocketEnabled = value;
-    await this._sendParam({ websocket_enabled: value }, () => { this.websocketEnabled = prev; });
+    try {
+      await this.daliProxy.SetBus({ busId: this.id, config: { websocket_enabled: value } });
+      this.setError(null);
+    } catch (error) {
+      runInAction(() => {
+        this.websocketEnabled = prev;
+      });
+      this.setError(error);
+    }
   }
 
   async setWebsocketPort(value: number | undefined) {
@@ -70,22 +85,38 @@ export class BusStore extends BaseItemStore {
   async setBusMonitorEnabled(value: boolean) {
     const prev = this.busMonitorEnabled;
     this.busMonitorEnabled = value;
-    this._updateMonitor({ bus_monitor_enabled: value });
-    await this._sendParam({ bus_monitor_enabled: value }, () => {
-      this.busMonitorEnabled = prev;
+    const configUpdate: Record<string, unknown> = { bus_monitor_enabled: value };
+    this._updateMonitor(configUpdate);
+    try {
+      await this.daliProxy.SetBus({ busId: this.id, config: configUpdate });
+      this.setError(null);
+    } catch (error) {
+      runInAction(() => {
+        this.busMonitorEnabled = prev;
+      });
       this._updateMonitor({ bus_monitor_enabled: prev });
-    });
+      this.setError(error);
+    }
   }
 
   async load() {
     if (this.objectStore) {
       return;
     }
-    this.isLoading = true;
     try {
+      if (!this.objectStore) {
+        if (this.isFirstLoad) {
+          this.isLoading = true;
+        } else {
+          this.isParametersSchemaLoading = true;
+        }
+      }
       const data = await this.daliProxy.GetBus({ busId: this.id });
-      this._applyConfig(data.config);
-      this._updateMonitor(data.config);
+      if (this.isFirstLoad) {
+        this._applyConfig(data.config);
+        this._updateMonitor(data.config);
+        runInAction(() => { this.isFirstLoad = false; });
+      }
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       if (schema) {
@@ -97,7 +128,10 @@ export class BusStore extends BaseItemStore {
     } catch (error) {
       this.setError(error);
     } finally {
-      runInAction(() => { this.isLoading = false; });
+      runInAction(() => { 
+        this.isLoading = false;
+        this.isParametersSchemaLoading = false;
+      });
     }
   }
 
@@ -121,7 +155,7 @@ export class BusStore extends BaseItemStore {
   }
 
   async scan() {
-    this.isLoading = true;
+    this.isScanning = true;
     try {
       const res = await this.daliProxy.ScanBus({ busId: this.id });
       runInAction(() => {
@@ -136,7 +170,7 @@ export class BusStore extends BaseItemStore {
     } catch (error) {
       this.setError(error);
     } finally {
-      runInAction(() => { this.isLoading = false; });
+      runInAction(() => { this.isScanning = false; });
     }
   }
 
@@ -181,19 +215,6 @@ export class BusStore extends BaseItemStore {
       this.busMonitor!.enableMonitoring(this.id);
     } else {
       this.busMonitor!.disableMonitoring();
-    }
-  }
-
-  private async _sendParam(param: Record<string, unknown>, onError: () => void) {
-    this.isLoading = true;
-    try {
-      await this.daliProxy.SetBus({ busId: this.id, config: param });
-      this.setError(null);
-    } catch (error) {
-      runInAction(onError);
-      this.setError(error);
-    } finally {
-      runInAction(() => { this.isLoading = false; });
     }
   }
 

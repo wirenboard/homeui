@@ -6,6 +6,7 @@ export enum CellComponent {
   Switch = 'switch',
   Text = 'text',
   Value = 'value',
+  DateTime = 'datetime',
 }
 
 export type CellValueType = 'string' | 'number' | 'boolean' | 'pushbutton' | 'rgb';
@@ -55,6 +56,11 @@ export const commonCellTypes = new Map<string, CellTypeEntry>([
   ['pushbutton', {
     valueType: 'pushbutton',
     displayType: CellComponent.Button,
+    readOnly: false,
+  }],
+  ['unixtime', {
+    valueType: 'number',
+    displayType: CellComponent.DateTime,
     readOnly: false,
   }],
 ]);

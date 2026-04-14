@@ -13,6 +13,7 @@ export default function daliProxyService(MqttRpc) {
       'SetDevice',
       'GetGroup',
       'SetGroup',
+      'IdentifyDevice',
     ],
     'daliProxy');
 }

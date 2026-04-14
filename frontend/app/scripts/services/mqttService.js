@@ -358,13 +358,13 @@ function mqttClient(
             qos: message.qos,
             retained: message.retained,
           };
+          callbackMap[pattern].forEach(function (callback) {
+            callback(data);
+          });
         } catch (err) {
           console.error('malformed data in MQTT topic %s: %s', topic, String(err));
           return;
         }
-        callbackMap[pattern].forEach(function (callback) {
-          callback(data);
-        });
       });
     if (!messageDigestTimer)
       messageDigestTimer = $timeout(() => {

@@ -86,10 +86,6 @@
     border-color: var(--orange-color);
 }
 
-.deviceSettingsEditor-desktop .deviceSettingsEditor-topGroupContent {
-    padding: 0px 19px 9px 19px;
-}
-
 .deviceSettingsEditor-mobile .deviceSettingsEditor-parameter {
     flex-basis: 100%;
     width: 100%;

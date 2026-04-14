@@ -1,10 +1,9 @@
-import { autorun } from 'mobx';
 import ReactDOM from 'react-dom/client';
+import NetworkConnectionsPage from '@/pages/settings/network-connections';
+import { NetworkConnectionsPageStore } from '@/pages/settings/network-connections/stores/page-store';
 import { setReactLocale } from '../locale';
-import CreateNetworkConnectionsPage from './networkConnectionsPage';
-import NetworkConnectionsPageStore from './pageStore';
 
-function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProxy, PageState) {
+export default function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProxy, $rootScope) {
   'ngInject';
 
   setReactLocale();
@@ -12,72 +11,13 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
     restrict: 'E',
     scope: {},
     link: function (scope, element) {
-      const path = '/usr/share/wb-mqtt-confed/schemas/wb-network.schema.json';
-
-      const saveConnections = async (data) => {
-        await ConfigEditorProxy.Save({ path, content: data });
-      };
-
-      const loadConnections = async () => {
-        const res = await ConfigEditorProxy.Load({ path });
-        return res.content.ui.connections;
-      };
-
-      scope.toggleConnectionState = (uuid) => {
-        mqttClient.send(`/devices/system__networks__${uuid}/controls/UpDown/on`, '1', false);
-      };
-
       if (scope.root) {
         scope.root.unmount();
       }
-      scope.store = new NetworkConnectionsPageStore(
-        saveConnections,
-        loadConnections,
-        scope.toggleConnectionState
-      );
-      autorun(() => {
-        PageState.setDirty(scope.store.isDirty);
-      });
+
+      scope.store = new NetworkConnectionsPageStore(mqttClient, whenMqttReady, ConfigEditorProxy);
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(CreateNetworkConnectionsPage({ pageStore: scope.store }));
-
-      const re = new RegExp('/devices/system__networks__([^/]+)/');
-      const getUuidFromTopic = (topic) => topic.match(re)?.[1];
-
-      scope.$watch(() => mqttClient.isConnected(), (isConnected) => {
-        if (scope.store.error && isConnected) {
-          scope.store.setError('');
-        }
-      });
-
-      whenMqttReady().then(() => {
-        ConfigEditorProxy.Load({ path })
-          .then((r) => {
-            scope.configPath = r.configPath;
-            scope.store.setSchemaAndData(r.schema, r.content);
-            mqttClient.addStickySubscription('/devices/+/controls/State', (msg) => {
-              scope.store.setConnectionState(getUuidFromTopic(msg.topic), msg.payload);
-            });
-            mqttClient.addStickySubscription('/devices/+/controls/Connectivity', (msg) => {
-              scope.store.setConnectionConnectivity(
-                getUuidFromTopic(msg.topic),
-                msg.payload !== '0'
-              );
-            });
-            mqttClient.addStickySubscription('/devices/+/controls/Operator', (msg) => {
-              scope.store.setConnectionOperator(getUuidFromTopic(msg.topic), msg.payload);
-            });
-            mqttClient.addStickySubscription('/devices/+/controls/SignalQuality', (msg) => {
-              scope.store.setConnectionSignalQuality(getUuidFromTopic(msg.topic), msg.payload);
-            });
-            mqttClient.addStickySubscription('/devices/+/controls/AccessTechnologies', (msg) => {
-              scope.store.setConnectionAccessTechnologies(getUuidFromTopic(msg.topic), msg.payload);
-            });
-          })
-          .catch((err) => {
-            scope.store.setError(err.message);
-          });
-      });
+      scope.root.render(<NetworkConnectionsPage store={scope.store} rootScope={$rootScope} />);
 
       element.on('$destroy', function () {
         scope.root.unmount();
@@ -85,5 +25,3 @@ function networkConnectionsDirective(mqttClient, whenMqttReady, ConfigEditorProx
     },
   };
 }
-
-export default networkConnectionsDirective;

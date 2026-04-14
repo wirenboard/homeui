@@ -1,8 +1,13 @@
-import { makeObservable, action, observable } from 'mobx';
+import { makeObservable, action, observable, runInAction } from 'mobx';
 
 export class BooleanStore {
-  constructor({ name, value }) {
-    this.type = 'boolean';
+  public type?: string = 'boolean';
+  public name?: string;
+  public initialValue?: boolean;
+  public formColumns?: number;
+  public value?: boolean;
+
+  constructor({ name, value }: Partial<BooleanStore>) {
     this.name = name;
     this.formColumns = null;
     this.initialValue = !!value;
@@ -18,11 +23,11 @@ export class BooleanStore {
     });
   }
 
-  setValue(value) {
+  setValue(value: boolean) {
     this.value = !!value;
   }
 
-  setFormColumns(columns) {
+  setFormColumns(columns: number) {
     this.formColumns = columns;
   }
 
@@ -31,7 +36,9 @@ export class BooleanStore {
   }
 
   submit() {
-    this.initialValue = this.value;
+    runInAction(() => {
+      this.initialValue = this.value;
+    });
   }
 
   reset() {

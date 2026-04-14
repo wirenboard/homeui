@@ -1,3 +1,133 @@
+wb-mqtt-homeui (2.197.4) stable; urgency=medium
+
+  * Allow disabling poll of channels not supported by firmware in device settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 13 Apr 2026 19:12:25 +0500
+
+wb-mqtt-homeui (2.197.3) stable; urgency=medium
+
+  * Error handling for invalid data from MQTT
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Apr 2026 15:12:00 +0300
+
+wb-mqtt-homeui (2.197.2) stable; urgency=medium
+
+  * Fix removing zero value cell
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Apr 2026 11:59:00 +0300
+
+wb-mqtt-homeui (2.197.1) stable; urgency=medium
+
+  * Fix unswitchable switch
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 10 Apr 2026 10:19:00 +0300
+
+wb-mqtt-homeui (2.197.0) stable; urgency=medium
+
+  * Add support for hidden channels
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Apr 2026 16:20:41 +0500
+
+wb-mqtt-homeui (2.196.3) stable; urgency=medium
+
+  * Fix datetime autopost value on render
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 13:21:00 +0300
+
+wb-mqtt-homeui (2.196.2) stable; urgency=medium
+
+  * Fix /auth/users POST response Content-Type
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Apr 2026 13:55:03 +0500
+
+wb-mqtt-homeui (2.196.1) stable; urgency=medium
+
+  * Hide widget actions for hmi moode
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 11:01:00 +0300
+
+wb-mqtt-homeui (2.196.0) stable; urgency=medium
+
+  * Add new_row parameter to wb options in json-editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Apr 2026 10:31:24 +0500
+
+wb-mqtt-homeui (2.195.1) stable; urgency=medium
+
+  * Fix strict device remove
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 08 Apr 2026 11:56:00 +0300
+
+wb-mqtt-homeui (2.195.0) stable; urgency=medium
+
+  * Add new units - var, VA, kvarh
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Tue, 07 Apr 2026 16:00:00 +0300
+
+wb-mqtt-homeui (2.194.1) stable; urgency=medium
+
+  * Add tooltip to DALI device identification button
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 07 Apr 2026 10:12:57 +0500
+
+wb-mqtt-homeui (2.194.0) stable; urgency=medium
+
+  * Add unixtime cell type support
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Apr 2026 17:41:00 +0300
+
+wb-mqtt-homeui (2.193.1) stable; urgency=medium
+
+  * Fix svg dashboards memory leaks
+  * Fix offset issue on SVG dashboards in HMI panels after transition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 03 Apr 2026 12:30:00 +0300
+
+wb-mqtt-homeui (2.193.0) stable; urgency=medium
+
+  * Add DALI device identification button
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Apr 2026 15:25:58 +0500
+
+wb-mqtt-homeui (2.192.5) stable; urgency=medium
+
+  * Fix DALI device settings editor crash on bus reading errors
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 01 Apr 2026 10:26:06 +0500
+
+wb-mqtt-homeui (2.192.4) stable; urgency=medium
+
+  * Fix svg dashboards memory leaks
+  * Fix svg dashboards fit to content view
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 31 Mar 2026 13:36:00 +0300
+
+wb-mqtt-homeui (2.192.3) stable; urgency=medium
+
+  * Fix DALI settings spinners
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 30 Mar 2026 14:46:19 +0500
+
+wb-mqtt-homeui (2.192.2) stable; urgency=medium
+
+  * Fix add svg dashboard "url trap"
+  * Fix config editor console error
+  * Fix config editor scroll
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 30 Mar 2026 11:17:00 +0300
+
+wb-mqtt-homeui (2.192.1) stable; urgency=medium
+
+  * Fix scroll on settings pages. The bug was introduced in 2.191.0.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 30 Mar 2026 12:14:06 +0500
+
+wb-mqtt-homeui (2.192.0) stable; urgency=medium
+
+  * Update network connections page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 30 Mar 2026 09:43:00 +0300
+
 wb-mqtt-homeui (2.191.0) stable; urgency=medium
 
   * Add DALI bus settings page

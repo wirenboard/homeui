@@ -100,14 +100,14 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
             value={store.commonParameters['id']}
             required={true}
             autoFocus
-            onChange={(val) => store.setCommonParam('id', val)}
+            onChange={(val: string) => store.setCommonParam('id', val)}
           />
 
           <StringField
             title={t('edit-svg-dashboard.labels.common-parameters-name')}
             value={store.commonParameters['name']}
             required={true}
-            onChange={(val) => store.setCommonParam('name', val)}
+            onChange={(val: string) => store.setCommonParam('name', val)}
           />
 
           <BooleanField

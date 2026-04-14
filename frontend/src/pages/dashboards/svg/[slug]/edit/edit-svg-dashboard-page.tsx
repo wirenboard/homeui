@@ -21,7 +21,7 @@ const EditSvgDashboardPage = observer(({ dashboardsStore, devicesStore, openPage
   const [isDeleteDashboard, setIsDeleteDashboard] = useState(false);
 
   useEffect(() => {
-    if (!dashboardsStore.isLoading) {
+    if (id && !dashboardsStore.isLoading) {
       const isNew = id === 'add';
       if (!dashboardsStore.dashboards.get(id) && !isNew) {
         openPage('dashboard-svg-add');
