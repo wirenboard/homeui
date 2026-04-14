@@ -93,7 +93,11 @@ export class ObjectStore implements PropertyStore {
     }
 
     if (initialValue === undefined) {
-      this.isUndefined = true;
+      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
+        this.setDefault();
+      } else {
+        this.isUndefined = true;
+      }
     }
 
     makeObservable(this, {

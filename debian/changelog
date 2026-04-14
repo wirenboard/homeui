@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.197.6) stable; urgency=medium
+
+  * Fix options.wb.show_editor flag handling in json-editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 14 Apr 2026 20:31:56 +0500
+
 wb-mqtt-homeui (2.197.5) stable; urgency=medium
 
   * Fix unixtime cell useless updates
