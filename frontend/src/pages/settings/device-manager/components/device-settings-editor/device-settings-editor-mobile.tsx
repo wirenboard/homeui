@@ -77,10 +77,8 @@ const ChannelCard = observer((
     >
       <div className="deviceSettingsEditor-channel">
         {description && <ParamDescription description={description} />}
-        {channel.isSupportedByFirmware && (
-          <StringEditor store={channel.mode} translator={translator} />
-        )}
-        {channel.isSupportedByFirmware && channel.hasCustomPeriod && (
+        <StringEditor store={channel.mode} translator={translator} />
+        {channel.hasCustomPeriod && (
           <CustomPeriodEditor store={channel.period} translator={translator} />
         )}
       </div>
