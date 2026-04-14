@@ -113,13 +113,17 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
       return;
     }
 
+    const normalize = (d: Date) => {
+      const copy = new Date(d);
+      copy.setSeconds(0, 0);
+      return copy.getTime();
+    };
+
     const parsedDate = parse(val, dateFormat, new Date());
 
-    if (isValid(parsedDate)) {
-      if (parsedDate.getTime() !== value?.getTime()) {
-        setSelected(parsedDate);
-        onChange?.(parsedDate);
-      }
+    if (isValid(parsedDate) && normalize(parsedDate) !== normalize(value)) {
+      setSelected(parsedDate);
+      onChange?.(parsedDate);
     }
   };
 
