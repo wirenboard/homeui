@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.197.6) stable; urgency=medium
+wb-mqtt-homeui (2.197.7) stable; urgency=medium
 
   * Update eslint version and fix
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 14 Apr 2026 18:21:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 11:57:00 +0300
+
+wb-mqtt-homeui (2.197.6) stable; urgency=medium
+
+  * Fix options.wb.show_editor flag handling in json-editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 14 Apr 2026 20:31:56 +0500
 
 wb-mqtt-homeui (2.197.5) stable; urgency=medium
 
