@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb109) stable; urgency=medium
+
+  * Fix devices loading
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 16:00:00 +0300
+
 wb-mqtt-homeui (2.172.0-wb108) stable; urgency=medium
 
   * Allow disabling poll of channels not supported by firmware in device settings editor
