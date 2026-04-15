@@ -149,3 +149,11 @@ export interface TableCellWithEditorProps {
   editorBuilder: EditorBuilderFunction;
   width?: number;
 }
+
+export interface ArrayItemProps {
+  index: number;
+  store: ArrayStore;
+  rootStore: PropertyStore;
+  translator: Translator;
+  editorBuilder: EditorBuilderFunction;
+}

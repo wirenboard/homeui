@@ -45,7 +45,9 @@ export class DeviceStore extends BaseItemStore {
     } catch (error) {
       this.setError(error);
     } finally {
-      runInAction(() => { this.isLoading = false; });
+      runInAction(() => {
+        this.isLoading = false;
+      });
     }
   }
 
@@ -67,7 +69,9 @@ export class DeviceStore extends BaseItemStore {
     } catch (error) {
       this.setError(error);
     } finally {
-      runInAction(() => { this.isLoading = false; });
+      runInAction(() => {
+        this.isLoading = false;
+      });
     }
   }
 

@@ -18,28 +18,28 @@ const deviceMethods: Completion[] = [
   { label: 'controlsList', type: 'function', detail: '(): Control[]', apply: 'controlsList()' },
   snippetCompletion(
     'getCellId("${1:cellId}")',
-    { label: 'getCellId', type: 'function', detail: '(cellId: string): string' }
+    { label: 'getCellId', type: 'function', detail: '(cellId: string): string' },
   ),
   snippetCompletion(
     'getControl(${1:name})',
-    { label: 'getControl', type: 'function', detail: '(name: string)' }
+    { label: 'getControl', type: 'function', detail: '(name: string)' },
   ),
   snippetCompletion(
     'addControl("${1:name}", { ${2:params} })',
-    { label: 'addControl', type: 'function', detail: '(name: string, options: {...})' }
+    { label: 'addControl', type: 'function', detail: '(name: string, options: {...})' },
   ),
   snippetCompletion(
     'removeControl("${1:name}")',
-    { label: 'removeControl', type: 'function', detail: '(name: string)' }
+    { label: 'removeControl', type: 'function', detail: '(name: string)' },
   ),
   snippetCompletion(
     'isControlExists("${1:name}")',
-    { label: 'isControlExists', type: 'function', detail: '(name: string): boolean' }
+    { label: 'isControlExists', type: 'function', detail: '(name: string): boolean' },
   ),
   { label: 'isVirtual', type: 'function', detail: '(): boolean', apply: 'isVirtual()' },
   snippetCompletion(
     'setError("${1:msg}")',
-    { label: 'setError', type: 'function', detail: '(msg: string)' }
+    { label: 'setError', type: 'function', detail: '(msg: string)' },
   ),
   { label: 'getError', type: 'function', detail: '(): string', apply: 'getError()' },
 ];
@@ -48,7 +48,7 @@ const controlMethods: Completion[] = [
   { label: 'getId', type: 'function', detail: '(): string', apply: 'getId()' },
   snippetCompletion(
     'getTitle("${1:lang}")',
-    { label: 'getTitle', type: 'function', detail: '(lang?: string): string' }
+    { label: 'getTitle', type: 'function', detail: '(lang?: string): string' },
   ),
   { label: 'getDescription', type: 'function', detail: '(): string', apply: 'getDescription()' },
   { label: 'getType', type: 'function', detail: '(): string', apply: 'getType()' },
@@ -62,51 +62,51 @@ const controlMethods: Completion[] = [
   { label: 'getValue', type: 'function', detail: '(): any', apply: 'getValue()' },
   snippetCompletion(
     'setTitle({ en: "${1:titleEn}", ru: "${2:titleRu}" })',
-    { label: 'setTitle', type: 'function', detail: '(lang?: string): string' }
+    { label: 'setTitle', type: 'function', detail: '(lang?: string): string' },
   ),
   snippetCompletion(
     'setEnumTitles({ "val1": { en: "${1:titleEn}", ru: "${2:titleRu}" } })',
-    { label: 'setEnumTitles', type: 'function', detail: '(object)' }
+    { label: 'setEnumTitles', type: 'function', detail: '(object)' },
   ),
   snippetCompletion(
     'setDescription("${1:description}")',
-    { label: 'setDescription', type: 'function', detail: '(string)' }
+    { label: 'setDescription', type: 'function', detail: '(string)' },
   ),
   snippetCompletion(
     'setType("${1:type}")',
-    { label: 'setType', type: 'function', detail: '(string)' }
+    { label: 'setType', type: 'function', detail: '(string)' },
   ),
   snippetCompletion(
     'setUnits("${1:units}")',
-    { label: 'setUnits', type: 'function', detail: '(string)' }
+    { label: 'setUnits', type: 'function', detail: '(string)' },
   ),
   snippetCompletion(
     'setReadonly(${1:true})',
-    { label: 'setReadonly', type: 'function', detail: '(boolean)' }
+    { label: 'setReadonly', type: 'function', detail: '(boolean)' },
   ),
   snippetCompletion(
     'setMin(${1:number})',
-    { label: 'setMin', type: 'function', detail: '(number)' }
+    { label: 'setMin', type: 'function', detail: '(number)' },
   ),
   snippetCompletion(
     'setMax(${1:number})',
-    { label: 'setMax', type: 'function', detail: '(number)' }
+    { label: 'setMax', type: 'function', detail: '(number)' },
   ),
   snippetCompletion(
     'setPrecision(${1:number})',
-    { label: 'setPrecision', type: 'function', detail: '(number)' }
+    { label: 'setPrecision', type: 'function', detail: '(number)' },
   ),
   snippetCompletion(
     'setOrder(${1:number})',
-    { label: 'setOrder', type: 'function', detail: '(number)' }
+    { label: 'setOrder', type: 'function', detail: '(number)' },
   ),
   snippetCompletion(
     'setError("${1:w}")',
-    { label: 'setError', type: 'function', detail: '("r" | "w" | "p")' }
+    { label: 'setError', type: 'function', detail: '("r" | "w" | "p")' },
   ),
   snippetCompletion(
     'setValue(${1:string})',
-    { label: 'setValue', type: 'function', detail: '(any)' }
+    { label: 'setValue', type: 'function', detail: '(any)' },
   ),
 ];
 
@@ -125,19 +125,19 @@ const logMethodsSource: CompletionSource = (context) => {
     options: [
       snippetCompletion(
         'debug("${1:message}")',
-        { label: 'debug', type: 'function', detail: '(fmt, ...args)' }
+        { label: 'debug', type: 'function', detail: '(fmt, ...args)' },
       ),
       snippetCompletion(
         'info("${1:message}")',
-        { label: 'info', type: 'function', detail: '(fmt, ...args)' }
+        { label: 'info', type: 'function', detail: '(fmt, ...args)' },
       ),
       snippetCompletion(
         'warning("${1:message}")',
-        { label: 'warning', type: 'function', detail: '(fmt, ...args)' }
+        { label: 'warning', type: 'function', detail: '(fmt, ...args)' },
       ),
       snippetCompletion(
         'error("${1:message}")',
-        { label: 'error', type: 'function', detail: '(fmt, ...args)' }
+        { label: 'error', type: 'function', detail: '(fmt, ...args)' },
       ),
     ],
   };
@@ -153,15 +153,16 @@ const notifyMethodsSource: CompletionSource = (context) => {
     options: [
       snippetCompletion(
         'sendEmail(${1:to}, ${2:subject}, ${3:text})',
-        { label: 'sendEmail', type: 'function', detail: '(to, subject, text)' }
+        { label: 'sendEmail', type: 'function', detail: '(to, subject, text)' },
+
       ),
       snippetCompletion(
         'sendSMS(${1:to}, ${2:text}, ${3:command})',
-        { label: 'sendSMS', type: 'function', detail: '(to, text, command?)' }
+        { label: 'sendSMS', type: 'function', detail: '(to, text, command?)' },
       ),
       snippetCompletion(
         'sendTelegramMessage(${1:token}, ${2:chatId}, ${3:text})',
-        { label: 'sendTelegramMessage', type: 'function', detail: '(token, chatId, text)' }
+        { label: 'sendTelegramMessage', type: 'function', detail: '(token, chatId, text)' },
       ),
     ],
   };
@@ -177,11 +178,11 @@ const stringFormatSource: CompletionSource = (context) => {
     options: [
       snippetCompletion(
         'format(${1:arg})',
-        { label: 'format', type: 'function', detail: '(arg1, arg2, ...)' }
+        { label: 'format', type: 'function', detail: '(arg1, arg2, ...)' },
       ),
       snippetCompletion(
         'xformat(${1:arg})',
-        { label: 'xformat', type: 'function', detail: '(arg1, arg2, ...)' }
+        { label: 'xformat', type: 'function', detail: '(arg1, arg2, ...)' },
       ),
     ],
   };

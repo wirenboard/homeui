@@ -101,7 +101,7 @@ const makeLayout = (params: ObjectParamStore[], rootStore: PropertyStore, transl
             rootStore={rootStore}
             translator={translator}
             editorBuilder={editorBuilder}
-          />
+          />,
         );
         elements = [param];
         slotsInRow = gridColumns;
@@ -116,7 +116,7 @@ const makeLayout = (params: ObjectParamStore[], rootStore: PropertyStore, transl
         rootStore={rootStore}
         translator={translator}
         editorBuilder={editorBuilder}
-      />
+      />,
     );
   }
   return res;
@@ -128,7 +128,7 @@ const ObjectEditor = observer(({ store, rootStore, translator, editorBuilder, is
       className={
         classNames(
           'wb-jsonEditor-objectEditor',
-          { 'wb-jsonEditor-objectEditorWithBorder': !isTopLevel && store.schema.format !== 'card' }
+          { 'wb-jsonEditor-objectEditorWithBorder': !isTopLevel && store.schema.format !== 'card' },
         )
       }
     >

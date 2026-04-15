@@ -91,7 +91,7 @@ export const ReadRegistersResultAlert = observer(({
   tab,
   onDeviceTypeChange,
   onReadRegisters,
-}: ReadRegistersResultAlertProps
+}: ReadRegistersResultAlertProps,
 ) => {
   const { t } = useTranslation();
   switch (tab.readRegistersState.state) {

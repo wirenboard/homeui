@@ -47,7 +47,7 @@ const makeGetDeviceSource = (devices: string[]): CompletionSource => {
 
 const makeGetControlSource = (
   devices: Map<string, Device>,
-  topics: string[] = []
+  topics: string[] = [],
 ): CompletionSource => {
   return (context) => {
     const before = context.matchBefore(/(?:getDevice\(\s*(['"])([^'"]+)\1\)\.)?getControl\(\s*(['"]?)([^'"]*)$/);
@@ -105,7 +105,7 @@ const typeCompletionSource: CompletionSource = (context) => {
 const makeTopicSource = (fnName: string, topics: string[]): CompletionSource => {
   return (context) => {
     const before = context.matchBefore(
-      new RegExp(`${fnName}\\(\\s*(['"]?)([^'",)]*)$`)
+      new RegExp(`${fnName}\\(\\s*(['"]?)([^'",)]*)$`),
     );
     if (!before) {
       return null;

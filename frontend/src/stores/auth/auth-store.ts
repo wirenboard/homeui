@@ -81,7 +81,7 @@ export default class AuthStore {
     const res = await request.patch<string>(`/auth/users/${id}`, body);
     return runInAction(() => {
       this.users = this.users.map((user) =>
-        user.id === id ? { ...user, login: body.login, type: body.type } : user
+        user.id === id ? { ...user, login: body.login, type: body.type } : user,
       );
       return res;
     });

@@ -52,7 +52,7 @@ export class NetworkConnectionsPageStore {
           this.#mqttClient.addStickySubscription('/devices/+/controls/Connectivity', ({ topic, payload }) => {
             this.setConnectionConnectivity(
               getUuidFromTopic(topic),
-              payload !== '0'
+              payload !== '0',
             );
           });
           this.#mqttClient.addStickySubscription('/devices/+/controls/Operator', ({ topic, payload }) => {
@@ -88,7 +88,7 @@ export class NetworkConnectionsPageStore {
     index: number,
     lastIndex: number,
     showHasChangesConfirm: Confirmation,
-    showHasErrorsConfirm: Confirmation
+    showHasErrorsConfirm: Confirmation,
   ) {
     try {
       let activePageStore = lastIndex === 0 ? this.connections : this.switcher;
@@ -127,7 +127,7 @@ export class NetworkConnectionsPageStore {
   async allowConnectionSwitch(
     currentIndex: number,
     showHasChangesConfirm: Confirmation,
-    showHasErrorsConfirm: Confirmation
+    showHasErrorsConfirm: Confirmation,
   ) {
     const activeConnection = this.connections.connections[currentIndex];
     if (!activeConnection?.isDirty) {
@@ -158,7 +158,7 @@ export class NetworkConnectionsPageStore {
     newIndex: number,
     currentIndex: number,
     showHasChangesConfirm: Confirmation,
-    showHasErrorsConfirm: Confirmation
+    showHasErrorsConfirm: Confirmation,
   ): Promise<number | null> {
     if (newIndex < 0 || newIndex >= this.connections.connections.length) return null;
 
@@ -174,7 +174,7 @@ export class NetworkConnectionsPageStore {
     connectionType: NetworkType,
     currentIndex: number,
     showHasChangesConfirm: Confirmation,
-    showHasErrorsConfirm: Confirmation
+    showHasErrorsConfirm: Confirmation,
   ): Promise<number | null> {
     if (await this.allowConnectionSwitch(currentIndex, showHasChangesConfirm, showHasErrorsConfirm)) {
       return this.connections.addConnection({ type: connectionType, state: ConnectionState.new });

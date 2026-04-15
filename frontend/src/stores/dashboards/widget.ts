@@ -23,7 +23,7 @@ export class Widget {
     if (!data.id) {
       data.id = generateNextId(
         Array.from(this.#dashboardsStore.widgets.values()).map((item) => item.id),
-        'widget'
+        'widget',
       );
     }
     this.#dashboardsStore.updateWidget(data);

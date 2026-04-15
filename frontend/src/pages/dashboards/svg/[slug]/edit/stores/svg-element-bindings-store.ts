@@ -18,7 +18,7 @@ const addEnableReaction = (binding: SvgEditableParam, params: Partial<Record<Par
           return false;
         });
       }
-    }
+    },
   );
 };
 
@@ -82,7 +82,7 @@ export class SvgElementBindingsStore {
         this.addParam('long-press', { enable: false, dashboard: '' });
         this.addParam(
           'long-press-write',
-          { enable: false, channel: null, check: false, value: { on: 1, off: 0 }, dashboard: '' }
+          { enable: false, channel: null, check: false, value: { on: 1, off: 0 }, dashboard: '' },
         );
         this.tagName = element.tagName;
       }

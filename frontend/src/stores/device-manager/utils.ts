@@ -37,7 +37,7 @@ export function getIntAddress(address: string | number): number {
 export const setupDevice = async (
   serialPortProxy: SerialPortProxy,
   device: ScannedDevice,
-  newConfig: SerialPortProxySetupItemNewConfig
+  newConfig: SerialPortProxySetupItemNewConfig,
 ): Promise<boolean> => {
   if (!device.type) {
     return false;
@@ -73,7 +73,7 @@ function getSerialNumberForDeviceSetupRPCCall(device: ScannedDevice): number | u
 
 const getDeviceSetupParams = (
   device: ScannedDevice,
-  newConfig: SerialPortProxySetupItemNewConfig
+  newConfig: SerialPortProxySetupItemNewConfig,
 ): SerialPortProxySetupParams | undefined => {
 
   let params = {

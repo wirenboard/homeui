@@ -94,7 +94,7 @@ export class ConnectionPrioritiesStore {
 
     reaction(
       () => getConnectionsManageableBySwitcher(connectionsStore),
-      (connections) => updateTiers(connections, this)
+      (connections) => updateTiers(connections, this),
     );
     makeAutoObservable(this);
   }

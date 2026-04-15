@@ -69,7 +69,7 @@ export class WbDeviceChannelEditor {
   constructor(
     channel: WbDeviceTemplateChannel,
     initialValue: WbDeviceTemplateChannelSettings | undefined,
-    parameters: Map<string, WbDeviceParameterEditor>
+    parameters: Map<string, WbDeviceParameterEditor>,
   ) {
     this.channel = channel;
     this._parameters = parameters;
