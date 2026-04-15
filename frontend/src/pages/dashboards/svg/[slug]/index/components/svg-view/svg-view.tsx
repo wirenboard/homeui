@@ -151,20 +151,20 @@ export const SvgView = ({
               if (!param?.write?.check || await confirmHandler()) {
                 onSwitchValue(param.write.channel, param.write.value);
               }
-            })
+            }),
           );
         } else if (param?.click?.enable) {
           disposers.push(setClickHandler(el, () => onMoveToDashboard(param.click.dashboard)));
         }
         if (param['long-press']?.enable) {
           disposers.push(
-            setLongPressHandler(el, () => onMoveToDashboard(param['long-press'].dashboard))
+            setLongPressHandler(el, () => onMoveToDashboard(param['long-press'].dashboard)),
           );
         } else if (param['long-press-write']?.enable) {
           disposers.push(
             setLongPressHandler(el, () => {
               onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
-            })
+            }),
           );
         }
       }

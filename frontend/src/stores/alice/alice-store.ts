@@ -121,7 +121,7 @@ export default class AliceStore {
   async copyDevice(data: SmartDevice): Promise<string> {
     const name = generateNextId(
       Array.from(this.devices).map(([_key, device]) => device.name),
-      data.name + ' '
+      data.name + ' ',
     );
     const device = await addDevice({ ...data, name });
 

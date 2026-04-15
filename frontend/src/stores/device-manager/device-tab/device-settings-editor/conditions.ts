@@ -10,7 +10,7 @@ export class Conditions {
       if (!fn) {
         fn = new Function(
           dependencies,
-          'let isDefined = p => p!==undefined; return ' + conditionText + ';'
+          'let isDefined = p => p!==undefined; return ' + conditionText + ';',
         );
         this.functions[conditionText] = fn;
       }

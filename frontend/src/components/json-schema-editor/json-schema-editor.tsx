@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite';
 import { lazy, Suspense, useId } from 'react';
 import {
   type ObjectStore,
@@ -7,10 +8,9 @@ import {
   type ByteArrayStore,
   type ArrayStore,
 } from '@/stores/json-schema-editor';
+import { ParamError } from './param-error';
 import type { JsonSchemaEditorProps, EditorBuilderFunctionProps } from './types';
 import './styles.css';
-import { ParamError } from './param-error';
-import { observer } from 'mobx-react-lite';
 
 const BooleanEditor = lazy(() => import('./boolean-param-editor'));
 const NumberEditor = lazy(() => import('./number-param-editor'));

@@ -29,13 +29,13 @@ const eventValueOptionsForInstance = (instance?: string): Option<string>[] => {
 // Returns float instances that are unused or belong to current property
 const getAvailableFloatInstances = (
   properties: any[],
-  currentPropertyIndex?: number
+  currentPropertyIndex?: number,
 ) => {
   const usedInstances = new Set(
     properties
       .filter((property) => property.type === Property.Float)
       .map((property) => property?.parameters?.instance)
-      .filter(Boolean) as string[]
+      .filter(Boolean) as string[],
   );
   const currentInstance = typeof currentPropertyIndex === 'number'
     ? properties[currentPropertyIndex]?.parameters?.instance
@@ -59,7 +59,7 @@ const getAvailableEventInstances = (properties: any[]) => {
       properties
         .filter((p) => p.type === Property.Event && p.parameters?.instance === instance)
         .map((p) => p.parameters?.value)
-        .filter(Boolean) as string[]
+        .filter(Boolean) as string[],
     );
 
     // Instance has available values if not all values are used
@@ -101,7 +101,7 @@ export const DeviceProperties = observer(({
           && p.parameters?.instance === instance
           && i !== currentPropertyIndex)
         .map((p) => p.parameters?.value)
-        .filter(Boolean) as string[]
+        .filter(Boolean) as string[],
     );
 
     return allOptions.map((opt) => ({
@@ -112,7 +112,7 @@ export const DeviceProperties = observer(({
 
   const handleFloatInstanceChange = useCallback((
     newInstance: string,
-    currentPropertyIndex: number
+    currentPropertyIndex: number,
   ) => {
     const currentProperty = properties[currentPropertyIndex];
     const availableUnits = floatUnitOptionsForInstance(newInstance).map((o) => o.value);
@@ -133,7 +133,7 @@ export const DeviceProperties = observer(({
     }
 
     const updatedProperties = properties.map((item, i) =>
-      i === currentPropertyIndex ? { ...item, parameters: updatedParams } : item
+      i === currentPropertyIndex ? { ...item, parameters: updatedParams } : item,
     );
 
     onPropertyChange(updatedProperties);
@@ -141,7 +141,7 @@ export const DeviceProperties = observer(({
 
   const handleEventInstanceChange = useCallback((
     newInstance: string,
-    currentPropertyIndex: number
+    currentPropertyIndex: number,
   ) => {
     const currentProperty = properties[currentPropertyIndex];
     const options = getEventValueOptions(newInstance, currentPropertyIndex);
@@ -189,7 +189,7 @@ export const DeviceProperties = observer(({
                 && p.parameters?.instance === inst
                 && i !== currentPropertyIndex)
               .map((p) => p.parameters?.value)
-              .filter(Boolean) as string[]
+              .filter(Boolean) as string[],
           );
 
           // pick first unit that is not used yet
@@ -361,7 +361,7 @@ export const DeviceProperties = observer(({
                     properties
                       .filter((p) => p.type === Property.Event && p.parameters?.instance === inst)
                       .map((p) => p.parameters?.value)
-                      .filter(Boolean) as string[]
+                      .filter(Boolean) as string[],
                   );
                   const firstAvailableValue = availableValues.find((v) => !usedValues.has(v));
 

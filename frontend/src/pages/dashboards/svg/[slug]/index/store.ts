@@ -31,7 +31,7 @@ export class SvgDashboardPageStore {
         if (this.#devicesStore.cells.size) {
           this.setDeviceData();
         }
-      }
+      },
     );
   }
 

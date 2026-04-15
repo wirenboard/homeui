@@ -14,7 +14,7 @@ export function ColumnsWrapper({ children, baseColumnWidth, columnClassName }: P
       list.forEach((item, i) => result[i % count].push(item));
       setColumns(result);
     },
-    [baseColumnWidth]
+    [baseColumnWidth],
   );
 
   const recalc = useCallback(() => {

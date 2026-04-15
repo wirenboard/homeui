@@ -161,5 +161,5 @@ export const DeviceTabContent = observer(
         )}
       </div>
     );
-  }
+  },
 );

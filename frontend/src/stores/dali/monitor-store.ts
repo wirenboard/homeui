@@ -1,16 +1,14 @@
 import { runInAction, makeAutoObservable } from 'mobx';
 
-
 export class MonitorStore {
   public logs: string[] = [];
   public isEnabled: boolean = false;
   public isOnPause: boolean = false;
 
-  private topic: string = "";
+  private topic: string = '';
 
   #mqttClient: any;
 
-  // eslint-disable-next-line typescript/naming-convention
   constructor(mqttClient) {
     this.#mqttClient = mqttClient;
 
@@ -28,7 +26,7 @@ export class MonitorStore {
   disableMonitoring() {
     if (this.topic) {
       this._unsubscribeFromTopic();
-      this.topic = "";
+      this.topic = '';
     }
     this.isEnabled = false;
     this.logs = [];

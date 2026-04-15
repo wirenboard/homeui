@@ -1,9 +1,9 @@
 import { runInAction, makeObservable, observable } from 'mobx';
 import { type ErrorInfo } from '@/layouts/page';
 import { formatError } from '@/utils/formatError';
-import { GatewayStore } from './gateway-store';
 import { BusStore } from './bus-store';
 import { DeviceStore } from './device-store';
+import { GatewayStore } from './gateway-store';
 import type { DaliProxy } from './types';
 
 export class DaliStore {

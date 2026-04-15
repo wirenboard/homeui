@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.197.7) stable; urgency=medium
+wb-mqtt-homeui (2.197.8) stable; urgency=medium
 
   * Add login logging with client IP and user-agent
 
  -- vvzvlad <vlad.zaitsev@wirenboard.com>  Mon, 14 Apr 2026 15:03:00 +0300
+
+wb-mqtt-homeui (2.197.7) stable; urgency=medium
+
+  * Update eslint version and fix
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 11:57:00 +0300
 
 wb-mqtt-homeui (2.197.6) stable; urgency=medium
 
