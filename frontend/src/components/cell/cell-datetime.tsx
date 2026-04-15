@@ -34,6 +34,7 @@ export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
             value={fromUnixTime(cell.value as number)}
             isInvalid={!!cell.error}
             ariaLabel={cell.name}
+            withSeconds
             onChange={(value: Date) => {
               cell.value = value ? getUnixTime(value) : 0;
             }}
