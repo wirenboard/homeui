@@ -105,6 +105,7 @@ import angular from 'angular';
 
 import { aliceStore } from '@/stores/alice';
 import { DashboardsStore } from '@/stores/dashboards';
+import { DeviceStore } from '@/stores/device';
 import { RulesStore } from '@/stores/rules';
 
 //-----------------------------------------------------------------------------
@@ -399,6 +400,7 @@ const realApp = angular
       });
 
       $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
+      $rootScope.devicesStore = new DeviceStore(mqttClient);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
 
       $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {
