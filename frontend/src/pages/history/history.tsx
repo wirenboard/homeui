@@ -176,7 +176,7 @@ const HistoryPage = observer(({
             <Button
               variant="secondary"
               label={t('history.buttons.today')}
-              disabled={!store.selectedControls[0] || store.disableUi}
+              disabled={store.disableUi}
               onClick={() => store.resetDates()}
             />
           </div>
