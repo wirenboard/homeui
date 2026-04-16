@@ -1,15 +1,18 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore } from './base-item-store';
+import type { BusStore } from './bus-store';
 
 export class GroupStore extends BaseItemStore {
   readonly type = 'group' as const;
   public index: number;
+  #parent: BusStore | null;
 
-  constructor(daliProxy: any, id: string, groupIndex: number) {
+  constructor(daliProxy: any, id: string, groupIndex: number, parent: BusStore | null = null) {
     // Group label is its index, since group name is not editable
     super(daliProxy, id, String(groupIndex));
     this.index = groupIndex;
+    this.#parent = parent;
 
     makeObservable(this, {
       load: action,
@@ -55,6 +58,7 @@ export class GroupStore extends BaseItemStore {
         param.store.commit();
         this.setError(null);
       });
+      this.#parent?.dropDeviceCaches(this.index);
     } catch (error) {
       this.setError(error);
     }

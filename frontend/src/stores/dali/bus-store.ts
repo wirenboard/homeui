@@ -151,9 +151,17 @@ export class BusStore extends BaseItemStore {
         param.store.commit();
         this.setError(null);
       });
+      this.dropDeviceCaches();
     } catch (error) {
       this.setError(error);
     }
+  }
+
+  dropDeviceCaches(groupIndex?: number) {
+    this.children
+      .filter((c): c is DeviceStore => c.type === ItemType.Device)
+      .filter((d) => groupIndex === undefined || d.groups.includes(groupIndex))
+      .forEach((d) => d.dropCache());
   }
 
   async scan() {
@@ -197,7 +205,7 @@ export class BusStore extends BaseItemStore {
     );
     const groupIndexesToAdd: number[] = Array.from(activeGroupNums.keys()).filter((index) => !existingGroupIndexes.has(index));
     groupIndexesToAdd.forEach((index) => {
-      this.children.push(new GroupStore(this.daliProxy, this.makeGroupId(index), index));
+      this.children.push(new GroupStore(this.daliProxy, this.makeGroupId(index), index, this));
     });
     this.children.sort((a, b) => {
       if (a.type !== ItemType.Group || b.type !== ItemType.Group) {
