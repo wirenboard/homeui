@@ -38,8 +38,8 @@ export default class ConfigsStore {
       });
   }
 
-  async saveConfig() {
-    return this.#configEditorProxy.Save({ path: this.config.configPath, content: this.config.content });
+  async saveConfig(content?: any) {
+    return this.#configEditorProxy.Save({ path: this.config.configPath, content: content || this.config.content });
   }
 
   clearConfig() {

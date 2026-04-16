@@ -24,7 +24,6 @@ import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
 import '../styles/css/scan.css';
-import '../styles/css/mbgate.css';
 
 // homeui modules: sevices
 import errorsService from './services/errors';

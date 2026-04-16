@@ -1,0 +1,24 @@
+.form-header {
+    all: unset;
+    width: 100%;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--light-gray-color);
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: baseline;
+}
+
+.form-caption {
+    font-size: var(--font-size-large);
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.form-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+}

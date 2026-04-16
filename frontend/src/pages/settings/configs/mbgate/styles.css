@@ -1,0 +1,41 @@
+.mbgate-registersHeader {
+    all: unset;
+    width: 100%;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--light-gray-color);
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: baseline;
+}
+
+.mbgate-registerName {
+    flex-shrink: 0;
+    font-size: var(--font-size-large);
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.mbgate-registerContent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.mbgate-channelName {
+    min-width: 300px;
+}
+
+.mbgate .form-group {
+    margin-bottom: 0;
+}
+
+.mbgate table:has(tr > *:nth-child(6)) [type="number"] {
+    max-width: 100px;
+}
+
+.mbgate table .dropdown-m {
+    min-width: 100px;
+}
