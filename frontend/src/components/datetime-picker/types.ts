@@ -9,5 +9,6 @@ export interface DateTimePickerProps {
   ariaLabel?: string;
   disabledDates?: Matcher | Matcher[];
   isInvalid?: boolean;
+  withSeconds?: boolean;
   onChange?: (_date: Date | null) => void;
 }

@@ -125,7 +125,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
 
   const isLoading = useMemo(
     () => (isModuleInstalled && isAvailable && pageState === 'isLoading'),
-    [isModuleInstalled, isAvailable, pageState]
+    [isModuleInstalled, isAvailable, pageState],
   );
 
   const handleUnlinkController = async (ev: MouseEvent) => {

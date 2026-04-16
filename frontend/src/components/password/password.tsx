@@ -98,7 +98,7 @@ export const Password = ({
                     'password-indicatorWeak': score === 2 && i < score,
                     'password-indicatorNormal': score === 3 && i < score,
                     'password-indicatorStrong': score === 4 && i < score,
-                  }
+                  },
                 )}
               />
             ))}

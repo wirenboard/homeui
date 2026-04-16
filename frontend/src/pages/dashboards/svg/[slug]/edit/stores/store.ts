@@ -109,7 +109,7 @@ export class EditSvgDashboardPageStore {
           params: [],
         },
       },
-      this.#dashboardsStore
+      this.#dashboardsStore,
     );
   }
 }

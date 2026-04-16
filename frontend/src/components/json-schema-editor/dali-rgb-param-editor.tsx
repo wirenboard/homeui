@@ -61,9 +61,30 @@ const DaliRGBEditor = observer(({ store, inputId }: DaliRGBEditorProps) => {
         onChange={onColorChange}
       />
       <div className="dali-rgb-editor-sliders">
-        <ChannelSlider value={r} color="rgb(255, 0, 0)" isDisabled={isDisabled} isInvalid={isInvalid} maskLabel={maskLabel} onChange={onRChange} />
-        <ChannelSlider value={g} color="rgb(0, 255, 0)" isDisabled={isDisabled} isInvalid={isInvalid} maskLabel={maskLabel} onChange={onGChange} />
-        <ChannelSlider value={b} color="rgb(0, 0, 255)" isDisabled={isDisabled} isInvalid={isInvalid} maskLabel={maskLabel} onChange={onBChange} />
+        <ChannelSlider
+          value={r}
+          color="rgb(255, 0, 0)"
+          isDisabled={isDisabled}
+          isInvalid={isInvalid}
+          maskLabel={maskLabel}
+          onChange={onRChange}
+        />
+        <ChannelSlider
+          value={g}
+          color="rgb(0, 255, 0)"
+          isDisabled={isDisabled}
+          isInvalid={isInvalid}
+          maskLabel={maskLabel}
+          onChange={onGChange}
+        />
+        <ChannelSlider
+          value={b}
+          color="rgb(0, 0, 255)"
+          isDisabled={isDisabled}
+          isInvalid={isInvalid}
+          maskLabel={maskLabel}
+          onChange={onBChange}
+        />
       </div>
     </div>
   );

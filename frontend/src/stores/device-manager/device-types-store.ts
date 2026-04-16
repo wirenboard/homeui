@@ -106,7 +106,7 @@ export class DeviceTypesStore {
     // Return device types with the closest firmware
     return deviceTypes
       .filter(([_typeName, desc]) =>
-        desc.hw?.some((hw) => hw.signature === deviceSignature && closestFw === hw.fw)
+        desc.hw?.some((hw) => hw.signature === deviceSignature && closestFw === hw.fw),
       )
       .map(([typeName, _desc]) => typeName)
       .sort();

@@ -4,15 +4,15 @@ import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
-import { Loader } from '@/components/loader';
 import { FormButtonGroup } from '@/components/form';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
+import { Loader } from '@/components/loader';
 import type { BusStore } from '@/stores/dali';
+import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
+import { useAsyncAction } from '@/utils/async-action';
 import { BusMonitor } from '../bus-monitor';
 import { LunatoneGatewayField } from './lunatone-gateway-field';
 import { PollingIntervalField } from './polling-interval-field';
-import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
-import { useAsyncAction } from '@/utils/async-action';
 import './styles.css';
 
 const MAX_SLOTS = 12;
@@ -43,12 +43,16 @@ const BusParam = observer(({ store, param }: { store: BusStore; param: ObjectPar
         <span>{store.translator.find(param.store.schema.title || param.key, i18n.language)}</span>
         <Button
           label={t('dali.buttons.set')}
-          onClick={save}
           isLoading={isSaving}
           disabled={param.store.hasErrors}
+          onClick={save}
         />
       </div>
-      <div className={classNames('dali-busParam-editor', { 'wb-jsonEditor-objectEditorWithBorder': param.store.storeType === 'object' })}>
+      <div
+        className={classNames('dali-busParam-editor', {
+          'wb-jsonEditor-objectEditorWithBorder': param.store.storeType === 'object',
+        })}
+      >
         <JsonSchemaEditor
           store={param.store}
           translator={store.translator}
@@ -63,8 +67,8 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
 
   let rows = [];
   if (store.objectStore) {
-    const params = store.objectStore.params.filter(p => !p.hidden);
-  
+    const params = store.objectStore.params.filter((p) => !p.hidden);
+
     let currentRow: typeof params = [];
     let slotsInRow = 0;
     for (const param of params) {
@@ -88,7 +92,9 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
       className="dali-busParams"
       variant="tertiary"
       isBodyVisible={store.broadcastSettingsVisible}
-      toggleBody={() => { store.broadcastSettingsVisible = !store.broadcastSettingsVisible; }}
+      toggleBody={() => {
+        store.broadcastSettingsVisible = !store.broadcastSettingsVisible;
+      }}
       heading={t('dali.labels.bus-settings')}
     >
       {store.isParametersSchemaLoading ? (
@@ -97,9 +103,9 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
         </div>
       ) : (
         <>
-          {rows.map(rowParams => {
-            const rowKey = rowParams.map(p => p.key).join('-');
-            const items = rowParams.map(param => (
+          {rows.map((rowParams) => {
+            const rowKey = rowParams.map((p) => p.key).join('-');
+            const items = rowParams.map((param) => (
               <BusParam key={param.key} store={store} param={param} />
             ));
             if (rowParams.length === 1) {
@@ -152,7 +158,7 @@ export const BusTabContent = observer(({ store, onScan }: { store: BusStore; onS
       <BusMonitor
         monitorStore={store.busMonitor}
         busMonitorEnabled={store.busMonitorEnabled}
-        onToggle={v => store.setBusMonitorEnabled(v)}
+        onToggle={(v) => store.setBusMonitorEnabled(v)}
       />
     </>
   );

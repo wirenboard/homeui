@@ -6,10 +6,10 @@ export class GroupStore extends BaseItemStore {
   readonly type = 'group' as const;
   public index: number;
 
-  constructor(daliProxy: any, id: string, group_index: number) {
+  constructor(daliProxy: any, id: string, groupIndex: number) {
     // Group label is its index, since group name is not editable
-    super(daliProxy, id, String(group_index));
-    this.index = group_index;
+    super(daliProxy, id, String(groupIndex));
+    this.index = groupIndex;
 
     makeObservable(this, {
       load: action,
@@ -35,7 +35,9 @@ export class GroupStore extends BaseItemStore {
     } catch (error) {
       this.setError(error);
     } finally {
-      runInAction(() => { this.isLoading = false; });
+      runInAction(() => {
+        this.isLoading = false;
+      });
     }
   }
 

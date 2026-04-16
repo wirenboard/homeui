@@ -3,7 +3,7 @@ import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/
 import { BaseItemStore, ItemType } from './base-item-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
-import { MonitorStore } from './monitor-store'
+import { MonitorStore } from './monitor-store';
 
 export class BusStore extends BaseItemStore {
   readonly type = ItemType.Bus;
@@ -115,7 +115,9 @@ export class BusStore extends BaseItemStore {
       if (this.isFirstLoad) {
         this._applyConfig(data.config);
         this._updateMonitor(data.config);
-        runInAction(() => { this.isFirstLoad = false; });
+        runInAction(() => {
+          this.isFirstLoad = false;
+        });
       }
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
@@ -128,7 +130,7 @@ export class BusStore extends BaseItemStore {
     } catch (error) {
       this.setError(error);
     } finally {
-      runInAction(() => { 
+      runInAction(() => {
         this.isLoading = false;
         this.isParametersSchemaLoading = false;
       });
@@ -160,7 +162,7 @@ export class BusStore extends BaseItemStore {
       const res = await this.daliProxy.ScanBus({ busId: this.id });
       runInAction(() => {
         this.children = res.devices.map((device: { id: string; name: string; groups?: number[] }) =>
-          new DeviceStore(this.daliProxy, device.id, device.name, device.groups ?? [], this)
+          new DeviceStore(this.daliProxy, device.id, device.name, device.groups ?? [], this),
         );
         this.syncGroupChildren();
         this.setError(null);
@@ -170,7 +172,9 @@ export class BusStore extends BaseItemStore {
     } catch (error) {
       this.setError(error);
     } finally {
-      runInAction(() => { this.isScanning = false; });
+      runInAction(() => {
+        this.isScanning = false;
+      });
     }
   }
 
@@ -178,9 +182,9 @@ export class BusStore extends BaseItemStore {
     const activeGroupNums = new Set<number>(
       this.children
         .filter((c): c is DeviceStore => c.type === ItemType.Device)
-        .flatMap(d => d.groups)
+        .flatMap((d) => d.groups),
     );
-    this.children = this.children.filter(c => {
+    this.children = this.children.filter((c) => {
       if (c.type !== ItemType.Group) {
         return true;
       }
@@ -189,10 +193,10 @@ export class BusStore extends BaseItemStore {
     const existingGroupIndexes = new Set(
       this.children
         .filter((c): c is GroupStore => c.type === ItemType.Group)
-        .map(c => c.index)
+        .map((c) => c.index),
     );
-    const groupIndexesToAdd: number[] = Array.from(activeGroupNums.keys()).filter(index => !existingGroupIndexes.has(index));
-    groupIndexesToAdd.forEach(index => {
+    const groupIndexesToAdd: number[] = Array.from(activeGroupNums.keys()).filter((index) => !existingGroupIndexes.has(index));
+    groupIndexesToAdd.forEach((index) => {
       this.children.push(new GroupStore(this.daliProxy, this.makeGroupId(index), index));
     });
     this.children.sort((a, b) => {

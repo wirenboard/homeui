@@ -88,7 +88,7 @@
     "@types/react-dom": "18.2.0",
     "@types/react-plotly.js": "2.6.4",
     "@types/sortablejs": "1.15.8",
-    "@wirenboard/eslint": "1.5.1",
+    "@wirenboard/eslint": "1.7.0",
     "angular-mocks": "^1.8.3",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^8.3.0",

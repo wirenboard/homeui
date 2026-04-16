@@ -90,7 +90,7 @@ export const MenuItem = ({
                 item.children?.some(
                   (subItem) =>
                     (id ? subItem.url === `${page}/${id}` : subItem.url === page) ||
-                    openedSubmenus.includes(subItem.id)
+                    openedSubmenus.includes(subItem.id),
                 )),
             'menuItem-linkWithSubmenu': !!item.children?.length,
           })}

@@ -100,7 +100,7 @@ export const getMenuItems = (
   dashboardsList: Dashboard[],
   isShowWidgetsPage: boolean,
   params: URLSearchParams,
-  hasRights: (role: UserRole) => boolean
+  hasRights: (role: UserRole) => boolean,
 ): MenuItemInstance[] => {
   const computeUrlWithParams = (url: string) => {
     return params.has('fullscreen') ? `${url}?fullscreen` : url;

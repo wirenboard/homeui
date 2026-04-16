@@ -2,7 +2,31 @@ wb-mqtt-homeui (2.198.0) stable; urgency=medium
 
   * Update history page
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 14 Apr 2026 18:10:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 16 Apr 2026 16:54:00 +0300
+
+wb-mqtt-homeui (2.197.9) stable; urgency=medium
+
+  * Add optional seconds to datepicker
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 17:40:00 +0300
+
+wb-mqtt-homeui (2.197.8) stable; urgency=medium
+
+  * Add login logging with client IP and user-agent
+
+ -- vvzvlad <vlad.zaitsev@wirenboard.com>  Wed, 15 Apr 2026 15:11:00 +0300
+
+wb-mqtt-homeui (2.197.7) stable; urgency=medium
+
+  * Update eslint version and fix
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 11:57:00 +0300
+
+wb-mqtt-homeui (2.197.6) stable; urgency=medium
+
+  * Fix options.wb.show_editor flag handling in json-editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 14 Apr 2026 20:31:56 +0500
 
 wb-mqtt-homeui (2.197.5) stable; urgency=medium
 

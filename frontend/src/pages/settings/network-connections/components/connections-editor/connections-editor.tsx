@@ -103,7 +103,7 @@ export const ConnectionsEditor = observer(({
                     label={t(
                       connection.state === 'activated'
                         ? 'network-connections.buttons.disconnect'
-                        : 'network-connections.buttons.connect'
+                        : 'network-connections.buttons.connect',
                     )}
                     onClick={() => onToggleState(connection)}
                   />
@@ -175,5 +175,5 @@ export const ConnectionsEditor = observer(({
       )}
     </>
   );
-}
+},
 );

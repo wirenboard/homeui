@@ -37,7 +37,7 @@ const RANGE_LIMITS_LOCKED: Record<string, { min: number; max: number; precision?
 
 const getAvailableColorModels = (
   capabilities: SmartDeviceCapability[],
-  excludeIndex?: number
+  excludeIndex?: number,
 ): Color[] => {
   // Collect already used Color models among color-setting capabilities
   const usedColorModels = capabilities
@@ -64,18 +64,18 @@ const getCurrentColorModel = (capability: SmartDeviceCapability) => {
 
 const getAvailableRangeInstances = (
   capabilities: SmartDeviceCapability[],
-  excludeIndex?: number
+  excludeIndex?: number,
 ): string[] => {
   const usedInstances = capabilities
     .filter((cap, index) =>
       cap.type === Capability.Range &&
       index !== excludeIndex &&
-      cap.parameters?.instance
+      cap.parameters?.instance,
     )
     .map((cap) => cap.parameters.instance);
 
   return ranges.filter(
-    (rangeInstance) => !usedInstances.includes(rangeInstance)
+    (rangeInstance) => !usedInstances.includes(rangeInstance),
   );
 };
 
@@ -90,7 +90,7 @@ const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
 
 const isCapabilityDisabled = (
   capabilityType: Capability,
-  capabilities: SmartDeviceCapability[]
+  capabilities: SmartDeviceCapability[],
 ) => {
   if (capabilityType === Capability['Color setting']) {
     // For color setting, disable only if all color models are used
@@ -113,7 +113,7 @@ export const DeviceCapabilities = observer(({
 
   const handleColorSettingTypeChange = useCallback((
     value: Color,
-    key: number
+    key: number,
   ) => {
     let newParameters: CapabilityParameters = {};
 
@@ -133,7 +133,7 @@ export const DeviceCapabilities = observer(({
 
   const handleColorModelInstanceChange = useCallback((
     value: ColorModel,
-    key: number
+    key: number,
   ) => {
     const newParameters = defaultColorModelParameters[value];
 
@@ -146,7 +146,7 @@ export const DeviceCapabilities = observer(({
   const handleTemperatureParameterChange = useCallback((
     paramType: 'min' | 'max',
     value: number,
-    key: number
+    key: number,
   ) => {
     const updatedCapabilities = capabilities.map((item, i) => i === key
       ? {
@@ -165,7 +165,7 @@ export const DeviceCapabilities = observer(({
 
   const handleColorScenesChange = useCallback((
     scenes: string,
-    key: number
+    key: number,
   ) => {
     const sceneList = scenes.split(',').map((s) => s.trim()).filter(Boolean);
     const updatedCapabilities = capabilities.map((item, i) => i === key
@@ -207,7 +207,7 @@ export const DeviceCapabilities = observer(({
 
   const getRangeInstanceOptions = useCallback((
     currentCapability: SmartDeviceCapability,
-    currentCapabilityIndex: number
+    currentCapabilityIndex: number,
   ) => {
     const availableInstances = getAvailableRangeInstances(capabilities, currentCapabilityIndex);
     const currentlySelectedInstance = currentCapability.parameters?.instance;
@@ -469,7 +469,7 @@ export const DeviceCapabilities = observer(({
                         };
 
                         const val = capabilities.map((item, i) =>
-                          i === key ? { ...item, parameters: nextParams } : item
+                          i === key ? { ...item, parameters: nextParams } : item,
                         );
                         onCapabilityChange(val);
                       }}
