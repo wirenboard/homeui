@@ -46,7 +46,6 @@ export const FormStringEdit = observer(({ store }) => {
   return (
     <StringField
       title={showCaption && store.name}
-      type={['number', 'integer'].includes(store.type) ? 'number' : 'text'}
       description={store.description}
       view={store.editType === 'textarea' ? 'textarea' : 'input'}
       value={store.value === undefined ? '' : store.value}
