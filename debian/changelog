@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.172.0-wb110) stable; urgency=medium
+
+  * Fix connection status
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 16 Apr 2026 17:25:00 +0300
+
 wb-mqtt-homeui (2.172.0-wb109) stable; urgency=medium
 
   * Fix devices loading
