@@ -158,10 +158,11 @@ export class BusStore extends BaseItemStore {
   }
 
   dropDeviceCaches(groupIndex?: number) {
-    this.children
-      .filter((c): c is DeviceStore => c.type === ItemType.Device)
-      .filter((d) => groupIndex === undefined || d.groups.includes(groupIndex))
-      .forEach((d) => d.dropCache());
+    for (const child of this.children) {
+      if (child.type === ItemType.Device && (groupIndex === undefined || child.groups.includes(groupIndex))) {
+        child.dropCache();
+      }
+    }
   }
 
   async scan() {
