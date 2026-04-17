@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.197.11) stable; urgency=medium
+
+  * Fix cell creation
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Apr 2026 11:55:00 +0300
+
 wb-mqtt-homeui (2.197.10) stable; urgency=medium
 
   * Reload DALI device settings after group or broadcast command
