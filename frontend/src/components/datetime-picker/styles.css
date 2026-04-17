@@ -11,11 +11,12 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    min-width: 210px;
 }
 
 .datetimePicker-input {
     box-sizing: border-box;
-    padding-right: 38px;
+    padding-right: 28px;
     width: calc(100% - 38px);
 }
 
@@ -23,6 +24,7 @@
     position: absolute;
     right: 3px;
     border: 0;
+    padding: 4px;
     height: auto;
     z-index: 10;
 }
