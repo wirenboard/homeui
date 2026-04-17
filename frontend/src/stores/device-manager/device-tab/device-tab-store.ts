@@ -1,4 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
+import every from 'lodash/every';
+import intersection from 'lodash/intersection';
+import isEqual from 'lodash/isEqual';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
 import { type JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
@@ -121,8 +124,9 @@ export class DeviceTabStore {
     return !!this.loadingMessage;
   }
 
-  async _loadConfigFromDevice(portConfig?: PortTabConfig) {
-    if (![ReadRegistersState.WaitFirstRead, ReadRegistersState.Manual].includes(this.readRegistersState.state)) {
+  async _loadConfigFromDevice(portConfig?: PortTabConfig, isForce = false, previousData?: JsonObject) {
+    if (![ReadRegistersState.WaitFirstRead, ReadRegistersState.Manual].includes(this.readRegistersState.state)
+      && !isForce) {
       return;
     }
     this._setLoading(i18n.t('device-manager.labels.reading-parameters'));
@@ -131,6 +135,7 @@ export class DeviceTabStore {
       device_type: this.deviceType,
       modbus_mode: (portConfig as PortTabTcpConfig).modbusTcp ? 'TCP' : 'RTU',
       ...toSerialRpcPortConfig(portConfig),
+      force: isForce,
     };
     let configFromDevice: LoadConfigResult;
     try {
@@ -139,12 +144,25 @@ export class DeviceTabStore {
       this.readRegistersState.readError(err);
       return;
     }
+
+    if (isForce && previousData) {
+      const isEqualByCommonFields = (a: JsonObject, b: JsonObject)=> {
+        const commonKeys = intersection(Object.keys(a), Object.keys(b));
+        return every(commonKeys, (key: string) => isEqual(a[key], b[key]));
+      };
+
+      const isDirty = !isEqualByCommonFields(configFromDevice.parameters, previousData);
+      if (isDirty && !confirm(i18n.t('device-manager.labels.uncommitted-settings'))) {
+        return;
+      }
+    }
+
     this.readRegistersState.successfulRead(
       this.deviceType,
       configFromDevice.model,
       configFromDevice.fw
     );
-    this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw);
+    this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw, isForce);
   }
 
   async setDeviceType(type: string, portConfig: PortTabConfig) {
@@ -199,13 +217,14 @@ export class DeviceTabStore {
     return tab;
   }
 
-  async loadContent(portConfig?: PortTabConfig) {
+  async loadContent(portConfig?: PortTabConfig, isForce: boolean = false) {
+    let previousData = { ...this.editedData };
     if (this.isUnknownType || this.withSubdevices) {
       this._clearLoading();
       return;
     }
     try {
-      if (!this.schemaStore) {
+      if (!this.schemaStore || isForce) {
         this._setLoading(i18n.t('device-manager.labels.loading-template'));
         const schema = await this.deviceTypesStore.getSchema(this.deviceType);
         runInAction(() => {
@@ -213,7 +232,7 @@ export class DeviceTabStore {
         });
       }
       if (portConfig) {
-        await this._loadConfigFromDevice(portConfig);
+        await this._loadConfigFromDevice(portConfig, isForce, previousData);
       }
     } catch (err) {
       this._setError(err);

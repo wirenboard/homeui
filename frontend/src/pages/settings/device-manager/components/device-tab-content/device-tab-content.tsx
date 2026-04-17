@@ -151,6 +151,10 @@ export const DeviceTabContent = observer(
                 onClick={onCopyTab}
               />
             )}
+            <Button
+              label={t('device-manager.buttons.review-config')}
+              onClick={() => onReadRegisters(tab, true)}
+            />
           </div>
         </div>
         {tab.schemaStore && tab.readRegistersState.allowEditSettings && (
