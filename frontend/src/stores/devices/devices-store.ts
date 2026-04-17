@@ -46,7 +46,7 @@ export default class DevicesStore {
     return new Map(
       Array.from(this.devices.entries())
         .filter(([_, device]) => !device.isSystemDevice)
-        .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name)),
+        .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name))
     );
   }
 
@@ -255,8 +255,6 @@ export default class DevicesStore {
     const deviceTopicBase = '/devices/+';
     const cellTopicBase = `${deviceTopicBase}/controls/+`;
 
-    const cell = this.#getCellFromTopic(topic);
-
     return [
       {
         handledTopic: `${deviceTopicBase}/meta`,
@@ -288,6 +286,7 @@ export default class DevicesStore {
       {
         handledTopic: cellTopicBase,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.receiveValue(message);
           this.#updateCellCompleteness(cell);
           this.#notifyCellValueChange(cell.id, cell.value);
@@ -296,6 +295,7 @@ export default class DevicesStore {
       {
         handledTopic: `${cellTopicBase}/meta`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           if (message) {
             cell.setMeta(message);
             this.#updateCellCompleteness(cell);
@@ -307,6 +307,7 @@ export default class DevicesStore {
       {
         handledTopic: `${cellTopicBase}/meta/type`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setType(message);
           this.#updateCellCompleteness(cell);
         },
@@ -314,12 +315,14 @@ export default class DevicesStore {
       {
         handledTopic: `${cellTopicBase}/meta/name`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setName(message);
         },
       },
       {
         handledTopic: `${cellTopicBase}/meta/units`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setUnits(message);
         },
       },
@@ -327,6 +330,7 @@ export default class DevicesStore {
         handledTopic: `${cellTopicBase}/meta/readonly`,
         handler: (message: string) => {
           if (['', '0', '1'].includes(message)) {
+            const cell = this.#getCellFromTopic(topic);
             cell.setReadOnly(message ? Boolean(Number(message)) : null);
           } else {
             console.warn(`${topic} payload is neither '0', '1' nor empty`);
@@ -342,30 +346,35 @@ export default class DevicesStore {
       {
         handledTopic: `${cellTopicBase}/meta/error`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setError(message);
         },
       },
       {
         handledTopic: `${cellTopicBase}/meta/min`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setMin(message);
         },
       },
       {
         handledTopic: `${cellTopicBase}/meta/max`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setMax(message);
         },
       },
       {
         handledTopic: `${cellTopicBase}/meta/precision`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setStep(message);
         },
       },
       {
         handledTopic: `${cellTopicBase}/meta/order`,
         handler: (message: string) => {
+          const cell = this.#getCellFromTopic(topic);
           cell.setOrder(message);
         },
       },
