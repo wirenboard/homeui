@@ -13,13 +13,14 @@ import { getMenuItems } from '@/components/navigation/menu-items';
 import { Tooltip } from '@/components/tooltip';
 import { aliceStore } from '@/stores/alice';
 import { UserRole, authStore } from '@/stores/auth';
+import { uiStore } from '@/stores/ui';
 import { useParseHash } from '@/utils/url';
 import i18n from '~/i18n/react/config';
 import { DescriptionStatus } from './components/description-status';
 import type { NavigationProps } from './types';
 import './styles.css';
 
-export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient }: NavigationProps) => {
+export const Navigation = observer(({ dashboardsStore, toggleConsole }: NavigationProps) => {
   const { t } = useTranslation();
   const { id, page, params } = useParseHash();
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -111,7 +112,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
         </div>
 
         <DescriptionStatus
-          mqttClient={mqttClient}
+          isConnected={uiStore.isConnected}
           isCompact={isMenuCompact}
           description={dashboardsStore.description}
         />

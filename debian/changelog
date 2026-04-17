@@ -1,9 +1,15 @@
-wb-mqtt-homeui (2.172.0-wb110) stable; urgency=medium
+wb-mqtt-homeui (2.172.0-wb111) stable; urgency=medium
 
   * Add 1-Wire sensor id param support in serial
   * Device editor — add reread config button
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 17:55:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Apr 2026 18:26:00 +0300
+
+wb-mqtt-homeui (2.172.0-wb110) stable; urgency=medium
+
+  * Fix connection status
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 16 Apr 2026 17:25:00 +0300
 
 wb-mqtt-homeui (2.172.0-wb109) stable; urgency=medium
 

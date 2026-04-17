@@ -4,6 +4,7 @@
 const MAX_QUEUED_MESSAGES = 100;
 
 import Paho from 'paho-mqtt';
+import { uiStore } from '@/stores/ui';
 
 const mqttServiceModule = angular
   .module('homeuiApp.mqttServiceModule', [])
@@ -209,6 +210,9 @@ function mqttClient(
     }
     connected = true;
 
+    // call this getter to update the value in uiStore
+    service.isConnected();
+
     console.log('Connected to ' + client.host + " as '" + client.clientId + "'");
     if (globalPrefix !== '') console.log('With globalPrefix: ' + globalPrefix);
 
@@ -302,6 +306,8 @@ function mqttClient(
     } else {
       console.log('Successfully disconnected');
     }
+    // call this getter to update the value in uiStore
+    service.isConnected();
   };
 
   //...........................................................................
@@ -413,6 +419,7 @@ function mqttClient(
 
   //...........................................................................
   service.isConnected = () => {
+    uiStore.setIsConnected(connected);
     return connected;
   };
 
