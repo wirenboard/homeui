@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.197.10) stable; urgency=medium
+
+  * Reload DALI device settings after group or broadcast command
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Apr 2026 08:42:51 +0500
+
 wb-mqtt-homeui (2.197.9) stable; urgency=medium
 
   * Add optional seconds to datepicker
