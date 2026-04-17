@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Switch } from '@/components/switch';
-import { Tooltip } from '@/components/tooltip';
 import ClearIcon from '@/assets/icons/clear.svg';
 import VisibilityOff from '@/assets/icons/visibility-off.svg';
 import VisibilityOn from '@/assets/icons/visibility.svg';
+import { Switch } from '@/components/switch';
+import { Tooltip } from '@/components/tooltip';
 import { useAsyncAction } from '@/utils/async-action';
 import { type BusMonitorProps } from './types';
 import './styles.css';
@@ -53,7 +53,10 @@ export const BusMonitor = observer(({ monitorStore, busMonitorEnabled, onToggle 
             </Tooltip>
             <Tooltip text={t(monitorStore.isOnPause ? 'dali.buttons.resume-log' : 'dali.buttons.pause-log')}>
               <button className="rulesConsole-button" onClick={() => monitorStore.toggleLogsReception()}>
-                {monitorStore.isOnPause ? <VisibilityOn className="rulesConsole-icon"/> : <VisibilityOff className="rulesConsole-icon"/>}
+                {monitorStore.isOnPause
+                  ? <VisibilityOn className="rulesConsole-icon"/>
+                  : <VisibilityOff className="rulesConsole-icon"/>
+                }
               </button>
             </Tooltip>
           </>

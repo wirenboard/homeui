@@ -20,7 +20,7 @@ import type { DeviceSettingsEditorProps } from './types';
 
 const DeviceSettingsSubGroup = (
   { group, translator }:
-  { group: WbDeviceParameterEditorsGroup; translator: Translator }
+  { group: WbDeviceParameterEditorsGroup; translator: Translator },
 ) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
@@ -55,7 +55,7 @@ const CustomPeriodEditor = observer(({ store, translator }: { store: NumberStore
 
 const ChannelCard = observer((
   { channel, translator }:
-  { channel: WbDeviceChannelEditor; translator: Translator }
+  { channel: WbDeviceChannelEditor; translator: Translator },
 ) => {
   const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
@@ -77,10 +77,8 @@ const ChannelCard = observer((
     >
       <div className="deviceSettingsEditor-channel">
         {description && <ParamDescription description={description} />}
-        {channel.isSupportedByFirmware && (
-          <StringEditor store={channel.mode} translator={translator} />
-        )}
-        {channel.isSupportedByFirmware && channel.hasCustomPeriod && (
+        <StringEditor store={channel.mode} translator={translator} />
+        {channel.hasCustomPeriod && (
           <CustomPeriodEditor store={channel.period} translator={translator} />
         )}
       </div>
@@ -90,7 +88,7 @@ const ChannelCard = observer((
 
 const ChannelsList = observer((
   { channels, translator }:
-  { channels: WbDeviceChannelEditor[]; translator: Translator }
+  { channels: WbDeviceChannelEditor[]; translator: Translator },
 ) => {
   return (
     <>
@@ -108,7 +106,7 @@ const ChannelsList = observer((
 
 const DeviceSettingsCardContent = observer((
   { group, isTopLevel, translator }:
-  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator }
+  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator },
 ) => {
   const showDescription = !!group.properties.description;
   const { i18n } = useTranslation();
@@ -138,7 +136,7 @@ const DeviceSettingsCardContent = observer((
 
 const DeviceSettingsCard = observer((
   { group, translator }:
-  { group: WbDeviceParameterEditorsGroup; translator: Translator }
+  { group: WbDeviceParameterEditorsGroup; translator: Translator },
 ) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
@@ -160,7 +158,7 @@ const DeviceSettingsCard = observer((
 
 const CustomChannelsCard = observer((
   { customChannels, translator }:
-  { customChannels: ArrayStore; translator: Translator }
+  { customChannels: ArrayStore; translator: Translator },
 ) => {
   const { t } = useTranslation();
   const [isBodyVisible, setIsBodyVisible] = useState(false);

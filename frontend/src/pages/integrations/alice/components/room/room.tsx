@@ -56,7 +56,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
       .sort((a, b) =>
         sortDirection === 'asc'
           ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name)
+          : b.name.localeCompare(a.name),
       );
 
     if (id === 'all') {

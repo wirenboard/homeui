@@ -10,7 +10,7 @@ export const useTabs = ({
   const [activeTab, setActiveTab] = useState<string | number | undefined>(() =>
     defaultTab && items.find((i) => i.id === defaultTab)
       ? defaultTab
-      : items[0]?.id
+      : items[0]?.id,
   );
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export const useTabs = ({
       setActiveTab(next);
       onAfterTabChange?.(next, prev);
     },
-    [activeTab, onBeforeTabChange, onAfterTabChange]
+    [activeTab, onBeforeTabChange, onAfterTabChange],
   );
 
   useEffect(() => {

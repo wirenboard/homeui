@@ -1,8 +1,86 @@
-wb-mqtt-homeui (2.197.0) stable; urgency=medium
+wb-mqtt-homeui (2.198.0) stable; urgency=medium
 
   * Update a11y
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 12:40:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Apr 2026 18:08:00 +0300
+
+wb-mqtt-homeui (2.197.11) stable; urgency=medium
+
+  * Fix cell creation
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Apr 2026 11:55:00 +0300
+
+wb-mqtt-homeui (2.197.10) stable; urgency=medium
+
+  * Reload DALI device settings after group or broadcast command
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Apr 2026 08:42:51 +0500
+
+wb-mqtt-homeui (2.197.9) stable; urgency=medium
+
+  * Add optional seconds to datepicker
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 17:40:00 +0300
+
+wb-mqtt-homeui (2.197.8) stable; urgency=medium
+
+  * Add login logging with client IP and user-agent
+
+ -- vvzvlad <vlad.zaitsev@wirenboard.com>  Wed, 15 Apr 2026 15:11:00 +0300
+
+wb-mqtt-homeui (2.197.7) stable; urgency=medium
+
+  * Update eslint version and fix
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 15 Apr 2026 11:57:00 +0300
+
+wb-mqtt-homeui (2.197.6) stable; urgency=medium
+
+  * Fix options.wb.show_editor flag handling in json-editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 14 Apr 2026 20:31:56 +0500
+
+wb-mqtt-homeui (2.197.5) stable; urgency=medium
+
+  * Fix unixtime cell useless updates
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 14 Apr 2026 16:21:00 +0300
+
+wb-mqtt-homeui (2.197.4) stable; urgency=medium
+
+  * Allow disabling poll of channels not supported by firmware in device settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 13 Apr 2026 19:12:25 +0500
+
+wb-mqtt-homeui (2.197.3) stable; urgency=medium
+
+  * Error handling for invalid data from MQTT
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Apr 2026 15:12:00 +0300
+
+wb-mqtt-homeui (2.197.2) stable; urgency=medium
+
+  * Fix removing zero value cell
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 13 Apr 2026 11:59:00 +0300
+
+wb-mqtt-homeui (2.197.1) stable; urgency=medium
+
+  * Fix unswitchable switch
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 10 Apr 2026 10:19:00 +0300
+
+wb-mqtt-homeui (2.197.0) stable; urgency=medium
+
+  * Add support for hidden channels
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 09 Apr 2026 16:20:41 +0500
+
+wb-mqtt-homeui (2.196.3) stable; urgency=medium
+
+  * Fix datetime autopost value on render
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 09 Apr 2026 13:21:00 +0300
 
 wb-mqtt-homeui (2.196.2) stable; urgency=medium
 

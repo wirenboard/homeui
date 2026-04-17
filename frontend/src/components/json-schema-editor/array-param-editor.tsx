@@ -7,13 +7,10 @@ import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
-import { type ArrayStore, type ObjectStore, type PropertyStore, type Translator } from '@/stores/json-schema-editor';
-import type { ArrayEditorProps, EditorBuilderFunction } from './types';
+import { type ObjectStore } from '@/stores/json-schema-editor';
+import { type ArrayEditorProps, type ArrayItemProps } from './types';
 
-const ArrayItem = observer((
-  { index, store, rootStore, translator, editorBuilder }:
-  { index: number; store: ArrayStore; rootStore: PropertyStore; translator: Translator; editorBuilder: EditorBuilderFunction }
-) => {
+const ArrayItem = observer(({ index, store, rootStore, translator, editorBuilder }: ArrayItemProps) => {
   const { t } = useTranslation();
   const [isBodyVisible, setIsBodyVisible] = useState(true);
   const actions = [

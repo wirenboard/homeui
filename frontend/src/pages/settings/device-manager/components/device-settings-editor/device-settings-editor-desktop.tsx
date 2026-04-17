@@ -21,7 +21,7 @@ import type { DeviceSettingsEditorProps, DeviceSettingsTabsProps } from './types
 
 const DeviceSettingsSubGroup = (
   { group, translator, showChannels }:
-  { group: WbDeviceParameterEditorsGroup; translator: Translator; showChannels: boolean }
+  { group: WbDeviceParameterEditorsGroup; translator: Translator; showChannels: boolean },
 ) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
@@ -79,15 +79,13 @@ const ChannelsTableRow = observer(({
         {description && <ParamDescription description={description} />}
       </TableCell>
       <TableCell>
-        {channel.isSupportedByFirmware && (
-          <StringEditor
-            store={channel.mode}
-            translator={translator}
-          />
-        )}
+        <StringEditor
+          store={channel.mode}
+          translator={translator}
+        />
       </TableCell>
       <TableCell>
-        {channel.isSupportedByFirmware && channel.hasCustomPeriod && (
+        {channel.hasCustomPeriod && (
           <CustomPeriodEditor
             store={channel.period}
             translator={translator}
@@ -100,7 +98,7 @@ const ChannelsTableRow = observer(({
 
 const ChannelsTable = observer((
   { channels, translator }:
-  { channels: WbDeviceChannelEditor[]; translator: Translator }
+  { channels: WbDeviceChannelEditor[]; translator: Translator },
 ) => {
   const { t } = useTranslation();
   if (!channels || channels.length === 0) {
@@ -125,7 +123,7 @@ const ChannelsTable = observer((
 
 const DeviceSettingsTabContent = observer((
   { group, isTopLevel, translator, showChannels }:
-  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator; showChannels: boolean }
+  { group: WbDeviceParameterEditorsGroup; isTopLevel: boolean; translator: Translator; showChannels: boolean },
 ) => {
   const showDescription = !!group.properties.description;
   const { i18n } = useTranslation();
@@ -159,7 +157,7 @@ const DeviceSettingsTabContent = observer((
 });
 
 const DeviceSettingsTabs = observer((
-  { groups, translator, showChannels, customChannelsStore }: DeviceSettingsTabsProps
+  { groups, translator, showChannels, customChannelsStore }: DeviceSettingsTabsProps,
 ) => {
   const { i18n, t } = useTranslation();
   const tabs = groups

@@ -13,7 +13,7 @@ import {
 } from '@floating-ui/react';
 import classNames from 'classnames';
 import { format, parse, isValid } from 'date-fns';
-import { useState, useId, useEffect } from 'react';
+import { useState, useId, useEffect, useRef } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { ru, enGB } from 'react-day-picker/locale';
 import { useTranslation } from 'react-i18next';
@@ -24,17 +24,31 @@ import { Input } from '@/components/input';
 import { type DateTimePickerProps } from './types';
 import './styles.css';
 
-export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid, size }: DateTimePickerProps) => {
+export const DateTimePicker = ({
+  value,
+  onChange,
+  disabled,
+  ariaLabel,
+  isInvalid,
+  size,
+  withSeconds,
+}: DateTimePickerProps) => {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Date | null>(value ?? null);
-  const dateFormat = i18n.language === 'ru' ? 'dd.MM.yyyy HH:mm' : 'dd/MM/yyyy HH:mm';
+  const dateFormat = i18n.language === 'ru'
+    ? `dd.MM.yyyy HH:mm${withSeconds ? ':ss' : ''}`
+    : `dd/MM/yyyy HH:mm${withSeconds ? ':ss' : ''}`;
   const [inputValue, setInputValue] = useState(selected ? format(selected, dateFormat) : '');
 
   const id = useId();
   const timeId = useId();
+  const focusedRef = useRef(false);
 
   useEffect(() => {
+    if (focusedRef.current || open) {
+      return;
+    }
     if (value?.getTime() !== selected?.getTime()) {
       setSelected(value ?? null);
       setInputValue(value ? format(value, dateFormat) : '');
@@ -51,6 +65,7 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
     if (selected) {
       newDate.setHours(selected.getHours());
       newDate.setMinutes(selected.getMinutes());
+      newDate.setSeconds(selected.getSeconds());
     }
 
     setSelected(newDate);
@@ -86,19 +101,20 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
 
     let h = 0;
     let m = 0;
+    let s = 0;
 
     if (val) {
-      const [parsedH, parsedM] = val.split(':').map(Number);
-      if (isNaN(parsedH) || isNaN(parsedM)) {
+      const parts = val.split(':').map(Number);
+      if (parts.some(isNaN)) {
         return;
       }
-      h = parsedH;
-      m = parsedM;
+      [h, m, s = 0] = parts;
     }
 
     const newDate = new Date(selected);
     newDate.setHours(h);
     newDate.setMinutes(m);
+    newDate.setSeconds(s);
 
     setSelected(newDate);
     setInputValue(format(newDate, dateFormat));
@@ -113,9 +129,18 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
       return;
     }
 
+    const normalize = (d: Date) => {
+      const copy = new Date(d);
+      copy.setMilliseconds(0);
+      if (!withSeconds) {
+        copy.setSeconds(0);
+      }
+      return copy.getTime();
+    };
+
     const parsedDate = parse(val, dateFormat, new Date());
 
-    if (isValid(parsedDate)) {
+    if (isValid(parsedDate) && normalize(parsedDate) !== normalize(value)) {
       setSelected(parsedDate);
       onChange?.(parsedDate);
     }
@@ -131,7 +156,11 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
             'input-s': size === 'small',
             'input-invalid': isInvalid,
           })}
-          mask={i18n.language === 'ru' ? '00.00.0000 00:00' : '00/00/0000 00:00'}
+          mask={
+            i18n.language === 'ru'
+              ? `00.00.0000 00:00${withSeconds ? ':00' : ''}`
+              : `00/00/0000 00:00${withSeconds ? ':00' : ''}`
+          }
           value={inputValue}
           disabled={disabled}
           aria-haspopup="dialog"
@@ -139,6 +168,12 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
           aria-label={ariaLabel}
           aria-controls={`${id}-popup`}
           onAccept={(val: string) => handleInputChange(val)}
+          onFocus={() => {
+            focusedRef.current = true;
+          }}
+          onBlur={() => {
+            focusedRef.current = false;
+          }}
           onKeyDown={(ev) => {
             if (ev.key === 'Enter') {
               setOpen(false);
@@ -179,7 +214,10 @@ export const DateTimePicker = ({ value, onChange, disabled, ariaLabel, isInvalid
                 <Input
                   id={timeId}
                   type="time"
-                  value={selected ? format(selected, 'HH:mm') : '00:00'}
+                  value={selected
+                    ? format(selected, `HH:mm${withSeconds ? ':ss' : ''}`)
+                    : `00:00${withSeconds ? ':00' : ''}`}
+                  step={withSeconds ? 1 : null}
                   onChange={handleTimeChange}
                   onEnter={() => setOpen(false)}
                 />

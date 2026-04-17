@@ -14,6 +14,7 @@ export default class Cell {
   public max?: number;
   public step: number;
   public order: number;
+  public hidden: boolean = false;
 
   private _value: ValueType = '';
   private _readOnly: boolean | null = null;
@@ -97,15 +98,7 @@ export default class Cell {
   }
 
   receiveValue(newValue: string) {
-    if (!newValue) {
-      if (this.valueType === 'rgb') {
-        this._value = null;
-      } else {
-        this._value = this._isString() ? '' : '-';
-      }
-    } else {
-      this._setCellValue(newValue);
-    }
+    this._setCellValue(newValue);
   }
 
   setType(type: CellType) {
@@ -207,6 +200,9 @@ export default class Cell {
           case 'error':
             this.setError(parsedMeta.error);
             break;
+          case 'hidden':
+            this.hidden = !!parsedMeta.hidden;
+            break;
           default:
             // unsettanble
         }
@@ -253,7 +249,9 @@ export default class Cell {
     const maxSafeBigInt = BigInt(Number.MAX_SAFE_INTEGER);
     switch (this.valueType) {
       case 'number':
-        if (isNaN(value as number | null)) {
+        if (this.type === 'unixtime') {
+          this._value = value || 0;
+        } else if (!value || isNaN(value as number | null)) {
           this._value = 0;
         } else if (Number(value) && Number.isInteger(Number(value)) && BigInt(Number(value)) >= maxSafeBigInt) {
           // to avoid rounding we will set value as string if value is greater than max safe integer
@@ -263,14 +261,16 @@ export default class Cell {
         }
         break;
       case 'boolean':
-        // it could be boolean or string '0' | '1'
+        // it could  be boolean or string '0' | '1'
         this._value = Boolean(Number(value));
         break;
       case 'pushbutton':
         // unsettable
         break;
       case 'rgb':
-        if (isHex(value as string)) {
+        if (!value) {
+          this._value = null;
+        } else if (isHex(value as string)) {
           this._value = value;
         } else if (/^\d{1,3};\d{1,3};\d{1,3}$/.test(value as string)) {
           const [r, g, b] = (value as string).split(';');
@@ -280,7 +280,11 @@ export default class Cell {
         }
         break;
       default:
-        this._value = String(value);
+        if (!value) {
+          this._value = this._isString() ? '' : '-';
+        } else {
+          this._value = String(value);
+        }
         break;
     }
   }

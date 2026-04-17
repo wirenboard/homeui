@@ -62,7 +62,7 @@ export class WbDeviceParameterEditor {
     parameter: WbDeviceTemplateParameter,
     userDefinedConfig: unknown,
     parametersByName: Map<string, WbDeviceParameterEditor>,
-    conditions: Conditions
+    conditions: Conditions,
   ) {
     this.addVariant(parameter, userDefinedConfig, parametersByName, conditions);
     this.id = parameter.id;
@@ -152,7 +152,7 @@ export class WbDeviceParameterEditor {
     parameter: WbDeviceTemplateParameter,
     userDefinedConfig: unknown,
     parametersByName: Map<string, WbDeviceParameterEditor>,
-    conditions: Conditions
+    conditions: Conditions,
   ) {
 
     let valueFromUserDefinedConfig = undefined;
@@ -165,7 +165,7 @@ export class WbDeviceParameterEditor {
       parameter,
       valueFromUserDefinedConfig,
       parametersByName,
-      conditions
+      conditions,
     ));
   }
 

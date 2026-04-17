@@ -43,7 +43,7 @@ export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onCha
               return true;
             },
           },
-        ])
+        ]),
       );
     }
 

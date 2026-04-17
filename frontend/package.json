@@ -86,7 +86,7 @@
     "@types/paho-mqtt": "1.0.10",
     "@types/react-dom": "18.2.0",
     "@types/sortablejs": "1.15.8",
-    "@wirenboard/eslint": "1.5.1",
+    "@wirenboard/eslint": "1.7.0",
     "angular-mocks": "^1.8.3",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^8.3.0",

@@ -217,6 +217,7 @@ export interface WbDeviceTemplateChannel extends WbDeviceTemplateChannelSettings
   fw?: string;
   sporadic?: boolean;
   'semi-sporadic'?: boolean;
+  hidden?: boolean;
 }
 
 export interface WbDeviceParametersGroup {

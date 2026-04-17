@@ -180,7 +180,7 @@ export class DeviceSettingsObjectStore {
       parameter,
       userDefinedConfig,
       this._parametersByName,
-      this._conditions
+      this._conditions,
     );
     this._parametersByName.set(parameter.id, parameterEditor);
     if (parameter.group && this._groupsByName.has(parameter.group)) {
@@ -216,6 +216,9 @@ export class DeviceSettingsObjectStore {
       });
     }
     deviceTemplate.channels.forEach((channel) => {
+      if (channel.hidden) {
+        return;
+      }
       const channelEditor = new WbDeviceChannelEditor(
         channel,
         initialChannelsByName[channel.name],

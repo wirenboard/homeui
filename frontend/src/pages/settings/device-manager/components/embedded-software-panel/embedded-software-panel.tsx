@@ -70,7 +70,7 @@ export const FirmwareVersionPanel = observer(
               : 'device-manager.labels.current-firmware',
             {
               firmware: firmwareVersion,
-            }
+            },
           )}
         </b>
       </div>
@@ -269,7 +269,7 @@ const HasUpdateAlert = observer(
         )}
       </Alert>
     );
-  }
+  },
 );
 
 function getErrorDescriptionKey(type: string, errorId: string) {
@@ -343,5 +343,5 @@ export const EmbeddedSoftwarePanel = observer(
         )}
       </>
     );
-  }
+  },
 );

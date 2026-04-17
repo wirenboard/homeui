@@ -54,7 +54,7 @@ export class DeviceTabStore {
     deviceTypesStore: DeviceTypesStore,
     fwUpdateProxy: FwUpdateProxy,
     serialDeviceProxy: SerialDeviceProxy,
-    serialPortProxy: SerialPortProxy
+    serialPortProxy: SerialPortProxy,
   ) {
     this.initialData = initialData;
     this.deviceTypesStore = deviceTypesStore;
@@ -160,7 +160,7 @@ export class DeviceTabStore {
     this.readRegistersState.successfulRead(
       this.deviceType,
       configFromDevice.model,
-      configFromDevice.fw
+      configFromDevice.fw,
     );
     this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw, isForce);
   }
@@ -211,7 +211,7 @@ export class DeviceTabStore {
       this.deviceTypesStore,
       this._fwUpdateProxy,
       this._serialDeviceProxy,
-      this._serialPortProxy
+      this._serialPortProxy,
     );
     tab.loadContent();
     return tab;

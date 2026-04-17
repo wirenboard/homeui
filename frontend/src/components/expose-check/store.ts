@@ -42,7 +42,7 @@ export class ExposeCheckStore {
 
     this._timerHandler = setTimeout(
       () => this.check(),
-      result === 'found' ? TEN_MINUTES : ONE_HOUR
+      result === 'found' ? TEN_MINUTES : ONE_HOUR,
     );
   }
 }

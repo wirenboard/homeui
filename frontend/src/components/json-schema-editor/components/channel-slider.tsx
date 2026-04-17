@@ -1,4 +1,4 @@
-import { useCallback, ChangeEvent, MouseEvent, TouchEvent, KeyboardEvent } from 'react';
+import { useCallback, type ChangeEvent, type MouseEvent, type TouchEvent, type KeyboardEvent } from 'react';
 import { Switch } from '@/components/switch';
 
 const CHANNEL_MIN = 0;
