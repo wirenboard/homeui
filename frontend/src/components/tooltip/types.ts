@@ -5,6 +5,7 @@ export interface TooltipProps {
   className?: string;
   text: string | ReactElement;
   trigger?: 'hover' | 'click';
+  id?: string;
   placement?: Placement;
   closeOnClick?: boolean;
 }

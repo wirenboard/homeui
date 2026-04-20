@@ -57,8 +57,10 @@
     border: 1px solid var(--primary-color);
 }
 
-.button-primary:not(:disabled):not(.button-outlined):hover {
+.button-primary:not(:disabled):not(.button-outlined):hover,
+.button-primary:not(.button-outlined):focus {
     background: var(--primary-color-hover);
+    color: var(--button-color);
     border: 1px solid var(--primary-color-hover);
 }
 
@@ -76,7 +78,9 @@
     fill: var(--text-color) !important;
 }
 
-.button-secondary:not(:disabled):not(.button-outlined):hover {
+.button-secondary:not(:disabled):not(.button-outlined):hover,
+.button-secondary:not(.button-outlined):focus {
+    color: var(--text-color);
     background: var(--secondary-color-hover);
 }
 
@@ -85,11 +89,14 @@
 }
 
 .button-danger {
+    color: var(--button-color);
     border: 1px solid var(--danger-color);
     background: var(--danger-color);
 }
 
-.button-danger:not(:disabled):not(.button-outlined):hover {
+.button-danger:not(:disabled):not(.button-outlined):hover,
+.button-danger:not(.button-outlined):focus {
+    color: var(--button-color);
     border: 1px solid var(--danger-color-hover);
     background: var(--danger-color-hover);
 }
@@ -99,11 +106,14 @@
 }
 
 .button-warn {
+    color: var(--button-color);
     border: 1px solid var(--warn-color);
     background: var(--warn-color);
 }
 
-.button-warn:not(:disabled):hover {
+.button-warn:not(:disabled):hover,
+.button-warn:not(.button-outlined):focus {
+    color: var(--button-color);
     border: 1px solid var(--warn-color-hover);
     background: var(--warn-color-hover);
 }
@@ -118,7 +128,9 @@
     color: var(--text-color);
 }
 
-.button-unaccented:hover {
+.button-unaccented:hover,
+.button-unaccented:not(.button-outlined):focus {
+    color: var(--text-color);
     background: var(--light-gray-color);
     border-color: var(--light-gray-color);
 }

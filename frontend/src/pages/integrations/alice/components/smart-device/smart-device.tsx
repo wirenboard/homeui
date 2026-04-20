@@ -107,6 +107,7 @@ export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpe
                 size="small"
                 type="button"
                 icon={<EditSquareIcon />}
+                aria-label={t('alice.buttons.edit-device-name')}
                 variant="secondary"
                 isOutlined
                 onClick={() => setIsEditingTitle(true)}
@@ -119,6 +120,7 @@ export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpe
               type="button"
               icon={<CopyIcon />}
               variant="secondary"
+              aria-label={t('alice.buttons.copy-device')}
               isLoading={isCopied}
               isOutlined
               onClick={onCopy}
@@ -128,6 +130,8 @@ export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpe
             type="button"
             icon={<TrashIcon />}
             variant="danger"
+            aria-label={t('alice.buttons.delete-device')}
+            aria-haspopup="dialog"
             isOutlined
             onClick={() => {
               if (id) {

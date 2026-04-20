@@ -1,0 +1,22 @@
+.skipToContentButton-container {
+    width: 100%;
+    position: absolute;
+    z-index: 99999;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.skipToContentButton:focus {
+    z-index: 9999;
+}
+
+.skipToContentButton:not(:focus) {
+    border: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}

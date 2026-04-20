@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useId } from 'react';
 import type { PropsWithChildren, MouseEvent, KeyboardEvent } from 'react';
 import ChevronDownIcon from '@/assets/icons/chevron-down.svg';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
@@ -34,7 +35,9 @@ const CardActionButton = ({ action, id }: { action: CardAction; id?: string }) =
       <button
         type="button"
         className="card-action"
-        disabled={true}
+        aria-label={action.title}
+        aria-haspopup={action.isPopupAction ? 'dialog' : null}
+        disabled
       >
         <action.icon />
       </button>
@@ -50,6 +53,8 @@ const CardActionButton = ({ action, id }: { action: CardAction; id?: string }) =
         type="button"
         className="card-action"
         disabled={action.disabled}
+        aria-label={action.title}
+        aria-haspopup={action.isPopupAction ? 'dialog' : null}
         onClick={actionCall}
       >
         <action.icon />
@@ -63,7 +68,11 @@ const CardHeader = ({
 }: CardProps) => {
   return (
     <>
-      <h4 className={classNames('card-title', { 'card-titleWithError': withError })}>{heading}</h4>
+      <h4
+        className={classNames('card-title', { 'card-titleWithError': withError })}
+        tabIndex={-1}
+      >{heading}
+      </h4>
 
       {(!!actions.length || !!toggleBody) && (
         <div className="card-actions">
@@ -75,7 +84,9 @@ const CardHeader = ({
             )
           ))}
           {!!toggleBody && (
-            isBodyVisible ? <ChevronDownIcon className="card-toggle" /> : <ChevronRightIcon className="card-toggle" />
+            isBodyVisible
+              ? <ChevronDownIcon className="card-toggle" aria-hidden="true" />
+              : <ChevronRightIcon className="card-toggle" aria-hidden="true" />
           )}
         </div>
       )}
@@ -86,6 +97,11 @@ const CardHeader = ({
 export const Card = ({
   children, id, className, heading, actions, toggleBody, withError, isBodyVisible = true, variant = 'primary',
 }: PropsWithChildren<CardProps>) => {
+  const generatedId = useId();
+  const normalizedId = id ?? generatedId;
+  const headerId = `${normalizedId}-header`;
+  const cardBodyId = `${normalizedId}-body`;
+
   const onKeyHeaderClick = (ev: KeyboardEvent<HTMLDivElement>) => {
     const target = ev.target as HTMLElement;
 
@@ -101,20 +117,24 @@ export const Card = ({
   };
 
   return (
-    <div
+    <article
       className={classNames('card', className, {
         'card-primary': variant === 'primary',
         'card-secondary': variant === 'secondary',
         'card-tertiary': variant === 'tertiary',
       })}
+      role="group"
       id={id}
     >
       {toggleBody ? (
         <div className="card-headerContainer">
           <div
             role="button"
+            id={headerId}
             className="card-header card-headerToggable"
             tabIndex={0}
+            aria-controls={cardBodyId}
+            aria-expanded={isBodyVisible}
             onClick={toggleBody}
             onKeyDown={onKeyHeaderClick}
           >
@@ -129,12 +149,16 @@ export const Card = ({
           </div>
         </div>
       ) : (
-        <div className="card-header">
+        <div id={headerId} className="card-header">
           <CardHeader heading={heading} id={id} actions={actions} withError={withError} />
         </div>
       )}
 
-      {isBodyVisible && (<div className="card-body">{children}</div>)}
-    </div>
+      {isBodyVisible && (
+        <div className="card-body" id={cardBodyId} aria-labelledby={headerId}>
+          {children}
+        </div>
+      )}
+    </article>
   );
 };

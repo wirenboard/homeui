@@ -15,6 +15,7 @@ export const Alert = ({
 }: PropsWithChildren<AlertProps>) => (
   <div
     role="alert"
+    aria-live="polite"
     className={classNames('alertMessage', className, {
       'alertMessage-m': size === 'default',
       'alertMessage-s': size === 'small',

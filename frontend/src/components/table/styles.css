@@ -15,11 +15,14 @@
     gap: 0;
 }
 
-.wb-tableRow:not(.wb-tableRowHeading):hover .wb-tableCell {
+.wb-tableRow:not(.wb-tableRowHeading):hover .wb-tableCell,
+.wb-tableRow:not(.wb-tableRowHeading):focus .wb-tableCell,
+.wb-tableRow:not(.wb-tableRowHeading):has(a:focus) {
     background: var(--table-item-hover);
 }
 
 .wb-tableRow:focus-within .wb-tableCellInvisible,
+.wb-tableRow:has(a:focus) .wb-tableCellInvisible,
 .wb-tableRow:hover .wb-tableCellInvisible {
     visibility: visible;
 }

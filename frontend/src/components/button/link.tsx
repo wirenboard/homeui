@@ -1,13 +1,12 @@
 import classNames from 'classnames';
 import { Loader } from '@/components/loader';
-import { type ButtonProps } from './types';
+import { type ButtonLinkProps } from './types';
 import './styles.css';
 
-export const Button = ({
-  className, type, icon, label, isOutlined, isLoading, size = 'default', variant = 'primary', ...rest
-}: ButtonProps) => (
-  <button
-    type={type || 'button'}
+export const ButtonLink = ({
+  className, icon, label, isOutlined, isLoading, size = 'default', variant = 'primary', ...rest
+}: ButtonLinkProps) => (
+  <a
     className={classNames('button', className, {
       'button-l': size === 'large',
       'button-m': size === 'default',
@@ -19,7 +18,6 @@ export const Button = ({
       'button-warn': variant === 'warn',
       'button-outlined': isOutlined,
     })}
-    aria-busy={isLoading}
     {...rest}
   >
     {isLoading && <Loader className="button-loader" />}
@@ -32,5 +30,5 @@ export const Button = ({
       </span>
     )}
     {!!label && <span className={classNames('button-text', { 'button-loading': isLoading })}>{label}</span>}
-  </button>
+  </a>
 );

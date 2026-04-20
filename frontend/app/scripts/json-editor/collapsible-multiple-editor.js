@@ -58,8 +58,10 @@ export function makeCollapsibleMultipleEditor() {
       }
 
       const { container } = this;
+      const id = Math.random().toString(36).substring(2, 10);
 
       this.header = this.label = this.theme.getFormInputLabel(this.getTitle(), this.isRequired());
+      this.label.htmlFor = id;
       this.container.appendChild(this.header);
 
       this.switcher = this.theme.getSwitcher();
@@ -67,6 +69,8 @@ export function makeCollapsibleMultipleEditor() {
 
       var opt_group = undefined;
       var opt_group_id = undefined;
+
+      this.switcher.id = id;
 
       this.types.forEach((type, i) => {
         this.editors[i] = false;

@@ -26,7 +26,10 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
 
   const actions = [
     {
-      title: t('devices.labels.delete'), action: (id: string) => setDeletedDeviceId(id), icon: TrashIcon,
+      title: t('devices.labels.delete'),
+      action: (id: string) => setDeletedDeviceId(id),
+      icon: TrashIcon,
+      isPopupAction: true,
     },
   ];
 
@@ -40,6 +43,7 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
         >
           <Button
             variant="secondary"
+            aria-label={store.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
             icon={store.hasOpenedDivices ? <CollapseIcon /> : <ExpandIcon />}
             onClick={store.toggleDevices}
           />

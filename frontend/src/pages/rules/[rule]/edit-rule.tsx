@@ -84,7 +84,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
       }
       stickyHeader
       onTitleChange={(title) => rulesStore.setRuleName(title)}
-      onTitleEditEnable={() => setIsEditingTitle(true)}
+      onTitleEditEnable={() => setIsEditingTitle(!isEditingTitle)}
     >
       <div className="editRule-container">
         <CodeEditor

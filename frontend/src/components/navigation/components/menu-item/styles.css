@@ -48,7 +48,7 @@
 }
 
 .menuItem-link:hover,
-.menuItem-link:focus:not(.menuItem-linkWithSubmenu) {
+.menuItem-link:focus {
     background: var(--nav-item-hover);
     color: #fff;
 }

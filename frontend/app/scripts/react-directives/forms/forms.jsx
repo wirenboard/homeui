@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react-lite';
-import { useContext, createContext, forwardRef } from 'react';
+import { useContext, createContext, forwardRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, LineEdit, Button } from '../common';
+import TrashIcon from '@/assets/icons/trash.svg';
+import { Button } from '@/components/button';
+import { Checkbox, LineEdit } from '../common';
 import BootstrapLikeSelect from '../components/select/select';
 import CollapsiblePanel from './collapsiblePanel';
 
@@ -17,11 +19,11 @@ function makeFlexItemStyle(columns) {
   };
 }
 
-export const FormEditDescription = observer(({ description, defaultText }) => {
+export const FormEditDescription = observer(({ description, defaultText, id }) => {
   const { t } = useTranslation();
   if (defaultText) {
     return (
-      <p className="help-block">
+      <p className="help-block" id={id}>
         {description && <>{description} </>}
         {t('forms.default-text-prefix')}
         <span className="form-edit-default-text">{defaultText}</span>
@@ -29,20 +31,20 @@ export const FormEditDescription = observer(({ description, defaultText }) => {
       </p>
     );
   }
-  return <>{description && <p className="help-block">{description}</p>}</>;
+  return <>{description && <p className="help-block" id={id}>{description}</p>}</>;
 });
 
-export const FormEdit = observer(({ store, children }) => {
+export const FormEdit = observer(({ store, children, labelId, descriptionId }) => {
   const showCaption = useContext(ShowParamCaptionContext);
   return (
     <div
       className={store.hasErrors ? 'form-group has-error' : 'form-group'}
       style={makeFlexItemStyle(store?.formColumns)}
     >
-      {showCaption && <label className="control-label">{store.name}</label>}
+      {showCaption && <label className="control-label" id={labelId}>{store.name}</label>}
       {children}
       {showCaption && (
-        <FormEditDescription description={store.description} defaultText={store.defaultText} />
+        <FormEditDescription description={store.description} id={descriptionId} defaultText={store.defaultText} />
       )}
       {store.error && !store?.isHideErrorText && <div className="help-block">{store.error}</div>}
     </div>
@@ -51,13 +53,18 @@ export const FormEdit = observer(({ store, children }) => {
 
 export const FormStringEdit = observer(
   forwardRef(({ store }, ref) => {
+    const labelId = useId();
+    const descriptionId = useId();
+
     return (
-      <FormEdit store={store}>
+      <FormEdit store={store} labelId={labelId} descriptionId={descriptionId}>
         <LineEdit
           value={store.value === undefined ? '' : store.value}
           placeholder={store.placeholder}
           disabled={store.readOnly}
           ref={ref}
+          labelId={labelId}
+          descriptionId={descriptionId}
           type={store.editType}
           required={store.required}
           autocomplete={store.autocomplete}
@@ -142,8 +149,10 @@ export const FormCollapsibleTable = observer(({ store }) => {
                 })}
                 <td>
                   <Button
-                    icon="glyphicon glyphicon-trash"
                     title={t('forms.remove')}
+                    aria-label={t('forms.remove')}
+                    variant="secondary"
+                    icon={<TrashIcon />}
                     onClick={() => {
                       if (confirm(t('forms.confirm-remove'))) {
                         store.remove(index);

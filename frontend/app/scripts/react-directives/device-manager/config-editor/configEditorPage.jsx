@@ -152,6 +152,7 @@ const PageTabs = observer(
             <Button
               additionalStyles="add-port-button"
               label={t('device-manager.buttons.add-port')}
+              ariaHasPopup={true}
               onClick={onAddPort}
             />
           )}
@@ -206,6 +207,7 @@ const AddDevicesButtonsPanel = ({ allowAddDevice, onAddDevice, onAddWbDevice }) 
       />
       <Button
         label={t('device-manager.buttons.add-custom-device')}
+        ariaHasPopup={true}
         disabled={!allowAddDevice}
         onClick={onAddDevice}
       />
