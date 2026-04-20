@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.198.0) stable; urgency=medium
 
   * Update a11y
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Apr 2026 18:08:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 20 Apr 2026 08:32:00 +0300
+
+wb-mqtt-homeui (2.197.12) stable; urgency=medium
+
+  * Update json-editor version to 2.5.3-wb17
+
+ -- Valerii Trovimov <valeriy.trofimov@wirenboard.com>  Fri, 17 Apr 2026 17:26:00 +0300
 
 wb-mqtt-homeui (2.197.11) stable; urgency=medium
 
