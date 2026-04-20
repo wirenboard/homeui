@@ -5,6 +5,7 @@ const Y_CHART_MARGIN = 25;
 
 const makeBoolAxis = (index: number, axisCount: number, calcRange = false): Record<string, any> => {
   const axis: Record<string, any> = {
+    automargin: true,
     type: 'linear',
     tickmode: 'array',
     tickvals: [0, 1],
@@ -58,7 +59,7 @@ export const fixBoolAxes = (
   layout: Partial<PlotlyLayout>,
   config: PlotlyData[],
   minValue?: number,
-  maxValue?: number
+  maxValue?: number,
 ) => {
   const isBoolAxis = (axis?: Record<string, any>) => axis?.customdata === ChartType.Boolean;
   const isCommonAxis = (axis?: Record<string, any>) => axis?.customdata === ChartType.Number;
