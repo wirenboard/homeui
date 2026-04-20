@@ -17,16 +17,17 @@ export const Input = ({
   size = 'default',
   ariaLabel,
   ariaDescribedby,
+  ariaLive,
   ariaInvalid,
   ariaErrorMessage,
   ...rest
 }: InputProps) => {
   const defaultValue = type === 'number' ? 0 : '';
-  const [internalValue, setInternalValue] = useState(value || defaultValue);
+  const [internalValue, setInternalValue] = useState(value ?? defaultValue);
   const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
 
   useEffect(() => {
-    setInternalValue(value || defaultValue);
+    setInternalValue(value ?? defaultValue);
   }, [value]);
 
   const handleBlurOrChange = () => {
@@ -73,6 +74,7 @@ export const Input = ({
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedby}
       aria-invalid={ariaInvalid}
+      aria-live={ariaLive}
       aria-errormessage={ariaErrorMessage}
       onChange={handleOnChange}
       onBlur={handleBlurOrChange}

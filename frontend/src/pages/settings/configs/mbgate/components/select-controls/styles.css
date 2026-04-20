@@ -1,0 +1,11 @@
+.selectControls-header {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.selectControls-mqttId {
+    margin-left: 4px;
+    color: var(--gray-color);
+}

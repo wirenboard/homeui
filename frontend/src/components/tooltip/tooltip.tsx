@@ -26,6 +26,7 @@ export const Tooltip = ({
   closeOnClick = false,
   trigger = 'hover',
   placement = 'top',
+  ...rest
 }: PropsWithChildren<TooltipProps>) => {
   const [isOpen, setIsOpen] = useState(false);
   const arrowRef = useRef(null);
@@ -72,7 +73,7 @@ export const Tooltip = ({
 
   return (
     <>
-      <div className="wb-tooltip-container" ref={refs.setReference} {...getReferenceProps()}>{children}</div>
+      <div className="wb-tooltip-container" ref={refs.setReference} {...getReferenceProps()} {...rest}>{children}</div>
       <FloatingPortal>
         {isOpen && !!text && (
           <div

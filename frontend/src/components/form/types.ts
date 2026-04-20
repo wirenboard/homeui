@@ -1,3 +1,4 @@
+import { type CSSProperties } from 'react';
 import { type Option } from '@/components/dropdown';
 
 export interface FormFieldProps {
@@ -6,6 +7,7 @@ export interface FormFieldProps {
   defaultText?: string;
   descriptionId?: string;
   errorId?: string;
+  style?: CSSProperties;
 }
 
 export interface FieldLabelProps {
@@ -25,26 +27,35 @@ export interface FieldErrorProps {
 }
 
 export interface StringFieldProps {
-  title: string;
+  title?: string;
   value: string | number;
   description?: string;
   placeholder?: string;
   error?: string;
+  type?: 'text' | 'number';
   view?: 'input' | 'textarea';
   defaultText?: string;
   isDisabled?: boolean;
   autoComplete?: 'username' | 'new-password' | 'current-password' | 'off';
   required?: boolean;
   autoFocus?: boolean;
+  formStyle?: CSSProperties;
   onChange: (value: string | number) => void;
+}
+
+export interface PasswordFieldProps extends StringFieldProps {
+  showIndicator?: boolean;
+  value: string;
 }
 
 export interface BooleanFieldProps {
   title: string;
   value: boolean;
+  view: 'switch' | 'checkbox';
   description?: string;
   error?: string;
   isDisabled?: boolean;
+  formStyle?: CSSProperties;
   onChange: (value: boolean) => void;
 }
 
@@ -62,5 +73,6 @@ export interface OptionsFieldProps<T = string | boolean | number | null | unknow
   placeholder?: string;
   isSearchable?: boolean;
   isClearable?: boolean;
+  formStyle?: CSSProperties;
   onChange: (value: T) => void;
 }

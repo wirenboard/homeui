@@ -75,6 +75,7 @@ const EditSvgDashboardPage = observer(({ dashboardsStore, devicesStore, openPage
                 <Button
                   variant="danger"
                   label={t('edit-svg-dashboard.buttons.remove')}
+                  aria-haspopup="dialog"
                   onClick={() => setIsDeleteDashboard(true)}
                 />
               </>

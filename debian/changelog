@@ -1,8 +1,38 @@
-wb-mqtt-homeui (2.198.0) stable; urgency=medium
+wb-mqtt-homeui (2.200.0) stable; urgency=medium
 
   * Update history page
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 16 Apr 2026 16:54:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 20 Apr 2026 15:10:00 +0300
+
+wb-mqtt-homeui (2.199.0) stable; urgency=medium
+
+  * Rewrite mbgate page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 20 Apr 2026 09:42:00 +0300
+
+wb-mqtt-homeui (2.198.0) stable; urgency=medium
+
+  * Update a11y
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 20 Apr 2026 08:32:00 +0300
+
+wb-mqtt-homeui (2.197.12) stable; urgency=medium
+
+  * Update json-editor version to 2.5.3-wb17
+
+ -- Valerii Trovimov <valeriy.trofimov@wirenboard.com>  Fri, 17 Apr 2026 17:26:00 +0300
+
+wb-mqtt-homeui (2.197.11) stable; urgency=medium
+
+  * Fix cell creation
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 17 Apr 2026 11:55:00 +0300
+
+wb-mqtt-homeui (2.197.10) stable; urgency=medium
+
+  * Reload DALI device settings after group or broadcast command
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 17 Apr 2026 08:42:51 +0500
 
 wb-mqtt-homeui (2.197.9) stable; urgency=medium
 

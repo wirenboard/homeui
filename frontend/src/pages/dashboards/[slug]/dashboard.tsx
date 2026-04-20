@@ -35,12 +35,15 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
 
   const actions = hasEditRights && !params.has('hmi') ? [
     {
-      title: t('dashboard.buttons.remove-widget'), action: (id: string) => {
-        setRemovedWidgetId(id);
-      }, icon: TrashIcon,
+      title: t('dashboard.buttons.remove-widget'), action: (id: string) => setRemovedWidgetId(id),
+      icon: TrashIcon,
+      isPopupAction: true,
     },
     {
-      title: t('dashboard.buttons.edit-widget'), action: (id: string) => setEditingWidgetId(id), icon: EditIcon,
+      title: t('dashboard.buttons.edit-widget'),
+      action: (id: string) => setEditingWidgetId(id),
+      icon: EditIcon,
+      isPopupAction: true,
     },
   ] : [];
 
@@ -73,6 +76,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
             {hasEditRights && !isFullscreen && (
               <Button
                 label={t('dashboard.buttons.add-widget')}
+                aria-haspopup="dialog"
                 onClick={() => setIsAddWidgetModalOpened(true)}
               />
             )}
@@ -83,6 +87,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
               <Button
                 icon={isFullscreen ? <FullScreenExitIcon/> : <FullScreenIcon/>}
                 variant="secondary"
+                aria-label={isFullscreen ? t('dashboard.buttons.fullscreen-exit') : t('dashboard.buttons.fullscreen')}
                 onClick={() => toggleFullscreen()}
               />
             </Tooltip>

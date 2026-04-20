@@ -144,8 +144,8 @@
 }
 
 .widgetEdit-iconAction {
-    width: 18px;
-    height: 18px;
+    width: 18px !important;
+    height: 18px !important;
     cursor: pointer;
     display: flex;
 }

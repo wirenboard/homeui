@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import useResizeObserver from 'use-resize-observer';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
 import FullScreenIcon from '@/assets/icons/full-screen.svg';
-import { Button } from '@/components/button';
+import { Button, ButtonLink } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
@@ -83,13 +83,11 @@ export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
         actions={
           <>
             {hasRights(UserRole.Operator) && !(isFullscreen || params.has('fullscreen')) && (
-              <a href={`#!/dashboards/svg/edit/${id}`}>
-                <Button
-                  variant="primary"
-                  type="button"
-                  label={t('svg-dashboard.buttons.edit')}
-                />
-              </a>
+              <ButtonLink
+                href={`#!/dashboards/svg/edit/${id}`}
+                type="button"
+                label={t('svg-dashboard.buttons.edit')}
+              />
             )}
 
             {!params.has('fullscreen') && (
@@ -102,6 +100,9 @@ export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
                 <Button
                   icon={isFullscreen ? <FullScreenExitIcon/> : <FullScreenIcon/>}
                   variant="secondary"
+                  aria-label={isFullscreen
+                    ? t('svg-dashboard.buttons.exit-fullscreen')
+                    : t('svg-dashboard.buttons.fullscreen')}
                   onClick={() => toggleFullscreen()}
                 />
               </Tooltip>

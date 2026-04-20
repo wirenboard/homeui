@@ -4,7 +4,6 @@ import { authStore, UserRole, type User } from '@/stores/auth';
 import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/httpsUtils';
 import { request } from '@/utils/request';
 import i18n from '~/i18n/react/config';
-import type { UserParams } from './components/edit-user/types';
 
 function sortUsers(users: User[]) {
   users.sort((a, b) => {
@@ -16,14 +15,12 @@ function sortUsers(users: User[]) {
 }
 
 class UsersPageStore {
-  public isLoading = false;
   public errors = [];
   public users: User[] = [];
   public httpsDomainName = '';
   public autologinUser = null;
   public autologinOptions = [];
   public showEnableHttpsConfirmModal: () => Promise<boolean>;
-  public showUserEditModal: () => Promise<UserParams>;
 
   constructor() {
     makeAutoObservable(this);
@@ -49,7 +46,6 @@ class UsersPageStore {
   }
 
   async loadUsers() {
-    this.isLoading = true;
     try {
       const users = await authStore.getUsers().then(({ data }) => data);
       this.setUsers(users);
@@ -60,10 +56,6 @@ class UsersPageStore {
     } catch (error) {
       this.processFetchError(error);
       this.setUsers([]);
-    } finally {
-      runInAction(() => {
-        this.isLoading = false;
-      });
     }
   }
 
@@ -122,14 +114,9 @@ class UsersPageStore {
   async fetchWrapper(fetchFn: () => Promise<any>) {
     try {
       this.errors = [];
-      this.isLoading = true;
       return await fetchFn();
     } catch (error) {
       this.processFetchError(error);
-    } finally {
-      runInAction(() => {
-        this.isLoading = false;
-      });
     }
     return null;
   }
@@ -142,7 +129,6 @@ class UsersPageStore {
       return true;
     }
     this.errors = [];
-    this.isLoading = true;
 
     try {
       await request.patch('/api/https', { enabled: true });
@@ -150,22 +136,11 @@ class UsersPageStore {
       return false;
     } catch (error) {
       this.processFetchError(error);
-    } finally {
-      this.isLoading = false;
     }
     return false;
   }
 
-  async addUser() {
-    if (!authStore.areUsersConfigured) {
-      if (!await this.confirmSetupHttps()) {
-        return;
-      }
-    }
-    const user = await this.showUserEditModal();
-    if (!user) {
-      return;
-    }
+  async addUser(user) {
     const res = await this.fetchWrapper(() => authStore.addUser(user));
     if (res === null) {
       return;
@@ -182,12 +157,7 @@ class UsersPageStore {
     });
   }
 
-  async editUser(user: User) {
-    const modifiedUser = await this.showUserEditModal();
-
-    if (!modifiedUser) {
-      return;
-    }
+  async editUser(user: User, modifiedUser: User) {
     const res = await this.fetchWrapper(() => authStore.updateUser(user.id, modifiedUser));
     if (res === null) {
       return;
