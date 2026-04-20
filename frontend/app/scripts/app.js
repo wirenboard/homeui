@@ -35,7 +35,6 @@ import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
 import spinnerService from './services/spinner';
 import pageStateService from './services/pagestate';
-import deviceDataService from './services/devicedata';
 import hiliteService from './services/hilite';
 import rolesFactoryService from './services/roles.factory';
 import diagnosticProxyService from './services/diagnosticProxy';
@@ -114,7 +113,6 @@ module
   .factory('Spinner', spinnerService)
   .value('forceBeforeUnloadConfirmationForTests', false)
   .factory('PageState', pageStateService)
-  .factory('DeviceData', deviceDataService)
   .factory('DiagnosticProxy', diagnosticProxyService)
   .factory('DeviceManagerProxy', deviceManagerProxyService)
   .factory('SerialProxy', serialProxyService)
@@ -125,10 +123,6 @@ module
 
   .service('rolesFactory', rolesFactoryService)
 
-  .run(DeviceData => {
-    'ngInject';
-    // make sure DeviceData is loaded at the startup so no MQTT messages are missed
-  })
   .filter('hilite', hiliteService);
 
 // Register controllers
