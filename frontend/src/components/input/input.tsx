@@ -23,11 +23,11 @@ export const Input = ({
   ...rest
 }: InputProps) => {
   const defaultValue = type === 'number' ? 0 : '';
-  const [internalValue, setInternalValue] = useState(value || defaultValue);
+  const [internalValue, setInternalValue] = useState(value ?? defaultValue);
   const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
 
   useEffect(() => {
-    setInternalValue(value || defaultValue);
+    setInternalValue(value ?? defaultValue);
   }, [value]);
 
   const handleBlurOrChange = () => {

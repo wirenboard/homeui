@@ -12,15 +12,15 @@ export const StringField = ({
   error,
   defaultText,
   view = 'input',
+  type = 'text',
   onChange,
+  formStyle,
   ...rest
 }: StringFieldProps) => {
   const inputId = useId();
   const descriptionId = useId();
   const errorId = useId();
   const hasErrors = !!error;
-
-  const Component = view === 'input' ? Input : Textarea;
 
   return (
     <FormField
@@ -29,18 +29,33 @@ export const StringField = ({
       defaultText={defaultText}
       descriptionId={descriptionId}
       errorId={errorId}
+      style={formStyle}
     >
-      <FieldLabel title={title} inputId={inputId} />
-      <Component
-        id={inputId}
-        value={value}
-        isInvalid={!!error}
-        ariaDescribedby={descriptionId}
-        ariaInvalid={hasErrors}
-        ariaErrorMessage={errorId}
-        onChange={onChange}
-        {...rest}
-      />
+      {title && <FieldLabel title={title} inputId={inputId} />}
+      {view === 'input' ? (
+        <Input
+          id={inputId}
+          type={type}
+          value={value as string}
+          isInvalid={!!error}
+          ariaDescribedby={descriptionId}
+          ariaInvalid={hasErrors}
+          ariaErrorMessage={errorId}
+          onChange={onChange}
+          {...rest}
+        />
+      ) : (
+        <Textarea
+          id={inputId}
+          value={value as string}
+          isInvalid={!!error}
+          ariaDescribedby={descriptionId}
+          ariaInvalid={hasErrors}
+          ariaErrorMessage={errorId}
+          onChange={onChange}
+          {...rest}
+        />
+      )}
     </FormField>
   );
 };

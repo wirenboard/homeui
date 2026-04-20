@@ -11,11 +11,12 @@ export const FormField = ({
   defaultText,
   descriptionId,
   errorId,
+  style,
 }: PropsWithChildren<FormFieldProps>) => {
   const showError = !!error;
   const showDescription = description || defaultText;
   return (
-    <div className={classNames('form-field', { 'form-fieldError': showError })} >
+    <div className={classNames('form-field', { 'form-fieldError': showError })} style={style}>
       {children}
       {showError && <FieldError id={errorId} error={error} />}
       {showDescription && (

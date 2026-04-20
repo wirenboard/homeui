@@ -14,6 +14,7 @@ export const OptionsField = ({
   isDisabled,
   isClearable,
   isSearchable,
+  formStyle,
   onChange,
 }: OptionsFieldProps) => {
   const inputId = useId();
@@ -25,8 +26,9 @@ export const OptionsField = ({
       error={error}
       descriptionId={descriptionId}
       errorId={errorId}
+      style={formStyle}
     >
-      <FieldLabel title={title} inputId={inputId} />
+      {!!title && <FieldLabel title={title} inputId={inputId} />}
       <Dropdown
         id={inputId}
         value={value}
