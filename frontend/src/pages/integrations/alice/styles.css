@@ -16,6 +16,14 @@
     gap: 6px;
 }
 
+.alice-binding {
+    width: fit-content;
+}
+
+.alice-binding:focus {
+    text-decoration: underline;
+}
+
 .alice-unlink {
     background: none;
     border: none;

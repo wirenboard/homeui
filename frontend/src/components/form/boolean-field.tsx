@@ -32,6 +32,7 @@ export const BooleanField = ({
             value={value}
             ariaLabel={title}
             isDisabled={isDisabled}
+            ariaDescribedby={descriptionId}
             onChange={onChange}
           />
         ) : (
@@ -40,9 +41,9 @@ export const BooleanField = ({
             checked={value}
             ariaLabel={title}
             isDisabled={isDisabled}
+            ariaDescribedby={descriptionId}
             onChange={onChange}
           />
-
         )}
         <span>{title}</span>
       </label>

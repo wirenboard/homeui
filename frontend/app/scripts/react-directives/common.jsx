@@ -1,4 +1,5 @@
-import { useId } from 'react';
+import { useId, forwardRef } from 'react';
+import { Password } from '@/components/password';
 
 export const BootstrapRow = ({ children, additionalStyles }) => {
   const classes = 'row' + (additionalStyles ? ' ' + additionalStyles : '');
@@ -52,7 +53,7 @@ export const ErrorBar = ({ msg, children }) => {
   );
 };
 
-export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title, submit }) => {
+export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, ariaHasPopup, title, submit }) => {
   const classes =
     'btn btn-' + (type ? type : 'default') + (additionalStyles ? ' ' + additionalStyles : '');
   return (
@@ -61,6 +62,7 @@ export const Button = ({ label, type, onClick, disabled, additionalStyles, icon,
       className={classes}
       disabled={disabled}
       title={title}
+      aria-haspopup={ariaHasPopup ? 'dialog' : null}
       onClick={onClick}
     >
       {icon && (
@@ -84,3 +86,60 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
     </div>
   );
 };
+
+export const LineEdit = forwardRef(
+  ({ placeholder, value, onChange, disabled, type, name, required, autocomplete, showIndicator, labelId, descriptionId }, ref) => {
+    if (type === 'textarea') {
+      return (
+        <textarea
+          ref={ref}
+          className="form-control"
+          placeholder={placeholder}
+          value={value}
+          disabled={disabled}
+          name={name}
+          required={required}
+          autoComplete={autocomplete}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
+          onChange={onChange}
+        />
+      );
+    } else if (type === 'password') {
+      return (
+        <Password
+          ref={ref}
+          className="form-control"
+          placeholder={placeholder}
+          value={value}
+          disabled={disabled}
+          name={name}
+          required={required}
+          autoComplete={autocomplete}
+          showIndicator={showIndicator}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
+          isFullWidth
+          onChangeEvent={onChange}
+        />
+      );
+    } else {
+      return (
+        <input
+          ref={ref}
+          className="form-control"
+          type={type || 'text'}
+          placeholder={placeholder}
+          value={value}
+          disabled={disabled}
+          name={name}
+          required={required}
+          autoComplete={autocomplete}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
+          onChange={onChange}
+        />
+      );
+    }
+  }
+);

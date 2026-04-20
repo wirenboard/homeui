@@ -77,6 +77,7 @@ export const Password = ({
               'password-toggleL': size === 'large',
             })}
             type="button"
+            aria-label={t(isHidden ? 'common.buttons.password-show' : 'common.buttons.password-hide')}
             icon={isHidden ? <VisibilityIcon /> : <VisibilityOffIcon />}
             variant="secondary"
             isOutlined

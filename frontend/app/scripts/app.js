@@ -63,6 +63,7 @@ import navigationDirective from '~/react-directives/navigation/navigation';
 import rulesConsoleDirective from '~/react-directives/rules-console/rules-console';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
 import loginPageDirective from './react-directives/login/login';
+import skipToMainContentDirective from '~/react-directives/skip-to-main-content/skip-to-main-content';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -164,6 +165,7 @@ module
   .directive('onResize', ['$parse', onResizeDirective])
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
+  .directive('skipToMainContent', skipToMainContentDirective)
   .directive('rulesConsole', rulesConsoleDirective)
   .directive('loginPage', loginPageDirective);
 
@@ -275,7 +277,9 @@ const realApp = angular
     ) => {
       'ngInject';
 
-      $rootScope.$on('$translateChangeSuccess', () => {
+      $rootScope.$on('$translateChangeSuccess', (data) => {
+        $rootScope.language = $translate.use();
+
         $translate([
           'datepicker.buttons.close',
           'datepicker.buttons.today',

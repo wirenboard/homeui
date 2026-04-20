@@ -11,4 +11,6 @@ export interface MenuItemProps {
   setActivePopup: (_val: string) => void;
   isChildren?: boolean;
   closeMobileMenu: () => void;
+  isMenuFocused: boolean;
+  setIsMenuFocused: (_val: boolean) => void;
 }

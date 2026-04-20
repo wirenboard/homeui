@@ -11,8 +11,8 @@
 
 .dashboardList-icon {
     color: var(--text-color);
-    width: 18px;
-    height: 18px;
-    text-align: center;
+    width: 22px;
+    height: 22px;
+    margin: 0 auto;
     display: flex;
 }

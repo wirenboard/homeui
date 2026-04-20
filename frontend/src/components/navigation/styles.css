@@ -65,12 +65,20 @@
     width: 144px;
     height: 60px;
     margin: 12px auto;
+    transition: transform ease 300ms;
 
     @media(max-width: 768px) {
         margin: 0;
         padding: 0;
         height: 36px;
     }
+}
+
+.navigation-logo:hover,
+.navigation-logoLink:focus .navigation-logo,
+.navigation-logoCompact:hover,
+.navigation-logoCompact:focus .navigation-logo {
+    transform: scale(1.05);
 }
 
 .navigation-logoCompact {

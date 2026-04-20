@@ -11,6 +11,7 @@ export const Switch = ({
   isInvalid,
   onChange = () => {},
   ariaLabel,
+  ariaLabelledby,
   ariaDescribedby,
   ariaInvalid,
   ariaErrorMessage,
@@ -32,6 +33,7 @@ export const Switch = ({
         checked={value}
         disabled={isDisabled}
         aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledby}
         aria-describedby={ariaDescribedby}
         aria-invalid={ariaInvalid}
         aria-errormessage={ariaErrorMessage}

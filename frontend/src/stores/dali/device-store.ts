@@ -18,6 +18,7 @@ export class DeviceStore extends BaseItemStore {
     makeObservable(this, {
       load: action,
       save: action,
+      dropCache: action,
       isLoading: observable,
       error: observable,
     });
@@ -73,6 +74,10 @@ export class DeviceStore extends BaseItemStore {
         this.isLoading = false;
       });
     }
+  }
+
+  dropCache() {
+    this.objectStore = null;
   }
 
   async identify() {

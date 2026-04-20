@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useRef } from 'react';
+import { useId, useRef, useState } from 'react';
 import Select, { components, type SelectInstance } from 'react-select';
 import PlusIcon from '@/assets/icons/plus.svg';
 import type { DropdownProps, Option } from './types';
@@ -15,6 +15,18 @@ const getClassNames = (className: string, size: DropdownProps['size']) => classN
   'dropdown-m': size === 'default',
   'dropdown-s': size === 'small',
 });
+
+const Placeholder = (props: any) => (
+  <components.Placeholder {...props} innerProps={{ ...props.innerProps, 'aria-hidden': true }}>
+    {props.selectProps?.placeholder}
+  </components.Placeholder>
+);
+
+const SingleValue = (props: any) => (
+  <components.SingleValue {...props} innerProps={{ ...props.innerProps, 'aria-hidden': true }}>
+    {props.children}
+  </components.SingleValue>
+);
 
 const MenuPortal = (props: any, size: DropdownProps['size']) => (
   <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
@@ -36,7 +48,9 @@ export const Dropdown = ({
   minWidth = '150px',
   onChange,
 }: DropdownProps) => {
-  const select = useRef<SelectInstance>();
+  const select = useRef<SelectInstance>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const inputId = id ?? useId();
 
   const handleChange = (option) => {
     if (isButton && option) {
@@ -45,6 +59,16 @@ export const Dropdown = ({
       });
     }
     onChange(option);
+  };
+
+  const handleKeyDown = (ev) => {
+    if (ev.key === 'Enter' && !isMenuOpen) {
+      ev.preventDefault();
+      select.current.openMenu('first');
+    }
+    if (ev.key === 'Escape' && isMenuOpen) {
+      ev.stopPropagation();
+    }
   };
 
   const findOption = (options: Option<unknown>[], value: unknown) => {
@@ -66,7 +90,7 @@ export const Dropdown = ({
   return (
     <Select
       ref={select}
-      inputId={id}
+      inputId={inputId}
       className={classNames(getClassNames(className, size), {
         'dropdown-button': isButton,
         'dropdown-invalid': isInvalid,
@@ -85,8 +109,10 @@ export const Dropdown = ({
       components={{
         MenuPortal: (props) => MenuPortal({ ...props, className }, size),
         DropdownIndicator: (props) => DropdownIndicator(props, isButton),
+        Placeholder: (props) => Placeholder(props),
+        SingleValue: (props) => SingleValue(props),
       }}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel || placeholder}
       styles={{
         control: (baseStyles, _state) => ({
           ...baseStyles,
@@ -97,7 +123,11 @@ export const Dropdown = ({
           display: data?.hidden ? 'none' : baseStyles.display,
         }),
       }}
+      tabSelectsValue={false}
       unstyled
+      onMenuOpen={() => setIsMenuOpen(true)}
+      onMenuClose={() => setIsMenuOpen(false)}
+      onKeyDown={handleKeyDown}
       onChange={handleChange}
     />
   );

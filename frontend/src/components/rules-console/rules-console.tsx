@@ -93,6 +93,12 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
   }, []);
 
   useEffect(() => {
+    if (container.current) {
+      container.current?.focus();
+    }
+  }, [container]);
+
+  useEffect(() => {
     if (content.current && !isStopAutoScroll) {
       content.current.scrollTo({ top: content.current.scrollHeight });
     }
@@ -111,27 +117,37 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
   }, [isMobile]);
 
   return (
-    <div
+    <aside
       className={classNames('rulesConsole', {
         'rulesConsole-bottom': position === 'bottom',
         'rulesConsole-right': position === 'right',
       })}
       ref={container}
+      aria-label={t('rules-console.title')}
+      tabIndex={0}
       style={{ height: position === 'bottom' ? height : '100%', width: position === 'right' ? width : '100%' }}
     >
       <div className="rulesConsole-resizer" id="resizer" ref={resizer}></div>
-      <div className="rulesConsole-header">
+      <header className="rulesConsole-header">
         <div className="rulesConsole-headerActions">
           <div className="rulesConsole-separatorRight">
             <Tooltip text={t('rules-console.buttons.clear')}>
-              <button className="rulesConsole-button" onClick={() => rulesStore.clearLogs()}>
+              <button
+                className="rulesConsole-button"
+                aria-label={t('rules-console.buttons.clear')}
+                onClick={() => rulesStore.clearLogs()}
+              >
                 <ClearIcon className="rulesConsole-icon"/>
               </button>
             </Tooltip>
           </div>
 
           <Tooltip text={t('rules-console.buttons.debug')}>
-            <button className="rulesConsole-button" onClick={() => rulesStore.toggleRuleDebugging()}>
+            <button
+              className="rulesConsole-button"
+              aria-label={t('rules-console.buttons.debug')}
+              onClick={() => rulesStore.toggleRuleDebugging()}
+            >
               <BugIcon
                 className={classNames('rulesConsole-icon', {
                   'rulesConsole-iconActive': isRuleDebugEnabled,
@@ -151,7 +167,11 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
 
         <div className="rulesConsole-headerActions rulesConsole-separatorLeft">
           <Tooltip text={t('rules-console.buttons.dock-bottom')}>
-            <button className="rulesConsole-button" onClick={() => changePosition('bottom')}>
+            <button
+              className="rulesConsole-button"
+              aria-label={t('rules-console.buttons.dock-bottom')}
+              onClick={() => changePosition('bottom')}
+            >
               <LayoutBottomIcon
                 className={classNames('rulesConsole-icon', {
                   'rulesConsole-iconActive': position === 'bottom',
@@ -161,7 +181,12 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
           </Tooltip>
 
           <Tooltip text={t('rules-console.buttons.dock-right')}>
-            <button className="rulesConsole-button" disabled={isMobile} onClick={() => changePosition('right')}>
+            <button
+              className="rulesConsole-button"
+              disabled={isMobile}
+              aria-label={t('rules-console.buttons.dock-right')}
+              onClick={() => changePosition('right')}
+            >
               <LayoutRightIcon
                 className={classNames('rulesConsole-icon', {
                   'rulesConsole-iconActive': position === 'right',
@@ -171,15 +196,21 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
           </Tooltip>
 
           <Tooltip text={t('rules-console.buttons.close')}>
-            <button className="rulesConsole-button rulesConsole-close" onClick={toggleConsole}>
+            <button
+              className="rulesConsole-button rulesConsole-close"
+              aria-label={t('rules-console.buttons.close')}
+              onClick={toggleConsole}
+            >
               <CloseIcon className="rulesConsole-icon" />
             </button>
           </Tooltip>
         </div>
-      </div>
+      </header>
       <div
         className="rulesConsole-content"
         ref={content}
+        role="log"
+        aria-live="polite"
         onScroll={handleScroll}
       >
         {logs
@@ -191,15 +222,19 @@ export const RulesConsole = observer(({ toggleConsole, changeConsoleView, rulesS
                 'rulesConsole-logError': log.level === 'error',
                 'rulesConsole-logDebug': log.level === 'debug',
               })}
+              tabIndex={0}
               key={i + log.time}
             >
-              <div className="rulesConsole-logDate">
+              <time
+                dateTime={new Date(log.time).toISOString()}
+                className="rulesConsole-logDate"
+              >
                 {formatDate(log.time)}
-              </div>
+              </time>
               <div>{log.payload}</div>
             </div>
           ))}
       </div>
-    </div>
+    </aside>
   );
 });
