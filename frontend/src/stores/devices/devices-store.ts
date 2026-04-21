@@ -235,7 +235,7 @@ export default class DevicesStore {
   }
 
   #updateCellCompleteness(cell: Cell) {
-    if (cell.isComplete && this.devices.has(cell.deviceId)) {
+    if (cell.isComplete) {
       this.#addCellToDevice(cell.id, cell.deviceId);
       return;
     }
