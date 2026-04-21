@@ -932,7 +932,8 @@
       },
       "labels": {
          "select-params": "Добавьте или удалите параметры",
-         "dali-mask": "MASK (не изменять)"
+         "dali-mask": "MASK (не изменять)",
+         "dali-mask-tc-limit-not-set": "MASK (не задан)"
       }
    },
    "dali": {

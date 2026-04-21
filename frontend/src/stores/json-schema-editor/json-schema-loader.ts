@@ -148,6 +148,10 @@ const sanitizeOptions = (source: JsonEditorOptions, dest: JsonEditorOptions) => 
       dest.wb.dali_tc = dest.wb.dali_tc || {};
       dest.wb.dali_tc.maximum = source.wb.dali_tc.maximum;
     }
+    if (typeof source.wb.dali_tc?.mode === 'string') {
+      dest.wb.dali_tc = dest.wb.dali_tc || {};
+      dest.wb.dali_tc.mode = source.wb.dali_tc.mode;
+    }
   }
   if (Array.isArray(source.enum_titles)) {
     dest.enum_titles = source.enum_titles;

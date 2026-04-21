@@ -8,6 +8,11 @@ export interface TranslationsByLocale {
 export interface WbDaliTcEditorOptions {
   minimum?: number;
   maximum?: number;
+
+  // Affects MASK label.
+  // In 'value' mode, MASK means "do not change", in 'limit' mode, MASK means "no limit"
+  // Default is 'value'
+  mode?: 'value' | 'limit';
 }
 
 export interface WbOptions {
