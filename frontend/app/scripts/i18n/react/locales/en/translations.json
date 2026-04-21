@@ -108,6 +108,29 @@
          "inactive": "Disconnected"
       }
    },
+   "history": {
+      "title": "History",
+      "labels": {
+         "choose": "Please Choose",
+         "start": "Start",
+         "end": "End",
+         "nothing": "No data points to display",
+         "date": "Date and time",
+         "all_channels": "All channels: ",
+         "widget_channels": "Channels used in widgets: "
+      },
+      "buttons": {
+         "delete": "Delete",
+         "add": "Add channel",
+         "load": "Load data",
+         "today": "Per day",
+         "stop": "Stop loading",
+         "download": "Download history as CSV"
+      },
+      "errors": {
+         "load": "Error getting history"
+      }
+   },
    "scan": {
       "title": "New devices",
       "search-disconnected-title": "Search for disconnected device",

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.200.0) stable; urgency=medium
+
+  * Update history page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 20 Apr 2026 15:10:00 +0300
+
 wb-mqtt-homeui (2.199.0) stable; urgency=medium
 
   * Rewrite mbgate page

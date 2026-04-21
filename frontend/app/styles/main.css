@@ -313,15 +313,6 @@ footer{
   color: red;
 }
 
-.history-time-col-l {
-    padding-top: 42px;
-}
-
-.history-time-col-r {
-    padding-top: 34px;
-    padding-left: 2em;
-}
-
 .jarviswidget > div {
     border-width: 1px;
 }

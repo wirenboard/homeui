@@ -1,0 +1,57 @@
+.history-channelWrapper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.history-channel {
+  width: 100%;
+  max-width: 440px;
+  flex-shrink: 0;
+}
+
+.history-addChannel {
+  margin-top: 12px;
+}
+
+.history-dateFilter {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 24px 0;
+
+
+  @media(max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+.history-dateWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-date {
+  max-width: 180px;
+}
+
+.history-label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+}
+
+.history-loadActions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.history-table {
+  margin-top: 12px;
+}

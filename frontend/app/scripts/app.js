@@ -35,10 +35,8 @@ import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
 import spinnerService from './services/spinner';
 import pageStateService from './services/pagestate';
-import deviceDataService from './services/devicedata';
 import hiliteService from './services/hilite';
 import rolesFactoryService from './services/roles.factory';
-import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
 import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
@@ -46,8 +44,6 @@ import serialPortProxyService from './services/serialPortProxy';
 import serialDeviceProxyService from './services/serialDeviceProxy';
 import fwUpdateProxyService from './services/fwUpdateProxy';
 import daliProxyService from './services/daliProxy';
-
-import handleDataService from './services/handle-data';
 
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
@@ -117,7 +113,6 @@ module
   .factory('Spinner', spinnerService)
   .value('forceBeforeUnloadConfirmationForTests', false)
   .factory('PageState', pageStateService)
-  .factory('DeviceData', deviceDataService)
   .factory('DiagnosticProxy', diagnosticProxyService)
   .factory('DeviceManagerProxy', deviceManagerProxyService)
   .factory('SerialProxy', serialProxyService)
@@ -126,14 +121,8 @@ module
   .factory('FwUpdateProxy', fwUpdateProxyService)
   .factory('DaliProxy', daliProxyService)
 
-  .service('handleData', handleDataService)
   .service('rolesFactory', rolesFactoryService)
-  .service('historyUrlService', historyUrlService)
 
-  .run(DeviceData => {
-    'ngInject';
-    // make sure DeviceData is loaded at the startup so no MQTT messages are missed
-  })
   .filter('hilite', hiliteService);
 
 // Register controllers
@@ -179,7 +168,6 @@ module
         'help',
         'system',
         'logs',
-        'history',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {

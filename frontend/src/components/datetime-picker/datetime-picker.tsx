@@ -26,8 +26,11 @@ import './styles.css';
 
 export const DateTimePicker = ({
   value,
+  id,
+  className,
   onChange,
   disabled,
+  disabledDates,
   ariaLabel,
   isInvalid,
   size,
@@ -41,7 +44,7 @@ export const DateTimePicker = ({
     : `dd/MM/yyyy HH:mm${withSeconds ? ':ss' : ''}`;
   const [inputValue, setInputValue] = useState(selected ? format(selected, dateFormat) : '');
 
-  const id = useId();
+  const generatedId = useId();
   const timeId = useId();
   const focusedRef = useRef(false);
 
@@ -148,9 +151,9 @@ export const DateTimePicker = ({
 
   return (
     <>
-      <div className="datetimePicker-inputWrapper" ref={refs.setReference}>
+      <div className={classNames('datetimePicker-inputWrapper', className)} ref={refs.setReference}>
         <IMaskInput
-          id={id}
+          id={id ?? generatedId}
           className={classNames('input', 'datetimePicker-input', {
             'input-m': (size || 'default') === 'default',
             'input-s': size === 'small',
@@ -166,7 +169,7 @@ export const DateTimePicker = ({
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-label={ariaLabel}
-          aria-controls={`${id}-popup`}
+          aria-controls={`${id ?? generatedId}-popup`}
           onAccept={(val: string) => handleInputChange(val)}
           onFocus={() => {
             focusedRef.current = true;
@@ -180,15 +183,17 @@ export const DateTimePicker = ({
             }
           }}
         />
-        <Button
-          className="datetimePicker-openButton"
-          variant="secondary"
-          size={size || 'default'}
-          icon={<CalendarIcon />}
-          disabled={disabled}
-          aria-label={t('common.buttons.open-calendar')}
-          {...getReferenceProps()}
-        />
+        {!disabled && (
+          <Button
+            className="datetimePicker-openButton"
+            variant="secondary"
+            size={size || 'default'}
+            icon={<CalendarIcon />}
+            disabled={disabled}
+            aria-label={t('common.buttons.open-calendar')}
+            {...getReferenceProps()}
+          />
+        )}
       </div>
 
       {open && (
@@ -196,7 +201,7 @@ export const DateTimePicker = ({
           <FloatingFocusManager context={context} modal>
             <div
               ref={refs.setFloating}
-              id={`${id}-popup`}
+              id={`${id ?? generatedId}-popup`}
               className="datetimePicker-container"
               style={{ ...floatingStyles }}
               {...getFloatingProps()}
@@ -205,6 +210,7 @@ export const DateTimePicker = ({
                 mode="single"
                 selected={selected ?? undefined}
                 locale={i18n.language === 'ru' ? ru : enGB}
+                disabled={disabledDates}
                 autoFocus
                 onSelect={handleDateSelect}
               />
