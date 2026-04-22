@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { useId, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Select, { components, type SelectInstance } from 'react-select';
 import PlusIcon from '@/assets/icons/plus.svg';
 import type { DropdownProps, Option } from './types';
@@ -48,6 +49,7 @@ export const Dropdown = ({
   minWidth = '150px',
   onChange,
 }: DropdownProps) => {
+  const { t } = useTranslation();
   const select = useRef<SelectInstance>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const inputId = id ?? useId();
@@ -124,6 +126,7 @@ export const Dropdown = ({
         }),
       }}
       tabSelectsValue={false}
+      noOptionsMessage={() => t('common.labels.empty-search')}
       unstyled
       onMenuOpen={() => setIsMenuOpen(true)}
       onMenuClose={() => setIsMenuOpen(false)}

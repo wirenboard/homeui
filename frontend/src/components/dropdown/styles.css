@@ -128,3 +128,7 @@
 .dropdown__control--is-disabled {
   background-color: var(--border-color);
 }
+
+.dropdown__menu-notice {
+  padding: 6px;
+}
