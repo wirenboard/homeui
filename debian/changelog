@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.201.1) stable; urgency=medium
+
+  * Fix DALI colour temperature editor limits handling
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 22 Apr 2026 20:17:52 +0500
+
 wb-mqtt-homeui (2.201.0) stable; urgency=medium
 
   * Drop support for old WB-DALI template. Only WB-MDALI is supported now.

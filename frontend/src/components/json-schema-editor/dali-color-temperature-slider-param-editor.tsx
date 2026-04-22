@@ -32,8 +32,8 @@ export const DaliColorTemperatureSliderEditor = observer(({
   const isDisabled = !!store.schema.options?.wb?.read_only;
 
   const onSwitchChange = useCallback((enabled: boolean) => {
-    store.setValue(enabled ? minValue : MASK_VALUE);
-  }, [store, minValue]);
+    store.setValue(enabled ? maxValue : MASK_VALUE);
+  }, [store, maxValue]);
 
   const onSliderChange = useCallback((val: number) => {
     store.setValue(val);
@@ -47,7 +47,12 @@ export const DaliColorTemperatureSliderEditor = observer(({
         onChange={onSwitchChange}
       />
       {isMasked ? (
-        <span className="dali-color-temperature-slider-mask">{t('json-editor.labels.dali-mask')}</span>
+        <span
+         className="dali-color-temperature-slider-mask">{
+          t(store.schema.options?.wb?.dali_tc?.mode === 'limit' ? 
+            'json-editor.labels.dali-mask-tc-limit-not-set' : 
+            'json-editor.labels.dali-mask')}
+        </span>
       ) : (
         <Range
           id={inputId ?? ''}
