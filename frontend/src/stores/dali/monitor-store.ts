@@ -17,7 +17,7 @@ export class MonitorStore {
 
   enableMonitoring(bus_mqtt_id: string) {
     this.logs = [];
-    this.topic = `/wb-dali/${bus_mqtt_id}/bus_monitor`;
+    this.topic = `/wb-mdali/${bus_mqtt_id}/bus_monitor`;
     this._subscribeToTopic();
     this.isEnabled = true;
     this.isOnPause = false;

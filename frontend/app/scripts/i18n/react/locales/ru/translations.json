@@ -5,6 +5,7 @@
          "asc": "по возрастанию",
          "desc": "по убыванию",
          "time": "Время",
+         "empty-search": "Ничего не найдено",
          "password-strength-0": "Короткий пароль",
          "password-strength-1": "Очень слабый пароль",
          "password-strength-2": "Слабый пароль",

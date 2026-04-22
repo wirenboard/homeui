@@ -79,19 +79,32 @@ export const FormCheckbox = observer(({ store }) => {
 
 export const FormSelect = observer(({ store, isClearable }) => {
   const showCaption = useContext(ShowParamCaptionContext);
+
+  const findOption = (options, value) => {
+    for (const option of options) {
+      if (option.value === value) return option;
+      if (option.children) {
+        const found = findOption(option.children, value);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
   return (
     <OptionsField
       formStyle={makeFlexItemStyle(store?.formColumns)}
       description={store.description}
       title={showCaption && store.name}
-      value={store.options.find((item) => item.value === store.selectedOption.value)?.value}
+      value={store.selectedOption?.value}
       options={store.options}
       isClearable={isClearable}
       error={store.error}
       placeholder={store.placeholder}
       isDisabled={store.readOnly}
+      isSearchable
       onChange={(value) => {
-        store.setSelectedOption(store.options.find((item) => item.value === value));
+        store.setSelectedOption(findOption(store.options, value));
       }}
     />
   );
