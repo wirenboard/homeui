@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.201.0) stable; urgency=medium
 
   * Drop support for old WB-DALI template. Only WB-MDALI is supported now.
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 22 Apr 2026 13:47:57 +0500
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 22 Apr 2026 15:10:35 +0500
+
+wb-mqtt-homeui (2.200.2) stable; urgency=medium
+
+  * Fix dropdown option fields
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 22 Apr 2026 12:27:00 +0300
 
 wb-mqtt-homeui (2.200.1) stable; urgency=medium
 
