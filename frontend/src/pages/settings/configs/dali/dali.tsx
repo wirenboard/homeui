@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
@@ -15,13 +15,13 @@ import type { DaliPageProps } from './types';
 import './styles.css';
 
 const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => void }) => {
-  if (store.type === 'bus') {
+  if (store?.type === 'bus') {
     return <BusTabContent store={store as BusStore} onScan={onRefresh} />;
   }
-  if (store.type === 'group') {
+  if (store?.type === 'group') {
     return <GroupTabContent store={store as GroupStore} />;
   }
-  if (store.type === 'device') {
+  if (store?.type === 'device') {
     return <DeviceTabContent store={store as DeviceStore} onSave={onRefresh} />;
   }
   return null;
@@ -97,25 +97,34 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
       }
       stickyHeader
     >
-      <div className="dali">
-        {(!isMobile || !selectedItem) && (
-          <aside className="dali-list">
-            <Tree
-              data={data}
-              isDisabled={store.isLoading}
-              onItemClick={onItemClick}
-            />
-          </aside>
-        )}
-        {(!isMobile || selectedItem) && (
-          <section className="dali-content">
-            {!selectedItem?.isLoading && selectedItem?.error && (
-              <Alert variant="danger">{selectedItem.error}</Alert>
-            )}
-            <TabContent store={selectedItem} onRefresh={refreshData} />
-          </section>
-        )}
-      </div>
+      {!store.isLoading && !store.errors?.length && !store.gateways.length ? (
+        <Alert variant="warn">
+          <Trans
+            i18nKey="dali.labels.no-gateways"
+            components={[<a href="#!/serial-config" />]}
+          />
+        </Alert>
+      ) : (
+        <div className="dali">
+          {(!isMobile || !selectedItem) && (
+            <aside className="dali-list">
+              <Tree
+                data={data}
+                isDisabled={store.isLoading}
+                onItemClick={onItemClick}
+              />
+            </aside>
+          )}
+          {(!isMobile || selectedItem) && (
+            <section className="dali-content">
+              {!selectedItem?.isLoading && selectedItem?.error && (
+                <Alert variant="danger">{selectedItem.error}</Alert>
+              )}
+              <TabContent store={selectedItem} onRefresh={refreshData} />
+            </section>
+          )}
+        </div>
+      )}
     </PageLayout>
   );
 });
