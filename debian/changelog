@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.201.2) stable; urgency=medium
+
+  * Add notification about missing DALI gateways in DALI settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 23 Apr 2026 14:10:32 +0500
+
 wb-mqtt-homeui (2.201.1) stable; urgency=medium
 
   * Fix DALI colour temperature editor limits handling
