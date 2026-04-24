@@ -2,7 +2,13 @@
     "system": {
         "title": "System",
         "labels": {
-            "testing-offer": "If you want to be the first to get access to new features of our software, switch to "
+            "testing-offer": "If you want to be the first to get access to new features of our software, switch to ",
+            "trixieNotice1": "A new version of Debian (Trixie) is available!",
+            "trixieNotice2": "To update run in console",
+            "trixieNotice3": "or download",
+            "trixieNotice4": "FIT firmware image",
+            "trixieNotice5": "and update via the web interface by visiting",
+            "trixieNotice6": "Settings → System"
         }
     },
     "collector": {
