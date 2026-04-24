@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.202.0) stable; urgency=medium
+
+  * Rename WB-MDALI to WB-DALI
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Apr 2026 19:36:47 +0500
+
 wb-mqtt-homeui (2.201.3) stable; urgency=medium
 
   * Fix Add button in custom device add dialog in wb-mqtt-serial settings editor
