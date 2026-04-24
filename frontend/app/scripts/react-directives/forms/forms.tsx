@@ -83,8 +83,8 @@ export const FormSelect = observer(({ store, isClearable }) => {
   const findOption = (options, value) => {
     for (const option of options) {
       if (option.value === value) return option;
-      if (option.children) {
-        const found = findOption(option.children, value);
+      if (option.options) {
+        const found = findOption(option.options, value);
         if (found) return found;
       }
     }

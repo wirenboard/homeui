@@ -1,8 +1,20 @@
-wb-mqtt-homeui (2.201.3) stable; urgency=medium
+wb-mqtt-homeui (2.202.1) stable; urgency=medium
 
   * Use pre-defined DH group ffdhe2048 recommended by the IETF
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 23 Apr 2026 20:00:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 24 Apr 2026 20:00:00 +0400
+
+wb-mqtt-homeui (2.202.0) stable; urgency=medium
+
+  * Rename WB-MDALI to WB-DALI
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Apr 2026 19:36:47 +0500
+
+wb-mqtt-homeui (2.201.3) stable; urgency=medium
+
+  * Fix Add button in custom device add dialog in wb-mqtt-serial settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 24 Apr 2026 16:33:23 +0500
 
 wb-mqtt-homeui (2.201.2) stable; urgency=medium
 
