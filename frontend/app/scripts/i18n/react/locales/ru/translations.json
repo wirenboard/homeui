@@ -950,10 +950,17 @@
          "polling-interval": "Интервал опроса (с)",
          "polling-interval-error": "Интервал должен быть целым положительным числом",
          "identify-tooltip": "Устройство будет мигать или другим способом привлекать внимание, что поможет его найти среди других устройств",
-         "no-gateways": "Нет настроенных DALI-шлюзов. Настройте их на странице <0>настроек wb-mqtt-serial</0>."
+         "no-gateways": "Нет настроенных DALI-шлюзов. Настройте их на странице <0>настроек wb-mqtt-serial</0>.",
+         "scan-error": "Сканирование завершилось с ошибкой в {{when}}: {{error}}",
+         "scan-stage-queued": "В очереди",
+         "scan-stage-query_short_addresses": "Опрос коротких адресов. Найдено: {{count}}",
+         "scan-stage-binary_search": "Двоичный поиск. Найдено: {{count}}",
+         "scan-stage-dali2_query_short_addresses": "DALI 2 опрос коротких адресов. Найдено: {{count}}",
+         "scan-stage-dali2_binary_search": "DALI 2 двоичный поиск. Найдено: {{count}}"
       },
       "buttons": {
          "rescan": "Пересканировать",
+         "stop-scan": "Остановить",
          "return": "К списку устройств",
          "reload": "Прочитать параметры заново",
          "clear-log": "Очистить журнал",

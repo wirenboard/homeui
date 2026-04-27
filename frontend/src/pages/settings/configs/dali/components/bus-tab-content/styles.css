@@ -24,3 +24,15 @@
 .dali-busParam-editor .input {
     width: 100%;
 }
+
+.dali-commissioningProgress {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.dali-commissioningProgress .wb-progress {
+    flex-grow: 1;
+    width: unset;
+}

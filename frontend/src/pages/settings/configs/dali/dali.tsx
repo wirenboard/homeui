@@ -16,7 +16,7 @@ import './styles.css';
 
 const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => void }) => {
   if (store?.type === 'bus') {
-    return <BusTabContent store={store as BusStore} onScan={onRefresh} />;
+    return <BusTabContent store={store as BusStore} />;
   }
   if (store?.type === 'group') {
     return <GroupTabContent store={store as GroupStore} />;
