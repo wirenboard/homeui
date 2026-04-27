@@ -9,6 +9,7 @@ export default function daliProxyService(MqttRpc) {
       'GetBus',
       'SetBus',
       'ScanBus',
+      'StopScanBus',
       'GetDevice',
       'SetDevice',
       'GetGroup',

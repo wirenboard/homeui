@@ -11,6 +11,8 @@ import type { BusStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
 import { useAsyncAction } from '@/utils/async-action';
 import { BusMonitor } from '../bus-monitor';
+import { CommissioningErrorBanner } from './commissioning-error-banner';
+import { CommissioningProgress } from './commissioning-progress';
 import { LunatoneGatewayField } from './lunatone-gateway-field';
 import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
@@ -123,7 +125,7 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
   );
 });
 
-export const BusTabContent = observer(({ store, onScan }: { store: BusStore; onScan: () => void }) => {
+export const BusTabContent = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
 
   if (store.isLoading) {
@@ -137,18 +139,14 @@ export const BusTabContent = observer(({ store, onScan }: { store: BusStore; onS
   return (
     <>
       {store.isScanning ? (
-        <div className="dali-contentLoader">
-          <Loader />
-        </div>
+        <CommissioningProgress store={store} />
       ) : (
         <>
+          <CommissioningErrorBanner store={store} />
           <FormButtonGroup>
             <Button
               label={t('dali.buttons.rescan')}
-              onClick={async () => {
-                await store.scan();
-                onScan();
-              }}
+              onClick={() => store.scan()}
             />
           </FormButtonGroup>
           <BusSettingsForm store={store} />

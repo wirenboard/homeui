@@ -29,10 +29,17 @@ export class DaliStore {
     try {
       await this.#whenMqttReady();
       const gateways = await this.#daliProxy.GetList();
+      const nextGateways: GatewayStore[] = [];
       gateways.forEach((gateway) => {
         const gatewayStore = new GatewayStore(this.#daliProxy, gateway.id, gateway.name);
         gateway.buses.forEach((bus) => {
-          const busStore = new BusStore(this.#daliProxy, bus.id, bus.name, this.#mqttClient);
+          const busStore = new BusStore(
+            this.#daliProxy,
+            bus.id,
+            bus.name,
+            this.#mqttClient,
+            bus.commissioning,
+          );
           bus.devices.forEach((device) => {
             const deviceStore = new DeviceStore(this.#daliProxy, device.id, device.name, device.groups ?? [], busStore);
             busStore.children.push(deviceStore);
@@ -40,7 +47,10 @@ export class DaliStore {
           busStore.syncGroupChildren();
           gatewayStore.children.push(busStore);
         });
-        this.gateways.push(gatewayStore);
+        nextGateways.push(gatewayStore);
+      });
+      runInAction(() => {
+        this.gateways = nextGateways;
       });
     } catch (error) {
       this.setError(error);
@@ -49,6 +59,14 @@ export class DaliStore {
         this.isLoading = false;
       });
     }
+  }
+
+  destroy() {
+    this.gateways.forEach((gateway) => {
+      gateway.children.forEach((bus) => {
+        bus.destroy();
+      });
+    });
   }
 
   setError(error: unknown) {

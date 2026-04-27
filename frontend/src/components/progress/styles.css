@@ -11,6 +11,7 @@
     -webkit-appearance: none;
     appearance: none;
     height: 100%;
+    border-radius: var(--input-border-radius);
 }
 
 .wb-progress-bar[value]::-webkit-progress-bar {
@@ -23,6 +24,10 @@
     box-shadow: none;
     border-color: transparent;
     border-radius: var(--input-border-radius);
+}
+
+.wb-progress-bar[value]::-moz-progress-bar {
+    background: var(--brand-color);
 }
 
 .wb-progress-caption {
