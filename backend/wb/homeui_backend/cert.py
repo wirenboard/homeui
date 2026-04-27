@@ -192,9 +192,6 @@ def update_cert(sn: str) -> None:
         with open(SSL_CERT_PATH, "w", encoding="utf-8") as cert_file:
             cert_file.write(fullchain_pem)
 
-        logging.debug("Generating DH parameters")
-        subprocess.run(["openssl", "dhparam", "-out", "/etc/ssl/dhparam.pem", "256"], check=True)
-
         logging.info("Certificate updated successfully")
 
 
