@@ -20,14 +20,15 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const {
     roomList,
     isAvailable,
+    linkStatus,
     fetchData,
+    fetchLinkStatus,
     fetchIntegrationStatus,
     isIntegrationEnabled,
     checkIsAvailable,
     setIntegrationEnabled,
   } = aliceStore;
   const [pageState, setPageState] = useState<AlicePageState>('isLoading');
-  const [bindingInfo, setBindingInfo] = useState({ url: '', isBinded: false });
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
   const [isIntegrationLoading, setIntegrationLoading] = useState(true);
@@ -46,22 +47,39 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   });
   const isModuleInstalled = useMemo(() => uiStore.modules.some((item) => item === 'alice'), [uiStore.modules]);
 
+  const refreshBindingStatus = async () => {
+    try {
+      await fetchLinkStatus();
+    } catch (err) {
+      const msg = err?.response?.data?.detail || err?.response?.data?.message
+        || t('alice.errors.integration-error');
+      setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
+    }
+  };
+
   const handleIntegrationToggle = async (enabled: boolean) => {
     const prevEnabled = aliceStore.isIntegrationEnabled;
     setIntegrationLoading(true);
 
     try {
+      if (enabled) {
+        const currentLinkStatus = await fetchLinkStatus();
+
+        if (!currentLinkStatus.linked) {
+          return setErrors([{
+            text: t('alice.errors.integration-enabled-binding-required'),
+            variant: 'warn',
+            onClose: () => setErrors([]),
+          }]);
+        }
+      }
+
       await setIntegrationEnabled(enabled);
     } catch (err) {
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.detail || err?.response?.data?.message || null;
 
-      // 412 - controller not bound: keep switch ON so user can bind and see binding link
-      if (status === 412) {
-        runInAction(() => {
-          aliceStore.isIntegrationEnabled = true;
-        });
-
+      if (status === 409) {
         return setErrors([{
           text: serverMessage || t('alice.errors.integration-enabled-binding-required'),
           variant: 'warn',
@@ -94,7 +112,10 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     setIntegrationLoading(true);
     (async () => {
       try {
-        await fetchIntegrationStatus();
+        await Promise.all([
+          fetchIntegrationStatus(),
+          fetchLinkStatus(),
+        ]);
       } catch (err) {
         const msg = err?.response?.data?.detail || err?.response?.data?.message
           || t('alice.errors.integration-error');
@@ -105,15 +126,43 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     })();
 
     fetchData()
-      .then((res) => {
-        setBindingInfo({
-          isBinded: !!res.unlink_url,
-          url: res.link_url || res.unlink_url,
-        });
-        setPageState('isConnected');
-      })
+      .then(() => setPageState('isConnected'))
       .catch(() => setPageState('isNotConnected'));
-  }, [isModuleInstalled]);
+  }, [checkIsAvailable, fetchData, fetchIntegrationStatus, fetchLinkStatus, isModuleInstalled, t]);
+
+  useEffect(() => {
+    if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) {
+      return;
+    }
+
+    const refreshOnReturn = async () => {
+      try {
+        await fetchLinkStatus();
+      } catch (err) {
+        const msg = err?.response?.data?.detail || err?.response?.data?.message
+          || t('alice.errors.integration-error');
+        setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
+      }
+    };
+
+    const handleWindowFocus = () => {
+      void refreshOnReturn();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshOnReturn();
+      }
+    };
+
+    window.addEventListener('focus', handleWindowFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchLinkStatus, isModuleInstalled, t]);
 
   useEffect(() => {
     if (!authStore.hasRights(UserRole.Admin)) {
@@ -138,7 +187,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     setIsConfirmModalOpen(false);
     try {
       await aliceStore.unlinkController();
-      window.location.reload();
+      await refreshBindingStatus();
     } catch (err: any) {
       setErrors([{ variant: 'danger', text: err?.response?.data?.detail || err?.message || String(err) }]);
     }
@@ -169,11 +218,11 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
         pageState === 'isConnected'
           ? (
             <>
-              {isIntegrationEnabled && (
-                bindingInfo.isBinded
+              {isIntegrationEnabled && linkStatus && (
+                linkStatus.linked
                   ? (
                     <div className="alice-bindingContainer">
-                      <a href={bindingInfo.url} className="alice-binding" target="_blank">
+                      <a href={linkStatus.unlink_url} className="alice-binding" target="_blank" rel="noreferrer">
                         {t('alice.buttons.check-binding-status')}
                       </a>
                       <span>{t('alice.labels.is-binded')}</span>
@@ -188,7 +237,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
                     </div>
                   )
                   : (
-                    <a href={bindingInfo.url} className="alice-binding" target="_blank">
+                    <a href={linkStatus?.link_url} className="alice-binding" target="_blank" rel="noreferrer">
                       {t('alice.buttons.bind')}
                     </a>
                   )

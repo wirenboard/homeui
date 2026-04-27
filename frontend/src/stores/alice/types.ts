@@ -53,9 +53,13 @@ export interface SmartDevice {
 export interface AliceFetchData {
   rooms: Record<string, Room>;
   devices: Record<string, SmartDevice>;
+  enabled?: boolean;
+}
+
+export interface AliceLinkStatus {
+  linked: boolean;
   link_url?: string;
   unlink_url?: string;
-  enabled?: boolean;
 }
 
 export interface AddDeviceParams {

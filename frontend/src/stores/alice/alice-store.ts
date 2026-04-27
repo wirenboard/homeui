@@ -6,6 +6,7 @@ import {
   addRoom,
   deleteRoom,
   getAliceInfo,
+  getAliceLinkStatus,
   updateRoom,
   deleteDevice,
   updateDevice,
@@ -17,6 +18,7 @@ import {
 import type {
   AddDeviceParams,
   AliceFetchData,
+  AliceLinkStatus,
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
@@ -28,6 +30,7 @@ export default class AliceStore {
   public devices = new Map<string, SmartDevice>();
   public isAvailable = null;
   public isIntegrationEnabled = false;
+  public linkStatus: AliceLinkStatus | null = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -69,6 +72,15 @@ export default class AliceStore {
     return runInAction(() => {
       this.rooms = new Map(Object.entries(data.rooms).map(([id, room]) => [id, room]));
       this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
+      return data;
+    });
+  }
+
+  async fetchLinkStatus(): Promise<AliceLinkStatus> {
+    const data = await getAliceLinkStatus();
+
+    return runInAction(() => {
+      this.linkStatus = data;
       return data;
     });
   }
