@@ -50,6 +50,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const refreshBindingStatus = async () => {
     try {
       await fetchLinkStatus();
+      setErrors([]);
     } catch (err) {
       const msg = err?.response?.data?.detail || err?.response?.data?.message
         || t('alice.errors.integration-error');
@@ -210,7 +211,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
         pageState === 'isConnected'
           ? (
             <>
-              {linkStatus && (
+              {isIntegrationEnabled && linkStatus && (
                 linkStatus.linked
                   ? (
                     <div className="alice-bindingContainer">
