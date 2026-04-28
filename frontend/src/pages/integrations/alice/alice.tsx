@@ -54,38 +54,21 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       const msg = err?.response?.data?.detail || err?.response?.data?.message
         || t('alice.errors.integration-error');
       setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
+      throw err;
     }
   };
 
   const handleIntegrationToggle = async (enabled: boolean) => {
     const prevEnabled = aliceStore.isIntegrationEnabled;
+    let integrationUpdated = false;
     setIntegrationLoading(true);
 
     try {
-      if (enabled) {
-        const currentLinkStatus = await fetchLinkStatus();
-
-        if (!currentLinkStatus.linked) {
-          return setErrors([{
-            text: t('alice.errors.integration-enabled-binding-required'),
-            variant: 'warn',
-            onClose: () => setErrors([]),
-          }]);
-        }
-      }
-
       await setIntegrationEnabled(enabled);
+      integrationUpdated = true;
     } catch (err) {
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.detail || err?.response?.data?.message || null;
-
-      if (status === 409) {
-        return setErrors([{
-          text: serverMessage || t('alice.errors.integration-enabled-binding-required'),
-          variant: 'warn',
-          onClose: () => setErrors([]),
-        }]);
-      }
 
       runInAction(() => {
         aliceStore.isIntegrationEnabled = prevEnabled;
@@ -99,6 +82,13 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
 
       setErrors([{ text: msg, variant: 'danger', onClose: () => setErrors([]) }]);
     } finally {
+      if (integrationUpdated) {
+        try {
+          await refreshBindingStatus();
+        } catch {
+          // The integration state is independent from link status availability.
+        }
+      }
       setIntegrationLoading(false);
     }
   };
@@ -111,18 +101,20 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     checkIsAvailable();
     setIntegrationLoading(true);
     (async () => {
-      try {
-        await Promise.all([
-          fetchIntegrationStatus(),
-          fetchLinkStatus(),
-        ]);
-      } catch (err) {
+      const results = await Promise.allSettled([
+        fetchIntegrationStatus(),
+        fetchLinkStatus(),
+      ]);
+
+      const firstRejected = results.find((result) => result.status === 'rejected');
+      if (firstRejected?.status === 'rejected') {
+        const err = firstRejected.reason;
         const msg = err?.response?.data?.detail || err?.response?.data?.message
           || t('alice.errors.integration-error');
         setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
-      } finally {
-        setIntegrationLoading(false);
       }
+
+      setIntegrationLoading(false);
     })();
 
     fetchData()
@@ -218,7 +210,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
         pageState === 'isConnected'
           ? (
             <>
-              {isIntegrationEnabled && linkStatus && (
+              {linkStatus && (
                 linkStatus.linked
                   ? (
                     <div className="alice-bindingContainer">
@@ -236,10 +228,11 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
                       </button>
                     </div>
                   )
-                  : (
+                  : linkStatus.link_url ? (
                     <a href={linkStatus?.link_url} className="alice-binding" target="_blank" rel="noreferrer">
                       {t('alice.buttons.bind')}
                     </a>
+                  ) : null
                   )
               )}
 

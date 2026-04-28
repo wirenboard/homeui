@@ -77,12 +77,20 @@ export default class AliceStore {
   }
 
   async fetchLinkStatus(): Promise<AliceLinkStatus> {
-    const data = await getAliceLinkStatus();
+    try {
+      const data = await getAliceLinkStatus();
 
-    return runInAction(() => {
-      this.linkStatus = data;
-      return data;
-    });
+      return runInAction(() => {
+        this.linkStatus = data;
+        return data;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.linkStatus = null;
+      });
+
+      throw err;
+    }
   }
 
   async addRoom(name: string): Promise<string> {
