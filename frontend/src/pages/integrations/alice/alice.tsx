@@ -165,21 +165,15 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       }
     };
 
-    const handleWindowFocus = () => {
-      void refreshOnReturn();
-    };
-
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         void refreshOnReturn();
       }
     };
 
-    window.addEventListener('focus', handleWindowFocus);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      window.removeEventListener('focus', handleWindowFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [fetchLinkStatus, isModuleInstalled, linkStatusErrorMessage]);
