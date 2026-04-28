@@ -124,9 +124,8 @@ export class DeviceSettingsObjectStore {
       });
     }
 
-    delete userDefinedConfig.channels;
-    userDefinedConfig.channels = customChannels;
-    this.commonParams = new ObjectStore(jsonSchema, userDefinedConfig, false, new StoreBuilder());
+    const configForCommonParams = { ...userDefinedConfig, channels: customChannels };
+    this.commonParams = new ObjectStore(jsonSchema, configForCommonParams, false, new StoreBuilder());
     this.customChannels = this.commonParams.getParamByKey('channels')?.store as ArrayStore;
     this.commonParams.removeParamByKey('channels');
 
