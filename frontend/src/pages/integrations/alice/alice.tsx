@@ -46,15 +46,25 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     items: sortedRooms,
   });
   const isModuleInstalled = useMemo(() => uiStore.modules.some((item) => item === 'alice'), [uiStore.modules]);
+  const linkStatusErrorMessage = t('alice.errors.link-status-unavailable');
+
+  const clearStatusError = () => {
+    setErrors((prev) => prev.filter((item) => item.text !== linkStatusErrorMessage));
+  };
+
+  const showStatusError = () => {
+    setErrors((prev) => {
+      const next = prev.filter((item) => item.text !== linkStatusErrorMessage);
+      return [...next, { variant: 'danger', text: linkStatusErrorMessage, onClose: () => setErrors([]) }];
+    });
+  };
 
   const refreshBindingStatus = async () => {
     try {
       await fetchLinkStatus();
-      setErrors([]);
+      clearStatusError();
     } catch (err) {
-      const msg = err?.response?.data?.detail || err?.response?.data?.message
-        || t('alice.errors.integration-error');
-      setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
+      showStatusError();
       throw err;
     }
   };
@@ -67,6 +77,13 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     try {
       await setIntegrationEnabled(enabled);
       integrationUpdated = true;
+
+      if (!enabled) {
+        runInAction(() => {
+          aliceStore.linkStatus = null;
+        });
+        clearStatusError();
+      }
     } catch (err) {
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.detail || err?.response?.data?.message || null;
@@ -83,7 +100,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
 
       setErrors([{ text: msg, variant: 'danger', onClose: () => setErrors([]) }]);
     } finally {
-      if (integrationUpdated) {
+      if (integrationUpdated && enabled) {
         try {
           await refreshBindingStatus();
         } catch {
@@ -102,26 +119,35 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     checkIsAvailable();
     setIntegrationLoading(true);
     (async () => {
-      const results = await Promise.allSettled([
-        fetchIntegrationStatus(),
-        fetchLinkStatus(),
-      ]);
+      try {
+        await fetchIntegrationStatus();
 
-      const firstRejected = results.find((result) => result.status === 'rejected');
-      if (firstRejected?.status === 'rejected') {
-        const err = firstRejected.reason;
+        if (aliceStore.isIntegrationEnabled) {
+          try {
+            await fetchLinkStatus();
+            clearStatusError();
+          } catch {
+            showStatusError();
+          }
+        } else {
+          runInAction(() => {
+            aliceStore.linkStatus = null;
+          });
+          clearStatusError();
+        }
+      } catch (err) {
         const msg = err?.response?.data?.detail || err?.response?.data?.message
           || t('alice.errors.integration-error');
         setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
+      } finally {
+        setIntegrationLoading(false);
       }
-
-      setIntegrationLoading(false);
     })();
 
     fetchData()
       .then(() => setPageState('isConnected'))
       .catch(() => setPageState('isNotConnected'));
-  }, [checkIsAvailable, fetchData, fetchIntegrationStatus, fetchLinkStatus, isModuleInstalled, t]);
+  }, [checkIsAvailable, fetchData, fetchIntegrationStatus, fetchLinkStatus, isModuleInstalled, linkStatusErrorMessage, t]);
 
   useEffect(() => {
     if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) {
@@ -129,12 +155,15 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     }
 
     const refreshOnReturn = async () => {
+      if (!aliceStore.isIntegrationEnabled) {
+        return;
+      }
+
       try {
         await fetchLinkStatus();
-      } catch (err) {
-        const msg = err?.response?.data?.detail || err?.response?.data?.message
-          || t('alice.errors.integration-error');
-        setErrors([{ variant: 'danger', text: msg, onClose: () => setErrors([]) }]);
+        clearStatusError();
+      } catch {
+        showStatusError();
       }
     };
 
@@ -155,7 +184,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       window.removeEventListener('focus', handleWindowFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [fetchLinkStatus, isModuleInstalled, t]);
+  }, [fetchLinkStatus, isModuleInstalled, linkStatusErrorMessage]);
 
   useEffect(() => {
     if (!authStore.hasRights(UserRole.Admin)) {
@@ -163,7 +192,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     }
     const hasError = !isModuleInstalled || (typeof isAvailable === 'boolean' && !isAvailable);
     setErrors(hasError ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
-  }, [isAvailable, isModuleInstalled]);
+  }, [isAvailable, isModuleInstalled, t]);
 
   const isLoading = useMemo(
     () => (isModuleInstalled && isAvailable && pageState === 'isLoading'),

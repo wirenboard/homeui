@@ -760,6 +760,9 @@
    },
    "alice": {
       "title": "Yandex Alice Integration",
+      "errors": {
+         "link-status-unavailable": "The server did not respond, link status is unavailable."
+      },
       "labels": {
          "unavailable": "Yandex Alisa module is not installed, or the configurator service is stopped",
          "is-binded": "controller is linked",
