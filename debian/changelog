@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.202.2) stable; urgency=medium
 
-  * Fix default channel poll policy for WB-MSW v.3
+  * Fix default poll policy for semi-sporadic channels
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 11:08:20 +0500
 
