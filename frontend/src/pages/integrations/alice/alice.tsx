@@ -69,6 +69,12 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     }
   };
 
+  const refreshBindingStatusInBackground = () => {
+    void refreshBindingStatus().catch(() => {
+      // Link status availability should not block page interactions.
+    });
+  };
+
   const handleIntegrationToggle = async (enabled: boolean) => {
     const prevEnabled = aliceStore.isIntegrationEnabled;
     let integrationUpdated = false;
@@ -101,11 +107,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       setErrors([{ text: msg, variant: 'danger', onClose: () => setErrors([]) }]);
     } finally {
       if (integrationUpdated && enabled) {
-        try {
-          await refreshBindingStatus();
-        } catch {
-          // The integration state is independent from link status availability.
-        }
+        refreshBindingStatusInBackground();
       }
       setIntegrationLoading(false);
     }
@@ -121,14 +123,10 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     (async () => {
       try {
         await fetchIntegrationStatus();
+        setIntegrationLoading(false);
 
         if (aliceStore.isIntegrationEnabled) {
-          try {
-            await fetchLinkStatus();
-            clearStatusError();
-          } catch {
-            showStatusError();
-          }
+          refreshBindingStatusInBackground();
         } else {
           runInAction(() => {
             aliceStore.linkStatus = null;
