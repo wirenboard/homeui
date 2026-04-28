@@ -14,7 +14,15 @@ import { GroupTabContent } from './components/group-tab-content';
 import type { DaliPageProps } from './types';
 import './styles.css';
 
-const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => void }) => {
+const TabContent = ({
+  store,
+  onRefresh,
+  onDeviceRemoved,
+}: {
+  store: ItemStore;
+  onRefresh: () => void;
+  onDeviceRemoved: (device: DeviceStore) => void;
+}) => {
   if (store?.type === 'bus') {
     return <BusTabContent store={store as BusStore} onScan={onRefresh} />;
   }
@@ -22,7 +30,13 @@ const TabContent = ({ store, onRefresh }: { store: ItemStore; onRefresh: () => v
     return <GroupTabContent store={store as GroupStore} />;
   }
   if (store?.type === 'device') {
-    return <DeviceTabContent store={store as DeviceStore} onSave={onRefresh} />;
+    return (
+      <DeviceTabContent
+        store={store as DeviceStore}
+        onSave={onRefresh}
+        onDeviceRemoved={onDeviceRemoved}
+      />
+    );
   }
   return null;
 };
@@ -82,6 +96,17 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
     }
   };
 
+  const onDeviceRemoved = (device: DeviceStore) => {
+    const parentBus = device.parent;
+    refreshData();
+    if (parentBus) {
+      setSelectedItem(parentBus);
+      parentBus.load().then(() => refreshData());
+    } else {
+      setSelectedItem(null);
+    }
+  };
+
   return (
     <PageLayout
       title={t('dali.title')}
@@ -112,6 +137,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
                 data={data}
                 isDisabled={store.isLoading}
                 onItemClick={onItemClick}
+                activeId={selectedItem?.id}
               />
             </aside>
           )}
@@ -120,7 +146,11 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
               {!selectedItem?.isLoading && selectedItem?.error && (
                 <Alert variant="danger">{selectedItem.error}</Alert>
               )}
-              <TabContent store={selectedItem} onRefresh={refreshData} />
+              <TabContent
+                store={selectedItem}
+                onRefresh={refreshData}
+                onDeviceRemoved={onDeviceRemoved}
+              />
             </section>
           )}
         </div>
