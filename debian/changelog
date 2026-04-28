@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.203.0) stable; urgency=medium
+
+  * Add support for gateway level settings in DALI config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 13:02:33 +0500
+
 wb-mqtt-homeui (2.202.1) stable; urgency=medium
 
   * Fix clearing channel settings on config reread in wb-mqtt-serial editor 

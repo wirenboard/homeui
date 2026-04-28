@@ -5,10 +5,10 @@ import { BooleanField } from '@/components/form';
 import { FieldLabel } from '@/components/form/field-label';
 import { FormField } from '@/components/form/form-field';
 import { Input } from '@/components/input';
-import type { BusStore } from '@/stores/dali';
+import type { GatewayStore } from '@/stores/dali';
 import { useAsyncAction } from '@/utils/async-action';
 
-export const LunatoneGatewayField = observer(({ store }: { store: BusStore }) => {
+export const LunatoneGatewayField = observer(({ store }: { store: GatewayStore }) => {
   const { t } = useTranslation();
   const { websocketEnabled, websocketPort } = store;
   const [portStr, setPortStr] = useState(websocketPort !== undefined ? String(websocketPort) : '');
