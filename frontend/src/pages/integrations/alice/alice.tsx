@@ -233,7 +233,6 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
                       {t('alice.buttons.bind')}
                     </a>
                   ) : null
-                  )
               )}
 
               <div className="alice-container">
