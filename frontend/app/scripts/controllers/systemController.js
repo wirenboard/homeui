@@ -14,11 +14,20 @@ function SystemCtrl(rolesFactory) {
       res.release_suite === 'stable'
       && !localStorage.getItem('hide-stable-notice')
       && rolesFactory.current.role == rolesFactory.ROLE_THREE;
+    this.showTransitionOffer =
+      res.release_name.endsWith('-transition')
+      && !localStorage.getItem('hide-transition-notice')
+      && rolesFactory.current.role == rolesFactory.ROLE_THREE;
   });
 
   this.closeTestingOffer = () => {
     this.showTestingOffer = false;
     localStorage.setItem('hide-stable-notice', true);
+  };
+
+  this.closeTransitionOffer = () => {
+    this.showTransitionOffer = false;
+    localStorage.setItem('hide-transition-notice', true);
   };
 }
 

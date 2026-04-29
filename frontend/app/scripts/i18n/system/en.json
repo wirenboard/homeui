@@ -2,7 +2,13 @@
     "system": {
         "title": "System",
         "labels": {
-            "testing-offer": "If you want to be the first to get access to new features of our software, switch to "
+            "testing-offer": "If you want to be the first to get access to new features of our software, switch to ",
+            "transition-offer1": "A new version of Debian is available!",
+            "transition-offer2": "To update run in console",
+            "transition-offer3": "or download",
+            "transition-offer4": "FIT firmware image",
+            "transition-offer5": "and update via the web interface by visiting",
+            "transition-offer6": "Settings → System"
         }
     },
     "collector": {

@@ -239,7 +239,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         self.context.certificate_thread = MagicMock()
         self.context.certificate_thread.get_certificate_state.return_value = CertificateState.VALID
         self.context.security_check_thread = MagicMock()
-        mock_file = mock_open(read_data="SUITE=stable\n")
+        mock_file = mock_open(read_data="SUITE=stable\nRELEASE_NAME=wb-2602\n")
         with patch("wb.homeui_backend.main.open", mock_file):
             response = device_info_handler(self.request, self.context)
 
@@ -253,7 +253,13 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         )
         self.assertEqual(
             json.loads(response.body),
-            {"sn": "ABC123", "ip": "1.2.3.4", "https_cert": "valid", "release_suite": "stable"},
+            {
+                "sn": "ABC123",
+                "ip": "1.2.3.4",
+                "https_cert": "valid",
+                "release_suite": "stable",
+                "release_name": "wb-2602",
+            },
         )
 
 

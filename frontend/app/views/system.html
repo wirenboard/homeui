@@ -10,6 +10,15 @@
     {{'system.labels.testing-offer' | translate}}<a href="https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases" target="_blank" draggable="false">testing</a>
 </div>
 
+<div class="alert alert-warning alert-dismissible" role="alert" ng-cloak ng-show="$ctrl.showTransitionOffer">
+    <button type="button" class="close" ng-click="$ctrl.closeTransitionOffer()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span style="font-weight: bold">{{'system.labels.transition-offer1' | translate}}</span>
+    <span>{{'system.labels.transition-offer2' | translate}}</span>
+    <span style="font-weight: bold">wb-release --update-debian-release</span>
+    <span>{{'system.labels.transition-offer3' | translate}} <a href="http://fw-releases.wirenboard.com/?prefix=fit_image">{{'system.labels.transition-offer4' | translate}}</a> {{'system.labels.transition-offer5' | translate}} <a href="#!/system">{{'system.labels.transition-offer6' | translate}}</a></span>
+</div>
+
 <section ng-if="$ctrl.haveRights">
     <cloud-status-meta-widget></cloud-status-meta-widget>
 

@@ -95,11 +95,11 @@ def get_session(
     return None
 
 
-def get_release_suite(release_file: str = "/usr/lib/wb-release") -> str:
+def get_wb_release(key: str, release_file: str = "/usr/lib/wb-release") -> str:
     try:
         with open(release_file, "r", encoding="utf-8") as fp:
             res = {k.strip(): v.strip() for k, v in (l.split("=", 1) for l in fp)}
-            return res.get("SUITE", "")
+            return res.get(key, "")
     except FileNotFoundError:
         logging.warning("Release file %s not found", release_file)
     except Exception as e:  # pylint: disable=broad-exception-caught
@@ -376,7 +376,8 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
         "sn": context.sn,
         "ip": host_ip,
         "https_cert": context.certificate_thread.get_certificate_state().value,
-        "release_suite": get_release_suite(),
+        "release_suite": get_wb_release("SUITE"),
+        "release_name": get_wb_release("RELEASE_NAME"),
     }
     return response_200(
         [
