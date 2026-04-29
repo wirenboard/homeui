@@ -14,6 +14,8 @@ export default function daliProxyService(MqttRpc) {
       'GetGroup',
       'SetGroup',
       'IdentifyDevice',
+      'ResetDeviceSettings',
+      'ResetDevice',
     ],
     'daliProxy');
 }

@@ -921,7 +921,13 @@
          "polling-interval": "Polling Interval (s)",
          "polling-interval-error": "Interval must be a positive integer",
          "identify-tooltip": "The device will flash the light or attract attention, which can help to identify it among other devices",
-         "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>."
+         "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>.",
+         "reset-dialog-heading": "Reset device",
+         "reset-settings-option-title": "Reset settings",
+         "reset-settings-option-description": "Variables return to factory defaults. Short address is kept, the device stays in the gateway configuration and MQTT.",
+         "reset-device-option-title": "Reset address and settings",
+         "reset-device-option-description": "Variables and short address are erased. The device is removed from the gateway configuration and MQTT and becomes available for rescan.",
+         "reset-unsaved-warning": "Unsaved changes will be lost."
       },
       "buttons": {
          "rescan": "Rescan",
@@ -931,7 +937,9 @@
          "pause-log": "Pause log",
          "resume-log": "Resume log",
          "set": "Set",
-         "identify": "Identify"
+         "identify": "Identify",
+         "reset": "Reset…",
+         "reset-confirm": "Reset"
       }
    }
 }

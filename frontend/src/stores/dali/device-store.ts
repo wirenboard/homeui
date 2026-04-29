@@ -18,10 +18,17 @@ export class DeviceStore extends BaseItemStore {
     makeObservable(this, {
       load: action,
       save: action,
+      resetSettings: action,
+      reset: action,
       dropCache: action,
+      setError: action,
       isLoading: observable,
       error: observable,
     });
+  }
+
+  get parent(): BusStore | null {
+    return this.#parent;
   }
 
   async load(forceReload = false) {
@@ -83,6 +90,34 @@ export class DeviceStore extends BaseItemStore {
   async identify() {
     try {
       await this.daliProxy.IdentifyDevice({ deviceId: this.id });
+    } catch (error) {
+      this.setError(error);
+    }
+  }
+
+  async resetSettings() {
+    try {
+      await this.daliProxy.ResetDeviceSettings({ deviceId: this.id });
+      this.setError(null);
+    } catch (error) {
+      this.setError(error);
+      return;
+    }
+    await this.load(true);
+  }
+
+  async reset() {
+    try {
+      await this.daliProxy.ResetDevice({ deviceId: this.id });
+      runInAction(() => {
+        const parent = this.#parent;
+        if (parent) {
+          parent.children = parent.children.filter((child) => child !== this);
+          parent.syncGroupChildren();
+          parent.objectStore = null;
+        }
+        this.setError(null);
+      });
     } catch (error) {
       this.setError(error);
     }
