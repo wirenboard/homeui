@@ -11,7 +11,7 @@ export interface DeviceTabContentProps {
   onUpdateFirmware: () => void;
   onUpdateBootloader: () => void;
   onUpdateComponents: () => void;
-  onReadRegisters: (tab: DeviceTabStore) => void;
+  onReadRegisters: (tab: DeviceTabStore, isForce?: boolean) => void;
 }
 
 export interface ReadRegistersResultAlertProps {
