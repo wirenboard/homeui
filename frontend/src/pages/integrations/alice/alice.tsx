@@ -20,6 +20,8 @@ type BindingView =
   | { kind: 'bind'; linkUrl: string }
   | null;
 
+const STATUS_ERROR_ID = 'alice-link-status';
+
 const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const { t } = useTranslation();
   const {
@@ -57,13 +59,18 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const clearBindingView = () => setBindingView(null);
 
   const clearStatusError = () => {
-    setErrors((prev) => prev.filter((item) => item.text !== linkStatusErrorMessage));
+    setErrors((prev) => prev.filter((item) => item.id !== STATUS_ERROR_ID));
   };
 
   const showStatusError = () => {
     setErrors((prev) => {
-      const next = prev.filter((item) => item.text !== linkStatusErrorMessage);
-      return [...next, { variant: 'danger', text: linkStatusErrorMessage, onClose: () => setErrors([]) }];
+      const next = prev.filter((item) => item.id !== STATUS_ERROR_ID);
+      return [...next, {
+        id: STATUS_ERROR_ID,
+        variant: 'danger',
+        text: linkStatusErrorMessage,
+        onClose: clearStatusError,
+      }];
     });
   };
 
@@ -158,7 +165,15 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     fetchData()
       .then(() => setPageState('isConnected'))
       .catch(() => setPageState('isNotConnected'));
-  }, [checkIsAvailable, fetchData, fetchIntegrationStatus, fetchLinkStatus, isModuleInstalled, linkStatusErrorMessage, t]);
+  }, [
+    checkIsAvailable,
+    fetchData,
+    fetchIntegrationStatus,
+    fetchLinkStatus,
+    isModuleInstalled,
+    linkStatusErrorMessage,
+    t,
+  ]);
 
   useEffect(() => {
     if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) {
@@ -214,7 +229,11 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     try {
       await aliceStore.unlinkController();
       clearBindingView();
-      await refreshBindingStatus();
+      try {
+        await refreshBindingStatus();
+      } catch {
+        // `refreshBindingStatus()` already updates the UI with its own generic error state.
+      }
     } catch (err: any) {
       setErrors([{ variant: 'danger', text: err?.response?.data?.detail || err?.message || String(err) }]);
     }
