@@ -761,7 +761,8 @@
    "alice": {
       "title": "Yandex Alice Integration",
       "errors": {
-         "link-status-unavailable": "The server did not respond, link status is unavailable."
+         "link-status-unavailable": "The server did not respond, link status is unavailable.",
+         "integration-error": "Error changing integration status"
       },
       "labels": {
          "unavailable": "Yandex Alisa module is not installed, or the configurator service is stopped",
@@ -834,10 +835,6 @@
          "electrics": "Electrics",
          "openable": "Opening/closing control",
          "other": "Other devices"
-      },
-      "errors": {
-         "integration-error": "Error changing integration status",
-         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one."
       },
       "binding":{
          "unlink-controller": "(unlink controller)",
