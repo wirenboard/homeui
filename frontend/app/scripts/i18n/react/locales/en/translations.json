@@ -833,8 +833,8 @@
          "other": "Other devices"
       },
       "errors": {
-         "link-status-unavailable": "The server did not respond, link status is unavailable.",
-         "integration-error": "Error changing integration status"
+         "integration-error": "Error changing integration status",
+         "link-status-unavailable": "The server did not respond, link status is unavailable."
       },
       "binding":{
          "unlink-controller": "(unlink controller)",
