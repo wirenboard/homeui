@@ -57,8 +57,11 @@ export interface AliceFetchData {
 
 export interface AliceLinkStatus {
   linked: boolean;
-  link_url?: string;
-  unlink_url?: string;
+  status_url?: string;
+}
+
+export interface AliceLinkUrl {
+  link_url: string;
 }
 
 export interface AddDeviceParams {

@@ -4,6 +4,7 @@ import { generateNextId } from '@/utils/id';
 import {
   addDevice,
   addRoom,
+  createAliceLink,
   deleteRoom,
   getAliceInfo,
   getAliceLinkStatus,
@@ -19,6 +20,7 @@ import type {
   AddDeviceParams,
   AliceFetchData,
   AliceLinkStatus,
+  AliceLinkUrl,
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
@@ -91,6 +93,10 @@ export default class AliceStore {
 
       throw err;
     }
+  }
+
+  async createLink(): Promise<AliceLinkUrl> {
+    return createAliceLink();
   }
 
   async addRoom(name: string): Promise<string> {

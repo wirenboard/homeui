@@ -5,6 +5,7 @@ import type {
   AddRoomFetchData,
   AliceFetchData,
   AliceLinkStatus,
+  AliceLinkUrl,
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
@@ -21,6 +22,10 @@ export const getAliceInfo = async () => request.get<AliceFetchData>(
 
 export const getAliceLinkStatus = async () => request.get<AliceLinkStatus>(
   '/api/integrations/alice/link_status',
+).then(({ data }) => data);
+
+export const createAliceLink = async () => request.post<AliceLinkUrl>(
+  '/api/integrations/alice/link',
 ).then(({ data }) => data);
 
 export const addRoom = async (name: string) => request.post<AddRoomFetchData>(

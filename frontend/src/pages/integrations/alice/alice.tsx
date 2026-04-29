@@ -21,6 +21,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     roomList,
     isAvailable,
     linkStatus,
+    createLink,
     fetchData,
     fetchLinkStatus,
     fetchIntegrationStatus,
@@ -32,6 +33,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
   const [isIntegrationLoading, setIntegrationLoading] = useState(true);
+  const [bindLinkUrl, setBindLinkUrl] = useState<string | null>(null);
   const sortedRooms = useMemo(() => [{ id: 'all', label: t('alice.buttons.all-devices') }, ...roomList
     .sort(([keyA], [keyB]) => {
       if (keyA === 'all') return -1;
@@ -61,9 +63,16 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
 
   const refreshBindingStatus = async () => {
     try {
-      await fetchLinkStatus();
+      const status = await fetchLinkStatus();
+      if (status.linked) {
+        setBindLinkUrl(null);
+      } else {
+        const { link_url: linkUrl } = await createLink();
+        setBindLinkUrl(linkUrl);
+      }
       clearStatusError();
     } catch (err) {
+      setBindLinkUrl(null);
       showStatusError();
       throw err;
     }
@@ -88,6 +97,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
         runInAction(() => {
           aliceStore.linkStatus = null;
         });
+        setBindLinkUrl(null);
         clearStatusError();
       }
     } catch (err) {
@@ -131,6 +141,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
           runInAction(() => {
             aliceStore.linkStatus = null;
           });
+          setBindLinkUrl(null);
           clearStatusError();
         }
       } catch (err) {
@@ -158,10 +169,9 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       }
 
       try {
-        await fetchLinkStatus();
-        clearStatusError();
+        await refreshBindingStatus();
       } catch {
-        showStatusError();
+        // Status error is already handled inside refreshBindingStatus().
       }
     };
 
@@ -176,7 +186,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [fetchLinkStatus, isModuleInstalled, linkStatusErrorMessage]);
+  }, [isModuleInstalled, linkStatusErrorMessage]);
 
   useEffect(() => {
     if (!authStore.hasRights(UserRole.Admin)) {
@@ -201,6 +211,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     setIsConfirmModalOpen(false);
     try {
       await aliceStore.unlinkController();
+      setBindLinkUrl(null);
       await refreshBindingStatus();
     } catch (err: any) {
       setErrors([{ variant: 'danger', text: err?.response?.data?.detail || err?.message || String(err) }]);
@@ -236,9 +247,11 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
                 linkStatus.linked
                   ? (
                     <div className="alice-bindingContainer">
-                      <a href={linkStatus.unlink_url} className="alice-binding" target="_blank" rel="noreferrer">
-                        {t('alice.buttons.check-binding-status')}
-                      </a>
+                      {linkStatus.status_url && (
+                        <a href={linkStatus.status_url} className="alice-binding" target="_blank" rel="noreferrer">
+                          {t('alice.buttons.check-binding-status')}
+                        </a>
+                      )}
                       <span>{t('alice.labels.is-binded')}</span>
                       <button
                         type="button"
@@ -250,8 +263,8 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
                       </button>
                     </div>
                   )
-                  : linkStatus.link_url ? (
-                    <a href={linkStatus?.link_url} className="alice-binding" target="_blank" rel="noreferrer">
+                  : bindLinkUrl ? (
+                    <a href={bindLinkUrl} className="alice-binding" target="_blank" rel="noreferrer">
                       {t('alice.buttons.bind')}
                     </a>
                   ) : null
