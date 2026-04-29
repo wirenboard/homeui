@@ -32,7 +32,6 @@ export default class AliceStore {
   public devices = new Map<string, SmartDevice>();
   public isAvailable = null;
   public isIntegrationEnabled = false;
-  public linkStatus: AliceLinkStatus | null = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -79,20 +78,7 @@ export default class AliceStore {
   }
 
   async fetchLinkStatus(): Promise<AliceLinkStatus> {
-    try {
-      const data = await getAliceLinkStatus();
-
-      return runInAction(() => {
-        this.linkStatus = data;
-        return data;
-      });
-    } catch (err) {
-      runInAction(() => {
-        this.linkStatus = null;
-      });
-
-      throw err;
-    }
+    return getAliceLinkStatus();
   }
 
   async createLink(): Promise<AliceLinkUrl> {

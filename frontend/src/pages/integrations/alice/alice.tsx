@@ -15,12 +15,16 @@ import { SmartDevice } from './components/smart-device';
 import type { AlicePageProps, AlicePageState, View } from './types';
 import './styles.css';
 
+type BindingView =
+  | { kind: 'linked'; statusUrl?: string }
+  | { kind: 'bind'; linkUrl: string }
+  | null;
+
 const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const { t } = useTranslation();
   const {
     roomList,
     isAvailable,
-    linkStatus,
     createLink,
     fetchData,
     fetchLinkStatus,
@@ -33,7 +37,8 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const [view, setView] = useState<View>({ roomId: 'all' });
   const [errors, setErrors] = useState([]);
   const [isIntegrationLoading, setIntegrationLoading] = useState(true);
-  const [bindLinkUrl, setBindLinkUrl] = useState<string | null>(null);
+  const [isBindingStatusLoading, setBindingStatusLoading] = useState(false);
+  const [bindingView, setBindingView] = useState<BindingView>(null);
   const sortedRooms = useMemo(() => [{ id: 'all', label: t('alice.buttons.all-devices') }, ...roomList
     .sort(([keyA], [keyB]) => {
       if (keyA === 'all') return -1;
@@ -49,6 +54,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   });
   const isModuleInstalled = useMemo(() => uiStore.modules.some((item) => item === 'alice'), [uiStore.modules]);
   const linkStatusErrorMessage = t('alice.errors.link-status-unavailable');
+  const clearBindingView = () => setBindingView(null);
 
   const clearStatusError = () => {
     setErrors((prev) => prev.filter((item) => item.text !== linkStatusErrorMessage));
@@ -62,19 +68,23 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   };
 
   const refreshBindingStatus = async () => {
+    setBindingStatusLoading(true);
+
     try {
       const status = await fetchLinkStatus();
       if (status.linked) {
-        setBindLinkUrl(null);
+        setBindingView({ kind: 'linked', statusUrl: status.status_url });
       } else {
         const { link_url: linkUrl } = await createLink();
-        setBindLinkUrl(linkUrl);
+        setBindingView({ kind: 'bind', linkUrl });
       }
       clearStatusError();
     } catch (err) {
-      setBindLinkUrl(null);
+      clearBindingView();
       showStatusError();
       throw err;
+    } finally {
+      setBindingStatusLoading(false);
     }
   };
 
@@ -94,10 +104,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       integrationUpdated = true;
 
       if (!enabled) {
-        runInAction(() => {
-          aliceStore.linkStatus = null;
-        });
-        setBindLinkUrl(null);
+        clearBindingView();
         clearStatusError();
       }
     } catch (err) {
@@ -133,15 +140,10 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     (async () => {
       try {
         await fetchIntegrationStatus();
-        setIntegrationLoading(false);
-
         if (aliceStore.isIntegrationEnabled) {
           refreshBindingStatusInBackground();
         } else {
-          runInAction(() => {
-            aliceStore.linkStatus = null;
-          });
-          setBindLinkUrl(null);
+          clearBindingView();
           clearStatusError();
         }
       } catch (err) {
@@ -211,7 +213,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     setIsConfirmModalOpen(false);
     try {
       await aliceStore.unlinkController();
-      setBindLinkUrl(null);
+      clearBindingView();
       await refreshBindingStatus();
     } catch (err: any) {
       setErrors([{ variant: 'danger', text: err?.response?.data?.detail || err?.message || String(err) }]);
@@ -231,6 +233,61 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     </div>
   ) : undefined;
 
+  const renderBindingStatus = () => {
+    if (!isIntegrationEnabled) {
+      return null;
+    }
+
+    const hasBindingContent = Boolean(bindingView);
+
+    if (bindingView?.kind === 'linked') {
+      return (
+        <div className="alice-bindingContainer">
+          {bindingView.statusUrl && (
+            <a
+              href={bindingView.statusUrl}
+              className="alice-binding"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t('alice.buttons.check-binding-status')}
+            </a>
+          )}
+          <span>{t('alice.labels.is-binded')}</span>
+          <button
+            type="button"
+            className="alice-binding alice-unlink"
+            title={t('alice.binding.unlink-controller')}
+            onClick={handleUnlinkController}
+          >
+            {t('alice.binding.unlink-controller')}
+          </button>
+        </div>
+      );
+    }
+
+    if (bindingView?.kind === 'bind') {
+      return (
+        <div className="alice-bindingContainer">
+          <a
+            href={bindingView.linkUrl}
+            className="alice-binding"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t('alice.buttons.bind')}
+          </a>
+        </div>
+      );
+    }
+
+    if (isBindingStatusLoading && !hasBindingContent) {
+      return <div className="alice-bindingSkeleton" aria-hidden="true" />;
+    }
+
+    return null;
+  };
+
   return (
     <PageLayout
       title={t('alice.title')}
@@ -243,32 +300,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
         pageState === 'isConnected'
           ? (
             <>
-              {isIntegrationEnabled && linkStatus && (
-                linkStatus.linked
-                  ? (
-                    <div className="alice-bindingContainer">
-                      {linkStatus.status_url && (
-                        <a href={linkStatus.status_url} className="alice-binding" target="_blank" rel="noreferrer">
-                          {t('alice.buttons.check-binding-status')}
-                        </a>
-                      )}
-                      <span>{t('alice.labels.is-binded')}</span>
-                      <button
-                        type="button"
-                        className="alice-binding alice-unlink"
-                        title={t('alice.binding.unlink-controller')}
-                        onClick={handleUnlinkController}
-                      >
-                        {t('alice.binding.unlink-controller')}
-                      </button>
-                    </div>
-                  )
-                  : bindLinkUrl ? (
-                    <a href={bindLinkUrl} className="alice-binding" target="_blank" rel="noreferrer">
-                      {t('alice.buttons.bind')}
-                    </a>
-                  ) : null
-              )}
+              {renderBindingStatus()}
 
               <div className="alice-container">
                 <aside className="alice-sidebar">

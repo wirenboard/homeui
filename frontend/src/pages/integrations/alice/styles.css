@@ -20,6 +20,20 @@
     width: fit-content;
 }
 
+.alice-bindingSkeleton {
+    width: 220px;
+    height: 20px;
+    border-radius: 4px;
+    background: linear-gradient(
+        90deg,
+        var(--border-color) 25%,
+        rgba(255, 255, 255, 0.12) 50%,
+        var(--border-color) 75%
+    );
+    background-size: 200% 100%;
+    animation: alice-bindingSkeleton 1.2s ease-in-out infinite;
+}
+
 .alice-binding:focus {
     text-decoration: underline;
 }
@@ -31,6 +45,15 @@
     color: inherit;
     text-decoration: underline;
     cursor: pointer;
+}
+
+@keyframes alice-bindingSkeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 .alice-sidebar {
