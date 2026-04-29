@@ -863,7 +863,7 @@
       },
       "errors": {
          "integration-error": "Ошибка при изменении состояния интеграции",
-         "link-status-unavailable": "Сервер не ответил, статус привязки недоступен."
+         "link-status-unavailable": "Сервис интеграции с Алисой сейчас недоступен."
       },
       "binding":{
          "unlink-controller": "(отвязать контроллер)",

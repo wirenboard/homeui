@@ -834,7 +834,7 @@
       },
       "errors": {
          "integration-error": "Error changing integration status",
-         "link-status-unavailable": "The server did not respond, link status is unavailable."
+         "link-status-unavailable": "The Alice integration service is currently unavailable."
       },
       "binding":{
          "unlink-controller": "(unlink controller)",
