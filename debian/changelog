@@ -1,11 +1,21 @@
-wb-mqtt-homeui (2.202.2) stable; urgency=medium
+wb-mqtt-homeui (2.203.1) stable; urgency=medium
 
-  * Update the Alice integration page to use explicit link status and link creation actions
-  * Refresh the controller binding state automatically when returning to the page
-  * Improve the Alice binding UI for initial loading, background refresh, and server errors
-  * Fix Alice translation keys for the new link status error messages
+  * Update the Alice integration page for the new controller link API flow
+  * Improve controller binding status handling, automatic refresh, and related UI/error states
 
  -- Denis Smagin <denis.smagin@wirenboard.com>  Wed, 29 Apr 2026 12:00:00 +0200
+
+wb-mqtt-homeui (2.203.0) stable; urgency=medium
+
+  * Add support for gateway level settings in DALI config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 13:02:33 +0500
+
+wb-mqtt-homeui (2.202.2) stable; urgency=medium
+
+  * Fix default poll policy for semi-sporadic channels
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 11:08:20 +0500
 
 wb-mqtt-homeui (2.202.1) stable; urgency=medium
 
