@@ -25,7 +25,7 @@ const TabContent = ({
   onDeviceRemoved: (device: DeviceStore) => void;
 }) => {
   if (store?.type === 'bus') {
-    return <BusTabContent store={store as BusStore} onScan={onRefresh} />;
+    return <BusTabContent store={store as BusStore} />;
   }
   if (store?.type === 'group') {
     return <GroupTabContent store={store as GroupStore} />;
