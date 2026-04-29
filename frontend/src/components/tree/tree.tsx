@@ -31,15 +31,18 @@ export const Tree = ({
   size = 'default',
   isDisabled,
   onItemClick,
+  activeId,
   selectable,
   selectedIds,
   onSelectionChange,
 }: TreeProps) => {
-  const [active, setActive] = useState<string>();
+  const [internalActive, setInternalActive] = useState<string>();
+  const isControlled = activeId !== undefined;
+  const active = isControlled ? activeId : internalActive;
 
   useEffect(() => {
-    if (!selectable && data.length && !active) {
-      setActive(data.at(0).id);
+    if (!selectable && !isControlled && data.length && !internalActive) {
+      setInternalActive(data.at(0).id);
     }
   }, [data]);
 
@@ -91,7 +94,9 @@ export const Tree = ({
               toggleItem(item);
             } else {
               onItemClick?.(item);
-              setActive(item.id);
+              if (!isControlled) {
+                setInternalActive(item.id);
+              }
             }
           }}
         >

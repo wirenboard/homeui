@@ -956,7 +956,13 @@
          "scan-stage-query_short_addresses": "Опрос коротких адресов. Найдено: {{count}}",
          "scan-stage-binary_search": "Двоичный поиск. Найдено: {{count}}",
          "scan-stage-dali2_query_short_addresses": "DALI 2 опрос коротких адресов. Найдено: {{count}}",
-         "scan-stage-dali2_binary_search": "DALI 2 двоичный поиск. Найдено: {{count}}"
+         "scan-stage-dali2_binary_search": "DALI 2 двоичный поиск. Найдено: {{count}}",
+         "reset-dialog-heading": "Сброс устройства",
+         "reset-settings-option-title": "Сбросить настройки",
+         "reset-settings-option-description": "Параметры возвращаются к заводским значениям. Адрес сохраняется, устройство остаётся в конфигурации шлюза и MQTT.",
+         "reset-device-option-title": "Сбросить адрес и настройки",
+         "reset-device-option-description": "Параметры и адрес стираются. Устройство удаляется из конфигурации шлюза и MQTT, становится доступным для повторного сканирования.",
+         "reset-unsaved-warning": "Несохранённые изменения будут потеряны."
       },
       "buttons": {
          "rescan": "Пересканировать",
@@ -967,7 +973,9 @@
          "pause-log": "Приостановить получение сообщений",
          "resume-log": "Возобновить получение сообщений",
          "set": "Задать",
-         "identify": "Идентифицировать"
+         "identify": "Идентифицировать",
+         "reset": "Сброс…",
+         "reset-confirm": "Сбросить"
       }
    }
 }

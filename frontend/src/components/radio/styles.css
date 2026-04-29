@@ -26,3 +26,26 @@
     margin: 0 !important;
     position: relative !important;
 }
+
+.radio-withDescription {
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.radio-withDescription input {
+    margin-top: 4px !important;
+}
+
+.radio-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.radio-label {
+    font-weight: 600;
+}
+
+.radio-description {
+    color: var(--gray-color);
+}

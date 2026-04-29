@@ -1,12 +1,18 @@
+import classNames from 'classnames';
 import { useId } from 'react';
 import { type RadioProps } from './types';
 import './styles.css';
 
-export const Radio = ({ checked, isDisabled, onChange, label, ariaLabel, name }: RadioProps) => {
+export const Radio = ({
+  checked, isDisabled, onChange, label, description, ariaLabel, name,
+}: RadioProps) => {
   const id = useId();
 
   return (
-    <label className="radio" htmlFor={id}>
+    <label
+      className={classNames('radio', { 'radio-withDescription': description })}
+      htmlFor={id}
+    >
       <input
         type="radio"
         aria-label={ariaLabel}
@@ -16,7 +22,14 @@ export const Radio = ({ checked, isDisabled, onChange, label, ariaLabel, name }:
         disabled={isDisabled}
         onChange={(ev) => onChange(ev.target.checked)}
       />
-      {label}
+      {description ? (
+        <span className="radio-content">
+          <span className="radio-label">{label}</span>
+          <span className="radio-description">{description}</span>
+        </span>
+      ) : (
+        label
+      )}
     </label>
   );
 };

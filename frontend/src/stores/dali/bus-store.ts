@@ -21,8 +21,6 @@ export class BusStore extends BaseItemStore {
   public busMonitor: MonitorStore | null = null;
 
   public pollingInterval: number = 5;
-  public websocketEnabled: boolean = false;
-  public websocketPort: number | undefined = undefined;
   public busMonitorEnabled: boolean = false;
   public broadcastSettingsVisible: boolean = false;
 
@@ -54,8 +52,6 @@ export class BusStore extends BaseItemStore {
       stopScan: action,
       saveParam: action,
       setPollingInterval: action,
-      setWebsocketEnabled: action,
-      setWebsocketPort: action,
       setBusMonitorEnabled: action,
       applyCommissioningState: action,
       setError: action,
@@ -67,8 +63,6 @@ export class BusStore extends BaseItemStore {
       isScanning: computed,
       error: observable,
       pollingInterval: observable,
-      websocketEnabled: observable,
-      websocketPort: observable,
       busMonitorEnabled: observable,
       broadcastSettingsVisible: observable,
     });
@@ -86,32 +80,6 @@ export class BusStore extends BaseItemStore {
       await this.daliProxy.SetBus({ busId: this.id, config: { polling_interval: value } });
       runInAction(() => {
         this.pollingInterval = value;
-        this.setError(null);
-      });
-    } catch (error) {
-      this.setError(error);
-    }
-  }
-
-  async setWebsocketEnabled(value: boolean) {
-    const prev = this.websocketEnabled;
-    this.websocketEnabled = value;
-    try {
-      await this.daliProxy.SetBus({ busId: this.id, config: { websocket_enabled: value } });
-      this.setError(null);
-    } catch (error) {
-      runInAction(() => {
-        this.websocketEnabled = prev;
-      });
-      this.setError(error);
-    }
-  }
-
-  async setWebsocketPort(value: number | undefined) {
-    try {
-      await this.daliProxy.SetBus({ busId: this.id, config: { websocket_port: value } });
-      runInAction(() => {
-        this.websocketPort = value;
         this.setError(null);
       });
     } catch (error) {
@@ -303,8 +271,6 @@ export class BusStore extends BaseItemStore {
 
   private _applyConfig(config: Record<string, any>) {
     this.pollingInterval = config.polling_interval ?? 5;
-    this.websocketEnabled = config.websocket_enabled ?? false;
-    this.websocketPort = config.websocket_port;
     this.busMonitorEnabled = config.bus_monitor_enabled ?? false;
   }
 

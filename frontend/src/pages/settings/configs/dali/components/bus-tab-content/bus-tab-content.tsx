@@ -13,18 +13,11 @@ import { useAsyncAction } from '@/utils/async-action';
 import { BusMonitor } from '../bus-monitor';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
-import { LunatoneGatewayField } from './lunatone-gateway-field';
 import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
 
 const MAX_SLOTS = 12;
 
-const BusSettingsForm = ({ store }: { store: BusStore }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-    <PollingIntervalField store={store} />
-    <LunatoneGatewayField store={store} />
-  </div>
-);
 
 const BusParam = observer(({ store, param }: { store: BusStore; param: ObjectParamStore }) => {
   const { t, i18n } = useTranslation();
@@ -149,7 +142,7 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
               onClick={() => store.scan()}
             />
           </FormButtonGroup>
-          <BusSettingsForm store={store} />
+          <PollingIntervalField store={store} />
           <BusParamsTabContent store={store} />
         </>
       )}
