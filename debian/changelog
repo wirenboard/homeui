@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.202.2) stable; urgency=medium
+
+  * Update the Alice integration page to use explicit link status and link creation actions
+  * Refresh the controller binding state automatically when returning to the page
+  * Improve the Alice binding UI for initial loading, background refresh, and server errors
+  * Fix Alice translation keys for the new link status error messages
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Wed, 29 Apr 2026 12:00:00 +0200
+
 wb-mqtt-homeui (2.202.1) stable; urgency=medium
 
   * Fix clearing channel settings on config reread in wb-mqtt-serial editor 
