@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.172.0-wb112) stable; urgency=medium
+
+  * Fix clearing channel settings on config reread in wb-mqtt-serial editor 
+  * Fix default poll policy for semi-sporadic channels
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 11:08:20 +0500
+
 wb-mqtt-homeui (2.172.0-wb111) stable; urgency=medium
 
   * Add 1-Wire sensor id param support in serial

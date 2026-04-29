@@ -217,7 +217,7 @@ export class WbDeviceChannelEditor {
 
   setDefault() {
     const { mode, period } = getEditorValuesFromChannelData(this.channel);
-    if (this.channel['semi-sporadic'] === true || this.channel.sporadic === true) {
+    if (this.channel.sporadic === true) {
       this.mode.setValue(mode === WbDeviceChannelModes.Disabled ? mode : WbDeviceChannelModes.UsingFastModbus);
     } else {
       this.mode.setValue(mode);
