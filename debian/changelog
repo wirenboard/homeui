@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.203.0) stable; urgency=medium
+wb-mqtt-homeui (2.204.0) stable; urgency=medium
 
   * Add reset flow for DALI devices
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 17:13:53 +0500
+
+wb-mqtt-homeui (2.203.0) stable; urgency=medium
+
+  * Add support for gateway level settings in DALI config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 13:02:33 +0500
 
 wb-mqtt-homeui (2.202.2) stable; urgency=medium
 

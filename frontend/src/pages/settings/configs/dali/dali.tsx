@@ -11,6 +11,7 @@ import type { ItemStore, GroupStore, DeviceStore, BusStore } from '@/stores/dali
 import { BusTabContent } from './components/bus-tab-content';
 import { DeviceTabContent } from './components/device-tab-content';
 import { GroupTabContent } from './components/group-tab-content';
+import { GatewayTabContent } from './components/gateway-tab-content';
 import type { DaliPageProps } from './types';
 import './styles.css';
 
@@ -37,6 +38,9 @@ const TabContent = ({
         onDeviceRemoved={onDeviceRemoved}
       />
     );
+  }
+  if (store?.type === 'gateway') {
+    return <GatewayTabContent store={store} />;
   }
   return null;
 };
@@ -82,6 +86,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
         const firstGateway = store.gateways.at(0);
         if (firstGateway) {
           setSelectedItem(firstGateway);
+          firstGateway.load().then(() => refreshData());
         }
       }
     };
