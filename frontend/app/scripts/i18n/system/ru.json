@@ -3,12 +3,7 @@
         "title": "Система",
         "labels": {
             "testing-offer": "Если вы хотите раньше всех получать доступ к новым возможностям нашего ПО — переключайтесь на ",
-            "transition-offer1": "Доступна новая версия Debian!",
-            "transition-offer2": "Для обновления выполните в консоли",
-            "transition-offer3": "или скачайте",
-            "transition-offer4": "FIT-файл прошивки",
-            "transition-offer5": "и обновите через веб-интерфейс контроллера, перейдя в",
-            "transition-offer6": "Настройки → Система"
+            "transition-offer": "<strong>Доступна новая версия Debian!</strong> Для обновления выполните в консоли <strong>wb-release --update-debian-release</strong> или скачайте <a href=\"https://fw-releases.wirenboard.com/?prefix=fit_image\" target=\"_blank\" rel=\"noopener noreferrer\">FIT-файл прошивки</a> и обновите через веб-интерфейс контроллера, перейдя в <a href=\"#!/system\">Настройки → Система</a>"
         }
     },
     "collector": {
