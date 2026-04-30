@@ -243,6 +243,8 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         with patch("wb.homeui_backend.main.open", mock_file):
             response = device_info_handler(self.request, self.context)
 
+        mock_file.assert_called_once_with("/usr/lib/wb-release", "r", encoding="utf-8")
+
         self.assertEqual(response.status, 200)
         self.assertEqual(
             response.headers,
