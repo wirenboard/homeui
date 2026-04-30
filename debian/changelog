@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.205.1) stable; urgency=medium
+
+  * Fix unixtime control type handling in dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 29 Apr 2026 21:20:12 +0500
+
 wb-mqtt-homeui (2.205.0) stable; urgency=medium
 
   * Show DALI scan progress in DALI settings editor
