@@ -2,7 +2,8 @@
     "system": {
         "title": "Система",
         "labels": {
-            "testing-offer": "Если вы хотите раньше всех получать доступ к новым возможностям нашего ПО — переключайтесь на "
+            "testing-offer": "Если вы хотите раньше всех получать доступ к новым возможностям нашего ПО — переключайтесь на ",
+            "transition-offer": "<strong>Доступна новая версия Debian!</strong> Для обновления выполните в консоли <strong>wb-release --update-debian-release</strong> или скачайте <a href=\"https://fw-releases.wirenboard.com/?prefix=fit_image\" target=\"_blank\" rel=\"noopener noreferrer\">FIT-файл прошивки</a> и обновите через веб-интерфейс контроллера, перейдя в <a href=\"#!/system\">Настройки → Система</a>"
         }
     },
     "collector": {

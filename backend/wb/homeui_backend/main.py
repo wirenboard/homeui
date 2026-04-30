@@ -95,16 +95,15 @@ def get_session(
     return None
 
 
-def get_release_suite(release_file: str = "/usr/lib/wb-release") -> str:
+def get_wb_release(release_file: str = "/usr/lib/wb-release") -> dict[str, str]:
     try:
         with open(release_file, "r", encoding="utf-8") as fp:
-            res = {k.strip(): v.strip() for k, v in (l.split("=", 1) for l in fp)}
-            return res.get("SUITE", "")
+            return {k.strip(): v.strip() for k, v in (l.split("=", 1) for l in fp)}
     except FileNotFoundError:
         logging.warning("Release file %s not found", release_file)
     except Exception as e:  # pylint: disable=broad-exception-caught
         logging.error("Failed to read release file %s: %s", release_file, e)
-    return ""
+    return {}
 
 
 def validate_login_request(form: dict) -> None:
@@ -372,11 +371,13 @@ def get_users_handler(_request: BaseHTTPRequestHandler, context: WebRequestHandl
 
 def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHandlerContext) -> HttpResponse:
     host_ip = request.headers.get("X-Forwarded-Host-Ip", "")
+    wb_release = get_wb_release()
     res = {
         "sn": context.sn,
         "ip": host_ip,
         "https_cert": context.certificate_thread.get_certificate_state().value,
-        "release_suite": get_release_suite(),
+        "release_suite": wb_release.get("SUITE", ""),
+        "release_name": wb_release.get("RELEASE_NAME", ""),
     }
     return response_200(
         [

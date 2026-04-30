@@ -23,6 +23,7 @@ export default function daliDirective(whenMqttReady, DaliProxy, mqttClient) {
       );
 
       element.on('$destroy', () => {
+        scope.store.destroy();
         scope.root.unmount();
       });
     },

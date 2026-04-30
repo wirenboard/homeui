@@ -1,4 +1,4 @@
-import { getUnixTime, format, fromUnixTime } from 'date-fns';
+import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { DateTimePicker } from '@/components/datetime-picker';
@@ -7,6 +7,28 @@ import { type Cell } from '@/stores/devices';
 import { copyToClipboard } from '@/utils/clipboard';
 import { CellHistory } from './cell-history';
 import './styles.css';
+
+const unixToUtcDate = (unix: number): Date => {
+  const d = new Date(unix * 1000);
+  return new Date(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate(),
+    d.getUTCHours(),
+    d.getUTCMinutes(),
+    d.getUTCSeconds()
+  );
+};
+
+const utcDateToUnix = (date: Date): number =>
+  Math.floor(Date.UTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
+  ) / 1000);
 
 export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
   const { t, i18n } = useTranslation();
@@ -24,19 +46,19 @@ export const CellDateTime = observer(({ cell }: { cell: Cell }) => {
             trigger="click"
           >
             <div className="deviceCell-text" onClick={() => copyToClipboard(cell.value as string)}>
-              {format(fromUnixTime(cell.value as number || 0), dateFormat)}
+              {format(unixToUtcDate(cell.value as number || 0), dateFormat)}
             </div>
           </Tooltip>
         )
         : (
           <DateTimePicker
             size="small"
-            value={fromUnixTime(cell.value as number)}
+            value={unixToUtcDate(cell.value as number)}
             isInvalid={!!cell.error}
             ariaLabel={cell.name}
             withSeconds
             onChange={(value: Date) => {
-              cell.value = value ? getUnixTime(value) : 0;
+              cell.value = value ? utcDateToUnix(value) : 0;
             }}
           />
         )}

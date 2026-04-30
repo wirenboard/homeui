@@ -11,18 +11,13 @@ import type { BusStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
 import { useAsyncAction } from '@/utils/async-action';
 import { BusMonitor } from '../bus-monitor';
-import { LunatoneGatewayField } from './lunatone-gateway-field';
+import { CommissioningErrorBanner } from './commissioning-error-banner';
+import { CommissioningProgress } from './commissioning-progress';
 import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
 
 const MAX_SLOTS = 12;
 
-const BusSettingsForm = ({ store }: { store: BusStore }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-    <PollingIntervalField store={store} />
-    <LunatoneGatewayField store={store} />
-  </div>
-);
 
 const BusParam = observer(({ store, param }: { store: BusStore; param: ObjectParamStore }) => {
   const { t, i18n } = useTranslation();
@@ -123,7 +118,7 @@ const BusParamsTabContent = observer(({ store }: { store: BusStore }) => {
   );
 });
 
-export const BusTabContent = observer(({ store, onScan }: { store: BusStore; onScan: () => void }) => {
+export const BusTabContent = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
 
   if (store.isLoading) {
@@ -137,21 +132,17 @@ export const BusTabContent = observer(({ store, onScan }: { store: BusStore; onS
   return (
     <>
       {store.isScanning ? (
-        <div className="dali-contentLoader">
-          <Loader />
-        </div>
+        <CommissioningProgress store={store} />
       ) : (
         <>
+          <CommissioningErrorBanner store={store} />
           <FormButtonGroup>
             <Button
               label={t('dali.buttons.rescan')}
-              onClick={async () => {
-                await store.scan();
-                onScan();
-              }}
+              onClick={() => store.scan()}
             />
           </FormButtonGroup>
-          <BusSettingsForm store={store} />
+          <PollingIntervalField store={store} />
           <BusParamsTabContent store={store} />
         </>
       )}

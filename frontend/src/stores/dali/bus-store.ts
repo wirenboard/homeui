@@ -1,9 +1,19 @@
-import { runInAction, makeObservable, observable, action } from 'mobx';
+import { runInAction, makeObservable, observable, action, computed } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore, ItemType } from './base-item-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
 import { MonitorStore } from './monitor-store';
+import type { CommissioningState } from './types';
+
+const IDLE_COMMISSIONING_STATE: CommissioningState = {
+  status: 'idle',
+  progress: 0,
+  error: null,
+  device_count: 0,
+  devices: null,
+  finished_at: null,
+};
 
 export class BusStore extends BaseItemStore {
   readonly type = ItemType.Bus;
@@ -11,37 +21,58 @@ export class BusStore extends BaseItemStore {
   public busMonitor: MonitorStore | null = null;
 
   public pollingInterval: number = 5;
-  public websocketEnabled: boolean = false;
-  public websocketPort: number | undefined = undefined;
   public busMonitorEnabled: boolean = false;
   public broadcastSettingsVisible: boolean = false;
 
   public isParametersSchemaLoading: boolean = false;
-  public isScanning: boolean = false;
+
+  public commissioningState: CommissioningState = IDLE_COMMISSIONING_STATE;
+  public scanStartRequested: boolean = false;
+  public scanStopRequested: boolean = false;
 
   private isFirstLoad: boolean = true;
+  #mqttClient: any;
+  #commissioningTopic: string;
+  #commissioningHandler: ((msg: { topic: string; payload: string }) => void) | null = null;
 
-  constructor(daliProxy: any, id: string, name: string, mqttClient: any) {
+  constructor(
+    daliProxy: any,
+    id: string,
+    name: string,
+    mqttClient: any,
+    commissioning?: CommissioningState,
+  ) {
     super(daliProxy, id, name);
     this.busMonitor = new MonitorStore(mqttClient);
+    this.#mqttClient = mqttClient;
+    this.#commissioningTopic = `/wb-dali/${id}/commissioning`;
     makeObservable(this, {
       load: action,
       scan: action,
+      stopScan: action,
       saveParam: action,
       setPollingInterval: action,
-      setWebsocketEnabled: action,
-      setWebsocketPort: action,
       setBusMonitorEnabled: action,
+      applyCommissioningState: action,
+      setError: action,
       isLoading: observable,
       isParametersSchemaLoading: observable,
-      isScanning: observable,
+      commissioningState: observable,
+      scanStartRequested: observable,
+      scanStopRequested: observable,
+      isScanning: computed,
       error: observable,
       pollingInterval: observable,
-      websocketEnabled: observable,
-      websocketPort: observable,
       busMonitorEnabled: observable,
       broadcastSettingsVisible: observable,
     });
+
+    this.commissioningState = commissioning ?? IDLE_COMMISSIONING_STATE;
+    this.subscribeToCommissioning();
+  }
+
+  get isScanning(): boolean {
+    return !['idle', 'completed', 'failed', 'cancelled'].includes(this.commissioningState.status) || this.scanStartRequested;
   }
 
   async setPollingInterval(value: number) {
@@ -49,32 +80,6 @@ export class BusStore extends BaseItemStore {
       await this.daliProxy.SetBus({ busId: this.id, config: { polling_interval: value } });
       runInAction(() => {
         this.pollingInterval = value;
-        this.setError(null);
-      });
-    } catch (error) {
-      this.setError(error);
-    }
-  }
-
-  async setWebsocketEnabled(value: boolean) {
-    const prev = this.websocketEnabled;
-    this.websocketEnabled = value;
-    try {
-      await this.daliProxy.SetBus({ busId: this.id, config: { websocket_enabled: value } });
-      this.setError(null);
-    } catch (error) {
-      runInAction(() => {
-        this.websocketEnabled = prev;
-      });
-      this.setError(error);
-    }
-  }
-
-  async setWebsocketPort(value: number | undefined) {
-    try {
-      await this.daliProxy.SetBus({ busId: this.id, config: { websocket_port: value } });
-      runInAction(() => {
-        this.websocketPort = value;
         this.setError(null);
       });
     } catch (error) {
@@ -166,25 +171,33 @@ export class BusStore extends BaseItemStore {
   }
 
   async scan() {
-    this.isScanning = true;
+    this.scanStartRequested = true;
     try {
-      const res = await this.daliProxy.ScanBus({ busId: this.id });
-      runInAction(() => {
-        this.children = res.devices.map((device: { id: string; name: string; groups?: number[] }) =>
-          new DeviceStore(this.daliProxy, device.id, device.name, device.groups ?? [], this),
-        );
-        this.syncGroupChildren();
-        this.setError(null);
-      });
-      this.objectStore = null;
-      await this.load();
+      await this.daliProxy.ScanBus({ busId: this.id });
+      this.setError(null);
     } catch (error) {
-      this.setError(error);
-    } finally {
       runInAction(() => {
-        this.isScanning = false;
+        this.scanStartRequested = false;
       });
+      this.setError(error);
     }
+  }
+
+  async stopScan() {
+    this.scanStopRequested = true;
+    try {
+      await this.daliProxy.StopScanBus({ busId: this.id });
+      this.setError(null);
+    } catch (error) {
+      runInAction(() => {
+        this.scanStopRequested = false;
+      });
+      this.setError(error);
+    }
+  }
+
+  destroy() {
+    this.unsubscribeFromCommissioning();
   }
 
   syncGroupChildren() {
@@ -216,10 +229,48 @@ export class BusStore extends BaseItemStore {
     });
   }
 
+  async applyCommissioningState(newState: CommissioningState) {
+    this.commissioningState = newState;
+    this.scanStartRequested = false;
+    this.scanStopRequested = false;
+    console.log('Commissioning state updated', newState);
+    if ('completed' === newState.status) {
+      this.children = newState.devices.map((device: { id: string; name: string; groups: number[] }) =>
+        new DeviceStore(this.daliProxy, device.id, device.name, device.groups, this),
+      );
+      this.syncGroupChildren();
+      this.setError(null);
+      this.objectStore = null;
+      await this.load();
+    }
+  }
+
+  private subscribeToCommissioning() {
+    this.#commissioningHandler = ({ payload }: { topic: string; payload: string }) => {
+      if (!payload) {
+        return;
+      }
+      let parsed: CommissioningState;
+      try {
+        parsed = JSON.parse(payload) as CommissioningState;
+      } catch (error) {
+        console.warn('Failed to parse commissioning payload', error);
+        return;
+      }
+      this.applyCommissioningState(parsed);
+    };
+    this.#mqttClient.addStickySubscription(this.#commissioningTopic, this.#commissioningHandler);
+  }
+
+  private unsubscribeFromCommissioning() {
+    if (this.#commissioningHandler) {
+      this.#mqttClient.unsubscribe(this.#commissioningTopic);
+      this.#commissioningHandler = null;
+    }
+  }
+
   private _applyConfig(config: Record<string, any>) {
     this.pollingInterval = config.polling_interval ?? 5;
-    this.websocketEnabled = config.websocket_enabled ?? false;
-    this.websocketPort = config.websocket_port;
     this.busMonitorEnabled = config.bus_monitor_enabled ?? false;
   }
 

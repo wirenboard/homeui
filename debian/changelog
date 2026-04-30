@@ -1,8 +1,38 @@
-wb-mqtt-homeui (2.203.0) stable; urgency=medium
+wb-mqtt-homeui (2.207.0) stable; urgency=medium
 
   * Use pre-defined DH group ffdhe2048 recommended by the IETF
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 28 Apr 2026 14:00:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 30 Apr 2026 12:00:00 +0400
+
+wb-mqtt-homeui (2.206.0) stable; urgency=medium
+
+  * Add transition upgrade notice
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 30 Apr 2026 10:00:00 +0400
+
+wb-mqtt-homeui (2.205.1) stable; urgency=medium
+
+  * Fix unixtime control type handling in dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 29 Apr 2026 21:20:12 +0500
+
+wb-mqtt-homeui (2.205.0) stable; urgency=medium
+
+  * Show DALI scan progress in DALI settings editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 29 Apr 2026 17:16:28 +0500
+
+wb-mqtt-homeui (2.204.0) stable; urgency=medium
+
+  * Add reset flow for DALI devices
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 17:13:53 +0500
+
+wb-mqtt-homeui (2.203.0) stable; urgency=medium
+
+  * Add support for gateway level settings in DALI config editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 28 Apr 2026 13:02:33 +0500
 
 wb-mqtt-homeui (2.202.2) stable; urgency=medium
 
