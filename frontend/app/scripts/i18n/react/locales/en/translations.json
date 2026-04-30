@@ -834,7 +834,8 @@
       },
       "errors": {
          "integration-error": "Error changing integration status",
-         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one."
+         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one.",
+         "link-status-unavailable": "The Alice integration service is currently unavailable."
       },
       "binding":{
          "unlink-controller": "(unlink controller)",
