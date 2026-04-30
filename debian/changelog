@@ -2,7 +2,13 @@ wb-mqtt-homeui (2.206.0) stable; urgency=medium
 
   * Add transition upgrade notice
 
- -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 29 Apr 2026 21:00:00 +0400
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 30 Apr 2026 10:00:00 +0400
+
+wb-mqtt-homeui (2.205.1) stable; urgency=medium
+
+  * Fix unixtime control type handling in dashboards
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Wed, 29 Apr 2026 21:20:12 +0500
 
 wb-mqtt-homeui (2.205.0) stable; urgency=medium
 
