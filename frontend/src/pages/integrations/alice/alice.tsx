@@ -247,61 +247,6 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     </div>
   ) : undefined;
 
-  const renderBindingStatus = () => {
-    if (!isIntegrationEnabled) {
-      return null;
-    }
-
-    const hasBindingContent = Boolean(bindingView);
-
-    if (bindingView?.kind === 'linked') {
-      return (
-        <div className="alice-bindingContainer">
-          {bindingView.statusUrl && (
-            <a
-              href={bindingView.statusUrl}
-              className="alice-binding"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {t('alice.buttons.check-binding-status')}
-            </a>
-          )}
-          <span>{t('alice.labels.is-binded')}</span>
-          <button
-            type="button"
-            className="alice-binding alice-unlink"
-            title={t('alice.binding.unlink-controller')}
-            onClick={handleUnlinkController}
-          >
-            {t('alice.binding.unlink-controller')}
-          </button>
-        </div>
-      );
-    }
-
-    if (bindingView?.kind === 'bind') {
-      return (
-        <div className="alice-bindingContainer">
-          <a
-            href={bindingView.linkUrl}
-            className="alice-binding"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t('alice.buttons.bind')}
-          </a>
-        </div>
-      );
-    }
-
-    if (isBindingStatusLoading && !hasBindingContent) {
-      return <div className="alice-bindingSkeleton" aria-hidden="true" />;
-    }
-
-    return null;
-  };
-
   return (
     <PageLayout
       title={t('alice.title')}
@@ -314,7 +259,46 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
         pageState === 'isConnected'
           ? (
             <>
-              {renderBindingStatus()}
+              {isIntegrationEnabled && bindingView?.kind === 'linked' && (
+                <div className="alice-bindingContainer">
+                  {bindingView.statusUrl && (
+                    <a
+                      href={bindingView.statusUrl}
+                      className="alice-binding"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {t('alice.buttons.check-binding-status')}
+                    </a>
+                  )}
+                  <span>{t('alice.labels.is-binded')}</span>
+                  <button
+                    type="button"
+                    className="alice-binding alice-unlink"
+                    title={t('alice.binding.unlink-controller')}
+                    onClick={handleUnlinkController}
+                  >
+                    {t('alice.binding.unlink-controller')}
+                  </button>
+                </div>
+              )}
+
+              {isIntegrationEnabled && bindingView?.kind === 'bind' && (
+                <div className="alice-bindingContainer">
+                  <a
+                    href={bindingView.linkUrl}
+                    className="alice-binding"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {t('alice.buttons.bind')}
+                  </a>
+                </div>
+              )}
+
+              {isIntegrationEnabled && isBindingStatusLoading && !bindingView && (
+                <div className="alice-bindingSkeleton" aria-hidden="true" />
+              )}
 
               <div className="alice-container">
                 <aside className="alice-sidebar">
