@@ -928,6 +928,7 @@
          "scan-stage-binary_search": "Binary search. Found: {{count}}",
          "scan-stage-dali2_query_short_addresses": "DALI 2 querying short addresses. Found: {{count}}",
          "scan-stage-dali2_binary_search": "DALI 2 binary search. Found: {{count}}",
+         "scan-stage-read_device_info": "Reading device info. Found: {{count}}",
          "reset-dialog-heading": "Reset device",
          "reset-settings-option-title": "Reset settings",
          "reset-settings-option-description": "Variables return to factory defaults. Short address is kept, the device stays in the gateway configuration and MQTT.",

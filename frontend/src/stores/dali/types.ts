@@ -9,7 +9,7 @@ export type CommissioningStatus =
   | 'binary_search'
   | 'dali2_query_short_addresses'
   | 'dali2_binary_search'
-  | 'reading_device_info'
+  | 'read_device_info'
   | 'completed'
   | 'failed'
   | 'cancelled';

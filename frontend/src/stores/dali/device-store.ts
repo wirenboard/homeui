@@ -24,6 +24,8 @@ export class DeviceStore extends BaseItemStore {
       setError: action,
       isLoading: observable,
       error: observable,
+      label: observable,
+      groups: observable.shallow,
     });
   }
 
@@ -47,9 +49,11 @@ export class DeviceStore extends BaseItemStore {
       this.translator.addTranslations(schema.translations);
       this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       this.setError(null);
-      this.label = data.name || this.label;
-      this.updateGroups((data.config as any).groups);
-      this.#parent?.syncGroupChildren();
+      runInAction(() => {
+        this.label = data.name || this.label;
+        this.updateGroups((data.config as any).groups);
+        this.#parent?.syncGroupChildren();
+      });
     } catch (error) {
       this.setError(error);
     } finally {

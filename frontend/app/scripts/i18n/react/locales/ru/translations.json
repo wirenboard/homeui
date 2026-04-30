@@ -957,6 +957,7 @@
          "scan-stage-binary_search": "Двоичный поиск. Найдено: {{count}}",
          "scan-stage-dali2_query_short_addresses": "DALI 2 опрос коротких адресов. Найдено: {{count}}",
          "scan-stage-dali2_binary_search": "DALI 2 двоичный поиск. Найдено: {{count}}",
+         "scan-stage-read_device_info": "Чтение информации об устройствах. Найдено: {{count}}",
          "reset-dialog-heading": "Сброс устройства",
          "reset-settings-option-title": "Сбросить настройки",
          "reset-settings-option-description": "Параметры возвращаются к заводским значениям. Адрес сохраняется, устройство остаётся в конфигурации шлюза и MQTT.",
