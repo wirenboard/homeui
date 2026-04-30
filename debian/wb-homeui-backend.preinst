@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -f /var/lib/wb-homeui/nginx/https.conf
+
+#DEBHELPER#

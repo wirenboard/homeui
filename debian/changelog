@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.207.0) stable; urgency=medium
+
+  * Use pre-defined DH group ffdhe2048 recommended by the IETF
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 30 Apr 2026 12:00:00 +0400
+
 wb-mqtt-homeui (2.206.0) stable; urgency=medium
 
   * Add transition upgrade notice
