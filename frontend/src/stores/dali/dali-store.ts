@@ -22,6 +22,7 @@ export class DaliStore {
     makeObservable(this, {
       isLoading: observable,
       errors: observable,
+      gateways: observable.shallow,
     });
   }
 
@@ -29,18 +30,25 @@ export class DaliStore {
     try {
       await this.#whenMqttReady();
       const gateways = await this.#daliProxy.GetList();
-      gateways.forEach((gateway) => {
-        const gatewayStore = new GatewayStore(this.#daliProxy, gateway.id, gateway.name);
-        gateway.buses.forEach((bus) => {
-          const busStore = new BusStore(this.#daliProxy, bus.id, bus.name, this.#mqttClient);
-          bus.devices.forEach((device) => {
-            const deviceStore = new DeviceStore(this.#daliProxy, device.id, device.name, device.groups ?? [], busStore);
-            busStore.children.push(deviceStore);
+      runInAction(() => {
+        this.gateways = gateways.map((gateway) => {
+          const gatewayStore = new GatewayStore(this.#daliProxy, gateway.id, gateway.name);
+          gatewayStore.children = gateway.buses.map((bus) => {
+            const busStore = new BusStore(
+              this.#daliProxy,
+              bus.id,
+              bus.name,
+              this.#mqttClient,
+              bus.commissioning,
+            );
+            busStore.children = bus.devices.map(
+              (device) => new DeviceStore(this.#daliProxy, device.id, device.name, device.groups ?? [], busStore),
+            );
+            busStore.syncGroupChildren();
+            return busStore;
           });
-          busStore.syncGroupChildren();
-          gatewayStore.children.push(busStore);
+          return gatewayStore;
         });
-        this.gateways.push(gatewayStore);
       });
     } catch (error) {
       this.setError(error);
@@ -49,6 +57,14 @@ export class DaliStore {
         this.isLoading = false;
       });
     }
+  }
+
+  destroy() {
+    this.gateways.forEach((gateway) => {
+      gateway.children.forEach((bus) => {
+        bus.destroy();
+      });
+    });
   }
 
   setError(error: unknown) {

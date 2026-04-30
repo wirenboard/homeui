@@ -38,3 +38,17 @@
     align-items: center;
     justify-content: center;
 }
+
+.dali-deviceToolbar {
+    position: sticky;
+    top: -12px;
+    z-index: 1;
+    margin: -12px -12px 0;
+    padding: 12px;
+    background: var(--background-accent-color-hover);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dali-resetWarning {
+    margin-top: 12px;
+}

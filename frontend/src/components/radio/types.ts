@@ -2,6 +2,7 @@ export interface RadioProps {
   id: string;
   checked: boolean;
   label: string;
+  description?: string;
   isDisabled?: boolean;
   ariaLabel?: string;
   name?: string;
@@ -11,6 +12,7 @@ export interface RadioProps {
 export interface RadioOption {
   id: string;
   label: string;
+  description?: string;
   value: string;
   isDisabled?: boolean;
   ariaLabel?: string;
@@ -22,4 +24,5 @@ export interface RadioGroupProps {
   value: string;
   onChange: (value: string) => void;
   name?: string;
+  isDisabled?: boolean;
 }

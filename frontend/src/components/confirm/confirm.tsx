@@ -54,6 +54,7 @@ export const Confirm = ({
                 className="confirm-action"
                 label={cancelLabel || t('modal.labels.cancel')}
                 variant="secondary"
+                disabled={isLoading}
                 onClick={closeCallback}
               />
               <Button

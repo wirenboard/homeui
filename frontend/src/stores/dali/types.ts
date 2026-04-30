@@ -2,6 +2,34 @@ import {
   type JsonSchema,
 } from '@/stores/json-schema-editor';
 
+export type CommissioningStatus = 
+  | 'idle'
+  | 'queued'
+  | 'query_short_addresses'
+  | 'binary_search'
+  | 'dali2_query_short_addresses'
+  | 'dali2_binary_search'
+  | 'read_device_info'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
+
+
+export interface CommissioningDeviceSummary {
+  id: string;
+  name: string;
+  groups: number[];
+}
+
+export interface CommissioningState {
+  status: CommissioningStatus;
+  progress: number;
+  error: string | null;
+  device_count: number;
+  devices: CommissioningDeviceSummary[] | null;
+  finished_at: string | null;
+}
+
 export interface Gateway {
   id: string;
   name: string;
@@ -13,6 +41,7 @@ export interface Bus {
   name: string;
   devices: Device[];
   groups: Group[];
+  commissioning?: CommissioningState;
 }
 
 export interface Group {
@@ -81,6 +110,19 @@ export interface ScanBusParams {
   busId: string;
 }
 
+export interface StopScanBusParams {
+  busId: string;
+}
+
+export interface ScanBusResponse {
+  status: 'started' | 'already_running';
+  progressTopic: string;
+}
+
+export interface StopScanBusResponse {
+  status: 'stopped' | 'not_running';
+}
+
 export interface GroupDetailed {
   config: object;
   schema: JsonSchema;
@@ -96,6 +138,7 @@ export interface DaliProxy {
   GetGroup(params: GetGroupParams): Promise<GroupDetailed>;
   SetGroup(params: SetGroupParams): Promise<GroupDetailed>;
   GetList(): Promise<Gateway[]>;
-  ScanBus(params: ScanBusParams): Promise<Bus>;
+  ScanBus(params: ScanBusParams): Promise<ScanBusResponse>;
+  StopScanBus(params: StopScanBusParams): Promise<StopScanBusResponse>;
   IdentifyDevice(params: { deviceId: string }): Promise<void>;
 }

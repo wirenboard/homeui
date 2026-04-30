@@ -922,17 +922,33 @@
          "polling-interval": "Polling Interval (s)",
          "polling-interval-error": "Interval must be a positive integer",
          "identify-tooltip": "The device will flash the light or attract attention, which can help to identify it among other devices",
-         "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>."
+         "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>.",
+         "scan-error": "Scan failed at {{when}}: {{error}}",
+         "scan-stage-queued": "Queued",
+         "scan-stage-query_short_addresses": "Querying short addresses. Found: {{count}}",
+         "scan-stage-binary_search": "Binary search. Found: {{count}}",
+         "scan-stage-dali2_query_short_addresses": "DALI 2 querying short addresses. Found: {{count}}",
+         "scan-stage-dali2_binary_search": "DALI 2 binary search. Found: {{count}}",
+         "scan-stage-read_device_info": "Reading device info. Found: {{count}}",
+         "reset-dialog-heading": "Reset device",
+         "reset-settings-option-title": "Reset settings",
+         "reset-settings-option-description": "Variables return to factory defaults. Short address is kept, the device stays in the gateway configuration and MQTT.",
+         "reset-device-option-title": "Reset address and settings",
+         "reset-device-option-description": "Variables and short address are erased. The device is removed from the gateway configuration and MQTT and becomes available for rescan.",
+         "reset-unsaved-warning": "Unsaved changes will be lost."
       },
       "buttons": {
          "rescan": "Rescan",
+         "stop-scan": "Stop",
          "return": "To devices list",
          "reload": "Reload",
          "clear-log": "Clear log",
          "pause-log": "Pause log",
          "resume-log": "Resume log",
          "set": "Set",
-         "identify": "Identify"
+         "identify": "Identify",
+         "reset": "Reset…",
+         "reset-confirm": "Reset"
       }
    }
 }
