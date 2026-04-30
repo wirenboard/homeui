@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.205.2) stable; urgency=medium
+wb-mqtt-homeui (2.206.1) stable; urgency=medium
 
   * Fix DALI devices list update after scanning
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 30 Apr 2026 12:22:52 +0500
+
+wb-mqtt-homeui (2.206.0) stable; urgency=medium
+
+  * Add transition upgrade notice
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 30 Apr 2026 10:00:00 +0400
 
 wb-mqtt-homeui (2.205.1) stable; urgency=medium
 
