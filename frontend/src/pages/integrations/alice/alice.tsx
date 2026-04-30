@@ -12,13 +12,8 @@ import { authStore, UserRole } from '@/stores/auth';
 import { uiStore } from '@/stores/ui';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
-import type { AlicePageProps, AlicePageState, View } from './types';
+import type { AlicePageProps, AlicePageState, BindingView, View } from './types';
 import './styles.css';
-
-type BindingView =
-  | { kind: 'linked'; statusUrl?: string }
-  | { kind: 'bind'; linkUrl: string }
-  | null;
 
 const STATUS_ERROR_ID = 'alice-link-status';
 
