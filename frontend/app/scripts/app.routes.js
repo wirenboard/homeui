@@ -370,6 +370,19 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           );
         },
       },
+    })
+    //...........................................................................
+    .state('apps', {
+      url: '/apps',
+      template: '<apps-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'apps' */ './controllers/appsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     });
 }
 

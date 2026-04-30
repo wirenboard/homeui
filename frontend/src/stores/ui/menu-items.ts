@@ -1,4 +1,5 @@
 import DesktopIcon from '@/assets/icons/desktop.svg';
+import DownloadIcon from '@/assets/icons/download.svg';
 import FileIcon from '@/assets/icons/file.svg';
 import InfoIcon from '@/assets/icons/info.svg';
 import IntegrationsIcon from '@/assets/icons/integrations.svg';
@@ -146,6 +147,12 @@ export const getMenuItems = (
       label: 'navigation.labels.history',
       url: computeUrlWithParams('history'),
       icon: StatsIcon,
+    },
+    {
+      label: 'navigation.labels.apps',
+      url: 'apps',
+      icon: DownloadIcon,
+      isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
     },
     {
       label: 'navigation.labels.rules',

@@ -94,7 +94,8 @@
          "access": "Пользователи",
          "logs": "Системный журнал",
          "scan": "Сканирование",
-         "device-manager": "Устройства"
+         "device-manager": "Устройства",
+         "apps": "Магазин приложений"
       },
       "buttons": {
          "open-mobile": "Открыть мобильное меню",
@@ -978,5 +979,126 @@
          "reset": "Сброс…",
          "reset-confirm": "Сбросить"
       }
+   },
+   "apps": {
+      "title": "Магазин приложений",
+      "search-placeholder": "Поиск: Home Assistant, Modbus, Grafana…",
+      "empty": "Ничего не найдено",
+      "sidebar": {
+         "overview": "Обзор",
+         "categories": "Категории",
+         "all": "Все приложения",
+         "installed": "Установленные",
+         "updates": "Обновления"
+      },
+      "categories": {
+         "all": "Все категории",
+         "integrations": "Интеграции",
+         "drivers": "Драйверы и шаблоны",
+         "automation": "Сценарии и автоматизация",
+         "ui": "Дашборды и UI",
+         "monitoring": "Мониторинг",
+         "network": "Сетевые сервисы",
+         "system": "Системные утилиты"
+      },
+      "seg": {
+         "all": "Все",
+         "installed": "Установленные",
+         "updates": "Обновления"
+      },
+      "section": {
+         "updates": "Доступны обновления ({{n}})",
+         "updates-only": "Доступные обновления",
+         "installed": "Установленные приложения",
+         "all": "Все приложения",
+         "history": "История версий",
+         "sources": "Источники пакетов"
+      },
+      "featured": {
+         "recommended": "Рекомендуем",
+         "update": "Доступно обновление"
+      },
+      "badges": {
+         "installed": "Установлено",
+         "update": "Доступно обновление",
+         "installing": "Установка…",
+         "official": "Официальное",
+         "community": "Сообщество"
+      },
+      "buttons": {
+         "install": "Установить",
+         "update-to": "Обновить до {{v}}",
+         "update-all": "Обновить все ({{n}})",
+         "uninstall": "Удалить",
+         "rollback": "Откатить до {{v}}",
+         "details": "Подробнее",
+         "close": "Закрыть",
+         "add-source": "Добавить репозиторий",
+         "remove": "Удалить"
+      },
+      "drawer": {
+         "parameters": "Параметры",
+         "info": "Информация",
+         "autostart": "Запускать при старте системы",
+         "autoupdate": "Авто-обновление",
+         "version": "Версия",
+         "size": "Размер",
+         "author": "Автор",
+         "source": "Источник",
+         "current": "текущая"
+      },
+      "alerts": {
+         "in-progress": "Выполняется операция…"
+      },
+      "confirm": {
+         "uninstall-title": "Удалить приложение?",
+         "uninstall-body": "Приложение «{{name}}» и все его данные будут удалены с контроллера. Действие нельзя отменить.",
+         "rollback-title": "Откатить версию?",
+         "rollback-body": "Будет установлена версия {{v}} приложения «{{name}}». Текущие данные могут оказаться несовместимыми."
+      },
+      "stats": {
+         "installed": "Установлено",
+         "updates": "Обновлений",
+         "catalog": "В каталоге",
+         "disk": "Свободно на диске",
+         "disk-of": "из"
+      },
+      "sources": {
+         "title": "Репозитории и источники пакетов",
+         "subtitle": "Список apt-репозиториев, из которых берутся пакеты приложений.",
+         "enabled": "Включён",
+         "builtin": "Системный",
+         "name-placeholder": "Название",
+         "url-placeholder": "deb-строка или URL",
+         "empty-form-error": "Укажите URL репозитория."
+      },
+      "history": {
+         "subtitle": "Доступные версии для отката или обновления.",
+         "empty": "История версий недоступна."
+      },
+      "relations": {
+         "title": "Связанные приложения",
+         "requires": "Зависит от",
+         "recommends": "Рекомендуется",
+         "works-with": "Работает вместе с",
+         "conflicts": "Конфликтует с",
+         "includes": "Входит в набор",
+         "installed": "Установлено",
+         "needed-not-installed": "Нужен пакет «{{name}}»",
+         "conflict-active": "Конфликт с «{{name}}»",
+         "connected-to": "Подключено к {{name}}"
+      },
+      "deps-dialog": {
+         "title-install": "Установить «{{name}}»?",
+         "title-bundle": "Установить набор «{{name}}»?",
+         "requires-block": "Также будет установлено (обязательно):",
+         "recommends-block": "Рекомендуем установить:",
+         "includes-block": "В набор входят:",
+         "conflicts-block": "Невозможно установить — активны конфликты:",
+         "size-total": "Размер на диске: +{{size}}",
+         "install-only": "Только «{{name}}»",
+         "install-all": "Установить всё"
+      },
+      "open-sources": "Источники"
    }
 }

@@ -94,7 +94,8 @@
          "access": "Users",
          "logs": "Logs",
          "scan": "Scan",
-         "device-manager": "Device manager"
+         "device-manager": "Device manager",
+         "apps": "App Store"
       },
       "buttons": {
          "open-mobile": "Open mobile menu",
@@ -949,5 +950,126 @@
          "reset": "Reset…",
          "reset-confirm": "Reset"
       }
+   },
+   "apps": {
+      "title": "App Store",
+      "search-placeholder": "Search: Home Assistant, Modbus, Grafana…",
+      "empty": "Nothing found",
+      "sidebar": {
+         "overview": "Overview",
+         "categories": "Categories",
+         "all": "All apps",
+         "installed": "Installed",
+         "updates": "Updates"
+      },
+      "categories": {
+         "all": "All categories",
+         "integrations": "Integrations",
+         "drivers": "Drivers & templates",
+         "automation": "Automation",
+         "ui": "Dashboards & UI",
+         "monitoring": "Monitoring",
+         "network": "Network services",
+         "system": "System utilities"
+      },
+      "seg": {
+         "all": "All",
+         "installed": "Installed",
+         "updates": "Updates"
+      },
+      "section": {
+         "updates": "Updates available ({{n}})",
+         "updates-only": "Available updates",
+         "installed": "Installed apps",
+         "all": "All apps",
+         "history": "Version history",
+         "sources": "Package sources"
+      },
+      "featured": {
+         "recommended": "Featured",
+         "update": "Update available"
+      },
+      "badges": {
+         "installed": "Installed",
+         "update": "Update available",
+         "installing": "Installing…",
+         "official": "Official",
+         "community": "Community"
+      },
+      "buttons": {
+         "install": "Install",
+         "update-to": "Update to {{v}}",
+         "update-all": "Update all ({{n}})",
+         "uninstall": "Uninstall",
+         "rollback": "Roll back to {{v}}",
+         "details": "Details",
+         "close": "Close",
+         "add-source": "Add repository",
+         "remove": "Remove"
+      },
+      "drawer": {
+         "parameters": "Parameters",
+         "info": "Info",
+         "autostart": "Start on boot",
+         "autoupdate": "Auto-update",
+         "version": "Version",
+         "size": "Size",
+         "author": "Author",
+         "source": "Source",
+         "current": "current"
+      },
+      "alerts": {
+         "in-progress": "Operation in progress…"
+      },
+      "confirm": {
+         "uninstall-title": "Uninstall app?",
+         "uninstall-body": "App \"{{name}}\" and all its data will be removed from the controller. This action cannot be undone.",
+         "rollback-title": "Roll back version?",
+         "rollback-body": "Version {{v}} of \"{{name}}\" will be installed. Existing data may be incompatible."
+      },
+      "stats": {
+         "installed": "Installed",
+         "updates": "Updates",
+         "catalog": "In catalog",
+         "disk": "Free disk space",
+         "disk-of": "of"
+      },
+      "sources": {
+         "title": "Repositories and package sources",
+         "subtitle": "List of apt repositories used to fetch app packages.",
+         "enabled": "Enabled",
+         "builtin": "System",
+         "name-placeholder": "Name",
+         "url-placeholder": "deb line or URL",
+         "empty-form-error": "Repository URL is required."
+      },
+      "history": {
+         "subtitle": "Available versions to roll back or update to.",
+         "empty": "Version history is unavailable."
+      },
+      "relations": {
+         "title": "Related apps",
+         "requires": "Requires",
+         "recommends": "Recommended",
+         "works-with": "Works with",
+         "conflicts": "Conflicts with",
+         "includes": "Bundled with",
+         "installed": "Installed",
+         "needed-not-installed": "Needs «{{name}}»",
+         "conflict-active": "Conflicts with «{{name}}»",
+         "connected-to": "Connected to {{name}}"
+      },
+      "deps-dialog": {
+         "title-install": "Install «{{name}}»?",
+         "title-bundle": "Install bundle «{{name}}»?",
+         "requires-block": "Also required to install:",
+         "recommends-block": "Recommended to install:",
+         "includes-block": "Bundle contents:",
+         "conflicts-block": "Cannot install — active conflicts:",
+         "size-total": "Disk usage: +{{size}}",
+         "install-only": "Only «{{name}}»",
+         "install-all": "Install all"
+      },
+      "open-sources": "Sources"
    }
 }
