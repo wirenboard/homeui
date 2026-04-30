@@ -16,6 +16,7 @@ import type { AlicePageProps, AlicePageState, BindingView, View } from './types'
 import './styles.css';
 
 const STATUS_ERROR_ID = 'alice-link-status';
+const BINDING_REQUIRED_ERROR_ID = 'alice-binding-required';
 
 const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   const { t } = useTranslation();
@@ -51,15 +52,22 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   });
   const isModuleInstalled = useMemo(() => uiStore.modules.some((item) => item === 'alice'), [uiStore.modules]);
   const linkStatusErrorMessage = t('alice.errors.link-status-unavailable');
+  const bindingRequiredMessage = t('alice.errors.integration-enabled-binding-required');
   const clearBindingView = () => setBindingView(null);
 
   const clearStatusError = () => {
     setErrors((prev) => prev.filter((item) => item.id !== STATUS_ERROR_ID));
   };
 
+  const clearBindingRequiredError = () => {
+    setErrors((prev) => prev.filter((item) => item.id !== BINDING_REQUIRED_ERROR_ID));
+  };
+
   const showStatusError = () => {
     setErrors((prev) => {
-      const next = prev.filter((item) => item.id !== STATUS_ERROR_ID);
+      const next = prev.filter((item) => (
+        item.id !== STATUS_ERROR_ID && item.id !== BINDING_REQUIRED_ERROR_ID
+      ));
       return [...next, {
         id: STATUS_ERROR_ID,
         variant: 'danger',
@@ -69,18 +77,36 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     });
   };
 
-  const refreshBindingStatus = async () => {
+  const showBindingRequiredError = () => {
+    setErrors((prev) => {
+      const next = prev.filter((item) => item.id !== BINDING_REQUIRED_ERROR_ID);
+      return [...next, {
+        id: BINDING_REQUIRED_ERROR_ID,
+        variant: 'warn',
+        text: bindingRequiredMessage,
+        onClose: clearBindingRequiredError,
+      }];
+    });
+  };
+
+  const refreshBindingStatus = async (): Promise<BindingView> => {
     setBindingStatusLoading(true);
 
     try {
       const status = await fetchLinkStatus();
+      let nextBindingView: BindingView;
       if (status.linked) {
-        setBindingView({ kind: 'linked', statusUrl: status.status_url });
+        nextBindingView = { kind: 'linked', statusUrl: status.status_url };
       } else {
         const { link_url: linkUrl } = await createLink();
-        setBindingView({ kind: 'bind', linkUrl });
+        nextBindingView = { kind: 'bind', linkUrl };
       }
+      setBindingView(nextBindingView);
       clearStatusError();
+      if (nextBindingView?.kind === 'linked') {
+        clearBindingRequiredError();
+      }
+      return nextBindingView;
     } catch (err) {
       clearBindingView();
       showStatusError();
@@ -90,10 +116,16 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     }
   };
 
-  const refreshBindingStatusInBackground = () => {
-    void refreshBindingStatus().catch(() => {
-      // Link status availability should not block page interactions.
-    });
+  const refreshBindingStatusInBackground = (showBindingRequiredWarning = false) => {
+    void refreshBindingStatus()
+      .then((nextBindingView) => {
+        if (showBindingRequiredWarning && nextBindingView?.kind === 'bind') {
+          showBindingRequiredError();
+        }
+      })
+      .catch(() => {
+        // Link status availability should not block page interactions.
+      });
   };
 
   const handleIntegrationToggle = async (enabled: boolean) => {
@@ -108,6 +140,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       if (!enabled) {
         clearBindingView();
         clearStatusError();
+        clearBindingRequiredError();
       }
     } catch (err) {
       const status = err?.response?.status;
@@ -126,7 +159,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
       setErrors([{ text: msg, variant: 'danger', onClose: () => setErrors([]) }]);
     } finally {
       if (integrationUpdated && enabled) {
-        refreshBindingStatusInBackground();
+        refreshBindingStatusInBackground(true);
       }
       setIntegrationLoading(false);
     }
@@ -147,6 +180,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
         } else {
           clearBindingView();
           clearStatusError();
+          clearBindingRequiredError();
         }
       } catch (err) {
         const msg = err?.response?.data?.detail || err?.response?.data?.message
@@ -166,6 +200,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     fetchIntegrationStatus,
     fetchLinkStatus,
     isModuleInstalled,
+    bindingRequiredMessage,
     linkStatusErrorMessage,
     t,
   ]);
