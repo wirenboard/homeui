@@ -15,7 +15,8 @@ function SystemCtrl(rolesFactory) {
       && !localStorage.getItem('hide-stable-notice')
       && rolesFactory.current.role == rolesFactory.ROLE_THREE;
     this.showTransitionOffer =
-      res.release_name.endsWith('-transition')
+      typeof res.release_name === 'string'
+      && res.release_name.endsWith('-transition')
       && !localStorage.getItem('hide-transition-notice')
       && rolesFactory.current.role == rolesFactory.ROLE_THREE;
   });
