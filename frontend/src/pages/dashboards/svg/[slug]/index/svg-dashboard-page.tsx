@@ -137,8 +137,8 @@ export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
         <Confirm
           isOpened={isConfirmOpened}
           heading={t('svg-dashboard.prompt.confirm-heading')}
-          closeCallback={handleClose}
-          confirmCallback={handleConfirm}
+          closeCallback={() => handleClose(false)}
+          confirmCallback={() => handleConfirm(true)}
         >
           {t('svg-dashboard.prompt.confirm-question')}
         </Confirm>
