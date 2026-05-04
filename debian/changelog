@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.206.2) stable; urgency=medium
+wb-mqtt-homeui (2.206.3) stable; urgency=medium
 
   * Fix svg action confirmation
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 04 May 2026 13:23:00 +0400
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 04 May 2026 13:36:00 +0400
+
+wb-mqtt-homeui (2.206.2) stable; urgency=medium
+
+  * Store dependent parameters in wb-mqtt-serial if the main parameter has not default value
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 04 May 2026 10:45:05 +0500
 
 wb-mqtt-homeui (2.206.1) stable; urgency=medium
 
