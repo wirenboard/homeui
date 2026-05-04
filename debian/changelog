@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.206.2) stable; urgency=medium
+
+  * Store dependent parameters in wb-mqtt-serial if the main parameter has not default value
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 04 May 2026 10:45:05 +0500
+
 wb-mqtt-homeui (2.206.1) stable; urgency=medium
 
   * Fix DALI devices list update after scanning
