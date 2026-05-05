@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Alert } from '@/components/alert';
@@ -17,11 +17,9 @@ import './styles.css';
 
 const TabContent = ({
   store,
-  onRefresh,
   onDeviceRemoved,
 }: {
   store: ItemStore;
-  onRefresh: () => void;
   onDeviceRemoved: (device: DeviceStore) => void;
 }) => {
   if (store?.type === 'bus') {
@@ -34,7 +32,6 @@ const TabContent = ({
     return (
       <DeviceTabContent
         store={store as DeviceStore}
-        onSave={onRefresh}
         onDeviceRemoved={onDeviceRemoved}
       />
     );
@@ -69,44 +66,36 @@ const buildTreeItems = (
 const DaliPage = observer(({ store }: DaliPageProps) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
-  const [data, setData] = useState<TreeItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<ItemStore | null>(null);
-  const itemStoreMap = useRef<Map<string, ItemStore>>(new Map());
 
-  const refreshData = () => {
-    itemStoreMap.current.clear();
-    setData(buildTreeItems(store.gateways, itemStoreMap.current, t));
-  };
+  const itemStoreMap = new Map<string, ItemStore>();
+  const data = buildTreeItems(store.gateways, itemStoreMap, t);
 
   useEffect(() => {
     const fetchData = async () => {
       await store.load();
-      refreshData();
       if (!isMobile) {
         const firstGateway = store.gateways.at(0);
         if (firstGateway) {
           setSelectedItem(firstGateway);
-          firstGateway.load().then(() => refreshData());
+          firstGateway.load();
         }
       }
     };
     fetchData();
   }, []);
 
-  const onItemClick = async (treeItem: TreeItem) => {
-    const item = itemStoreMap.current.get(treeItem.id) ?? null;
+  const onItemClick = (treeItem: TreeItem) => {
+    const item = itemStoreMap.get(treeItem.id) ?? null;
     setSelectedItem(item);
-    if (item) {
-      item.load().then(() => refreshData());
-    }
+    item?.load();
   };
 
   const onDeviceRemoved = (device: DeviceStore) => {
     const parentBus = device.parent;
-    refreshData();
     if (parentBus) {
       setSelectedItem(parentBus);
-      parentBus.load().then(() => refreshData());
+      parentBus.load();
     } else {
       setSelectedItem(null);
     }
@@ -153,7 +142,6 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
               )}
               <TabContent
                 store={selectedItem}
-                onRefresh={refreshData}
                 onDeviceRemoved={onDeviceRemoved}
               />
             </section>

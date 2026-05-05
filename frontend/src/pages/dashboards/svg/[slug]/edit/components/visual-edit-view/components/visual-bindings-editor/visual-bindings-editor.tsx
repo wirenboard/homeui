@@ -133,11 +133,9 @@ const ClickBindingForm = observer(({
           }}
         />
 
-        {(store.params[writeParamName].check && !store.params[clickParamName].enable) && (
+        {(store.params[writeParamName].enable && !store.params[clickParamName].enable) && (
           <BooleanField
-            title={writeParamName === 'write'
-              ? t('edit-svg-dashboard.labels.write-enable')
-              : t('edit-svg-dashboard.labels.long-press-write-enable')}
+            title={t('edit-svg-dashboard.labels.check')}
             value={store.params[writeParamName].check}
             onChange={(checked) => store.setParamValue(writeParamName, 'check', checked)}
           />

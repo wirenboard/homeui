@@ -51,7 +51,7 @@ export interface PasswordFieldProps extends StringFieldProps {
 export interface BooleanFieldProps {
   title: string;
   value: boolean;
-  view: 'switch' | 'checkbox';
+  view?: 'switch' | 'checkbox';
   description?: string;
   error?: string;
   isDisabled?: boolean;

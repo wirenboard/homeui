@@ -15,6 +15,8 @@ export class GatewayStore extends BaseItemStore {
     makeObservable(this, {
       isLoading: observable,
       error: observable,
+      label: observable,
+      children: observable.shallow,
       websocketEnabled: observable,
       websocketPort: observable,
       setWebsocketEnabled: action,
@@ -31,13 +33,13 @@ export class GatewayStore extends BaseItemStore {
         try {
           this.isLoading = true;
           const data = await this.daliProxy.GetGateway({ gatewayId: this.id });
-          this.websocketEnabled = data.config.websocket_enabled ?? false;
-          this.websocketPort = data.config.websocket_port;
           runInAction(() => {
+            this.websocketEnabled = data.config.websocket_enabled ?? false;
+            this.websocketPort = data.config.websocket_port;
             this.isFirstLoad = false;
+            this.label = data.name || this.label;
           });
           this.setError(null);
-          this.label = data.name || this.label;
         } catch (error) {
           this.setError(error);
         } finally {

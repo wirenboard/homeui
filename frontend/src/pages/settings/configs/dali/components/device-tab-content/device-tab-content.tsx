@@ -13,11 +13,9 @@ import type { ResetMode } from './types';
 
 export const DeviceTabContent = observer(({
   store,
-  onSave,
   onDeviceRemoved,
 }: {
   store: DeviceStore;
-  onSave: () => void;
   onDeviceRemoved: (device: DeviceStore) => void;
 }) => {
   const { t } = useTranslation();
@@ -31,7 +29,6 @@ export const DeviceTabContent = observer(({
     if (mode === 'settings') {
       await store.resetSettings();
       setIsResetDialogOpen(false);
-      onSave();
     } else {
       await store.reset();
       setIsResetDialogOpen(false);
@@ -59,10 +56,7 @@ export const DeviceTabContent = observer(({
           </Tooltip>
           <Button
             label={t('dali.buttons.reload')}
-            onClick={async () => {
-              await store.load(true);
-              onSave();
-            }}
+            onClick={() => store.load(true)}
           />
           <Button
             label={t('dali.buttons.reset')}
@@ -72,10 +66,7 @@ export const DeviceTabContent = observer(({
           <Button
             label={t('common.buttons.save')}
             disabled={!store.objectStore.isDirty || store.objectStore.hasErrors}
-            onClick={async () => {
-              await store.save();
-              onSave();
-            }}
+            onClick={() => store.save()}
           />
         </FormButtonGroup>
       </div>

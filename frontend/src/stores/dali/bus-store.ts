@@ -54,6 +54,7 @@ export class BusStore extends BaseItemStore {
       setPollingInterval: action,
       setBusMonitorEnabled: action,
       applyCommissioningState: action,
+      syncGroupChildren: action,
       setError: action,
       isLoading: observable,
       isParametersSchemaLoading: observable,
@@ -62,6 +63,8 @@ export class BusStore extends BaseItemStore {
       scanStopRequested: observable,
       isScanning: computed,
       error: observable,
+      label: observable,
+      children: observable.shallow,
       pollingInterval: observable,
       busMonitorEnabled: observable,
       broadcastSettingsVisible: observable,
@@ -131,7 +134,9 @@ export class BusStore extends BaseItemStore {
         this.objectStore = new ObjectStore(schema, data.config, false, new StoreBuilder());
       }
       this.setError(null);
-      this.label = data.name || this.label;
+      runInAction(() => {
+        this.label = data.name || this.label;
+      });
     } catch (error) {
       this.setError(error);
     } finally {
@@ -233,7 +238,6 @@ export class BusStore extends BaseItemStore {
     this.commissioningState = newState;
     this.scanStartRequested = false;
     this.scanStopRequested = false;
-    console.log('Commissioning state updated', newState);
     if ('completed' === newState.status) {
       this.children = newState.devices.map((device: { id: string; name: string; groups: number[] }) =>
         new DeviceStore(this.daliProxy, device.id, device.name, device.groups, this),

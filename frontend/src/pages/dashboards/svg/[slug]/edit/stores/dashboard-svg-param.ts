@@ -11,6 +11,7 @@ const defaultParam: SvgDashboardConstructor = {
     enable: false,
     channel: null,
     value: { on: 1, off: 0 },
+    check: false,
   },
   visible: {
     enable: false,
@@ -35,6 +36,7 @@ const defaultParam: SvgDashboardConstructor = {
     enable: false,
     channel: null,
     value: { on: 1, off: 0 },
+    check: false,
   },
 };
 
