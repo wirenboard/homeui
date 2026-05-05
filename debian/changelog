@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.206.4) stable; urgency=medium
 
   * Add translations for new unit: g/m^3
 
- -- Ilia Skochilov <ilia.skochilov@wirenboard.com>  Tue, 5 May 2026 10:37:00 +0300
+ -- Ilia Skochilov <ilia.skochilov@wirenboard.com>  Tue, 05 May 2026 10:37:00 +0300
 
 wb-mqtt-homeui (2.206.3) stable; urgency=medium
 
