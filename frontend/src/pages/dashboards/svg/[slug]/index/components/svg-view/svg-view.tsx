@@ -162,8 +162,10 @@ export const SvgView = ({
           );
         } else if (param['long-press-write']?.enable) {
           disposers.push(
-            setLongPressHandler(el, () => {
-              onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
+            setLongPressHandler(el, async () => {
+              if (!param['long-press-write']?.check || await confirmHandler()) {
+                onSwitchValue(param['long-press-write'].channel, param['long-press-write'].value);
+              }
             }),
           );
         }

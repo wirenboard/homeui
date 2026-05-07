@@ -29,6 +29,7 @@ export class WbDeviceParameterEditorVariant {
 
     makeObservable(this, {
       isEnabledByCondition: computed,
+      hasDirtyDependency: computed,
     });
   }
 
@@ -45,6 +46,16 @@ export class WbDeviceParameterEditorVariant {
       return undefined;
     }));
     return res;
+  }
+
+  get hasDirtyDependency() {
+    if (!this._conditionFn) {
+      return false;
+    }
+    return this._dependencies?.some((dep) => {
+      const param = this._otherParameters.get(dep);
+      return param?.isEnabledByCondition && param.isDirty;
+    }) ?? false;
   }
 }
 
@@ -80,6 +91,7 @@ export class WbDeviceParameterEditor {
       hasErrors: computed,
       hasBadValueFromRegisters: computed,
       hasSeveralVariants: computed,
+      hasDirtyDependency: computed,
       shouldStoreInConfig: computed,
       addVariant: action,
       setFromDeviceRegister: action,
@@ -135,6 +147,10 @@ export class WbDeviceParameterEditor {
     return this.variants.filter((variant) => variant.isEnabledByCondition).length > 1;
   }
 
+  get hasDirtyDependency() {
+    return this.variants.some((variant) => variant.hasDirtyDependency);
+  }
+
   get shouldStoreInConfig() {
     if (!this.isEnabledByCondition || !this.isSupportedByFirmware) {
       return false;
@@ -145,7 +161,7 @@ export class WbDeviceParameterEditor {
     if (this.isSetInDeviceRegisters) {
       return !this.hasBadValueFromRegisters;
     }
-    return (this.required || this.isDirty) && !this.hasErrors;
+    return (this.required || this.isDirty || this.hasDirtyDependency) && !this.hasErrors;
   }
 
   addVariant(
@@ -225,7 +241,7 @@ export class WbDeviceParameterEditor {
     if (this.hasErrors || this.hasBadValueFromRegisters) {
       return;
     }
-    if (this.isDirty || this.isSetInDeviceRegisters) {
+    if (this.shouldStoreInConfig) {
       this.isSetInUserDefinedConfig = true;
     }
     this.isSetInDeviceRegisters = false;

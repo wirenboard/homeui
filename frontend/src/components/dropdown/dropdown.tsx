@@ -90,48 +90,50 @@ export const Dropdown = ({
   };
 
   return (
-    <Select
-      ref={select}
-      inputId={inputId}
-      className={classNames(getClassNames(className, size), {
-        'dropdown-button': isButton,
-        'dropdown-invalid': isInvalid,
-      })}
-      classNamePrefix="dropdown"
-      options={options}
-      value={findOption(options, value)}
-      placeholder={placeholder || ''}
-      isDisabled={isDisabled}
-      isSearchable={isSearchable}
-      isClearable={isClearable}
-      menuPortalTarget={document.body}
-      menuPlacement="auto"
-      maxMenuHeight={240}
-      menuPosition="fixed"
-      components={{
-        MenuPortal: (props) => MenuPortal({ ...props, className }, size),
-        DropdownIndicator: (props) => DropdownIndicator(props, isButton),
-        Placeholder: (props) => Placeholder(props),
-        SingleValue: (props) => SingleValue(props),
-      }}
-      aria-label={ariaLabel || placeholder}
-      styles={{
-        control: (baseStyles, _state) => ({
-          ...baseStyles,
-          minWidth,
-        }),
-        option: (baseStyles, { data }) => ({
-          ...baseStyles,
-          display: data?.hidden ? 'none' : baseStyles.display,
-        }),
-      }}
-      tabSelectsValue={false}
-      noOptionsMessage={() => t('common.labels.empty-search')}
-      unstyled
-      onMenuOpen={() => setIsMenuOpen(true)}
-      onMenuClose={() => setIsMenuOpen(false)}
-      onKeyDown={handleKeyDown}
-      onChange={handleChange}
-    />
+    <div onTouchEndCapture={(ev) => ev.stopPropagation()}>
+      <Select
+        ref={select}
+        inputId={inputId}
+        className={classNames(getClassNames(className, size), {
+          'dropdown-button': isButton,
+          'dropdown-invalid': isInvalid,
+        })}
+        classNamePrefix="dropdown"
+        options={options}
+        value={findOption(options, value)}
+        placeholder={placeholder || ''}
+        isDisabled={isDisabled}
+        isSearchable={isSearchable}
+        isClearable={isClearable}
+        menuPortalTarget={document.body}
+        menuPlacement="auto"
+        maxMenuHeight={240}
+        menuPosition="fixed"
+        components={{
+          MenuPortal: (props) => MenuPortal({ ...props, className }, size),
+          DropdownIndicator: (props) => DropdownIndicator(props, isButton),
+          Placeholder: (props) => Placeholder(props),
+          SingleValue: (props) => SingleValue(props),
+        }}
+        aria-label={ariaLabel || placeholder}
+        styles={{
+          control: (baseStyles, _state) => ({
+            ...baseStyles,
+            minWidth,
+          }),
+          option: (baseStyles, { data }) => ({
+            ...baseStyles,
+            display: data?.hidden ? 'none' : baseStyles.display,
+          }),
+        }}
+        tabSelectsValue={false}
+        noOptionsMessage={() => t('common.labels.empty-search')}
+        unstyled
+        onMenuOpen={() => setIsMenuOpen(true)}
+        onMenuClose={() => setIsMenuOpen(false)}
+        onKeyDown={handleKeyDown}
+        onChange={handleChange}
+      />
+    </div>
   );
 };

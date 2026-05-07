@@ -3,7 +3,32 @@ wb-mqtt-homeui (2.207.0) stable; urgency=medium
   * Update the Alice integration page for the new controller link API flow
   * Improve controller binding status handling, automatic refresh, and related UI/error states
 
- -- Denis Smagin <denis.smagin@wirenboard.com>  Wed, 30 Apr 2026 18:00:00 +0200
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Wed, 07 May 2026 18:00:00 +0200
+
+wb-mqtt-homeui (2.206.5) stable; urgency=medium
+
+  * Fix dropdown opening on touch
+  * Fix redirect from default dasboard
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 05 May 2026 17:58:00 +0400
+
+wb-mqtt-homeui (2.206.4) stable; urgency=medium
+
+  * Add translations for new unit: g/m^3
+
+ -- Ilia Skochilov <ilia.skochilov@wirenboard.com>  Tue, 05 May 2026 10:37:00 +0300
+
+wb-mqtt-homeui (2.206.3) stable; urgency=medium
+
+  * Fix svg action confirmation
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 04 May 2026 13:36:00 +0400
+
+wb-mqtt-homeui (2.206.2) stable; urgency=medium
+
+  * Store dependent parameters in wb-mqtt-serial if the main parameter has not default value
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 04 May 2026 10:45:05 +0500
 
 wb-mqtt-homeui (2.206.1) stable; urgency=medium
 
@@ -49,7 +74,7 @@ wb-mqtt-homeui (2.202.2) stable; urgency=medium
 
 wb-mqtt-homeui (2.202.1) stable; urgency=medium
 
-  * Fix clearing channel settings on config reread in wb-mqtt-serial editor 
+  * Fix clearing channel settings on config reread in wb-mqtt-serial editor
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 27 Apr 2026 16:44:47 +0500
 
