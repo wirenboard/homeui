@@ -12,3 +12,8 @@ export interface View {
   deviceId?: string;
   isNewDevice?: boolean;
 }
+
+export type BindingView =
+  | { kind: 'linked'; statusUrl?: string }
+  | { kind: 'bind'; linkUrl: string }
+  | null;

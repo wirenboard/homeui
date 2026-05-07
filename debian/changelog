@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.207.0) stable; urgency=medium
+
+  * Update the Alice integration page for the new controller link API flow
+  * Improve controller binding status handling, automatic refresh, and related UI/error states
+
+ -- Denis Smagin <denis.smagin@wirenboard.com>  Wed, 07 May 2026 18:00:00 +0200
+
 wb-mqtt-homeui (2.206.5) stable; urgency=medium
 
   * Fix dropdown opening on touch
