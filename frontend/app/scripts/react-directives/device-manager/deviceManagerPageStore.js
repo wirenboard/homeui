@@ -1,9 +1,8 @@
 import { makeObservable, computed } from 'mobx';
+import { NewDevicesScanPageStore, SearchDisconnectedScanPageStore } from '@/pages/settings/device-manager/scan';
 import { DeviceTypesStore } from '@/stores/device-manager';
 import ConfigEditorPageStore from './config-editor/configEditorPageStore';
 import ConfiguredDevices from './config-editor/configuredDevices';
-import NewDevicesScanPageStore from './scan/newDevicesScanPageStore';
-import SearchDisconnectedScanPageStore from './scan/searchDisconnectedScanPageStore';
 
 class DeviceManagerPageStore {
   constructor(
@@ -11,11 +10,10 @@ class DeviceManagerPageStore {
     saveConfigFn,
     stateTransitions,
     loadDeviceTypeFn,
-    rolesFactory,
     deviceManagerProxy,
     fwUpdateProxy,
     serialDeviceProxy,
-    seralPortProxy
+    seralPortProxy,
   ) {
     this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
     this.configEditorPageStore = new ConfigEditorPageStore(
@@ -24,20 +22,19 @@ class DeviceManagerPageStore {
       stateTransitions.toMobileContent,
       stateTransitions.toTabs,
       this.deviceTypesStore,
-      rolesFactory,
       fwUpdateProxy,
       serialDeviceProxy,
-      seralPortProxy
+      seralPortProxy,
     );
     this.newDevicesScanPageStore = new NewDevicesScanPageStore(
       deviceManagerProxy,
       this.deviceTypesStore,
-      stateTransitions.onLeaveScan
+      stateTransitions.onLeaveScan,
     );
     this.searchDisconnectedScanPageStore = new SearchDisconnectedScanPageStore(
       deviceManagerProxy,
       this.deviceTypesStore,
-      stateTransitions.onLeaveSearchDisconnectedDevice
+      stateTransitions.onLeaveSearchDisconnectedDevice,
     );
     this.stateTransitions = stateTransitions;
     this.inMobileMode = false;
@@ -89,7 +86,7 @@ class DeviceManagerPageStore {
   addWbDevice() {
     this.stateTransitions.toScan();
     this.newDevicesScanPageStore.select(
-      new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore)
+      new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore),
     );
   }
 
@@ -106,7 +103,7 @@ class DeviceManagerPageStore {
       selectedPortTab.path,
       selectedPortTab.isModbusTcp,
       new ConfiguredDevices(this.configEditorPageStore.tabs.portTabs, this.deviceTypesStore),
-      selectedDeviceTab.slaveId
+      selectedDeviceTab.slaveId,
     );
   }
 

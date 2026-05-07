@@ -3,31 +3,14 @@ import { Fragment } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Progress } from '@/components/progress';
 import {
   type EmbeddedSoftware,
   type EmbeddedSoftwareComponent,
   type ComponentFirmware,
 } from '@/stores/device-manager';
 import type { EmbeddedSoftwarePanelProps, HasUpdateAlertProps } from './types';
-
 import './styles.css';
-
-const UpdateProgressBar = observer(({ progress } : { progress: number }) => {
-  return (
-    <div className="progress">
-      <div
-        className="progress-bar progress-bar-striped active"
-        role="progressbar"
-        aria-valuenow={progress}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        style={{ width: progress + '%' }}
-      >
-        {progress + '%'}
-      </div>
-    </div>
-  );
-});
 
 const UpdateProgressPanel = observer(
   ({ component } : { component: EmbeddedSoftwareComponent | ComponentFirmware }) => {
@@ -50,7 +33,7 @@ const UpdateProgressPanel = observer(
     return (
       <Alert variant="warn" className="updateProgressAlert">
         <span>{t(label, vars)}</span>
-        <UpdateProgressBar progress={component.updateProgress} />
+        <Progress value={component.updateProgress} caption={component.updateProgress + '%'} />
         <span>
           <b>{t('device-manager.labels.update-firmware-notice')}</b>
         </span>

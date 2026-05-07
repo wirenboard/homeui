@@ -1,4 +1,4 @@
-import { getIntAddress } from '../common/modbusAddressesSet';
+import { getIntAddress } from '@/stores/device-manager/utils';
 
 /**
  * @typedef {Object} ConfiguredDevice
@@ -61,7 +61,7 @@ class ConfiguredDevices {
 
     return Object.entries(this.configuredDevices).reduce(
       (acc, [path, port]) => acc.set(path, getAddressesSet(port.devices)),
-      new Map()
+      new Map(),
     );
   }
 }

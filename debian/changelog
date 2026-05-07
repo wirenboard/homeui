@@ -1,3 +1,11 @@
+wb-mqtt-homeui (2.207.0) stable; urgency=medium
+
+  * Update scan page
+  * Fix duplicate device id error on device add
+  * Add scan selection checkbox
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 07 May 2026 17:39:00 +0400
+
 wb-mqtt-homeui (2.206.5) stable; urgency=medium
 
   * Fix dropdown opening on touch

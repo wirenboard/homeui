@@ -10,7 +10,9 @@
          "password-strength-1": "Very weak password",
          "password-strength-2": "Weak password",
          "password-strength-3": "Good password",
-         "password-strength-4": "Strong password"
+         "password-strength-4": "Strong password",
+         "select-all": "Select all",
+         "unselect-all": "Unselect all"
       },
       "buttons": {
          "close": "Close",

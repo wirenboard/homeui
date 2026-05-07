@@ -11,6 +11,7 @@ export const BooleanField = ({
   error,
   isDisabled,
   view = 'switch',
+  indeterminate,
   formStyle,
   onChange,
 }: BooleanFieldProps) => {
@@ -41,6 +42,7 @@ export const BooleanField = ({
             checked={value}
             ariaLabel={title}
             isDisabled={isDisabled}
+            indeterminate={indeterminate}
             ariaDescribedby={descriptionId}
             onChange={onChange}
           />

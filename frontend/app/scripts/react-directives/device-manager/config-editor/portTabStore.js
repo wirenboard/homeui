@@ -1,7 +1,7 @@
 import { makeObservable, observable, computed, action, autorun } from 'mobx';
+import { CollapseButtonState } from '@/components/collapse-button';
 import { ObjectStore, StoreBuilder } from '@/stores/json-schema-editor';
 import i18n from '../../../i18n/react/config';
-import CollapseButtonState from '../../components/buttons/collapseButtonState';
 import { TabType } from './tabsStore';
 
 function checkDuplicateSlaveIds(deviceTabs) {
@@ -43,7 +43,7 @@ export class PortTab {
     this.collapseButtonState = new CollapseButtonState(
       false,
       () => this.collapse(),
-      () => this.restore()
+      () => this.restore(),
     );
     this.nameGenerationFn = nameGenerationFn;
     this.children = [];

@@ -294,7 +294,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('serial-config', {
       url: '/serial-config',
-      template: require('../views/serial-config.html'),
+      template: '<device-manager-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
