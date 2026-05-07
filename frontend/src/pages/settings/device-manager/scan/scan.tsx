@@ -57,6 +57,7 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
           {!nothingFound && (
             isDesktop ? (
               <DevicesTable
+                isScanning={pageStore.commonScanStore.scanStore.actualState === ScanState.Started}
                 newDevices={pageStore.commonScanStore.devicesStore.newDevices}
                 alreadyConfiguredDevices={pageStore.commonScanStore.devicesStore.alreadyConfiguredDevices}
                 collapseButtonState={pageStore.commonScanStore.alreadyConfiguredDevicesCollapseButtonState}
@@ -65,6 +66,7 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
               />
             ) : (
               <DevicesList
+                isScanning={pageStore.commonScanStore.scanStore.actualState === ScanState.Started}
                 newDevices={pageStore.commonScanStore.devicesStore.newDevices}
                 alreadyConfiguredDevices={pageStore.commonScanStore.devicesStore.alreadyConfiguredDevices}
                 selectionValue={pageStore.commonScanStore.deviceSelectionState}

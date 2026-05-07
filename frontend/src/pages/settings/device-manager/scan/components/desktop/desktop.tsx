@@ -9,7 +9,7 @@ import { DeviceName, Port, SlaveId } from '../common';
 import type { AlreadyConfiguredDevicesHeaderProps, DeviceRowProps, DevicesTableProps } from './types';
 import './styles.css';
 
-const DeviceRow = observer(({ deviceStore }: DeviceRowProps) => {
+const DeviceRow = observer(({ isScanning, deviceStore }: DeviceRowProps) => {
   return (
     <>
       <TableRow
@@ -28,6 +28,7 @@ const DeviceRow = observer(({ deviceStore }: DeviceRowProps) => {
             selected={deviceStore.selected}
             otherMatchingDeviceTypesNames={deviceStore.names.slice(1)}
             selectable={deviceStore.selectable}
+            isScanning={isScanning}
             onSelectionChange={(val: boolean) => deviceStore.setSelected(val)}
           />
         </TableCell>
@@ -85,6 +86,7 @@ const AlreadyConfiguredDevicesHeader = observer(({
 );
 
 export const DevicesTable = observer(({
+  isScanning,
   newDevices,
   alreadyConfiguredDevices,
   collapseButtonState,
@@ -100,7 +102,7 @@ export const DevicesTable = observer(({
             <BooleanField
               title={t('scan.labels.device')}
               view="checkbox"
-              isDisabled={!newDevices.length}
+              isDisabled={isScanning || !newDevices.length}
               indeterminate={selectionValue === 'indeterminate'}
               value={!!selectionValue}
               onChange={(val) => toggleSelection(val)}
@@ -112,14 +114,15 @@ export const DevicesTable = observer(({
         <TableCell width="27%">{t('scan.labels.port')}</TableCell>
       </TableRow>
       {newDevices.map((device) => (
-        <DeviceRow key={device.uuid} deviceStore={device} />
+        <DeviceRow isScanning={isScanning} key={device.uuid} deviceStore={device} />
       ))}
       <AlreadyConfiguredDevicesHeader
         alreadyConfiguredDevices={alreadyConfiguredDevices}
         collapseButtonState={collapseButtonState}
       />
-      {!collapseButtonState.collapsed &&
-            alreadyConfiguredDevices.map((d, index) => <DeviceRow key={index} deviceStore={d} />)}
+      {!collapseButtonState.collapsed && alreadyConfiguredDevices.map((device, index) => (
+        <DeviceRow isScanning={isScanning} key={index} deviceStore={device} />
+      ))}
     </Table>
   );
 });

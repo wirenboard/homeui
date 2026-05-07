@@ -75,6 +75,7 @@ export const DeviceName = ({
   onSelectionChange,
   otherMatchingDeviceTypesNames,
   selectable,
+  isScanning,
 }) => {
   const { t } = useTranslation();
   return (
@@ -86,7 +87,7 @@ export const DeviceName = ({
         title={title}
         selectable={selectable}
         selected={selected}
-        disabled={unknownType}
+        disabled={isScanning || unknownType}
         onSelectionChange={onSelectionChange}
       />
       <InBootloaderErrorTag bootloaderMode={bootloaderMode} selectable={selectable} />

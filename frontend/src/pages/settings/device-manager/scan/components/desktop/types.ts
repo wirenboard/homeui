@@ -2,6 +2,7 @@ import type { CollapseButtonState } from '@/components/collapse-button';
 import type { SingleDeviceStore } from '@/pages/settings/device-manager/scan/stores/single-device-store';
 
 export interface DevicesTableProps {
+  isScanning: boolean;
   newDevices: SingleDeviceStore[];
   alreadyConfiguredDevices: SingleDeviceStore[];
   collapseButtonState: CollapseButtonState;
@@ -15,5 +16,6 @@ export interface AlreadyConfiguredDevicesHeaderProps {
 }
 
 export interface DeviceRowProps {
+  isScanning: boolean;
   deviceStore: SingleDeviceStore;
 }

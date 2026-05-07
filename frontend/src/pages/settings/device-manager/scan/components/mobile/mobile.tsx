@@ -9,7 +9,7 @@ import { DeviceName, SlaveId, Port } from '../common';
 import type { DeviceListProps, DevicePanelProps } from './types';
 import './styles.css';
 
-const DevicePanel = observer(({ deviceStore }: DevicePanelProps) => {
+const DevicePanel = observer(({ deviceStore, isScanning }: DevicePanelProps) => {
   const { t } = useTranslation();
 
   return (
@@ -21,6 +21,7 @@ const DevicePanel = observer(({ deviceStore }: DevicePanelProps) => {
       heading={
         <DeviceName
           title={deviceStore.title}
+          isScanning={isScanning}
           bootloaderMode={deviceStore.bootloaderMode}
           errors={deviceStore?.scannedDevice.errors}
           duplicateMqttTopic={deviceStore.duplicateMqttTopic}
@@ -69,6 +70,7 @@ export const DevicesList = observer(({
   alreadyConfiguredDevices,
   selectionValue,
   toggleSelection,
+  isScanning,
 }: DeviceListProps) => {
   const { t } = useTranslation();
 
@@ -80,19 +82,21 @@ export const DevicesList = observer(({
             title={selectionValue ? t('common.labels.unselect-all') : t('common.labels.select-all')}
             view="checkbox"
             indeterminate={selectionValue === 'indeterminate'}
-            isDisabled={!newDevices.length}
+            isDisabled={isScanning || !newDevices.length}
             value={!!selectionValue}
             onChange={(val) => toggleSelection(val)}
           />
         </div>
       )}
       {newDevices.map((device) => (
-        <DevicePanel key={device.uuid} deviceStore={device} />
+        <DevicePanel key={device.uuid} deviceStore={device} isScanning={isScanning} />
       ))}
 
       {!!alreadyConfiguredDevices.length && (
         <CollapsiblePanel title={t('scan.labels.device-in-config')} isCollapsed>
-          {alreadyConfiguredDevices.map((d, index) => <DevicePanel key={index} deviceStore={d} />)}
+          {alreadyConfiguredDevices.map((d, index) => (
+            <DevicePanel isScanning={isScanning} key={index} deviceStore={d} />
+          ))}
         </CollapsiblePanel>
       )}
     </>
