@@ -4,8 +4,10 @@ import { generateNextId } from '@/utils/id';
 import {
   addDevice,
   addRoom,
+  createAliceLink,
   deleteRoom,
   getAliceInfo,
+  getAliceLinkStatus,
   updateRoom,
   deleteDevice,
   updateDevice,
@@ -17,6 +19,8 @@ import {
 import type {
   AddDeviceParams,
   AliceFetchData,
+  AliceLinkStatus,
+  AliceLinkUrl,
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
@@ -71,6 +75,14 @@ export default class AliceStore {
       this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
       return data;
     });
+  }
+
+  async fetchLinkStatus(): Promise<AliceLinkStatus> {
+    return getAliceLinkStatus();
+  }
+
+  async createLink(): Promise<AliceLinkUrl> {
+    return createAliceLink();
   }
 
   async addRoom(name: string): Promise<string> {
