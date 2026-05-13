@@ -156,7 +156,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
             dashboard={dashboards.get(dashboardId)}
             cells={cells}
             isOpened={isAddWidgetModalOpened}
-            controls={devicesStore.controls}
+            topics={devicesStore.topicsWithoutSystem}
             onClose={() => setIsAddWidgetModalOpened(false)}
           />
         )}
@@ -189,7 +189,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
         <WidgetEdit
           widget={widgets.get(editingWidgetId)}
           cells={cells}
-          controls={devicesStore.controls}
+          topics={devicesStore.topicsWithoutSystem}
           isOpened={!!editingWidgetId}
           onClose={() => setEditingWidgetId(null)}
           onSave={(data) => {

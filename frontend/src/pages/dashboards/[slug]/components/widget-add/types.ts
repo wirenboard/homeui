@@ -1,6 +1,7 @@
 import { type Dashboard, type Widget } from '@/stores/dashboards';
 import type DashboardsStore from '@/stores/dashboards/dashboards-store';
 import { type Cell } from '@/stores/devices';
+import { type TopicGroup } from '@/stores/devices/types';
 
 export interface WidgetAddProps {
   dashboard: Dashboard;
@@ -8,6 +9,6 @@ export interface WidgetAddProps {
   widgets: Map<string, Widget>;
   cells: Map<string, Cell>;
   isOpened: boolean;
-  controls: any;
+  topics: TopicGroup[];
   onClose: () => void;
 }

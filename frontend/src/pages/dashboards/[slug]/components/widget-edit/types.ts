@@ -1,5 +1,6 @@
 import { type Widget } from '@/stores/dashboards/widget';
 import { type Cell } from '@/stores/devices';
+import { type TopicGroup } from '@/stores/devices/types';
 
 export interface CellSimple {
   id: string;
@@ -14,7 +15,7 @@ export interface WidgetEditProps {
   widget: Widget;
   cells: Map<string, Cell | CellSimple>;
   isOpened: boolean;
-  controls: any;
+  topics: TopicGroup[];
   onClose: () => void;
   onSave: (data: any) => void;
 }

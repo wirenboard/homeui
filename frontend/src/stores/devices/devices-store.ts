@@ -3,7 +3,7 @@ import type { MqttClient } from '@/common/types';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
-import type { ValueType } from './types';
+import type { TopicGroup, TopicOption, ValueType } from './types';
 
 export default class DevicesStore {
   public devices: Map<string, Device> = new Map();
@@ -46,7 +46,7 @@ export default class DevicesStore {
     return new Map(
       Array.from(this.devices.entries())
         .filter(([_, device]) => !device.isSystemDevice)
-        .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name))
+        .sort(([_1, device1], [_2, device2]) => device1.name.localeCompare(device2.name)),
     );
   }
 
@@ -110,11 +110,11 @@ export default class DevicesStore {
     this.#allDevicesTopics.delete(id);
   }
 
-  get topics(): any[] {
-    const result = [];
+  get topics(): TopicGroup[] {
+    const result: TopicGroup[] = [];
 
     for (const device of this.devices.values()) {
-      const options = [];
+      const options: TopicOption[] = [];
 
       for (const cellId of device.cells) {
         const cell = this.cells.get(cellId);
@@ -126,6 +126,8 @@ export default class DevicesStore {
         });
       }
 
+      if (options.length === 0) continue;
+
       result.push({
         label: device.name,
         options,
@@ -133,6 +135,17 @@ export default class DevicesStore {
     }
 
     return result;
+  }
+
+  // For end-user pickers (scenarios, widgets). Alice uses topics directly so
+  // that system controls remain exportable to the smart home.
+  get topicsWithoutSystem(): TopicGroup[] {
+    return this.topics
+      .map((group) => ({
+        label: group.label,
+        options: group.options.filter((opt) => !opt.value.startsWith('system__')),
+      }))
+      .filter((group) => group.options.length > 0);
   }
 
   toggleDevices() {
@@ -151,12 +164,6 @@ export default class DevicesStore {
 
   get hasOpenedDivices() {
     return Array.from(this.filteredDevices.values()).some((device) => device.isVisible);
-  }
-
-  get controls() {
-    return Array.from(this.cells.values())
-      .filter((cell) => !cell.id.startsWith('system__') && !cell.hidden)
-      .map((cell) => ({ id: cell.id, name: `${this.devices.get(cell.deviceId)?.name} / ${cell.name}` }));
   }
 
   async sendCellValueUpdate(deviceId: string, controlId: string, value: string) {
