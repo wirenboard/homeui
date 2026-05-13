@@ -3,12 +3,14 @@ import { type KeyboardEvent, type ReactElement, type Ref } from 'react';
 export interface TabItem {
   id: any;
   label: string | ReactElement<any, string>;
+  isHidden?: boolean;
 }
 
 export interface TabsProps {
   className?: string;
   items: TabItem[];
   activeTab: any;
+  isEllipsis?: boolean;
   orientation?: 'horizontal' | 'vertical';
   onTabChange: (id: any) => void;
 }

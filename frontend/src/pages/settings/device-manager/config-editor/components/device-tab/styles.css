@@ -1,0 +1,36 @@
+.deviceTab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 20px;
+    gap: 3px;
+}
+
+.deviceTab-title {
+    flex-grow: 1;
+}
+
+.deviceTab-updateIcon {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    color: var(--warn-color);
+}
+
+.deviceTab-updateIconAnimationRotate {
+    animation: rotate 2s linear infinite;
+}
+
+.deviceTab-warnIcon {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+}
+
+.deviceTab-withError .deviceTab-warnIcon {
+    color: var(--danger-color);
+}
+
+.deviceTab-withWarning .deviceTab-warnIcon {
+    color: var(--warn-color);
+}

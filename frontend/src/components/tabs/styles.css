@@ -17,6 +17,9 @@
     text-align: left;
     border: 0;
     background: none;
+}
+
+.tabs-ellipsisContent .tabs-button {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

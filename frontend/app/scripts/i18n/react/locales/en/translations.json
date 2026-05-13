@@ -447,6 +447,7 @@
          "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
          "restoring-device": "Restoring device firmware",
          "uncommitted-settings": "You have modified settings that will be lost. Continue?",
+         "delete-title": "Confirmation of deletion",
          "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed."
       },
       "buttons": {
@@ -493,6 +494,9 @@
          "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template.",
          "bad-value-from-registers": "Value \"{{value}}\" read from device is not suitable for this parameter. You can set your own — it will be written to the device. If it does not matter, you can leave it as is.",
          "several-param-variants": "Several variants of this parameter are specified in the template. Please fix the device template."
+      },
+      "prompt": {
+         "prevent-leave": "Scanning will be canceled. Do you really want to leave the page?"
       }
    },
    "exp-check": {

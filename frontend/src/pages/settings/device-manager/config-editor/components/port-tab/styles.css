@@ -1,0 +1,51 @@
+.portTab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+    border-radius: 2px;
+}
+
+.portTab-title {
+    flex-grow: 1;
+}
+
+.portTab-error .portTab-icon {
+    color: var(--danger-color);
+}
+
+.portTab-icon {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+}
+
+.portTab-header {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.portTab-headerTitle {
+    flex-grow: 1;
+}
+
+.portTab-buttonPanel {
+    gap: 5px;
+    display: flex;
+    flex-direction: row;
+
+    @media (max-width: 500px) {
+        flex-grow: 1;
+    }
+}
+
+.portTab-buttonPanel .button {
+    flex-grow: 1;
+}
+
+
+
+

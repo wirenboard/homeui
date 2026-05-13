@@ -7,7 +7,7 @@ import { type JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '~/i18n/react/config';
 import { type DeviceTypesStore } from '../device-types-store';
-import type { PortTabConfig, PortTabTcpConfig } from '../port-tab/types';
+import type { PortTabConfig, PortTabSerialConfig, PortTabTcpConfig } from '../port-tab/types';
 import type {
   FwUpdateProxy,
   UpdateItem,
@@ -54,11 +54,10 @@ export class DeviceTabStore {
     deviceTypesStore: DeviceTypesStore,
     fwUpdateProxy: FwUpdateProxy,
     serialDeviceProxy: SerialDeviceProxy,
-    serialPortProxy: SerialPortProxy,
+    serialPortProxy?: SerialPortProxy,
   ) {
     this.initialData = initialData;
     this.deviceTypesStore = deviceTypesStore;
-    this.devicesWithTheSameId = [];
     this.embeddedSoftware = new EmbeddedSoftware(fwUpdateProxy);
     this._serialDeviceProxy = serialDeviceProxy;
     this._fwUpdateProxy = fwUpdateProxy;
@@ -113,11 +112,9 @@ export class DeviceTabStore {
   }
 
   get name() {
-    let deviceName = this.deviceTypesStore.getName(this.deviceType);
-    if (!deviceName) {
-      deviceName = i18n.t('device-manager.labels.unknown-device-type');
-    }
-    return `${this.slaveId || ''} ` + deviceName;
+    const deviceName = this.deviceTypesStore.getName(this.deviceType)
+      || i18n.t('device-manager.labels.unknown-device-type');
+    return `${this.slaveId || ''} ${deviceName}`;
   }
 
   get isLoading() {
@@ -157,11 +154,7 @@ export class DeviceTabStore {
       }
     }
 
-    this.readRegistersState.successfulRead(
-      this.deviceType,
-      configFromDevice.model,
-      configFromDevice.fw,
-    );
+    this.readRegistersState.successfulRead(this.deviceType, configFromDevice.model, configFromDevice.fw);
     this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw, isForce);
   }
 
@@ -227,9 +220,7 @@ export class DeviceTabStore {
       if (!this.schemaStore || isForce) {
         this._setLoading(i18n.t('device-manager.labels.loading-template'));
         const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-        runInAction(() => {
-          this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData);
-        });
+        runInAction(() => this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData));
       }
       if (portConfig) {
         await this._loadConfigFromDevice(portConfig, isForce, previousData);
@@ -244,9 +235,7 @@ export class DeviceTabStore {
     this._setLoading(i18n.t('device-manager.labels.loading-template'));
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-      runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData);
-      });
+      runInAction(() => this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData));
     }
     if (this.schemaStore) {
       this.schemaStore.setDefault();
@@ -255,16 +244,11 @@ export class DeviceTabStore {
   }
 
   get hasInvalidConfig() {
-    return (
-      this.hasJsonValidationErrors || this.slaveIdIsDuplicate || this.devicesWithTheSameId.length
-    );
+    return this.hasJsonValidationErrors || this.slaveIdIsDuplicate || this.devicesWithTheSameId.length;
   }
 
-  get mqttId() {
-    return (
-      this.editedData.id ||
-      this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId)
-    );
+  get mqttId(): string {
+    return this.editedData.id as string || this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId);
   }
 
   get slaveId() {
@@ -384,8 +368,8 @@ export class DeviceTabStore {
           {
             slave_id: getIntAddress(this.slaveId),
             baud_rate: portConfig['baud-rate'],
-            parity: portConfig.parity,
-            stop_bits: portConfig.stopBits,
+            parity: (portConfig as PortTabSerialConfig).parity,
+            stop_bits: (portConfig as PortTabSerialConfig).stopBits,
           });
         return;
       }
@@ -394,7 +378,7 @@ export class DeviceTabStore {
         slave_id: getIntAddress(device.address),
         port: toDmRpcPortConfig(portConfig),
       };
-      if (portConfig.modbusTcp) {
+      if ((portConfig as PortTabTcpConfig).modbusTcp) {
         params.protocol = 'modbus-tcp';
       }
       await this._fwUpdateProxy.Restore(params);

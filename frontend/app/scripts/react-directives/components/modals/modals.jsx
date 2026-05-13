@@ -1,6 +1,5 @@
 import { useRef, useEffect } from 'react';
 import FocusLock from 'react-focus-lock';
-import { useTranslation } from 'react-i18next';
 
 export const ModalHeader = ({ children }) => {
   return <div className="modal-header">{children}</div>;
@@ -77,14 +76,5 @@ export const Modal = ({ id, active, onCancel, children }) => {
         </FocusLock>
       </div>
     </div>
-  );
-};
-
-export const ModalCancelButton = ({ onClick }) => {
-  const { t } = useTranslation();
-  return (
-    <button type="button" className="btn btn-default" data-dismiss="modal" onClick={onClick}>
-      {t('network-connections.buttons.cancel')}
-    </button>
   );
 };

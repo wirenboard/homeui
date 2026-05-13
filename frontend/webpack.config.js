@@ -208,7 +208,7 @@ module.exports = (function makeWebpackConfig() {
       minChunks: 1,
       cacheGroups: {
         react: {
-          test: /[\\/]node_modules[\\/](react|react-dom|react-select|mobx|mobx-react-lite|react-tabs|react-focus-lock|react-responsive|react-responsive-carousel)[\\/]/,
+          test: /[\\/]node_modules[\\/](react|react-dom|react-select|mobx|mobx-react-lite|react-focus-lock|react-responsive|react-responsive-carousel)[\\/]/,
           name: 'react',
           chunks: 'all',
         },
