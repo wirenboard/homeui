@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.209.0) stable; urgency=medium
 
   * Unify autocomplete fields
 
- Valerii Trovimov <valeriy.trofimov@wirenboard.com>  Wed, 13 May 2026 16:59:00 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Wed, 13 May 2026 16:59:00 +0300
 
 wb-mqtt-homeui (2.208.0) stable; urgency=medium
 
