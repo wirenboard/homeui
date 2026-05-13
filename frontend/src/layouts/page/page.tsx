@@ -90,7 +90,7 @@ export const PageLayout = ({
               {titleArea}
             </div>
 
-            {!isLoading && <div className="page-actions">{actions}</div>}
+            {(!isLoading || loadingOptions?.showActions) && <div className="page-actions">{actions}</div>}
           </header>
         )}
 

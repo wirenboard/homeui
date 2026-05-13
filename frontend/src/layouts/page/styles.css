@@ -86,6 +86,8 @@
     flex-shrink: 0;
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
+    max-width: 100%;
 }
 
 .page-container {

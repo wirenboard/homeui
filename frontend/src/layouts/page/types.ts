@@ -11,6 +11,7 @@ export interface LoadingOptions {
   loader?: 'spinner' | 'progress';
   label?: string;
   progress?: number;
+  showActions?: boolean;
 }
 
 export interface PageProps {
