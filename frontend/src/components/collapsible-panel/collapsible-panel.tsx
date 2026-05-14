@@ -5,10 +5,10 @@ import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
 import { Button } from '@/components/button';
 import './styles.css';
 
-export const CollapsiblePanel = ({ title, children }) => {
+export const CollapsiblePanel = ({ title, isCollapsed = false, children }) => {
   const { t } = useTranslation();
   const titleId = useId();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(isCollapsed);
 
   return (
     <section className="collapsiblePanel-container">

@@ -11,7 +11,6 @@ function deviceManagerDirective(
   DeviceManagerProxy,
   FwUpdateProxy,
   PageState,
-  rolesFactory,
   $state,
   $transitions,
   SerialProxy,
@@ -20,7 +19,7 @@ function deviceManagerDirective(
   mqttClient,
   $rootScope,
   $window,
-  $translate
+  $translate,
 ) {
   'ngInject';
 
@@ -94,11 +93,10 @@ function deviceManagerDirective(
         saveConfig,
         stateTransitions,
         loadDeviceTypeSchema,
-        rolesFactory,
         DeviceManagerProxy,
         FwUpdateProxy,
         SerialDeviceProxy,
-        SerialPortProxy
+        SerialPortProxy,
       );
 
       let CONFIRMATION_MSG;
@@ -148,7 +146,7 @@ function deviceManagerDirective(
           scope.store.stopScanning();
         }
 
-        if (to == 'serial-config.properties') {
+        if (to === 'serial-config.properties') {
           if (!scope.store.inMobileMode) {
             return $state.target('serial-config');
           }
@@ -172,10 +170,10 @@ function deviceManagerDirective(
             scope.store.setDeviceDisconnected(msg.topic, msg.payload);
           });
           mqttClient.addStickySubscription('/wb-device-manager/state', (msg) =>
-            scope.store.updateScanState(msg.payload)
+            scope.store.updateScanState(msg.payload),
           );
           mqttClient.addStickySubscription('/wb-mqtt-serial/firmware_update/state', (msg) =>
-            scope.store.setEmbeddedSoftwareUpdateProgress(msg.payload)
+            scope.store.setEmbeddedSoftwareUpdateProgress(msg.payload),
           );
         });
 

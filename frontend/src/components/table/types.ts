@@ -24,7 +24,7 @@ export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
   isSticky?: boolean;
 }
 
-export interface TableCellProps extends HTMLAttributes<HTMLDivElement> {
+export interface TableCellProps extends HTMLAttributes<HTMLTableCellElement> {
   width?: number | string;
   className?: string;
   visibleOnHover?: boolean;
@@ -39,4 +39,5 @@ export interface TableCellProps extends HTMLAttributes<HTMLDivElement> {
   isFirstLinkColumn?: boolean;
   isHeading?: boolean;
   ariaLabel?: string;
+  colSpan?: number;
 }

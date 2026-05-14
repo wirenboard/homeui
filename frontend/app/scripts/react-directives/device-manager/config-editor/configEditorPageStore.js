@@ -1,15 +1,14 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
 import { DeviceTabStore, setupDevice } from '@/stores/device-manager';
+import { getIntAddress } from '@/stores/device-manager/utils';
 import { loadJsonSchema, Translator, getDefaultValue } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '../../../i18n/react/config';
-import AccessLevelStore from '../../components/access-level/accessLevelStore';
 import ConfirmModalState from '../../components/modals/confirmModalState';
 import FormModalState from '../../components/modals/formModalState';
 import SelectModalState from '../../components/modals/selectModalState';
 import PageWrapperStore from '../../components/page-wrapper/pageWrapperStore';
-import { getIntAddress } from '../common/modbusAddressesSet';
 import showAddDeviceModal from './addDeviceModal';
 import showCopyDeviceModal from './copyDeviceModal';
 import { getTranslation } from './jsonSchemaUtils';
@@ -107,7 +106,7 @@ function getTopics(portTabs, deviceTypesStore) {
     portTab.children.forEach((deviceTab) => {
       topics.add(
         deviceTab.editedData.id ||
-          deviceTypesStore.getDefaultId(deviceTab.deviceType, deviceTab.slaveId)
+          deviceTypesStore.getDefaultId(deviceTab.deviceType, deviceTab.slaveId),
       );
     });
   });
@@ -128,13 +127,10 @@ class ConfigEditorPageStore {
     toMobileContent,
     toTabs,
     deviceTypesStore,
-    rolesFactory,
     fwUpdateProxy,
     serialDeviceProxy,
-    serialPortProxy
+    serialPortProxy,
   ) {
-    this.accessLevelStore = new AccessLevelStore(rolesFactory);
-    this.accessLevelStore.setRole(rolesFactory.ROLE_TWO);
     this.pageWrapperStore = new PageWrapperStore();
     this.selectModalState = new SelectModalState();
     this.confirmModalState = new ConfirmModalState();
@@ -172,7 +168,7 @@ class ConfigEditorPageStore {
         getPortData(portConfig),
         this.portSchemaMap['serial'],
         makeSerialPortTabName,
-        this.schemaTranslator
+        this.schemaTranslator,
       );
     }
     if (portConfig.port_type === 'tcp') {
@@ -187,7 +183,7 @@ class ConfigEditorPageStore {
         getPortData(portConfig),
         this.portSchemaMap['modbus tcp'],
         makeModbusTcpPortTabName,
-        this.schemaTranslator
+        this.schemaTranslator,
       );
     }
     return undefined;
@@ -199,7 +195,7 @@ class ConfigEditorPageStore {
       getDeviceTypeFromConfig(deviceConfig),
       this.deviceTypesStore,
       this.fwUpdateProxy,
-      this.serialDeviceProxy
+      this.serialDeviceProxy,
     );
   }
 
@@ -253,7 +249,7 @@ class ConfigEditorPageStore {
       newPortType = await this.selectModalState.show(
         i18n.t('device-manager.buttons.add-port'),
         i18n.t('device-manager.buttons.add-port'),
-        makePortTypeSelectOptions(this.portSchemaMap)
+        makePortTypeSelectOptions(this.portSchemaMap),
       );
     } catch (err) {
       if (err === 'cancel') {
@@ -275,21 +271,21 @@ class ConfigEditorPageStore {
           label: i18n.t('device-manager.buttons.delete'),
           type: 'danger',
         },
-      ]
+      ],
     );
   }
 
   async showDeleteTabConfirmModal() {
     return this.showDeleteConfirmModal(
       'device-manager.labels.confirm-delete',
-      this.tabs.selectedTab?.name
+      this.tabs.selectedTab?.name,
     );
   }
 
   async showDeletePortDevicesConfirmModal(portTab) {
     return this.showDeleteConfirmModal(
       'device-manager.labels.confirm-delete-port-devices',
-      portTab?.name
+      portTab?.name,
     );
   }
 
@@ -310,7 +306,7 @@ class ConfigEditorPageStore {
       this.formModalState,
       makePortSelectOptions(this.tabs.portTabs),
       this.deviceTypesStore.deviceTypeDropdownOptions,
-      this.tabs.selectedPortTab
+      this.tabs.selectedPortTab,
     );
     if (res === undefined) {
       return;
@@ -321,7 +317,7 @@ class ConfigEditorPageStore {
       res.deviceType,
       this.deviceTypesStore,
       this.fwUpdateProxy,
-      this.serialDeviceProxy
+      this.serialDeviceProxy,
     );
     this.tabs.addDeviceTab(res.port, deviceTab, true);
     try {
@@ -388,6 +384,7 @@ class ConfigEditorPageStore {
             }
             const portConfig = portTab.baseConfig;
             const newParams = {
+              slave_id: getIntAddress(device.newAddress || device.address),
               baud_rate: portConfig?.baudRate,
               parity: portConfig?.parity,
               stop_bits: portConfig?.stopBits,
@@ -397,7 +394,7 @@ class ConfigEditorPageStore {
             errors.push(getDeviceSetupErrorMessage(device, err));
           }
           return false;
-        })
+        }),
       );
       let changedDevices = devices.filter((_, i) => setupResults[i]);
       const selectedTab = this.tabs.selectedTab;
@@ -405,7 +402,7 @@ class ConfigEditorPageStore {
       if (changedDevices.length) {
         const topics = getTopics(this.tabs.portTabs, this.deviceTypesStore);
         await Promise.all(
-          changedDevices.map((device) => this.addScannedDeviceToConfig(device, topics, selectAddedTab))
+          changedDevices.map((device) => this.addScannedDeviceToConfig(device, topics, selectAddedTab)),
         );
         this.tabs.setModifiedStructure();
         if (!selectAddedTab) {
@@ -423,7 +420,7 @@ class ConfigEditorPageStore {
   async addScannedDeviceToConfig(device, topics, selectTab) {
     const jsonSchema = loadJsonSchema(await this.deviceTypesStore.getSchema(device.type));
     let deviceConfig = getDefaultValue(jsonSchema) ?? {};
-    deviceConfig.slave_id = String(device.address);
+    deviceConfig.slave_id = String(device.newAddress ? device.newAddress : device.address);
     const deviceId =
       deviceConfig?.id || this.deviceTypesStore.getDefaultId(device.type, deviceConfig.slave_id);
     if (topics.has(deviceId)) {
@@ -455,7 +452,7 @@ class ConfigEditorPageStore {
     const res = await showCopyDeviceModal(
       this.formModalState,
       makePortSelectOptions(this.tabs.portTabs),
-      portTab
+      portTab,
     );
     if (res) {
       for (let i = 0; i < res.count; ++i) {
@@ -470,7 +467,7 @@ class ConfigEditorPageStore {
       if (portTab) {
         const portConfig = portTab.baseConfig;
         portTab.children?.filter(
-          (deviceTab) => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id)
+          (deviceTab) => getIntAddress(deviceTab.slaveId) === getIntAddress(device.slave_id),
         ).forEach((deviceTab) => {
           deviceTab.setEmbeddedSoftwareUpdateProgress(device, portConfig);
         });

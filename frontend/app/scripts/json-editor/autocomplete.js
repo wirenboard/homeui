@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
 import { Dropdown } from '@/components/dropdown';
 
-export function makeAutocompleteEditor(devices) {
+export function makeAutocompleteEditor(topics) {
   return class extends JSONEditor.AbstractEditor {
     build() {
       this.control = document.createElement('div');
@@ -18,14 +18,9 @@ export function makeAutocompleteEditor(devices) {
         this.reactRoot = createRoot(this.control);
       }
 
-      const options = devices?.map(topic => ({
-        label: topic,
-        value: topic,
-      })) || [];
-
       this.reactRoot.render(
         createElement(Dropdown, {
-          options,
+          options: topics || [],
           value: this.value,
           isSearchable: true,
           isClearable: true,
@@ -38,7 +33,7 @@ export function makeAutocompleteEditor(devices) {
     }
 
     setValue(value) {
-      if (this.value === value){
+      if (this.value === value) {
         return;
       }
       this.value = value;

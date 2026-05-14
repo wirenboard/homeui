@@ -23,7 +23,6 @@ import 'ng-toast/dist/ngToast.css';
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
-import '../styles/css/scan.css';
 
 // homeui modules: sevices
 import errorsService from './services/errors';

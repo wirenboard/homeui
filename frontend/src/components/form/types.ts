@@ -56,6 +56,7 @@ export interface BooleanFieldProps {
   error?: string;
   isDisabled?: boolean;
   formStyle?: CSSProperties;
+  indeterminate?: boolean;
   onChange: (value: boolean) => void;
 }
 
