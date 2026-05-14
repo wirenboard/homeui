@@ -19,6 +19,7 @@ interface DeviceInfo {
   https_cert: CertificateStatus;
   release_suite: ReleaseSuite;
   release_name: string;
+  rootfs_expanded: boolean;
 }
 
 export interface HttpsStatus {

@@ -48,8 +48,6 @@ import daliProxyService from './services/daliProxy';
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
 import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
-import DiagnosticCtrl from './controllers/diagnosticController';
-import BackupCtrl from './controllers/backupController';
 
 // homeui modules: directives
 import userRolesDirective from './directives/user-roles.directive';
@@ -68,9 +66,10 @@ import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
 import { ConfigsStore} from '@/stores/configs';
+import { consolePanelStore } from '@/stores/console-panel';
 import { DashboardsStore } from '@/stores/dashboards';
 import { DevicesStore } from '@/stores/devices';
-import { RulesStore } from '@/stores/rules';
+import { RulesStore, registerRulesTab } from '@/stores/rules';
 import { uiStore } from '@/stores/ui';
 import { autorun } from 'mobx';
 
@@ -130,8 +129,6 @@ module
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
-  .controller('DiagnosticCtrl', DiagnosticCtrl)
-  .controller('BackupCtrl', BackupCtrl)
 
 module.directive('scriptForm', function (PageState) {
   'ngInject';
@@ -165,7 +162,6 @@ module
       [
         'app',
         'help',
-        'system',
         'logs',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
@@ -192,14 +188,14 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
     return Object.keys(collection);
   };
 
-  $rootScope.toggleConsole = function () {
-    $rootScope.consoleVisible = !$rootScope.consoleVisible;
-  };
+  $rootScope.consoleView = localStorage.getItem('console-panel-position') || 'bottom';
 
-  $rootScope.consoleView = localStorage.getItem('rules-console-position') || 'bottom'
-  $rootScope.changeConsoleView = function (view) {
-    $rootScope.consoleView = view;
-  };
+  autorun(() => {
+    $rootScope.consoleView = consolePanelStore.isVisible
+      ? consolePanelStore.position
+      : 'bottom';
+    $rootScope.$applyAsync();
+  });
 
   $transitions.onStart({}, function (trans) {
     // to avoid blinking on id change
@@ -313,6 +309,7 @@ const realApp = angular
             .then(() => {
               $rootScope.rulesStore.subscribeRulesLogs();
               $rootScope.rulesStore.subscribeRuleDebugging();
+              registerRulesTab($rootScope.rulesStore);
               return $rootScope.dashboardsStore.loadData(true);
             })
             .catch(errors.catch('app.errors.load'));

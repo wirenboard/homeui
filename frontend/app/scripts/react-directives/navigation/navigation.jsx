@@ -13,7 +13,6 @@ export default function navigationDirective($rootScope) {
       scope.root = ReactDOM.createRoot(element[0]);
       scope.root.render(
         <Navigation
-          toggleConsole={$rootScope.toggleConsole}
           dashboardsStore={$rootScope.dashboardsStore}
         />
       );

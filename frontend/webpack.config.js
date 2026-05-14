@@ -347,6 +347,11 @@ module.exports = (function makeWebpackConfig() {
     proxy: [
       {
         context: [
+          '/fwupdate/upload',
+          '/fwupdate/download/rootfs',
+          '/fwupdate/download/configs',
+          '/fwupdate/download/everything',
+          '/fwupdate/factoryreset',
           '/auth/check_config',
           '/auth/users',
           '/auth/login',

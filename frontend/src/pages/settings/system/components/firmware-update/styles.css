@@ -1,0 +1,23 @@
+.firmwareUpdate-logs {
+    padding: var(--card-body-padding);
+    background-color: var(--border-color);
+    border: 1px solid var(--light-gray-color);
+    border-radius: var(--input-border-radius);
+    box-shadow: none;
+    max-height: 340px;
+    overflow-y: scroll;
+    margin-bottom: 6px;
+}
+
+.firmwareUpdate-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.firmwareUpdate-rootfsCheckbox {
+    margin-top: 8px;
+}
+
+.firmwareUpdate-doneAlert {
+    margin-top: 8px;
+}
