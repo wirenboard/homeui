@@ -7,7 +7,7 @@ import { CellHistory } from './cell-history';
 import { type CellAlertProps } from './types';
 import './styles.css';
 
-export const CellAlert = observer(({ cell, hideHistory }: CellAlertProps) => {
+export const CellAlert = observer(({ cell, name, hideHistory }: CellAlertProps) => {
   const { t } = useTranslation();
 
   return (
@@ -23,7 +23,7 @@ export const CellAlert = observer(({ cell, hideHistory }: CellAlertProps) => {
           className="deviceCell-alert"
           onClick={() => copyToClipboard(cell.id)}
         >
-          {cell.name}
+          {name || cell.name}
         </Alert>
       </Tooltip>
 
