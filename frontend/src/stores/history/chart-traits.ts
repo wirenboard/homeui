@@ -25,7 +25,7 @@ export class ChartTraits {
   }
 
   get hasErrors() {
-    return this.type === ChartType.Number;
+    return this.type === ChartType.Number || this.type === ChartType.Boolean;
   }
 
   get hasBooleanValues() {
