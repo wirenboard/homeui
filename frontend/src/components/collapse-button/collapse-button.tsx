@@ -10,8 +10,10 @@ export const CollapseButton = observer(({ className, state, stopPropagation }: C
   const { t } = useTranslation();
 
   return (
-    <button
+    <span
+      role="button"
       className={classNames('collapseButton', className)}
+      tabIndex={0}
       aria-expanded={!state.collapsed}
       aria-label={state.collapsed ? t('common.buttons.expand') : t('common.buttons.collapse')}
       onClick={(ev) => {
@@ -25,6 +27,6 @@ export const CollapseButton = observer(({ className, state, stopPropagation }: C
         ? <ChevronRightIcon className="collapseButton-icon" />
         : <ChevronDownIcon className="collapseButton-icon" />
       }
-    </button>
+    </span>
   );
 });
