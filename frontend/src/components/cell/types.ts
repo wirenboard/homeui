@@ -28,6 +28,7 @@ export interface CellColorpickerProps {
 
 export interface CellAlertProps {
   cell: Cell;
+  name?: string;
   hideHistory: boolean;
 }
 
