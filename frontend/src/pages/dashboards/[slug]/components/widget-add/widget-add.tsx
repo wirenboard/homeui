@@ -23,7 +23,7 @@ export const WidgetAdd = observer(({
   widgets,
   dashboard,
   cells,
-  controls,
+  topics,
   isOpened,
   onClose,
 }: WidgetAddProps) => {
@@ -191,7 +191,7 @@ export const WidgetAdd = observer(({
             ? { id: '', name: '', description: '', cells: [], compact: false } as any
             : widgets.get(widgetId)}
           cells={cells}
-          controls={controls}
+          topics={topics}
           isOpened={!!isEditing}
           onClose={() => {
             setIsEditing(false);

@@ -1,3 +1,4 @@
+import { type Option } from '@/components/dropdown';
 import { type Widget } from '@/stores/dashboards/widget';
 import { type Cell } from '@/stores/devices';
 
@@ -14,7 +15,7 @@ export interface WidgetEditProps {
   widget: Widget;
   cells: Map<string, Cell | CellSimple>;
   isOpened: boolean;
-  controls: any;
+  topics: Option<string>[];
   onClose: () => void;
   onSave: (data: any) => void;
 }
