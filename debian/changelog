@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.208.1) stable; urgency=medium
+
+  * Fix widget's alert cell name redefinition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 14 May 2026 12:30:00 +0300
+
 wb-mqtt-homeui (2.208.0) stable; urgency=medium
 
   * Update scan page
