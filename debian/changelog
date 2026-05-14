@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.209.0) stable; urgency=medium
+wb-mqtt-homeui (2.208.2) stable; urgency=medium
 
   * Show min/max range band on history charts for switch channels
 
- -- Valerii Trovimov <valeriy.trofimov@wirenboard.com>  Tue, 14 May 2026 12:15:00 +0300
+ -- Valerii Trovimov <valeriy.trofimov@wirenboard.com>  Tue, 14 May 2026 14:46:00 +0300
+
+wb-mqtt-homeui (2.208.1) stable; urgency=medium
+
+  * Fix widget's alert cell name redefinition
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 14 May 2026 12:30:00 +0300
 
 wb-mqtt-homeui (2.208.0) stable; urgency=medium
 

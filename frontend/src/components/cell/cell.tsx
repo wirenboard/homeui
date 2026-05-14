@@ -28,7 +28,7 @@ export const CellContent = observer(({ cell, name, isCompact, extra, hideHistory
       case CellComponent.Text:
         return <CellText cell={cell} isCompact={isCompact} hideHistory={hideHistory} />;
       case CellComponent.Alert:
-        return <CellAlert cell={cell} hideHistory={hideHistory} />;
+        return <CellAlert cell={cell} name={name} hideHistory={hideHistory} />;
       case CellComponent.Switch:
         return <CellSwitch cell={cell} inverted={extra?.invert} hideHistory={hideHistory} />;
       case CellComponent.Button:
