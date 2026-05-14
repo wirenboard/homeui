@@ -33,13 +33,3 @@ export type ValueType = string | number | boolean | null;
 export type SendValueUpdate = (_deviceId: string, _controlId: string, _value: string) => Promise<void>;
 
 export type DeviceOption = Option<string>;
-
-export interface TopicOption {
-  value: string;
-  label: string;
-}
-
-export interface TopicGroup {
-  label: string;
-  options: TopicOption[];
-}

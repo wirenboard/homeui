@@ -1,9 +1,10 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { MqttClient } from '@/common/types';
+import { type Option } from '@/components/dropdown';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
-import type { TopicGroup, TopicOption, ValueType } from './types';
+import type { ValueType } from './types';
 
 export default class DevicesStore {
   public devices: Map<string, Device> = new Map();
@@ -110,11 +111,11 @@ export default class DevicesStore {
     this.#allDevicesTopics.delete(id);
   }
 
-  get topics(): TopicGroup[] {
-    const result: TopicGroup[] = [];
+  get topics(): Option<string>[] {
+    const result: Option<string>[] = [];
 
     for (const device of this.devices.values()) {
-      const options: TopicOption[] = [];
+      const options: Option<string>[] = [];
 
       for (const cellId of device.cells) {
         const cell = this.cells.get(cellId);
@@ -139,12 +140,15 @@ export default class DevicesStore {
 
   // For end-user pickers (scenarios, widgets). Alice uses topics directly so
   // that system controls remain exportable to the smart home.
-  get topicsWithoutSystem(): TopicGroup[] {
+  get topicsWithoutSystem(): Option<string>[] {
     return this.topics
-      .map((group) => ({
-        label: group.label,
-        options: group.options.filter((opt) => !opt.value.startsWith('system__')),
-      }))
+      .map((group) => {
+        const options = 'options' in group ? group.options ?? [] : [];
+        return {
+          label: group.label,
+          options: options.filter((opt) => !(opt.value as string).startsWith('system__')),
+        };
+      })
       .filter((group) => group.options.length > 0);
   }
 
