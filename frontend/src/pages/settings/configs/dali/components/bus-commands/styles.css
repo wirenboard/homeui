@@ -1,0 +1,109 @@
+.dali-busCommands .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dali-busCommands-editor {
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    min-height: 200px;
+    max-height: 360px;
+    background: var(--background-color);
+}
+
+.dali-busCommands-editor .cm-editor {
+    height: 280px;
+}
+
+.dali-busCommands-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.dali-busCommands-results {
+    border-top: 1px solid var(--border-color);
+    margin-top: -4px;
+}
+
+.dali-busCommands-results table {
+    table-layout: auto;
+}
+
+.dali-busCommands-results .wb-tableCell {
+    text-align: left;
+}
+
+.dali-busCommands-resultCell {
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--text-color);
+    background: transparent;
+    padding: 0;
+}
+
+.dali-busCommands-resultArrow {
+    font-family: monospace;
+    opacity: 0.5;
+    margin: 0 4px;
+}
+
+.dali-busCommands-resultRowError .wb-tableCell {
+    background: rgba(198, 40, 40, 0.06);
+}
+
+.dali-busCommands-catalog {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 70vh;
+    overflow: hidden;
+}
+
+.dali-busCommands-catalogLoading {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+}
+
+.dali-busCommands-catalogEmpty {
+    padding: 24px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.dali-busCommands-catalogTree {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.dali-busCommands-catalogCategoryLabel {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.dali-busCommands-catalogItemName {
+    font-family: monospace;
+    font-size: 0.95em;
+}
+
+@media (max-width: 990px) {
+    .dali-busCommands-editor .cm-editor {
+        height: 180px;
+    }
+
+    .dali-busCommands-catalogButton .button-text {
+        display: none;
+    }
+
+    .dali-busCommands-results .wb-tableWrapper {
+        overflow-x: visible;
+    }
+}

@@ -4,18 +4,25 @@ import { formatError } from '@/utils/formatError';
 import { BusStore } from './bus-store';
 import { DeviceStore } from './device-store';
 import { GatewayStore } from './gateway-store';
-import type { DaliProxy } from './types';
+import type { DaliBusProxy, DaliProxy } from './types';
 
 export class DaliStore {
   public gateways: GatewayStore[] = [];
   public isLoading = true;
   public errors: ErrorInfo[];
   #daliProxy: DaliProxy;
+  #daliBusProxy: DaliBusProxy;
   #whenMqttReady: () => Promise<void>;
   #mqttClient: any;
 
-  constructor(whenMqttReady: () => Promise<void>, daliProxy: DaliProxy, mqttClient: any) {
+  constructor(
+    whenMqttReady: () => Promise<void>,
+    daliProxy: DaliProxy,
+    daliBusProxy: DaliBusProxy,
+    mqttClient: any,
+  ) {
     this.#daliProxy = daliProxy;
+    this.#daliBusProxy = daliBusProxy;
     this.#whenMqttReady = whenMqttReady;
     this.#mqttClient = mqttClient;
 
@@ -36,6 +43,7 @@ export class DaliStore {
           gatewayStore.children = gateway.buses.map((bus) => {
             const busStore = new BusStore(
               this.#daliProxy,
+              this.#daliBusProxy,
               bus.id,
               bus.name,
               this.#mqttClient,

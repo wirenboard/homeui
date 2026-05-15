@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.208.3) stable; urgency=medium
+
+  * Add DALI bus manual command entry with catalog and autocomplete
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Fri, 15 May 2026 12:08:47 +0500
+
 wb-mqtt-homeui (2.208.2) stable; urgency=medium
 
   * Unify autocomplete fields
