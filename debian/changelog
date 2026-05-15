@@ -1,4 +1,4 @@
-wb-mqtt-homeui (2.208.3) stable; urgency=medium
+wb-mqtt-homeui (2.209.0) stable; urgency=medium
 
   * Add DALI bus manual command entry with catalog and autocomplete
 
