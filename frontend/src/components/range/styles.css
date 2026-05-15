@@ -108,6 +108,11 @@
     margin-right: 2px;
 }
 
+.range-container-no-label {
+    padding-top: 0;
+    height: auto;
+}
+
 .range-container-right {
     display: flex;
     align-items: center;

@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.209.0) stable; urgency=medium
+
+  * Add Kelvin input to DALI color temperature editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 15 May 2026 12:00:00 +0300
+
 wb-mqtt-homeui (2.208.2) stable; urgency=medium
 
   * Unify autocomplete fields
