@@ -240,10 +240,13 @@ class DeviceInfoHandlerTests(unittest.TestCase):
         self.context.certificate_thread.get_certificate_state.return_value = CertificateState.VALID
         self.context.security_check_thread = MagicMock()
         mock_file = mock_open(read_data="SUITE=stable\nRELEASE_NAME=wb-2602\n")
-        with patch("wb.homeui_backend.main.open", mock_file):
+        with patch("wb.homeui_backend.main.open", mock_file), patch(
+            "wb.homeui_backend.main.get_rootfs_expanded", return_value=True
+        ) as get_rootfs_expanded_mock:
             response = device_info_handler(self.request, self.context)
 
         mock_file.assert_called_once_with("/usr/lib/wb-release", "r", encoding="utf-8")
+        get_rootfs_expanded_mock.assert_called_once_with()
 
         self.assertEqual(response.status, 200)
         self.assertEqual(
@@ -261,6 +264,7 @@ class DeviceInfoHandlerTests(unittest.TestCase):
                 "https_cert": "valid",
                 "release_suite": "stable",
                 "release_name": "wb-2602",
+                "rootfs_expanded": True,
             },
         )
 
