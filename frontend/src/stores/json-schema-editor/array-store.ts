@@ -1,6 +1,6 @@
 import { makeObservable, action, computed, observable } from 'mobx';
 import { MistypedValue } from './mistyped-value';
-import { StoreBuilder } from './store-builder';
+import { type StoreBuilder } from './store-builder';
 import type { JsonSchema, PropertyStore, JsonArray } from './types';
 
 export class ArrayStore implements PropertyStore {
@@ -21,6 +21,7 @@ export class ArrayStore implements PropertyStore {
     this.schema = schema;
     this.required = required;
     this._builder = builder;
+
     if (schema.format === 'wb-byte-array') {
       // Special handling of byte arrays
       this._itemsSchema = (schema.items as JsonSchema).oneOf[0];
@@ -29,7 +30,27 @@ export class ArrayStore implements PropertyStore {
     }
 
     if (initialValue === undefined || schema.items === undefined) {
-      this.isUndefined = true;
+      if (required) {
+        if (Array.isArray(this._itemsSchema)) {
+          this._itemsSchema.forEach((itemSchema) => {
+            const itemStore = this._builder.createStore(itemSchema as JsonSchema, undefined, false);
+            if (itemStore) {
+              itemStore.setDefault();
+              this.items.push(itemStore);
+            }
+          });
+        } else {
+          for (let i = 0; i < (schema.minItems ?? 0); i++) {
+            const itemStore = this._builder.createStore(this._itemsSchema as JsonSchema, undefined, false);
+            if (itemStore) {
+              itemStore.setDefault();
+              this.items.push(itemStore);
+            }
+          }
+        }
+      } else {
+        this.isUndefined = true;
+      }
     } else {
       if (Array.isArray(initialValue)) {
         initialValue.forEach((item, index) => {
@@ -53,6 +74,7 @@ export class ArrayStore implements PropertyStore {
       reset: action,
       setUndefined: action,
       setDefault: action,
+      setValue: action,
       addItem: action,
       removeItem: action,
     });
@@ -91,13 +113,42 @@ export class ArrayStore implements PropertyStore {
 
   setDefault() {
     if (Array.isArray(this._itemsSchema)) {
-      this.items.forEach((item) => item.setDefault());
+      if (this.items.length === 0) {
+        this._itemsSchema.forEach((itemSchema) => {
+          const itemStore = this._builder.createStore(itemSchema as JsonSchema, undefined, false);
+          if (itemStore) {
+            itemStore.setDefault();
+            this.items.push(itemStore);
+          }
+        });
+        this._hasStructureChanges = true;
+      } else {
+        this.items.forEach((item) => item.setDefault());
+      }
+      this.isUndefined = false;
       return;
     }
     if (this.items.length) {
       this.items = [];
       this._hasStructureChanges = true;
     }
+  }
+
+  setValue(value: unknown): void {
+    if (!Array.isArray(value)) {
+      this.setUndefined();
+      return;
+    }
+    this.items = [];
+    value.forEach((item, index) => {
+      const itemSchema = Array.isArray(this._itemsSchema) ? this._itemsSchema[index] : this._itemsSchema;
+      const itemStore = this._builder.createStore(itemSchema as JsonSchema, item, false);
+      if (itemStore) {
+        this.items.push(itemStore);
+      }
+    });
+    this.isUndefined = false;
+    this._hasStructureChanges = true;
   }
 
   commit() {

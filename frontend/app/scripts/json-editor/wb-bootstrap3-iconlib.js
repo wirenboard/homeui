@@ -1,6 +1,6 @@
 'use strict';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 const glyphiconIconPrefix = 'glyphicon glyphicon-';
 const glyphiconMapping = {
@@ -32,7 +32,7 @@ const fontawesomeMapping = {
   'old-settings': 'fas fa-bars',
 };
 
-function makeWbBootstrap3Iconlib() {
+export function makeWbBootstrap3Iconlib() {
   return class extends JSONEditor.AbstractIconLib {
     getIconClass(key) {
       if (!key) {
@@ -45,5 +45,3 @@ function makeWbBootstrap3Iconlib() {
     }
   };
 }
-
-export default makeWbBootstrap3Iconlib;

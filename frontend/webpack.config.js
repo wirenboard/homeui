@@ -58,6 +58,7 @@ module.exports = (function makeWebpackConfig() {
       __IS_PROD__: JSON.stringify(isProd),
       __DISABLE_HTTPS_CHECK__: process.env.DISABLE_HTTPS_CHECK === 'true',
       __APP_NAME__: JSON.stringify(process.env.APP_NAME),
+      __APP_SHORT_NAME__: JSON.stringify(process.env.APP_SHORT_NAME),
       __LOGO__: JSON.stringify(process.env.LOGO),
       __LOGO_COMPACT__: JSON.stringify(process.env.LOGO_COMPACT),
       __HIDE_COMPACT_MENU__: process.env.HIDE_COMPACT_MENU === 'true',
@@ -76,9 +77,6 @@ module.exports = (function makeWebpackConfig() {
       minify: false,
 
       // Options passed to template
-
-      // Set to true when building for stable release
-      stableRelease: false,
     }),
   ];
 
@@ -184,13 +182,7 @@ module.exports = (function makeWebpackConfig() {
         'angular-touch',
         'angular-sanitize',
         './3rdparty/ui-bootstrap',
-        'spectrum-colorpicker',
-        'angular-spectrum-colorpicker',
         'ui-select',
-        'angular-elastic/elastic',
-        'angular-xeditable',
-        'angular-sortable-view/src/angular-sortable-view',
-        'angular-rangeslider',
         'ng-toast',
 
         'angular-translate',
@@ -221,7 +213,7 @@ module.exports = (function makeWebpackConfig() {
           chunks: 'all',
         },
         plotly: {
-          test: /[\\/]node_modules[\\/]plotly\.js-basic-dist-min[\\/]/,
+          test: /[\\/]node_modules[\\/](plotly\.js-basic-dist-min|react-plotly\.js|plotly\.js-locales)[\\/]/,
           name: 'plotly',
           chunks: 'all',
         },
@@ -231,7 +223,7 @@ module.exports = (function makeWebpackConfig() {
           chunks: 'all',
         },
         jsoneditor: {
-          test: /[\\/]app[\\/]3rdparty[\\/]jsoneditor.js/,
+          test: /[\\/]node_modules[\\/]@wirenboard[\\/]json-editor[\\/]dist[\\/]jsoneditor\.js/,
           name: 'jsoneditor',
           chunks: 'all',
         },
@@ -313,7 +305,7 @@ module.exports = (function makeWebpackConfig() {
 
       // Output path from the view of the page
       // Uses dev-server in development
-      publicPath: 'http://localhost:8080/',
+      publicPath: '/',
 
       // Filename for entry points
       filename: '[name].bundle.js',
@@ -355,6 +347,11 @@ module.exports = (function makeWebpackConfig() {
     proxy: [
       {
         context: [
+          '/fwupdate/upload',
+          '/fwupdate/download/rootfs',
+          '/fwupdate/download/configs',
+          '/fwupdate/download/everything',
+          '/fwupdate/factoryreset',
           '/auth/check_config',
           '/auth/users',
           '/auth/login',
@@ -364,7 +361,10 @@ module.exports = (function makeWebpackConfig() {
           '/device/info',
           '/api/https/request_cert',
           '/api/https',
-          '/api/integrations/alice'
+          '/api/check',
+          '/api/integrations/alice',
+          '/ui/menu',
+          '/diag',
         ],
         target: process.env.MQTT_BROKER_URI,
         ws: true,

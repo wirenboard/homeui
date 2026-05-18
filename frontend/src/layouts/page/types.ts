@@ -1,4 +1,18 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
+
+export interface ErrorInfo {
+  variant?: string;
+  text?: string | ReactElement;
+  code?: number;
+  onClose?: () => void;
+}
+
+export interface LoadingOptions {
+  loader?: 'spinner' | 'progress';
+  label?: string;
+  progress?: number;
+  showActions?: boolean;
+}
 
 export interface PageProps {
   title: string;
@@ -6,10 +20,13 @@ export interface PageProps {
   editingTitlePlaceholder?: string;
   hasRights: boolean;
   isLoading?: boolean;
+  loadingOptions?: LoadingOptions;
   isHideHeader?: boolean;
   stickyHeader?: boolean;
   actions?: ReactElement;
-  errors?: { variant?: string; text?: string; code?: number }[];
+  titleArea?: ReactElement;
+  footer?: ReactElement;
+  errors?: ErrorInfo[];
   infoLink?: string;
   onTitleChange?: (_title: string) => void;
   onTitleEditEnable?: () => void;

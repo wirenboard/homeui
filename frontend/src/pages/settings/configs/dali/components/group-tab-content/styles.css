@@ -1,0 +1,20 @@
+.dali-groupParam {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dali-groupParam-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dali-groupParam-editor {
+    flex: 1;
+    min-width: 0;
+}
+
+.dali-groupParam-editor .input {
+    width: 100%;
+}

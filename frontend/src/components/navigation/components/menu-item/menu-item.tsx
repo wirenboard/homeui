@@ -7,12 +7,13 @@ import {
   shift, useClick,
   useDismiss,
   useFloating, useInteractions,
-  useRole
+  useRole,
 } from '@floating-ui/react';
 import classNames from 'classnames';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from '@/components/tooltip';
+import { focusToMainContent } from '@/utils/focus-content';
 import type { MenuItemProps } from './types';
 import './styles.css';
 
@@ -26,6 +27,8 @@ export const MenuItem = ({
   activePopup,
   closeMobileMenu,
   setActivePopup,
+  isMenuFocused,
+  setIsMenuFocused,
 }: MenuItemProps) => {
   const { t } = useTranslation();
   const Component = item.url ? 'a' : 'button';
@@ -72,6 +75,19 @@ export const MenuItem = ({
     </ul>
   );
 
+  const isOpened = useMemo(() => {
+    return !!item.children?.length && !isMenuCompact && openedSubmenus.includes(item.id);
+  }, [item.children, isMenuCompact, openedSubmenus]);
+
+  const isActive = useMemo(() => {
+    return (id ? item.url === `${page}/${id}` : item.url === page) ||
+      (isMenuCompact &&
+        item.children?.some((subItem) =>
+          (id ? subItem.url === `${page}/${id}` : subItem.url === page) ||
+            openedSubmenus.includes(subItem.id)
+        ));
+  }, [id, item, isMenuCompact]);
+
   return (item.isShow === undefined || item.isShow) && (
     <li>
       <Tooltip
@@ -83,12 +99,14 @@ export const MenuItem = ({
       >
         <Component
           href={item.url && `#!/${item.url}`}
+          aria-label={t(item.label)}
           className={classNames('menuItem-link', {
-            'menuItem-linkActive': id ? item.url === `${page}/${id}` : item.url === page,
+            'menuItem-linkActive': isActive,
+            'menuItem-linkWithSubmenu': !!item.children?.length,
           })}
+          tabIndex={isMenuFocused || isActive ? null : -1}
           draggable={false}
           ref={refs.setReference}
-          {...getReferenceProps()}
           onClick={() => {
             if (!isMenuCompact) {
               const updatedValue = openedSubmenus.includes(item.id)
@@ -99,9 +117,14 @@ export const MenuItem = ({
 
             if (Component === 'a') {
               closeMobileMenu();
+              // TODO: move to Page onMounted after full rewrite
+              focusToMainContent(300);
             }
           }}
-          {...getReferenceProps()}
+          onFocus={() => setIsMenuFocused(true)}
+          onBlur={() => setIsMenuFocused(false)}
+          {...(isMenuCompact ? getReferenceProps() : {})}
+          aria-expanded={item.children?.length ? isOpened : null}
         >
           {item?.icon && (
             <item.icon className="menuItem-icon" />
@@ -109,7 +132,7 @@ export const MenuItem = ({
 
           {!isMenuCompact && t(item.label)}
 
-          {item.children?.length && activePopup === item.id && (
+          {!!item.children?.length && activePopup === item.id && (
             <>
               <div
                 ref={refs.setFloating}
@@ -124,7 +147,7 @@ export const MenuItem = ({
         </Component>
       </Tooltip>
 
-      {!!item.children?.length && !isMenuCompact && openedSubmenus.includes(item.id) && (
+      {isOpened && (
         <ul className={classNames('navigation-list', 'menuItem-subList')}>
           {item.children.map((item, i) => (
             <MenuItem
@@ -137,6 +160,8 @@ export const MenuItem = ({
               activePopup={activePopup}
               setActivePopup={setActivePopup}
               closeMobileMenu={closeMobileMenu}
+              isMenuFocused={isMenuFocused}
+              setIsMenuFocused={setIsMenuFocused}
               key={i}
             />
           ))}

@@ -1,6 +1,14 @@
 .web-ui-settings-pageContent {
-    display: flex;
-    flex-direction: row;
+    display: grid;
     gap: 10px;
-    flex-wrap: wrap;
+    grid-template-columns: 1fr 1fr;
+
+    @media(max-width: 900px) {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.web-ui-settings-pageContent > :last-child {
+    grid-column: 1 / -1;
 }

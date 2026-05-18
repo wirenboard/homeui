@@ -1,0 +1,54 @@
+.dali {
+    display: flex;
+    gap: 12px;
+    height: 100%;
+    overflow: auto;
+    flex-grow: 1;
+}
+
+.dali .card {
+    max-width: initial;
+    margin-bottom: 0px;
+}
+
+.dali-list {
+    width: 100%;
+    overflow-y: auto;
+
+    @media (min-width: 991px) {
+        width: 280px;
+    }
+}
+
+.dali-content {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    width: 100%;
+    border-radius: var(--card-border-radius);
+    background: var(--background-accent-color-hover);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: scroll;
+}
+
+.dali-contentLoader {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dali-deviceToolbar {
+    position: sticky;
+    top: -12px;
+    z-index: 1;
+    margin: -12px -12px 0;
+    padding: 12px;
+    background: var(--background-accent-color-hover);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dali-resetWarning {
+    margin-top: 12px;
+}

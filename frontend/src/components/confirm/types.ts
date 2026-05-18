@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 export interface ConfirmationProps {
   className?: string;
@@ -6,11 +6,14 @@ export interface ConfirmationProps {
   heading?: string;
   width?: number;
   headerActions?: ReactElement;
-  confirmCallback: () => Promise<void> | void;
-  closeCallback: () => void;
+  footerActions?: ReactElement;
+  confirmCallback?: () => Promise<void> | void;
+  closeCallback?: () => void;
   isDisabled?: boolean;
   isPreventSubmit?: boolean;
+  isLoading?: boolean;
   isOverlayCloseDisabled?: boolean;
-  variant?: 'default' | 'danger';
+  variant?: 'primary' | 'danger';
   acceptLabel?: string;
+  cancelLabel?: string;
 }

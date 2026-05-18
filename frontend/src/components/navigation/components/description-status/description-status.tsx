@@ -1,18 +1,20 @@
 import classNames from 'classnames';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { Tooltip } from '@/components/tooltip';
 import type { DescriptionStatusProps } from './types';
 import './styles.css';
 
-export const DescriptionStatus = ({ mqttClient, isCompact, description }: DescriptionStatusProps) => {
+export const DescriptionStatus = ({ isConnected, isCompact, description }: DescriptionStatusProps) => {
   const { t } = useTranslation();
   const isDesktop = useMediaQuery({ minWidth: 768 });
-  const isConnected = useMemo(() => mqttClient.isConnected(), [mqttClient.isConnected()]);
 
   return (
-    <div className="descriptionStatus">
+    <div
+      className={classNames('descriptionStatus', {
+        'descriptionStatus-mobile': !isDesktop,
+      })}
+    >
       {isCompact
         ? (
           <Tooltip
@@ -32,7 +34,7 @@ export const DescriptionStatus = ({ mqttClient, isCompact, description }: Descri
         )
         : (
           <>
-            {description && isDesktop
+            {description
               ? (
                 <>
                   <div className="descriptionStatus-description">

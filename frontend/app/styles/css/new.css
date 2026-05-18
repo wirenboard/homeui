@@ -7,18 +7,6 @@
   opacity: 0.5;
 }
 
-.custom-tooltip .tooltip-inner {
-  max-width: 300px;
-}
-
-.custom-tooltip.cell-name-tooltip {
-  left: 0% !important;
-}
-
-.custom-tooltip.cell-name-tooltip .tooltip-arrow {
-  left: 20px !important;
-}
-
 .show-on-parent-hover {
   display: none;
 }
@@ -84,65 +72,6 @@ div[uib-datepicker-popup-wrap] {
 .relative {
   position: relative;
 }
-.progress-history{
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 300px;
-}
-.history-page select{
-  margin-bottom: 5px;
-}
-.history-page .progress {
-  margin-bottom: 1px;
-  height: 32px;
-}
-.history-page .progress-bar > div {
-  font-size: 11px;
-  margin-top: 7px;
-}
-
-@media (max-width: 991px){
-  .history-page .progress {
-    height: 4px;
-    margin-bottom: 1px;
-  }
-  .history-page select{
-    margin-bottom: 1px;
-  }
-  .progress-bar {
-    font-size: 1px;
-  }
-}
-
-.cell.cell-value {
-  display: flex;
-}
-
-.cell-value .value {
-  margin-right: -10px;
-  width: 110px;
-  display: flex;
-  align-items: center;
-}
-
-.cell-value span{
-  display: inline-block;
-  vertical-align: bottom;
-}
-
-.value .int {
-  display: inline-block;
-  width: 50px;
-}
-
-.value .int span {
-  float: right;
-}
-
-.cell-value .units {
-  width: 20px;
-}
 
 .value .decimal {
   width: 6ch;
@@ -194,32 +123,6 @@ a[ng-click] {
 a[ng-click]:hover {
   text-decoration: none;
   cursor: pointer;
-}
-
-.mqtt-table-wrapper {
-  height: calc(100% - 120px);
-  overflow-y: auto !important;
-  border-top: 1px solid #ddd;
-}
-
-.mqtt-table-wrapper table {
-  border-top: 0 !important;
-  margin-top: 0 !important;
-}
-
-.mqtt-table-wrapper thead {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  box-shadow: 6px -6px #ddd inset;
-}
-
-.mqtt-table-value {
-  max-width: 300px;
-  width: max-content;
-  word-break: break-all;
-  word-wrap: break-word;
-  white-space: break-spaces;
 }
 
 .page-header {

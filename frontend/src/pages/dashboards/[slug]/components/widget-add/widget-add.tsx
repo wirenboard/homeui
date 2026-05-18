@@ -8,12 +8,12 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Cell } from '@/components/cell';
-import { Confirm } from '@/components/confirm';
 import { Dialog } from '@/components/dialog';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { TabContent, Tabs, useTabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
 import { Widget } from '@/stores/dashboards';
+import { WidgetDelete } from '../widget-delete';
 import { WidgetEdit } from '../widget-edit';
 import type { WidgetAddProps } from './types';
 import './styles.css';
@@ -23,7 +23,7 @@ export const WidgetAdd = observer(({
   widgets,
   dashboard,
   cells,
-  controls,
+  topics,
   isOpened,
   onClose,
 }: WidgetAddProps) => {
@@ -79,6 +79,7 @@ export const WidgetAdd = observer(({
             <Button
               className="widgetAdd-createButton"
               label={t('widget.buttons.create-widget')}
+              aria-haspopup="dialog"
               onClick={createWidget}
             />
 
@@ -110,35 +111,38 @@ export const WidgetAdd = observer(({
                   <div className="widgetAdd-actions">
                     <Tooltip text={t('widget.buttons.delete')} placement="bottom">
                       <Button
-                        variant="secondary"
+                        variant="danger"
                         size="small"
+                        aria-label={t('widget.buttons.delete')}
                         icon={<TrashIcon />}
+                        aria-haspopup="dialog"
                         onClick={() => setIsConfirmDelete(true)}
                       />
                     </Tooltip>
                     <Tooltip text={t('widget.buttons.copy')} placement="bottom">
                       <Button
-                        variant="secondary"
                         size="small"
+                        aria-label={t('widget.buttons.copy')}
                         icon={<CopyIcon />}
                         onClick={copyWidget}
                       />
                     </Tooltip>
                     <Tooltip text={t('widget.buttons.edit')} placement="bottom">
                       <Button
-                        variant="secondary"
                         size="small"
+                        aria-label={t('widget.buttons.edit')}
                         icon={<EditIcon />}
+                        aria-haspopup="dialog"
                         onClick={() => setIsEditing(!isEditing)}
                       />
                     </Tooltip>
                     <Button
-                      label={dashboard.hasWidget(widget.id)
+                      label={dashboard?.hasWidget(widget.id)
                         ? t('widget.buttons.exists-on-dashboard')
                         : t('widget.buttons.add')}
-                      icon={dashboard.hasWidget(widget.id) && <CheckIcon />}
+                      icon={dashboard?.hasWidget(widget.id) && <CheckIcon />}
                       size="small"
-                      disabled={dashboard.hasWidget(widget.id)}
+                      disabled={dashboard?.hasWidget(widget.id)}
                       onClick={() => dashboard.addWidget(widget.id)}
                     />
                   </div>
@@ -187,7 +191,7 @@ export const WidgetAdd = observer(({
             ? { id: '', name: '', description: '', cells: [], compact: false } as any
             : widgets.get(widgetId)}
           cells={cells}
-          controls={controls}
+          topics={topics}
           isOpened={!!isEditing}
           onClose={() => {
             setIsEditing(false);
@@ -201,24 +205,13 @@ export const WidgetAdd = observer(({
       )}
 
       {isConfirmDelete && widgets.get(widgetId) && (
-        <Confirm
+        <WidgetDelete
           isOpened={isConfirmDelete}
-          heading={t('widget.labels.delete')}
-          variant="danger"
-          closeCallback={() => setIsConfirmDelete(false)}
-          confirmCallback={deleteWidget}
-        >
-          {!!widgets.get(widgetId).associatedDashboards?.length && (
-            <>
-              <p>{t('widget.labels.warning')}</p>
-              <ul className="widgetAdd-list">
-                {widgets.get(widgetId).associatedDashboards
-                  .map((dashboard) => (<li key={dashboard.id}>{dashboard.name}</li>))}
-              </ul>
-            </>
-          )}
-          <p>{t('widget.prompt.delete')} <b>{widgets.get(widgetId).name}</b>?</p>
-        </Confirm>
+          name={widgets.get(widgetId).name}
+          associatedDashboards={widgets.get(widgetId).associatedDashboards}
+          onClose={() => setIsConfirmDelete(false)}
+          onDelete={deleteWidget}
+        />
       )}
     </>
   );

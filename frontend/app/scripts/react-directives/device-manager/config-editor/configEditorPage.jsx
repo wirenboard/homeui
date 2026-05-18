@@ -1,13 +1,14 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../../common';
+import { DeviceTab, DeviceTabContent } from '@/pages/settings/device-manager';
+import { Button } from '@/components/button'
+import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import ConfirmModal from '../../components/modals/confirmModal';
 import FormModal from '../../components/modals/formModal';
 import { SelectModal } from '../../components/modals/selectModal';
-import { PageWrapper, PageBody, PageTitle } from '../../components/page-wrapper/pageWrapper';
 import { VerticalTabs, TabContent, TabItem, TabPane, TabsList } from '../../components/tabs/tabs';
-import { DeviceTab, DeviceTabContent } from './deviceTab';
 import { PortTab, PortTabContent } from './portTab';
 import { SettingsTab, SettingsTabContent } from './settingsPage';
 import { TabType } from './tabsStore';
@@ -46,7 +47,8 @@ function getTabPaneContent(
   onSearchDisconnectedDevice,
   onUpdateFirmware,
   onUpdateBootloader,
-  onUpdateComponents
+  onUpdateComponents,
+  onReadRegisters,
 ) {
   if (tab.type === TabType.PORT) {
     return (
@@ -72,6 +74,7 @@ function getTabPaneContent(
         onUpdateBootloader={onUpdateBootloader}
         onUpdateComponents={onUpdateComponents}
         onDeletePortDevices={onDeletePortDevices}
+        onReadRegisters={onReadRegisters}
       />
     );
   }
@@ -91,7 +94,8 @@ function makeTabPanes(
   onSearchDisconnectedDevice,
   onUpdateFirmware,
   onUpdateBootloader,
-  onUpdateComponents
+  onUpdateComponents,
+  onReadRegisters,
 ) {
   return tabs.map((tab, index) => {
     return (
@@ -107,7 +111,8 @@ function makeTabPanes(
           onSearchDisconnectedDevice,
           onUpdateFirmware,
           onUpdateBootloader,
-          onUpdateComponents
+          onUpdateComponents,
+          onReadRegisters,
         )}
       </TabPane>
     );
@@ -130,7 +135,8 @@ const PageTabs = observer(
     onSearchDisconnectedDevice,
     onUpdateFirmware,
     onUpdateBootloader,
-    onUpdateComponents
+    onUpdateComponents,
+    onReadRegisters,
   }) => {
     const { t } = useTranslation();
     return (
@@ -145,8 +151,10 @@ const PageTabs = observer(
           <TabsList className="device-list">{makeTabItems(tabs)}</TabsList>
           {showButtons && (
             <Button
-              additionalStyles="add-port-button"
+              variant="secondary"
+              className="add-port-button"
               label={t('device-manager.buttons.add-port')}
+              aria-haspopup="dialog"
               onClick={onAddPort}
             />
           )}
@@ -168,7 +176,8 @@ const PageTabs = observer(
             onSearchDisconnectedDevice,
             onUpdateFirmware,
             onUpdateBootloader,
-            onUpdateComponents
+            onUpdateComponents,
+            onReadRegisters,
           )}
         </TabContent>
       </VerticalTabs>
@@ -180,7 +189,6 @@ const SaveSettingsButton = ({ onClick, disabled }) => {
   const { t } = useTranslation();
   return (
     <Button
-      type="success"
       label={t('device-manager.buttons.save')}
       disabled={disabled}
       onClick={onClick}
@@ -191,19 +199,20 @@ const SaveSettingsButton = ({ onClick, disabled }) => {
 const AddDevicesButtonsPanel = ({ allowAddDevice, onAddDevice, onAddWbDevice }) => {
   const { t } = useTranslation();
   return (
-    <div className="add-devices-panel">
+    <>
       <Button
-        type="primary"
         label={t('device-manager.buttons.add-wb-device')}
         disabled={!allowAddDevice}
         onClick={onAddWbDevice}
       />
       <Button
         label={t('device-manager.buttons.add-custom-device')}
+        aria-haspopup="dialog"
+        variant="secondary"
         disabled={!allowAddDevice}
         onClick={onAddDevice}
       />
-    </div>
+    </>
   );
 };
 
@@ -225,6 +234,7 @@ const HeaderButtons = observer(
       }
       return (
         <Button
+          variant="secondary"
           label={t('device-manager.buttons.to-port-list')}
           onClick={() => {
             mobileModeStore.showTabsPanel();
@@ -256,64 +266,72 @@ const PageHeader = observer(
     mobileModeStore,
   }) => {
     const { t } = useTranslation();
+    if (!showButtons) {
+      return null;
+    }
+
     return (
-      <PageTitle title={t('device-manager.labels.title')}>
-        {showButtons && (
-          <HeaderButtons
-            allowSave={allowSave}
-            allowAddDevice={allowAddDevice}
-            mobileModeStore={mobileModeStore}
-            onSave={onSave}
-            onAddDevice={onAddDevice}
-            onAddWbDevice={onAddWbDevice}
-          />
-        )}
-      </PageTitle>
-    );
+      <HeaderButtons
+        allowSave={allowSave}
+        allowAddDevice={allowAddDevice}
+        mobileModeStore={mobileModeStore}
+        onSave={onSave}
+        onAddDevice={onAddDevice}
+        onAddWbDevice={onAddWbDevice}
+      />
+    )
   }
 );
 
 const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnectedDevice }) => {
+  const { t } = useTranslation();
+
   return (
-    <PageWrapper
-      error={pageStore.pageWrapperStore.error}
-      className={classNames('device-manager-page', { mobile: pageStore.tabs.mobileModeStore.inMobileMode })}
-      accessLevelStore={pageStore.accessLevelStore}
-    >
+    <>
+      <PageLayout
+        title={t('device-manager.labels.title')}
+        hasRights={authStore.hasRights(UserRole.Admin)}
+        errors={pageStore.pageWrapperStore.error ? [{ variant: 'danger', text: pageStore.pageWrapperStore.error }] : []}
+        isLoading={pageStore.pageWrapperStore.loading}
+        actions={
+          <PageHeader
+            showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
+            allowSave={pageStore.allowSave}
+            allowAddDevice={pageStore.tabs.hasPortTabs}
+            mobileModeStore={pageStore.tabs.mobileModeStore}
+            onSave={() => pageStore.save()}
+            onAddDevice={() => pageStore.addDevice()}
+            onAddWbDevice={onAddWbDevice}
+          />
+      }
+      >
+        <div className={classNames('device-manager-page', { mobile: pageStore.tabs.mobileModeStore.inMobileMode })}>
+          {!pageStore.tabs.isEmpty && (
+            <PageTabs
+              tabs={pageStore.tabs.items}
+              selectedIndex={pageStore.tabs.selectedTabIndex}
+              showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
+              deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeDropdownOptions}
+              mobileModeStore={pageStore.tabs.mobileModeStore}
+              onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
+              onDeleteTab={() => pageStore.deleteTab()}
+              onDeletePortDevices={(tab) => pageStore.deletePortDevices(tab)}
+              onCopyTab={() => pageStore.copyTab()}
+              onAddPort={() => pageStore.addPort()}
+              onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
+              onSearchDisconnectedDevice={onSearchDisconnectedDevice}
+              onUpdateFirmware={() => pageStore.updateFirmware()}
+              onUpdateBootloader={() => pageStore.updateBootloader()}
+              onUpdateComponents={() => pageStore.updateComponents()}
+              onReadRegisters={(tab, isForce) => pageStore.readRegisters(tab, isForce)}
+            />
+          )}
+        </div>
+      </PageLayout>
       <SelectModal {...pageStore.selectModalState} />
       <ConfirmModal {...pageStore.confirmModalState} />
       <FormModal {...pageStore.formModalState} />
-      <PageHeader
-        showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
-        allowSave={pageStore.allowSave}
-        allowAddDevice={pageStore.tabs.hasPortTabs}
-        mobileModeStore={pageStore.tabs.mobileModeStore}
-        onSave={() => pageStore.save()}
-        onAddDevice={() => pageStore.addDevice()}
-        onAddWbDevice={onAddWbDevice}
-      />
-      <PageBody loading={pageStore.pageWrapperStore.loading}>
-        {!pageStore.tabs.isEmpty && (
-          <PageTabs
-            tabs={pageStore.tabs.items}
-            selectedIndex={pageStore.tabs.selectedTabIndex}
-            showButtons={!pageStore.pageWrapperStore.loading && pageStore.loaded}
-            deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeSelectOptions}
-            mobileModeStore={pageStore.tabs.mobileModeStore}
-            onSelect={(index, lastIndex) => pageStore.tabs.onSelectTab(index, lastIndex)}
-            onDeleteTab={() => pageStore.deleteTab()}
-            onDeletePortDevices={(tab) => pageStore.deletePortDevices(tab)}
-            onCopyTab={() => pageStore.copyTab()}
-            onAddPort={() => pageStore.addPort()}
-            onDeviceTypeChange={(tab, type) => pageStore.changeDeviceType(tab, type)}
-            onSearchDisconnectedDevice={onSearchDisconnectedDevice}
-            onUpdateFirmware={() => pageStore.updateFirmware()}
-            onUpdateBootloader={() => pageStore.updateBootloader()}
-            onUpdateComponents={() => pageStore.updateComponents()}
-          />
-        )}
-      </PageBody>
-    </PageWrapper>
+    </>
   );
 });
 

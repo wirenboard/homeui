@@ -19,7 +19,11 @@ export class BooleanStore implements PropertyStore {
     if (typeof initialValue === 'boolean') {
       this.value = initialValue;
     } else if (initialValue === undefined) {
-      this.value = schema.options?.wb?.show_editor ? getDefaultBooleanValue(schema) : undefined;
+      if (required || schema.options?.wb?.show_editor) {
+        this.value = getDefaultBooleanValue(schema) ?? false;
+      } else {
+        this.value = undefined;
+      }
     } else {
       this.value = new MistypedValue(initialValue);
     }
@@ -54,8 +58,12 @@ export class BooleanStore implements PropertyStore {
     this.error = undefined;
   }
 
-  setValue(value: boolean): void {
-    this.value = value;
+  setValue(value: unknown): void {
+    if (typeof value !== 'boolean') {
+      this.value = new MistypedValue(value);
+    } else {
+      this.value = value;
+    }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }
@@ -67,7 +75,7 @@ export class BooleanStore implements PropertyStore {
   }
 
   setDefault(): void {
-    this.setValue(getDefaultBooleanValue(this.schema));
+    this.setValue(getDefaultBooleanValue(this.schema) ?? false);
   }
 
   get hasErrors(): boolean {

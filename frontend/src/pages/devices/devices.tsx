@@ -12,10 +12,11 @@ import { ColumnsWrapper } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
-import { DeviceStore } from '@/stores/device';
+import { authStore, UserRole } from '@/stores/auth';
+import { type DevicesStore } from '@/stores/devices';
 import './styles.css';
 
-const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRights: boolean }) => {
+const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
   const { t } = useTranslation();
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
 
@@ -25,20 +26,24 @@ const DevicesPage = observer(({ store, hasRights }: { store: DeviceStore; hasRig
 
   const actions = [
     {
-      title: t('devices.labels.delete'), action: (id: string) => setDeletedDeviceId(id), icon: TrashIcon,
+      title: t('devices.labels.delete'),
+      action: (id: string) => setDeletedDeviceId(id),
+      icon: TrashIcon,
+      isPopupAction: true,
     },
   ];
 
   return (
     <PageLayout
       title={t('devices.title')}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Operator)}
       actions={
         <Tooltip
           text={store.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
         >
           <Button
             variant="secondary"
+            aria-label={store.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
             icon={store.hasOpenedDivices ? <CollapseIcon /> : <ExpandIcon />}
             onClick={store.toggleDevices}
           />

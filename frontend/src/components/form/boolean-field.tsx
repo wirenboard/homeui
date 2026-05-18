@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { Checkbox } from '@/components/checkbox';
 import { Switch } from '@/components/switch';
 import { FormField } from './form-field';
 import type { BooleanFieldProps } from './types';
@@ -9,6 +10,9 @@ export const BooleanField = ({
   description,
   error,
   isDisabled,
+  view = 'switch',
+  indeterminate,
+  formStyle,
   onChange,
 }: BooleanFieldProps) => {
   const inputId = useId();
@@ -20,17 +24,31 @@ export const BooleanField = ({
       error={error}
       descriptionId={descriptionId}
       errorId={errorId}
+      style={formStyle}
     >
-      <div className="form-fieldSwitch">
-        <Switch
-          id={inputId}
-          value={value}
-          ariaLabel={title}
-          isDisabled={isDisabled}
-          onChange={onChange}
-        />
+      <label className="form-fieldSwitch">
+        {view === 'switch' ? (
+          <Switch
+            id={inputId}
+            value={value}
+            ariaLabel={title}
+            isDisabled={isDisabled}
+            ariaDescribedby={descriptionId}
+            onChange={onChange}
+          />
+        ) : (
+          <Checkbox
+            id={inputId}
+            checked={value}
+            ariaLabel={title}
+            isDisabled={isDisabled}
+            indeterminate={indeterminate}
+            ariaDescribedby={descriptionId}
+            onChange={onChange}
+          />
+        )}
         <span>{title}</span>
-      </div>
+      </label>
     </FormField>
   );
 };

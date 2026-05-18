@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { CollapseButton } from '@/components/collapse-button';
+import { Button } from '@/components/button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
-import { Button, ErrorBar } from '../../common';
-import CollapseButton from '../../components/buttons/collapseButton';
+import { ErrorBar } from '../../common';
 
 export const PortTab = observer(({ tab }) => {
   const isMobile = useMediaQuery({ maxWidth: 991 });
@@ -29,15 +30,16 @@ export const PortTabContent = ({ tab, onDeleteTab, onDeletePortDevices }) => {
           <Button
             key="delete-devices"
             label={t('device-manager.buttons.delete-devices')}
-            type="danger"
+            variant="danger"
             disabled={!tab.hasChildren}
+            aria-haspopup="dialog"
             onClick={() => onDeletePortDevices(tab)}
           />
           {tab.canDelete && (
             <Button
               key="delete-port"
               label={t('device-manager.buttons.delete-port')}
-              type="danger"
+              variant="danger"
               onClick={onDeleteTab}
             />
           )}

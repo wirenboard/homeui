@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import CommonSettings from './components/common-settings';
 import HttpsSettings from './components/https-settings';
 import MqttSettings from './components/mqtt-settings';
 import type { WebUiSettingsPageProps } from './types';
 import './styles.css';
 
-const WebUiSettingsPage = ({ onChangeLanguage, dashboardsStore, userType }: WebUiSettingsPageProps) => {
+const WebUiSettingsPage = ({ onChangeLanguage, dashboardsStore }: WebUiSettingsPageProps) => {
   const { t } = useTranslation();
   const [errors, setErrors] = useState([]);
 
@@ -20,11 +21,11 @@ const WebUiSettingsPage = ({ onChangeLanguage, dashboardsStore, userType }: WebU
   };
 
   return (
-    <PageLayout title={t('web-ui-settings.title')} hasRights={true} errors={errors}>
+    <PageLayout title={t('web-ui-settings.title')} errors={errors} hasRights>
       <div className="web-ui-settings-pageContent">
-        {userType !== 'user' && <MqttSettings />}
+        {authStore.hasRights(UserRole.Operator) && <MqttSettings />}
         <CommonSettings dashboardsStore={dashboardsStore} onChangeLanguage={onChangeLanguage} />
-        {userType === 'admin' && <HttpsSettings onError={httpsErrorHandler} />}
+        {authStore.hasRights(UserRole.Admin) && <HttpsSettings onError={httpsErrorHandler} />}
       </div>
     </PageLayout>
   );

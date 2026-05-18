@@ -1,7 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { uiConfigPath } from '@/common/paths';
-import type { DashboardBase, UIConfigResponse, WidgetBase } from '@/stores/dashboards/types';
+import type { DashboardBase, UIConfigResponse, WidgetBase } from '@/stores/dashboards';
 import { generateNextId } from '@/utils/id';
+import i18n from '~/i18n/react/config';
 import { Dashboard } from './dashboard';
 import { Widget } from './widget';
 
@@ -11,12 +12,12 @@ export default class DashboardsStore {
   public isLoading = true;
   public description = '';
   public defaultDashboardId: string;
+  public isShowWidgetsPage: boolean = false;
+  public saveError: string = null;
   #configEditorProxy: any;
-  #uiConfig: any;
 
-  constructor(configEditorProxy: any, uiConfig: any) {
+  constructor(configEditorProxy: any) {
     this.#configEditorProxy = configEditorProxy;
-    this.#uiConfig = uiConfig;
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -25,7 +26,7 @@ export default class DashboardsStore {
     this.isLoading = true;
     return this.#configEditorProxy.Load({ path: uiConfigPath })
       .then(({ content }: UIConfigResponse) => {
-        const { dashboards, widgets, defaultDashboardId, description } = content;
+        const { dashboards, widgets, defaultDashboardId, isShowWidgetsPage, description } = content;
         return runInAction(() => {
           this.isLoading = false;
           dashboards.forEach((dashboard: DashboardBase) => {
@@ -35,6 +36,7 @@ export default class DashboardsStore {
             this.widgets.set(widget.id, new Widget(widget, this));
           });
           this.defaultDashboardId = defaultDashboardId;
+          this.isShowWidgetsPage = !!isShowWidgetsPage;
           this.description = description || '';
 
           return content;
@@ -129,6 +131,13 @@ export default class DashboardsStore {
     });
   }
 
+  setIsShowWidgetsPage(isShow: boolean) {
+    runInAction(() => {
+      this.isShowWidgetsPage = isShow;
+      this._saveData();
+    });
+  }
+
   setDescription(description: string) {
     runInAction(() => {
       this.description = description;
@@ -140,21 +149,29 @@ export default class DashboardsStore {
     return Array.from(this.dashboards.values());
   }
 
-  _saveData() {
+  async _saveData() {
     const content = {
       defaultDashboardId: this.defaultDashboardId,
       dashboards: Array.from(this.dashboards.values()),
       widgets: Array.from(this.widgets.values()),
       description: this.description,
+      isShowWidgetsPage: this.isShowWidgetsPage,
     };
 
-    // hack to synchronize old save logic
-    // TODO delete when there is a common store for dashboards
-    this.#uiConfig.ready(content);
-
-    // await this.#configEditorProxy.Save({
-    //   path: uiConfigPath,
-    //   content,
-    // });
+    await this.#configEditorProxy.Save({ path: uiConfigPath, content })
+      .then(() => {
+        runInAction(() => {
+          this.saveError = null;
+        });
+      })
+      .catch((err: any) => {
+        runInAction(() => {
+          if (err.name === 'QuotaExceededError') {
+            this.saveError = i18n.t('dashboards.errors.overflow');
+          } else {
+            this.saveError = i18n.t('dashboards.errors.save', { err });
+          }
+        });
+      });
   }
 }

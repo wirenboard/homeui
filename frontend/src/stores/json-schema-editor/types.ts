@@ -1,9 +1,19 @@
-import { MistypedValue } from './mistyped-value';
+import { type MistypedValue } from './mistyped-value';
 
-export type TranslationsByLocale = {
+export interface TranslationsByLocale {
   en?: Record<string, string>;
   ru?: Record<string, string>;
-};
+}
+
+export interface WbDaliTcEditorOptions {
+  minimum?: number;
+  maximum?: number;
+
+  // Affects MASK label.
+  // In 'value' mode, MASK means "do not change", in 'limit' mode, MASK means "no limit"
+  // Default is 'value'
+  mode?: 'value' | 'limit';
+}
 
 export interface WbOptions {
   // Show editor even if the property is not required and options.show_opt_in is not set
@@ -23,6 +33,14 @@ export interface WbOptions {
   // and we want to allow user to not set the property at all.
   // This option has effect only if show_editor is true
   allow_undefined?: boolean;
+
+  // If true, the property will be shown as read-only in the editor
+  read_only?: boolean;
+
+  // If true, the property will start a new row in the flex layout
+  new_row?: boolean;
+
+  dali_tc?: WbDaliTcEditorOptions;
 }
 
 export interface InputAttributes {
@@ -86,6 +104,7 @@ export interface JsonSchema {
 
   // wb specific properties
   translations?: TranslationsByLocale;
+  device?: unknown; // Used in wb-mqtt-serial to store device template
 }
 
 export interface ValidationError {
@@ -119,6 +138,7 @@ export interface PropertyStore {
 
   setUndefined(): void;
   setDefault(): void;
+  setValue(value: unknown): void;
   commit(): void;
   reset(): void;
 }

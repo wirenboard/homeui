@@ -1,25 +1,35 @@
 import { observer } from 'mobx-react-lite';
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
-import SwapIcon from '@/assets/icons/swap.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Input } from '@/components/input';
-import { Table, TableCell, TableRow } from '@/components/table';
+import { Table, TableCell, type TableCellSortDirection, TableRow } from '@/components/table';
 import { aliceStore, DefaultRoom } from '@/stores/alice';
-import { notificationsStore } from '@/stores/notifications';
-import type { RoomParams } from './types';
+import { useAsyncAction } from '@/utils/async-action';
+import type { RoomProps } from './types';
 import './styles.css';
 
-export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams) => {
+export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps) => {
   const { t } = useTranslation();
   const { addRoom, deleteRoom, devices, fetchData, rooms, updateRoom } = aliceStore;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isDeleteRoom, setIsDeleteRoom] = useState(false);
   const [roomName, setRoomName] = useState(null);
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [saveError, setSaveError] = useState(null);
+  const [sortDirection, setSortDirection] = useState<TableCellSortDirection>('asc');
+
+  const getSortProps = (column: string, label: string) => ({
+    onSort: () => {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    },
+    isActive: column === 'device',
+    direction: sortDirection,
+    label,
+  });
 
   const deviceList = useMemo(() => {
     const formatRoomDevices = (keys: string[]) => keys
@@ -46,7 +56,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
       .sort((a, b) =>
         sortDirection === 'asc'
           ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name)
+          : b.name.localeCompare(a.name),
       );
 
     if (id === 'all') {
@@ -59,30 +69,24 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
     }
   }, [devices, rooms, id, sortDirection]);
 
-  const save = useCallback(async (ev: FormEvent) => {
+  const [save, isSaving] = useAsyncAction(async (ev: FormEvent) => {
     ev.preventDefault();
+
     try {
       if (!id) {
         const room = await addRoom(roomName);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.room-added', { name: roomName }),
-        });
         onSave(room);
       } else {
         await updateRoom(id, { name: roomName, devices: deviceList.map((device) => device.id) });
         setIsEditingTitle(false);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.room-updated', { name: roomName }),
-        });
       }
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
+      setSaveError(err.response.data.detail);
     }
-  }, [id, roomName, deviceList]);
+  });
 
   useEffect(() => {
+    setSaveError(null);
     setIsEditingTitle(!id);
     if (id === 'all') {
       setRoomName(t('alice.buttons.all-devices'));
@@ -91,16 +95,12 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
     }
   }, [id]);
 
-  const onConfirmDelete = async () => {
+  const [onConfirmDelete, isDeleting] = useAsyncAction(async () => {
     await deleteRoom(id);
-    setIsDeleteRoom(false);
     await fetchData();
-    notificationsStore.showNotification({
-      variant: 'success',
-      text: t('alice.notifications.room-deleted', { name: roomName }),
-    });
+    setIsDeleteRoom(false);
     onDelete();
-  };
+  });
 
   return (
     <>
@@ -122,6 +122,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
                 size="small"
                 type="button"
                 icon={<EditSquareIcon />}
+                aria-label={t('alice.buttons.edit-room-name')}
                 variant="secondary"
                 isOutlined
                 onClick={() => setIsEditingTitle(true)}
@@ -131,10 +132,11 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
           {id !== DefaultRoom && id !== 'all' && (
             <>
               <Button
-                size="small"
                 type="button"
                 icon={<TrashIcon />}
-                variant="secondary"
+                aria-label={t('alice.buttons.delete-room')}
+                aria-haspopup="dialog"
+                variant="danger"
                 isOutlined
                 onClick={() => {
                   if (id) {
@@ -146,36 +148,39 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
               />
               <Button
                 type="submit"
-                disabled={!roomName}
+                disabled={!roomName || !isEditingTitle}
+                isLoading={isSaving}
                 label={t('alice.buttons.save')}
-                variant="secondary"
+                variant="primary"
               />
             </>
           )}
         </form>
-        <Table isWithoutGap>
+
+        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+
+        <Table isWithoutGap isFullWidth>
           <TableRow isHeading>
-            <TableCell>
-              <div
-                className="aliceRoom-swap"
-                onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-              >
-                {t('alice.labels.device')}
-                <SwapIcon />
-              </div>
+            <TableCell width="25%" sort={getSortProps('device', t('alice.labels.device'))}>
+              {t('alice.labels.device')}
             </TableCell>
-            <TableCell>
+            <TableCell width="25%">
               {t('alice.labels.room')}
             </TableCell>
-            <TableCell>
+            <TableCell width="25%">
               {t('alice.labels.property-capability')}
             </TableCell>
-            <TableCell>
+            <TableCell width="25%">
               {t('alice.labels.topic')}
             </TableCell>
           </TableRow>
           {deviceList.map((device) => (
-            <TableRow key={device.id} className="aliceRoom-item" onClick={() => onOpenDevice(device.id)}>
+            <TableRow
+              key={device.id}
+              className="aliceRoom-item"
+              aria-label={t('alice.buttons.open-device', { name: device.name })}
+              onClick={() => onOpenDevice(device.id)}
+            >
               <TableCell verticalAlign="top" ellipsis>
                 {device.name}
               </TableCell>
@@ -207,6 +212,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomParams
         isOpened={isDeleteRoom}
         heading={t('alice.prompt.delete-room-title')}
         variant="danger"
+        isLoading={isDeleting}
         closeCallback={() => setIsDeleteRoom(false)}
         confirmCallback={onConfirmDelete}
       >

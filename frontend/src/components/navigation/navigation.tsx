@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
@@ -9,29 +9,30 @@ import LogoutIcon from '@/assets/icons/logout.svg';
 import MenuIcon from '@/assets/icons/menu.svg';
 import { APP_NAME, HIDE_COMPACT_MENU, LOGO, LOGO_COMPACT } from '@/common/constants';
 import { MenuItem } from '@/components/navigation/components/menu-item';
-import { getMenuItems } from '@/components/navigation/menu-items';
 import { Tooltip } from '@/components/tooltip';
-import { aliceStore } from '@/stores/alice';
 import { UserRole, authStore } from '@/stores/auth';
+import { consolePanelStore } from '@/stores/console-panel';
+import { uiStore } from '@/stores/ui';
 import { useParseHash } from '@/utils/url';
-import i18n from '~/i18n/react/config';
 import { DescriptionStatus } from './components/description-status';
-import type { NavigationProps } from './types';
+import { type NavigationProps } from './types';
 import './styles.css';
 
-export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient }: NavigationProps) => {
-  const { t } = useTranslation();
+export const Navigation = observer(({ dashboardsStore }: NavigationProps) => {
+  const { t, i18n } = useTranslation();
   const { id, page, params } = useParseHash();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const { integrations } = aliceStore;
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
-  const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true' || false);
-  const [openedSubmenus, setOpenedSubmenus] = useState([]);
+  const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true');
+  const [openedSubmenus, setOpenedSubmenus] = useState(['dashboards-all']);
+  const [isMenuFocused, setIsMenuFocused] = useState(true);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
-  const computeUrlWithParams = useCallback((url: string) => {
-    return params.has('fullscreen') ? `${url}?fullscreen` : url;
-  }, [params.has('fullscreen')]);
+  const { menuItems } = uiStore;
+
+  useEffect(() => {
+    uiStore.buildMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params);
+  }, [dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params, i18n.language, isAuthenticated]);
 
   const toggleNavigation = () => {
     const value = !isMenuCompact;
@@ -40,43 +41,31 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
   };
 
   const handleDebugClick = () => {
-    toggleConsole();
+    consolePanelStore.toggleVisibility();
     setIsMobileMenuOpened(false);
   };
-
-  const menuItems = useMemo(
-    () => getMenuItems(
-      dashboardsStore.dashboardsList,
-      params,
-      hasRights,
-      computeUrlWithParams,
-      integrations,
-      i18n.language
-    ),
-    [dashboardsStore.dashboardsList, params, hasRights, computeUrlWithParams, integrations, i18n.language]
-  );
 
   useEffect(() => {
     if (!menuItems.some((item) => item.url === page)) {
       const val = menuItems.find((item) => item.children
         ?.some((subItem) => subItem.url === page || (id && subItem.url === `${page}/${id}`)));
 
-      if (val) {
-        setOpenedSubmenus([val.id]);
+      if (val?.id) {
+        setOpenedSubmenus((prev) => {
+          const next = new Set(prev);
+          next.add(val.id);
+          return Array.from(next);
+        });
       }
     }
-  }, [page, id]);
-
-  useEffect(() => {
-    setOpenedSubmenus((prev) => [...prev, 'dashboards-all']);
-  }, []);
+  }, [menuItems, page, id]);
 
   useEffect(() => {
     setIsMobileMenuOpened(false);
     setIsMenuCompact(isMobile ? false : localStorage.getItem('isMenuCompact') === 'true');
   }, [isMobile]);
 
-  return !isAuthenticated || params.has('hmi') || location.hash === '#!/login' ? null : (
+  return !isAuthenticated || params.has('hmi') || location.hash.startsWith('#!/login') ? null : (
     <>
       <nav
         className={classNames('navigation', {
@@ -86,22 +75,44 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
         <div className="navigation-header">
           <button
             className="navigation-mobileButton"
-            aria-label={t('navigation.labels.toggle')}
+            aria-label={t('navigation.buttons.open-mobile')}
             onClick={() => setIsMobileMenuOpened(!isMobileMenuOpened)}
           >
             <MenuIcon />
           </button>
 
-          <a href="/" draggable={false}>
-            {isMenuCompact
-              ? <img src={LOGO_COMPACT} className="navigation-logo navigation-logoCompact" alt={APP_NAME} />
-              : <img src={LOGO} className="navigation-logo" alt={APP_NAME} />
-            }
-          </a>
+          <div
+            className={classNames({
+              'navigation-logoWrapper': !isMenuCompact,
+              'navigation-logoWrapperCompact': isMenuCompact,
+            })}
+          >
+            <a
+              href="/"
+              aria-label={t('navigation.labels.home')}
+              className="navigation-logoLink"
+              draggable={false}
+            >
+              <img
+                src={LOGO_COMPACT}
+                className={classNames('navigation-logoCompact', {
+                  'navigation-logoHidden': !isMenuCompact,
+                })}
+                alt={APP_NAME}
+              />
+              <img
+                src={LOGO}
+                className={classNames('navigation-logo', {
+                  'navigation-logoHidden': isMenuCompact,
+                })}
+                alt={APP_NAME}
+              />
+            </a>
+          </div>
         </div>
 
         <DescriptionStatus
-          mqttClient={mqttClient}
+          isConnected={uiStore.isConnected}
           isCompact={isMenuCompact}
           description={dashboardsStore.description}
         />
@@ -111,6 +122,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
             className={classNames('navigation-toggle', {
               'navigation-toggleIconRotated': !isMenuCompact,
             })}
+            aria-label={isMenuCompact ? t('navigation.buttons.compact-off') : t('navigation.buttons.compact-on')}
             onClick={toggleNavigation}
           >
             <ChevronRightIcon className="navigation-toggleIcon" />
@@ -135,6 +147,8 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
                 activePopup={activePopup}
                 closeMobileMenu={() => setIsMobileMenuOpened(false)}
                 key={i}
+                isMenuFocused={isMenuFocused}
+                setIsMenuFocused={setIsMenuFocused}
               />
             ))}
           </ul>
@@ -158,7 +172,14 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
                   <button
                     className="menuItem-link navigation-logout"
                     draggable={false}
-                    onClick={logout}
+                    aria-label={t(isAutologin ? 'navigation.buttons.switch-user' : 'navigation.buttons.logout')}
+                    tabIndex={isMenuFocused ? null : -1}
+                    onFocus={() => setIsMenuFocused(true)}
+                    onBlur={() => setIsMenuFocused(false)}
+                    onClick={() => {
+                      setIsMobileMenuOpened(false);
+                      logout();
+                    }}
                   >
                     <LogoutIcon className="menuItem-icon" />
                     {!isMenuCompact && t(isAutologin ? 'navigation.buttons.switch-user' : 'navigation.buttons.logout')}
@@ -175,6 +196,11 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole, mqttClient
                   <button
                     className={classNames('menuItem-link')}
                     draggable={false}
+                    aria-label={t('navigation.buttons.debug')}
+                    tabIndex={isMenuFocused ? null : -1}
+                    aria-expanded={consolePanelStore.isVisible}
+                    onFocus={() => setIsMenuFocused(true)}
+                    onBlur={() => setIsMenuFocused(false)}
                     onClick={handleDebugClick}
                   >
                     <ConsoleIcon className="menuItem-icon" />

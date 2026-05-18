@@ -7,7 +7,7 @@ import VisibilityOffIcon from '@/assets/icons/visibility-off.svg';
 import VisibilityIcon from '@/assets/icons/visibility.svg';
 import { Button } from '@/components/button';
 import { Input } from '../input';
-import { PasswordProps } from './types';
+import { type PasswordProps } from './types';
 import './styles.css';
 
 export const Password = ({
@@ -77,6 +77,7 @@ export const Password = ({
               'password-toggleL': size === 'large',
             })}
             type="button"
+            aria-label={t(isHidden ? 'common.buttons.password-show' : 'common.buttons.password-hide')}
             icon={isHidden ? <VisibilityIcon /> : <VisibilityOffIcon />}
             variant="secondary"
             isOutlined
@@ -98,7 +99,7 @@ export const Password = ({
                     'password-indicatorWeak': score === 2 && i < score,
                     'password-indicatorNormal': score === 3 && i < score,
                     'password-indicatorStrong': score === 4 && i < score,
-                  }
+                  },
                 )}
               />
             ))}

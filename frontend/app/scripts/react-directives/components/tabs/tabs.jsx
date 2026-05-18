@@ -19,7 +19,7 @@ TabsList.tabsRole = 'TabList';
 
 export const TabItem = observer(({ children, className, ...otherProps }) => {
   return (
-    <Tab tabIndex={'0'} className={className} selectedClassName={'active'} {...otherProps}>
+    <Tab tabIndex="0" className={className} selectedClassName="active" {...otherProps}>
       {children}
     </Tab>
   );
@@ -28,7 +28,7 @@ TabItem.tabsRole = 'Tab';
 
 export const TabPane = observer(({ children, ...otherProps }) => {
   return (
-    <TabPanel selectedClassName={'active'} className={'tab-pane'} {...otherProps}>
+    <TabPanel selectedClassName="active" className="tab-pane" {...otherProps}>
       {children}
     </TabPanel>
   );
@@ -49,22 +49,10 @@ export const TabContent = ({ className, children, ...otherProps }) => {
 
 export const VerticalTabs = ({ selectedIndex, onSelect, className, children }) => {
   return (
-    <TabsOrientationContext.Provider value={'vertical'}>
-      <Tabs selectedIndex={selectedIndex} onSelect={onSelect} className={className}>
+    <TabsOrientationContext.Provider value="vertical">
+      <Tabs selectedIndex={selectedIndex} className={className} onSelect={onSelect}>
         {children}
       </Tabs>
     </TabsOrientationContext.Provider>
   );
 };
-
-export const HorizontalTabs = observer(({ selectedIndex, onSelect, children }) => {
-  return (
-    <div>
-      <TabsOrientationContext.Provider value={'horizontal'}>
-        <Tabs selectedIndex={selectedIndex} onSelect={onSelect}>
-          {children}
-        </Tabs>
-      </TabsOrientationContext.Provider>
-    </div>
-  );
-});

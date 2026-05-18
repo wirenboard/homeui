@@ -1,11 +1,13 @@
 node_modules
 dist
+.eslintcache
 *.tgz
 *.tar.*
 .tmp
 .sass-cache
 npm-debug.log
 .tern-port
+.claude
 
 debian/files
 debian/wb-mqtt-homeui.debhelper.log
@@ -21,6 +23,7 @@ coverage
 .vscode
 .idea
 *.env
+.venv
 
 .coveragerc
 .prettierrc

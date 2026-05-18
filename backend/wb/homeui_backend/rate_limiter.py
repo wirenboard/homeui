@@ -10,7 +10,7 @@ class CallStatistics:
     calls_per_minute: int = 1
 
 
-class RateLimiter:
+class RateLimiter:  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.calls: dict[str, CallStatistics] = {}
 

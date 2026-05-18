@@ -60,10 +60,12 @@
 }
 
 .navigation-logo {
-    padding: 12px 18px;
+    display: flex;
+    justify-self: center;
+    width: 144px;
     height: 60px;
-    margin: 12px 0 12px;
-    width: 100%;
+    margin: 12px auto;
+    transition: transform ease 300ms;
 
     @media(max-width: 768px) {
         margin: 0;
@@ -72,9 +74,23 @@
     }
 }
 
+.navigation-logo:hover,
+.navigation-logoLink:focus .navigation-logo,
+.navigation-logoCompact:hover,
+.navigation-logoCompact:focus .navigation-logo {
+    transform: scale(1.05);
+}
+
 .navigation-logoCompact {
-    padding: 8px;
-    width: unset;
+    display: flex;
+    justify-self: center;
+    margin: 18px auto 22px;
+    width: 44px;
+    height: 44px;
+}
+
+.navigation-logoHidden {
+    display: none;
 }
 
 .navigation-toggle {

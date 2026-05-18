@@ -9,7 +9,7 @@
 .password-toggle {
     position: absolute;
     box-shadow: none !important;
-    top: 14%;
+    top: 4%;
     right: 6px;
     padding: 4px;
     color: var(--gray-color);

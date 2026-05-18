@@ -1,9 +1,10 @@
 import classNames from 'classnames';
-import { ButtonProps } from './types';
+import { Loader } from '@/components/loader';
+import { type ButtonProps } from './types';
 import './styles.css';
 
 export const Button = ({
-  className, type, icon, label, isOutlined, size = 'default', variant = 'primary', ...rest
+  className, type, icon, label, isOutlined, isLoading, size = 'default', variant = 'primary', ...rest
 }: ButtonProps) => (
   <button
     type={type || 'button'}
@@ -12,15 +13,24 @@ export const Button = ({
       'button-m': size === 'default',
       'button-s': size === 'small',
       'button-primary': variant === 'primary',
-      'button-success': variant === 'success',
       'button-secondary': variant === 'secondary',
       'button-danger': variant === 'danger',
       'button-unaccented': variant === 'unaccented',
+      'button-warn': variant === 'warn',
       'button-outlined': isOutlined,
     })}
+    aria-busy={isLoading}
     {...rest}
   >
-    {!!icon && <span className="button-icon" aria-hidden="true">{icon}</span>}
-    {!!label && <span className="button-text">{label}</span>}
+    {isLoading && <Loader className="button-loader" />}
+    {!!icon && (
+      <span
+        className={classNames('button-icon', { 'button-loading': isLoading })}
+        aria-hidden="true"
+      >
+        {icon}
+      </span>
+    )}
+    {!!label && <span className={classNames('button-text', { 'button-loading': isLoading })}>{label}</span>}
   </button>
 );

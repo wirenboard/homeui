@@ -1,9 +1,7 @@
-'use strict';
-
-import { OptionsStore } from '../../forms/optionsStore';
-import { NumberStore } from '../../forms/numberStore';
 import i18n from '../../../i18n/react/config';
 import { FormStore } from '../../forms/formStore';
+import { NumberStore } from '../../forms/number-store';
+import { OptionsStore } from '../../forms/optionsStore';
 
 async function showCopyDeviceModal(formModalState, portOptions, currentPort) {
   let form = new FormStore();

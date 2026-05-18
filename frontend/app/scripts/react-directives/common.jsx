@@ -1,28 +1,8 @@
-import { useId, forwardRef } from 'react';
-import { Password } from '@/components/password';
-
-export const WarningTag = ({ text }) => {
-  return <span className="tag bg-warning text-nowrap">{text}</span>;
-};
-
-export const ErrorTag = ({ text }) => {
-  return <span className="tag bg-danger text-nowrap">{text}</span>;
-};
+import { useId } from 'react';
 
 export const BootstrapRow = ({ children, additionalStyles }) => {
   const classes = 'row' + (additionalStyles ? ' ' + additionalStyles : '');
   return <div className={classes}>{children}</div>;
-};
-
-export const BootstrapRowWithLabel = ({ label, children }) => {
-  return (
-    <BootstrapRow>
-      <div className="form-group col-md-12">
-        <label>{label}</label>
-        {children}
-      </div>
-    </BootstrapRow>
-  );
 };
 
 export const Spinner = () => {
@@ -72,38 +52,7 @@ export const ErrorBar = ({ msg, children }) => {
   );
 };
 
-export const WarningPanel = ({ className, children }) => {
-  const classes = 'alert alert-warning' + (className ? ' ' + className : '');
-  return (
-    <div className={classes} role="alert">
-      {children}
-    </div>
-  );
-};
-
-const WarningSign = () => {
-  return <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>;
-};
-
-export const WarningHeader = ({ children }) => {
-  return (
-    <div className="alert-header">
-      <WarningSign />
-      &nbsp;
-      {children}
-    </div>
-  );
-};
-
-export const WarningBar = ({ children }) => {
-  return (
-    <WarningPanel>
-      <WarningHeader>{children}</WarningHeader>
-    </WarningPanel>
-  );
-};
-
-export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, title, submit }) => {
+export const Button = ({ label, type, onClick, disabled, additionalStyles, icon, ariaHasPopup, title, submit }) => {
   const classes =
     'btn btn-' + (type ? type : 'default') + (additionalStyles ? ' ' + additionalStyles : '');
   return (
@@ -112,6 +61,7 @@ export const Button = ({ label, type, onClick, disabled, additionalStyles, icon,
       className={classes}
       disabled={disabled}
       title={title}
+      aria-haspopup={ariaHasPopup ? 'dialog' : null}
       onClick={onClick}
     >
       {icon && (
@@ -133,65 +83,5 @@ export const Checkbox = ({ label, value, onChange, disabled }) => {
         {label}
       </label>
     </div>
-  );
-};
-
-export const LineEdit = forwardRef(
-  ({ placeholder, value, onChange, disabled, type, name, required, autocomplete, showIndicator }, ref) => {
-    if (type === 'textarea') {
-      return (
-        <textarea
-          ref={ref}
-          className="form-control"
-          placeholder={placeholder}
-          value={value}
-          disabled={disabled}
-          name={name}
-          required={required}
-          autoComplete={autocomplete}
-          onChange={onChange}
-        />
-      );
-    } else if (type === 'password') {
-      return (
-        <Password
-          ref={ref}
-          className="form-control"
-          placeholder={placeholder}
-          value={value}
-          disabled={disabled}
-          name={name}
-          required={required}
-          autoComplete={autocomplete}
-          showIndicator={showIndicator}
-          isFullWidth
-          onChangeEvent={onChange}
-        />
-      );
-    } else {
-      return (
-        <input
-          ref={ref}
-          className="form-control"
-          type={type || 'text'}
-          placeholder={placeholder}
-          value={value}
-          disabled={disabled}
-          name={name}
-          required={required}
-          autoComplete={autocomplete}
-          onChange={onChange}
-        />
-      );
-    }
-  }
-);
-
-export const Radio = ({ label, id, value, onChange }) => {
-  return (
-    <label className="radio-inline" htmlFor={id}>
-      <input type="radio" id={id} checked={value} onChange={(e) => onChange?.(e.target.checked)} />
-      {label}
-    </label>
   );
 };

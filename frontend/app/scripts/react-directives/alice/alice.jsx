@@ -1,25 +1,18 @@
 import ReactDOM from 'react-dom/client';
 import AlicePage from '@/pages/integrations/alice';
-import { DeviceStore } from '@/stores/device';
 import { setReactLocale } from '~/react-directives/locale';
 
-export default function aliceDirective(rolesFactory, mqttClient) {
+export default function aliceDirective($rootScope) {
   'ngInject';
 
   setReactLocale();
 
   return {
     restrict: 'E',
-    scope: {
-      path: '=',
-      isNew: '=',
-    },
-    link: function (scope, element) {
-      const hasRights = rolesFactory.checkRights(rolesFactory.ROLE_THREE);
-
-      scope.deviceStore = new DeviceStore(mqttClient);
+    scope: {},
+    link: function(scope, element) {
       scope.root = ReactDOM.createRoot(element[0]);
-      scope.root.render(<AlicePage hasRights={hasRights} deviceStore={scope.deviceStore}/>);
+      scope.root.render(<AlicePage devicesStore={$rootScope.devicesStore} />);
 
       element.on('$destroy', ()=> {
         scope.root.unmount();

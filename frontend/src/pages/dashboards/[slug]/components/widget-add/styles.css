@@ -9,7 +9,7 @@
 
 .widgetAdd-heading,
 .widgetAdd-headingPreview {
-    font-size: 15px;
+    font-size: var(--font-size-large);
     font-weight: bold;
     margin: 8px 0 12px 12px;
 }

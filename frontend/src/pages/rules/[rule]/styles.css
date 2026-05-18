@@ -1,11 +1,8 @@
 .editRule-container {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: 100%;
-    flex-grow: 1;
-}
-
-.editRule-nameInput {
-    max-width: 70%;
+    flex: 1 1 0;
 }
 
 .editRule-error {

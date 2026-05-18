@@ -9,8 +9,9 @@ import FilelistIcon from '@/assets/icons/file-list.svg';
 import MoveIcon from '@/assets/icons/move.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
-import { Dropdown, Option } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Switch } from '@/components/switch';
 import { Textarea } from '@/components/textarea';
@@ -18,7 +19,7 @@ import { generateNextId } from '@/utils/id';
 import type { CellSimple, WidgetEditProps } from './types';
 import './styles.css';
 
-export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose }: WidgetEditProps) => {
+export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }: WidgetEditProps) => {
   const { t } = useTranslation();
   const [widgetCells, setWidgetCells] = useState<(CellSimple)[]>([]);
   const [isJsonView, setIsJsonView] = useState(false);
@@ -67,7 +68,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
     const updatedValue = widgetCells.map((widgetCell) =>
       cellId === widgetCell.id
         ? { ...widgetCell, ...value }
-        : widgetCell
+        : widgetCell,
     );
     setWidgetCells(updatedValue);
   };
@@ -88,10 +89,22 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
 
   const controlsOptions = useMemo(() => {
     const uniqueSeparatorId = generateNextId(widgetCells.map((item, i) => item.id || String(i)), 'separator');
-    return [{ name: t('widget.labels.separator'), id:uniqueSeparatorId }, ...controls]
-      .filter(({ id }) => !widgetCells.find((cell) => cell.id === id && !id?.startsWith('separator')))
-      .map(({ name, id }) => ({ label: name, value: id }));
-  }, [widgetCells]);
+    const addedIds = new Set(
+      widgetCells
+        .filter((c) => !c.id?.startsWith('separator'))
+        .map((c) => c.id),
+    );
+    const groups = (topics || [])
+      .map((group) => ({
+        label: group.label,
+        options: group.options.filter((opt) => !addedIds.has(opt.value)),
+      }))
+      .filter((group) => group.options.length > 0);
+    return [
+      { label: t('widget.labels.separator'), value: uniqueSeparatorId },
+      ...groups,
+    ];
+  }, [widgetCells, topics]);
 
   return (
     <Confirm
@@ -104,16 +117,22 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
       acceptLabel={t('widget.buttons.save')}
       headerActions={isJsonView
         ? (
-          <FilelistIcon
-            title={t('widget.buttons.editor')}
-            className="widgetEdit-toggleViewIcon"
+          <Button
+            variant="secondary"
+            icon={<FilelistIcon className="widgetEdit-toggleViewIcon" />}
+            aria-label={t('widget.buttons.editor')}
+            size="large"
+            isOutlined
             onClick={() => setIsJsonView(!isJsonView)}
           />
         )
         : (
-          <FileCodeIcon
-            title={t('widget.buttons.edit-json')}
-            className="widgetEdit-toggleViewIcon"
+          <Button
+            variant="secondary"
+            icon={<FileCodeIcon className="widgetEdit-toggleViewIcon"/>}
+            aria-label={t('widget.buttons.edit-json')}
+            size="large"
+            isOutlined
             onClick={() => setIsJsonView(!isJsonView)}
           />
         )
@@ -155,6 +174,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
               <Input
                 className={classNames('widgetEdit-input', 'widgetEdit-name')}
                 placeholder={t('widget.labels.name')}
+                ariaLabel={t('widget.labels.name')}
                 value={name}
                 isDisabled={isJsonView}
                 autoFocus
@@ -164,14 +184,15 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
               <Textarea
                 className="widgetEdit-description"
                 placeholder={t('widget.labels.description')}
+                ariaLabel={t('widget.labels.description')}
                 value={description}
                 onChange={(value) => setDescription(value)}
               />
 
-              <div className="widgetEdit-label">
+              <label className="widgetEdit-label">
                 <div>{t('widget.labels.compact')}</div>
                 <Switch id="compact" value={isCompactView} onChange={(value) => setIsCompactView(value)} />
-              </div>
+              </label>
             </div>
 
             <div className="widgetEdit-controls">
@@ -194,6 +215,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                 setList={(val) => {
                   if (val.length) {
                     setWidgetCells(val.map((cell: any) => {
+                      // eslint-disable-next-line no-unused-vars
                       const { chosen, ...value } = cell;
                       return value;
                     }));
@@ -209,6 +231,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                     className={classNames('widgetEdit-editedCell', {
                       'widgetEdit-editedCellWithInverted': hasInvertedColumn,
                     })}
+                    tabIndex={0}
                   >
                     <div className="widgetEdit-sort">
                       {widgetCells.length > 1 && (
@@ -230,15 +253,20 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
                       <div className="widgetEdit-invert">
                         {cell.type === 'switch' && (
                           <Switch
-                            id="inverted"
+                            id={`inverted_${cell.id}_${i}`}
                             value={cell.extra?.invert}
+                            ariaLabel={t('widget.labels.invert')}
                             onChange={(invert) => updateCell(cell.id, { extra: { invert } })}
                           />
                         )}
                       </div>
                     )}
-                    <TrashIcon
-                      className="widgetEdit-iconAction widgetEdit-remove"
+                    <Button
+                      variant="secondary"
+                      icon={<TrashIcon className="widgetEdit-iconAction widgetEdit-remove"/>}
+                      aria-label={t('widget.buttons.delete-control')}
+                      size="large"
+                      isOutlined
                       onClick={() => removeCell(cell.id)}
                     />
                   </div>
@@ -250,6 +278,7 @@ export const WidgetEdit = ({ widget, cells, controls, isOpened, onSave, onClose 
               value={null}
               className="widgetEdit-dropdown"
               placeholder={t('widget.labels.add-control')}
+              ariaLabel={t('widget.labels.add-control')}
               options={controlsOptions}
               isButton
               isSearchable

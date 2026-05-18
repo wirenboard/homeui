@@ -4,26 +4,34 @@ import { generateNextId } from '@/utils/id';
 import {
   addDevice,
   addRoom,
+  createAliceLink,
   deleteRoom,
   getAliceInfo,
+  getAliceLinkStatus,
   updateRoom,
   deleteDevice,
   updateDevice,
-  checkIsAliceAvailable
+  checkIsAliceAvailable,
+  toggleAliceIntegration,
+  getAliceIntegrationStatus,
+  unlinkController,
 } from './api';
 import type {
   AddDeviceParams,
   AliceFetchData,
+  AliceLinkStatus,
+  AliceLinkUrl,
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
-  SuccessMessageFetch
+  SuccessMessageFetch,
 } from './types';
 
 export default class AliceStore {
-  public integrations: string[];
   public rooms = new Map<string, Room>();
   public devices = new Map<string, SmartDevice>();
+  public isAvailable = null;
+  public isIntegrationEnabled = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -34,10 +42,28 @@ export default class AliceStore {
       const isAvailable = await checkIsAliceAvailable();
 
       runInAction(() => {
-        this.integrations = isAvailable ? ['alice'] : [];
+        this.isAvailable = isAvailable;
       });
     } catch {
-    //
+      runInAction(() => {
+        this.isAvailable = false;
+      });
+    }
+  }
+
+  async fetchIntegrationStatus(): Promise<void> {
+    try {
+      const { enabled } = await getAliceIntegrationStatus();
+
+      runInAction(() => {
+        this.isIntegrationEnabled = enabled;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.isIntegrationEnabled = false;
+      });
+
+      throw err;
     }
   }
 
@@ -49,6 +75,14 @@ export default class AliceStore {
       this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
       return data;
     });
+  }
+
+  async fetchLinkStatus(): Promise<AliceLinkStatus> {
+    return getAliceLinkStatus();
+  }
+
+  async createLink(): Promise<AliceLinkUrl> {
+    return createAliceLink();
   }
 
   async addRoom(name: string): Promise<string> {
@@ -99,7 +133,7 @@ export default class AliceStore {
   async copyDevice(data: SmartDevice): Promise<string> {
     const name = generateNextId(
       Array.from(this.devices).map(([_key, device]) => device.name),
-      data.name + ' '
+      data.name + ' ',
     );
     const device = await addDevice({ ...data, name });
 
@@ -110,5 +144,21 @@ export default class AliceStore {
       this.rooms.set(device[key].room_id, { name: room.name, devices: [...room.devices, key] });
       return key;
     });
+  }
+
+  async setIntegrationEnabled(enabled: boolean): Promise<void> {
+    await toggleAliceIntegration(enabled);
+
+    runInAction(() => {
+      this.isIntegrationEnabled = enabled;
+    });
+  }
+
+  get roomList() {
+    return Array.from(this.rooms);
+  }
+
+  async unlinkController(): Promise<SuccessMessageFetch> {
+    return unlinkController();
   }
 }

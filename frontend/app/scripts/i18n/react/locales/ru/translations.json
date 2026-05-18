@@ -1,18 +1,40 @@
 {
    "common":{
       "labels": {
+         "loading": "Загрузка",
+         "asc": "по возрастанию",
+         "desc": "по убыванию",
+         "time": "Время",
+         "empty-search": "Ничего не найдено",
          "password-strength-0": "Короткий пароль",
          "password-strength-1": "Очень слабый пароль",
          "password-strength-2": "Слабый пароль",
          "password-strength-3": "Хороший пароль",
-         "password-strength-4": "Надежный пароль"
+         "password-strength-4": "Надежный пароль",
+         "select-all": "Выбрать все",
+         "unselect-all": "Снять выделение"
       },
       "buttons": {
+         "close": "Закрыть",
          "apply": "Применить",
          "add": "Добавить",
+         "edit": "Редактировать",
          "remove": "Удалить",
          "move-up": "Переместить вверх",
-         "move-down": "Переместить вниз"
+         "move-down": "Переместить вниз",
+         "select": "Выбрать",
+         "read": "Прочитать",
+         "save": "Сохранить",
+         "password-hide": "Скрыть пароль",
+         "password-show": "Показать пароль",
+         "sort": "Сортировать по столбцу \"{{column}}\"",
+         "collapse": "Свернуть",
+         "expand": "Развернуть",
+         "skip-to-main-content": "Перейти к содержанию",
+         "open-calendar": "Открыть календарь"
+      },
+      "prompt": {
+         "dirty": "На странице остались несохранённые изменения. Вы действительно хотите покинуть страницу?"
       }
    },
    "dashboards": {
@@ -20,31 +42,40 @@
       "labels": {
          "id": "Идентификатор панели (используется в url)",
          "name": "Название",
+         "type": "Тип",
          "in-menu": "В меню",
          "empty-list": "Не создано ни одной панели",
          "edit": "Редактирование панели \"{{name}}\"",
          "create": "Добавление панели",
+         "svg-flag": "Тип панели — svg",
+         "text-flag": "Тип панели — текстовая",
          "text-dashboard": "Текстовая"
       },
       "buttons": {
          "add": "Добавить панель",
+         "open": "Открыть панель \"{{name}}\"",
          "edit": "Редактировать",
+         "edit-dashboard": "Редактировать панель \"{{name}}\"",
          "delete": "Удалить",
+         "delete-dashboard": "Удалить панель \"{{name}}\"",
          "save": "Сохранить",
          "hidden": "Скрыто из меню",
-         "visible": "Отображается в меню"
+         "visible": "Отображается в меню",
+         "visible-flag": "Отображать панель \"{{name}}\" в меню"
       },
       "prompt": {
          "delete-title": "Удаление панели",
          "delete-description": "Вы действительно хотите удалить панель \"{{name}}\"?"
       },
       "errors": {
-         "duplicate": "Идентификатор должен быть уникальным"
+         "duplicate": "Идентификатор должен быть уникальным",
+         "save": "Не удалось сохранить настройки",
+         "overflow": "Не удалось сохранить настройки. Попробуйте очистить localStorage страницы и перезапустить браузер. Если не помогло — попробуйте уменьшить суммарный размер SVG-изображений."
       }
    },
    "navigation": {
       "labels": {
-         "toggle": "Переключить меню",
+         "toggle": "Изменить режим отображения меню",
          "home": "Домашняя страница",
          "dashboards": "Панели",
          "list": "Список",
@@ -64,11 +95,13 @@
          "channels": "Каналы MQTT",
          "access": "Пользователи",
          "logs": "Системный журнал",
-         "serial-metrics": "Метрики wb-mqtt-serial",
          "scan": "Сканирование",
          "device-manager": "Устройства"
       },
       "buttons": {
+         "open-mobile": "Открыть мобильное меню",
+         "compact-off": "Свернуть навигацию",
+         "compact-on": "Развернуть навигацию",
          "logout": "Выйти",
          "switch-user": "Сменить пользователя",
          "debug": "Отладка"
@@ -76,6 +109,29 @@
       "connection": {
          "active": "Подключено",
          "inactive": "Отключено"
+      }
+   },
+   "history": {
+      "title": "История",
+      "labels": {
+         "choose": "Выберите канал",
+         "start": "Начало",
+         "end": "Конец",
+         "nothing": "Нет записей для отображения",
+         "date": "Дата и время",
+         "all_channels": "Все каналы: ",
+         "widget_channels": "Каналы из виджетов: "
+      },
+      "buttons": {
+         "delete": "Удалить",
+         "add": "Добавить канал",
+         "load": "Загрузить данные",
+         "today": "За сутки",
+         "stop": "Остановить загрузку",
+         "download": "Скачать данные в виде CSV"
+      },
+      "errors": {
+         "load": "Ошибка получения данных"
       }
    },
    "scan": {
@@ -114,16 +170,22 @@
          "duplicate-topic": "есть устройство с аналогичным MQTT топиком",
          "unknown-device-type": "неизвестный тип устройства",
          "similar-device-signatures": "также подходят шаблоны:<br>{{types}}",
-         "device-in-config": "Настроенные устройства"
+         "device-in-config": "Настроенные устройства",
+         "notice": "Для выбранного устройства будут применены текущие настройки, включая параметры обмена с портом. Если устройство находится в режиме загрузчика, будет установлена актуальная прошивка."
       }
    },
    "com": {
       "wb": {
          "device_manager": {
             "failed_to_scan_error": "Произошла ошибка во время сканирования портов: {{ failed_ports }}. Более детальную информацию можно посмотреть в системном журнале",
-            "error": "Ошибка",
+            "error": "Ошибка"
+         },
+         "serial_driver": {
+            "error": "Error",
             "device": {
               "read_device_signature_error": "Не удалось прочитать сигнатуру устройства",
+              "read_serial_params_error": "Не удалось прочитать параметры порта устройства",
+              "read_sn_error": "Не удалось прочитать серийный номер устройства",
               "read_fw_version_error": "Не удалось прочитать версию прошивки",
               "read_fw_signature_error": "Не удалось прочитать сигнатуру прошивки"
             }
@@ -149,7 +211,6 @@
          "ethernet": "Ethernet-соединение",
          "modem": "GSM-соединение",
          "canbus": "CAN bus",
-         "confirm-delete-connection": "Вы действительно хотите удалить это соединение?",
          "main-deprecation-notice": "Соединения {{connections}} настроены в /etc/network/interfaces. Для них доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается в Wiren Board. Для перехода на NetworkManager используйте существующие из списка (или создайте новые, если нужно) и <strong>удалите устаревшие</strong>.",
          "main-deprecation-notice_one": "Соединение {{connections}} настроено в /etc/network/interfaces. Для него доступно управление через NetworkManager - это современный сервис настройки, поддержка которого сейчас развивается в Wiren Board. Для перехода на NetworkManager используйте существующее из списка (или создайте новое, если нужно) и <strong>удалите устаревшее</strong>.",
          "manual-connect": "Подключается вручную",
@@ -176,8 +237,15 @@
          "add-connection": "Добавить соединение",
          "delete": "Удалить",
          "add": "Добавить",
+         "priority-up": "Повысить приоритет",
+         "priority-down": "Понизить приоритет",
          "connect": "Подключить",
          "disconnect": "Отключить"
+      },
+      "prompt": {
+         "confirmation-title": "Подтверждение действия",
+         "delete-title": "Удаление соединения",
+         "confirm-delete-connection": "Вы действительно хотите удалить это соединение?"
       },
       "errors": {
          "write": "Ошибка при сохранении настроек. Более детальная информация находится в журнале работы сервиса wb-mqtt-confed"
@@ -196,61 +264,95 @@
       }
    },
    "system": {
-        "factory_reset": {
-            "title": "Сброс к заводским настройкам",
-            "warning1": "Используйте кнопку \"Выбрать файл прошивки\" чтобы обновить прошивку и сбросить все настройки к заводским",
-            "warning2": "Используйте кнопку \"Сброс к заводским настройкам\" чтобы сбросить все настройки и ПО к заводскому состоянию",
-            "confirm_prompt": "Наберите \"factoryreset\" чтобы подтвердить и продолжить",
-            "modal_title": "Подтверждение сброса",
-            "modal_page": "<p><strong>Все ваши данные будут потеряны!</strong></p><p>Вы должны подтвердить это действие. Отменить его будет невозможно.</p>"
-        },
-        "update": {
-            "title": "Обновление прошивки",
-            "help": "Скачать прошивку",
-            "expandrootfs": "Расширить rootfs, если прошивка поддерживает эту возможность",
-            "backup_modal_title": "Резервная копия rootfs",
-            "backup_first_page": "<p>При обновлении сохраняются пользовательские файлы и настройки только в /mnt/data. <strong>Стороннее ПО (nodered, SH и т.п.) будет удалено!</strong></p><p>Нажмите на кнопку <strong>Скачать архив</strong>, чтобы загрузить резервную копию rootfs, где могут оставаться файлы настроек, не перенесённые в /mnt/data.</p><p>Этот архив сейчас не может быть использован для восстановления Wiren Board.</p>",
-            "backup_second_page": "<p>Отлично! <strong>Дождитесь окончания загрузки</strong> архива и нажмите на кнопку <strong>Выбрать файл прошивки</strong>, чтобы начать обновление.</p>"
-        },
-        "errors": {
-            "unavailable": "Сервис обновления прошивки не доступен",
-            "stalled": "Обновление прошивки прервалось",
-            "reboot": "Перезагрузка заняла слишком много времени",
-            "unknown": "Во время обновления произошла ошибка"
-        },
-        "buttons": {
-            "reset": "Сброс к заводским настройкам",
-            "select": "Выбрать файл прошивки",
-            "select_and_reset": "Выбрать файл прошивки и обновить со сбросом",
-            "dismiss": "Отменить",
-            "hide": "Скрыть",
-            "download_backup": "Скачать архив",
-            "select_anyway": "Мне не нужен архив"
-        },
-        "states": {
-            "complete": "Обновление прошивки завершено",
-            "reboot": "Перезагрузка, пожалуйста, подождите",
-            "uploading": "Файл прошивки загружается",
-            "uploaded": "Загрузка завершена",
-            "upload_error": "Ошибка загрузки"
-        },
-        "cloud-status": {
-            "title": "Подключение к облаку",
-            "activation-link-preamble": "Почти готово! Для подключения контроллера к Wiren Board Cloud, нажмите",
-            "activation-link": "эту ссылку",
-            "status-ok": "Этот контроллер подключен к облаку",
-            "status-starting": "Сервис wb-cloud-agent запускается",
-            "status-connecting": "Подключаемся к облаку",
-            "status-stopped": "Сервис wb-cloud-agent не запущен",
-            "status-error": "Ошибка подключения к облаку",
-            "goto-cloud": "Перейти в Wiren Board Cloud"
-        }
+      "title": "Система",
+      "labels": {
+         "testing-offer": "Если вы хотите раньше всех получать доступ к новым возможностям нашего ПО — переключайтесь на <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases\">testing</0>.",
+         "transition-offer": "<1>Доступна новая версия Debian!</1> Для обновления выполните в консоли <1>wb-release --update-debian-release</1> или скачайте <0 href=\"https://fw-releases.wirenboard.com/?prefix=fit_image\" target=\"_blank\" rel=\"noopener noreferrer\">FIT-файл прошивки</0> и обновите через веб-интерфейс контроллера, перейдя в <0 href=\"#!/system\">Настройки → Система</0>"
+      },
+      "collector": {
+         "title": "Сборщик данных для диагностики",
+         "errors": {
+            "unavailable": "Сервис диагностики не доступен",
+            "unavailableToDownload": "Невозможно скачать файл. Скопируйте его с контроллера по пути <0>{{path}}</0>",
+            "checkLogs": "Ошибка сервера. Проверьте логи wb-diag-collect"
+         },
+         "buttons": {
+            "download": "Скачать",
+            "collect": "Собрать данные для диагностики"
+         },
+         "states": {
+            "checking": "Проверка доступа к сервису...",
+            "collecting": "Данные собираются..."
+         }
+      },
+      "backup": {
+         "title": "Резервное копирование",
+         "download_rootfs_button": "Скачать архив с rootfs",
+         "download_configs_button": "Скачать файлы конфигурации",
+         "download_everything_button": "Скачать всё",
+         "rootfs_warning1": "Из этих архивов пока нельзя восстановить систему, они только для того, чтобы иметь резервную копию ваших файлов",
+         "rootfs_warning2": "Система может работать медленнее, пока архив скачивается",
+         "rootfs_warning3": "В архив rootfs не включаются файлы, находящиеся в разделе /mnt/data"
+      },
+      "factory_reset": {
+         "title": "Сброс к заводским настройкам",
+         "warning1": "Используйте кнопку \"Выбрать файл прошивки\" чтобы обновить прошивку и сбросить все настройки к заводским",
+         "warning2": "Используйте кнопку \"Сброс к заводским настройкам\" чтобы сбросить все настройки и ПО к заводскому состоянию",
+         "confirm_prompt": "Наберите \"factoryreset\" чтобы подтвердить и продолжить",
+         "modal_title": "Подтверждение сброса",
+         "modal_page": "<p><strong>Все ваши данные будут потеряны!</strong></p><p>Вы должны подтвердить это действие. Отменить его будет невозможно.</p>"
+      },
+      "update": {
+         "title": "Обновление прошивки",
+         "help": "Скачать прошивку",
+         "expandrootfs": "Расширить rootfs (с 1Гб до 2Гб), если прошивка поддерживает эту возможность",
+         "backup_modal_title": "Резервная копия rootfs",
+         "backup_first_page": "<p>При обновлении сохраняются пользовательские файлы и настройки только в /mnt/data. <strong>Стороннее ПО (nodered, SH и т.п.) будет удалено!</strong></p><p>Нажмите на кнопку <strong>Скачать архив</strong>, чтобы загрузить резервную копию rootfs, где могут оставаться файлы настроек, не перенесённые в /mnt/data.</p><p>Этот архив сейчас не может быть использован для восстановления Wiren Board.</p>",
+         "backup_second_page": "<p>Отлично! <strong>Дождитесь окончания загрузки</strong> архива и нажмите на кнопку <strong>Выбрать файл прошивки</strong>, чтобы начать обновление.</p>"
+      },
+      "errors": {
+         "unavailable": "Сервис обновления прошивки не доступен",
+         "stalled": "Обновление прошивки прервалось",
+         "reboot": "Перезагрузка заняла слишком много времени",
+         "unknown": "Во время обновления произошла ошибка"
+      },
+      "buttons": {
+         "reset": "Сброс к заводским настройкам",
+         "select": "Выбрать файл прошивки",
+         "select_and_reset": "Выбрать файл прошивки и обновить со сбросом",
+         "dismiss": "Отменить",
+         "hide": "Скрыть",
+         "download_backup": "Скачать архив",
+         "select_anyway": "Мне не нужен архив"
+      },
+      "states": {
+         "complete": "Обновление прошивки завершено",
+         "reboot": "Перезагрузка, пожалуйста, подождите",
+         "uploading": "Файл прошивки загружается",
+         "uploaded": "Загрузка завершена",
+         "upload_error": "Ошибка загрузки"
+      },
+      "cloud-status": {
+         "title": "Подключение к облаку",
+         "activation-link-preamble": "Почти готово! Для подключения контроллера к Wiren Board Cloud, нажмите",
+         "activation-link": "эту ссылку",
+         "status-ok": "Этот контроллер подключен к облаку",
+         "status-starting": "Сервис wb-cloud-agent запускается",
+         "status-connecting": "Подключаемся к облаку",
+         "status-stopped": "Сервис wb-cloud-agent не запущен",
+         "status-error": "Ошибка подключения к облаку",
+         "goto-cloud": "Перейти в Wiren Board Cloud"
+      }
    },
-   "view-svg-dashboard": {
+   "svg-dashboard": {
       "buttons": {
          "fullscreen": "Перейти в полноэкранный режим",
          "exit-fullscreen": "Выйти из полноэкранного режима",
          "edit": "Редактировать"
+      },
+      "prompt": {
+         "confirm-heading": "Подтверждение действия",
+         "confirm-question": "Вы уверены?"
       }
    },
    "edit-svg-dashboard": {
@@ -264,14 +366,12 @@
          "bindings-title": "Привязки",
          "write-enable": "Запись в канал",
          "check": "Требовать подтверждение действия",
-         "confirm-question": "Вы уверены?",
          "read-enable": "Чтение",
          "style-enable": "Стиль оформления",
          "visible-enable": "Видимость",
          "channel": "Канал",
          "value": "Значение",
          "tag-name": "Тип элемента: {{tag}}",
-         "confirm-remove": "Действительно удалить панель?",
          "condition": "Условие",
          "select-channel-placeholder": "Выберите канал",
          "off": "Значение выключенного состояния",
@@ -300,9 +400,14 @@
          "cancel": "Отменить",
          "edit-json": "В виде JSON",
          "load-svg": "Загрузить SVG",
+         "download-svg": "Скачать SVG",
          "to-dashboards-list": "Список панелей",
          "preview": "Демонстрация",
          "remove": "Удалить"
+      },
+      "prompt": {
+         "confirm-remove": "Удаление панели",
+         "delete-dashboard": "Вы действительно хотите удалить панель \"{{name}}\"?"
       }
    },
    "validator": {
@@ -341,28 +446,35 @@
          "current-firmware": "Текущая версия прошивки: {{firmware}}",
          "actual-firmware": "Текущая версия прошивки: {{firmware}} (актуальная)",
          "new-firmware": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}.",
-         "new-firmware-link": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>",
-         "new-bootloader": "Доступна новая версия загрузчика: {{available_bootloader}}, текущая: {{current_bootloader}}.",
+         "new-firmware-link": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>",
+         "new-bootloader": "Доступна новая версия загрузчика: {{available_bootloader}}, текущая: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Список изменений</0>.",
          "new-software-components": "Доступны новые версии:",
-         "new-bootloader-item": "загрузчик {{available_bootloader}}, текущая {{current_bootloader}};",
+         "new-bootloader-item": "загрузчик {{available_bootloader}}, текущая {{current_bootloader}}; <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Список изменений</0>;",
          "new-firmware-item": "прошивка {{available_firmware}}, текущая {{current_firmware}}.",
-         "new-firmware-item-link": "прошивка {{available_firmware}}, текущая {{current_firmware}}. <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
-         "manual-update": "<0 href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update#%D0%9E%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D1%81%D0%BE_%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D1%8B%D0%BC%D0%B8_%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0%D0%BC%D0%B8_%D1%81%D0%BE%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F\">Инструкция по обновлению</0>",
+         "new-firmware-item-link": "прошивка {{available_firmware}}, текущая {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
+         "manual-update": "<0 target=\"_blank\" href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update#%D0%9E%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D1%81%D0%BE_%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D1%8B%D0%BC%D0%B8_%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0%D0%BC%D0%B8_%D1%81%D0%BE%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F\">Инструкция по обновлению</0>",
          "update-firmware-notice": "Не отключайте устройство во время обновления",
          "erase-settings-notice": "В устройстве старый загрузчик, поэтому при обновлении неуказанные в веб-интерфейсе настройки будут утеряны",
          "new-component-item": "компонент {{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
-         "new-component-item-link": "компонент {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
+         "new-component-item-link": "компонент {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
          "new-components": "Доступны новые версии прошивок компонентов:",
          "new-component": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
-         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
+         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>.",
          "updating-component": "Обновление прошивки компонента {{model}}:{{maybe_current_firmware}}{{available}}",
          "component_current_version": ", текущая {{current_firmware}}.",
          "component_update_current_version": " {{current}} на ",
          "channel": "Канал",
          "mode": "Опрос",
          "period": "Период (мс)",
-         "unknown": "Неизвестно",
-         "custom-channels": "Пользовательские каналы"
+         "custom-channels": "Пользовательские каналы",
+         "loading-template": "Загрузка шаблона устройства...",
+         "reading-parameters": "Чтение параметров из устройства...",
+         "better-template": "Для этого устройства доступен новый шаблон. Устройство продолжит корректно работать с текущим шаблоном. Переключитесь, если нужна поддержка новых функций или исправление ошибок.",
+         "select-template": "Выберите шаблон",
+         "read-registers-disabled": "Параметры не прочитаны, показаны значения по умолчанию. Некоторые настройки зависят от версии прошивки и могут быть недоступны в устройстве",
+         "read-registers-manual": "Устройство доступно, можно прочитать параметры, но это удалит все сделанные вами изменения",
+         "restoring-device": "Восстановление прошивки устройства",
+         "uncommitted-settings": "У вас есть измененные настройки, которые будут утеряны. Продолжить?"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -378,7 +490,9 @@
          "resolve-duplicate-mqtt-topic": "Задать уникальный идентификатор",
          "search-disconnected-device": "Найти устройство",
          "update": "Обновить",
-         "parameters": "Параметры"
+         "parameters": "Параметры",
+         "reread-config": "Перечитать настройки",
+         "switch-template": "Переключить шаблон"
       },
       "errors": {
          "write": "Ошибка при сохранении настроек. Более детальная информация находится в журнале работы сервиса wb-mqtt-confed",
@@ -399,7 +513,14 @@
          "update-error-rpc-timeout": "Убедитесь, что сервис wb-mqtt-serial запущен и работает корректно.",
          "update-error-download": "Не удалось загрузить файл с обновлением. Проверьте интернет-соединение.",
          "add-device": "Ошибка при добавлении устройства: {{error}}. Детальную информацию можно посмотреть в системном журнале wb-mqtt-serial",
-         "change-device-type": "Ошибка при изменении типа устройства: {{error}}. Детальную информацию можно посмотреть в системном журнале wb-mqtt-serial"
+         "change-device-type": "Ошибка при изменении типа устройства: {{error}}. Детальную информацию можно посмотреть в системном журнале wb-mqtt-serial",
+         "load-registers": "Ошибка при чтении текущих настроек из устройства: {{error}}. Для параметров, отсутствующих в конфигурационном файле, отображаются значения по умолчанию",
+         "supported-since": "Поддерживается с прошивки {{fw}}",
+         "not-supported-param": "Прошивка не поддерживает этот параметр",
+         "fw-mismatch": "Текущая прошивка устройства {{currentFw}} не поддерживается этим шаблоном. Минимальная требуемая версия: {{requiredFw}}. Обновите прошивку или переключитесь на другой шаблон.",
+         "model-mismatch": "Выбранный шаблон не поддерживает устройство {{deviceModel}} с прошивкой {{currentFw}}. Пожалуйста, выберите другой шаблон.",
+         "bad-value-from-registers": "Из устройства прочитано значение \"{{value}}\", которое не подходит для этого параметра. Можете задать своё — оно будет записано в устройство. Если это не важно, можно оставить как есть.",
+         "several-param-variants": "В шаблоне задано несколько вариантов описания этого параметра. Исправьте шаблон устройства."
       }
    },
    "exp-check": {
@@ -408,7 +529,7 @@
       "ssh_desc": "доступ к консоли контроллера со стандартным паролем root/wirenboard",
       "http_desc": "доступ к веб-интерфейсу без пароля",
       "mqtt_desc": "доступ к MQTT-брокеру без пароля",
-      "found_instructions": "Как защитить контроллер Wiren Board",
+      "found_instructions": "Как защитить контроллер Wiren Board: ",
       "support_url": "https://wirenboard.com/wiki/Security"
    },
    "mbgate": {
@@ -454,7 +575,8 @@
          "title": "Название",
          "description": "Описание",
          "notice": "Для просмотра этой страницы необходимо получить соответствующие ",
-         "access": "права доступа"
+         "access": "права доступа",
+         "copy": "Скопировано в буфер обмена"
       },
       "buttons": {
          "save": "Записать"
@@ -475,6 +597,7 @@
       "mA": "мА",
       "m^3/h": "м³/ч",
       "m^3": "м³",
+      "g/m^3": "г/м³",
       "Gcal/h": "Гкал/ч",
       "cal": "кал",
       "Gcal": "Гкал",
@@ -497,7 +620,10 @@
       "dB": "дБ",
       "Hz": "Гц",
       "rpm": "об/мин",
-      "Pa" : "Па"
+      "Pa" : "Па",
+      "var" : "вар",
+      "VA" : "ВА",
+      "kvarh" : "кварч"
    },
    "widget": {
       "labels": {
@@ -533,11 +659,34 @@
          "add": "Добавить на панель",
          "save": "Сохранить",
          "delete": "Удалить виджет",
+         "delete-control": "Удалить контрол",
          "copy": "Копировать виджет",
          "edit": "Редактировать виджет",
          "edit-json": "Редактировать JSON",
          "editor": "Визуальный редактор",
          "exists-on-dashboard": "Уже добавлен"
+      }
+   },
+   "widgets": {
+      "title": "Виджеты",
+      "labels": {
+         "name-and-description": "Название и описание",
+         "cells": "Контролы",
+         "types": "Типы",
+         "values": "Значения",
+         "graph": "История",
+         "dashboards": "Панели",
+         "preview": "Демонстрация"
+      },
+      "errors": {
+         "empty": "Не создано ни одного виджета",
+         "hidden": "Страница «Виджеты» сейчас скрыта из навигации — включить её можно в <0>настройках веб-интерфейса</0>"
+      },
+      "buttons": {
+         "add": "Добавить на панель",
+         "delete": "Удалить виджет",
+         "widget-view": "В виде виджетов",
+         "table-view": "В виде текста"
       }
    },
    "dashboard": {
@@ -583,10 +732,12 @@
       },
       "labels": {
          "delete-title": "Удаление правила",
+         "open-rule": "Открыть правило \"{{path}}\"",
          "title-placeholder": "Название правила",
          "success": "Правило сохранено",
          "success-errors": "Правило сохранено с ошибками",
          "with-errors": "С ошибками",
+         "inactive": "Правило отключено",
          "switch-on": "Включить",
          "switch-off": "Выключить"
       },
@@ -599,6 +750,7 @@
       }
    },
    "rules-console": {
+      "title": "Правила",
       "labels": {
          "filter-all": "Все сообщения"
       },
@@ -608,6 +760,16 @@
          "dock-bottom": "Закрепить снизу",
          "dock-right": "Закрепить справа",
          "close": "Закрыть"
+      }
+   },
+   "console-panel": {
+      "title": "Консоль",
+      "buttons": {
+         "clear": "Очистить",
+         "dock-bottom": "Закрепить снизу",
+         "dock-right": "Закрепить справа",
+         "close": "Закрыть",
+         "close-tab": "Закрыть вкладку"
       }
    },
    "logs":{
@@ -637,7 +799,7 @@
       }
    },
    "page": {
-      "access-denied": "Для просмотра этой страницы необходимо получить соответствующие <0>права доступа</0>.",
+      "access-denied": "У вас недостаточно прав для просмотра этой страницы",
       "not-found": "Страница не найдена: 404",
       "not-found-description": "Вы запрашиваете несуществующую страницу"
    },
@@ -661,6 +823,7 @@
          "admin": "Администратор",
          "user": "Пользователь",
          "operator": "Оператор",
+         "confirm-delete-heading": "Удаление пользователя",
          "confirm-delete": "Вы действительно хотите удалить пользователя \"{{name}}\"?",
          "autologin": "Автоматически входить от имени пользователя",
          "no-autologin": "Не использовать автоматический вход",
@@ -670,8 +833,10 @@
       "buttons": {
          "save": "Сохранить",
          "add": "Добавить",
+         "edit": "Редактировать",
          "delete": "Удалить",
-         "enable-https": "Настроить HTTPS"
+         "enable-https": "Настроить HTTPS",
+         "use-http": "Остаться на HTTP"
       }
    },
    "login": {
@@ -681,21 +846,25 @@
       },
       "buttons": {
          "login": "Войти",
-         "auto-login": "Войти без пароля"
+         "auto-login": "Войти без пароля",
+         "choose-language": "Выбор языка"
       },
       "labels": {
+         "authorization-title": "Авторизация в интерфейсе контроллера",
          "login": "Имя",
          "password": "Пароль",
          "documentation": "Документация"
       }
    },
    "alice": {
-      "title": "Настройка интеграции с Яндекс Алисой",
+      "title": "Интеграция с Яндекс Алисой",
       "labels": {
-         "unavailable": "Модуль интеграции с Яндекс Алисой не установлен",
-         "is-binded": "Данный контроллер привязан.",
+         "unavailable": "Модуль интеграции с Яндекс Алисой не установлен или остановлен сервис конфигуратора",
+         "is-binded": "контроллер привязан",
          "onboarding1": "Для настройки интеграции с платформой Умный дом Яндекс рекомендуем сначала привязать контроллер через Яндекс ID",
          "onboarding2": "Добавить и настроить устройство для дальнейшего взаимодействия через Алису и платформу Умный дом Яндекс",
+         "enable-integration": "Активировать",
+         "enable-integration-caption": "Активировать интеграцию",
          "room": "Комната",
          "room-name": "Название комнаты",
          "empty-list": "Устройства не добавлены",
@@ -724,13 +893,20 @@
          "device-capabilities": "Умения",
          "device-capabilities-description": "Список того, что может делать устройство",
          "device-properties": "Свойства",
-         "device-properties-description": "Список характеристик устройства"
+         "device-properties-description": "Список характеристик устройства",
+         "event-value": "Значение"
       },
       "buttons": {
          "add-room": "Добавить комнату",
+         "edit-room-name": "Изменить название комнаты",
+         "delete-room": "Удалить комнату",
          "add-device": "Добавить устройство",
+         "edit-device-name": "Изменить название устройства",
+         "delete-device": "Удалить устройство",
+         "copy-device": "Копировать устройство",
+         "open-device": "Открыть устройство \"{{name}}\"",
          "bind": "Привязать контроллер через Яндекс ID",
-         "check-binding-status": "Проверить статус",
+         "check-binding-status": "Текущий статус:",
          "save": "Сохранить",
          "add-capability": "Добавить умение",
          "add-property": "Добавить свойство",
@@ -754,14 +930,17 @@
          "openable": "Управление открытием/закрытием",
          "other": "Остальные устройства"
       },
-      "notifications": {
-         "room-added": "Комната \"{{name}}\" сохранена",
-         "room-updated": "Настройки комнаты \"{{name}}\" обновлены",
-         "room-deleted": "Комната \"{{name}}\" удалена",
-         "device-added": "Устройство \"{{name}}\" сохранено",
-         "device-updated": "Настройки устройства \"{{name}}\" обновлены",
-         "device-deleted": "Устройство \"{{name}}\" удалено",
-         "device-copied": "Устройство скопировано"
+      "errors": {
+         "integration-error": "Ошибка при изменении состояния интеграции",
+         "integration-enabled-binding-required": "Интеграция активирована, но контроллер не привязан. Перейдите по ссылке, чтобы привязать его.",
+         "link-status-unavailable": "Сервис интеграции с Алисой сейчас недоступен."
+      },
+      "binding":{
+         "unlink-controller": "(отвязать контроллер)",
+         "confirm-unlink": "Отвязать контроллер?",
+         "confirm-unlink-message": "Вы действительно хотите отвязать контроллер от аккаунта Яндекс?",
+         "confirm-unlink-button":"Отвязать",
+         "cur-status": "Текущий"
       }
    },
    "web-ui-settings": {
@@ -774,6 +953,7 @@
          "add-prefix-to-topic": "Добавлять префикс (/client/user_id/)",
          "common-settings": "Общие настройки",
          "show-system-devices": "Показывать системные устройства",
+         "show-widgets-page": "Отображать в навигации страницу Виджеты",
          "language": "Язык интерфейса",
          "default-dashboard": "Панель по-умолчанию",
          "https-settings": "Настройки HTTPS",
@@ -791,6 +971,19 @@
          "get-https-status": "Не удалось получить статус поддержки HTTPS: {{error}}"
       }
    },
+   "mqtt": {
+      "title": "Каналы MQTT",
+      "labels": {
+         "search": "Поиск по устройствам",
+         "device": "Устройство",
+         "control": "Контрол",
+         "type": "Тип",
+         "topic": "MQTT-топик",
+         "value": "Значение",
+         "status": "Статус",
+         "error": "Ошибка: {{error}}"
+      }
+   },
    "json-editor": {
       "errors": {
          "not-a-number": "Введите число",
@@ -799,6 +992,7 @@
          "not-a-boolean": "Выберите значение",
          "not-in-enum": "Выберите значение из списка",
          "not-a-byte-array": "Введите массив чисел от 0 до 255 в десятичном или шестнадцатеричном формате (0-255 или 0x00-0xFF), разделенных запятыми",
+         "invalid-1-wire-format": "Введите значение в формате 28-************",
          "min-length": "Минимальное число символов: {{limit}}",
          "max-length": "Максимальное число символов: {{limit}}",
          "invalid-format": "Неверный формат",
@@ -808,7 +1002,51 @@
          "required": "Задайте значение"
       },
       "labels": {
-         "select-params": "Добавьте или удалите параметры"
+         "select-params": "Добавьте или удалите параметры",
+         "dali-mask": "MASK (не изменять)",
+         "dali-mask-tc-limit-not-set": "MASK (не задан)"
+      }
+   },
+   "dali": {
+      "title": "Устройства DALI",
+      "labels": {
+         "group": "Группа {{name}}",
+         "bus-monitor": "Монитор шины",
+         "bus-settings": "Широковещательные настройки",
+         "websocket-enabled": "Эмуляция шлюза Lunatone DALI-2 IoT",
+         "websocket-description": "Включение этой опции запустит WebSocket-сервер, который эмулирует Lunatone DALI-2 IoT Gateway. К нему можно подключить Lunatone DALI Cockpit для управления устройствами. В DALI Cockpit надо выбрать Network в качестве интерфейса шины, указать DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, ввести адрес контроллера и порт, заданный ниже.",
+         "websocket-port": "Порт WebSocket'а",
+         "websocket-port-error": "Порт должен быть целым числом от 1 до 65535",
+         "polling-interval": "Интервал опроса (с)",
+         "polling-interval-error": "Интервал должен быть целым положительным числом",
+         "identify-tooltip": "Устройство будет мигать или другим способом привлекать внимание, что поможет его найти среди других устройств",
+         "no-gateways": "Нет настроенных DALI-шлюзов. Настройте их на странице <0>настроек wb-mqtt-serial</0>.",
+         "scan-error": "Сканирование завершилось с ошибкой в {{when}}: {{error}}",
+         "scan-stage-queued": "В очереди",
+         "scan-stage-query_short_addresses": "Опрос коротких адресов. Найдено: {{count}}",
+         "scan-stage-binary_search": "Двоичный поиск. Найдено: {{count}}",
+         "scan-stage-dali2_query_short_addresses": "DALI 2 опрос коротких адресов. Найдено: {{count}}",
+         "scan-stage-dali2_binary_search": "DALI 2 двоичный поиск. Найдено: {{count}}",
+         "scan-stage-read_device_info": "Чтение информации об устройствах. Найдено: {{count}}",
+         "reset-dialog-heading": "Сброс устройства",
+         "reset-settings-option-title": "Сбросить настройки",
+         "reset-settings-option-description": "Параметры возвращаются к заводским значениям. Адрес сохраняется, устройство остаётся в конфигурации шлюза и MQTT.",
+         "reset-device-option-title": "Сбросить адрес и настройки",
+         "reset-device-option-description": "Параметры и адрес стираются. Устройство удаляется из конфигурации шлюза и MQTT, становится доступным для повторного сканирования.",
+         "reset-unsaved-warning": "Несохранённые изменения будут потеряны."
+      },
+      "buttons": {
+         "rescan": "Пересканировать",
+         "stop-scan": "Остановить",
+         "return": "К списку устройств",
+         "reload": "Прочитать параметры заново",
+         "clear-log": "Очистить журнал",
+         "pause-log": "Приостановить получение сообщений",
+         "resume-log": "Возобновить получение сообщений",
+         "set": "Задать",
+         "identify": "Идентифицировать",
+         "reset": "Сброс…",
+         "reset-confirm": "Сбросить"
       }
    }
 }

@@ -2,7 +2,7 @@ function fwUpdateProxyService(MqttRpc) {
   'ngInject';
 
   return MqttRpc.getProxy(
-    'wb-device-manager/fw-update',
+    'wb-mqtt-serial/fw-update',
     ['GetFirmwareInfo', 'Update', 'ClearError', 'Restore'],
     'fwUpdateProxy'
   );

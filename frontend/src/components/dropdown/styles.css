@@ -84,6 +84,7 @@
 .dropdown-s .dropdown__group-heading {
   height: 28px;
   padding: 3px 8px;
+  max-height: 30px;
 }
 
 .dropdown-s .dropdown__group-heading + div .dropdown__option {
@@ -122,6 +123,7 @@
   background: var(--primary-color);
   border: 1px solid var(--primary-color);
   color: var(--button-color);
+  height: 34px;
 }
 
 .dropdown-button:hover .dropdown__control {
@@ -141,6 +143,10 @@
 
 .dropdown__control--is-disabled {
   background-color: var(--border-color);
+}
+
+.dropdown__menu-notice {
+  padding: 6px;
 }
 
 .dropdown__control:has(.dropdown__value-container--is-multi.dropdown__value-container--has-value) {

@@ -1,5 +1,5 @@
 import type { CompletionSource } from '@codemirror/autocomplete';
-import { Device, commonCellTypes, DeviceStore } from '@/stores/device';
+import { type Device, commonCellTypes, type DevicesStore } from '@/stores/devices';
 
 const makeDevTopicsSource = (topics: string[]): CompletionSource => {
   return (context) => {
@@ -47,7 +47,7 @@ const makeGetDeviceSource = (devices: string[]): CompletionSource => {
 
 const makeGetControlSource = (
   devices: Map<string, Device>,
-  topics: string[] = []
+  topics: string[] = [],
 ): CompletionSource => {
   return (context) => {
     const before = context.matchBefore(/(?:getDevice\(\s*(['"])([^'"]+)\1\)\.)?getControl\(\s*(['"]?)([^'"]*)$/);
@@ -105,7 +105,7 @@ const typeCompletionSource: CompletionSource = (context) => {
 const makeTopicSource = (fnName: string, topics: string[]): CompletionSource => {
   return (context) => {
     const before = context.matchBefore(
-      new RegExp(`${fnName}\\(\\s*(['"]?)([^'",)]*)$`)
+      new RegExp(`${fnName}\\(\\s*(['"]?)([^'",)]*)$`),
     );
     if (!before) {
       return null;
@@ -127,9 +127,9 @@ const makeTopicSource = (fnName: string, topics: string[]): CompletionSource => 
   };
 };
 
-export const getEnums = (devicesStore: DeviceStore) => {
+export const getEnums = (devicesStore: DevicesStore) => {
   const devices = Array.from(devicesStore.devices.keys());
-  const topics = devicesStore.controls.map(({ id }) => id);
+  const topics = devicesStore.topicsWithoutSystem.flatMap((g) => g.options.map((o) => o.value));
 
   return [
     typeCompletionSource,

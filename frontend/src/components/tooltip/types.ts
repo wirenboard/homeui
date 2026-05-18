@@ -1,10 +1,11 @@
-import { Placement } from '@floating-ui/react';
-import { ReactElement } from 'react';
+import { type Placement } from '@floating-ui/react';
+import { type ReactElement } from 'react';
 
 export interface TooltipProps {
   className?: string;
   text: string | ReactElement;
   trigger?: 'hover' | 'click';
+  id?: string;
   placement?: Placement;
   closeOnClick?: boolean;
 }

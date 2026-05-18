@@ -1,0 +1,11 @@
+.dashboardCarousel {
+    height: 100%;
+    position: relative;
+    flex-grow: 1;
+}
+
+.dashboardCarousel .carousel,
+.dashboardCarousel .slider-wrapper,
+.dashboardCarousel .slider {
+    height: 100%;
+}

@@ -1,0 +1,4 @@
+.configs-itemPath {
+    user-select: text !important;
+    color: var(--text-color);
+}

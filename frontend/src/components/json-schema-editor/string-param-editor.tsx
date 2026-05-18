@@ -11,6 +11,7 @@ const StringEditor = observer(({
   descriptionId,
   errorId,
   translator,
+  hideError,
 }: StringEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
@@ -24,6 +25,7 @@ const StringEditor = observer(({
       label: translator.find(option.label, currentLanguage),
     }));
   }, [store.enumOptions, translator, currentLanguage]);
+  const hasErrors = store.hasErrors && !hideError;
   return store.schema.enum ? (
     <Dropdown
       id={inputId}
@@ -31,6 +33,8 @@ const StringEditor = observer(({
       value={valueToDisplay}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
+      isDisabled={store.schema.options?.wb?.read_only}
+      className={hasErrors ? 'wb-jsonEditor-propertyDropdownError' : ''}
       onChange={(option) => {
         if (typeof option.value === 'string') {
           store.setValue(option.value);
@@ -45,8 +49,10 @@ const StringEditor = observer(({
       value={valueToDisplay}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       ariaDescribedby={descriptionId}
-      ariaInvalid={store.hasErrors}
-      ariaErrorMessage={errorId}
+      ariaInvalid={hasErrors}
+      ariaErrorMessage={hasErrors ? errorId : undefined}
+      isDisabled={store.schema.options?.wb?.read_only}
+      className={hasErrors ? 'wb-jsonEditor-propertyInputError' : ''}
       onChange={(value) => {
         if (value === '' && !store.required && isOptInEditor) {
           store.setUndefined();

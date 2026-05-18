@@ -1,5 +1,7 @@
 :root {
     --background-color: #fff;
+    --background-accent-color: #f5f5f5;
+    --background-accent-color-hover: #fafafa;
 
     --primary-color: #337ab7;
     --primary-color-hover: #5393c8;
@@ -10,6 +12,7 @@
     --success-color-hover: #5b835b;
     --success-color-border: #659265;
     --warn-color: #eebc40;
+    --warn-color-hover: #fecb4b;
     --orange-color: #ea8623;
     --danger-color: #dc3545;
     --danger-color-hover: #f73b3b;
@@ -34,14 +37,13 @@
     --nav-status-color: #fff;
     --nav-debug-enabled-color: var(--orange-color);
 
+    --font: 'Roboto', sans-serif;
     --font-size-small: 13px;
     --font-size-medium: 14px;
-    --font-size-large: 16px;
+    --font-size-large: 15px;
 
     --scrollbar-color: var(--gray-color);
     --scrollbar-background: #0000;
-
-    --font: "Open Sans", Arial, Helvetica, Sans-Serif;
 
     --input-action-background: #3498db;
     --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(38, 167, 255, 0.5);
@@ -65,14 +67,12 @@
     --alert-color: var(--text-color);
     --alert-info-background: #d1ecf1;
     --alert-info-border: #bee5eb;
-    --alert-success-background: #d4edda;
+    --alert-success-background: #cde0c4;
     --alert-success-border: #c3e6cb;
     --alert-warn-background: #fff3cd;
     --alert-warn-border: #ffeeba;
     --alert-danger-background: #f8d7da;
     --alert-danger-border: #f5c6cb;
-
-    --notification-box-shadow: 0 4px 10px -2px #aa9c9c;
 
     --tooltip-background: #333;
     --tooltip-color: #fff;
@@ -137,8 +137,6 @@
     --alert-warn-border: #eebc40;
     --alert-danger-background: #dc3545;
     --alert-danger-border: #dc3545;
-
-    --notification-box-shadow: 0 4px 10px -2px var(--input-background);
 
     --tooltip-background: #7676ff;
     --tooltip-color: #fff;

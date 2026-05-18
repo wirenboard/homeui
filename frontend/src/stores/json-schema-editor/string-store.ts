@@ -20,8 +20,8 @@ export class StringStore implements PropertyStore {
     if (typeof initialValue === 'string') {
       this.value = initialValue;
     } else if (initialValue === undefined) {
-      if (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined) {
-        this.value = getDefaultStringValue(schema);
+      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
+        this.value = getDefaultStringValue(schema) ?? '';
       } else {
         this.value = undefined;
       }
@@ -89,7 +89,11 @@ export class StringStore implements PropertyStore {
   }
 
   setValue(value: string): void {
-    this.value = value;
+    if (typeof value !== 'string') {
+      this.value = new MistypedValue(value);
+    } else {
+      this.value = value;
+    }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
   }
@@ -105,7 +109,7 @@ export class StringStore implements PropertyStore {
       this.setUndefined();
       return;
     }
-    this.setValue(getDefaultStringValue(this.schema));
+    this.setValue(getDefaultStringValue(this.schema) ?? '');
   }
 
   get hasErrors(): boolean {

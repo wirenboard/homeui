@@ -23,6 +23,7 @@ export class OptionsStore {
     makeObservable(this, {
       options: observable,
       value: observable,
+      initialValue: observable,
       hasErrors: observable,
       selectedOption: observable,
       formColumns: observable,

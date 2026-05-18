@@ -1,6 +1,4 @@
-'use strict';
-
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 // Editor for array.
 // Extends tabs layout with icons fo every tab.
@@ -19,7 +17,7 @@ import { JSONEditor } from '../../3rdparty/jsoneditor';
 //     "color": "default" // Bootstrap contextual color ("default", "warning", "danger" etc.)
 // }
 
-function makeWbArrayEditor() {
+export function makeWbArrayEditor() {
   JSONEditor.defaults.languages.en.select_type = 'Select type';
   return class extends JSONEditor.defaults.editors['array'] {
     constructor(options, defaults) {
@@ -334,5 +332,3 @@ function makeWbArrayEditor() {
     }
   };
 }
-
-export default makeWbArrayEditor;

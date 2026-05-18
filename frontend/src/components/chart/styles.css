@@ -1,0 +1,6 @@
+.js-plotly-plot .plotly [data-title]::before {
+    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) var(--tooltip-background) !important;
+}
+.js-plotly-plot .plotly [data-title]::after {
+    background: var(--tooltip-background) !important;
+}

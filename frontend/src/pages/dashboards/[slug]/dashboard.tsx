@@ -14,6 +14,7 @@ import { ColumnsWrapper } from '@/components/columns-wrapper';
 import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
+import { authStore, UserRole } from '@/stores/auth';
 import { useToggleFullscreen } from '@/utils/fullScreen';
 import { useParseHash } from '@/utils/url';
 import { WidgetAdd } from './components/widget-add';
@@ -21,24 +22,28 @@ import { WidgetEdit } from './components/widget-edit';
 import type { DashboardPageProps } from './types';
 import './styles.css';
 
-const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }: DashboardPageProps) => {
+const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPageProps) => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
   const { dashboards, widgets, isLoading } = dashboardsStore;
+  const hasEditRights = authStore.hasRights(UserRole.Operator);
   const { id: dashboardId, params } = useParseHash();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
 
-  const actions = hasEditRights ? [
+  const actions = hasEditRights && !params.has('hmi') ? [
     {
-      title: t('dashboard.buttons.remove-widget'), action: (id: string) => {
-        setRemovedWidgetId(id);
-      }, icon: TrashIcon,
+      title: t('dashboard.buttons.remove-widget'), action: (id: string) => setRemovedWidgetId(id),
+      icon: TrashIcon,
+      isPopupAction: true,
     },
     {
-      title: t('dashboard.buttons.edit-widget'), action: (id: string) => setEditingWidgetId(id), icon: EditIcon,
+      title: t('dashboard.buttons.edit-widget'),
+      action: (id: string) => setEditingWidgetId(id),
+      icon: EditIcon,
+      isPopupAction: true,
     },
   ] : [];
 
@@ -71,7 +76,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
             {hasEditRights && !isFullscreen && (
               <Button
                 label={t('dashboard.buttons.add-widget')}
-                variant="success"
+                aria-haspopup="dialog"
                 onClick={() => setIsAddWidgetModalOpened(true)}
               />
             )}
@@ -82,6 +87,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
               <Button
                 icon={isFullscreen ? <FullScreenExitIcon/> : <FullScreenIcon/>}
                 variant="secondary"
+                aria-label={isFullscreen ? t('dashboard.buttons.fullscreen-exit') : t('dashboard.buttons.fullscreen')}
                 onClick={() => toggleFullscreen()}
               />
             </Tooltip>
@@ -120,7 +126,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
                           {!!cell.name && <span className="dashboard-separatorTitle">{cell.name}</span>}
                         </div>
                       )
-                        : cell.name || 'nosuchcell'
+                        : <div>{cell.name || 'nosuchcell'}</div>
                       }
                     </Fragment>
                   ))}
@@ -150,7 +156,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
             dashboard={dashboards.get(dashboardId)}
             cells={cells}
             isOpened={isAddWidgetModalOpened}
-            controls={devicesStore.controls}
+            topics={devicesStore.topicsWithoutSystem}
             onClose={() => setIsAddWidgetModalOpened(false)}
           />
         )}
@@ -183,7 +189,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore, hasEditRights }
         <WidgetEdit
           widget={widgets.get(editingWidgetId)}
           cells={cells}
-          controls={devicesStore.controls}
+          topics={devicesStore.topicsWithoutSystem}
           isOpened={!!editingWidgetId}
           onClose={() => setEditingWidgetId(null)}
           onSave={(data) => {

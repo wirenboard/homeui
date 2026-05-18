@@ -1,21 +1,24 @@
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { Dialog } from '@/components/dialog';
-import { ConfirmationProps } from './types';
+import { type ConfirmationProps } from './types';
 import './styles.css';
 
 export const Confirm = ({
   className,
   acceptLabel,
+  cancelLabel,
   heading,
   headerActions,
+  footerActions,
   children,
   confirmCallback,
   closeCallback,
   width,
-  variant = 'default',
+  variant = 'primary',
   isOpened = false,
+  isLoading = false,
   isOverlayCloseDisabled = false,
   isPreventSubmit = false,
   isDisabled = false,
@@ -42,23 +45,29 @@ export const Confirm = ({
           }
         }}
       >
-        {!!children && <div className="dialog-content">{children}</div>}
-        <div className="dialog-actions">
-          <Button
-            type="button"
-            className="dialog-action"
-            label={t('modal.labels.cancel')}
-            variant="secondary"
-            onClick={closeCallback}
-          />
-          <Button
-            type="submit"
-            disabled={isDisabled}
-            className="dialog-action"
-            label={acceptLabel || t('modal.labels.yes')}
-            variant={variant === 'danger' ? 'danger' : 'primary'}
-            onClick={confirmCallback}
-          />
+        {!!children && <div className="confirm-content">{children}</div>}
+        <div className="confirm-actions">
+          {footerActions || (
+            <>
+              <Button
+                type="button"
+                className="confirm-action"
+                label={cancelLabel || t('modal.labels.cancel')}
+                variant="secondary"
+                disabled={isLoading}
+                onClick={closeCallback}
+              />
+              <Button
+                type="submit"
+                isLoading={isLoading}
+                disabled={isDisabled}
+                className="confirm-action"
+                label={acceptLabel || t('modal.labels.yes')}
+                variant={variant}
+                onClick={confirmCallback}
+              />
+            </>
+          )}
         </div>
       </form>
     </Dialog>

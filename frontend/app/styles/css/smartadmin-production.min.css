@@ -646,7 +646,7 @@ h3,
 h4 {
   margin: 0;
   font-family: var(--font);
-  font-weight: 300
+  font-weight: 400;
 }
 
 label {
@@ -1048,6 +1048,7 @@ input[type=week].ui-autocomplete-loading {
   border-left-width: 5px;
   padding: 10px;
   border-radius: 0;
+  font-size: var(--font-size-small);
   -webkit-border-radius: 0;
   -moz-border-radius: 0
 }
@@ -1066,7 +1067,7 @@ input[type=week].ui-autocomplete-loading {
   border-color: #953b39;
   color: #fff;
   background-color: #c26565;
-  text-shadow: none
+  text-shadow: none;
 }
 
 .alert-warning {

@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CopyIcon from '@/assets/icons/copy.svg';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Dropdown } from '@/components/dropdown';
@@ -13,27 +14,30 @@ import {
   DefaultRoom,
   deviceTypes,
   type AddDeviceParams,
-  type SmartDevice as SmartDeviceData
+  type SmartDevice as SmartDeviceData,
 } from '@/stores/alice';
-import { notificationsStore } from '@/stores/notifications';
+import { useAsyncAction } from '@/utils/async-action';
 import { DeviceSkills } from './components/device-skills';
-import type { SmartDeviceParams } from './types';
+import { type SmartDeviceProps } from './types';
 import './styles.css';
 
-export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpenDevice }: SmartDeviceParams) => {
+export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpenDevice }: SmartDeviceProps) => {
   const { t } = useTranslation();
   const { addDevice, devices, rooms, fetchData, deleteDevice, updateDevice, copyDevice } = aliceStore;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [category, setCategory] = useState<string>();
   const [isDeleteDevice, setIsDeleteDevice] = useState(false);
   const [data, setData] = useState<Partial<SmartDeviceData>>({ capabilities: [], properties: [] });
+  const [saveError, setSaveError] = useState(null);
 
   useEffect(() => {
     setIsEditingTitle(!id);
+    setSaveError(null);
     const cat = id
       ? Object.keys(deviceTypes).find((key) => deviceTypes[key].includes(devices.get(id).type))
       : Object.keys(deviceTypes).at(0);
     setCategory(cat);
+
     setData({
       name: id ? devices.get(id).name : '',
       room_id: id ? devices.get(id).room_id : DefaultRoom,
@@ -43,44 +47,45 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
     });
   }, [id]);
 
-  const save = useCallback(async (ev: FormEvent) => {
+  const [save, isSaving] = useAsyncAction(async (ev: FormEvent) => {
     ev.preventDefault();
     try {
+      const payload = { ...data } as AddDeviceParams;
+
       if (!id) {
-        const device = await addDevice(data as AddDeviceParams);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.device-added', { name: data.name }),
-        });
+        const device = await addDevice(payload);
         await fetchData();
         onSave(device);
       } else {
-        await updateDevice(id, data);
-        notificationsStore.showNotification({
-          variant: 'success',
-          text: t('alice.notifications.device-updated', { name: data.name }),
-        });
+        await updateDevice(id, payload);
         await fetchData();
       }
       setIsEditingTitle(false);
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
+      setSaveError(err.response.data.detail);
     }
-  }, [id, data]);
+  });
 
-  const onConfirmDelete = async () => {
+  const [onConfirmDelete, isDeleting] = useAsyncAction(async () => {
     try {
       await deleteDevice(id);
-      await fetchData();
-      notificationsStore.showNotification({
-        variant: 'success',
-        text: t('alice.notifications.device-deleted', { name: data.name }),
-      });
+      setIsDeleteDevice(false);
+      fetchData();
       onDelete();
     } catch (err) {
-      notificationsStore.showNotification({ variant: 'danger', text: err.response.data.detail });
+      await fetchData();
+      if (err.status === 404) {
+        return onDelete();
+      }
+      setSaveError(err.response.data.detail);
+      setIsDeleteDevice(false);
     }
-  };
+  });
+
+  const [onCopy, isCopied] = useAsyncAction(async () => {
+    const deviceId = await copyDevice(data as SmartDeviceData);
+    onOpenDevice(deviceId);
+  });
 
   return (
     <>
@@ -102,6 +107,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
                 size="small"
                 type="button"
                 icon={<EditSquareIcon />}
+                aria-label={t('alice.buttons.edit-device-name')}
                 variant="secondary"
                 isOutlined
                 onClick={() => setIsEditingTitle(true)}
@@ -111,26 +117,21 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
 
           {!!id && (
             <Button
-              size="small"
               type="button"
               icon={<CopyIcon />}
               variant="secondary"
+              aria-label={t('alice.buttons.copy-device')}
+              isLoading={isCopied}
               isOutlined
-              onClick={async () => {
-                const deviceId = await copyDevice(data as SmartDeviceData);
-                notificationsStore.showNotification({
-                  variant: 'success',
-                  text: t('alice.notifications.device-copied'),
-                });
-                onOpenDevice(deviceId);
-              }}
+              onClick={onCopy}
             />
           )}
           <Button
-            size="small"
             type="button"
             icon={<TrashIcon />}
-            variant="secondary"
+            variant="danger"
+            aria-label={t('alice.buttons.delete-device')}
+            aria-haspopup="dialog"
             isOutlined
             onClick={() => {
               if (id) {
@@ -142,11 +143,15 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
           />
           <Button
             type="submit"
+            isLoading={isSaving}
             disabled={!data.name}
             label={t('alice.buttons.save')}
-            variant="secondary"
+            variant="primary"
           />
         </form>
+
+        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+
         <div>
           <label className="aliceSmartDevice-label">
             <div>{t('alice.labels.room')}</div>
@@ -183,7 +188,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
           <DeviceSkills
             capabilities={data.capabilities}
             properties={data.properties}
-            deviceStore={deviceStore}
+            devicesStore={devicesStore}
             onCapabilityChange={(capabilities) => {
               setData((prev: SmartDeviceData) => ({
                 ...prev,
@@ -202,6 +207,7 @@ export const SmartDevice = observer(({ id, deviceStore, onSave, onDelete, onOpen
 
       <Confirm
         isOpened={isDeleteDevice}
+        isLoading={isDeleting}
         heading={t('alice.prompt.delete-device-title')}
         variant="danger"
         closeCallback={() => setIsDeleteDevice(false)}

@@ -1,0 +1,72 @@
+.connectionEditor {
+    display: flex;
+    gap: 12px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+}
+
+.connectionEditor-tabs {
+    min-width: 220px;
+
+    @media (max-width: 768px) {
+        .tabs {
+            max-width: 100%;
+        }
+    }
+}
+
+.connectionEditor-content {
+    width: 100%;
+    background: var(--table-item-hover);
+    padding: 12px;
+    border-radius: var(--input-border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.connectionEditor-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    @media (max-width: 768px) {
+        align-items: flex-end;
+    }
+}
+
+.connectionEditor-connectionNameWrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    white-space: nowrap;
+    margin: 0;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: unset;
+        gap: 12px
+    }
+}
+
+.connectionEditor-connectionName {
+    width: 100%;
+}
+
+.connectionEditor-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.connectionEditor-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.connectionEditor-add {
+    width: 100%;
+    margin-top: 6px;
+    white-space: normal;
+}

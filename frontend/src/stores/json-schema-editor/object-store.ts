@@ -1,6 +1,6 @@
 import { makeObservable, action, computed, observable } from 'mobx';
 import { MistypedValue } from './mistyped-value';
-import { StoreBuilder } from './store-builder';
+import { type StoreBuilder } from './store-builder';
 import type { JsonSchema, PropertyStore, JsonObject } from './types';
 
 export class ObjectParamStore {
@@ -18,13 +18,13 @@ export class ObjectParamStore {
    */
   public hasPermanentEditor: boolean;
 
-  constructor(key: string, store: PropertyStore) {
+  constructor(key: string, store: PropertyStore, initialValue?: unknown) {
     this.key = key;
     this.store = store;
     this.hasPermanentEditor = this.store.required ||
       this.store.schema.options?.wb?.show_editor ||
       this.store.schema.options?.show_opt_in;
-    this.disabled = !store.required && !store.schema.options?.wb?.show_editor;
+    this.disabled = !store.required && !store.schema.options?.wb?.show_editor && initialValue === undefined;
 
     makeObservable(this, {
       disabled: observable,
@@ -52,7 +52,7 @@ export class ObjectParamStore {
   }
 }
 
-function comparePropertyOrder([key1, schema1], [key2, schema2]) {
+export function comparePropertyOrder([key1, schema1], [key2, schema2]) {
   const order1 = schema1.propertyOrder ?? 10000;
   const order2 = schema2.propertyOrder ?? 10000;
   if (order1 === order2) {
@@ -86,17 +86,18 @@ export class ObjectStore implements PropertyStore {
           if (!store) {
             return;
           }
-          const param = new ObjectParamStore(key, store);
-          if (initialValueToSet === undefined) {
-            param.disable();
-          }
+          const param = new ObjectParamStore(key, store, initialValueToSet);
           this.params.push(param);
           this._paramByKey[key] = param;
         });
     }
 
     if (initialValue === undefined) {
-      this.isUndefined = true;
+      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
+        this.setDefault();
+      } else {
+        this.isUndefined = true;
+      }
     }
 
     makeObservable(this, {
@@ -108,6 +109,7 @@ export class ObjectStore implements PropertyStore {
       reset: action,
       setUndefined: action,
       setDefault: action,
+      setValue: action,
     });
   }
 
@@ -154,6 +156,24 @@ export class ObjectStore implements PropertyStore {
         param.store.setDefault();
       } else {
         param.store.setUndefined();
+      }
+    });
+    this.isUndefined = false;
+  }
+
+  setValue(value: unknown) {
+    if (value === undefined) {
+      this.setUndefined();
+      return;
+    }
+    if (typeof value !== 'object' || Array.isArray(value) || value === null) {
+      this.setUndefined();
+      return;
+    }
+    Object.entries(value).forEach(([key, val]) => {
+      const param = this.getParamByKey(key);
+      if (param) {
+        param.store.setValue(val);
       }
     });
     this.isUndefined = false;

@@ -33,8 +33,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('system', {
       url: '/system',
-      template: require('../views/system.html'),
-      controller: 'SystemCtrl as $ctrl',
+      template: '<system-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -46,12 +45,27 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('MQTTChannels', {
       url: '/MQTTChannels',
-      template: require('../views/MQTTChannels.html'),
-      controller: 'MQTTCtrl as $ctrl',
+      template: '<mqtt-channels-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'mqtt-channels' */ './controllers/MQTTChannelsController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     .state('accessLevel', {
       url: '/access-level',
       template: '<users-page />',
+      resolve: {
+        ctrl: ($q, $ocLazyLoad) => {
+          'ngInject';
+          return import(/* webpackChunkName: 'users' */ './controllers/usersController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
+        },
+      },
     })
     .state('scan', {
       url: '/scan',
@@ -70,11 +84,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
         },
       },
     })
-    //...........................................................................
     .state('widgets', {
-      url: '/widgets',
-      controller: 'WidgetsCtrl as $ctrl',
-      template: require('../views/widgets.html'),
+      url: '/dashboards/widgets',
+      template: '<widgets-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -83,6 +95,11 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
           );
         },
       },
+    })
+    //...........................................................................
+    .state('widgets-old', {
+      url: '/widgets',
+      redirectTo: 'widgets',
     })
     //...........................................................................
     .state('dashboards', {
@@ -101,6 +118,13 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     .state('dashboard', {
       url: '/dashboards/{id}?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}&{sourceDashboardId}',
       template: '<dashboard-page />',
+      params: {
+        id: { dynamic: true },
+        hmi: { dynamic: true },
+        hmicolor: { dynamic: true },
+        fullscreen: { dynamic: true },
+        sourceDashboardId: { dynamic: true },
+      },
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -113,8 +137,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('dashboard-svg', {
       url: '/dashboards/svg/view/:id?{hmi:boolean}&{hmicolor}&{fullscreen:boolean}',
-      controller: 'DashboardSvgCtrl as $ctrl',
-      template: require('../views/dashboard-svg.html'),
+      template: '<svg-dashboard-page />',
       params: {
         id: {
           dynamic: true,
@@ -204,8 +227,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('history', {
       url: '/history?{fullscreen:boolean}',
-      controller: 'HistoryCtrl as $ctrl',
-      template: require('../views/history.html'),
+      template: '<history-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -215,11 +237,9 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
         },
       },
     })
-    //...........................................................................
     .state('history.sample', {
-      url: '/{data}',
-      template: require('../views/history.html'),
-      controller: 'HistoryCtrl as $ctrl',
+      url: '/:id',
+      template: '<history-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -232,8 +252,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('configs', {
       url: '/configs',
-      controller: 'ConfigsCtrl as $ctrl',
-      template: require('../views/configs.html'),
+      template: '<configs-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -247,8 +266,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('configEdit', {
       url: '/configs/edit/{path:.*}',
-      controller: 'ConfigCtrl as $ctrl',
-      template: require('../views/config.html'),
+      template: '<config-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -260,7 +278,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     //...........................................................................
     .state('network-connections', {
-      url: '/network-connections/{path:.*}',
+      url: '/network-connections',
       template: require('../views/network-connections.html'),
       controller: 'NetworkConnectionsCtrl as $ctrl',
       resolve: {
@@ -275,7 +293,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     //...........................................................................
     .state('serial-config', {
       url: '/serial-config',
-      template: require('../views/serial-config.html'),
+      template: '<device-manager-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
@@ -326,16 +344,15 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
       },
     })
     //...........................................................................
-    .state('serial-metrics', {
-      url: '/serial-metrics',
-      controller: 'SerialMetricsCtrl as $ctrl',
-      template: require('../views/serial-metrics.html'),
+    .state('dali', {
+      url: '/dali',
+      template: '<dali-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';
-          return import(
-            /* webpackChunkName: 'serial-metrics' */ './controllers/serialMetricsController'
-          ).then(module => $ocLazyLoad.load({ name: module.default.name }));
+          return import(/* webpackChunkName: 'dali' */ './controllers/daliController').then(
+            module => $ocLazyLoad.load({ name: module.default.name })
+          );
         },
       },
     })

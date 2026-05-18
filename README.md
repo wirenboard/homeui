@@ -18,3 +18,33 @@ Change listen settings in `/etc/nginx/includes/default.wb.d/listen.conf`.
 2. Install dependencies: `npm install`
 3. Create `.env` file and set `MQTT_BROKER_URI` if your controller is running on different IP (default is 10.200.200.1)
 4. Start the development server: `npm run start`
+
+## Custom menu
+One can put a JSON-file with custom menu description in `/usr/share/wb-mqtt-homeui/custom-menu`.
+Items, defined in the file, will be added to left navigation panel.
+
+The structure of the JSON-file
+```jsonc
+[
+  {
+    "id": "string",
+    // Not used if id is already defined
+    "url": "string",
+    // Not used if id is already defined
+    "title": {
+      "en": "string",
+      "ru": "string"
+    },
+    "children": [
+      {
+        "id": "string",
+        "url": "string",
+        "title": {
+          "en": "string",
+          "ru": "string"
+        }
+      }
+    ]
+  }
+]
+```

@@ -1,6 +1,7 @@
+import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useId, ReactElement } from 'react';
-import { Translator, ObjectParamStore } from '@/stores/json-schema-editor';
+import { useId } from 'react';
+import { type Translator, type ObjectParamStore, type PropertyStore } from '@/stores/json-schema-editor';
 import { EditorWrapper } from './editor-wrapper';
 import type { ObjectEditorProps, EditorBuilderFunction } from './types';
 
@@ -10,10 +11,12 @@ const shouldRenderObjectParamEditor = (param: ObjectParamStore) => {
 
 const ObjectParamEditor = ({
   param,
+  rootStore,
   translator,
   editorBuilder,
 }: {
   param: ObjectParamStore;
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder: EditorBuilderFunction;
 }) => {
@@ -28,17 +31,28 @@ const ObjectParamEditor = ({
       descriptionId={descriptionId}
       errorId={errorId}
     >
-      {editorBuilder({ store: param.store, paramId: param.key, translator, inputId, descriptionId, errorId })}
+      {editorBuilder({
+        store: param.store,
+        rootStore,
+        paramId: param.key,
+        translator,
+        inputId,
+        descriptionId,
+        errorId,
+        hideError: param.disabled,
+      })}
     </EditorWrapper>
   );
 };
 
 const ObjectParamEditorRow = ({
   params,
+  rootStore,
   translator,
   editorBuilder,
 }: {
   params: ObjectParamStore[];
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder: EditorBuilderFunction;
 }) => {
@@ -46,6 +60,7 @@ const ObjectParamEditorRow = ({
     return (
       <ObjectParamEditor
         param={params[0]}
+        rootStore={rootStore}
         translator={translator}
         editorBuilder={editorBuilder}
       />
@@ -57,6 +72,7 @@ const ObjectParamEditorRow = ({
         <ObjectParamEditor
           key={p.key}
           param={p}
+          rootStore={rootStore}
           translator={translator}
           editorBuilder={editorBuilder}
         />
@@ -65,7 +81,7 @@ const ObjectParamEditorRow = ({
   );
 };
 
-const makeLayout = (params:ObjectParamStore[], translator, editorBuilder) => {
+const makeLayout = (params: ObjectParamStore[], rootStore: PropertyStore, translator, editorBuilder) => {
   let res = [];
   let elements = [];
   let slotsInRow = 0;
@@ -73,7 +89,8 @@ const makeLayout = (params:ObjectParamStore[], translator, editorBuilder) => {
   for (const param of params) {
     if (shouldRenderObjectParamEditor(param)) {
       const gridColumns = param.store.schema.options?.grid_columns ?? MAX_SLOTS + 1;
-      if (slotsInRow === 0 || slotsInRow + gridColumns <= MAX_SLOTS) {
+      const newRow = param.store.schema.options?.wb?.new_row ?? false;
+      if (slotsInRow === 0 || (!newRow && slotsInRow + gridColumns <= MAX_SLOTS)) {
         slotsInRow += gridColumns;
         elements.push(param);
       } else {
@@ -81,9 +98,10 @@ const makeLayout = (params:ObjectParamStore[], translator, editorBuilder) => {
           <ObjectParamEditorRow
             key={elements.map((e) => e.key).join('-')}
             params={elements}
+            rootStore={rootStore}
             translator={translator}
             editorBuilder={editorBuilder}
-          />
+          />,
         );
         elements = [param];
         slotsInRow = gridColumns;
@@ -95,18 +113,26 @@ const makeLayout = (params:ObjectParamStore[], translator, editorBuilder) => {
       <ObjectParamEditorRow
         key={elements.map((e) => e.key).join('-')}
         params={elements}
+        rootStore={rootStore}
         translator={translator}
         editorBuilder={editorBuilder}
-      />
+      />,
     );
   }
   return res;
 };
 
-const ObjectEditor = observer(({ store, translator, editorBuilder } : ObjectEditorProps) => {
+const ObjectEditor = observer(({ store, rootStore, translator, editorBuilder, isTopLevel } : ObjectEditorProps) => {
   return (
-    <div className="wb-jsonEditor-objectEditor">
-      {editorBuilder && makeLayout(store.params, translator, editorBuilder)}
+    <div
+      className={
+        classNames(
+          'wb-jsonEditor-objectEditor',
+          { 'wb-jsonEditor-objectEditorWithBorder': !isTopLevel && store.schema.format !== 'card' },
+        )
+      }
+    >
+      {editorBuilder && makeLayout(store.params, rootStore, translator, editorBuilder)}
     </div>
   );
 });

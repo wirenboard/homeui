@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { InputProps } from './types';
+import { type ChangeEvent, type KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { type InputProps } from './types';
 import './styles.css';
 
 export const Input = ({
@@ -10,21 +10,24 @@ export const Input = ({
   isWithExplicitChanges,
   onChange,
   onChangeEvent,
+  onEnter,
   type = 'text',
   isFullWidth = false,
   isInvalid,
   size = 'default',
   ariaLabel,
   ariaDescribedby,
+  ariaLive,
   ariaInvalid,
   ariaErrorMessage,
   ...rest
 }: InputProps) => {
-  const [internalValue, setInternalValue] = useState(value);
+  const defaultValue = type === 'number' ? 0 : '';
+  const [internalValue, setInternalValue] = useState(value ?? defaultValue);
   const inputMethod = useRef<'keyboard' | 'mouse' | 'unknown'>('unknown');
 
   useEffect(() => {
-    setInternalValue(value);
+    setInternalValue(value ?? defaultValue);
   }, [value]);
 
   const handleBlurOrChange = () => {
@@ -37,6 +40,7 @@ export const Input = ({
     inputMethod.current = 'keyboard';
     if (ev.key === 'Enter') {
       handleBlurOrChange();
+      onEnter?.();
     } else if (ev.key === 'Escape') {
       ev.preventDefault();
       setInternalValue(value);
@@ -70,6 +74,7 @@ export const Input = ({
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedby}
       aria-invalid={ariaInvalid}
+      aria-live={ariaLive}
       aria-errormessage={ariaErrorMessage}
       onChange={handleOnChange}
       onBlur={handleBlurOrChange}

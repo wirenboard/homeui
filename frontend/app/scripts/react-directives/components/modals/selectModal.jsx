@@ -44,7 +44,7 @@ export const SelectModal = ({
       <ModalFooter>
         <Button
           label={selectButtonLabel}
-          type={'success'}
+          type="primary"
           onClick={() => onSelect(selectedOption.value)}
         />
         <ModalCancelButton onClick={onCancel} />

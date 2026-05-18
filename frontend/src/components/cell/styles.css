@@ -57,6 +57,12 @@
     cursor: pointer;
 }
 
+.deviceCell-alert.alertMessage-danger {
+    background: var(--danger-color);
+    border-color: var(--danger-color-hover);
+    color: #fff;
+}
+
 .deviceCell-reversed {
     flex-direction: row-reverse;
 }
@@ -93,7 +99,7 @@
     text-align: right;
     max-width: 260px;
     flex-grow: 1;
-    font-size: 13px;
+    font-size: var(--font-size-small);
     cursor: pointer;
 }
 
@@ -148,6 +154,7 @@
     cursor: pointer;
 }
 
+.deviceCell-historyLinkVisible,
 .deviceCell:hover .deviceCell-historyLink,
 .deviceCell:focus-within .deviceCell-historyLink {
     min-width: 18px;

@@ -5,34 +5,24 @@
 // Import slylesheets
 import '@/assets/styles/variables.css';
 import '@/assets/styles/animations.css';
+import '@/assets/styles/fonts.css';
 import '../styles/css/bootstrap.min.css';
 import '../styles/css/font-awesome.min.css';
 import '../styles/css/fontawesome.min.css';
 import '../styles/css/fontawesome5-solid.min.css';
 import '../styles/css/smartadmin-production.min.css';
-import '../styles/css/icons.css';
 
 import '../styles/css/new.css';
 import '../styles/main.css';
 import '../styles/css/spacing.css';
 
-import '../styles/css/wb-switch.css';
-
-import 'spectrum-colorpicker/spectrum.css';
 import 'ui-select/dist/select.css';
-import 'angular-xeditable/dist/css/xeditable.css';
 import '../styles/css/spinner.css';
-import '../styles/css/angular.rangeSlider.css';
 import 'ng-toast/dist/ngToast.css';
 
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
 import '../styles/css/device-manager.css';
-import '../styles/css/scan.css';
-import '../styles/css/network-connections.css';
-import '../styles/css/svg-edit-page.css';
-import '../styles/css/svg-view-page.css';
-import '../styles/css/mbgate.css';
 
 // homeui modules: sevices
 import errorsService from './services/errors';
@@ -42,60 +32,31 @@ import configEditorProxyService from './services/configEditorProxy';
 import historyProxyService from './services/historyProxy';
 import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
-import gotoDefStartService from './services/gotoDefStart';
-import getTimeService from './services/time';
 import spinnerService from './services/spinner';
-import dumbTemplateModule from './services/dumbtemplate';
 import pageStateService from './services/pagestate';
-import deviceDataService from './services/devicedata';
-import uiConfigService from './services/uiconfig';
 import hiliteService from './services/hilite';
-import userAgentFactory from './services/userAgent.factory';
 import rolesFactoryService from './services/roles.factory';
-import historyUrlService from './services/historyUrl';
 import diagnosticProxyService from './services/diagnosticProxy';
-import serialMetricsProxyService from './services/serialMetricsProxy';
-import translationService from './services/translationService';
 import deviceManagerProxyService from './services/deviceManagerProxy';
 import serialProxyService from './services/serialProxy';
 import serialPortProxyService from './services/serialPortProxy';
+import serialDeviceProxyService from './services/serialDeviceProxy';
 import fwUpdateProxyService from './services/fwUpdateProxy';
-
-import handleDataService from './services/handle-data';
+import daliProxyService from './services/daliProxy';
 
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import MQTTCtrl from './controllers/MQTTChannelsController';
-import DiagnosticCtrl from './controllers/diagnosticController';
-import BackupCtrl from './controllers/backupController';
+import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 
 // homeui modules: directives
+import userRolesDirective from './directives/user-roles.directive';
+import onResizeDirective from './directives/resize';
 import navigationDirective from '~/react-directives/navigation/navigation';
 import rulesConsoleDirective from '~/react-directives/rules-console/rules-console';
-import cellDirective from './directives/cell';
-import widgetDirective from './directives/widget';
-import transformRgbDirective from './directives/transformrgb';
-import alarmCellDirective from './directives/alarmcell';
-import valueCellDirective from './directives/valuecell';
-import switchCellDirective from './directives/switchcell';
-import textCellDirective from './directives/textcell';
-import rangeCellDirective from './directives/rangecell';
-import buttonCellDirective from './directives/buttoncell';
-import { displayCellDirective, displayCellConfig } from './directives/displaycell';
-import cellNameDirective from './directives/cellname';
-import rgbCellDirective from './directives/rgbcell';
-import cellPickerDirective from './directives/cellpicker';
-import explicitChangesDirective from './directives/explicitchanges';
-import editableElasticTextareaDirective from './directives/editableelastictextarea';
-import userRolesDirective from './directives/user-roles.directive';
-import dashboardPickerDirective from './directives/dashboardpicker';
-import onResizeDirective from './directives/resize';
-import confirmDirective from './directives/confirm';
-import fullscreenToggleDirective from './directives/fullscreenToggle';
 import expCheckMetaDirective from './react-directives/exp-check/exp-check';
-import usersPageDirective from './react-directives/users/users';
 import loginPageDirective from './react-directives/login/login';
+import skipToMainContentDirective from '~/react-directives/skip-to-main-content/skip-to-main-content';
 
 // Angular routes
 import routingModule from './app.routes';
@@ -104,9 +65,13 @@ import { switchToHttps } from '@/utils/httpsUtils';
 import { fillUserType}  from './utils/authUtils';
 import angular from 'angular';
 
-import { aliceStore } from '@/stores/alice';
+import { ConfigsStore} from '@/stores/configs';
+import { consolePanelStore } from '@/stores/console-panel';
 import { DashboardsStore } from '@/stores/dashboards';
-import { RulesStore } from '@/stores/rules';
+import { DevicesStore } from '@/stores/devices';
+import { RulesStore, registerRulesTab } from '@/stores/rules';
+import { uiStore } from '@/stores/ui';
+import { autorun } from 'mobx';
 
 //-----------------------------------------------------------------------------
 /**
@@ -121,25 +86,19 @@ const module = angular
   .module('homeuiApp', [
     'ngSanitize',
     'ngTouch',
-    'angularSpectrumColorpicker',
     'ui.bootstrap',
-    'xeditable',
     'ui.select',
-    'monospaced.elastic',
     'oc.lazyLoad',
     'pascalprecht.translate',
     'angular-spinkit',
     routingModule,
-    dumbTemplateModule,
-
-    'ui-rangeSlider',
     'ngToast',
     'ui.scroll',
     'tmh.dynamicLocale',
     'angularjs-dropdown-multiselect',
   ])
   .value('historyMaxPoints', 1000)
-  .value('webuiConfigPath', '/etc/wb-webui.conf')
+  .value('logsMaxRows', 50)
   .value('configSaveDebounceMs', 300);
 
 // Register services
@@ -149,30 +108,19 @@ module
   .factory('ConfigEditorProxy', configEditorProxyService)
   .factory('HistoryProxy', historyProxyService)
   .factory('LogsProxy', logsProxyService)
-  .factory('SerialMetricsProxy', serialMetricsProxyService)
-  .factory('gotoDefStart', gotoDefStartService)
-  .factory('getTime', getTimeService)
   .factory('Spinner', spinnerService)
   .value('forceBeforeUnloadConfirmationForTests', false)
   .factory('PageState', pageStateService)
-  .factory('DeviceData', deviceDataService)
   .factory('DiagnosticProxy', diagnosticProxyService)
-  .factory('TranslationService', translationService)
   .factory('DeviceManagerProxy', deviceManagerProxyService)
   .factory('SerialProxy', serialProxyService)
   .factory('SerialPortProxy', serialPortProxyService)
+  .factory('SerialDeviceProxy', serialDeviceProxyService)
   .factory('FwUpdateProxy', fwUpdateProxyService)
+  .factory('DaliProxy', daliProxyService)
 
-  .service('handleData', handleDataService)
-  .service('userAgentFactory', userAgentFactory)
   .service('rolesFactory', rolesFactoryService)
-  .service('historyUrlService', historyUrlService)
 
-  .run(DeviceData => {
-    'ngInject';
-    // make sure DeviceData is loaded at the startup so no MQTT messages are missed
-  })
-  .factory('uiConfig', uiConfigService)
   .filter('hilite', hiliteService);
 
 // Register controllers
@@ -180,9 +128,7 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('MQTTCtrl', MQTTCtrl)
-  .controller('DiagnosticCtrl', DiagnosticCtrl)
-  .controller('BackupCtrl', BackupCtrl)
+  .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
 
 module.directive('scriptForm', function (PageState) {
   'ngInject';
@@ -199,76 +145,13 @@ module.directive('scriptForm', function (PageState) {
 
 // Register directives
 module
-  .directive('cell', cellDirective)
   .value('scrollTimeoutMs', 100)
-  .directive('widget', widgetDirective)
-  .directive('transformRgb', transformRgbDirective)
-  .provider('displayCellConfig', displayCellConfig)
-  .directive('displayCell', displayCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('alarm', 'alarm-cell', true);
-    },
-  ])
-  .directive('alarmCell', alarmCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('value', 'value-cell');
-    },
-  ])
-  .directive('valueCell', valueCellDirective)
-
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('switch', 'switch-cell');
-    },
-  ])
-  .directive('switchCell', switchCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('text', 'text-cell');
-    },
-  ])
-  .directive('textCell', textCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('range', 'range-cell');
-    },
-  ])
-  .directive('rangeCell', rangeCellDirective)
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('button', 'button-cell', true);
-    },
-  ])
-  .directive('buttonCell', buttonCellDirective)
-  .directive('cellName', cellNameDirective)
-  .value('rgbLocalStorageKey', 'cell_rgb_palette')
-  .config([
-    'displayCellConfigProvider',
-    function (displayCellConfigProvider) {
-      displayCellConfigProvider.addDisplayType('rgb', 'rgb-cell');
-    },
-  ])
-  .directive('rgbCell', rgbCellDirective)
-  .directive('cellPicker', cellPickerDirective)
-  .directive('explicitChanges', explicitChangesDirective)
-  .directive('editableElasticTextarea', editableElasticTextareaDirective)
   .directive('userRole', userRolesDirective)
-  .directive('dashboardPicker', dashboardPickerDirective)
   .directive('onResize', ['$parse', onResizeDirective])
-  .directive('ngConfirm', confirmDirective)
-  .directive('fullscreenToggle', fullscreenToggleDirective)
   .directive('expCheckWidget', expCheckMetaDirective)
   .directive('navigation', navigationDirective)
+  .directive('skipToMainContent', skipToMainContentDirective)
   .directive('rulesConsole', rulesConsoleDirective)
-  .directive('usersPage', usersPageDirective)
   .directive('loginPage', loginPageDirective);
 
 module
@@ -279,14 +162,6 @@ module
       [
         'app',
         'help',
-        'mqtt',
-        'system',
-        'ui',
-        'configurations',
-        'history',
-        'widgets',
-        'units',
-        'serial-metrics',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {
@@ -312,16 +187,20 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
     return Object.keys(collection);
   };
 
-  $rootScope.toggleConsole = function () {
-    $rootScope.consoleVisible = !$rootScope.consoleVisible;
-  };
+  $rootScope.consoleView = localStorage.getItem('console-panel-position') || 'bottom';
 
-  $rootScope.consoleView = localStorage.getItem('rules-console-position') || 'bottom'
-  $rootScope.changeConsoleView = function (view) {
-    $rootScope.consoleView = view;
-  };
+  autorun(() => {
+    $rootScope.consoleView = consolePanelStore.isVisible
+      ? consolePanelStore.position
+      : 'bottom';
+    $rootScope.$applyAsync();
+  });
 
   $transitions.onStart({}, function (trans) {
+    // to avoid blinking on id change
+    if (trans.from().name === trans.to().name) {
+      return;
+    }
     document.getElementById('overlay').classList.remove('overlay');
     $rootScope.stateIsLoading = true;
   });
@@ -329,19 +208,6 @@ module.run(($rootScope, $state, $transitions, rolesFactory) => {
   $transitions.onSuccess({}, function (trans) {
     $rootScope.stateIsLoading = false;
   });
-
-  $rootScope.checkFullscreen = () => {
-    const fullScreenElement =
-      document.fullscreenElement ||
-      document.webkitFullscreenElement ||
-      document.mozFullScreenElement ||
-      document.msFullscreenElement ||
-      null;
-
-    return fullScreenElement !== null || $rootScope.forceFullscreen;
-  };
-
-  $rootScope.forceFullscreen = false;
 
   if (!__IS_PROD__) {
     $rootScope.theme = localStorage.getItem('theme') || 'bootstrap';
@@ -377,10 +243,8 @@ const realApp = angular
       mqttClient,
       ConfigEditorProxy,
       EditorProxy,
-      webuiConfigPath,
       errors,
       whenMqttReady,
-      uiConfig,
       $timeout,
       configSaveDebounceMs,
       ngToast,
@@ -395,7 +259,9 @@ const realApp = angular
     ) => {
       'ngInject';
 
-      $rootScope.$on('$translateChangeSuccess', () => {
+      $rootScope.$on('$translateChangeSuccess', (data) => {
+        $rootScope.language = $translate.use();
+
         $translate([
           'datepicker.buttons.close',
           'datepicker.buttons.today',
@@ -409,11 +275,13 @@ const realApp = angular
         });
       });
 
-      $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy, uiConfig);
+      $rootScope.dashboardsStore = new DashboardsStore(ConfigEditorProxy);
+      $rootScope.devicesStore = new DevicesStore(mqttClient);
       $rootScope.rulesStore = new RulesStore(mqttClient, whenMqttReady, EditorProxy);
+      $rootScope.configsStore = new ConfigsStore(whenMqttReady, ConfigEditorProxy);
 
       $rootScope.$watch(() => $rootScope.dashboardsStore.description, (name) => {
-        document.title = name ? `${name} | ${__APP_NAME__}` : __APP_NAME__;
+        document.title = name ? `${name} | ${__APP_SHORT_NAME__ || __APP_NAME__}` : __APP_NAME__;
       });
 
       //.........................................................................
@@ -421,10 +289,8 @@ const realApp = angular
         $rootScope,
         mqttClient,
         ConfigEditorProxy,
-        webuiConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
       ) {
         return function (loginData) {
           if (loginData.url) {
@@ -442,9 +308,9 @@ const realApp = angular
             .then(() => {
               $rootScope.rulesStore.subscribeRulesLogs();
               $rootScope.rulesStore.subscribeRuleDebugging();
+              registerRulesTab($rootScope.rulesStore);
               return $rootScope.dashboardsStore.loadData(true);
             })
-            .then(result => uiConfig.ready(result))
             .catch(errors.catch('app.errors.load'));
 
           return true;
@@ -465,10 +331,8 @@ const realApp = angular
         $rootScope,
         mqttClient,
         ConfigEditorProxy,
-        webuiConfigPath,
         errors,
         whenMqttReady,
-        uiConfig
       );
 
       //.........................................................................
@@ -495,41 +359,8 @@ const realApp = angular
       $translate.use(language);
       tmhDynamicLocale.set(language);
 
-      var firstBootstrap = true;
-
-      // Watch for WebUI config changes
-      $rootScope.$watch(
-        () => uiConfig.filtered(),
-        async (newData, oldData) => {
-          if (angular.equals(newData, oldData)) {
-            return;
-          }
-          if (firstBootstrap) {
-            firstBootstrap = false;
-            return;
-          }
-          console.log('new data: %o', newData);
-          errors.hideError();
-          await ConfigEditorProxy.Save({ path: webuiConfigPath, content: newData })
-            .then(() => {
-              console.log('config saved');
-            })
-            .catch(err => {
-              if (err.name === 'QuotaExceededError') {
-                errors.showError('app.errors.overflow');
-              } else {
-                errors.showError('app.errors.save', err);
-              }
-            });
-        },
-        true
-      );
-
-      const { checkIsAvailable } = aliceStore;
-
       whenMqttReady()
         .then(() => {
-          checkIsAvailable();
           if (rolesFactory.checkRights(rolesFactory.ROLE_THREE)) {
             return DeviceManagerProxy.Stop();
           }
@@ -549,17 +380,32 @@ const realApp = angular
         angular.element('#https-setup-label')[0].style.display = 'flex';
       }, 1000);
 
-      let hideGlobalSpinner = true;
+      const menuItemsReady = () => uiStore.menuItems.length > 0;
+      let hideGlobalSpinner = false;
+      let spinnerHidden = false;
+
+      const removeGlobalSpinner = () => {
+        clearTimeout(httpsSetupTimer);
+        angular.element('#https-setup-label').remove();
+        angular.element('double-bounce-spinner').remove();
+        angular.element('#wrapper').removeClass('fade');
+        spinnerHidden = true;
+      };
+
+      const tryHideGlobalSpinner = () => {
+        if (!spinnerHidden && hideGlobalSpinner) {
+          removeGlobalSpinner();
+        }
+      };
+
+      autorun(() => {
+        hideGlobalSpinner = menuItemsReady();
+        tryHideGlobalSpinner();
+      });
       let connectToMqtt = true;
       $transitions.onBefore({}, function (transition) {
-        return fillUserType(rolesFactory).then(fillUserTypeResult => {
-          if (hideGlobalSpinner) {
-            clearTimeout(httpsSetupTimer);
-            angular.element('#https-setup-label').remove();
-            angular.element('double-bounce-spinner').remove();
-            angular.element('#wrapper').removeClass('fade');
-            hideGlobalSpinner = false;
-          }
+        return fillUserType(rolesFactory, errors).then(fillUserTypeResult => {
+          tryHideGlobalSpinner();
           if (fillUserTypeResult === 'login') {
             // transition.params() contains all possible parameters by default - let's delete them
             const cleanParams = (params) => {

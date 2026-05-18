@@ -1,5 +1,6 @@
 import { action, makeObservable, observable, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
+import { reverseTransformNumber, transformNumber } from '@/utils/one-wire-number';
 import { MistypedValue } from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
 import type { JsonSchema, ValidationError, PropertyStore } from './types';
@@ -16,18 +17,17 @@ export class NumberStore implements PropertyStore {
   readonly required: boolean;
 
   private _initialValue: MistypedValue | number | undefined;
+  private _anyUserInputIsDirty: boolean = false;
+  private _doNotShowInvalidValue: boolean = false;
 
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
       this.value = initialValue;
-      this.editString = String(initialValue);
+      this.editString = schema.format === 'w1-id' ? transformNumber(initialValue) : String(initialValue);
     } else if (initialValue === undefined) {
-      if (schema.options?.wb?.show_editor) {
-        if (schema.options?.wb?.allow_undefined) {
-          this.value = schema.default as number | undefined;
-        } else {
-          this.value = getDefaultNumberValue(schema);
-        }
+      this.value = undefined;
+      if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
+        this.value = getDefaultNumberValue(schema) ?? 0;
       }
       this.editString = this.value === undefined ? '' : String(this.value);
     } else {
@@ -57,10 +57,11 @@ export class NumberStore implements PropertyStore {
       isDirty: observable,
       commit: action,
       reset: action,
+      setDoNotShowInvalidValue: action,
     });
   }
 
-  _checkConstraints(): void {
+  _checkConstraints() {
     if (this.value instanceof MistypedValue) {
       this.error = { key: 'json-editor.errors.not-a-number' };
       return;
@@ -80,6 +81,11 @@ export class NumberStore implements PropertyStore {
       this.error = { key: 'json-editor.errors.not-an-integer' };
       return;
     }
+    if (this.schema.format === 'dali-tc' && this.value === 65535) {
+      // DALI color temperature special masked value, allow it even if it's out of range
+      this.error = undefined;
+      return;
+    }
     if (
       (this.schema.minimum !== undefined && this.schema.minimum > this.value) ||
       (this.schema.maximum !== undefined && this.schema.maximum < this.value)
@@ -96,10 +102,17 @@ export class NumberStore implements PropertyStore {
       };
       return;
     }
+    if (this.schema.format === 'w1-id' && this.editString) {
+      const hexPattern = /^(28-[0-9A-Fa-f]{12}|0)$/;
+      if (!hexPattern.test(this.editString)) {
+        this.error = { key: 'json-editor.errors.invalid-1-wire-format' };
+        return;
+      }
+    }
     this.error = undefined;
   }
 
-  setValue(value: number | string) {
+  setValue(value: unknown) {
     if (typeof value === 'string') {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
@@ -109,27 +122,40 @@ export class NumberStore implements PropertyStore {
         this.value = parsedValue;
         this.editString = value;
       }
-    } else {
+    } else if (typeof value === 'number') {
       this.value = value;
-      this.editString = String(value);
+      this.editString = this.schema.format === 'w1-id' ? transformNumber(value) : String(value);
+    } else {
+      this.value = new MistypedValue(value);
+      this.editString = '';
     }
     this.isDirty = this.value !== this._initialValue;
     this._checkConstraints();
+    if (this._doNotShowInvalidValue && this.hasErrors) {
+      this.editString = '';
+    }
   }
 
   setEditString(value: string) {
     this.editString = value;
-    if (value === '') {
+    if (!value && this.schema.format === 'w1-id') {
+      this.value = 0;
+      this.editString = '0';
+    } else if (value === '') {
       this.value = undefined;
     } else {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
-        this.value = new MistypedValue(value);
+        this.value = this.schema.format === 'w1-id' ? reverseTransformNumber(value) : new MistypedValue(value);
       } else {
         this.value = parsedValue;
       }
     }
-    this.isDirty = this.value !== this._initialValue;
+    if (this._anyUserInputIsDirty) {
+      this.isDirty = true;
+    } else {
+      this.isDirty = this.value !== this._initialValue;
+    }
     this._checkConstraints();
   }
 
@@ -145,7 +171,7 @@ export class NumberStore implements PropertyStore {
       this.setUndefined();
       return;
     }
-    this.setValue(getDefaultNumberValue(this.schema));
+    this.setValue(getDefaultNumberValue(this.schema) ?? 0);
   }
 
   get hasErrors(): boolean {
@@ -165,5 +191,27 @@ export class NumberStore implements PropertyStore {
     this.value = this._initialValue;
     this.isDirty = false;
     this._checkConstraints();
+    if (this._doNotShowInvalidValue && this.hasErrors) {
+      this.editString = '';
+    }
+  }
+
+  /**
+   * If true, invalid value, that was set with setValue method,
+   * will not be shown in the editor
+   */
+  setDoNotShowInvalidValue(doNotShow: boolean) {
+    this._doNotShowInvalidValue = doNotShow;
+    if (doNotShow && this.hasErrors) {
+      this.editString = '';
+    }
+  }
+
+  /**
+   * If true, any user input will mark the property as dirty,
+   * even if the value is equal to the initial value
+   */
+  setAnyUserInputIsDirty(anyUserInputIsDirty: boolean) {
+    this._anyUserInputIsDirty = anyUserInputIsDirty;
   }
 }

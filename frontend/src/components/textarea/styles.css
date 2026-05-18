@@ -18,3 +18,8 @@
 .textarea-s {
     padding: 3px 8px;
 }
+
+.textarea-invalid {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}

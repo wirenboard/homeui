@@ -4,6 +4,10 @@
     align-items: flex-start;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     max-width: calc(100% - 10px);
+
+    @media(max-width: 768px) {
+        display: block;
+    }
 }
 
 .columnsWrapper-column {

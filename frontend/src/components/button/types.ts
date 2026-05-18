@@ -1,10 +1,14 @@
-import { ButtonHTMLAttributes, ReactElement } from 'react';
+import type { ButtonHTMLAttributes, AnchorHTMLAttributes, ReactElement } from 'react';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface CommonButtonProps {
   className?: string;
   label?: string;
   icon?: ReactElement;
-  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'unaccented';
+  variant?: 'primary' | 'secondary' | 'danger' | 'unaccented' | 'warn';
   size?: 'default' | 'small' | 'large';
+  isLoading?: boolean;
   isOutlined?: boolean;
 }
+
+export type ButtonProps = CommonButtonProps & ButtonHTMLAttributes<HTMLButtonElement>;
+export type ButtonLinkProps = CommonButtonProps & AnchorHTMLAttributes<HTMLAnchorElement>;

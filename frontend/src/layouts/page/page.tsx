@@ -1,15 +1,13 @@
-import classNames from 'classnames';
-import { PropsWithChildren, useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { type PropsWithChildren, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
 import InfoIcon from '@/assets/icons/info.svg';
 import { Alert } from '@/components/alert';
-import { AlertProps } from '@/components/alert/types';
+import { type AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import { Loader } from '@/components/loader';
-import { Notifications } from '@/components/notifications';
-import { PageProps } from './types';
+import { PageLoader } from './components/loader';
+import { type PageProps } from './types';
 import './styles.css';
 
 export const PageLayout = ({
@@ -17,13 +15,16 @@ export const PageLayout = ({
   title,
   errors = [],
   hasRights,
+  titleArea,
   stickyHeader,
   isEditingTitle,
   editingTitlePlaceholder,
   isLoading = false,
+  loadingOptions,
   isHideHeader = false,
   actions,
   infoLink,
+  footer,
   onTitleChange,
   onTitleEditEnable,
 }: PropsWithChildren<PageProps>) => {
@@ -36,7 +37,7 @@ export const PageLayout = ({
 
   if (errors.find((error) => error.code === 404)) {
     return (
-      <main className="page">
+      <main className="page" tabIndex={-1}>
         <header className="page-headerContainer">
           <h1 className="page-title">{t('page.not-found')}</h1>
         </header>
@@ -48,76 +49,78 @@ export const PageLayout = ({
   }
 
   return (
-    <main className="page">
-      {!isHideHeader && (titleValue || isEditingTitle) && (
-        <header className="page-headerContainer">
-          <div className="page-headerTitleWrapper">
-            {isEditingTitle ? (
-              <Input
-                className="editRule-nameInput"
-                value={titleValue}
-                placeholder={editingTitlePlaceholder}
-                autoFocus
-                isFullWidth
-                onChange={onTitleChange}
-              />
-            ) : (
-              <>
-                <h1 className="page-title">{title}</h1>
-                {infoLink && (
-                  <a href={infoLink} target="_blank" className="page-info">
-                    <InfoIcon />
-                  </a>
-                )}
-              </>
-            )}
+    <div className="page-container">
+      <main className="page" tabIndex={-1}>
+        {hasRights && !isHideHeader && (titleValue || isEditingTitle) && (
+          <header className="page-headerContainer">
+            <div className="page-headerTitleWrapper">
+              {isEditingTitle ? (
+                <Input
+                  className="page-nameInput"
+                  ariaLive="polite"
+                  value={titleValue}
+                  placeholder={editingTitlePlaceholder}
+                  autoFocus
+                  isFullWidth
+                  onChange={onTitleChange}
+                />
+              ) : (
+                <>
+                  <h1 className="page-title" tabIndex={-1}>{title}</h1>
+                  {infoLink && (
+                    <a href={infoLink} target="_blank" className="page-info">
+                      <InfoIcon />
+                    </a>
+                  )}
+                </>
+              )}
 
-            {(!isEditingTitle && onTitleChange) && (
-              <Button
-                size="small"
-                type="button"
-                icon={<EditSquareIcon />}
-                variant="secondary"
-                isOutlined
-                onClick={() => onTitleEditEnable()}
-              />
-            )}
-          </div>
-
-          {!isLoading && <div className="page-actions">{actions}</div>}
-        </header>
-      )}
-
-      {errors?.map((error, i) => (
-        <Alert variant={error.variant as AlertProps['variant']} key={i} className="page-error">
-          {error.text}
-        </Alert>
-      ))}
-
-      {!hasRights && (
-        <Alert variant="danger">
-          <Trans
-            i18nKey="page.access-denied"
-            components={[<a href="/#!/access-level" key="access-level" />]}
-          />
-        </Alert>
-      )}
-
-      {hasRights && (
-        isLoading
-          ? <Loader className="page-loader" />
-          : (
-            <div
-              className={classNames({
-                'page-container': stickyHeader,
-              })}
-            >
-              {children}
+              {(!isEditingTitle && onTitleChange) && (
+                <Button
+                  size="small"
+                  type="button"
+                  aria-label={t('common.buttons.edit')}
+                  aria-description={editingTitlePlaceholder}
+                  icon={<EditSquareIcon />}
+                  variant="secondary"
+                  isOutlined
+                  onClick={() => onTitleEditEnable()}
+                />
+              )}
+              {titleArea}
             </div>
-          )
-      )}
 
-      <Notifications />
-    </main>
+            {(!isLoading || loadingOptions?.showActions) && <div className="page-actions">{actions}</div>}
+          </header>
+        )}
+
+        {errors?.map((error, i) => (
+          <Alert
+            variant={error.variant as AlertProps['variant']}
+            key={i}
+            className="page-error"
+            onClose={error?.onClose}
+          >
+            {error.text}
+          </Alert>
+        ))}
+
+        {!hasRights && (
+          <Alert variant="danger">
+            {t('page.access-denied')}
+          </Alert>
+        )}
+
+        {hasRights && (
+          isLoading
+            ? <PageLoader options={loadingOptions} />
+            : stickyHeader ? (
+              <div className="page-container">{children}</div>
+            ) : children
+        )}
+
+      </main>
+      {!!footer && <footer className="page-footer">{footer}</footer>}
+    </div>
   );
 };

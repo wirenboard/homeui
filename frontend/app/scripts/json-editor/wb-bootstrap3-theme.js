@@ -1,8 +1,6 @@
-'use strict';
+import { JSONEditor } from '@wirenboard/json-editor';
 
-import { JSONEditor } from '../../3rdparty/jsoneditor';
-
-function makeWbBootstrap3Theme() {
+export function makeWbBootstrap3Theme() {
   return class extends JSONEditor.defaults.themes.bootstrap3 {
     getErrorMessage(text) {
       const el = document.createElement('p');
@@ -34,6 +32,20 @@ function makeWbBootstrap3Theme() {
       tab.childNodes[0].classList.add('text-' + color);
     }
 
+    markTabActive(row) {
+      super.markTabActive(row);
+      if (row.tab?.querySelector('a')) {
+        row.tab.querySelector('a').setAttribute('aria-selected', 'true');
+      }
+    }
+
+    markTabInactive(row) {
+      super.markTabInactive(row);
+      if (row.tab?.querySelector('a')) {
+        row.tab.querySelector('a').setAttribute('aria-selected', 'false');
+      }
+    }
+
     removeTabContextualColors(tab) {
       this.removeContextualColorsInElement(tab);
       this.removeContextualColorsInElement(tab.childNodes[0]);
@@ -58,5 +70,3 @@ function makeWbBootstrap3Theme() {
     }
   };
 }
-
-export default makeWbBootstrap3Theme;

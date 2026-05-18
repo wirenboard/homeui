@@ -11,15 +11,15 @@ function deviceManagerDirective(
   DeviceManagerProxy,
   FwUpdateProxy,
   PageState,
-  rolesFactory,
   $state,
   $transitions,
   SerialProxy,
   SerialPortProxy,
+  SerialDeviceProxy,
   mqttClient,
   $rootScope,
   $window,
-  $translate
+  $translate,
 ) {
   'ngInject';
 
@@ -54,10 +54,6 @@ function deviceManagerDirective(
           schema: response.schema,
           deviceTypeGroups: response.types,
         };
-      };
-
-      const setupPort = (deviceCfg) => {
-        return SerialPortProxy.Setup(deviceCfg);
       };
 
       const stateTransitions = {
@@ -97,10 +93,10 @@ function deviceManagerDirective(
         saveConfig,
         stateTransitions,
         loadDeviceTypeSchema,
-        rolesFactory,
         DeviceManagerProxy,
         FwUpdateProxy,
-        setupPort
+        SerialDeviceProxy,
+        SerialPortProxy,
       );
 
       let CONFIRMATION_MSG;
@@ -121,7 +117,7 @@ function deviceManagerDirective(
         // In this case, redirect to the main page
         // Button hint is used to distinguish between direct URL and button click
         if (
-          from == 'serial-config' &&
+          from === 'serial-config' &&
           ['serial-config.properties', 'serial-config.scan'].includes(to) &&
           !transition.params('to').hint
         ) {
@@ -129,18 +125,18 @@ function deviceManagerDirective(
         }
 
         // Mobile properties page, browser Back button
-        if (to == 'serial-config') {
+        if (to === 'serial-config') {
           scope.store.movedToTabsPanel();
         }
 
         // Scan page, browser Back button
-        if (from == 'serial-config.scan' && to.startsWith('serial-config')) {
+        if (from === 'serial-config.scan' && to.startsWith('serial-config')) {
           scope.store.stopScanning();
         }
 
         // Confirm moving from scanning page to any page not related to device-manager
         if (
-          from == 'serial-config.scan' &&
+          from === 'serial-config.scan' &&
           !to.startsWith('serial-config') &&
           scope.store.shouldConfirmLeavePage()
         ) {
@@ -150,7 +146,7 @@ function deviceManagerDirective(
           scope.store.stopScanning();
         }
 
-        if (to == 'serial-config.properties') {
+        if (to === 'serial-config.properties') {
           if (!scope.store.inMobileMode) {
             return $state.target('serial-config');
           }
@@ -174,10 +170,10 @@ function deviceManagerDirective(
             scope.store.setDeviceDisconnected(msg.topic, msg.payload);
           });
           mqttClient.addStickySubscription('/wb-device-manager/state', (msg) =>
-            scope.store.updateScanState(msg.payload)
+            scope.store.updateScanState(msg.payload),
           );
-          mqttClient.addStickySubscription('/wb-device-manager/firmware_update/state', (msg) =>
-            scope.store.setEmbeddedSoftwareUpdateProgress(msg.payload)
+          mqttClient.addStickySubscription('/wb-mqtt-serial/firmware_update/state', (msg) =>
+            scope.store.setEmbeddedSoftwareUpdateProgress(msg.payload),
           );
         });
 

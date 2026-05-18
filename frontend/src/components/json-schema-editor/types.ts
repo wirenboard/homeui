@@ -1,24 +1,27 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import {
-  StringStore,
-  ObjectStore,
-  NumberStore,
-  BooleanStore,
-  ArrayStore,
-  PropertyStore,
-  ObjectParamStore,
-  ByteArrayStore,
-  Translator,
-  type ValidationError
+  type StringStore,
+  type ObjectStore,
+  type NumberStore,
+  type BooleanStore,
+  type ArrayStore,
+  type PropertyStore,
+  type ObjectParamStore,
+  type ByteArrayStore,
+  type Translator,
+  type ValidationError,
 } from '@/stores/json-schema-editor';
 
 export interface EditorBuilderFunctionProps {
   store: PropertyStore;
+  rootStore: PropertyStore;
   paramId?: string;
   translator: Translator;
   inputId?: string;
   descriptionId?: string;
   errorId?: string;
+  hideError?: boolean; // Do not show error state
+  isTopLevel?: boolean; // Is the top-level editor
 }
 
 export type EditorBuilderFunction = (props: EditorBuilderFunctionProps) => ReactElement | null;
@@ -35,6 +38,7 @@ export interface BooleanEditorProps {
   errorId?: string;
   descriptionId?: string;
   translator: Translator;
+  titleOverride?: string;
 }
 
 export interface NumberEditorProps {
@@ -43,6 +47,29 @@ export interface NumberEditorProps {
   descriptionId?: string;
   errorId?: string;
   translator: Translator;
+  isDisabled?: boolean;
+  hideError?: boolean;
+}
+
+export interface DaliLevelSliderEditorProps {
+  store: NumberStore;
+  rootStore: PropertyStore;
+  inputId?: string;
+}
+
+export interface DaliColorTemperatureSliderEditorProps {
+  store: NumberStore;
+  inputId?: string;
+}
+
+export interface DaliRGBEditorProps {
+  store: StringStore;
+  inputId?: string;
+}
+
+export interface DaliWhiteEditorProps {
+  store: NumberStore;
+  inputId?: string;
 }
 
 export interface StringEditorProps {
@@ -51,18 +78,27 @@ export interface StringEditorProps {
   descriptionId?: string;
   errorId?: string;
   translator: Translator;
+  hideError?: boolean;
 }
 
 export interface ObjectEditorProps {
   store: ObjectStore;
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
+  isTopLevel?: boolean;
 }
 
 export interface ArrayEditorProps {
   store: ArrayStore;
+  rootStore: PropertyStore;
   translator: Translator;
   editorBuilder?: EditorBuilderFunction;
+}
+
+export interface BooleanArrayEditorProps {
+  store: ArrayStore;
+  translator: Translator;
 }
 
 export interface ByteArrayEditorProps {
@@ -84,6 +120,7 @@ export interface EditorWrapperLabelProps {
   param: ObjectParamStore;
   title: string;
   inputId: string;
+  showError: boolean;
 }
 
 export interface ParamDescriptionProps {
@@ -103,4 +140,20 @@ export interface OptionalParamsSelectDialogProps {
   store: ObjectStore;
   translator: Translator;
   onClose: () => void;
+}
+
+export interface TableCellWithEditorProps {
+  paramStore: ObjectParamStore;
+  rootStore: PropertyStore;
+  translator: Translator;
+  editorBuilder: EditorBuilderFunction;
+  width?: number;
+}
+
+export interface ArrayItemProps {
+  index: number;
+  store: ArrayStore;
+  rootStore: PropertyStore;
+  translator: Translator;
+  editorBuilder: EditorBuilderFunction;
 }

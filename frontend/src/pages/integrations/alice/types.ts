@@ -1,8 +1,7 @@
-import { DeviceStore } from '@/stores/device';
+import { type DevicesStore } from '@/stores/devices';
 
-export interface AlicePageParams {
-  hasRights: boolean;
-  deviceStore: DeviceStore;
+export interface AlicePageProps {
+  devicesStore: DevicesStore;
 }
 
 export type AlicePageState = 'isLoading' | 'isConnected' | 'isNotConnected';
@@ -13,3 +12,8 @@ export interface View {
   deviceId?: string;
   isNewDevice?: boolean;
 }
+
+export type BindingView =
+  | { kind: 'linked'; statusUrl?: string }
+  | { kind: 'bind'; linkUrl: string }
+  | null;

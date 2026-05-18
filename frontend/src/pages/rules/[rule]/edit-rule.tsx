@@ -3,14 +3,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
+import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
-import { notificationsStore } from '@/stores/notifications';
+import { authStore, UserRole } from '@/stores/auth';
 import { getExtensions } from '@/stores/rules/autocomplete';
+import { useAsyncAction } from '@/utils/async-action';
 import { getPathname } from '@/utils/url';
 import type { RulePageProps } from './types';
 import './styles.css';
 
-const EditRulePage = observer(({ rulesStore, devicesStore, hasRights }: RulePageProps) => {
+const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
   const { t } = useTranslation();
   const { rule } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +32,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore, hasRights }: RulePage
 
   useEffect(() => {
     if (pathName === 'new') {
+      rulesStore.resetRule();
       setIsLoading(false);
       return;
     }
@@ -46,56 +49,42 @@ const EditRulePage = observer(({ rulesStore, devicesStore, hasRights }: RulePage
       });
   }, []);
 
-  const save = async () => {
-    try {
-      const initRuleName = rule.initName;
-      if (rule.initName !== rule.name) {
-        await rulesStore.checkIsNameUnique(rule.name);
-      }
-      const savedRuleName = await rulesStore.save(rule);
-      const isWithErrors = !!rule.error?.message;
-      notificationsStore.showNotification({
-        variant: isWithErrors ? 'warn' : 'success',
-        text: isWithErrors ? t('rules.labels.success-errors') : t('rules.labels.success'),
-      });
-
-      if (pathName === 'new') {
-        return location.replace(`/#!/rules/edit/${savedRuleName}`);
-      } else if (initRuleName !== rule.name) {
-        const path = await rulesStore.rename(initRuleName, rule.name);
-        return location.replace(`/#!/rules/edit/${path}`);
-      }
-      setIsEditingTitle(false);
-    } catch (err) {
-      let message = err.message;
-      if (err.data === 'MqttConnectionError') {
-        message = t('rules.errors.mqtt-connection');
-      } else if (err.message === 'file-exists') {
-        message = t('rules.errors.exists');
-      }
-      notificationsStore.showNotification({ variant: 'danger', text: message });
+  const [save, isSaving] = useAsyncAction(async () => {
+    const initRuleName = rule.initName;
+    if (rule.initName !== rule.name) {
+      await rulesStore.checkIsNameUnique(rule.name);
     }
-  };
+    const savedRuleName = await rulesStore.save(rule);
+
+    if (pathName === 'new') {
+      return location.replace(`/#!/rules/edit/${savedRuleName}`);
+    } else if (initRuleName !== rule.name) {
+      const path = await rulesStore.rename(initRuleName, rule.name);
+      return location.replace(`/#!/rules/edit/${path}`);
+    }
+    setIsEditingTitle(false);
+  });
 
   return (
     <PageLayout
       title={rule.name}
-      hasRights={hasRights}
+      hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={isLoading}
       isEditingTitle={isEditingTitle}
       editingTitlePlaceholder={t('rules.labels.title-placeholder')}
       errors={errors}
+      titleArea={!rule.enabled && <Tag variant="gray">{t('rules.labels.inactive')}</Tag>}
       actions={
         <Button
-          variant="success"
           label={t('rules.buttons.save')}
           disabled={!rule.name}
+          isLoading={isSaving}
           onClick={save}
         />
       }
       stickyHeader
       onTitleChange={(title) => rulesStore.setRuleName(title)}
-      onTitleEditEnable={() => setIsEditingTitle(true)}
+      onTitleEditEnable={() => setIsEditingTitle(!isEditingTitle)}
     >
       <div className="editRule-container">
         <CodeEditor

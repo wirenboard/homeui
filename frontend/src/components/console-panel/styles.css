@@ -1,0 +1,209 @@
+.consolePanel {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 345px;
+    max-height: 100dvh;
+    box-shadow: 2px 0 6px rgb(136, 136, 136, 1);
+    background: var(--background-color);
+    color: var(--text-color)
+}
+
+.consolePanel-bottom {
+    width: 100%;
+}
+
+.consolePanel-resizer {
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    width: 100%;
+    height: 8px;
+    cursor: ns-resize;
+    touch-action: none;
+}
+
+.consolePanel-right .consolePanel-resizer {
+    height: 100%;
+    width: 8px;
+    left: -4px;
+    cursor: w-resize;
+}
+
+.consolePanel-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-right: 12px;
+    border-bottom: 1px solid var(--light-gray-color);
+}
+
+.consolePanel-tabs {
+    flex-shrink: 0;
+    width: auto;
+    border-bottom: none;
+    border-radius: var(--input-border-radius) var(--input-border-radius) 0 0;
+}
+
+.consolePanel-tabs .tabs-button {
+    padding: 6px 12px;
+}
+
+.consolePanel-tabs li {
+    height: fit-content;
+    border-top: 0;
+}
+
+/*.consolePanel-tabs li:not(.tabs-buttonSelected) {*/
+/*    border-bottom: 4px solid transparent;*/
+/*}*/
+
+.consolePanel-tabs .tabs-buttonSelected {
+    border-top: 0;
+    border-bottom: 4px solid var(--primary-color);
+    border-radius: 0;
+}
+
+.consolePanel-tabLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.consolePanel-tabClose {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: var(--input-border-radius);
+}
+
+.consolePanel-tabClose:hover {
+    color: var(--primary-color-hover);
+}
+
+.consolePanel-tabCloseIcon {
+    width: 14px;
+    height: 14px;
+}
+
+.consolePanel-headerActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.consolePanel-separatorRight {
+    border-right: 1px solid var(--light-gray-color);
+    padding-right: 8px;
+    height: 22px;
+}
+
+.consolePanel-separatorLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 1px solid var(--light-gray-color);
+    padding-left: 8px;
+    height: 22px;
+}
+
+.consolePanel-button {
+    all: unset;
+    position: relative;
+    cursor: pointer;
+    height: 20px;
+    border-radius: var(--input-border-radius)
+}
+
+.consolePanel-button:hover:not(:disabled) {
+    color: var(--primary-color-hover);
+}
+
+.consolePanel-button:focus {
+    box-shadow: var(--input-active-shadow);
+}
+
+.consolePanel-button:disabled {
+    color: var(--gray-color);
+    cursor: not-allowed;
+}
+
+.consolePanel-filter {
+    width: 140px;
+}
+
+.consolePanel-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.consolePanel-iconActive {
+    color: var(--primary-color);
+}
+
+.consolePanel-close {
+    margin-left: 12px;
+}
+
+.consolePanel-content {
+    width: 100%;
+    overflow: auto;
+    height: 100%;
+}
+
+.consolePanel-content::-webkit-scrollbar {
+    -webkit-appearance: none;
+    background-color: var(--scrollbar-background);
+    width: 12px;
+    display: none;
+}
+
+.consolePanel-content:hover::-webkit-scrollbar,
+.consolePanel-content:focus::-webkit-scrollbar {
+    display: block;
+}
+
+.consolePanel-content::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    background-color: var(--scrollbar-color);
+    border: 3px solid var(--scrollbar-background);
+    border-radius: 8px;
+}
+
+.consolePanel-content::-webkit-scrollbar-thumb:hover {
+    border-width: 2px;
+}
+
+.consolePanel-log {
+    display: flex;
+    white-space: pre-wrap;
+    padding: 2px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.consolePanel-logError {
+    background: var(--alert-danger-background);
+}
+
+.consolePanel-logWarn {
+    background: var(--alert-warn-background);
+}
+
+.consolePanel-logDebug {
+    font-weight: bold;
+}
+
+.consolePanel-logDate {
+    width: 140px;
+    display: flex;
+    flex-shrink: 0;
+}
+
+.consolePanel-logPlain {
+    padding: 2px 12px;
+    white-space: pre-wrap;
+    border-bottom: 1px solid var(--border-color);
+}

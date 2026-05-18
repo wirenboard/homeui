@@ -11,23 +11,28 @@ const NumberEditor = observer(({
   descriptionId,
   errorId,
   translator,
+  isDisabled,
+  hideError,
 }: NumberEditorProps) => {
   const { i18n } = useTranslation();
   const currentLanguage = i18n.language;
   const enumOptions = useMemo(() => {
     if (!store.schema.enum) return [];
     return store.enumOptions.map((option) => ({
-      value: option.value,
+      value: String(option.value),
       label: translator.find(option.label, currentLanguage),
     }));
   }, [store.enumOptions, translator, currentLanguage]);
+  const hasErrors = store.hasErrors && !hideError;
   return store.schema.enum ? (
     <Dropdown
       id={inputId}
       options={enumOptions}
-      value={typeof store.value === 'number' ? store.value : undefined}
+      value={store.editString}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       minWidth="30px"
+      isDisabled={isDisabled || store.schema.options?.wb?.read_only}
+      className={hasErrors ? 'wb-jsonEditor-propertyDropdownError' : ''}
       onChange={(option) => {
         if (typeof option.value === 'number' || typeof option.value === 'string') {
           store.setValue(option.value);
@@ -42,8 +47,10 @@ const NumberEditor = observer(({
       value={store.editString}
       placeholder={translator.find(store.schema.options?.inputAttributes?.placeholder, currentLanguage)}
       ariaDescribedby={descriptionId}
-      ariaInvalid={store.hasErrors}
-      ariaErrorMessage={errorId}
+      ariaInvalid={hasErrors}
+      ariaErrorMessage={hasErrors ? errorId : undefined}
+      isDisabled={isDisabled || store.schema.options?.wb?.read_only}
+      className={hasErrors ? 'wb-jsonEditor-propertyInputError' : ''}
       onChange={(value) => store.setEditString(String(value))}
     />
   );

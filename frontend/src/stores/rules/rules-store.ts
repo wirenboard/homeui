@@ -5,6 +5,7 @@ import type { Rule, RuleError, RuleFetchData, RuleListItem, RuleLog, RuleSaveDat
 export default class RulesStore {
   public rule?: Rule = {
     name: '',
+    enabled: true,
     initName: '',
   };
   public rules: RuleListItem[] = [];
@@ -32,6 +33,7 @@ export default class RulesStore {
           this.rule = {
             initName: path,
             name: path,
+            enabled: res.enabled,
             content: res.content,
           };
           if (res.error) {
@@ -52,6 +54,16 @@ export default class RulesStore {
 
   setRuleName(value: string) {
     this.rule.name = value;
+  }
+
+  resetRule() {
+    this.rule = {
+      name: '',
+      initName: '',
+      content: '',
+      enabled: true,
+      error: null,
+    };
   }
 
   async save(rule: Rule): Promise<string> {
@@ -119,7 +131,7 @@ export default class RulesStore {
     const copiedRule = await this.load(path);
     copiedRule.name = generateNextId(
       this.rules.map((rule) => rule.virtualPath.replace(/\.js$/, '')),
-      copiedRule.name.replace(/\.js$/, '')
+      copiedRule.name.replace(/\.js$/, ''),
     );
     const copiedRuleName = await this.save({ ...copiedRule, initName: this.getValidRuleName(copiedRule.name) });
     await new Promise((resolve) => setTimeout(resolve, 2000));

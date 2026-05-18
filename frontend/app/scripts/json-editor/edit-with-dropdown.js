@@ -1,12 +1,10 @@
-'use strict';
-
-import { JSONEditor } from '../../3rdparty/jsoneditor';
+import { JSONEditor } from '@wirenboard/json-editor';
 
 // Editor for integer or string values.
 // It allows free value editing and has additional dropdown list with possible values.
 // Values in dropdown are defined by options.enum_values array.
 // Titles for values could be set in options.enum_titles array.
-function makeEditWithDropdownEditor() {
+export function makeEditWithDropdownEditor() {
   return class extends JSONEditor.AbstractEditor {
     constructor(options, defaults) {
       super(options, defaults);
@@ -145,6 +143,13 @@ function makeEditWithDropdownEditor() {
       this.control.appendChild(this.dropdown);
       this.control.classList.add('editable-dropdown');
       this.container.appendChild(this.control);
+
+      if (this.schema.description) {
+        this.container.appendChild(
+          this.theme.getFormInputDescription(this.translateProperty(this.schema.description))
+        );
+      }
+
       if (this.options.compact) {
         this.container.classList.add('compact');
       }
@@ -250,5 +255,3 @@ function makeEditWithDropdownEditor() {
     }
   };
 }
-
-export default makeEditWithDropdownEditor;

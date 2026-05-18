@@ -1,4 +1,13 @@
-import { HTMLAttributes } from 'react';
+import { type HTMLAttributes } from 'react';
+
+export type TableCellSortDirection = 'asc' | 'desc';
+
+export interface TableCellSort {
+  onSort: () => void;
+  isActive?: boolean;
+  direction?: TableCellSortDirection;
+  label?: string;
+}
 
 export interface TableProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -7,21 +16,28 @@ export interface TableProps extends HTMLAttributes<HTMLDivElement> {
   isWithoutGap?: boolean;
 }
 
-export interface TableRowProps extends HTMLAttributes<HTMLDivElement | HTMLAnchorElement> {
+export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
   className?: string;
   url?: string;
-  gap?: number;
   isFullWidth?: boolean;
   isHeading?: boolean;
+  isSticky?: boolean;
 }
 
-export interface TableCellProps extends HTMLAttributes<HTMLDivElement> {
-  width?: number;
+export interface TableCellProps extends HTMLAttributes<HTMLTableCellElement> {
+  width?: number | string;
   className?: string;
   visibleOnHover?: boolean;
   preventClick?: boolean;
   ellipsis?: boolean;
   isWithoutPadding?: boolean;
+  isDraggable?: boolean;
   verticalAlign?: 'top' | 'center';
   align?: 'left' | 'center' | 'right';
+  sort?: TableCellSort;
+  url?: string;
+  isFirstLinkColumn?: boolean;
+  isHeading?: boolean;
+  ariaLabel?: string;
+  colSpan?: number;
 }

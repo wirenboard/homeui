@@ -32,7 +32,7 @@ export const Modal = ({ id, active, onCancel, children }) => {
   useEffect(() => {
     if (active) {
       const handleClick = (event) => {
-        if (ref && ref.current && !ref.current.contains(event.target)) {
+        if (ref && ref.current && !ref.current.contains(event.target) && !event.target.closest('.dropdown__menu')) {
           onCancel();
         }
       };
