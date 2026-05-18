@@ -1,11 +1,9 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { lazy } from 'react';
+import RefreshIcon from '@/assets/icons/refresh.svg';
+import WarnIcon from '@/assets/icons/warn.svg';
 import { type EmbeddedSoftware, type DeviceTabStore } from '@/stores/device-manager';
 import './styles.css';
-
-const RefreshIcon = lazy(() => import('@/assets/icons/refresh.svg'));
-const WarnIcon = lazy(() => import('@/assets/icons/warn.svg'));
 
 const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }: { embeddedSoftware: EmbeddedSoftware }) => {
   if (embeddedSoftware.isUpdating) {

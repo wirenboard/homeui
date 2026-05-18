@@ -210,7 +210,7 @@ export class DeviceSettingsObjectStore {
     if (Array.isArray(configuredChannels)) {
       configuredChannels.forEach((channel) => {
         if (typeof channel === 'object' && channel !== null && Object.hasOwn(channel, 'name')) {
-          initialChannelsByName[channel.name] = channel as WbDeviceTemplateChannel;
+          initialChannelsByName[(channel as WbDeviceTemplateChannel).name] = channel as WbDeviceTemplateChannel;
         }
       });
     }

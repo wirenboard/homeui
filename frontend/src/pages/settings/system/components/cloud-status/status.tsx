@@ -1,11 +1,9 @@
 import { observer } from 'mobx-react-lite';
-import { lazy } from 'react';
 import { useTranslation } from 'react-i18next';
+import RefreshIcon from '@/assets/icons/refresh.svg';
 import { Alert } from '@/components/alert';
 import { ConnectionStatus } from './store';
 import './styles.css';
-
-const RefreshIcon = lazy(() => import('@/assets/icons/refresh.svg'));
 
 export const Status = observer(({ status }: { status: ConnectionStatus }) => {
   const { t } = useTranslation();

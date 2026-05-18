@@ -1,16 +1,14 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import WarnIcon from '@/assets/icons/warn.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { CollapseButton } from '@/components/collapse-button';
 import { JsonSchemaEditor } from '@/components/json-schema-editor';
 import { type PortTabProps } from './types';
 import './styles.css';
-
-const WarnIcon = lazy(() => import('@/assets/icons/warn.svg'));
 
 export const PortTab = observer(({ tab }: PortTabProps) => {
   const isMobile = useMediaQuery({ maxWidth: 991 });
