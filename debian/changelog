@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.209.0) stable; urgency=medium
+
+  * Update system page
+  * Move update/reset process logs to console component
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 18 May 2026 13:01:00 +0300
+
 wb-mqtt-homeui (2.208.2) stable; urgency=medium
 
   * Unify autocomplete fields
