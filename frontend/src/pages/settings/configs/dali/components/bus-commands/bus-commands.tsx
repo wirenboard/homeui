@@ -36,7 +36,7 @@ export const BusCommands = observer(({ store }: BusCommandsProps) => {
   const onCatalogSelect = useCallback((entry: ListCommandsEntry) => {
     insertSnippet?.(entry.snippet);
     store.closeCatalog();
-  }, [insertSnippet, store]);
+  }, [insertSnippet]);
 
   return (
     <Card
