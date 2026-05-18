@@ -1,0 +1,17 @@
+.system {
+    display: flex;
+    flex-direction: column;
+}
+
+.system-testingOffer {
+    margin-bottom: 16px;
+}
+
+.system-card {
+    width: 100%;
+    max-width: unset;
+}
+
+.system ul {
+    padding-left: 18px;
+}
