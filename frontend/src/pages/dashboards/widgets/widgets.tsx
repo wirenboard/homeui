@@ -227,7 +227,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
         <WidgetEdit
           widget={store.widgets.get(widgetToEdit)}
           cells={cells}
-          controls={devicesStore.controls}
+          topics={devicesStore.topicsWithoutSystem}
           isOpened={!!widgetToEdit}
           onClose={() => {
             setWidgetToEdit(null);

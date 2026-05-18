@@ -90,7 +90,7 @@ export const Dropdown = ({
   };
 
   return (
-    <div onTouchEndCapture={(ev) => ev.stopPropagation()}>
+    <div style={{ display: 'contents' }} onTouchEndCapture={(ev) => ev.stopPropagation()}>
       <Select
         ref={select}
         inputId={inputId}

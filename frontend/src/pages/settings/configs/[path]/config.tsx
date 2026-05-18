@@ -82,7 +82,7 @@ const ConfigPage = observer(({ store, rootScope, devicesStore }: ConfigPageProps
       <JsonEditor
         schema={store.config?.schema}
         data={store.config?.content}
-        cells={Array.from(devicesStore.cells.keys()).filter((t) => !t.startsWith('system__'))}
+        cells={devicesStore.topicsWithoutSystem}
         onChange={onChange}
       />
     </PageLayout>
