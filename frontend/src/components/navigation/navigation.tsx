@@ -11,13 +11,14 @@ import { APP_NAME, HIDE_COMPACT_MENU, LOGO, LOGO_COMPACT } from '@/common/consta
 import { MenuItem } from '@/components/navigation/components/menu-item';
 import { Tooltip } from '@/components/tooltip';
 import { UserRole, authStore } from '@/stores/auth';
+import { consolePanelStore } from '@/stores/console-panel';
 import { uiStore } from '@/stores/ui';
 import { useParseHash } from '@/utils/url';
 import { DescriptionStatus } from './components/description-status';
 import { type NavigationProps } from './types';
 import './styles.css';
 
-export const Navigation = observer(({ dashboardsStore, toggleConsole }: NavigationProps) => {
+export const Navigation = observer(({ dashboardsStore }: NavigationProps) => {
   const { t, i18n } = useTranslation();
   const { id, page, params } = useParseHash();
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -27,7 +28,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   const [isMenuFocused, setIsMenuFocused] = useState(true);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
-  const { menuItems, isConsoleVisible, toggleConsoleVisibility } = uiStore;
+  const { menuItems } = uiStore;
 
   useEffect(() => {
     uiStore.buildMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params);
@@ -40,8 +41,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   };
 
   const handleDebugClick = () => {
-    toggleConsole();
-    toggleConsoleVisibility();
+    consolePanelStore.toggleVisibility();
     setIsMobileMenuOpened(false);
   };
 
@@ -198,7 +198,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                     draggable={false}
                     aria-label={t('navigation.buttons.debug')}
                     tabIndex={isMenuFocused ? null : -1}
-                    aria-expanded={isConsoleVisible}
+                    aria-expanded={consolePanelStore.isVisible}
                     onFocus={() => setIsMenuFocused(true)}
                     onBlur={() => setIsMenuFocused(false)}
                     onClick={handleDebugClick}

@@ -64,7 +64,6 @@
     "react": "^18.2.0",
     "react-day-picker": "^9.14.0",
     "react-dom": "^18.2.0",
-    "react-focus-lock": "^2.9.3",
     "react-i18next": "^12.0.0",
     "react-imask": "^7.6.1",
     "react-plotly.js": "2.6.0",

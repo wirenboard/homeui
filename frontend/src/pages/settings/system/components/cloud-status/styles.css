@@ -1,0 +1,13 @@
+.cloudStatus-button {
+  margin-top: 12px;
+  width: fit-content;
+}
+
+.cloudStatus-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.cloudStatus-alert svg {
+  stroke-width: 1.5px;
+}

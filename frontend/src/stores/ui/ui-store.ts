@@ -8,7 +8,6 @@ import type { CustomMenuItem, MenuItemInstance } from './types';
 
 export default class UiStore {
   public isConnected = false;
-  public isConsoleVisible = false;
   public menuItems: MenuItemInstance[] = [];
   public modules: string[] = [];
   #additionalItems: CustomMenuItem[] = null;
@@ -21,10 +20,6 @@ export default class UiStore {
     runInAction(() => {
       this.isConnected = isConnected;
     });
-  }
-
-  toggleConsoleVisibility() {
-    this.isConsoleVisible = !this.isConsoleVisible;
   }
 
   async buildMenu(dashboards: Dashboard[], isShowWidgetsPage: boolean, params: URLSearchParams) {

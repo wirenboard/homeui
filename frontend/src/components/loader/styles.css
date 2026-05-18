@@ -5,9 +5,17 @@
 }
 
 .loader {
-    width: 60px;
-    height: 60px;
     fill: var(--alert-color);
     animation: spin 1s linear infinite;
     border: 0;
+}
+
+.loader-iconDefault {
+    width: 60px;
+    height: 60px;
+}
+
+.loader-iconSmall {
+    width: 30px;
+    height: 30px;
 }
