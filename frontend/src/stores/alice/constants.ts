@@ -78,7 +78,7 @@ export enum Capability {
   'Color setting' = 'devices.capabilities.color_setting',
   // Mode = 'devices.capabilities.mode',
   Range = 'devices.capabilities.range',
-  // Toggle = 'devices.capabilities.toggle',
+  Toggle = 'devices.capabilities.toggle',
 }
 
 export enum Color {

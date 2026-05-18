@@ -11,7 +11,7 @@ import {
   ColorModel,
   // modes, // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
   ranges,
-  // toggles, // TODO: <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
+  toggles,
   type CapabilityParameters,
   type SmartDeviceCapability,
   // colorSceneOptions, // TODO: <DISABLED_COLOR> - need uncomment for Color Scenes activation in WEBUI
@@ -79,6 +79,23 @@ const getAvailableRangeInstances = (
   );
 };
 
+const getAvailableToggleInstances = (
+  capabilities: SmartDeviceCapability[],
+  excludeIndex?: number,
+): string[] => {
+  const usedInstances = capabilities
+    .filter((cap, index) =>
+      cap.type === Capability.Toggle &&
+      index !== excludeIndex &&
+      cap.parameters?.instance,
+    )
+    .map((cap) => cap.parameters.instance);
+
+  return toggles.filter(
+    (toggleInstance) => !usedInstances.includes(toggleInstance),
+  );
+};
+
 const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
   switch (colorKey) {
     case 'ColorModel': return t('alice.labels.color-model');
@@ -100,6 +117,11 @@ const isCapabilityDisabled = (
   if (capabilityType === Capability.Range) {
     // For range, disable only if all range instances are used
     return !getAvailableRangeInstances(capabilities).length;
+  }
+
+  if (capabilityType === Capability.Toggle) {
+    // For toggle, disable only if all toggle instances are used
+    return !getAvailableToggleInstances(capabilities).length;
   }
 
   // For other capabilities, use existing logic
@@ -224,6 +246,25 @@ export const DeviceCapabilities = observer(({
     });
   }, [capabilities]);
 
+  const getToggleInstanceOptions = useCallback((
+    currentCapability: SmartDeviceCapability,
+    currentCapabilityIndex: number,
+  ) => {
+    const availableInstances = getAvailableToggleInstances(capabilities, currentCapabilityIndex);
+    const currentlySelectedInstance = currentCapability.parameters?.instance;
+
+    return toggles.map((toggleInstance) => {
+      const isCurrentlySelected = currentlySelectedInstance === toggleInstance;
+      const isAvailableForUse = availableInstances.includes(toggleInstance);
+
+      return {
+        label: toggleInstance,
+        value: toggleInstance,
+        isDisabled: !isCurrentlySelected && !isAvailableForUse,
+      };
+    });
+  }, [capabilities]);
+
   const getAvailableCapabilities = () => {
     return Object.values(Capability).filter((capType) => {
       return !isCapabilityDisabled(capType, capabilities);
@@ -270,11 +311,14 @@ export const DeviceCapabilities = observer(({
         parameters.unit = rangeUnitByInstance[selectedInstance];
         break;
       }
-      // <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
-      // case Capability.Toggle: {
-      //   parameters.instance = 'backlight';
-      //   break;
-      // }
+      case Capability.Toggle: {
+        // Select first available instance
+        const availableInstances = getAvailableToggleInstances(capabilities);
+        const selectedInstance = availableInstances[0] || 'backlight'; // fallback to backlight
+
+        parameters.instance = selectedInstance;
+        break;
+      }
       case Capability['On/Off']: {
         parameters.instance = 'on';
         break;
@@ -547,13 +591,12 @@ export const DeviceCapabilities = observer(({
                 </>
               )}
 
-              {/* <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI */}
-              {/* {capability.type === Capability.Toggle && (
+              {capability.type === Capability.Toggle && (
                 <div className="aliceDeviceSkills-colspan2">
                   <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
                   <Dropdown
                     value={capability.parameters?.instance}
-                    options={toggles.map((toggle) => ({ label: toggle, value: toggle }))}
+                    options={getToggleInstanceOptions(capability, key)}
                     onChange={({ value: instance }: Option<string>) => {
                       const val = capabilities.map((item, i) => i === key
                         ? { ...item, parameters: { ...item.parameters, instance } }
@@ -562,7 +605,7 @@ export const DeviceCapabilities = observer(({
                     }}
                   />
                 </div>
-              )} */}
+              )}
 
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
