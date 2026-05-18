@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { startTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/checkbox';
 import { Dialog } from '@/components/dialog';
@@ -21,11 +22,13 @@ export const OptionalParamsSelectDialog = observer(
                 checked={!param.disabled}
                 title={translator.find(param.store.schema.title || param.key, currentLanguage)}
                 onChange={(value) => {
-                  if (value) {
-                    param.enable();
-                  } else {
-                    param.disable();
-                  }
+                  startTransition(() => {
+                    if (value) {
+                      param.enable();
+                    } else {
+                      param.disable();
+                    }
+                  });
                 }}
               />
           ))}
