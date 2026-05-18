@@ -3,17 +3,17 @@ import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import InfoIcon from '@/assets/icons/info.svg';
-import { DatePicker } from '@/components/date-picker';
-import { Dropdown, Option } from '@/components/dropdown';
+import { DateTimePicker } from '@/components/datetime-picker';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { FormGroup } from '@/components/form-group';
 import { Input } from '@/components/input';
 import { ToggleButton } from '@/components/toggle-button';
 import { Tooltip } from '@/components/tooltip';
-import { LogsStore, LogLevel } from '@/stores/logs';
+import { type LogsStore, LogLevel } from '@/stores/logs';
 import './styles.css';
 
 export const LogsFilters = observer((
-  { store, filter, onFilterChange }: { store: LogsStore; filter: any; onFilterChange: (value: any) => void }
+  { store, filter, onFilterChange }: { store: LogsStore; filter: any; onFilterChange: (value: any) => void },
 ) => {
   const { t } = useTranslation();
 
@@ -35,7 +35,7 @@ export const LogsFilters = observer((
 
   const debouncedPatternChange = useMemo(
     () => debounce((value) => onFilterChange({ ...filter, pattern: value }), 1000),
-    [filter, onFilterChange]
+    [filter, onFilterChange],
   );
 
   return (
@@ -73,12 +73,11 @@ export const LogsFilters = observer((
         onChange={(options: Option[]) => onFilterChange({ ...filter, levels: options.map((opt) => opt.value) })}
       />
 
-      <DatePicker
+      <DateTimePicker
         className="logsFilters-input"
-        placeholder={t('logs.labels.latest')}
-        heading={t('logs.labels.set-date')}
+        placeholder={t('logs.labels.set-date')}
         value={filter.time ? new Date(filter.time * 1000) : null}
-        onChange={(time) => onFilterChange({ ...filter, time: time ? time.getTime() / 1000 : null })}
+        onChange={(time: Date) => onFilterChange({ ...filter, time: time ? time.getTime() / 1000 : null })}
       />
 
       <div className="logsFilters-patternWrapper">

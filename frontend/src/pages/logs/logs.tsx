@@ -9,7 +9,7 @@ import { Button } from '@/components/button';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { LogLevel, LogsStore, type Log } from '@/stores/logs';
+import { LogLevel, type LogsStore, type Log } from '@/stores/logs';
 import { downloadFile } from '@/utils/download';
 import { LogsFilters } from './components/filters';
 import './styles.css';
@@ -96,7 +96,7 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
 
     const file = new Blob(
       [makeLogHeader(), store.logs.filter((log) => log?.msg).map((l) => formatLogRow(l, filter.service)).join('\n')],
-      { type: 'text/txt' }
+      { type: 'text/txt' },
     );
     const fileName = `${format(store.logs[0].time, 'yyyyMMdd')}T${format(store.logs[0].time, 'HHmmss')}`;
     downloadFile(`${filter.service?.split('.')[0] || 'log'}_${fileName}.log`, file);

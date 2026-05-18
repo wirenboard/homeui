@@ -47,7 +47,6 @@ import daliProxyService from './services/daliProxy';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 
 // homeui modules: directives
 import userRolesDirective from './directives/user-roles.directive';
@@ -128,7 +127,6 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
 
 module.directive('scriptForm', function (PageState) {
   'ngInject';

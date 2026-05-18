@@ -33,6 +33,7 @@ export const DateTimePicker = ({
   disabledDates,
   ariaLabel,
   isInvalid,
+  placeholder,
   size,
   withSeconds,
 }: DateTimePickerProps) => {
@@ -164,6 +165,7 @@ export const DateTimePicker = ({
               ? `00.00.0000 00:00${withSeconds ? ':00' : ''}`
               : `00/00/0000 00:00${withSeconds ? ':00' : ''}`
           }
+          placeholder={placeholder}
           value={inputValue}
           disabled={disabled}
           aria-haspopup="dialog"
