@@ -22,15 +22,15 @@ export const DaliColorTemperatureSliderEditor = observer(({
 
   const onSwitchChange = useCallback((enabled: boolean) => {
     store.setValue(enabled ? maxValue : DALI_TC_MASK_VALUE);
-  }, [store, maxValue]);
+  }, [maxValue]);
 
   const onSliderChange = useCallback((val: number) => {
     store.setValue(val);
-  }, [store]);
+  }, []);
 
   const onKelvinChange = useCallback((val: string | number) => {
     store.setEditString(String(val));
-  }, [store]);
+  }, []);
 
   const onKelvinCommit = useCallback(() => {
     if (store.hasErrors || typeof store.value !== 'number') {
@@ -38,7 +38,7 @@ export const DaliColorTemperatureSliderEditor = observer(({
     }
     // Re-derive editString from canonical K — gives the "snap" (4500 → 4505).
     store.setValue(store.value);
-  }, [store]);
+  }, []);
 
   return (
     <div className="dali-color-temperature-slider">
