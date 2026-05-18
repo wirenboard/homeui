@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { Button, ButtonLink } from '@/components/button';
@@ -6,6 +6,7 @@ import { Card } from '@/components/card';
 import { Loader } from '@/components/loader';
 import { copyToClipboard } from '@/utils/clipboard';
 import { request } from '@/utils/request';
+import './styles.css';
 
 export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticProxy }) => {
   const { t } = useTranslation();
@@ -13,7 +14,6 @@ export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticPro
   const [isVisible, setIsVisible] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [isShowError, setIsShowError] = useState(false);
-  const [baseName, setBaseName] = useState('');
   const [href, setHref] = useState('');
   const isCollecting = useRef(false);
   const [label, setLabel] = useState('');
@@ -33,26 +33,26 @@ export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticPro
     );
   };
 
-  let fileIsOk = function httpGet(url: string, callback: (_header: string) => void) {
+  const fileIsOk = (url: string, fileName: string, callback: (_header: string, _fileName: string) => void) => {
     request.head(url)
       .then((response: any) => {
-        callback(response.headers.get('Content-Type'));
+        callback(response.headers.get('Content-Type'), fileName);
       }).catch((err) => {
-        callback(err.response.headers.get('Content-Type'));
+        callback(err.response.headers.get('Content-Type'), fileName);
       });
   };
 
-  let callbackFileIsOk = function callbackFileIsOk(contentType: string) {
+  const callbackFileIsOk = useCallback((contentType: string, fileName: string) => {
     isCollecting.current = false;
     if (contentType === 'application/zip') {
       setIsEnabled(true);
       setLabel('system.collector.buttons.download');
-      setHref(`diag/${baseName}`);
+      setHref(`diag/${fileName}`);
     } else {
       setIsVisible(false);
       setIsShowError(true);
     }
-  };
+  }, []);
 
   useEffect(() => {
     whenMqttReady()
@@ -73,11 +73,10 @@ export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticPro
       if (isCollecting.current && payload) {
         const data = JSON.parse(payload);
         setPath(data['fullname']);
-        setBaseName(data['basename']);
         let url = window.location.href;
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
-        fileIsOk(`${location.protocol}//${url}/diag/${baseName}`, callbackFileIsOk);
+        fileIsOk(`${location.protocol}//${url}/diag/${data['basename']}`, data['basename'], callbackFileIsOk);
       }
     });
   }, []);
@@ -96,6 +95,7 @@ export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticPro
         <>
           {href ? (
             <ButtonLink
+              className="diagnostic-downloadButton"
               variant="primary"
               label={t(label)}
               href={href}
