@@ -34,7 +34,7 @@ export const Tab = ({
   buttonRef,
 }: PropsWithChildren<TabProps>) => (
   <li
-    className={classNames({
+    className={classNames('tabs-buttonWrapper', {
       'tabs-buttonSelected': activeTab === id,
     })}
   >

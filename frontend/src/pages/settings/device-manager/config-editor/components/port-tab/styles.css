@@ -6,8 +6,21 @@
     border-radius: 2px;
 }
 
+.deviceManagerPage .tabs-buttonWrapper:has(.portTab) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+    background: var(--background-accent-color) !important;
+}
+
+
 .portTab-title {
     flex-grow: 1;
+}
+
+.portTab-error {
+    margin-bottom: 6px;
 }
 
 .portTab-error .portTab-icon {
@@ -45,7 +58,3 @@
 .portTab-buttonPanel .button {
     flex-grow: 1;
 }
-
-
-
-

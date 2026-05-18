@@ -1,7 +1,18 @@
+.settingsTab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
 .settingsTab-icon {
-    width: 18px;
-    min-width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
+}
+
+.settingsTab-icon path {
+    fill: var(--gray-color);
+    color: var(--gray-color);
 }
 
 .settingsTab-name {

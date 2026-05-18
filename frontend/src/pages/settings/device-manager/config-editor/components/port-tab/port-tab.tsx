@@ -34,7 +34,7 @@ export const PortTabContent = ({ tab, onDeleteTab, onDeletePortDevices }) => {
   return (
     <div>
       {tab.childrenHasInvalidConfig && (
-        <Alert className="portTab-error" variant="danger" size="small">
+        <Alert className="portTab-error" variant="danger">
           {t('device-manager.errors.device-config')}
         </Alert>
       )}
