@@ -1,4 +1,4 @@
-import type { PortTabSerialConfig, PortTabTcpConfig, PortTabConfig } from './port-tab/types';
+import type { PortTabSerialConfig, PortTabTcpConfig, PortTabConfig } from '../port-tab/types';
 import type {
   DmRpcTcpPortConfig,
   SerialRpcTcpPortConfig,
@@ -8,7 +8,7 @@ import type {
   SerialPortProxySetupItem,
   SerialPortProxySetupItemNewConfig,
   ScannedDevice,
-} from './types';
+} from '../types';
 
 export function toDmRpcPortConfig(portConfig: PortTabConfig): DmRpcTcpPortConfig | RpcSerialPortConfig {
   if (Object.hasOwn(portConfig, 'address')) {

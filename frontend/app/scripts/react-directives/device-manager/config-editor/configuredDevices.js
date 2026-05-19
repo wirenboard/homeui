@@ -1,4 +1,4 @@
-import { getIntAddress } from '@/stores/device-manager/utils';
+import { getIntAddress } from '@/stores/device-manager';
 
 /**
  * @typedef {Object} ConfiguredDevice
