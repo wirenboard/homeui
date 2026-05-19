@@ -5,7 +5,8 @@
   "scripts": {
     "clean": "rimraf -G dist coverage ./tmp",
     "build": "rimraf -G dist && webpack --progress",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "start": "npx webpack serve --history-api-fallback --client-progress --open",
     "lint": "npx eslint --cache --cache-location .eslintcache",
     "lint:fix": "npx eslint --fix",
