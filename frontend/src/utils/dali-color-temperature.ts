@@ -10,13 +10,23 @@ const reciprocalMillion = (n: number): number => (n <= 0 ? 0 : Math.round(1_000_
 export const mirekToKelvin = reciprocalMillion;
 export const kelvinToMirek = reciprocalMillion;
 
-// Format a mirek value for the user-facing input. MASK is shown as an empty
-// string (the editor hides the input in masked state anyway).
+// Default to 10 K granularity, but the mirek that lies closest to each
+// multiple of 100 is promoted to show that 100-multiple exactly. This keeps
+// every multiple of 100 in [1000, 10000] reachable while letting every other
+// slider position keep its natural 10 K rounding.
+const roundKelvinForDisplay = (k: number): number => {
+  if (k < 1000) return k;
+  const hundred = Math.round(k / 100) * 100;
+  if (kelvinToMirek(hundred) === kelvinToMirek(k)) return hundred;
+  return Math.round(k / 10) * 10;
+};
+
 export const formatKelvinEditString = (mirek: number): string =>
-  mirek === DALI_TC_MASK_VALUE ? '' : String(mirekToKelvin(mirek));
+  mirek === DALI_TC_MASK_VALUE ? '' : String(roundKelvinForDisplay(mirekToKelvin(mirek)));
 
 // Validates a user-entered K text against [minMirek, maxMirek] mirek bounds.
-// The bounds are converted to K internally so the message data is in K.
+// Validation happens in mirek-space so the device-side range is respected even
+// when the typed K rounds to a value just outside the displayed bounds.
 export const validateKelvinEditString = (
   editString: string,
   minMirek: number,
@@ -27,10 +37,15 @@ export const validateKelvinEditString = (
     return { key: 'json-editor.errors.not-an-integer' };
   }
   const k = parseInt(trimmed, 10);
-  const minK = mirekToKelvin(maxMirek);
-  const maxK = mirekToKelvin(minMirek);
-  if (k < minK || k > maxK) {
-    return { key: 'json-editor.errors.minmax', data: { min: minK, max: maxK } };
+  const m = kelvinToMirek(k);
+  if (m < minMirek || m > maxMirek) {
+    return {
+      key: 'json-editor.errors.minmax',
+      data: {
+        min: roundKelvinForDisplay(mirekToKelvin(maxMirek)),
+        max: roundKelvinForDisplay(mirekToKelvin(minMirek)),
+      },
+    };
   }
   return undefined;
 };
