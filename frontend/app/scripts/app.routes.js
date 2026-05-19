@@ -33,8 +33,7 @@ function routing($stateProvider, $locationProvider, $urlRouterProvider) {
     })
     .state('system', {
       url: '/system',
-      template: require('../views/system.html'),
-      controller: 'SystemCtrl as $ctrl',
+      template: '<system-page />',
       resolve: {
         ctrl: ($q, $ocLazyLoad) => {
           'ngInject';

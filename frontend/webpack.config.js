@@ -347,6 +347,11 @@ module.exports = (function makeWebpackConfig() {
     proxy: [
       {
         context: [
+          '/fwupdate/upload',
+          '/fwupdate/download/rootfs',
+          '/fwupdate/download/configs',
+          '/fwupdate/download/everything',
+          '/fwupdate/factoryreset',
           '/auth/check_config',
           '/auth/users',
           '/auth/login',
@@ -358,7 +363,8 @@ module.exports = (function makeWebpackConfig() {
           '/api/https',
           '/api/check',
           '/api/integrations/alice',
-          '/ui/menu'
+          '/ui/menu',
+          '/diag',
         ],
         target: process.env.MQTT_BROKER_URI,
         ws: true,

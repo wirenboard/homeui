@@ -3,6 +3,7 @@ import every from 'lodash/every';
 import intersection from 'lodash/intersection';
 import isEqual from 'lodash/isEqual';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
+import { getIntAddress, toSerialRpcPortConfig, toDmRpcPortConfig, setupDevice } from '@/stores/device-manager';
 import { type JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '~/i18n/react/config';
@@ -18,7 +19,6 @@ import type {
   ScannedDevice,
   FwUpdateProxyRestoreParams,
 } from '../types';
-import { getIntAddress, toSerialRpcPortConfig, toDmRpcPortConfig, setupDevice } from '../utils';
 import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';
 import { EmbeddedSoftware } from './embedded-software/embedded-software-store';
 import { ReadRegistersStateStore } from './read-registers-state';
