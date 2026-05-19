@@ -597,11 +597,6 @@ button.dashboard-back:active {
   border-color: var(--danger-color);
 }
 
-.has-error .dropdown__control,
-.has-error .dropdown__control:hover {
-  border-color: var(--danger-color);
-}
-
 .wb-react-select .wb-react-select__indicator-separator {
   display: none,
 }
