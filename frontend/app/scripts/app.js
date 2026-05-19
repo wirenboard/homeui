@@ -43,6 +43,7 @@ import serialPortProxyService from './services/serialPortProxy';
 import serialDeviceProxyService from './services/serialDeviceProxy';
 import fwUpdateProxyService from './services/fwUpdateProxy';
 import daliProxyService from './services/daliProxy';
+import daliBusProxyService from './services/daliBusProxy';
 
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
@@ -118,6 +119,7 @@ module
   .factory('SerialDeviceProxy', serialDeviceProxyService)
   .factory('FwUpdateProxy', fwUpdateProxyService)
   .factory('DaliProxy', daliProxyService)
+  .factory('DaliBusProxy', daliBusProxyService)
 
   .service('rolesFactory', rolesFactoryService)
 

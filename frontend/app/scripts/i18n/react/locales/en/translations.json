@@ -983,7 +983,16 @@
          "reset-settings-option-description": "Variables return to factory defaults. Short address is kept, the device stays in the gateway configuration and MQTT.",
          "reset-device-option-title": "Reset address and settings",
          "reset-device-option-description": "Variables and short address are erased. The device is removed from the gateway configuration and MQTT and becomes available for rescan.",
-         "reset-unsaved-warning": "Unsaved changes will be lost."
+         "reset-unsaved-warning": "Unsaved changes will be lost.",
+         "commands": "Manual command entry",
+         "commands-placeholder": "One command per line.\nCtrl+Space — commands list\n\nFormat: Name(arg, ...)\nA<n> address 0–63, G<n> group, I<n> instance\nExamples: Off(A5),\n          DAPC(A5, 0xFE),\n          DT8.Activate",
+         "commands-sent": "sent successfully",
+         "commands-not-sent": "not sent",
+         "commands-truncated-warning": "Bus connection lost: response truncated",
+         "commands-catalog-title": "Insert command",
+         "commands-catalog-search": "Search commands…",
+         "commands-catalog-empty": "No commands match",
+         "commands-catalog-error": "Failed to load commands list"
       },
       "buttons": {
          "rescan": "Rescan",
@@ -996,7 +1005,10 @@
          "set": "Set",
          "identify": "Identify",
          "reset": "Reset…",
-         "reset-confirm": "Reset"
+         "reset-confirm": "Reset",
+         "run": "Run",
+         "commands": "Commands…",
+         "retry": "Retry"
       }
    }
 }

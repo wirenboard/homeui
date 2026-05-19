@@ -1,3 +1,4 @@
+import { BusCommandsStore } from './bus-commands-store';
 import { BusStore } from './bus-store';
 import { DaliStore } from './dali-store';
 import { DeviceStore } from './device-store';
@@ -11,6 +12,7 @@ export {
   DaliStore,
   GatewayStore,
   BusStore,
+  BusCommandsStore,
   DeviceStore,
   GroupStore,
   MonitorStore
