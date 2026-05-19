@@ -12,7 +12,18 @@ import {
 } from './device-tab/embedded-software/embedded-software-store';
 import { ReadRegistersState } from './device-tab/types';
 import { DeviceTypesStore } from './device-types-store';
-import { toDmRpcPortConfig, toSerialRpcPortConfig, setupDevice } from './utils';
+
+export {
+  toDmRpcPortConfig,
+  toSerialRpcPortConfig,
+  setupDevice,
+  getIntAddress
+} from './utils/common';
+
+export {
+  firmwareIsNewer,
+  firmwareIsNewerOrEqual
+} from './utils/firmware';
 
 export {
   DeviceSettingsObjectStore,
@@ -23,9 +34,6 @@ export {
   EmbeddedSoftwareComponent,
   ComponentFirmware,
   DeviceTabStore,
-  toDmRpcPortConfig,
-  toSerialRpcPortConfig,
   DeviceTypesStore,
-  ReadRegistersState,
-  setupDevice
+  ReadRegistersState
 };

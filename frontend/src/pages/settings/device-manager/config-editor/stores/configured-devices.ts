@@ -1,5 +1,5 @@
+import { getIntAddress } from '@/stores/device-manager';
 import { type DeviceTypesStore } from '@/stores/device-manager';
-import { getIntAddress } from '@/stores/device-manager/utils';
 import { type ConfiguredDevice } from './types';
 
 /**

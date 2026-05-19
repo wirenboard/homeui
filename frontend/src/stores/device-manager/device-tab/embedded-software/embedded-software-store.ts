@@ -1,5 +1,5 @@
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
-import { firmwareIsNewerOrEqual } from '~/utils/fwUtils';
+import { toDmRpcPortConfig, getIntAddress, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import type { PortTabTcpConfig, PortTabConfig } from '../../port-tab/types';
 import type {
   FwUpdateProxy,
@@ -8,7 +8,6 @@ import type {
   FwUpdateProxyUpdateParams,
   UpdateItem,
 } from '../../types';
-import { toDmRpcPortConfig, getIntAddress } from '../../utils';
 
 export class EmbeddedSoftwareComponent {
   public current: string = '';
