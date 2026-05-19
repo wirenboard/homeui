@@ -1,3 +1,5 @@
+import { W1_ID_FORMAT } from '@/utils/one-wire-number';
+
 export enum CellComponent {
   Alert = 'alarm',
   Range = 'range',
@@ -19,7 +21,7 @@ export interface CellTypeEntry {
 }
 
 export enum CellFormat {
-  OneWireId = 'w1-id',
+  OneWireId = W1_ID_FORMAT,
 }
 
 export const commonCellTypes = new Map<string, CellTypeEntry>([
@@ -182,7 +184,7 @@ const deprecatedCellTypes = new Map<string, CellTypeEntry>([
 ]);
 
 const customCellTypes = new Map<string, CellTypeEntry>([
-  ['w1-id', {
+  [W1_ID_FORMAT, {
     valueType: 'number',
     displayType: CellComponent.Value,
     readOnly: true,
