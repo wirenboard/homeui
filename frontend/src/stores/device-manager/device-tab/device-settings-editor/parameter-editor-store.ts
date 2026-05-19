@@ -1,8 +1,9 @@
 import { makeObservable, computed, observable, action, runInAction } from 'mobx';
+import { firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
-import { firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type { WbDeviceTemplateParameter } from '../../types';
 import { type Conditions } from './conditions';
+import { W1_ID_FORMAT } from '@/utils/one-wire-number';
 
 export class WbDeviceParameterEditorVariant {
   public store: NumberStore;
@@ -18,8 +19,8 @@ export class WbDeviceParameterEditorVariant {
     conditions: Conditions) {
 
     const jsonSchema = makeJsonSchemaForParameter(parameter);
-    if (parameter.type === 'w1-id') {
-      jsonSchema.format = 'w1-id';
+    if (parameter.type === W1_ID_FORMAT) {
+      jsonSchema.format = W1_ID_FORMAT;
     }
     const initialValueToSet = valueFromUserDefinedConfig ?? getDefaultValue(jsonSchema) ?? 0;
     this.store = new NumberStore(jsonSchema, initialValueToSet, parameter.required);

@@ -1,3 +1,5 @@
+export const W1_ID_FORMAT = 'w1-id';
+
 export const transformNumber = (value?: number): string => {
   if (!value) {
     return '0';
