@@ -6,9 +6,24 @@ import { Dropdown } from '@/components/dropdown';
 export function makeAutocompleteEditor(topics) {
   return class extends JSONEditor.AbstractEditor {
     build() {
+      // AbstractEditor doesn't render label/description by default, so reproduce
+      // the pattern used by the built-in string editor — otherwise schema title
+      // and description are silently dropped for every wb-autocomplete field.
+      if (!this.options.compact) {
+        this.label = this.theme.getFormInputLabel(this.getTitle(), this.isRequired());
+      }
+
       this.control = document.createElement('div');
       this.control.style.minWidth = '180px';
-      this.container.appendChild(this.control);
+      
+      const formControl = this.theme.getFormControl(this.label, this.control);
+      this.container.appendChild(formControl);
+
+      if (this.schema.description) {
+        this.container.appendChild(
+          this.theme.getFormInputDescription(this.translateProperty(this.schema.description))
+        );
+      }
 
       this.render();
     }
