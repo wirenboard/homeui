@@ -1,7 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
-import { DeviceTabStore, setupDevice } from '@/stores/device-manager';
-import { getIntAddress } from '@/stores/device-manager/utils';
+import { DeviceTabStore, setupDevice, getIntAddress } from '@/stores/device-manager';
 import { loadJsonSchema, Translator, getDefaultValue } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/formatError';
 import i18n from '../../../i18n/react/config';
