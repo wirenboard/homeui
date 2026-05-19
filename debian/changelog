@@ -1,8 +1,15 @@
-wb-mqtt-homeui (2.209.0) stable; urgency=medium
+wb-mqtt-homeui (2.210.0) stable; urgency=medium
 
   * Add Kelvin input to DALI color temperature editor
 
- -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Fri, 15 May 2026 12:00:00 +0300
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 19 May 2026 09:16:04 +0500
+
+wb-mqtt-homeui (2.209.0) stable; urgency=medium
+
+  * Update system page
+  * Move update/reset process logs to console component
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 18 May 2026 13:01:00 +0300
 
 wb-mqtt-homeui (2.208.2) stable; urgency=medium
 

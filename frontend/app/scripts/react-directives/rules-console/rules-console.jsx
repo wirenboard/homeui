@@ -1,5 +1,7 @@
+import { autorun } from 'mobx';
 import ReactDOM from 'react-dom/client';
-import { RulesConsole } from '@/components/rules-console';
+import { ConsolePanel } from '@/components/console-panel';
+import { consolePanelStore } from '@/stores/console-panel';
 import { setReactLocale } from '~/react-directives/locale';
 
 export default function rulesConsoleDirective($rootScope) {
@@ -12,24 +14,27 @@ export default function rulesConsoleDirective($rootScope) {
     link: function (scope, element) {
       scope.root = ReactDOM.createRoot(element[0]);
 
-      $rootScope.$watch(
-        () => $rootScope.consoleVisible,
-        (isOpened) => {
-          scope.root.render(
-            isOpened
-              ? (
-                <RulesConsole
-                  toggleConsole={$rootScope.toggleConsole}
-                  changeConsoleView={$rootScope.changeConsoleView}
-                  rulesStore={$rootScope.rulesStore}
-                />
-              )
-              : null
-          );
-        }
-      );
+      const onPositionChange = (pos) => {
+        $rootScope.consoleView = pos;
+        $rootScope.$applyAsync();
+      };
 
-      element.on('$destroy', ()=> {
+      const dispose = autorun(() => {
+        const isVisible = consolePanelStore.isVisible;
+        scope.root.render(
+          isVisible
+            ? (
+              <ConsolePanel
+                store={consolePanelStore}
+                onPositionChange={onPositionChange}
+              />
+            )
+            : null
+        );
+      });
+
+      element.on('$destroy', () => {
+        dispose();
         scope.root.unmount();
       });
     },

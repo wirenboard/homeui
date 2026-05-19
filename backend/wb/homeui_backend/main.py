@@ -106,6 +106,19 @@ def get_wb_release(release_file: str = "/usr/lib/wb-release") -> dict[str, str]:
     return {}
 
 
+def get_rootfs_expanded() -> bool:
+    if not os.path.exists("/dev/mmcblk0p6"):
+        return True
+
+    try:
+        p2_size = subprocess.check_output(["blockdev", "--getsz", "/dev/mmcblk0p2"]).decode("utf-8").strip()
+        p3_size = subprocess.check_output(["blockdev", "--getsz", "/dev/mmcblk0p3"]).decode("utf-8").strip()
+        return p2_size != p3_size
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.error("Failed to detect rootfs expansion status: %s", e)
+        return False
+
+
 def validate_login_request(form: dict) -> None:
     if "password" not in form.keys():
         raise TypeError("No password field")
@@ -378,6 +391,7 @@ def device_info_handler(request: BaseHTTPRequestHandler, context: WebRequestHand
         "https_cert": context.certificate_thread.get_certificate_state().value,
         "release_suite": wb_release.get("SUITE", ""),
         "release_name": wb_release.get("RELEASE_NAME", ""),
+        "rootfs_expanded": get_rootfs_expanded(),
     }
     return response_200(
         [
