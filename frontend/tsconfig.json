@@ -21,7 +21,8 @@
     "paths": {
       "~/*": ["./app/scripts/*"],
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vitest/globals"]
   },
-  "include": ["app/scripts", "src/custom.d.ts"]
+  "include": ["app/scripts", "src"],
 }

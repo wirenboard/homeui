@@ -1,6 +1,6 @@
 import { makeObservable, computed, observable, action, runInAction } from 'mobx';
+import { firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
-import { firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type { WbDeviceTemplateParameter } from '../../types';
 import { type Conditions } from './conditions';
 
