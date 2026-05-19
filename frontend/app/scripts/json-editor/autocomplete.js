@@ -15,7 +15,7 @@ export function makeAutocompleteEditor(topics) {
 
       this.control = document.createElement('div');
       this.control.style.minWidth = '180px';
-      
+
       const formControl = this.theme.getFormControl(this.label, this.control);
       this.container.appendChild(formControl);
 
@@ -25,7 +25,21 @@ export function makeAutocompleteEditor(topics) {
         );
       }
 
+      this.control.controlgroup = formControl;
+
       this.render();
+    }
+
+    showValidationErrors(errors) {
+      const messages = errors
+        .filter((error) => error.path === this.path)
+        .map((error) => error.message);
+
+      if (messages.length) {
+        this.theme.addInputError(this.control, `${messages.join('. ')}.`);
+      } else {
+        this.theme.removeInputError(this.control);
+      }
     }
 
     render() {
