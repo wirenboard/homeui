@@ -1,9 +1,8 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { makeObservable, observable, computed, action } from 'mobx';
-import { DeviceTabStore, type DeviceTypesStore, setupDevice } from '@/stores/device-manager';
+import { DeviceTabStore, type DeviceTypesStore, setupDevice, getIntAddress } from '@/stores/device-manager';
 import type { PortTabSerialConfig } from '@/stores/device-manager/port-tab/types';
 import type { FwUpdateProxy, ScannedDevice, SerialDeviceProxy, SerialPortProxy } from '@/stores/device-manager/types';
-import { getIntAddress } from '@/stores/device-manager/utils';
 import {
   loadJsonSchema,
   Translator,
