@@ -1007,7 +1007,16 @@
          "reset-settings-option-description": "Параметры возвращаются к заводским значениям. Адрес сохраняется, устройство остаётся в конфигурации шлюза и MQTT.",
          "reset-device-option-title": "Сбросить адрес и настройки",
          "reset-device-option-description": "Параметры и адрес стираются. Устройство удаляется из конфигурации шлюза и MQTT, становится доступным для повторного сканирования.",
-         "reset-unsaved-warning": "Несохранённые изменения будут потеряны."
+         "reset-unsaved-warning": "Несохранённые изменения будут потеряны.",
+         "commands": "Ручной ввод команд",
+         "commands-placeholder": "По одной команде на строку.\nCtrl+Space — список команд\n\nФормат: Name(arg, ...)\nA<n> адрес 0–63, G<n> группа, I<n> instance\nПримеры: Off(A5),\n         DAPC(A5, 0xFE),\n         DT8.Activate",
+         "commands-sent": "отправлено успешно",
+         "commands-not-sent": "не отправлено",
+         "commands-truncated-warning": "Связь с шиной потеряна: ответ обрезан",
+         "commands-catalog-title": "Вставить команду",
+         "commands-catalog-search": "Поиск команд…",
+         "commands-catalog-empty": "Ничего не найдено",
+         "commands-catalog-error": "Не удалось загрузить список команд"
       },
       "buttons": {
          "rescan": "Пересканировать",
@@ -1020,7 +1029,10 @@
          "set": "Задать",
          "identify": "Идентифицировать",
          "reset": "Сброс…",
-         "reset-confirm": "Сбросить"
+         "reset-confirm": "Сбросить",
+         "run": "Выполнить",
+         "commands": "Команды…",
+         "retry": "Повторить"
       }
    }
 }

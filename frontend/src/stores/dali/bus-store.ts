@@ -1,10 +1,11 @@
 import { runInAction, makeObservable, observable, action, computed } from 'mobx';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore, ItemType } from './base-item-store';
+import { BusCommandsStore } from './bus-commands-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
 import { MonitorStore } from './monitor-store';
-import type { CommissioningState } from './types';
+import type { CommissioningState, DaliBusProxy } from './types';
 
 const IDLE_COMMISSIONING_STATE: CommissioningState = {
   status: 'idle',
@@ -19,6 +20,7 @@ export class BusStore extends BaseItemStore {
   readonly type = ItemType.Bus;
   public children: (DeviceStore | GroupStore)[] = [];
   public busMonitor: MonitorStore | null = null;
+  public commands: BusCommandsStore;
 
   public pollingInterval: number = 5;
   public busMonitorEnabled: boolean = false;
@@ -37,12 +39,14 @@ export class BusStore extends BaseItemStore {
 
   constructor(
     daliProxy: any,
+    daliBusProxy: DaliBusProxy,
     id: string,
     name: string,
     mqttClient: any,
     commissioning?: CommissioningState,
   ) {
     super(daliProxy, id, name);
+    this.commands = new BusCommandsStore(daliBusProxy, id);
     this.busMonitor = new MonitorStore(mqttClient);
     this.#mqttClient = mqttClient;
     this.#commissioningTopic = `/wb-dali/${id}/commissioning`;
