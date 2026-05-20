@@ -296,6 +296,11 @@
          "rootfs_warning2": "System may run slower while downloading the archive",
          "rootfs_warning3": "Rootfs archive does not include files from /mnt/data"
       },
+      "reboot_confirm": {
+         "title": "Reboot controller",
+         "description": "The controller will be rebooted. Continue?",
+         "accept": "Reboot"
+      },
       "factory_reset": {
          "title": "Factory reset",
          "warning1": "Use \"Select firmware file\" button to update firmware and reset all settings to defaults",
