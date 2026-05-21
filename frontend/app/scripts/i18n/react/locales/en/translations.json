@@ -762,7 +762,8 @@
       "buttons": {
          "save": "Save loaded log to file",
          "case": "Match case",
-         "regex": "Regular expression"
+         "regex": "Regular expression",
+         "live-update": "Live update"
       },
       "errors": {
          "unavailable": "wb-mqtt-logs service is unavailable",

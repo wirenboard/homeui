@@ -27,9 +27,30 @@
     color: var(--text-color);
 }
 
+.logsFilters-liveUpdate {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 12px;
+
+    @media (max-width: 510px) {
+        margin-left: 0;
+        margin-top: 6px;
+    }
+}
+
+
 .logsFilters-input {
     min-width: 200px;
     white-space: nowrap;
+}
+
+.logsFilters-inputDate {
+    min-width: 210px;
+}
+
+.logsFilters-liveUpdate .form-fieldSwitch {
+    margin-bottom: 0 !important;
 }
 
 @media (max-width: 500px) {

@@ -39,7 +39,7 @@ export default class LogsStore {
     });
     return this.#whenMqttReady()
       .then(() => this.#logsProxy.Load({ ...params, limit: 50 }))
-      .then((logs: Log[]) => {
+      .then((logs: (Log | undefined)[]) => {
         return runInAction(() => {
           const reversedLogs = logs.reverse();
 

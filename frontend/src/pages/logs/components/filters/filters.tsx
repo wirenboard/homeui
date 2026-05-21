@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import InfoIcon from '@/assets/icons/info.svg';
 import { DateTimePicker } from '@/components/datetime-picker';
 import { Dropdown, type Option } from '@/components/dropdown';
+import { BooleanField } from '@/components/form';
 import { FormGroup } from '@/components/form-group';
 import { Input } from '@/components/input';
 import { ToggleButton } from '@/components/toggle-button';
@@ -13,7 +14,13 @@ import { type LogsStore, LogLevel } from '@/stores/logs';
 import './styles.css';
 
 export const LogsFilters = observer((
-  { store, filter, onFilterChange }: { store: LogsStore; filter: any; onFilterChange: (value: any) => void },
+  { store, filter, onFilterChange, liveUpdate, onLiveUpdateChange }: {
+    store: LogsStore;
+    filter: any;
+    onFilterChange: (value: any) => void;
+    liveUpdate: boolean;
+    onLiveUpdateChange: (value: boolean) => void;
+  },
 ) => {
   const { t } = useTranslation();
 
@@ -74,7 +81,7 @@ export const LogsFilters = observer((
       />
 
       <DateTimePicker
-        className="logsFilters-input"
+        className="logsFilters-input logsFilters-inputDate"
         placeholder={t('logs.labels.set-date')}
         value={filter.time ? new Date(filter.time * 1000) : null}
         onChange={(time: Date) => onFilterChange({ ...filter, time: time ? time.getTime() / 1000 : null })}
@@ -118,6 +125,14 @@ export const LogsFilters = observer((
             <InfoIcon className="logsFilters-info" />
           </a>
         </Tooltip>
+      </div>
+
+      <div className="logsFilters-liveUpdate">
+        <BooleanField
+          title={t('logs.buttons.live-update')}
+          value={liveUpdate}
+          onChange={onLiveUpdateChange}
+        />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import DownloadIcon from '@/assets/icons/download.svg';
@@ -27,6 +27,19 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
   });
   const [hasMore, setHasMore] = useState(true);
   const [errors, setErrors] = useState([]);
+  const [liveUpdate, setLiveUpdate] = useState(false);
+  const fetchLogsRef = useRef<(direction?: 'forward' | 'backward') => void>(null);
+  const liveScrollingRef = useRef(false);
+  const [showLoading, setShowLoading] = useState(false);
+
+  useEffect(() => {
+    if (!store.isLoading) {
+      setShowLoading(false);
+      return;
+    }
+    const timeout = setTimeout(() => setShowLoading(true), 1000);
+    return () => clearTimeout(timeout);
+  }, [store.isLoading]);
 
   useEffect(() => {
     store.loadServicesAndBoots().catch(() => {
@@ -35,7 +48,10 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
   }, []);
 
   useEffect(() => {
+    let stale = false;
     store.loadLogs(filter, true).then((isThereMoreLogs) => {
+      if (stale) return;
+      setErrors([]);
       setHasMore(isThereMoreLogs);
       if (filter.time) {
         const container = document.getElementById('logs-container');
@@ -45,8 +61,12 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
         });
       }
     }).catch(() => {
+      if (stale) return;
       setErrors([{ variant: 'danger', text: t('logs.errors.unavailable') }]);
     });
+    return () => {
+      stale = true;
+    };
   }, [filter]);
 
   const fetchLogs = useCallback((direction: 'forward' | 'backward' = 'backward') => {
@@ -56,20 +76,51 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
       : container.scrollTop;
     const id = direction === 'forward' ? store.logs.at(-1)?.cursor : store.logs.at(0)?.cursor;
 
+    const logsCountBefore = store.logs.length;
+    if (liveUpdate && direction === 'forward') {
+      // Prevents onScroll from disabling live update during programmatic scroll
+      liveScrollingRef.current = true;
+    }
     store.loadLogs({ ...filter, cursor: { direction, id } })
       .then((isThereMoreLogs) => {
+        setErrors([]);
         if (direction === 'backward') {
           setHasMore(isThereMoreLogs);
         }
+        const hasNewLogs = store.logs.length > logsCountBefore && store.logs.at(-1)?.msg !== undefined;
         requestAnimationFrame(() => {
-          container.scrollTop = direction === 'forward'
-            ? oldScrollTop - document.querySelector('.infinite-scroll-component').clientHeight
-            : oldScrollTop;
+          if (liveUpdate && direction === 'forward') {
+            if (hasNewLogs) {
+              // -1 instead of 0 so smooth scroll always has distance to animate
+              container.scrollTo({ top: -1, behavior: 'smooth' });
+              container.addEventListener('scrollend', () => {
+                liveScrollingRef.current = false;
+              }, { once: true });
+            } else {
+              liveScrollingRef.current = false;
+            }
+          } else {
+            container.scrollTop = direction === 'forward'
+              ? oldScrollTop - document.querySelector('.infinite-scroll-component').clientHeight
+              : oldScrollTop;
+          }
         });
       }).catch(() => {
         setErrors([{ variant: 'danger', text: t('logs.errors.unavailable') }]);
       });
-  }, [filter]);
+  }, [filter, liveUpdate]);
+
+  fetchLogsRef.current = fetchLogs;
+
+  useEffect(() => {
+    if (!liveUpdate) return;
+    const intervalId = setInterval(() => {
+      if (!store.isLoading && store.logs.length) {
+        fetchLogsRef.current?.('forward');
+      }
+    }, 5000);
+    return () => clearInterval(intervalId);
+  }, [liveUpdate]);
 
   const downloadLogs = () => {
     const getDate = (time: number) => new Date(time).toISOString();
@@ -123,6 +174,8 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
         <LogsFilters
           store={store}
           filter={filter}
+          liveUpdate={liveUpdate}
+          onLiveUpdateChange={setLiveUpdate}
           onFilterChange={(value) => {
             setHasMore(true);
             setFilter(value);
@@ -131,7 +184,7 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
       )}
       <div
         className={classNames('logs-container', {
-          'logs-loading': store.isLoading,
+          'logs-loading': showLoading,
         })}
         id="logs-container"
       >
@@ -146,7 +199,11 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
           initialScrollY={332}
           inverse
           onScroll={(ev: MouseEvent) => {
-            if ((ev.target as HTMLDivElement).scrollTop >= 0) {
+            const { scrollTop } = ev.target as HTMLDivElement;
+            if (liveUpdate && !liveScrollingRef.current && scrollTop < -50) {
+              setLiveUpdate(false);
+            }
+            if (!liveUpdate && scrollTop >= 0) {
               fetchLogs('forward');
             }
           }}
