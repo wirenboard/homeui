@@ -205,22 +205,29 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
           }}
         >
           <div className="logs-grid">
-            {store.logs.map((log, i) => (
-              <div
-                className={classNames('logs-item', {
-                  'logs-itemWarn': log.level === LogLevel.Warning,
-                  'logs-itemError': log.level === LogLevel.Error,
-                  'logs-itemDebug': log.level === LogLevel.Debug,
-                })}
-                key={log.time.toString() + i}
-              >
-                <div className="logs-itemInfo logs-cell">
-                  <div className="logs-itemDate">{format(log.time, 'dd-MM-yyyy HH:mm:ss.SSS')}</div>
-                  <div className="logs-itemService">{log.service ? `[${log.service}]` : ''}</div>
+            {store.logs.map((log, i) => {
+              const cellClass = classNames('logs-cell', {
+                'logs-cellWarn': log.level === LogLevel.Warning,
+                'logs-cellError': log.level === LogLevel.Error,
+              });
+              return (
+                <div className="logs-item" key={log.time.toString() + i}>
+                  <div className={classNames('logs-itemDate', cellClass)}>
+                    {format(log.time, 'dd-MM-yyyy HH:mm:ss.SSS')}
+                  </div>
+                  <div className={classNames('logs-itemService', cellClass)}>
+                    {log.service ? `[${log.service}]` : ''}
+                  </div>
+                  <div
+                    className={classNames('logs-itemText', cellClass, {
+                      'logs-cellDebug': log.level === LogLevel.Debug,
+                    })}
+                  >
+                    {log.msg}
+                  </div>
                 </div>
-                <div className="logs-itemText logs-cell">{log.msg}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </InfiniteScroll>
       </div>

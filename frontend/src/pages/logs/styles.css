@@ -20,11 +20,7 @@
 
 .logs-grid {
     display: grid;
-    grid-template-columns: auto 1fr;
-
-    @media (max-width: 500px) {
-        grid-template-columns: auto 1fr;
-    }
+    grid-template-columns: auto auto 1fr;
 }
 
 .logs-item {
@@ -36,31 +32,44 @@
     border-bottom: 1px solid var(--border-color);
 }
 
-.logs-itemInfo {
-    display: flex;
-    gap: 16px;
-
-    @media (max-width: 1024px) {
-        flex-direction: column;
-        gap: 0;
-    }
-}
-
-.logs-itemWarn * {
+.logs-cellWarn {
     background: var(--alert-warn-background);
 }
 
-.logs-itemError * {
+.logs-cellError {
     background: var(--alert-danger-background);
 }
 
-.logs-itemDebug .logs-itemText {
+.logs-cellDebug {
     font-weight: bold;
     white-space: pre;
 }
 
 .logs-itemDate {
-    @media (max-width: 500px) {
-        width: 85px;
+    white-space: nowrap;
+}
+
+.logs-itemService {
+    white-space: nowrap;
+}
+
+@media (max-width: 500px) {
+    .logs-grid {
+        grid-template-columns: auto 1fr;
+    }
+
+    .logs-item {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: subgrid;
+    }
+
+    .logs-itemDate {
+        border-bottom: none;
+    }
+
+    .logs-itemText {
+        grid-column: 2;
+        grid-row: 1 / 3;
     }
 }
