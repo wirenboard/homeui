@@ -29,7 +29,6 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
   const [errors, setErrors] = useState([]);
   const [liveUpdate, setLiveUpdate] = useState(false);
   const fetchLogsRef = useRef<(direction?: 'forward' | 'backward') => void>(null);
-  const liveScrollingRef = useRef(false);
   const [showLoading, setShowLoading] = useState(false);
 
   useEffect(() => {
@@ -77,10 +76,6 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
     const id = direction === 'forward' ? store.logs.at(-1)?.cursor : store.logs.at(0)?.cursor;
 
     const logsCountBefore = store.logs.length;
-    if (liveUpdate && direction === 'forward') {
-      // Prevents onScroll from disabling live update during programmatic scroll
-      liveScrollingRef.current = true;
-    }
     store.loadLogs({ ...filter, cursor: { direction, id } })
       .then((isThereMoreLogs) => {
         setErrors([]);
@@ -93,11 +88,6 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
             if (hasNewLogs) {
               // -1 instead of 0 so smooth scroll always has distance to animate
               container.scrollTo({ top: -1, behavior: 'smooth' });
-              container.addEventListener('scrollend', () => {
-                liveScrollingRef.current = false;
-              }, { once: true });
-            } else {
-              liveScrollingRef.current = false;
             }
           } else {
             container.scrollTop = direction === 'forward'
@@ -187,6 +177,16 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
           'logs-loading': showLoading,
         })}
         id="logs-container"
+        onWheel={() => {
+          if (liveUpdate) {
+            setLiveUpdate(false);
+          }
+        }}
+        onTouchMove={() => {
+          if (liveUpdate) {
+            setLiveUpdate(false);
+          }
+        }}
       >
         <InfiniteScroll
           dataLength={store.logs.length}
@@ -199,11 +199,7 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
           initialScrollY={332}
           inverse
           onScroll={(ev: MouseEvent) => {
-            const { scrollTop } = ev.target as HTMLDivElement;
-            if (liveUpdate && !liveScrollingRef.current && scrollTop < -50) {
-              setLiveUpdate(false);
-            }
-            if (!liveUpdate && scrollTop >= 0) {
+            if (!liveUpdate && (ev.target as HTMLDivElement).scrollTop >= 0) {
               fetchLogs('forward');
             }
           }}

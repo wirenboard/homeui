@@ -8,7 +8,7 @@
 }
 
 .logsFilters-pattern {
-    width: 200px;
+    width: 140px;
 
     @media (max-width: 1024px) {
         width: calc(100% - 90px);
@@ -31,7 +31,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-left: 12px;
+    margin-left: 6px;
 
     @media (max-width: 510px) {
         margin-left: 0;
@@ -45,8 +45,23 @@
     white-space: nowrap;
 }
 
+.logsFilters-boot {
+    min-width: unset;
+    width: 170px;
+    max-width: 170px;
+
+    @media (max-width: 400px) {
+        max-width: unset;
+    }
+}
+
 .logsFilters-inputDate {
-    min-width: 210px;
+    min-width: 160px;
+    max-width: 160px;
+
+    @media (max-width: 400px) {
+        max-width: unset;
+    }
 }
 
 .logsFilters-liveUpdate .form-fieldSwitch {

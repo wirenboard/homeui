@@ -61,7 +61,7 @@ export const LogsFilters = observer((
       />
 
       <Dropdown
-        className="logsFilters-input"
+        className="logsFilters-input logsFilters-boot"
         ariaLabel={t('logs.labels.choose-boot')}
         value={filter.boot}
         options={boots}
