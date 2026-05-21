@@ -141,6 +141,14 @@
   border-color: var(--danger-color);
 }
 
+/* Picked up by json-editor's has-error class on the surrounding form-group so
+   the dropdown shows the same red border as native form-controls on validation
+   failure. */
+.has-error .dropdown__control,
+.has-error .dropdown__control:hover {
+  border-color: var(--danger-color);
+}
+
 .dropdown__control--is-disabled {
   background-color: var(--border-color);
 }

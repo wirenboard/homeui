@@ -8,6 +8,7 @@ import {
   type ByteArrayStore,
   type ArrayStore,
 } from '@/stores/json-schema-editor';
+import { DALI_TC_FORMAT } from '@/utils/dali-color-temperature';
 import { ParamError } from './param-error';
 import type { JsonSchemaEditorProps, EditorBuilderFunctionProps } from './types';
 import './styles.css';
@@ -123,7 +124,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
         </Suspense>
       );
     }
-    if (props.store.schema.format === 'dali-tc') {
+    if (props.store.schema.format === DALI_TC_FORMAT) {
       return (
         <Suspense>
           <DaliColorTemperatureSliderEditor

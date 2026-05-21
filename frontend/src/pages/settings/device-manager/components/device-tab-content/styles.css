@@ -35,29 +35,3 @@
         min-width: 10px;
     }
 }
-
-.alert-withButton .alertMessage-content {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    flex-grow: 1;
-    overflow: visible;
-}
-
-.alert-withButton .alertMessage-content > span {
-    flex-grow: 1;
-}
-
-.alert-withButton .button {
-    white-space: nowrap;
-}
-
-@media (max-width: 991px) {
-    .alert-withButton .alertMessage-content {
-        flex-wrap: wrap;
-    }
-
-    .alert-withButton .button {
-        flex-grow: 1;
-    }
-}

@@ -1,4 +1,4 @@
-import { getIntAddress } from '@/stores/device-manager/utils';
+import { getIntAddress } from '@/stores/device-manager';
 
 export class ModbusAddressSet {
   public usedAddresses: Map<string, Set<number>>;

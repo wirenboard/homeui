@@ -1,5 +1,5 @@
+import { firmwareIsNewer, firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, loadJsonSchema } from '@/stores/json-schema-editor';
-import { firmwareIsNewer, firmwareIsNewerOrEqual } from '~/utils/fwUtils';
 import type {
   DeviceTypeDescription,
   DeviceTypeDropdownOptionGroup,
