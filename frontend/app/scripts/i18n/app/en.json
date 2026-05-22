@@ -5,14 +5,6 @@
             "load": "Cannot load WebUI config.",
             "stop-scan": "The controller started searching for Modbus devices. This could lead to slow polling of already configured devices. The search process is forcibly stopped"
         },
-        "prompt": {
-            "dirty": "The page has unsaved changes. Are you sure you want to leave?",
-            "serial-config-leave": "Scanning will be canceled. Do you really want to leave the page?"
-        },
-        "buttons": {
-            "logout": "Logout",
-            "switch-user": "Switch user"
-        },
         "roles": {
             "user": "User",
             "operator": "Operator",
@@ -31,20 +23,6 @@
     "heading": {
         "loading": "Loading..."
     },
-    "dashboard": {
-        "svg": {
-            "edit": {
-                "title": {
-                    "create": "New SVG Dashboard",
-                    "update": "Edit SVG Dashboard"
-                }
-            }
-        },
-        "buttons": {
-            "add": "Add widget",
-            "back": "Back"
-        }
-    },
     "datepicker": {
         "format": "yyyy-MM-dd",
         "buttons": {
@@ -53,9 +31,5 @@
             "close": "Close",
             "cancel": "Cancel"
         }
-    },
-    "fullscreen": {
-        "open": "Enter fullscreen mode",
-        "close": "Leave fullscreen mode"
     }
 }

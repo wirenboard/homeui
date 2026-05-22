@@ -1,0 +1,48 @@
+.deviceManagerPageTabs-container {
+    flex-grow: 1;
+    height: 1px;
+    display: flex;
+    flex-direction: row;
+}
+
+.deviceManagerPageTabs-listWrapper {
+    display: flex;
+    flex-direction: column;
+    margin-right: 12px;
+    width: 20%;
+    flex-shrink: 0;
+    max-width: 250px;
+
+    @media (max-width: 991px) {
+        width: 100%;
+        max-width: unset;
+    }
+}
+
+.deviceManagerPageTabs-list {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.deviceManagerPageTabs-listMobile .tabs-buttonSelected {
+    border-right: 0 !important;
+}
+
+.deviceManagerPageTabs-tab {
+    border: 1px solid var(--border-color);
+    background: var(--table-item-hover);
+    overflow-y: auto;
+    padding: 8px 18px;
+    flex-grow: 1;
+}
+
+.deviceManagerPageTabs-tabMobile {
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.deviceManagerPageTabs-addPort {
+    width: 100%;
+    margin-top: 10px;
+}

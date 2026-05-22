@@ -1,16 +1,4 @@
-export interface SelectedDevice {
-  title: string;
-  sn: string;
-  address: number;
-  type: string;
-  port: string;
-  baudRate: number;
-  parity: string;
-  stopBits: number;
-  gotByFastScan: boolean;
-}
-
-export interface ScannedDevice {
+export interface FullScannedDevice {
   uuid: string;
   port: {
     path: string;
@@ -38,10 +26,6 @@ export interface ScannedDevice {
       error: string;
     };
   };
-}
-
-export interface ScannedDeviceToModify extends SelectedDevice {
-  newAddress: string;
 }
 
 export interface GlobalError {

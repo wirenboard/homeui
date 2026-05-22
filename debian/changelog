@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.214.0) stable; urgency=medium
+wb-mqtt-homeui (2.215.0) stable; urgency=medium
 
   * Upgrade logs page
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 21 May 2026 14:58:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 22 May 2026 13:26:00 +0300
+
+wb-mqtt-homeui (2.214.0) stable; urgency=medium
+
+  * Update config editor page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 22 May 2026 13:01:00 +0300
 
 wb-mqtt-homeui (2.213.0) stable; urgency=medium
 

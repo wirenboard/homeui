@@ -29,7 +29,7 @@ export const PageLayout = ({
   onTitleEditEnable,
 }: PropsWithChildren<PageProps>) => {
   const { t } = useTranslation();
-  const [titleValue, setTitleValue] = useState('');
+  const [titleValue, setTitleValue] = useState(title);
 
   useEffect(() => {
     setTitleValue(title);

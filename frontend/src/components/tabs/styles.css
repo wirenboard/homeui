@@ -5,6 +5,7 @@
     width: 100%;
     scrollbar-width: thin;
     border-radius: var(--input-border-radius);
+    overflow: hidden;
 }
 
 .tabs-vertical {
@@ -17,6 +18,9 @@
     text-align: left;
     border: 0;
     background: none;
+}
+
+.tabs-ellipsisContent .tabs-button {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -32,8 +36,19 @@ li:not(.tabs-buttonSelected) .tabs-button:hover {
     transition: background 200ms linear, var(--input-active-shadow-transition);
 }
 
-.tabs-vertical .tabs-buttonSelected {
-    border-right: 6px solid var(--primary-color) !important;
+.tabs-vertical .tabs-buttonWrapper {
+    position: relative;
+}
+
+.tabs-vertical .tabs-buttonSelected::after {
+    display: block;
+    top: 0;
+    width: 6px;
+    content: '';
+    height: 100%;
+    position: absolute;
+    right: 0;
+    box-shadow: inset -6px 0 0 var(--primary-color);
 }
 
 .tabs-vertical li:not(:last-of-type) .tabs-button {

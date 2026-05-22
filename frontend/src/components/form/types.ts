@@ -40,6 +40,8 @@ export interface StringFieldProps {
   required?: boolean;
   autoFocus?: boolean;
   formStyle?: CSSProperties;
+  min?: number;
+  max?: number;
   onChange: (value: string | number) => void;
 }
 
