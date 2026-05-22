@@ -11,6 +11,7 @@ export const Range = ({
   const input = useRef<HTMLInputElement>(null);
   const rangeBlockWidth = 70;
   const isRight = labelPosition === 'right';
+  const showLabel = labelPosition !== 'none';
 
   const rangeValuePosition = useMemo(() => {
     const range = max - min;
@@ -48,6 +49,7 @@ export const Range = ({
       className={classNames('range-container', {
         'range-invalid': isInvalid,
         'range-container-right': isRight,
+        'range-container-no-label': !showLabel,
       })}
     >
       <input
@@ -71,7 +73,7 @@ export const Range = ({
         }}
         onMouseUp={() => onChange(proxyValue)}
       />
-      {valueLabel}
+      {showLabel && valueLabel}
     </div>
   );
 };

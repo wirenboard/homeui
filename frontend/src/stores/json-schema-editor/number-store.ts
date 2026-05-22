@@ -1,9 +1,26 @@
 import { action, makeObservable, observable, computed } from 'mobx';
 import type { Option } from '@/components/dropdown';
-import { reverseTransformNumber, transformNumber } from '@/utils/one-wire-number';
+import {
+  DALI_TC_FORMAT,
+  DALI_TC_MASK_VALUE,
+  formatKelvinEditString,
+  kelvinToMirek,
+  validateKelvinEditString,
+} from '@/utils/dali-color-temperature';
+import { reverseTransformNumber, transformNumber, W1_ID_FORMAT } from '@/utils/one-wire-number';
 import { MistypedValue } from './mistyped-value';
 import { getDefaultNumberValue } from './schema-helpers';
 import type { JsonSchema, ValidationError, PropertyStore } from './types';
+
+const formatEditString = (schema: JsonSchema, value: number): string => {
+  if (schema.format === W1_ID_FORMAT) {
+    return transformNumber(value);
+  }
+  if (schema.format === DALI_TC_FORMAT) {
+    return formatKelvinEditString(value);
+  }
+  return String(value);
+};
 
 export class NumberStore implements PropertyStore {
   public value: MistypedValue | number | undefined;
@@ -23,13 +40,13 @@ export class NumberStore implements PropertyStore {
   constructor(schema: JsonSchema, initialValue: unknown, required: boolean) {
     if (typeof initialValue === 'number') {
       this.value = initialValue;
-      this.editString = schema.format === 'w1-id' ? transformNumber(initialValue) : String(initialValue);
+      this.editString = formatEditString(schema, initialValue);
     } else if (initialValue === undefined) {
       this.value = undefined;
       if (required || (schema.options?.wb?.show_editor && !schema.options?.wb?.allow_undefined)) {
         this.value = getDefaultNumberValue(schema) ?? 0;
       }
-      this.editString = this.value === undefined ? '' : String(this.value);
+      this.editString = typeof this.value === 'number' ? formatEditString(schema, this.value) : '';
     } else {
       this.value = new MistypedValue(initialValue);
       this.editString = '';
@@ -81,9 +98,14 @@ export class NumberStore implements PropertyStore {
       this.error = { key: 'json-editor.errors.not-an-integer' };
       return;
     }
-    if (this.schema.format === 'dali-tc' && this.value === 65535) {
-      // DALI color temperature special masked value, allow it even if it's out of range
-      this.error = undefined;
+    if (this.schema.format === DALI_TC_FORMAT) {
+      this.error = this.value === DALI_TC_MASK_VALUE
+        ? undefined
+        : validateKelvinEditString(
+          this.editString,
+          this.schema.options?.wb?.dali_tc?.minimum ?? 1,
+          this.schema.options?.wb?.dali_tc?.maximum ?? (DALI_TC_MASK_VALUE - 1),
+        );
       return;
     }
     if (
@@ -102,7 +124,7 @@ export class NumberStore implements PropertyStore {
       };
       return;
     }
-    if (this.schema.format === 'w1-id' && this.editString) {
+    if (this.schema.format === W1_ID_FORMAT && this.editString) {
       const hexPattern = /^(28-[0-9A-Fa-f]{12}|0)$/;
       if (!hexPattern.test(this.editString)) {
         this.error = { key: 'json-editor.errors.invalid-1-wire-format' };
@@ -120,11 +142,13 @@ export class NumberStore implements PropertyStore {
         this.editString = '';
       } else {
         this.value = parsedValue;
-        this.editString = value;
+        this.editString = this.schema.format === DALI_TC_FORMAT
+          ? formatEditString(this.schema, parsedValue)
+          : value;
       }
     } else if (typeof value === 'number') {
       this.value = value;
-      this.editString = this.schema.format === 'w1-id' ? transformNumber(value) : String(value);
+      this.editString = formatEditString(this.schema, value);
     } else {
       this.value = new MistypedValue(value);
       this.editString = '';
@@ -138,7 +162,7 @@ export class NumberStore implements PropertyStore {
 
   setEditString(value: string) {
     this.editString = value;
-    if (!value && this.schema.format === 'w1-id') {
+    if (!value && this.schema.format === W1_ID_FORMAT) {
       this.value = 0;
       this.editString = '0';
     } else if (value === '') {
@@ -146,9 +170,9 @@ export class NumberStore implements PropertyStore {
     } else {
       const parsedValue = Number(value);
       if (isNaN(parsedValue)) {
-        this.value = this.schema.format === 'w1-id' ? reverseTransformNumber(value) : new MistypedValue(value);
+        this.value = this.schema.format === W1_ID_FORMAT ? reverseTransformNumber(value) : new MistypedValue(value);
       } else {
-        this.value = parsedValue;
+        this.value = this.schema.format === DALI_TC_FORMAT ? kelvinToMirek(parsedValue) : parsedValue;
       }
     }
     if (this._anyUserInputIsDirty) {

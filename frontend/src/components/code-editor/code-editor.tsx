@@ -6,27 +6,45 @@ import { breakpointState, customGutter, getGutterEffects } from './helpers';
 import { type CodeEditorProps } from './types';
 import './styles.css';
 
-export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onChange, onSave }: CodeEditorProps) => {
+export const CodeEditor = ({
+  text,
+  errorLines,
+  autoFocus,
+  extensions = [],
+  withBreakpoints = true,
+  basicSetup,
+  onChange,
+  onSave,
+  onCreateEditor,
+}: CodeEditorProps) => {
   const editor = useRef<ReactCodeMirrorRef>(null);
   const [allExtensions, setAllExtensions] = useState([]);
 
   const onEditorReInit = (view: EditorView, state: EditorState) => {
-    if (errorLines?.length) {
-      view.dispatch({
-        selection: { anchor: state.doc.line(Math.min(errorLines[0], state.doc.lines)).from },
-        scrollIntoView: true,
-      });
+    if (withBreakpoints) {
+      if (errorLines?.length) {
+        view.dispatch({
+          selection: { anchor: state.doc.line(Math.min(errorLines[0], state.doc.lines)).from },
+          scrollIntoView: true,
+        });
+      }
+
+      const effectList = getGutterEffects(view, state, errorLines);
+
+      if (effectList.length > 0) {
+        view.dispatch({ effects: effectList });
+      }
     }
 
-    const effectList = getGutterEffects(view, state, errorLines);
-
-    if (effectList.length > 0) {
-      view.dispatch({ effects: effectList });
-    }
+    onCreateEditor?.(view, state);
   };
 
   useEffect(() => {
-    const settedExtensions = [...extensions, lineNumbers(), customGutter, breakpointState];
+    const settedExtensions = [...extensions, lineNumbers()];
+
+    if (withBreakpoints) {
+      settedExtensions.push(customGutter, breakpointState);
+    }
 
     if (onSave) {
       const saveHandler = (ev: Event) => {
@@ -48,9 +66,12 @@ export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onCha
     }
 
     setAllExtensions(settedExtensions);
-  }, [extensions, onSave]);
+  }, [extensions, onSave, withBreakpoints]);
 
   useEffect(() => {
+    if (!withBreakpoints) {
+      return;
+    }
     if (editor.current?.view) {
       const view = editor.current.view;
       const state = view.state;
@@ -60,7 +81,7 @@ export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onCha
         view.dispatch({ effects });
       }
     }
-  }, [errorLines]);
+  }, [errorLines, withBreakpoints]);
 
   return (
     <CodeMirror
@@ -70,6 +91,7 @@ export const CodeEditor = ({ text, errorLines, autoFocus, extensions = [], onCha
       height="100%"
       autoFocus={autoFocus}
       extensions={allExtensions}
+      basicSetup={basicSetup}
       onCreateEditor={onEditorReInit}
       onChange={onChange}
     />
