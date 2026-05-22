@@ -20,3 +20,10 @@ export interface DevicePropertiesProps {
   devicesStore: DevicesStore;
   onPropertyChange: (properties: any[]) => void;
 }
+
+export interface CapabilitySubProps {
+  capability: SmartDeviceCapability;
+  index: number;
+  capabilities: SmartDeviceCapability[];
+  onCapabilityChange: (capabilities: SmartDeviceCapability[]) => void;
+}
