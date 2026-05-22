@@ -16,8 +16,9 @@ const EmbeddedSoftwareUpdateIcon = observer(({ embeddedSoftware }: { embeddedSof
 });
 
 export const DeviceTab = observer(({ tab }: { tab: DeviceTabStore }) => {
+  const isDisconnected = tab.isDisconnected && !tab.embeddedSoftware.isUpdating;
   const isError =
-    tab.hasInvalidConfig || tab.showDisconnectedError || tab.embeddedSoftware.hasError;
+    tab.hasInvalidConfig || isDisconnected || tab.embeddedSoftware.hasError;
   const isWarning = tab.isDeprecated || tab.withSubdevices;
   const showSign = isError || isWarning;
 
