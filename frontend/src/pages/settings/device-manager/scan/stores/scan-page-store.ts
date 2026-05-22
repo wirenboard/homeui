@@ -1,11 +1,12 @@
 import { action, makeAutoObservable, makeObservable, observable, reaction, computed } from 'mobx';
 import { CollapseButtonState } from '@/components/collapse-button';
 import type { DeviceTypesStore } from '@/stores/device-manager';
+import { type ScannedDevice } from '@/stores/device-manager/types';
 import i18n from '~/i18n/react/config';
 import { GlobalErrorStore } from './global-error-store';
 import { ScanningProgressStore } from './scanning-progress-store';
 import { SingleDeviceStore } from './single-device-store';
-import type { ScannedDevice, ScannedDeviceToModify } from './types';
+import { type FullScannedDevice } from './types';
 
 export enum SelectionPolicy {
   Single = 'Select only one item',
@@ -37,7 +38,7 @@ class DevicesStore {
     });
   }
 
-  makeConfiguredDeviceStore(scannedDevice: ScannedDevice) {
+  makeConfiguredDeviceStore(scannedDevice: FullScannedDevice) {
     return new SingleDeviceStore(
       scannedDevice,
       [this.deviceTypesStore.getName(scannedDevice.configured_device_type)],
@@ -46,7 +47,7 @@ class DevicesStore {
     );
   }
 
-  makeNewDeviceStore(scannedDevice: ScannedDevice) {
+  makeNewDeviceStore(scannedDevice: FullScannedDevice) {
     const deviceTypes = this.deviceTypesStore.findNotDeprecatedDeviceTypes(
       scannedDevice.device_signature,
       scannedDevice.fw?.version,
@@ -71,7 +72,7 @@ class DevicesStore {
     return deviceStore;
   }
 
-  setDevices(scannedDevicesList: ScannedDevice[]) {
+  setDevices(scannedDevicesList: FullScannedDevice[]) {
     if (!Array.isArray(scannedDevicesList)) {
       return;
     }
@@ -280,7 +281,7 @@ export class CommonScanStore {
     this.startExtendedScanning();
   }
 
-  getSelectedDevices(): Partial<ScannedDeviceToModify>[] {
+  getSelectedDevices(): Partial<ScannedDevice>[] {
     return this.devicesStore.newDevices
       .filter((d) => d.selected)
       .map((d) => {

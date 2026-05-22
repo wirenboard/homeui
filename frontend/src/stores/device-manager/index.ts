@@ -1,17 +1,18 @@
-import { WbDeviceChannelEditor } from './device-tab/device-settings-editor/channel-editor-store';
-import {
+export { WbDeviceChannelEditor } from './device-tab/device-settings-editor/channel-editor-store';
+export {
   DeviceSettingsObjectStore,
-  WbDeviceParameterEditorsGroup,
+  WbDeviceParameterEditorsGroup
 } from './device-tab/device-settings-editor/device-settings-store';
-import { WbDeviceParameterEditor } from './device-tab/device-settings-editor/parameter-editor-store';
-import { DeviceTabStore } from './device-tab/device-tab-store';
-import {
+export { WbDeviceParameterEditor } from './device-tab/device-settings-editor/parameter-editor-store';
+export { DeviceTabStore } from './device-tab/device-tab-store';
+export {
   EmbeddedSoftware,
   EmbeddedSoftwareComponent,
-  ComponentFirmware,
+  ComponentFirmware
 } from './device-tab/embedded-software/embedded-software-store';
-import { ReadRegistersState } from './device-tab/types';
-import { DeviceTypesStore } from './device-types-store';
+export { ReadRegistersStateStore } from './device-tab/read-registers-state';
+export { ReadRegistersState } from './device-tab/types';
+export { DeviceTypesStore } from './device-types-store';
 
 export {
   toDmRpcPortConfig,
@@ -24,16 +25,3 @@ export {
   firmwareIsNewer,
   firmwareIsNewerOrEqual
 } from './utils/firmware';
-
-export {
-  DeviceSettingsObjectStore,
-  WbDeviceParameterEditorsGroup,
-  WbDeviceParameterEditor,
-  WbDeviceChannelEditor,
-  EmbeddedSoftware,
-  EmbeddedSoftwareComponent,
-  ComponentFirmware,
-  DeviceTabStore,
-  DeviceTypesStore,
-  ReadRegistersState
-};

@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import i18n from '~/i18n/react/config';
 
-export const usePreventLeavePage = (rootScope: any) => {
+export const usePreventLeavePage = (rootScope: any, confirmMessage: string = i18n.t('common.prompt.dirty')) => {
   const [isDirty, setIsDirty] = useState(false);
   const isDirtyRef = useRef(isDirty);
+  const confirmMessageRef = useRef(confirmMessage);
 
   useEffect(() => {
     isDirtyRef.current = isDirty;
   }, [isDirty]);
+
+  useEffect(() => {
+    confirmMessageRef.current = confirmMessage;
+  }, [confirmMessage]);
 
   useEffect(() => {
     const onBeforeUnload = (ev: BeforeUnloadEvent) => {
@@ -26,7 +31,7 @@ export const usePreventLeavePage = (rootScope: any) => {
 
         event.preventDefault();
 
-        if (confirm(i18n.t('common.prompt.dirty'))) {
+        if (confirm(confirmMessageRef.current)) {
           isDirtyRef.current = false;
           setIsDirty(false);
           window.location.assign(newUrl);

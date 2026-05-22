@@ -88,6 +88,11 @@ export interface FwUpdateProxy {
   Restore(params: FwUpdateProxyRestoreParams): Promise<void>;
 }
 
+export interface DeviceManagerProxyProxy {
+  Start(): Promise<void>;
+  Stop(): Promise<void>;
+}
+
 interface LoadConfigBaseParams {
   slave_id: number;
   device_type: string;
@@ -174,6 +179,7 @@ export interface ScannedDevice {
   title: string;
   sn: string;
   address: number;
+  newAddress?: number;
   type: string;
   port: string;
   baudRate: number;

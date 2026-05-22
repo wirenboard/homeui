@@ -22,8 +22,6 @@ import 'ng-toast/dist/ngToast.css';
 
 import 'angular-spinkit/build/angular-spinkit.min.css';
 
-import '../styles/css/device-manager.css';
-
 // homeui modules: sevices
 import errorsService from './services/errors';
 import mqttServiceModule from './services/mqttService';
@@ -33,7 +31,6 @@ import historyProxyService from './services/historyProxy';
 import logsProxyService from './services/logsProxy';
 import mqttRpcServiceModule from './services/rpc';
 import spinnerService from './services/spinner';
-import pageStateService from './services/pagestate';
 import hiliteService from './services/hilite';
 import rolesFactoryService from './services/roles.factory';
 import diagnosticProxyService from './services/diagnosticProxy';
@@ -111,7 +108,6 @@ module
   .factory('LogsProxy', logsProxyService)
   .factory('Spinner', spinnerService)
   .value('forceBeforeUnloadConfirmationForTests', false)
-  .factory('PageState', pageStateService)
   .factory('DiagnosticProxy', diagnosticProxyService)
   .factory('DeviceManagerProxy', deviceManagerProxyService)
   .factory('SerialProxy', serialProxyService)
@@ -131,19 +127,6 @@ module
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
   .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
-
-module.directive('scriptForm', function (PageState) {
-  'ngInject';
-  return {
-    restrict: 'A',
-    link: function (scope, element) {
-      var formCtrl = scope[element.attr('name')];
-      scope.$watch(element.attr('name') + '.$dirty', function (newValue) {
-        PageState.setDirty(newValue);
-      });
-    },
-  };
-});
 
 // Register directives
 module

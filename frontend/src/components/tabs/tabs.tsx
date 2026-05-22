@@ -34,7 +34,7 @@ export const Tab = ({
   buttonRef,
 }: PropsWithChildren<TabProps>) => (
   <li
-    className={classNames({
+    className={classNames('tabs-buttonWrapper', {
       'tabs-buttonSelected': activeTab === id,
     })}
   >
@@ -54,7 +54,7 @@ export const Tab = ({
   </li>
 );
 
-export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: TabsProps) => {
+export const Tabs = ({ className, items, orientation, activeTab, isEllipsis = true, onTabChange }: TabsProps) => {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const tabIds = items.map((item) => item.id);
 
@@ -133,6 +133,7 @@ export const Tabs = ({ className, items, orientation, activeTab, onTabChange }: 
       className={classNames('tabs', className, {
         'tabs-vertical': !orientation || orientation === 'vertical',
         'tabs-horizontal': orientation === 'horizontal',
+        'tabs-ellipsisContent': isEllipsis,
       })}
       aria-orientation={orientation === 'vertical' ? 'vertical' : 'horizontal'}
       role="tablist"

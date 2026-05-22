@@ -1,8 +1,8 @@
 import { action, type IReactionDisposer, makeObservable, observable } from 'mobx';
-import { type ScannedDevice } from './types';
+import { type FullScannedDevice } from './types';
 
 export class SingleDeviceStore {
-  public scannedDevice: ScannedDevice;
+  public scannedDevice: FullScannedDevice;
   public deviceTypes: string[];
   public selectable: boolean;
   public selected: boolean;
@@ -12,7 +12,7 @@ export class SingleDeviceStore {
   public disposer: IReactionDisposer = undefined;
   public names: string[];
 
-  constructor(scannedDevice: ScannedDevice, names: string[], deviceTypes: string[], selectable: boolean) {
+  constructor(scannedDevice: FullScannedDevice, names: string[], deviceTypes: string[], selectable: boolean) {
     this.scannedDevice = scannedDevice;
     this.deviceTypes = deviceTypes;
     this.selectable = selectable;
@@ -81,7 +81,7 @@ export class SingleDeviceStore {
     this.selected = this.selectable && value;
   }
 
-  update(scannedDevice: ScannedDevice) {
+  update(scannedDevice: FullScannedDevice) {
     this.scannedDevice = scannedDevice;
   }
 
