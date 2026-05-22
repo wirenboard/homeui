@@ -30,7 +30,7 @@ import {
   ToggleCapability,
   getAvailableToggleInstances,
 } from './capabilities/toggle';
-import { type DeviceCapabilitiesProps } from './types';
+import { type CapabilitySubProps, type DeviceCapabilitiesProps } from './types';
 
 export const DeviceCapabilities = observer(({
   capabilities, devicesStore, onCapabilityChange,
@@ -131,7 +131,7 @@ export const DeviceCapabilities = observer(({
   };
 
   const renderCapabilityFields = (capability: SmartDeviceCapability, key: number) => {
-    const subProps = { capability, index: key, capabilities, onCapabilityChange };
+    const subProps: CapabilitySubProps = { capability, index: key, capabilities, onCapabilityChange };
     switch (capability.type) {
       case Capability['On/Off']: return <OnOffCapability />;
       case Capability['Color setting']: return <ColorSettingCapability {...subProps} />;
