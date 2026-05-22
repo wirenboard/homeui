@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Capability, toggles, type SmartDeviceCapability } from '@/stores/alice';
+import { type CapabilitySubProps } from '../types';
 
 export const getAvailableToggleInstances = (
   capabilities: SmartDeviceCapability[],
@@ -20,16 +21,9 @@ export const getAvailableToggleInstances = (
   );
 };
 
-interface ToggleCapabilityProps {
-  capability: SmartDeviceCapability;
-  index: number;
-  capabilities: SmartDeviceCapability[];
-  onCapabilityChange: (capabilities: SmartDeviceCapability[]) => void;
-}
-
 export const ToggleCapability = ({
   capability, index, capabilities, onCapabilityChange,
-}: ToggleCapabilityProps) => {
+}: CapabilitySubProps) => {
   const { t } = useTranslation();
 
   const getToggleInstanceOptions = useCallback((

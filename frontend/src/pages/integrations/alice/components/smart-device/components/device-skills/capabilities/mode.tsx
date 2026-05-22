@@ -1,6 +1,7 @@
 // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
 
 // import { modes } from '@/stores/alice';
+// import { type CapabilitySubProps } from '../types';
 //
 // {capability.type === Capability.Mode && (
 //   <>

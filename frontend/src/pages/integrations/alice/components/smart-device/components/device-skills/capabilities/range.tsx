@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Capability, ranges, rangeUnitByInstance, type SmartDeviceCapability } from '@/stores/alice';
+import { type CapabilitySubProps } from '../types';
 
 // Default range values for unlocked instances
 export const RANGE_LIMITS_DEFAULT = { min: 0, max: 100, precision: 1 };
@@ -34,16 +35,9 @@ export const getAvailableRangeInstances = (
   );
 };
 
-interface RangeCapabilityProps {
-  capability: SmartDeviceCapability;
-  index: number;
-  capabilities: SmartDeviceCapability[];
-  onCapabilityChange: (capabilities: SmartDeviceCapability[]) => void;
-}
-
 export const RangeCapability = ({
   capability, index, capabilities, onCapabilityChange,
-}: RangeCapabilityProps) => {
+}: CapabilitySubProps) => {
   const { t } = useTranslation();
 
   const getRangeInstanceOptions = useCallback((

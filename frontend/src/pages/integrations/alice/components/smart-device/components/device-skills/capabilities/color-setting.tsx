@@ -13,6 +13,7 @@ import {
   defaultTemperatureParameters,
   defaultColorSceneParameters,
 } from '@/stores/alice';
+import { type CapabilitySubProps } from '../types';
 
 export const getAvailableColorModels = (
   capabilities: SmartDeviceCapability[],
@@ -50,16 +51,9 @@ const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
   }
 };
 
-interface ColorSettingCapabilityProps {
-  capability: SmartDeviceCapability;
-  index: number;
-  capabilities: SmartDeviceCapability[];
-  onCapabilityChange: (capabilities: SmartDeviceCapability[]) => void;
-}
-
 export const ColorSettingCapability = ({
   capability, index, capabilities, onCapabilityChange,
-}: ColorSettingCapabilityProps) => {
+}: CapabilitySubProps) => {
   const { t } = useTranslation();
 
   const handleColorSettingTypeChange = useCallback((
