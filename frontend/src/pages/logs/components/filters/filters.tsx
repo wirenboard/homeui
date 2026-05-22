@@ -41,7 +41,7 @@ export const LogsFilters = observer((
   ];
 
   const debouncedPatternChange = useMemo(
-    () => debounce((value) => onFilterChange({ ...filter, pattern: value }), 1000),
+    () => debounce((value: string) => onFilterChange({ ...filter, pattern: value }), 1000),
     [filter, onFilterChange],
   );
 

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import DownloadIcon from '@/assets/icons/download.svg';
+import { RpcErrorCode } from '@/common/constants';
 import { Button } from '@/components/button';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
@@ -59,7 +60,11 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
           container.scrollTop = -(container.clientHeight / 2);
         });
       }
-    }).catch(() => {
+    }).catch((err) => {
+      if ([RpcErrorCode.Parse, RpcErrorCode.Server, RpcErrorCode.Timeout].includes(err.code)) {
+        store.clearLogs();
+        return;
+      }
       if (stale) return;
       setErrors([{ variant: 'danger', text: t('logs.errors.unavailable') }]);
     });
@@ -95,7 +100,11 @@ const LogsPage = observer(({ store }: { store: LogsStore }) => {
               : oldScrollTop;
           }
         });
-      }).catch(() => {
+      }).catch((err) => {
+        if ([RpcErrorCode.Parse, RpcErrorCode.Server, RpcErrorCode.Timeout].includes(err.code)) {
+          store.clearLogs();
+          return;
+        }
         setErrors([{ variant: 'danger', text: t('logs.errors.unavailable') }]);
       });
   }, [filter, liveUpdate]);

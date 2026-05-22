@@ -70,4 +70,8 @@ export default class LogsStore {
     await this.#logsProxy.CancelLoad();
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
+
+  clearLogs() {
+    this.logs = [];
+  }
 }
