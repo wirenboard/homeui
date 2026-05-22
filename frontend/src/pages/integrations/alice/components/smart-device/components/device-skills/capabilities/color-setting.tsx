@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
@@ -55,6 +55,12 @@ export const ColorSettingCapability = ({
   capability, index, capabilities, onCapabilityChange,
 }: CapabilitySubProps) => {
   const { t } = useTranslation();
+  const idPrefix = useId();
+  const typeId = `${idPrefix}-type`;
+  const colorModelId = `${idPrefix}-color-model`;
+  const minId = `${idPrefix}-min`;
+  const maxId = `${idPrefix}-max`;
+  const scenesId = `${idPrefix}-scenes`;
 
   const handleColorSettingTypeChange = useCallback((
     value: Color,
@@ -153,8 +159,9 @@ export const ColorSettingCapability = ({
   return (
     <>
       <div>
-        <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
+        <label className="aliceDeviceSkills-gridLabel" htmlFor={typeId}>{t('alice.labels.type')}</label>
         <Dropdown
+          id={typeId}
           value={getCurrentColorModel(capability)}
           options={getColorModelOptions(capability, index)}
           onChange={({ value }: Option<Color>) => {
@@ -165,8 +172,9 @@ export const ColorSettingCapability = ({
 
       {getCurrentColorModel(capability) === Color.ColorModel && (
         <div>
-          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.color-model')}</div>
+          <label className="aliceDeviceSkills-gridLabel" htmlFor={colorModelId}>{t('alice.labels.color-model')}</label>
           <Dropdown
+            id={colorModelId}
             value={capability.parameters?.color_model ?? null}
             options={Object.keys(ColorModel)
               // TODO: <DISABLED_COLOR> This line disable Color HSV, need remove for enable
@@ -185,8 +193,9 @@ export const ColorSettingCapability = ({
       {capability.parameters?.temperature_k && (
         <div className="aliceDeviceSkills-gridRange">
           <div>
-            <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
+            <label className="aliceDeviceSkills-gridLabel" htmlFor={minId}>{t('alice.labels.min')}</label>
             <Input
+              id={minId}
               value={capability.parameters?.temperature_k?.min}
               type="number"
               isFullWidth
@@ -197,8 +206,9 @@ export const ColorSettingCapability = ({
             />
           </div>
           <div>
-            <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
+            <label className="aliceDeviceSkills-gridLabel" htmlFor={maxId}>{t('alice.labels.max')}</label>
             <Input
+              id={maxId}
               value={capability.parameters?.temperature_k?.max}
               type="number"
               isFullWidth
@@ -213,8 +223,9 @@ export const ColorSettingCapability = ({
 
       {getCurrentColorModel(capability) === Color.ColorScene && (
         <div>
-          <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.scenes-input')}</div>
+          <label className="aliceDeviceSkills-gridLabel" htmlFor={scenesId}>{t('alice.labels.scenes-input')}</label>
           <Input
+            id={scenesId}
             value={capability.parameters?.color_scene?.scenes?.join(', ') || ''}
             placeholder="ocean, sunset, party"
             isFullWidth

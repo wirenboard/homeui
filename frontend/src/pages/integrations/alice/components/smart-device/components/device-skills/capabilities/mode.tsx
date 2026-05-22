@@ -6,8 +6,9 @@
 // {capability.type === Capability.Mode && (
 //   <>
 //     <div>
-//       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode-type')}</div>
+//       <label className="aliceDeviceSkills-gridLabel" htmlFor={modeTypeId}>{t('alice.labels.mode-type')}</label>
 //       <Dropdown
+//         id={modeTypeId}
 //         value={capability.parameters?.instance}
 //         options={modes.map((mode) => ({ label: mode, value: mode }))}
 //         onChange={({ value: instance }: Option<string>) => {
@@ -19,8 +20,9 @@
 //       />
 //     </div>
 //     <div>
-//       <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
+//       <label className="aliceDeviceSkills-gridLabel" htmlFor={modeId}>{t('alice.labels.mode')}</label>
 //       <Input
+//         id={modeId}
 //         value={capability.parameters?.modes}
 //         isFullWidth
 //         onChange={(modes: string) => {

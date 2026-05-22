@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment } from 'react';
+import { Fragment, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
@@ -36,6 +36,7 @@ export const DeviceCapabilities = observer(({
   capabilities, devicesStore, onCapabilityChange,
 }: DeviceCapabilitiesProps) => {
   const { t } = useTranslation();
+  const idPrefix = useId();
 
   const isCapabilityDisabled = (
     capabilityType: Capability,
@@ -142,55 +143,61 @@ export const DeviceCapabilities = observer(({
     }
   };
 
-  const renderCapabilityRow = (capability: SmartDeviceCapability, key: number) => (
-    <Fragment key={key}>
-      <div>
-        <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-          {t('alice.labels.capability')}
+  const renderCapabilityRow = (capability: SmartDeviceCapability, key: number) => {
+    const capabilityId = `${idPrefix}-capability-${key}`;
+    const topicId = `${idPrefix}-topic-${key}`;
+    return (
+      <Fragment key={key}>
+        <div>
+          <label className="aliceDeviceSkills-gridLabel" htmlFor={capabilityId}>
+            {t('alice.labels.capability')}
+          </label>
+          <Dropdown
+            id={capabilityId}
+            value={capability.type}
+            options={Object.keys(Capability).map((cap) => ({
+              label: cap,
+              value: Capability[cap],
+              isDisabled: isCapabilityDisabled(Capability[cap], capabilities),
+            }))}
+            onChange={(option: Option<Capability>) => onCapabilityTypeChange(option.value, key)}
+          />
         </div>
-        <Dropdown
-          value={capability.type}
-          options={Object.keys(Capability).map((cap) => ({
-            label: cap,
-            value: Capability[cap],
-            isDisabled: isCapabilityDisabled(Capability[cap], capabilities),
-          }))}
-          onChange={(option: Option<Capability>) => onCapabilityTypeChange(option.value, key)}
-        />
-      </div>
-      <div>
-        <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-          {t('alice.labels.topic')}
+        <div>
+          <label className="aliceDeviceSkills-gridLabel" htmlFor={topicId}>
+            {t('alice.labels.topic')}
+          </label>
+          <Dropdown
+            id={topicId}
+            className="aliceDeviceSkills-dropdown"
+            value={capability.mqtt}
+            placeholder={devicesStore.topics.flatMap((g) => g.options)
+              .find((o) => o.value === capability.mqtt)?.label}
+            options={devicesStore.topics as any[]}
+            isSearchable
+            onChange={({ value }: Option<string>) => {
+              onCapabilityChange(capabilities.map((item, i) => (
+                i === key ? { ...item, mqtt: value } : item
+              )));
+            }}
+          />
         </div>
-        <Dropdown
-          className="aliceDeviceSkills-dropdown"
-          value={capability.mqtt}
-          placeholder={devicesStore.topics.flatMap((g) => g.options)
-            .find((o) => o.value === capability.mqtt)?.label}
-          options={devicesStore.topics as any[]}
-          isSearchable
-          onChange={({ value }: Option<string>) => {
-            onCapabilityChange(capabilities.map((item, i) => (
-              i === key ? { ...item, mqtt: value } : item
-            )));
-          }}
-        />
-      </div>
 
-      {renderCapabilityFields(capability, key)}
+        {renderCapabilityFields(capability, key)}
 
-      <div className="aliceDeviceSkills-deleteButton">
-        <Button
-          size="small"
-          type="button"
-          icon={<TrashIcon />}
-          variant="secondary"
-          isOutlined
-          onClick={() => onCapabilityChange(capabilities.filter((_item, i) => i !== key))}
-        />
-      </div>
-    </Fragment>
-  );
+        <div className="aliceDeviceSkills-deleteButton">
+          <Button
+            size="small"
+            type="button"
+            icon={<TrashIcon />}
+            variant="secondary"
+            isOutlined
+            onClick={() => onCapabilityChange(capabilities.filter((_item, i) => i !== key))}
+          />
+        </div>
+      </Fragment>
+    );
+  };
 
   return (
     <>

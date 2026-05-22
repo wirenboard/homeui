@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
@@ -39,6 +39,11 @@ export const RangeCapability = ({
   capability, index, capabilities, onCapabilityChange,
 }: CapabilitySubProps) => {
   const { t } = useTranslation();
+  const idPrefix = useId();
+  const modeId = `${idPrefix}-mode`;
+  const minId = `${idPrefix}-min`;
+  const maxId = `${idPrefix}-max`;
+  const precisionId = `${idPrefix}-precision`;
 
   const getRangeInstanceOptions = useCallback((
     currentCapability: SmartDeviceCapability,
@@ -62,8 +67,9 @@ export const RangeCapability = ({
   return (
     <>
       <div>
-        <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
+        <label className="aliceDeviceSkills-gridLabel" htmlFor={modeId}>{t('alice.labels.mode')}</label>
         <Dropdown
+          id={modeId}
           value={capability.parameters?.instance}
           options={getRangeInstanceOptions(capability, index)}
           onChange={({ value: instance }: Option<string>) => {
@@ -99,8 +105,9 @@ export const RangeCapability = ({
           return (
             <>
               <div>
-                <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
+                <label className="aliceDeviceSkills-gridLabel" htmlFor={minId}>{t('alice.labels.min')}</label>
                 <Input
+                  id={minId}
                   value={lockedMin}
                   type="number"
                   isDisabled={isRangeLocked}
@@ -118,8 +125,9 @@ export const RangeCapability = ({
                 />
               </div>
               <div>
-                <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
+                <label className="aliceDeviceSkills-gridLabel" htmlFor={maxId}>{t('alice.labels.max')}</label>
                 <Input
+                  id={maxId}
                   value={lockedMax}
                   type="number"
                   isDisabled={isRangeLocked}
@@ -137,8 +145,11 @@ export const RangeCapability = ({
                 />
               </div>
               <div>
-                <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.precision')}</div>
+                <label className="aliceDeviceSkills-gridLabel" htmlFor={precisionId}>
+                  {t('alice.labels.precision')}
+                </label>
                 <Input
+                  id={precisionId}
                   value={capability.parameters?.range.precision}
                   type="number"
                   isFullWidth
