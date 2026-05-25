@@ -6,7 +6,7 @@ wb-mqtt-homeui (2.216.0) stable; urgency=medium
 
 wb-mqtt-homeui (2.215.0) stable; urgency=medium
 
-* Refactor Alice device-capabilities by splitting it by capability type
+  * Refactor Alice device-capabilities by splitting it by capability type
   * Make Alice capability labels clickable
 
  -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Fri, 22 May 2026 21:00:00 +0300
