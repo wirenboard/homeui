@@ -1,1 +1,15 @@
+# This configuration resolves Git warnings related to line endings:
+#   This diff contains a change in line endings from 'LF' to 'CRLF'.
+#
+# After creating the config, the above error is hidden but may show
+# this one for some files:
+#   This diff contains a change in line endings from 'CRLF' to 'LF'.
+#
+# Refer to the following link for more information about this
+# configuration file:
+#   https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings
+
+# Use LF for all files as this project runs on a Linux-driven controller
+*.tsx text=auto eol=lf
+
 * text=auto
