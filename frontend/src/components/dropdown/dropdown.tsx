@@ -33,6 +33,14 @@ const MenuPortal = (props: any, size: DropdownProps['size']) => (
   <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
 );
 
+const NoOptionsMessage = (props: any, message: string = '') => {
+  return (
+    <components.NoOptionsMessage {...props}>
+      <span className="custom-css-class">{message}</span>
+    </components.NoOptionsMessage>
+  );
+};
+
 export const Dropdown = ({
   id,
   options,
@@ -41,10 +49,13 @@ export const Dropdown = ({
   placeholder,
   size = 'default',
   ariaLabel,
+  multiselect,
   isDisabled,
+  isLoading,
   isInvalid,
   isClearable = false,
   isSearchable = false,
+  noOptionsMessage,
   isButton,
   minWidth = '150px',
   onChange,
@@ -97,6 +108,8 @@ export const Dropdown = ({
         className={classNames(getClassNames(className, size), {
           'dropdown-button': isButton,
           'dropdown-invalid': isInvalid,
+          'dropdown-m': size === 'default',
+          'dropdown-s': size === 'small',
         })}
         classNamePrefix="dropdown"
         options={options}
@@ -105,6 +118,7 @@ export const Dropdown = ({
         isDisabled={isDisabled}
         isSearchable={isSearchable}
         isClearable={isClearable}
+        isMulti={multiselect}
         menuPortalTarget={document.body}
         menuPlacement="auto"
         maxMenuHeight={240}
@@ -112,6 +126,7 @@ export const Dropdown = ({
         components={{
           MenuPortal: (props) => MenuPortal({ ...props, className }, size),
           DropdownIndicator: (props) => DropdownIndicator(props, isButton),
+          NoOptionsMessage: (props) => NoOptionsMessage(props, noOptionsMessage),
           Placeholder: (props) => Placeholder(props),
           SingleValue: (props) => SingleValue(props),
         }}

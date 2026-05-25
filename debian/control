@@ -27,7 +27,7 @@ Conflicts: wb-homa-webinterface
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          wb-homeui-backend (= ${binary:Version})
-Recommends: wb-mqtt-logs,
+Recommends: wb-mqtt-logs (>= 1.2.0),
             wb-device-manager,
             wb-rules (>= 2.37.0~~)
 Suggests: wb-mqtt-confed (>= 1.4.0),

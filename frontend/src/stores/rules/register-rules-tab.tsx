@@ -1,13 +1,9 @@
 import classNames from 'classnames';
+import { format } from 'date-fns';
 import BugIcon from '@/assets/icons/bug.svg';
 import { consolePanelStore } from '@/stores/console-panel';
 import type { RulesStore } from '@/stores/rules';
 import i18n from '~/i18n/react/config';
-
-const formatDate = (time: number) =>
-  new Date(time).toLocaleString('sv-SE', {
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  });
 
 export const registerRulesTab = (rulesStore: RulesStore) => {
   consolePanelStore.registerTab({
@@ -36,7 +32,7 @@ export const registerRulesTab = (rulesStore: RulesStore) => {
           dateTime={new Date(log.time).toISOString()}
           className="consolePanel-logDate"
         >
-          {formatDate(log.time)}
+          {format(log.time, 'dd-MM-yyyy HH:mm:ss')}
         </time>
         <div>{log.payload}</div>
       </div>

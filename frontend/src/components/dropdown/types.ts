@@ -15,7 +15,7 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   options: Option<T>[];
   value: T;
   placeholder?: string;
-  onChange: (_val: Option<T>) => void;
+  onChange: (_val: Option<T> | Option<T>[]) => void;
   size?: 'default' | 'small';
   ariaLabel?: string;
   isDisabled?: boolean;
@@ -24,4 +24,7 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   isClearable?: boolean;
   isInvalid?: boolean;
   minWidth?: string;
+  noOptionsMessage?: string;
+  multiselect?: boolean;
+  isLoading?: boolean;
 }

@@ -45,7 +45,6 @@ import daliBusProxyService from './services/daliBusProxy';
 // homeui modules: controllers
 import AlertCtrl from './controllers/alertController';
 import HomeCtrl from './controllers/homeController';
-import DateTimePickerModalCtrl from './controllers/dateTimePickerModalController';
 
 // homeui modules: directives
 import userRolesDirective from './directives/user-roles.directive';
@@ -126,7 +125,6 @@ module
   .value('AlertDelayMs', 5000)
   .controller('AlertCtrl', AlertCtrl)
   .controller('HomeCtrl', HomeCtrl)
-  .controller('DateTimePickerModalCtrl', DateTimePickerModalCtrl)
 
 // Register directives
 module
@@ -147,7 +145,6 @@ module
       [
         'app',
         'help',
-        'logs',
       ].forEach(el => $translatePartialLoaderProvider.addPart(el));
       $translateProvider.useSanitizeValueStrategy('sceParameters');
       $translateProvider.useLoader('$translatePartialLoader', {

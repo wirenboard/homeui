@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.216.0) stable; urgency=medium
+
+  * Upgrade logs page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 25 May 2026 11:16:00 +0300
+
 wb-mqtt-homeui (2.215.0) stable; urgency=medium
 
   * Refactor Alice device-capabilities by splitting it by capability type
