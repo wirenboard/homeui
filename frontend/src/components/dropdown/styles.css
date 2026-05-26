@@ -51,6 +51,11 @@
   display: block;
 }
 
+.dropdown__single-value {
+  user-select: text;
+  cursor: text;
+}
+
 .dropdown__group {
   padding-bottom: 4px;
   width: 100%;
