@@ -1,21 +1,24 @@
 import { observer } from 'mobx-react-lite';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import LocaleIcon from '@/assets/icons/locale.svg';
 import LoaderIcon from '@/assets/icons/spinner.svg';
 import { APP_NAME, LOGO } from '@/common/constants';
+import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button, ButtonLink } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import { Password } from '@/components/password';
-import type { LoginPageProps } from '@/pages/login/types';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
-const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) => {
-  const { t } = useTranslation();
+const LoginPage = observer(() => {
+  const { t, i18n } = useTranslation();
   const { isAutologin } = authStore;
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [login, setLogin] = useState('');
   const [isShowError, setIsShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,8 +30,8 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
     try {
       setIsShowError(false);
       setIsLoading(true);
-      const data = await authStore.login({ login, password });
-      onSuccessLogin(data.user_type);
+      await authStore.login({ login, password });
+      navigate(searchParams.get('returnState') ?? '/', { replace: true });
     } catch {
       setIsShowError(true);
     } finally {
@@ -36,9 +39,9 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
     }
   };
 
-  const onChangeLanguageHandler = (lang: string) => {
+  const onChangeLanguageHandler = async (lang: string) => {
     localStorage.setItem('language', lang);
-    onChangeLocale(lang);
+    await i18n.changeLanguage(lang);
     setLanguage(lang);
   };
 
@@ -97,7 +100,7 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
           <div className="login-actions">
             {isAutologin && (
               <ButtonLink
-                href="/"
+                to="/"
                 className="login-button"
                 type="button"
                 label={t('login.buttons.auto-login')}
@@ -116,7 +119,7 @@ const LoginPage = observer(({ onSuccessLogin, onChangeLocale }: LoginPageProps) 
       </fieldset>
 
       <nav className="login-links">
-        <a href="https://wiki.wirenboard.com/wiki/Documentation" target="_blank">{t('login.labels.documentation')}</a>
+        <a href={documentation[i18n.language]?.main} target="_blank">{t('login.labels.documentation')}</a>
 
         <label htmlFor="language" className="login-languageWrapper">
           <LocaleIcon className="login-languageIcon" />

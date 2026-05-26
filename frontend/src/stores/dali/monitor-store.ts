@@ -1,4 +1,5 @@
 import { runInAction, makeAutoObservable } from 'mobx';
+import { mqttClient } from '@/services';
 
 export class MonitorStore {
   public logs: string[] = [];
@@ -7,17 +8,13 @@ export class MonitorStore {
 
   private topic: string = '';
 
-  #mqttClient: any;
-
-  constructor(mqttClient) {
-    this.#mqttClient = mqttClient;
-
+  constructor() {
     makeAutoObservable(this);
   }
 
-  enableMonitoring(bus_mqtt_id: string) {
+  enableMonitoring(busMqttId: string) {
     this.logs = [];
-    this.topic = `/wb-dali/${bus_mqtt_id}/bus_monitor`;
+    this.topic = `/wb-dali/${busMqttId}/bus_monitor`;
     this._subscribeToTopic();
     this.isEnabled = true;
     this.isOnPause = false;
@@ -49,7 +46,7 @@ export class MonitorStore {
 
   _subscribeToTopic() {
     const MAX_MESSAGES = 500;
-    this.#mqttClient.addStickySubscription(this.topic, ({ topic, payload }) => {
+    mqttClient.addStickySubscription(this.topic, ({ payload }) => {
       runInAction(() => {
         if (this.logs.length === MAX_MESSAGES) {
           this.logs.shift();
@@ -60,6 +57,6 @@ export class MonitorStore {
   }
 
   _unsubscribeFromTopic() {
-    this.#mqttClient.unsubscribe(this.topic);
+    mqttClient.unsubscribe(this.topic);
   }
 }

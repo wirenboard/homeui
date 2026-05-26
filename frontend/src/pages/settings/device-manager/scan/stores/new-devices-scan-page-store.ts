@@ -1,4 +1,5 @@
 import { makeObservable, observable, action, computed } from 'mobx';
+import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import { type DeviceTypesStore } from '@/stores/device-manager';
 import type { ScannedDevice } from '@/stores/device-manager/types';
 import { type ConfiguredDevices } from '../../config-editor/stores/configured-devices';
@@ -12,7 +13,7 @@ export class NewDevicesScanPageStore {
   public configuredDevices: ConfiguredDevices;
 
   constructor(
-    deviceManagerProxy: any,
+    deviceManagerProxy: typeof deviceManagerProxyInstance,
     deviceTypesStore: DeviceTypesStore,
     onLeave: (_devices: Partial<ScannedDevice>[]
     ) => void) {

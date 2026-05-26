@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { Children, cloneElement, isValidElement, type PropsWithChildren, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import SortAscIcon from '@/assets/icons/sort-asc.svg';
 import SortDescIcon from '@/assets/icons/sort-desc.svg';
 import { Button } from '@/components/button';
@@ -139,8 +140,8 @@ export const TableCell = ({
       {...rest}
     >
       {!!url && !preventClick && (
-        <a
-          href={url}
+        <Link
+          to={url}
           className="wb-tableLink"
           {...(isFirstLinkColumn ? {} : { 'aria-hidden': true, tabIndex: -1 })}
           aria-label={ariaLabel}

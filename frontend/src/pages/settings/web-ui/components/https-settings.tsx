@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
 import { BooleanField, FormFieldGroup } from '@/components/form';
-import { setupHttps, isHttpsEnabled, getHttpsCertificateStatus, CertificateStatus } from '@/utils/httpsUtils';
+import { setupHttps, isHttpsEnabled, getHttpsCertificateStatus, CertificateStatus } from '@/utils/https-utils';
 import type { HttpsSettingsProps } from '../types';
 
 const CertStatusBanner = () => {

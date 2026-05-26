@@ -9,6 +9,7 @@ export class Conditions {
       let fn = this.functions?.[conditionText];
       if (!fn) {
         fn = new Function(
+          // @ts-ignore
           dependencies,
           'let isDefined = p => p!==undefined; return ' + conditionText + ';',
         );

@@ -6,8 +6,8 @@ import type { BusStore } from '@/stores/dali';
 
 export const CommissioningProgress = observer(({ store }: { store: BusStore }) => {
   const { t } = useTranslation();
-  const { progress, status, device_count } = store.commissioningState;
-  const caption = status ? t(`dali.labels.scan-stage-${status}`, { count: device_count }) : '';
+  const { progress, status, device_count: count } = store.commissioningState;
+  const caption = status ? t(`dali.labels.scan-stage-${status}`, { count }) : '';
 
   return (
     <div className="dali-commissioningProgress">

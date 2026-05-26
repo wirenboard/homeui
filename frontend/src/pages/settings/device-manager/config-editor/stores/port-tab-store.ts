@@ -1,9 +1,9 @@
 import { makeObservable, observable, computed, action, autorun, type IReactionDisposer } from 'mobx';
 import { CollapseButtonState } from '@/components/collapse-button';
+import i18n from '@/i18n/config';
 import { type DeviceTabStore } from '@/stores/device-manager';
 import type { PortTabConfig, PortTabSerialConfig, PortTabTcpConfig } from '@/stores/device-manager/port-tab/types';
 import { ObjectStore, StoreBuilder, type Translator, type JsonSchema } from '@/stores/json-schema-editor';
-import i18n from '~/i18n/react/config';
 import { TabType } from './tabs-store';
 import type { ModbusTcpPort, SerialPort, TcpPort } from './types';
 

@@ -117,6 +117,7 @@ export const Dropdown = ({
         placeholder={placeholder || ''}
         isDisabled={isDisabled}
         isSearchable={isSearchable}
+        isLoading={isLoading}
         isClearable={isClearable}
         isMulti={multiselect}
         menuPortalTarget={document.body}

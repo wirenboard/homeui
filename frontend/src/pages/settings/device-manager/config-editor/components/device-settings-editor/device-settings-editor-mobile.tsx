@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useId, useState } from 'react';
+import { Suspense, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/card';
 import {
@@ -77,7 +77,10 @@ const ChannelCard = observer((
     >
       <div className="deviceSettingsEditor-channel">
         {description && <ParamDescription description={description} />}
-        <StringEditor store={channel.mode} translator={translator} />
+        qweqweqwe
+        <Suspense fallback="">
+          <StringEditor store={channel.mode} translator={translator} />
+        </Suspense>
         {channel.hasCustomPeriod && (
           <CustomPeriodEditor store={channel.period} translator={translator} />
         )}
@@ -116,8 +119,8 @@ const DeviceSettingsCardContent = observer((
       className={classNames({
         'deviceSettingsEditor-topGroupContent': isTopLevel,
         'deviceSettingsEditor-subGroupContent': !isTopLevel,
-        // eslint-disable-next-line stylistic/max-len
-        'deviceSettingsEditor-subGroupContentWithBorder': !isTopLevel && !group.properties.ui_options?.wb?.disable_title,
+        'deviceSettingsEditor-subGroupContentWithBorder': !isTopLevel
+          && !group.properties.ui_options?.wb?.disable_title,
       })}
     >
       {showDescription && (

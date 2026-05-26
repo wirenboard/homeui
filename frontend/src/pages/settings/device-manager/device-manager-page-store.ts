@@ -1,14 +1,15 @@
 import { makeObservable, computed } from 'mobx';
 import { NewDevicesScanPageStore, SearchDisconnectedScanPageStore } from '@/pages/settings/device-manager/scan';
+import type {
+  fwUpdateProxy as FwUpdateProxyInstance,
+  serialDeviceProxy as SerialDeviceProxyInstance,
+  serialPortProxy as SerialPortProxyInstance,
+  deviceManagerProxy as DeviceManagerProxyInstance,
+} from '@/services';
 import { type DeviceTabStore, DeviceTypesStore } from '@/stores/device-manager';
 import type { PortTabConfig } from '@/stores/device-manager/port-tab/types';
-import type {
-  DeviceManagerProxyProxy,
-  FwUpdateProxy,
-  ScannedDevice,
-  SerialDeviceProxy,
-  SerialPortProxy,
-} from '@/stores/device-manager/types';
+import type { ScannedDevice } from '@/stores/device-manager/types';
+import type { JsonSchema } from '@/stores/json-schema-editor';
 import { ConfigEditorPageStore } from './config-editor/stores/config-editor-page-store';
 import { ConfiguredDevices } from './config-editor/stores/configured-devices';
 import type { ConfigJson, LoadConfigResult } from './config-editor/stores/types';
@@ -26,11 +27,11 @@ export class DeviceManagerPageStore {
     loadConfigFn: () => Promise<LoadConfigResult>,
     saveConfigFn: (_cfg: ConfigJson) => Promise<void>,
     stateTransitions: StateTransitions,
-    loadDeviceTypeFn: (_deviceType: string) => Promise<void>,
-    deviceManagerProxy: DeviceManagerProxyProxy,
-    fwUpdateProxy: FwUpdateProxy,
-    serialDeviceProxy: SerialDeviceProxy,
-    seralPortProxy: SerialPortProxy,
+    loadDeviceTypeFn: (_deviceType: string) => Promise<JsonSchema>,
+    deviceManagerProxy: typeof DeviceManagerProxyInstance,
+    fwUpdateProxy: typeof FwUpdateProxyInstance,
+    serialDeviceProxy: typeof SerialDeviceProxyInstance,
+    serialPortProxy: typeof SerialPortProxyInstance,
   ) {
     this.deviceTypesStore = new DeviceTypesStore(loadDeviceTypeFn);
     this.configEditorPageStore = new ConfigEditorPageStore(
@@ -41,7 +42,7 @@ export class DeviceManagerPageStore {
       this.deviceTypesStore,
       fwUpdateProxy,
       serialDeviceProxy,
-      seralPortProxy,
+      serialPortProxy,
     );
     this.newDevicesScanPageStore = new NewDevicesScanPageStore(
       deviceManagerProxy,

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditIcon from '@/assets/icons/edit.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
@@ -16,7 +17,7 @@ import { store } from './page-store';
 import './styles.css';
 
 const UsersPage = observer(() => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [deletedUserId, setDeletedUserId] = useState('');
   const [ confirm, isOpened, handleConfirm, handleClose ] = useConfirm<any>();
   const [ editedUser, setEditedUser ] = useState<any>();
@@ -50,6 +51,7 @@ const UsersPage = observer(() => {
   return (
     <PageLayout
       title={t('users.title')}
+      infoLink={documentation[i18n.language]?.users}
       hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={isLoading}
       errors={store.errors}

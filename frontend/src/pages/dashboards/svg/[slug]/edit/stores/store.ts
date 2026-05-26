@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Dashboard, type DashboardsStore, type DashboardBase } from '@/stores/dashboards';
+import { Dashboard, type DashboardBase, dashboardsStore } from '@/stores/dashboards';
 import { BindingsStore } from './bindings-store';
 import { SvgStore } from './svg-store';
 
@@ -16,10 +16,7 @@ export class EditSvgDashboardPageStore {
   };
   public swipeParameters: DashboardBase['swipe'] = { enable: false, left: null, right: null };
 
-  #dashboardsStore: DashboardsStore;
-
-  constructor(dashboardsStore: DashboardsStore) {
-    this.#dashboardsStore = dashboardsStore;
+  constructor() {
     this.svgStore = new SvgStore();
     this.bindingsStore = new BindingsStore();
 
@@ -47,13 +44,13 @@ export class EditSvgDashboardPageStore {
   }
 
   setDashboard(dashboardId: string) {
-    const db = this.#dashboardsStore.dashboards.get(dashboardId);
+    const db = dashboardsStore.dashboards.get(dashboardId);
     this.setOriginalId(dashboardId);
     this.dashboard = db || this.#createNewDashboard();
     this.commonParameters.id = this.dashboard.id;
     this.commonParameters.name = this.dashboard.name;
     this.commonParameters.svg_fullwidth = this.dashboard.svg_fullwidth;
-    const dashboardsForClicks = this.#dashboardsStore.dashboardsList
+    const dashboardsForClicks = dashboardsStore.dashboardsList
       .filter((d) => d.id !== dashboardId)
       .map(({ id, name }) => ({ value: id, label: name }));
     this.bindingsStore.setDashboards(dashboardsForClicks);
@@ -70,7 +67,7 @@ export class EditSvgDashboardPageStore {
   }
 
   async removeDashboard() {
-    await this.#dashboardsStore.deleteDashboard(this.dashboard.id);
+    await dashboardsStore.deleteDashboard(this.dashboard.id);
   }
 
   async onSaveDashboard(): Promise<string> {
@@ -82,9 +79,9 @@ export class EditSvgDashboardPageStore {
 
     if (this.isNew) {
       this.dashboard.svg_url = 'local';
-      await this.#dashboardsStore.addDashboard(this.dashboard);
+      await dashboardsStore.addDashboard(this.dashboard);
     } else {
-      await this.#dashboardsStore.updateDashboard(this.originalId, this.dashboard);
+      await dashboardsStore.updateDashboard(this.originalId, this.dashboard);
     }
     return this.dashboard.id;
   }
@@ -109,7 +106,6 @@ export class EditSvgDashboardPageStore {
           params: [],
         },
       },
-      this.#dashboardsStore,
     );
   }
 }

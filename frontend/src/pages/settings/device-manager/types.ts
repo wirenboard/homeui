@@ -1,22 +1,4 @@
-import type {
-  DeviceManagerProxyProxy,
-  FwUpdateProxy,
-  ScannedDevice,
-  SerialDeviceProxy,
-  SerialPortProxy,
-} from '@/stores/device-manager/types';
-
-export interface DeviceManagerPageProps {
-  configEditorProxy: any;
-  serialProxy: any;
-  deviceManagerProxy: DeviceManagerProxyProxy;
-  fwUpdateProxy: FwUpdateProxy;
-  serialPortProxy: SerialPortProxy;
-  serialDeviceProxy: SerialDeviceProxy;
-  rootScope: any;
-  mqttClient: any;
-  whenMqttReady: () => Promise<void>;
-}
+import type { ScannedDevice } from '@/stores/device-manager/types';
 
 export interface StateTransitions {
   toMobileContent: () => void;

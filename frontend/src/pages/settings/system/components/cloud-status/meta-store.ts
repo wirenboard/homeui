@@ -1,18 +1,13 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import CloudStatusStore from './store';
+import { mqttClient } from '@/services';
+import CloudStatusStore, { type ConnectionStatus } from './store';
 
 export class CloudStatusMetaStore {
   public stores = {};
 
-  #mqttClient: any;
-  #whenMqttReady: any;
-
-  constructor(mqttClient: any, whenMqttReady: any) {
-    this.#mqttClient = mqttClient;
-    this.#whenMqttReady = whenMqttReady;
-
-    this.#whenMqttReady().then(() => {
-      this.#mqttClient.addStickySubscription('/wb-cloud-agent/providers', ({ payload }) => {
+  constructor() {
+    mqttClient.whenConnected().then(() => {
+      mqttClient.addStickySubscription('/wb-cloud-agent/providers', ({ payload }) => {
         this.updateProviderList(payload);
       });
     });
@@ -23,23 +18,23 @@ export class CloudStatusMetaStore {
   instantiateStore(provider: string) {
     const store = new CloudStatusStore(provider);
 
-    this.#whenMqttReady().then(() => {
-      this.#mqttClient.addStickySubscription(
+    mqttClient.whenConnected().then(() => {
+      mqttClient.addStickySubscription(
         `/devices/system__wb-cloud-agent__${provider}/controls/status`,
-        ({ payload }) => store.updateStatus(payload),
+        ({ payload }) => store.updateStatus(payload as ConnectionStatus),
       );
 
-      this.#mqttClient.addStickySubscription(
+      mqttClient.addStickySubscription(
         `/devices/system__wb-cloud-agent__${provider}/controls/activation_link`,
         ({ payload }) => store.updateActivationLink(payload),
       );
 
-      this.#mqttClient.addStickySubscription(
+      mqttClient.addStickySubscription(
         '/devices/system/controls/Short SN',
         ({ payload }) => store.updateSerialNum(payload),
       );
 
-      this.#mqttClient.addStickySubscription(
+      mqttClient.addStickySubscription(
         `/devices/system__wb-cloud-agent__${provider}/controls/cloud_base_url`,
         ({ payload }) => store.updateCloudBaseUrl(payload),
       );

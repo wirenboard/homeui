@@ -1,15 +1,11 @@
-export type Option<T = string | boolean | number | null | unknown> = {
+export interface Option<T = string | boolean | number | null> {
   label: string;
   value?: T;
-  hidden?: boolean;
-} | {
-  value?: T;
-  label: string;
   hidden?: boolean;
   options?: Option<T>[];
-};
+}
 
-export interface DropdownProps<T = string | boolean | number | null | unknown> {
+export interface DropdownProps<T = string | boolean | number | null> {
   id?: string;
   className?: string;
   options: Option<T>[];

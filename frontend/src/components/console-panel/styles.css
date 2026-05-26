@@ -1,6 +1,7 @@
 .consolePanel {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     position: relative;
     min-width: 345px;
     max-height: 100dvh;
@@ -41,7 +42,8 @@
 }
 
 .consolePanel-tabs {
-    flex-shrink: 0;
+    overflow: hidden;
+    min-width: 0;
     width: auto;
     border-bottom: none;
     border-radius: var(--input-border-radius) var(--input-border-radius) 0 0;
@@ -54,11 +56,9 @@
 .consolePanel-tabs li {
     height: fit-content;
     border-top: 0;
+    min-width: 0;
+    overflow: hidden;
 }
-
-/*.consolePanel-tabs li:not(.tabs-buttonSelected) {*/
-/*    border-bottom: 4px solid transparent;*/
-/*}*/
 
 .consolePanel-tabs .tabs-buttonSelected {
     border-top: 0;
@@ -91,6 +91,7 @@
 
 .consolePanel-headerActions {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     gap: 10px;
 }

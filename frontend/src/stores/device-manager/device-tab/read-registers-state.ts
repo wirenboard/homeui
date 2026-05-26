@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
+import i18n from '@/i18n/config';
 import { type JsonObject } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/formatError';
-import i18n from '~/i18n/react/config';
+import { formatError } from '@/utils/format-error';
 import { type DeviceTypesStore } from '../device-types-store';
 import { ReadRegistersState } from './types';
 

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
@@ -8,14 +9,16 @@ import { Tabs, TabContent, useTabs } from '@/components/tabs';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
+import { useStore } from '@/utils/use-store';
 import { ConnectionsEditor } from './components/connections-editor/connections-editor';
 import { SwitcherEditor } from './components/switcher';
-import { type NetworkConnectionsPageProps } from './types';
+import { NetworkConnectionsPageStore } from './stores/page-store';
 import './styles.css';
 
-const NetworkConnectionsPage = observer(({ store, rootScope }: NetworkConnectionsPageProps) => {
-  const { t } = useTranslation();
-  const { setIsDirty } = usePreventLeavePage(rootScope);
+const NetworkConnectionsPage = observer(() => {
+  const { t, i18n } = useTranslation();
+  const store = useStore(() => new NetworkConnectionsPageStore());
+  const { setIsDirty } = usePreventLeavePage();
   const [ confirmChanges, isConfirmChangesOpened, handleConfirmChanges, handleCloseConfirmChanges ] = useConfirm<any>();
   const [ confirmErrors, isConfirmErrorsOpened, handleConfirmErrors, handleCloseConfirmErrors ] = useConfirm<any>();
 
@@ -38,6 +41,7 @@ const NetworkConnectionsPage = observer(({ store, rootScope }: NetworkConnection
     <>
       <PageLayout
         title={t('network-connections.labels.connections')}
+        infoLink={documentation[i18n.language]?.networks}
         hasRights={authStore.hasRights(UserRole.Admin)}
         isLoading={store.loading}
         errors={store.error ? [{ variant: 'danger', text: store.error }] : []}

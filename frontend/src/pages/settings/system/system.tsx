@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { getDeviceInfo } from '@/utils/httpsUtils';
+import { getDeviceInfo } from '@/utils/https-utils';
 import { useStore } from '@/utils/use-store';
 import { Backup } from './components/backup';
 import { CloudStatus } from './components/cloud-status';
 import { Diagnostic } from './components/diagnostic';
 import { FirmwareUpdate, FirmwareUpdateStore } from './components/firmware-update';
-import type { SystemPageProps } from './types';
 import './styles.css';
 
-const SystemPage = ({ mqttClient, whenMqttReady, diagnosticProxy }: SystemPageProps) => {
-  const { t } = useTranslation();
-  const firmwareUpdateStore = useStore(() => new FirmwareUpdateStore(mqttClient, whenMqttReady));
+const SystemPage = () => {
+  const { t, i18n } = useTranslation();
+  const firmwareUpdateStore = useStore(() => new FirmwareUpdateStore());
   const [isShowOffer, setIsShowOffer] = useState(false);
   const [isShowTransitionOffer, setIsShowTransitionOffer] = useState(false);
 
@@ -40,6 +40,7 @@ const SystemPage = ({ mqttClient, whenMqttReady, diagnosticProxy }: SystemPagePr
   return (
     <PageLayout
       title={t('system.title')}
+      infoLink={documentation[i18n.language]?.system}
       hasRights={authStore.hasRights(UserRole.Admin)}
     >
       {isShowTransitionOffer && (
@@ -77,8 +78,6 @@ const SystemPage = ({ mqttClient, whenMqttReady, diagnosticProxy }: SystemPagePr
       <section className="system">
         <CloudStatus
           className="system-card"
-          mqttClient={mqttClient}
-          whenMqttReady={whenMqttReady}
         />
 
         <FirmwareUpdate
@@ -91,9 +90,6 @@ const SystemPage = ({ mqttClient, whenMqttReady, diagnosticProxy }: SystemPagePr
 
         <Diagnostic
           className="system-card"
-          diagnosticProxy={diagnosticProxy}
-          mqttClient={mqttClient}
-          whenMqttReady={whenMqttReady}
         />
 
         <FirmwareUpdate

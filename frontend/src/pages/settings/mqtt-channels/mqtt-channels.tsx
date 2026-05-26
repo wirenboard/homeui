@@ -1,15 +1,17 @@
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { errorsConvention, documentation } from '@/common/links';
 import { Input } from '@/components/input';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
-import type { MqttChannelsPageProps, MqttChannelsSortColumn, SortDirection } from './types';
+import { type Cell, devicesStore } from '@/stores/devices';
+import type { MqttChannelsSortColumn, SortDirection } from './types';
 import './styles.css';
 
-const MqttChannelsPage = observer(({ store }: MqttChannelsPageProps) => {
-  const { t } = useTranslation();
+const MqttChannelsPage = observer(() => {
+  const { t, i18n } = useTranslation();
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState<MqttChannelsSortColumn>('id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
@@ -38,10 +40,10 @@ const MqttChannelsPage = observer(({ store }: MqttChannelsPageProps) => {
     return compareStrings(String(first ?? ''), String(second ?? ''));
   };
 
-  const getTopic = (cell: typeof store.filteredCells[number]) => `/devices/${cell.deviceId}/controls/${cell.controlId}`;
-  const getStatus = (cell: typeof store.filteredCells[number]) => (cell.error ? 'error' : 'ok');
+  const getTopic = (cell: Cell) => `/devices/${cell.deviceId}/controls/${cell.controlId}`;
+  const getStatus = (cell: Cell) => (cell.error ? 'error' : 'ok');
 
-  const sortedCells = [...store.filteredCells];
+  const sortedCells = [...devicesStore.filteredCells];
   sortedCells.sort((a, b) => {
     const multiplier = sortDirection === 'asc' ? 1 : -1;
     const primaryComparison = (() => {
@@ -70,6 +72,7 @@ const MqttChannelsPage = observer(({ store }: MqttChannelsPageProps) => {
   return (
     <PageLayout
       title={t('mqtt.title')}
+      infoLink={documentation[i18n.language]?.mqtt}
       hasRights
     >
       <Input
@@ -121,7 +124,7 @@ const MqttChannelsPage = observer(({ store }: MqttChannelsPageProps) => {
               </TableCell>
               <TableCell align="right" verticalAlign="top">
                 {cell.error ? (
-                  <a href="https://github.com/wirenboard/conventions?tab=readme-ov-file#errors" target="_blank">
+                  <a href={errorsConvention} target="_blank">
                     <Tag variant="danger">
                       {t('mqtt.labels.error', { error: cell.error.at(0) })}
                     </Tag>

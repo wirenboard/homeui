@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 import { Loader } from '@/components/loader';
 import { type ButtonLinkProps } from './types';
 import './styles.css';
@@ -6,7 +7,8 @@ import './styles.css';
 export const ButtonLink = ({
   className, icon, label, isOutlined, isLoading, size = 'default', variant = 'primary', ...rest
 }: ButtonLinkProps) => (
-  <a
+  <Link
+    to={rest.to}
     className={classNames('button', className, {
       'button-l': size === 'large',
       'button-m': size === 'default',
@@ -30,5 +32,5 @@ export const ButtonLink = ({
       </span>
     )}
     {!!label && <span className={classNames('button-text', { 'button-loading': isLoading })}>{label}</span>}
-  </a>
+  </Link>
 );

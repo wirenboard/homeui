@@ -2,25 +2,24 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { serialConfiPath } from '@/common/paths';
+import i18n from '@/i18n/config';
+import {
+  configEditorProxy,
+  deviceManagerProxy,
+  fwUpdateProxy,
+  mqttClient,
+  serialDeviceProxy,
+  serialPortProxy,
+  serialProxy,
+} from '@/services';
 import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import { useStore } from '@/utils/use-store';
-import i18n from '~/i18n/react/config';
 import ConfigEditorPage from './config-editor';
 import { DeviceManagerPageStore } from './device-manager-page-store';
 import ScanPage from './scan';
-import type { DeviceManagerPageProps, StateTransitions } from './types';
+import type { StateTransitions } from './types';
 
-const DeviceManagerPage = observer(({
-  configEditorProxy,
-  serialProxy,
-  deviceManagerProxy,
-  fwUpdateProxy,
-  serialPortProxy,
-  serialDeviceProxy,
-  rootScope,
-  whenMqttReady,
-  mqttClient,
-}: DeviceManagerPageProps) => {
+const DeviceManagerPage = observer(() => {
   const isMobile = useMediaQuery({ maxWidth: 991 });
 
   const store = useStore(() => {
@@ -78,7 +77,7 @@ const DeviceManagerPage = observer(({
   const confirmMessage = isScanning
     ? i18n.t('device-manager.prompt.prevent-leave')
     : i18n.t('common.prompt.dirty');
-  const { setIsDirty } = usePreventLeavePage(rootScope, confirmMessage);
+  const { setIsDirty } = usePreventLeavePage(confirmMessage);
 
   useEffect(() => {
     store.setMobileMode(isMobile);
@@ -89,7 +88,7 @@ const DeviceManagerPage = observer(({
   }, [store.isDirty, isScanning]);
 
   useEffect(() => {
-    whenMqttReady()
+    mqttClient.whenReady()
       .then(() => {
         return store.loadConfig();
       })

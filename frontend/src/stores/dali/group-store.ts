@@ -1,4 +1,5 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
+import { daliProxy } from '@/services';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore } from './base-item-store';
 import type { BusStore } from './bus-store';
@@ -8,9 +9,8 @@ export class GroupStore extends BaseItemStore {
   public index: number;
   #parent: BusStore | null;
 
-  constructor(daliProxy: any, id: string, groupIndex: number, parent: BusStore | null = null) {
-    // Group label is its index, since group name is not editable
-    super(daliProxy, id, String(groupIndex));
+  constructor(id: string, groupIndex: number, parent: BusStore | null = null) {
+    super(id, String(groupIndex));
     this.index = groupIndex;
     this.#parent = parent;
 
@@ -28,7 +28,7 @@ export class GroupStore extends BaseItemStore {
     }
     this.isLoading = true;
     try {
-      const data = await this.daliProxy.GetGroup({ groupId: this.id });
+      const data = await daliProxy.GetGroup({ groupId: this.id });
       this.translator = new Translator();
       const schema = loadJsonSchema(data);
       this.translator.addTranslations(schema.translations);
@@ -53,7 +53,7 @@ export class GroupStore extends BaseItemStore {
       return;
     }
     try {
-      await this.daliProxy.SetGroup({ groupId: this.id, config: { [key]: param.store.value } });
+      await daliProxy.SetGroup({ groupId: this.id, config: { [key]: param.store.value } });
       runInAction(() => {
         param.store.commit();
         this.setError(null);

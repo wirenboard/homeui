@@ -8,4 +8,5 @@ export interface TooltipProps {
   id?: string;
   placement?: Placement;
   closeOnClick?: boolean;
+  autoClose?: boolean;
 }

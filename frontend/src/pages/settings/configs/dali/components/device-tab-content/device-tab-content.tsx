@@ -84,8 +84,8 @@ export const DeviceTabContent = observer(({
         isOpened={isResetDialogOpen}
         isLoading={isResetting}
         isDirty={store.objectStore.isDirty}
-        onConfirm={runReset}
         closeCallback={() => setIsResetDialogOpen(false)}
+        onConfirm={runReset}
       />
     </>
   );

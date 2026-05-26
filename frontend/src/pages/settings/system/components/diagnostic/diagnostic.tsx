@@ -4,11 +4,12 @@ import { Alert } from '@/components/alert';
 import { Button, ButtonLink } from '@/components/button';
 import { Card } from '@/components/card';
 import { Loader } from '@/components/loader';
+import { diagnosticProxy, mqttClient } from '@/services';
 import { copyToClipboard } from '@/utils/clipboard';
 import { request } from '@/utils/request';
 import './styles.css';
 
-export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticProxy }) => {
+export const Diagnostic = ({ className }: { className?: string }) => {
   const { t } = useTranslation();
   const [isEnabled, setIsEnabled] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
@@ -55,7 +56,7 @@ export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticPro
   }, []);
 
   useEffect(() => {
-    whenMqttReady()
+    mqttClient.whenConnected()
       .then(() => diagnosticProxy.hasMethod('diag'))
       .then((result: boolean) => result ? diagnosticProxy.status() : '-1')
       .then((payload: string) => {
@@ -73,7 +74,7 @@ export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticPro
       if (isCollecting.current && payload) {
         const data = JSON.parse(payload);
         setPath(data['fullname']);
-        let url = window.location.href;
+        let url = location.href;
         url = url.substring(url.indexOf('//') + 2);
         url = url.substring(0, url.indexOf('/'));
         fileIsOk(`${location.protocol}//${url}/diag/${data['basename']}`, data['basename'], callbackFileIsOk);
@@ -98,7 +99,7 @@ export const Diagnostic = ({ className, whenMqttReady, mqttClient, diagnosticPro
               className="diagnostic-downloadButton"
               variant="primary"
               label={t(label)}
-              href={href}
+              to={href}
               download
             />
           ) : (

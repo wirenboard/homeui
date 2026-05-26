@@ -1,28 +1,30 @@
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { StringField } from '@/components/form';
-import { PageLayout } from '@/layouts/page';
-import { MbGateStore } from '@/pages/settings/configs/mbgate/stores/page-store';
-import { authStore, UserRole } from '@/stores/auth';
-import { useAsyncAction } from '@/utils/async-action';
-import { usePreventLeavePage } from '@/utils/prevent-page-leave';
-import { useStore } from '@/utils/use-store';
 import {
   CustomEditorBuilderContext,
   Form,
   MakeFormFields,
   ShowParamCaptionContext,
-} from '~/react-directives/forms/forms';
+} from '@/components/json-editor/forms';
+import { PageLayout } from '@/layouts/page';
+import { MbGateStore } from '@/pages/settings/configs/mbgate/stores/page-store';
+import { authStore, UserRole } from '@/stores/auth';
+import { configsStore } from '@/stores/configs';
+import { devicesStore } from '@/stores/devices';
+import { useAsyncAction } from '@/utils/async-action';
+import { usePreventLeavePage } from '@/utils/prevent-page-leave';
+import { useStore } from '@/utils/use-store';
 import { SelectControls } from './components/select-controls';
-import { type MbGatePageProps } from './types';
 import './styles.css';
 
-const MbGatePage = observer(({ configsStore, devicesStore, rootScope }: MbGatePageProps) => {
-  const { t } = useTranslation();
-  const { setIsDirty } = usePreventLeavePage(rootScope);
+const MbGatePage = observer(() => {
+  const { t, i18n } = useTranslation();
+  const { setIsDirty } = usePreventLeavePage();
   const store = useStore(() => new MbGateStore(configsStore, devicesStore));
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [configuredControls, setConfiguredControls] = useState<string[]>([]);
@@ -105,6 +107,7 @@ const MbGatePage = observer(({ configsStore, devicesStore, rootScope }: MbGatePa
     <>
       <PageLayout
         title={t('mbgate.title')}
+        infoLink={documentation[i18n.language]?.mbgate}
         hasRights={authStore.hasRights(UserRole.Admin)}
         isLoading={isLoading}
         errors={store.error ? [{ variant: 'danger', text: store.error }] : []}
