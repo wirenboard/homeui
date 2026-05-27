@@ -1,5 +1,14 @@
 import classNames from 'classnames';
-import { useId, useRef, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useId,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+  type RefObject,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import Select, { components, type SelectInstance } from 'react-select';
 import PlusIcon from '@/assets/icons/plus.svg';
@@ -23,11 +32,59 @@ const Placeholder = (props: any) => (
   </components.Placeholder>
 );
 
-const SingleValue = (props: any) => (
-  <components.SingleValue {...props} innerProps={{ ...props.innerProps, 'aria-hidden': true }}>
-    {props.children}
-  </components.SingleValue>
-);
+const DRAG_THRESHOLD_PX = 3;
+
+const SelectRefContext = createContext<RefObject<SelectInstance> | null>(null);
+
+const SingleValue = (props: any) => {
+  const selectRef = useContext(SelectRefContext);
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
+
+  const handleMouseDown = (ev: MouseEvent) => {
+    if (ev.button !== 0) return;
+    ev.stopPropagation();
+    dragStart.current = { x: ev.clientX, y: ev.clientY };
+  };
+
+  const handleMouseUp = (ev: MouseEvent) => {
+    const start = dragStart.current;
+    dragStart.current = null;
+    if (!start) return;
+    const moved =
+      Math.abs(ev.clientX - start.x) > DRAG_THRESHOLD_PX ||
+      Math.abs(ev.clientY - start.y) > DRAG_THRESHOLD_PX;
+    if (moved) return;
+    const select = selectRef?.current;
+    if (!select) return;
+    if (props.selectProps.menuIsOpen) {
+      select.onMenuClose();
+    } else {
+      select.openMenu('first');
+      select.focus();
+    }
+  };
+
+  // SingleValue and InputContainer share a grid cell; lift SingleValue above it
+  // while menu is closed so clicks land here, drop back when menu opens so input stays clickable.
+  const liftStyle: CSSProperties | undefined = props.selectProps?.menuIsOpen
+    ? undefined
+    : { position: 'relative', zIndex: 1 };
+
+  return (
+    <components.SingleValue
+      {...props}
+      innerProps={{
+        ...props.innerProps,
+        'aria-hidden': true,
+        onMouseDown: handleMouseDown,
+        onMouseUp: handleMouseUp,
+        style: { ...(props.innerProps?.style ?? {}), ...(liftStyle ?? {}) },
+      }}
+    >
+      {props.children}
+    </components.SingleValue>
+  );
+};
 
 const MenuPortal = (props: any, size: DropdownProps['size']) => (
   <components.MenuPortal{...props} className={getClassNames(props.className, size)} />
@@ -101,55 +158,57 @@ export const Dropdown = ({
   };
 
   return (
-    <div style={{ display: 'contents' }} onTouchEndCapture={(ev) => ev.stopPropagation()}>
-      <Select
-        ref={select}
-        inputId={inputId}
-        className={classNames(getClassNames(className, size), {
-          'dropdown-button': isButton,
-          'dropdown-invalid': isInvalid,
-          'dropdown-m': size === 'default',
-          'dropdown-s': size === 'small',
-        })}
-        classNamePrefix="dropdown"
-        options={options}
-        value={findOption(options, value)}
-        placeholder={placeholder || ''}
-        isDisabled={isDisabled}
-        isSearchable={isSearchable}
-        isLoading={isLoading}
-        isClearable={isClearable}
-        isMulti={multiselect}
-        menuPortalTarget={document.body}
-        menuPlacement="auto"
-        maxMenuHeight={240}
-        menuPosition="fixed"
-        components={{
-          MenuPortal: (props) => MenuPortal({ ...props, className }, size),
-          DropdownIndicator: (props) => DropdownIndicator(props, isButton),
-          NoOptionsMessage: (props) => NoOptionsMessage(props, noOptionsMessage),
-          Placeholder: (props) => Placeholder(props),
-          SingleValue: (props) => SingleValue(props),
-        }}
-        aria-label={ariaLabel || placeholder}
-        styles={{
-          control: (baseStyles, _state) => ({
-            ...baseStyles,
-            minWidth,
-          }),
-          option: (baseStyles, { data }) => ({
-            ...baseStyles,
-            display: data?.hidden ? 'none' : baseStyles.display,
-          }),
-        }}
-        tabSelectsValue={false}
-        noOptionsMessage={() => t('common.labels.empty-search')}
-        unstyled
-        onMenuOpen={() => setIsMenuOpen(true)}
-        onMenuClose={() => setIsMenuOpen(false)}
-        onKeyDown={handleKeyDown}
-        onChange={handleChange}
-      />
-    </div>
+    <SelectRefContext.Provider value={select}>
+      <div style={{ display: 'contents' }} onTouchEndCapture={(ev) => ev.stopPropagation()}>
+        <Select
+          ref={select}
+          inputId={inputId}
+          className={classNames(getClassNames(className, size), {
+            'dropdown-button': isButton,
+            'dropdown-invalid': isInvalid,
+            'dropdown-m': size === 'default',
+            'dropdown-s': size === 'small',
+          })}
+          classNamePrefix="dropdown"
+          options={options}
+          value={findOption(options, value)}
+          placeholder={placeholder || ''}
+          isDisabled={isDisabled}
+          isSearchable={isSearchable}
+          isLoading={isLoading}
+          isClearable={isClearable}
+          isMulti={multiselect}
+          menuPortalTarget={document.body}
+          menuPlacement="auto"
+          maxMenuHeight={240}
+          menuPosition="fixed"
+          components={{
+            MenuPortal: (props) => MenuPortal({ ...props, className }, size),
+            DropdownIndicator: (props) => DropdownIndicator(props, isButton),
+            NoOptionsMessage: (props) => NoOptionsMessage(props, noOptionsMessage),
+            Placeholder: (props) => Placeholder(props),
+            SingleValue: (props) => SingleValue(props),
+          }}
+          aria-label={ariaLabel || placeholder}
+          styles={{
+            control: (baseStyles, _state) => ({
+              ...baseStyles,
+              minWidth,
+            }),
+            option: (baseStyles, { data }) => ({
+              ...baseStyles,
+              display: data?.hidden ? 'none' : baseStyles.display,
+            }),
+          }}
+          tabSelectsValue={false}
+          noOptionsMessage={() => t('common.labels.empty-search')}
+          unstyled
+          onMenuOpen={() => setIsMenuOpen(true)}
+          onMenuClose={() => setIsMenuOpen(false)}
+          onKeyDown={handleKeyDown}
+          onChange={handleChange}
+        />
+      </div>
+    </SelectRefContext.Provider>
   );
 };
