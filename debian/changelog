@@ -2,7 +2,7 @@ wb-mqtt-homeui (2.216.1) stable; urgency=medium
 
   * Add select ability for autocomplete fields
 
- -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Tue, 26 May 2026 18:57:00 +0300
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Wed, 27 May 2026 10:17:00 +0300
 
 wb-mqtt-homeui (2.216.0) stable; urgency=medium
 
