@@ -5,15 +5,15 @@ WWW_ROOT = /var/www
 all: build
 
 clean:
-	npm install
+	npm install --no-package-lock
 	npm run clean
 
 test:
-	npm install
+	npm install --no-package-lock
 	npm run test
 
 build:
-	npm install
+	npm install --no-package-lock
 	npm run build
 
 install:
