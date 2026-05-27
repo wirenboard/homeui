@@ -11,19 +11,20 @@ import './styles.css';
 export const App = observer(({ router }: AppProps) => {
   const { t } = useTranslation();
 
+  if (uiStore.isSettingUpHttps) {
+    return (
+      <div className="app-loader">
+        <Loader caption={t('common.labels.setting-up-https')} />
+      </div>
+    );
+  }
+
   return (
-    (!uiStore.isConnected || uiStore.isSettingUpHttps)
-      ? (
-        <div className="app-loader">
-          <Loader caption={t('common.labels.setting-up-https')} />
-        </div>
-      ) : (
-        <>
-          <SkipToContentButton />
-          <Suspense>
-            <RouterProvider router={router} />
-          </Suspense>
-        </>
-      )
+    <>
+      <SkipToContentButton />
+      <Suspense>
+        <RouterProvider router={router} />
+      </Suspense>
+    </>
   );
 });

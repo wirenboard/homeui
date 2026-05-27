@@ -9,6 +9,7 @@ export const authGuard: MiddlewareFunction = async (_, next) => {
 
   try {
     await authStore.checkAuth();
+    return next();
   } catch (err) {
     if (err instanceof ApiError && err.code === ErrorCode.HTMLResponse) {
       console.error('app.errors.nginx', err);

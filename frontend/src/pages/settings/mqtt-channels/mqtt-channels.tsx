@@ -1,14 +1,24 @@
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { errorsConvention, documentation } from '@/common/links';
+import { documentation } from '@/common/links';
 import { Input } from '@/components/input';
 import { Table, TableCell, TableRow } from '@/components/table';
-import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { type Cell, devicesStore } from '@/stores/devices';
+import { CellRow } from './components/cell-row';
 import type { MqttChannelsSortColumn, SortDirection } from './types';
 import './styles.css';
+
+const getTopic = (cell: Cell) => `/devices/${cell.deviceId}/controls/${cell.controlId}`;
+
+const compareStrings = (first: string, second: string) => first.localeCompare(second);
+const compareValues = (first: unknown, second: unknown) => {
+  if (typeof first === 'number' && typeof second === 'number') {
+    return first - second;
+  }
+  return compareStrings(String(first ?? ''), String(second ?? ''));
+};
 
 const MqttChannelsPage = observer(() => {
   const { t, i18n } = useTranslation();
@@ -32,42 +42,45 @@ const MqttChannelsPage = observer(() => {
     label,
   });
 
-  const compareStrings = (first: string, second: string) => first.localeCompare(second);
-  const compareValues = (first: unknown, second: unknown) => {
-    if (typeof first === 'number' && typeof second === 'number') {
-      return first - second;
-    }
-    return compareStrings(String(first ?? ''), String(second ?? ''));
-  };
+  const cells = devicesStore.filteredCells;
 
-  const getTopic = (cell: Cell) => `/devices/${cell.deviceId}/controls/${cell.controlId}`;
-  const getStatus = (cell: Cell) => (cell.error ? 'error' : 'ok');
+  const sortedCells = useMemo(() => {
+    const sorted = [...cells];
+    sorted.sort((a, b) => {
+      const multiplier = sortDirection === 'asc' ? 1 : -1;
+      const primaryComparison = (() => {
+        switch (sortColumn) {
+          case 'type':
+            return compareStrings(a.type, b.type);
+          case 'topic':
+            return compareStrings(getTopic(a), getTopic(b));
+          case 'value':
+            return compareValues(a.value, b.value);
+          case 'status':
+            return compareStrings(
+              a.error ? 'error' : 'ok',
+              b.error ? 'error' : 'ok',
+            );
+          case 'id':
+          default:
+            return compareStrings(a.id, b.id);
+        }
+      })();
 
-  const sortedCells = [...devicesStore.filteredCells];
-  sortedCells.sort((a, b) => {
-    const multiplier = sortDirection === 'asc' ? 1 : -1;
-    const primaryComparison = (() => {
-      switch (sortColumn) {
-        case 'type':
-          return compareStrings(a.type, b.type);
-        case 'topic':
-          return compareStrings(getTopic(a), getTopic(b));
-        case 'value':
-          return compareValues(a.value, b.value);
-        case 'status':
-          return compareStrings(getStatus(a), getStatus(b));
-        case 'id':
-        default:
-          return compareStrings(a.id, b.id);
+      if (primaryComparison !== 0) {
+        return primaryComparison * multiplier;
       }
-    })();
 
-    if (primaryComparison !== 0) {
-      return primaryComparison * multiplier;
-    }
+      return compareStrings(a.id, b.id) * multiplier;
+    });
+    return sorted;
+  }, [cells, sortColumn, sortDirection]);
 
-    return compareStrings(a.id, b.id) * multiplier;
-  });
+  const filteredCells = useMemo(() =>
+    sortedCells.filter((item) => item.id?.includes(search)
+      || item.type?.includes(search)
+      || String(item.value)?.includes(search)),
+  [sortedCells, search]);
 
   return (
     <PageLayout
@@ -102,39 +115,9 @@ const MqttChannelsPage = observer(() => {
           </TableCell>
         </TableRow>
 
-        {sortedCells
-          .filter((item) => item.id?.includes(search)
-            || item.type?.includes(search)
-            || String(item.value)?.includes(search))
-          .map((cell) => (
-            <TableRow key={cell.id} tabIndex={0}>
-              <TableCell verticalAlign="top">
-                {cell.id}
-              </TableCell>
-              <TableCell verticalAlign="top">
-                {cell.type}
-              </TableCell>
-              <TableCell verticalAlign="top">
-                {getTopic(cell)}
-              </TableCell>
-              <TableCell verticalAlign="top">
-                <div className="mqtt-value">
-                  {String(cell.value)}
-                </div>
-              </TableCell>
-              <TableCell align="right" verticalAlign="top">
-                {cell.error ? (
-                  <a href={errorsConvention} target="_blank">
-                    <Tag variant="danger">
-                      {t('mqtt.labels.error', { error: cell.error.at(0) })}
-                    </Tag>
-                  </a>
-                ) : (
-                  <Tag variant="success">OK</Tag>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
+        {filteredCells.map((cell) => (
+          <CellRow key={cell.id} cell={cell} />
+        ))}
       </Table>
     </PageLayout>
   );

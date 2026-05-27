@@ -116,7 +116,6 @@
 }
 
 .json-editor select {
-  max-width: 260px;
   text-overflow: ellipsis;
   padding: 6px 12px;
   vertical-align: middle;
@@ -127,6 +126,10 @@
   outline: 1px solid var(--input-border-color) !important;
   outline-offset: -1px;
   transition: border-color 200ms linear, var(--input-active-shadow-transition);
+}
+
+.json-editor select:not(:disabled) {
+  background: var(--background-color);
 }
 
 .json-editor input[type="text"],

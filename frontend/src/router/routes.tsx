@@ -40,6 +40,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         index: true,
+        element: null,
         middleware: [homeRedirect],
       },
       {
