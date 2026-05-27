@@ -83,6 +83,9 @@
     "vite-plugin-svgr": "5.2.0",
     "vitest": "4.1.7"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.5"
+  },
   "browserslist": [
     "defaults"
   ]
