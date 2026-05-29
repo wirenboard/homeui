@@ -85,13 +85,13 @@ def main():
     if hasattr(uploading_file, "filename") and hasattr(uploading_file, "file"):
         fname = uploading_file.filename or "fwupdate"
         fp_upload = uploading_file.file
+
+        with open(os.path.join(rw_dir, fname), "wb") as fp_save:  # wb-watch-update triggers on fd close
+            for chunk in to_chunks(fp_upload):
+                fp_save.write(chunk)
+        sys.stdout.write("Status: 200\r\n\r\n")
     else:
         _error("Incorrect request body")
-
-    with open(os.path.join(rw_dir, fname), "wb") as fp_save:  # wb-watch-update triggers on fd close
-        for chunk in to_chunks(fp_upload):
-            fp_save.write(chunk)
-    sys.stdout.write("Status: 200\r\n\r\n")
 
 
 try:

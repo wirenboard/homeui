@@ -7,7 +7,13 @@ wb-mqtt-homeui (3.0.0) stable; urgency=medium
   * Update json editor styles
   * Fix all typescript and eslint errors
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 27 May 2026 17:51:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 29 May 2026 16:34:00 +0300
+
+wb-mqtt-homeui (2.216.2) stable; urgency=medium
+
+  * Fix pylint
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 29 May 2026 15:50:00 +0400
 
 wb-mqtt-homeui (2.216.1) stable; urgency=medium
 
