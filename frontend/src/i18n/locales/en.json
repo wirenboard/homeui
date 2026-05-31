@@ -851,7 +851,13 @@
          "switch-off": "Command off",
          "type": "Type",
          "mode": "Mode",
-         "mode-type": "Mode type",
+         "function-type": "Function type",
+         "mode-value": "Mode value",
+         "mqtt-value": "MQTT value",
+         "mqtt-value-hint": "Only a-z, 0-9, _ allowed (e.g. 0 or auto)",
+         "mqtt-value-duplicate": "Value already used in another mode",
+         "recommended-for": "Recommended for {{instance}}",
+         "other-modes": "Other modes",
          "min": "Min",
          "max": "Max",
          "no-units": "Unitless",
@@ -876,6 +882,7 @@
          "save": "Save",
          "add-capability": "Add capability",
          "add-property": "Add property",
+         "add-mode": "Add mode",
          "all-devices": "All devices"
       },
       "prompt": {

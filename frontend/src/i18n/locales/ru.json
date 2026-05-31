@@ -880,7 +880,13 @@
          "switch-off": "Команда выкл",
          "type": "Тип",
          "mode": "Режим",
-         "mode-type": "Тип режима",
+         "function-type": "Тип функции",
+         "mode-value": "Значение режима",
+         "mqtt-value": "Значение в MQTT",
+         "mqtt-value-hint": "Только a-z, 0-9, _ (например: 0 или auto)",
+         "mqtt-value-duplicate": "Значение уже используется в другом режиме",
+         "recommended-for": "Рекомендуемые для {{instance}}",
+         "other-modes": "Прочие режимы",
          "min": "Минимум",
          "max": "Максимум",
          "no-units": "Безразмерно",
@@ -905,6 +911,7 @@
          "save": "Сохранить",
          "add-capability": "Добавить умение",
          "add-property": "Добавить свойство",
+         "add-mode": "Добавить режим",
          "all-devices": "Все устройства"
       },
       "prompt": {

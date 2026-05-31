@@ -71,6 +71,11 @@
     width: 155px;
 }
 
+.aliceDeviceSkills-addModeButton {
+    flex-direction: row-reverse;
+    margin: 12px auto 0;
+}
+
 .aliceDeviceSkills-noUnits {
   opacity: .6;
 }
@@ -81,4 +86,51 @@
     @media (max-width: 310px) {
         min-width: unset;
     }
+}
+
+.aliceDeviceSkills-modesList {
+    margin-top: 12px;
+    padding: 6px 12px;
+    border-left: 2px solid var(--border-color);
+}
+
+.aliceDeviceSkills-modesRow {
+    display: grid;
+    grid-template-columns: 22px minmax(120px, 200px) minmax(120px, 200px) 22px;
+    gap: 3px 12px;
+    margin-bottom: 6px;
+    align-items: end;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 22px 1fr 1fr 22px;
+    }
+}
+
+.aliceDeviceSkills-modesDragHandle {
+    align-self: end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    cursor: grab;
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+.aliceDeviceSkills-modesDragHandle svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.aliceDeviceSkills-modesDragHandle:hover {
+    opacity: 0.8;
+}
+
+.aliceDeviceSkills-modesDragHandle:active {
+    cursor: grabbing;
+}
+
+.aliceDeviceSkills-modesRowDelete {
+    align-self: end;
 }
