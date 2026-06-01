@@ -4,3 +4,11 @@
 .js-plotly-plot .plotly [data-title]::after {
     background: var(--tooltip-background) !important;
 }
+
+:root[data-theme="dark"] .plot-container {
+    filter: invert(85%) hue-rotate(180deg);
+}
+
+:root[data-theme="dark"] .main-svg {
+    background: transparent !important;
+}
