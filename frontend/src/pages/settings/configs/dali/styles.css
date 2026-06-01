@@ -52,3 +52,7 @@
 .dali-resetWarning {
     margin-top: 12px;
 }
+
+.dali .dropdown__control--is-disabled .dropdown__indicator {
+    display: none;
+}
