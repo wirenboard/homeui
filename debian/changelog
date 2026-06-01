@@ -1,4 +1,4 @@
-wb-mqtt-homeui (3.0.0) stable; urgency=medium
+wb-mqtt-homeui (2.217.0) stable; urgency=medium
 
   * Move from angular to react
   * Move from webpack to vite
@@ -7,7 +7,7 @@ wb-mqtt-homeui (3.0.0) stable; urgency=medium
   * Update json editor styles
   * Fix all typescript and eslint errors
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 29 May 2026 16:34:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Jun 2026 12:12:00 +0300
 
 wb-mqtt-homeui (2.216.2) stable; urgency=medium
 

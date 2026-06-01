@@ -1,6 +1,6 @@
 {
   "name": "homeui",
-  "version": "3.0.0",
+  "version": "2.0.0",
   "description": "Wiren Board web interface",
   "scripts": {
     "clean": "rimraf -G dist coverage ./tmp",
