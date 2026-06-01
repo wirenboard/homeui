@@ -1,0 +1,89 @@
+[data-theme='bootstrap'] {
+    color-scheme: light;
+
+    --primary-color: #337ab7;
+    --primary-color-hover: #5393c8;
+    --secondary-color: #fff;
+    --secondary-color-hover: #e6e6e6;
+    --success-color: #739e73;
+    --warn-color: #eebc40;
+    --warn-color-hover: #fecb4b;
+    --orange-color: #ea8623;
+    --danger-color: #dc3545;
+    --danger-color-hover: #f73b3b;
+    --gray-color: #888;
+    --light-gray-color: #d7dcdf;
+    --link-color: #5393c8;
+
+    --background-color: #fff;
+    --background-accent-color: #f5f5f5;
+    --background-accent-color-hover: #fafafa;
+    --container-background: var(--background-color);
+    --container-background-hover: #fbfbfb;
+    --container-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    --container-border-radius: 2px;
+    --border-color: #eee;
+    --text-color: #333;
+    --button-text-color: #fff;
+    --form-element-medium-height: 34px;
+    --form-element-outline: 2px solid rgba(38, 167, 255, 0.5) !important;
+    --form-element-outline-offset: 2px;
+    --form-element-focus-transition: outline-offset 200ms linear;
+    --active-item-right-shadow: inset -6px 0 0 var(--primary-color);
+    --table-border: unset;
+    --table-border-radius: 0;
+    --table-shadow: unset;
+
+    --nav-bg: rgb(34, 34, 34);
+    --nav-sublist-bg: rgb(56, 56, 56);
+    --nav-border: rgba(34, 34, 34, 0.5);
+    --nav-item-active: rgb(22, 22, 22);
+    --nav-item-active-right-shadow: unset;
+    --nav-item-hover: var(--nav-item-active);
+    --nav-subitem-hover: var(--nav-item-hover);
+    --nav-text-color: rgb(144, 144, 144);
+    --nav-font-size: var(--font-size-medium);
+    --nav-status-online-color: rgb(92, 179, 0);
+    --nav-toggle-bg: rgb(206, 206, 206);
+    --nav-toggle-text-color: var(--nav-text-color);
+    --nav-status-color: #fff;
+
+    --input-action-background: #3498db;
+    --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(38, 167, 255, 0.5);
+    --input-background-disabled: var(--border-color);
+    --input-background: #fff;
+    --input-color: #495057;
+    --input-border-color: #ced4da;
+    --input-border-radius: 4px;
+
+    --card-primary-border-color: var(--card-primary-header-background);
+    --card-primary-header-background: var(--primary-color);
+    --card-primary-header-text: #fff;
+    --card-secondary-border-color: var(--input-border-color);
+    --card-secondary-header-background: var(--border-color);
+    --card-header-bottom: var(--primary-color);
+    --card-header-padding: 12px;
+    --card-header-font-weight: 400;
+    --card-body-padding: 8px 12px;
+
+    --alert-info-color: var(--text-color);
+    --alert-info-background: #d1ecf1;
+    --alert-info-icon: var(--text-color);
+    --alert-info-border: #bee5eb;
+    --alert-success-color: var(--text-color);
+    --alert-success-background: #cde0c4;
+    --alert-success-icon: var(--text-color);
+    --alert-success-border: #c3e6cb;
+    --alert-warn-color: var(--text-color);
+    --alert-warn-background: #fff3cd;
+    --alert-warn-icon: var(--text-color);
+    --alert-warn-border: #ffeeba;
+    --alert-danger-color: var(--text-color);
+    --alert-danger-background: #f8d7da;
+    --alert-danger-icon: var(--text-color);
+    --alert-danger-border: #f5c6cb;
+    --alert-gray-color: var(--text-color);
+    --alert-gray-background: var(--light-gray-color);
+    --alert-gray-icon: var(--text-color);
+    --alert-gray-border: var(--gray-color);
+}

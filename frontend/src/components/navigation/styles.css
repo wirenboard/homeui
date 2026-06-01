@@ -7,6 +7,7 @@
     position: relative;
     border-right: 1px solid var(--nav-border);
     z-index: 1000;
+    transition: background ease 300ms;
 
     @media(max-width: 768px) {
         flex-direction: row;
@@ -145,7 +146,6 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: var(--nav-bg);
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;

@@ -3,6 +3,8 @@
     display: flex;
     flex-direction: column-reverse;
     position: relative;
+    background: var(--container-background);
+    box-shadow: var(--container-box-shadow);
 }
 
 .logs-container.logs-loading {

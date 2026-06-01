@@ -5,13 +5,14 @@
 
 body {
     font-family: var(--font);
+    background: var(--background-color);
     height: 100dvh;
     font-size: var(--font-size-medium);
     line-height: 1.45em;
 }
 
 :focus {
-    outline: 0 !important
+    outline: 0
 }
 
 #root {
@@ -25,6 +26,10 @@ label {
 
 button {
     line-height: 1.45em;
+}
+
+button:not(:disabled) {
+    cursor: pointer;
 }
 
 a {

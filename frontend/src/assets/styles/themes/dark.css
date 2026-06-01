@@ -1,0 +1,92 @@
+[data-theme='dark'] {
+    color-scheme: dark;
+
+    --primary-color: #5d2ae4;
+    --primary-color-hover: #5018e1;
+    --secondary-color: #616991;
+    --secondary-color-hover: #6c749d;
+    --success-color: #739e73;
+    --warn-color: #eebc40;
+    --warn-color-hover: #fecb4b;
+    --orange-color: #ea8623;
+    --danger-color: #dc3545;
+    --danger-color-hover: #f73b3b;
+    --gray-color: #888;
+    --light-gray-color: #616991;
+    --link-color: #746ff1;
+
+    --text-color: #e1e8ec;
+    --background-color: #1c2236;
+    --background-accent-color: #f5f5f5;
+    --background-accent-color-hover: #fafafa;
+    --container-background: rgb(39 48 79);
+    --container-background-hover: rgb(50 61 101);
+    --container-box-shadow: 0 6px 15px -3px rgb(0 0 0 / 10%);
+    --container-border-radius: 8px;
+    --border-color: rgb(50 61 101);
+    --button-text-color: #fff;
+    --form-element-medium-height: 36px;
+    --form-element-outline: 2px solid var(--primary-color) !important;
+    --form-element-outline-offset: 2px;
+    --form-element-focus-transition: outline-offset 200ms linear;
+    --active-item-right-shadow: inset -6px 0 0 var(--primary-color);
+    --table-border: 1px solid var(--border-color);
+    --table-border-radius: var(--container-border-radius);
+    --table-shadow: var(--container-box-shadow);
+
+    --input-action-background: var(--primary-color);
+    --input-active-shadow: 0 0 0 2px #1d1e2e, 0 0 0 4px var(--primary-color);
+    --input-background: rgb(50 61 101);
+    --input-background-disabled: var(--border-color);
+    --input-color: #fff;
+    --input-border-color: var(--light-gray-color);
+    --input-border-radius: 8px;
+
+    --card-primary-border-color: var(--border-color);
+    --card-primary-header-background: rgb(50 61 101);
+    --card-primary-header-text: var(--text-color);
+    --card-secondary-border-color: var(--border-color);
+    --card-secondary-header-background: var(--border-color);
+    --card-header-bottom: var(--primary-color);
+    --card-header-padding: 16px;
+    --card-header-font-weight: 600;
+    --card-body-padding: 12px 16px;
+
+    --alert-info-color: var(--text-color);
+    --alert-info-background: #769dff;
+    --alert-info-icon: var(--text-color);
+    --alert-info-border: #769dff;
+    --alert-success-color: var(--text-color);
+    --alert-success-background: #4ea823;
+    --alert-success-icon: var(--text-color);
+    --alert-success-border: #4ea823;
+    --alert-warn-color: #000;
+    --alert-warn-background: #eebc40;
+    --alert-warn-icon: #000;
+    --alert-warn-border: #eebc40;
+    --alert-danger-color: var(--text-color);
+    --alert-danger-background: #dc3545;
+    --alert-danger-icon: var(--text-color);
+    --alert-danger-border: #dc3545;
+    --alert-gray-color: var(--text-color);
+    --alert-gray-background: var(--border-color);
+    --alert-gray-icon: var(--text-color);
+    --alert-gray-border: var(--border-color);
+
+    --tooltip-background: #7676ff;
+    --tooltip-color: #fff;
+
+    --nav-font-size: var(--font-size-medium);
+    --nav-bg: linear-gradient(to bottom, #1c2236 0%, #11141f 100%);
+    --nav-sublist-bg: rgb(39 48 79);
+    --nav-border: rgba(34, 34, 34, 0.5);
+    --nav-item-active: rgb(50 61 101);
+    --nav-item-active-right-shadow: var(--active-item-right-shadow);
+    --nav-item-hover: rgb(50 61 101);
+    --nav-subitem-hover: rgb(50 61 101);
+    --nav-text-color: rgb(221, 221, 221, 1);
+    --nav-status-online-color: rgb(92, 179, 0);
+    --nav-status-color: #fff;
+    --nav-toggle-bg: rgb(50 61 101);
+    --nav-toggle-text-color: var(--nav-text-color);
+}

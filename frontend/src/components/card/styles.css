@@ -1,26 +1,28 @@
 .card {
-    border-radius: var(--card-border-radius);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
-    margin-bottom: 18px;
+    border-radius: var(--container-border-radius);
+    box-shadow: var(--container-box-shadow);
+    margin-bottom: var(--content-gap);
     max-width: 450px;
     width: 100%;
-    transition: background ease 300ms, border ease 300ms;
+    transition: background ease 300ms, border ease 300ms, border-radius ease 300ms;
     display: inline-block;
+    background: var(--container-background);
 }
 
 .card-header {
-    border-radius: var(--card-border-radius);
+    border-radius: calc(var(--container-border-radius) - 1px) calc(var(--container-border-radius) - 1px) 0 0;
+    overflow: hidden;
     width: 100%;
     padding: var(--card-header-padding);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: background-color ease 300ms;
+    transition: background-color ease 300ms, border-radius ease 300ms, padding ease 300ms;
     user-select: none;
 }
 
-.card-header:not(.card-headerToggable) {
-    border-radius: 0;
+.card-header[aria-expanded="false"] {
+    border-radius: calc(var(--container-border-radius) - 1px);
 }
 
 .card-headerContainer {
@@ -35,13 +37,14 @@
 }
 
 .card-headerToggable:focus {
-    box-shadow: var(--input-active-shadow);
-    transition: var(--input-active-shadow-transition);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: border-color 200ms linear, var(--form-element-focus-transition);
 }
 
 .card-title {
     font-size: var(--font-size-medium);
-    font-weight: 400;
+    font-weight: var(--card-header-font-weight);
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -71,6 +74,7 @@
     width: 16px;
     height: 16px;
     overflow: hidden;
+    cursor: pointer;
 
     @media(max-width: 768px) {
         opacity: 1;
@@ -85,8 +89,9 @@
 
 button:not(:disabled).card-action:hover,
 button:not(:disabled).card-action:focus {
-    box-shadow: var(--input-active-shadow);
-    transition: var(--input-active-shadow-transition);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: border-color 200ms linear, var(--form-element-focus-transition);
 }
 
 .card-toggle {
@@ -95,43 +100,35 @@ button:not(:disabled).card-action:focus {
 }
 
 .card-body {
-    background: var(--card-body-background);
     padding: var(--card-body-padding);
     font-size: var(--font-size-medium);
     color: var(--text-color);
-    border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
-    transition: background ease 300ms, color ease 300ms;
+    border-radius: 0 0 calc(var(--container-border-radius) - 1px) calc(var(--container-border-radius) - 1px);
+    transition: background ease 300ms, color ease 300ms, padding ease 300ms, border-radius ease 300ms;
 }
 
 .card-primary {
-    border: 1px solid var(--card-header-background);
+    border: 1px solid var(--card-primary-border-color);
 }
 
 .card-primary .card-header {
-    background-color: var(--card-header-background);
-    color: var(--card-header-text);
+    background: var(--card-primary-header-background);
 }
 
-.card-primary .card-headerContainer {
-    background-color: var(--card-header-background);
-}
-
-.card-primary .card-action {
-    color: var(--card-header-text);
-}
-
+.card-primary .card-header,
+.card-primary .card-action,
 .card-primary .card:hover .card-action,
 .card-primary .card:focus-within .card-action,
 .card-primary .card-action:focus {
-    color: var(--card-header-text);
+    color: var(--card-primary-header-text);
 }
 
 .card-secondary {
-    border: 1px solid var(--input-border-color);
+    border: 1px solid var(--card-secondary-border-color);
 }
 
 .card-secondary .card-header {
-    background-color: var(--border-color);
+    background: var(--card-secondary-header-background);
     color: var(--text-color);
 }
 

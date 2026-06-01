@@ -12,6 +12,7 @@
 }
 
 .collapseButton:focus {
-    box-shadow: var(--input-active-shadow);
-    border-radius: var(--input-border-radius);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
 }

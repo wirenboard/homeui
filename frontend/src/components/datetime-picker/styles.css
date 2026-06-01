@@ -1,7 +1,7 @@
 .datetimePicker-container {
-    background: var(--card-body-background);
+    background: var(--container-background);
     border: 1px solid var(--border-color);
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
     padding: 8px;
     z-index: 1000;
 }
@@ -98,7 +98,7 @@
 .rdp-selected .rdp-day_button {
     background: var(--primary-color);
     border-color: var(--primary-color);
-    color: var(--button-color)
+    color: var(--button-text-color)
 }
 
 .rdp-weekday {
