@@ -2,7 +2,6 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactSortable } from 'react-sortablejs';
 import MoveIcon from '@/assets/icons/move.svg';
-import PlusIcon from '@/assets/icons/plus.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
@@ -218,7 +217,6 @@ export const ModeCapability = ({
       <Button
         className="aliceDeviceSkills-addModeButton"
         label={t('alice.buttons.add-mode')}
-        icon={<PlusIcon />}
         variant="secondary"
         disabled={allValuesUsed}
         onClick={handleAddMode}

@@ -72,8 +72,7 @@
 }
 
 .aliceDeviceSkills-addModeButton {
-    flex-direction: row-reverse;
-    margin: 12px auto 0;
+    margin-top: 12px;
 }
 
 .aliceDeviceSkills-noUnits {
