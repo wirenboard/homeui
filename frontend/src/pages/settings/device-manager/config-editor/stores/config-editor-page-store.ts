@@ -37,6 +37,7 @@ export class ConfigEditorPageStore {
   public schemaTranslator: Translator;
   public loaded: boolean = false;
   public loading: boolean = true;
+  public saving: boolean = false;
   public error = '';
   public deviceTypesStore: DeviceTypesStore;
   public fwUpdateProxy: typeof FwUpdateProxyInstance;
@@ -69,6 +70,7 @@ export class ConfigEditorPageStore {
       allowSave: computed,
       isDirty: computed,
       loaded: observable,
+      saving: observable,
       addDevices: action,
     });
   }
@@ -234,7 +236,7 @@ export class ConfigEditorPageStore {
   }
 
   async save() {
-    this.loading = true;
+    this.saving = true;
     this.error = '';
     try {
       await this.saveConfigFn(this.makeConfigJson());
@@ -242,7 +244,7 @@ export class ConfigEditorPageStore {
     } catch (err) {
       this.error = getErrorMessage(err);
     }
-    this.loading = false;
+    this.saving = false;
   }
 
   async changeDeviceType(tab: DeviceTabStore, type: string) {

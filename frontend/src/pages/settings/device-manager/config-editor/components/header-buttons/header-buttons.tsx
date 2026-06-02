@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/button';
 import { type HeaderButtonsProps } from './types';
 
-const SaveSettingsButton = ({ onClick, disabled }) => {
+const SaveSettingsButton = ({ onClick, disabled, isLoading }) => {
   const { t } = useTranslation();
   return (
     <Button
       label={t('device-manager.buttons.save')}
       disabled={disabled}
+      isLoading={isLoading}
       onClick={onClick}
     />
   );
@@ -35,14 +36,22 @@ const AddDevicesButtonsPanel = ({ allowAddDevice, onAddDevice, onAddWbDevice }) 
 };
 
 export const HeaderButtons = observer(
-  ({ allowSave, allowAddDevice, onSave, onAddDevice, onAddWbDevice, mobileModeStore }: HeaderButtonsProps) => {
+  ({
+    allowSave,
+    isSaving,
+    allowAddDevice,
+    onSave,
+    onAddDevice,
+    onAddWbDevice,
+    mobileModeStore,
+  }: HeaderButtonsProps) => {
     const { t } = useTranslation();
 
     if (mobileModeStore.inMobileMode) {
       if (mobileModeStore.tabsPanelIsActive) {
         return (
           <>
-            <SaveSettingsButton disabled={!allowSave} onClick={onSave} />
+            <SaveSettingsButton disabled={!allowSave} isLoading={isSaving} onClick={onSave} />
             <AddDevicesButtonsPanel
               allowAddDevice={allowAddDevice}
               onAddDevice={onAddDevice}
@@ -68,7 +77,7 @@ export const HeaderButtons = observer(
           onAddDevice={onAddDevice}
           onAddWbDevice={onAddWbDevice}
         />
-        <SaveSettingsButton disabled={!allowSave} onClick={onSave} />
+        <SaveSettingsButton disabled={!allowSave} isLoading={isSaving} onClick={onSave} />
       </>
     );
   },

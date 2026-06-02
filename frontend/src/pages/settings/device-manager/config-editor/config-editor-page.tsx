@@ -33,6 +33,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
           (!pageStore.loading && pageStore.loaded) && (
             <HeaderButtons
               allowSave={pageStore.allowSave}
+              isSaving={pageStore.saving}
               allowAddDevice={pageStore.tabs.hasPortTabs}
               mobileModeStore={pageStore.tabs.mobileModeStore}
               onSave={() => pageStore.save()}

@@ -18,6 +18,7 @@
     text-align: left;
     border: 0;
     background: none;
+    cursor: pointer;
 }
 
 .tabs-ellipsisContent .tabs-button {
