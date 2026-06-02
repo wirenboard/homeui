@@ -129,7 +129,7 @@
 }
 
 .json-editor select:not(:disabled) {
-  background: var(--background-color);
+  background: var(--input-background);
 }
 
 .json-editor select:focus {

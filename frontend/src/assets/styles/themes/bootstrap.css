@@ -33,6 +33,8 @@
     --table-border: unset;
     --table-border-radius: 0;
     --table-shadow: unset;
+    --tooltip-background: #333;
+    --tooltip-color: #fff;
 
     --nav-bg: rgb(34, 34, 34);
     --nav-sublist-bg: rgb(56, 56, 56);

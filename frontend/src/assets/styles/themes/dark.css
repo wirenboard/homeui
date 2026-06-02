@@ -3,22 +3,22 @@
 
     --primary-color: #5d2ae4;
     --primary-color-hover: #5018e1;
-    --secondary-color: #616991;
-    --secondary-color-hover: #6c749d;
+    --secondary-color: var(--background-color);
+    --secondary-color-hover: var(--background-accent-color);
     --success-color: #739e73;
     --warn-color: #eebc40;
     --warn-color-hover: #fecb4b;
     --orange-color: #ea8623;
     --danger-color: #dc3545;
     --danger-color-hover: #f73b3b;
-    --gray-color: #888;
+    --gray-color: #9897ac;
     --light-gray-color: #616991;
     --link-color: #746ff1;
 
     --text-color: #e1e8ec;
     --background-color: #1c2236;
-    --background-accent-color: #f5f5f5;
-    --background-accent-color-hover: #fafafa;
+    --background-accent-color: var(--border-color);
+    --background-accent-color-hover: var(--container-background-hover);
     --container-background: rgb(39 48 79);
     --container-background-hover: rgb(50 61 101);
     --container-box-shadow: 0 6px 15px -3px rgb(0 0 0 / 10%);
@@ -33,6 +33,8 @@
     --table-border: 1px solid var(--border-color);
     --table-border-radius: var(--container-border-radius);
     --table-shadow: var(--container-box-shadow);
+    --tooltip-background: #7676ff;
+    --tooltip-color: #fff;
 
     --input-action-background: var(--primary-color);
     --input-active-shadow: 0 0 0 2px #1d1e2e, 0 0 0 4px var(--primary-color);
@@ -73,13 +75,10 @@
     --alert-gray-icon: var(--text-color);
     --alert-gray-border: var(--border-color);
 
-    --tooltip-background: #7676ff;
-    --tooltip-color: #fff;
-
     --nav-font-size: var(--font-size-medium);
     --nav-bg: linear-gradient(to bottom, #1c2236 0%, #11141f 100%);
     --nav-sublist-bg: rgb(39 48 79);
-    --nav-border: rgba(34, 34, 34, 0.5);
+    --nav-border: #13192a;
     --nav-item-active: rgb(50 61 101);
     --nav-item-active-right-shadow: var(--active-item-right-shadow);
     --nav-item-hover: rgb(50 61 101);

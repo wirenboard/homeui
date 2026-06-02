@@ -36,6 +36,7 @@
 
 .logs-cellWarn {
     background: var(--alert-warn-background);
+    color: var(--alert-warn-color);
 }
 
 .logs-cellError {

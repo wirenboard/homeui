@@ -21,7 +21,7 @@
     --background-accent-color-hover: #fafafa;
     --container-background: #fff;
     --container-background-hover: #fbfbfb;
-    --container-box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    --container-box-shadow: rgba(0, 0, 0, 0.08) 0px -1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
     --container-border-radius: 8px;
     --border-color: #f1f1f1;
     --button-text-color: #fff;
@@ -33,6 +33,8 @@
     --table-border: 1px solid var(--border-color);
     --table-border-radius: var(--container-border-radius);
     --table-shadow: var(--container-box-shadow);
+    --tooltip-background: #333;
+    --tooltip-color: #fff;
 
     --input-action-background: var(--primary-color);
     --input-active-shadow: 0 0 0 2px #fff, 0 0 0 4px rgb(92 179 0 / 0.4);

@@ -4,6 +4,7 @@
     background: var(--nav-bg);
     height: 100%;
     width: 225px;
+    min-width: 225px;
     position: relative;
     border-right: 1px solid var(--nav-border);
     z-index: 1000;
@@ -24,6 +25,7 @@
 
 .navigation-compact {
     width: 60px;
+    min-width: 60px;
 }
 
 .navigation-header {
@@ -140,6 +142,10 @@
     border: 1px solid var(--nav-border);
     color: var(--nav-sublist-bg) !important;
     padding: 8px 12px !important;
+}
+
+.navigation-tooltip svg {
+    fill: var(--nav-sublist-bg);
 }
 
 .navigation-container {

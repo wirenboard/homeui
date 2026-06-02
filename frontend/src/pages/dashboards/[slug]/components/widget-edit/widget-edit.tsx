@@ -1,5 +1,4 @@
 import { json } from '@codemirror/lang-json';
-import CodeMirror from '@uiw/react-codemirror';
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +9,7 @@ import MoveIcon from '@/assets/icons/move.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { CodeEditor } from '@/components/code-editor';
 import { Confirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
@@ -151,12 +151,10 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
     >
       <div className="widgetEdit-content">
         {isJsonView ? (
-          <CodeMirror
-            className="widgetEdit-codeEditor"
-            value={code}
-            style={{ height: '100%' }}
-            height="100%"
+          <CodeEditor
+            text={code}
             extensions={[json()]}
+            autoFocus
             onChange={(val) => setCode(val)}
           />
         ) : (
