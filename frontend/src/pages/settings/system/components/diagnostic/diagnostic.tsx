@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Alert } from '@/components/alert';
-import { Button, ButtonLink } from '@/components/button';
+import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Loader } from '@/components/loader';
 import { diagnosticProxy, mqttClient } from '@/services';
