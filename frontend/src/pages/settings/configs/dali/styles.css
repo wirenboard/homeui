@@ -42,7 +42,7 @@
 .dali-deviceToolbar {
     position: sticky;
     top: -12px;
-    z-index: 1;
+    z-index: 101;
     margin: -12px -12px 0;
     padding: 12px;
     background: var(--background-accent-color-hover);

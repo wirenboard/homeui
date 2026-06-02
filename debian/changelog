@@ -1,8 +1,14 @@
-wb-mqtt-homeui (2.216.3) stable; urgency=medium
+wb-mqtt-homeui (2.216.4) stable; urgency=medium
 
   * Hide dropdown arrow for readonly fields on DALI settings page
 
  -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Jun 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.216.3) stable; urgency=medium
+
+  * Fix DALI device scenes settings editor scroll bug
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Jun 2026 11:01:44 +0500
 
 wb-mqtt-homeui (2.216.2) stable; urgency=medium
 
