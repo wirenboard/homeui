@@ -48,7 +48,7 @@ export const Diagnostic = ({ className }: { className?: string }) => {
     if (contentType === 'application/zip') {
       setIsEnabled(true);
       setLabel('system.collector.buttons.download');
-      setHref(`diag/${fileName}`);
+      setHref(`/diag/${fileName}`);
     } else {
       setIsVisible(false);
       setIsShowError(true);
@@ -95,13 +95,9 @@ export const Diagnostic = ({ className }: { className?: string }) => {
       {isVisible && (
         <>
           {href ? (
-            <ButtonLink
-              className="diagnostic-downloadButton"
-              variant="primary"
-              label={t(label)}
-              to={href}
-              download
-            />
+            <a className="button button-m button-primary diagnostic-downloadButton" href={href} download>
+              {t(label)}
+            </a>
           ) : (
             <Button
               type="button"
