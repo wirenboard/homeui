@@ -12,6 +12,7 @@ export interface LoadingOptions {
   label?: string;
   progress?: number;
   showActions?: boolean;
+  overlay?: boolean;
 }
 
 export interface PageProps {

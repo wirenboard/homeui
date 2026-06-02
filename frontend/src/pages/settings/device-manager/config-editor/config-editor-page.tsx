@@ -28,7 +28,8 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
         infoLink={documentation[i18n.language]?.serial}
         hasRights={authStore.hasRights(UserRole.Admin)}
         errors={pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []}
-        isLoading={pageStore.loading}
+        isLoading={pageStore.loading || pageStore.saving}
+        loadingOptions={pageStore.saving ? { overlay: true, showActions: true } : undefined}
         actions={
           (!pageStore.loading && pageStore.loaded) && (
             <HeaderButtons

@@ -15,20 +15,20 @@ const SaveSettingsButton = ({ onClick, disabled, isLoading }) => {
   );
 };
 
-const AddDevicesButtonsPanel = ({ allowAddDevice, onAddDevice, onAddWbDevice }) => {
+const AddDevicesButtonsPanel = ({ allowAddDevice, isSaving, onAddDevice, onAddWbDevice }) => {
   const { t } = useTranslation();
   return (
     <>
       <Button
         label={t('device-manager.buttons.add-wb-device')}
-        disabled={!allowAddDevice}
+        disabled={!allowAddDevice || isSaving}
         onClick={onAddWbDevice}
       />
       <Button
         label={t('device-manager.buttons.add-custom-device')}
         aria-haspopup="dialog"
         variant="secondary"
-        disabled={!allowAddDevice}
+        disabled={!allowAddDevice || isSaving}
         onClick={onAddDevice}
       />
     </>
@@ -53,6 +53,7 @@ export const HeaderButtons = observer(
           <>
             <SaveSettingsButton disabled={!allowSave} isLoading={isSaving} onClick={onSave} />
             <AddDevicesButtonsPanel
+              isSaving={isSaving}
               allowAddDevice={allowAddDevice}
               onAddDevice={onAddDevice}
               onAddWbDevice={onAddWbDevice}
@@ -74,6 +75,7 @@ export const HeaderButtons = observer(
       <>
         <AddDevicesButtonsPanel
           allowAddDevice={allowAddDevice}
+          isSaving={isSaving}
           onAddDevice={onAddDevice}
           onAddWbDevice={onAddWbDevice}
         />

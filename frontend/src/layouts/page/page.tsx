@@ -5,6 +5,7 @@ import { Alert } from '@/components/alert';
 import { type AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import { Loader } from '@/components/loader';
 import { focusToMainContent } from '@/utils/focus-content';
 import { ExposeCheck } from './components/expose-check';
 import { Info } from './components/info';
@@ -115,11 +116,20 @@ export const PageLayout = ({
         )}
 
         {hasRights && (
-          isLoading
+          isLoading && !loadingOptions?.overlay
             ? <PageLoader options={loadingOptions} />
-            : stickyHeader ? (
-              <div className="page-container">{children}</div>
-            ) : children
+            : (
+              <div className="page-contentWrapper">
+                {isLoading && loadingOptions?.overlay && (
+                  <div className="page-overlay">
+                    <Loader />
+                  </div>
+                )}
+                {stickyHeader ? (
+                  <div className="page-container">{children}</div>
+                ) : children}
+              </div>
+            )
         )}
 
       </main>

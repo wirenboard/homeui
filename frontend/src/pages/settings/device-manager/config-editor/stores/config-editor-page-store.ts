@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { makeObservable, observable, computed, action } from 'mobx';
+import { makeObservable, observable, computed, action, runInAction } from 'mobx';
 import i18n from '@/i18n/config';
 import type {
   fwUpdateProxy as FwUpdateProxyInstance,
@@ -236,15 +236,23 @@ export class ConfigEditorPageStore {
   }
 
   async save() {
-    this.saving = true;
-    this.error = '';
+    runInAction(() => {
+      this.saving = true;
+      this.error = '';
+    });
     try {
       await this.saveConfigFn(this.makeConfigJson());
-      this.tabs.commitData();
+      runInAction(() => {
+        this.tabs.commitData();
+      });
     } catch (err) {
-      this.error = getErrorMessage(err);
+      runInAction(() => {
+        this.error = getErrorMessage(err);
+      });
     }
-    this.saving = false;
+    runInAction(() => {
+      this.saving = false;
+    });
   }
 
   async changeDeviceType(tab: DeviceTabStore, type: string) {
