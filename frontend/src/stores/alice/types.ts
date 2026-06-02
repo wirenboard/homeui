@@ -19,7 +19,7 @@ export interface SmartDeviceProperty {
 
 export interface ModeMapping {
   value: string;
-  mqtt_value: string;
+  mqtt_value_match: string;
 }
 
 export interface CapabilityParameters {

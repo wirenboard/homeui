@@ -62,20 +62,20 @@ export const ModeCapability = ({
     updateParameters({ ...capability.parameters, modes: newModes });
   };
 
-  const handleMqttValueChange = (rowIdx: number, mqttValue: string) => {
-    const newModes = modesList.map((m, i) => (i === rowIdx ? { ...m, mqtt_value: mqttValue } : m));
+  const handleMqttValueMatchChange = (rowIdx: number, mqttValueMatch: string) => {
+    const newModes = modesList.map((m, i) => (i === rowIdx ? { ...m, mqtt_value_match: mqttValueMatch } : m));
     updateParameters({ ...capability.parameters, modes: newModes });
   };
 
-  // Returns an error message for the mqtt_value in the given row, or null if valid.
+  // Returns an error message for the mqtt_value_match in the given row, or null if valid.
   // Allowed format: lowercase Latin letters, digits, or underscore.
   // Empty string is not considered invalid — user hasn't typed yet.
-  // Duplicates of mqtt_value across rows are also flagged.
-  const getMqttValueError = (value: string, rowIdx: number): string | null => {
+  // Duplicates of mqtt_value_match across rows are also flagged.
+  const getMqttValueMatchError = (value: string, rowIdx: number): string | null => {
     if (value.length === 0) return null;
-    if (!/^[a-z0-9_]+$/.test(value)) return t('alice.labels.mqtt-value-hint');
-    const otherValues = modesList.filter((_, i) => i !== rowIdx).map((m) => m.mqtt_value);
-    if (otherValues.includes(value)) return t('alice.labels.mqtt-value-duplicate');
+    if (!/^[a-z0-9_]+$/.test(value)) return t('alice.labels.mqtt-value-match-hint');
+    const otherValues = modesList.filter((_, i) => i !== rowIdx).map((m) => m.mqtt_value_match);
+    if (otherValues.includes(value)) return t('alice.labels.mqtt-value-match-duplicate');
     return null;
   };
 
@@ -85,17 +85,17 @@ export const ModeCapability = ({
     const nextValue = recommended.find((v) => !usedValues.includes(v))
       ?? modes.find((v) => !usedValues.includes(v))
       ?? '';
-    // Default mqtt_value = max numeric + 1 to avoid collisions after deletions.
+    // Default mqtt_value_match = max numeric + 1 to avoid collisions after deletions.
     // Custom string values are ignored when computing the next index.
-    const numericMqttValues = modesList
-      .map((m) => Number(m.mqtt_value))
+    const numericMqttValueMatches = modesList
+      .map((m) => Number(m.mqtt_value_match))
       .filter((n) => !Number.isNaN(n));
-    const nextMqttIdx = numericMqttValues.length > 0
-      ? Math.max(...numericMqttValues) + 1
+    const nextMqttIdx = numericMqttValueMatches.length > 0
+      ? Math.max(...numericMqttValueMatches) + 1
       : 0;
     const newModes: ModeMapping[] = [
       ...modesList,
-      { value: nextValue, mqtt_value: String(nextMqttIdx) },
+      { value: nextValue, mqtt_value_match: String(nextMqttIdx) },
     ];
     updateParameters({ ...capability.parameters, modes: newModes });
   };
@@ -186,17 +186,17 @@ export const ModeCapability = ({
             </div>
             <div>
               {rowIdx === 0 && (
-                <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mqtt-value')}</div>
+                <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mqtt-value-match')}</div>
               )}
               {(() => {
-                const mqttError = getMqttValueError(mode.mqtt_value, rowIdx);
+                const mqttValueMatchError = getMqttValueMatchError(mode.mqtt_value_match, rowIdx);
                 return (
                   <Input
-                    value={mode.mqtt_value}
+                    value={mode.mqtt_value_match}
                     isFullWidth
-                    isInvalid={!!mqttError}
-                    title={mqttError ?? undefined}
-                    onChange={(v: string) => handleMqttValueChange(rowIdx, v)}
+                    isInvalid={!!mqttValueMatchError}
+                    title={mqttValueMatchError ?? undefined}
+                    onChange={(v: string) => handleMqttValueMatchChange(rowIdx, v)}
                   />
                 );
               })()}
