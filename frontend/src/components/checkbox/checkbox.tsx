@@ -44,7 +44,7 @@ export const Checkbox = ({
     );
   }
   return (
-    <label className={classNames('wb-checkbox', className)}>
+    <label className={classNames('checkbox', className)}>
       <input
         id={id}
         type="checkbox"

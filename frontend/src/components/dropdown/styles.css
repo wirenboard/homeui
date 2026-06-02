@@ -15,9 +15,10 @@
   max-width: 240px !important;
 }
 
-.dropdown__control--is-focused {
-  transition: border-color 200ms linear, var(--input-active-shadow-transition);
-  box-shadow: var(--input-active-shadow);
+.dropdown__control.dropdown__control--is-focused {
+  transition: border-color 200ms linear, var(--form-element-focus-transition);
+  outline: var(--form-element-outline) !important;
+  outline-offset: var(--form-element-outline-offset);
   z-index: 100;
 }
 
@@ -77,7 +78,7 @@
 }
 
 .dropdown-m .dropdown__control {
-  height: 34px;
+  height: var(--form-element-medium-height);
 }
 
 .dropdown-m .dropdown__control,
@@ -109,13 +110,13 @@
 
 .dropdown__option--is-focused {
   background: var(--primary-color-hover);
-  color: var(--button-color);
+  color: var(--button-text-color);
   cursor: pointer !important;
 }
 
 .dropdown__option--is-selected {
   background: var(--primary-color);
-  color: var(--button-color);
+  color: var(--button-text-color);
 }
 
 .dropdown__menu,
@@ -138,8 +139,8 @@
 .dropdown-button .dropdown__control {
   background: var(--primary-color);
   border: 1px solid var(--primary-color);
-  color: var(--button-color);
-  height: 34px;
+  color: var(--button-text-color);
+  height: var(--form-element-medium-height);
 }
 
 .dropdown-button:hover .dropdown__control {

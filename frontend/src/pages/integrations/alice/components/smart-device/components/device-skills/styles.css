@@ -1,7 +1,7 @@
 .aliceDeviceSkills {
     padding: 16px;
     border: 1px solid var(--border-color);
-    border-radius: var(--card-border-radius);
+    border-radius: var(--container-border-radius);
 }
 
 .aliceDeviceSkills-grid {

@@ -30,7 +30,9 @@
     padding: 0;
     max-width: 350px;
     width: 100%;
-    border: 1px solid var(--light-gray-color);
+    border: 1px solid var(--border-color);
+    background: var(--container-background);
+    box-shadow: var(--container-box-shadow);
     border-radius: 6px;
     overflow: hidden;
 }
@@ -60,14 +62,19 @@
 .login-button {
     display: flex;
     align-items: center;
-    background: var(--brand-color);
-    border-color: var(--brand-color);
 }
 
-.login-button:hover,
-.login-button:focus {
-    background: var(--brand-color-hover) !important;
-    border-color: var(--brand-color-hover) !important;
+[data-theme='bootstrap'] {
+    .login-button {
+        background: var(--brand-color);
+        border-color: var(--brand-color);
+    }
+
+    .login-button:hover,
+    .login-button:focus {
+        background: var(--brand-color-hover) !important;
+        border-color: var(--brand-color-hover) !important;
+    }
 }
 
 .login-loader {
@@ -90,11 +97,16 @@
 
 .login-links a {
     font-size: var(--font-size-medium);
-    color: #00b7f4;
+    color: var(--link-color);
+    text-decoration: underline;
 }
 
-.login-links a:hover {
-    text-decoration: underline;
+.login-links a:hover,
+.login-links a:focus {
+    border-radius: 4px;
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
 }
 
 .login-languageWrapper {
@@ -103,13 +115,13 @@
 
 .login-languageIcon {
     width: 14px;
-    color: #00b7f4;
+    color: var(--link-color);
 }
 
 .login-language .dropdown__control {
     border: 0;
     box-shadow: none;
-    color: #00b7f4;
+    color: var(--link-color);
     cursor: pointer;
     gap: 0;
     background: transparent;

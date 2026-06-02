@@ -1,6 +1,5 @@
 .alertMessage {
     border: 0;
-    color: var(--alert-color);
     border-radius: var(--input-border-radius);
     align-items: center;
     width: 100%;
@@ -15,7 +14,7 @@
 }
 
 .alertMessage a {
-    color: var(--alert-color);
+    color: inherit;
     text-decoration: underline;
     white-space: nowrap;
 }
@@ -33,7 +32,6 @@
 }
 
 .alertMessage-content {
-    overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
 }
@@ -41,26 +39,50 @@
 .alertMessage-info {
     background: var(--alert-info-background);
     border: 1px solid var(--alert-info-border);
+    color: var(--alert-info-color);
+}
+.alertMessage-info .alertMessage-icon {
+    color: var(--alert-info-icon);
 }
 
 .alertMessage-gray {
-    background: var(--light-gray-color);
-    border: 1px solid var(--gray-color);
+    background: var(--alert-gray-background);
+    border: 1px solid var(--alert-gray-border);
+    color: var(--alert-gray-color);
+}
+
+.alertMessage-gray .alertMessage-icon {
+    color: var(--alert-gray-icon);
 }
 
 .alertMessage-success {
     background: var(--alert-success-background);
     border: 1px solid var(--alert-success-border);
+    color: var(--alert-success-color);
+}
+
+.alertMessage-success .alertMessage-icon {
+    color: var(--alert-success-icon);
 }
 
 .alertMessage-warn {
     background: var(--alert-warn-background);
     border: 1px solid var(--alert-warn-border);
+    color: var(--alert-warn-color);
+}
+
+.alertMessage-warn .alertMessage-icon {
+    color: var(--alert-warn-icon);
 }
 
 .alertMessage-danger {
     background: var(--alert-danger-background);
     border: 1px solid var(--alert-danger-border);
+    color: var(--alert-danger-color);
+}
+
+.alertMessage-danger .alertMessage-icon {
+    color: var(--alert-danger-icon);
 }
 
 .alertMessage-close {
@@ -96,4 +118,8 @@
     .alert-withButton .button {
         flex-grow: 1;
     }
+}
+
+[data-theme='dark'] .alertMessage .button {
+    box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.2);
 }

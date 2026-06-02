@@ -1,5 +1,8 @@
 .wb-tableWrapper {
     overflow-x: auto;
+    box-shadow: var(--table-shadow);
+    border-radius: var(--table-border-radius);
+    border: var(--table-border);
 }
 
 .wb-table {
@@ -15,10 +18,14 @@
     gap: 0;
 }
 
+.wb-tableRow {
+    background: var(--container-background);
+}
+
 .wb-tableRow:not(.wb-tableRowHeading):hover .wb-tableCell,
 .wb-tableRow:not(.wb-tableRowHeading):focus .wb-tableCell,
 .wb-tableRow:not(.wb-tableRowHeading):has(a:focus) {
-    background: var(--table-item-hover);
+    background: var(--container-background-hover);
 }
 
 .wb-tableRow:focus-within .wb-tableCellInvisible,
@@ -164,7 +171,7 @@
 }
 
 .wb-tableLoading {
-    background: var(--table-item-hover);
+    background: var(--container-background-hover);
     opacity: 0.7;
     align-items: center;
     justify-content: center;

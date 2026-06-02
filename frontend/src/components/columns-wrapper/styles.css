@@ -1,5 +1,5 @@
 .columnsWrapper-container {
-    gap: 18px;
+    gap: var(--content-gap);
     display: grid;
     align-items: flex-start;
     grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));

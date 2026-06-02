@@ -35,7 +35,8 @@
     color: var(--nav-text-color);
     text-decoration: none;
     cursor: pointer;
-    transition: background 100ms ease, color 100ms ease;
+    box-shadow: unset;
+    transition: background 100ms ease, color 100ms ease, box-shadow 400ms ease;
 }
 
 .navigation-containerMobile .menuItem-link {
@@ -53,8 +54,14 @@
     color: #fff;
 }
 
+.menuItem-subList .menuItem-link:hover,
+.menuItem-subList .menuItem-link:not(.menuItem-linkWithSubmenu):focus  {
+    background: var(--nav-subitem-hover);
+}
+
 .menuItem-linkActive {
     background: var(--nav-item-active);
+    box-shadow: var(--nav-item-active-right-shadow);
     color: #fff;
 }
 

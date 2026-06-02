@@ -10,12 +10,19 @@ export default class UiStore {
   public isConnected = false;
   public isSettingUpHttps = true;
   public menuItems: MenuItemInstance[] = [];
-  public theme: string = localStorage.getItem('theme') ?? 'bootstrap';
+  public theme: string = localStorage.getItem('theme') ?? 'light';
   public modules: string[] = [];
   #additionalItems: CustomMenuItem[] = null;
+  #systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
+    this.#applyResolvedTheme();
+    this.#systemThemeQuery.addEventListener('change', () => {
+      if (this.theme === 'system') {
+        this.#applyResolvedTheme();
+      }
+    });
   }
 
   setIsConnected(isConnected: boolean) {
@@ -38,6 +45,20 @@ export default class UiStore {
   setTheme(theme: string) {
     localStorage.setItem('theme', theme);
     this.theme = theme;
+    this.#applyResolvedTheme();
+  }
+
+  get resolvedTheme(): 'light' | 'dark' {
+    return this.theme === 'system'
+      ? (this.#systemThemeQuery.matches ? 'dark' : 'light')
+      : this.theme === 'dark' ? 'dark' : 'light';
+  }
+
+  #applyResolvedTheme() {
+    const theme = this.theme === 'system'
+      ? (this.#systemThemeQuery.matches ? 'dark' : 'light')
+      : this.theme;
+    document.documentElement.setAttribute('data-theme', theme);
   }
 
   async #getCustomMenuItems() {

@@ -15,8 +15,6 @@ import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import './assets/styles/index.css';
 
-document.documentElement.setAttribute('data-theme', 'bootstrap');
-
 switchToHttps().finally(() => {
   runInAction(() => {
     uiStore.isSettingUpHttps = false;

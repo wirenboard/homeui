@@ -4,9 +4,11 @@
     background: var(--nav-bg);
     height: 100%;
     width: 225px;
+    min-width: 225px;
     position: relative;
     border-right: 1px solid var(--nav-border);
     z-index: 1000;
+    transition: background ease 300ms;
 
     @media(max-width: 768px) {
         flex-direction: row;
@@ -23,6 +25,7 @@
 
 .navigation-compact {
     width: 60px;
+    min-width: 60px;
 }
 
 .navigation-header {
@@ -141,11 +144,14 @@
     padding: 8px 12px !important;
 }
 
+.navigation-tooltip svg {
+    fill: var(--nav-sublist-bg);
+}
+
 .navigation-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: var(--nav-bg);
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;

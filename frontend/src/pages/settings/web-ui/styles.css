@@ -1,6 +1,6 @@
 .web-ui-settings-pageContent {
     display: grid;
-    gap: 10px;
+    gap: var(--content-gap);
     grid-template-columns: 1fr 1fr;
 
     @media(max-width: 900px) {

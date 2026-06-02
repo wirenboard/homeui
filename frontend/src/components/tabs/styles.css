@@ -17,7 +17,7 @@
     width: 100%;
     text-align: left;
     border: 0;
-    background: none;
+    background: var(--container-background);
 }
 
 .tabs-ellipsisContent .tabs-button {
@@ -33,7 +33,7 @@
 li:not(.tabs-buttonSelected) .tabs-button:focus,
 li:not(.tabs-buttonSelected) .tabs-button:hover {
     background: var(--border-color);
-    transition: background 200ms linear, var(--input-active-shadow-transition);
+    transition: background 200ms linear;
 }
 
 .tabs-vertical .tabs-buttonWrapper {
@@ -48,7 +48,7 @@ li:not(.tabs-buttonSelected) .tabs-button:hover {
     height: 100%;
     position: absolute;
     right: 0;
-    box-shadow: inset -6px 0 0 var(--primary-color);
+    box-shadow: var(--active-item-right-shadow);
 }
 
 .tabs-vertical li:not(:last-of-type) .tabs-button {

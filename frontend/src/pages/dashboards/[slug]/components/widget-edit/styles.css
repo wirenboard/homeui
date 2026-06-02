@@ -151,7 +151,7 @@
 }
 
 .widgetEdit-fields {
-    margin-bottom: 18px;
+    margin-bottom: var(--content-gap);
 }
 
 .widgetEdit-label {

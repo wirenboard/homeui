@@ -44,9 +44,9 @@
 
 .json-editor .well {
   position: relative;
-  border-radius: var(--card-border-radius);
+  border-radius: var(--container-border-radius);
   border: 1px solid var(--border-color);
-  background: var(--table-item-hover);
+  background: var(--container-background-hover);
   padding: 8px 12px !important;
   margin-bottom: 12px;
 }
@@ -119,26 +119,26 @@
   text-overflow: ellipsis;
   padding: 6px 12px;
   vertical-align: middle;
-  height: 34px;
+  height: var(--form-element-medium-height);
   border-radius: var(--input-border-radius);
   border-color: transparent;
   border-right: 8px solid transparent;
   outline: 1px solid var(--input-border-color) !important;
   outline-offset: -1px;
-  transition: border-color 200ms linear, var(--input-active-shadow-transition);
+  transition: border-color 200ms linear, box-shadow 200ms linear;
 }
 
 .json-editor select:not(:disabled) {
-  background: var(--background-color);
+  background: var(--input-background);
+}
+
+.json-editor select:focus {
+  box-shadow: var(--input-active-shadow);
 }
 
 .json-editor input[type="text"],
 .json-editor input[type="number"] {
   width: 100%;
-}
-
-.json-editor select:focus {
-  box-shadow: var(--input-active-shadow);
 }
 
 .json-editor .help-block {
@@ -169,6 +169,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border-color);
+  background: var(--container-background);
   border-radius: var(--input-border-radius);
   height: fit-content;
 
@@ -186,7 +187,7 @@
 .json-editor .nav li:has(a:focus) {
   cursor: pointer;
   background: var(--border-color);
-  transition: background 200ms linear, var(--input-active-shadow-transition);
+  transition: background 200ms linear;
 }
 
 .json-editor .nav li:not(:last-child) {
@@ -203,13 +204,14 @@
 }
 
 .json-editor .nav li:has(a[aria-selected="true"]) {
-  box-shadow: inset -6px 0 0 var(--primary-color);
+  box-shadow: var(--active-item-right-shadow);
 }
 
 .json-editor .je-modal {
   padding: var(--card-body-padding);
-  border-radius: var(--card-border-radius);
-  border: 1px solid var(--gray-color);
+  background: var(--container-background);
+  border-radius: var(--container-border-radius);
+  border: 1px solid var(--border-color);
   box-shadow: none;
   min-width: 400px !important;
 }
@@ -255,8 +257,9 @@
 }
 
 .json-editor input[type="checkbox"]:focus {
-  box-shadow: var(--input-active-shadow);
-  transition: var(--input-active-shadow-transition);
+  outline: var(--form-element-outline);
+  outline-offset: var(--form-element-outline-offset);
+  transition: var(--form-element-focus-transition);
 }
 
 .json-editor .btn-group .button:not([style*="display: none"]):not(:nth-last-child(1 of .button:not([style*="display: none"]))) {

@@ -12,7 +12,7 @@
     outline: none;
     padding: 0;
     margin: 0;
-    transition: background ease 300ms, var(--input-active-shadow-transition);
+    transition: background ease 300ms, var(--form-element-focus-transition);
 }
 
 /* Have to lock input slide touch to avoid value change on scroll */
@@ -41,7 +41,7 @@
     border: 0;
     border-radius: 50%;
     background: var(--input-action-background);
-    transition: background .15s ease-in-out, var(--input-active-shadow-transition);
+    transition: background .15s ease-in-out, var(--form-element-focus-transition);
 }
 
 .range-invalid .range::-moz-range-thumb {
@@ -59,7 +59,7 @@
     border: 0;
     border-radius: 50%;
     background: var(--input-action-background);
-    transition: background .15s ease-in-out, var(--input-active-shadow-transition);
+    transition: background .15s ease-in-out, var(--form-element-focus-transition);
 }
 
 .range:disabled {
@@ -80,11 +80,15 @@
 }
 
 .range:focus::-webkit-slider-thumb {
-    box-shadow: var(--input-active-shadow);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
 }
 
 .range:focus::-moz-range-thumb {
-    box-shadow: var(--input-active-shadow);
+    outline: var(--form-element-outline);
+    outline-offset: var(--form-element-outline-offset);
+    transition: var(--form-element-focus-transition);
 }
 
 .range-value {
