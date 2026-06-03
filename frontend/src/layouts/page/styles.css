@@ -10,7 +10,6 @@
     display: flex;
     flex-grow: 1;
     flex-direction: column;
-    padding-top: 12px;
 }
 
 .page-headerContainer {
@@ -22,6 +21,7 @@
     border-bottom: 1px solid var(--border-color);
     gap: 12px;
     flex-wrap: wrap;
+    padding-top: 12px;
 
     @media(max-width: 768px) {
         gap: 6px;
@@ -48,6 +48,9 @@
 
 .page-title {
     color: var(--text-color);
+    font-size: 24px;
+    letter-spacing: -1px;
+    line-height: normal;
     font-weight: 400;
     margin: 0;
     overflow-x: hidden;
@@ -60,17 +63,6 @@
     width: 16px;
     display: inline-block;
     cursor: pointer;
-}
-
-.page-info {
-    display: flex;
-    color: var(--gray-color);
-}
-
-.page-info:hover {
-    color: var(--link-color);
-    cursor: pointer;
-    transition: color 200ms;
 }
 
 .page-info svg {
@@ -96,6 +88,26 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    padding-inline: 6px;
+    margin-inline: -6px;
+}
+
+.page-contentWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.page-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--background-color) 70%, transparent);
+    border-radius: var(--input-border-radius);
 }
 
 .page-error {
@@ -104,6 +116,4 @@
 
 .page-footer {
     position: relative;
-    right: 0;
-    opacity: 1;
 }

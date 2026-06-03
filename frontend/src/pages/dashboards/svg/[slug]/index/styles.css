@@ -44,3 +44,9 @@
         padding-bottom: 5px;
     }
 }
+
+.defaultLayout-pageWrapper:has(.svgDashboard-fitToPage) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}

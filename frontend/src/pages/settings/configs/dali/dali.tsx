@@ -1,18 +1,21 @@
+import { type TFunction } from 'i18next';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { Link } from 'react-router-dom';
+import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Tree, type TreeItem } from '@/components/tree';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import type { ItemStore, GroupStore, DeviceStore, BusStore } from '@/stores/dali';
+import { type ItemStore, type GroupStore, type DeviceStore, type BusStore, DaliStore } from '@/stores/dali';
+import { useStore } from '@/utils/use-store';
 import { BusTabContent } from './components/bus-tab-content';
 import { DeviceTabContent } from './components/device-tab-content';
-import { GroupTabContent } from './components/group-tab-content';
 import { GatewayTabContent } from './components/gateway-tab-content';
-import type { DaliPageProps } from './types';
+import { GroupTabContent } from './components/group-tab-content';
 import './styles.css';
 
 const TabContent = ({
@@ -45,7 +48,7 @@ const TabContent = ({
 const buildTreeItems = (
   items: ItemStore[],
   storeMap: Map<string, ItemStore>,
-  t: (key: string, options?: object) => string,
+  t: TFunction<'translation', undefined>,
 ): TreeItem[] =>
   items.map((item) => {
     storeMap.set(item.id, item);
@@ -63,8 +66,9 @@ const buildTreeItems = (
     };
   });
 
-const DaliPage = observer(({ store }: DaliPageProps) => {
-  const { t } = useTranslation();
+const DaliPage = observer(() => {
+  const store = useStore(() => new DaliStore());
+  const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 991 });
   const [selectedItem, setSelectedItem] = useState<ItemStore | null>(null);
 
@@ -104,6 +108,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
   return (
     <PageLayout
       title={t('dali.title')}
+      infoLink={documentation[i18n.language]?.dali}
       hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={store.isLoading}
       errors={store.errors}
@@ -120,7 +125,7 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
         <Alert variant="warn">
           <Trans
             i18nKey="dali.labels.no-gateways"
-            components={[<a href="#!/serial-config" />]}
+            components={[<Link to="/settings/configs/serial-config" />]}
           />
         </Alert>
       ) : (
@@ -130,8 +135,8 @@ const DaliPage = observer(({ store }: DaliPageProps) => {
               <Tree
                 data={data}
                 isDisabled={store.isLoading}
-                onItemClick={onItemClick}
                 activeId={selectedItem?.id}
+                onItemClick={onItemClick}
               />
             </aside>
           )}

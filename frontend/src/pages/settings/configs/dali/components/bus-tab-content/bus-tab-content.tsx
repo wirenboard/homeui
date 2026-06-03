@@ -19,7 +19,6 @@ import './styles.css';
 
 const MAX_SLOTS = 12;
 
-
 const BusParam = observer(({ store, param }: { store: BusStore; param: ObjectParamStore }) => {
   const { t, i18n } = useTranslation();
   const [save, isSaving] = useAsyncAction(async () => {

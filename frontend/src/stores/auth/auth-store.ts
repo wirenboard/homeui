@@ -49,17 +49,10 @@ export default class AuthStore {
     });
   }
 
-  async logout(redirectUrl?: string) {
+  async logout() {
     this.#currentUserId = null;
-    if (this.isAutologin) {
-      // If the user is an autologin user, just show login page to select another user.
-      location.assign('/#!/login');
-    } else {
+    if (!this.isAutologin) {
       await request.post('/auth/logout');
-      if (redirectUrl) {
-        location.assign(redirectUrl);
-      }
-      location.reload();
     }
   }
 

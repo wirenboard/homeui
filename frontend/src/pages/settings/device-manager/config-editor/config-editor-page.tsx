@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { documentation } from '@/common/links';
 import { useConfirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
@@ -14,7 +15,7 @@ import type { ConfigEditorPageProps } from './types';
 import './styles.css';
 
 const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnectedDevice }: ConfigEditorPageProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [ showCopyDeviceModal, isCopyTabOpened, handleCopyTab, handleCopyTabClose ] = useConfirm<any>();
   const [ showAddDeviceModal, isAddDeviceOpened, handleAddDevice, handleAddDeviceClose ] = useConfirm<any>();
   const [ showAddPortModal, isAddPortOpened, handleAddPort, handleAddPortClose ] = useConfirm<any>();
@@ -24,13 +25,16 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
     <>
       <PageLayout
         title={t('device-manager.labels.title')}
+        infoLink={documentation[i18n.language]?.serial}
         hasRights={authStore.hasRights(UserRole.Admin)}
         errors={pageStore.error ? [{ variant: 'danger', text: pageStore.error }] : []}
-        isLoading={pageStore.loading}
+        isLoading={pageStore.loading || pageStore.saving}
+        loadingOptions={pageStore.saving ? { overlay: true, showActions: true } : undefined}
         actions={
           (!pageStore.loading && pageStore.loaded) && (
             <HeaderButtons
               allowSave={pageStore.allowSave}
+              isSaving={pageStore.saving}
               allowAddDevice={pageStore.tabs.hasPortTabs}
               mobileModeStore={pageStore.tabs.mobileModeStore}
               onSave={() => pageStore.save()}

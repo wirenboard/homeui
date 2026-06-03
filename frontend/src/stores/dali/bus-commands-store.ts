@@ -1,7 +1,7 @@
 import { runInAction, makeObservable, observable, action, computed } from 'mobx';
-import { formatError } from '@/utils/formatError';
+import { daliBusProxy } from '@/services';
+import { formatError } from '@/utils/format-error';
 import type {
-  DaliBusProxy,
   ListCommandsEntry,
   SendCommandResponseValue,
   SendCommandResultItem,
@@ -29,10 +29,8 @@ export class BusCommandsStore {
   public isCatalogModalOpen: boolean = false;
 
   readonly busId: string;
-  #daliBusProxy: DaliBusProxy;
 
-  constructor(daliBusProxy: DaliBusProxy, busId: string) {
-    this.#daliBusProxy = daliBusProxy;
+  constructor(busId: string) {
     this.busId = busId;
 
     makeObservable(this, {
@@ -82,7 +80,7 @@ export class BusCommandsStore {
     });
 
     try {
-      const result = await this.#daliBusProxy.SendCommand({ busId: this.busId, commands });
+      const result = await daliBusProxy.SendCommand({ busId: this.busId, commands });
       const rows: ResultRow[] = commands.map((command, i) => {
         const item: SendCommandResultItem | undefined = result[i];
         if (item === undefined) {
@@ -121,7 +119,7 @@ export class BusCommandsStore {
     });
 
     try {
-      const entries = await this.#daliBusProxy.ListCommands({});
+      const entries = await daliBusProxy.ListCommands({});
       runInAction(() => {
         this.catalog = entries;
       });

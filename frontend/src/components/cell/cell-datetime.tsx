@@ -16,7 +16,7 @@ const unixToUtcDate = (unix: number): Date => {
     d.getUTCDate(),
     d.getUTCHours(),
     d.getUTCMinutes(),
-    d.getUTCSeconds()
+    d.getUTCSeconds(),
   );
 };
 
@@ -27,7 +27,7 @@ const utcDateToUnix = (date: Date): number =>
     date.getDate(),
     date.getHours(),
     date.getMinutes(),
-    date.getSeconds()
+    date.getSeconds(),
   ) / 1000);
 
 export const CellDateTime = observer(({ cell }: { cell: Cell }) => {

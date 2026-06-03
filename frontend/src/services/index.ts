@@ -1,0 +1,15 @@
+export { createRpcProxy } from './rpc';
+export type { RpcProxy } from './rpc';
+export { configEditorProxy } from './config-editor-proxy';
+export { daliProxy } from './dali-proxy';
+export { daliBusProxy } from './dali-bus-proxy';
+export { deviceManagerProxy } from './device-manager-proxy';
+export { diagnosticProxy } from './diagnostic-proxy';
+export { editorProxy } from './editor-proxy';
+export { fwUpdateProxy } from './fw-update-proxy';
+export { historyProxy } from './history-proxy';
+export { logsProxy } from './logs-proxy';
+export { serialDeviceProxy } from './serial-device-proxy';
+export { serialPortProxy } from './serial-port-proxy';
+export { serialProxy } from './serial-proxy';
+export { mqttClient } from './mqtt-client';

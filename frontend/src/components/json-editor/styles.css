@@ -1,8 +1,278 @@
-.json-editor .well .row,
-.json-editor .je-object__container .col-md-12,
-.json-editor .je-object__container .row {
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
+.json-editor .tab-content>.tab-pane {
+  display: none;
+}
+
+.json-editor .tab-content>.active {
+  display: block;
+  visibility: visible;
+}
+
+.json-editor .tab-content {
+  flex-shrink: 1;
+
+  @media (max-width: 991px) {
+    width: 100%;
+    margin-top: 12px;
+  }
+}
+
+.json-editor .btn-group,
+.json-editor .btn-group-vertical {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+
+.json-editor .button {
+  font-weight: 300 !important;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: var(--font-size-medium) !important;
+}
+
+.json-editor .button i {
+  font-weight: 300 !important;
+  font-size: 12px;
+  line-height: 1em;;
+}
+
+.json-editor .btn-group-vertical>.btn, .btn-group>.btn {
+  float: left;
+  position: relative;
+}
+
+.json-editor .well {
+  position: relative;
+  border-radius: var(--card-border-radius);
+  border: 1px solid var(--border-color);
+  background: var(--table-item-hover);
+  padding: 8px 12px !important;
+  margin-bottom: 12px;
+}
+
+.json-editor .je-header {
+  display: inline-block;
+  font-size: var(--font-size-medium);
+  font-weight: bold;
+}
+
+.json-editor .je-header .button {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.json-editor .je-header label {
+  margin-right: 12px;
+}
+
+.json-editor .je-header span:empty {
+  display: none;
+}
+
+.json-editor .je-header:not(:has(> :not([style*="display: none"]):not(.sr-only))) {
+  display: none;
+}
+
+.json-editor .btn-group:not(:has(> .button:not([style*="display: none"]))) {
+  display: none;
+}
+
+.json-editor .row:not(:has(> :not([style*="display: none"]))) {
+  display: none;
+}
+
+.json-editor .row {
+  margin-bottom: 12px;
+}
+
+.json-editor > .je-object__container {
+  overflow-x: clip;
+}
+
+.json-editor :has(> table) {
+  overflow-x: auto;
+}
+
+.json-editor .row .je-header {
+  margin-bottom: 6px;
+}
+
+.json-editor .form-group {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.json-editor .checkbox label,
+.json-editor .radio label {
+  margin-bottom: 6px;
+  margin-top: 6px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.json-editor select {
+  text-overflow: ellipsis;
+  padding: 6px 12px;
+  vertical-align: middle;
+  height: 34px;
+  border-radius: var(--input-border-radius);
+  border-color: transparent;
+  border-right: 8px solid transparent;
+  outline: 1px solid var(--input-border-color) !important;
+  outline-offset: -1px;
+  transition: border-color 200ms linear, var(--input-active-shadow-transition);
+}
+
+.json-editor select:not(:disabled) {
+  background: var(--background-color);
+}
+
+.json-editor input[type="text"],
+.json-editor input[type="number"] {
+  width: 100%;
+}
+
+.json-editor select:focus {
+  box-shadow: var(--input-active-shadow);
+}
+
+.json-editor .help-block {
+  color: var(--gray-color);
+  margin-bottom: 0;
+}
+
+.json-editor .has-error,
+.json-editor .help-block.errormsg {
+  color: var(--danger-color);
+}
+
+.json-editor .has-error input {
+  border-color: var(--danger-color);
+}
+
+.json-editor div:has(> ul.nav-pills) {
+  display: flex;
+  gap: 12px;
+
+  @media (max-width: 991px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.json-editor ul.nav-pills {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: var(--input-border-radius);
+  height: fit-content;
+
+  @media (max-width: 991px) {
+    width: 100%;
+  }
+}
+
+.json-editor .nav li {
+  list-style: none;
+  padding: 12px !important;
+}
+
+.json-editor .nav li:hover,
+.json-editor .nav li:has(a:focus) {
+  cursor: pointer;
+  background: var(--border-color);
+  transition: background 200ms linear, var(--input-active-shadow-transition);
+}
+
+.json-editor .nav li:not(:last-child) {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.json-editor .nav a {
+  width: 100%;
+  display: block;
+  border: 0;
+  color: var(--text-color);
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.json-editor .nav li:has(a[aria-selected="true"]) {
+  box-shadow: inset -6px 0 0 var(--primary-color);
+}
+
+.json-editor .je-modal {
+  padding: var(--card-body-padding);
+  border-radius: var(--card-border-radius);
+  border: 1px solid var(--gray-color);
+  box-shadow: none;
+  min-width: 400px !important;
+}
+
+.json-editor .je-modal .button {
+  display: inline-block;
+}
+
+.json-editor textarea {
+  display: inline-block;
+  width: 100% !important;
+}
+
+.json-editor p {
+  margin-bottom: 12px;
+}
+
+.json-editor p[style="color: rgb(185, 74, 72);"] {
+  color: var(--danger-color) !important;
+}
+
+.json-editor table th {
+  background: var(--border-color);
+}
+
+.json-editor table th,
+.json-editor table td {
+  vertical-align: top;
+  text-align: left;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.json-editor table .form-group {
+  margin-bottom: 0;
+  display: block;
+}
+
+.json-editor div:empty,
+.json-editor .button span:empty,
+.json-editor ul:empty {
+  display: none;
+}
+
+.json-editor input[type="checkbox"]:focus {
+  box-shadow: var(--input-active-shadow);
+  transition: var(--input-active-shadow-transition);
+}
+
+.json-editor .btn-group .button:not([style*="display: none"]):not(:nth-last-child(1 of .button:not([style*="display: none"]))) {
+  border-right: none;
+}
+
+.json-editor .btn-group .button:nth-child(1 of .button:not([style*="display: none"])):not(:nth-last-child(1 of .button:not([style*="display: none"]))) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.json-editor .btn-group .button:nth-last-child(1 of .button:not([style*="display: none"])):not(:nth-child(1 of .button:not([style*="display: none"]))) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.json-editor .btn-group .button:not([style*="display: none"]):not(:nth-child(1 of .button:not([style*="display: none"]))):not(:nth-last-child(1 of .button:not([style*="display: none"]))) {
+  border-radius: 0;
 }

@@ -1,23 +1,22 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useMediaQuery } from 'react-responsive';
 import CopyIcon from '@/assets/icons/copy.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
 import WarnIcon from '@/assets/icons/warn.svg';
-import { Button } from '@/components/button';
+import { documentation } from '@/common/links';
+import { Button, ButtonLink } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Switch } from '@/components/switch';
 import { Table, TableRow, TableCell } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type RulesStore } from '@/stores/rules';
+import { rulesStore } from '@/stores/rules';
 import './styles.css';
 
-const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
-  const { t } = useTranslation();
-  const isDesktop = useMediaQuery({ minWidth: 874 });
+const RulesPage = observer(() => {
+  const { t, i18n } = useTranslation();
   const { rules } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
   const [isRulesUpdating, setIsRulesUpdating] = useState(false);
@@ -36,8 +35,6 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
       });
   }, []);
 
-  const createRule = () => location.assign('/#!/rules/new');
-
   const copyRule = async (path: string) => {
     setIsRulesUpdating(true);
     await rulesStore.copyRule(path);
@@ -53,15 +50,16 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
   return (
     <PageLayout
       title={t('rules.title')}
+      infoLink={documentation[i18n.language]?.rules}
       hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={isLoading}
       errors={errors}
       actions={
         errors.length ? null : (
-          <Button
+          <ButtonLink
+            to="/rules/new"
             variant="primary"
             label={t('rules.buttons.create')}
-            onClick={createRule}
           />
         )
       }
@@ -69,7 +67,7 @@ const RulesPage = observer(({ rulesStore }: { rulesStore: RulesStore }) => {
       <Table isLoading={isRulesUpdating}>
         {rules.map((rule) => (
           <TableRow
-            url={`#!/rules/edit/${rule.virtualPath}`}
+            url={`/rules/edit/${rule.virtualPath}`}
             aria-label={t('rules.labels.open-rule', { path: rule.virtualPath })}
             key={rule.virtualPath}
           >

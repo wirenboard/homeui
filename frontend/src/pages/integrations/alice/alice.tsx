@@ -2,6 +2,7 @@ import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Switch } from '@/components/switch';
@@ -12,14 +13,14 @@ import { authStore, UserRole } from '@/stores/auth';
 import { uiStore } from '@/stores/ui';
 import { Room } from './components/room';
 import { SmartDevice } from './components/smart-device';
-import type { AlicePageProps, AlicePageState, BindingView, View } from './types';
+import type { AlicePageState, BindingView, View } from './types';
 import './styles.css';
 
 const STATUS_ERROR_ID = 'alice-link-status';
 const BINDING_REQUIRED_ERROR_ID = 'alice-binding-required';
 
-const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
-  const { t } = useTranslation();
+const AlicePage = observer(() => {
+  const { t, i18n } = useTranslation();
   const {
     roomList,
     isAvailable,
@@ -123,9 +124,8 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
           showBindingRequiredError();
         }
       })
-      .catch(() => {
-        // Link status availability should not block page interactions.
-      });
+    // Link status availability should not block page interactions.
+      .catch(() => {});
   };
 
   const handleIntegrationToggle = async (enabled: boolean) => {
@@ -206,14 +206,10 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   ]);
 
   useEffect(() => {
-    if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) {
-      return;
-    }
+    if (!authStore.hasRights(UserRole.Admin) || !isModuleInstalled) return;
 
     const refreshOnReturn = async () => {
-      if (!aliceStore.isIntegrationEnabled) {
-        return;
-      }
+      if (!aliceStore.isIntegrationEnabled) return;
 
       try {
         await refreshBindingStatus();
@@ -229,18 +225,16 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [isModuleInstalled, linkStatusErrorMessage]);
 
   useEffect(() => {
-    if (!authStore.hasRights(UserRole.Admin)) {
-      return;
+    if (authStore.hasRights(UserRole.Admin)) {
+      const hasError = !isModuleInstalled || (typeof isAvailable === 'boolean' && !isAvailable);
+      setErrors(hasError ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
     }
-    const hasError = !isModuleInstalled || (typeof isAvailable === 'boolean' && !isAvailable);
-    setErrors(hasError ? [{ variant: 'danger', text: t('alice.labels.unavailable') }] : []);
   }, [isAvailable, isModuleInstalled, t]);
 
   const isLoading = useMemo(
@@ -285,6 +279,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
   return (
     <PageLayout
       title={t('alice.title')}
+      infoLink={documentation[i18n.language]?.mqtt}
       isLoading={isLoading}
       hasRights={authStore.hasRights(UserRole.Admin)}
       errors={errors}
@@ -297,12 +292,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
               {isIntegrationEnabled && bindingView?.kind === 'linked' && (
                 <div className="alice-bindingContainer">
                   {bindingView.statusUrl && (
-                    <a
-                      href={bindingView.statusUrl}
-                      className="alice-binding"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a href={bindingView.statusUrl} className="alice-binding" target="_blank" rel="noreferrer">
                       {t('alice.buttons.check-binding-status')}
                     </a>
                   )}
@@ -320,12 +310,7 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
 
               {isIntegrationEnabled && bindingView?.kind === 'bind' && (
                 <div className="alice-bindingContainer">
-                  <a
-                    href={bindingView.linkUrl}
-                    className="alice-binding"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                  <a href={bindingView.linkUrl} className="alice-binding" target="_blank" rel="noreferrer">
                     {t('alice.buttons.bind')}
                   </a>
                 </div>
@@ -382,7 +367,6 @@ const AlicePage = observer(({ devicesStore }: AlicePageProps) => {
                 {!!(view.isNewDevice || view.deviceId) && (
                   <SmartDevice
                     id={view.deviceId}
-                    devicesStore={devicesStore}
                     onSave={(deviceId) => setView({ deviceId })}
                     onDelete={() => setView({ roomId: 'all' })}
                     onOpenDevice={(deviceId) => setView({ deviceId })}

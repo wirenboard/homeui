@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import i18n from '~/i18n/react/config';
+import { useBlocker } from 'react-router-dom';
+import i18n from '@/i18n/config';
 
-export const usePreventLeavePage = (rootScope: any, confirmMessage: string = i18n.t('common.prompt.dirty')) => {
+export const usePreventLeavePage = (confirmMessage: string = i18n.t('common.prompt.dirty')) => {
   const [isDirty, setIsDirty] = useState(false);
   const isDirtyRef = useRef(isDirty);
   const confirmMessageRef = useRef(confirmMessage);
@@ -14,36 +15,40 @@ export const usePreventLeavePage = (rootScope: any, confirmMessage: string = i18
     confirmMessageRef.current = confirmMessage;
   }, [confirmMessage]);
 
+  // browser refresh / tab close
   useEffect(() => {
     const onBeforeUnload = (ev: BeforeUnloadEvent) => {
-      if (isDirtyRef.current) {
-        ev.preventDefault();
-        ev.returnValue = '';
-      }
+      if (!isDirtyRef.current) return;
+
+      ev.preventDefault();
+      ev.returnValue = '';
     };
+
     window.addEventListener('beforeunload', onBeforeUnload);
-
-    // TODO: move from $locationChangeStart to react router useBlocker
-    const unsubscribe = rootScope.$on(
-      '$locationChangeStart',
-      (event: any, newUrl: string) => {
-        if (!isDirtyRef.current) return;
-
-        event.preventDefault();
-
-        if (confirm(confirmMessageRef.current)) {
-          isDirtyRef.current = false;
-          setIsDirty(false);
-          window.location.assign(newUrl);
-        }
-      },
-    );
 
     return () => {
       window.removeEventListener('beforeunload', onBeforeUnload);
-      unsubscribe();
     };
   }, []);
+
+  const blocker = useBlocker(isDirty);
+
+  useEffect(() => {
+    if (blocker.state !== 'blocked') return;
+
+    const confirmed = window.confirm(
+      i18n.t(confirmMessageRef.current),
+    );
+
+    if (confirmed) {
+      isDirtyRef.current = false;
+      setIsDirty(false);
+
+      blocker.proceed();
+    } else {
+      blocker.reset();
+    }
+  }, [blocker]);
 
   return { isDirty, setIsDirty };
 };

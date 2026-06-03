@@ -1,4 +1,6 @@
 import { runInAction, makeObservable, observable, action } from 'mobx';
+import { daliProxy } from '@/services';
+import { type GetDeviceParams } from '@/stores/dali/types';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore, ItemType } from './base-item-store';
 import type { BusStore } from './bus-store';
@@ -6,13 +8,12 @@ import type { BusStore } from './bus-store';
 export class DeviceStore extends BaseItemStore {
   readonly type = ItemType.Device;
 
-  // Array of group indexes that this device belongs to (e.g. 0, 1, etc.)
   public groups: number[] = [];
 
   #parent: BusStore | null;
 
-  constructor(daliProxy: any, id: string, name: string, groups: number[] = [], parent: BusStore | null = null) {
-    super(daliProxy, id, name);
+  constructor(id: string, name: string, groups: number[] = [], parent: BusStore | null = null) {
+    super(id, name);
     this.groups = groups;
     this.#parent = parent;
     makeObservable(this, {
@@ -39,11 +40,11 @@ export class DeviceStore extends BaseItemStore {
     }
     this.isLoading = true;
     try {
-      const params: Record<string, unknown> = { deviceId: this.id };
+      const params: GetDeviceParams = { deviceId: this.id };
       if (forceReload) {
         params.forceReload = true;
       }
-      const data = await this.daliProxy.GetDevice(params);
+      const data = await daliProxy.GetDevice(params);
       this.translator = new Translator();
       const schema = loadJsonSchema(data.schema);
       this.translator.addTranslations(schema.translations);
@@ -69,7 +70,7 @@ export class DeviceStore extends BaseItemStore {
     }
     this.isLoading = true;
     try {
-      const data = await this.daliProxy.SetDevice({ deviceId: this.id, config: this.objectStore.value });
+      const data = await daliProxy.SetDevice({ deviceId: this.id, config: this.objectStore.value });
       runInAction(() => {
         this.objectStore.setValue(data);
         this.objectStore.commit();
@@ -93,7 +94,7 @@ export class DeviceStore extends BaseItemStore {
 
   async identify() {
     try {
-      await this.daliProxy.IdentifyDevice({ deviceId: this.id });
+      await daliProxy.IdentifyDevice({ deviceId: this.id });
     } catch (error) {
       this.setError(error);
     }
@@ -101,7 +102,7 @@ export class DeviceStore extends BaseItemStore {
 
   async resetSettings() {
     try {
-      await this.daliProxy.ResetDeviceSettings({ deviceId: this.id });
+      await daliProxy.ResetDeviceSettings({ deviceId: this.id });
       this.setError(null);
     } catch (error) {
       this.setError(error);
@@ -112,7 +113,7 @@ export class DeviceStore extends BaseItemStore {
 
   async reset() {
     try {
-      await this.daliProxy.ResetDevice({ deviceId: this.id });
+      await daliProxy.ResetDevice({ deviceId: this.id });
       runInAction(() => {
         const parent = this.#parent;
         if (parent) {

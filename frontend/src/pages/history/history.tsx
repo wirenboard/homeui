@@ -3,6 +3,8 @@ import { ru, enUS } from 'date-fns/locale';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
 import { Chart } from '@/components/chart';
 import { DateTimePicker } from '@/components/datetime-picker';
@@ -11,34 +13,24 @@ import { Progress } from '@/components/progress';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { dashboardsStore } from '@/stores/dashboards';
 import { HistoryStore } from '@/stores/history';
 import { downloadFile } from '@/utils/donwload-file';
-import { useParseHash } from '@/utils/url';
 import { useStore } from '@/utils/use-store';
-import type { HistoryPageProps } from './types';
 import './styles.css';
 
-const HistoryPage = observer(({
-  historyProxy,
-  dashboardsStore,
-  devicesStore,
-  $state,
-}: HistoryPageProps) => {
+const HistoryPage = observer(() => {
   const { t, i18n } = useTranslation();
-  const { id, params } = useParseHash();
-
-  const store = useStore(() => new HistoryStore({
-    historyProxy,
-    dashboardsStore,
-    devicesStore,
-    $state,
-  }));
+  const params = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const store = useStore(() => new HistoryStore());
 
   useEffect(() => {
     if (!dashboardsStore.isLoading) {
-      store.initialize(id);
+      store.initialize(params.id);
     }
-  }, [id, dashboardsStore.isLoading]);
+  }, [params.id, dashboardsStore.isLoading]);
 
   const downloadHistoryTable = () => {
     const rows = document.querySelectorAll('#history-table tr');
@@ -85,6 +77,7 @@ const HistoryPage = observer(({
   return (
     <PageLayout
       title={t('history.title')}
+      infoLink={documentation[i18n.language]?.history}
       actions={!!store.chartConfig.length && (
         <Button
           variant="secondary"
@@ -101,7 +94,8 @@ const HistoryPage = observer(({
         <form
           onSubmit={(ev) => {
             ev.preventDefault();
-            store.loadData(params.has('fullscreen'));
+            const id = store.loadData();
+            navigate(`/history/${id}${searchParams.has('fullscreen') ? '?fullscreen=true' : ''}`);
           }}
         >
           {store.selectedControls.map((control, index) => (
@@ -237,7 +231,7 @@ const HistoryPage = observer(({
                   {format(
                     new Date(row.date),
                     row.showMs ? 'PPpp.SSS' : 'PPpp',
-                    { locale: i18n.language === 'ru' ? ru : enUS }
+                    { locale: i18n.language === 'ru' ? ru : enUS },
                   )}
                 </TableCell>
                 {row.value.map((cellValue, index) => (

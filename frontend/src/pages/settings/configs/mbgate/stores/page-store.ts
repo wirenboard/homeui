@@ -1,9 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 import { mbgatePath } from '@/common/paths';
+import { makeParameterStoreFromJsonSchema } from '@/components/json-editor/forms';
 import { type ConfigsStore } from '@/stores/configs';
 import { type DevicesStore, type Device } from '@/stores/devices';
-import i18n from '~/i18n/react/config';
-import { makeParameterStoreFromJsonSchema } from '~/react-directives/forms/jsonSchemaForms';
 import { RegSpace } from './reg-space';
 import type { AllRegisters, Register } from './types';
 
@@ -27,7 +26,7 @@ export class MbGateStore {
   }
 
   setSchemaAndData(schema: any, data: any) {
-    this.paramsStore = makeParameterStoreFromJsonSchema(schema, i18n.language);
+    this.paramsStore = makeParameterStoreFromJsonSchema(schema);
     this.paramsStore?.setValue(data);
     let keepalive = this.paramsStore.params?.['mqtt']?.params?.['keepalive'];
     keepalive.setStrict(false);

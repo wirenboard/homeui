@@ -1,5 +1,5 @@
+import i18n from '@/i18n/config';
 import { consolePanelStore } from '@/stores/console-panel';
-import i18n from '~/i18n/react/config';
 import type { FirmwareUpdateStore } from './store';
 
 export function registerFirmwareTab(store: FirmwareUpdateStore) {

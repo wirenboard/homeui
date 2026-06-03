@@ -11,6 +11,8 @@ declare module '*.svg' {
   export default src;
 }
 
+declare module '*.css' {}
+
 declare const __HIDE_COMPACT_MENU__: boolean;
 declare const __LOGO__: string;
 declare const __LOGO_COMPACT__: string;

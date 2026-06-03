@@ -19,7 +19,6 @@ import type { WidgetAddProps } from './types';
 import './styles.css';
 
 export const WidgetAdd = observer(({
-  dashboardsStore,
   widgets,
   dashboard,
   cells,
@@ -91,7 +90,7 @@ export const WidgetAdd = observer(({
               onTabChange={onTabChange}
             />
             <Dropdown
-              value={widgetList.find((widget) => widget.id === widgetId)}
+              value={widgetList.find((widget) => widget.id === widgetId).id}
               className="widgetAdd-dropdown"
               placeholder={t('widget.labels.available')}
               options={widgetList.map((widget) => ({ label: widget.label, value: widget.id }))}
@@ -197,7 +196,7 @@ export const WidgetAdd = observer(({
             setIsEditing(false);
           }}
           onSave={(data) => {
-            (widgets.get(widgetId) ?? new Widget(data, dashboardsStore)).save(data);
+            (widgets.get(widgetId) ?? new Widget(data)).save(data);
             setIsEditing(false);
             setWidgetId(data.id);
           }}

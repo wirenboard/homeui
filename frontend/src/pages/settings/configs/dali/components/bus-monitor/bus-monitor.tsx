@@ -47,15 +47,15 @@ export const BusMonitor = observer(({ monitorStore, busMonitorEnabled, onToggle 
         {busMonitorEnabled && (
           <>
             <Tooltip text={t('dali.buttons.clear-log')}>
-              <button className="rulesConsole-button" onClick={() => monitorStore.clearLogs()}>
-                <ClearIcon className="rulesConsole-icon"/>
+              <button className="consolePanel-button" onClick={() => monitorStore.clearLogs()}>
+                <ClearIcon className="consolePanel-icon"/>
               </button>
             </Tooltip>
             <Tooltip text={t(monitorStore.isOnPause ? 'dali.buttons.resume-log' : 'dali.buttons.pause-log')}>
-              <button className="rulesConsole-button" onClick={() => monitorStore.toggleLogsReception()}>
+              <button className="consolePanel-button" onClick={() => monitorStore.toggleLogsReception()}>
                 {monitorStore.isOnPause
-                  ? <VisibilityOn className="rulesConsole-icon"/>
-                  : <VisibilityOff className="rulesConsole-icon"/>
+                  ? <VisibilityOn className="consolePanel-icon"/>
+                  : <VisibilityOff className="consolePanel-icon"/>
                 }
               </button>
             </Tooltip>

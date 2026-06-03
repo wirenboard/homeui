@@ -5,10 +5,10 @@ import { Button } from '@/components/button';
 import { type Option } from '@/components/dropdown';
 import { BooleanField, FormButtonGroup, FormFieldGroup, OptionsField, StringField } from '@/components/form';
 import { authStore, UserRole } from '@/stores/auth';
-import { type CommonSettingsProps } from '../types';
+import { dashboardsStore } from '@/stores/dashboards';
 
-const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSettingsProps) => {
-  const { t } = useTranslation();
+const CommonSettings = observer(() => {
+  const { t, i18n } = useTranslation();
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
   const [defaultDashboardId, setDefaultDashboardId] = useState('');
@@ -29,10 +29,10 @@ const CommonSettings = observer(({ onChangeLanguage, dashboardsStore }: CommonSe
     { label: 'Русский', value: 'ru' },
   ];
 
-  const applyHandler = () => {
+  const applyHandler = async () => {
     localStorage.setItem('show-system-devices', showSystemDevices ? 'yes' : 'no');
     localStorage.setItem('language', language);
-    onChangeLanguage(language);
+    await i18n.changeLanguage(language);
     dashboardsStore.setDefaultDashboardId(defaultDashboardId);
     dashboardsStore.setDescription(description);
     dashboardsStore.setIsShowWidgetsPage(isShowWidgetsPage);

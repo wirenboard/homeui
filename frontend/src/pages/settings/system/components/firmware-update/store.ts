@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import type { MqttClient } from '@/common/types';
+import { mqttClient } from '@/services';
 import FactoryResetFitsState from './factory-reset';
 import { registerFirmwareTab, showFirmwareTab } from './register-firmware-tab';
 
@@ -22,8 +22,8 @@ export class FirmwareUpdateStore {
   public _timer = null;
   public factoryResetFitsState = new FactoryResetFitsState();
 
-  constructor(mqttClient: MqttClient, whenMqttReady: () => Promise<any>) {
-    whenMqttReady().then(() => {
+  constructor() {
+    mqttClient.whenConnected().then(() => {
       mqttClient.addStickySubscription('/firmware/status', ({ payload }) => {
         this.updateStatus(payload);
       });

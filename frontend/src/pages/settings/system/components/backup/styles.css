@@ -3,3 +3,7 @@
     gap: 12px;
     flex-wrap: wrap;
 }
+
+.backup-list {
+    margin-bottom: 6px;
+}

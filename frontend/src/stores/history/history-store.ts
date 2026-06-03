@@ -1,8 +1,11 @@
+/* eslint-disable max-lines */
+
 import { subDays } from 'date-fns';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { type DashboardsStore, type Widget } from '@/stores/dashboards';
-import { type Cell, type Device, type DevicesStore } from '@/stores/devices';
-import i18n from '~/i18n/react/config';
+import i18n from '@/i18n/config';
+import { historyProxy } from '@/services';
+import { dashboardsStore, type Widget } from '@/stores/dashboards';
+import { type Cell, type Device, devicesStore } from '@/stores/devices';
 import { fixBoolAxes, getAxis } from './axis';
 import { ChartColors } from './chart-colors';
 import { ChartTraits } from './chart-traits';
@@ -22,7 +25,6 @@ import {
 const HISTORY_MAX_POINTS = 1000;
 
 export default class HistoryStore {
-  private readonly $state: any;
   private chartContainer: HTMLDivElement | null = null;
   public errors = [];
   public controls: ChartsControl[] = [];
@@ -39,15 +41,7 @@ export default class HistoryStore {
   public selectedEndDate: Date | null = null;
   private loadId = 0;
 
-  readonly #dashboardsStore: DashboardsStore;
-  readonly #devicesStore: DevicesStore;
-  readonly #historyProxy: any;
-
-  constructor(deps: { historyProxy: any; $state: any; dashboardsStore: DashboardsStore; devicesStore: DevicesStore }) {
-    this.#historyProxy = deps.historyProxy;
-    this.$state = deps.$state;
-    this.#dashboardsStore = deps.dashboardsStore;
-    this.#devicesStore = deps.devicesStore;
+  constructor() {
     this.layoutConfig = this.#getDefaultLayoutConfig();
 
     makeAutoObservable(this, {}, { autoBind: true });
@@ -56,6 +50,10 @@ export default class HistoryStore {
   initialize(id?: string) {
     this.readDatesFromUrl(id);
     this.buildControls(id);
+    if (!id) {
+      this.chartConfig = [];
+      this.dataPointsMultiple = [];
+    }
   }
 
   setChartContainerRef(ref: HTMLDivElement | null) {
@@ -76,7 +74,7 @@ export default class HistoryStore {
     this.stopLoadData = false;
   }
 
-  loadData(isFullScreen: boolean) {
+  loadData() {
     if (this.stopLoadData) {
       return;
     }
@@ -99,17 +97,11 @@ export default class HistoryStore {
 
     const startValue = this.selectedStartDate;
     const endValue = this.selectedEndDate;
-    const id = encodeControls(
+    return encodeControls(
       controlsForUrl,
       startValue ? startValue.getTime() : undefined,
       endValue ? endValue.getTime() : undefined,
     );
-
-    const params: Record<string, unknown> = { id };
-    if (isFullScreen) {
-      params.fullscreen = true;
-    }
-    this.$state.go('history.sample', params, { reload: true, inherit: false, notify: true });
   }
 
   setSelectedControlValue(index: number, control: string | null) {
@@ -160,13 +152,13 @@ export default class HistoryStore {
   buildControls(id?: string) {
     const widgetChannelsMsg = i18n.t('history.labels.widget_channels');
     const allChannelsMsg = i18n.t('history.labels.all_channels');
-    const widgetControls = [...this.#dashboardsStore.widgets.values()]
+    const widgetControls = [...dashboardsStore.widgets.values()]
       .flatMap((widget) => widget.cells
         .filter((item) => item.id)
         .map((item) => {
           try {
-            const cell = this.#devicesStore.cells.get(item.id);
-            const device = this.#devicesStore.devices.get(cell.deviceId);
+            const cell = devicesStore.cells.get(item.id);
+            const device = devicesStore.devices.get(cell.deviceId);
             return this.makeChartsControlFromCell(device, cell, widgetChannelsMsg, widget);
           } catch (error) {
             const deviceControl = item.id.split('/');
@@ -181,11 +173,11 @@ export default class HistoryStore {
         }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    const allControls = Array.from(this.#devicesStore.filteredDevices.keys()).sort()
+    const allControls = Array.from(devicesStore.filteredDevices.keys()).sort()
       .flatMap((deviceId) => {
-        const device = this.#devicesStore.devices.get(deviceId);
+        const device = devicesStore.devices.get(deviceId);
         return [...device.cells].map((cellId) => {
-          const cell = this.#devicesStore.cells.get(cellId);
+          const cell = devicesStore.cells.get(cellId);
           return this.makeChartsControlFromCell(device, cell, allChannelsMsg);
         });
       });
@@ -537,7 +529,7 @@ export default class HistoryStore {
       this.disableUi = false;
       return;
     }
-    this.#historyProxy.get_values(params)
+    historyProxy.get_values(params)
       .then((result: LoadHistoryResponse) => {
         runInAction(() => {
           if (loadId !== this.loadId) return;

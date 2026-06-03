@@ -1,9 +1,10 @@
 export const focusToMainContent = (delay: number = 0) => {
   setTimeout(() => {
-    let focusedBlock: HTMLElement | null
-      = document.querySelector('main.page')
-      || document.querySelector('#page-wrapper');
+    if (document.activeElement instanceof HTMLInputElement) {
+      return;
+    }
 
+    let focusedBlock: HTMLElement | null = document.querySelector('main');
     if (focusedBlock.querySelector('.login-form')) {
       focusedBlock = focusedBlock.querySelector('input');
     } else if (focusedBlock.querySelector('h1')) {

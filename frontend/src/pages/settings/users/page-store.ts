@@ -1,9 +1,9 @@
 import { type AxiosError } from 'axios';
 import { makeAutoObservable, runInAction } from 'mobx';
+import i18n from '@/i18n/config';
 import { authStore, UserRole, type User } from '@/stores/auth';
-import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/httpsUtils';
+import { getDeviceInfo, makeHttpsUrlOrigin } from '@/utils/https-utils';
 import { request } from '@/utils/request';
-import i18n from '~/i18n/react/config';
 
 function sortUsers(users: User[]) {
   users.sort((a, b) => {
@@ -122,7 +122,7 @@ class UsersPageStore {
   }
 
   async confirmSetupHttps() {
-    if (window.location.protocol === 'https:') {
+    if (location.protocol === 'https:') {
       return true;
     }
     if (!await this.showEnableHttpsConfirmModal()) {
@@ -132,7 +132,7 @@ class UsersPageStore {
 
     try {
       await request.patch('/api/https', { enabled: true });
-      window.location.reload();
+      location.reload();
       return false;
     } catch (error) {
       this.processFetchError(error);
@@ -164,7 +164,7 @@ class UsersPageStore {
     }
 
     if (authStore.me.id === user.id && !authStore.me.autologin) {
-      return authStore.logout('/#!/login?returnState=accessLevel');
+      return authStore.logout();
     }
 
     runInAction(() => {

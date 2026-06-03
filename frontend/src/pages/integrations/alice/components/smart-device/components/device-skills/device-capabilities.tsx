@@ -15,6 +15,7 @@ import {
   defaultTemperatureParameters,
   defaultColorSceneParameters,
 } from '@/stores/alice';
+import { devicesStore } from '@/stores/devices';
 import {
   ColorSettingCapability,
   getAvailableColorModels,
@@ -32,9 +33,7 @@ import {
 } from './capabilities/toggle';
 import { type CapabilitySubProps, type DeviceCapabilitiesProps } from './types';
 
-export const DeviceCapabilities = observer(({
-  capabilities, devicesStore, onCapabilityChange,
-}: DeviceCapabilitiesProps) => {
+export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }: DeviceCapabilitiesProps) => {
   const { t } = useTranslation();
   const idPrefix = useId();
 
@@ -110,9 +109,8 @@ export const DeviceCapabilities = observer(({
       case Capability.Toggle: {
         // Select first available instance
         const availableInstances = getAvailableToggleInstances(capabilities);
-        const selectedInstance = availableInstances[0] || 'backlight'; // fallback to backlight
 
-        parameters.instance = selectedInstance;
+        parameters.instance = availableInstances[0] || 'backlight'; // fallback to backlight;
         break;
       }
       case Capability['On/Off']: {

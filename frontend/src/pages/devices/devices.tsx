@@ -13,10 +13,10 @@ import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type DevicesStore } from '@/stores/devices';
+import { devicesStore } from '@/stores/devices';
 import './styles.css';
 
-const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
+const DevicesPage = observer(() => {
   const { t } = useTranslation();
   const [deletedDeviceId, setDeletedDeviceId] = useState<string | null>(null);
 
@@ -39,24 +39,24 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
       hasRights={authStore.hasRights(UserRole.Operator)}
       actions={
         <Tooltip
-          text={store.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
+          text={devicesStore.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
         >
           <Button
             variant="secondary"
-            aria-label={store.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
-            icon={store.hasOpenedDivices ? <CollapseIcon /> : <ExpandIcon />}
-            onClick={store.toggleDevices}
+            aria-label={devicesStore.hasOpenedDivices ? t('devices.labels.collapse') : t('devices.labels.expand')}
+            icon={devicesStore.hasOpenedDivices ? <CollapseIcon /> : <ExpandIcon />}
+            onClick={devicesStore.toggleDevices}
           />
         </Tooltip>
       }
     >
       <section className="devices">
-        {store.filteredDevices.size ? (
+        {devicesStore.filteredDevices.size ? (
           <ColumnsWrapper
             columnClassName="devices-column"
             baseColumnWidth={376}
           >
-            {Array.from(store.filteredDevices).map(([deviceId, device]) => (
+            {Array.from(devicesStore.filteredDevices).map(([deviceId, device]) => (
               <Card
                 heading={device.name}
                 id={deviceId}
@@ -65,7 +65,7 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
                 isBodyVisible={device.isVisible}
                 key={device.id}
               >
-                {store.getDeviceCells(device.id).map((cell) => (
+                {devicesStore.getDeviceCells(device.id).map((cell) => (
                   <Cell
                     cell={cell}
                     key={cell.id}
@@ -87,14 +87,14 @@ const DevicesPage = observer(({ store }: { store: DevicesStore }) => {
         variant="danger"
         closeCallback={() => setDeletedDeviceId(null)}
         confirmCallback={() => {
-          store.deleteDevice(deletedDeviceId);
+          devicesStore.deleteDevice(deletedDeviceId);
           setDeletedDeviceId(null);
         }}
       >
         <Trans
           i18nKey="devices.prompt.delete-description"
           values={{
-            name: store.devices.get(deletedDeviceId)?.name,
+            name: devicesStore.devices.get(deletedDeviceId)?.name,
           }}
           components={[<b key="device-name" />]}
           shouldUnescape

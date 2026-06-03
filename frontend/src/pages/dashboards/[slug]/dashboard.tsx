@@ -2,10 +2,12 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { Fragment, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import EditIcon from '@/assets/icons/edit.svg';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
 import FullScreenIcon from '@/assets/icons/full-screen.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
@@ -15,25 +17,27 @@ import { Confirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { useToggleFullscreen } from '@/utils/fullScreen';
-import { useParseHash } from '@/utils/url';
+import { dashboardsStore } from '@/stores/dashboards';
+import { devicesStore } from '@/stores/devices';
+import { useToggleFullscreen } from '@/utils/full-screen';
 import { WidgetAdd } from './components/widget-add';
 import { WidgetEdit } from './components/widget-edit';
-import type { DashboardPageProps } from './types';
 import './styles.css';
 
-const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPageProps) => {
-  const { t } = useTranslation();
+const DashboardPage = observer(() => {
+  const { t, i18n } = useTranslation();
   const { cells } = devicesStore;
+  const params = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { dashboards, widgets, isLoading } = dashboardsStore;
   const hasEditRights = authStore.hasRights(UserRole.Operator);
-  const { id: dashboardId, params } = useParseHash();
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [isAddWidgetModalOpened, setIsAddWidgetModalOpened] = useState(false);
   const [removedWidgetId, setRemovedWidgetId] = useState(null);
   const [editingWidgetId, setEditingWidgetId] = useState(null);
 
-  const actions = hasEditRights && !params.has('hmi') ? [
+  const actions = hasEditRights && !searchParams.has('hmi') ? [
     {
       title: t('dashboard.buttons.remove-widget'), action: (id: string) => setRemovedWidgetId(id),
       icon: TrashIcon,
@@ -48,25 +52,26 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
   ] : [];
 
   const returnToPreviousPage = () => {
-    let url = `/#!/dashboards/svg/view/${params.get('sourceDashboardId')}`;
+    let url = `/dashboards/svg/view/${searchParams.get('sourceDashboardId')}`;
 
-    if (params.has('hmi')) {
+    if (searchParams.has('hmi')) {
       url += '?hmi';
 
-      if (params.get('hmicolor')) {
-        url += `&hmicolor=${params.get('hmicolor')}`;
+      if (searchParams.get('hmicolor')) {
+        url += `&hmicolor=${searchParams.get('hmicolor')}`;
       }
     }
-    location.assign(url);
+    navigate(url);
   };
 
   return (
     <>
       <PageLayout
-        title={dashboards.get(dashboardId)?.name || ''}
-        actions={!params.has('fullscreen') && (
+        title={dashboards.get(params.id)?.name || ''}
+        infoLink={documentation[i18n.language]?.dashboards}
+        actions={!searchParams.has('fullscreen') && (
           <>
-            {params.get('sourceDashboardId') && (
+            {searchParams.get('sourceDashboardId') && (
               <Button
                 label={t('dashboard.buttons.back-to-dashboard')}
                 variant="secondary"
@@ -93,18 +98,18 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
             </Tooltip>
           </>
         )}
-        isHideHeader={!!params.has('hmi')}
+        isHideHeader={!!searchParams.has('hmi')}
         isLoading={isLoading}
         hasRights
       >
-        {dashboards.get(dashboardId)?.widgets.length ? (
+        {dashboards.get(params.id)?.widgets.length ? (
           <div
             className={classNames('dashboard-container', {
-              'dashboard-fullScreen': params.has('hmi'),
+              'dashboard-fullScreen': searchParams.has('hmi'),
             })}
           >
             <ColumnsWrapper baseColumnWidth={376}>
-              {dashboards.get(dashboardId).widgets.map((widgetId) => widgets.get(widgetId) ? (
+              {dashboards.get(params.id).widgets.map((widgetId) => widgets.get(widgetId) ? (
                 <Card
                   id={widgetId}
                   heading={widgets.get(widgetId)?.name}
@@ -140,7 +145,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
           </Alert>
         )}
 
-        {params.get('sourceDashboardId') && params.has('hmi') && (
+        {searchParams.get('sourceDashboardId') && searchParams.has('hmi') && (
           <Button
             className="dashboard-backButton"
             label={t('dashboard.buttons.back-to-dashboard')}
@@ -152,8 +157,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
         {isAddWidgetModalOpened && (
           <WidgetAdd
             widgets={widgets}
-            dashboardsStore={dashboardsStore}
-            dashboard={dashboards.get(dashboardId)}
+            dashboard={dashboards.get(params.id)}
             cells={cells}
             isOpened={isAddWidgetModalOpened}
             topics={devicesStore.topicsWithoutSystem}
@@ -168,7 +172,7 @@ const DashboardPage = observer(({ dashboardsStore, devicesStore }: DashboardPage
             variant="danger"
             closeCallback={() => setRemovedWidgetId(null)}
             confirmCallback={() => {
-              dashboardsStore.removeWidgetFromDashboard(dashboardId, removedWidgetId);
+              dashboardsStore.removeWidgetFromDashboard(params.id, removedWidgetId);
               setRemovedWidgetId(null);
             }}
           >

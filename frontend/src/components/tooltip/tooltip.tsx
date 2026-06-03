@@ -25,6 +25,7 @@ export const Tooltip = ({
   text,
   closeOnClick = false,
   trigger = 'hover',
+  autoClose = true,
   placement = 'top',
   ...rest
 }: PropsWithChildren<TooltipProps>) => {
@@ -64,7 +65,7 @@ export const Tooltip = ({
   ]);
 
   useEffect(() => {
-    if (trigger === 'click') {
+    if (trigger === 'click' && autoClose) {
       setTimeout(() => {
         setIsOpen(false);
       }, 2000);

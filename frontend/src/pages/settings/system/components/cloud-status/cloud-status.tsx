@@ -10,9 +10,9 @@ import type CloudStatusStore from './store';
 import { type CloudStatusProps } from './types';
 import './styles.css';
 
-export const CloudStatus = observer(({ className, mqttClient, whenMqttReady }: CloudStatusProps) => {
+export const CloudStatus = observer(({ className }: CloudStatusProps) => {
   const { t } = useTranslation();
-  const store = useStore(() => new CloudStatusMetaStore(mqttClient, whenMqttReady));
+  const store = useStore(() => new CloudStatusMetaStore());
 
   return Object.values(store.stores).map((store: CloudStatusStore) => store.initialized ? (
     <Card
@@ -25,7 +25,7 @@ export const CloudStatus = observer(({ className, mqttClient, whenMqttReady }: C
         <>
           <Status status={store.status} />
           <ButtonLink
-            href={store.cloudLink}
+            to={store.cloudLink}
             label={t('system.cloud-status.goto-cloud')}
             className="cloudStatus-button"
             variant="secondary"

@@ -10,11 +10,11 @@ import LayoutRightIcon from '@/assets/icons/layout-right.svg';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Tabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
+import { consolePanelStore as store } from '@/stores/console-panel';
 import { ConsolePanelContent } from './console-panel-content';
-import type { ConsolePanelProps } from './types';
 import './styles.css';
 
-export const ConsolePanel = observer(({ store, onPositionChange }: ConsolePanelProps) => {
+export const ConsolePanel = observer(() => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const container = useRef<HTMLDivElement>(null);
@@ -47,33 +47,44 @@ export const ConsolePanel = observer(({ store, onPositionChange }: ConsolePanelP
       : tab.label,
   }));
 
+  const dragStart = useRef<{ size: number; coord: number } | null>(null);
+  const rafId = useRef(0);
+
   const handleResizerDown = useCallback((ev: PointerEvent) => {
     const target = ev.target as HTMLElement;
     if (resizer.current && target.id === 'consoleResizer') {
       resizer.current.setPointerCapture(ev.pointerId);
+      const rect = container.current.getBoundingClientRect();
+      if (positionRef.current === 'bottom') {
+        dragStart.current = { size: rect.height, coord: ev.clientY };
+      } else {
+        dragStart.current = { size: rect.width, coord: ev.clientX };
+      }
     }
   }, []);
 
   const handleResizerMove = useCallback((ev: PointerEvent) => {
-    if (!resizer.current || !resizer.current.hasPointerCapture(ev.pointerId)) {
+    if (!resizer.current || !resizer.current.hasPointerCapture(ev.pointerId) || !dragStart.current) {
       return;
     }
 
-    if (positionRef.current === 'bottom') {
-      const maxHeight = window.innerHeight * 0.7;
-      const newHeight = container.current.getBoundingClientRect().height - ev.movementY;
-      const clampedHeight = Math.min(Math.max(newHeight, 50), maxHeight);
-      store.setHeight(`${clampedHeight}px`);
-    } else {
-      const maxWidth = 780;
-      const newWidth = container.current.getBoundingClientRect().width - ev.movementX;
-      const clampedWidth = Math.min(Math.max(newWidth, 50), maxWidth);
-      store.setWidth(`${clampedWidth}px`);
-    }
+    cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      if (!dragStart.current) return;
+
+      if (positionRef.current === 'bottom') {
+        const max = window.innerHeight * 0.7;
+        const val = Math.min(Math.max(dragStart.current.size - (ev.clientY - dragStart.current.coord), 50), max);
+        store.setHeight(`${val}px`);
+      } else {
+        const max = window.innerWidth * 0.7;
+        const val = Math.min(Math.max(dragStart.current.size - (ev.clientX - dragStart.current.coord), 50), max);
+        store.setWidth(`${val}px`);
+      }
+    });
   }, []);
 
   const changePosition = (pos: 'bottom' | 'right', isWithSave = true) => {
-    onPositionChange(pos);
     if (isWithSave) {
       store.setPosition(pos);
     }
@@ -84,8 +95,8 @@ export const ConsolePanel = observer(({ store, onPositionChange }: ConsolePanelP
     addEventListener('pointermove', handleResizerMove);
 
     return () => {
-      document.removeEventListener('pointerdown', handleResizerDown, true);
-      document.removeEventListener('pointermove', handleResizerMove, true);
+      removeEventListener('pointerdown', handleResizerDown);
+      removeEventListener('pointermove', handleResizerMove);
     };
   }, []);
 

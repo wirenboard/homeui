@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import type DashboardsStore from '@/stores/dashboards/dashboards-store';
+import { dashboardsStore } from '@/stores/dashboards/index';
 import { type DashboardBase } from './types';
 
 export class Dashboard {
@@ -12,9 +12,8 @@ export class Dashboard {
   declare svg_url: string;
   declare swipe: DashboardBase['swipe'];
   declare options: DashboardBase['options'];
-  #dashboardsStore: DashboardsStore;
 
-  constructor(dashboard: DashboardBase, dashboardsStore: DashboardsStore) {
+  constructor(dashboard: DashboardBase) {
     this.id = dashboard.id;
     this.name = dashboard.name;
     this.widgets = dashboard.widgets || [];
@@ -27,7 +26,6 @@ export class Dashboard {
       this.svg_url = dashboard.svg_url;
       this.swipe = dashboard.swipe;
     }
-    this.#dashboardsStore = dashboardsStore;
 
     makeAutoObservable(this, {
       svg: false,
@@ -42,15 +40,15 @@ export class Dashboard {
   }
 
   addWidget(widgetId: string) {
-    this.#dashboardsStore.addWidgetToDashboard(this.id, widgetId);
+    dashboardsStore.addWidgetToDashboard(this.id, widgetId);
   }
 
   async delete() {
-    return this.#dashboardsStore.deleteDashboard(this.id);
+    return dashboardsStore.deleteDashboard(this.id);
   }
 
   async toggleVisibility() {
     this.options.isHidden = Object.hasOwn(this.options, 'isHidden') ? !this.options.isHidden : true;
-    return this.#dashboardsStore.updateDashboard(this.id, this);
+    return dashboardsStore.updateDashboard(this.id, this);
   }
 }

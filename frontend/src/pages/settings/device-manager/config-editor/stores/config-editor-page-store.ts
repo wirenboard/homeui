@@ -1,8 +1,14 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { makeObservable, observable, computed, action } from 'mobx';
+import { makeObservable, observable, computed, action, runInAction } from 'mobx';
+import i18n from '@/i18n/config';
+import type {
+  fwUpdateProxy as FwUpdateProxyInstance,
+  serialDeviceProxy as SerialDeviceProxyInstance,
+  serialPortProxy as SerialPortProxyInstance,
+} from '@/services';
 import { DeviceTabStore, type DeviceTypesStore, setupDevice, getIntAddress } from '@/stores/device-manager';
 import type { PortTabSerialConfig } from '@/stores/device-manager/port-tab/types';
-import type { FwUpdateProxy, ScannedDevice, SerialDeviceProxy, SerialPortProxy } from '@/stores/device-manager/types';
+import type { ScannedDevice } from '@/stores/device-manager/types';
 import {
   loadJsonSchema,
   Translator,
@@ -10,8 +16,7 @@ import {
   type JsonObject,
   type JsonSchema,
 } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/formatError';
-import i18n from '~/i18n/react/config';
+import { formatError } from '@/utils/format-error';
 import { getTranslation } from '../stores/json-schema-utils';
 import {
   getDeviceSetupErrorMessage,
@@ -32,11 +37,12 @@ export class ConfigEditorPageStore {
   public schemaTranslator: Translator;
   public loaded: boolean = false;
   public loading: boolean = true;
+  public saving: boolean = false;
   public error = '';
   public deviceTypesStore: DeviceTypesStore;
-  public fwUpdateProxy: FwUpdateProxy;
-  public serialDeviceProxy: SerialDeviceProxy;
-  public serialPortProxy: SerialPortProxy;
+  public fwUpdateProxy: typeof FwUpdateProxyInstance;
+  public serialDeviceProxy: typeof SerialDeviceProxyInstance;
+  public serialPortProxy: typeof SerialPortProxyInstance;
   public loadConfigFn: () => Promise<LoadConfigResult>;
   public saveConfigFn: (_cfg: ConfigJson) => Promise<void>;
   public portSchemaMap = {};
@@ -47,9 +53,9 @@ export class ConfigEditorPageStore {
     toMobileContent: () => void,
     toTabs: () => void,
     deviceTypesStore: DeviceTypesStore,
-    fwUpdateProxy: FwUpdateProxy,
-    serialDeviceProxy: SerialDeviceProxy,
-    serialPortProxy: SerialPortProxy,
+    fwUpdateProxy: typeof FwUpdateProxyInstance,
+    serialDeviceProxy: typeof SerialDeviceProxyInstance,
+    serialPortProxy: typeof SerialPortProxyInstance,
   ) {
     this.tabs = new TabsStore(toMobileContent, toTabs);
     this.deviceTypesStore = deviceTypesStore;
@@ -64,6 +70,7 @@ export class ConfigEditorPageStore {
       allowSave: computed,
       isDirty: computed,
       loaded: observable,
+      saving: observable,
       addDevices: action,
     });
   }
@@ -214,13 +221,14 @@ export class ConfigEditorPageStore {
   }
 
   makeConfigJson(): ConfigJson {
-    const config = cloneDeep(this.tabs.items[this.tabs.items.length - 1].editedData);
+    const settingsData = this.tabs.items[this.tabs.items.length - 1].editedData;
+    const config = cloneDeep(settingsData) as unknown as ConfigJson;
+    config.ports ??= [];
     this.tabs.portTabs.forEach((portTab) => {
-      config.ports ??= [];
-      const portConfig = cloneDeep(portTab.editedData);
+      const portConfig = cloneDeep(portTab.editedData) as unknown as PortConfig & { devices: JsonObject[] };
       portConfig.devices ??= [];
       portTab.children.forEach((deviceTab) => {
-        portConfig.devices.push(cloneDeep(deviceTab.editedData));
+        portConfig.devices.push(cloneDeep(deviceTab.editedData) as unknown as JsonObject);
       });
       config.ports.push(portConfig);
     });
@@ -228,15 +236,23 @@ export class ConfigEditorPageStore {
   }
 
   async save() {
-    this.loading = true;
-    this.error = '';
+    runInAction(() => {
+      this.saving = true;
+      this.error = '';
+    });
     try {
       await this.saveConfigFn(this.makeConfigJson());
-      this.tabs.commitData();
+      runInAction(() => {
+        this.tabs.commitData();
+      });
     } catch (err) {
-      this.error = getErrorMessage(err);
+      runInAction(() => {
+        this.error = getErrorMessage(err);
+      });
     }
-    this.loading = false;
+    runInAction(() => {
+      this.saving = false;
+    });
   }
 
   async changeDeviceType(tab: DeviceTabStore, type: string) {

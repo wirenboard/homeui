@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Trans, useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
 import { useConfirm } from '@/components/confirm';
 import { Progress } from '@/components/progress';
@@ -15,7 +16,7 @@ import { type ScanPageProps } from './types';
 import './styles.css';
 
 const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isDesktop = useMediaQuery({ minWidth: 874 });
   const [confirmAddressChange, isConfirmOpened, handleConfirm, handleClose] = useConfirm<any>();
   const nothingFound = !pageStore.commonScanStore.devicesStore.newDevices.length
@@ -25,6 +26,7 @@ const ScanPage = observer(({ pageStore, scanType }: ScanPageProps) => {
     <>
       <PageLayout
         title={t(scanType === 'new' ? 'scan.title' : 'scan.search-disconnected-title')}
+        infoLink={documentation[i18n.language]?.scan}
         hasRights={authStore.hasRights(UserRole.Admin)}
         isLoading={pageStore.commonScanStore.mqttStore.waitStartup}
         loadingOptions={{

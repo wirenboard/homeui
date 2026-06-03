@@ -1,6 +1,6 @@
 import { makeObservable, computed } from 'mobx';
+import i18n from '@/i18n/config';
 import { type JsonSchema, ObjectStore, StoreBuilder, type Translator } from '@/stores/json-schema-editor';
-import i18n from '~/i18n/react/config';
 import { TabType } from './tabs-store';
 
 export class SettingsTab {

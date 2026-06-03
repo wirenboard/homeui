@@ -1,51 +1,50 @@
 import { observer } from 'mobx-react-lite';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button } from '@/components/button';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { documentation } from '@/common/links';
+import { Button, ButtonLink } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { dashboardsStore } from '@/stores/dashboards';
+import { devicesStore } from '@/stores/devices';
 import { useAsyncAction } from '@/utils/async-action';
-import { useParseHash } from '@/utils/url';
 import { useStore } from '@/utils/use-store';
 import { VisualEditView } from './components/visual-edit-view';
 import { EditSvgDashboardPageStore } from './stores/store';
-import { type EditSvgDashboardPageProps } from './types';
 
 const JsonBindingsEditor = lazy(() => import('./components/json-bindings-editor'));
 
-const EditSvgDashboardPage = observer(({ dashboardsStore, devicesStore, openPage }: EditSvgDashboardPageProps) => {
-  const { t } = useTranslation();
-  const { id } = useParseHash();
-  const store = useStore(() => new EditSvgDashboardPageStore(dashboardsStore));
+const EditSvgDashboardPage = observer(() => {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+  const store = useStore(() => new EditSvgDashboardPageStore());
   const [isDeleteDashboard, setIsDeleteDashboard] = useState(false);
 
   useEffect(() => {
-    if (id && !dashboardsStore.isLoading) {
-      const isNew = id === 'add';
-      if (!dashboardsStore.dashboards.get(id) && !isNew) {
-        openPage('dashboard-svg-add');
-      } else {
-        store.setDashboard(isNew ? null : id);
-      }
-    }
-  }, [id, dashboardsStore.isLoading]);
+    const isNew = location.pathname === '/dashboards/svg/add';
+    store.setDashboard(isNew ? null : params.id);
+  }, [params.id, dashboardsStore.isLoading]);
 
   const [save, isSaving] = useAsyncAction(async () => {
     const id = await store.onSaveDashboard();
-    openPage('dashboard-svg-edit', { id });
+    navigate(`/dashboards/svg/edit/${id}`);
   });
 
   const [deleteDashboard, isDeleting] = useAsyncAction(async () => {
     await store.removeDashboard();
     setIsDeleteDashboard(false);
-    return openPage('dashboards');
+    return navigate('/dashboards');
   });
 
   return (
     <>
       <PageLayout
         title={store.isNew ? t('edit-svg-dashboard.labels.create') : t('edit-svg-dashboard.labels.edit')}
+        infoLink={documentation[i18n.language]?.svgdashboard}
         isLoading={store.isLoading}
         hasRights={authStore.hasRights(UserRole.Operator)}
         errors={dashboardsStore.saveError ? [{ variant: 'danger', text: dashboardsStore.saveError }] : []}
@@ -57,21 +56,19 @@ const EditSvgDashboardPage = observer(({ dashboardsStore, devicesStore, openPage
                 variant="secondary"
                 onClick={async () => {
                   await store.removeDashboard();
-                  openPage('dashboards');
+                  navigate('/dashboards');
                 }}
               />
             ) : (
               <>
-                <Button
-                  label={t('edit-svg-dashboard.buttons.preview')}
-                  variant="secondary"
-                  onClick={() => {
-                    if (!id) {
-                      return;
-                    }
-                    openPage('dashboard-svg', { id });
-                  }}
-                />
+                {params.id && (
+                  <ButtonLink
+                    to={`/dashboards/svg/view/${params.id}`}
+                    label={t('edit-svg-dashboard.buttons.preview')}
+                    variant="secondary"
+                  />
+                )}
+
                 <Button
                   variant="danger"
                   label={t('edit-svg-dashboard.buttons.remove')}

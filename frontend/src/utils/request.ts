@@ -32,7 +32,7 @@ export class ApiError extends Error {
 request.interceptors.response.use(
   (response) => {
     const contentType = response.headers['content-type'];
-    if (contentType && contentType.includes('text/html')) {
+    if (contentType && (contentType as string).includes('text/html')) {
       throw new ApiError({
         message: `"${response.config.url}" wrong response type`,
         status: 502,

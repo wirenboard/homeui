@@ -1,31 +1,17 @@
 import { runInAction, makeObservable, observable } from 'mobx';
 import { type ErrorInfo } from '@/layouts/page';
-import { formatError } from '@/utils/formatError';
+import { daliProxy, mqttClient } from '@/services';
+import { formatError } from '@/utils/format-error';
 import { BusStore } from './bus-store';
 import { DeviceStore } from './device-store';
 import { GatewayStore } from './gateway-store';
-import type { DaliBusProxy, DaliProxy } from './types';
 
 export class DaliStore {
   public gateways: GatewayStore[] = [];
   public isLoading = true;
   public errors: ErrorInfo[];
-  #daliProxy: DaliProxy;
-  #daliBusProxy: DaliBusProxy;
-  #whenMqttReady: () => Promise<void>;
-  #mqttClient: any;
 
-  constructor(
-    whenMqttReady: () => Promise<void>,
-    daliProxy: DaliProxy,
-    daliBusProxy: DaliBusProxy,
-    mqttClient: any,
-  ) {
-    this.#daliProxy = daliProxy;
-    this.#daliBusProxy = daliBusProxy;
-    this.#whenMqttReady = whenMqttReady;
-    this.#mqttClient = mqttClient;
-
+  constructor() {
     makeObservable(this, {
       isLoading: observable,
       errors: observable,
@@ -35,22 +21,19 @@ export class DaliStore {
 
   async load() {
     try {
-      await this.#whenMqttReady();
-      const gateways = await this.#daliProxy.GetList();
+      await mqttClient.whenConnected();
+      const gateways = await daliProxy.GetList();
       runInAction(() => {
         this.gateways = gateways.map((gateway) => {
-          const gatewayStore = new GatewayStore(this.#daliProxy, gateway.id, gateway.name);
+          const gatewayStore = new GatewayStore(gateway.id, gateway.name);
           gatewayStore.children = gateway.buses.map((bus) => {
             const busStore = new BusStore(
-              this.#daliProxy,
-              this.#daliBusProxy,
               bus.id,
               bus.name,
-              this.#mqttClient,
               bus.commissioning,
             );
             busStore.children = bus.devices.map(
-              (device) => new DeviceStore(this.#daliProxy, device.id, device.name, device.groups ?? [], busStore),
+              (device) => new DeviceStore(device.id, device.name, device.groups ?? [], busStore),
             );
             busStore.syncGroupChildren();
             return busStore;

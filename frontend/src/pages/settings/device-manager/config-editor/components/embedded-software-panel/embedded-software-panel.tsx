@@ -16,7 +16,7 @@ const UpdateProgressPanel = observer(
   ({ component } : { component: EmbeddedSoftwareComponent | ComponentFirmware }) => {
     const { t } = useTranslation();
     let label: string;
-    let vars : Record<string, any> = {
+    let vars: Record<string, string> = {
       current: component.current,
       available: component.available,
     };

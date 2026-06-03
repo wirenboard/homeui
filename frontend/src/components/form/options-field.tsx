@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Dropdown } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { FieldLabel } from './field-label';
 import { FormField } from './form-field';
 import type { OptionsFieldProps } from './types';
@@ -31,14 +31,14 @@ export const OptionsField = ({
       {!!title && <FieldLabel title={title} inputId={inputId} />}
       <Dropdown
         id={inputId}
-        value={value}
+        value={value as string}
         options={options}
         placeholder={placeholder}
         isClearable={isClearable}
         isDisabled={isDisabled}
         isSearchable={isSearchable}
         isInvalid={!!error}
-        onChange={(option) => onChange(option?.value)}
+        onChange={(option: Option<string>) => onChange(option?.value)}
       />
     </FormField>
   );
