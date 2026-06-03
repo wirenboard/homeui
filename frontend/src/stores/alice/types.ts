@@ -17,11 +17,16 @@ export interface SmartDeviceProperty {
   parameters: PropertyParameters;
 }
 
+export interface ModeMapping {
+  value: string;
+  mqtt_value_match: string;
+}
+
 export interface CapabilityParameters {
   color_model?: ColorModel;
   color_scene?: { scenes: string[] };
   instance?: string;
-  modes?: string;
+  modes?: ModeMapping[];
   unit?: string;
   range?: {
     min: number;

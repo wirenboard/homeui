@@ -76,7 +76,7 @@ export const deviceTypes = {
 export enum Capability {
   'On/Off' = 'devices.capabilities.on_off',
   'Color setting' = 'devices.capabilities.color_setting',
-  // Mode = 'devices.capabilities.mode',
+  Mode = 'devices.capabilities.mode',
   Range = 'devices.capabilities.range',
   Toggle = 'devices.capabilities.toggle',
 }
@@ -91,6 +91,69 @@ export enum ColorModel {
   RGB = 'rgb',
   HSV = 'hsv',
 }
+
+// 12 Yandex Mode capability instances (categories).
+// See: https://yandex.ru/dev/dialogs/smart-home/doc/en/concepts/mode-instance
+export const modeInstances = [
+  'cleanup_mode',
+  'coffee_mode',
+  'dishwashing',
+  'fan_speed',
+  'heat',
+  'input_source',
+  'program',
+  'swing',
+  'tea_mode',
+  'thermostat',
+  'ventilation_mode',
+  'work_speed',
+];
+
+// Recommended mode-values for each instance per Yandex docs.
+// Any mode from `modes` can technically be used with any instance —
+// these are the recommendations shown at the top of the picker.
+// See: https://yandex.ru/dev/dialogs/smart-home/doc/en/concepts/mode-instance
+export const recommendedModesByInstance: Record<string, string[]> = {
+  cleanup_mode: [
+    'auto', 'eco', 'express', 'normal', 'quiet',
+    'wet_cleaning', 'dry_cleaning', 'mixed_cleaning',
+  ],
+  coffee_mode: [
+    'americano', 'cappuccino', 'double_espresso', 'espresso', 'latte',
+  ],
+  dishwashing: [
+    'auto', 'eco', 'express', 'glass', 'intensive', 'pre_rinse', 'quiet',
+  ],
+  fan_speed: [
+    'auto', 'high', 'low', 'medium', 'turbo',
+  ],
+  heat: [
+    'auto', 'max', 'min', 'normal', 'turbo',
+  ],
+  input_source: [
+    'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+  ],
+  program: [
+    'auto', 'express',
+    'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+  ],
+  swing: [
+    'auto', 'horizontal', 'stationary', 'vertical',
+  ],
+  tea_mode: [
+    'black_tea', 'flower_tea', 'green_tea', 'herbal_tea',
+    'oolong_tea', 'puerh_tea', 'red_tea', 'white_tea',
+  ],
+  thermostat: [
+    'auto', 'cool', 'dry', 'fan_only', 'heat', 'preheat',
+  ],
+  ventilation_mode: [
+    'auto', 'supply_air', 'extraction_air',
+  ],
+  work_speed: [
+    'auto', 'fast', 'max', 'medium', 'min', 'slow', 'turbo',
+  ],
+};
 
 export const modes = [
   'wet_cleaning',

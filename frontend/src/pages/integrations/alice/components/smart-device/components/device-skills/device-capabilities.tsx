@@ -20,6 +20,7 @@ import {
   ColorSettingCapability,
   getAvailableColorModels,
 } from './capabilities/color-setting';
+import { ModeCapability, getAvailableModeInstances } from './capabilities/mode';
 import { OnOffCapability } from './capabilities/on-off';
 import {
   RangeCapability,
@@ -56,6 +57,11 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
       return !getAvailableToggleInstances(capabilities).length;
     }
 
+    if (capabilityType === Capability.Mode) {
+      // For mode, disable only if all mode instances are used
+      return !getAvailableModeInstances(capabilities).length;
+    }
+
     // For other capabilities, use existing logic
     return capabilities.find((item) => item.type === capabilityType);
   };
@@ -85,12 +91,15 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
 
         break;
       }
-      // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
-      // case Capability.Mode: {
-      //   parameters.instance = 'wet_cleaning';
-      //   parameters.modes = 'start=1, stop=0';
-      //   break;
-      // }
+      case Capability.Mode: {
+        // Select first available instance
+        const availableInstances = getAvailableModeInstances(capabilities);
+        const selectedInstance = availableInstances[0] || 'cleanup_mode'; // fallback to cleanup_mode
+
+        parameters.instance = selectedInstance;
+        parameters.modes = [];
+        break;
+      }
       case Capability.Range: {
         // Select first available instance
         const availableInstances = getAvailableRangeInstances(capabilities);
@@ -133,8 +142,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
     switch (capability.type) {
       case Capability['On/Off']: return <OnOffCapability />;
       case Capability['Color setting']: return <ColorSettingCapability {...subProps} />;
-      // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
-      // case Capability.Mode: return <ModeCapability {...subProps} />;
+      case Capability.Mode: return <ModeCapability {...subProps} />;
       case Capability.Range: return <RangeCapability {...subProps} />;
       case Capability.Toggle: return <ToggleCapability {...subProps} />;
       default: return null;
