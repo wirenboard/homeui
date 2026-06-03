@@ -7,7 +7,25 @@ wb-mqtt-homeui (2.217.0) stable; urgency=medium
   * Update json editor styles
   * Fix all typescript and eslint errors
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 01 Jun 2026 12:12:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 03 Jun 2026 15:22:00 +0300
+
+wb-mqtt-homeui (2.216.5) stable; urgency=medium
+
+  * Fix default svg colors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 02 Jun 2026 11:50:00 +0300
+
+wb-mqtt-homeui (2.216.4) stable; urgency=medium
+
+  * Hide dropdown arrow for readonly fields on DALI settings page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Jun 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.216.3) stable; urgency=medium
+
+  * Fix DALI device scenes settings editor scroll bug
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Jun 2026 11:01:44 +0500
 
 wb-mqtt-homeui (2.216.2) stable; urgency=medium
 
