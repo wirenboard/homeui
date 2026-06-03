@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.218.0) stable; urgency=medium
+
+  * Port for Debian 13
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 03 Jun 2026 18:20:00 +0400
+
 wb-mqtt-homeui (2.217.0) stable; urgency=medium
 
   * Move from angular to react
