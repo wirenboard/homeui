@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.218.1) stable; urgency=medium
+
+  * Require nodejs>=22
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 03 Jun 2026 18:30:00 +0400
+
 wb-mqtt-homeui (2.218.0) stable; urgency=medium
 
   * Port for Debian 13
