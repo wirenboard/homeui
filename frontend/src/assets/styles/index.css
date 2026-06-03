@@ -1,0 +1,43 @@
+@import 'variables.css';
+@import 'fonts.css';
+@import 'animations.css';
+@import 'reset.css';
+
+body {
+    font-family: var(--font);
+    height: 100dvh;
+    font-size: var(--font-size-medium);
+    line-height: 1.45em;
+}
+
+:focus {
+    outline: 0 !important
+}
+
+#root {
+    height: 100dvh;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+button {
+    line-height: 1.45em;
+}
+
+a {
+    color: var(--link-color);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0
+}

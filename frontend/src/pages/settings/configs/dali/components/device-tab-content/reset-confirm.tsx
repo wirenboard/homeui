@@ -32,7 +32,6 @@ export const ResetConfirm = ({
       <RadioGroup
         name="dali-reset-mode"
         value={mode}
-        onChange={(value) => setMode(value as ResetMode)}
         isDisabled={isLoading}
         options={[
           {
@@ -48,6 +47,7 @@ export const ResetConfirm = ({
             description: t('dali.labels.reset-device-option-description'),
           },
         ]}
+        onChange={(value) => setMode(value as ResetMode)}
       />
       {isDirty && (
         <Alert variant="warn" size="small" className="dali-resetWarning">

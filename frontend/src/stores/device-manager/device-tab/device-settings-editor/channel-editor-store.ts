@@ -1,9 +1,9 @@
 import { makeObservable, computed, observable, action } from 'mobx';
 import { firmwareIsNewerOrEqual } from '@/stores/device-manager';
+import type { WbDeviceParameterEditor } from '@/stores/device-manager';
 import { NumberStore, StringStore } from '@/stores/json-schema-editor';
 import type { WbDeviceTemplateChannel, WbDeviceTemplateChannelSettings } from '../../types';
 import { Conditions } from './conditions';
-import type { WbDeviceParameterEditor } from './parameter-editor-store';
 
 enum WbDeviceChannelModes {
   Disabled = 'do not read',
@@ -207,10 +207,7 @@ export class WbDeviceChannelEditor {
     if (this.mode.isDirty) {
       return true;
     }
-    if (this.mode.value === WbDeviceChannelModes.CustomPeriod && this.period.isDirty) {
-      return true;
-    }
-    return false;
+    return this.mode.value === WbDeviceChannelModes.CustomPeriod && this.period.isDirty;
   }
 
   get shouldStoreInConfig() {

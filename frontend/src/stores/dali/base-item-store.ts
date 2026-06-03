@@ -1,5 +1,5 @@
 import { type ObjectStore, type Translator } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/formatError';
+import { formatError } from '@/utils/format-error';
 
 export enum ItemType {
   Gateway = 'gateway',
@@ -15,10 +15,8 @@ export abstract class BaseItemStore {
   public label: string;
   public error: string | null = null;
   readonly id: string;
-  protected readonly daliProxy: any;
 
-  constructor(daliProxy: any, id: string, name: string) {
-    this.daliProxy = daliProxy;
+  constructor(id: string, name: string) {
     this.id = id;
     this.label = name;
   }

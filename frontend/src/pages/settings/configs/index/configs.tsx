@@ -5,32 +5,33 @@ import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { type ConfigListItem } from '@/stores/configs';
+import { type ConfigListItem, configsStore } from '@/stores/configs';
 import { copyToClipboard } from '@/utils/clipboard';
-import { type ConfigsPageProps } from './types';
 import './styles.css';
 
-const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
+const ConfigsPage = observer(() => {
   const { t, i18n } = useTranslation();
   const hasRights = authStore.hasRights(UserRole.Admin);
 
   useEffect(() => {
     if (hasRights) {
-      store.getList();
+      configsStore.getList();
     }
   }, [hasRights]);
 
   const getUrl = (config: ConfigListItem) => {
     const encodePath = (path: string) => path.replace(/\//g, '~2F');
 
-    return config.editor ? `/#!/${config.editor}` : `/#!/configs/edit/${encodePath(config.schemaPath)}`;
+    return config.editor
+      ? `/settings/configs/${config.editor}`
+      : `/settings/configs/${encodePath(config.schemaPath)}`;
   };
 
   return (
     <PageLayout
       title={t('configurations.title')}
       hasRights={hasRights}
-      isLoading={!store.configs.length}
+      isLoading={!configsStore.configs.length}
     >
       <Table>
         <TableRow isHeading>
@@ -42,7 +43,7 @@ const ConfigsPage = observer(({ store }: ConfigsPageProps) => {
           </TableCell>
         </TableRow>
 
-        {store.configs.map((config, i) => (
+        {configsStore.configs.map((config, i) => (
           <TableRow
             url={getUrl(config)}
             aria-label={config.titleTranslations?.[i18n.language] || config.title}

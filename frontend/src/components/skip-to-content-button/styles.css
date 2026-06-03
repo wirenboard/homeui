@@ -20,3 +20,7 @@
     padding: 0 !important;
     overflow: hidden !important;
 }
+
+#root:has(.defaultLayout-pageWrapperHmi) .skipToContentButton-container {
+    display: none   ;
+}

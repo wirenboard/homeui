@@ -1,11 +1,12 @@
 import { runInAction, makeObservable, observable, action, computed } from 'mobx';
+import { daliProxy, mqttClient } from '@/services';
 import { ObjectStore, StoreBuilder, Translator, loadJsonSchema } from '@/stores/json-schema-editor';
 import { BaseItemStore, ItemType } from './base-item-store';
 import { BusCommandsStore } from './bus-commands-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
 import { MonitorStore } from './monitor-store';
-import type { CommissioningState, DaliBusProxy } from './types';
+import type { CommissioningState } from './types';
 
 const IDLE_COMMISSIONING_STATE: CommissioningState = {
   status: 'idle',
@@ -33,22 +34,18 @@ export class BusStore extends BaseItemStore {
   public scanStopRequested: boolean = false;
 
   private isFirstLoad: boolean = true;
-  #mqttClient: any;
   #commissioningTopic: string;
   #commissioningHandler: ((msg: { topic: string; payload: string }) => void) | null = null;
 
   constructor(
-    daliProxy: any,
-    daliBusProxy: DaliBusProxy,
     id: string,
     name: string,
-    mqttClient: any,
     commissioning?: CommissioningState,
   ) {
-    super(daliProxy, id, name);
-    this.commands = new BusCommandsStore(daliBusProxy, id);
-    this.busMonitor = new MonitorStore(mqttClient);
-    this.#mqttClient = mqttClient;
+    super(id, name);
+    this.busMonitor = new MonitorStore();
+    this.commands = new BusCommandsStore(id);
+    this.busMonitor = new MonitorStore();
     this.#commissioningTopic = `/wb-dali/${id}/commissioning`;
     makeObservable(this, {
       load: action,
@@ -79,12 +76,13 @@ export class BusStore extends BaseItemStore {
   }
 
   get isScanning(): boolean {
-    return !['idle', 'completed', 'failed', 'cancelled'].includes(this.commissioningState.status) || this.scanStartRequested;
+    return !['idle', 'completed', 'failed', 'cancelled'].includes(this.commissioningState.status)
+      || this.scanStartRequested;
   }
 
   async setPollingInterval(value: number) {
     try {
-      await this.daliProxy.SetBus({ busId: this.id, config: { polling_interval: value } });
+      await daliProxy.SetBus({ busId: this.id, config: { polling_interval: value } });
       runInAction(() => {
         this.pollingInterval = value;
         this.setError(null);
@@ -100,7 +98,7 @@ export class BusStore extends BaseItemStore {
     const configUpdate: Record<string, unknown> = { bus_monitor_enabled: value };
     this._updateMonitor(configUpdate);
     try {
-      await this.daliProxy.SetBus({ busId: this.id, config: configUpdate });
+      await daliProxy.SetBus({ busId: this.id, config: configUpdate });
       this.setError(null);
     } catch (error) {
       runInAction(() => {
@@ -123,7 +121,7 @@ export class BusStore extends BaseItemStore {
           this.isParametersSchemaLoading = true;
         }
       }
-      const data = await this.daliProxy.GetBus({ busId: this.id });
+      const data = await daliProxy.GetBus({ busId: this.id });
       if (this.isFirstLoad) {
         this._applyConfig(data.config);
         this._updateMonitor(data.config);
@@ -160,7 +158,7 @@ export class BusStore extends BaseItemStore {
       return;
     }
     try {
-      await this.daliProxy.SetBus({ busId: this.id, config: { [key]: param.store.value } });
+      await daliProxy.SetBus({ busId: this.id, config: { [key]: param.store.value } });
       runInAction(() => {
         param.store.commit();
         this.setError(null);
@@ -182,7 +180,7 @@ export class BusStore extends BaseItemStore {
   async scan() {
     this.scanStartRequested = true;
     try {
-      await this.daliProxy.ScanBus({ busId: this.id });
+      await daliProxy.ScanBus({ busId: this.id });
       this.setError(null);
     } catch (error) {
       runInAction(() => {
@@ -195,7 +193,7 @@ export class BusStore extends BaseItemStore {
   async stopScan() {
     this.scanStopRequested = true;
     try {
-      await this.daliProxy.StopScanBus({ busId: this.id });
+      await daliProxy.StopScanBus({ busId: this.id });
       this.setError(null);
     } catch (error) {
       runInAction(() => {
@@ -226,9 +224,10 @@ export class BusStore extends BaseItemStore {
         .filter((c): c is GroupStore => c.type === ItemType.Group)
         .map((c) => c.index),
     );
-    const groupIndexesToAdd: number[] = Array.from(activeGroupNums.keys()).filter((index) => !existingGroupIndexes.has(index));
+    const groupIndexesToAdd: number[] = Array.from(activeGroupNums.keys())
+      .filter((index) => !existingGroupIndexes.has(index));
     groupIndexesToAdd.forEach((index) => {
-      this.children.push(new GroupStore(this.daliProxy, this.makeGroupId(index), index, this));
+      this.children.push(new GroupStore(this.makeGroupId(index), index, this));
     });
     this.children.sort((a, b) => {
       if (a.type !== ItemType.Group || b.type !== ItemType.Group) {
@@ -244,7 +243,7 @@ export class BusStore extends BaseItemStore {
     this.scanStopRequested = false;
     if ('completed' === newState.status) {
       this.children = newState.devices.map((device: { id: string; name: string; groups: number[] }) =>
-        new DeviceStore(this.daliProxy, device.id, device.name, device.groups, this),
+        new DeviceStore(device.id, device.name, device.groups, this),
       );
       this.syncGroupChildren();
       this.setError(null);
@@ -267,12 +266,12 @@ export class BusStore extends BaseItemStore {
       }
       this.applyCommissioningState(parsed);
     };
-    this.#mqttClient.addStickySubscription(this.#commissioningTopic, this.#commissioningHandler);
+    mqttClient.addStickySubscription(this.#commissioningTopic, this.#commissioningHandler);
   }
 
   private unsubscribeFromCommissioning() {
     if (this.#commissioningHandler) {
-      this.#mqttClient.unsubscribe(this.#commissioningTopic);
+      mqttClient.unsubscribe(this.#commissioningTopic);
       this.#commissioningHandler = null;
     }
   }

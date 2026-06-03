@@ -3,6 +3,7 @@ import every from 'lodash/every';
 import intersection from 'lodash/intersection';
 import isEqual from 'lodash/isEqual';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
+import i18n from '@/i18n/config';
 import {
   getIntAddress,
   toSerialRpcPortConfig,
@@ -14,8 +15,7 @@ import {
   ReadRegistersStateStore,
 } from '@/stores/device-manager';
 import { type JsonObject } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/formatError';
-import i18n from '~/i18n/react/config';
+import { formatError } from '@/utils/format-error';
 import { type DeviceTypesStore } from '../device-types-store';
 import type { PortTabConfig, PortTabSerialConfig, PortTabTcpConfig } from '../port-tab/types';
 import type {
@@ -57,8 +57,8 @@ export class DeviceTabStore {
     initialData: JsonObject,
     deviceType: string,
     deviceTypesStore: DeviceTypesStore,
-    fwUpdateProxy: FwUpdateProxy,
-    serialDeviceProxy: SerialDeviceProxy,
+    fwUpdateProxy?: FwUpdateProxy,
+    serialDeviceProxy?: SerialDeviceProxy,
     serialPortProxy?: SerialPortProxy,
   ) {
     this.initialData = initialData;

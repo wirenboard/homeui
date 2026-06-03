@@ -45,7 +45,6 @@ export class RegSpace {
 
   #getRegisterSize(register: Register) {
     if (!register?.format || register.size <= 0) {
-      console.log(register);
       return 1;
     }
     if (register.format === 'varchar') {

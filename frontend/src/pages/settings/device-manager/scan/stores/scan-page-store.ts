@@ -1,8 +1,9 @@
 import { action, makeAutoObservable, makeObservable, observable, reaction, computed } from 'mobx';
 import { CollapseButtonState } from '@/components/collapse-button';
+import i18n from '@/i18n/config';
+import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import type { DeviceTypesStore } from '@/stores/device-manager';
 import { type ScannedDevice } from '@/stores/device-manager/types';
-import i18n from '~/i18n/react/config';
 import { GlobalErrorStore } from './global-error-store';
 import { ScanningProgressStore } from './scanning-progress-store';
 import { SingleDeviceStore } from './single-device-store';
@@ -141,7 +142,7 @@ class MqttStateStore {
 }
 
 export class CommonScanStore {
-  public deviceManagerProxy: any;
+  public deviceManagerProxy: typeof deviceManagerProxyInstance;
   public mqttStore: MqttStateStore;
   public scanStore: ScanningProgressStore;
   public devicesStore: DevicesStore;
@@ -152,7 +153,7 @@ export class CommonScanStore {
   public outOfOrderSlaveIds: string[];
   public alreadyConfiguredDevicesCollapseButtonState: CollapseButtonState;
 
-  constructor(deviceManagerProxy: any, deviceTypesStore: DeviceTypesStore) {
+  constructor(deviceManagerProxy: typeof deviceManagerProxyInstance, deviceTypesStore: DeviceTypesStore) {
     this.deviceManagerProxy = deviceManagerProxy;
     this.mqttStore = new MqttStateStore();
     this.scanStore = new ScanningProgressStore();

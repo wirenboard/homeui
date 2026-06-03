@@ -35,6 +35,7 @@
 .wb-tableRowHeading .wb-tableCell {
     background: var(--border-color);
     font-weight: bold;
+    text-align: left;
 }
 
 .wb-tableRowStickyHeading {

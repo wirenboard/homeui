@@ -1,6 +1,5 @@
 .range-container {
     width: 100%;
-    padding-top: 6px;
     height: 36px;
 }
 
@@ -92,7 +91,6 @@
     width: 100%;
     height: 30px;
     position: relative;
-    margin-top: 6px;
     text-align: center;
     color: var(--text-color);
     font-size: var(--font-size-small);

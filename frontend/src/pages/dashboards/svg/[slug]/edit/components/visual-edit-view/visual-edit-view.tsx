@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { useFilePicker } from 'use-file-picker';
 import DownloadIcon from '@/assets/icons/download.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { BooleanField, StringField, OptionsField } from '@/components/form';
-import { useParseHash } from '@/utils/url';
 import { SvgView } from '../svg-view';
 import { VisualBindingsEditor } from './components/visual-bindings-editor';
 import { type VisualEditViewProps } from './types';
@@ -15,24 +15,24 @@ import './styles.css';
 
 export const VisualEditView = observer(({ store, dashboardsStore, devices }: VisualEditViewProps) => {
   const { t } = useTranslation();
-  const { id } = useParseHash();
+  const params = useParams();
 
-  const [openFileSelector] = useFilePicker({
+  const { openFilePicker } = useFilePicker({
     accept: '.svg',
     multiple: false,
-    onFilesSuccessfulySelected: ({ filesContent }) => {
+    onFilesSuccessfullySelected: ({ filesContent }) => {
       store.svgStore.setSvg(filesContent[0].content);
     },
   });
 
   const dashboardOptions = useMemo(() => {
     return Array.from(dashboardsStore.dashboards.values())
-      .filter((dashboard) => dashboard.isSvg && dashboard.id !== id)
+      .filter((dashboard) => dashboard.isSvg && dashboard.id !== params.id)
       .map((dashboard) => ({
         label: dashboard.name,
         value: dashboard.id,
       }));
-  }, [dashboardsStore.dashboards, id]);
+  }, [dashboardsStore.dashboards, params.id]);
 
   return (
     <div className="visualEditView">
@@ -45,7 +45,7 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
         ) : (
           <Button
             label={t('edit-svg-dashboard.buttons.load-svg')}
-            onClick={() => openFileSelector()}
+            onClick={() => openFilePicker()}
           />
         )}
       </div>
@@ -84,7 +84,7 @@ export const VisualEditView = observer(({ store, dashboardsStore, devices }: Vis
               <div className="visualEditView-svgButtons">
                 <Button
                   label={t('edit-svg-dashboard.buttons.load-svg')}
-                  onClick={() => openFileSelector()}
+                  onClick={() => openFilePicker()}
                 />
                 <Button
                   icon={<DownloadIcon />}

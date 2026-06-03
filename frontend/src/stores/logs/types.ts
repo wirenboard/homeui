@@ -4,11 +4,6 @@ export interface Boot {
   end?: number;
 }
 
-export interface LogsListFetch {
-  boots: Boot[];
-  services: string[];
-}
-
 export interface Cursor {
   id: string;
   direction: 'backward' | 'forward';
@@ -39,4 +34,8 @@ export interface LoadLogsParams {
   cursor?: Cursor;
   pattern?: string;
   levels?: LogLevel[];
+  regex?: boolean;
+  'case-sensitive'?: boolean;
+  limit?: number;
+  time?: number;
 }

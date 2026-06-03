@@ -1,0 +1,25 @@
+.info-container {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 6px;
+    padding: 6px;
+}
+
+.info-link {
+    color: #fff;
+    font-size: var(--font-size-medium);
+}
+
+.info-icon {
+    display: flex;
+    width: 22px;
+    height: 22px;
+    color: var(--gray-color);
+}
+
+.info-icon:hover {
+    color: var(--link-color);
+    cursor: pointer;
+    transition: color 200ms;
+}

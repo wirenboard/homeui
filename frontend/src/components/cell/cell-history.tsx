@@ -3,6 +3,7 @@ import { compressToEncodedURIComponent } from 'lz-string';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useSearchParams } from 'react-router-dom';
 import StatsIcon from '@/assets/icons/stats.svg';
 import { Tooltip } from '@/components/tooltip';
 import { type CellHistoryProps } from './types';
@@ -10,15 +11,17 @@ import './styles.css';
 
 export const CellHistory = observer(({ cell, isVisible }: CellHistoryProps) => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
 
   const getChartUrl = useMemo(() => {
     const data = { c: [{ d: cell.deviceId, c: cell.controlId }] };
     const encodedUrl = encodeURIComponent(compressToEncodedURIComponent(JSON.stringify(data)));
-    return `#!/history/${encodedUrl}`;
-  }, [cell]);
+    const search = searchParams.toString();
+    return `/history/${encodedUrl}${search ? `?${search}` : ''}`;
+  }, [cell, searchParams]);
 
   return (
-    <a href={getChartUrl} aria-label={`${t('widget.labels.graph')} ${cell.name}`}>
+    <Link to={getChartUrl} aria-label={`${t('widget.labels.graph')} ${cell.name}`}>
       <Tooltip text={t('widget.labels.graph')} placement="top-end">
         <span>
           <StatsIcon
@@ -28,6 +31,6 @@ export const CellHistory = observer(({ cell, isVisible }: CellHistoryProps) => {
           />
         </span>
       </Tooltip>
-    </a>
+    </Link>
   );
 });

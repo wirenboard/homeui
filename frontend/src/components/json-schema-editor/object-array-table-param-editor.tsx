@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import PlusIcon from '@/assets/icons/plus.svg';
 import { Button } from '@/components/button';
 import { Table, TableRow, TableCell } from '@/components/table';
-import { type ObjectStore, comparePropertyOrder } from '@/stores/json-schema-editor';
+import { type ObjectStore, comparePropertyOrder, type JsonSchema } from '@/stores/json-schema-editor';
 import { ParamError } from './param-error';
 import { type ArrayEditorProps, type TableCellWithEditorProps } from './types';
 
@@ -52,7 +52,7 @@ const ObjectArrayTableEditor = observer(({ store, rootStore, translator, editorB
       <Table style={{ color: 'var(--wb-color-text-primary)' }}>
         <TableRow isHeading>
           <TableCell key="index_header" width={indexColumnWidth}/>
-          {Object.entries(store.schema.items.properties)
+          {Object.entries((store.schema.items as JsonSchema).properties)
             .sort(comparePropertyOrder)
             .map(([_key, prop], index) => (
               <TableCell

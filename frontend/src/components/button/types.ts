@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes, AnchorHTMLAttributes, ReactElement } from 'react';
+import type { ButtonHTMLAttributes, ReactElement } from 'react';
+import { type LinkProps } from 'react-router-dom';
 
 interface CommonButtonProps {
   className?: string;
@@ -11,4 +12,4 @@ interface CommonButtonProps {
 }
 
 export type ButtonProps = CommonButtonProps & ButtonHTMLAttributes<HTMLButtonElement>;
-export type ButtonLinkProps = CommonButtonProps & AnchorHTMLAttributes<HTMLAnchorElement>;
+export type ButtonLinkProps = CommonButtonProps & LinkProps;

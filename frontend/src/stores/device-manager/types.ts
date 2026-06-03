@@ -76,21 +76,12 @@ export interface UpdateItem {
   };
 }
 
-export interface UpdateStatus {
-  devices: UpdateItem[];
-}
-
 export interface FwUpdateProxy {
   hasMethod(method: string): Promise<boolean>;
   GetFirmwareInfo(params: FwUpdateProxyGetFirmwareInfoParams): Promise<FwUpdateProxyGetFirmwareInfoResult>;
   Update(params: FwUpdateProxyUpdateParams): Promise<void>;
   ClearError(params: FwUpdateProxyClearErrorParams): Promise<void>;
   Restore(params: FwUpdateProxyRestoreParams): Promise<void>;
-}
-
-export interface DeviceManagerProxyProxy {
-  Start(): Promise<void>;
-  Stop(): Promise<void>;
 }
 
 interface LoadConfigBaseParams {

@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes } from 'react';
+import { type ButtonHTMLAttributes } from 'react';
 
 export interface ToggleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;

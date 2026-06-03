@@ -1,24 +1,27 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams, useNavigate } from 'react-router-dom';
+import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
 import { CodeEditor } from '@/components/code-editor';
 import { Tag } from '@/components/tag';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { devicesStore } from '@/stores/devices';
+import { rulesStore } from '@/stores/rules';
 import { getExtensions } from '@/stores/rules/autocomplete';
 import { useAsyncAction } from '@/utils/async-action';
-import { getPathname } from '@/utils/url';
-import type { RulePageProps } from './types';
 import './styles.css';
 
-const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
-  const { t } = useTranslation();
+const EditRulePage = observer(() => {
+  const { t, i18n } = useTranslation();
   const { rule } = rulesStore;
   const [isLoading, setIsLoading] = useState(true);
   const [pageLoadError, setPageLoadError] = useState(null);
-  const pathName = getPathname();
-  const [isEditingTitle, setIsEditingTitle] = useState(pathName === 'new');
+  const params = useParams();
+  const navigate = useNavigate();
+  const [isEditingTitle, setIsEditingTitle] = useState(!params.id);
 
   const errors = useMemo(() => {
     if (pageLoadError) {
@@ -31,13 +34,13 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
   }, [pageLoadError, rule.error]);
 
   useEffect(() => {
-    if (pathName === 'new') {
+    if (!params.id) {
       rulesStore.resetRule();
       setIsLoading(false);
       return;
     }
     setIsLoading(true);
-    rulesStore.load(pathName)
+    rulesStore.load(params.id)
       .then(() => {
         setIsLoading(false);
       })
@@ -47,7 +50,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
           setIsLoading(false);
         }
       });
-  }, []);
+  }, [params.id]);
 
   const [save, isSaving] = useAsyncAction(async () => {
     const initRuleName = rule.initName;
@@ -56,11 +59,11 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
     }
     const savedRuleName = await rulesStore.save(rule);
 
-    if (pathName === 'new') {
-      return location.replace(`/#!/rules/edit/${savedRuleName}`);
+    if (!params.id) {
+      return navigate(`/rules/edit/${savedRuleName}`, { replace: true });
     } else if (initRuleName !== rule.name) {
       const path = await rulesStore.rename(initRuleName, rule.name);
-      return location.replace(`/#!/rules/edit/${path}`);
+      return navigate(`/rules/edit/${path}`, { replace: true });
     }
     setIsEditingTitle(false);
   });
@@ -68,6 +71,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
   return (
     <PageLayout
       title={rule.name}
+      infoLink={documentation[i18n.language]?.rule}
       hasRights={authStore.hasRights(UserRole.Admin)}
       isLoading={isLoading}
       isEditingTitle={isEditingTitle}
@@ -90,7 +94,7 @@ const EditRulePage = observer(({ rulesStore, devicesStore }: RulePageProps) => {
         <CodeEditor
           text={rule.content}
           errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
-          autoFocus={pathName !== 'new'}
+          autoFocus={!!params.id}
           extensions={getExtensions(devicesStore)}
           onChange={(value) => rulesStore.setRule(value)}
           onSave={save}

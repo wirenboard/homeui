@@ -1,14 +1,16 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import i18n from '@/i18n/config';
 import { authStore } from '@/stores/auth';
 import type { Dashboard } from '@/stores/dashboards';
-import i18n from '~/i18n/react/config';
 import { getMenu } from './api';
 import { getMenuItems, mergeMenuItems, normalizeMenuResponse, toMenuItemInstance } from './menu-items';
 import type { CustomMenuItem, MenuItemInstance } from './types';
 
 export default class UiStore {
   public isConnected = false;
+  public isSettingUpHttps = true;
   public menuItems: MenuItemInstance[] = [];
+  public theme: string = localStorage.getItem('theme') ?? 'bootstrap';
   public modules: string[] = [];
   #additionalItems: CustomMenuItem[] = null;
 
@@ -31,6 +33,11 @@ export default class UiStore {
     runInAction(() => {
       this.menuItems = mergeMenuItems(commontems, customItems);
     });
+  }
+
+  setTheme(theme: string) {
+    localStorage.setItem('theme', theme);
+    this.theme = theme;
   }
 
   async #getCustomMenuItems() {

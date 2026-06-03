@@ -1,10 +1,10 @@
 import DesktopIcon from '@/assets/icons/desktop.svg';
 import FileIcon from '@/assets/icons/file.svg';
-import InfoIcon from '@/assets/icons/info.svg';
 import IntegrationsIcon from '@/assets/icons/integrations.svg';
 import SettingsIcon from '@/assets/icons/settings.svg';
 import SitemapIcon from '@/assets/icons/sitemap.svg';
 import StatsIcon from '@/assets/icons/stats.svg';
+import { migrateLegacyUrl } from '@/router/legacy-redirects';
 import { UserRole } from '@/stores/auth';
 import { type Dashboard } from '@/stores/dashboards';
 import { type CustomMenuItem, type MenuItemInstance } from './types';
@@ -27,12 +27,18 @@ export const normalizeMenuResponse = (data: CustomMenuItem[]) => {
   return items;
 };
 
+const normalizeUrl = (url?: string) => {
+  if (!url) return url;
+  const normalized = url.startsWith('/') ? url : `/${url}`;
+  return migrateLegacyUrl(normalized);
+};
+
 export const toMenuItemInstance = (item: CustomMenuItem, language: string): MenuItemInstance => {
   const label = item.title?.[language as 'ru' | 'en'] || item.title?.ru || item.title?.en || item.id;
   const children = item.children?.map((child) => toMenuItemInstance(child, language));
   const output: MenuItemInstance = {
     id: item.id,
-    url: item.url,
+    url: normalizeUrl(item.url),
     label,
     children: children?.length ? children : undefined,
   };
@@ -112,27 +118,27 @@ export const getMenuItems = (
       id: 'dashboards-all',
       icon: DesktopIcon,
       children: [
-        { label: 'navigation.labels.list', url: 'dashboards', isShow: !params.has('fullscreen') },
+        { label: 'navigation.labels.list', url: '/dashboards', isShow: !params.has('fullscreen') },
         ...dashboardsList
           .filter((dashboard) => !dashboard.options?.isHidden)
           .map((dashboard) => {
             return {
               label: dashboard.name,
               url: computeUrlWithParams(dashboard.isSvg
-                ? `dashboards/svg/view/${dashboard.id}`
-                : `dashboards/${dashboard.id}`),
+                ? `/dashboards/svg/view/${dashboard.id}`
+                : `/dashboards/${dashboard.id}`),
             };
           }),
         {
           label: 'navigation.labels.widgets',
-          url: 'dashboards/widgets',
+          url: '/dashboards/widgets',
           isShow: isShowWidgetsPage && !params.has('fullscreen'),
         },
       ],
     },
     {
       label: 'navigation.labels.devices',
-      url: 'devices',
+      url: '/devices',
       icon: SitemapIcon,
       isShow: hasRights(UserRole.Operator) && !params.has('fullscreen'),
     },
@@ -144,7 +150,7 @@ export const getMenuItems = (
     },
     {
       label: 'navigation.labels.history',
-      url: computeUrlWithParams('history'),
+      url: computeUrlWithParams('/history'),
       icon: StatsIcon,
     },
     {
@@ -153,7 +159,7 @@ export const getMenuItems = (
       icon: FileIcon,
       isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
       children: [
-        { label: 'navigation.labels.rule-editor', url: 'rules' },
+        { label: 'navigation.labels.rule-editor', url: '/rules' },
       ],
     },
     {
@@ -162,19 +168,13 @@ export const getMenuItems = (
       icon: SettingsIcon,
       isShow: !params.has('fullscreen'),
       children: [
-        { label: 'navigation.labels.configs', url: 'configs', isShow: hasRights(UserRole.Admin) },
-        { label: 'navigation.labels.ui', url: 'web-ui' },
-        { label: 'navigation.labels.system', url: 'system', isShow: hasRights(UserRole.Admin) },
-        { label: 'navigation.labels.channels', url: 'MQTTChannels' },
-        { label: 'navigation.labels.access', url: 'access-level', isShow: hasRights(UserRole.Admin) },
-        { label: 'navigation.labels.logs', url: 'logs', isShow: hasRights(UserRole.Operator) },
+        { label: 'navigation.labels.configs', url: '/settings/configs', isShow: hasRights(UserRole.Admin) },
+        { label: 'navigation.labels.ui', url: '/settings/ui' },
+        { label: 'navigation.labels.system', url: '/settings/system', isShow: hasRights(UserRole.Admin) },
+        { label: 'navigation.labels.channels', url: '/settings/mqtt-channels' },
+        { label: 'navigation.labels.access', url: '/settings/users', isShow: hasRights(UserRole.Admin) },
+        { label: 'navigation.labels.logs', url: '/settings/logs', isShow: hasRights(UserRole.Operator) },
       ],
-    },
-    {
-      label: 'navigation.labels.help',
-      url: 'help',
-      icon: InfoIcon,
-      isShow: !params.has('fullscreen'),
     },
   ];
 };

@@ -1,9 +1,9 @@
 import { makeObservable, computed, observable, action, runInAction } from 'mobx';
 import { firmwareIsNewerOrEqual } from '@/stores/device-manager';
 import { type JsonSchema, NumberStore, getDefaultValue } from '@/stores/json-schema-editor';
+import { W1_ID_FORMAT } from '@/utils/one-wire-number';
 import type { WbDeviceTemplateParameter } from '../../types';
 import { type Conditions } from './conditions';
-import { W1_ID_FORMAT } from '@/utils/one-wire-number';
 
 export class WbDeviceParameterEditorVariant {
   public store: NumberStore;
@@ -38,7 +38,7 @@ export class WbDeviceParameterEditorVariant {
     if (!this._conditionFn) {
       return true;
     }
-    const res = this._conditionFn.apply(null, this._dependencies?.map((dep) => {
+    return this._conditionFn.apply(null, this._dependencies?.map((dep) => {
       const param = this._otherParameters.get(dep);
       if (param !== undefined && param.isEnabledByCondition) {
         const value = param.value;
@@ -46,7 +46,6 @@ export class WbDeviceParameterEditorVariant {
       }
       return undefined;
     }));
-    return res;
   }
 
   get hasDirtyDependency() {

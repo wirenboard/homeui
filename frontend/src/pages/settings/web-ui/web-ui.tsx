@@ -5,10 +5,9 @@ import { authStore, UserRole } from '@/stores/auth';
 import CommonSettings from './components/common-settings';
 import HttpsSettings from './components/https-settings';
 import MqttSettings from './components/mqtt-settings';
-import type { WebUiSettingsPageProps } from './types';
 import './styles.css';
 
-const WebUiSettingsPage = ({ onChangeLanguage, dashboardsStore }: WebUiSettingsPageProps) => {
+const WebUiSettingsPage = () => {
   const { t } = useTranslation();
   const [errors, setErrors] = useState([]);
 
@@ -24,7 +23,7 @@ const WebUiSettingsPage = ({ onChangeLanguage, dashboardsStore }: WebUiSettingsP
     <PageLayout title={t('web-ui-settings.title')} errors={errors} hasRights>
       <div className="web-ui-settings-pageContent">
         {authStore.hasRights(UserRole.Operator) && <MqttSettings />}
-        <CommonSettings dashboardsStore={dashboardsStore} onChangeLanguage={onChangeLanguage} />
+        <CommonSettings />
         {authStore.hasRights(UserRole.Admin) && <HttpsSettings onError={httpsErrorHandler} />}
       </div>
     </PageLayout>

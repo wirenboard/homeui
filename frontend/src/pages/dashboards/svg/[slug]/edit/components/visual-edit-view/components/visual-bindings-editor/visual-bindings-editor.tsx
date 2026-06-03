@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { Card } from '@/components/card';
 import { BooleanField, OptionsField, StringField } from '@/components/form';
 import { RadioGroup } from '@/components/radio';
-import { useParseHash } from '@/utils/url';
 import type {
   ClickBindingFormProps,
   ParamBindingFormProps,
@@ -74,16 +74,16 @@ const ClickBindingForm = observer(({
   writeDefault,
 }: ClickBindingFormProps) => {
   const { t } = useTranslation();
-  const { id } = useParseHash();
+  const params = useParams();
 
   const dashboardOptions = useMemo(() => {
     return dashboardsStore?.dashboards ? Array.from(dashboardsStore.dashboards.values())
-      .filter((dashboard) => dashboard.id !== id)
+      .filter((dashboard) => dashboard.id !== params.id)
       .map((dashboard) => ({
         label: dashboard.name,
         value: dashboard.id,
       })) : [];
-  }, [dashboardsStore?.dashboards, id]);
+  }, [dashboardsStore?.dashboards, params.id]);
 
   const enabled = !!(store.params[clickParamName].enable || store.params[writeParamName].enable);
 

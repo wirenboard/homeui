@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Fragment, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import EditIcon from '@/assets/icons/edit.svg';
 import CardIcon from '@/assets/icons/file-list.svg';
 import ListIcon from '@/assets/icons/list.svg';
@@ -14,11 +15,12 @@ import { Tooltip } from '@/components/tooltip';
 import { PageLayout, type PageProps } from '@/layouts/page';
 import { WidgetDelete, WidgetEdit } from '@/pages/dashboards/[slug]';
 import { authStore, UserRole } from '@/stores/auth';
-import { Widget } from '@/stores/dashboards';
-import { PageView, type WidgetsPageProps } from './types';
+import { dashboardsStore, Widget } from '@/stores/dashboards';
+import { devicesStore } from '@/stores/devices';
+import { PageView } from './types';
 import './styles.css';
 
-const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
+const WidgetsPage = observer(() => {
   const { t } = useTranslation();
   const { cells } = devicesStore;
   const [view, setView] = useState(PageView.List);
@@ -28,14 +30,14 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
 
   const errors = useMemo(() => {
     const messages: PageProps['errors'] = [];
-    if (store.isLoading) {
+    if (dashboardsStore.isLoading) {
       return messages;
     }
 
-    if (!store.isShowWidgetsPage && !isHideAlert) {
+    if (!dashboardsStore.isShowWidgetsPage && !isHideAlert) {
       messages.push({
         variant: 'info',
-        text: (<Trans i18nKey="widgets.errors.hidden" components={[<a href="#!/web-ui" />]}/>),
+        text: (<Trans i18nKey="widgets.errors.hidden" components={[<Link to="/web-ui" />]}/>),
         onClose: () => {
           setIsHideAlert(true);
           localStorage.setItem('hide-widgets-alert', 'true');
@@ -43,21 +45,21 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
       });
     }
 
-    if (!Array.from(store.widgets.values()).length) {
+    if (!Array.from(dashboardsStore.widgets.values()).length) {
       messages.push({ variant: 'info', text: t('widgets.errors.empty') });
     }
 
     return messages;
-  }, [store.isLoading, store.isShowWidgetsPage, store.widgets.values()]);
+  }, [dashboardsStore.isLoading, dashboardsStore.isShowWidgetsPage, dashboardsStore.widgets.values()]);
 
   return (
     <>
       <PageLayout
         title={t('widgets.title')}
-        isLoading={store.isLoading}
+        isLoading={dashboardsStore.isLoading}
         errors={errors}
         actions={
-          !!Array.from(store.widgets.values()).length && (
+          !!Array.from(dashboardsStore.widgets.values()).length && (
             <Tooltip
               text={t(view === PageView.List ? 'widgets.buttons.widget-view' : 'widgets.buttons.table-view')}
               placement="bottom"
@@ -73,7 +75,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
         }
         hasRights
       >
-        {!!Array.from(store.widgets.values()).length && (
+        {!!Array.from(dashboardsStore.widgets.values()).length && (
           <Table>
             <TableRow isHeading>
               <TableCell width={250}>{t('widgets.labels.name-and-description')}</TableCell>
@@ -85,7 +87,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
               <TableCell width={250}>{t('widgets.labels.dashboards')}</TableCell>
               {authStore.hasRights(UserRole.Operator) && (<TableCell width={80} />)}
             </TableRow>
-            {Array.from(store.widgets.values()).map((widget) => (
+            {Array.from(dashboardsStore.widgets.values()).map((widget) => (
               <TableRow key={widget.id}>
                 <TableCell width={250} verticalAlign="top">
                   <b>{widget.name}</b>
@@ -147,7 +149,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
                             <Cell
                               cell={cells.get(cell.id)}
                               name={cell.name}
-                              isCompact={store.widgets.get(widget.id).compact}
+                              isCompact={dashboardsStore.widgets.get(widget.id).compact}
                               extra={cell.extra}
                             />
                           ) : cell.type === 'separator' ? (
@@ -172,7 +174,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
                       <ul className="widgets-dashboardList">
                         {widget.associatedDashboards.map((item) => (
                           <li key={item.id}>
-                            <a href={`#!/dashboards/${item.id}`}>{item.name}</a>
+                            <Link to={`/dashboards/${item.id}`}>{item.name}</Link>
                           </li>
                         ))}
                       </ul>
@@ -182,13 +184,13 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
                     <Dropdown
                       className="widgets-addToDashboard"
                       options={widget.notUsedDashboards.map((item) => ({ label: item.name, value: item.id }))}
-                      value={{}}
+                      value={null}
                       placeholder={t('widgets.buttons.add')}
                       size="small"
                       isButton
                       onChange={(option: Option<string>) => {
                         if (option) {
-                          store.dashboards.get(option.value).addWidget(widget.id);
+                          dashboardsStore.dashboards.get(option.value).addWidget(widget.id);
                         }
                       }}
                     />
@@ -225,7 +227,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
 
       {widgetToEdit && (
         <WidgetEdit
-          widget={store.widgets.get(widgetToEdit)}
+          widget={dashboardsStore.widgets.get(widgetToEdit)}
           cells={cells}
           topics={devicesStore.topicsWithoutSystem}
           isOpened={!!widgetToEdit}
@@ -233,7 +235,7 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
             setWidgetToEdit(null);
           }}
           onSave={(data) => {
-            (store.widgets.get(widgetToEdit) ?? new Widget(data, store)).save(data);
+            (dashboardsStore.widgets.get(widgetToEdit) ?? new Widget(data)).save(data);
             setWidgetToEdit(null);
           }}
         />
@@ -242,11 +244,11 @@ const WidgetsPage = observer(({ store, devicesStore }: WidgetsPageProps) => {
       {widgetToDelete && (
         <WidgetDelete
           isOpened={!!widgetToDelete}
-          name={store.widgets.get(widgetToDelete).name}
-          associatedDashboards={store.widgets.get(widgetToDelete).associatedDashboards}
+          name={dashboardsStore.widgets.get(widgetToDelete).name}
+          associatedDashboards={dashboardsStore.widgets.get(widgetToDelete).associatedDashboards}
           onClose={() => setWidgetToDelete(null)}
           onDelete={() => {
-            store.deleteWidget(widgetToDelete);
+            dashboardsStore.deleteWidget(widgetToDelete);
             setWidgetToDelete(null);
           }}
         />

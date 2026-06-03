@@ -1,11 +1,14 @@
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
-import InfoIcon from '@/assets/icons/info.svg';
 import { Alert } from '@/components/alert';
 import { type AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import { Loader } from '@/components/loader';
+import { focusToMainContent } from '@/utils/focus-content';
+import { ExposeCheck } from './components/expose-check';
+import { Info } from './components/info';
 import { PageLoader } from './components/loader';
 import { type PageProps } from './types';
 import './styles.css';
@@ -35,14 +38,18 @@ export const PageLayout = ({
     setTitleValue(title);
   }, [title]);
 
+  useEffect(() => {
+    focusToMainContent(300);
+  }, []);
+
   if (errors.find((error) => error.code === 404)) {
     return (
       <main className="page" tabIndex={-1}>
         <header className="page-headerContainer">
-          <h1 className="page-title">{t('page.not-found')}</h1>
+          <h1 className="page-title">{t('page.labels.not-found')}</h1>
         </header>
         <Alert variant="danger" className="page-error">
-          {t('page.not-found-description')}
+          {t('page.labels.not-found-description')}
         </Alert>
       </main>
     );
@@ -51,6 +58,7 @@ export const PageLayout = ({
   return (
     <div className="page-container">
       <main className="page" tabIndex={-1}>
+        <ExposeCheck />
         {hasRights && !isHideHeader && (titleValue || isEditingTitle) && (
           <header className="page-headerContainer">
             <div className="page-headerTitleWrapper">
@@ -67,11 +75,7 @@ export const PageLayout = ({
               ) : (
                 <>
                   <h1 className="page-title" tabIndex={-1}>{title}</h1>
-                  {infoLink && (
-                    <a href={infoLink} target="_blank" className="page-info">
-                      <InfoIcon />
-                    </a>
-                  )}
+                  <Info link={infoLink} />
                 </>
               )}
 
@@ -107,16 +111,25 @@ export const PageLayout = ({
 
         {!hasRights && (
           <Alert variant="danger">
-            {t('page.access-denied')}
+            {t('page.labels.access-denied')}
           </Alert>
         )}
 
         {hasRights && (
-          isLoading
+          isLoading && !loadingOptions?.overlay
             ? <PageLoader options={loadingOptions} />
-            : stickyHeader ? (
-              <div className="page-container">{children}</div>
-            ) : children
+            : (
+              <div className="page-contentWrapper">
+                {isLoading && loadingOptions?.overlay && (
+                  <div className="page-overlay">
+                    <Loader />
+                  </div>
+                )}
+                {stickyHeader ? (
+                  <div className="page-container">{children}</div>
+                ) : children}
+              </div>
+            )
         )}
 
       </main>

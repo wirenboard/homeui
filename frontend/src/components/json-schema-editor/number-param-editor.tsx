@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dropdown } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import type { NumberEditorProps } from './types';
 
@@ -33,7 +33,7 @@ const NumberEditor = observer(({
       minWidth="30px"
       isDisabled={isDisabled || store.schema.options?.wb?.read_only}
       className={hasErrors ? 'wb-jsonEditor-propertyDropdownError' : ''}
-      onChange={(option) => {
+      onChange={(option: Option<'string' | 'number'>) => {
         if (typeof option.value === 'number' || typeof option.value === 'string') {
           store.setValue(option.value);
         } else {

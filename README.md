@@ -17,7 +17,7 @@ Change listen settings in `/etc/nginx/includes/default.wb.d/listen.conf`.
 1. Navigate to the project directory: `cd ./frontend`
 2. Install dependencies: `npm install`
 3. Create `.env` file and set `MQTT_BROKER_URI` if your controller is running on different IP (default is 10.200.200.1)
-4. Start the development server: `npm run start`
+4. Start the development server: `npm run dev`
 
 ## Before committing
 

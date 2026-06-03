@@ -1,11 +1,11 @@
 import classNames from 'classnames';
 import { format } from 'date-fns';
 import BugIcon from '@/assets/icons/bug.svg';
+import i18n from '@/i18n/config';
 import { consolePanelStore } from '@/stores/console-panel';
-import type { RulesStore } from '@/stores/rules';
-import i18n from '~/i18n/react/config';
+import { rulesStore } from '@/stores/rules/index';
 
-export const registerRulesTab = (rulesStore: RulesStore) => {
+export const registerRulesTab = () => {
   consolePanelStore.registerTab({
     id: 'rules',
     label: i18n.t('rules-console.title'),

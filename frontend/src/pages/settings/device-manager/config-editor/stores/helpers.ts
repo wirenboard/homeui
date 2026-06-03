@@ -1,8 +1,8 @@
 import cloneDeep from 'lodash/cloneDeep';
+import i18n from '@/i18n/config';
 import { type DeviceTypesStore } from '@/stores/device-manager';
 import { loadJsonSchema } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/formatError';
-import i18n from '~/i18n/react/config';
+import { formatError } from '@/utils/format-error';
 import { type PortTab } from '../stores/port-tab-store';
 import type { PortConfig } from './types';
 

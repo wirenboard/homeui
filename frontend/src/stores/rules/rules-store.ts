@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { editorProxy, mqttClient } from '@/services';
 import { generateNextId } from '@/utils/id';
-import type { Rule, RuleError, RuleFetchData, RuleListItem, RuleLog, RuleSaveData } from './types';
+import type { Rule, RuleError, RuleLevel, RuleListItem, RuleLog } from './types';
 
 export default class RulesStore {
   public rule?: Rule = {
@@ -12,23 +13,14 @@ export default class RulesStore {
   public isRuleDebugEnabled = false;
   public logs: RuleLog[] = [];
 
-  #mqttClient: any;
-  #editorProxy: any;
-  #whenMqttReady: () => Promise<void>;
-
-  // eslint-disable-next-line typescript/naming-convention
-  constructor(mqttClient, whenMqttReady: () => Promise<void>, EditorProxy: any) {
-    this.#mqttClient = mqttClient;
-    this.#editorProxy = EditorProxy;
-    this.#whenMqttReady = whenMqttReady;
-
+  constructor() {
     makeAutoObservable(this);
   }
 
   async load(path: string): Promise<Rule> {
-    return this.#whenMqttReady()
-      .then(() => this.#editorProxy.Load({ path }))
-      .then((res: RuleFetchData) => {
+    return mqttClient.whenConnected()
+      .then(() => editorProxy.Load({ path }))
+      .then((res) => {
         runInAction(() => {
           this.rule = {
             initName: path,
@@ -72,8 +64,8 @@ export default class RulesStore {
       path = this.getValidRuleName(rule.name);
     }
 
-    return this.#editorProxy.Save({ path, content: rule.content })
-      .then(async (res: RuleSaveData) => {
+    return editorProxy.Save({ path, content: rule.content })
+      .then(async (res) => {
         runInAction(() => {
           if (res.error) {
             this.setError({
@@ -89,7 +81,7 @@ export default class RulesStore {
   }
 
   async rename(oldName: string, newName: string): Promise<string> {
-    return this.#editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
+    return editorProxy.Rename({ path: oldName, new_path: this.getValidRuleName(newName) })
       .then(async () => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
         return this.getValidRuleName(newName);
@@ -111,15 +103,15 @@ export default class RulesStore {
   }
 
   async changeState(path: string, state: boolean): Promise<void> {
-    await this.#editorProxy.ChangeState({ path, state });
+    await editorProxy.ChangeState({ path, state });
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.getList();
   }
 
   async getList(): Promise<RuleListItem[]> {
-    return this.#whenMqttReady()
-      .then(() => this.#editorProxy.List())
-      .then((rules: RuleListItem[]) => {
+    return mqttClient.whenConnected()
+      .then(() => editorProxy.List())
+      .then((rules) => {
         return runInAction(() => {
           this.rules = rules;
           return this.rules;
@@ -139,7 +131,7 @@ export default class RulesStore {
   }
 
   async deleteRule(path: string) {
-    return this.#editorProxy.Remove({ path }).then((res: boolean) => {
+    return editorProxy.Remove({ path }).then((res) => {
       if (res) {
         runInAction(() => {
           this.rules = this.rules.filter((rule) => rule.virtualPath !== path);
@@ -157,7 +149,7 @@ export default class RulesStore {
   }
 
   subscribeRuleDebugging() {
-    this.#mqttClient.addStickySubscription('/devices/wbrules/controls/Rule debugging', ({ payload }) => {
+    mqttClient.addStickySubscription('/devices/wbrules/controls/Rule debugging', ({ payload }) => {
       runInAction(() => {
         this.isRuleDebugEnabled = payload === '1';
       });
@@ -167,25 +159,29 @@ export default class RulesStore {
   toggleRuleDebugging() {
     runInAction(() => {
       const value = !this.isRuleDebugEnabled;
-      this.#mqttClient.send('/devices/wbrules/controls/Rule debugging/on', String(Number(value)), false, 1);
+      mqttClient.send('/devices/wbrules/controls/Rule debugging/on', String(Number(value)), false, 1);
       this.isRuleDebugEnabled = value;
     });
   }
 
   subscribeRulesLogs() {
     const MAX_MESSAGES = 500;
-    this.#mqttClient.addStickySubscription('/wbrules/log/+', ({ topic, payload }) => {
+    mqttClient.addStickySubscription('/wbrules/log/+', ({ topic, payload }) => {
       runInAction(() => {
         if (this.logs.length === MAX_MESSAGES) {
           this.logs.shift();
         }
-        this.logs.push({ level: topic.replace(/^.*\//, ''), payload: payload.trim(), time: new Date().getTime() });
+        this.logs.push({
+          level: topic.replace(/^.*\//, '') as RuleLevel,
+          payload: payload.trim(),
+          time: new Date().getTime(),
+        });
       });
     });
   }
 
   unSubscribeRulesLogs() {
-    this.#mqttClient.unsubscribe('/wbrules/log/+');
+    mqttClient.unsubscribe('/wbrules/log/+');
   }
 
   clearLogs() {

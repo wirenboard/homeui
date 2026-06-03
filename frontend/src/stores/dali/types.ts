@@ -55,18 +55,25 @@ export interface Device {
 }
 
 export interface GatewayDetailed {
-  config: object;
+  config: {
+    websocket_port?: number;
+    websocket_enabled?: boolean;
+  };
   schema: JsonSchema;
+  name: string;
 }
 
 export interface BusDetailed {
   config: object;
   schema: JsonSchema;
+  name: string;
 }
 
 export interface DeviceDetailed {
   config: object;
   schema: JsonSchema;
+  name: string;
+  groups: boolean[];
 }
 
 export interface GetGatewayParams {
@@ -88,7 +95,8 @@ export interface SetBusParams {
 }
 
 export interface GetDeviceParams {
-  id: string;
+  deviceId: string;
+  forceReload?: boolean;
 }
 
 export interface SetDeviceParams {
@@ -140,6 +148,8 @@ export interface DaliProxy {
   ScanBus(params: ScanBusParams): Promise<ScanBusResponse>;
   StopScanBus(params: StopScanBusParams): Promise<StopScanBusResponse>;
   IdentifyDevice(params: { deviceId: string }): Promise<void>;
+  ResetDeviceSettings(params: { deviceId: string }): Promise<void>;
+  ResetDevice(params: { deviceId: string }): Promise<void>;
 }
 
 export interface SendCommandParams {

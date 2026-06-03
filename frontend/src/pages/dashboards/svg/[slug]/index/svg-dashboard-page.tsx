@@ -2,34 +2,40 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import useResizeObserver from 'use-resize-observer';
 import FullScreenExitIcon from '@/assets/icons/full-screen-exit.svg';
 import FullScreenIcon from '@/assets/icons/full-screen.svg';
+import { documentation } from '@/common/links';
 import { Button, ButtonLink } from '@/components/button';
 import { Confirm, useConfirm } from '@/components/confirm';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
-import { useToggleFullscreen } from '@/utils/fullScreen';
-import { useParseHash } from '@/utils/url';
+import { useToggleFullscreen } from '@/utils/full-screen';
+import { useStore } from '@/utils/use-store';
 import { DashboardCarousel } from './components/dashboard-carousel';
 import { SvgView } from './components/svg-view';
-import { type SvgDashboardPageProps } from './types';
+import { SvgDashboardPageStore } from './store';
 import './styles.css';
 
-export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
+export const SvgDashboardPage = observer(() => {
   const { ref, width } = useResizeObserver();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const params = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const store = useStore(() => new SvgDashboardPageStore());
   const [isFullscreen, toggleFullscreen] = useToggleFullscreen();
   const [ confirm, isConfirmOpened, handleConfirm, handleClose ] = useConfirm<any>();
-  const { params, id } = useParseHash();
   const { hasRights } = authStore;
 
   useEffect(() => {
     if (store.dashboardConfigs.length) {
-      store.setDashboard(id);
+      store.setDashboard(params.id);
     }
-  }, [id, store.dashboardConfigs]);
+  }, [params.id, store.dashboardConfigs]);
 
   useEffect(() => {
     store.setMoveToDashboardFn((dashboardId: string, sourceDashboardId: string) => {
@@ -39,22 +45,22 @@ export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
       }
 
       const base = dashboard.isSvg
-        ? `/#!/dashboards/svg/view/${dashboardId}`
-        : `/#!/dashboards/${dashboardId}`;
+        ? `/dashboards/svg/view/${dashboardId}`
+        : `/dashboards/${dashboardId}`;
 
       const query = new URLSearchParams();
 
-      if (params.has('fullscreen')) {
-        const val = params.get('fullscreen') || 'true';
+      if (searchParams.has('fullscreen')) {
+        const val = searchParams.get('fullscreen') || 'true';
         query.append('fullscreen', val);
       }
 
-      if (params.has('hmi')) {
-        const val = params.get('hmi') || 'true';
+      if (searchParams.has('hmi')) {
+        const val = searchParams.get('hmi') || 'true';
         query.append('hmi', val);
 
-        if (params.has('hmicolor')) {
-          query.append('hmicolor', params.get('hmicolor')!);
+        if (searchParams.has('hmicolor')) {
+          query.append('hmicolor', searchParams.get('hmicolor')!);
         }
       }
 
@@ -66,31 +72,32 @@ export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
         ? `${base}?${query.toString()}`
         : base;
 
-      location.assign(url);
+      navigate(url);
     });
   }, []);
 
   useEffect(() => () => {
-    const isPageDestroy = !location.hash.startsWith('#!/dashboards/svg/view');
+    const isPageDestroy = !location.hash.startsWith('/dashboards/svg/view');
     store.unsubscribeAll(isPageDestroy);
   }, []);
 
   return (
     <>
       <PageLayout
-        title={store.getDashboard(id)?.name}
+        title={store.getDashboard(params.id)?.name}
+        infoLink={documentation[i18n.language]?.svgdashboard}
         isLoading={store.loading}
         actions={
           <>
-            {hasRights(UserRole.Operator) && !(isFullscreen || params.has('fullscreen')) && (
+            {hasRights(UserRole.Operator) && !(isFullscreen || searchParams.has('fullscreen')) && (
               <ButtonLink
-                href={`#!/dashboards/svg/edit/${id}`}
+                to={`/dashboards/svg/edit/${params.id}`}
                 type="button"
                 label={t('svg-dashboard.buttons.edit')}
               />
             )}
 
-            {!params.has('fullscreen') && (
+            {!searchParams.has('fullscreen') && (
               <Tooltip
                 text={isFullscreen
                   ? t('svg-dashboard.buttons.exit-fullscreen')
@@ -109,7 +116,7 @@ export const SvgDashboardPage = observer(({ store }: SvgDashboardPageProps) => {
             )}
           </>
         }
-        isHideHeader={!!params.has('hmi')}
+        isHideHeader={!!searchParams.has('hmi')}
         hasRights
       >
         <DashboardCarousel store={store} width={width}>

@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { Boot, LoadLogsParams, Log, LogsListFetch } from './types';
+import { logsProxy, mqttClient } from '@/services';
+import type { Boot, LoadLogsParams, Log } from './types';
 
 export default class LogsStore {
   public logs: Log[] = [];
@@ -7,21 +8,14 @@ export default class LogsStore {
   public boots: Boot[] = [];
   public isLoading = false;
 
-  #logsProxy: any;
-  #whenMqttReady: () => Promise<void>;
-
-  // eslint-disable-next-line typescript/naming-convention
-  constructor(whenMqttReady: () => Promise<void>, LogsProxy: any) {
-    this.#logsProxy = LogsProxy;
-    this.#whenMqttReady = whenMqttReady;
-
+  constructor() {
     makeAutoObservable(this);
   }
 
   async loadServicesAndBoots() {
-    return this.#whenMqttReady()
-      .then(() => this.#logsProxy.List())
-      .then((res: LogsListFetch) => {
+    return mqttClient.whenReady()
+      .then(() => logsProxy.List())
+      .then((res) => {
         runInAction(() => {
           this.services = res.services;
           this.boots = res.boots;
@@ -37,8 +31,8 @@ export default class LogsStore {
     runInAction(() => {
       this.isLoading = true;
     });
-    return this.#whenMqttReady()
-      .then(() => this.#logsProxy.Load({ ...params, limit: 50 }))
+    return mqttClient.whenReady()
+      .then(() => logsProxy.Load({ ...params, limit: 50 }))
       .then((logs: (Log | undefined)[]) => {
         return runInAction(() => {
           const reversedLogs = logs.reverse();
@@ -67,7 +61,7 @@ export default class LogsStore {
   }
 
   async cancelLoadLogs() {
-    await this.#logsProxy.CancelLoad();
+    await logsProxy.CancelLoad();
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 

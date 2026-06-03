@@ -8,6 +8,7 @@ import Uploady, {
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { releases } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
@@ -53,7 +54,7 @@ const UploadWidget = observer(({ store, mode, onSetMode }: UploadWidgetProps) =>
   if (mode === 'reset') {
     return (
       <div>
-        <ul>
+        <ul className="firmwareUpdate-list">
           <li>{t('system.factory_reset.warning1')}</li>
           {store.factoryResetFitsState.canDoFactoryReset && (<li>{t('system.factory_reset.warning2')}</li>)}
         </ul>
@@ -88,9 +89,9 @@ const UploadWidget = observer(({ store, mode, onSetMode }: UploadWidgetProps) =>
   return (
     <div>
       <div>
-        <ul>
+        <ul className="firmwareUpdate-list">
           <li>
-            <a href="https://fw-releases.wirenboard.com/?prefix=fit_image" target="_blank">
+            <a href={releases} target="_blank">
               {t('system.update.help')}
             </a>
           </li>
