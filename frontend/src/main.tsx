@@ -15,6 +15,11 @@ import 'glyphicons-only-bootstrap/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
 import './assets/styles/index.css';
 
+// Stale assets after a rebuild — reload to pick up the new HTML with fresh hashes
+window.addEventListener('vite:preloadError', () => {
+  window.location.reload();
+});
+
 document.documentElement.setAttribute('data-theme', 'bootstrap');
 
 switchToHttps().finally(() => {
