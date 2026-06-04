@@ -785,6 +785,8 @@
       "labels":{
          "login": "Login",
          "password": "Password",
+         "password-again": "Password again",
+         "password-mismatch": "Passwords don't match",
          "type": "Type",
          "admin": "Admin",
          "user": "User",
@@ -813,6 +815,7 @@
       "buttons": {
          "login": "Sign in",
          "auto-login": "Sign in without password",
+         "forgot-password": "Forgot password?",
          "choose-language": "Choose language"
       },
       "labels": {
