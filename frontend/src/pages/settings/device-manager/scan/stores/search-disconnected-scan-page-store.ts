@@ -53,8 +53,12 @@ export class SearchDisconnectedScanPageStore {
     this.active = true;
     const slaveIdInt = parseInt(slaveId);
     let outOfOrderSlaveIds = [];
+    let selectableConfiguredDevice = null;
     if (!isNaN(slaveIdInt)) {
       outOfOrderSlaveIds.push(slaveIdInt);
+      // The searched device is already in the config (same port + slave_id), so the backend reports
+      // it as configured. Keep it selectable so its connection settings can be re-applied.
+      selectableConfiguredDevice = { portPath, slaveId: slaveIdInt };
     }
     this.commonScanStore.startScanning(
       SelectionPolicy.Single,
@@ -63,6 +67,7 @@ export class SearchDisconnectedScanPageStore {
       useModbusTcp,
       outOfOrderSlaveIds,
       true,
+      selectableConfiguredDevice,
     );
   }
 

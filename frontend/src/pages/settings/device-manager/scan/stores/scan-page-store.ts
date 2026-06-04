@@ -20,6 +20,11 @@ export const ScanState = {
   NotSpecified: 'NotSpecified',
 };
 
+export interface SelectableConfiguredDevice {
+  portPath: string;
+  slaveId: number;
+}
+
 class DevicesStore {
   public newDevices: SingleDeviceStore[] = [];
   public alreadyConfiguredDevices: SingleDeviceStore[] = [];
@@ -27,6 +32,7 @@ class DevicesStore {
   public deviceTypesStore: DeviceTypesStore;
   public selectionPolicy: SelectionPolicy = SelectionPolicy.Multiple;
   public allowToSelectDevicesInBootloader = false;
+  public selectableConfiguredDevice: SelectableConfiguredDevice = null;
   public disposer: string;
 
   constructor(deviceTypesStore: DeviceTypesStore) {
@@ -45,6 +51,15 @@ class DevicesStore {
       [this.deviceTypesStore.getName(scannedDevice.configured_device_type)],
       [scannedDevice.configured_device_type],
       false,
+    );
+  }
+
+  isSearchedDevice(scannedDevice: FullScannedDevice) {
+    const target = this.selectableConfiguredDevice;
+    return (
+      !!target &&
+      scannedDevice.port?.path === target.portPath &&
+      scannedDevice.cfg?.slave_id === target.slaveId
     );
   }
 
@@ -82,7 +97,10 @@ class DevicesStore {
     this.newDevices.forEach((device) => device.disposer?.());
     this.newDevices = [];
     scannedDevicesList.forEach((scannedDevice) => {
-      if (scannedDevice.configured_device_type) {
+      // A device found by "search disconnected device" matches an existing config entry by
+      // (port + slave_id), so the backend always reports it as already configured. It still must
+      // be selectable, otherwise the user can't re-apply connection settings (e.g. baud rate) to it.
+      if (scannedDevice.configured_device_type && !this.isSearchedDevice(scannedDevice)) {
         this.alreadyConfiguredDevices.push(this.makeConfiguredDeviceStore(scannedDevice));
       } else {
         this.newDevices.push(this.makeNewDeviceStore(scannedDevice));
@@ -98,9 +116,15 @@ class DevicesStore {
 
   }
 
-  init(selectionPolicy: SelectionPolicy, configuredDevices, allowToSelectDevicesInBootloader: boolean) {
+  init(
+    selectionPolicy: SelectionPolicy,
+    configuredDevices,
+    allowToSelectDevicesInBootloader: boolean,
+    selectableConfiguredDevice: SelectableConfiguredDevice = null,
+  ) {
     this.configuredDevices = configuredDevices;
     this.allowToSelectDevicesInBootloader = !!allowToSelectDevicesInBootloader;
+    this.selectableConfiguredDevice = selectableConfiguredDevice;
     this.newDevices.forEach((device) => device.disposer?.());
     this.selectionPolicy = selectionPolicy ?? SelectionPolicy.Multiple;
     this.newDevices = [];
@@ -265,6 +289,8 @@ export class CommonScanStore {
    * @param {boolean} useModbusTcp - Whether to use Modbus TCP protocol.
    * @param {Array} outOfOrderSlaveIds - The list of out-of-order slave IDs.
    * @param {boolean} allowToSelectDevicesInBootloader - The flag to allow to select devices in bootloader.
+   * @param {SelectableConfiguredDevice} selectableConfiguredDevice - An already configured device
+   *   (port + slave_id) that must stay selectable, used when searching for a disconnected device.
    * @returns {void}
    */
   startScanning(
@@ -274,8 +300,14 @@ export class CommonScanStore {
     useModbusTcp?: boolean,
     outOfOrderSlaveIds?: string[],
     allowToSelectDevicesInBootloader?: boolean,
+    selectableConfiguredDevice?: SelectableConfiguredDevice,
   ): void {
-    this.devicesStore.init(selectionPolicy, configuredDevices, allowToSelectDevicesInBootloader);
+    this.devicesStore.init(
+      selectionPolicy,
+      configuredDevices,
+      allowToSelectDevicesInBootloader,
+      selectableConfiguredDevice,
+    );
     this.portPath = portPath;
     this.useModbusTcp = useModbusTcp;
     this.outOfOrderSlaveIds = outOfOrderSlaveIds;
