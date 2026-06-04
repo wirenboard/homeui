@@ -1,228 +1,70 @@
 import { observer } from 'mobx-react-lite';
-import { Fragment, useCallback, useMemo } from 'react';
+import { Fragment, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import TrashIcon from '@/assets/icons/trash.svg';
 import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
-import { Input } from '@/components/input';
 import {
   Capability,
   Color,
   ColorModel,
-  // modes, // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
-  ranges,
-  // toggles, // TODO: <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
   type CapabilityParameters,
   type SmartDeviceCapability,
-  // colorSceneOptions, // TODO: <DISABLED_COLOR> - need uncomment for Color Scenes activation in WEBUI
   rangeUnitByInstance,
   defaultColorModelParameters,
   defaultTemperatureParameters,
   defaultColorSceneParameters,
 } from '@/stores/alice';
-import { type DeviceCapabilitiesProps } from './types';
+import { devicesStore } from '@/stores/devices';
+import {
+  ColorSettingCapability,
+  getAvailableColorModels,
+} from './capabilities/color-setting';
+import { ModeCapability, getAvailableModeInstances } from './capabilities/mode';
+import { OnOffCapability } from './capabilities/on-off';
+import {
+  RangeCapability,
+  RANGE_LIMITS_DEFAULT,
+  RANGE_LIMITS_LOCKED,
+  getAvailableRangeInstances,
+} from './capabilities/range';
+import {
+  ToggleCapability,
+  getAvailableToggleInstances,
+} from './capabilities/toggle';
+import { type CapabilitySubProps, type DeviceCapabilitiesProps } from './types';
 
-// Default range values for unlocked instances
-const RANGE_LIMITS_DEFAULT = { min: 0, max: 100, precision: 1 };
-
-// Instances with fixed ranges that cannot be changed in UI
-const RANGE_LIMITS_LOCKED: Record<string, { min: number; max: number; precision?: number }> = {
-  brightness: { min: 0, max: 100, precision: 1 },
-  // channel: No lock applied
-  humidity:   { min: 0, max: 100, precision: 1 },
-  open:       { min: 0, max: 100, precision: 1 },
-  // temperature: No lock applied
-  // volume: No lock applied
-};
-
-const getAvailableColorModels = (
-  capabilities: SmartDeviceCapability[],
-  excludeIndex?: number,
-): Color[] => {
-  // Collect already used Color models among color-setting capabilities
-  const usedColorModels = capabilities
-    .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
-    .map((cap) => {
-      if (cap.parameters?.color_model) return Color.ColorModel;
-      if (cap.parameters?.temperature_k) return Color.TemperatureK;
-      if (cap.parameters?.color_scene) return Color.ColorScene;
-      return null;
-    })
-    .filter(Boolean);
-
-  return Object.values(Color)
-    .filter((m) => m !== Color.ColorScene) // TODO: <DISABLED_COLOR> Its disable Color scene, need remove for enable
-    .filter((colorModel) => !usedColorModels.includes(colorModel));
-};
-
-const getCurrentColorModel = (capability: SmartDeviceCapability) => {
-  if (capability.parameters?.color_model) return Color.ColorModel;
-  if (capability.parameters?.temperature_k) return Color.TemperatureK;
-  if (capability.parameters?.color_scene) return Color.ColorScene;
-  return Color.ColorModel; // Default value
-};
-
-const getAvailableRangeInstances = (
-  capabilities: SmartDeviceCapability[],
-  excludeIndex?: number,
-): string[] => {
-  const usedInstances = capabilities
-    .filter((cap, index) =>
-      cap.type === Capability.Range &&
-      index !== excludeIndex &&
-      cap.parameters?.instance,
-    )
-    .map((cap) => cap.parameters.instance);
-
-  return ranges.filter(
-    (rangeInstance) => !usedInstances.includes(rangeInstance),
-  );
-};
-
-const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
-  switch (colorKey) {
-    case 'ColorModel': return t('alice.labels.color-model');
-    case 'TemperatureK': return t('alice.labels.color-temperature');
-    case 'ColorScene': return t('alice.labels.color-scenes');
-    default: return colorKey;
-  }
-};
-
-const isCapabilityDisabled = (
-  capabilityType: Capability,
-  capabilities: SmartDeviceCapability[],
-) => {
-  if (capabilityType === Capability['Color setting']) {
-    // For color setting, disable only if all color models are used
-    return !getAvailableColorModels(capabilities).length;
-  }
-
-  if (capabilityType === Capability.Range) {
-    // For range, disable only if all range instances are used
-    return !getAvailableRangeInstances(capabilities).length;
-  }
-
-  // For other capabilities, use existing logic
-  return capabilities.find((item) => item.type === capabilityType);
-};
-
-export const DeviceCapabilities = observer(({
-  capabilities, devicesStore, onCapabilityChange,
-}: DeviceCapabilitiesProps) => {
+export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }: DeviceCapabilitiesProps) => {
   const { t } = useTranslation();
+  const idPrefix = useId();
 
-  const handleColorSettingTypeChange = useCallback((
-    value: Color,
-    key: number,
+  const isCapabilityDisabled = (
+    capabilityType: Capability,
+    capabilities: SmartDeviceCapability[],
   ) => {
-    let newParameters: CapabilityParameters = {};
-
-    if (value === Color.ColorModel) {
-      Object.assign(newParameters, defaultColorModelParameters[ColorModel.RGB]);
-    } else if (value === Color.TemperatureK) {
-      Object.assign(newParameters, defaultTemperatureParameters);
-    } else if (value === Color.ColorScene) {
-      Object.assign(newParameters, defaultColorSceneParameters);
+    if (capabilityType === Capability['Color setting']) {
+      // For color setting, disable only if all color models are used
+      return !getAvailableColorModels(capabilities).length;
     }
 
-    const updatedCapabilities = capabilities.map((item, i) => i === key
-      ? { ...item, parameters: newParameters }
-      : item);
-    onCapabilityChange(updatedCapabilities);
-  }, [capabilities]);
+    if (capabilityType === Capability.Range) {
+      // For range, disable only if all range instances are used
+      return !getAvailableRangeInstances(capabilities).length;
+    }
 
-  const handleColorModelInstanceChange = useCallback((
-    value: ColorModel,
-    key: number,
-  ) => {
-    const newParameters = defaultColorModelParameters[value];
+    if (capabilityType === Capability.Toggle) {
+      // For toggle, disable only if all toggle instances are used
+      return !getAvailableToggleInstances(capabilities).length;
+    }
 
-    const updatedCapabilities = capabilities.map((item, i) => i === key
-      ? { ...item, parameters: newParameters }
-      : item);
-    onCapabilityChange(updatedCapabilities);
-  }, [capabilities]);
+    if (capabilityType === Capability.Mode) {
+      // For mode, disable only if all mode instances are used
+      return !getAvailableModeInstances(capabilities).length;
+    }
 
-  const handleTemperatureParameterChange = useCallback((
-    paramType: 'min' | 'max',
-    value: number,
-    key: number,
-  ) => {
-    const updatedCapabilities = capabilities.map((item, i) => i === key
-      ? {
-        ...item,
-        parameters: {
-          ...item.parameters,
-          temperature_k: {
-            ...item.parameters.temperature_k,
-            [paramType]: value,
-          },
-        },
-      }
-      : item);
-    onCapabilityChange(updatedCapabilities);
-  }, [capabilities]);
-
-  const handleColorScenesChange = useCallback((
-    scenes: string,
-    key: number,
-  ) => {
-    const sceneList = scenes.split(',').map((s) => s.trim()).filter(Boolean);
-    const updatedCapabilities = capabilities.map((item, i) => i === key
-      ? {
-        ...item,
-        parameters: {
-          ...item.parameters,
-          color_scene: {
-            ...item.parameters.color_scene,
-            scenes: sceneList,
-          },
-        },
-      }
-      : item);
-    onCapabilityChange(updatedCapabilities);
-  }, [capabilities]);
-
-  const getColorModelOptions = useMemo(() => {
-    return (currentCapability: SmartDeviceCapability, currentCapabilityIndex: number) => {
-      const availableModels = getAvailableColorModels(capabilities, currentCapabilityIndex);
-      const currentlySelectedModel = getCurrentColorModel(currentCapability);
-
-      return Object.keys(Color)
-        // TODO: <DISABLED_COLOR> This line disable Color scene, need remove for enable
-        .filter((colorKey) => colorKey !== 'ColorScene')
-        .map((colorKey) => {
-          const modelValue = Color[colorKey];
-          const isCurrentlySelected = currentlySelectedModel === modelValue;
-          const isAvailableForUse = availableModels.includes(modelValue);
-
-          return {
-            label: getColorModelLabel(colorKey, t),
-            value: modelValue,
-            isDisabled: !isCurrentlySelected && !isAvailableForUse,
-          };
-        });
-    };
-  }, [capabilities]);
-
-  const getRangeInstanceOptions = useCallback((
-    currentCapability: SmartDeviceCapability,
-    currentCapabilityIndex: number,
-  ) => {
-    const availableInstances = getAvailableRangeInstances(capabilities, currentCapabilityIndex);
-    const currentlySelectedInstance = currentCapability.parameters?.instance;
-
-    return ranges.map((rangeInstance) => {
-      const isCurrentlySelected = currentlySelectedInstance === rangeInstance;
-      const isAvailableForUse = availableInstances.includes(rangeInstance);
-
-      return {
-        label: rangeInstance,
-        value: rangeInstance,
-        isDisabled: !isCurrentlySelected && !isAvailableForUse,
-      };
-    });
-  }, [capabilities]);
+    // For other capabilities, use existing logic
+    return capabilities.find((item) => item.type === capabilityType);
+  };
 
   const getAvailableCapabilities = () => {
     return Object.values(Capability).filter((capType) => {
@@ -249,12 +91,15 @@ export const DeviceCapabilities = observer(({
 
         break;
       }
-      // TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI
-      // case Capability.Mode: {
-      //   parameters.instance = 'wet_cleaning';
-      //   parameters.modes = 'start=1, stop=0';
-      //   break;
-      // }
+      case Capability.Mode: {
+        // Select first available instance
+        const availableInstances = getAvailableModeInstances(capabilities);
+        const selectedInstance = availableInstances[0] || 'cleanup_mode'; // fallback to cleanup_mode
+
+        parameters.instance = selectedInstance;
+        parameters.modes = [];
+        break;
+      }
       case Capability.Range: {
         // Select first available instance
         const availableInstances = getAvailableRangeInstances(capabilities);
@@ -270,11 +115,13 @@ export const DeviceCapabilities = observer(({
         parameters.unit = rangeUnitByInstance[selectedInstance];
         break;
       }
-      // <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI
-      // case Capability.Toggle: {
-      //   parameters.instance = 'backlight';
-      //   break;
-      // }
+      case Capability.Toggle: {
+        // Select first available instance
+        const availableInstances = getAvailableToggleInstances(capabilities);
+
+        parameters.instance = availableInstances[0] || 'backlight'; // fallback to backlight;
+        break;
+      }
       case Capability['On/Off']: {
         parameters.instance = 'on';
         break;
@@ -290,292 +137,81 @@ export const DeviceCapabilities = observer(({
     )));
   };
 
+  const renderCapabilityFields = (capability: SmartDeviceCapability, key: number) => {
+    const subProps: CapabilitySubProps = { capability, index: key, capabilities, onCapabilityChange };
+    switch (capability.type) {
+      case Capability['On/Off']: return <OnOffCapability />;
+      case Capability['Color setting']: return <ColorSettingCapability {...subProps} />;
+      case Capability.Mode: return <ModeCapability {...subProps} />;
+      case Capability.Range: return <RangeCapability {...subProps} />;
+      case Capability.Toggle: return <ToggleCapability {...subProps} />;
+      default: return null;
+    }
+  };
+
+  const renderCapabilityRow = (capability: SmartDeviceCapability, key: number) => {
+    const capabilityId = `${idPrefix}-capability-${key}`;
+    const topicId = `${idPrefix}-topic-${key}`;
+    return (
+      <Fragment key={key}>
+        <div>
+          <label className="aliceDeviceSkills-gridLabel" htmlFor={capabilityId}>
+            {t('alice.labels.capability')}
+          </label>
+          <Dropdown
+            id={capabilityId}
+            value={capability.type}
+            options={Object.keys(Capability).map((cap) => ({
+              label: cap,
+              value: Capability[cap],
+              isDisabled: isCapabilityDisabled(Capability[cap], capabilities),
+            }))}
+            onChange={(option: Option<Capability>) => onCapabilityTypeChange(option.value, key)}
+          />
+        </div>
+        <div>
+          <label className="aliceDeviceSkills-gridLabel" htmlFor={topicId}>
+            {t('alice.labels.topic')}
+          </label>
+          <Dropdown
+            id={topicId}
+            className="aliceDeviceSkills-dropdown"
+            value={capability.mqtt}
+            placeholder={devicesStore.topics.flatMap((g) => g.options)
+              .find((o) => o.value === capability.mqtt)?.label}
+            options={devicesStore.topics as any[]}
+            isSearchable
+            onChange={({ value }: Option<string>) => {
+              onCapabilityChange(capabilities.map((item, i) => (
+                i === key ? { ...item, mqtt: value } : item
+              )));
+            }}
+          />
+        </div>
+
+        {renderCapabilityFields(capability, key)}
+
+        <div className="aliceDeviceSkills-deleteButton">
+          <Button
+            size="small"
+            type="button"
+            icon={<TrashIcon />}
+            variant="secondary"
+            isOutlined
+            onClick={() => onCapabilityChange(capabilities.filter((_item, i) => i !== key))}
+          />
+        </div>
+      </Fragment>
+    );
+  };
+
   return (
     <>
       <h6>{t('alice.labels.device-capabilities')}</h6>
       <div className="aliceDeviceSkills">
         <p>{t('alice.labels.device-capabilities-description')}</p>
         <div className="aliceDeviceSkills-grid">
-          {capabilities.map((capability, key) => (
-            <Fragment key={key}>
-              <div>
-                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                  {t('alice.labels.capability')}
-                </div>
-                <Dropdown
-                  value={capability.type}
-                  options={Object.keys(Capability).map((cap) => ({
-                    label: cap,
-                    value: Capability[cap],
-                    isDisabled: isCapabilityDisabled(Capability[cap], capabilities),
-                  }))}
-                  onChange={(option: Option<Capability>) => onCapabilityTypeChange(option.value, key)}
-                />
-              </div>
-              <div>
-                <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
-                  {t('alice.labels.topic')}
-                </div>
-                <Dropdown
-                  className="aliceDeviceSkills-dropdown"
-                  value={capability.mqtt}
-                  placeholder={devicesStore.topics.flatMap((g) => g.options)
-                    .find((o) => o.value === capability.mqtt)?.label}
-                  options={devicesStore.topics as any[]}
-                  isSearchable
-                  onChange={({ value }: Option<string>) => {
-                    onCapabilityChange(capabilities.map((item, i) => (
-                      i === key ? { ...item, mqtt: value } : item
-                    )));
-                  }}
-                />
-              </div>
-
-              {capability.type === Capability['On/Off'] && (
-                <div className="aliceDeviceSkills-colspan2"></div>
-              )}
-
-              {capability.type === Capability['Color setting'] && (
-                <>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.type')}</div>
-                    <Dropdown
-                      value={getCurrentColorModel(capability)}
-                      options={getColorModelOptions(capability, key)}
-                      onChange={({ value }: Option<Color>) => {
-                        handleColorSettingTypeChange(value, key);
-                      }}
-                    />
-                  </div>
-
-                  {getCurrentColorModel(capability) === Color.ColorModel && (
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.color-model')}</div>
-                      <Dropdown
-                        value={capability.parameters?.color_model ?? null}
-                        options={Object.keys(ColorModel)
-                          // TODO: <DISABLED_COLOR> This line disable Color HSV, need remove for enable
-                          .filter((m) => m !== 'HSV' || capability.parameters?.color_model === ColorModel.HSV)
-                          .map((model) => ({
-                            label: model,
-                            value: ColorModel[model as keyof typeof ColorModel],
-                          }))}
-                        onChange={({ value }: Option<ColorModel>) => {
-                          handleColorModelInstanceChange(value, key);
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {capability.parameters?.temperature_k && (
-                    <div className="aliceDeviceSkills-gridRange">
-                      <div>
-                        <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
-                        <Input
-                          value={capability.parameters?.temperature_k?.min}
-                          type="number"
-                          isFullWidth
-                          onChangeEvent={(event) => {
-                            const min = event.currentTarget.valueAsNumber || 0;
-                            handleTemperatureParameterChange('min', min, key);
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
-                        <Input
-                          value={capability.parameters?.temperature_k?.max}
-                          type="number"
-                          isFullWidth
-                          onChangeEvent={(event) => {
-                            const max = event.currentTarget.valueAsNumber || 0;
-                            handleTemperatureParameterChange('max', max, key);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {getCurrentColorModel(capability) === Color.ColorScene && (
-                    <div>
-                      <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.scenes-input')}</div>
-                      <Input
-                        value={capability.parameters?.color_scene?.scenes?.join(', ') || ''}
-                        placeholder="ocean, sunset, party"
-                        isFullWidth
-                        onChange={(scenes: string) => {
-                          handleColorScenesChange(scenes, key);
-                        }}
-                      />
-                    </div>
-                  )}
-                </>
-
-              )}
-
-              {/* TODO: <DISABLED_MODE> - need uncomment for Mode activation in WEBUI */}
-              {/* {capability.type === Capability.Mode && (
-                <>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode-type')}</div>
-                    <Dropdown
-                      value={capability.parameters?.instance}
-                      options={modes.map((mode) => ({ label: mode, value: mode }))}
-                      onChange={({ value: instance }: Option<string>) => {
-                        const val = capabilities.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, instance } }
-                          : item);
-                        onCapabilityChange(val);
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
-                    <Input
-                      value={capability.parameters?.modes}
-                      isFullWidth
-                      onChange={(modes: string) => {
-                        const val = capabilities.map((item, i) => i === key
-                          ? { ...item, parameters: { ...item.parameters, modes } }
-                          : item);
-                        onCapabilityChange(val);
-                      }}
-                    />
-                  </div>
-                </>
-              )} */}
-
-              {capability.type === Capability.Range && (
-                <>
-                  <div>
-                    <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
-                    <Dropdown
-                      value={capability.parameters?.instance}
-                      options={getRangeInstanceOptions(capability, key)}
-                      onChange={({ value: instance }: Option<string>) => {
-                        const unit = rangeUnitByInstance[instance];
-
-                        // If instance has a fixed range - apply it
-                        const rangeConfig = RANGE_LIMITS_LOCKED[instance] ?? RANGE_LIMITS_DEFAULT;
-                        const nextParams = {
-                          ...capability.parameters,
-                          instance,
-                          unit,
-                          range: {
-                            min: rangeConfig.min,
-                            max: rangeConfig.max,
-                            precision: rangeConfig.precision ?? capability.parameters?.range?.precision ?? 1,
-                          },
-                        };
-
-                        const val = capabilities.map((item, i) =>
-                          i === key ? { ...item, parameters: nextParams } : item,
-                        );
-                        onCapabilityChange(val);
-                      }}
-                    />
-                  </div>
-                  <div className="aliceDeviceSkills-gridRange">
-                    {(() => {
-                      const curInstance = capability.parameters?.instance as string;
-                      const fixedRange = RANGE_LIMITS_LOCKED[curInstance];
-                      const isRangeLocked = !!fixedRange;
-                      const lockedMin = fixedRange?.min ?? capability.parameters?.range?.min ?? 0;
-                      const lockedMax = fixedRange?.max ?? capability.parameters?.range?.max ?? 100;
-                      return (
-                        <>
-                          <div>
-                            <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.min')}</div>
-                            <Input
-                              value={lockedMin}
-                              type="number"
-                              isDisabled={isRangeLocked}
-                              isFullWidth
-                              onChangeEvent={(event) => {
-                                const min = event.currentTarget.valueAsNumber || 0;
-                                const val = capabilities.map((item, i) => i === key
-                                  ? {
-                                    ...item,
-                                    parameters: { ...item.parameters, range: { ...item.parameters.range, min } },
-                                  }
-                                  : item);
-                                onCapabilityChange(val);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.max')}</div>
-                            <Input
-                              value={lockedMax}
-                              type="number"
-                              isDisabled={isRangeLocked}
-                              isFullWidth
-                              onChangeEvent={(event) => {
-                                const max = event.currentTarget.valueAsNumber || 0;
-                                const val = capabilities.map((item, i) => i === key
-                                  ? {
-                                    ...item,
-                                    parameters: { ...item.parameters, range: { ...item.parameters.range, max } },
-                                  }
-                                  : item);
-                                onCapabilityChange(val);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.precision')}</div>
-                            <Input
-                              value={capability.parameters?.range.precision}
-                              type="number"
-                              isFullWidth
-                              onChangeEvent={(event) => {
-                                const precision = event.currentTarget.valueAsNumber || 0;
-                                const val = capabilities.map((item, i) => i === key
-                                  ? {
-                                    ...item,
-                                    parameters: { ...item.parameters, range: { ...item.parameters.range, precision } },
-                                  }
-                                  : item);
-                                onCapabilityChange(val);
-                              }}
-                            />
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-                </>
-              )}
-
-              {/* <DISABLED_TOGGLE> - need uncomment for Toggle activation in WEBUI */}
-              {/* {capability.type === Capability.Toggle && (
-                <div className="aliceDeviceSkills-colspan2">
-                  <div className="aliceDeviceSkills-gridLabel">{t('alice.labels.mode')}</div>
-                  <Dropdown
-                    value={capability.parameters?.instance}
-                    options={toggles.map((toggle) => ({ label: toggle, value: toggle }))}
-                    onChange={({ value: instance }: Option<string>) => {
-                      const val = capabilities.map((item, i) => i === key
-                        ? { ...item, parameters: { ...item.parameters, instance } }
-                        : item);
-                      onCapabilityChange(val);
-                    }}
-                  />
-                </div>
-              )} */}
-
-              <div className="aliceDeviceSkills-deleteButton">
-                <Button
-                  size="small"
-                  type="button"
-                  icon={<TrashIcon />}
-                  variant="secondary"
-                  isOutlined
-                  onClick={() => onCapabilityChange(capabilities.filter((_item, i) => i !== key))}
-                />
-              </div>
-            </Fragment>
-          ))}
+          {capabilities.map(renderCapabilityRow)}
         </div>
 
         <Button

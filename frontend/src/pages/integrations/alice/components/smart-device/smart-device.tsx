@@ -7,7 +7,7 @@ import TrashIcon from '@/assets/icons/trash.svg';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
-import { Dropdown } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import {
   aliceStore,
@@ -21,7 +21,7 @@ import { DeviceSkills } from './components/device-skills';
 import { type SmartDeviceProps } from './types';
 import './styles.css';
 
-export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpenDevice }: SmartDeviceProps) => {
+export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: SmartDeviceProps) => {
   const { t } = useTranslation();
   const { addDevice, devices, rooms, fetchData, deleteDevice, updateDevice, copyDevice } = aliceStore;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -168,9 +168,9 @@ export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpe
               <Dropdown
                 value={category}
                 options={Object.keys(deviceTypes).map((val) => ({ label: t(`alice.device-types.${val}`), value: val }))}
-                onChange={({ value }) => {
-                  setCategory(value as string);
-                  setData({ ...data, type: deviceTypes[value as string].at(0) });
+                onChange={({ value }: Option<string>) => {
+                  setCategory(value);
+                  setData({ ...data, type: deviceTypes[value].at(0) });
                 }}
               />
             </label>
@@ -180,7 +180,7 @@ export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpe
                 value={data.type}
                 isDisabled={!category}
                 options={!category ? [] : deviceTypes[category].map((value) => ({ label: value, value }))}
-                onChange={(option) => setData({ ...data, type: option.value as string })}
+                onChange={(option: Option<string>) => setData({ ...data, type: option.value })}
               />
             </label>
           </div>
@@ -188,7 +188,6 @@ export const SmartDevice = observer(({ id, devicesStore, onSave, onDelete, onOpe
           <DeviceSkills
             capabilities={data.capabilities}
             properties={data.properties}
-            devicesStore={devicesStore}
             onCapabilityChange={(capabilities) => {
               setData((prev: SmartDeviceData) => ({
                 ...prev,

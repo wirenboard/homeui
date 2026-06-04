@@ -1,4 +1,4 @@
-export type RangeLabelPosition = 'bottom' | 'right';
+export type RangeLabelPosition = 'bottom' | 'right' | 'none';
 
 export interface RangeProps {
   id: string;

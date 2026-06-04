@@ -14,6 +14,7 @@ import {
   type PropertyParameters,
   unitLabels,
 } from '@/stores/alice';
+import { devicesStore } from '@/stores/devices';
 import { type DevicePropertiesProps } from './types';
 
 const floatUnitOptionsForInstance = (instance?: string): Option<string>[] => {
@@ -67,9 +68,7 @@ const getAvailableEventInstances = (properties: any[]) => {
   });
 };
 
-export const DeviceProperties = observer(({
-  properties, devicesStore, onPropertyChange,
-}: DevicePropertiesProps) => {
+export const DeviceProperties = observer(({ properties, onPropertyChange }: DevicePropertiesProps) => {
   const { t } = useTranslation();
 
   const getFloatInstanceOptions = useMemo(() => {

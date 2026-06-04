@@ -1,0 +1,1037 @@
+{
+   "common":{
+      "labels": {
+         "loading": "Loading",
+         "asc": "ascending",
+         "desc": "descending",
+         "time": "Time",
+         "empty-search": "Nothing found",
+         "password-strength-0": "Short password",
+         "password-strength-1": "Very weak password",
+         "password-strength-2": "Weak password",
+         "password-strength-3": "Good password",
+         "password-strength-4": "Strong password",
+         "select-all": "Select all",
+         "unselect-all": "Unselect all",
+         "setting-up-https": "Setting up HTTPS"
+      },
+      "buttons": {
+         "close": "Close",
+         "apply": "Apply",
+         "add": "Add",
+         "edit": "Edit",
+         "remove": "Remove",
+         "move-up": "Move up",
+         "move-down": "Move down",
+         "select": "Select",
+         "read": "Read",
+         "save": "Save",
+         "password-hide": "Hide password",
+         "password-show": "Show password",
+         "sort": "Sort by column \"{{column}}\"",
+         "collapse": "Collapse",
+         "expand": "Expand",
+         "skip-to-main-content": "Skip to main content",
+         "open-calendar": "Open calendar"
+      },
+      "prompt": {
+         "dirty": "The page has unsaved changes. Are you sure you want to leave?"
+      },
+      "errors": {
+         "nginx": "The server returned an invalid response — check your nginx configuration, `proxy_pass`, and API routing",
+         "load": "Cannot load WebUI config."
+      }
+   },
+   "dashboards": {
+      "title": "Dashboards",
+      "labels": {
+         "id": "Panel id (used in url)",
+         "name": "Name",
+         "type": "Type",
+         "in-menu": "In nav",
+         "empty-list": "No dashboards currently defined",
+         "edit": "Edit panel \"{{name}}\"",
+         "create": "Add panel",
+         "svg-flag": "SVG panel type",
+         "text-flag": "Text panel type",
+         "text-dashboard": "Text"
+      },
+      "buttons": {
+         "add": "Add",
+         "open": "Open \"{{name}}\" dashboard",
+         "edit": "Edit",
+         "edit-dashboard": "Edit \"{{name}}\" dashboard",
+         "delete": "Delete",
+         "delete-dashboard": "Delete \"{{name}}\" dashboard",
+         "save": "Save",
+         "hide": "Hidden from menu",
+         "visible": "Shown in menu",
+         "visible-flag": "Show dashboard \"{{name}}\" in navigation menu"
+      },
+      "prompt": {
+         "delete-title": "Dashboard deletion",
+         "delete-description": "Are you sure you want to delete \"{{name}}\" dashboard?"
+      },
+      "errors": {
+         "duplicate": "Duplicate dashboard ids are not allowed",
+         "save": "Config saving failed",
+         "overflow": "Config saving failed. Try to clear page's localStorage and restart the browser. If problem remains, try to reduce overall size of SVG images."
+      }
+   },
+   "navigation": {
+      "labels": {
+         "toggle": "Toggle navigation display mode",
+         "home": "Home",
+         "dashboards": "Dashboards",
+         "list": "List",
+         "devices": "Devices",
+         "integrations": "Integrations",
+         "alice": "Yandex Alice",
+         "widgets": "Widgets",
+         "history": "History",
+         "rules": "Rules",
+         "rule-editor": "Rule Editor",
+         "scenario": "Scenarios",
+         "settings": "Settings",
+         "help": "Help",
+         "configs": "Configs",
+         "ui": "Web UI",
+         "system": "System",
+         "channels": "MQTT Channels",
+         "access": "Users",
+         "logs": "Logs",
+         "scan": "Scan",
+         "device-manager": "Device manager"
+      },
+      "buttons": {
+         "open-mobile": "Open mobile menu",
+         "compact-off": "Collapse navigation",
+         "compact-on": "Expand navigation",
+         "logout": "Logout",
+         "switch-user": "Switch user",
+         "debug": "Debug"
+      },
+      "connection": {
+         "active": "Connected",
+         "inactive": "Disconnected"
+      }
+   },
+   "history": {
+      "title": "History",
+      "labels": {
+         "choose": "Please Choose",
+         "start": "Start",
+         "end": "End",
+         "nothing": "No data points to display",
+         "date": "Date and time",
+         "all_channels": "All channels: ",
+         "widget_channels": "Channels used in widgets: "
+      },
+      "buttons": {
+         "delete": "Delete",
+         "add": "Add channel",
+         "load": "Load data",
+         "today": "Per day",
+         "stop": "Stop loading",
+         "download": "Download history as CSV"
+      },
+      "errors": {
+         "load": "Error getting history"
+      }
+   },
+   "scan": {
+      "title": "New devices",
+      "search-disconnected-title": "Search for disconnected device",
+      "errors": {
+         "scan": "Start scan failed",
+         "common": "Error",
+         "unavailable": "wb-device-manager service is unavailable or outdated"
+      },
+      "buttons": {
+         "scan": "Start slow scan",
+         "stop": "Stop",
+         "bootloader-scan": "Find devices in bootloader mode",
+         "to-serial": "Add to wb-mqtt-serial",
+         "cancel": "Cancel",
+         "setup-as-selected": "Setup"
+      },
+      "labels": {
+         "device": "Device",
+         "address": "Address",
+         "port": "Port",
+         "sn": "Serial number",
+         "firmware": "Firmware",
+         "available": "available {{version}}",
+         "in-bootloader": "in bootloader",
+         "in-bootloader-link": "in bootloader, <0 href=\"https://wirenboard.com/wiki/Wb-mcu-fw-updater#%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_(recover)\">how to recover</0>",
+         "not-polled": "not polled",
+         "offline": "offline",
+         "duplicate": "duplicate",
+         "scanning": "Searching {{-ports}}...",
+         "fast-scanning": "Fast scanning in progress {{-ports}}...",
+         "extended-modbus": "This device was found by scanning via fast Modbus",
+         "try-normal-scan": "If the required devices are not found, run slow scan. During this time, already configured devices will not be polled or accept commands",
+         "misconfigured-port": "differs from port settings",
+         "duplicate-topic": "There is a device with the same MQTT topic",
+         "unknown-device-type": "unknown device type",
+         "similar-device-signatures": "also matches templates:<br>{{types}}",
+         "device-in-config": "Devices in config"
+      }
+   },
+   "com": {
+      "wb": {
+         "device_manager": {
+            "failed_to_scan_error": "Scan failed for ports: {{ failed_ports }}. Check logs for more information",
+            "error": "Error"
+         },
+         "serial_driver": {
+            "error": "Error",
+            "device": {
+              "read_device_signature_error": "Failed to read device signature",
+              "read_serial_params_error": "Failed to read device port settings",
+              "read_sn_error": "Failed to read device serial number",
+              "read_fw_version_error": "Failed to read FW version",
+              "read_fw_signature_error": "Failed to read FW signature"
+            }
+         }
+      }
+   },
+   "network-connections": {
+      "labels": {
+         "changes": "There are unsaved changes",
+         "has-errors": "There are invalid parameters",
+         "activated": "Connected",
+         "activating": "Connecting",
+         "deactivating": "Disconnecting",
+         "not-connected": "Not connected",
+         "deprecated": "Deprecated",
+         "deactivating-by-cm": "Disconnecting because a higher priority connection is available",
+         "deactivated-by-cm": "Disconnected because a higher priority connection is available",
+         "limited-connectivity": "No internet access",
+         "new": "New connection",
+         "select-type": "Select connection type",
+         "wifi": "Wi-Fi client",
+         "wifi-ap": "Wi-Fi access point",
+         "ethernet": "Wired connection (Ethernet)",
+         "modem": "GSM-modem connection",
+         "canbus": "CAN bus",
+         "main-deprecation-notice": "Connections {{connections}} are setup in /etc/network/interfaces. They can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined connections (or create new from scratch) and <strong>remove deprecated</strong>",
+         "main-deprecation-notice_one":  "Connection {{connections}} is setup in /etc/network/interfaces. It can be managed by NetworkManager - this is a modern configuration service, support for which is currently being developed in Wiren Board. To switch to NetworkManager, use a pre-defined one (or create a new from scratch) and <strong>remove deprecated</strong>",
+         "manual-connect": "Manual connect",
+         "switcher": "Connection priorities",
+         "connections": "Network connections",
+         "high": "High priority",
+         "medium": "Medium priority",
+         "low": "Low priority",
+         "sticky-connection-period": "Deny SIM/Wi-Fi switching period in seconds",
+         "sticky-connection-period-desc": "The GSM modem can work with only one SIM card. To test connectivity, the current SIM card is disconnected and the tested one is connected. If a modem connection is successfully established with one of the SIM cards, do not switch the SIM card for testing for the specified period. This timeout also applies to Wi-Fi connections which also share a single physical wireless device.",
+         "sticky-connection-period-default-text": "900",
+         "debug": "Enable debug logging",
+         "connectivity-url": "Connectivity check URL",
+         "connectivity-url-desc": "To test connectivity, the service sends an HTTP GET request to specified URL.",
+         "connectivity-url-default-text": "http://network-test.debian.org/nm",
+         "connectivity-url-error-length": "The minimum URL length is {{length}} characters",
+         "connectivity-url-error-format": "The URL must start with 'http://' or 'https://'",
+         "connectivity-payload": "Connectivity check payload",
+         "connectivity-payload-desc": "Connectivity check response content must contain specified string.",
+         "connectivity-payload-default-text": "NetworkManager is online",
+         "switcher-desc": "The service will automatically select the highest priority internet connection and route internet traffic through it. All connections except the modem will remain active and can be used for other tasks. The manager checks internet access every 5 seconds."
+      },
+      "buttons": {
+         "save": "Save",
+         "dont-save": "Don't save",
+         "cancel": "Cancel",
+         "add-connection": "Add connection",
+         "delete": "Delete",
+         "add": "Add",
+         "priority-up": "Increase priority",
+         "priority-down": "Decrease priority",
+         "connect": "Connect",
+         "disconnect": "Disconnect"
+      },
+      "prompt": {
+         "confirmation-title": "Confirmation",
+         "delete-title": "Connection delete",
+         "confirm-delete-connection": "Do you really want to delete the connection?"
+      },
+      "errors": {
+         "write": "Error writing config. See wb-mqtt-confed logs for details"
+      }
+   },
+   "editors": {
+      "errors": {
+         "integer": "Value must be an integer",
+         "integer_min": "Value must be an integer equal or bigger than {{min}}",
+         "integer_max": "Value must be an integer equal or less than {{max}}",
+         "integer_minmax": "Value must be an integer in the range from {{min}} to {{max}}",
+         "number": "Value must be a number",
+         "number_min": "Value must be a number equal or bigger than {{min}}",
+         "number_max": "Value must be a number equal or less than {{max}}",
+         "number_minmax": "Value must be a number in the range from {{min}} to {{max}}"
+      }
+   },
+   "system": {
+      "title": "System",
+      "labels": {
+         "testing-offer": "If you want to be the first to get access to new features of our software, switch to <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Wiren_Board_Firmware_Update#releases\">testing</0>.",
+         "transition-offer": "<1>A new version of Debian is available!</1> To update run in console <1>wb-release --update-debian-release</1> or download <0 href=\"https://fw-releases.wirenboard.com/?prefix=fit_image\" target=\"_blank\" rel=\"noopener noreferrer\">FIT firmware image</0> and update via the web interface by visiting <0 href=\"/system\">Settings → System</0>"
+      },
+      "collector": {
+         "title": "Diagnostic collector",
+         "errors": {
+            "unavailable": "Diagnostic service is unavailable",
+            "unavailableToDownload": "Can't reach file. Copy it from <0>{{path}}</0>",
+            "checkLogs": "Server error. Check wb-diag-collect logs"
+         },
+         "buttons": {
+            "download": "Download",
+            "collect": "Collect diagnostic data"
+         },
+         "states": {
+            "checking": "Check access to service...",
+            "collecting": "Collecting data"
+         }
+      },
+      "backup": {
+         "title": "Backup",
+         "download_rootfs_button": "Download rootfs archive",
+         "download_configs_button": "Download configs",
+         "download_everything_button": "Download everything",
+         "rootfs_warning1": "You cannot restore system state using this archives, it just allows you to have a copy of your files",
+         "rootfs_warning2": "System may run slower while downloading the archive",
+         "rootfs_warning3": "Rootfs archive does not include files from /mnt/data"
+      },
+      "reboot_confirm": {
+         "title": "Reboot controller",
+         "description": "The controller will be rebooted. Continue?",
+         "accept": "Reboot"
+      },
+      "factory_reset": {
+         "title": "Factory reset",
+         "warning1": "Use \"Select firmware file\" button to update firmware and reset all settings to defaults",
+         "warning2": "Use \"Perform factory reset\" button to reset all settings and software versions to factory defaults",
+         "confirm_prompt": "Type \"factoryreset\" to confirm and continue",
+         "modal_title": "Confirm reset",
+         "modal_page": "<p><strong>All your data will be lost!</strong></p><p>You must confirm this action. It cannot be undone.</p>"
+      },
+      "update": {
+         "title": "Firmware update",
+         "help": "Download firmware",
+         "expandrootfs": "Expand rootfs (from 1 GB to 2 GB), if firmware supports it",
+         "backup_modal_title": "rootfs backup archive",
+         "backup_first_page": "<p>During update only files stored in /mnt/data are saved. <strong>Third-party software like nodered or SH will be removed!</strong></p><p>Press <strong>Download backup</strong> to download a rootfs backup archive, where some useful files like third-party service configs may be stored.</p><p>This backup archive currently can't be used to restore Wiren Board state.</p>",
+         "backup_second_page": "<p>Great! Now <strong>wait until file is downloaded</strong> and press <strong>Select firmware file</strong> button to begin update process.</p>"
+      },
+      "errors": {
+         "unavailable": "Firmware update service is not available",
+         "stalled": "Firmware update stalled, something gone wrong",
+         "reboot": "Reboot took too long",
+         "unknown": "Firmware update error"
+      },
+      "buttons": {
+         "reset": "Perform factory reset",
+         "select": "Select firmware file",
+         "select_and_reset": "Select firmware file and update with reset",
+         "dismiss": "Dismiss",
+         "hide": "Hide",
+         "download_backup": "Download backup",
+         "select_anyway": "I don't need a backup"
+      },
+      "states": {
+         "complete": "Firmware update complete",
+         "reboot": "Rebooting, please wait",
+         "uploading": "Uploading firmware file",
+         "uploaded": "Upload complete",
+         "upload_error": "Upload error"
+      },
+      "cloud-status": {
+         "title": "Cloud status",
+         "activation-link-preamble": "To connect this Wiren Board to cloud, press",
+         "activation-link": "this link",
+         "status-ok": "Connected to cloud",
+         "status-starting": "wb-cloud-agent service starting up",
+         "status-connecting": "Connecting to cloud",
+         "status-stopped": "wb-cloud-agent service is not running",
+         "status-error": "Cloud connection error",
+         "goto-cloud": "Open this controller in cloud"
+      }
+   },
+   "svg-dashboard": {
+      "buttons": {
+         "fullscreen": "Enter fullscreen mode",
+         "exit-fullscreen": "Exit fullscreen mode",
+         "edit": "Edit"
+      },
+      "prompt": {
+         "confirm-heading": "Action confirmation",
+         "confirm-question": "Are you sure?"
+      }
+   },
+   "edit-svg-dashboard": {
+      "labels": {
+         "create": "Create SVG dashboard",
+         "edit": "Edit SVG dashboard",
+         "common-parameters-title": "Common parameters",
+         "common-parameters-id": "Id",
+         "common-parameters-name": "Name",
+         "common-parameters-fullscreen": "Fit fullscreen",
+         "bindings-title": "Bindings",
+         "write-enable": "Write",
+         "check": "Confirmation of action required",
+         "read-enable": "Read",
+         "style-enable": "Style",
+         "visible-enable": "Visible",
+         "channel": "Channel",
+         "value": "Value",
+         "tag-name": "Tag type: {{tag}}",
+         "condition": "Condition",
+         "select-channel-placeholder": "Select channel",
+         "on": "Value on",
+         "off": "Value off",
+         "read-value-desc": "Example: ((val + 0) > 0) ? 'On' : 'Off'",
+         "style-value-desc": "Example: (val) ? ';fill: green' : ';fill: red'",
+         "long-press-enable": "Move to",
+         "long-press-write-enable": "Write to channel",
+         "dashboard": "Dashboard",
+         "select-dashboard-placeholder": "Select the dashboard to move",
+         "swipe-enable": "Swipe",
+         "left": "Left",
+         "right": "Right",
+         "select-caption": "Click to select an element, Alt+Click to select a group",
+         "long-press": "Long press/touch",
+         "click": "Click/touch",
+         "click-enable": "Move to",
+         "group": "group",
+         "text": "text",
+         "path": "path",
+         "circle": "circle",
+         "rect": "rectangle"
+      },
+      "buttons": {
+         "save": "Save",
+         "cancel": "Cancel",
+         "edit-json": "Edit as JSON",
+         "load-svg": "Upload SVG",
+         "download-svg": "Download SVG",
+         "to-dashboards-list": "Dashboards list",
+         "preview": "Preview",
+         "remove": "Remove"
+      },
+      "prompt": {
+         "confirm-remove": "Dashboard delete",
+         "delete-dashboard": "Are you sure you want to delete dashboard \"{{name}}\"?"
+      }
+   },
+   "validator": {
+      "errors": {
+         "empty": "Enter value",
+         "syntax": "Syntax error. Check that all quotes and parentheses are closed and periods and commas are in place",
+         "min-length": "Enter at least {{min}} characters"
+      }
+   },
+   "forms": {
+      "default-text-prefix": "If the value is not set, ",
+      "default-text-postfix": " is used",
+      "remove": "Remove",
+      "confirm-remove": "Do you really want to remove this item?"
+   },
+   "device-manager": {
+      "labels": {
+         "title": "Device manager",
+         "serial-port": "Serial port",
+         "confirm-delete": "Do you really want to delete {{item}}?",
+         "confirm-delete-port-devices": "Do you really want to delete all devices connected to {{item}}?",
+         "add-device": "Add device",
+         "port": "Port",
+         "device-type": "Device type",
+         "settings": "wb-mqtt-serial settings",
+         "unknown-device-type": "Unknown device type",
+         "address-conflicts-note": "The addresses of conflicting devices will be changed",
+         "address-conflicts": "Address conflicts",
+         "copy-count": "Copy count",
+         "copy-device": "Copy device",
+         "updating-firmware": "Updating firmware {{current}} to {{available}}",
+         "updating-bootloader": "Updating bootloader {{current}} to {{available}}",
+         "current-firmware": "Current firmware version: {{firmware}}",
+         "actual-firmware": "Current firmware version: {{firmware}} (actual)",
+         "new-firmware": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}.",
+         "new-firmware-link": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>",
+         "new-bootloader": "There is a new bootloader: {{available_bootloader}}, current: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Change log</0>",
+         "new-software-components": "New versions are available:",
+         "new-bootloader-item": "bootloader {{available_bootloader}}, current {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Change log</0>;",
+         "new-firmware-item": "firmware {{available_firmware}}, current {{current_firmware}}.",
+         "new-firmware-item-link": "firmware {{available_firmware}}, current {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "manual-update": "<0 target=\"_blank\" href=\"https://wirenboard.com/wiki/WB_Modbus_Devices_Firmware_Update/en#Updating_with_default_connection_settings\">How to update</0>",
+         "update-firmware-notice": "Do not disconnect the device during the update",
+         "erase-settings-notice": "The device has an old bootloader, so when updating, the settings not specified in the web interface will be lost",
+         "new-component-item": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}}",
+         "new-component-item-link": "component {{device_model}}: {{available_firmware}}{{maybe_current_firmware}} <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "new-components": "New component firmware versions are available:",
+         "new-component": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}.",
+         "new-component-link": "{{device_model}}: {{available_firmware}}{{maybe_current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>.",
+         "updating-component": "Updating component firmware {{model}}:{{maybe_current_firmware}}{{available}}",
+         "component_current_version": ", current {{current_firmware}}.",
+         "component_update_current_version": " {{current}} на ",
+         "channel": "Channel",
+         "mode": "Mode",
+         "period": "Period (ms)",
+         "custom-channels": "Custom channels",
+         "loading-template": "Loading device template...",
+         "reading-parameters": "Reading parameters from device...",
+         "better-template": "A new template is available for the device. This device will continue to work correctly with the current template. Switch if you need support for new features or bug fixes.",
+         "select-template": "Select template",
+         "read-registers-disabled": "Parameters not read, default values shown. Some settings depend on the firmware version and may not be available on the device",
+         "read-registers-manual": "Device is available, parameters can be read, but this will remove all changes you made",
+         "restoring-device": "Restoring device firmware",
+         "uncommitted-settings": "You have modified settings that will be lost. Continue?",
+         "delete-title": "Confirmation of deletion",
+         "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed."
+      },
+      "buttons": {
+         "save": "Save config",
+         "add-port": "Add port",
+         "delete": "Delete",
+         "delete-port": "Delete port",
+         "delete-devices": "Delete all devices",
+         "add-custom-device": "Manually add any device",
+         "add-wb-device": "Find and add Wiren Board devices",
+         "add": "Add",
+         "copy": "Copy",
+         "to-port-list": "To ports and devices list",
+         "resolve-duplicate-mqtt-topic": "Set unique id",
+         "search-disconnected-device": "Search for the device",
+         "update": "Update",
+         "parameters": "Parameters",
+         "reread-config": "Reread config",
+         "switch-template": "Switch template"
+      },
+      "errors": {
+         "write":"Error writing config. See wb-mqtt-confed logs for details",
+         "device-config": "Error in the settings of one or more devices",
+         "deprecated": "Device template is deprecated, use newer version",
+         "with-subdevices": "Device template is deprecated. Editing settings is no longer supported. It is recommended to use the new version of the template",
+         "unknown-device-type": "Unknown device type: {{type}}",
+         "duplicate-slave-id": "Duplicate slave id",
+         "duplicate-mqtt-topic": "MQTT id is the same as for {{device}}",
+         "is-disconnected": "The device is not responding. Check the physical connection of the RS-485 bus and the communication settings of the port and device, which should be the same",
+         "setup": "{{device}} setup failed: {{error}}",
+         "update-error-firmware": "Updating firmware {{from_version}} to {{to_version}} failed.",
+         "update-error-bootloader": "Updating bootloader {{from_version}} to {{to_version}} failed.",
+         "update-error-generic": "Error: {{error}}. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
+         "update-error-generic-component": "Error: {{error}}. If the device works, but is not responding to component firmware updates, try to update again. If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode. If restore failed, contact technical support.",
+         "update-error-recoverable": "If the device is not responding, it may be in bootloader mode, to restore use the \"Find device\" button and search for devices in bootloader mode.",
+         "update-error-rpc-timeout": "Check wb-mqtt-serial is up and running.",
+         "update-error-download": "File download error. Check the network connection.",
+         "add-device": "Add device error: {{error}}. See the wb-mqtt-serial system log for detailed information",
+         "change-device-type": "Changing device type error: {{error}}. See the wb-mqtt-serial system log for detailed information",
+         "load-registers": "Error loading current settings from device: {{error}}. Default values are displayed for parameters not present in the configuration file",
+         "supported-since": "Supported since firmware {{fw}}",
+         "not-supported-param": "The firmware does not support this parameter",
+         "fw-mismatch": "Current firmware {{currentFw}} is not supported by this template. Minimum required version: {{requiredFw}}. Please update the firmware or switch to another template.",
+         "model-mismatch": "The selected template does not support device {{deviceModel}} with firmware {{currentFw}}. Please select another template.",
+         "bad-value-from-registers": "Value \"{{value}}\" read from device is not suitable for this parameter. You can set your own — it will be written to the device. If it does not matter, you can leave it as is.",
+         "several-param-variants": "Several variants of this parameter are specified in the template. Please fix the device template."
+      },
+      "prompt": {
+         "prevent-leave": "Scanning will be canceled. Do you really want to leave the page?"
+      }
+   },
+   "exp-check": {
+      "found_title": "Your controller is at risk!",
+      "details_text": "Anybody can access your controller from the Internet, here's list of problems detected:",
+      "ssh_desc": "publicly accessible ssh with default root/wirenboard credentials",
+      "http_desc": "web interface is available from the Internet without password",
+      "mqtt_desc": "mqtt is available from the Internet without password",
+      "found_instructions": "How to protect your Wiren Board controller: ",
+      "support_url": "https://wirenboard.com/wiki/Security"
+   },
+   "mbgate": {
+      "title": "MQTT to Modbus TCP and RTU slave gateway configuration",
+      "buttons": {
+         "save": "Save",
+         "add": "Add"
+      },
+      "labels": {
+         "no-controls": "All available channels are already configured",
+         "select-channels": "Select channels",
+         "search-device": "Search device",
+         "search-control": "Search channel"
+      }
+   },
+   "configurations": {
+      "title": "Configuration Files",
+      "labels": {
+         "loading": "Loading...",
+         "file": "File",
+         "title": "Title",
+         "description": "Description",
+         "notice": "You cannot view this page. You can change",
+         "access": "access level",
+         "copy": "Copied to clipboard"
+      },
+      "buttons": {
+         "save": "Save"
+      },
+      "errors": {
+         "load": "Error loading the file",
+         "save": "Error saving {{name}}"
+      }
+   },
+   "units": {
+      "m^3/h": "m³/h",
+      "m^3": "m³",
+      "g/m^3": "g/m³",
+      "mbar": "mbar (100 Pa)",
+      "deg C": "°C",
+      "deg": "°"
+   },
+   "widget": {
+      "labels": {
+         "name": "Name",
+         "type": "Type",
+         "graph": "Graph",
+         "description": "Description",
+         "widget_view": "Widget view",
+         "table_view": "Table view",
+         "compact": "Hide labels",
+         "warning": "The changes will affect all panels that use this widget:",
+         "invert": "Invert",
+         "add": "Add widget",
+         "available": "Available widgets",
+         "add-control": "Add control",
+         "preview": "Preview",
+         "copy": "copied to clipboard",
+         "delete": "Widget deleting",
+         "create": "Widget creation",
+         "edit": "Edit widget",
+         "separator": "Separator"
+      },
+      "errors": {
+         "nothing": "No widgets are currently defined",
+         "empty-name": "Empty widget name is not allowed",
+         "poll": "Desired read period is missed"
+      },
+      "prompt": {
+         "delete": "Are you sure you want to delete widget"
+      },
+      "buttons": {
+         "create-widget": "Create new widget",
+         "add": "Add to dashboard",
+         "save": "Save",
+         "delete": "Delete widget",
+         "delete-control": "Delete control",
+         "copy": "Copy widget",
+         "edit": "Edit widget",
+         "edit-json": "Edit as JSON",
+         "editor": "Visual editor",
+         "exists-on-dashboard": "Already added"
+      }
+   },
+   "widgets": {
+      "title": "Widgets",
+      "labels": {
+         "name-and-description": "Name and description",
+         "cells": "Cells",
+         "types": "Types",
+         "values": "Values",
+         "graph": "Graph",
+         "dashboards": "Dashboards",
+         "preview": "Preview"
+      },
+      "errors": {
+         "empty": "No widgets are currently defined",
+         "hidden": "The Widgets page is currently hidden from navigation — you can enable it in <0>the web interface settings</0>"
+      },
+      "buttons": {
+         "add": "Add dashboard",
+         "delete": "Delete widget",
+         "widget-view": "Widget view",
+         "table-view": "Table view"
+      }
+   },
+   "dashboard": {
+      "labels": {
+         "no-widgets": "No widgets found"
+      },
+      "buttons": {
+         "back-to-dashboard": "Back",
+         "add-widget": "Add widget",
+         "edit-widget": "Edit widget",
+         "remove-widget": "Remove from this dashboard",
+         "fullscreen": "Enter fullscreen mode",
+         "fullscreen-exit": "Exit fullscreen mode"
+      },
+      "prompt": {
+         "remove-title": "Remove widget from dashboard",
+         "remove-description": "Really remove widget <0>{{name}}</0> from dashboard?"
+      },
+      "errors": {
+         "mqtt-connection": "MQTT client is not connected"
+      }
+   },
+   "devices": {
+      "title": "Devices",
+      "labels": {
+         "nothing": "No devices available for this moment.",
+         "delete": "Delete device",
+         "collapse": "Collapse devices",
+         "expand": "Expand devices"
+      },
+      "prompt": {
+         "delete-title": "Delete device",
+         "delete-description": "Do you really want to delete <0>{{name}}</0>?"
+      }
+   },
+   "rules": {
+      "title": "Rules",
+      "buttons": {
+         "create": "New",
+         "save": "Save",
+         "copy": "Copy",
+         "delete": "Delete"
+      },
+      "labels": {
+         "delete-title": "Rule deletion",
+         "open-rule": "Open rule \"{{path}}\"",
+         "title-placeholder": "Rule name",
+         "success": "Rule saved",
+         "success-errors": "Rule saved with errors",
+         "with-errors": "With errors",
+         "inactive": "Rule inactive",
+         "switch-on": "Switch on",
+         "switch-off": "Switch off"
+      },
+      "prompt": {
+         "delete": "Are you sure you want to delete <0>{{name}}</0> rule?"
+      },
+      "errors": {
+         "exists": "A rule with that name already exists",
+         "mqtt-connection": "MQTT client is not connected"
+      }
+   },
+   "rules-console": {
+      "title": "Rules",
+      "labels": {
+         "filter-all": "All levels"
+      },
+      "buttons": {
+         "clear": "Clear console",
+         "debug": "Rules debug",
+         "dock-bottom": "Dock to bottom",
+         "dock-right": "Dock to right",
+         "close": "Close"
+      }
+   },
+   "console-panel": {
+      "title": "Console",
+      "buttons": {
+         "clear": "Clear",
+         "dock-bottom": "Dock to bottom",
+         "dock-right": "Dock to right",
+         "close": "Close",
+         "close-tab": "Close tab"
+      }
+   },
+   "logs":{
+      "title": "Logs",
+      "labels": {
+         "latest": "Latest",
+         "set-date": "Start date",
+         "choose-boot": "Choose a boot",
+         "all-boots": "All boots",
+         "last-boot": "Last boot",
+         "choose-service": "Choose a service",
+         "all-services": "All services",
+         "choose-level": "Choose a log level",
+         "levels": "All log levels",
+         "pattern": "Search",
+         "help": "Regular expressions user guide",
+         "no-logs-with-filter": "There are no logs with current filters"
+      },
+      "buttons": {
+         "save": "Save loaded log to file",
+         "case": "Match case",
+         "regex": "Regular expression",
+         "live-update": "Live update"
+      },
+      "errors": {
+         "unavailable": "wb-mqtt-logs service is unavailable",
+         "services": "Error getting boots and services"
+      }
+   },
+   "page": {
+      "labels": {
+         "access-denied": "You don't have enough permissions to view this page",
+         "not-found": "Page not found: 404",
+         "not-found-description": "You are requesting a page that doesn't exists",
+         "documentation-current": "Page info",
+         "documentation": "Documentation",
+         "support": "Technical support"
+      }
+   },
+   "modal": {
+      "labels": {
+         "yes": "Confirm",
+         "cancel": "Cancel"
+      }
+   },
+   "users": {
+      "title": "Users",
+      "errors": {
+         "forbidden": "You don't have permission to view this page",
+         "old-backend": "The software is out of date. Please update it",
+         "unknown": "Error: {{msg}}"
+      },
+      "labels":{
+         "login": "Login",
+         "password": "Password",
+         "type": "Type",
+         "admin": "Admin",
+         "user": "User",
+         "operator": "Operator",
+         "confirm-delete-heading": "User delete",
+         "confirm-delete":"Do you really want to delete user \"{{name}}\"?",
+         "autologin": "Automatically log in as user:",
+         "no-autologin": "Do not use autologin",
+         "https": "HTTPS",
+         "enable-https-warning": " You are creating a first user. To protect the credentials, it is recommended to use a secure HTTPS connection. It can be automatically configured. You will be redirected to {{domain}} and the controller will request a certificate using Wiren Board infrastructure. The controller must have Internet access."
+      },
+      "buttons": {
+         "save": "Save",
+         "add": "Add",
+         "edit": "Edit",
+         "delete": "Delete",
+         "enable-https": "Enable HTTPS",
+         "use-http": "Stay on HTTP"
+      }
+   },
+   "login": {
+      "title": "Controller interface",
+      "errors": {
+         "failed": "Incorrect credentials"
+      },
+      "buttons": {
+         "login": "Sign in",
+         "auto-login": "Sign in without password",
+         "choose-language": "Choose language"
+      },
+      "labels": {
+         "authorization-title": "Logging in to the controller interface",
+         "login": "Login",
+         "password": "Password",
+         "documentation": "Documentation"
+      }
+   },
+   "alice": {
+      "title": "Yandex Alice Integration",
+      "labels": {
+         "unavailable": "Yandex Alisa module is not installed, or the configurator service is stopped",
+         "is-binded": "controller is linked",
+         "onboarding1": "To set up integration with the Yandex Smart Home platform, we recommend to first bind the controller via Yandex ID",
+         "onboarding2": "Add and customize the device for further interaction via Alice and the Yandex Smart Home platform",
+         "enable-integration": "Enable",
+         "enable-integration-caption": "Enable integration",
+         "room": "Room",
+         "room-name": "Room name",
+         "empty-list": "No devices added",
+         "device-name": "Device name",
+         "device": "Device",
+         "device-category": "Device category",
+         "device-type": "Device type",
+         "capability": "Capability",
+         "color-model": "Color model",
+         "color-temperature": "Color temperature",
+         "color-scenes": "Color scenes",
+         "property": "Property",
+         "property-settings": "Property settings",
+         "property-capability": "Capability/Property",
+         "topic": "MQTT topic",
+         "scenes-input": "Scenes (comma separated)",
+         "switch-on": "Command on",
+         "switch-off": "Command off",
+         "type": "Type",
+         "mode": "Mode",
+         "function-type": "Function type",
+         "mode-value": "Mode value",
+         "mqtt-value-match": "MQTT match",
+         "mqtt-value-match-hint": "Only a-z, 0-9, _ allowed (e.g. 0 or auto)",
+         "mqtt-value-match-duplicate": "Value already used in another mode",
+         "recommended-for": "Recommended for {{instance}}",
+         "other-modes": "Other modes",
+         "min": "Min",
+         "max": "Max",
+         "no-units": "Unitless",
+         "precision": "Precision",
+         "device-capabilities": "Capabilities",
+         "device-capabilities-description": "A list of what the device can do",
+         "device-properties": "Properties",
+         "device-properties-description": "A list of the device's characteristics",
+         "event-value": "Value"
+      },
+      "buttons": {
+         "add-room": "Add room",
+         "edit-room-name": "Edit room name",
+         "delete-room": "Delete room",
+         "add-device": "Add device",
+         "edit-device-name": "Edit device name",
+         "delete-device": "Delete device",
+         "copy-device": "Copy device",
+         "open-device": "Open \"{{name}}\" device",
+         "bind": "Bind controller via Yandex ID",
+         "check-binding-status": "Check status",
+         "save": "Save",
+         "add-capability": "Add capability",
+         "add-property": "Add property",
+         "add-mode": "Add mode",
+         "all-devices": "All devices"
+      },
+      "prompt": {
+         "delete-room-title": "Removing the room",
+         "delete-room": "Do you really want to delete \"{{name}}\" room?",
+         "delete-device-title": "Removing the device",
+         "delete-device": "Do you really want to delete device \"{{name}}\"?"
+      },
+      "device-types": {
+         "sensor": "Sensors",
+         "smart_meter": "Smart meters",
+         "media": "Media device",
+         "cooking": "Kitchen appliances",
+         "appliances": "Home appliances",
+         "pet": "For pets",
+         "climate": "Climate technology",
+         "electrics": "Electrics",
+         "openable": "Opening/closing control",
+         "other": "Other devices"
+      },
+      "errors": {
+         "integration-error": "Error changing integration status",
+         "integration-enabled-binding-required": "The integration is enabled, but no controller is linked. Click here to link one.",
+         "link-status-unavailable": "The Alice integration service is currently unavailable."
+      },
+      "binding":{
+         "unlink-controller": "(unlink controller)",
+         "confirm-unlink": "Unlink controller?",
+         "confirm-unlink-message": "Are you sure you want to unlink the controller from your Yandex account?",
+         "confirm-unlink-button":"Unlink",
+         "cur-status": "Current"
+      }
+   },
+   "web-ui-settings":{
+      "title": "Web UI",
+      "labels": {
+         "mqtt-settings": "Login to MQTT broker",
+         "use-mqtt-password": "Use access credentials",
+         "mqtt-login": "User ID",
+         "mqtt-password": "Password",
+         "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
+         "common-settings": "Common settings",
+         "show-system-devices": "Show system devices",
+         "show-widgets-page": "Show Widgets page in navigation",
+         "language": "UI locale",
+         "default-dashboard": "Default dashboard",
+         "https-settings": "HTTPS settings",
+         "enable-https": "Auto configuration",
+         "enable-https-description": "Automatically redirect to special domain name (IP.SN.ip.wirenboard.com) and switch to HTTPS. The controller requests certificate using Wiren Board infrastructure and must have Internet access.",
+         "name": "Controller name",
+         "name-description": "Shown in the menu",
+         "getting-https-cert-status": "Getting HTTPS certificate status...",
+         "https-cert-valid": "HTTPS certificate is valid",
+         "https-cert-requesting": "Requesting HTTPS certificate",
+         "https-cert-unavailable": "Failed to obtain HTTPS certificate. Please check that the controller is connected to the Internet"
+      },
+      "errors": {
+         "setup-https": "Failed to setting up HTTPS: {{error}}",
+         "get-https-status": "Failed to get HTTPS status: {{error}}"
+      }
+   },
+   "mqtt": {
+      "title": "MQTT Channels",
+      "labels": {
+         "search": "Search for devices",
+         "device": "Device",
+         "control": "Control",
+         "type": "Type",
+         "topic": "MQTT Topic",
+         "value": "Value",
+         "status": "Status",
+         "error": "Error: {{error}}"
+      }
+   },
+   "json-editor": {
+      "errors": {
+         "not-a-number": "Value must be a number",
+         "not-an-integer": "Value must be an integer",
+         "not-a-string": "Value must be a string",
+         "not-a-boolean": "Set value",
+         "not-a-byte-array": "Enter an array of numbers from 0 to 255 in decimal or hexadecimal format (0-255 or 0x00-0xFF) separated by commas",
+         "invalid-1-wire-format": "Enter the value in the format 28-************",
+         "not-in-enum": "Select one of the available options",
+         "min-length": "Value must be at least {{limit}} characters long",
+         "max-length": "Value must be no more than {{limit}} characters long",
+         "invalid-format": "Invalid format",
+         "min": "Value must be greater than or equal to {{min}}",
+         "max": "Value must be less than or equal to {{max}}",
+         "minmax": "Value must be between {{min}} and {{max}}",
+         "required": "This field is required"
+      },
+      "labels": {
+         "select-params": "Add or remove parameters",
+         "dali-mask": "MASK (do not change)",
+         "dali-mask-tc-limit-not-set": "MASK (not set)"
+      }
+   },
+   "dali": {
+      "title": "DALI devices",
+      "labels": {
+         "group": "Group #{{name}}",
+         "bus-monitor": "Bus Monitor",
+         "bus-settings": "Broadcast settings",
+         "websocket-enabled": "Lunatone DALI-2 IoT Gateway emulator",
+         "websocket-description": "Enabling this option will start a WebSocket-server that emulates the Lunatone DALI-2 IoT Gateway. You can connect the Lunatone DALI Cockpit to it for device management. In DALI Cockpit, select Network as the bus interface, specify DALI-2 Display/DALI-2 IoT/DALI-2 WLAN, and enter the controller address and the port specified above.",
+         "websocket-port": "WebSocket port",
+         "websocket-port-error": "Port must be an integer between 1 and 65535",
+         "polling-interval": "Polling Interval (s)",
+         "polling-interval-error": "Interval must be a positive integer",
+         "identify-tooltip": "The device will flash the light or attract attention, which can help to identify it among other devices",
+         "no-gateways": "No DALI gateways are configured. Configure them in <0>wb-mqtt-serial settings</0>.",
+         "scan-error": "Scan failed at {{when}}: {{error}}",
+         "scan-stage-queued": "Queued",
+         "scan-stage-query_short_addresses": "Querying short addresses. Found: {{count}}",
+         "scan-stage-binary_search": "Binary search. Found: {{count}}",
+         "scan-stage-dali2_query_short_addresses": "DALI 2 querying short addresses. Found: {{count}}",
+         "scan-stage-dali2_binary_search": "DALI 2 binary search. Found: {{count}}",
+         "scan-stage-read_device_info": "Reading device info. Found: {{count}}",
+         "reset-dialog-heading": "Reset device",
+         "reset-settings-option-title": "Reset settings",
+         "reset-settings-option-description": "Variables return to factory defaults. Short address is kept, the device stays in the gateway configuration and MQTT.",
+         "reset-device-option-title": "Reset address and settings",
+         "reset-device-option-description": "Variables and short address are erased. The device is removed from the gateway configuration and MQTT and becomes available for rescan.",
+         "reset-unsaved-warning": "Unsaved changes will be lost.",
+         "commands": "Manual command entry",
+         "commands-placeholder": "One command per line.\nCtrl+Space — commands list\n\nFormat: Name(arg, ...)\nA<n> address 0–63, G<n> group, I<n> instance\nExamples: Off(A5),\n          DAPC(A5, 0xFE),\n          DT8.Activate",
+         "commands-sent": "sent successfully",
+         "commands-not-sent": "not sent",
+         "commands-truncated-warning": "Bus connection lost: response truncated",
+         "commands-catalog-title": "Insert command",
+         "commands-catalog-search": "Search commands…",
+         "commands-catalog-empty": "No commands match",
+         "commands-catalog-error": "Failed to load commands list"
+      },
+      "buttons": {
+         "rescan": "Rescan",
+         "stop-scan": "Stop",
+         "return": "To devices list",
+         "reload": "Reload",
+         "clear-log": "Clear log",
+         "pause-log": "Pause log",
+         "resume-log": "Resume log",
+         "set": "Set",
+         "identify": "Identify",
+         "reset": "Reset…",
+         "reset-confirm": "Reset",
+         "run": "Run",
+         "commands": "Commands…",
+         "retry": "Retry"
+      }
+   }
+}

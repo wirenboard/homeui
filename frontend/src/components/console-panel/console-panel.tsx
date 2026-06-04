@@ -1,0 +1,235 @@
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import ClearIcon from '@/assets/icons/clear.svg';
+import CloseIcon from '@/assets/icons/close.svg';
+import LayoutBottomIcon from '@/assets/icons/layout-bottom.svg';
+import LayoutRightIcon from '@/assets/icons/layout-right.svg';
+import { Dropdown, type Option } from '@/components/dropdown';
+import { Tabs } from '@/components/tabs';
+import { Tooltip } from '@/components/tooltip';
+import { consolePanelStore as store } from '@/stores/console-panel';
+import { ConsolePanelContent } from './console-panel-content';
+import './styles.css';
+
+export const ConsolePanel = observer(() => {
+  const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const container = useRef<HTMLDivElement>(null);
+  const resizer = useRef<HTMLDivElement>(null);
+  const positionRef = useRef(store.position);
+  const [filter, setFilter] = useState('all');
+
+  const activeTab = store.activeTab;
+
+  const tabItems = store.tabs.map((tab) => ({
+    id: tab.id,
+    label: tab.closable
+      ? (
+        <span className="consolePanel-tabLabel">
+          {tab.label}
+          <span
+            role="button"
+            tabIndex={0}
+            className="consolePanel-tabClose"
+            aria-label={t('console-panel.buttons.close-tab')}
+            onClick={(ev) => {
+              ev.stopPropagation();
+              store.unregisterTab(tab.id);
+            }}
+          >
+            <CloseIcon className="consolePanel-tabCloseIcon" />
+          </span>
+        </span>
+      )
+      : tab.label,
+  }));
+
+  const dragStart = useRef<{ size: number; coord: number } | null>(null);
+  const rafId = useRef(0);
+
+  const handleResizerDown = useCallback((ev: PointerEvent) => {
+    const target = ev.target as HTMLElement;
+    if (resizer.current && target.id === 'consoleResizer') {
+      resizer.current.setPointerCapture(ev.pointerId);
+      const rect = container.current.getBoundingClientRect();
+      if (positionRef.current === 'bottom') {
+        dragStart.current = { size: rect.height, coord: ev.clientY };
+      } else {
+        dragStart.current = { size: rect.width, coord: ev.clientX };
+      }
+    }
+  }, []);
+
+  const handleResizerMove = useCallback((ev: PointerEvent) => {
+    if (!resizer.current || !resizer.current.hasPointerCapture(ev.pointerId) || !dragStart.current) {
+      return;
+    }
+
+    cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      if (!dragStart.current) return;
+
+      if (positionRef.current === 'bottom') {
+        const max = window.innerHeight * 0.7;
+        const val = Math.min(Math.max(dragStart.current.size - (ev.clientY - dragStart.current.coord), 50), max);
+        store.setHeight(`${val}px`);
+      } else {
+        const max = window.innerWidth * 0.7;
+        const val = Math.min(Math.max(dragStart.current.size - (ev.clientX - dragStart.current.coord), 50), max);
+        store.setWidth(`${val}px`);
+      }
+    });
+  }, []);
+
+  const changePosition = (pos: 'bottom' | 'right', isWithSave = true) => {
+    if (isWithSave) {
+      store.setPosition(pos);
+    }
+  };
+
+  useEffect(() => {
+    addEventListener('pointerdown', handleResizerDown);
+    addEventListener('pointermove', handleResizerMove);
+
+    return () => {
+      removeEventListener('pointerdown', handleResizerDown);
+      removeEventListener('pointermove', handleResizerMove);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (container.current) {
+      container.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    positionRef.current = store.position;
+  }, [store.position]);
+
+  useEffect(() => {
+    if (isMobile && store.position === 'right') {
+      changePosition('bottom', false);
+    } else if (!isMobile && localStorage.getItem('console-panel-position') === 'right') {
+      changePosition('right', false);
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
+    setFilter('all');
+  }, [store.activeTabId]);
+
+  return (
+    <aside
+      className={classNames('consolePanel', {
+        'consolePanel-bottom': store.position === 'bottom',
+        'consolePanel-right': store.position === 'right',
+      })}
+      ref={container}
+      aria-label={t('console-panel.title')}
+      tabIndex={0}
+      style={{
+        height: store.position === 'bottom' ? store.height : '100%',
+        width: store.position === 'right' ? store.width : '100%',
+      }}
+    >
+      <div className="consolePanel-resizer" id="consoleResizer" ref={resizer} />
+
+      <header className="consolePanel-header">
+        <Tabs
+          className="consolePanel-tabs"
+          items={tabItems}
+          activeTab={store.activeTabId}
+          orientation="horizontal"
+          onTabChange={store.setActiveTab}
+        />
+
+        <div className="consolePanel-headerActions">
+          {activeTab?.actions?.map((action) => (
+            <Tooltip key={action.id} text={action.tooltip}>
+              <button
+                className="consolePanel-button"
+                aria-label={action.tooltip}
+                onClick={action.onClick}
+              >
+                <action.icon
+                  className={classNames('consolePanel-icon', {
+                    'consolePanel-iconActive': action.isActive?.(),
+                  })}
+                />
+              </button>
+            </Tooltip>
+          ))}
+
+          <Tooltip text={t('console-panel.buttons.clear')}>
+            <button
+              className="consolePanel-button"
+              aria-label={t('console-panel.buttons.clear')}
+              onClick={() => activeTab?.clearLogs()}
+            >
+              <ClearIcon className="consolePanel-icon" />
+            </button>
+          </Tooltip>
+
+          {activeTab?.filterLevels && (
+            <div className="consolePanel-separatorLeft">
+              <Dropdown
+                className="consolePanel-filter"
+                options={activeTab.filterLevels}
+                value={filter}
+                size="small"
+                onChange={({ value }: Option<string>) => setFilter(value)}
+              />
+            </div>
+          )}
+
+          <div className="consolePanel-separatorLeft">
+            <Tooltip text={t('console-panel.buttons.dock-bottom')}>
+              <button
+                className="consolePanel-button"
+                aria-label={t('console-panel.buttons.dock-bottom')}
+                onClick={() => changePosition('bottom')}
+              >
+                <LayoutBottomIcon
+                  className={classNames('consolePanel-icon', {
+                    'consolePanel-iconActive': store.position === 'bottom',
+                  })}
+                />
+              </button>
+            </Tooltip>
+
+            <Tooltip text={t('console-panel.buttons.dock-right')}>
+              <button
+                className="consolePanel-button"
+                disabled={isMobile}
+                aria-label={t('console-panel.buttons.dock-right')}
+                onClick={() => changePosition('right')}
+              >
+                <LayoutRightIcon
+                  className={classNames('consolePanel-icon', {
+                    'consolePanel-iconActive': store.position === 'right',
+                  })}
+                />
+              </button>
+            </Tooltip>
+
+            <Tooltip text={t('console-panel.buttons.close')}>
+              <button
+                className="consolePanel-button consolePanel-close"
+                aria-label={t('console-panel.buttons.close')}
+                onClick={store.hide}
+              >
+                <CloseIcon className="consolePanel-icon" />
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+      </header>
+
+      {activeTab && <ConsolePanelContent tab={activeTab} filter={filter} />}
+    </aside>
+  );
+});

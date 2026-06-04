@@ -1,19 +1,20 @@
 import { makeObservable, observable, action } from 'mobx';
+import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import { type DeviceTypesStore } from '@/stores/device-manager';
+import type { ScannedDevice } from '@/stores/device-manager/types';
 import { CommonScanStore, SelectionPolicy } from './scan-page-store';
-import { type ScannedDeviceToModify } from './types';
 
 export class SearchDisconnectedScanPageStore {
   public commonScanStore: CommonScanStore;
   public active: boolean;
   public deviceTypesStore: DeviceTypesStore;
   public signatures: string[];
-  public onLeave: (_selectedDevice: Partial<ScannedDeviceToModify>) => void;
+  public onLeave: (_selectedDevice: Partial<ScannedDevice>) => void;
 
   constructor(
-    deviceManagerProxy: any,
+    deviceManagerProxy: typeof deviceManagerProxyInstance,
     deviceTypesStore: DeviceTypesStore,
-    onLeave: (_selectedDevice: Partial<ScannedDeviceToModify>) => void,
+    onLeave: (_selectedDevice: Partial<ScannedDevice>) => void,
   ) {
     this.commonScanStore = new CommonScanStore(deviceManagerProxy, deviceTypesStore);
     this.active = false;
@@ -30,7 +31,7 @@ export class SearchDisconnectedScanPageStore {
 
   // Expected props structure
   // https://github.com/wirenboard/wb-device-manager/blob/main/README.md
-  update(stringDataToRender) {
+  update(stringDataToRender: string) {
     // wb-device-manager could be stopped, so it will clear state topic and send empty string
     if (stringDataToRender === '') {
       this.commonScanStore.setDeviceManagerUnavailable();

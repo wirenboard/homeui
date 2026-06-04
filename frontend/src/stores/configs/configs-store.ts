@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { configEditorProxy, mqttClient } from '@/services';
 import type { ConfigListItem, Config } from './types';
 
 export default class ConfigsStore {
@@ -6,20 +7,13 @@ export default class ConfigsStore {
   public config: Config = null;
   public path: string = null;
 
-  #configEditorProxy: any;
-  #whenMqttReady: () => Promise<void>;
-
-  // eslint-disable-next-line typescript/naming-convention
-  constructor(whenMqttReady: () => Promise<void>, ConfigEditorProxy: any) {
-    this.#configEditorProxy = ConfigEditorProxy;
-    this.#whenMqttReady = whenMqttReady;
-
+  constructor() {
     makeAutoObservable(this);
   }
 
   async getList() {
-    return this.#whenMqttReady()
-      .then(() => this.#configEditorProxy.List())
+    return mqttClient.whenConnected()
+      .then(() => configEditorProxy.List())
       .then((configs: ConfigListItem[]) => {
         runInAction(() => {
           this.configs = configs;
@@ -28,8 +22,8 @@ export default class ConfigsStore {
   }
 
   async getConfig(path: string) {
-    return this.#whenMqttReady()
-      .then(() => this.#configEditorProxy.Load({ path }))
+    return mqttClient.whenConnected()
+      .then(() => configEditorProxy.Load({ path }))
       .then((config: Config) => {
         runInAction(() => {
           this.config = config;
@@ -39,7 +33,7 @@ export default class ConfigsStore {
   }
 
   async saveConfig(content?: any) {
-    return this.#configEditorProxy.Save({ path: this.config.configPath, content: content || this.config.content });
+    return configEditorProxy.Save({ path: this.config.configPath, content: content || this.config.content });
   }
 
   clearConfig() {

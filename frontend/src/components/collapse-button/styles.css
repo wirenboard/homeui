@@ -10,3 +10,8 @@
     width: 16px;
     height: 16px;
 }
+
+.collapseButton:focus {
+    box-shadow: var(--input-active-shadow);
+    border-radius: var(--input-border-radius);
+}

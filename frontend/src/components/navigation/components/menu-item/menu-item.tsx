@@ -12,8 +12,8 @@ import {
 import classNames from 'classnames';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Tooltip } from '@/components/tooltip';
-import { focusToMainContent } from '@/utils/focus-content';
 import type { MenuItemProps } from './types';
 import './styles.css';
 
@@ -31,7 +31,7 @@ export const MenuItem = ({
   setIsMenuFocused,
 }: MenuItemProps) => {
   const { t } = useTranslation();
-  const Component = item.url ? 'a' : 'button';
+  const Component = item.url ? Link : 'button';
 
   const arrowRef = useRef(null);
 
@@ -63,13 +63,13 @@ export const MenuItem = ({
 
       {children.map((item, i) => (
         <li className="menuItem-item" key={i}>
-          <a
-            href={`#!/${item.url}`}
+          <Link
+            to={item.url}
             className="menuItem-link"
             draggable={false}
           >
             {t(item.label)}
-          </a>
+          </Link>
         </li>
       ))}
     </ul>
@@ -80,13 +80,11 @@ export const MenuItem = ({
   }, [item.children, isMenuCompact, openedSubmenus]);
 
   const isActive = useMemo(() => {
-    return (id ? item.url === `${page}/${id}` : item.url === page) ||
-      (isMenuCompact &&
-        item.children?.some((subItem) =>
-          (id ? subItem.url === `${page}/${id}` : subItem.url === page) ||
-            openedSubmenus.includes(subItem.id)
-        ));
-  }, [id, item, isMenuCompact]);
+    const matchesUrl = (url?: string) => !!url && page === url;
+
+    return matchesUrl(item.url) ||
+      (isMenuCompact && item.children?.some((subItem) => matchesUrl(subItem.url)));
+  }, [page, item, isMenuCompact]);
 
   return (item.isShow === undefined || item.isShow) && (
     <li>
@@ -98,7 +96,7 @@ export const MenuItem = ({
         closeOnClick
       >
         <Component
-          href={item.url && `#!/${item.url}`}
+          to={item.url}
           aria-label={t(item.label)}
           className={classNames('menuItem-link', {
             'menuItem-linkActive': isActive,
@@ -115,10 +113,8 @@ export const MenuItem = ({
               setOpenedSubmenus(updatedValue);
             }
 
-            if (Component === 'a') {
+            if (Component !== 'button') {
               closeMobileMenu();
-              // TODO: move to Page onMounted after full rewrite
-              focusToMainContent(300);
             }
           }}
           onFocus={() => setIsMenuFocused(true)}

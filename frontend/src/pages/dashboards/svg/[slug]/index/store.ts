@@ -1,6 +1,6 @@
 import { observable, makeAutoObservable, type ObservableMap, reaction, runInAction } from 'mobx';
-import type { Dashboard, DashboardsStore, SvgEditableParam } from '@/stores/dashboards';
-import type DevicesStore from '@/stores/devices/devices-store';
+import { type Dashboard, dashboardsStore, type SvgEditableParam } from '@/stores/dashboards';
+import { devicesStore } from '@/stores/devices';
 import { type MoveToDashboardFn } from './types';
 
 export class SvgDashboardPageStore {
@@ -15,20 +15,16 @@ export class SvgDashboardPageStore {
   private _pendingUpdates = new Map<string, any>();
 
   #moveToDashboardFn: MoveToDashboardFn | null = null;
-  #dashboardsStore: DashboardsStore;
-  #devicesStore: DevicesStore;
 
-  constructor(dashboardsStore: DashboardsStore, devicesStore: DevicesStore) {
+  constructor() {
     this.channelValues = observable.map<string, any>();
-    this.#dashboardsStore = dashboardsStore;
-    this.#devicesStore = devicesStore;
 
     makeAutoObservable(this, {}, { autoBind: true });
 
     this._disposeReaction = reaction(
       () => [this.getUsedChannels(), this.dashboardId],
       () => {
-        if (this.#devicesStore.cells.size) {
+        if (devicesStore.cells.size) {
           this.setDeviceData();
         }
       },
@@ -44,7 +40,7 @@ export class SvgDashboardPageStore {
   }
 
   get dashboardConfigs(): Dashboard[] {
-    return this.#dashboardsStore.dashboardsList;
+    return dashboardsStore.dashboardsList;
   }
 
   private getUsedChannels(): Set<string> {
@@ -82,14 +78,14 @@ export class SvgDashboardPageStore {
       }
     }
 
-    if (this.#devicesStore.cells) {
+    if (devicesStore.cells) {
       const usedChannels = this.getUsedChannels();
       Array.from(this.channelValues.keys())
         .filter((key) => !usedChannels.has(key))
         .forEach((key) => this.channelValues.delete(key));
       usedChannels.forEach((channel) => {
         if (!this.channelValues.has(channel)) {
-          const cell = this.#devicesStore.cells.get(channel);
+          const cell = devicesStore.cells.get(channel);
           this.channelValues.set(channel, cell ? cell.value : '');
         }
       });
@@ -102,12 +98,12 @@ export class SvgDashboardPageStore {
     this._unsubscribeOnValue();
 
     const usedChannels = this.getUsedChannels();
-    this.#devicesStore.cells.forEach((cell, channel) => {
+    devicesStore.cells.forEach((cell, channel) => {
       if (usedChannels.has(channel)) {
         this.channelValues.set(channel, cell.value);
       }
     });
-    this._unsubscribeOnValue = this.#devicesStore.subscribeOnCellValue((cellId, value) => {
+    this._unsubscribeOnValue = devicesStore.subscribeOnCellValue((cellId, value) => {
       if (!this.channelValues.has(cellId)) return;
 
       this._pendingUpdates.set(cellId, value);
@@ -134,11 +130,11 @@ export class SvgDashboardPageStore {
   }
 
   switchValue(channel: string, value: any) {
-    if (!this.#devicesStore.cells) {
+    if (!devicesStore.cells) {
       return;
     }
     try {
-      const cell = this.#devicesStore.cells.get(channel);
+      const cell = devicesStore.cells.get(channel);
       cell.value = cell.getStringifiedValue() === String(value.on) ? value.off : value.on;
     } catch (e) {
       // Do nothing if cell is not found

@@ -26,7 +26,7 @@ export const MqttSettings = () => {
       localStorage.removeItem('password');
     }
     localStorage.setItem('prefix', addPrefixToTopic ? 'true' : 'false');
-    window.location.reload();
+    location.reload();
   };
 
   const setAddPrefixToTopicHandler = (value: boolean) => {

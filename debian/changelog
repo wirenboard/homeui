@@ -1,8 +1,129 @@
-wb-mqtt-homeui (2.208.3) stable; urgency=medium
+wb-mqtt-homeui (2.219.1) stable; urgency=medium
 
   * Use pre-defined DH group ffdhe2048 recommended by the IETF
 
  -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 14 May 2026 19:00:00 +0400
+
+wb-mqtt-homeui (2.219.0) stable; urgency=medium
+
+  * Add mode capability to the Alice integration page
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Tue, 02 Jun 2026 12:00:00 +0300
+
+wb-mqtt-homeui (2.218.1) stable; urgency=medium
+
+  * Require nodejs>=22
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 03 Jun 2026 18:30:00 +0400
+
+wb-mqtt-homeui (2.218.0) stable; urgency=medium
+
+  * Port for Debian 13
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Wed, 03 Jun 2026 18:20:00 +0400
+
+wb-mqtt-homeui (2.217.0) stable; urgency=medium
+
+  * Move from angular to react
+  * Move from webpack to vite
+  * Update routes
+  * Add help link to page header
+  * Update json editor styles
+  * Fix all typescript and eslint errors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 03 Jun 2026 15:22:00 +0300
+
+wb-mqtt-homeui (2.216.5) stable; urgency=medium
+
+  * Fix default svg colors
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 02 Jun 2026 11:50:00 +0300
+
+wb-mqtt-homeui (2.216.4) stable; urgency=medium
+
+  * Hide dropdown arrow for readonly fields on DALI settings page
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.ru>  Mon, 01 Jun 2026 12:00:00 +0500
+
+wb-mqtt-homeui (2.216.3) stable; urgency=medium
+
+  * Fix DALI device scenes settings editor scroll bug
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 01 Jun 2026 11:01:44 +0500
+
+wb-mqtt-homeui (2.216.2) stable; urgency=medium
+
+  * Fix pylint
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Fri, 29 May 2026 15:50:00 +0400
+
+wb-mqtt-homeui (2.216.1) stable; urgency=medium
+
+  * Add select ability for autocomplete fields
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Wed, 27 May 2026 10:17:00 +0300
+
+wb-mqtt-homeui (2.216.0) stable; urgency=medium
+
+  * Upgrade logs page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 25 May 2026 11:16:00 +0300
+
+wb-mqtt-homeui (2.215.0) stable; urgency=medium
+
+  * Refactor Alice device-capabilities by splitting it by capability type
+  * Make Alice capability labels clickable
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Fri, 22 May 2026 21:00:00 +0300
+
+wb-mqtt-homeui (2.214.0) stable; urgency=medium
+
+  * Update config editor page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 22 May 2026 13:01:00 +0300
+
+wb-mqtt-homeui (2.213.0) stable; urgency=medium
+
+  * Add toggle capability to the Alice integration page
+
+ -- Vitalii Gaponov <vitalii.gaponov@wirenboard.com>  Wed, 20 May 2026 15:00:00 +0300
+
+wb-mqtt-homeui (2.212.0) stable; urgency=medium
+
+  * Ask for confirmation before rebooting the controller from the device panel
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 19 May 2026 22:01:41 +0500
+
+wb-mqtt-homeui (2.211.0) stable; urgency=medium
+
+  * Add DALI bus manual command entry with catalog and autocomplete
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 19 May 2026 16:55:38 +0500
+
+wb-mqtt-homeui (2.210.0) stable; urgency=medium
+
+  * Add Kelvin input to DALI color temperature editor
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 19 May 2026 16:35:21 +0500
+
+wb-mqtt-homeui (2.209.2) stable; urgency=medium
+
+  * Fix missing title and description for autocomplete fields
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Tue, 19 May 2026 12:07:00 +0300
+
+wb-mqtt-homeui (2.209.1) stable; urgency=medium
+
+  * Return tests for fw-utils
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 19 May 2026 09:40:00 +0300
+
+wb-mqtt-homeui (2.209.0) stable; urgency=medium
+
+  * Update system page
+  * Move update/reset process logs to console component
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 18 May 2026 13:01:00 +0300
 
 wb-mqtt-homeui (2.208.2) stable; urgency=medium
 

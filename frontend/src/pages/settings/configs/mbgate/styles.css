@@ -40,3 +40,8 @@
 .mbgate table .dropdown-m {
     min-width: 100px;
 }
+
+.mbgate input[type="text"],
+.mbgate input[type="number"] {
+    width: 100%;
+}

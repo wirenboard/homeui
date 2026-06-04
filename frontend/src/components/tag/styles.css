@@ -6,6 +6,7 @@
     border-radius: 6px;
     background: var(--light-gray-color);
     padding: 4px 8px;
+    white-space: nowrap;
 }
 
 .tag-primary {

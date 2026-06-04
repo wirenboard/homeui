@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { MqttClient } from '@/common/types';
 import { type Option } from '@/components/dropdown';
+import { mqttClient } from '@/services';
 import Cell from './cell';
 import Device from './device';
 import { isTopicsAreEqual, splitTopic } from './helpers';
@@ -12,13 +12,10 @@ export default class DevicesStore {
 
   #cellValueSubscribers: Set<(cellId: string, value: ValueType) => void> = new Set();
   #allDevicesTopics: Map<string, { deviceTopics: Set<string>; cellTopics: Set<string> }> = new Map();
-  #mqttClient: MqttClient;
 
-  constructor(mqttClient: MqttClient) {
-    this.#mqttClient = mqttClient;
-
+  constructor() {
     // add subscription to all the topics of devices
-    this.#mqttClient.addStickySubscription('/devices/#', ({ topic, payload }: { topic: string; payload: string }) => {
+    mqttClient.addStickySubscription('/devices/#', ({ topic, payload }: { topic: string; payload: string }) => {
       const { deviceId } = splitTopic(topic);
 
       const topics = this.#getOrCreateTopics(deviceId);
@@ -98,14 +95,14 @@ export default class DevicesStore {
     const { cellTopics, deviceTopics } = entry;
 
     for (const topic of cellTopics) {
-      this.#mqttClient.send(topic, '', true, 2);
+      mqttClient.send(topic, '', true, 2);
     }
 
     const sortedDeviceTopics = Array.from(deviceTopics)
       .sort((a, b) => b.length - a.length);
 
     for (const topic of sortedDeviceTopics) {
-      this.#mqttClient.send(topic, '', true, 2);
+      mqttClient.send(topic, '', true, 2);
     }
 
     this.#allDevicesTopics.delete(id);
@@ -172,7 +169,7 @@ export default class DevicesStore {
 
   async sendCellValueUpdate(deviceId: string, controlId: string, value: string) {
     const topic = `/devices/${deviceId}/controls/${controlId}/on`;
-    await this.#mqttClient.send(topic, value, false);
+    await mqttClient.send(topic, value, false);
   }
 
   #getOrCreateTopics(deviceId: string) {

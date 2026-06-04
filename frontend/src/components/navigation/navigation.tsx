@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { useNavigate, useLocation, Link, useParams, useSearchParams } from 'react-router-dom';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg';
 import ConsoleIcon from '@/assets/icons/console.svg';
 import LogoutIcon from '@/assets/icons/logout.svg';
@@ -11,15 +12,18 @@ import { APP_NAME, HIDE_COMPACT_MENU, LOGO, LOGO_COMPACT } from '@/common/consta
 import { MenuItem } from '@/components/navigation/components/menu-item';
 import { Tooltip } from '@/components/tooltip';
 import { UserRole, authStore } from '@/stores/auth';
+import { consolePanelStore } from '@/stores/console-panel';
+import { dashboardsStore } from '@/stores/dashboards';
 import { uiStore } from '@/stores/ui';
-import { useParseHash } from '@/utils/url';
 import { DescriptionStatus } from './components/description-status';
-import { type NavigationProps } from './types';
 import './styles.css';
 
-export const Navigation = observer(({ dashboardsStore, toggleConsole }: NavigationProps) => {
+export const Navigation = observer(() => {
   const { t, i18n } = useTranslation();
-  const { id, page, params } = useParseHash();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+  const [searchParams] = useSearchParams();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const { isAuthenticated, isAutologin, areUsersConfigured, hasRights, logout } = authStore;
   const [isMenuCompact, setIsMenuCompact] = useState(localStorage.getItem('isMenuCompact') === 'true');
@@ -27,10 +31,10 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   const [isMenuFocused, setIsMenuFocused] = useState(true);
   const [isMobileMenuOpened, setIsMobileMenuOpened] = useState(false);
   const [activePopup, setActivePopup] = useState<string | null>(null);
-  const { menuItems, isConsoleVisible, toggleConsoleVisibility } = uiStore;
+  const { menuItems } = uiStore;
 
   useEffect(() => {
-    uiStore.buildMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params);
+    uiStore.buildMenu(dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, searchParams);
   }, [dashboardsStore.dashboardsList, dashboardsStore.isShowWidgetsPage, params, i18n.language, isAuthenticated]);
 
   const toggleNavigation = () => {
@@ -40,15 +44,17 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
   };
 
   const handleDebugClick = () => {
-    toggleConsole();
-    toggleConsoleVisibility();
+    consolePanelStore.toggleVisibility();
     setIsMobileMenuOpened(false);
   };
 
   useEffect(() => {
-    if (!menuItems.some((item) => item.url === page)) {
+    const matchesPage = (url?: string) =>
+      !!url && (location.pathname === url || location.pathname.startsWith(url + '/'));
+
+    if (!menuItems.some((item) => matchesPage(item.url))) {
       const val = menuItems.find((item) => item.children
-        ?.some((subItem) => subItem.url === page || (id && subItem.url === `${page}/${id}`)));
+        ?.some((subItem) => matchesPage(subItem.url)));
 
       if (val?.id) {
         setOpenedSubmenus((prev) => {
@@ -58,14 +64,29 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
         });
       }
     }
-  }, [menuItems, page, id]);
+  }, [menuItems, location.pathname]);
 
   useEffect(() => {
     setIsMobileMenuOpened(false);
     setIsMenuCompact(isMobile ? false : localStorage.getItem('isMenuCompact') === 'true');
   }, [isMobile]);
 
-  return !isAuthenticated || params.has('hmi') || location.hash.startsWith('#!/login') ? null : (
+  const handleLogout = () => {
+    setIsMobileMenuOpened(false);
+    logout().then(() => {
+      if (authStore.isAutologin) {
+        // If the user is an autologin user, just show login page to select another user.
+        navigate('/login');
+      } else {
+        const params = new URLSearchParams({
+          returnState: location.pathname,
+        });
+        navigate(`/login?${params}`);
+      }
+    });
+  };
+
+  return searchParams.has('hmi') ? null : (
     <>
       <nav
         className={classNames('navigation', {
@@ -87,8 +108,8 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
               'navigation-logoWrapperCompact': isMenuCompact,
             })}
           >
-            <a
-              href="/"
+            <Link
+              to="/"
               aria-label={t('navigation.labels.home')}
               className="navigation-logoLink"
               draggable={false}
@@ -107,7 +128,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                 })}
                 alt={APP_NAME}
               />
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -141,8 +162,8 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                 isMenuCompact={isMenuCompact}
                 openedSubmenus={openedSubmenus}
                 setOpenedSubmenus={setOpenedSubmenus}
-                id={id}
-                page={page}
+                id={params.id}
+                page={location.pathname}
                 setActivePopup={setActivePopup}
                 activePopup={activePopup}
                 closeMobileMenu={() => setIsMobileMenuOpened(false)}
@@ -153,7 +174,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
             ))}
           </ul>
 
-          {!params.has('fullscreen') && (
+          {!searchParams.has('fullscreen') && (
             <div
               className={classNames('navigation-actions', {
                 'navigation-actionsMultimple': hasRights(UserRole.Admin) && areUsersConfigured,
@@ -176,10 +197,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                     tabIndex={isMenuFocused ? null : -1}
                     onFocus={() => setIsMenuFocused(true)}
                     onBlur={() => setIsMenuFocused(false)}
-                    onClick={() => {
-                      setIsMobileMenuOpened(false);
-                      logout();
-                    }}
+                    onClick={handleLogout}
                   >
                     <LogoutIcon className="menuItem-icon" />
                     {!isMenuCompact && t(isAutologin ? 'navigation.buttons.switch-user' : 'navigation.buttons.logout')}
@@ -198,7 +216,7 @@ export const Navigation = observer(({ dashboardsStore, toggleConsole }: Navigati
                     draggable={false}
                     aria-label={t('navigation.buttons.debug')}
                     tabIndex={isMenuFocused ? null : -1}
-                    aria-expanded={isConsoleVisible}
+                    aria-expanded={consolePanelStore.isVisible}
                     onFocus={() => setIsMenuFocused(true)}
                     onBlur={() => setIsMenuFocused(false)}
                     onClick={handleDebugClick}

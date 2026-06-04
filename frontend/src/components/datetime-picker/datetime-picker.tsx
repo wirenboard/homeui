@@ -1,3 +1,5 @@
+import { DayPicker } from '@daypicker/react';
+import { ru, enGB } from '@daypicker/react/locale';
 import {
   useFloating,
   offset,
@@ -14,8 +16,6 @@ import {
 import classNames from 'classnames';
 import { format, parse, isValid } from 'date-fns';
 import { useState, useId, useEffect, useRef } from 'react';
-import { DayPicker } from 'react-day-picker';
-import { ru, enGB } from 'react-day-picker/locale';
 import { useTranslation } from 'react-i18next';
 import { IMaskInput } from 'react-imask';
 import CalendarIcon from '@/assets/icons/calendar.svg';
@@ -33,6 +33,7 @@ export const DateTimePicker = ({
   disabledDates,
   ariaLabel,
   isInvalid,
+  placeholder,
   size,
   withSeconds,
 }: DateTimePickerProps) => {
@@ -164,6 +165,7 @@ export const DateTimePicker = ({
               ? `00.00.0000 00:00${withSeconds ? ':00' : ''}`
               : `00/00/0000 00:00${withSeconds ? ':00' : ''}`
           }
+          placeholder={placeholder}
           value={inputValue}
           disabled={disabled}
           aria-haspopup="dialog"

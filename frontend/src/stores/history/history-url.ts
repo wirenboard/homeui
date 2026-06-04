@@ -4,7 +4,7 @@ import { type UrlControl } from './types';
 export const encodeControls = (
   controls: Array<UrlControl>,
   startDate?: number,
-  endDate?: number
+  endDate?: number,
 ) => {
   const data = {
     c: controls,

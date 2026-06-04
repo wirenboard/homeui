@@ -1,0 +1,83 @@
+.logsFilters {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    margin-bottom: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logsFilters-pattern {
+    width: 140px;
+
+    @media (max-width: 1024px) {
+        width: calc(100% - 90px);
+    }
+}
+
+.logsFilters-patternWrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.logsFilters-info {
+    width: 18px;
+    height: 18px;
+    color: var(--text-color);
+}
+
+.logsFilters-liveUpdate {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 6px;
+
+    @media (max-width: 510px) {
+        margin-left: 0;
+        margin-top: 6px;
+    }
+}
+
+
+.logsFilters-input {
+    min-width: 200px;
+    white-space: nowrap;
+}
+
+.logsFilters-boot {
+    min-width: unset;
+    width: 170px;
+    max-width: 170px;
+
+    @media (max-width: 400px) {
+        max-width: unset;
+    }
+}
+
+.logsFilters-inputDate {
+    min-width: 160px;
+    max-width: 160px;
+
+    @media (max-width: 400px) {
+        max-width: unset;
+    }
+}
+
+.logsFilters-liveUpdate .form-fieldSwitch {
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 500px) {
+    .logsFilters .formFields-group {
+        width: calc(100% - 30px);
+    }
+}
+
+@media (max-width: 400px) {
+    .datetimePicker-inputWrapper,
+    .wb-tooltip-container:has(.logsFilters-input),
+    .logsFilters-input {
+        width: 100%;
+    }
+}

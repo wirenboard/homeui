@@ -1,6 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { networkPath } from '@/common/paths';
-import i18n from '~/i18n/react/config';
+import i18n from '@/i18n/config';
+import { configEditorProxy, mqttClient } from '@/services';
 import { Connections, connectionsStoreFromJson } from './connections-store';
 import { getConnectionJson, type SingleConnection } from './single-connection-store';
 import { SwitcherStore, switcherStoreToJson, switcherStoreFromJson } from './switcher-store';
@@ -13,21 +14,13 @@ export class NetworkConnectionsPageStore {
   public connections: Connections;
   public switcher: SwitcherStore;
 
-  #mqttClient: any;
-  #whenMqttReady: any;
-  #configEditorProxy: any;
-
-  constructor(mqttClient: any, whenMqttReady: any, configEditorProxy: any) {
+  constructor() {
     this.connections = new Connections();
     this.switcher = new SwitcherStore(this.connections);
 
-    this.#mqttClient = mqttClient;
-    this.#whenMqttReady = whenMqttReady;
-    this.#configEditorProxy = configEditorProxy;
-
     this.init();
 
-    reaction(() => this.#mqttClient.isConnected(), (isConnected) => {
+    reaction(() => mqttClient.isConnected(), (isConnected) => {
       if (this.error && isConnected) {
         runInAction(() => {
           this.setError('');
@@ -42,26 +35,26 @@ export class NetworkConnectionsPageStore {
     const re = new RegExp('/devices/system__networks__([^/]+)/');
     const getUuidFromTopic = (topic: string) => topic.match(re)?.[1];
 
-    this.#whenMqttReady().then(() => {
-      this.#configEditorProxy.Load({ path: networkPath })
+    mqttClient.whenConnected().then(() => {
+      configEditorProxy.Load({ path: networkPath })
         .then(({ schema, content }) => {
           this.setSchemaAndData(schema, content);
-          this.#mqttClient.addStickySubscription('/devices/+/controls/State', ({ topic, payload }) => {
-            this.setConnectionState(getUuidFromTopic(topic), payload);
+          mqttClient.addStickySubscription('/devices/+/controls/State', ({ topic, payload }) => {
+            this.setConnectionState(getUuidFromTopic(topic), payload as ConnectionState);
           });
-          this.#mqttClient.addStickySubscription('/devices/+/controls/Connectivity', ({ topic, payload }) => {
+          mqttClient.addStickySubscription('/devices/+/controls/Connectivity', ({ topic, payload }) => {
             this.setConnectionConnectivity(
               getUuidFromTopic(topic),
               payload !== '0',
             );
           });
-          this.#mqttClient.addStickySubscription('/devices/+/controls/Operator', ({ topic, payload }) => {
+          mqttClient.addStickySubscription('/devices/+/controls/Operator', ({ topic, payload }) => {
             this.setConnectionOperator(getUuidFromTopic(topic), payload);
           });
-          this.#mqttClient.addStickySubscription('/devices/+/controls/SignalQuality', ({ topic, payload }) => {
-            this.setConnectionSignalQuality(getUuidFromTopic(topic), payload);
+          mqttClient.addStickySubscription('/devices/+/controls/SignalQuality', ({ topic, payload }) => {
+            this.setConnectionSignalQuality(getUuidFromTopic(topic), Number(payload));
           });
-          this.#mqttClient.addStickySubscription('/devices/+/controls/AccessTechnologies', ({ topic, payload }) => {
+          mqttClient.addStickySubscription('/devices/+/controls/AccessTechnologies', ({ topic, payload }) => {
             this.setConnectionAccessTechnologies(getUuidFromTopic(topic), payload);
           });
         })
@@ -72,16 +65,16 @@ export class NetworkConnectionsPageStore {
   }
 
   async saveConnections(data: any){
-    await this.#configEditorProxy.Save({ path: networkPath, content: data });
+    await configEditorProxy.Save({ path: networkPath, content: data });
   }
 
   async loadConnections() {
-    const res = await this.#configEditorProxy.Load({ path: networkPath });
+    const res = await configEditorProxy.Load({ path: networkPath });
     return res.content.ui.connections;
   }
 
   async onToggleConnectionState(uuid: string) {
-    this.#mqttClient.send(`/devices/system__networks__${uuid}/controls/UpDown/on`, '1', false);
+    mqttClient.send(`/devices/system__networks__${uuid}/controls/UpDown/on`, '1', false);
   }
 
   async onSelect(

@@ -1,20 +1,21 @@
 import { makeObservable, observable, action, computed } from 'mobx';
+import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import { type DeviceTypesStore } from '@/stores/device-manager';
-import type ConfiguredDevices from '~/react-directives/device-manager/config-editor/configuredDevices';
+import type { ScannedDevice } from '@/stores/device-manager/types';
+import { type ConfiguredDevices } from '../../config-editor/stores/configured-devices';
 import { ModbusAddressSet } from './modbus-addresses-set';
 import { CommonScanStore, SelectionPolicy } from './scan-page-store';
-import { type ScannedDeviceToModify } from './types';
 
 export class NewDevicesScanPageStore {
   public commonScanStore: CommonScanStore;
   public active: boolean;
-  public onLeave: (_devices: Partial<ScannedDeviceToModify>[]) => void;
+  public onLeave: (_devices: Partial<ScannedDevice>[]) => void;
   public configuredDevices: ConfiguredDevices;
 
   constructor(
-    deviceManagerProxy: any,
+    deviceManagerProxy: typeof deviceManagerProxyInstance,
     deviceTypesStore: DeviceTypesStore,
-    onLeave: (_devices: Partial<ScannedDeviceToModify>[]
+    onLeave: (_devices: Partial<ScannedDevice>[]
     ) => void) {
     this.commonScanStore = new CommonScanStore(deviceManagerProxy, deviceTypesStore);
     this.active = false;
@@ -76,7 +77,7 @@ export class NewDevicesScanPageStore {
     this?.onLeave([]);
   }
 
-  get devicesToModify(): ScannedDeviceToModify[] {
+  get devicesToModify(): ScannedDevice[] {
     const modbusAddressesSet = new ModbusAddressSet(this.configuredDevices.getUsedAddresses());
     const devices = this.commonScanStore.getSelectedDevices();
     const devicesWithDuplicateAddresses = devices.filter((device) => {

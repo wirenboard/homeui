@@ -5,6 +5,7 @@ export interface DateTimePickerProps {
   className?: string;
   value?: Date | null;
   size?: 'default' | 'small';
+  placeholder?: string;
   disabled?: boolean;
   ariaLabel?: string;
   disabledDates?: Matcher | Matcher[];

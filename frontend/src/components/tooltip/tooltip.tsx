@@ -25,6 +25,7 @@ export const Tooltip = ({
   text,
   closeOnClick = false,
   trigger = 'hover',
+  autoClose = true,
   placement = 'top',
   ...rest
 }: PropsWithChildren<TooltipProps>) => {
@@ -50,7 +51,7 @@ export const Tooltip = ({
   });
 
   const role = useRole(context, { role: 'tooltip' });
-  const hover = useHover(context, { move: false, enabled: trigger === 'hover' });
+  const hover = useHover(context, { move: false, enabled: trigger === 'hover', delay: 400 });
   const focus = useFocus(context, { enabled: trigger === 'hover' });
   const click = useClick(context, { enabled: trigger === 'click' });
   const dismiss = useDismiss(context, { referencePress: closeOnClick });
@@ -64,7 +65,7 @@ export const Tooltip = ({
   ]);
 
   useEffect(() => {
-    if (trigger === 'click') {
+    if (trigger === 'click' && autoClose) {
       setTimeout(() => {
         setIsOpen(false);
       }, 2000);

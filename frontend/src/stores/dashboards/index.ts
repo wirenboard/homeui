@@ -1,11 +1,12 @@
-import { Dashboard } from './dashboard';
 import DashboardsStore from './dashboards-store';
-import { Widget } from './widget';
 
+export { Dashboard } from './dashboard';
+export { Widget } from './widget';
 export * from './types';
 
+const dashboardsStore = new DashboardsStore();
+
 export {
-  Dashboard,
   DashboardsStore,
-  Widget
+  dashboardsStore
 };

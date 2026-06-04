@@ -38,8 +38,10 @@ export interface Rule extends RuleFetchData {
   };
 }
 
+export type RuleLevel = 'info' | 'warning' | 'error' | 'debug';
+
 export interface RuleLog {
-  level: 'info' | 'warning' | 'error' | 'debug';
+  level: RuleLevel;
   payload: string;
   time: number;
 }

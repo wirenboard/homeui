@@ -2,8 +2,8 @@ import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import { observer } from 'mobx-react-lite';
 import { useLayoutEffect, useRef, useState } from 'react';
-import i18n from '~/i18n/react/config';
-import { createJSONEditor } from '~/json-editor/wb-json-editor';
+import i18n from '@/i18n/config';
+import { createJSONEditor } from './extensions/wb-json-editor';
 import { type JsonEditorProps } from './types';
 import './styles.css';
 

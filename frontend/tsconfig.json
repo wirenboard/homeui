@@ -8,20 +8,23 @@
     "strictNullChecks": false,
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "module": "commonjs",
+    "resolveJsonModule": true,
+    "module": "es2022",
     "removeComments": true,
     "preserveConstEnums": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": ".",
-    "baseUrl": "./",
     "paths": {
       "~/*": ["./app/scripts/*"],
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vitest/globals"]
   },
-  "include": ["app/scripts", "src/custom.d.ts"]
+  "include": ["app/scripts", "src"],
+  "exclude": ["vite.config.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

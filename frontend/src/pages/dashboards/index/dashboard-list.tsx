@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useMediaQuery } from 'react-responsive';
+import { useNavigate } from 'react-router-dom';
 import { ReactSortable } from 'react-sortablejs';
 import useResizeObserver from 'use-resize-observer';
 import EditIcon from '@/assets/icons/edit.svg';
@@ -9,23 +9,24 @@ import FileSvgIcon from '@/assets/icons/file-svg.svg';
 import FileTextIcon from '@/assets/icons/file-text.svg';
 import MoveIcon from '@/assets/icons/move.svg';
 import TrashIcon from '@/assets/icons/trash.svg';
+import { documentation } from '@/common/links';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
-import { Dropdown } from '@/components/dropdown';
+import { Dropdown, type Option } from '@/components/dropdown';
 import { Switch } from '@/components/switch';
 import { Table, TableCell, TableRow } from '@/components/table';
 import { Tooltip } from '@/components/tooltip';
 import { PageLayout } from '@/layouts/page';
 import { authStore, UserRole } from '@/stores/auth';
+import { dashboardsStore } from '@/stores/dashboards';
 import { DashboardEdit } from './components/dashboard-edit';
-import type { DashboardListPageProps } from './types';
 import './styles.css';
 
-const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => {
-  const { t } = useTranslation();
+const DashboardList = observer(() => {
+  const { t, i18n } = useTranslation();
   const { ref, width } = useResizeObserver();
-  const isDesktop = useMediaQuery({ minWidth: 874 });
+  const navigate = useNavigate();
   const {
     dashboards,
     isLoading,
@@ -42,6 +43,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
     <>
       <PageLayout
         title={t('dashboards.title')}
+        infoLink={documentation[i18n.language]?.dashboards}
         isLoading={isLoading}
         actions={
           hasEditRights && (
@@ -53,9 +55,9 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
               ]}
               placeholder={t('dashboards.buttons.add')}
               isButton
-              onChange={(option) => {
+              onChange={(option: Option<'dashboard' | 'svg'>) => {
                 if (option?.value === 'svg') {
-                  location.assign('/#!/dashboards/svg/add');
+                  navigate('/dashboards/svg/add');
                 } else if (option?.value === 'dashboard') {
                   setEditedDashboardId(Symbol('new'));
                 }
@@ -106,8 +108,8 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                   aria-roledescription="sortable row"
                   aria-label={t('dashboards.buttons.open', { name: dashboard.name })}
                   url={dashboard.isSvg
-                    ? `/#!/dashboards/svg/view/${dashboard.id}`
-                    : `/#!/dashboards/${dashboard.id}`}
+                    ? `/dashboards/svg/view/${dashboard.id}`
+                    : `/dashboards/${dashboard.id}`}
                   key={dashboard.id}
                 >
                   {hasEditRights && dashboardsList.length > 1 && width >= 480 && (
@@ -130,7 +132,7 @@ const DashboardList = observer(({ dashboardsStore }: DashboardListPageProps) => 
                           aria-label={t('dashboards.buttons.edit-dashboard', { name: dashboard.name })}
                           onClick={() => {
                             if (dashboard.isSvg) {
-                              location.assign(`/#!/dashboards/svg/edit/${dashboard.id}`);
+                              navigate(`/dashboards/svg/edit/${dashboard.id}`);
                             } else {
                               setEditedDashboardId(dashboard.id);
                             }

@@ -35,7 +35,7 @@ const getOffset = (): number => {
 export const dayMinusNDays = (dayString: string, n: number, returnString = true, withTime = false): string | Date => {
   const offset = getOffset() / 60;
   const d = JSON.stringify(
-    new Date(+new Date(dayString) - n * ((24 + (withTime ? offset : 0)) * 60 * 60000))
+    new Date(+new Date(dayString) - n * ((24 + (withTime ? offset : 0)) * 60 * 60000)),
   ).slice(1, withTime ? 20 : 11);
   return returnString ? d : new Date(d);
 };

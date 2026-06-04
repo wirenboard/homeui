@@ -9,28 +9,46 @@
   transition: background ease 300ms;
 }
 
+.dropdown__menu {
+  width: auto !important;
+  min-width: 100% !important;
+  max-width: 240px !important;
+}
+
 .dropdown__control--is-focused {
   transition: border-color 200ms linear, var(--input-active-shadow-transition);
   box-shadow: var(--input-active-shadow);
   z-index: 100;
 }
 
+.dropdown-m .dropdown__indicators {
+  flex-shrink: 0;
+}
+
 .dropdown-m .dropdown__indicator {
-  max-width: 20px;
   padding: 0 6px;
+  cursor: pointer;
 }
 
 .dropdown-m .dropdown__indicator svg {
-  flex-shrink: 0.4;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.dropdown-s .dropdown__indicators {
+  flex-shrink: 0;
 }
 
 .dropdown-s .dropdown__indicator {
-  max-width: 16px;
   padding: 0 2px;
+  cursor: pointer;
 }
 
 .dropdown-s .dropdown__indicator svg {
-  flex-shrink: 1;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .dropdown__option {
@@ -44,6 +62,11 @@
   display: block;
 }
 
+.dropdown__single-value {
+  user-select: text;
+  cursor: text;
+}
+
 .dropdown__group {
   padding-bottom: 4px;
   width: 100%;
@@ -51,6 +74,10 @@
 
 .dropdown__group-heading {
   font-weight: bold;
+}
+
+.dropdown-m .dropdown__control {
+  height: 34px;
 }
 
 .dropdown-m .dropdown__control,
@@ -64,9 +91,14 @@
   padding-left: 24px;
 }
 
+.dropdown-s .dropdown__control {
+  height: 28px;
+}
+
 .dropdown-s .dropdown__control,
 .dropdown-s .dropdown__option,
 .dropdown-s .dropdown__group-heading {
+  height: 28px;
   padding: 3px 8px;
   max-height: 30px;
 }
@@ -125,10 +157,36 @@
   border-color: var(--danger-color);
 }
 
+/* Picked up by json-editor's has-error class on the surrounding form-group so
+   the dropdown shows the same red border as native form-controls on validation
+   failure. */
+.has-error .dropdown__control,
+.has-error .dropdown__control:hover {
+  border-color: var(--danger-color);
+}
+
 .dropdown__control--is-disabled {
   background-color: var(--border-color);
 }
 
 .dropdown__menu-notice {
   padding: 6px;
+}
+
+.dropdown__control:has(.dropdown__value-container--is-multi.dropdown__value-container--has-value) {
+  padding-top: 4px;
+}
+
+.dropdown__value-container--is-multi {
+  gap: 4px;
+}
+
+.dropdown__multi-value {
+  border: 1px solid var(--light-gray-color);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.dropdown__multi-value__remove {
+  cursor: pointer;
 }

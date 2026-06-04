@@ -2,7 +2,7 @@
     display: block;
     color: var(--gray-color);
     margin-top: 5px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     flex-basis: 100%;
 }
 
@@ -21,11 +21,13 @@
 .wb-jsonEditor-errorText {
     color: var(--danger-color);
     margin-top: 5px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .wb-jsonEditor-optionalParamsList {
-    padding: 0px 16px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .wb-jsonEditor-descriptionText {
@@ -97,7 +99,7 @@
 }
 
 .wb-jsonEditor-booleanEditorSwitchLabel {
-    margin: 0px;
+    margin: 0;
 }
 
 .dali-level-slider {
@@ -132,9 +134,17 @@
     min-width: 0;
 }
 
-.dali-color-temperature-slider .range-container input {
+.dali-color-temperature-slider .range-container input[type=range] {
     /* Invert slider */
     direction: rtl;
+}
+
+.dali-color-temperature-slider-input {
+    width: 70px;
+}
+
+.dali-color-temperature-slider-input-suffix {
+    font-size: var(--font-size-small);
 }
 
 .dali-color-temperature-slider-mask {

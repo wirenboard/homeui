@@ -10,6 +10,7 @@ import { Loader } from '@/components/loader';
 import type { BusStore } from '@/stores/dali';
 import type { ObjectParamStore } from '@/stores/json-schema-editor/object-store';
 import { useAsyncAction } from '@/utils/async-action';
+import { BusCommands } from '../bus-commands';
 import { BusMonitor } from '../bus-monitor';
 import { CommissioningErrorBanner } from './commissioning-error-banner';
 import { CommissioningProgress } from './commissioning-progress';
@@ -17,7 +18,6 @@ import { PollingIntervalField } from './polling-interval-field';
 import './styles.css';
 
 const MAX_SLOTS = 12;
-
 
 const BusParam = observer(({ store, param }: { store: BusStore; param: ObjectParamStore }) => {
   const { t, i18n } = useTranslation();
@@ -144,6 +144,7 @@ export const BusTabContent = observer(({ store }: { store: BusStore }) => {
           </FormButtonGroup>
           <PollingIntervalField store={store} />
           <BusParamsTabContent store={store} />
+          <BusCommands store={store.commands} />
         </>
       )}
       <BusMonitor

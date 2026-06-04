@@ -5,20 +5,18 @@ import type { DeviceSkillsProps } from './types';
 import './styles.css';
 
 export const DeviceSkills = observer(({
-  capabilities, properties, devicesStore, onCapabilityChange, onPropertyChange,
+  capabilities, properties, onCapabilityChange, onPropertyChange,
 }: DeviceSkillsProps) => {
 
   return (
     <>
       <DeviceCapabilities
         capabilities={capabilities}
-        devicesStore={devicesStore}
         onCapabilityChange={onCapabilityChange}
       />
 
       <DeviceProperties
         properties={properties}
-        devicesStore={devicesStore}
         onPropertyChange={onPropertyChange}
       />
     </>

@@ -1,8 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { uiConfigPath } from '@/common/paths';
+import i18n from '@/i18n/config';
+import { configEditorProxy } from '@/services';
 import type { DashboardBase, UIConfigResponse, WidgetBase } from '@/stores/dashboards';
 import { generateNextId } from '@/utils/id';
-import i18n from '~/i18n/react/config';
 import { Dashboard } from './dashboard';
 import { Widget } from './widget';
 
@@ -14,26 +15,23 @@ export default class DashboardsStore {
   public defaultDashboardId: string;
   public isShowWidgetsPage: boolean = false;
   public saveError: string = null;
-  #configEditorProxy: any;
 
-  constructor(configEditorProxy: any) {
-    this.#configEditorProxy = configEditorProxy;
-
+  constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
   loadData() {
     this.isLoading = true;
-    return this.#configEditorProxy.Load({ path: uiConfigPath })
+    return configEditorProxy.Load({ path: uiConfigPath })
       .then(({ content }: UIConfigResponse) => {
         const { dashboards, widgets, defaultDashboardId, isShowWidgetsPage, description } = content;
         return runInAction(() => {
           this.isLoading = false;
           dashboards.forEach((dashboard: DashboardBase) => {
-            this.dashboards.set(dashboard.id, new Dashboard(dashboard, this));
+            this.dashboards.set(dashboard.id, new Dashboard(dashboard));
           });
           widgets.forEach((widget: WidgetBase) => {
-            this.widgets.set(widget.id, new Widget(widget, this));
+            this.widgets.set(widget.id, new Widget(widget));
           });
           this.defaultDashboardId = defaultDashboardId;
           this.isShowWidgetsPage = !!isShowWidgetsPage;
@@ -45,16 +43,16 @@ export default class DashboardsStore {
   }
 
   async addDashboard(data: Dashboard) {
-    this.dashboards.set(data.id, new Dashboard(data, this));
+    this.dashboards.set(data.id, new Dashboard(data));
 
     this._saveData();
   }
 
   async updateDashboard(id: string, data: Dashboard) {
     if (id === data.id) {
-      this.dashboards.set(id, new Dashboard(data, this));
+      this.dashboards.set(id, new Dashboard(data));
     } else {
-      this.dashboards.set(data.id, new Dashboard(data, this));
+      this.dashboards.set(data.id, new Dashboard(data));
       this.dashboards.delete(id);
     }
 
@@ -62,7 +60,7 @@ export default class DashboardsStore {
   }
 
   async updateDashboards(data: Dashboard[]) {
-    this.dashboards = new Map(data.map((dashboard) => [dashboard.id, new Dashboard(dashboard, this)]));
+    this.dashboards = new Map(data.map((dashboard) => [dashboard.id, new Dashboard(dashboard)]));
     this._saveData();
   }
 
@@ -75,7 +73,7 @@ export default class DashboardsStore {
     runInAction(() => {
       const dashboard = this.dashboards.get(dashboardId);
       dashboard.widgets.push(widgetId);
-      this.dashboards.set(dashboardId, new Dashboard(dashboard, this));
+      this.dashboards.set(dashboardId, new Dashboard(dashboard));
       this._saveData();
     });
   }
@@ -84,7 +82,7 @@ export default class DashboardsStore {
     runInAction(() => {
       const dashboard = this.dashboards.get(dashboardId);
       dashboard.widgets = dashboard.widgets.filter((widget) => widget !== widgetId);
-      this.dashboards.set(dashboardId, new Dashboard(dashboard, this));
+      this.dashboards.set(dashboardId, new Dashboard(dashboard));
       if (withSave) {
         this._saveData();
       }
@@ -95,14 +93,14 @@ export default class DashboardsStore {
     return runInAction(() => {
       const id = generateNextId(Array.from(this.widgets.keys()), 'widget');
       const copiedWidget = this.widgets.get(widgetId);
-      this.widgets.set(id, new Widget({ ...copiedWidget, id, name: `${copiedWidget.name}_copy` }, this));
+      this.widgets.set(id, new Widget({ ...copiedWidget, id, name: `${copiedWidget.name}_copy` }));
       this._saveData();
       return id;
     });
   }
 
   updateWidget(widget: WidgetBase) {
-    this.widgets.set(widget.id, new Widget(widget, this));
+    this.widgets.set(widget.id, new Widget(widget));
     this._saveData();
   }
 
@@ -158,7 +156,7 @@ export default class DashboardsStore {
       isShowWidgetsPage: this.isShowWidgetsPage,
     };
 
-    await this.#configEditorProxy.Save({ path: uiConfigPath, content })
+    await configEditorProxy.Save({ path: uiConfigPath, content })
       .then(() => {
         runInAction(() => {
           this.saveError = null;

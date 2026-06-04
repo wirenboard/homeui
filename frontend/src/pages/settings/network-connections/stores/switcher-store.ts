@@ -1,8 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import i18n from '~/i18n/react/config';
-import { BooleanStore } from '~/react-directives/forms/boolean-store';
-import { NumberStore } from '~/react-directives/forms/number-store';
-import { StringStore } from '~/react-directives/forms/string-store';
+import { BooleanStore, NumberStore, StringStore } from '@/components/json-editor/forms';
+import i18n from '@/i18n/config';
 import { type Tier, TierLevel } from '../components/switcher/types';
 import { type Connections } from '../stores/connections-store';
 import { type SingleConnection } from '../stores/single-connection-store';
@@ -139,7 +137,7 @@ export class SwitcherStore {
       name: i18n.t('network-connections.labels.connectivity-url'),
       description: i18n.t('network-connections.labels.connectivity-url-desc'),
       defaultText: i18n.t('network-connections.labels.connectivity-url-default-text'),
-      validator: (value) => {
+      validator: (value: string): string => {
         if (value !== '') {
           if (value.length < this.urlProperties.minLength) {
             return i18n.t('network-connections.labels.connectivity-url-error-length', {
@@ -150,7 +148,7 @@ export class SwitcherStore {
             return i18n.t('network-connections.labels.connectivity-url-error-format');
           }
         }
-        return false;
+        return null;
       },
     });
 

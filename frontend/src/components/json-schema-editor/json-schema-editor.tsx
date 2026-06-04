@@ -8,14 +8,15 @@ import {
   type ByteArrayStore,
   type ArrayStore,
 } from '@/stores/json-schema-editor';
+import { DALI_TC_FORMAT } from '@/utils/dali-color-temperature';
+import NumberEditor from './number-param-editor';
 import { ParamError } from './param-error';
+import StringEditor from './string-param-editor';
 import type { JsonSchemaEditorProps, EditorBuilderFunctionProps } from './types';
 import './styles.css';
 
 const BooleanEditor = lazy(() => import('./boolean-param-editor'));
-const NumberEditor = lazy(() => import('./number-param-editor'));
 const ObjectEditor = lazy(() => import('./object-param-editor'));
-const StringEditor = lazy(() => import('./string-param-editor'));
 const ArrayEditor = lazy(() => import('./array-param-editor'));
 const BooleanArrayEditor = lazy(() => import('./boolean-array-param-editor'));
 const ByteArrayEditor = lazy(() => import('./byte-array-param-editor'));
@@ -123,7 +124,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
         </Suspense>
       );
     }
-    if (props.store.schema.format === 'dali-tc') {
+    if (props.store.schema.format === DALI_TC_FORMAT) {
       return (
         <Suspense>
           <DaliColorTemperatureSliderEditor

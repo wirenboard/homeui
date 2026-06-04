@@ -4,11 +4,7 @@ import reactConfig from '@wirenboard/eslint/react';
 const getCustomConfig = (cfg) => {
   const customIgnores = [
     'src/custom.d.ts',
-    'app/3rdparty/**',
-    'app/lib/**',
-    'app/scripts/**',
-    '!app/scripts/react-directives/**',
-    'webpack.config.js',
+    'src/components/json-editor/extensions/*',
   ];
   const { ignores, ...rest } = cfg.at(0);
 

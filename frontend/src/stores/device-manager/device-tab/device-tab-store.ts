@@ -3,11 +3,21 @@ import every from 'lodash/every';
 import intersection from 'lodash/intersection';
 import isEqual from 'lodash/isEqual';
 import { makeObservable, observable, action, runInAction, computed } from 'mobx';
+import i18n from '@/i18n/config';
+import {
+  getIntAddress,
+  toSerialRpcPortConfig,
+  toDmRpcPortConfig,
+  setupDevice,
+  DeviceSettingsObjectStore,
+  EmbeddedSoftware,
+  ReadRegistersState,
+  ReadRegistersStateStore,
+} from '@/stores/device-manager';
 import { type JsonObject } from '@/stores/json-schema-editor';
-import { formatError } from '@/utils/formatError';
-import i18n from '~/i18n/react/config';
+import { formatError } from '@/utils/format-error';
 import { type DeviceTypesStore } from '../device-types-store';
-import type { PortTabConfig, PortTabTcpConfig } from '../port-tab/types';
+import type { PortTabConfig, PortTabSerialConfig, PortTabTcpConfig } from '../port-tab/types';
 import type {
   FwUpdateProxy,
   UpdateItem,
@@ -18,11 +28,6 @@ import type {
   ScannedDevice,
   FwUpdateProxyRestoreParams,
 } from '../types';
-import { getIntAddress, toSerialRpcPortConfig, toDmRpcPortConfig, setupDevice } from '../utils';
-import { DeviceSettingsObjectStore } from './device-settings-editor/device-settings-store';
-import { EmbeddedSoftware } from './embedded-software/embedded-software-store';
-import { ReadRegistersStateStore } from './read-registers-state';
-import { ReadRegistersState } from './types';
 
 export class DeviceTabStore {
   public type: string = 'device';
@@ -52,13 +57,12 @@ export class DeviceTabStore {
     initialData: JsonObject,
     deviceType: string,
     deviceTypesStore: DeviceTypesStore,
-    fwUpdateProxy: FwUpdateProxy,
-    serialDeviceProxy: SerialDeviceProxy,
-    serialPortProxy: SerialPortProxy,
+    fwUpdateProxy?: FwUpdateProxy,
+    serialDeviceProxy?: SerialDeviceProxy,
+    serialPortProxy?: SerialPortProxy,
   ) {
     this.initialData = initialData;
     this.deviceTypesStore = deviceTypesStore;
-    this.devicesWithTheSameId = [];
     this.embeddedSoftware = new EmbeddedSoftware(fwUpdateProxy);
     this._serialDeviceProxy = serialDeviceProxy;
     this._fwUpdateProxy = fwUpdateProxy;
@@ -113,11 +117,9 @@ export class DeviceTabStore {
   }
 
   get name() {
-    let deviceName = this.deviceTypesStore.getName(this.deviceType);
-    if (!deviceName) {
-      deviceName = i18n.t('device-manager.labels.unknown-device-type');
-    }
-    return `${this.slaveId || ''} ` + deviceName;
+    const deviceName = this.deviceTypesStore.getName(this.deviceType)
+      || i18n.t('device-manager.labels.unknown-device-type');
+    return `${this.slaveId || ''} ${deviceName}`;
   }
 
   get isLoading() {
@@ -141,8 +143,7 @@ export class DeviceTabStore {
     try {
       configFromDevice = await this._serialDeviceProxy.LoadConfig(params);
     } catch (err) {
-      this.readRegistersState.readError(err);
-      return;
+      return this.readRegistersState.readError(err);
     }
 
     if (isForce && previousData) {
@@ -157,11 +158,7 @@ export class DeviceTabStore {
       }
     }
 
-    this.readRegistersState.successfulRead(
-      this.deviceType,
-      configFromDevice.model,
-      configFromDevice.fw,
-    );
+    this.readRegistersState.successfulRead(this.deviceType, configFromDevice.model, configFromDevice.fw);
     this.schemaStore?.setFromDeviceRegisters(configFromDevice.parameters, configFromDevice.fw, isForce);
   }
 
@@ -183,8 +180,7 @@ export class DeviceTabStore {
         interpolation: { escapeValue: false },
       });
       this._setError(errorMsg);
-      this._clearLoading();
-      return;
+      return this._clearLoading();
     }
     this._initFromDeviceType(type);
     this.schemaStore?.setSlaveId(oldSlaveId);
@@ -220,16 +216,13 @@ export class DeviceTabStore {
   async loadContent(portConfig?: PortTabConfig, isForce: boolean = false) {
     let previousData = { ...this.editedData };
     if (this.isUnknownType || this.withSubdevices) {
-      this._clearLoading();
-      return;
+      return this._clearLoading();
     }
     try {
       if (!this.schemaStore || isForce) {
         this._setLoading(i18n.t('device-manager.labels.loading-template'));
         const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-        runInAction(() => {
-          this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData);
-        });
+        runInAction(() => this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData));
       }
       if (portConfig) {
         await this._loadConfigFromDevice(portConfig, isForce, previousData);
@@ -244,9 +237,7 @@ export class DeviceTabStore {
     this._setLoading(i18n.t('device-manager.labels.loading-template'));
     if (this.schemaStore === undefined) {
       const schema = await this.deviceTypesStore.getSchema(this.deviceType);
-      runInAction(() => {
-        this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData);
-      });
+      runInAction(() => this.schemaStore = new DeviceSettingsObjectStore(schema, this.initialData));
     }
     if (this.schemaStore) {
       this.schemaStore.setDefault();
@@ -255,16 +246,11 @@ export class DeviceTabStore {
   }
 
   get hasInvalidConfig() {
-    return (
-      this.hasJsonValidationErrors || this.slaveIdIsDuplicate || this.devicesWithTheSameId.length
-    );
+    return this.hasJsonValidationErrors || this.slaveIdIsDuplicate || this.devicesWithTheSameId.length;
   }
 
-  get mqttId() {
-    return (
-      this.editedData.id ||
-      this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId)
-    );
+  get mqttId(): string {
+    return this.editedData.id as string || this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId);
   }
 
   get slaveId() {
@@ -278,12 +264,11 @@ export class DeviceTabStore {
   }
 
   setUniqueMqttTopic() {
-    const idParam = this.schemaStore?.commonParams?.params?.['id'];
+    const idParam = this.schemaStore?.commonParams?.params.find((item) => item.key === 'id');
     if (idParam) {
-      const oldId = idParam.value.hasError ?
-        this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId) :
-        idParam.value;
-      idParam.setValue(oldId + '_2');
+      const oldId = idParam.store.value ?? this.deviceTypesStore.getDefaultId(this.deviceType, this.slaveId);
+      idParam.enable();
+      idParam.store.setValue(oldId + '_2');
     }
   }
 
@@ -378,23 +363,22 @@ export class DeviceTabStore {
     try {
       this._setLoading(i18n.t('device-manager.labels.restoring-device'));
       if (!device.bootloaderMode) {
-        await setupDevice(
+        return await setupDevice(
           this._serialPortProxy,
           device,
           {
             slave_id: getIntAddress(this.slaveId),
             baud_rate: portConfig['baud-rate'],
-            parity: portConfig.parity,
-            stop_bits: portConfig.stopBits,
+            parity: (portConfig as PortTabSerialConfig).parity,
+            stop_bits: (portConfig as PortTabSerialConfig).stopBits,
           });
-        return;
       }
 
       let params: FwUpdateProxyRestoreParams = {
         slave_id: getIntAddress(device.address),
         port: toDmRpcPortConfig(portConfig),
       };
-      if (portConfig.modbusTcp) {
+      if ((portConfig as PortTabTcpConfig).modbusTcp) {
         params.protocol = 'modbus-tcp';
       }
       await this._fwUpdateProxy.Restore(params);

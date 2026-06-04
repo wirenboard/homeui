@@ -1,5 +1,5 @@
+import { dashboardsStore } from '@/stores/dashboards/index';
 import { generateNextId } from '@/utils/id';
-import type DashboardsStore from './dashboards-store';
 import { type WidgetBase } from './types';
 
 export class Widget {
@@ -8,42 +8,40 @@ export class Widget {
   declare description: string;
   declare compact: boolean;
   declare cells: any[];
-  #dashboardsStore: DashboardsStore;
 
-  constructor(widget: WidgetBase, dashboardsStore: DashboardsStore) {
+  constructor(widget: WidgetBase) {
     this.id = widget.id;
     this.name = widget.name;
     this.description = widget.description;
     this.compact = widget.compact;
     this.cells = widget.cells;
-    this.#dashboardsStore = dashboardsStore;
   }
 
   save(data: WidgetBase) {
     if (!data.id) {
       data.id = generateNextId(
-        Array.from(this.#dashboardsStore.widgets.values()).map((item) => item.id),
+        Array.from(dashboardsStore.widgets.values()).map((item) => item.id),
         'widget',
       );
     }
-    this.#dashboardsStore.updateWidget(data);
+    dashboardsStore.updateWidget(data);
   }
 
   copy() {
-    return this.#dashboardsStore.copyWidget(this.id);
+    return dashboardsStore.copyWidget(this.id);
   }
 
   delete(id: string) {
-    this.#dashboardsStore.deleteWidget(id);
+    dashboardsStore.deleteWidget(id);
   }
 
   get associatedDashboards() {
-    return Array.from(this.#dashboardsStore.dashboards.values())
+    return Array.from(dashboardsStore.dashboards.values())
       .filter((dashboard) => dashboard.widgets.includes(this.id));
   }
 
   get notUsedDashboards() {
-    return Array.from(this.#dashboardsStore.dashboards.values())
+    return Array.from(dashboardsStore.dashboards.values())
       .filter((dashboard) => {
         return !dashboard.isSvg && !dashboard.widgets.includes(this.id);
       });

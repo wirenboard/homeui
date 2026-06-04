@@ -1,8 +1,8 @@
-import type { ScannedDeviceToModify } from '@/pages/settings/device-manager/scan/stores/types';
+import { type ScannedDevice } from '@/stores/device-manager/types';
 
 export interface SetupAddressModalProps {
   isOpened: boolean;
-  devices: ScannedDeviceToModify[];
-  onConfirm: (_devices: ScannedDeviceToModify[]) => void;
+  devices: ScannedDevice[];
+  onConfirm: (_devices: ScannedDevice[]) => void;
   onClose: (_cancel: boolean) => void;
 }

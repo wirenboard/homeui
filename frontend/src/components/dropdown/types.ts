@@ -1,21 +1,17 @@
-export type Option<T = string | boolean | number | null | unknown> = {
+export interface Option<T = string | boolean | number | null> {
   label: string;
   value?: T;
-  hidden?: boolean;
-} | {
-  value?: T;
-  label: string;
   hidden?: boolean;
   options?: Option<T>[];
-};
+}
 
-export interface DropdownProps<T = string | boolean | number | null | unknown> {
+export interface DropdownProps<T = string | boolean | number | null> {
   id?: string;
   className?: string;
   options: Option<T>[];
   value: T;
   placeholder?: string;
-  onChange: (_val: Option<T>) => void;
+  onChange: (_val: Option<T> | Option<T>[]) => void;
   size?: 'default' | 'small';
   ariaLabel?: string;
   isDisabled?: boolean;
@@ -24,4 +20,7 @@ export interface DropdownProps<T = string | boolean | number | null | unknown> {
   isClearable?: boolean;
   isInvalid?: boolean;
   minWidth?: string;
+  noOptionsMessage?: string;
+  multiselect?: boolean;
+  isLoading?: boolean;
 }

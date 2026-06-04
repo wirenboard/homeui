@@ -76,10 +76,6 @@ export interface UpdateItem {
   };
 }
 
-export interface UpdateStatus {
-  devices: UpdateItem[];
-}
-
 export interface FwUpdateProxy {
   hasMethod(method: string): Promise<boolean>;
   GetFirmwareInfo(params: FwUpdateProxyGetFirmwareInfoParams): Promise<FwUpdateProxyGetFirmwareInfoResult>;
@@ -174,6 +170,7 @@ export interface ScannedDevice {
   title: string;
   sn: string;
   address: number;
+  newAddress?: number;
   type: string;
   port: string;
   baudRate: number;

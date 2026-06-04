@@ -5,15 +5,15 @@ WWW_ROOT = /var/www
 all: build
 
 clean:
-	npm install
+	npm ci
 	npm run clean
 
 test:
-	npm install
+	npm ci
 	npm run test
 
 build:
-	npm install
+	npm ci
 	npm run build
 
 install:
