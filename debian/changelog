@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.220.0) stable; urgency=medium
+
+  * Add a device type filter and icons to the Devices page
+  * Fix logout return state url
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 04 Jun 2026 14:54:00 +0300
+
 wb-mqtt-homeui (2.219.0) stable; urgency=medium
 
   * Add mode capability to the Alice integration page

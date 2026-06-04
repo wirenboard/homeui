@@ -1,43 +1,52 @@
 import { makeAutoObservable } from 'mobx';
 import i18n from '@/i18n/config';
-import type { DeviceMeta, NameTranslations } from './types';
-
-function getFoldedDevices(): string[] {
-  try {
-    const stored = localStorage.getItem('foldedDevices');
-    if (stored !== null){
-      return JSON.parse(stored);
-    }
-  } catch (error) {}
-  return [];
-}
+import { getFoldedDevices, isDefaultSystemDevice } from './helpers';
+import { type DeviceMeta, DeviceType, type NameTranslations } from './types';
 
 export default class Device {
   public id: string;
   public cells: Set<string> = new Set();
   public explicit: boolean = false;
   public isVisible: boolean = true;
-  private _name: string;
-  private _nameTranslations: NameTranslations = {};
+  public type: DeviceType;
+  #name: string;
+  #nameTranslations: NameTranslations = {};
 
   constructor(id: string) {
     this.id = id;
     this.isVisible = !getFoldedDevices().includes(this.id);
+
+    if (isDefaultSystemDevice(id)) {
+      this.type = DeviceType.System;
+    }
+
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
   get name(): string {
-    return this._nameTranslations[i18n.language] || this._nameTranslations.en || this._name || this.id;
+    return this.#nameTranslations[i18n.language] || this.#nameTranslations.en || this.#name || this.id;
   }
 
   set name(value: string) {
-    this._name = value;
+    this.#name = value;
   }
 
   setMeta(meta: string): void {
     try {
       const parsedMeta: DeviceMeta = JSON.parse(meta);
-      this._nameTranslations = parsedMeta.title || {};
+      this.#nameTranslations = parsedMeta.title || {};
+
+      if (Object.values(DeviceType).includes(this.type)) {
+        return;
+      }
+
+      if (parsedMeta.driver === 'wb-rules') {
+        this.type = DeviceType.Virtual;
+      } else if (parsedMeta.driver === 'wb-modbus') {
+        this.type = DeviceType.Modbus;
+      } else if (parsedMeta.driver === 'wb-mqtt-zigbee') {
+        this.type = DeviceType.Modbus;
+      }
     } catch (error) {
       console.error('Invalid meta format:', error);
     }
