@@ -16,7 +16,7 @@ export default class Device {
     this.id = id;
     this.isVisible = !getFoldedDevices().includes(this.id);
 
-    if (isDefaultSystemDevice(id)) {
+    if (isDefaultSystemDevice(id) || this.isServiceDevice) {
       this.type = DeviceType.System;
     }
 
@@ -60,7 +60,7 @@ export default class Device {
     this.cells.delete(cellId);
   }
 
-  get isSystemDevice(): boolean {
+  get isServiceDevice(): boolean {
     return this.id.startsWith('system__');
   }
 

@@ -931,7 +931,7 @@
          "mqtt-password": "Password",
          "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
          "common-settings": "Common settings",
-         "show-system-devices": "Show system devices",
+         "show-system-devices": "Show service devices",
          "show-widgets-page": "Show Widgets page in navigation",
          "language": "UI locale",
          "default-dashboard": "Default dashboard",

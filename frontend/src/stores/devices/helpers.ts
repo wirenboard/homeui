@@ -37,5 +37,5 @@ const SYSTEM_DEVICE_IDS = [
 ];
 
 export const isDefaultSystemDevice = (id: string): boolean => {
-  return id.startsWith('system__') || SYSTEM_DEVICE_IDS.includes(id);
+  return SYSTEM_DEVICE_IDS.includes(id);
 };
