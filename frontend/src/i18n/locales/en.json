@@ -454,6 +454,7 @@
          "updating-bootloader": "Updating bootloader {{current}} to {{available}}",
          "current-firmware": "Current firmware version: {{firmware}}",
          "actual-firmware": "Current firmware version: {{firmware}} (actual)",
+         "has-firmware-updates": "New firmware version available",
          "new-firmware": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}.",
          "new-firmware-link": "There is a new firmware: {{available_firmware}}, current: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Change log</0>",
          "new-bootloader": "There is a new bootloader: {{available_bootloader}}, current: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Change log</0>",
@@ -485,7 +486,8 @@
          "restoring-device": "Restoring device firmware",
          "uncommitted-settings": "You have modified settings that will be lost. Continue?",
          "delete-title": "Confirmation of deletion",
-         "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed."
+         "notice": "For the selected device, the current settings will be applied, including port communication parameters. If the device is in bootloader mode, the latest firmware will be installed.",
+         "not-polled": "The device is not being polled"
       },
       "buttons": {
          "save": "Save config",
