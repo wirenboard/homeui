@@ -66,7 +66,11 @@ export const mergeMenuItems = (baseItems: MenuItemInstance[], customItems: MenuI
     if (item.id && indexById.has(item.id)) {
       const idx = indexById.get(item.id);
       const baseItem = items[idx];
-      const mergedChildren = [...(baseItem.children || []), ...(item.children || [])];
+      // For the integrations group the backend injects "alice"; show it above the
+      // built-in items (e.g. Zabbix Export) by putting custom children first.
+      const mergedChildren = baseItem.id === 'integrations'
+        ? [...(item.children || []), ...(baseItem.children || [])]
+        : [...(baseItem.children || []), ...(item.children || [])];
 
       items[idx] = {
         ...baseItem,
@@ -147,6 +151,13 @@ export const getMenuItems = (
       id: 'integrations',
       icon: IntegrationsIcon,
       isShow: hasRights(UserRole.Admin) && !params.has('fullscreen'),
+      children: [
+        {
+          label: 'navigation.labels.zabbix-export',
+          url: '/integrations/zabbix-export',
+          isShow: hasRights(UserRole.Admin),
+        },
+      ],
     },
     {
       label: 'navigation.labels.history',

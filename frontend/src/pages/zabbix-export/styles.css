@@ -1,0 +1,75 @@
+.zabbixExport-description {
+    margin-bottom: 16px;
+    max-width: 720px;
+    white-space: pre-line;
+    color: var(--text-secondary, inherit);
+}
+
+.zabbixExport-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.zabbixExport-pickerField {
+    flex: 1;
+    min-width: 240px;
+}
+
+.zabbixExport-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.zabbixExport-blockControls {
+    display: flex;
+    flex-direction: column;
+}
+
+.zabbixExport-controlItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+}
+
+.zabbixExport-controlItem:last-child {
+    border-bottom: none;
+}
+
+.zabbixExport-controlItem_disabled {
+    color: var(--text-disabled, rgba(0, 0, 0, 0.4));
+    opacity: 0.6;
+}
+
+.zabbixExport-controlName {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.zabbixExport-controlMeta {
+    font-size: 12px;
+    color: var(--text-secondary, rgba(0, 0, 0, 0.5));
+}
+
+.zabbixExport-controlNote {
+    font-size: 12px;
+    font-style: italic;
+}
+
+.zabbixExport-blockActions {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.zabbixExport-headerActions {
+    display: flex;
+    gap: 8px;
+}
