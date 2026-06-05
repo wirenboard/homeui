@@ -12,6 +12,7 @@ const EditSvgDashboardPage = lazy(() => import('@/pages/dashboards/svg/[slug]/ed
 const WidgetsPage = lazy(() => import('@/pages/dashboards/widgets'));
 const DevicesPage = lazy(() => import('@/pages/devices'));
 const AlicePage = lazy(() => import('@/pages/integrations/alice'));
+const ZabbixExportPage = lazy(() => import('@/pages/zabbix-export'));
 const HistoryPage = lazy(() => import('@/pages/history'));
 const RulesPage = lazy(() => import('@/pages/rules/index'));
 const RulePage = lazy(() => import('@/pages/rules/[rule]'));
@@ -82,6 +83,10 @@ export const routes: RouteObject[] = [
           {
             path: 'alice',
             element: <AlicePage />,
+          },
+          {
+            path: 'zabbix-export',
+            element: <ZabbixExportPage />,
           },
         ],
       },

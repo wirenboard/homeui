@@ -87,6 +87,7 @@
          "devices": "Devices",
          "integrations": "Integrations",
          "alice": "Yandex Alice",
+         "zabbix-export": "Zabbix Export",
          "widgets": "Widgets",
          "history": "History",
          "rules": "Rules",
@@ -1037,6 +1038,23 @@
          "run": "Run",
          "commands": "Commands…",
          "retry": "Retry"
+      }
+   },
+   "zabbixExport": {
+      "title": "Zabbix Export",
+      "labels": {
+         "description": "Select the devices and controls you want to monitor and download a ready-to-import Zabbix file. Then:\n1 - Import the template\n2 - Create a host matching the agent Hostname\n3 - If Agent 2 runs outside the controller, add the {$MQTT.BROKER} macro with the MQTT broker address",
+         "search-device": "Search for a device",
+         "pushbutton-skipped": "Write-only, not monitored",
+         "empty-list": "No devices added yet. Pick a device above and click Add."
+      },
+      "buttons": {
+         "add-device": "Add",
+         "remove-device": "Remove device",
+         "delete-control": "Remove control",
+         "refresh-device": "Refresh",
+         "save": "Save",
+         "export": "Export"
       }
    }
 }
