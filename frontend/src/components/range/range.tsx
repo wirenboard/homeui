@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type FormEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type InputEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { type RangeProps } from './types';
 import './styles.css';
 
@@ -64,7 +64,7 @@ export const Range = ({
         step={step}
         aria-label={ariaLabel}
         onKeyUp={() => onChange(proxyValue)}
-        onInput={(ev: FormEvent<HTMLInputElement>) => {
+        onInput={(ev: InputEvent<HTMLInputElement>) => {
           setProxyValue(ev.currentTarget.valueAsNumber);
         }}
         onTouchEnd={() => {

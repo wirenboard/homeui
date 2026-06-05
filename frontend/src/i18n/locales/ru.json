@@ -452,6 +452,7 @@
          "updating-bootloader": "Обновление загрузчика {{current}} на {{available}}",
          "current-firmware": "Текущая версия прошивки: {{firmware}}",
          "actual-firmware": "Текущая версия прошивки: {{firmware}} (актуальная)",
+         "has-firmware-updates": "Доступна новая версия прошивки",
          "new-firmware": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}.",
          "new-firmware-link": "Доступна новая версия прошивки: {{available_firmware}}, текущая: {{current_firmware}}. <0 target=\"_blank\" href=\"https://wirenboard.com/wiki/Changelog?signature={{device_model}}\">Список изменений</0>",
          "new-bootloader": "Доступна новая версия загрузчика: {{available_bootloader}}, текущая: {{current_bootloader}}. <0 target=\"_blank\" href=\"https://wiki.wirenboard.com/wiki/Bootloader_Changelog\">Список изменений</0>.",
@@ -482,7 +483,8 @@
          "read-registers-manual": "Устройство доступно, можно прочитать параметры, но это удалит все сделанные вами изменения",
          "restoring-device": "Восстановление прошивки устройства",
          "uncommitted-settings": "У вас есть измененные настройки, которые будут утеряны. Продолжить?",
-         "delete-title": "Подтверждение удаления"
+         "delete-title": "Подтверждение удаления",
+         "not-polled": "Устройство не опрашивается"
       },
       "buttons": {
          "save": "Сохранить настройки",
@@ -820,6 +822,8 @@
       "labels":{
          "login": "Имя",
          "password": "Пароль",
+         "password-again": "Пароль еще раз",
+         "password-mismatch": "Пароли не совпадают",
          "type": "Тип",
          "admin": "Администратор",
          "user": "Пользователь",
@@ -848,6 +852,7 @@
       "buttons": {
          "login": "Войти",
          "auto-login": "Войти без пароля",
+         "forgot-password": "Забыли пароль?",
          "choose-language": "Выбор языка"
       },
       "labels": {

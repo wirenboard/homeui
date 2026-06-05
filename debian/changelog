@@ -1,9 +1,28 @@
-wb-mqtt-homeui (2.220.0) stable; urgency=medium
+wb-mqtt-homeui (2.222.0) stable; urgency=medium
 
   * Add a device type filter and icons to the Devices page
   * Fix logout return state url
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 04 Jun 2026 14:54:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Jun 2026 11:30:00 +0300
+
+wb-mqtt-homeui (2.221.0) stable; urgency=medium
+
+  * Device manager — add disabled device icon and tooltip
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Jun 2026 10:54:00 +0300
+
+wb-mqtt-homeui (2.220.0) stable; urgency=medium
+
+  * Add second password field to approve current password
+  * Add restore password link to login page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Fri, 05 Jun 2026 10:11:00 +0300
+
+wb-mqtt-homeui (2.219.1) stable; urgency=medium
+
+  * Use pre-defined DH group ffdhe2048 recommended by the IETF
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Thu, 14 May 2026 19:00:00 +0400
 
 wb-mqtt-homeui (2.219.0) stable; urgency=medium
 
