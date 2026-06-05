@@ -88,13 +88,17 @@
     margin-top: 12px;
 }
 
-.login-links a {
+.login-link {
     font-size: var(--font-size-medium);
     color: #00b7f4;
 }
 
-.login-links a:hover {
+.login-link:hover {
     text-decoration: underline;
+}
+
+.login-passwordLink {
+    margin: -6px 0;
 }
 
 .login-languageWrapper {

@@ -816,6 +816,8 @@
       "labels":{
          "login": "Имя",
          "password": "Пароль",
+         "password-again": "Пароль еще раз",
+         "password-mismatch": "Пароли не совпадают",
          "type": "Тип",
          "admin": "Администратор",
          "user": "Пользователь",
@@ -844,6 +846,7 @@
       "buttons": {
          "login": "Войти",
          "auto-login": "Войти без пароля",
+         "forgot-password": "Забыли пароль?",
          "choose-language": "Выбор языка"
       },
       "labels": {
