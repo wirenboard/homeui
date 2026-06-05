@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { Option } from '@/components/dropdown';
 
 export const DefaultRoom = 'without_rooms';

@@ -1,25 +1,9 @@
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
-import { Capability, toggles, type SmartDeviceCapability } from '@/stores/alice';
+import { toggles, type SmartDeviceCapability } from '@/stores/alice';
 import { type CapabilitySubProps } from '../types';
-
-export const getAvailableToggleInstances = (
-  capabilities: SmartDeviceCapability[],
-  excludeIndex?: number,
-): string[] => {
-  const usedInstances = capabilities
-    .filter((cap, index) =>
-      cap.type === Capability.Toggle &&
-      index !== excludeIndex &&
-      cap.parameters?.instance,
-    )
-    .map((cap) => cap.parameters.instance);
-
-  return toggles.filter(
-    (toggleInstance) => !usedInstances.includes(toggleInstance),
-  );
-};
+import { getAvailableToggleInstances } from './helpers';
 
 export const ToggleCapability = ({
   capability, index, capabilities, onCapabilityChange,

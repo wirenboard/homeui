@@ -140,7 +140,7 @@
       }
    },
    "scan": {
-      "title": "New devices",
+      "title": "Search for new devices",
       "search-disconnected-title": "Search for disconnected device",
       "errors": {
          "scan": "Start scan failed",
@@ -931,6 +931,7 @@
          "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
          "common-settings": "Common settings",
          "show-system-devices": "Show system devices",
+         "show-page-in-title": "Show page name in browser tab title",
          "show-widgets-page": "Show Widgets page in navigation",
          "language": "UI locale",
          "default-dashboard": "Default dashboard",

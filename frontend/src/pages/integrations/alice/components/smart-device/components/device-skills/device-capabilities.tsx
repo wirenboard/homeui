@@ -18,20 +18,17 @@ import {
 import { devicesStore } from '@/stores/devices';
 import {
   ColorSettingCapability,
+  getAvailableModeInstances,
+  getAvailableToggleInstances,
+  getAvailableRangeInstances,
   getAvailableColorModels,
-} from './capabilities/color-setting';
-import { ModeCapability, getAvailableModeInstances } from './capabilities/mode';
-import { OnOffCapability } from './capabilities/on-off';
-import {
+  ModeCapability,
+  OnOffCapability,
   RangeCapability,
+  ToggleCapability,
   RANGE_LIMITS_DEFAULT,
   RANGE_LIMITS_LOCKED,
-  getAvailableRangeInstances,
-} from './capabilities/range';
-import {
-  ToggleCapability,
-  getAvailableToggleInstances,
-} from './capabilities/toggle';
+} from './capabilities';
 import { type CapabilitySubProps, type DeviceCapabilitiesProps } from './types';
 
 export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }: DeviceCapabilitiesProps) => {
@@ -94,9 +91,8 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
       case Capability.Mode: {
         // Select first available instance
         const availableInstances = getAvailableModeInstances(capabilities);
-        const selectedInstance = availableInstances[0] || 'cleanup_mode'; // fallback to cleanup_mode
 
-        parameters.instance = selectedInstance;
+        parameters.instance = availableInstances[0] || 'cleanup_mode'; // fallback to cleanup_mode;
         parameters.modes = [];
         break;
       }
@@ -207,7 +203,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
 
   return (
     <>
-      <h6>{t('alice.labels.device-capabilities')}</h6>
+      <h6 className="aliceDeviceSkills-title">{t('alice.labels.device-capabilities')}</h6>
       <div className="aliceDeviceSkills">
         <p>{t('alice.labels.device-capabilities-description')}</p>
         <div className="aliceDeviceSkills-grid">

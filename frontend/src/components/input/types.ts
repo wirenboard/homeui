@@ -18,6 +18,7 @@ interface BaseInputProps {
   placeholder?: string;
   autoComplete?: string;
   ariaLabel?: string;
+  title?: string;
   ariaDescribedby?: string;
   ariaInvalid?: boolean;
   ariaErrorMessage?: string;

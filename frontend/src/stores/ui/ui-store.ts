@@ -12,6 +12,8 @@ export default class UiStore {
   public menuItems: MenuItemInstance[] = [];
   public theme: string = localStorage.getItem('theme') ?? 'bootstrap';
   public modules: string[] = [];
+  public currentPageTitle: string = '';
+  public showPageInTitle: boolean = localStorage.getItem('show-page-in-title') !== 'false';
   #additionalItems: CustomMenuItem[] = null;
 
   constructor() {
@@ -38,6 +40,15 @@ export default class UiStore {
   setTheme(theme: string) {
     localStorage.setItem('theme', theme);
     this.theme = theme;
+  }
+
+  setCurrentPageTitle(title: string) {
+    this.currentPageTitle = title;
+  }
+
+  setShowPageInTitle(value: boolean) {
+    localStorage.setItem('show-page-in-title', value ? 'true' : 'false');
+    this.showPageInTitle = value;
   }
 
   async #getCustomMenuItems() {
