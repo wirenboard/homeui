@@ -11,7 +11,7 @@
 
 .aliceDeviceSkills-grid {
     display: grid;
-    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) 22px;
+    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) 22px 22px;
     gap: 3px 12px;
     margin-bottom: 6px;
 
@@ -50,12 +50,23 @@
     flex-grow: 1;
 }
 
-.aliceDeviceSkills-deleteButton {
+.aliceDeviceSkills-deleteButton,
+.aliceDeviceSkills-optionsButton {
     margin-top: 24px;
 
     @media (max-width: 768px) {
         margin-top: 4px;
     }
+}
+
+.aliceDeviceSkills-optionsContent {
+    max-width: 280px;
+}
+
+.aliceDeviceSkills-optionsHint {
+    font-size: var(--font-size-small);
+    opacity: 0.7;
+    margin-top: 6px;
 }
 
 .aliceDeviceSkills-deleteButton:not(:last-of-type)::after {
