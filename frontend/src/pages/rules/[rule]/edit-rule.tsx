@@ -12,11 +12,13 @@ import { devicesStore } from '@/stores/devices';
 import { rulesStore } from '@/stores/rules';
 import { getExtensions } from '@/stores/rules/autocomplete';
 import { useAsyncAction } from '@/utils/async-action';
+import { usePreventLeavePage } from '@/utils/prevent-page-leave';
 import './styles.css';
 
 const EditRulePage = observer(() => {
   const { t, i18n } = useTranslation();
   const { rule } = rulesStore;
+  const { setIsDirty } = usePreventLeavePage();
   const [isLoading, setIsLoading] = useState(true);
   const [pageLoadError, setPageLoadError] = useState(null);
   const params = useParams();
@@ -66,6 +68,7 @@ const EditRulePage = observer(() => {
       return navigate(`/rules/edit/${path}`, { replace: true });
     }
     setIsEditingTitle(false);
+    setIsDirty(false);
   });
 
   return (
@@ -96,7 +99,10 @@ const EditRulePage = observer(() => {
           errorLines={rule.error?.errorLine ? [rule.error.errorLine] : null}
           autoFocus={!!params.id}
           extensions={getExtensions(devicesStore)}
-          onChange={(value) => rulesStore.setRule(value)}
+          onChange={(value) => {
+            setIsDirty(true);
+            rulesStore.setRule(value);
+          }}
           onSave={save}
         />
       </div>

@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.222.0) stable; urgency=medium
+
+  * Add rule edit prevent leave page hook
+  * Add return button to history page
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Jun 2026 16:08:00 +0300
+
 wb-mqtt-homeui (2.221.2) stable; urgency=medium
 
   * Fix history mobile layout
