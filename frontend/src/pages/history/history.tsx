@@ -3,7 +3,7 @@ import { ru, enUS } from 'date-fns/locale';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { documentation } from '@/common/links';
 import { Button } from '@/components/button';
 import { Chart } from '@/components/chart';
@@ -23,6 +23,7 @@ const HistoryPage = observer(() => {
   const { t, i18n } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const store = useStore(() => new HistoryStore());
 
@@ -78,14 +79,25 @@ const HistoryPage = observer(() => {
     <PageLayout
       title={t('history.title')}
       infoLink={documentation[i18n.language]?.history}
-      actions={!!store.chartConfig.length && (
-        <Button
-          variant="secondary"
-          label={t('history.buttons.download')}
-          disabled={store.loadPending}
-          onClick={downloadHistoryTable}
-        />
-      )}
+      actions={
+        <>
+          {location.state?.canReturn && (
+            <Button
+              variant="secondary"
+              label={t('common.buttons.back')}
+              onClick={() => navigate(-1)}
+            />
+          )}
+          {!!store.chartConfig.length && (
+            <Button
+              variant="secondary"
+              label={t('history.buttons.download')}
+              disabled={store.loadPending}
+              onClick={downloadHistoryTable}
+            />
+          )}
+        </>
+      }
       errors={store.errors}
       isLoading={!channelOptions.length}
       hasRights={authStore.hasRights(UserRole.User)}

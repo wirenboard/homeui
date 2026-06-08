@@ -4,3 +4,6 @@
 .js-plotly-plot .plotly [data-title]::after {
     background: var(--tooltip-background) !important;
 }
+.js-plotly-plot .plotly .modebar {
+    top: -16px !important;
+}

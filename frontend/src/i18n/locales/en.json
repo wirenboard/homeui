@@ -32,7 +32,8 @@
          "collapse": "Collapse",
          "expand": "Expand",
          "skip-to-main-content": "Skip to main content",
-         "open-calendar": "Open calendar"
+         "open-calendar": "Open calendar",
+         "back": "Back"
       },
       "prompt": {
          "dirty": "The page has unsaved changes. Are you sure you want to leave?"
