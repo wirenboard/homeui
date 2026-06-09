@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import {
-  Capability,
   Color,
   ColorModel,
   type CapabilityParameters,
@@ -14,42 +13,7 @@ import {
   defaultColorSceneParameters,
 } from '@/stores/alice';
 import { type CapabilitySubProps } from '../types';
-
-export const getAvailableColorModels = (
-  capabilities: SmartDeviceCapability[],
-  excludeIndex?: number,
-): Color[] => {
-  // Collect already used Color models among color-setting capabilities
-  const usedColorModels = capabilities
-    .filter((cap, index) => cap.type === Capability['Color setting'] && index !== excludeIndex)
-    .map((cap) => {
-      if (cap.parameters?.color_model) return Color.ColorModel;
-      if (cap.parameters?.temperature_k) return Color.TemperatureK;
-      if (cap.parameters?.color_scene) return Color.ColorScene;
-      return null;
-    })
-    .filter(Boolean);
-
-  return Object.values(Color)
-    .filter((m) => m !== Color.ColorScene) // TODO: <DISABLED_COLOR> Its disable Color scene, need remove for enable
-    .filter((colorModel) => !usedColorModels.includes(colorModel));
-};
-
-const getCurrentColorModel = (capability: SmartDeviceCapability) => {
-  if (capability.parameters?.color_model) return Color.ColorModel;
-  if (capability.parameters?.temperature_k) return Color.TemperatureK;
-  if (capability.parameters?.color_scene) return Color.ColorScene;
-  return Color.ColorModel; // Default value
-};
-
-const getColorModelLabel = (colorKey: string, t: (k: string) => string) => {
-  switch (colorKey) {
-    case 'ColorModel': return t('alice.labels.color-model');
-    case 'TemperatureK': return t('alice.labels.color-temperature');
-    case 'ColorScene': return t('alice.labels.color-scenes');
-    default: return colorKey;
-  }
-};
+import { getAvailableColorModels, getColorModelLabel, getCurrentColorModel } from './helpers';
 
 export const ColorSettingCapability = ({
   capability, index, capabilities, onCapabilityChange,

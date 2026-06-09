@@ -2,38 +2,9 @@ import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
-import { Capability, ranges, rangeUnitByInstance, type SmartDeviceCapability } from '@/stores/alice';
+import { ranges, rangeUnitByInstance, type SmartDeviceCapability } from '@/stores/alice';
 import { type CapabilitySubProps } from '../types';
-
-// Default range values for unlocked instances
-export const RANGE_LIMITS_DEFAULT = { min: 0, max: 100, precision: 1 };
-
-// Instances with fixed ranges that cannot be changed in UI
-export const RANGE_LIMITS_LOCKED: Record<string, { min: number; max: number; precision?: number }> = {
-  brightness: { min: 0, max: 100, precision: 1 },
-  // channel: No lock applied
-  humidity:   { min: 0, max: 100, precision: 1 },
-  open:       { min: 0, max: 100, precision: 1 },
-  // temperature: No lock applied
-  // volume: No lock applied
-};
-
-export const getAvailableRangeInstances = (
-  capabilities: SmartDeviceCapability[],
-  excludeIndex?: number,
-): string[] => {
-  const usedInstances = capabilities
-    .filter((cap, index) =>
-      cap.type === Capability.Range &&
-      index !== excludeIndex &&
-      cap.parameters?.instance,
-    )
-    .map((cap) => cap.parameters.instance);
-
-  return ranges.filter(
-    (rangeInstance) => !usedInstances.includes(rangeInstance),
-  );
-};
+import { getAvailableRangeInstances, RANGE_LIMITS_DEFAULT, RANGE_LIMITS_LOCKED } from './helpers';
 
 export const RangeCapability = ({
   capability, index, capabilities, onCapabilityChange,

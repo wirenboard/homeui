@@ -6,6 +6,7 @@ import { type AlertProps } from '@/components/alert/types';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Loader } from '@/components/loader';
+import { uiStore } from '@/stores/ui';
 import { focusToMainContent } from '@/utils/focus-content';
 import { ExposeCheck } from './components/expose-check';
 import { Info } from './components/info';
@@ -36,6 +37,11 @@ export const PageLayout = ({
 
   useEffect(() => {
     setTitleValue(title);
+  }, [title]);
+
+  useEffect(() => {
+    uiStore.setCurrentPageTitle(title ?? '');
+    return () => uiStore.setCurrentPageTitle('');
   }, [title]);
 
   useEffect(() => {

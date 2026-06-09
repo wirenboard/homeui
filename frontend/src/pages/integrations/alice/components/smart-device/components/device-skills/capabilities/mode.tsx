@@ -7,32 +7,14 @@ import { Button } from '@/components/button';
 import { Dropdown, type Option } from '@/components/dropdown';
 import { Input } from '@/components/input';
 import {
-  Capability,
   modeInstances,
   modes,
   recommendedModesByInstance,
   type CapabilityParameters,
   type ModeMapping,
-  type SmartDeviceCapability,
 } from '@/stores/alice';
 import { type CapabilitySubProps } from '../types';
-
-export const getAvailableModeInstances = (
-  capabilities: SmartDeviceCapability[],
-  excludeIndex?: number,
-): string[] => {
-  const usedInstances = capabilities
-    .filter((cap, index) =>
-      cap.type === Capability.Mode &&
-      index !== excludeIndex &&
-      cap.parameters?.instance,
-    )
-    .map((cap) => cap.parameters.instance);
-
-  return modeInstances.filter(
-    (modeInstance) => !usedInstances.includes(modeInstance),
-  );
-};
+import { getAvailableModeInstances } from './helpers';
 
 export const ModeCapability = ({
   capability, index, capabilities, onCapabilityChange,
@@ -159,6 +141,7 @@ export const ModeCapability = ({
         setList={(items) => {
           if (!items.length) return;
           // Strip helper fields added by react-sortablejs and our local id.
+          // eslint-disable-next-line no-unused-vars
           const cleaned: ModeMapping[] = items.map(({ chosen, selected, id, ...rest }: any) => rest);
           // Avoid update if nothing actually changed (lib calls setList on every render).
           if (JSON.stringify(cleaned) !== JSON.stringify(modesList)) {
@@ -193,9 +176,9 @@ export const ModeCapability = ({
                 return (
                   <Input
                     value={mode.mqtt_value_match}
-                    isFullWidth
                     isInvalid={!!mqttValueMatchError}
                     title={mqttValueMatchError ?? undefined}
+                    isFullWidth
                     onChange={(v: string) => handleMqttValueMatchChange(rowIdx, v)}
                   />
                 );

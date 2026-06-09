@@ -6,10 +6,12 @@ import { type Option } from '@/components/dropdown';
 import { BooleanField, FormButtonGroup, FormFieldGroup, OptionsField, StringField } from '@/components/form';
 import { authStore, UserRole } from '@/stores/auth';
 import { dashboardsStore } from '@/stores/dashboards';
+import { uiStore } from '@/stores/ui';
 
 const CommonSettings = observer(() => {
   const { t, i18n } = useTranslation();
   const [showSystemDevices, setShowSystemDevices] = useState((localStorage['show-system-devices'] || 'no') === 'yes');
+  const [showPageInTitle, setShowPageInTitle] = useState(uiStore.showPageInTitle);
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
   const [defaultDashboardId, setDefaultDashboardId] = useState('');
   const [description, setDescription] = useState('');
@@ -31,6 +33,7 @@ const CommonSettings = observer(() => {
 
   const applyHandler = async () => {
     localStorage.setItem('show-system-devices', showSystemDevices ? 'yes' : 'no');
+    uiStore.setShowPageInTitle(showPageInTitle);
     localStorage.setItem('language', language);
     await i18n.changeLanguage(language);
     dashboardsStore.setDefaultDashboardId(defaultDashboardId);
@@ -62,6 +65,12 @@ const CommonSettings = observer(() => {
         options={options}
         isDisabled={dashboardsStore.isLoading}
         onChange={setDefaultDashboardId}
+      />
+
+      <BooleanField
+        title={t('web-ui-settings.labels.show-page-in-title')}
+        value={showPageInTitle}
+        onChange={setShowPageInTitle}
       />
 
       <BooleanField
