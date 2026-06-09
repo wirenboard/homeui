@@ -212,7 +212,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
 
   return (
     <>
-      <h6>{t('alice.labels.device-properties')}</h6>
+      <h6 className="aliceDeviceSkills-title">{t('alice.labels.device-properties')}</h6>
       <div className="aliceDeviceSkills">
         <p>{t('alice.labels.device-properties-description')}</p>
         <div className="aliceDeviceSkills-grid">

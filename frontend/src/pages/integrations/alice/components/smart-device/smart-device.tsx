@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { type FormEvent, useEffect, useState } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import CopyIcon from '@/assets/icons/copy.svg';
 import EditSquareIcon from '@/assets/icons/edit-square.svg';
@@ -47,7 +47,7 @@ export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: Sma
     });
   }, [id]);
 
-  const [save, isSaving] = useAsyncAction(async (ev: FormEvent) => {
+  const [save, isSaving] = useAsyncAction(async (ev: SubmitEvent<HTMLFormElement>) => {
     ev.preventDefault();
     try {
       const payload = { ...data } as AddDeviceParams;

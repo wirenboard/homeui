@@ -24,6 +24,7 @@ export const documentation = {
     '/etc/wb-mqtt-opcua.conf': 'https://wiki.wirenboard.com/wiki/OPC_UA',
     '/etc/wb-rules/alarms.conf': 'https://wiki.wirenboard.com/wiki/Notification_module',
     '/etc/wb-security.conf': 'https://wiki.wirenboard.com/wiki/Security',
+    usersUtility: 'https://wiki.wirenboard.com/wiki/Wb-homeui-users',
   },
   en: {
     main: 'https://wiki.wirenboard.com/wiki/Documentation/en',
@@ -37,6 +38,7 @@ export const documentation = {
     system: 'https://wiki.wirenboard.com/wiki/Wiren_Board_Web_Interface/en#Firmware_update_and_collect_diagnostic_data',
     mbgate: 'https://wiki.wirenboard.com/wiki/Modbus_RTU/TCP_Slave/en',
     '/etc/wb-rules/alarms.conf': 'https://wiki.wirenboard.com/wiki/Notification_module/en',
+    usersUtility: 'https://wiki.wirenboard.com/wiki/Wb-homeui-users/en',
   },
 };
 

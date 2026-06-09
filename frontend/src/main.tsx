@@ -55,7 +55,9 @@ when(() => authStore.isAuthenticated).then(() => {
 
 autorun(() => {
   const name = dashboardsStore.description;
-  document.title = name ? `${name} | ${APP_SHORT_NAME || APP_NAME}` : APP_NAME;
+  const appTitle = name ? `${name} | ${APP_SHORT_NAME || APP_NAME}` : APP_NAME;
+  const pageTitle = uiStore.showPageInTitle ? uiStore.currentPageTitle : '';
+  document.title = pageTitle ? `${pageTitle} – ${appTitle}` : appTitle;
 });
 
 mqttClient.whenConnected().then(async () => {
