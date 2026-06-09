@@ -1,16 +1,17 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InfoIcon from '@/assets/icons/info.svg';
-import { Tooltip } from '@/components/tooltip';
+import { Popup } from '@/components/popup';
 import './styles.css';
 
 export const Info = ({ link }: { link?: string }) => {
   const { t, i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Tooltip
-      trigger="click"
-      autoClose={false}
-      text={
+    <Popup
+      isOpen={isOpen}
+      content={
         <div className="info-container">
           {link && (
             <a href={link} className="info-link" target="_blank">
@@ -27,8 +28,9 @@ export const Info = ({ link }: { link?: string }) => {
           </a>
         </div>
       }
+      onOpenChange={setIsOpen}
     >
       <InfoIcon className="info-icon" />
-    </Tooltip>
+    </Popup>
   );
 };

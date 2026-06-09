@@ -31,7 +31,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
         isLoading={pageStore.loading || pageStore.saving}
         loadingOptions={pageStore.saving ? { overlay: true, showActions: true } : undefined}
         actions={
-          (!pageStore.loading && pageStore.loaded) && (
+          (!pageStore.loading) && (
             <HeaderButtons
               allowSave={pageStore.allowSave}
               isSaving={pageStore.saving}
@@ -49,7 +49,7 @@ const ConfigEditorPage = observer(({ pageStore, onAddWbDevice, onSearchDisconnec
             <PageTabs
               tabs={pageStore.tabs.items}
               selectedIndex={pageStore.tabs.selectedTabIndex}
-              showButtons={!pageStore.loading && pageStore.loaded}
+              showButtons={!pageStore.loading}
               deviceTypeSelectOptions={pageStore.deviceTypesStore.deviceTypeDropdownOptions}
               mobileModeStore={pageStore.tabs.mobileModeStore}
               onSelect={(index) => pageStore.tabs.onSelectTab(index)}
