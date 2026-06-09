@@ -675,10 +675,16 @@
    "devices": {
       "title": "Devices",
       "labels": {
-         "nothing": "No devices available for this moment.",
+         "nothing": "No devices available for this moment",
          "delete": "Delete device",
          "collapse": "Collapse devices",
-         "expand": "Expand devices"
+         "expand": "Expand devices",
+         "filter-type": "Filter by type",
+         "all-devices": "All devices",
+         "type-system": "System",
+         "type-virtual": "Virtual",
+         "type-modbus": "Modbus",
+         "type-zigbee": "Zigbee"
       },
       "prompt": {
          "delete-title": "Delete device",
@@ -931,7 +937,7 @@
          "mqtt-password": "Password",
          "add-prefix-to-topic": "Enable prefix (/client/user_id/)",
          "common-settings": "Common settings",
-         "show-system-devices": "Show system devices",
+         "show-system-devices": "Show service devices",
          "show-widgets-page": "Show Widgets page in navigation",
          "language": "UI locale",
          "default-dashboard": "Default dashboard",
