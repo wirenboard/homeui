@@ -1,5 +1,6 @@
 import { JSONEditor } from '@wirenboard/json-editor';
 import merge from 'lodash/merge';
+import { makeActionValueEditor } from './action-value-editor';
 import { makeAutocompleteEditor } from './autocomplete';
 import { makeCollapsibleArrayEditor } from './collapsible-array-editor';
 import { makeCollapsibleMultipleEditor } from './collapsible-multiple-editor';
@@ -205,6 +206,9 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.resolvers.unshift(
     (schema) => schema.type === 'array' && schema.format === 'wb-array' && 'wb-array',
   );
+  JSONEditor.defaults.resolvers.unshift(
+    (schema) => schema.format === 'wb-action-value' && 'wb-action-value',
+  );
 
   JSONEditor.defaults.editors['select'] = makeSelectWithHiddenItems();
   JSONEditor.defaults.editors['inWb'] = makeDisabledEditorWrapper(
@@ -230,6 +234,7 @@ function overrideJSONEditor(data) {
   JSONEditor.defaults.editors['wb-optional'] = makeOptionalEditorWithDropDown();
   JSONEditor.defaults.editors['wb-array'] = makeWbArrayEditor();
   JSONEditor.defaults.editors['wb-first-oneof'] = makeFirstOneOfEditor();
+  JSONEditor.defaults.editors['wb-action-value'] = makeActionValueEditor();
 
   JSONEditor.defaults.languages.en.error_oneOf = 'Parameters are set incorrectly';
 

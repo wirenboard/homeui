@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.226.0) stable; urgency=medium
+
+  * Add wb-action-value json-editor widget for scenario output value
+
+ -- Valerii Trofimov <valeriy.trofimov@wirenboard.com>  Tue, 09 Jun 2026 18:48:00 +0300
+
 wb-mqtt-homeui (2.225.1) stable; urgency=medium
 
   * Fix searching for a disconnected device: the found device is now selectable, so its connection settings (e.g. baud rate) can be re-applied
