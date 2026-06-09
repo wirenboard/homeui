@@ -1,8 +1,21 @@
-wb-mqtt-homeui (2.223.0) stable; urgency=medium
+wb-mqtt-homeui (2.225.0) stable; urgency=medium
 
   * Add page name in title
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Jun 2026 16:19:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 09 Jun 2026 09:41:00 +0300
+
+wb-mqtt-homeui (2.224.0) stable; urgency=medium
+
+  * Add a device type filter and icons to the Devices page
+  * Fix logout return state url
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 09 Jun 2026 09:04:00 +0300
+
+wb-mqtt-homeui (2.223.0) stable; urgency=medium
+
+  * Add popup component
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 08 Jun 2026 17:15:00 +0300
 
 wb-mqtt-homeui (2.222.0) stable; urgency=medium
 
