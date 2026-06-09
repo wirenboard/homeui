@@ -2,7 +2,8 @@ import { makeObservable, observable, action } from 'mobx';
 import { type deviceManagerProxy as deviceManagerProxyInstance } from '@/services';
 import { type DeviceTypesStore } from '@/stores/device-manager';
 import type { ScannedDevice } from '@/stores/device-manager/types';
-import { CommonScanStore, SelectionPolicy } from './scan-page-store';
+import { CommonScanStore } from './scan-page-store';
+import { SelectionPolicy } from './types';
 
 export class SearchDisconnectedScanPageStore {
   public commonScanStore: CommonScanStore;
