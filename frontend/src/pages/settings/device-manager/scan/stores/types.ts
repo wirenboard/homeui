@@ -35,3 +35,19 @@ export interface GlobalError {
     failed_ports: string[];
   };
 }
+
+export enum SelectionPolicy {
+  Single = 'Select only one item',
+  Multiple = 'Multiple selection',
+}
+
+export const ScanState = {
+  Started: 'Started',
+  Stopped: 'Stopped',
+  NotSpecified: 'NotSpecified',
+};
+
+export interface SelectableConfiguredDevice {
+  portPath: string;
+  slaveId: number;
+}

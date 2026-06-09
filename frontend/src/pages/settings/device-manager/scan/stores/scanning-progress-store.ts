@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { ScanState } from './scan-page-store';
+import { ScanState } from './types';
 
 export class ScanningProgressStore {
   public actualState = ScanState.NotSpecified;
