@@ -7,7 +7,7 @@ import { useConfirm } from '@/components/confirm';
 import { Progress } from '@/components/progress';
 import { PageLayout } from '@/layouts/page';
 import { type NewDevicesScanPageStore } from '@/pages/settings/device-manager/scan';
-import { ScanState } from '@/pages/settings/device-manager/scan/stores/scan-page-store';
+import { ScanState } from '@/pages/settings/device-manager/scan/stores/types';
 import { authStore, UserRole } from '@/stores/auth';
 import { DevicesTable } from './components/desktop';
 import { DevicesList } from './components/mobile';
