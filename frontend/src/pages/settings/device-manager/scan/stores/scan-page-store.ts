@@ -7,23 +7,7 @@ import { type ScannedDevice } from '@/stores/device-manager/types';
 import { GlobalErrorStore } from './global-error-store';
 import { ScanningProgressStore } from './scanning-progress-store';
 import { SingleDeviceStore } from './single-device-store';
-import { type FullScannedDevice } from './types';
-
-export enum SelectionPolicy {
-  Single = 'Select only one item',
-  Multiple = 'Multiple selection',
-}
-
-export const ScanState = {
-  Started: 'Started',
-  Stopped: 'Stopped',
-  NotSpecified: 'NotSpecified',
-};
-
-export interface SelectableConfiguredDevice {
-  portPath: string;
-  slaveId: number;
-}
+import { type FullScannedDevice, type SelectableConfiguredDevice, SelectionPolicy, ScanState } from './types';
 
 class DevicesStore {
   public newDevices: SingleDeviceStore[] = [];
