@@ -8,6 +8,14 @@ clean:
 	npm ci
 	npm run clean
 
+check-types:
+	npm ci
+	npm run check:type
+
+lint:
+	npm ci
+	npm run lint
+
 test:
 	npm ci
 	npm run test
