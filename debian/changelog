@@ -1,5 +1,11 @@
 wb-mqtt-homeui (2.225.2) stable; urgency=medium
 
+  * Fix json-editor horizontal tabs
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 10 Jun 2026 17:55:00 +0300
+
+wb-mqtt-homeui (2.225.2) stable; urgency=medium
+
   * Update ci
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 10 Jun 2026 15:11:00 +0300
