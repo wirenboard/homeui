@@ -11,7 +11,7 @@
     "test:watch": "vitest",
     "lint": "npx eslint --cache --cache-location .eslintcache",
     "lint:fix": "npx eslint --fix",
-    "check:type": "tsc --noEmit"
+    "check:types": "tsc --noEmit"
   },
   "repository": {
     "type": "git",

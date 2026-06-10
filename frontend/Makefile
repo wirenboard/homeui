@@ -10,7 +10,7 @@ clean:
 
 check-types:
 	npm ci
-	npm run check:type
+	npm run check:types
 
 lint:
 	npm ci
