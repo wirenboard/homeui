@@ -96,10 +96,20 @@
     margin-top: 6px;
 }
 
+.aliceDeviceSkills-optionsItem {
+    padding-left: 12px;
+    border-left: 2px solid transparent;
+    margin-left: -12px;
+}
+
+.aliceDeviceSkills-optionsItem.is-modified {
+    border-color: var(--primary-color);
+}
+
 .aliceDeviceSkills-optionsDivider {
     height: 1px;
     background: var(--border-color);
-    margin: 12px 0;
+    margin: 12px -12px;
 }
 
 .aliceDeviceSkills-deleteButton:not(:last-of-type)::after {

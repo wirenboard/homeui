@@ -31,6 +31,11 @@ export const CapabilityOptionsButton = ({
   const split = capability.parameters?.split ?? defaults.parameters.split ?? false;
 
   const modifiedCount = countModifiedCapability(capability);
+  const itemClass = (modified: boolean) =>
+    `aliceDeviceSkills-optionsItem${modified ? ' is-modified' : ''}`;
+  const isRetrievableModified = capability.retrievable !== undefined && retrievable !== defaults.retrievable;
+  const isReportableModified = capability.reportable !== undefined && reportable !== defaults.reportable;
+  const isSplitModified = capability.parameters?.split !== undefined && split !== defaults.parameters.split;
 
   const handleRetrievableChange = (checked: boolean) => {
     onCapabilityChange(updateCapability(capabilities, index, { retrievable: checked }));
@@ -50,38 +55,44 @@ export const CapabilityOptionsButton = ({
 
   const content = (
     <div className="aliceDeviceSkills-optionsContent">
-      <Checkbox
-        checked={retrievable}
-        title={t('alice.labels.retrievable')}
-        ariaLabel={t('alice.labels.retrievable')}
-        onChange={handleRetrievableChange}
-      />
-      <div className="aliceDeviceSkills-optionsHint">
-        {t('alice.labels.retrievable-hint')}
+      <div className={itemClass(isRetrievableModified)}>
+        <Checkbox
+          checked={retrievable}
+          title={t('alice.labels.retrievable')}
+          ariaLabel={t('alice.labels.retrievable')}
+          onChange={handleRetrievableChange}
+        />
+        <div className="aliceDeviceSkills-optionsHint">
+          {t('alice.labels.retrievable-hint')}
+        </div>
       </div>
 
       <div className="aliceDeviceSkills-optionsDivider" />
-      <Checkbox
-        checked={reportable}
-        title={t('alice.labels.reportable')}
-        ariaLabel={t('alice.labels.reportable')}
-        onChange={handleReportableChange}
-      />
-      <div className="aliceDeviceSkills-optionsHint">
-        {t('alice.labels.reportable-hint')}
+      <div className={itemClass(isReportableModified)}>
+        <Checkbox
+          checked={reportable}
+          title={t('alice.labels.reportable')}
+          ariaLabel={t('alice.labels.reportable')}
+          onChange={handleReportableChange}
+        />
+        <div className="aliceDeviceSkills-optionsHint">
+          {t('alice.labels.reportable-hint')}
+        </div>
       </div>
 
       {showSplit && (
         <>
           <div className="aliceDeviceSkills-optionsDivider" />
-          <Checkbox
-            checked={split}
-            title={t('alice.labels.split')}
-            ariaLabel={t('alice.labels.split')}
-            onChange={handleSplitChange}
-          />
-          <div className="aliceDeviceSkills-optionsHint">
-            {t('alice.labels.split-hint')}
+          <div className={itemClass(isSplitModified)}>
+            <Checkbox
+              checked={split}
+              title={t('alice.labels.split')}
+              ariaLabel={t('alice.labels.split')}
+              onChange={handleSplitChange}
+            />
+            <div className="aliceDeviceSkills-optionsHint">
+              {t('alice.labels.split-hint')}
+            </div>
           </div>
         </>
       )}

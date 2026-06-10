@@ -32,6 +32,11 @@ export const PropertyOptionsButton = ({
   const reportable = isEvent ? defaults.reportable : (property.reportable ?? defaults.reportable);
 
   const modifiedCount = countModifiedProperty(property);
+  // Event options are locked to defaults — never marked as modified
+  const itemClass = (modified: boolean) =>
+    `aliceDeviceSkills-optionsItem${modified ? ' is-modified' : ''}`;
+  const isRetrievableModified = !isEvent && property.retrievable !== undefined && retrievable !== defaults.retrievable;
+  const isReportableModified = !isEvent && property.reportable !== undefined && reportable !== defaults.reportable;
 
   const handleRetrievableChange = (checked: boolean) => {
     const updated = properties.map((item, i) => (
@@ -49,32 +54,36 @@ export const PropertyOptionsButton = ({
 
   const content = (
     <div className="aliceDeviceSkills-optionsContent">
-      <Checkbox
-        checked={retrievable}
-        title={t('alice.labels.retrievable')}
-        ariaLabel={t('alice.labels.retrievable')}
-        isDisabled={isEvent}
-        onChange={handleRetrievableChange}
-      />
-      {!isEvent && (
-        <div className="aliceDeviceSkills-optionsHint">
-          {t('alice.labels.retrievable-hint')}
-        </div>
-      )}
+      <div className={itemClass(isRetrievableModified)}>
+        <Checkbox
+          checked={retrievable}
+          title={t('alice.labels.retrievable')}
+          ariaLabel={t('alice.labels.retrievable')}
+          isDisabled={isEvent}
+          onChange={handleRetrievableChange}
+        />
+        {!isEvent && (
+          <div className="aliceDeviceSkills-optionsHint">
+            {t('alice.labels.retrievable-hint')}
+          </div>
+        )}
+      </div>
 
       <div className="aliceDeviceSkills-optionsDivider" />
-      <Checkbox
-        checked={reportable}
-        title={t('alice.labels.reportable')}
-        ariaLabel={t('alice.labels.reportable')}
-        isDisabled={isEvent}
-        onChange={handleReportableChange}
-      />
-      {!isEvent && (
-        <div className="aliceDeviceSkills-optionsHint">
-          {t('alice.labels.reportable-hint')}
-        </div>
-      )}
+      <div className={itemClass(isReportableModified)}>
+        <Checkbox
+          checked={reportable}
+          title={t('alice.labels.reportable')}
+          ariaLabel={t('alice.labels.reportable')}
+          isDisabled={isEvent}
+          onChange={handleReportableChange}
+        />
+        {!isEvent && (
+          <div className="aliceDeviceSkills-optionsHint">
+            {t('alice.labels.reportable-hint')}
+          </div>
+        )}
+      </div>
     </div>
   );
 
