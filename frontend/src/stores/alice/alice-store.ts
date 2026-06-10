@@ -37,6 +37,7 @@ const normalizeCapability = (cap: SmartDeviceCapability): SmartDeviceCapability 
   const out: SmartDeviceCapability = {
     ...cap,
     retrievable: cap.retrievable ?? true,
+    reportable: cap.reportable ?? true,
   };
   if (out.type === Capability['On/Off']) {
     out.parameters = { ...out.parameters, split: out.parameters?.split ?? false };
@@ -46,8 +47,10 @@ const normalizeCapability = (cap: SmartDeviceCapability): SmartDeviceCapability 
 
 const normalizeProperty = (prop: SmartDeviceProperty): SmartDeviceProperty => ({
   ...prop,
-  // Event properties are locked off — see property-options-button.tsx
+  // Event properties: retrievable forced false, reportable forced true
+  // (see property-options-button.tsx)
   retrievable: prop.retrievable ?? (prop.type === Property.Event ? false : true),
+  reportable: prop.type === Property.Event ? true : (prop.reportable ?? true),
 });
 
 const normalizeDevice = (device: SmartDevice): SmartDevice => ({

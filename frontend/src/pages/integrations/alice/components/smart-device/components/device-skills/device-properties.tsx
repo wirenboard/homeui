@@ -360,7 +360,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                   if (units.length) params.unit = units[0];
                   onPropertyChange([
                     ...properties,
-                    { type: Property.Float, mqtt: '', parameters: params, retrievable: true },
+                    { type: Property.Float, mqtt: '', parameters: params, retrievable: true, reportable: true },
                   ]);
                 } else if (freeEventInstances.length > 0) {
                   // Add Event property with first available instance
@@ -381,7 +381,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
 
                   onPropertyChange([
                     ...properties,
-                    { type: Property.Event, mqtt: '', parameters: params },
+                    { type: Property.Event, mqtt: '', parameters: params, reportable: true },
                   ]);
                 }
               }}

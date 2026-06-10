@@ -13,17 +13,28 @@ export const PropertyOptionsButton = ({
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Event checkbox is locked off: events may span multiple MQTT topics and
-  // there is no local state cache, so the last known state cannot be returned
-  // Client treats retrievable=true on events as false with a warning
-  // (see wb-mqtt-alice device_registry._collect_properties)
-  // Unlock once local state storage is implemented
-  const eventLocked = property.type === Property.Event;
-  const retrievable = eventLocked ? false : (property.retrievable ?? true);
+  // Event property: retrievable locked off, reportable locked on
+  // retrievable: events may span multiple MQTT topics and there is no local
+  //   state cache, so the last known state cannot be returned; client treats
+  //   retrievable=true on events as false with a warning
+  //   (see wb-mqtt-alice device_registry._collect_properties)
+  // reportable: an event only exists as a push update, so disabling reporting
+  //   would make the property useless
+  // Unlock retrievable once local state storage is implemented
+  const isEvent = property.type === Property.Event;
+  const retrievable = isEvent ? false : (property.retrievable ?? true);
+  const reportable = isEvent ? true : (property.reportable ?? true);
 
   const handleRetrievableChange = (checked: boolean) => {
     const updated = properties.map((item, i) => (
       i === index ? { ...item, retrievable: checked } : item
+    ));
+    onPropertyChange(updated);
+  };
+
+  const handleReportableChange = (checked: boolean) => {
+    const updated = properties.map((item, i) => (
+      i === index ? { ...item, reportable: checked } : item
     ));
     onPropertyChange(updated);
   };
@@ -34,12 +45,26 @@ export const PropertyOptionsButton = ({
         checked={retrievable}
         title={t('alice.labels.retrievable')}
         ariaLabel={t('alice.labels.retrievable')}
-        isDisabled={eventLocked}
+        isDisabled={isEvent}
         onChange={handleRetrievableChange}
       />
-      {!eventLocked && (
+      {!isEvent && (
         <div className="aliceDeviceSkills-optionsHint">
           {t('alice.labels.retrievable-hint')}
+        </div>
+      )}
+
+      <div className="aliceDeviceSkills-optionsDivider" />
+      <Checkbox
+        checked={reportable}
+        title={t('alice.labels.reportable')}
+        ariaLabel={t('alice.labels.reportable')}
+        isDisabled={isEvent}
+        onChange={handleReportableChange}
+      />
+      {!isEvent && (
+        <div className="aliceDeviceSkills-optionsHint">
+          {t('alice.labels.reportable-hint')}
         </div>
       )}
     </div>
