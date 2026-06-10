@@ -63,6 +63,11 @@
     max-width: 280px;
 }
 
+.aliceDeviceSkills-optionsContent .wb-checkbox:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .aliceDeviceSkills-optionsHint {
     font-size: var(--font-size-small);
     opacity: 0.7;

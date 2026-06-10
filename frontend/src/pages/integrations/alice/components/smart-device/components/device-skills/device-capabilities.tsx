@@ -232,7 +232,13 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             const type = getAvailableCapabilities().at(0);
             onCapabilityChange([
               ...capabilities,
-              { type, mqtt: '', parameters: getCapabilityParameters(type), retrievable: true },
+              {
+                type,
+                mqtt: '',
+                parameters: getCapabilityParameters(type),
+                retrievable: true,
+                reportable: true,
+              },
             ]);
           }}
         />

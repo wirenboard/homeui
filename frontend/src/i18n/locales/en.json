@@ -874,6 +874,8 @@
          "split-hint": "Only changes the display in the Yandex Smart Home app. MQTT commands are published as usual.",
          "retrievable": "Allow Alice to request state",
          "retrievable-hint": "Disable for write-only devices (e.g. IR remotes) — Alice won't poll their state.",
+         "reportable": "Send state updates to Alice",
+         "reportable-hint": "Disable to stop pushing this item to Alice. Alice can still request the state if retrievable is on.",
          "capability-options": "Capability options",
          "property-options": "Property options",
          "min": "Min",

@@ -25,10 +25,15 @@ export const CapabilityOptionsButton = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const retrievable = capability.retrievable ?? true;
+  const reportable = capability.reportable ?? true;
   const split = capability.parameters?.split ?? false;
 
   const handleRetrievableChange = (checked: boolean) => {
     onCapabilityChange(updateCapability(capabilities, index, { retrievable: checked }));
+  };
+
+  const handleReportableChange = (checked: boolean) => {
+    onCapabilityChange(updateCapability(capabilities, index, { reportable: checked }));
   };
 
   const handleSplitChange = (checked: boolean) => {
@@ -49,6 +54,17 @@ export const CapabilityOptionsButton = ({
       />
       <div className="aliceDeviceSkills-optionsHint">
         {t('alice.labels.retrievable-hint')}
+      </div>
+
+      <div className="aliceDeviceSkills-optionsDivider" />
+      <Checkbox
+        checked={reportable}
+        title={t('alice.labels.reportable')}
+        ariaLabel={t('alice.labels.reportable')}
+        onChange={handleReportableChange}
+      />
+      <div className="aliceDeviceSkills-optionsHint">
+        {t('alice.labels.reportable-hint')}
       </div>
 
       {showSplit && (
