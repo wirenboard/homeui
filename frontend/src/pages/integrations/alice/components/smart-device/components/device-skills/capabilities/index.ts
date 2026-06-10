@@ -13,4 +13,4 @@ export { ColorSettingCapability } from './color-setting';
 export { ModeCapability } from './mode';
 export { OnOffCapability } from './on-off';
 export { ToggleCapability } from './toggle';
-export { CapabilityOptionsButton, hasCapabilityOptions } from './options-button';
+export { CapabilityOptionsButton } from './options-button';

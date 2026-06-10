@@ -4,12 +4,13 @@ import MoreIcon from '@/assets/icons/more.svg';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Popup } from '@/components/popup';
-import { Capability, type SmartDeviceCapability } from '@/stores/alice';
+import {
+  Capability,
+  countModifiedCapability,
+  getCapabilityDefaults,
+  type SmartDeviceCapability,
+} from '@/stores/alice';
 import { type CapabilitySubProps } from '../types';
-
-// True if the given capability has any settings to show in the popup.
-// Retrievable applies to every capability, so the kebab is shown for all types.
-export const hasCapabilityOptions = (_type: Capability) => true;
 
 const updateCapability = (
   capabilities: SmartDeviceCapability[],
@@ -24,9 +25,12 @@ export const CapabilityOptionsButton = ({
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const retrievable = capability.retrievable ?? true;
-  const reportable = capability.reportable ?? true;
-  const split = capability.parameters?.split ?? false;
+  const defaults = getCapabilityDefaults(capability.type);
+  const retrievable = capability.retrievable ?? defaults.retrievable;
+  const reportable = capability.reportable ?? defaults.reportable;
+  const split = capability.parameters?.split ?? defaults.parameters.split ?? false;
+
+  const modifiedCount = countModifiedCapability(capability);
 
   const handleRetrievableChange = (checked: boolean) => {
     onCapabilityChange(updateCapability(capabilities, index, { retrievable: checked }));
@@ -94,7 +98,14 @@ export const CapabilityOptionsButton = ({
       <Button
         size="small"
         type="button"
-        icon={<MoreIcon />}
+        icon={(
+          <span className="aliceDeviceSkills-optionsIcon">
+            <MoreIcon />
+            {modifiedCount > 0 && (
+              <span className="aliceDeviceSkills-optionsBadge">{modifiedCount}</span>
+            )}
+          </span>
+        )}
         variant="secondary"
         isOutlined
         title={t('alice.labels.capability-options')}

@@ -7,6 +7,7 @@ import { Dropdown, type Option } from '@/components/dropdown';
 import {
   events,
   floats,
+  getPropertyDefaults,
   Property,
   floatUnitsByInstance,
   valueEventsByInstance,
@@ -360,7 +361,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                   if (units.length) params.unit = units[0];
                   onPropertyChange([
                     ...properties,
-                    { type: Property.Float, mqtt: '', parameters: params, retrievable: true, reportable: true },
+                    { type: Property.Float, mqtt: '', parameters: params, ...getPropertyDefaults(Property.Float) },
                   ]);
                 } else if (freeEventInstances.length > 0) {
                   // Add Event property with first available instance
@@ -381,7 +382,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
 
                   onPropertyChange([
                     ...properties,
-                    { type: Property.Event, mqtt: '', parameters: params, reportable: true },
+                    { type: Property.Event, mqtt: '', parameters: params, ...getPropertyDefaults(Property.Event) },
                   ]);
                 }
               }}

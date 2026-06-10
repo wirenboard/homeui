@@ -8,6 +8,7 @@ import {
   Capability,
   Color,
   ColorModel,
+  getCapabilityDefaults,
   type CapabilityParameters,
   type SmartDeviceCapability,
   rangeUnitByInstance,
@@ -23,7 +24,6 @@ import {
   getAvailableToggleInstances,
   getAvailableRangeInstances,
   getAvailableColorModels,
-  hasCapabilityOptions,
   ModeCapability,
   OnOffCapability,
   RangeCapability,
@@ -122,7 +122,6 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
       }
       case Capability['On/Off']: {
         parameters.instance = 'on';
-        parameters.split = false;
         break;
       }
     }
@@ -191,14 +190,12 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
         {renderCapabilityFields(capability, key)}
 
         <div className="aliceDeviceSkills-optionsButton">
-          {hasCapabilityOptions(capability.type) && (
-            <CapabilityOptionsButton
-              capability={capability}
-              index={key}
-              capabilities={capabilities}
-              onCapabilityChange={onCapabilityChange}
-            />
-          )}
+          <CapabilityOptionsButton
+            capability={capability}
+            index={key}
+            capabilities={capabilities}
+            onCapabilityChange={onCapabilityChange}
+          />
         </div>
 
         <div className="aliceDeviceSkills-deleteButton">
@@ -230,14 +227,15 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
           disabled={!getAvailableCapabilities().length}
           onClick={() => {
             const type = getAvailableCapabilities().at(0);
+            const defaults = getCapabilityDefaults(type);
             onCapabilityChange([
               ...capabilities,
               {
                 type,
                 mqtt: '',
-                parameters: getCapabilityParameters(type),
-                retrievable: true,
-                reportable: true,
+                parameters: { ...defaults.parameters, ...getCapabilityParameters(type) },
+                retrievable: defaults.retrievable,
+                reportable: defaults.reportable,
               },
             ]);
           }}

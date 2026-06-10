@@ -16,7 +16,8 @@ import {
   getAliceIntegrationStatus,
   unlinkController,
 } from './api';
-import { Capability, Property } from './constants';
+import { Property } from './constants';
+import { getCapabilityDefaults, getPropertyDefaults } from './defaults';
 import type {
   AddDeviceParams,
   AliceFetchData,
@@ -30,28 +31,32 @@ import type {
   SuccessMessageFetch,
 } from './types';
 
-// Backfill defaults the UI now expects in saved configs
+// Backfill defaults the UI expects in saved configs
 // Old configs may omit these fields — fill them at load so the next Save
-// persists them explicitly; defaults match Yandex Smart Home API defaults
+// persists them explicitly; defaults come from getCapabilityDefaults/getPropertyDefaults
 const normalizeCapability = (cap: SmartDeviceCapability): SmartDeviceCapability => {
-  const out: SmartDeviceCapability = {
+  const defaults = getCapabilityDefaults(cap.type);
+  return {
     ...cap,
-    retrievable: cap.retrievable ?? true,
-    reportable: cap.reportable ?? true,
+    retrievable: cap.retrievable ?? defaults.retrievable,
+    reportable: cap.reportable ?? defaults.reportable,
+    parameters: { ...defaults.parameters, ...cap.parameters },
   };
-  if (out.type === Capability['On/Off']) {
-    out.parameters = { ...out.parameters, split: out.parameters?.split ?? false };
-  }
-  return out;
 };
 
-const normalizeProperty = (prop: SmartDeviceProperty): SmartDeviceProperty => ({
-  ...prop,
-  // Event properties: retrievable forced false, reportable forced true
-  // (see property-options-button.tsx)
-  retrievable: prop.retrievable ?? (prop.type === Property.Event ? false : true),
-  reportable: prop.type === Property.Event ? true : (prop.reportable ?? true),
-});
+const normalizeProperty = (prop: SmartDeviceProperty): SmartDeviceProperty => {
+  const defaults = getPropertyDefaults(prop.type);
+  // Event properties: defaults are forced (locked in UI) — overwrite whatever is
+  // in config so next Save persists correct values and the client stops warning
+  if (prop.type === Property.Event) {
+    return { ...prop, retrievable: defaults.retrievable, reportable: defaults.reportable };
+  }
+  return {
+    ...prop,
+    retrievable: prop.retrievable ?? defaults.retrievable,
+    reportable: prop.reportable ?? defaults.reportable,
+  };
+};
 
 const normalizeDevice = (device: SmartDevice): SmartDevice => ({
   ...device,

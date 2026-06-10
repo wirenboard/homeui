@@ -4,7 +4,11 @@ import MoreIcon from '@/assets/icons/more.svg';
 import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
 import { Popup } from '@/components/popup';
-import { Property } from '@/stores/alice';
+import {
+  countModifiedProperty,
+  getPropertyDefaults,
+  Property,
+} from '@/stores/alice';
 import { type PropertySubProps } from './types';
 
 export const PropertyOptionsButton = ({
@@ -22,8 +26,12 @@ export const PropertyOptionsButton = ({
   //   would make the property useless
   // Unlock retrievable once local state storage is implemented
   const isEvent = property.type === Property.Event;
-  const retrievable = isEvent ? false : (property.retrievable ?? true);
-  const reportable = isEvent ? true : (property.reportable ?? true);
+  const defaults = getPropertyDefaults(property.type);
+  // Event property values are locked to defaults; non-event reads config with fallback
+  const retrievable = isEvent ? defaults.retrievable : (property.retrievable ?? defaults.retrievable);
+  const reportable = isEvent ? defaults.reportable : (property.reportable ?? defaults.reportable);
+
+  const modifiedCount = countModifiedProperty(property);
 
   const handleRetrievableChange = (checked: boolean) => {
     const updated = properties.map((item, i) => (
@@ -80,7 +88,14 @@ export const PropertyOptionsButton = ({
       <Button
         size="small"
         type="button"
-        icon={<MoreIcon />}
+        icon={(
+          <span className="aliceDeviceSkills-optionsIcon">
+            <MoreIcon />
+            {modifiedCount > 0 && (
+              <span className="aliceDeviceSkills-optionsBadge">{modifiedCount}</span>
+            )}
+          </span>
+        )}
         variant="secondary"
         isOutlined
         title={t('alice.labels.property-options')}
