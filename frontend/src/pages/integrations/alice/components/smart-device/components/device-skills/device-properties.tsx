@@ -15,6 +15,7 @@ import {
   unitLabels,
 } from '@/stores/alice';
 import { devicesStore } from '@/stores/devices';
+import { PropertyOptionsButton } from './property-options-button';
 import { type DevicePropertiesProps } from './types';
 
 const floatUnitOptionsForInstance = (instance?: string): Option<string>[] => {
@@ -318,6 +319,15 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                   </div>
                 </>
               )}
+              <div className="aliceDeviceSkills-optionsButton">
+                <PropertyOptionsButton
+                  property={property}
+                  index={key}
+                  properties={properties}
+                  onPropertyChange={onPropertyChange}
+                />
+              </div>
+
               <div className="aliceDeviceSkills-deleteButton">
                 <Button
                   size="small"
@@ -350,7 +360,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                   if (units.length) params.unit = units[0];
                   onPropertyChange([
                     ...properties,
-                    { type: Property.Float, mqtt: '', parameters: params },
+                    { type: Property.Float, mqtt: '', parameters: params, retrievable: true },
                   ]);
                 } else if (freeEventInstances.length > 0) {
                   // Add Event property with first available instance
