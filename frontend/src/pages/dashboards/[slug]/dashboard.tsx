@@ -119,10 +119,12 @@ const DashboardPage = observer(() => {
                 >
                   {widgets.get(widgetId).cells.map((cell, i) => (
                     <Fragment key={cell.id || i}>
+                      {cell.id === 'wb-msw-v4_61/Red LED' && JSON.stringify(cell)}
                       {cells.has(cell.id) ? (
                         <Cell
                           cell={cells.get(cell.id)}
                           name={cell.name}
+                          isReadOnly={cell.readOnly}
                           isCompact={widgets.get(widgetId).compact}
                           extra={cell.extra}
                         />
