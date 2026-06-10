@@ -16,6 +16,7 @@ import {
   getAliceIntegrationStatus,
   unlinkController,
 } from './api';
+import { Capability, Property } from './constants';
 import type {
   AddDeviceParams,
   AliceFetchData,
@@ -24,8 +25,36 @@ import type {
   AliceRoomUpdateParams,
   Room,
   SmartDevice,
+  SmartDeviceCapability,
+  SmartDeviceProperty,
   SuccessMessageFetch,
 } from './types';
+
+// Backfill defaults the UI now expects in saved configs
+// Old configs may omit these fields — fill them at load so the next Save
+// persists them explicitly; defaults match Yandex Smart Home API defaults
+const normalizeCapability = (cap: SmartDeviceCapability): SmartDeviceCapability => {
+  const out: SmartDeviceCapability = {
+    ...cap,
+    retrievable: cap.retrievable ?? true,
+  };
+  if (out.type === Capability['On/Off']) {
+    out.parameters = { ...out.parameters, split: out.parameters?.split ?? false };
+  }
+  return out;
+};
+
+const normalizeProperty = (prop: SmartDeviceProperty): SmartDeviceProperty => ({
+  ...prop,
+  // Event properties are locked off — see property-options-button.tsx
+  retrievable: prop.retrievable ?? (prop.type === Property.Event ? false : true),
+});
+
+const normalizeDevice = (device: SmartDevice): SmartDevice => ({
+  ...device,
+  capabilities: device.capabilities.map(normalizeCapability),
+  properties: device.properties.map(normalizeProperty),
+});
 
 export default class AliceStore {
   public rooms = new Map<string, Room>();
@@ -72,7 +101,9 @@ export default class AliceStore {
 
     return runInAction(() => {
       this.rooms = new Map(Object.entries(data.rooms).map(([id, room]) => [id, room]));
-      this.devices = new Map(Object.entries(data.devices).map(([id, device]) => [id, device]));
+      this.devices = new Map(
+        Object.entries(data.devices).map(([id, device]) => [id, normalizeDevice(device)]),
+      );
       return data;
     });
   }

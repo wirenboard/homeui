@@ -69,6 +69,12 @@
     margin-top: 6px;
 }
 
+.aliceDeviceSkills-optionsDivider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 12px 0;
+}
+
 .aliceDeviceSkills-deleteButton:not(:last-of-type)::after {
     @media (max-width: 768px) {
         content: '';

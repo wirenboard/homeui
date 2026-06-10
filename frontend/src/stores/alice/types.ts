@@ -15,6 +15,7 @@ export interface SmartDeviceProperty {
   type: Property;
   mqtt: string;
   parameters: PropertyParameters;
+  retrievable?: boolean;
 }
 
 export interface ModeMapping {
@@ -44,6 +45,7 @@ export interface SmartDeviceCapability {
   type: Capability;
   mqtt: string;
   parameters: CapabilityParameters;
+  retrievable?: boolean;
 }
 
 export interface SmartDevice {
