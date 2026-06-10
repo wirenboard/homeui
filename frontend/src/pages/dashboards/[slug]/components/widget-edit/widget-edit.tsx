@@ -112,7 +112,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
       isOpened={isOpened}
       heading={widget.id ? `${t('widget.labels.edit')} ${widget.name}` : t('widget.labels.create')}
       closeCallback={onClose}
-      width={650}
+      width={750}
       isDisabled={!isCodeValid || !name || !widgetCells.length}
       acceptLabel={t('widget.buttons.save')}
       headerActions={isJsonView
@@ -206,7 +206,8 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                   <div className="widgetEdit-id">id</div>
                   <div>{t('widget.labels.name')}</div>
                   <div>{t('widget.labels.type')}</div>
-                  {hasInvertedColumn && <div>{t('widget.labels.invert')}</div>}
+                  {hasInvertedColumn && <div className="widgetEdit-invert">{t('widget.labels.invert')}</div>}
+                  <div className="widgetEdit-readonly">{t('widget.labels.readOnly')}</div>
                 </div>
               )}
 
@@ -261,6 +262,14 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                         )}
                       </div>
                     )}
+                    <div className="widgetEdit-readonly">
+                      <Switch
+                        id={`readonly_${cell.id}_${i}`}
+                        value={cell.readOnly}
+                        ariaLabel={t('widget.labels.readOnly')}
+                        onChange={(readOnly) => updateCell(cell.id, { readOnly })}
+                      />
+                    </div>
                     <Button
                       variant="secondary"
                       icon={<TrashIcon className="widgetEdit-iconAction widgetEdit-remove"/>}
