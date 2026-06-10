@@ -599,6 +599,7 @@
          "compact": "Hide labels",
          "warning": "The changes will affect all panels that use this widget:",
          "invert": "Invert",
+         "readOnly": "Read only",
          "add": "Add widget",
          "available": "Available widgets",
          "add-control": "Add control",

@@ -119,7 +119,6 @@ const DashboardPage = observer(() => {
                 >
                   {widgets.get(widgetId).cells.map((cell, i) => (
                     <Fragment key={cell.id || i}>
-                      {cell.id === 'wb-msw-v4_61/Red LED' && JSON.stringify(cell)}
                       {cells.has(cell.id) ? (
                         <Cell
                           cell={cells.get(cell.id)}

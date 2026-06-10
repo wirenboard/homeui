@@ -28,38 +28,39 @@
     grid-gap: 12px 12px;
     align-self: center;
     display: grid;
-    grid-template-columns: 20px 160px 1fr 70px 20px;
+    grid-template-columns: 20px 160px 1fr 70px 60px 20px;
     border: 1px solid var(--border-color);
     border-radius: var(--input-border-radius);
     padding: 6px;
-    grid-template-areas: "sort id control type remove";
+    grid-template-areas: "sort id control type readonly remove";
 
     @media(max-width: 640px) {
         min-width: fit-content;
-        grid-template-columns: 20px 1fr auto 20px;
-        grid-template-areas: "sort control type remove";
+        grid-template-columns: 20px 1fr auto 60px 20px;
+        grid-template-areas: "sort control type readonly remove";
     }
 }
 
 .widgetEdit-editedCellWithInverted {
-    grid-template-columns: 20px 160px 1fr 70px 60px 20px;
-    grid-template-areas: "sort id control type invert remove";
+    grid-template-columns: 20px 160px 1fr 70px 90px 60px 20px;
+    grid-template-areas: "sort id control type invert readonly remove";
 
     @media(max-width: 640px) {
-        grid-template-columns: 20px 1fr 70px 60px 20px;
-        grid-template-areas: "sort control type invert remove";
+        grid-template-columns: 20px 1fr 70px 90px 60px 20px;
+        grid-template-areas: "sort control type invert readonly remove";
     }
 
     @media(max-width: 460px) {
-        grid-template-columns: 20px 1fr 60px 60px 20px;
-        grid-template-areas: "sort control type invert remove";
+        grid-template-columns: 20px 1fr 60px 60px 60px 20px;
+        grid-template-areas: "sort control type invert readonly remove";
     }
 
     @media(max-width: 420px) {
         grid-template-columns: 20px 1fr 40px;
         grid-template-areas:
                 "sort control remove"
-                ". type invert";
+                ". type invert"
+                ". . readonly";
     }
 }
 
@@ -85,6 +86,16 @@
         display: none;
     }
 }
+
+.widgetEdit-invert {
+    word-break: break-all;
+    line-height: 1.2em;
+}
+
+.widgetEdit-readonly {
+    line-height: 1.2em;
+}
+
 
 .widgetEdit-controlName {
     grid-area: control;
@@ -141,6 +152,10 @@
 
 .widgetEdit-invert {
     grid-area: invert;
+}
+
+.widgetEdit-readonly {
+    grid-area: readonly;
 }
 
 .widgetEdit-iconAction {
