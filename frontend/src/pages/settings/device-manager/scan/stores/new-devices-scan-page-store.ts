@@ -7,7 +7,6 @@ import { ModbusAddressSet } from './modbus-addresses-set';
 import { CommonScanStore } from './scan-page-store';
 import { SelectionPolicy } from './types';
 
-
 export class NewDevicesScanPageStore {
   public commonScanStore: CommonScanStore;
   public active: boolean;

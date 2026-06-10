@@ -23,6 +23,8 @@ override_dh_auto_build:
 override_dh_auto_test:
 	dh_auto_test -Dbackend -O--buildsystem=pybuild
 	dh_auto_test -Dfrontend -O--buildsystem=makefile
+	cd frontend && npm run check:types
+	cd frontend && npm run lint
 
 override_dh_auto_install:
 	dh_auto_install -Dbackend --destdir $(CURDIR)/debian/wb-homeui-backend -O--buildsystem=pybuild

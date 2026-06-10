@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.225.2) stable; urgency=medium
+
+  * Update ci
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Wed, 10 Jun 2026 15:11:00 +0300
+
 wb-mqtt-homeui (2.225.1) stable; urgency=medium
 
   * Fix searching for a disconnected device: the found device is now selectable, so its connection settings (e.g. baud rate) can be re-applied
