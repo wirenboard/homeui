@@ -1,60 +1,57 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import MoreIcon from '@/assets/icons/more.svg';
-import { Button } from '@/components/button';
 import { Checkbox } from '@/components/checkbox';
-import { Popup } from '@/components/popup';
 import {
   countModifiedProperty,
   getPropertyDefaults,
   Property,
+  type SmartDeviceProperty,
 } from '@/stores/alice';
+import { OptionsDivider, OptionsItem, OptionsPopup } from './options-popup';
 import { type PropertySubProps } from './types';
+
+// Return a new array with the item at `index` merged with `changes`
+// Used to update a single property immutably
+const updateProperty = (
+  properties: SmartDeviceProperty[],
+  index: number,
+  changes: Partial<SmartDeviceProperty>,
+): SmartDeviceProperty[] =>
+  properties.map((item, i) => (i === index ? { ...item, ...changes } : item));
 
 export const PropertyOptionsButton = ({
   property, index, properties, onPropertyChange,
 }: PropertySubProps) => {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
 
-  // Event property: retrievable locked off, reportable locked on
-  // retrievable: events may span multiple MQTT topics and there is no local
-  //   state cache, so the last known state cannot be returned; client treats
-  //   retrievable=true on events as false with a warning
-  //   (see wb-mqtt-alice device_registry._collect_properties)
-  // reportable: an event only exists as a push update, so disabling reporting
-  //   would make the property useless
-  // Unlock retrievable once local state storage is implemented
+  // Event properties have both options locked: retrievable forced to false and
+  // reportable forced to true. Events may span multiple MQTT topics and we keep
+  // no local state cache, so the last known state cannot be returned to Alice —
+  // and disabling reporting would make the property useless (an event only
+  // exists as a push update). See wb-mqtt-alice device_registry._collect_properties
+  // TODO: unlock retrievable once a local state store is implemented
   const isEvent = property.type === Property.Event;
   const defaults = getPropertyDefaults(property.type);
-  // Event property values are locked to defaults; non-event reads config with fallback
   const retrievable = isEvent ? defaults.retrievable : (property.retrievable ?? defaults.retrievable);
   const reportable = isEvent ? defaults.reportable : (property.reportable ?? defaults.reportable);
 
-  const modifiedCount = countModifiedProperty(property);
-  // Event options are locked to defaults — never marked as modified
-  const itemClass = (modified: boolean) =>
-    `aliceDeviceSkills-optionsItem${modified ? ' is-modified' : ''}`;
+  // A field is "modified" when it is present in config AND differs from the default
+  // Event options are locked to defaults and never count as modified
   const isRetrievableModified = !isEvent && property.retrievable !== undefined && retrievable !== defaults.retrievable;
   const isReportableModified = !isEvent && property.reportable !== undefined && reportable !== defaults.reportable;
 
-  const handleRetrievableChange = (checked: boolean) => {
-    const updated = properties.map((item, i) => (
-      i === index ? { ...item, retrievable: checked } : item
-    ));
-    onPropertyChange(updated);
-  };
+  // Apply a partial change to this property and notify the parent
+  const applyChange = (changes: Partial<SmartDeviceProperty>) =>
+    onPropertyChange(updateProperty(properties, index, changes));
 
-  const handleReportableChange = (checked: boolean) => {
-    const updated = properties.map((item, i) => (
-      i === index ? { ...item, reportable: checked } : item
-    ));
-    onPropertyChange(updated);
-  };
+  const handleRetrievableChange = (checked: boolean) => applyChange({ retrievable: checked });
+  const handleReportableChange = (checked: boolean) => applyChange({ reportable: checked });
 
-  const content = (
-    <div className="aliceDeviceSkills-optionsContent">
-      <div className={itemClass(isRetrievableModified)}>
+  return (
+    <OptionsPopup
+      ariaLabel={t('alice.labels.property-options')}
+      modifiedCount={countModifiedProperty(property)}
+    >
+      <OptionsItem isModified={isRetrievableModified}>
         <Checkbox
           checked={retrievable}
           title={t('alice.labels.retrievable')}
@@ -67,10 +64,10 @@ export const PropertyOptionsButton = ({
             {t('alice.labels.retrievable-hint')}
           </div>
         )}
-      </div>
+      </OptionsItem>
 
-      <div className="aliceDeviceSkills-optionsDivider" />
-      <div className={itemClass(isReportableModified)}>
+      <OptionsDivider />
+      <OptionsItem isModified={isReportableModified}>
         <Checkbox
           checked={reportable}
           title={t('alice.labels.reportable')}
@@ -83,33 +80,7 @@ export const PropertyOptionsButton = ({
             {t('alice.labels.reportable-hint')}
           </div>
         )}
-      </div>
-    </div>
-  );
-
-  return (
-    <Popup
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-      placement="bottom-end"
-      content={content}
-    >
-      <Button
-        size="small"
-        type="button"
-        icon={(
-          <span className="aliceDeviceSkills-optionsIcon">
-            <MoreIcon />
-            {modifiedCount > 0 && (
-              <span className="aliceDeviceSkills-optionsBadge">{modifiedCount}</span>
-            )}
-          </span>
-        )}
-        variant="secondary"
-        isOutlined
-        title={t('alice.labels.property-options')}
-        aria-label={t('alice.labels.property-options')}
-      />
-    </Popup>
+      </OptionsItem>
+    </OptionsPopup>
   );
 };

@@ -2,12 +2,10 @@ import { Capability, Property } from './constants';
 import type { SmartDeviceCapability, SmartDeviceProperty } from './types';
 
 // Single source of truth for capability/property defaults
-// Used by Add buttons, alice-store normalize, options popups, and the
-// "modified" badge counters. Match Yandex Smart Home API defaults
-// (https://yandex.ru/dev/dialogs/smart-home/doc/concepts/capability-types)
-//
-// Change a default here and every place that reads it picks up the new value
-// without manual sync — Add, normalize, render, badge counter
+// Read by Add buttons, alice-store normalize, options popups, and the
+// "modified" badge counter — change a value here and every place updates
+// Defaults match Yandex Smart Home API:
+// https://yandex.ru/dev/dialogs/smart-home/doc/concepts/capability-types
 
 export interface CapabilityDefaults {
   retrievable: boolean;
