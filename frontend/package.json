@@ -33,7 +33,7 @@
     "@floating-ui/react": "0.27.19",
     "@rpldy/uploady": "1.13.0",
     "@uiw/react-codemirror": "4.25.10",
-    "@wirenboard/json-editor": "2.5.3-wb18",
+    "@wirenboard/json-editor": "2.5.3-wb19",
     "@zxcvbn-ts/core": "3.0.4",
     "@zxcvbn-ts/language-common": "3.0.4",
     "axios": "1.16.1",
