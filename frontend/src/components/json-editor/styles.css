@@ -6,3 +6,13 @@
   padding-left: 0;
   padding-right: 0;
 }
+
+
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  .json-editor .well .row,
+  .json-editor .je-object__container .col-md-12,
+  .json-editor .je-object__container .row {
+    overflow-x: hidden;
+  }
+}
+
