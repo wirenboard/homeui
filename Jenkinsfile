@@ -5,4 +5,5 @@ buildDebSbuild defaultTargets: 'bullseye-armhf',
                defaultAngryPylint: true,
                defaultRunCoverage: true,
                defaultCoverageMin: "55",
-               defaultDoCoverallsReporting: true
+               defaultDoCoverallsReporting: true,
+               defaultWbdevImage: 'contactless/devenv:latest_bullseye'
