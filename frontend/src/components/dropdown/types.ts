@@ -23,4 +23,6 @@ export interface DropdownProps<T = string | boolean | number | null> {
   noOptionsMessage?: string;
   multiselect?: boolean;
   isLoading?: boolean;
+  isCreatable?: boolean;
+  formatCreateLabel?: (_inputValue: string) => string;
 }

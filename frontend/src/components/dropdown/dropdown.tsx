@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import {
   createContext,
+  lazy,
+  Suspense,
   useContext,
   useId,
   useRef,
@@ -14,6 +16,8 @@ import Select, { components, type SelectInstance } from 'react-select';
 import PlusIcon from '@/assets/icons/plus.svg';
 import type { DropdownProps, Option } from './types';
 import './styles.css';
+
+const LazyCreatableSelect = lazy(() => import('react-select/creatable'));
 
 const DropdownIndicator = (props: any, isButton: boolean) => (
   <components.DropdownIndicator {...props}>
@@ -114,6 +118,8 @@ export const Dropdown = ({
   isSearchable = false,
   noOptionsMessage,
   isButton,
+  isCreatable,
+  formatCreateLabel,
   minWidth = '150px',
   onChange,
 }: DropdownProps) => {
@@ -157,57 +163,68 @@ export const Dropdown = ({
     return res;
   };
 
+  const selectProps = {
+    ref: select,
+    inputId,
+    className: classNames(getClassNames(className, size), {
+      'dropdown-button': isButton,
+      'dropdown-invalid': isInvalid,
+      'dropdown-m': size === 'default',
+      'dropdown-s': size === 'small',
+    }),
+    classNamePrefix: 'dropdown' as const,
+    options,
+    value: findOption(options, value) ?? null,
+    placeholder: placeholder || '',
+    isDisabled,
+    isSearchable,
+    isLoading,
+    isClearable,
+    isMulti: multiselect,
+    menuPortalTarget: document.body,
+    menuPlacement: 'auto' as const,
+    maxMenuHeight: 240,
+    menuPosition: 'fixed' as const,
+    components: {
+      MenuPortal: (props: any) => MenuPortal({ ...props, className }, size),
+      DropdownIndicator: (props: any) => DropdownIndicator(props, isButton),
+      NoOptionsMessage: (props: any) => NoOptionsMessage(props, noOptionsMessage),
+      Placeholder: (props: any) => Placeholder(props),
+      SingleValue: (props: any) => SingleValue(props),
+    },
+    'aria-label': ariaLabel || placeholder,
+    styles: {
+      control: (baseStyles: any) => ({
+        ...baseStyles,
+        minWidth,
+      }),
+      option: (baseStyles: any, { data }: any) => ({
+        ...baseStyles,
+        display: data?.hidden ? 'none' : baseStyles.display,
+      }),
+    },
+    tabSelectsValue: false,
+    noOptionsMessage: () => t('common.labels.empty-search'),
+    unstyled: true,
+    onMenuOpen: () => setIsMenuOpen(true),
+    onMenuClose: () => setIsMenuOpen(false),
+    onKeyDown: handleKeyDown,
+    onChange: handleChange,
+    ...(isCreatable && {
+      formatCreateLabel: formatCreateLabel ?? ((inputValue: string) => `${t('common.buttons.add')} "${inputValue}"`),
+    }),
+  };
+
   return (
     <SelectRefContext.Provider value={select}>
       <div style={{ display: 'contents' }} onTouchEndCapture={(ev) => ev.stopPropagation()}>
-        <Select
-          ref={select}
-          inputId={inputId}
-          className={classNames(getClassNames(className, size), {
-            'dropdown-button': isButton,
-            'dropdown-invalid': isInvalid,
-            'dropdown-m': size === 'default',
-            'dropdown-s': size === 'small',
-          })}
-          classNamePrefix="dropdown"
-          options={options}
-          value={findOption(options, value)}
-          placeholder={placeholder || ''}
-          isDisabled={isDisabled}
-          isSearchable={isSearchable}
-          isLoading={isLoading}
-          isClearable={isClearable}
-          isMulti={multiselect}
-          menuPortalTarget={document.body}
-          menuPlacement="auto"
-          maxMenuHeight={240}
-          menuPosition="fixed"
-          components={{
-            MenuPortal: (props) => MenuPortal({ ...props, className }, size),
-            DropdownIndicator: (props) => DropdownIndicator(props, isButton),
-            NoOptionsMessage: (props) => NoOptionsMessage(props, noOptionsMessage),
-            Placeholder: (props) => Placeholder(props),
-            SingleValue: (props) => SingleValue(props),
-          }}
-          aria-label={ariaLabel || placeholder}
-          styles={{
-            control: (baseStyles, _state) => ({
-              ...baseStyles,
-              minWidth,
-            }),
-            option: (baseStyles, { data }) => ({
-              ...baseStyles,
-              display: data?.hidden ? 'none' : baseStyles.display,
-            }),
-          }}
-          tabSelectsValue={false}
-          noOptionsMessage={() => t('common.labels.empty-search')}
-          unstyled
-          onMenuOpen={() => setIsMenuOpen(true)}
-          onMenuClose={() => setIsMenuOpen(false)}
-          onKeyDown={handleKeyDown}
-          onChange={handleChange}
-        />
+        {isCreatable ? (
+          <Suspense fallback={null}>
+            <LazyCreatableSelect {...selectProps} />
+          </Suspense>
+        ) : (
+          <Select {...selectProps} />
+        )}
       </div>
     </SelectRefContext.Provider>
   );

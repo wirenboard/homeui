@@ -59,7 +59,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--gray-color);
   display: block;
+}
+
+.dropdown-button .dropdown__placeholder {
+  color: var(--button-color);
 }
 
 .dropdown__single-value {
