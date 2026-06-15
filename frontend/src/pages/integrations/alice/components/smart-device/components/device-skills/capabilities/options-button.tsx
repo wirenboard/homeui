@@ -4,6 +4,7 @@ import {
   Capability,
   countModifiedCapability,
   getCapabilityDefaults,
+  isFieldModified,
   type SmartDeviceCapability,
 } from '@/stores/alice';
 import { OptionsDivider } from '../options-divider';
@@ -25,13 +26,11 @@ export const CapabilityOptionsButton = ({
 
   const showSplit = capability.type === Capability['On/Off'];
 
-  // A field is "modified" when it is present in config AND differs from the default
-  // Used to highlight the row with an accent border in the popup
-  const isRetrievableModified = capability.retrievable !== undefined && retrievable !== defaults.retrievable;
-  const isReportableModified = capability.reportable !== undefined && reportable !== defaults.reportable;
+  // Modified flags drive the accent border on each row in the popup
+  const isRetrievableModified = isFieldModified(capability.retrievable, defaults.retrievable);
+  const isReportableModified = isFieldModified(capability.reportable, defaults.reportable);
   const isSplitModified = showSplit
-    && capability.parameters?.split !== undefined
-    && split !== defaults.parameters.split;
+    && isFieldModified(capability.parameters?.split, defaults.parameters.split);
 
   // Apply a partial change to this capability and notify the parent
   const applyChange = (changes: Partial<SmartDeviceCapability>) =>
@@ -39,8 +38,10 @@ export const CapabilityOptionsButton = ({
 
   const handleRetrievableChange = (checked: boolean) => applyChange({ retrievable: checked });
   const handleReportableChange = (checked: boolean) => applyChange({ reportable: checked });
-  const handleSplitChange = (checked: boolean) =>
-    applyChange({ parameters: { ...capability.parameters, split: checked } });
+  const handleSplitChange = (checked: boolean) => {
+    const newParameters = { ...capability.parameters, split: checked };
+    applyChange({ parameters: newParameters });
+  };
 
   return (
     <OptionsPopup

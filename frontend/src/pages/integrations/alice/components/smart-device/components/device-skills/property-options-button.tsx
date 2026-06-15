@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/checkbox';
 import {
   countModifiedProperty,
   getPropertyDefaults,
+  isFieldModified,
   Property,
   type SmartDeviceProperty,
 } from '@/stores/alice';
@@ -17,21 +18,27 @@ export const PropertyOptionsButton = ({
 }: PropertySubProps) => {
   const { t } = useTranslation();
 
-  // Event properties have both options locked: retrievable forced to false and
-  // reportable forced to true. Events may span multiple MQTT topics and we keep
-  // no local state cache, so the last known state cannot be returned to Alice —
-  // and disabling reporting would make the property useless (an event only
-  // exists as a push update). See wb-mqtt-alice device_registry._collect_properties
+  // Event properties have locked options (retrievable=false, reportable=true)
+  // See wb-mqtt-alice device_registry._collect_properties for the rationale
   // TODO: unlock retrievable once a local state store is implemented
   const isEvent = property.type === Property.Event;
   const defaults = getPropertyDefaults(property.type);
-  const retrievable = isEvent ? defaults.retrievable : (property.retrievable ?? defaults.retrievable);
-  const reportable = isEvent ? defaults.reportable : (property.reportable ?? defaults.reportable);
 
-  // A field is "modified" when it is present in config AND differs from the default
-  // Event options are locked to defaults and never count as modified
-  const isRetrievableModified = !isEvent && property.retrievable !== undefined && retrievable !== defaults.retrievable;
-  const isReportableModified = !isEvent && property.reportable !== undefined && reportable !== defaults.reportable;
+  let retrievable: boolean;
+  let reportable: boolean;
+  if (isEvent) {
+    retrievable = defaults.retrievable;
+    reportable = defaults.reportable;
+  } else {
+    retrievable = property.retrievable ?? defaults.retrievable;
+    reportable = property.reportable ?? defaults.reportable;
+  }
+
+  // Event options never count as modified — they are locked to defaults
+  const isRetrievableModified = !isEvent
+    && isFieldModified(property.retrievable, defaults.retrievable);
+  const isReportableModified = !isEvent
+    && isFieldModified(property.reportable, defaults.reportable);
 
   // Apply a partial change to this property and notify the parent
   const applyChange = (changes: Partial<SmartDeviceProperty>) =>

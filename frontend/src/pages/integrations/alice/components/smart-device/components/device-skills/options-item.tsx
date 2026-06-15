@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { type ReactNode } from 'react';
 
 interface OptionsItemProps {
@@ -8,7 +9,7 @@ interface OptionsItemProps {
 // Single option row inside the popup
 // When `isModified` is true, the row gets an accent border on the left
 export const OptionsItem = ({ isModified, children }: OptionsItemProps) => (
-  <div className={`aliceDeviceSkills-optionsItem${isModified ? ' is-modified' : ''}`}>
+  <div className={classNames('aliceDeviceSkills-optionsItem', { 'is-modified': isModified })}>
     {children}
   </div>
 );
