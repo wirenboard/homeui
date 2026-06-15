@@ -9,8 +9,8 @@ interface OptionsPopupProps {
   children: ReactNode;
 }
 
-// Kebab button + popup container shared by capability and property option popups
-// Counts of modified options are rendered as a badge on the kebab icon
+// Kebab button that opens a popup with the option checkboxes inside
+// `modifiedCount` is rendered as a badge in the top-right corner of the button
 export const OptionsPopup = ({ ariaLabel, modifiedCount, children }: OptionsPopupProps) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -36,20 +36,3 @@ export const OptionsPopup = ({ ariaLabel, modifiedCount, children }: OptionsPopu
     </Popup>
   );
 };
-
-interface OptionsItemProps {
-  isModified: boolean;
-  children: ReactNode;
-}
-
-// Single option row inside the popup; carries the modified accent border
-export const OptionsItem = ({ isModified, children }: OptionsItemProps) => (
-  <div className={`aliceDeviceSkills-optionsItem${isModified ? ' is-modified' : ''}`}>
-    {children}
-  </div>
-);
-
-// Horizontal divider between options
-export const OptionsDivider = () => (
-  <div className="aliceDeviceSkills-optionsDivider" />
-);

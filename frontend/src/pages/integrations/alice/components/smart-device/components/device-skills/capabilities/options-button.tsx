@@ -6,17 +6,11 @@ import {
   getCapabilityDefaults,
   type SmartDeviceCapability,
 } from '@/stores/alice';
-import { OptionsDivider, OptionsItem, OptionsPopup } from '../options-popup';
+import { OptionsDivider } from '../options-divider';
+import { OptionsItem } from '../options-item';
+import { OptionsPopup } from '../options-popup';
 import { type CapabilitySubProps } from '../types';
-
-// Return a new array with the item at `index` merged with `changes`
-// Used to update a single capability immutably
-const updateCapability = (
-  capabilities: SmartDeviceCapability[],
-  index: number,
-  changes: Partial<SmartDeviceCapability>,
-): SmartDeviceCapability[] =>
-  capabilities.map((item, i) => (i === index ? { ...item, ...changes } : item));
+import { updateItem } from '../update-item';
 
 export const CapabilityOptionsButton = ({
   capability, index, capabilities, onCapabilityChange,
@@ -41,7 +35,7 @@ export const CapabilityOptionsButton = ({
 
   // Apply a partial change to this capability and notify the parent
   const applyChange = (changes: Partial<SmartDeviceCapability>) =>
-    onCapabilityChange(updateCapability(capabilities, index, changes));
+    onCapabilityChange(updateItem(capabilities, index, changes));
 
   const handleRetrievableChange = (checked: boolean) => applyChange({ retrievable: checked });
   const handleReportableChange = (checked: boolean) => applyChange({ reportable: checked });

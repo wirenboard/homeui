@@ -6,17 +6,11 @@ import {
   Property,
   type SmartDeviceProperty,
 } from '@/stores/alice';
-import { OptionsDivider, OptionsItem, OptionsPopup } from './options-popup';
+import { OptionsDivider } from './options-divider';
+import { OptionsItem } from './options-item';
+import { OptionsPopup } from './options-popup';
 import { type PropertySubProps } from './types';
-
-// Return a new array with the item at `index` merged with `changes`
-// Used to update a single property immutably
-const updateProperty = (
-  properties: SmartDeviceProperty[],
-  index: number,
-  changes: Partial<SmartDeviceProperty>,
-): SmartDeviceProperty[] =>
-  properties.map((item, i) => (i === index ? { ...item, ...changes } : item));
+import { updateItem } from './update-item';
 
 export const PropertyOptionsButton = ({
   property, index, properties, onPropertyChange,
@@ -41,7 +35,7 @@ export const PropertyOptionsButton = ({
 
   // Apply a partial change to this property and notify the parent
   const applyChange = (changes: Partial<SmartDeviceProperty>) =>
-    onPropertyChange(updateProperty(properties, index, changes));
+    onPropertyChange(updateItem(properties, index, changes));
 
   const handleRetrievableChange = (checked: boolean) => applyChange({ retrievable: checked });
   const handleReportableChange = (checked: boolean) => applyChange({ reportable: checked });
