@@ -20,22 +20,19 @@ export const OptionsPopup = ({ ariaLabel, modifiedCount, children }: OptionsPopu
       placement="bottom-end"
       content={<div className="aliceDeviceSkills-optionsContent">{children}</div>}
     >
-      <Button
-        size="small"
-        type="button"
-        icon={(
-          <span className="aliceDeviceSkills-optionsIcon">
-            <MoreIcon />
-            {modifiedCount > 0 && (
-              <span className="aliceDeviceSkills-optionsBadge">{modifiedCount}</span>
-            )}
-          </span>
+      <span className="aliceDeviceSkills-optionsButtonWrapper">
+        <Button
+          size="small"
+          type="button"
+          icon={<MoreIcon />}
+          variant="secondary"
+          title={ariaLabel}
+          aria-label={ariaLabel}
+        />
+        {modifiedCount > 0 && (
+          <span className="aliceDeviceSkills-optionsBadge">{modifiedCount}</span>
         )}
-        variant="secondary"
-        isOutlined
-        title={ariaLabel}
-        aria-label={ariaLabel}
-      />
+      </span>
     </Popup>
   );
 };

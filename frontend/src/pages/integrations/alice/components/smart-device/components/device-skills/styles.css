@@ -11,7 +11,7 @@
 
 .aliceDeviceSkills-grid {
     display: grid;
-    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) 22px 22px;
+    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) auto auto;
     gap: 3px 12px;
     margin-bottom: 6px;
 
@@ -68,26 +68,29 @@
     cursor: not-allowed;
 }
 
-.aliceDeviceSkills-optionsIcon {
+.aliceDeviceSkills-optionsButtonWrapper {
     position: relative;
     display: inline-flex;
+    isolation: isolate;
 }
 
 .aliceDeviceSkills-optionsBadge {
     position: absolute;
-    top: -5px;
-    right: -7px;
-    min-width: 14px;
-    height: 14px;
-    padding: 0 3px;
-    border-radius: 7px;
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
     background: var(--primary-color);
     color: var(--button-color);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
-    line-height: 14px;
+    line-height: 16px;
     text-align: center;
     pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 0 0 2px var(--background-color);
 }
 
 .aliceDeviceSkills-optionsHint {
