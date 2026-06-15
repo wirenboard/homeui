@@ -7,11 +7,8 @@ import {
   Property,
   type SmartDeviceProperty,
 } from '@/stores/alice';
-import { OptionsDivider } from './options-divider';
-import { OptionsItem } from './options-item';
-import { OptionsPopup } from './options-popup';
-import { type PropertySubProps } from './types';
-import { updateItem } from './update-item';
+import { OptionsDivider, OptionsItem, OptionsPopup, updateItem } from '../options';
+import { type PropertySubProps } from '../types';
 
 export const PropertyOptionsButton = ({
   property, index, properties, onPropertyChange,

@@ -1,0 +1,55 @@
+.aliceDeviceSkills-optionsContent {
+    max-width: 280px;
+}
+
+.aliceDeviceSkills-optionsContent .wb-checkbox:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.aliceDeviceSkills-optionsButtonWrapper {
+    position: relative;
+    display: inline-flex;
+    isolation: isolate;
+}
+
+.aliceDeviceSkills-optionsBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: var(--button-color);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 0 0 2px var(--background-color);
+}
+
+.aliceDeviceSkills-optionsHint {
+    font-size: var(--font-size-small);
+    opacity: 0.7;
+    margin-top: 6px;
+}
+
+.aliceDeviceSkills-optionsItem {
+    padding-left: 12px;
+    border-left: 2px solid transparent;
+    margin-left: -12px;
+}
+
+.aliceDeviceSkills-optionsItem.is-modified {
+    border-color: var(--primary-color);
+}
+
+.aliceDeviceSkills-optionsDivider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 12px -12px;
+}
