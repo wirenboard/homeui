@@ -60,6 +60,7 @@ export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: Sma
         await updateDevice(id, payload);
         await fetchData();
       }
+      setSaveError('');
       setIsEditingTitle(false);
     } catch (err) {
       setSaveError(err.response.data.detail);
@@ -150,7 +151,16 @@ export const SmartDevice = observer(({ id, onSave, onDelete, onOpenDevice }: Sma
           />
         </form>
 
-        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+        {!!saveError && (
+          <Alert
+            className="alice-saveAlert"
+            variant="danger"
+            size="small"
+            onClose={() => setSaveError('')}
+          >
+            {saveError}
+          </Alert>
+        )}
 
         <div>
           <label className="aliceSmartDevice-label">

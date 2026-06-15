@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.225.5) stable; urgency=medium
+
+  * Fix alice errors on save
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Jun 2026 16:53:00 +0300
+
 wb-mqtt-homeui (2.225.4) stable; urgency=medium
 
   * Fix edit with dropdown
