@@ -138,7 +138,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
   const renderCapabilityFields = (capability: SmartDeviceCapability, key: number) => {
     const subProps: CapabilitySubProps = { capability, index: key, capabilities, onCapabilityChange };
     switch (capability.type) {
-      case Capability['On/Off']: return <OnOffCapability {...subProps} />;
+      case Capability['On/Off']: return <OnOffCapability />;
       case Capability['Color setting']: return <ColorSettingCapability {...subProps} />;
       case Capability.Mode: return <ModeCapability {...subProps} />;
       case Capability.Range: return <RangeCapability {...subProps} />;

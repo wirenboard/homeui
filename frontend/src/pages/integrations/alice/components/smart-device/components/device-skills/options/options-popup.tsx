@@ -16,9 +16,9 @@ export const OptionsPopup = ({ ariaLabel, modifiedCount, children }: OptionsPopu
   return (
     <Popup
       isOpen={isOpen}
-      onOpenChange={setIsOpen}
       placement="bottom-end"
       content={<div className="aliceDeviceSkills-optionsContent">{children}</div>}
+      onOpenChange={setIsOpen}
     >
       <span className="aliceDeviceSkills-optionsButtonWrapper">
         <Button
