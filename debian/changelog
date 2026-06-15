@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.225.3) stable; urgency=medium
+
+  * Fix json-editor's default enum translations
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Jun 2026 12:39:00 +0300
+
 wb-mqtt-homeui (2.225.2) stable; urgency=medium
 
   * Update ci
