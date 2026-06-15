@@ -10,6 +10,24 @@ export function makeAutocompleteEditor(devices) {
       this.control.style.minWidth = '180px';
       this.container.appendChild(this.control);
 
+      if (!this.options.compact) {
+        this.label = this.theme.getFormInputLabel(this.getTitle(), this.isRequired());
+      }
+
+      this.control = document.createElement('div');
+      this.control.style.minWidth = '180px';
+
+      const formControl = this.theme.getFormControl(this.label, this.control);
+      this.container.appendChild(formControl);
+
+      if (this.schema.description) {
+        this.container.appendChild(
+          this.theme.getFormInputDescription(this.translateProperty(this.schema.description)),
+        );
+      }
+
+      this.control.controlgroup = formControl;
+
       this.render();
     }
 
