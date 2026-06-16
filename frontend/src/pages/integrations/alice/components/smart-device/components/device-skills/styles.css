@@ -22,19 +22,12 @@
 }
 
 .aliceDeviceSkills-gridLabel {
+    display: block;
     color: var(--text-color);
     font-size: var(--font-size-small);
     height: 18px;
-}
-
-.aliceDeviceSkills-grid div:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) .aliceDeviceSkills-gridHiddenLabel {
-    visibility: hidden;
-}
-
-.aliceDeviceSkills-grid div:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) .aliceDeviceSkills-gridHiddenLabel {
-    @media (max-width: 768px) {
-        visibility: visible;
-    }
+    /* override the global `label { margin-bottom: 5px }` rule so <label> and <div> match */
+    margin-bottom: 0;
 }
 
 .aliceDeviceSkills-colspan2 {
@@ -52,7 +45,8 @@
 
 .aliceDeviceSkills-deleteButton,
 .aliceDeviceSkills-optionsButton {
-    margin-top: 24px;
+    /* offset by gridLabel height so buttons line up with the dropdown next to them */
+    margin-top: 18px;
 
     @media (max-width: 768px) {
         margin-top: 4px;

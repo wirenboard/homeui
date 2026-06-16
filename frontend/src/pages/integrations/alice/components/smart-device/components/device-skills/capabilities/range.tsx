@@ -40,6 +40,7 @@ export const RangeCapability = ({
       <div>
         <label className="aliceDeviceSkills-gridLabel" htmlFor={modeId}>{t('alice.labels.mode')}</label>
         <Dropdown
+          size="small"
           id={modeId}
           value={capability.parameters?.instance}
           options={getRangeInstanceOptions(capability, index)}
@@ -78,6 +79,7 @@ export const RangeCapability = ({
               <div>
                 <label className="aliceDeviceSkills-gridLabel" htmlFor={minId}>{t('alice.labels.min')}</label>
                 <Input
+                  size="small"
                   id={minId}
                   value={lockedMin}
                   type="number"
@@ -98,6 +100,7 @@ export const RangeCapability = ({
               <div>
                 <label className="aliceDeviceSkills-gridLabel" htmlFor={maxId}>{t('alice.labels.max')}</label>
                 <Input
+                  size="small"
                   id={maxId}
                   value={lockedMax}
                   type="number"
@@ -120,6 +123,7 @@ export const RangeCapability = ({
                   {t('alice.labels.precision')}
                 </label>
                 <Input
+                  size="small"
                   id={precisionId}
                   value={capability.parameters?.range.precision}
                   type="number"

@@ -30,10 +30,7 @@ const eventValueOptionsForInstance = (instance?: string): Option<string>[] => {
 };
 
 // Returns float instances that are unused or belong to current property
-const getAvailableFloatInstances = (
-  properties: any[],
-  currentPropertyIndex?: number,
-) => {
+const getAvailableFloatInstances = (properties: any[], currentPropertyIndex?: number) => {
   const usedInstances = new Set(
     properties
       .filter((property) => property.type === Property.Float)
@@ -43,11 +40,9 @@ const getAvailableFloatInstances = (
   const currentInstance = typeof currentPropertyIndex === 'number'
     ? properties[currentPropertyIndex]?.parameters?.instance
     : undefined;
-
   return floats.filter((instance) => {
     const isUnused = !usedInstances.has(instance);
     const isCurrentSelection = instance === currentInstance;
-
     return isUnused || isCurrentSelection;
   });
 };
@@ -225,6 +220,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                   {t('alice.labels.property')}
                 </div>
                 <Dropdown
+                  size="small"
                   value={property.type}
                   options={Object.keys(Property).map((prop) => ({ label: prop, value: Property[prop] }))}
                   onChange={(option: Option<Property>) => onPropertyTypeChange(option.value, key)}
@@ -235,6 +231,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                   {t('alice.labels.topic')}
                 </div>
                 <Dropdown
+                  size="small"
                   className="aliceDeviceSkills-dropdown"
                   value={property.mqtt}
                   placeholder={devicesStore.topics.flatMap((g) => g.options)
@@ -254,6 +251,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                       {t('alice.labels.property-settings')}
                     </div>
                     <Dropdown
+                      size="small"
                       value={property.parameters?.instance}
                       options={getFloatInstanceOptions(property, key)}
                       onChange={({ value: instance }: Option<string>) =>
@@ -262,9 +260,12 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                     />
                   </div>
                   <div>
-                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel"></div>
+                    <div className="aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel">
+                      {t('alice.labels.property-unit')}
+                    </div>
                     {floatUnitOptionsForInstance(property.parameters?.instance).length ? (
                       <Dropdown
+                        size="small"
                         value={property.parameters?.unit}
                         options={floatUnitOptionsForInstance(property.parameters?.instance)}
                         onChange={({ value: unit }: Option<string>) => {
@@ -290,6 +291,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                       {t('alice.labels.property-settings')}
                     </div>
                     <Dropdown
+                      size="small"
                       value={property.parameters?.instance}
                       options={events.map((event) => ({ label: event, value: event }))}
                       onChange={({ value: instance }: Option<string>) =>
@@ -303,6 +305,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
                     </div>
                     {getEventValueOptions(property.parameters?.instance, key).length ? (
                       <Dropdown
+                        size="small"
                         value={property.parameters?.value}
                         options={getEventValueOptions(property.parameters?.instance, key)}
                         onChange={({ value }: Option<string>) => {

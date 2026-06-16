@@ -857,6 +857,7 @@
          "color-scenes": "Color scenes",
          "property": "Property",
          "property-settings": "Property settings",
+         "property-unit": "Unit of measurement",
          "property-capability": "Capability/Property",
          "topic": "MQTT topic",
          "scenes-input": "Scenes (comma separated)",

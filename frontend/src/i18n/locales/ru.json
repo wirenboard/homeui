@@ -886,6 +886,7 @@
          "color-scenes": "Цветовые сцены",
          "property": "Свойство",
          "property-settings": "Настройки свойства",
+         "property-unit": "Единица измерения",
          "property-capability": "Умение/свойство",
          "topic": "MQTT топик",
          "scenes-input": "Сцены (через запятую)",

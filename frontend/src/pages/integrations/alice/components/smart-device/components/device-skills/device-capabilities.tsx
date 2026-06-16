@@ -157,6 +157,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             {t('alice.labels.capability')}
           </label>
           <Dropdown
+            size="small"
             id={capabilityId}
             value={capability.type}
             options={Object.keys(Capability).map((cap) => ({
@@ -172,6 +173,7 @@ export const DeviceCapabilities = observer(({ capabilities, onCapabilityChange }
             {t('alice.labels.topic')}
           </label>
           <Dropdown
+            size="small"
             id={topicId}
             className="aliceDeviceSkills-dropdown"
             value={capability.mqtt}
