@@ -61,6 +61,7 @@ interface WidgetCell {
   id: string;
   name: string;
   type?: string;
+  readOnly?: boolean;
   extra: {
     invert?: boolean;
   };
