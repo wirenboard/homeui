@@ -5,8 +5,14 @@
 }
 
 .aliceDeviceSkills-title {
-    margin: 10px 0;
+    margin: 24px 0 10px;
     font-size: var(--font-size-medium);
+    font-weight: 600;
+}
+
+/* Visually mark the trash icon as a destructive action without changing button variant */
+.aliceDeviceSkills-deleteButton svg {
+    color: var(--danger-color, #d9534f);
 }
 
 .aliceDeviceSkills-grid {
@@ -22,7 +28,8 @@
 }
 
 .aliceDeviceSkills-gridLabel {
-    display: block;
+    display: flex;
+    align-items: center;
     color: var(--text-color);
     font-size: var(--font-size-small);
     line-height: 18px;
