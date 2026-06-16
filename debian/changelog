@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.225.6) stable; urgency=medium
+
+  * Fix DALI colour temperature slider to follow the device's current Coolest/Warmest limits live.
+    The slider steps in 100 K.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Jun 2026 20:19:10 +0500
+
 wb-mqtt-homeui (2.225.5) stable; urgency=medium
 
   * Fix rule prevent leave on save
