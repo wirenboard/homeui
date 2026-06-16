@@ -15,6 +15,12 @@
     color: var(--danger-color, #d9534f);
 }
 
+/* Match the small-dropdown height (28px) so toolbar buttons line up with field bottoms */
+.aliceDeviceSkills-deleteButton button,
+.aliceDeviceSkills-optionsButton button {
+    height: 28px;
+}
+
 .aliceDeviceSkills-grid {
     display: grid;
     grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) auto auto;
