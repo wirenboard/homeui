@@ -3,6 +3,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
 import { ReactSortable } from 'react-sortablejs';
 import FileCodeIcon from '@/assets/icons/file-code.svg';
 import FilelistIcon from '@/assets/icons/file-list.svg';
@@ -12,6 +13,7 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Confirm } from '@/components/confirm';
 import { Dropdown, type Option } from '@/components/dropdown';
+import { BooleanField } from '@/components/form';
 import { Input } from '@/components/input';
 import { Switch } from '@/components/switch';
 import { Textarea } from '@/components/textarea';
@@ -21,6 +23,7 @@ import './styles.css';
 
 export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }: WidgetEditProps) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery({ maxWidth: 420 });
   const [widgetCells, setWidgetCells] = useState<(CellSimple)[]>([]);
   const [isJsonView, setIsJsonView] = useState(false);
   const [name, setName] = useState(widget?.name);
@@ -112,7 +115,7 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
       isOpened={isOpened}
       heading={widget.id ? `${t('widget.labels.edit')} ${widget.name}` : t('widget.labels.create')}
       closeCallback={onClose}
-      width={650}
+      width={750}
       isDisabled={!isCodeValid || !name || !widgetCells.length}
       acceptLabel={t('widget.buttons.save')}
       headerActions={isJsonView
@@ -206,7 +209,8 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                   <div className="widgetEdit-id">id</div>
                   <div>{t('widget.labels.name')}</div>
                   <div>{t('widget.labels.type')}</div>
-                  {hasInvertedColumn && <div>{t('widget.labels.invert')}</div>}
+                  {hasInvertedColumn && <div className="widgetEdit-invert">{t('widget.labels.invert')}</div>}
+                  <div className="widgetEdit-readonly">{t('widget.labels.readOnly')}</div>
                 </div>
               )}
 
@@ -233,11 +237,13 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                     })}
                     tabIndex={0}
                   >
-                    <div className="widgetEdit-sort">
-                      {widgetCells.length > 1 && (
-                        <MoveIcon className="widgetEdit-sortHandle widgetEdit-iconAction" />
-                      )}
-                    </div>
+                    {!isMobile && (
+                      <div className="widgetEdit-sort">
+                        {widgetCells.length > 1 && (
+                          <MoveIcon className="widgetEdit-sortHandle widgetEdit-iconAction" />
+                        )}
+                      </div>
+                    )}
                     <div className="widgetEdit-id">{cell.id}</div>
                     <Input
                       className="widgetEdit-controlName"
@@ -252,15 +258,21 @@ export const WidgetEdit = ({ widget, cells, topics, isOpened, onSave, onClose }:
                     {hasInvertedColumn && (
                       <div className="widgetEdit-invert">
                         {cell.type === 'switch' && (
-                          <Switch
-                            id={`inverted_${cell.id}_${i}`}
+                          <BooleanField
                             value={cell.extra?.invert}
-                            ariaLabel={t('widget.labels.invert')}
+                            title={isMobile && t('widget.labels.invert')}
                             onChange={(invert) => updateCell(cell.id, { extra: { invert } })}
                           />
                         )}
                       </div>
                     )}
+                    <div className="widgetEdit-readonly">
+                      <BooleanField
+                        value={cell.readOnly}
+                        title={isMobile && t('widget.labels.readOnly')}
+                        onChange={(readOnly) => updateCell(cell.id, { readOnly })}
+                      />
+                    </div>
                     <Button
                       variant="secondary"
                       icon={<TrashIcon className="widgetEdit-iconAction widgetEdit-remove"/>}

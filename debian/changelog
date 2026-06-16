@@ -1,8 +1,20 @@
-wb-mqtt-homeui (2.225.7) stable; urgency=medium
+wb-mqtt-homeui (2.226.1) stable; urgency=medium
 
   * Fix json-editor horizontal tabs
 
- -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 13:55:00 +0300
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 15:11:00 +0300
+
+wb-mqtt-homeui (2.226.0) stable; urgency=medium
+
+  * Add posibility to disable widget cell
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 14:54:00 +0300
+
+wb-mqtt-homeui (2.225.7) stable; urgency=medium
+
+  * Fix alice errors on save
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 14:46:00 +0300
 
 wb-mqtt-homeui (2.225.6) stable; urgency=medium
 

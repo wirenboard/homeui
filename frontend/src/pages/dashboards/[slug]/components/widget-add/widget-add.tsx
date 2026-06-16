@@ -160,6 +160,7 @@ export const WidgetAdd = observer(({
                           <Cell
                             cell={cells.get(cell.id)}
                             name={cell.name}
+                            isReadOnly={cell.readOnly}
                             isCompact={widgets.get(widgetId).compact}
                             extra={cell.extra}
                           />

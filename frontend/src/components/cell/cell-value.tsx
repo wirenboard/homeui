@@ -12,7 +12,7 @@ import { CellHistory } from './cell-history';
 import { type CellValueProps } from './types';
 import './styles.css';
 
-export const CellValue = observer(({ cell, hideHistory }: CellValueProps) => {
+export const CellValue = observer(({ cell, isReadOnly, hideHistory }: CellValueProps) => {
   const { t } = useTranslation();
   const [capturedValue, setCapturedValue] = useState<string>(null);
   const [minimumFractionDigits, setMinimumFractionDigits] = useState(0);
@@ -50,7 +50,7 @@ export const CellValue = observer(({ cell, hideHistory }: CellValueProps) => {
 
   return (
     <>
-      {cell.valueType === 'number' && !cell.readOnly && (
+      {cell.valueType === 'number' && !(cell.readOnly || isReadOnly) && (
         cell.isEnum ? (
           <div className="deviceCell-withSelect">
             {!hideHistory && <CellHistory cell={cell} />}
@@ -73,7 +73,7 @@ export const CellValue = observer(({ cell, hideHistory }: CellValueProps) => {
               isInvalid={!!cell.error}
               className="deviceCell-text"
               value={cell.value as number}
-              isDisabled={cell.readOnly}
+              isDisabled={cell.readOnly || isReadOnly}
               min={cell.min}
               max={cell.max}
               step={cell.step}

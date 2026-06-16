@@ -9,7 +9,7 @@ import { CellHistory } from './cell-history';
 import { type CellTextProps } from './types';
 import './styles.css';
 
-export const CellText = observer(({ cell, isCompact, hideHistory }: CellTextProps) => {
+export const CellText = observer(({ cell, isCompact, isReadOnly, hideHistory }: CellTextProps) => {
   const { t } = useTranslation();
 
   return (
@@ -46,7 +46,7 @@ export const CellText = observer(({ cell, isCompact, hideHistory }: CellTextProp
         <Input
           id={cell.id}
           value={cell.value as string}
-          isDisabled={cell.readOnly}
+          isDisabled={cell.readOnly || isReadOnly}
           isInvalid={!!cell.error}
           size="small"
           ariaLabel={cell.name}
