@@ -129,6 +129,7 @@ const DefaultEditorBuilder = (props: EditorBuilderFunctionProps) => {
         <Suspense>
           <DaliColorTemperatureSliderEditor
             store={props.store as NumberStore}
+            rootStore={props.rootStore}
             inputId={props.inputId}
           />
         </Suspense>
