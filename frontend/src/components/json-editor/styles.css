@@ -170,7 +170,11 @@
   display: flex;
   border: 1px solid var(--border-color);
   border-radius: var(--input-border-radius);
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
   height: fit-content;
+  margin-bottom: 4px;
 
   @media (max-width: 991px) {
     width: 100%;
@@ -180,6 +184,7 @@
 .json-editor ul.nav-tabs.nav-stacked,
 .json-editor ul.nav-pills.nav-stacked {
   flex-direction: column;
+  border: 1px solid var(--border-color) !important;
 }
 
 .json-editor .nav li {
@@ -212,11 +217,35 @@
 }
 
 .json-editor .nav:not(.nav-stacked) li {
+  border-bottom: 0;
   border-right: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.json-editor .nav:not(.nav-stacked) li:first-child {
+  border-radius: var(--input-border-radius) 0 0 0;
+  border-left: 1px solid var(--border-color);
+}
+
+.json-editor .nav:not(.nav-stacked) li:last-child {
+  border-radius: 0 var(--input-border-radius) 0 0;
 }
 
 .json-editor .nav:not(.nav-stacked) li:has(a[aria-selected="true"]) {
-  box-shadow: inset 0 6px 0 var(--primary-color);
+  position: relative;
+  background: var(--button-color);
+  font-weight: bold;
+}
+
+.json-editor .nav:not(.nav-stacked) li:has(a[aria-selected="true"])::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--primary-color);
 }
 
 .json-editor .je-modal {
