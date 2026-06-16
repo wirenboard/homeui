@@ -61,6 +61,7 @@ const EditRulePage = observer(() => {
     }
     const savedRuleName = await rulesStore.save(rule);
 
+    setIsDirty(false);
     if (!params.id) {
       return navigate(`/rules/edit/${savedRuleName}`, { replace: true });
     } else if (initRuleName !== rule.name) {
@@ -68,7 +69,6 @@ const EditRulePage = observer(() => {
       return navigate(`/rules/edit/${path}`, { replace: true });
     }
     setIsEditingTitle(false);
-    setIsDirty(false);
   });
 
   return (

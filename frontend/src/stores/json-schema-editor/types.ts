@@ -9,6 +9,13 @@ export interface WbDaliTcEditorOptions {
   minimum?: number;
   maximum?: number;
 
+  // Dotted paths (from the device root store) to the parameters that bound this
+  // slider live, e.g. 'tc_limits.tc_coolest'. When set and resolving to a usable
+  // value, that value overrides the static minimum/maximum; otherwise the static
+  // bound is used.
+  min_limit?: string;
+  max_limit?: string;
+
   // Affects MASK label.
   // In 'value' mode, MASK means "do not change", in 'limit' mode, MASK means "no limit"
   // Default is 'value'
