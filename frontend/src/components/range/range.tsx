@@ -4,7 +4,7 @@ import { type RangeProps } from './types';
 import './styles.css';
 
 export const Range = ({
-  value, id, isDisabled, min, max, step, units, formatLabel, isInvalid, onChange, ariaLabel,
+  value, id, isDisabled, min, max, step, units, formatLabel, isInvalid, onChange, onLiveChange, ariaLabel,
   labelPosition = 'bottom',
 }: RangeProps) => {
   const [proxyValue, setProxyValue] = useState(0);
@@ -65,7 +65,9 @@ export const Range = ({
         aria-label={ariaLabel}
         onKeyUp={() => onChange(proxyValue)}
         onInput={(ev: InputEvent<HTMLInputElement>) => {
-          setProxyValue(ev.currentTarget.valueAsNumber);
+          const next = ev.currentTarget.valueAsNumber;
+          setProxyValue(next);
+          onLiveChange?.(next);
         }}
         onTouchEnd={() => {
           input.current.focus();

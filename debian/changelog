@@ -1,8 +1,23 @@
+<<<<<<< bugfix/alice-errors
 wb-mqtt-homeui (2.225.5) stable; urgency=medium
 
   * Fix alice errors on save
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Jun 2026 16:53:00 +0300
+=======
+wb-mqtt-homeui (2.225.6) stable; urgency=medium
+
+  * Fix DALI colour temperature slider to follow the device's current Coolest/Warmest limits live.
+    The slider steps in 100 K.
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 15 Jun 2026 20:19:10 +0500
+
+wb-mqtt-homeui (2.225.5) stable; urgency=medium
+
+  * Fix rule prevent leave on save
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 15 Jun 2026 18:02:00 +0300
+>>>>>>> master
 
 wb-mqtt-homeui (2.225.4) stable; urgency=medium
 
