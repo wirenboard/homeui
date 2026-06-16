@@ -168,13 +168,9 @@
 .json-editor ul.nav-tabs,
 .json-editor ul.nav-pills {
   display: flex;
-  border: 1px solid var(--border-color);
   border-radius: var(--input-border-radius);
-  border-top: 0;
-  border-right: 0;
-  border-left: 0;
   height: fit-content;
-  margin-bottom: 4px;
+  margin-bottom: -1px;
 
   @media (max-width: 991px) {
     width: 100%;
@@ -184,6 +180,7 @@
 .json-editor ul.nav-tabs.nav-stacked,
 .json-editor ul.nav-pills.nav-stacked {
   flex-direction: column;
+  margin-bottom: unset;
   border: 1px solid var(--border-color) !important;
 }
 
@@ -217,9 +214,9 @@
 }
 
 .json-editor .nav:not(.nav-stacked) li {
-  border-bottom: 0;
   border-right: 1px solid var(--border-color);
   border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   overflow: hidden;
 }
 
