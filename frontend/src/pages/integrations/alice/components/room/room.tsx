@@ -80,6 +80,7 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
         await updateRoom(id, { name: roomName, devices: deviceList.map((device) => device.id) });
         setIsEditingTitle(false);
       }
+      setSaveError('');
     } catch (err) {
       setSaveError(err.response.data.detail);
     }
@@ -157,7 +158,16 @@ export const Room = observer(({ id, onOpenDevice, onSave, onDelete }: RoomProps)
           )}
         </form>
 
-        {!!saveError && <Alert className="alice-saveAlert" variant="danger" size="small">{saveError}</Alert>}
+        {!!saveError && (
+          <Alert
+            className="alice-saveAlert"
+            variant="danger"
+            size="small"
+            onClose={() => setSaveError(null)}
+          >
+            {saveError}
+          </Alert>
+        )}
 
         <Table isWithoutGap isFullWidth>
           <TableRow isHeading>
