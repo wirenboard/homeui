@@ -1,6 +1,6 @@
 wb-mqtt-homeui (2.226.0) stable; urgency=medium
 
-  * Fix widget cell readOnly state
+  * Add posibility to disable widget cell
 
  -- Victor Vedenin <victor.vedenin@wirenboard.com>  Tue, 16 Jun 2026 14:54:00 +0300
 
