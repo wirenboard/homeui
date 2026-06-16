@@ -216,7 +216,7 @@ export const DeviceProperties = observer(({ properties, onPropertyChange }: Devi
         <div className="aliceDeviceSkills-grid">
           {properties.map((property, key) => {
             const id = (s: string) => `${idPrefix}-${s}-${key}`;
-            const labelCls = 'aliceDeviceSkills-gridLabel aliceDeviceSkills-gridHiddenLabel';
+            const labelCls = 'aliceDeviceSkills-gridLabel';
             return (
               <Fragment key={key}>
                 <div>

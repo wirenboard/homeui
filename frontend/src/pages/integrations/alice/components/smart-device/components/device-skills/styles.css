@@ -25,7 +25,10 @@
     display: block;
     color: var(--text-color);
     font-size: var(--font-size-small);
-    height: 18px;
+    line-height: 18px;
+    /* reserve room for up to 2 lines so labels that wrap on narrow screens
+       (e.g. "Цветовая модель") don't push their dropdown below the row */
+    min-height: 36px;
     /* override the global `label { margin-bottom: 5px }` rule so <label> and <div> match */
     margin-bottom: 0;
 }
@@ -45,8 +48,8 @@
 
 .aliceDeviceSkills-deleteButton,
 .aliceDeviceSkills-optionsButton {
-    /* offset by gridLabel height so buttons line up with the dropdown next to them */
-    margin-top: 18px;
+    /* same offset as gridLabel min-height so buttons line up with the dropdown next to them */
+    margin-top: 36px;
 
     @media (max-width: 768px) {
         margin-top: 4px;
