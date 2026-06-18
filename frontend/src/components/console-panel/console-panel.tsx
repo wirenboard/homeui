@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import ChevronRightDoubleIcon from '@/assets/icons/chevron-right-double.svg';
 import ClearIcon from '@/assets/icons/clear.svg';
 import CloseIcon from '@/assets/icons/close.svg';
 import LayoutBottomIcon from '@/assets/icons/layout-bottom.svg';
@@ -12,7 +13,10 @@ import { Tabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
 import { consolePanelStore as store } from '@/stores/console-panel';
 import { ConsolePanelContent } from './console-panel-content';
+import { getOverflowIds } from './get-overflow-ids';
 import './styles.css';
+
+const OVERFLOW_BTN_SPACE = 26;
 
 export const ConsolePanel = observer(() => {
   const { t } = useTranslation();
@@ -21,6 +25,13 @@ export const ConsolePanel = observer(() => {
   const resizer = useRef<HTMLDivElement>(null);
   const positionRef = useRef(store.position);
   const [filter, setFilter] = useState('all');
+
+  const measureRef = useRef<HTMLDivElement>(null);
+  const tabsAreaRef = useRef<HTMLDivElement>(null);
+  const overflowRef = useRef<HTMLDivElement>(null);
+  const [tabWidths, setTabWidths] = useState<Record<string, number>>({});
+  const [areaWidth, setAreaWidth] = useState(0);
+  const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
 
   const activeTab = store.activeTab;
 
@@ -46,6 +57,61 @@ export const ConsolePanel = observer(() => {
       )
       : tab.label,
   }));
+
+  const tabIds = store.tabs.map((t) => t.id).join(',');
+
+  useLayoutEffect(() => {
+    const measureEl = measureRef.current;
+    if (measureEl) {
+      const lis = measureEl.querySelectorAll<HTMLLIElement>('[role="tablist"] > li');
+      const tabs = store.tabs;
+      const widths: Record<string, number> = {};
+      lis.forEach((li, i) => {
+        if (i < tabs.length) {
+          widths[tabs[i].id] = li.getBoundingClientRect().width;
+        }
+      });
+      setTabWidths(widths);
+    }
+
+    const areaEl = tabsAreaRef.current;
+    if (areaEl) {
+      setAreaWidth(areaEl.getBoundingClientRect().width);
+    }
+  }, [tabIds, store.activeTabId]);
+
+  useEffect(() => {
+    const el = tabsAreaRef.current;
+    if (!el) return;
+
+    const ro = new ResizeObserver(() => {
+      setAreaWidth(el.getBoundingClientRect().width);
+    });
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, []);
+
+  const overflowIds = useMemo(
+    () => getOverflowIds(store.tabs, tabWidths, areaWidth, store.activeTabId, OVERFLOW_BTN_SPACE),
+    [tabWidths, areaWidth, store.activeTabId, store.tabs],
+  );
+
+  const visibleTabItems = tabItems.filter((item) => !overflowIds.has(item.id));
+  const overflowTabs = store.tabs.filter((tab) => overflowIds.has(tab.id));
+
+  useEffect(() => {
+    if (!isOverflowMenuOpen) return;
+
+    const handlePointerDown = (ev: PointerEvent) => {
+      if (overflowRef.current && !overflowRef.current.contains(ev.target as Node)) {
+        setIsOverflowMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [isOverflowMenuOpen]);
 
   const dragStart = useRef<{ size: number; coord: number } | null>(null);
   const rafId = useRef(0);
@@ -138,14 +204,78 @@ export const ConsolePanel = observer(() => {
     >
       <div className="consolePanel-resizer" id="consoleResizer" ref={resizer} />
 
-      <header className="consolePanel-header">
+      <div className="consolePanel-tabsMeasure" ref={measureRef} aria-hidden="true">
         <Tabs
           className="consolePanel-tabs"
           items={tabItems}
           activeTab={store.activeTabId}
           orientation="horizontal"
-          onTabChange={store.setActiveTab}
+          onTabChange={() => {}}
         />
+      </div>
+
+      <header className="consolePanel-header">
+        <div className="consolePanel-tabsArea" ref={tabsAreaRef}>
+          <div className="consolePanel-tabsWrapper">
+            <Tabs
+              className="consolePanel-tabs"
+              items={visibleTabItems}
+              activeTab={store.activeTabId}
+              orientation="horizontal"
+              onTabChange={store.setActiveTab}
+            />
+          </div>
+
+          {overflowTabs.length > 0 && (
+            <div className="consolePanel-overflow" ref={overflowRef}>
+              <Tooltip text={t('console-panel.buttons.more-tabs')}>
+                <button
+                  className="consolePanel-button consolePanel-overflowBtn"
+                  aria-label={t('console-panel.buttons.more-tabs')}
+                  aria-haspopup="true"
+                  aria-expanded={isOverflowMenuOpen}
+                  onClick={() => setIsOverflowMenuOpen((prev) => !prev)}
+                >
+                  <ChevronRightDoubleIcon className="consolePanel-overflowIcon" />
+                </button>
+              </Tooltip>
+
+              {isOverflowMenuOpen && (
+                <ul className="consolePanel-overflowMenu" role="menu">
+                  {overflowTabs.map((tab) => (
+                    <li key={tab.id} role="none">
+                      <button
+                        role="menuitem"
+                        className={classNames('consolePanel-overflowMenuItem', {
+                          'consolePanel-overflowMenuItemActive': tab.id === store.activeTabId,
+                        })}
+                        onClick={() => {
+                          store.setActiveTab(tab.id);
+                          setIsOverflowMenuOpen(false);
+                        }}
+                      >
+                        <span className="consolePanel-overflowMenuLabel">{tab.label}</span>
+                        {tab.closable && (
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            className="consolePanel-tabClose"
+                            onClick={(ev) => {
+                              ev.stopPropagation();
+                              store.unregisterTab(tab.id);
+                            }}
+                          >
+                            <CloseIcon className="consolePanel-tabCloseIcon" />
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="consolePanel-headerActions">
           {activeTab?.actions?.map((action) => (

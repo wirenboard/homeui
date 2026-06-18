@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.228.0) stable; urgency=medium
+
+  * Add console tabs overflow logic
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Thu, 18 Jun 2026 15:17:00 +0300
+
 wb-mqtt-homeui (2.227.0) stable; urgency=medium
 
   * Add tests
