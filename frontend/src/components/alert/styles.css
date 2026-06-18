@@ -45,7 +45,6 @@
 
 .alertMessage-gray {
     background: var(--light-gray-color);
-    color: var(--gray-color);
 }
 
 .alertMessage-success {
