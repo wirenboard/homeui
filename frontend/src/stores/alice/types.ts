@@ -50,6 +50,17 @@ export interface SmartDeviceCapability {
   reportable?: boolean;
 }
 
+export interface CapabilityDefaults {
+  retrievable: boolean;
+  reportable: boolean;
+  parameters: { split?: boolean };
+}
+
+export interface PropertyDefaults {
+  retrievable: boolean;
+  reportable: boolean;
+}
+
 export interface SmartDevice {
   name: string;
   status_info: { reportable: boolean };

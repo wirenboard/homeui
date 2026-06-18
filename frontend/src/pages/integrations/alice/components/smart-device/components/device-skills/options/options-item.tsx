@@ -1,10 +1,5 @@
 import classNames from 'classnames';
-import { type ReactNode } from 'react';
-
-interface OptionsItemProps {
-  isModified: boolean;
-  children: ReactNode;
-}
+import type { OptionsItemProps } from './types';
 
 // Single option row inside the popup
 // When `isModified` is true, the row gets an accent border on the left

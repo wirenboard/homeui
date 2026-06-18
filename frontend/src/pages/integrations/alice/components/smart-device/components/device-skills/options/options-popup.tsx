@@ -1,13 +1,9 @@
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import MoreIcon from '@/assets/icons/more.svg';
 import { Button } from '@/components/button';
 import { Popup } from '@/components/popup';
-
-interface OptionsPopupProps {
-  ariaLabel: string;
-  modifiedCount: number;
-  children: ReactNode;
-}
+import type { OptionsPopupProps } from './types';
+import './styles.css';
 
 // Kebab button that opens a popup with the option checkboxes inside
 // `modifiedCount` is rendered as a badge in the top-right corner of the button

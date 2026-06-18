@@ -12,7 +12,7 @@
 
 /* Visually mark the trash icon as a destructive action without changing button variant */
 .aliceDeviceSkills-deleteButton svg {
-    color: var(--danger-color, #d9534f);
+    color: var(--danger-color);
 }
 
 /* Match the small-dropdown height (28px) so toolbar buttons line up with field bottoms */

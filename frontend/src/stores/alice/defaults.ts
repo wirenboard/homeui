@@ -1,22 +1,16 @@
 import { Capability, Property } from './constants';
-import type { SmartDeviceCapability, SmartDeviceProperty } from './types';
+import type {
+  CapabilityDefaults,
+  PropertyDefaults,
+  SmartDeviceCapability,
+  SmartDeviceProperty,
+} from './types';
 
 // Single source of truth for capability/property defaults
 // Read by Add buttons, alice-store normalize, options popups, and the
 // "modified" badge counter — change a value here and every place updates
 // Defaults match Yandex Smart Home API:
 // https://yandex.ru/dev/dialogs/smart-home/doc/concepts/capability-types
-
-export interface CapabilityDefaults {
-  retrievable: boolean;
-  reportable: boolean;
-  parameters: { split?: boolean };
-}
-
-export interface PropertyDefaults {
-  retrievable: boolean;
-  reportable: boolean;
-}
 
 export const getCapabilityDefaults = (type: Capability): CapabilityDefaults => ({
   retrievable: true,
