@@ -25,8 +25,10 @@ export const Alert = ({
       case 'warn':
         Component = WarnIcon;
         break;
-      case 'info':
       case 'gray':
+        Component = WarnIcon;
+        break;
+      case 'info':
       default:
         Component = InfoIcon;
     }

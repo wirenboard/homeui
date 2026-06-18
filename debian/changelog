@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.227.1) stable; urgency=medium
+
+  * Fix displaying read errors for alarm controls 
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Thu, 18 Jun 2026 17:10:10 +0500
+
 wb-mqtt-homeui (2.227.0) stable; urgency=medium
 
   * Add tests
