@@ -60,8 +60,8 @@ const normalizeProperty = (prop: SmartDeviceProperty): SmartDeviceProperty => {
 
 const normalizeDevice = (device: SmartDevice): SmartDevice => ({
   ...device,
-  capabilities: device.capabilities.map(normalizeCapability),
-  properties: device.properties.map(normalizeProperty),
+  capabilities: (device.capabilities ?? []).map(normalizeCapability),
+  properties: (device.properties ?? []).map(normalizeProperty),
 });
 
 export default class AliceStore {
