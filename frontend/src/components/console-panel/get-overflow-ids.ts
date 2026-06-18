@@ -13,12 +13,16 @@ export function getOverflowIds(
 
   let available = areaWidth - overflowBtnSpace;
 
-  if (activeId && tabWidths[activeId]) {
-    available -= tabWidths[activeId];
-  }
-
   const visibleIds = new Set<string>();
-  if (activeId) visibleIds.add(activeId);
+
+  if (activeId && tabWidths[activeId]) {
+    if (tabWidths[activeId] <= available) {
+      available -= tabWidths[activeId];
+      visibleIds.add(activeId);
+    }
+  } else if (activeId) {
+    visibleIds.add(activeId);
+  }
 
   for (const tab of tabs) {
     if (tab.id === activeId) continue;

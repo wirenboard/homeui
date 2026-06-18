@@ -228,4 +228,24 @@ describe('ConsolePanel overflow', () => {
     fireEvent.click(btn);
     expect(screen.queryByRole('menu')).toBeNull();
   });
+
+  test('shows only overflow button when all tabs overflow', () => {
+    store.registerTab(makeTab('a', { label: 'Alpha' }));
+    store.registerTab(makeTab('b', { label: 'Beta' }));
+    mockOverflowIds = new Set(['a', 'b']);
+
+    const { container } = render(<ConsolePanel />);
+
+    const wrapper = container.querySelector('.consolePanel-tabsWrapper');
+    expect(wrapper!.querySelectorAll('[role="tab"]')).toHaveLength(0);
+
+    expect(screen.getByLabelText(OVERFLOW_LABEL)).toBeTruthy();
+
+    fireEvent.click(screen.getByLabelText(OVERFLOW_LABEL));
+    const menu = screen.getByRole('menu');
+    const items = within(menu).getAllByRole('menuitem');
+    expect(items).toHaveLength(2);
+    expect(within(menu).getByText('Alpha')).toBeTruthy();
+    expect(within(menu).getByText('Beta')).toBeTruthy();
+  });
 });

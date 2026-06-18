@@ -92,17 +92,37 @@ describe('getOverflowIds', () => {
     const tabs = makeTabs('a', 'b', 'c');
     const widths = { a: 100, b: 100, c: 100 };
     // total = 300, area = 130 → overflow
-    // available = 130 - 26 - 100 (active 'a') = 4
+    // available = 130 - 26 = 104, active 'a' = 100 fits (4 left)
     // 'b' = 100 doesn't, 'c' = 100 doesn't
     const result = getOverflowIds(tabs, widths, 130, 'a', 26);
     expect(result).toEqual(new Set(['b', 'c']));
+  });
+
+  test('all tabs overflow when even active tab does not fit', () => {
+    const tabs = makeTabs('a', 'b', 'c');
+    const widths = { a: 100, b: 100, c: 100 };
+    // total = 300, area = 50 → overflow
+    // available = 50 - 26 = 24, active 'a' = 100 doesn't fit
+    // no tabs fit → all overflow
+    const result = getOverflowIds(tabs, widths, 50, 'a', 26);
+    expect(result).toEqual(new Set(['a', 'b', 'c']));
+  });
+
+  test('all tabs overflow with single tab that does not fit', () => {
+    const tabs = makeTabs('a');
+    const widths = { a: 100 };
+    // total = 100, area = 30 → overflow
+    // available = 30 - 26 = 4, active 'a' = 100 doesn't fit
+    const result = getOverflowIds(tabs, widths, 30, 'a', 26);
+    expect(result).toEqual(new Set(['a']));
   });
 
   test('respects custom overflowBtnSpace', () => {
     const tabs = makeTabs('a', 'b');
     const widths = { a: 100, b: 100 };
     // total = 200, area = 199 → overflow
-    // available = 199 - 50 - 100 (active 'a') = 49 → 'b' doesn't fit
+    // available = 199 - 50 = 149, active 'a' = 100 fits (49 left)
+    // 'b' = 100 doesn't fit
     const result = getOverflowIds(tabs, widths, 199, 'a', 50);
     expect(result).toEqual(new Set(['b']));
   });
