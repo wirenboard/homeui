@@ -88,7 +88,7 @@ describe('ConsolePanel overflow', () => {
     render(<ConsolePanel />);
 
     const btn = screen.getByLabelText(OVERFLOW_LABEL);
-    expect(btn.getAttribute('aria-haspopup')).toBe('true');
+    expect(btn.getAttribute('aria-haspopup')).toBe('menu');
     expect(btn.getAttribute('aria-expanded')).toBe('false');
   });
 
