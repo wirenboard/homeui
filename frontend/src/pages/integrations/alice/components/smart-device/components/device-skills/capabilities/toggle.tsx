@@ -34,6 +34,7 @@ export const ToggleCapability = ({
     <div className="aliceDeviceSkills-colspan2">
       <label className="aliceDeviceSkills-gridLabel" htmlFor={instanceId}>{t('alice.labels.mode')}</label>
       <Dropdown
+        size="small"
         id={instanceId}
         value={capability.parameters?.instance}
         options={getToggleInstanceOptions(capability, index)}

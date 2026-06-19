@@ -125,6 +125,7 @@ export const ColorSettingCapability = ({
       <div>
         <label className="aliceDeviceSkills-gridLabel" htmlFor={typeId}>{t('alice.labels.type')}</label>
         <Dropdown
+          size="small"
           id={typeId}
           value={getCurrentColorModel(capability)}
           options={getColorModelOptions(capability, index)}
@@ -138,6 +139,7 @@ export const ColorSettingCapability = ({
         <div>
           <label className="aliceDeviceSkills-gridLabel" htmlFor={colorModelId}>{t('alice.labels.color-model')}</label>
           <Dropdown
+            size="small"
             id={colorModelId}
             value={capability.parameters?.color_model ?? null}
             options={Object.keys(ColorModel)
@@ -159,6 +161,7 @@ export const ColorSettingCapability = ({
           <div>
             <label className="aliceDeviceSkills-gridLabel" htmlFor={minId}>{t('alice.labels.min')}</label>
             <Input
+              size="small"
               id={minId}
               value={capability.parameters?.temperature_k?.min}
               type="number"
@@ -172,6 +175,7 @@ export const ColorSettingCapability = ({
           <div>
             <label className="aliceDeviceSkills-gridLabel" htmlFor={maxId}>{t('alice.labels.max')}</label>
             <Input
+              size="small"
               id={maxId}
               value={capability.parameters?.temperature_k?.max}
               type="number"
@@ -189,6 +193,7 @@ export const ColorSettingCapability = ({
         <div>
           <label className="aliceDeviceSkills-gridLabel" htmlFor={scenesId}>{t('alice.labels.scenes-input')}</label>
           <Input
+            size="small"
             id={scenesId}
             value={capability.parameters?.color_scene?.scenes?.join(', ') || ''}
             placeholder="ocean, sunset, party"

@@ -5,7 +5,13 @@ import { DeviceCapabilities } from './device-capabilities';
 
 vi.mock('@/stores/alice', async () => {
   const c = await vi.importActual<any>('@/stores/alice/constants');
-  return { ...c, aliceStore: {} };
+  return {
+    ...c,
+    aliceStore: {},
+    getCapabilityDefaults: () => ({ retrievable: true, reportable: true, parameters: {} }),
+    isFieldModified: () => false,
+    countModifiedCapability: () => 0,
+  };
 });
 vi.mock('@/stores/devices', () => ({
   devicesStore: {
@@ -42,6 +48,7 @@ vi.mock('./capabilities', () => ({
   ModeCapability: () => <div data-testid="mode-fields" />,
   RangeCapability: () => <div data-testid="range-fields" />,
   ToggleCapability: () => <div data-testid="toggle-fields" />,
+  CapabilityOptionsButton: () => <div data-testid="capability-options" />,
   getAvailableModeInstances: () => ['cleanup_mode'],
   getAvailableToggleInstances: () => ['backlight'],
   getAvailableRangeInstances: () => ['brightness'],

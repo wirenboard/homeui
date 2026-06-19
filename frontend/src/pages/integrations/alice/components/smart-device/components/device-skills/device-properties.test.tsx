@@ -5,8 +5,17 @@ import { DeviceProperties } from './device-properties';
 
 vi.mock('@/stores/alice', async () => {
   const c = await vi.importActual<any>('@/stores/alice/constants');
-  return { ...c, aliceStore: {} };
+  return {
+    ...c,
+    aliceStore: {},
+    getPropertyDefaults: () => ({ retrievable: true, reportable: true }),
+    isFieldModified: () => false,
+    countModifiedProperty: () => 0,
+  };
 });
+vi.mock('./property-options-button', () => ({
+  PropertyOptionsButton: () => <div data-testid="property-options" />,
+}));
 vi.mock('@/stores/devices', () => ({
   devicesStore: {
     topics: [{ label: 'Group', options: [{ label: '/wb/temp', value: '/wb/temp' }] }],
