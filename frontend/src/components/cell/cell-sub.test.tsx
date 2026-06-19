@@ -132,10 +132,10 @@ describe('CellAlert', () => {
     expect(container.querySelector('.alertMessage-danger')).toBeTruthy();
   });
 
-  test('info variant when value is falsy', () => {
+  test('success variant when value is falsy', () => {
     const cell = makeCell({ value: false });
     const { container } = withRouter(<CellAlert cell={cell} hideHistory />);
-    expect(container.querySelector('.alertMessage-info')).toBeTruthy();
+    expect(container.querySelector('.alertMessage-success')).toBeTruthy();
   });
 
   test('uses custom name', () => {
