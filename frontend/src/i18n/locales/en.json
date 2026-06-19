@@ -739,7 +739,8 @@
          "dock-bottom": "Dock to bottom",
          "dock-right": "Dock to right",
          "close": "Close",
-         "close-tab": "Close tab"
+         "close-tab": "Close tab",
+         "more-tabs": "More tabs"
       }
    },
    "logs":{
