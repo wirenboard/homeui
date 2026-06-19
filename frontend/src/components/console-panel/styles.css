@@ -72,7 +72,7 @@
     min-width: 0;
     width: auto;
     border-bottom: none;
-    border-radius: var(--input-border-radius) var(--input-border-radius) 0 0;
+    border-radius: 0;
 }
 
 .consolePanel-tabs .tabs-button {
@@ -81,13 +81,11 @@
 
 .consolePanel-tabs li {
     height: fit-content;
-    border-top: 0;
     flex-shrink: 0;
 }
 
 .consolePanel-tabs .tabs-buttonSelected {
-    border-top: 0;
-    border-bottom: 4px solid var(--primary-color);
+    border-bottom: 0;
     border-radius: 0;
 }
 
