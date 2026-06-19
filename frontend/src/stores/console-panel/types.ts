@@ -1,22 +1,12 @@
-import type { FunctionComponent, ReactNode } from 'react';
-import type { Option } from '@/components/dropdown';
-
-export interface ConsoleTabAction {
-  id: string;
-  icon: FunctionComponent<any>;
-  tooltip: string;
-  isActive?: () => boolean;
-  onClick: () => void;
-}
+import type { ReactNode } from 'react';
 
 export interface ConsoleTab {
   id: string;
   label: string;
-  getLogs: () => any[];
-  filterLevels?: Option[];
-  getLogLevel?: (log: any) => string;
-  renderLog: (log: any, index: number) => ReactNode;
-  actions?: ConsoleTabAction[];
-  clearLogs: () => void;
   closable?: boolean;
+  onClose?: () => void;
+  /** Per-tab toolbar (filters + buttons) rendered on the right of the header. */
+  renderToolbar?: () => ReactNode;
+  /** Per-tab content (the log list). */
+  renderContent: () => ReactNode;
 }

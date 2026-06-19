@@ -4,9 +4,7 @@ import type { ConsoleTab } from './types';
 const makeTab = (id: string): ConsoleTab => ({
   id,
   label: id,
-  getLogs: vi.fn(() => []),
-  renderLog: vi.fn(),
-  clearLogs: vi.fn(),
+  renderContent: () => null,
 });
 
 const getItemMock = vi.fn();

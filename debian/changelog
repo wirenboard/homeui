@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.230.0) stable; urgency=medium
+
+  * Refactor console panel to a per-tab toolbar and content API
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Mon, 22 Jun 2026 08:58:26 +0500
+
 wb-mqtt-homeui (2.229.0) stable; urgency=medium
 
   * Add console tabs overflow logic

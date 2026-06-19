@@ -24,7 +24,14 @@ export class ConsolePanelStore {
     }
   }
 
-  unregisterTab(id: string) {
+  unregisterTab(id: string, options?: { silent?: boolean }) {
+    const tab = this.tabs.find((t) => t.id === id);
+    if (!tab) {
+      return;
+    }
+    if (!options?.silent && tab.onClose) {
+      tab.onClose();
+    }
     this.tabs = this.tabs.filter((t) => t.id !== id);
     if (this.activeTabId === id) {
       this.activeTabId = this.tabs.length > 0 ? this.tabs[0].id : null;
