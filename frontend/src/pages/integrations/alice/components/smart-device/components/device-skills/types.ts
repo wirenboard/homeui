@@ -23,3 +23,10 @@ export interface CapabilitySubProps {
   capabilities: SmartDeviceCapability[];
   onCapabilityChange: (capabilities: SmartDeviceCapability[]) => void;
 }
+
+export interface PropertySubProps {
+  property: SmartDeviceProperty;
+  index: number;
+  properties: SmartDeviceProperty[];
+  onPropertyChange: (properties: SmartDeviceProperty[]) => void;
+}

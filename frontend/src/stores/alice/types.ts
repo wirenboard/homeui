@@ -15,6 +15,8 @@ export interface SmartDeviceProperty {
   type: Property;
   mqtt: string;
   parameters: PropertyParameters;
+  retrievable?: boolean;
+  reportable?: boolean;
 }
 
 export interface ModeMapping {
@@ -27,6 +29,7 @@ export interface CapabilityParameters {
   color_scene?: { scenes: string[] };
   instance?: string;
   modes?: ModeMapping[];
+  split?: boolean;
   unit?: string;
   range?: {
     min: number;
@@ -43,6 +46,19 @@ export interface SmartDeviceCapability {
   type: Capability;
   mqtt: string;
   parameters: CapabilityParameters;
+  retrievable?: boolean;
+  reportable?: boolean;
+}
+
+export interface CapabilityDefaults {
+  retrievable: boolean;
+  reportable: boolean;
+  parameters: { split?: boolean };
+}
+
+export interface PropertyDefaults {
+  retrievable: boolean;
+  reportable: boolean;
 }
 
 export interface SmartDevice {

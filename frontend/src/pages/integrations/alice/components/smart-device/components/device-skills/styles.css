@@ -5,13 +5,25 @@
 }
 
 .aliceDeviceSkills-title {
-    margin: 10px 0;
+    margin: 24px 0 10px;
     font-size: var(--font-size-medium);
+    font-weight: 600;
+}
+
+/* Visually mark the trash icon as a destructive action without changing button variant */
+.aliceDeviceSkills-deleteButton svg {
+    color: var(--danger-color);
+}
+
+/* Match the small-dropdown height (28px) so toolbar buttons line up with field bottoms */
+.aliceDeviceSkills-deleteButton button,
+.aliceDeviceSkills-optionsButton button {
+    height: 28px;
 }
 
 .aliceDeviceSkills-grid {
     display: grid;
-    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) 22px;
+    grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) minmax(100px, 150px) minmax(auto, 1fr) auto auto;
     gap: 3px 12px;
     margin-bottom: 6px;
 
@@ -22,19 +34,16 @@
 }
 
 .aliceDeviceSkills-gridLabel {
+    display: flex;
+    align-items: center;
     color: var(--text-color);
     font-size: var(--font-size-small);
-    height: 18px;
-}
-
-.aliceDeviceSkills-grid div:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) .aliceDeviceSkills-gridHiddenLabel {
-    visibility: hidden;
-}
-
-.aliceDeviceSkills-grid div:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) .aliceDeviceSkills-gridHiddenLabel {
-    @media (max-width: 768px) {
-        visibility: visible;
-    }
+    line-height: 18px;
+    /* reserve room for up to 2 lines so labels that wrap on narrow screens
+       (e.g. "Цветовая модель") don't push their dropdown below the row */
+    min-height: 36px;
+    /* override the global `label { margin-bottom: 5px }` rule so <label> and <div> match */
+    margin-bottom: 0;
 }
 
 .aliceDeviceSkills-colspan2 {
@@ -50,8 +59,10 @@
     flex-grow: 1;
 }
 
-.aliceDeviceSkills-deleteButton {
-    margin-top: 24px;
+.aliceDeviceSkills-deleteButton,
+.aliceDeviceSkills-optionsButton {
+    /* same offset as gridLabel min-height so buttons line up with the dropdown next to them */
+    margin-top: 36px;
 
     @media (max-width: 768px) {
         margin-top: 4px;
