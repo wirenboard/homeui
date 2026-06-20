@@ -4,6 +4,10 @@ wb-mqtt-homeui (2.230.0) stable; urgency=medium
     item): render them as a full-page anchor instead of an in-app router link,
     so a custom-menu drop-in can point at a reverse-proxied sub-app such as
     Node-RED at /node-red/ and actually navigate there.
+  * After login, honour an `externalReturn` query param: if it is a same-origin
+    absolute path, do a full-page navigation to it (open-redirect-safe). This
+    lets a reverse-proxied sub-app send a logged-out user through the homeui
+    login and back to itself, which the in-app `returnState` cannot do.
 
  -- Denis Smagin <denis.smagin@struhe.com>  Sat, 20 Jun 2026 09:00:00 +0300
 

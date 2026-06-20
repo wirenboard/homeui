@@ -14,6 +14,20 @@ import { Password } from '@/components/password';
 import { authStore } from '@/stores/auth';
 import './styles.css';
 
+// A reverse-proxied sub-app (e.g. Node-RED at /node-red/) sends the user to the
+// login page with an `externalReturn` query param on the real URL (not the hash
+// router's, which the SPA clobbers on boot). Such targets live outside this SPA,
+// so they need a full-page navigation rather than an in-app route. Only
+// same-origin absolute paths are honoured — never a full URL or a
+// protocol-relative `//host` — to avoid an open redirect.
+const getSafeExternalReturn = (): string | null => {
+  const target = new URLSearchParams(window.location.search).get('externalReturn');
+  if (target && target.startsWith('/') && !target.startsWith('//') && !target.startsWith('/\\')) {
+    return target;
+  }
+  return null;
+};
+
 const LoginPage = observer(() => {
   const { t, i18n } = useTranslation();
   const { isAutologin } = authStore;
@@ -31,6 +45,11 @@ const LoginPage = observer(() => {
       setIsShowError(false);
       setIsLoading(true);
       await authStore.login({ login, password });
+      const externalReturn = getSafeExternalReturn();
+      if (externalReturn) {
+        window.location.assign(externalReturn);
+        return;
+      }
       navigate(searchParams.get('returnState') ?? '/', { replace: true });
     } catch {
       setIsShowError(true);
