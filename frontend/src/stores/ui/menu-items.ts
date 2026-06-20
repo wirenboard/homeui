@@ -38,8 +38,11 @@ export const toMenuItemInstance = (item: CustomMenuItem, language: string): Menu
   const children = item.children?.map((child) => toMenuItemInstance(child, language));
   const output: MenuItemInstance = {
     id: item.id,
-    url: normalizeUrl(item.url),
+    // External links point outside the SPA (e.g. /node-red/); keep the URL
+    // verbatim — the in-app route normalizer would rewrite or break it.
+    url: item.isExternal ? item.url : normalizeUrl(item.url),
     label,
+    ...(item.isExternal ? { isExternal: true } : null),
     children: children?.length ? children : undefined,
   };
 
@@ -71,6 +74,7 @@ export const mergeMenuItems = (baseItems: MenuItemInstance[], customItems: MenuI
       items[idx] = {
         ...baseItem,
         ...(item.url ? { url: item.url } : null),
+        ...(item.isExternal !== undefined ? { isExternal: item.isExternal } : null),
         ...(item.label && item.label !== item.id ? { label: item.label } : null),
         children: mergedChildren.length ? mergedChildren : undefined,
       };

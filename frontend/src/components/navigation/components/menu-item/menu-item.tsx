@@ -10,7 +10,7 @@ import {
   useRole,
 } from '@floating-ui/react';
 import classNames from 'classnames';
-import { useMemo, useRef } from 'react';
+import { type ElementType, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Tooltip } from '@/components/tooltip';
@@ -31,7 +31,10 @@ export const MenuItem = ({
   setIsMenuFocused,
 }: MenuItemProps) => {
   const { t } = useTranslation();
-  const Component = item.url ? Link : 'button';
+  // External links (e.g. a reverse-proxied sub-app like /node-red/) need a real
+  // full-page navigation, not an in-app hash route, so render a plain anchor.
+  const isExternalLink = Boolean(item.isExternal && item.url);
+  const Component: ElementType = item.url ? (isExternalLink ? 'a' : Link) : 'button';
 
   const arrowRef = useRef(null);
 
@@ -63,13 +66,23 @@ export const MenuItem = ({
 
       {children.map((item, i) => (
         <li className="menuItem-item" key={i}>
-          <Link
-            to={item.url}
-            className="menuItem-link"
-            draggable={false}
-          >
-            {t(item.label)}
-          </Link>
+          {item.isExternal && item.url ? (
+            <a
+              href={item.url}
+              className="menuItem-link"
+              draggable={false}
+            >
+              {t(item.label)}
+            </a>
+          ) : (
+            <Link
+              to={item.url}
+              className="menuItem-link"
+              draggable={false}
+            >
+              {t(item.label)}
+            </Link>
+          )}
         </li>
       ))}
     </ul>
@@ -96,7 +109,7 @@ export const MenuItem = ({
         closeOnClick
       >
         <Component
-          to={item.url}
+          {...(isExternalLink ? { href: item.url } : { to: item.url })}
           aria-label={t(item.label)}
           className={classNames('menuItem-link', {
             'menuItem-linkActive': isActive,

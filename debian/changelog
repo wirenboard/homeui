@@ -1,3 +1,12 @@
+wb-mqtt-homeui (2.230.0) stable; urgency=medium
+
+  * Support external links in the navigation menu (isExternal flag on a menu
+    item): render them as a full-page anchor instead of an in-app router link,
+    so a custom-menu drop-in can point at a reverse-proxied sub-app such as
+    Node-RED at /node-red/ and actually navigate there.
+
+ -- Denis Smagin <denis.smagin@struhe.com>  Sat, 20 Jun 2026 09:00:00 +0300
+
 wb-mqtt-homeui (2.229.0) stable; urgency=medium
 
   * Add console tabs overflow logic

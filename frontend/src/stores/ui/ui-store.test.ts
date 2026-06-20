@@ -225,6 +225,20 @@ describe('toMenuItemInstance', () => {
     expect(result.children).toHaveLength(1);
     expect(result.children[0].label).toBe('Child');
   });
+
+  test('keeps external url verbatim and flags it', () => {
+    const result = toMenuItemInstance(
+      { id: 'node-red', url: '/node-red/', title: { en: 'Node-RED' }, isExternal: true },
+      'en',
+    );
+    expect(result.url).toBe('/node-red/');
+    expect(result.isExternal).toBe(true);
+  });
+
+  test('does not set isExternal for internal items', () => {
+    const result = toMenuItemInstance({ id: 'x', url: '/x' }, 'en');
+    expect(result.isExternal).toBeUndefined();
+  });
 });
 
 describe('mergeMenuItems', () => {
@@ -257,5 +271,16 @@ describe('mergeMenuItems', () => {
     const base = [{ label: 'Empty', id: 'empty' }];
     const result = mergeMenuItems(base, []);
     expect(result.find((i) => i.id === 'empty')).toBeUndefined();
+  });
+
+  test('appends external custom item preserving the flag', () => {
+    const base = [{ label: 'A', url: '/a' }];
+    const custom = [{ label: 'Node-RED', id: 'node-red', url: '/node-red/', isExternal: true }];
+
+    const result = mergeMenuItems(base, custom);
+
+    const ext = result.find((i) => i.id === 'node-red');
+    expect(ext?.isExternal).toBe(true);
+    expect(ext?.url).toBe('/node-red/');
   });
 });
