@@ -303,7 +303,7 @@ export const ConsolePanel = observer(() => {
         </div>
 
         <div className="consolePanel-headerActions">
-          {activeTab?.renderToolbar?.()}
+          {activeTab && activeTab.renderToolbar && <activeTab.renderToolbar />}
 
           <div className="consolePanel-separatorLeft">
             <Tooltip text={t('console-panel.buttons.dock-bottom')}>
@@ -348,7 +348,7 @@ export const ConsolePanel = observer(() => {
         </div>
       </header>
 
-      {activeTab && activeTab.renderContent()}
+      {activeTab && <activeTab.renderContent />}
     </aside>
   );
 });
