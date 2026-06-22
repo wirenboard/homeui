@@ -30,7 +30,11 @@ export class ConsolePanelStore {
       return;
     }
     if (!options?.silent && tab.onClose) {
-      tab.onClose();
+      try {
+        tab.onClose();
+      } catch (error) {
+        console.error(`Console tab "${id}" onClose handler failed`, error);
+      }
     }
     this.tabs = this.tabs.filter((t) => t.id !== id);
     if (this.activeTabId === id) {

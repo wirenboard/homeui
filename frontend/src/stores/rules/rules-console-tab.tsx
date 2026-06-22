@@ -52,7 +52,7 @@ export const RulesConsoleContent = observer(() => {
     : rulesStore.logs.filter((log) => log.level === filter);
 
   return (
-    <ConsoleLogScroller scrollKey={logs.length}>
+    <ConsoleLogScroller scrollKey={`${filter}:${logs.length}`}>
       {logs.map((log, i) => (
         <div
           className={classNames('consolePanel-log', {
