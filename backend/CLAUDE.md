@@ -39,11 +39,19 @@ Run all four from `backend/` and fix every failure before considering the change
 PR. All tools read their config from `backend/pyproject.toml`:
 
 ```sh
-.venv/bin/isort wb tests    # import sorting
-.venv/bin/black wb tests    # formatting
-.venv/bin/pylint wb tests   # lint — must pass clean
-.venv/bin/pytest            # tests (tests/*_test.py) — all green
+.venv/bin/isort --src .. wb tests   # import sorting — see --src note below
+.venv/bin/black wb tests            # formatting
+.venv/bin/pylint wb tests           # lint — must pass clean
+.venv/bin/pytest                    # tests (tests/*_test.py) — all green
 ```
+
+**Always pass `--src ..` to isort.** The config is only `profile = "black"`, so isort auto-detects
+first-party packages from its source root. Run plainly from `backend/`, it sees `wb/` next to the
+config and treats `wb.*` as **first-party** (separate import group, blank line before it). CI runs
+isort from the repo root, where `wb/` is not directly present, so it treats `wb.*` as
+**third-party** (no blank line) — the opposite result, failing the build. `--src ..` points the
+source root at the repo root, reproducing CI's classification locally. Do **not** "fix" this by
+editing `pyproject.toml`.
 
 CI (`Jenkinsfile`) runs pylint ("angry") + coverage on the backend; the frontend is excluded from
 the Python checks.
