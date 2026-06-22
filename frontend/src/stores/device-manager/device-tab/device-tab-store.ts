@@ -117,7 +117,7 @@ export class DeviceTabStore {
   }
 
   get name() {
-    const deviceName = this.deviceTypesStore.getName(this.deviceType)
+    const deviceName = this.initialData.name || this.deviceTypesStore.getName(this.deviceType)
       || i18n.t('device-manager.labels.unknown-device-type');
     return `${this.slaveId || ''} ${deviceName}`;
   }
