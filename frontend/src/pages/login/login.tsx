@@ -18,14 +18,27 @@ import './styles.css';
 // login page with an `externalReturn` query param on the real URL (not the hash
 // router's, which the SPA clobbers on boot). Such targets live outside this SPA,
 // so they need a full-page navigation rather than an in-app route. Only
-// same-origin absolute paths are honoured — never a full URL or a
-// protocol-relative `//host` — to avoid an open redirect.
+// same-origin targets are honoured — never a full URL or a protocol-relative
+// `//host` — to avoid an open redirect.
 const getSafeExternalReturn = (): string | null => {
-  const target = new URLSearchParams(window.location.search).get('externalReturn');
-  if (target && target.startsWith('/') && !target.startsWith('//') && !target.startsWith('/\\')) {
-    return target;
+  const raw = new URLSearchParams(window.location.search).get('externalReturn');
+  if (!raw) {
+    return null;
   }
-  return null;
+  // Resolve against our origin and require it to stay same-origin. A prefix
+  // check (reject `//`, `/\`) is not enough: browsers strip tab/newline/CR
+  // before parsing a URL, so `/\t/evil.com` collapses to a protocol-relative
+  // `//evil.com`. new URL() applies that same normalisation, so a cross-origin
+  // target is reliably caught here.
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin) {
+      return null;
+    }
+    return url.pathname + url.search + url.hash;
+  } catch {
+    return null;
+  }
 };
 
 const LoginPage = observer(() => {
