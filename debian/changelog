@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.232.0) stable; urgency=medium
+
+  * Fix mosquitto acl and password file permissions
+
+ -- Nikolay Korotkiy <nikolay.korotkiy@wirenboard.com>  Tue, 23 Jun 2026 16:20:00 +0400
+
 wb-mqtt-homeui (2.231.1) stable; urgency=medium
 
   * Add Claude Code agent guidance (CLAUDE.md) and project rules

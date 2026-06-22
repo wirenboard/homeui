@@ -2,15 +2,6 @@
 
 #DEBHELPER#
 
-chmod 0700 /usr/share/wb-mqtt-homeui/mosquitto/acl/user.conf
-chmod 0700 /usr/share/wb-mqtt-homeui/mosquitto/acl/operator.conf
-
-chgrp mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/user.conf
-chgrp mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/operator.conf
-
-chown mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/user.conf
-chown mosquitto /usr/share/wb-mqtt-homeui/mosquitto/acl/operator.conf
-
 if [ "$1" = "configure" ] && dpkg --compare-versions "$2" lt 2.219.1~; then
     if [ -f /var/lib/wb-homeui/nginx/https.conf ]; then
         sed -i 's#/etc/ssl/dhparam.pem#/usr/share/wb-mqtt-homeui/nginx/ffdhe2048.pem#' /var/lib/wb-homeui/nginx/https.conf
@@ -19,6 +10,6 @@ fi
 
 systemctl --system daemon-reload >/dev/null || true
 
-deb-systemd-invoke restart mosquitto || true
-deb-systemd-invoke restart fcgiwrap || true
-deb-systemd-invoke restart nginx || true
+deb-systemd-invoke try-restart mosquitto || true
+deb-systemd-invoke try-restart fcgiwrap || true
+deb-systemd-invoke try-restart nginx || true
