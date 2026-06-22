@@ -13,14 +13,13 @@ import {
   EmbeddedSoftware,
   ReadRegistersState,
   ReadRegistersStateStore,
+  type DeviceTypesStore,
 } from '@/stores/device-manager';
 import { type JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/format-error';
-import { type DeviceTypesStore } from '../device-types-store';
 import type { PortTabConfig, PortTabSerialConfig, PortTabTcpConfig } from '../port-tab/types';
 import type {
-  FwUpdateProxy,
-  UpdateItem,
+  FwUpdateProxy, UpdateItem,
   SerialDeviceProxy,
   LoadConfigParams,
   LoadConfigResult,
@@ -74,6 +73,7 @@ export class DeviceTabStore {
       name: computed,
       isDirty: computed,
       hasJsonValidationErrors: computed,
+      initialData: observable.ref,
       hidden: observable,
       isDeprecated: observable,
       withSubdevices: observable,
