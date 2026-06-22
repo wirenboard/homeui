@@ -19,7 +19,8 @@ import { type JsonObject } from '@/stores/json-schema-editor';
 import { formatError } from '@/utils/format-error';
 import type { PortTabConfig, PortTabSerialConfig, PortTabTcpConfig } from '../port-tab/types';
 import type {
-  FwUpdateProxy, UpdateItem,
+  FwUpdateProxy,
+  UpdateItem,
   SerialDeviceProxy,
   LoadConfigParams,
   LoadConfigResult,
@@ -73,7 +74,6 @@ export class DeviceTabStore {
       name: computed,
       isDirty: computed,
       hasJsonValidationErrors: computed,
-      initialData: observable.ref,
       hidden: observable,
       isDeprecated: observable,
       withSubdevices: observable,
@@ -117,7 +117,7 @@ export class DeviceTabStore {
   }
 
   get name() {
-    const deviceName = this.initialData.name || this.deviceTypesStore.getName(this.deviceType)
+    const deviceName = this.editedData.name || this.deviceTypesStore.getName(this.deviceType)
       || i18n.t('device-manager.labels.unknown-device-type');
     return `${this.slaveId || ''} ${deviceName}`;
   }
