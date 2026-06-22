@@ -1,3 +1,9 @@
+wb-mqtt-homeui (2.230.0) stable; urgency=medium
+
+  * Device name in tab list (device manager)
+
+ -- Victor Vedenin <victor.vedenin@wirenboard.com>  Mon, 22 Jun 2026 13:17:00 +0300
+
 wb-mqtt-homeui (2.229.0) stable; urgency=medium
 
   * Add console tabs overflow logic
