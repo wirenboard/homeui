@@ -4,9 +4,7 @@ import type { ConsoleTab } from './types';
 const makeTab = (id: string): ConsoleTab => ({
   id,
   label: id,
-  getLogs: vi.fn(() => []),
-  renderLog: vi.fn(),
-  clearLogs: vi.fn(),
+  renderContent: () => null,
 });
 
 const getItemMock = vi.fn();
@@ -72,6 +70,33 @@ describe('ConsolePanelStore', () => {
       store.registerTab(makeTab('b'));
       store.unregisterTab('b');
       expect(store.activeTabId).toBe('a');
+    });
+
+    test('calls onClose when unregistering', () => {
+      const onClose = vi.fn();
+      store.registerTab({ ...makeTab('a'), onClose });
+      store.unregisterTab('a');
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not call onClose with the silent option', () => {
+      const onClose = vi.fn();
+      store.registerTab({ ...makeTab('a'), onClose });
+      store.unregisterTab('a', { silent: true });
+      expect(onClose).not.toHaveBeenCalled();
+      expect(store.tabs).toHaveLength(0);
+    });
+
+    test('still removes the tab when onClose throws', () => {
+      const onClose = vi.fn(() => {
+        throw new Error('boom');
+      });
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      store.registerTab({ ...makeTab('a'), onClose });
+      store.unregisterTab('a');
+      expect(store.tabs).toHaveLength(0);
+      expect(store.activeTabId).toBeNull();
+      errorSpy.mockRestore();
     });
   });
 

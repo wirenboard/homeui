@@ -84,6 +84,13 @@
     flex-shrink: 0;
 }
 
+/* The active tab is always shown; when it alone is wider than the tab area it
+   shrinks and its label truncates with an ellipsis instead of overflowing. */
+.consolePanel-tabs li.tabs-buttonSelected {
+    flex-shrink: 1;
+    min-width: 0;
+}
+
 .consolePanel-tabs .tabs-buttonSelected {
     border-bottom: 0;
     border-radius: 0;
@@ -95,11 +102,18 @@
     gap: 6px;
 }
 
+.consolePanel-tabText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .consolePanel-tabClose {
     all: unset;
     cursor: pointer;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
     border-radius: var(--input-border-radius);
 }
 

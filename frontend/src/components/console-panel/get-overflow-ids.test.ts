@@ -98,21 +98,39 @@ describe('getOverflowIds', () => {
     expect(result).toEqual(new Set(['b', 'c']));
   });
 
-  test('all tabs overflow when even active tab does not fit', () => {
+  test('keeps the active tab visible (it shrinks) when there is room for a minimal chip', () => {
+    const tabs = makeTabs('a', 'b', 'c');
+    const widths = { a: 100, b: 100, c: 100 };
+    // total = 300, area = 100 → overflow
+    // available = 100 - 26 = 74 (≥ MIN_ACTIVE_TAB_WIDTH); active 'a' = 100 doesn't
+    // fit but shrinks to fill it, leaving no room → 'b' and 'c' overflow
+    const result = getOverflowIds(tabs, widths, 100, 'a', 26);
+    expect(result.has('a')).toBe(false);
+    expect(result).toEqual(new Set(['b', 'c']));
+  });
+
+  test('overflows the active tab too when there is no room for a minimal chip', () => {
     const tabs = makeTabs('a', 'b', 'c');
     const widths = { a: 100, b: 100, c: 100 };
     // total = 300, area = 50 → overflow
-    // available = 50 - 26 = 24, active 'a' = 100 doesn't fit
-    // no tabs fit → all overflow
+    // available = 50 - 26 = 24 (< MIN_ACTIVE_TAB_WIDTH); even a shrunk chip would be
+    // clipped, so the active tab overflows too → all tabs overflow
     const result = getOverflowIds(tabs, widths, 50, 'a', 26);
     expect(result).toEqual(new Set(['a', 'b', 'c']));
   });
 
-  test('all tabs overflow with single tab that does not fit', () => {
+  test('keeps a single active tab visible (shrunk) when there is room for a minimal chip', () => {
     const tabs = makeTabs('a');
     const widths = { a: 100 };
-    // total = 100, area = 30 → overflow
-    // available = 30 - 26 = 4, active 'a' = 100 doesn't fit
+    // total = 100, area = 80 → overflow; available = 54 (≥ MIN) → active shrinks, stays
+    const result = getOverflowIds(tabs, widths, 80, 'a', 26);
+    expect(result.size).toBe(0);
+  });
+
+  test('overflows the single active tab when there is no room for a minimal chip', () => {
+    const tabs = makeTabs('a');
+    const widths = { a: 100 };
+    // total = 100, area = 30 → overflow; available = 4 (< MIN) → active overflows
     const result = getOverflowIds(tabs, widths, 30, 'a', 26);
     expect(result).toEqual(new Set(['a']));
   });
