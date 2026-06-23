@@ -1,11 +1,11 @@
-export interface Option<T = string | boolean | number | null> {
+export interface Option<T = string | boolean | number | null | string[]> {
   label: string;
   value?: T;
   hidden?: boolean;
   options?: Option<T>[];
 }
 
-export interface DropdownProps<T = string | boolean | number | null> {
+export interface DropdownProps<T = string | boolean | number | null | string[]> {
   id?: string;
   className?: string;
   options: Option<T>[];

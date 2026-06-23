@@ -174,7 +174,9 @@ export const Dropdown = ({
     }),
     classNamePrefix: 'dropdown' as const,
     options,
-    value: findOption(options, value) ?? null,
+    value: multiselect && Array.isArray(value)
+      ? value.map((v) => findOption(options, v)).filter(Boolean)
+      : findOption(options, value) ?? null,
     placeholder: placeholder || '',
     isDisabled,
     isSearchable,
