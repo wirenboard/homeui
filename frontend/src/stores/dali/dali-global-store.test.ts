@@ -103,6 +103,36 @@ describe('DaliGlobalStore', () => {
     });
   });
 
+  describe('closing the tab (onClose)', () => {
+    test('persists the disabled flag and tears the monitor down on success', async () => {
+      store.enable('bus1', { gatewayName: 'GW', busIndex: 1, autoShow: false });
+      daliProxyMock.SetBus.mockResolvedValue(undefined);
+
+      consolePanelStore.unregisterTab(busTabId('bus1'));
+      await Promise.resolve();
+
+      expect(daliProxyMock.SetBus).toHaveBeenCalledWith({
+        busId: 'bus1',
+        config: { bus_monitor_enabled: false },
+      });
+      expect(store.isMonitorEnabled('bus1')).toBe(false);
+      expect(hasTab('bus1')).toBe(false);
+    });
+
+    test('reverts the close (re-registers the tab) when the write fails', async () => {
+      store.enable('bus1', { gatewayName: 'GW', busIndex: 1, autoShow: false });
+      daliProxyMock.SetBus.mockRejectedValue(new Error('fail'));
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      consolePanelStore.unregisterTab(busTabId('bus1'));
+      await new Promise((resolve) => setTimeout(resolve));
+
+      expect(store.isMonitorEnabled('bus1')).toBe(true);
+      expect(hasTab('bus1')).toBe(true);
+      warn.mockRestore();
+    });
+  });
+
   describe('updateLabel', () => {
     test('updates the registered tab label', () => {
       store.enable('bus1', { gatewayName: 'GW', busIndex: 1, autoShow: false });

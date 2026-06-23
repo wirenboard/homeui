@@ -71,9 +71,19 @@ export class DaliGlobalStore {
         // directly always reflects the current gateway name / bus index.
         getLabel: () => buildLabel(newRecord.gatewayName, newRecord.busIndex),
         onClose: () => {
-          daliProxy.SetBus({ busId, config: { bus_monitor_enabled: false } })
-            .catch((err) => console.warn(`Failed to disable bus monitor for ${busId}`, err));
+          // Close optimistically; if persisting the disabled flag fails the backend
+          // stays enabled, so revert (re-register + re-subscribe) to keep the UI in
+          // sync with persisted state instead of the next reconcile bringing it back.
           this.disable(busId);
+          daliProxy.SetBus({ busId, config: { bus_monitor_enabled: false } })
+            .catch((err) => {
+              console.warn(`Failed to disable bus monitor for ${busId}`, err);
+              this.enable(busId, {
+                gatewayName: newRecord.gatewayName,
+                busIndex: newRecord.busIndex,
+                autoShow: true,
+              });
+            });
         },
       });
     } else {
