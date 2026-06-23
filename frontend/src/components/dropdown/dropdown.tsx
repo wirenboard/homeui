@@ -121,6 +121,8 @@ export const Dropdown = ({
   isCreatable,
   formatCreateLabel,
   minWidth = '150px',
+  menuPortal = true,
+  captureMenuScroll,
   onChange,
 }: DropdownProps) => {
   const { t } = useTranslation();
@@ -163,6 +165,17 @@ export const Dropdown = ({
     return res;
   };
 
+  const resolveValue = () => {
+    if (multiselect) {
+      if (value === undefined) {
+        return undefined;
+      }
+      const values = Array.isArray(value) ? value : [value];
+      return values.map((item) => findOption(options, item)).filter(Boolean);
+    }
+    return findOption(options, value) ?? null;
+  };
+
   const selectProps = {
     ref: select,
     inputId,
@@ -174,17 +187,18 @@ export const Dropdown = ({
     }),
     classNamePrefix: 'dropdown' as const,
     options,
-    value: findOption(options, value) ?? null,
+    value: resolveValue(),
     placeholder: placeholder || '',
     isDisabled,
     isSearchable,
     isLoading,
     isClearable,
     isMulti: multiselect,
-    menuPortalTarget: document.body,
+    menuPortalTarget: menuPortal ? document.body : undefined,
     menuPlacement: 'auto' as const,
     maxMenuHeight: 240,
-    menuPosition: 'fixed' as const,
+    captureMenuScroll,
+    menuPosition: menuPortal ? ('fixed' as const) : ('absolute' as const),
     components: {
       MenuPortal: (props: any) => MenuPortal({ ...props, className }, size),
       DropdownIndicator: (props: any) => DropdownIndicator(props, isButton),
