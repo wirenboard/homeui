@@ -1,0 +1,12 @@
+# Dev/test/lint tooling for backend/. Runtime deps come from requirements.txt
+# (bootstrap-venv.sh installs both).
+
+# Formatting & linting — pinned so results stay identical across machines/CI.
+black==24.2.0
+isort==5.13.2
+pylint==3.3.9
+
+# Tests & coverage — unpinned (less sensitive; avoid stale local pins).
+pytest
+pytest-cov
+coverage
