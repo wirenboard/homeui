@@ -17,15 +17,12 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import ChevronRightDoubleIcon from '@/assets/icons/chevron-right-double.svg';
-import ClearIcon from '@/assets/icons/clear.svg';
 import CloseIcon from '@/assets/icons/close.svg';
 import LayoutBottomIcon from '@/assets/icons/layout-bottom.svg';
 import LayoutRightIcon from '@/assets/icons/layout-right.svg';
-import { Dropdown, type Option } from '@/components/dropdown';
 import { Tabs } from '@/components/tabs';
 import { Tooltip } from '@/components/tooltip';
 import { consolePanelStore as store } from '@/stores/console-panel';
-import { ConsolePanelContent } from './console-panel-content';
 import { getOverflowIds } from './get-overflow-ids';
 import './styles.css';
 
@@ -37,7 +34,6 @@ export const ConsolePanel = observer(() => {
   const container = useRef<HTMLDivElement>(null);
   const resizer = useRef<HTMLDivElement>(null);
   const positionRef = useRef(store.position);
-  const [filter, setFilter] = useState('all');
 
   const measureRef = useRef<HTMLDivElement>(null);
   const tabsAreaRef = useRef<HTMLDivElement>(null);
@@ -79,7 +75,7 @@ export const ConsolePanel = observer(() => {
     label: tab.closable
       ? (
         <span className="consolePanel-tabLabel">
-          {tab.label}
+          <span className="consolePanel-tabText">{tab.label}</span>
           <span
             role="button"
             tabIndex={0}
@@ -210,10 +206,6 @@ export const ConsolePanel = observer(() => {
     }
   }, [isMobile]);
 
-  useEffect(() => {
-    setFilter('all');
-  }, [store.activeTabId]);
-
   return (
     <aside
       className={classNames('consolePanel', {
@@ -311,43 +303,7 @@ export const ConsolePanel = observer(() => {
         </div>
 
         <div className="consolePanel-headerActions">
-          {activeTab?.actions?.map((action) => (
-            <Tooltip key={action.id} text={action.tooltip}>
-              <button
-                className="consolePanel-button"
-                aria-label={action.tooltip}
-                onClick={action.onClick}
-              >
-                <action.icon
-                  className={classNames('consolePanel-icon', {
-                    'consolePanel-iconActive': action.isActive?.(),
-                  })}
-                />
-              </button>
-            </Tooltip>
-          ))}
-
-          <Tooltip text={t('console-panel.buttons.clear')}>
-            <button
-              className="consolePanel-button"
-              aria-label={t('console-panel.buttons.clear')}
-              onClick={() => activeTab?.clearLogs()}
-            >
-              <ClearIcon className="consolePanel-icon" />
-            </button>
-          </Tooltip>
-
-          {activeTab?.filterLevels && (
-            <div className="consolePanel-separatorLeft">
-              <Dropdown
-                className="consolePanel-filter"
-                options={activeTab.filterLevels}
-                value={filter}
-                size="small"
-                onChange={({ value }: Option<string>) => setFilter(value)}
-              />
-            </div>
-          )}
+          {activeTab && activeTab.renderToolbar && <activeTab.renderToolbar />}
 
           <div className="consolePanel-separatorLeft">
             <Tooltip text={t('console-panel.buttons.dock-bottom')}>
@@ -392,7 +348,7 @@ export const ConsolePanel = observer(() => {
         </div>
       </header>
 
-      {activeTab && <ConsolePanelContent tab={activeTab} filter={filter} />}
+      {activeTab && <activeTab.renderContent />}
     </aside>
   );
 });

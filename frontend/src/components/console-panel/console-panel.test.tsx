@@ -44,9 +44,7 @@ const OVERFLOW_LABEL = 'console-panel.buttons.more-tabs';
 const makeTab = (id: string, overrides: Partial<ConsoleTab> = {}): ConsoleTab => ({
   id,
   label: id,
-  getLogs: vi.fn(() => []),
-  renderLog: vi.fn(),
-  clearLogs: vi.fn(),
+  renderContent: () => null,
   ...overrides,
 });
 
@@ -247,5 +245,27 @@ describe('ConsolePanel overflow', () => {
     expect(items).toHaveLength(2);
     expect(within(menu).getByText('Alpha')).toBeTruthy();
     expect(within(menu).getByText('Beta')).toBeTruthy();
+  });
+});
+
+describe('ConsolePanel tab slots', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockOverflowIds = new Set();
+    store.tabs = [];
+    store.activeTabId = null;
+    store.isVisible = false;
+  });
+
+  test('renders the active tab toolbar and content', () => {
+    store.registerTab(makeTab('a', {
+      renderToolbar: () => <button>my-toolbar-btn</button>,
+      renderContent: () => <div>my-content</div>,
+    }));
+
+    render(<ConsolePanel />);
+
+    expect(screen.getByText('my-toolbar-btn')).toBeTruthy();
+    expect(screen.getByText('my-content')).toBeTruthy();
   });
 });

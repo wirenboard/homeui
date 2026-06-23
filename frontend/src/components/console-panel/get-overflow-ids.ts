@@ -1,3 +1,11 @@
+/**
+ * Smallest width (px) at which a shrunk active tab is still usable — an
+ * ellipsised label plus its close button. Below this the active tab overflows
+ * (like a regular tab) so the row collapses to the overflow button instead of
+ * showing a clipped sliver.
+ */
+const MIN_ACTIVE_TAB_WIDTH = 48;
+
 export function getOverflowIds(
   tabs: { id: string }[],
   tabWidths: Record<string, number>,
@@ -15,13 +23,21 @@ export function getOverflowIds(
 
   const visibleIds = new Set<string>();
 
-  if (activeId && tabWidths[activeId]) {
-    if (tabWidths[activeId] <= available) {
-      available -= tabWidths[activeId];
+  // The active tab stays visible and shrinks with an ellipsis (see styles.css)
+  // rather than moving to the overflow menu — but only while there is room for a
+  // usable chip. Below that it overflows too, so the row collapses to just the
+  // overflow button instead of showing a clipped sliver.
+  if (activeId) {
+    const activeWidth = tabWidths[activeId] ?? 0;
+    if (activeWidth <= available) {
       visibleIds.add(activeId);
+      available -= activeWidth;
+    } else if (available >= MIN_ACTIVE_TAB_WIDTH) {
+      // Too wide to fit, but wide enough to shrink into the remaining space,
+      // which then leaves no room for any other tab.
+      visibleIds.add(activeId);
+      available = 0;
     }
-  } else if (activeId) {
-    visibleIds.add(activeId);
   }
 
   for (const tab of tabs) {
