@@ -1,3 +1,4 @@
+import type { UserRole } from '@/stores/auth';
 import { getMenu } from './api';
 import { normalizeMenuResponse, toMenuItemInstance, mergeMenuItems } from './menu-items';
 import UiStore from './ui-store';
@@ -238,6 +239,70 @@ describe('toMenuItemInstance', () => {
   test('does not set isExternal for internal items', () => {
     const result = toMenuItemInstance({ id: 'x', url: '/x' }, 'en');
     expect(result.isExternal).toBeUndefined();
+  });
+
+  test('propagates openInNewTab for external items', () => {
+    const result = toMenuItemInstance(
+      { id: 'node-red', url: '/node-red/', title: { en: 'Node-RED' }, isExternal: true, openInNewTab: true },
+      'en',
+    );
+    expect(result.openInNewTab).toBe(true);
+  });
+
+  test('hides requiredRole item when the role is insufficient', () => {
+    const hasRights = vi.fn(() => false);
+    const result = toMenuItemInstance(
+      { id: 'node-red', url: '/node-red/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
+      'en',
+      hasRights,
+    );
+    expect(hasRights).toHaveBeenCalledWith('operator');
+    expect(result.isShow).toBe(false);
+  });
+
+  test('shows requiredRole item when the role is sufficient', () => {
+    const hasRights = vi.fn(() => true);
+    const result = toMenuItemInstance(
+      { id: 'node-red', url: '/node-red/', title: { en: 'Editor' }, requiredRole: 'operator' as UserRole },
+      'en',
+      hasRights,
+    );
+    expect(hasRights).toHaveBeenCalledWith('operator');
+    expect(result.isShow).not.toBe(false);
+  });
+
+  test('keeps item visible for any role when requiredRole is absent', () => {
+    const denyAll = vi.fn(() => false);
+    const result = toMenuItemInstance(
+      { id: 'dashboard', url: '/dashboard', title: { en: 'Dashboard' } },
+      'en',
+      denyAll,
+    );
+    expect(denyAll).not.toHaveBeenCalled();
+    expect(result.isShow).not.toBe(false);
+  });
+
+  test('does not re-show an item hidden by another rule even when role allows', () => {
+    const allowAll = vi.fn(() => true);
+    const result = toMenuItemInstance(
+      { id: 'alice', title: { en: 'Alice' }, requiredRole: 'user' as UserRole },
+      'en',
+      allowAll,
+    );
+    expect(result.isShow).toBe(false);
+  });
+
+  test('propagates the role checker to children', () => {
+    const hasRights = vi.fn(() => false);
+    const result = toMenuItemInstance(
+      {
+        id: 'parent',
+        children: [{ id: 'child', title: { en: 'Child' }, requiredRole: 'operator' as UserRole }],
+      },
+      'en',
+      hasRights,
+    );
+    expect(result.children[0].isShow).toBe(false);
   });
 });
 

@@ -33,9 +33,13 @@ const normalizeUrl = (url?: string) => {
   return migrateLegacyUrl(normalized);
 };
 
-export const toMenuItemInstance = (item: CustomMenuItem, language: string): MenuItemInstance => {
+export const toMenuItemInstance = (
+  item: CustomMenuItem,
+  language: string,
+  hasRights?: (role: UserRole) => boolean,
+): MenuItemInstance => {
   const label = item.title?.[language as 'ru' | 'en'] || item.title?.ru || item.title?.en || item.id;
-  const children = item.children?.map((child) => toMenuItemInstance(child, language));
+  const children = item.children?.map((child) => toMenuItemInstance(child, language, hasRights));
   const output: MenuItemInstance = {
     id: item.id,
     // External links point outside the SPA (e.g. /node-red/); keep the URL
@@ -43,12 +47,22 @@ export const toMenuItemInstance = (item: CustomMenuItem, language: string): Menu
     url: item.isExternal ? item.url : normalizeUrl(item.url),
     label,
     ...(item.isExternal ? { isExternal: true } : null),
+    ...(item.openInNewTab ? { openInNewTab: true } : null),
     children: children?.length ? children : undefined,
   };
 
   if (item.id === 'alice') {
     output.isShow = language !== 'en';
   }
+
+  // Role gating combines with any visibility already decided above (e.g. the
+  // alice language rule): the item stays visible only when both allow it, so a
+  // requiredRole never silently re-shows an item another rule hid, nor vice
+  // versa. Without a hasRights checker the role gate is a no-op.
+  if (item.requiredRole !== undefined && hasRights) {
+    output.isShow = output.isShow !== false && hasRights(item.requiredRole);
+  }
+
   return output;
 };
 
@@ -75,6 +89,7 @@ export const mergeMenuItems = (baseItems: MenuItemInstance[], customItems: MenuI
         ...baseItem,
         ...(item.url ? { url: item.url } : null),
         ...(item.isExternal !== undefined ? { isExternal: item.isExternal } : null),
+        ...(item.openInNewTab !== undefined ? { openInNewTab: item.openInNewTab } : null),
         ...(item.label && item.label !== item.id ? { label: item.label } : null),
         children: mergedChildren.length ? mergedChildren : undefined,
       };
