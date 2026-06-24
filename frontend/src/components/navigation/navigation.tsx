@@ -13,6 +13,7 @@ import { MenuItem } from '@/components/navigation/components/menu-item';
 import { Tooltip } from '@/components/tooltip';
 import { UserRole, authStore } from '@/stores/auth';
 import { consolePanelStore } from '@/stores/console-panel';
+import { daliGlobalStore } from '@/stores/dali';
 import { dashboardsStore } from '@/stores/dashboards';
 import { uiStore } from '@/stores/ui';
 import { DescriptionStatus } from './components/description-status';
@@ -74,6 +75,7 @@ export const Navigation = observer(() => {
   const handleLogout = () => {
     setIsMobileMenuOpened(false);
     logout().then(() => {
+      daliGlobalStore.reset();
       if (authStore.isAutologin) {
         // If the user is an autologin user, just show login page to select another user.
         navigate('/login');

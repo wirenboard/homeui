@@ -14,14 +14,13 @@ describe('BusStore', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    store = new BusStore('bus1', 'Bus 1');
+    store = new BusStore('bus1', 'Bus 1', 1, 'GW');
   });
 
   describe('constructor', () => {
     test('sets id, label, and subscribes to commissioning', () => {
       expect(store.id).toBe('bus1');
       expect(store.label).toBe('Bus 1');
-      expect(store.busMonitor).toBeDefined();
       expect(store.commands).toBeDefined();
       expect(mqttClientMock.addStickySubscription).toHaveBeenCalledWith(
         '/wb-dali/bus1/commissioning',
@@ -31,7 +30,7 @@ describe('BusStore', () => {
 
     test('accepts initial commissioning state', () => {
       const state = { status: 'binary_search' as const, progress: 50, error: null, device_count: 0, devices: null, finished_at: null };
-      const s = new BusStore('bus2', 'Bus 2', state);
+      const s = new BusStore('bus2', 'Bus 2', 2, 'GW', state);
       expect(s.commissioningState.status).toBe('binary_search');
     });
   });
@@ -119,22 +118,25 @@ describe('BusStore', () => {
     });
   });
 
-  describe('setBusMonitorEnabled', () => {
-    test('updates and saves', async () => {
+  describe('setBusMonitorSyslogEnabled', () => {
+    test('persists the syslog flag', async () => {
       daliProxyMock.SetBus.mockResolvedValue(undefined);
 
-      await store.setBusMonitorEnabled(true);
+      await store.setBusMonitorSyslogEnabled(true);
 
-      expect(store.busMonitorEnabled).toBe(true);
+      expect(store.busMonitorSyslogEnabled).toBe(true);
+      expect(daliProxyMock.SetBus).toHaveBeenCalledWith({
+        busId: 'bus1',
+        config: { bus_monitor_syslog_enabled: true },
+      });
     });
 
     test('rolls back on failure', async () => {
-      store.busMonitorEnabled = false;
       daliProxyMock.SetBus.mockRejectedValue(new Error('fail'));
 
-      await store.setBusMonitorEnabled(true);
+      await store.setBusMonitorSyslogEnabled(true);
 
-      expect(store.busMonitorEnabled).toBe(false);
+      expect(store.busMonitorSyslogEnabled).toBe(false);
       expect(store.error).toBe('fail');
     });
   });

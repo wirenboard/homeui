@@ -1,3 +1,10 @@
+wb-mqtt-homeui (2.232.0) stable; urgency=medium
+
+  * DALI: render the bus monitor as a global console tab with address filter and save-to-file
+  * DALI: add a per-bus "Save to syslog" toggle
+
+ -- Petr Krasnoshchekov <petr.krasnoshchekov@wirenboard.com>  Tue, 23 Jun 2026 15:15:52 +0500
+
 wb-mqtt-homeui (2.231.1) stable; urgency=medium
 
   * Add Claude Code agent guidance (CLAUDE.md) and project rules

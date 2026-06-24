@@ -5,7 +5,6 @@ import { BaseItemStore, ItemType } from './base-item-store';
 import { BusCommandsStore } from './bus-commands-store';
 import { DeviceStore } from './device-store';
 import { GroupStore } from './group-store';
-import { MonitorStore } from './monitor-store';
 import type { CommissioningState } from './types';
 
 const IDLE_COMMISSIONING_STATE: CommissioningState = {
@@ -20,11 +19,12 @@ const IDLE_COMMISSIONING_STATE: CommissioningState = {
 export class BusStore extends BaseItemStore {
   readonly type = ItemType.Bus;
   public children: (DeviceStore | GroupStore)[] = [];
-  public busMonitor: MonitorStore | null = null;
   public commands: BusCommandsStore;
+  public gatewayName: string;
+  public index: number;
 
   public pollingInterval: number = 5;
-  public busMonitorEnabled: boolean = false;
+  public busMonitorSyslogEnabled: boolean = false;
   public broadcastSettingsVisible: boolean = false;
 
   public isParametersSchemaLoading: boolean = false;
@@ -40,12 +40,14 @@ export class BusStore extends BaseItemStore {
   constructor(
     id: string,
     name: string,
+    index: number,
+    gatewayName: string,
     commissioning?: CommissioningState,
   ) {
     super(id, name);
-    this.busMonitor = new MonitorStore();
+    this.index = index;
+    this.gatewayName = gatewayName;
     this.commands = new BusCommandsStore(id);
-    this.busMonitor = new MonitorStore();
     this.#commissioningTopic = `/wb-dali/${id}/commissioning`;
     makeObservable(this, {
       load: action,
@@ -53,7 +55,7 @@ export class BusStore extends BaseItemStore {
       stopScan: action,
       saveParam: action,
       setPollingInterval: action,
-      setBusMonitorEnabled: action,
+      setBusMonitorSyslogEnabled: action,
       applyCommissioningState: action,
       syncGroupChildren: action,
       setError: action,
@@ -65,9 +67,10 @@ export class BusStore extends BaseItemStore {
       isScanning: computed,
       error: observable,
       label: observable,
+      gatewayName: observable,
       children: observable.shallow,
       pollingInterval: observable,
-      busMonitorEnabled: observable,
+      busMonitorSyslogEnabled: observable,
       broadcastSettingsVisible: observable,
     });
 
@@ -92,19 +95,20 @@ export class BusStore extends BaseItemStore {
     }
   }
 
-  async setBusMonitorEnabled(value: boolean) {
-    const prev = this.busMonitorEnabled;
-    this.busMonitorEnabled = value;
-    const configUpdate: Record<string, unknown> = { bus_monitor_enabled: value };
-    this._updateMonitor(configUpdate);
+  /**
+   * Optimistically flips the syslog flag, persists it, and rolls back if the
+   * backend write fails.
+   */
+  async setBusMonitorSyslogEnabled(value: boolean) {
+    const prev = this.busMonitorSyslogEnabled;
+    this.busMonitorSyslogEnabled = value;
     try {
-      await daliProxy.SetBus({ busId: this.id, config: configUpdate });
+      await daliProxy.SetBus({ busId: this.id, config: { bus_monitor_syslog_enabled: value } });
       this.setError(null);
     } catch (error) {
       runInAction(() => {
-        this.busMonitorEnabled = prev;
+        this.busMonitorSyslogEnabled = prev;
       });
-      this._updateMonitor({ bus_monitor_enabled: prev });
       this.setError(error);
     }
   }
@@ -124,7 +128,6 @@ export class BusStore extends BaseItemStore {
       const data = await daliProxy.GetBus({ busId: this.id });
       if (this.isFirstLoad) {
         this._applyConfig(data.config);
-        this._updateMonitor(data.config);
         runInAction(() => {
           this.isFirstLoad = false;
         });
@@ -278,15 +281,7 @@ export class BusStore extends BaseItemStore {
 
   private _applyConfig(config: Record<string, any>) {
     this.pollingInterval = config.polling_interval ?? 5;
-    this.busMonitorEnabled = config.bus_monitor_enabled ?? false;
-  }
-
-  private _updateMonitor(config: Record<string, any>) {
-    if (config.bus_monitor_enabled) {
-      this.busMonitor!.enableMonitoring(this.id);
-    } else {
-      this.busMonitor!.disableMonitoring();
-    }
+    this.busMonitorSyslogEnabled = config.bus_monitor_syslog_enabled ?? false;
   }
 
   private makeGroupId(groupNum: number): string {
