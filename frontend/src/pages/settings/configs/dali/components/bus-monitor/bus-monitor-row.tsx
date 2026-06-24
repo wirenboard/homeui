@@ -19,7 +19,7 @@ export const BusMonitorRow = memo(({ frame }: { frame: ParsedBusMonitorLine }) =
 
   return (
     <div className={classNames('daliMonitor-row', { 'daliMonitor-rowError': response.kind === 'error' })}>
-      <span className="daliMonitor-time">{frame.time}</span>
+      <time className="daliMonitor-time" dateTime={frame.time}>{frame.time}</time>
       <span className="daliMonitor-hex">{formatHexBytes(frame.hex)}</span>
       <span className="daliMonitor-command">
         <span className="daliMonitor-cmdText" title={frame.command}>{frame.command}</span>

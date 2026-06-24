@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import MoreIcon from '@/assets/icons/more-vertical.svg';
+import MoreIcon from '@/assets/icons/more.svg';
 import { Popup } from '@/components/popup';
 import { Tooltip } from '@/components/tooltip';
 import type { ConsoleMenuProps } from './types';
