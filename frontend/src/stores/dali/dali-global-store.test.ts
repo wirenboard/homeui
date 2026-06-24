@@ -1,4 +1,3 @@
-// @vitest-environment happy-dom
 import { autorun, runInAction } from 'mobx';
 import { consolePanelStore } from '@/stores/console-panel';
 import { daliProxyMock, mqttClientMock } from '@/test/mocks/services';
@@ -6,6 +5,20 @@ import { busTabId } from './bus-tab-id';
 import { DaliGlobalStore } from './dali-global-store';
 
 vi.mock('@/services', () => import('@/test/mocks/services'));
+// The real i18n config touches `document` at import; the store only needs `t`.
+vi.mock('@/i18n/config', () => ({ default: { t: (key: string) => key } }));
+
+// `consolePanelStore` is a singleton constructed at import time and reads
+// localStorage in its field initializers, so the stub has to be in place before
+// that import runs — hence vi.hoisted (lifted above the imports). A plain
+// top-level assignment as in console-panel-store.test.ts would run too late here,
+// since that test constructs the store lazily inside each case.
+vi.hoisted(() => {
+  Object.defineProperty(globalThis, 'localStorage', {
+    value: { getItem: () => null, setItem: () => {} },
+    configurable: true,
+  });
+});
 
 const hasTab = (busId: string) => consolePanelStore.tabs.some((t) => t.id === busTabId(busId));
 
